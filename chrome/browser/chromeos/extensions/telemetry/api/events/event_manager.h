@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
-#include "chromeos/ash/components/telemetry_extension/events/telemetry_event_service_ash.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -81,8 +80,6 @@ class EventManager : public extensions::BrowserContextKeyedAPI,
   static const bool kServiceIsCreatedInGuestMode = false;
   static const bool kServiceRedirectedInIncognito = true;
 
-  ash::TelemetryEventServiceAsh& GetEventService();
-
   void OnAppUiClosed(extensions::ExtensionId extension_id);
   void OnAppUiFocusChanged(extensions::ExtensionId extension_id,
                            bool is_focused);
@@ -94,7 +91,6 @@ class EventManager : public extensions::BrowserContextKeyedAPI,
   base::flat_map<extensions::ExtensionId, std::unique_ptr<AppUiObserver>>
       app_ui_observers_;
   EventRouter event_router_;
-  std::unique_ptr<ash::TelemetryEventServiceAsh> event_service_;
 
   const raw_ptr<content::BrowserContext> browser_context_;
 };

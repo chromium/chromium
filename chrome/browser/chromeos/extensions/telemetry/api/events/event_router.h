@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_observation.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
-#include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -46,7 +46,7 @@ class EventRouter {
   // `ExtensionId`. For one category there can always be a number of receivers.
   // The `ExtensionId` is needed to dispatch an actual event to a specific
   // extension.
-  mojo::PendingRemote<crosapi::mojom::TelemetryEventObserver>
+  mojo::PendingRemote<ash::cros_healthd::mojom::EventObserver>
   GetPendingRemoteForCategoryAndExtension(
       chromeos::api::os_events::EventCategory category,
       extensions::ExtensionId extension_id);

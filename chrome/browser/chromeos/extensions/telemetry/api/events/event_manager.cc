@@ -98,10 +98,11 @@ EventManager::RegisterEventResult EventManager::RegisterExtensionForEvent(
     }
   }
 
-  auto crosapi_category = converters::events::ConvertCrosapi(category);
-  GetEventService().AddEventObserver(
-      crosapi_category, event_router_.GetPendingRemoteForCategoryAndExtension(
-                            category, extension_id));
+  ash::cros_healthd::ServiceConnection::GetInstance()
+      ->GetEventService()
+      ->AddEventObserver(converters::events::Convert(category),
+                         event_router_.GetPendingRemoteForCategoryAndExtension(
+                             category, extension_id));
   return kSuccess;
 }
 
@@ -122,13 +123,6 @@ void EventManager::IsEventSupported(
       ->GetEventService()
       ->IsEventSupported(converters::events::Convert(category),
                          std::move(callback));
-}
-
-ash::TelemetryEventServiceAsh& EventManager::GetEventService() {
-  if (!event_service_) {
-    event_service_ = std::make_unique<ash::TelemetryEventServiceAsh>();
-  }
-  return *event_service_;
 }
 
 void EventManager::OnAppUiClosed(extensions::ExtensionId extension_id) {

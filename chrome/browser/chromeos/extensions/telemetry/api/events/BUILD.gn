@@ -43,6 +43,7 @@ source_set("event_router") {
     "//base",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/ash/components/telemetry_extension/events",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",
     "//content/public/browser",
     "//extensions/common",
@@ -68,7 +69,6 @@ source_set("event_manager") {
     "//chromeos/ash/components/telemetry_extension/events",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
-    "//chromeos/crosapi/mojom",
     "//content/public/browser",
   ]
 
@@ -157,7 +157,7 @@ source_set("extensions_unittests") {
     ":event_router",
     "//base/test:test_support",
     "//chrome/common/chromeos/extensions/api",
-    "//chromeos/crosapi/mojom",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
     "//content/test:test_support",
     "//extensions:test_support",
     "//extensions/common",

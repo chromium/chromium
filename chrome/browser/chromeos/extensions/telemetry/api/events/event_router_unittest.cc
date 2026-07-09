@@ -7,18 +7,12 @@
 #include <memory>
 
 #include "chrome/common/chromeos/extensions/api/events.h"
-#include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "extensions/browser/extensions_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
-
-namespace {
-
-namespace crosapi = ::crosapi::mojom;
-
-}  // namespace
 
 class TelemetryExtensionEventRouterTest : public extensions::ExtensionsTest {
  public:
@@ -40,12 +34,12 @@ TEST_F(TelemetryExtensionEventRouterTest, ResetReceiversForExtension) {
   constexpr char kExtensionIdOne[] = "TESTEXTENSION1";
   constexpr char kExtensionIdTwo[] = "TESTEXTENSION2";
 
-  mojo::Remote<crosapi::TelemetryEventObserver> remote_one(
+  mojo::Remote<ash::cros_healthd::mojom::EventObserver> remote_one(
       GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
           chromeos::api::os_events::EventCategory::kAudioJack,
           kExtensionIdOne));
 
-  mojo::Remote<crosapi::TelemetryEventObserver> remote_two(
+  mojo::Remote<ash::cros_healthd::mojom::EventObserver> remote_two(
       GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
           chromeos::api::os_events::EventCategory::kAudioJack,
           kExtensionIdTwo));
@@ -79,15 +73,15 @@ TEST_F(TelemetryExtensionEventRouterTest, ResetReceiversOfExtensionByCategory) {
   constexpr char kExtensionIdOne[] = "TESTEXTENSION1";
   constexpr char kExtensionIdTwo[] = "TESTEXTENSION2";
 
-  mojo::Remote<crosapi::TelemetryEventObserver> remote_one_audio(
+  mojo::Remote<ash::cros_healthd::mojom::EventObserver> remote_one_audio(
       GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
           chromeos::api::os_events::EventCategory::kAudioJack,
           kExtensionIdOne));
-  mojo::Remote<crosapi::TelemetryEventObserver> remote_one_unmapped(
+  mojo::Remote<ash::cros_healthd::mojom::EventObserver> remote_one_unmapped(
       GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
           chromeos::api::os_events::EventCategory::kNone, kExtensionIdOne));
 
-  mojo::Remote<crosapi::TelemetryEventObserver> remote_two(
+  mojo::Remote<ash::cros_healthd::mojom::EventObserver> remote_two(
       GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
           chromeos::api::os_events::EventCategory::kAudioJack,
           kExtensionIdTwo));
@@ -127,18 +121,20 @@ TEST_F(TelemetryExtensionEventRouterTest, RestrictReceiversForExtension) {
   constexpr chromeos::api::os_events::EventCategory focus_restriced_event =
       chromeos::api::os_events::EventCategory::kTouchpadConnected;
 
-  mojo::Remote<crosapi::TelemetryEventObserver> remote_one_regular(
+  mojo::Remote<ash::cros_healthd::mojom::EventObserver> remote_one_regular(
       GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
           regular_event, kExtensionIdOne));
-  mojo::Remote<crosapi::TelemetryEventObserver> remote_one_focus_restriced(
-      GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
-          focus_restriced_event, kExtensionIdOne));
-  mojo::Remote<crosapi::TelemetryEventObserver> remote_two_regular(
+  mojo::Remote<ash::cros_healthd::mojom::EventObserver>
+      remote_one_focus_restriced(
+          GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
+              focus_restriced_event, kExtensionIdOne));
+  mojo::Remote<ash::cros_healthd::mojom::EventObserver> remote_two_regular(
       GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
           regular_event, kExtensionIdTwo));
-  mojo::Remote<crosapi::TelemetryEventObserver> remote_two_focus_restriced(
-      GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
-          focus_restriced_event, kExtensionIdTwo));
+  mojo::Remote<ash::cros_healthd::mojom::EventObserver>
+      remote_two_focus_restriced(
+          GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
+              focus_restriced_event, kExtensionIdTwo));
 
   ASSERT_TRUE(remote_one_regular.is_bound());
   ASSERT_TRUE(remote_one_focus_restriced.is_bound());

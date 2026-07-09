@@ -11,7 +11,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/events_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
-#include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,7 +21,7 @@ namespace chromeos {
 
 class EventRouter;
 
-class EventObservation : public crosapi::mojom::TelemetryEventObserver {
+class EventObservation : public ash::cros_healthd::mojom::EventObserver {
  public:
   class Delegate {
    public:
@@ -29,7 +29,7 @@ class EventObservation : public crosapi::mojom::TelemetryEventObserver {
 
     virtual void OnEvent(const extensions::ExtensionId& extension_id,
                          EventRouter* event_router,
-                         crosapi::mojom::TelemetryEventInfoPtr info) = 0;
+                         ash::cros_healthd::mojom::EventInfoPtr info) = 0;
   };
 
   // `category` describes the category of events that this instance will be
@@ -44,18 +44,18 @@ class EventObservation : public crosapi::mojom::TelemetryEventObserver {
 
   ~EventObservation() override;
 
-  // crosapi::mojom::TelemetryEventObserver:
-  void OnEvent(crosapi::mojom::TelemetryEventInfoPtr info) override;
+  // ash::cros_healthd::mojom::EventObserver:
+  void OnEvent(ash::cros_healthd::mojom::EventInfoPtr info) override;
 
   // Binds a new pending remote to this implementation.
-  mojo::PendingRemote<crosapi::mojom::TelemetryEventObserver> GetRemote();
+  mojo::PendingRemote<ash::cros_healthd::mojom::EventObserver> GetRemote();
 
   // Sets the delegate for testing, assumes ownership.
   void SetDelegateForTesting(Delegate* delegate) { delegate_.reset(delegate); }
 
  private:
   extensions::ExtensionId extension_id_;
-  mojo::Receiver<crosapi::mojom::TelemetryEventObserver> receiver_;
+  mojo::Receiver<ash::cros_healthd::mojom::EventObserver> receiver_;
   std::unique_ptr<Delegate> delegate_;
   const raw_ptr<EventRouter> event_router_;
   const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;

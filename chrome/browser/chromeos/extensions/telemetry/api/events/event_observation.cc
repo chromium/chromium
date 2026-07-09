@@ -11,7 +11,7 @@
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
-#include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
+#include "chromeos/ash/components/telemetry_extension/events/telemetry_event_service_converters.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
@@ -22,8 +22,6 @@ namespace chromeos {
 
 namespace {
 
-namespace crosapi = ::crosapi::mojom;
-
 class DefaultEventDelegate : public EventObservation::Delegate {
  public:
   DefaultEventDelegate(content::BrowserContext* context,
@@ -33,11 +31,14 @@ class DefaultEventDelegate : public EventObservation::Delegate {
 
   void OnEvent(const extensions::ExtensionId& extension_id,
                EventRouter* event_router,
-               crosapi::TelemetryEventInfoPtr info) override {
+               ash::cros_healthd::mojom::EventInfoPtr healthd_info) override {
     if (!event_router->IsExtensionAllowedForCategory(extension_id, category_)) {
       return;
     }
 
+    // TODO(crbug.com/508411965): Remove the use of crosapi struct.
+    auto info =
+        ash::converters::events::ConvertStructPtr(std::move(healthd_info));
     std::unique_ptr<extensions::Event> event;
     switch (category_) {
       case api::os_events::EventCategory::kNone: {
@@ -137,14 +138,10 @@ class DefaultEventDelegate : public EventObservation::Delegate {
             browser_context_);
         break;
       }
-
-        // TODO(crbug.com/510951937): On switching from crosapi to direct
-        // cros_healthd call, CHECKs below need to be changed to if-statement
-        // because of the gap between JS api event category and cros_healthd
-        // event category.
-
       case api::os_events::EventCategory::kTouchpadButton: {
-        CHECK(info->is_touchpad_button_event_info());
+        if (!info->is_touchpad_button_event_info()) {
+          return;
+        }
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_TOUCHPAD_BUTTON_EVENT,
             api::os_events::OnTouchpadButtonEvent::kEventName,
@@ -156,7 +153,9 @@ class DefaultEventDelegate : public EventObservation::Delegate {
         break;
       }
       case api::os_events::EventCategory::kTouchpadTouch: {
-        CHECK(info->is_touchpad_touch_event_info());
+        if (!info->is_touchpad_touch_event_info()) {
+          return;
+        }
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_TOUCHPAD_TOUCH_EVENT,
             api::os_events::OnTouchpadTouchEvent::kEventName,
@@ -168,7 +167,9 @@ class DefaultEventDelegate : public EventObservation::Delegate {
         break;
       }
       case api::os_events::EventCategory::kTouchpadConnected: {
-        CHECK(info->is_touchpad_connected_event_info());
+        if (!info->is_touchpad_connected_event_info()) {
+          return;
+        }
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_TOUCHPAD_CONNECTED_EVENT,
             api::os_events::OnTouchpadConnectedEvent::kEventName,
@@ -180,7 +181,9 @@ class DefaultEventDelegate : public EventObservation::Delegate {
         break;
       }
       case api::os_events::EventCategory::kTouchscreenTouch: {
-        CHECK(info->is_touchscreen_touch_event_info());
+        if (!info->is_touchscreen_touch_event_info()) {
+          return;
+        }
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_TOUCHSCREEN_TOUCH_EVENT,
             api::os_events::OnTouchscreenTouchEvent::kEventName,
@@ -192,7 +195,9 @@ class DefaultEventDelegate : public EventObservation::Delegate {
         break;
       }
       case api::os_events::EventCategory::kTouchscreenConnected: {
-        CHECK(info->is_touchscreen_connected_event_info());
+        if (!info->is_touchscreen_connected_event_info()) {
+          return;
+        }
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_TOUCHSCREEN_CONNECTED_EVENT,
             api::os_events::OnTouchscreenConnectedEvent::kEventName,
@@ -204,7 +209,9 @@ class DefaultEventDelegate : public EventObservation::Delegate {
         break;
       }
       case api::os_events::EventCategory::kStylusTouch: {
-        CHECK(info->is_stylus_touch_event_info());
+        if (!info->is_stylus_touch_event_info()) {
+          return;
+        }
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_STYLUS_TOUCH_EVENT,
             api::os_events::OnStylusTouchEvent::kEventName,
@@ -216,7 +223,9 @@ class DefaultEventDelegate : public EventObservation::Delegate {
         break;
       }
       case api::os_events::EventCategory::kStylusConnected: {
-        CHECK(info->is_stylus_connected_event_info());
+        if (!info->is_stylus_connected_event_info()) {
+          return;
+        }
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_STYLUS_CONNECTED_EVENT,
             api::os_events::OnStylusConnectedEvent::kEventName,
@@ -252,7 +261,7 @@ EventObservation::EventObservation(const extensions::ExtensionId& extension_id,
 
 EventObservation::~EventObservation() = default;
 
-void EventObservation::OnEvent(crosapi::TelemetryEventInfoPtr info) {
+void EventObservation::OnEvent(ash::cros_healthd::mojom::EventInfoPtr info) {
   if (!info) {
     LOG(WARNING) << "Received empty event";
     return;
@@ -261,7 +270,7 @@ void EventObservation::OnEvent(crosapi::TelemetryEventInfoPtr info) {
   delegate_->OnEvent(extension_id_, event_router_, std::move(info));
 }
 
-mojo::PendingRemote<crosapi::TelemetryEventObserver>
+mojo::PendingRemote<ash::cros_healthd::mojom::EventObserver>
 EventObservation::GetRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
