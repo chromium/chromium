@@ -182,9 +182,7 @@ bool ShouldSkipFieldBecauseOfMeaningfulInitialValue(const AutofillField& field,
   }
 
   // Pre-filled country calling codes (e.g., "+1" or "+49") may be overwritten.
-  if (field.Type().GetGroups().contains(FieldTypeGroup::kPhone) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillOverwriteCountryCallingCodes)) {
+  if (field.Type().GetGroups().contains(FieldTypeGroup::kPhone)) {
     int maybe_country_calling_code = 0;
     if (base::StringToInt(
             base::TrimWhitespace(field.value(), base::TrimPositions::TRIM_ALL),

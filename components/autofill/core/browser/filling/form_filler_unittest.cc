@@ -1623,9 +1623,6 @@ TEST_F(FormFillerTest, FillFirstPhoneNumber_MultipleSectionFilledCorrectly) {
 
 // Tests that a prefilled country calling code does not prevent an Autofill.
 TEST_F(FormFillerTest, FillPhoneNumber_OverwriteCountryCallingCode) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillOverwriteCountryCallingCodes);
-
   FormData form = test::GetFormData(
       {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"},
                   {.role = PHONE_HOME_WHOLE_NUMBER,
@@ -1646,9 +1643,6 @@ TEST_F(FormFillerTest, FillPhoneNumber_OverwriteCountryCallingCode) {
 // Tests that a overwriting of country calling codes is limited to *valid* ones.
 TEST_F(FormFillerTest,
        FillPhoneNumber_DoNotOverwriteInvalidCountryCallingCode) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillOverwriteCountryCallingCodes);
-
   FormData form = test::GetFormData(
       {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"},
                   {.role = PHONE_HOME_WHOLE_NUMBER,

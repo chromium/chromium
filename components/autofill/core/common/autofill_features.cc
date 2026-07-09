@@ -769,12 +769,6 @@ BASE_FEATURE(kAutofillNewSuggestionGeneration,
 BASE_FEATURE(kAutofillOptimizeIsNormalizedNameVariantOf,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, prefilled country calling codes like "+49" do not prevent
-// autofilling.
-// TODO(crbug.com/453076638): Cleanup after M146 (after Feb 10, 2026).
-BASE_FEATURE(kAutofillOverwriteCountryCallingCodes,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables detection of language from Translate.
 // TODO(crbug.com/40158074): Cleanup when launched.
 BASE_FEATURE(kAutofillPageLanguageDetection, base::FEATURE_DISABLED_BY_DEFAULT);
