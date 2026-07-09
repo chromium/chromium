@@ -260,7 +260,7 @@ int TcpConnectJob::DoServiceEndpointsUpdated(
   fresh_state_.current_endpoint_index = 0;
   stale_state_.current_endpoint_index = 0;
   if (IsDualRaceOptimisticDnsEnabled() &&
-      !dns_request_->IsStaleWhileRefreshing()) {
+      (!dns_request_ || !dns_request_->IsStaleWhileRefreshing())) {
     // If fresh endpoints are now available, the stale state should no longer
     // start any new connection attempts. Point its index to the end.
     stale_state_.current_endpoint_index = GetEndpointResults().size();
