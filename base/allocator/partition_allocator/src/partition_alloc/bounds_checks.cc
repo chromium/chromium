@@ -44,7 +44,7 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
 
   uintptr_t object_addr = slot_start.value();
   uintptr_t object_end = object_addr + root->GetSlotUsableSize(slot_span);
-  if (test_address < object_addr || object_end < test_address) {
+  if (test_address < object_addr || object_end < test_address) [[unlikely]] {
     return PtrPosWithinAlloc::kFarOOB;
 #if PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   } else if (object_end - type_size < test_address) {
@@ -81,7 +81,7 @@ bool IsExtentOutOfBounds(const void* ptr,
   }
   const auto pool = partition_alloc::internal::GetPool(address);
   if (!partition_alloc::internal::ReservationOffsetTable::Get(pool)
-           .IsManagedByNormalBucketsOrDirectMap(address)) {
+           .IsManagedByNormalBucketsOrDirectMap(address)) [[unlikely]] {
     return false;
   }
 
