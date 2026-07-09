@@ -105,6 +105,23 @@ def GetBackwardsCompatibleTypes(
     return all_types
 
 
+def CheckWithEslint(api_file_path: str) -> list[str]:
+    eslint_cmd = [
+        sys.executable,
+        os.path.join(ROOT_PATH, 'third_party/node/node.py'),
+        os.path.join(ROOT_PATH,
+                     'third_party/node/node_modules/eslint/bin/eslint.js'),
+        '--config',
+        os.path.join(SCRIPT_PATH, 'eslint.config.mjs'),
+        api_file_path,
+    ]
+    try:
+        subprocess.check_output(eslint_cmd, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        return [e.output.decode('utf-8')]
+    return []
+
+
 # returns a dict of enum name to enum declaration text.
 def GetAllEnumDefinitions(source_text: str) -> dict[str, str]:
     # Use a multiline regex to extract all enum definitions
@@ -325,6 +342,7 @@ def main():
 
     if not skip_compatibility_check:
         errors.extend(CheckCompatibility(old_files, new_files))
+    errors.extend(CheckWithEslint(glic_api_path))
 
     for error in errors:
         print(error, file=sys.stderr)
