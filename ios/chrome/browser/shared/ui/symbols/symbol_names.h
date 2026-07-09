@@ -332,6 +332,10 @@ extern NSString* const kEnvelopeSymbol;
 extern NSString* const kSquareAndPencilSymbol;
 extern NSString* const kCreditCardFinderActionSymbol;
 extern NSString* const kPuzzlePieceExtensionSymbol;
+extern NSString* const kCursorArrowRaysSymbol;
+extern NSString* const kCursorArrowSymbol;
+extern NSString* const kCursorArrowMotionLinesSymbol;
+extern NSString* const kHourglassSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
