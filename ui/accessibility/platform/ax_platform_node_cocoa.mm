@@ -2314,7 +2314,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   ax::mojom::Role role = _node->GetRole();
   switch (role) {
     case ax::mojom::Role::kForm:
-      // Per Core AAM, unnamed forms should not be exposed as landmarks.
+      // Per HTML-AAM and Core-AAM, unnamed forms should not be exposed as
+      // landmarks. Only named forms keep the AXLandmarkForm subrole.
       if (!_node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
         return nil;
       }

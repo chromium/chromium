@@ -7428,7 +7428,16 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
       ia2_role = IA2_ROLE_CAPTION;
       break;
     case ax::mojom::Role::kForm:
-      ia2_role = IA2_ROLE_FORM;
+      // Per HTML-AAM and Core-AAM, a <form> maps to the form landmark only when
+      // it has an accessible name. An unnamed <form> must not be a landmark,
+      // otherwise screen readers announce a form region for every <form>. Note
+      // that every kForm node carries the "form" xml-roles attribute, so the
+      // accessible name is the only reliable signal here.
+      if (HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+        ia2_role = IA2_ROLE_FORM;
+      } else {
+        ia2_role = IA2_ROLE_SECTION;
+      }
       break;
     case ax::mojom::Role::kGenericContainer:
       ia2_role = IA2_ROLE_SECTION;
@@ -7943,10 +7952,10 @@ std::optional<LONG> AXPlatformNodeWin::ComputeUIALandmarkType() const {
       // should have no corresponding role, removing the role breaks both
       // aria-setsize and aria-posinset.
       // The only other difference for UIA is that it should not be a landmark.
-      // If the author provided an accessible name, or the role was explicit,
-      // then allow the form landmark.
-      if (HasStringAttribute(ax::mojom::StringAttribute::kName) ||
-          HasStringAttribute(ax::mojom::StringAttribute::kRole)) {
+      // Only expose the form landmark when the form has an accessible name.
+      // Every kForm node carries the "form" xml-roles attribute, so the
+      // accessible name is the only reliable signal here.
+      if (HasStringAttribute(ax::mojom::StringAttribute::kName)) {
         return UIA_FormLandmarkTypeId;
       }
       return {};

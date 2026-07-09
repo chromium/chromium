@@ -1701,6 +1701,14 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     return NSAccessibilitySecureTextFieldSubrole;
   }
 
+  if ([self internalRole] == ax::mojom::Role::kForm &&
+      !_owner->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+    // Per HTML-AAM and Core-AAM, an unnamed <form> is not a landmark, so do not
+    // expose the AXLandmarkForm subrole. Only named forms get the landmark
+    // subrole below.
+    return nil;
+  }
+
   if ([self internalRole] == ax::mojom::Role::kDescriptionList)
     return NSAccessibilityDefinitionListSubrole;
 
