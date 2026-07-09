@@ -784,7 +784,8 @@ bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
 
 bool ChromeAutocompleteProviderClient::ShouldOpenCoBrowsePanel() const {
 #if !BUILDFLAG(IS_ANDROID)
-  return omnibox::kAskGCoBrowse.Get();
+  return omnibox::kAskGCoBrowse.Get()
+      || omnibox::kAskGCoBrowseWithVisualSelection.Get();
 #else
   return false;
 #endif
@@ -803,6 +804,16 @@ void ChromeAutocompleteProviderClient::OpenCoBrowsePanel() {
                          : nullptr;
 
   if (ui_service) {
+    // TODO (crbug.com/532272763): Can likely unequivocally set the invocation
+    // source to kOmniboxPageActiom since this pathway is only ever called by
+    // kOmniboxPageAction.
+    if (omnibox::kAskGCoBrowseWithVisualSelection.Get()) {
+      if (auto* lens_controller = LensSearchController::From(tab)) {
+        lens_controller->SetInvocationSource(
+            lens::LensOverlayInvocationSource::kOmniboxPageAction);
+      }
+    }
+
     GURL creation_url = ui_service->GetDefaultAiPageUrl();
     auto* tab_helper =
         ContextualSearchWebContentsHelper::GetOrCreateForWebContents(

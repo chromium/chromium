@@ -255,3 +255,47 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientAskGCoBrowseTest,
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsContextualTasksSidePanelOpen(); }));
 }
+
+class ChromeAutocompleteProviderClientAskGCoBrowseWithLensOverlayTest
+    : public ChromeAutocompleteProviderClientTest {
+ protected:
+  ChromeAutocompleteProviderClientAskGCoBrowseWithLensOverlayTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{omnibox::kWebUIOmniboxAskGAboutThisPage,
+          {{"Omnibox_AskGCoBrowseWithVisualSelection", "true"}}},
+         {contextual_tasks::kContextualTasks, {}},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
+        {});
+  }
+
+  bool IsContextualTasksSidePanelOpen() {
+    auto* controller = contextual_tasks::ContextualTasksPanelController::From(
+        browser()->GetActiveTabInterface()->GetBrowserWindowInterface());
+    return controller && controller->IsPanelOpenForContextualTask();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeAutocompleteProviderClientAskGCoBrowseWithLensOverlayTest,
+    OpensSidePanelAndSetsAutoTrigger) {
+  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Lens overlay should NOT be opened immediately.
+  EXPECT_CALL(*GetLensSearchController(),
+              OpenLensOverlay(testing::_, testing::_))
+      .Times(0);
+
+  // Act: Call the entry point for Scenario B
+  GetAutocompleteProviderClient()->OpenCoBrowsePanel();
+
+  // Assert: Verify that the side panel is open.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsContextualTasksSidePanelOpen(); }));
+
+  // Assert: Verify that the invocation source is set to kOmniboxPageAction.
+  EXPECT_EQ(GetLensSearchController()->invocation_source(),
+            lens::LensOverlayInvocationSource::kOmniboxPageAction);
+}

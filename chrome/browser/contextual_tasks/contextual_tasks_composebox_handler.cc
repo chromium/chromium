@@ -66,6 +66,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #else
 #include "base/android/content_uri_utils.h"
 #endif
@@ -485,6 +486,9 @@ void ContextualTasksComposeboxHandler::UpdateStateFromUrl(const GURL& url) {
 
 void ContextualTasksComposeboxHandler::OnTaskChanged() {
   ClearFiles(/*should_block_auto_suggested_tabs=*/false);
+  // Maybe trigger lens overlay when Side Panel is done with navigation
+  // which triggers OnTaskChanged().
+  MaybeTriggerLens();
   InitializeInputStateModel();
 }
 
@@ -1095,6 +1099,24 @@ void ContextualTasksComposeboxHandler::DeleteContext(
   } else if (deleted_tab_url.has_value()) {
     auto_suggestion_manager->OnTabContextRemoved(deleted_tab_url.value());
   }
+}
+
+void ContextualTasksComposeboxHandler::MaybeTriggerLens() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!omnibox::kAskGCoBrowseWithVisualSelection.Get()) {
+    return;
+  }
+  if (auto* controller = GetLensSearchController()) {
+    if (controller->invocation_source() ==
+            lens::LensOverlayInvocationSource::kOmniboxPageAction) {
+      DCHECK(controller->invocation_source().has_value());
+      controller->SetThumbnailCreatedCallback(base::BindRepeating(
+          &ContextualTasksComposeboxHandler::OnLensThumbnailCreated,
+          weak_factory_.GetWeakPtr()));
+      controller->OpenLensOverlay(controller->invocation_source().value());
+    }
+  }
+#endif
 }
 
 void ContextualTasksComposeboxHandler::UpdateSuggestedTabContext(
