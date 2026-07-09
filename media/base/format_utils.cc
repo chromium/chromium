@@ -23,6 +23,8 @@ std::optional<VideoPixelFormat> SharedImageFormatToVideoPixelFormat(
   } else if (format == viz::SinglePlaneFormat::kRGBA_8888) {
     return PIXEL_FORMAT_ABGR;
   } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
+    return PIXEL_FORMAT_XB30;
+  } else if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
     return PIXEL_FORMAT_XR30;
   } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
     return PIXEL_FORMAT_RGBAF16;
@@ -63,8 +65,10 @@ std::optional<viz::SharedImageFormat> VideoPixelFormatToSharedImageFormat(
       return viz::SinglePlaneFormat::kRGBA_8888;
     case PIXEL_FORMAT_XBGR:
       return viz::SinglePlaneFormat::kRGBX_8888;
-    case PIXEL_FORMAT_XR30:
+    case PIXEL_FORMAT_XB30:
       return viz::SinglePlaneFormat::kRGBA_1010102;
+    case PIXEL_FORMAT_XR30:
+      return viz::SinglePlaneFormat::kBGRA_1010102;
     case PIXEL_FORMAT_RGBAF16:
       return viz::SinglePlaneFormat::kRGBA_F16;
     case PIXEL_FORMAT_YV12:
