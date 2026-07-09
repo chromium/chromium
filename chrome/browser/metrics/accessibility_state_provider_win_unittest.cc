@@ -44,7 +44,13 @@ TEST_F(AccessibilityStateProviderWinTest, RecordsMsaaOnly) {
       ui::AXPlatform::ActiveClientApi::kMsaaOnly, 1);
 }
 
-TEST_F(AccessibilityStateProviderWinTest, RecordsUiaOnly) {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/532802060): Re-enable this test on Windows ARM64.
+#define MAYBE_RecordsUiaOnly DISABLED_RecordsUiaOnly
+#else
+#define MAYBE_RecordsUiaOnly RecordsUiaOnly
+#endif
+TEST_F(AccessibilityStateProviderWinTest, MAYBE_RecordsUiaOnly) {
   content::ScopedAccessibilityModeOverride mode_override(
       ui::AXMode{ui::AXMode::kNativeAPIs});
   ui::AXPlatform::GetInstance().SetUiaActive();
