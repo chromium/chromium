@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/browser/contextual_cueing/features.h"
+#include "chrome/browser/contextual_cueing/prefs.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
@@ -23,6 +24,8 @@
 #include "chrome/browser/indigo/proto/indigo_prompts.pb.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -58,6 +61,16 @@ class IndigoServiceTest : public testing::Test {
 
   void SetUp() override {
     ::indigo::prefs::RegisterProfilePrefs(prefs_.registry());
+    prefs_.registry()->RegisterIntegerPref(
+        optimization_guide::prefs::GetSettingEnabledPrefName(
+            optimization_guide::UserVisibleFeatureKey::kContextualCueing),
+        static_cast<int>(
+            optimization_guide::prefs::FeatureOptInState::kNotInitialized));
+    prefs_.registry()->RegisterIntegerPref(
+        optimization_guide::prefs::kChromeSuggestionsSettings,
+        static_cast<int>(
+            contextual_cueing::ChromeSuggestionsSettingsValue::kEnabled));
+
     if (set_script_switch_in_setup_) {
       scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
           "indigo-script", "/dummy/path");
@@ -253,6 +266,31 @@ TEST_F(IndigoServiceTest, AnchoredMessageTrigger) {
   task_environment_.FastForwardBy(
       features::kIndigoAnchoredMessageResetDuration.Get());
   EXPECT_TRUE(service_->CanShowContextualCue());
+}
+
+TEST_F(IndigoServiceTest, CanShowContextualCueDisabledByUserOptIn) {
+  CreateService();
+
+  // Explicitly opt-out the user.
+  prefs_.SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::UserVisibleFeatureKey::kContextualCueing),
+      static_cast<int>(
+          optimization_guide::prefs::FeatureOptInState::kDisabled));
+
+  EXPECT_FALSE(service_->CanShowContextualCue());
+}
+
+TEST_F(IndigoServiceTest, CanShowContextualCueDisabledByEnterprisePolicy) {
+  CreateService();
+
+  // Disable via enterprise policy.
+  prefs_.SetInteger(
+      optimization_guide::prefs::kChromeSuggestionsSettings,
+      static_cast<int>(
+          contextual_cueing::ChromeSuggestionsSettingsValue::kDisabled));
+
+  EXPECT_FALSE(service_->CanShowContextualCue());
 }
 
 TEST_F(IndigoServiceTest, RemoteEligibilityUnsupported) {
