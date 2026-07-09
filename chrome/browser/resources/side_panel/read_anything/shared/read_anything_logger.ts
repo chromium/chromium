@@ -44,9 +44,18 @@ export class ReadAnythingLogger {
   // When this class is first instantiated, it will be because reading mode
   // is visible, so isHidden_ should be false be default.
   private isHidden_: boolean = false;
+  private hasUnloggedDistillation_: boolean = false;
+  private savedWordCountContainer_: Element|null = null;
+  private keyPointsRegex_: RegExp|null = null;
 
   setHidden(hidden: boolean) {
+    const wasHidden = this.isHidden_;
     this.isHidden_ = hidden;
+
+    if (wasHidden && !hidden && this.hasUnloggedDistillation_ &&
+        this.savedWordCountContainer_) {
+      this.logDistilledPageStructure(this.savedWordCountContainer_);
+    }
   }
 
   logEmptyState() {
@@ -248,8 +257,13 @@ export class ReadAnythingLogger {
 
   logDistilledPageStructure(wordCountContainer: Element) {
     if (this.isHidden_) {
+      this.hasUnloggedDistillation_ = true;
+      this.savedWordCountContainer_ = wordCountContainer;
       return;
     }
+
+    this.hasUnloggedDistillation_ = false;
+    this.savedWordCountContainer_ = null;
 
     const paragraphs = wordCountContainer.querySelectorAll('p');
     const headerCounts = ReadAnythingLogger.getHeaderCounts(wordCountContainer);
@@ -259,6 +273,39 @@ export class ReadAnythingLogger {
     if (chrome.readingMode.isPdf) {
       this.logPdfDistilledPageStructure_(headerCounts, paragraphs.length);
     }
+
+    this.logEnglishKeyPointsMetrics_(wordCountContainer);
+  }
+
+  private logEnglishKeyPointsMetrics_(wordCountContainer: Element) {
+    const lang = chrome.readingMode.baseLanguageForSpeech;
+    if (!lang || !lang.toLowerCase().startsWith('en')) {
+      return;
+    }
+
+    // Skip h1s as those are likely page titles.
+    const potentialKeyPointsContainers = wordCountContainer.querySelectorAll(
+        'h2, h3, h4, h5, h6, button, summary');
+    let maybeHasKeyPoints = false;
+    const regex = this.getKeyPointsRegex_();
+
+    for (const node of potentialKeyPointsContainers) {
+      const text = node.textContent || '';
+
+      if (regex.test(text)) {
+        maybeHasKeyPoints = true;
+        break;
+      }
+    }
+    this.metrics.recordBoolean(
+        'Accessibility.ReadAnything.PageStructure.EnglishKeyPointsInReadingMode',
+        maybeHasKeyPoints);
+
+    const maybeHasKeyPointsOnPage =
+        chrome.readingMode.maybeHasKeyPointsSection();
+    this.metrics.recordBoolean(
+        'Accessibility.ReadAnything.PageStructure.EnglishKeyPointsOnPage',
+        maybeHasKeyPointsOnPage);
   }
 
   private logOverallStructureMetrics_(
@@ -361,6 +408,14 @@ export class ReadAnythingLogger {
       {tag: 'h5', count: wordCountContainer.querySelectorAll('h5').length},
       {tag: 'h6', count: wordCountContainer.querySelectorAll('h6').length},
     ];
+  }
+
+  private getKeyPointsRegex_(): RegExp {
+    if (!this.keyPointsRegex_) {
+      const regexStr = chrome.readingMode.getKeyPointsRegex();
+      this.keyPointsRegex_ = new RegExp(regexStr, 'i');
+    }
+    return this.keyPointsRegex_;
   }
 
   static getInstance(): ReadAnythingLogger {

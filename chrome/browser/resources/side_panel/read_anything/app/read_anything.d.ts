@@ -249,6 +249,12 @@ declare namespace chrome {
     // Returns true if the element is a leaf node.
     function isLeafNode(nodeId: number): boolean;
 
+    // Returns true if the original page has a section with key points.
+    function maybeHasKeyPointsSection(): boolean;
+
+    // Returns a regex string of keywords used to identify a key points section.
+    function getKeyPointsRegex(): string;
+
     // Connects to the browser process. Called by ts when the read anything
     // element is added to the document.
     function onConnected(): void;

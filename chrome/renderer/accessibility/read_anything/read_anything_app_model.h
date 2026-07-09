@@ -204,6 +204,16 @@ class ReadAnythingAppModel {
   static constexpr char kEarlySelectionHistogramName[] =
       "Accessibility.ReadAnything.Readability.EarlySelection";
 
+  // Hardcoded list of words that are likely associated with "key points"
+  // sections on websites.
+  static constexpr char kKeyPointsRegex[] =
+      "\\b(key points|summary|tl;?dr|takeaways|what to know|in brief|"
+      "at a glance|the bottom line|fast facts|highlights|the gist|"
+      "need to know|overview|the short version|quick hits|key findings|"
+      "the big picture|in a nutshell|wrap up|quick read|"
+      "ai(-generated)? summary|bullet points|basic explainer|key facts|"
+      "why it matters)\\b";
+
   ReadAnythingAppModel();
   ReadAnythingAppModel(const ReadAnythingAppModel&) = delete;
   ReadAnythingAppModel& operator=(const ReadAnythingAppModel&) = delete;
@@ -712,6 +722,12 @@ class ReadAnythingAppModel {
   }
 
   bool has_pending_selection() const { return has_pending_selection_; }
+
+  // If the original page has something that looks like a key points section.
+  // This is a rough heuristic intended for metrics only and is not guaranteed.
+  bool MaybeHasKeyPointsSection() const;
+  bool IsNodeLikelyKeyPoints(ui::AXNode* node) const;
+  std::string GetKeyPointsRegex() const { return kKeyPointsRegex; }
 
  private:
   // TODO(crbug.com/513618559): Move text selection mapping algorithm logic

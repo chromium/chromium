@@ -232,6 +232,15 @@ export class FakeReadingMode {
     return nodeId === this.maxNodeId;
   }
 
+  // Returns true if the original page has a section with key points.
+  maybeHasKeyPointsSection(): boolean {
+    return false;
+  }
+
+  getKeyPointsRegex(): string {
+    return 'key points|summary|the bottom line|why it matters';
+  }
+
   // Connects to the browser process. Called by ts when the read anything
   // element is added to the document.
   onConnected() {}

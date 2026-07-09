@@ -3199,3 +3199,57 @@ TEST_F(ReadAnythingAppModelTest,
   EXPECT_EQ(mapping[0].start, 0);
   EXPECT_EQ(mapping[0].end, 15);
 }
+TEST_F(ReadAnythingAppModelTest,
+       MaybeHasKeyPointsSection_ReturnsTrueForHeadings) {
+  // Create an AXTreeUpdate with headings.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData root;
+  root.id = 1;
+
+  ui::AXNodeData heading1;
+  heading1.id = 2;
+  heading1.role = ax::mojom::Role::kHeading;
+  heading1.AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 2);
+  ui::AXNodeData text1 = test::TextNode(4, u"The big picture");
+  heading1.child_ids = {text1.id};
+
+  ui::AXNodeData heading2;
+  heading2.id = 3;
+  heading2.role = ax::mojom::Role::kHeading;
+  heading2.AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 1);
+  ui::AXNodeData text2 = test::TextNode(5, u"Main article title");
+  heading2.child_ids = {text2.id};
+
+  root.child_ids = {heading1.id, heading2.id};
+  update.root_id = root.id;
+  update.nodes = {root, heading1, text1, heading2, text2};
+
+  ApplyAccessibilityUpdates(tree_id_, {update});
+  model().SetActiveTreeId(tree_id_);
+
+  EXPECT_TRUE(model().MaybeHasKeyPointsSection());
+}
+
+TEST_F(ReadAnythingAppModelTest, MaybeHasKeyPointsSection_ReturnsFalseForH1) {
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData root;
+  root.id = 1;
+
+  ui::AXNodeData heading1;
+  heading1.id = 2;
+  heading1.role = ax::mojom::Role::kHeading;
+  heading1.AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 1);
+  ui::AXNodeData text1 = test::TextNode(3, u"Summary");  // "Summary" but it's an H1
+  heading1.child_ids = {text1.id};
+
+  root.child_ids = {heading1.id};
+  update.root_id = root.id;
+  update.nodes = {root, heading1, text1};
+
+  ApplyAccessibilityUpdates(tree_id_, {update});
+  model().SetActiveTreeId(tree_id_);
+
+  EXPECT_FALSE(model().MaybeHasKeyPointsSection());
+}

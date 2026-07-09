@@ -317,6 +317,8 @@ class ReadAnythingAppController
                          ui::AXNodeID focus_node_id,
                          int focus_offset);
   void OnCollapseSelection();
+  bool MaybeHasKeyPointsSection() const;
+  std::string GetKeyPointsRegex() const;
   void AttemptLogEarlySelection(bool from_side_panel);
   void OnDistilled(int word_count);
   void OnRenderedTextBlocksAvailable(const std::vector<std::u16string>& blocks);

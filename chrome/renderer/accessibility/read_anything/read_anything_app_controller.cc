@@ -1570,6 +1570,10 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getCurrentTextContent",
                  &ReadAnythingAppController::GetCurrentTextContent)
       .SetMethod("shouldShowUi", &ReadAnythingAppController::ShouldShowUI)
+      .SetMethod("maybeHasKeyPointsSection",
+                 &ReadAnythingAppController::MaybeHasKeyPointsSection)
+      .SetMethod("getKeyPointsRegex",
+                 &ReadAnythingAppController::GetKeyPointsRegex)
       .SetMethod("onIsSpeechActiveChanged",
                  &ReadAnythingAppController::OnIsSpeechActiveChanged)
       .SetMethod("onIsAudioCurrentlyPlayingChanged",
@@ -2431,6 +2435,14 @@ void ReadAnythingAppController::OnDistilled(int word_count) {
   base::UmaHistogramCustomCounts(
       "Accessibility.ReadAnything.WordsDistilledOnNewPage", word_count, 1,
       kMaxWordsConsumed, kWordsConsumedBuckets);
+}
+
+bool ReadAnythingAppController::MaybeHasKeyPointsSection() const {
+  return model_.MaybeHasKeyPointsSection();
+}
+
+std::string ReadAnythingAppController::GetKeyPointsRegex() const {
+  return model_.GetKeyPointsRegex();
 }
 
 void ReadAnythingAppController::UpdateWordsSeen(int words_seen) {

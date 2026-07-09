@@ -635,4 +635,51 @@ suite('Logger', () => {
       assertNotEquals(0, ratioMetric[1]);
     });
   });
+  test('logDistilledPageStructure logs key points correctly', () => {
+    // Setup wordCountContainer
+    const container = document.createElement('div');
+
+    // Add h1 which should be ignored
+    const h1 = document.createElement('h1');
+    h1.textContent = 'Summary of the article';
+    container.appendChild(h1);
+
+    // Test baseLanguageForSpeech is checked
+    chrome.readingMode.baseLanguageForSpeech = 'en-US';
+    logger.logDistilledPageStructure(container);
+
+    const booleanMetrics1 = metrics.getArgs('recordBoolean');
+    const inReadingModeMetric1 = booleanMetrics1.find(
+        (args: [string, boolean]) => args[0] ===
+            'Accessibility.ReadAnything.PageStructure.EnglishKeyPointsInReadingMode');
+    assertTrue(!!inReadingModeMetric1);
+    assertEquals(false, inReadingModeMetric1[1]);
+
+    metrics.reset();
+
+    // Add h2 which should trigger true
+    const h2 = document.createElement('h2');
+    h2.textContent = 'The Bottom Line';
+    container.appendChild(h2);
+
+    // Mock chrome.readingMode.maybeHasKeyPointsSection to return true
+    chrome.readingMode.maybeHasKeyPointsSection = () => true;
+
+    logger.logDistilledPageStructure(container);
+
+    // Verify true because of 'the bottom line'
+    const booleanMetrics2 = metrics.getArgs('recordBoolean');
+    const inReadingModeMetric2 = booleanMetrics2.find(
+        (args: [string, boolean]) => args[0] ===
+            'Accessibility.ReadAnything.PageStructure.EnglishKeyPointsInReadingMode');
+    assertTrue(!!inReadingModeMetric2);
+    assertEquals(true, inReadingModeMetric2[1]);
+
+    // Verify OnPage is also logged
+    const onPageMetric = booleanMetrics2.find(
+        (args: [string, boolean]) => args[0] ===
+            'Accessibility.ReadAnything.PageStructure.EnglishKeyPointsOnPage');
+    assertTrue(!!onPageMetric);
+    assertEquals(true, onPageMetric[1]);
+  });
 });
