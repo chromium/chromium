@@ -584,7 +584,7 @@ bool OffscreenCanvas::HasPlaceholderCanvas() const {
 }
 
 CanvasResourceDispatcher* OffscreenCanvas::GetOrCreateResourceDispatcher() {
-  DCHECK(HasPlaceholderCanvas());
+  CHECK(HasPlaceholderCanvas());
   // If we don't have a valid placeholder_canvas_id_, then this is a standalone
   // OffscreenCanvas, and it should not have a placeholder.
   if (frame_dispatcher_ == nullptr) {
@@ -692,7 +692,6 @@ bool OffscreenCanvas::PushFrame(
   auto exported_resource =
       base::MakeRefCounted<ExportedCanvasResource>(std::move(canvas_resource));
 
-  CHECK(HasPlaceholderCanvas());
   auto* dispatcher = GetOrCreateResourceDispatcher();
   if (placeholder_client_) {
     placeholder_client_->DispatchFrame(exported_resource);
