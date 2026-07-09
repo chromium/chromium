@@ -4095,6 +4095,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.Navigation.JavaObserverDuration.DidFinishNavigation"
+    units="ms" expires_after="2026-12-07">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the duration of the didFinishNavigationInPrimaryMainFrame event
+    dispatching to Java-side WebContentsObservers. Recorded on the browser main
+    thread when a primary main frame navigation finishes (committed, aborted, or
+    replaced).
+  </summary>
+</histogram>
+
 <histogram name="Android.NTP.Impression" enum="NTPImpressionType"
     expires_after="2026-11-15">
   <owner>finkm@chromium.org</owner>

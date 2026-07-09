@@ -10,7 +10,9 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/android/navigation_handle_proxy.h"
@@ -168,9 +170,13 @@ void WebContentsObserverProxy::DidFinishNavigation(
   if (navigation_handle->IsInPrimaryMainFrame()) {
     base::trace_event::EmitNamedTrigger("did-finish-navigation-in-pmf");
     JNIEnv* env = AttachCurrentThread();
+    base::TimeTicks start_time = base::TimeTicks::Now();
     Java_WebContentsObserverProxy_didFinishNavigationInPrimaryMainFrame(
         env, GetJavaObjectChecked(env),
         navigation_handle->GetJavaNavigationHandle());
+    base::UmaHistogramTimes(
+        "Android.Navigation.JavaObserverDuration.DidFinishNavigation",
+        base::TimeTicks::Now() - start_time);
   }
 }
 
