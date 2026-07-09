@@ -18,7 +18,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -270,9 +269,9 @@ struct AX_EXPORT ClientTreeNode final {
   ~ClientTreeNode();
   bool IsDirty() { return in_dirty_subtree || is_dirty; }
   const AXNodeID id;
-  const raw_ptr<ClientTreeNode, DanglingUntriaged> parent;
+  raw_ptr<ClientTreeNode, DanglingUntriaged> parent;
   // Not a vector<raw_ptr> due to regressions in blink_perf.accessibility tests.
-  RAW_PTR_EXCLUSION std::vector<ClientTreeNode*> children;
+  std::vector<raw_ptr<ClientTreeNode, kUnprotectedInRelease>> children;
   bool ignored : 1;
   // Additional nodes that must be serialized. When a dirty subtree is reached,
   // the entire subtree will be added to the current serialization.
@@ -343,8 +342,13 @@ void AXTreeSerializer<AXSourceNode,
   // but Reset() needs to work even if the tree is in a broken state.
   // Instead, iterate over |client_id_map_| to ensure we clear all nodes and
   // start from scratch.
-  for (auto&& item : client_id_map_)
+  for (auto&& item : client_id_map_) {
+    item.second->parent = nullptr;
+    item.second->children.clear();
+  }
+  for (auto&& item : client_id_map_) {
     delete item.second;
+  }
   client_id_map_.clear();
   client_root_ = nullptr;
 }
@@ -868,8 +872,11 @@ void AXTreeSerializer<AXSourceNode,
                       AXTreeDataType,
                       AXNodeDataType>::DeleteDescendants(ClientTreeNode*
                                                              client_node) {
-  for (size_t i = 0; i < client_node->children.size(); ++i)
-    DeleteClientSubtree(client_node->children[i]);
+  for (size_t i = 0; i < client_node->children.size(); ++i) {
+    ClientTreeNode* child = client_node->children[i];
+    client_node->children[i] = nullptr;
+    DeleteClientSubtree(child);
+  }
   client_node->children.clear();
 }
 
@@ -1010,12 +1017,13 @@ bool AXTreeSerializer<AXSourceNode,
   // don't end up children of two different parents in the middle
   // of an update, which can lead to a double-free.
   std::map<AXNodeID, ClientTreeNode*> client_child_id_map;
-  std::vector<ClientTreeNode*> old_children;
+  std::vector<raw_ptr<ClientTreeNode, kUnprotectedInRelease>> old_children;
   old_children.swap(client_node->children);
   for (size_t i = 0; i < old_children.size(); ++i) {
     ClientTreeNode* old_child = old_children[i];
     int old_child_id = old_child->id;
     if (new_child_ids.find(old_child_id) == new_child_ids.end()) {
+      old_children[i] = nullptr;
       DeleteClientSubtree(old_child);
     } else {
       client_child_id_map[old_child_id] = old_child;
