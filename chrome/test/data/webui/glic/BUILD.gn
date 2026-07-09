@@ -90,8 +90,10 @@ copy("test_client_external_files") {
 }
 
 copy("test_client_api_deps") {
-  sources =
-      [ "$root_gen_dir/chrome/browser/resources/glic/tsc/glic_api/glic_api.js" ]
+  sources = [
+    "$root_gen_dir/chrome/browser/resources/glic/tsc/glic_api/glic_api.js",
+    "$root_gen_dir/chrome/browser/resources/glic/tsc/glic_api/glic_api_generated.js",
+  ]
   outputs = [ "$out_dir/glic_api/{{source_file_part}}" ]
   deps = [ "//chrome/browser/resources/glic:build_ts" ]
 }

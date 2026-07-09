@@ -2,44 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export declare interface InterfaceA {
-  someMethod?(text: string): Promise<void>;
-  someRequiredMethod(text: string): Promise<void>;
-  returnsEnum1(): ExtEnum1;
-  takesEnum1(value: ExtEnum1): void;
-  // ErrorAddRequiredMethod:edit-add-lines:
-  // newRequired(): void;
+/// BEGIN_GENERATED - DO NOT MODIFY BELOW
+import * as generated from './check_api_cases_imported.js';
+export import InterfaceA = generated.InterfaceA;
+export import InterfaceB = generated.InterfaceB;
+export import ExtEnum1 = generated.ExtEnum1;
+export import ExtEnum2 = generated.ExtEnum2;
+export import ClosedEnum1 = generated.ClosedEnum1;
+/// END_GENERATED - DO NOT MODIFY ABOVE
 
-  // OkAddOptionalMethod:edit-add-lines:
-  // newOptional?(): void;
-}
+declare module './check_api_cases_imported.js' {
+  export interface InterfaceB {
+    // ErrorAddRequiredMethodInAugmentation:edit-add-lines:
+    // newRequiredInAugmentation(): void;
 
-export declare interface InterfaceB {
-  someMethod?(text: string): Promise<void>;
-  someRequiredMethod(text: string): Promise<void>;
-}
-
-// ErrorInterfaceIsNotDeclare:edit-add-lines:
-// export interface InterfaceC {}
-
-export enum ExtEnum1 {
-  A = 0,
-  B = 1,
-  // OkAddNewEnumValue:edit-add-lines:
-  // C = 2,
-}
-
-export enum ExtEnum2 {
-  A = 0,
-  // ErrorEnumRemovedValue:edit-remove-lines: 1
-  B = 1,
-}
-
-export enum ClosedEnum1 {
-  A = 0,
-  B = 1,
-  // ErrorAddToClosedEnum:edit-add-lines:
-  // C = 2,
+    // OkAddOptionalMethodInAugmentation:edit-add-lines:
+    // newOptionalInAugmentation?(): void;
+  }
 }
 
 export interface PrivateTypes {

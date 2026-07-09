@@ -6,6 +6,7 @@ Checks the Glic API for common mistakes and backwards compatibility
 issues. Used in PRESUBMIT.py.
 '''
 
+import json
 import os
 import re
 import sys
@@ -49,8 +50,8 @@ def ReadTypeSet(source_text: str, set_name: str) -> set[str]:
     return set(re.findall(decl_pattern, interface_body))
 
 
-# Returns a dict of interface name to whether it is declared with declare.
-def GetAllExportedInterfaces(source_text: str) -> dict[str, InterfaceInfo]:
+def _GetAllExportedInterfacesInString(
+        source_text: str) -> dict[str, InterfaceInfo]:
     pattern = r'\n\s*export\s+(declare\s+)?interface\s+(\w+)(<[^<>]*>)?'
     matches = re.finditer(pattern, StripComments(source_text))
     result = {}
@@ -65,27 +66,43 @@ def GetAllExportedInterfaces(source_text: str) -> dict[str, InterfaceInfo]:
     return result
 
 
-def GetBackwardsCompatibleTypes(source_text: str) -> dict[str, InterfaceInfo]:
-    all_types = GetAllExportedInterfaces(source_text)
-    for private_type in ReadTypeSet(source_text, 'PrivateTypes'):
-        del all_types[private_type]
+def GetPublicNamesInGeneratedBlock(glic_api_contents: str) -> set[str]:
+    START_MARKER = '/// BEGIN_GENERATED - DO NOT MODIFY BELOW'
+    END_MARKER = '/// END_GENERATED - DO NOT MODIFY ABOVE'
+    start = glic_api_contents.find(START_MARKER)
+    end = glic_api_contents.find(END_MARKER)
+    if start < 0 or end < 0:
+        return set()
+    block_content = glic_api_contents[start:end]
+    return set(re.findall(r'export\s+import\s+(\w+)\s*=', block_content))
+
+
+def GetBackwardsCompatibleTypes(
+        api_files: dict[str, str]) -> dict[str, InterfaceInfo]:
+    all_types = {}
+    for contents in api_files.values():
+        for name, info in _GetAllExportedInterfacesInString(contents).items():
+            if name in all_types:
+                if not all_types[name].type_parameters and info.type_parameters:
+                    all_types[name] = info
+            else:
+                all_types[name] = info
+    if 'glic_api.ts' in api_files:
+        glic_api_contents = api_files['glic_api.ts']
+        public_interface_names = GetPublicNamesInGeneratedBlock(
+            glic_api_contents)
+        interfaces_in_api = _GetAllExportedInterfacesInString(
+            glic_api_contents)
+        public_interface_names.update(interfaces_in_api.keys())
+        all_types = {
+            name: info
+            for name, info in all_types.items()
+            if name in public_interface_names
+        }
+        for private_type in ReadTypeSet(glic_api_contents, 'PrivateTypes'):
+            if private_type in all_types:
+                del all_types[private_type]
     return all_types
-
-
-def CheckForInterfacesWithoutDeclare(source_text: str) -> list[str]:
-    interfaces = GetAllExportedInterfaces(source_text)
-    interfaces_without_declare = set(
-        interface_name
-        for interface_name, interface_info in interfaces.items()
-        if not interface_info.is_declare)
-    interfaces_without_declare -= ReadTypeSet(source_text, 'PrivateTypes')
-    if interfaces_without_declare:
-        return [
-            'All exported interfaces in glic_api.ts must be declared with ' +
-            '`declare`. Please update the following interfaces: ' +
-            ', '.join(interfaces_without_declare)
-        ]
-    return []
 
 
 # returns a dict of enum name to enum declaration text.
@@ -101,20 +118,8 @@ def GetAllEnumDefinitions(source_text: str) -> dict[str, str]:
     return enums
 
 
-def ReplaceEnums(old_source: str, new_source: str,
-                 excluded_enums: set[str]) -> str:
-    old_enums = GetAllEnumDefinitions(old_source)
-    new_enums = GetAllEnumDefinitions(new_source)
-    for enum_name, enum_text in old_enums.items():
-        if enum_name in excluded_enums:
-            continue
-        if enum_name in new_enums:
-            old_source = old_source.replace(enum_text, new_enums[enum_name])
-    return old_source
-
-
-def BuildBackwardsCompatibleTypesDeclaration(source_text: str) -> str:
-    types = GetBackwardsCompatibleTypes(source_text)
+def BuildBackwardsCompatibleTypesDeclaration(api_files: dict[str, str]) -> str:
+    types = GetBackwardsCompatibleTypes(api_files)
 
     def MakeDecl(name):
         type_suffix = ''
@@ -128,9 +133,21 @@ def BuildBackwardsCompatibleTypesDeclaration(source_text: str) -> str:
         declarations) + '\n}'
 
 
-def BuildExtensibleEnumsTypeDeclaration(source_text: str) -> str:
-    enums = GetAllEnumDefinitions(source_text)
-    closed_enums = ReadTypeSet(source_text, 'ClosedEnums')
+def BuildExtensibleEnumsTypeDeclaration(api_files: dict[str, str]) -> str:
+    enums = {}
+    for contents in api_files.values():
+        enums.update(GetAllEnumDefinitions(contents))
+    closed_enums = set()
+    if 'glic_api.ts' in api_files:
+        glic_api_contents = api_files['glic_api.ts']
+        closed_enums = ReadTypeSet(glic_api_contents, 'ClosedEnums')
+        public_enum_names = GetPublicNamesInGeneratedBlock(glic_api_contents)
+        enums_in_api = GetAllEnumDefinitions(glic_api_contents)
+        public_enum_names.update(enums_in_api.keys())
+        enums = {
+            name: text
+            for name, text in enums.items() if name in public_enum_names
+        }
     extensible_enums = enums.keys() - closed_enums
 
     def MakeDecl(name):
@@ -141,15 +158,15 @@ def BuildExtensibleEnumsTypeDeclaration(source_text: str) -> str:
         declarations) + '\n}'
 
 
-def AddAnnotations(source_text: str) -> str:
+def BuildHelpers(api_files: dict[str, str]) -> str:
     return '\n'.join([
-        source_text,
-        BuildBackwardsCompatibleTypesDeclaration(source_text),
-        BuildExtensibleEnumsTypeDeclaration(source_text)
+        BuildBackwardsCompatibleTypesDeclaration(api_files),
+        BuildExtensibleEnumsTypeDeclaration(api_files)
     ])
 
 
-def CheckCompatibility(old_contents: str, new_contents: str) -> list[str]:
+def CheckCompatibility(old_files: dict[str, str],
+                       new_files: dict[str, str]) -> list[str]:
     tmp_dir = tempfile.TemporaryDirectory()
     tmp_dir_name = tmp_dir.name
 
@@ -157,28 +174,69 @@ def CheckCompatibility(old_contents: str, new_contents: str) -> list[str]:
     if DEBUG:
         tmp_dir_name = tempfile.mkdtemp()
 
-    with open(os.path.join(tmp_dir_name, 'old_glic_api.ts'), 'w') as oldfile:
-        oldfile.write(AddAnnotations(old_contents))
-    old_edited_contents = ReplaceEnums(
-        old_contents, new_contents, ReadTypeSet(old_contents, 'ClosedEnums'))
-    with open(os.path.join(tmp_dir_name, 'old_edited_glic_api.ts'),
-              'w') as old_edited_file:
-        old_edited_file.write(AddAnnotations(old_edited_contents))
-    with open(os.path.join(tmp_dir_name, 'new_glic_api.ts'), 'w') as newfile:
-        newfile.write(AddAnnotations(new_contents))
+    # Create subdirectories for each revision to isolate compilation
+    os.makedirs(os.path.join(tmp_dir_name, 'new'))
+    os.makedirs(os.path.join(tmp_dir_name, 'old_original'))
+    os.makedirs(os.path.join(tmp_dir_name, 'old_edited'))
+
+    # Write new files
+    for filename, contents in new_files.items():
+        path = os.path.join(tmp_dir_name, 'new', filename)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        if filename == 'glic_api.ts':
+            contents = contents + '\n' + BuildHelpers(new_files)
+        with open(path, 'w') as f:
+            f.write(contents)
+
+    # Write old original files
+    for filename, contents in old_files.items():
+        path = os.path.join(tmp_dir_name, 'old_original', filename)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        if filename == 'glic_api.ts':
+            contents = contents + '\n' + BuildHelpers(old_files)
+        with open(path, 'w') as f:
+            f.write(contents)
+
+    # Write old edited files (with extensible enums replaced by new versions)
+    closed_enums = set()
+    if 'glic_api.ts' in old_files:
+        closed_enums = ReadTypeSet(old_files['glic_api.ts'], 'ClosedEnums')
+
+    new_enums = {}
+    for contents in new_files.values():
+        new_enums.update(GetAllEnumDefinitions(contents))
+
+    old_edited_files = {}
+    for filename, contents in old_files.items():
+        old_enums = GetAllEnumDefinitions(contents)
+        for enum_name, enum_text in old_enums.items():
+            if enum_name in closed_enums:
+                continue
+            if enum_name in new_enums:
+                contents = contents.replace(enum_text, new_enums[enum_name])
+        old_edited_files[filename] = contents
+
+    for filename, contents in old_edited_files.items():
+        path = os.path.join(tmp_dir_name, 'old_edited', filename)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        if filename == 'glic_api.ts':
+            contents = contents + '\n' + BuildHelpers(old_edited_files)
+        with open(path, 'w') as f:
+            f.write(contents)
 
     tsconfig_path = os.path.join(tmp_dir_name, 'tsconfig.json')
-    with open(os.path.join(tmp_dir_name, 'tsconfig.json'),
-              'w') as tsconfigfile:
+    with open(tsconfig_path, 'w') as tsconfigfile:
         tsconfigfile.write('''{
   "extends": "$ROOT/chrome/browser/resources/glic/presubmit/tsconfig.json",
-    "compilerOptions": {
-      "ignoreDeprecations": "6.0",
-      "baseUrl": "$ROOT",
-      "paths": {
-        "@tmp/*": ["$TMP/*"]
-      }
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "baseUrl": "$ROOT",
+    "paths": {
+      "@tmp/new_glic_api.js": ["$TMP/new/glic_api.ts"],
+      "@tmp/old_edited_glic_api.js": ["$TMP/old_edited/glic_api.ts"],
+      "@tmp/old_glic_api.js": ["$TMP/old_original/glic_api.ts"]
     }
+  }
 }
 '''.replace("$TMP",
             tmp_dir_name.replace('\\',
@@ -217,30 +275,56 @@ def main():
     modification, and a tsconfig.json file to build
     chrome/browser/resources/glic/presubmit/check_api_compatibility.ts.
     """
-    old_contents = None
+    old_api_stdin = False
     skip_compatibility_check = False
     glic_api_path = os.path.join(
         ROOT_PATH, 'chrome/browser/resources/glic/glic_api/glic_api.ts')
     for arg in sys.argv[1:]:
         if arg == '--old-stdin':
-            old_contents = sys.stdin.read()
+            old_api_stdin = True
         if arg == '--skip-compatibility-check':
             skip_compatibility_check = True
         if arg.startswith('--api-file-path='):
             glic_api_path = arg.split('=')[1]
         if arg.startswith('--debug'):
             DEBUG = True
-    presubmit_results = []
     errors = []
 
-    with open(glic_api_path, 'r') as glic_api_file:
-        new_contents = glic_api_file.read()
+    # Read new files from disk
+    api_dir = os.path.dirname(glic_api_path)
+    entry_point_basename = os.path.basename(glic_api_path)
+    new_files = {}
 
-    errors.extend(CheckForInterfacesWithoutDeclare(new_contents))
-    if old_contents is None:
-        old_contents = new_contents
+    for filename in os.listdir(api_dir):
+        if filename.endswith('.ts') and not filename.endswith('.d.ts'):
+            with open(os.path.join(api_dir, filename), 'r') as f:
+                content = f.read()
+            if filename == entry_point_basename:
+                new_files['glic_api.ts'] = content
+            else:
+                new_files[filename] = content
+
+    # Read old files from stdin or disk
+    old_files = {}
+    if old_api_stdin:
+        stdin_data = sys.stdin.read()
+        try:
+            data = json.loads(stdin_data)
+            for k, v in data.items():
+                basename = os.path.basename(k)
+                if basename == entry_point_basename:
+                    old_files['glic_api.ts'] = v
+                else:
+                    old_files[basename] = v
+        except json.JSONDecodeError:
+            # Fallback if raw manual file is piped
+            old_files['glic_api.ts'] = stdin_data
+    else:
+        # If no stdin, old is the same as new
+        old_files = dict(new_files)
+
     if not skip_compatibility_check:
-        errors.extend(CheckCompatibility(old_contents, new_contents))
+        errors.extend(CheckCompatibility(old_files, new_files))
 
     for error in errors:
         print(error, file=sys.stderr)

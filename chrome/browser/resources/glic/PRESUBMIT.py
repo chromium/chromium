@@ -4,6 +4,7 @@
 
 import os
 import re
+import json
 
 # Runs PRESUBMIT.py in py3 mode by git cl presubmit.
 USE_PYTHON3 = True
@@ -11,10 +12,23 @@ USE_PYTHON3 = True
 DEBUG = False
 
 API_FILE = 'chrome/browser/resources/glic/glic_api/glic_api.ts'
+API_GEN_FILE = 'chrome/browser/resources/glic/glic_api/glic_api_generated.ts'
 
 TRIGGERING_FILE_PREFIXES = [
     'chrome/browser/resources/glic/',
 ]
+
+
+def _GetOldContents(input_api, local_path):
+    for f in input_api.AffectedFiles():
+        if f.LocalPath() == local_path:
+            return '\n'.join(f.OldContents())
+    src_root = input_api.os_path.join(os.getcwd(), '../../../../')
+    full_path = input_api.os_path.join(src_root, local_path)
+    if os.path.exists(full_path):
+        with open(full_path, 'r') as f:
+            return f.read()
+    return ""
 
 
 def CheckApiChanges(input_api, output_api, api_file, on_upload):
@@ -23,13 +37,26 @@ def CheckApiChanges(input_api, output_api, api_file, on_upload):
         in input_api.change.GitFootersFromDescription())
     src_root = input_api.os_path.join(os.getcwd(), '../../../../')
     api_file_path = input_api.os_path.join(src_root, API_FILE)
-    # If API_FILE was modified, get its old contents. Otherwise, use its current
-    # contents to confirm any modified checks still pass.
-    if api_file:
-        old_contents = '\n'.join(api_file.OldContents())
-    else:
-        with open(api_file_path, 'r') as f:
-            old_contents = f.read()
+
+    api_dir = input_api.os_path.dirname(API_FILE)
+    api_dir_path = input_api.os_path.join(src_root, api_dir)
+
+    filenames = set()
+    if os.path.exists(api_dir_path):
+        for filename in os.listdir(api_dir_path):
+            filenames.add(filename)
+
+    for f in input_api.AffectedFiles():
+        if f.LocalPath().startswith(api_dir + '/'):
+            filenames.add(input_api.os_path.basename(f.LocalPath()))
+
+    old_files_map = {}
+    for filename in filenames:
+        if filename.endswith('.ts') and not filename.endswith('.d.ts'):
+            local_path = input_api.os_path.join(api_dir,
+                                                filename).replace('\\', '/')
+            old_files_map[local_path] = _GetOldContents(input_api, local_path)
+    old_contents = json.dumps(old_files_map)
 
     cmd = [
         input_api.python_executable,

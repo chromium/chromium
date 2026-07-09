@@ -23,6 +23,7 @@ def _CheckGlicGeneratedApi(input_api, output_api):
         'chrome/browser/glic/host/glic.mojom',
         'chrome/browser/resources/glic/glic_api_impl/generate.py',
         'chrome/browser/resources/glic/glic_api/glic_api.ts',
+        'chrome/browser/resources/glic/glic_api/glic_api_generated.ts',
     )
     repo_root = input_api.change.RepositoryRoot()
     affected_files = [

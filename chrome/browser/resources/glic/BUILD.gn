@@ -49,6 +49,7 @@ build_webui("build") {
     "glic_api_impl/transport/messaging.ts",
     "glic_api_impl/transport/post_message_transport.ts",
     "glic_api/glic_api.ts",
+    "glic_api/glic_api_generated.ts",
     "glic_app_controller.ts",
     "glic.ts",
     "icons.html.ts",

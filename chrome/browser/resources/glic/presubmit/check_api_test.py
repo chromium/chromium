@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import json
 import os
 import re
 import sys
@@ -14,109 +15,129 @@ ROOT_PATH = os.path.join(SCRIPT_PATH, '../../../../../')
 TESTS_PATH = os.path.join(SCRIPT_PATH, 'tests')
 
 
-# Parses edit declarations, which are of the form
-# // <test_name>:edit-remove-lines:
-# // <test_name>:edit-add-lines: <number>
-# and returns a list of tuples of (test_name, modified_text).
-def CreateTestEdits(test_file):
+def ApplyEdits(text, name):
     edit_re = re.compile(r'// (\w+):(edit-[a-z-]+):(.*)')
-    with open(os.path.join(TESTS_PATH, test_file), 'r') as f:
-        text = f.read()
-    test_names = sorted(list(set(m[0] for m in edit_re.findall(text))))
-    for name in test_names:
-        lines = text.splitlines()
-        removing_lines = 0
-        adding_lines = False
-        for i, line in enumerate(lines):
-            match = edit_re.search(line)
-            if match and match.group(1) == name:
-                if match.group(2) == 'edit-add-lines':
-                    adding_lines = True
-                    new_line = ''
-                elif match.group(2) == 'edit-remove-lines':
-                    removing_lines = int(match.group(3))
-                    new_line = ''
+    lines = text.splitlines()
+    removing_lines = 0
+    adding_lines = False
+
+    for i, line in enumerate(lines):
+        match = edit_re.search(line)
+        if match and match.group(1) == name:
+            if match.group(2) == 'edit-add-lines':
+                adding_lines = True
+                new_line = ''
+            elif match.group(2) == 'edit-remove-lines':
+                removing_lines = int(match.group(3))
+                new_line = ''
+            lines[i] = new_line
+        elif removing_lines > 0:
+            lines[i] = ''
+            removing_lines -= 1
+        elif adding_lines:
+            new_line = lines[i].strip()
+            if new_line.startswith('//'):
+                new_line = new_line[2:]
                 lines[i] = new_line
-            elif removing_lines > 0:
-                lines[i] = ''
-                removing_lines -= 1
-            elif adding_lines:
-                new_line = lines[i].strip()
-                if new_line.startswith('//'):
-                    new_line = new_line[2:]
-                    lines[i] = new_line
-                else:
-                    adding_lines = False
-        yield name, '\n'.join(lines)
+            else:
+                adding_lines = False
+
+    return '\n'.join(lines)
 
 
-def DoTest(test_name, original_path, test_file, expected_pass):
+def RunTestCase(test_name, old_files, new_files, expected_pass):
     if DEBUG:
         print(f'---- Running test {test_name} ----')
+
+    # Create a unique temporary directory for this test case
+    tmp_dir = tempfile.TemporaryDirectory()
+    tmp_dir_name = tmp_dir.name
+
+    # Write the new files to the temp directory
+    for filename, contents in new_files.items():
+        path = os.path.join(tmp_dir_name, filename)
+        with open(path, 'w') as f:
+            f.write(contents)
+
+    # Serialize the old files map for stdin
+    old_contents_json = json.dumps(old_files)
+
+    # Run check_api.py on the entry point file 'check_api_cases.ts'
+    entry_point_path = os.path.join(tmp_dir_name, 'check_api_cases.ts')
     args = [
         sys.executable,
         os.path.join(SCRIPT_PATH, 'check_api.py'), '--old-stdin',
-        '--api-file-path=' + test_file
+        '--api-file-path=' + entry_point_path
     ]
     if DEBUG:
         args.append('--debug')
+
     result = subprocess.run(args,
-                            input=open(original_path).read(),
+                            input=old_contents_json,
                             text=True,
                             capture_output=True)
+
     if DEBUG:
-        print(f'Test {test_file} stdout: {result.stdout}')
-        print(f'Test {test_file} stderr: {result.stderr}')
+        print(f'Test {test_name} stdout: {result.stdout}')
+        print(f'Test {test_name} stderr: {result.stderr}')
+
+    # Clean up the temp directory
+    tmp_dir.cleanup()
+
     if expected_pass:
         if result.returncode != 0:
-            print(f'Test {test_file} failed: {result.stderr}')
-            if DEBUG:
-                sys.exit(1)
+            print(f'Test {test_name} failed: {result.stderr}')
             return False
     else:
         if result.returncode == 0:
-            print(f'Test {test_file} should have reported errors,',
-                  'but reported none.')
-            if DEBUG:
-                sys.exit(1)
+            print(f'Test {test_name} should have reported' +
+                  ' errors, but reported none.')
             return False
+
     if DEBUG:
-        print(f'---- Test Passesd {test_name} ----')
+        print(f'---- Test Passed {test_name} ----')
     return True
 
 
 def main():
+    # Read the base (unedited) content of all test files.
+    base_files = {}
+    for filename in os.listdir(TESTS_PATH):
+        if filename.endswith('.ts') and not filename.endswith('.d.ts'):
+            with open(os.path.join(TESTS_PATH, filename), 'r') as f:
+                base_files[filename] = f.read()
+
+    # Find all test names (from the edit comments in any file)
+    edit_re = re.compile(r'// (\w+):(edit-[a-z-]+):(.*)')
+    test_names = set()
+    for contents in base_files.values():
+        test_names.update(m[0] for m in edit_re.findall(contents))
+
     passed_tests = 0
     failed_tests = 0
-    for file in os.listdir(TESTS_PATH):
-        if not file.endswith('.ts'):
+
+    for test_name in sorted(test_names):
+        # Determine the expected pass status
+        if test_name.startswith('Error'):
+            expected_pass = False
+        elif test_name.startswith('Ok'):
+            expected_pass = True
+        else:
+            print(f'Tests must start with Error or Ok: {test_name}')
+            failed_tests += 1
             continue
-        test_file_path = os.path.join(TESTS_PATH, file)
-        for test_name, test_text in CreateTestEdits(test_file_path):
-            # Note: check_api.py needs to open the file, so we must
-            # close it before calling DoTest.
-            f = tempfile.NamedTemporaryFile(mode='w',
-                                            prefix=test_name,
-                                            suffix='.ts',
-                                            delete=False)
-            try:
-                f.write(test_text)
-                f.close()
-                if test_name.startswith('Error'):
-                    expected_pass = False
-                elif test_name.startswith('Ok'):
-                    expected_pass = True
-                else:
-                    print(f'Tests must start with Error or Ok: {test_name}')
-                    failed_tests += 1
-                    continue
-                if DoTest(test_name, test_file_path, f.name, expected_pass):
-                    passed_tests += 1
-                else:
-                    failed_tests += 1
-            finally:
-                if not DEBUG:
-                    os.remove(f.name)
+
+        # Create the edited versions of all files for this test case
+        new_files = {}
+        for filename, base_content in base_files.items():
+            edited_content = ApplyEdits(base_content, test_name)
+            new_files[filename] = edited_content
+
+        # Run the test
+        if RunTestCase(test_name, base_files, new_files, expected_pass):
+            passed_tests += 1
+        else:
+            failed_tests += 1
 
     if failed_tests == 0:
         print(f'All {passed_tests} tests passed!')
