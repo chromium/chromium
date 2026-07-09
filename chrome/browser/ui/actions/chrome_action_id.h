@@ -396,6 +396,7 @@
   E(kActionCommercePriceInsights) \
   E(kActionCommerceDiscounts) \
   /*Vertical Tabs*/ \
+  E(kActionToggleVerticalTabs, IDC_TOGGLE_VERTICAL_TABS) \
   E(kActionToggleCollapseVertical, IDC_TOGGLE_VERTICAL_TABS_COLLAPSE) \
   /*Projects Panel*/ \
   E(kActionToggleProjectsPanel) \
