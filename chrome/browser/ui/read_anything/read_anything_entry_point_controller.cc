@@ -50,7 +50,7 @@
 
 namespace {
 
-constexpr int kMaxChipIgnoredCount = 5;
+constexpr int kMaxChipIgnoredCount = 3;
 constexpr const char* kDenyList[] = {
     "mail.google.com",
     "whatsapp.com",
