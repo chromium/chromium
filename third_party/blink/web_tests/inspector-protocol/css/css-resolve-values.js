@@ -266,6 +266,10 @@
     async function testResolveValuesWithVar() {
       testRunner.log('Test resolveValues with var() for width property');
       await testResolveValues('.inner', arbSubs, "width");
+    },
+    async function testNestedCalc() {
+      testRunner.log('Nested calc evaluation test');
+      await testResolveValues('.inner', ["calc(calc(10px))", "calc(calc(1em + 10px))", "calc(calc(calc(10px)))"], "width");
     }
   ]);
 });
