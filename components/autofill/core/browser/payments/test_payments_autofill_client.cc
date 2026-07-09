@@ -460,7 +460,7 @@ void TestPaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog(
 
 void TestPaymentsAutofillClient::HideCreditCardSaveAndFillDialog() {}
 
-bool TestPaymentsAutofillClient::IsTabModalPopupDeprecated() const {
+bool TestPaymentsAutofillClient::IsTabModalPopup() const {
   return is_tab_model_popup_;
 }
 

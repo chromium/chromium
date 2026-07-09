@@ -677,7 +677,7 @@ void IOSChromePaymentsAutofillClient::HideCreditCardSaveAndFillDialog() {
   }
 }
 
-bool IOSChromePaymentsAutofillClient::IsTabModalPopupDeprecated() const {
+bool IOSChromePaymentsAutofillClient::IsTabModalPopup() const {
   return false;
 }
 

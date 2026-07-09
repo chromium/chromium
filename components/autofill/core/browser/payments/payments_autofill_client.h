@@ -803,7 +803,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual void HideCreditCardSaveAndFillDialog() = 0;
 
   // Checks if the browser popup is a tab modal popup.
-  virtual bool IsTabModalPopupDeprecated() const = 0;
+  virtual bool IsTabModalPopup() const = 0;
 
   // Gets the `BnplStrategy` instance associated with the client. Helps
   // determines the next step in the BNPL flow depending on the platform.

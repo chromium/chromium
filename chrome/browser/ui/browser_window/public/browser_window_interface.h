@@ -59,6 +59,10 @@ class UnownedUserDataHost;
 class Profile;
 class SessionID;
 
+namespace internal {
+class ScopedBrowserShower;
+}
+
 class BrowserWindowInterface : public content::PageNavigator {
  public:
   // TODO(crbug.com/421758609): Hoist other enums above method declarations.
@@ -313,7 +317,10 @@ class BrowserWindowInterface : public content::PageNavigator {
   virtual const Browser* GetBrowserForMigrationOnly() const = 0;
 
   // Checks if the browser popup is tab modal dialog.
-  virtual bool IsTabModalPopupDeprecated() const = 0;
+  virtual bool IsTabModalPopup() const = 0;
+  virtual void SetIsTabModalPopup(
+      bool is_tab_modal_popup,
+      base::PassKey<internal::ScopedBrowserShower>) = 0;
 
   // Checks if the browser was created by session restore.
   virtual bool CreatedBySessionRestore() const = 0;

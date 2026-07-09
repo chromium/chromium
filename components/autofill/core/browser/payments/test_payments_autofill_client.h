@@ -233,7 +233,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   void ShowCreditCardSaveAndFillPendingDialog(
       CardSaveAndFillDialogCallback callback) override;
   void HideCreditCardSaveAndFillDialog() override;
-  bool IsTabModalPopupDeprecated() const override;
+  bool IsTabModalPopup() const override;
   BnplStrategy* GetBnplStrategy() override;
   BnplUiDelegate* GetBnplUiDelegate() override;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

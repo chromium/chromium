@@ -377,15 +377,6 @@ void TestBrowserWindow::SetCloseCallback(base::OnceClosure close_callback) {
   close_callback_ = std::move(close_callback);
 }
 
-bool TestBrowserWindow::IsTabModalPopupDeprecated() const {
-  return is_tab_modal_popup_deprecated_;
-}
-
-void TestBrowserWindow::SetIsTabModalPopupDeprecated(
-    bool is_tab_modal_popup_deprecated) {
-  is_tab_modal_popup_deprecated_ = is_tab_modal_popup_deprecated;
-}
-
 void TestBrowserWindow::OnBrowserCreated(BrowserWindowInterface* browser) {
   Browser* current_browser = browser->GetBrowserForMigrationOnly();
   if (current_browser->create_params().window == this) {

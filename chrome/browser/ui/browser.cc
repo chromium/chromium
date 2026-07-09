@@ -842,8 +842,13 @@ const Browser* Browser::GetBrowserForMigrationOnly() const {
   return this;
 }
 
-bool Browser::IsTabModalPopupDeprecated() const {
-  return is_tab_modal_popup_deprecated_;
+bool Browser::IsTabModalPopup() const {
+  return is_tab_modal_popup_;
+}
+
+void Browser::SetIsTabModalPopup(bool is_tab_modal_popup,
+                                 base::PassKey<internal::ScopedBrowserShower>) {
+  is_tab_modal_popup_ = is_tab_modal_popup;
 }
 
 bool Browser::CreatedBySessionRestore() const {

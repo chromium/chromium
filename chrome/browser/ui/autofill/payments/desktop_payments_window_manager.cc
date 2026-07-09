@@ -12,8 +12,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_tab_modal.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
@@ -28,7 +28,7 @@
 #include "components/autofill/core/browser/ui/payments/payments_window_user_consent_dialog_controller_impl.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -41,20 +41,20 @@ namespace {
 
 using Vcn3dsFlowEvent = autofill_metrics::Vcn3dsFlowEvent;
 
-gfx::Rect GetPopupSizeForVcn3ds() {
+gfx::Size GetPopupSizeForVcn3ds() {
   // The first two arguments do not matter as position gets overridden by
   // the tab modal pop-up code. The 600x640 size of the pop-up was decided as
   // the ideal size for user experience. This decision largely factored in how
   // to minimize scrolling while maintaining a presentable pop-up.
-  return gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/600, /*height=*/640);
+  return gfx::Size(/*width=*/600, /*height=*/640);
 }
 
-gfx::Rect GetPopupSizeForBnpl() {
+gfx::Size GetPopupSizeForBnpl() {
   // The first two arguments do not matter as position gets overridden by
   // the tab modal pop-up code. The 600x840 size of the pop-up was decided as
   // the ideal size for user experience. This decision largely factored in how
   // to minimize scrolling while maintaining a presentable pop-up.
-  return gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/600, /*height=*/840);
+  return gfx::Size(/*width=*/600, /*height=*/840);
 }
 
 }  // namespace
@@ -177,24 +177,18 @@ void DesktopPaymentsWindowManager::OnBrowserActivated(
 #endif  // BUILDFLAG(IS_LINUX)
 
 void DesktopPaymentsWindowManager::CreatePopup(const GURL& url,
-                                               gfx::Rect popup_size) {
+                                               gfx::Size popup_size) {
   // Create a pop-up window. The created pop-up will not have any relationship
   // to the underlying tab, because `params.opener` is not set. Ensuring the
   // original tab is not a related site instance to the pop-up is critical for
   // security reasons.
   CHECK(flow_state_.has_value());
   content::WebContents& source_contents = client_->GetWebContents();
-  NavigateParams params(
-      Profile::FromBrowserContext(source_contents.GetBrowserContext()), url,
-      ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_POPUP;
-  params.window_action = NavigateParams::WindowAction::kShowWindow;
-  params.source_contents = &source_contents;
-  params.is_tab_modal_popup_deprecated = true;
-  params.window_features.bounds = std::move(popup_size);
 
   if (base::WeakPtr<content::NavigationHandle> navigation_handle =
-          Navigate(&params)) {
+          BrowserNavigatorTabModal::Show(
+              url, source_contents, popup_size,
+              base::PassKey<DesktopPaymentsWindowManager>())) {
     switch (flow_state_->flow_type) {
       case FlowType::kVcn3ds:
         flow_state_->vcn_3ds_popup_shown_timestamp = base::TimeTicks::Now();

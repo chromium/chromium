@@ -259,11 +259,6 @@ struct NavigateParams {
   captive_portal::CaptivePortalWindowType captive_portal_window_type =
       captive_portal::CaptivePortalWindowType::kNone;
 
-  // Whether the browser popup is being created as a tab modal. If true,
-  // `disposition` should be NEW_POPUP. Additionally, it prevents card saving
-  // and other prompts for payments autofill enrollment.
-  bool is_tab_modal_popup_deprecated = false;
-
   // If false then the navigation was not initiated by a user gesture. This
   // variable will be set to true for popups to get windows focus even if
   // the navigation was not triggered by user gesture.

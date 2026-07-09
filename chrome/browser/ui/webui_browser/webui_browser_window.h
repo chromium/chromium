@@ -81,9 +81,6 @@ class WebUIBrowserWindow : public BrowserWindow,
       BookmarkBar::AnimateChangeType change_type) override;
   void UpdateLoadingAnimations(bool is_visible) override;
   void SetStarredState(bool is_starred) override;
-  bool IsTabModalPopupDeprecated() const override;
-  void SetIsTabModalPopupDeprecated(
-      bool is_tab_modal_popup_deprecated) override;
   void OnActiveTabChanged(content::WebContents* old_contents,
                           content::WebContents* new_contents,
                           int index,

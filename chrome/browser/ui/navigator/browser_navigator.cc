@@ -101,6 +101,10 @@ using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
 
 namespace {
 
+struct AdditionalParams {
+  bool tab_modal_popup = false;
+};
+
 // Returns true if |params.browser| exists and can open a new tab for
 // |params.url|. Not all browsers support multiple tabs, such as app frames and
 // popups. TYPE_APP will open a new tab if the browser was launched from a
@@ -201,7 +205,8 @@ Browser::ValueSpecified GetOriginSpecified(const NavigateParams& params) {
 // was requested, in which case it might be the target tab index, or -1
 // if not found.
 std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
-    const NavigateParams& params) {
+    const NavigateParams& params,
+    const AdditionalParams& additional_params) {
   Profile* profile = params.initiating_profile;
 
   switch (params.disposition) {
@@ -312,8 +317,8 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
         browser_params.trusted_source = params.trusted_source;
         browser_params.initial_bounds = params.window_features.bounds;
         browser_params.initial_origin_specified = GetOriginSpecified(params);
-        browser_params.can_maximize = !params.is_tab_modal_popup_deprecated;
-        browser_params.can_fullscreen = !params.is_tab_modal_popup_deprecated;
+        browser_params.can_maximize = !additional_params.tab_modal_popup;
+        browser_params.can_fullscreen = !additional_params.tab_modal_popup;
         return {Browser::Create(browser_params), -1};
       }
       Browser::CreateParams browser_params =
@@ -425,59 +430,6 @@ Profile* GetSourceProfile(NavigateParams* params) {
   return params->initiating_profile;
 }
 
-// This class makes sure the Browser object held in |params| is made visible
-// by the time it goes out of scope, provided |params| wants it to be shown.
-class ScopedBrowserShower {
- public:
-  explicit ScopedBrowserShower(NavigateParams* params,
-                               content::WebContents** contents)
-      : params_(params), contents_(contents) {}
-
-  ScopedBrowserShower(const ScopedBrowserShower&) = delete;
-  ScopedBrowserShower& operator=(const ScopedBrowserShower&) = delete;
-
-  ~ScopedBrowserShower() {
-    ui::BaseWindow* window = params_->browser->GetWindow();
-    if (params_->window_action ==
-        NavigateParams::WindowAction::kShowWindowInactive) {
-      // TODO(crbug.com/40284685): investigate if SHOW_WINDOW_INACTIVE needs to
-      // be supported for tab modal popups.
-      CHECK_EQ(params_->is_tab_modal_popup_deprecated, false);
-      window->ShowInactive();
-    } else if (params_->window_action ==
-               NavigateParams::WindowAction::kShowWindow) {
-      if (params_->is_tab_modal_popup_deprecated) {
-        CHECK_EQ(params_->disposition, WindowOpenDisposition::NEW_POPUP);
-        CHECK_NE(source_contents_, nullptr);
-        BrowserWindow::FromBrowser(params_->browser)
-            ->SetIsTabModalPopupDeprecated(true);
-        constrained_window::ShowModalDialog(window->GetNativeWindow(),
-                                            source_contents_);
-      } else {
-        window->Show();
-      }
-      // If a user gesture opened a popup window, focus the contents.
-      if (params_->user_gesture &&
-          (params_->disposition == WindowOpenDisposition::NEW_POPUP ||
-           params_->disposition ==
-               WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) &&
-          *contents_) {
-        (*contents_)->Focus();
-        window->Activate();
-      }
-    }
-  }
-
-  void set_source_contents(content::WebContents* source_contents) {
-    source_contents_ = source_contents;
-  }
-
- private:
-  raw_ptr<NavigateParams> params_;
-  raw_ptr<content::WebContents*> contents_;
-  raw_ptr<content::WebContents> source_contents_;
-};
-
 std::unique_ptr<content::WebContents> CreateTargetContents(
     const NavigateParams& params,
     const GURL& url) {
@@ -521,7 +473,67 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
 
 }  // namespace
 
-base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
+namespace internal {
+
+// This class makes sure the Browser object held in |params| is made visible
+// by the time it goes out of scope, provided |params| wants it to be shown.
+class ScopedBrowserShower {
+ public:
+  explicit ScopedBrowserShower(NavigateParams& params,
+                               AdditionalParams& additional_params,
+                               content::WebContents** contents)
+      : params_(params),
+        additional_params_(additional_params),
+        contents_(contents),
+        modal_anchor_(additional_params.tab_modal_popup
+                          ? params.source_contents.get()
+                          : nullptr) {}
+
+  ScopedBrowserShower(const ScopedBrowserShower&) = delete;
+  ScopedBrowserShower& operator=(const ScopedBrowserShower&) = delete;
+
+  ~ScopedBrowserShower() {
+    ui::BaseWindow* window = params_->browser->GetWindow();
+    if (params_->window_action ==
+        NavigateParams::WindowAction::kShowWindowInactive) {
+      // TODO(crbug.com/40284685): investigate if SHOW_WINDOW_INACTIVE needs to
+      // be supported for tab modal popups.
+      CHECK(!additional_params_->tab_modal_popup);
+      window->ShowInactive();
+    } else if (params_->window_action ==
+               NavigateParams::WindowAction::kShowWindow) {
+      if (additional_params_->tab_modal_popup) {
+        CHECK_EQ(params_->disposition, WindowOpenDisposition::NEW_POPUP);
+        CHECK_NE(modal_anchor_, nullptr);
+        params_->browser->SetIsTabModalPopup(
+            true, base::PassKey<ScopedBrowserShower>());
+        constrained_window::ShowModalDialog(window->GetNativeWindow(),
+                                            modal_anchor_);
+      } else {
+        window->Show();
+      }
+      // If a user gesture opened a popup window, focus the contents.
+      if (params_->user_gesture &&
+          (params_->disposition == WindowOpenDisposition::NEW_POPUP ||
+           params_->disposition ==
+               WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) &&
+          *contents_) {
+        (*contents_)->Focus();
+        window->Activate();
+      }
+    }
+  }
+
+ private:
+  const raw_ref<NavigateParams> params_;
+  const raw_ref<AdditionalParams> additional_params_;
+  const raw_ptr<content::WebContents*> contents_;
+  const raw_ptr<content::WebContents> modal_anchor_;
+};
+
+base::WeakPtr<content::NavigationHandle> NavigateImpl(
+    NavigateParams* params,
+    AdditionalParams& additional_params) {
   TRACE_EVENT1("navigation", "chrome::Navigate", "disposition",
                params->disposition);
   CHECK(params);
@@ -688,7 +700,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     singleton_index = override_params->tab_index().value_or(-1);
   } else {
     std::tuple<BrowserWindowInterface*, int> browser_and_index =
-        GetBrowserAndTabForDisposition(*params);
+        GetBrowserAndTabForDisposition(*params, additional_params);
     params->browser =
         std::get<0>(browser_and_index) == nullptr
             ? nullptr
@@ -767,10 +779,8 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   }
 
   // Make sure the Browser is shown if params call for it.
-  ScopedBrowserShower shower(params, &contents_to_navigate_or_insert);
-  if (params->is_tab_modal_popup_deprecated) {
-    shower.set_source_contents(params->source_contents);
-  }
+  ScopedBrowserShower shower(*params, additional_params,
+                             &contents_to_navigate_or_insert);
 
   // Some dispositions need coercion to base types.
   NormalizeDisposition(params);
@@ -1016,6 +1026,20 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   }
 
   return navigation_handle;
+}
+
+base::WeakPtr<content::NavigationHandle> ShowTabModalPopup(
+    NavigateParams& params) {
+  AdditionalParams additional_params;
+  additional_params.tab_modal_popup = true;
+  return NavigateImpl(&params, additional_params);
+}
+
+}  // namespace internal
+
+base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
+  AdditionalParams additional_params;
+  return internal::NavigateImpl(params, additional_params);
 }
 
 void Navigate(NavigateParams* params,

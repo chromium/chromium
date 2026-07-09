@@ -586,17 +586,15 @@ class Browser : public TabStripModelObserver,
   std::vector<tabs::TabInterface*> GetAllTabInterfaces() override;
   Browser* GetBrowserForMigrationOnly() override;
   const Browser* GetBrowserForMigrationOnly() const override;
-  bool IsTabModalPopupDeprecated() const override;
+  bool IsTabModalPopup() const override;
+  void SetIsTabModalPopup(
+      bool is_tab_modal_popup,
+      base::PassKey<internal::ScopedBrowserShower>) override;
   bool CreatedBySessionRestore() const override;
   ui::BaseWindow* GetWindow() override;
   const ui::BaseWindow* GetWindow() const override;
   DesktopBrowserWindowCapabilities* capabilities() override;
   const DesktopBrowserWindowCapabilities* capabilities() const override;
-
-  // Called by BrowserView.
-  void set_is_tab_modal_popup_deprecated(bool is_tab_modal_popup_deprecated) {
-    is_tab_modal_popup_deprecated_ = is_tab_modal_popup_deprecated;
-  }
 
   // Called by BrowserView on active change for the browser.
   void DidBecomeActive();
@@ -1025,11 +1023,8 @@ class Browser : public TabStripModelObserver,
   // shortly (after a PostTask).
   bool is_delete_scheduled_ = false;
 
-  // Do not use this. Instead, create a views::Widget and use helpers like
-  // TabDialogManager.
-  // If true, the browser window was created as a tab modal pop-up. This is
-  // determined by the NavigateParams::is_tab_modal_popup_deprecated.
-  bool is_tab_modal_popup_deprecated_ = false;
+  // If true, the browser window was created as a tab modal pop-up.
+  bool is_tab_modal_popup_ = false;
 
   using BrowserDidCloseCallbackList =
       base::RepeatingCallbackList<void(BrowserWindowInterface*)>;

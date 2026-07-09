@@ -1223,12 +1223,12 @@ void ChromePaymentsAutofillClient::HideCreditCardSaveAndFillDialog() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-bool ChromePaymentsAutofillClient::IsTabModalPopupDeprecated() const {
+bool ChromePaymentsAutofillClient::IsTabModalPopup() const {
 #if !BUILDFLAG(IS_ANDROID)
   tabs::TabInterface* const tab_interface =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
-  return tab_interface && tab_interface->GetBrowserWindowInterface()
-                              ->IsTabModalPopupDeprecated();
+  return tab_interface &&
+         tab_interface->GetBrowserWindowInterface()->IsTabModalPopup();
 #else
   return false;
 #endif  // !BUILDFLAG(IS_ANDROID)

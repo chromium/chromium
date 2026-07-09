@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params_utils.h"
+#include "chrome/browser/ui/navigator/browser_navigator_tab_modal.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -712,12 +714,15 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 // and is_tab_modal_popup_deprecated = true results in a new WebContents that is
 // a popup and behaves like a tab modal.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupTabModal) {
-  NavigateParams params(MakeNavigateParams());
-  params.disposition = WindowOpenDisposition::NEW_POPUP;
-  params.is_tab_modal_popup_deprecated = true;
-  params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
-  // Wait for new popup to load and gain focus.
-  ui_test_utils::NavigateToURL(&params);
+  auto handle = BrowserNavigatorTabModal::ShowForTesting(
+      GetGoogleURL(), *browser()->GetActiveTabInterface()->GetContents(),
+      gfx::Size(200, 200));
+  ASSERT_TRUE(handle);
+  content::WebContents* const contents = handle->GetWebContents();
+  ASSERT_NE(nullptr, contents);
+  content::WaitForLoadStop(contents);
+  const auto* const popup =
+      tabs::TabModel::GetFromContents(contents)->GetBrowserWindowInterface();
 
   // Add a new tab.
   chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
@@ -726,17 +731,16 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupTabModal) {
   browser()->tab_strip_model()->ActivateTabAt(1);
 
   // Verify the popup window is hidden.
-  EXPECT_FALSE(params.browser->GetWindow()->IsVisible());
+  EXPECT_FALSE(popup->GetWindow()->IsVisible());
 
   // Switch back to the original tab.
   browser()->tab_strip_model()->ActivateTabAt(0);
 
   // Verify the popup window is visible again.
-  EXPECT_TRUE(params.browser->GetWindow()->IsVisible());
+  EXPECT_TRUE(popup->GetWindow()->IsVisible());
 
   // Verify the popup window is set as tab model popup.
-  EXPECT_TRUE(
-      BrowserWindow::FromBrowser(params.browser)->IsTabModalPopupDeprecated());
+  EXPECT_TRUE(popup->IsTabModalPopup());
 }
 
 // This test verifies that navigating with WindowOpenDisposition = NEW_WINDOW

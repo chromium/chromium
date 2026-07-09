@@ -739,16 +739,6 @@ void WebUIBrowserWindow::SetStarredState(bool is_starred) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-bool WebUIBrowserWindow::IsTabModalPopupDeprecated() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
-}
-
-void WebUIBrowserWindow::SetIsTabModalPopupDeprecated(
-    bool is_tab_modal_popup_deprecated) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 void WebUIBrowserWindow::OnActiveTabChanged(content::WebContents* old_contents,
                                             content::WebContents* new_contents,
                                             int index,

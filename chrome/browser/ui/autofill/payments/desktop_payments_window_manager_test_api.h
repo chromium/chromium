@@ -7,7 +7,7 @@
 
 #include "base/check_deref.h"
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
-#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace autofill::payments {
 
@@ -22,7 +22,7 @@ class DesktopPaymentsWindowManagerTestApi {
       const DesktopPaymentsWindowManagerTestApi&) = delete;
   ~DesktopPaymentsWindowManagerTestApi() = default;
 
-  void CreatePopup(const GURL& url, gfx::Rect popup_size) {
+  void CreatePopup(const GURL& url, gfx::Size popup_size) {
     window_manager_->CreatePopup(url, std::move(popup_size));
   }
 

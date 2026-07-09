@@ -452,7 +452,7 @@ void IOSWebViewPaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog(
 
 void IOSWebViewPaymentsAutofillClient::HideCreditCardSaveAndFillDialog() {}
 
-bool IOSWebViewPaymentsAutofillClient::IsTabModalPopupDeprecated() const {
+bool IOSWebViewPaymentsAutofillClient::IsTabModalPopup() const {
   return false;
 }
 

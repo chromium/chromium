@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/scoped_observation.h"
@@ -72,7 +73,7 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // Creates a pop-up for `flow_state_->flow_type`, with an initial URL of `url`
   // and size of `popup_size`. This pop-up will go through a couple of URL
   // navigations specific to the flow that it is created for.
-  void CreatePopup(const GURL& url, gfx::Rect popup_size);
+  void CreatePopup(const GURL& url, gfx::Size popup_size);
 
   // Triggered when a pop-up navigation has finished, and
   // `flow_state_->flow_type` is `kVcn3ds`.

@@ -207,10 +207,6 @@ class TestBrowserWindow : public BrowserWindow,
   void CreateTabSearchBubble() override {}
   void CloseTabSearchBubble() override {}
 
-  bool IsTabModalPopupDeprecated() const override;
-  void SetIsTabModalPopupDeprecated(
-      bool is_tab_modal_popup_deprecated) override;
-
   void set_workspace(std::string workspace) { workspace_ = workspace; }
   void set_visible_on_all_workspaces(bool visible_on_all_workspaces) {
     visible_on_all_workspaces_ = visible_on_all_workspaces;
@@ -282,7 +278,6 @@ class TestBrowserWindow : public BrowserWindow,
   bool is_active_ = false;
   bool is_closed_ = false;
   bool is_tab_strip_editable_ = true;
-  bool is_tab_modal_popup_deprecated_ = false;
 
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
