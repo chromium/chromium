@@ -75,7 +75,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const;
   gpu::SyncToken GetSyncToken() const;
 
-  void EndWriteAccess();
 
   // NOTE: Can only be used if this instance is accelerated.
   bool UploadToBackingSharedImage(const SkPixmap& pixmap,
@@ -86,7 +85,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
   // For WebGpu RecyclableCanvasResource.
-  void OnAcquireRecyclableCanvasResource();
   void OnDestroyRecyclableCanvasResource(const gpu::SyncToken& sync_token);
 
   // This is a workaround to ensure WaitSyncToken() is still called even when
@@ -146,7 +144,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
   size_t GetSize() const override;
 
-  void EnsureWriteAccess();
 
   bool IsValid() const;
 
@@ -183,8 +180,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
 
 
   scoped_refptr<CanvasResourceSharedImage> resource_;
-
-  bool current_resource_has_write_access_ = false;
 
   bool is_cleared_ = false;
   bool notified_context_lost_ = false;

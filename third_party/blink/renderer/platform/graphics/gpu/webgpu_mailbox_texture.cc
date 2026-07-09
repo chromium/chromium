@@ -120,8 +120,6 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
     }
   }
 
-  resource_provider->EndWriteAccess();
-
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       resource_provider->GetSharedImage();
   if (!shared_image) {

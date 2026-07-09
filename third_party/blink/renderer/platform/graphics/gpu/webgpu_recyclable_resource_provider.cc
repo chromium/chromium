@@ -166,9 +166,6 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
     }
   }
 
-  if (resource_) {
-    EnsureWriteAccess();
-  }
 }
 
 WebGpuRecyclableResourceProvider::~WebGpuRecyclableResourceProvider() {
@@ -188,26 +185,7 @@ bool WebGpuRecyclableResourceProvider::IsValid() const {
   return !IsGpuContextLost();
 }
 
-void WebGpuRecyclableResourceProvider::EnsureWriteAccess() {
-  DCHECK(resource_);
-  DCHECK(!resource()->is_cross_thread())
-      << "Write access is only allowed on the owning thread";
 
-  if (current_resource_has_write_access_ || IsGpuContextLost()) {
-    return;
-  }
-  current_resource_has_write_access_ = true;
-}
-
-void WebGpuRecyclableResourceProvider::EndWriteAccess() {
-  DCHECK(!resource()->is_cross_thread());
-
-  if (!current_resource_has_write_access_ || IsGpuContextLost()) {
-    return;
-  }
-
-  current_resource_has_write_access_ = false;
-}
 
 void WebGpuRecyclableResourceProvider::OnContextLost() {
   if (notified_context_lost_) {
@@ -218,11 +196,6 @@ void WebGpuRecyclableResourceProvider::OnContextLost() {
 
 void WebGpuRecyclableResourceProvider::OnContextDestroyed() {
   canvas_image_provider_.reset();
-}
-
-// For WebGpu RecyclableCanvasResource.
-void WebGpuRecyclableResourceProvider::OnAcquireRecyclableCanvasResource() {
-  EnsureWriteAccess();
 }
 
 void WebGpuRecyclableResourceProvider::OnDestroyRecyclableCanvasResource(
@@ -260,10 +233,6 @@ WebGpuRecyclableResourceProvider::BeginExternalOverwrite(
     return nullptr;
   }
 
-  // End the internal write access before calling WillDrawInternal(), which
-  // has a precondition that there should be no current write access on the
-  // resource.
-  EndWriteAccess();
 
   // NOTE: Invoking WillDrawInternal() ensures that this invocation of
   // EndAccess() will generate a new sync token.
@@ -294,7 +263,6 @@ void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
         recorder_for_external_draws_->ReleaseMainRecording();
 
     auto access = WillDrawInternal();
-    EnsureWriteAccess();
 
     const bool needs_clear = !is_cleared_;
     is_cleared_ = true;
@@ -345,11 +313,6 @@ void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
       canvas_image_provider_->UnbindTextureBackedImages();
     }
   }
-
-  // We are about to give the caller read access to this resource (and its
-  // backing SharedImage). Hence, we must give up the current write access
-  // (if any).
-  EndWriteAccess();
 }
 
 std::unique_ptr<gpu::RasterScopedAccess>
@@ -410,7 +373,6 @@ bool WebGpuRecyclableResourceProvider::CopyToBackingSharedImage(
 
   gfx::Rect copy_rect(src_x, src_y, Size().width(), Size().height());
 
-  EndWriteAccess();
   auto dst_access = WillDrawInternal();
 
   auto dst_client_si = resource()->GetSharedImage();

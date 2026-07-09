@@ -129,7 +129,6 @@ WebGPURecyclableResourceCache::AcquireCachedProvider(
     // becomes inefficient?
     // Remove the provider from the |unused_providers_|.
     unused_providers_.erase(it);
-    provider->OnAcquireRecyclableCanvasResource();
 
     return provider;
   }
