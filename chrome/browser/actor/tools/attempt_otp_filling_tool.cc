@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -435,7 +436,9 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
 
   if (!result.has_value()) {
     mojom::ActionResultCode code = mojom::ActionResultCode::kOtpRetrievalError;
-    std::string message = "An error occurred during OTP retrieval.";
+    std::string message =
+        base::StringPrintf("An error occurred during OTP retrieval: %d",
+                           std::to_underlying(result.error()));
 
     LogJournalEvent("AttemptOtpFillingTool::OnOtpRetrieved",
                     JournalDetailsBuilder()

@@ -480,7 +480,10 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ErrorRetrievingGmailOtp) {
   TestFuture<ActionResultPtr> future;
   tool.Invoke(future.GetCallback());
 
-  EXPECT_EQ(kOtpRetrievalError, future.Take()->code);
+  ActionResultPtr action_result = future.Take();
+  EXPECT_EQ(kOtpRetrievalError, action_result->code);
+  EXPECT_EQ("An error occurred during OTP retrieval: 0",
+            action_result->message);
 }
 
 }  // namespace actor
