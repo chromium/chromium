@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/input_method/url_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/manta/manta_service_factory.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
