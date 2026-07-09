@@ -1485,10 +1485,6 @@
       status: "stable",
     },
     {
-      name: "CreateInlineContentsExcludeOutOfFlow",
-      status: "stable",
-    },
-    {
       // When enabled, allowlisting script urls and scripts used in eval via
       // hashes will be supported in script-src. This is a no-op if the
       // network::features::kCSPScriptSrcHashesInV1 flag is off, since it
