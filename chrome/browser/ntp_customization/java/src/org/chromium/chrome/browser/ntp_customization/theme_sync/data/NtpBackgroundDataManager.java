@@ -59,9 +59,8 @@ public class NtpBackgroundDataManager {
                     getBackgroundDataGroupFromSharedPreference(platformType);
 
             if (currentGroup.isEmpty()) {
-                JSONArray newList = new JSONArray();
-                newList.put(backgroundData.toJson());
-                writeToSharedPreference(newList, platformType);
+                currentGroup.add(backgroundData);
+                writeToSharedPreference(currentGroup.toJsonArray(), platformType);
                 return;
             }
 
@@ -103,9 +102,8 @@ public class NtpBackgroundDataManager {
                     getBackgroundDataGroupFromSharedPreference(platformTypeToSave);
 
             if (currentGroup.isEmpty()) {
-                JSONArray newList = new JSONArray();
-                newList.put(backgroundData.toJson());
-                writeToSharedPreference(newList, platformTypeToSave);
+                currentGroup.add(backgroundData);
+                writeToSharedPreference(currentGroup.toJsonArray(), platformTypeToSave);
                 return;
             }
 

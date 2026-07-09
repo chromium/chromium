@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -38,7 +39,6 @@ import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
@@ -146,8 +146,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                         /* isChromeColorDailyRefreshEnabled= */ false);
         mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor);
 
-        when(mNtpCustomizationConfigManager.getBackgroundType())
-                .thenReturn(NtpBackgroundType.CHROME_COLOR);
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localColor);
 
         mCoordinator.prepareToShow();
 
@@ -178,8 +177,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor);
 
         // Current theme is default.
-        when(mNtpCustomizationConfigManager.getBackgroundType())
-                .thenReturn(NtpBackgroundType.DEFAULT);
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(null);
 
         mCoordinator.prepareToShow();
 
@@ -189,6 +187,30 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         // Highlighted index should be 0 (the default item)
         assertEquals(
                 0, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+    }
+
+    @Test
+    public void testPrepareToShow_WithLocalHistory_NonDefaultTheme() {
+        // Save some local history.
+        NtpBackgroundDataColor localColor =
+                new NtpBackgroundDataColor(
+                        mContext,
+                        PlatformType.ANDROID_LOCAL,
+                        NtpThemeColorId.NTP_COLORS_BLUE,
+                        /* isChromeColorDailyRefreshEnabled= */ false);
+
+        // Current theme is default.
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localColor);
+
+        mCoordinator.prepareToShow();
+
+        List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
+        assertEquals(1, dataList.size());
+
+        // Highlighted index should be 0 (the default item)
+        assertEquals(
+                RecyclerView.NO_POSITION,
+                (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
     }
 
     @Test
@@ -220,8 +242,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                         /* isChromeColorDailyRefreshEnabled= */ false);
         mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteDuplicateColor);
 
-        when(mNtpCustomizationConfigManager.getBackgroundType())
-                .thenReturn(NtpBackgroundType.CHROME_COLOR);
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localColor);
 
         mCoordinator.prepareToShow();
 
@@ -298,8 +319,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                         /* isChromeColorDailyRefreshEnabled= */ false);
         mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteColor1);
 
-        when(mNtpCustomizationConfigManager.getBackgroundType())
-                .thenReturn(NtpBackgroundType.CHROME_COLOR);
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localColor1);
 
         // Call first time
         mCoordinator.prepareToShow();
@@ -335,6 +355,8 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                         NtpThemeColorId.NTP_COLORS_GREEN,
                         /* isChromeColorDailyRefreshEnabled= */ false);
         mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteColor2);
+
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localColor2);
 
         // Call second time.
         mCoordinator.prepareToShow();

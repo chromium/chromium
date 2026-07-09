@@ -1832,4 +1832,16 @@ public class NtpCustomizationUtilsUnitTest {
                 NtpCustomizationUtils.getThemeTipBottomSheetShownTimestampFromSharedPreference());
         assertTrue(NtpCustomizationUtils.isThemeTipBottomSheetShownFromSharedPreference());
     }
+
+    @Test
+    public void testGetFileIdHashFromFilePath() {
+        assertNull(NtpCustomizationUtils.getFileIdHashFromFilePath(null));
+        assertNull(NtpCustomizationUtils.getFileIdHashFromFilePath(""));
+        assertNull(
+                NtpCustomizationUtils.getFileIdHashFromFilePath(
+                        "/path/to/" + NtpCustomizationUtils.NTP_BACKGROUND_IMAGE_FILE));
+        assertEquals(
+                "image_for_testing.jpg",
+                NtpCustomizationUtils.getFileIdHashFromFilePath("/path/to/image_for_testing.jpg"));
+    }
 }

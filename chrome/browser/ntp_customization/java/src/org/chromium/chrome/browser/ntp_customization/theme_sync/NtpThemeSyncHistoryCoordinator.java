@@ -18,7 +18,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
@@ -101,10 +100,9 @@ public class NtpThemeSyncHistoryCoordinator {
 
         // The default option is placed at the first.
         mDataShowingList.add(mDefaultNtpBackgroundData);
-        int lastSelectedIndex = 0;
-        boolean isDefaultTheme =
-                NtpCustomizationConfigManager.getInstance().getBackgroundType()
-                        == NtpCustomizationUtils.NtpBackgroundType.DEFAULT;
+        int lastSelectedIndex = RecyclerView.NO_POSITION;
+        NtpBackgroundDataBase currentNtpBackgroundData =
+                NtpCustomizationConfigManager.getInstance().getNtpBackgroundData();
 
         if (mNtpBackgroundDataGroups == null) {
             // Adds all history data to the list.
@@ -119,12 +117,19 @@ public class NtpThemeSyncHistoryCoordinator {
 
         NtpBackgroundDataGroup localGroup = mNtpBackgroundDataGroups[PlatformType.ANDROID_LOCAL];
         assumeNonNull(localGroup);
-        if (!localGroup.isEmpty()) {
-            // The last selected index is set to the first item from local selected history if the
-            // current selected theme isn't the default one, and the local group list isn't empty.
-            if (!isDefaultTheme) {
-                lastSelectedIndex = 1;
+        if (currentNtpBackgroundData == null) {
+            // Sets the index to the default theme if there isn't any NTP theme set before.
+            lastSelectedIndex = 0;
+        } else if (!localGroup.isEmpty()) {
+            int index = localGroup.indexOf(currentNtpBackgroundData);
+            if (index != -1) {
+                // The index is set to the item from local selected history which matches the
+                // current theme.
+                lastSelectedIndex = index + 1;
             }
+        }
+
+        if (!localGroup.isEmpty()) {
             mDataShowingList.addAll(localGroup.getList());
         }
 
@@ -150,7 +155,11 @@ public class NtpThemeSyncHistoryCoordinator {
     /** Called before showing the NTP theme customization history items. */
     public void prepareToShow() {
         mLastSelectedIndex = prepareData();
-        mLastSelectedNtpBackgroundData = mDataShowingList.get(mLastSelectedIndex);
+        if (mLastSelectedIndex != RecyclerView.NO_POSITION) {
+            mLastSelectedNtpBackgroundData = mDataShowingList.get(mLastSelectedIndex);
+        } else {
+            mLastSelectedNtpBackgroundData = null;
+        }
 
         mRecyclerViewAdaptor =
                 new NtpThemeSyncHistoryRecyclerViewAdaptor(
@@ -174,7 +183,7 @@ public class NtpThemeSyncHistoryCoordinator {
     /** Returns whether to recreate the activity to apply the new theme color. */
     private boolean shouldRecreateActivity(NtpBackgroundDataBase backgroundData) {
         boolean isDifferentColor = true;
-        if (isColorTheme(backgroundData)) {
+        if (mLastSelectedNtpBackgroundData != null && isColorTheme(backgroundData)) {
             // We check the following color theme cases to see if color matches.
             if (backgroundData instanceof NtpBackgroundDataColor ntpBackgroundDataColor
                     && mLastSelectedNtpBackgroundData

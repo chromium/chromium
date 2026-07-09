@@ -77,6 +77,11 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
         return mBitmap;
     }
 
+    /** Sets the bitmap. */
+    public void setBitmap(Bitmap bitmap) {
+        mBitmap = bitmap;
+    }
+
     /**
      * Sets the primary color of the background image.
      *
