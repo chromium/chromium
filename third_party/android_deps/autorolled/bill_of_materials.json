@@ -190,6 +190,16 @@
         "version": "1.5.0-SNAPSHOT"
     },
     {
+        "name": "material3-ripple",
+        "group": "androidx.compose.material3",
+        "version": "1.5.0-SNAPSHOT"
+    },
+    {
+        "name": "material3-ripple-android",
+        "group": "androidx.compose.material3",
+        "version": "1.5.0-SNAPSHOT"
+    },
+    {
         "name": "material-ripple",
         "group": "androidx.compose.material",
         "version": "1.13.0-SNAPSHOT"
@@ -787,47 +797,47 @@
     {
         "name": "media3-common",
         "group": "androidx.media3",
-        "version": "1.9.0-beta01"
+        "version": "1.2.0"
     },
     {
         "name": "media3-container",
         "group": "androidx.media3",
-        "version": "1.9.0-beta01"
+        "version": "1.2.0"
     },
     {
         "name": "media3-database",
         "group": "androidx.media3",
-        "version": "1.9.0-beta01"
+        "version": "1.2.0"
     },
     {
         "name": "media3-datasource",
         "group": "androidx.media3",
-        "version": "1.9.0-beta01"
+        "version": "1.2.0"
     },
     {
         "name": "media3-decoder",
         "group": "androidx.media3",
-        "version": "1.9.0-beta01"
+        "version": "1.2.0"
     },
     {
         "name": "media3-exoplayer",
         "group": "androidx.media3",
-        "version": "1.9.0-beta01"
+        "version": "1.2.0"
     },
     {
         "name": "media3-extractor",
         "group": "androidx.media3",
-        "version": "1.9.0-beta01"
+        "version": "1.2.0"
     },
     {
         "name": "media3-session",
         "group": "androidx.media3",
-        "version": "1.9.0-beta01"
+        "version": "1.2.0"
     },
     {
         "name": "media3-ui",
         "group": "androidx.media3",
-        "version": "1.9.0-beta01"
+        "version": "1.2.0"
     },
     {
         "name": "media",
@@ -1257,77 +1267,77 @@
     {
         "name": "arcore",
         "group": "androidx.xr.arcore",
-        "version": "1.0.0-alpha13"
+        "version": "1.0.0-alpha12"
     },
     {
         "name": "arcore-openxr",
         "group": "androidx.xr.arcore",
-        "version": "1.0.0-alpha13"
+        "version": "1.0.0-alpha12"
     },
     {
         "name": "arcore-projected",
         "group": "androidx.xr.arcore",
-        "version": "1.0.0-alpha13"
+        "version": "1.0.0-alpha12"
     },
     {
         "name": "arcore-runtime",
         "group": "androidx.xr.arcore",
-        "version": "1.0.0-alpha13"
+        "version": "1.0.0-alpha12"
     },
     {
         "name": "arcore-testing",
         "group": "androidx.xr.arcore",
-        "version": "1.0.0-alpha13"
+        "version": "1.0.0-alpha12"
     },
     {
         "name": "runtime",
         "group": "androidx.xr.runtime",
-        "version": "1.0.0-alpha13"
+        "version": "1.0.0-alpha12"
     },
     {
         "name": "runtime-interfaces",
         "group": "androidx.xr.runtime",
-        "version": "1.0.0-alpha13"
+        "version": "1.0.0-alpha12"
     },
     {
         "name": "runtime-manifest",
         "group": "androidx.xr.runtime",
-        "version": "1.0.0-alpha13"
+        "version": "1.0.0-alpha12"
     },
     {
         "name": "runtime-openxr",
         "group": "androidx.xr.runtime",
-        "version": "1.0.0-alpha13"
+        "version": "1.0.0-alpha12"
     },
     {
         "name": "runtime-testing",
         "group": "androidx.xr.runtime",
-        "version": "1.0.0-alpha13"
+        "version": "1.0.0-alpha12"
     },
     {
         "name": "scenecore",
         "group": "androidx.xr.scenecore",
-        "version": "1.0.0-alpha14"
+        "version": "1.0.0-alpha13"
     },
     {
         "name": "scenecore-runtime",
         "group": "androidx.xr.scenecore",
-        "version": "1.0.0-alpha14"
+        "version": "1.0.0-alpha13"
     },
     {
         "name": "scenecore-spatial-core",
         "group": "androidx.xr.scenecore",
-        "version": "1.0.0-alpha14"
+        "version": "1.0.0-alpha13"
     },
     {
         "name": "scenecore-spatial-rendering",
         "group": "androidx.xr.scenecore",
-        "version": "1.0.0-alpha14"
+        "version": "1.0.0-alpha13"
     },
     {
         "name": "scenecore-testing",
         "group": "androidx.xr.scenecore",
-        "version": "1.0.0-alpha14"
+        "version": "1.0.0-alpha13"
     },
     {
         "name": "lottie",
@@ -1532,7 +1542,7 @@
     {
         "name": "impress",
         "group": "com.google.ar",
-        "version": "0.0.13"
+        "version": "0.0.12"
     },
     {
         "name": "auto-service-annotations",
