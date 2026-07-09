@@ -27,7 +27,16 @@ SubresourceFilterSafeBrowsingClient::CheckResult::ToTracedValue() const {
   auto value = std::make_unique<base::trace_event::TracedValue>();
   value->SetInteger("request_id", request_id);
   value->SetInteger("threat_type", static_cast<int>(threat_type));
-  value->SetValue("threat_metadata", threat_metadata.ToTracedValue().get());
+
+  value->BeginDictionary("subresource_filter_match");
+  for (const auto& it : subresource_filter_match) {
+    value->BeginArray("match_metadata");
+    value->AppendInteger(static_cast<int>(it.first));
+    value->AppendInteger(static_cast<int>(it.second));
+    value->EndArray();
+  }
+  value->EndDictionary();
+
   value->SetInteger("duration (us)",
                     (base::TimeTicks::Now() - start_time).InMicroseconds());
   value->SetBoolean("finished", finished);

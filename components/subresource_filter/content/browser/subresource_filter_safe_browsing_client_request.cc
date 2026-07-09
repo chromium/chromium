@@ -54,7 +54,7 @@ void SubresourceFilterSafeBrowsingClientRequest::Start(const GURL& url) {
     request_completed_ = true;
     SendCheckResultToClient(false /* served_from_network */,
                             safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE,
-                            safe_browsing::ThreatMetadata());
+                            /*subresource_filter_match=*/{});
     return;
   }
   timer_.Start(
@@ -71,27 +71,25 @@ void SubresourceFilterSafeBrowsingClientRequest::
         const safe_browsing::SubresourceFilterMatch& subresource_filter_match) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
   request_completed_ = true;
-  safe_browsing::ThreatMetadata metadata;
-  metadata.subresource_filter_match = subresource_filter_match;
   SendCheckResultToClient(true /* served_from_network */, threat_type,
-                          metadata);
+                          subresource_filter_match);
 }
 
 void SubresourceFilterSafeBrowsingClientRequest::OnCheckUrlTimeout() {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
   SendCheckResultToClient(true /* served_from_network */,
                           safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE,
-                          safe_browsing::ThreatMetadata());
+                          /*subresource_filter_match=*/{});
 }
 
 void SubresourceFilterSafeBrowsingClientRequest::SendCheckResultToClient(
     bool served_from_network,
     safe_browsing::SBThreatType threat_type,
-    const safe_browsing::ThreatMetadata& metadata) {
+    const safe_browsing::SubresourceFilterMatch& subresource_filter_match) {
   SubresourceFilterSafeBrowsingClient::CheckResult result;
   result.request_id = request_id_;
   result.threat_type = threat_type;
-  result.threat_metadata = metadata;
+  result.subresource_filter_match = subresource_filter_match;
   result.start_time = start_time_;
 
   // This memeber is separate from |request_completed_|, in that it just

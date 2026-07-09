@@ -177,10 +177,11 @@ void SafeBrowsingTriggeredPopupBlocker::OnSafeBrowsingChecksComplete(
   std::optional<safe_browsing::SubresourceFilterLevel> match_level;
   if (result.threat_type ==
       safe_browsing::SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER) {
-    auto abusive = result.threat_metadata.subresource_filter_match.find(
+    auto abusive = result.subresource_filter_match.find(
         safe_browsing::SubresourceFilterType::ABUSIVE);
-    if (abusive != result.threat_metadata.subresource_filter_match.end())
+    if (abusive != result.subresource_filter_match.end()) {
       match_level = abusive->second;
+    }
   }
 
   if (match_level.has_value()) {

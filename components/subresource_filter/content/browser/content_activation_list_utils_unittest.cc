@@ -117,12 +117,11 @@ TEST(ContentActivationListUtilsTest, GetListForThreatTypeAndMetadata) {
     scoped_feature_list.InitWithFeatureState(
         kFilterAdsOnAbusiveSites, test_case.adblock_on_abusive_sites ==
                                       AdBlockOnAbusiveSitesTest::kEnabled);
-    safe_browsing::ThreatMetadata metadata;
-    metadata.subresource_filter_match = test_case.subresource_filter_match;
     bool warning = false;
     EXPECT_EQ(test_case.expected_activation_list,
-              GetListForThreatTypeAndMetadata(test_case.sb_threat_type,
-                                              metadata, &warning));
+              GetListForThreatTypeAndMetadata(
+                  test_case.sb_threat_type, test_case.subresource_filter_match,
+                  &warning));
     EXPECT_EQ(test_case.expected_warning, warning);
   }
 }

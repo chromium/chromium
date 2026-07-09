@@ -248,7 +248,8 @@ TEST_F(SubresourceFilterTest, NotifySafeBrowsing) {
     SimulateNavigateAndCommit(url, main_rfh());
     bool warning = false;
     EXPECT_EQ(test_case.expected_activation,
-              GetListForThreatTypeAndMetadata(threat_type, metadata, &warning));
+              GetListForThreatTypeAndMetadata(threat_type, test_case.match,
+                                              &warning));
     EXPECT_EQ(warning, test_case.expected_warning);
   }
 }

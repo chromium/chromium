@@ -16,10 +16,6 @@
 
 class GURL;
 
-namespace safe_browsing {
-struct ThreatMetadata;
-}  // namespace safe_browsing
-
 namespace subresource_filter {
 
 class SubresourceFilterSafeBrowsingClient;
@@ -65,9 +61,10 @@ class SubresourceFilterSafeBrowsingClientRequest
   // kCheckURLTimeout.
   void OnCheckUrlTimeout();
 
-  void SendCheckResultToClient(bool served_from_network,
-                               safe_browsing::SBThreatType threat_type,
-                               const safe_browsing::ThreatMetadata& metadata);
+  void SendCheckResultToClient(
+      bool served_from_network,
+      safe_browsing::SBThreatType threat_type,
+      const safe_browsing::SubresourceFilterMatch& subresource_filter_match);
 
   // The |request_id_| identifies a particular request, as issued from the
   // SubresourceFilterSafeBrowsingClient. It will be unique in the scope of a

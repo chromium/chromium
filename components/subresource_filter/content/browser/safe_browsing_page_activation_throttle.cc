@@ -50,7 +50,7 @@ std::optional<RedirectPosition> GetEnforcementRedirectPosition(
   for (int i = num_results - 1; i >= 0; --i) {
     bool warning = false;
     ActivationList list = GetListForThreatTypeAndMetadata(
-        results[i].threat_type, results[i].threat_metadata, &warning);
+        results[i].threat_type, results[i].subresource_filter_match, &warning);
     if (!warning && list != ActivationList::NONE) {
       if (num_results == 1) {
         return RedirectPosition::kOnly;
@@ -297,7 +297,7 @@ SafeBrowsingPageActivationThrottle::GetHighestPriorityConfiguration(
   bool warning = false;
   bool matched = false;
   ActivationList matched_list = GetListForThreatTypeAndMetadata(
-      result.threat_type, result.threat_metadata, &warning);
+      result.threat_type, result.subresource_filter_match, &warning);
   // If it's http or https, find the best config.
   if (navigation_handle()->GetURL().SchemeIsHTTPOrHTTPS()) {
     const auto& decreasing_configs =
