@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "cc/paint/paint_record.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_fill_rule.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_smoothing_quality.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
+#include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
@@ -50,6 +52,8 @@ class Vector2d;
 
 namespace blink {
 
+class Canvas2DResourceProvider;
+class Canvas2DBitmapProvider;
 class CanvasContextCreationAttributesCore;
 class CanvasRenderingContext2DSettings;
 class ExceptionState;
@@ -253,6 +257,11 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   unsigned try_restore_context_attempt_count_ = 0;
 
  protected:
+  std::optional<cc::PaintRecord> FlushCanvasInternal(
+      Canvas2DResourceProvider* shared_image_provider,
+      Canvas2DBitmapProvider* bitmap_provider,
+      FlushReason reason);
+
   explicit BaseRenderingContext2D(
       CanvasRenderingContextHost* canvas,
       const CanvasContextCreationAttributesCore& attrs,

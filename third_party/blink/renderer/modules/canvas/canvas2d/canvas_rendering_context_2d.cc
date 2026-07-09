@@ -585,13 +585,8 @@ std::optional<cc::PaintRecord> CanvasRenderingContext2D::FlushCanvas(
   if (!canvas()) {
     return std::nullopt;
   }
-  if (shared_image_provider_) {
-    return shared_image_provider_->Flush(reason);
-  }
-  if (bitmap_provider_) {
-    return bitmap_provider_->Flush(reason);
-  }
-  return std::nullopt;
+  return FlushCanvasInternal(shared_image_provider_.get(),
+                             bitmap_provider_.get(), reason);
 }
 
 void CanvasRenderingContext2D::OnFlushForImage(

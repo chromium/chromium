@@ -573,13 +573,8 @@ bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
 
 std::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
     FlushReason reason) {
-  if (shared_image_provider_) {
-    return shared_image_provider_->Flush(reason);
-  }
-  if (bitmap_provider_) {
-    return bitmap_provider_->Flush(reason);
-  }
-  return std::nullopt;
+  return FlushCanvasInternal(shared_image_provider_.get(),
+                             bitmap_provider_.get(), reason);
 }
 
 void OffscreenCanvasRenderingContext2D::OnFlushForImage(
