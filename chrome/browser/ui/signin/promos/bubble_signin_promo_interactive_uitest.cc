@@ -1760,8 +1760,16 @@ IN_PROC_BROWSER_TEST_F(
 /////////////////////////////////////////////////////////////////
 ///// Other tests
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/532726834): Re-enable this test on Mac.
+#define MAYBE_PasswordSignInPromoAccountDisallowedByPattern \
+  DISABLED_PasswordSignInPromoAccountDisallowedByPattern
+#else
+#define MAYBE_PasswordSignInPromoAccountDisallowedByPattern \
+  PasswordSignInPromoAccountDisallowedByPattern
+#endif
 IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
-                       PasswordSignInPromoAccountDisallowedByPattern) {
+                       MAYBE_PasswordSignInPromoAccountDisallowedByPattern) {
   // Set the signin pattern
   g_browser_process->local_state()->SetString(
       prefs::kGoogleServicesUsernamePattern, "*@signinallowed.com");
