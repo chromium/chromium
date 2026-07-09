@@ -906,6 +906,7 @@ class PasswordManagerTestBase : public testing::Test {
 // PasswordStore instance.
 class PasswordManagerTest : public PasswordManagerTestBase,
                             public testing::WithParamInterface<bool> {
+ public:
   bool ShouldEnableAccountStorage() const override { return GetParam(); }
 };
 
@@ -2124,6 +2125,56 @@ TEST_P(PasswordManagerTest,
   // destroy the manager prior to store destruction.
   ResetManager();
   store->ShutdownOnUIThread();
+}
+
+TEST_P(PasswordManagerTest, SavingBlockedByTrustedVaultErrorMetric) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kPasswordSaveInContextErrorResolution};
+
+  syncer::TestSyncService sync_service;
+  ON_CALL(client_, GetSyncService()).WillByDefault(Return(&sync_service));
+
+  // Setup error on the appropriate store and add login there.
+  if (ShouldEnableAccountStorage()) {
+    ON_CALL(*client_.GetPasswordFeatureManager(), IsAccountStorageActive())
+        .WillByDefault(Return(true));
+    account_store_->SetError(ActionableError::kTrustedVaultKeyNeeded);
+  } else {
+    store_->SetError(ActionableError::kTrustedVaultKeyNeeded);
+  }
+
+  FormData observed_form = MakeSimpleFormData();
+  manager()->OnPasswordFormsParsed(&driver_, {observed_form});
+  manager()->OnPasswordFormsRendered(&driver_, {observed_form});
+  task_environment_.RunUntilIdle();
+
+  manager()->OnPasswordFormSubmitted(&driver_, observed_form);
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  manager()->OnPasswordFormsRendered(&driver_, {});
+  task_environment_.RunUntilIdle();
+
+  // On platforms other than Android, IsAbleToSavePasswords currently only
+  // checks the profile store.
+  bool expected_able_to_save = ShouldEnableAccountStorage();
+#if BUILDFLAG(IS_ANDROID)
+  expected_able_to_save = false;
+#endif
+
+  bool expected_saving_blocked_by_trusted_vault_error = true;
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // On Android and iOS, IsSavingBlockedByTrustedVaultError currently only
+  // checks the account store.
+  expected_saving_blocked_by_trusted_vault_error = ShouldEnableAccountStorage();
+#endif
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AbleToSavePasswordsOnSuccessfulLogin",
+      expected_able_to_save, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SavingBlockedByTrustedVaultErrorOnSuccessfulLogin",
+      expected_saving_blocked_by_trusted_vault_error, 1);
 }
 
 TEST_P(PasswordManagerTest,

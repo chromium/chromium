@@ -1662,11 +1662,12 @@ void PasswordManager::OnLoginSuccessful() {
           client_, submitted_manager);
   bool able_to_save_passwords_after_fixing_recoverable_error =
       password_manager_util::IsSavingBlockedByRecoverableError(client_);
-  // TODO(crbug.com/484367376): Publish a metric for measuring the volume of
-  // cases when saving is blocked by the trusted vault error.
-
-  UMA_HISTOGRAM_BOOLEAN("PasswordManager.AbleToSavePasswordsOnSuccessfulLogin",
-                        able_to_save_passwords);
+  base::UmaHistogramBoolean(
+      "PasswordManager.AbleToSavePasswordsOnSuccessfulLogin",
+      able_to_save_passwords);
+  base::UmaHistogramBoolean(
+      "PasswordManager.SavingBlockedByTrustedVaultErrorOnSuccessfulLogin",
+      able_to_save_passwords_after_fixing_trusted_vault_error);
   if (!submitted_manager->IsPasswordUpdate() && !able_to_save_passwords &&
       !able_to_save_passwords_after_fixing_trusted_vault_error &&
       !able_to_save_passwords_after_fixing_recoverable_error) {

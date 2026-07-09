@@ -3819,6 +3819,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="UserSyncingType" variants="UserSyncingType"/>
 </histogram>
 
+<histogram
+    name="PasswordManager.SavingBlockedByTrustedVaultErrorOnSuccessfulLogin"
+    enum="Boolean" expires_after="2027-01-01">
+  <owner>ylahodiuk@google.com</owner>
+  <owner>anki-team@google.com</owner>
+  <summary>
+    Records whether saving a password after a successful login is blocked by a
+    trusted vault error. Recorded once per form submission on successful login.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ServerPredictionsWaitDuration" units="ms"
     expires_after="2026-09-06">
   <owner>kenrb@chromium.org</owner>
