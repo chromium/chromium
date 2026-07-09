@@ -209,6 +209,7 @@ class InfoBarDelegate {
     WEB_APP_BLOCKED_MIGRATION_INFOBAR_DELEGATE = 134,
     OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE = 135,
     AUTOFILL_AI_PRE_FETCH_FAILURE_INFOBAR_DELEGATE_IOS = 136,
+    SIGNIN_QRCODE_INFOBAR_DELEGATE = 137,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:InfoBarIdentifier)
 
