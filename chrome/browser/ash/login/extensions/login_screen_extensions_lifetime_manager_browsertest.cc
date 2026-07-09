@@ -183,15 +183,15 @@ IN_PROC_BROWSER_TEST_F(LoginScreenExtensionsLifetimeManagerTest,
   // Force-install the app during an active user session. The app gets
   // installed, but almost immediately (in an async job) gets disabled.
   LogIn();
+  extensions::TestExtensionRegistryObserver unload_observer(
+      extensions::ExtensionRegistry::Get(GetOriginalSigninProfile()),
+      kAllowlistedAppId);
   EXPECT_TRUE(extension_force_install_mixin()->ForceInstallFromCrx(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
           .AppendASCII(kAllowlistedAppCrxPath),
       ExtensionForceInstallMixin::WaitMode::kLoad));
   EXPECT_TRUE(IsExtensionInstalled(kAllowlistedAppId));
-  // Wait until the extension gets disabled. Sadly, the extensions system
-  // doesn't provide a proper way to wait until that happens, so we're relying
-  // on the production code doing this in zero-delayed async job.
-  base::RunLoop().RunUntilIdle();
+  unload_observer.WaitForExtensionUnloaded();
   EXPECT_FALSE(IsExtensionEnabled(kAllowlistedAppId));
 
   // The user locks the session. The app gets enabled and the background page is
