@@ -465,12 +465,6 @@ BASE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport,
 BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// If enabled, other apps can open the Autofill Options in Chrome.
-BASE_FEATURE(kAutofillDeepLinkAutofillOptions,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // If enabled, `FormPredictionsTracker` will wait up to 1 second
 // for Autofill to finish parsing forms pesent on a given tab before capturing
 // APC. For more context see: go/autofill-actor-mode-implementation

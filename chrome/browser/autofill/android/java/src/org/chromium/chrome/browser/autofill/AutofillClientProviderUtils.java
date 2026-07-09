@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.autofill;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.AUTOFILL_THIRD_PARTY_MODE_STATE;
 
 import android.content.ComponentName;
-import android.content.Context;
-import android.content.SharedPreferences.Editor;
 import android.text.TextUtils;
 import android.view.autofill.AutofillManager;
 
@@ -34,10 +32,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 public class AutofillClientProviderUtils {
     private static final String TAG = "AutofillClientProviderUtils";
 
-    public static final String AUTOFILL_OPTIONS_DEEP_LINK_SHARED_PREFS_FILE =
-            "autofill_options_deep_link_shared_prefs_file";
-    public static final String AUTOFILL_OPTIONS_DEEP_LINK_FEATURE_KEY =
-            "AUTOFILL_OPTIONS_DEEP_LINK_FEATURE_KEY";
     private static final String AWG_COMPONENT_NAME =
             "com.google.android.gms/com.google.android.gms.autofill.service.AutofillService";
     private static @Nullable Integer sAndroidAutofillFrameworkAvailabilityForTesting;
@@ -135,17 +129,6 @@ public class AutofillClientProviderUtils {
     public static void unsetThirdPartyModePref() {
         SharedPreferencesManager prefManager = ChromeSharedPreferences.getInstance();
         prefManager.removeKey(AUTOFILL_THIRD_PARTY_MODE_STATE);
-    }
-
-    @CalledByNative
-    public static void setAutofillOptionsDeepLinkPref(boolean featureOn) {
-        Editor editor =
-                ContextUtils.getApplicationContext()
-                        .getSharedPreferences(
-                                AUTOFILL_OPTIONS_DEEP_LINK_SHARED_PREFS_FILE, Context.MODE_PRIVATE)
-                        .edit();
-        editor.putBoolean(AUTOFILL_OPTIONS_DEEP_LINK_FEATURE_KEY, featureOn);
-        editor.apply();
     }
 
     @CalledByNative
