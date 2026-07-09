@@ -1361,10 +1361,10 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
   // TODO(crbug.com/40280256): Ignoring position-area means we may not allow
   // using the object as a relayout boundary even if position-area causes the
   // object to not rely on static position.
-  const ComputedStyle* style = box->Style();
+  const ComputedStyle& style = box->StyleRef();
   if (box->IsOutOfFlowPositioned() &&
-      (style->HasAutoLeftAndRightIgnoringPositionArea() ||
-       style->HasAutoTopAndBottomIgnoringPositionArea())) {
+      (style.HasAutoLeftAndRightIgnoringPositionArea() ||
+       style.HasAutoTopAndBottomIgnoringPositionArea())) {
     return false;
   }
 
@@ -1439,7 +1439,7 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
   // height will allow the object to grow and shrink based on the content
   // inside. The same goes for for logical width, if this objects is inside a
   // shrink-to-fit container, for instance.
-  if (!style->Width().IsFixed() || !style->Height().IsFixed()) {
+  if (!style.Width().IsFixed() || !style.Height().IsFixed()) {
     return false;
   }
 
