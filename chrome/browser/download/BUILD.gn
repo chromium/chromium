@@ -296,6 +296,7 @@ source_set("impl") {
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/window_feature_controller",
       "//chrome/common:chrome_features",
       "//components/drive",
     ]

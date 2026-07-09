@@ -129,10 +129,10 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/download/download_item_web_app_data.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/common/actor.mojom-shared.h"
 #endif
 
@@ -1329,9 +1329,11 @@ void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
     return;
   }
 
-  Browser* browser = chrome::ScopedTabbedBrowserDisplayer(profile_).browser();
-  CHECK(browser && browser->CanSupportWindowFeature(
-                       Browser::WindowFeature::kFeatureTabStrip));
+  BrowserWindowInterface* browser =
+      chrome::ScopedTabbedBrowserDisplayer(profile_).browser_window_interface();
+  CHECK(browser &&
+        WindowFeatureController::From(browser)->CanSupportWindowFeature(
+            WindowFeatureController::WindowFeature::kFeatureTabStrip));
   content::OpenURLParams params(
       net::FilePathToFileURL(download->GetTargetFilePath()),
       content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
