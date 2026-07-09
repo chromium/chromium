@@ -746,7 +746,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.customtabs") {
     "src/org/chromium/chrome/browser/customtabs/IncognitoCustomTabActivityRenderTest.java",
     "src/org/chromium/chrome/browser/customtabs/IncognitoCustomTabSnapshotControllerIntegrationTest.java",
     "src/org/chromium/chrome/browser/customtabs/MismatchNotificationControllerTest.java",
-    "src/org/chromium/chrome/browser/customtabs/PartialCustomTabActivityRenderTest.java",
     "src/org/chromium/chrome/browser/customtabs/TabReparentingTest.java",
     "src/org/chromium/chrome/browser/customtabs/TrustedCdnPublisherUrlTest.java",
     "src/org/chromium/chrome/browser/customtabs/content/TabObserverRegistrarTest.java",
