@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
@@ -2893,13 +2894,6 @@ class AutofillMetricsSeamlessnessTest
   static constexpr auto kBitmask = MetricName::Variant::kBitmask;
 
  protected:
-  AutofillMetricsSeamlessnessTest() {
-    scoped_features_.InitAndEnableFeatureWithParameters(
-        features::kAutofillLogUKMEventsWithSamplingOnSession,
-        {{features::kAutofillLogUKMEventsWithSamplingOnSessionRate.name,
-          "100"}});
-  }
-
   void InitAutofillClient() override {
     AutofillMetricsCrossFrameFormTest::InitAutofillClient();
 
@@ -2908,7 +2902,8 @@ class AutofillMetricsSeamlessnessTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_features_;
+  base::AutoReset<int> sampling_override_ =
+      autofill_metrics::SetUkmSamplingRateForTesting(100);
 };
 
 // Tests that Autofill.CreditCard.SeamlessFills.* is not emitted for manual

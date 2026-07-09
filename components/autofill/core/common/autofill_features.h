@@ -261,10 +261,6 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(
     int,
     kAutofillLabelSensitiveAutocompleteMigrationGeneration);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillLogUKMEventsWithSamplingOnSession);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE_PARAM(int, kAutofillLogUKMEventsWithSamplingOnSessionRate);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillModelPredictions);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(bool, kAutofillModelPredictionsAreActive);

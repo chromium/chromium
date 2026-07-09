@@ -10,6 +10,7 @@
 
 #include <optional>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -33,6 +34,10 @@ struct FormInteractionCounts;
 // This function returns whether we should record autofill UKM events for the
 // current session.
 bool ShouldRecordUkm();
+
+// Overrides the production-code sampling UKM rate for the lifetime of the
+// returned object.
+[[nodiscard]] base::AutoReset<int> SetUkmSamplingRateForTesting(int rate);
 
 // Utility to log URL keyed form interaction events.
 // Owned by AutofillClient. Therefore, it must not have page-specific state. In

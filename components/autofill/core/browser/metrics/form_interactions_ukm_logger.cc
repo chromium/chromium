@@ -13,9 +13,9 @@
 #include <variant>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -48,6 +48,10 @@ namespace autofill::autofill_metrics {
 
 namespace {
 
+// This is non-const because in tests, it can be overridden by
+// `SetUkmSamplingRateForTesting()`.
+int g_ukm_sampling_rate = 10;
+
 // Exponential bucket spacing for UKM event data.
 constexpr double kAutofillEventDataBucketSpacing = 2.0;
 
@@ -67,13 +71,11 @@ bool ShouldRecordUkm() {
   // is running.
   static const int random_value_per_session = base::RandIntInclusive(0, 99);
 
-  const int kSamplingRate =
-      base::FeatureList::IsEnabled(
-          features::kAutofillLogUKMEventsWithSamplingOnSession)
-          ? features::kAutofillLogUKMEventsWithSamplingOnSessionRate.Get()
-          : 0;
+  return random_value_per_session < g_ukm_sampling_rate;
+}
 
-  return random_value_per_session < kSamplingRate;
+base::AutoReset<int> SetUkmSamplingRateForTesting(int rate) {
+  return base::AutoReset<int>(&g_ukm_sampling_rate, rate);
 }
 
 FormInteractionsUkmLogger::FormInteractionsUkmLogger(

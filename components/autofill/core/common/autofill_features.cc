@@ -709,19 +709,6 @@ BASE_FEATURE_PARAM(int,
                    "autocomplete_label_sensitive_migration_generation",
                    0);
 
-// Enable the feature by default, and set the enabled percentage as a feature
-// param. We are logging information of field types, autofill status and
-// forms with a defined sampling rate of 10% on sessions.
-// Autofill FormSummary/FieldInfo UKM schema:
-// https://docs.google.com/document/d/1ZH0JbL6bES3cD4KqZWsGR6n8I-rhnkx6no6nQOgYq5w/.
-BASE_FEATURE(kAutofillLogUKMEventsWithSamplingOnSession,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kAutofillLogUKMEventsWithSamplingOnSessionRate,
-                   &kAutofillLogUKMEventsWithSamplingOnSession,
-                   "sampling_rate",
-                   10);
-
 // When enabled, all behaviours related to the on-device machine learning
 // model for field type predictions will be guarded.
 // TODO(crbug.com/40276177): Remove when launched.
