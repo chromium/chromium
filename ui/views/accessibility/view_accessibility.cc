@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -237,6 +238,17 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   }
 
   *data = data_;
+
+  // Expose the View's id as the author-unique id. Virtual views have no
+  // backing View and retain their existing identity.
+  if (view_) {
+    const int view_id = view_->GetID();
+    if (view_id &&
+        !data->HasStringAttribute(ax::mojom::StringAttribute::kHtmlId)) {
+      data->AddStringAttribute(ax::mojom::StringAttribute::kHtmlId,
+                               "view_" + base::NumberToString(view_id));
+    }
+  }
 }
 
 void ViewAccessibility::NotifyEvent(ax::mojom::Event event_type,

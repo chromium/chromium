@@ -378,6 +378,45 @@ TEST_F(ViewAccessibilityAXTreeSourceTest, SerializeNode_AXVirtualView) {
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), name);
 }
 
+TEST_F(ViewAccessibilityAXTreeSourceTest, SerializeNode_SetsHtmlIdFromViewId) {
+  auto v = std::make_unique<View>();
+  v->SetID(1234);
+
+  ui::AXNodeData data;
+  source()->SerializeNode(&v->GetViewAccessibility(), &data);
+
+  // A View with a nonzero id exposes it as the author-unique id in the form
+  // "view_<id>", which is what AXPlatformNodeDelegate::GetAuthorUniqueId()
+  // reads back and platform APIs surface as the UIA AutomationId.
+  EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kHtmlId),
+            "view_1234");
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest,
+       SerializeNode_NoHtmlIdForDefaultViewId) {
+  // A View with the default id (0) has no meaningful id to expose, so it
+  // receives no author-unique id (and thus an empty AutomationId).
+  auto v = std::make_unique<View>();
+  ASSERT_EQ(v->GetID(), 0);
+
+  ui::AXNodeData data;
+  source()->SerializeNode(&v->GetViewAccessibility(), &data);
+
+  EXPECT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kHtmlId));
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest,
+       SerializeNode_NoHtmlIdForVirtualView) {
+  // Virtual views have no backing View, so they must not receive a
+  // View-id-derived AutomationId.
+  auto v = std::make_unique<AXVirtualView>();
+
+  ui::AXNodeData data;
+  source()->SerializeNode(v.get(), &data);
+
+  EXPECT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kHtmlId));
+}
+
 TEST_F(ViewAccessibilityAXTreeSourceTest,
        GetChildCount_UsesSnapshotNotLiveList) {
   auto parent = std::make_unique<View>();

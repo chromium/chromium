@@ -619,9 +619,7 @@ bool AXPlatformNodeDelegate::IsValidRelationTarget(
 }
 
 std::u16string AXPlatformNodeDelegate::GetAuthorUniqueId() const {
-  if (node_)
-    return node_->GetString16Attribute(ax::mojom::StringAttribute::kHtmlId);
-  return std::u16string();
+  return GetString16Attribute(ax::mojom::StringAttribute::kHtmlId);
 }
 
 AXPlatformNodeId AXPlatformNodeDelegate::GetUniqueId() const {
