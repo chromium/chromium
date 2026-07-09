@@ -12,7 +12,7 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-class Browser;
+class BrowserWindowInterface;
 #endif
 
 class DownloadUIModel;
@@ -69,7 +69,7 @@ class DownloadCommands {
     BUILDFLAG(IS_MAC)
   bool IsDownloadPdf() const;
   bool CanOpenPdfInSystemViewer() const;
-  Browser* GetBrowser() const;
+  BrowserWindowInterface* GetBrowser() const;
 #endif
 
   GURL GetLearnMoreURLForInterruptedDownload() const;

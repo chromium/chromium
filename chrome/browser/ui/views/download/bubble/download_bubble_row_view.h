@@ -27,6 +27,8 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
+class Browser;
+
 namespace ui {
 class Event;
 }

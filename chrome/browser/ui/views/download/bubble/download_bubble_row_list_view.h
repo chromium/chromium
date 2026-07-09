@@ -19,6 +19,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 
+class Browser;
 class DownloadBubbleRowView;
 class DownloadBubbleUIController;
 class DownloadBubbleNavigationHandler;

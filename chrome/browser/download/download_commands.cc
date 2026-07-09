@@ -28,7 +28,6 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #endif
 
@@ -175,13 +174,13 @@ void DownloadCommands::ExecuteCommand(Command command) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 
-Browser* DownloadCommands::GetBrowser() const {
+BrowserWindowInterface* DownloadCommands::GetBrowser() const {
   if (!model_)
     return nullptr;
 
   chrome::ScopedTabbedBrowserDisplayer browser_displayer(model_->profile());
-  DCHECK(browser_displayer.browser());
-  return browser_displayer.browser();
+  DCHECK(browser_displayer.browser_window_interface());
+  return browser_displayer.browser_window_interface();
 }
 
 bool DownloadCommands::IsDownloadPdf() const {
