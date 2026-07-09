@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
@@ -24,12 +25,29 @@
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/webui/webui_util.h"
+
+namespace {
+
+bool IsAimEligible(Profile* profile) {
+  auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  return aim_eligibility_service && aim_eligibility_service->IsAimEligible();
+}
+
+bool IsFuseboxEligible(Profile* profile) {
+  return IsAimEligible(profile) &&
+         AimEligibilityServiceFactory::GetForProfile(profile)
+             ->IsFuseboxEligible();
+}
+
+}  // namespace
 
 bool OmniboxEverywhereUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
@@ -124,8 +142,8 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
                      omnibox::IsAimPopupEnabled(profile_) &&
                          omnibox::kShowLensSearchChip.Get());
 
-  source->AddBoolean("searchboxShowComposeEntrypoint", true);
-  source->AddBoolean("ntpRealboxNextEnabled", true);
+  source->AddBoolean("searchboxShowComposeEntrypoint", IsAimEligible(profile_));
+  source->AddBoolean("ntpRealboxNextEnabled", IsFuseboxEligible(profile_));
   source->AddBoolean("searchboxLensSearch", true);
 
   source->AddBoolean("composeboxShowTypedSuggest",
