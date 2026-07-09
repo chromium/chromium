@@ -535,6 +535,12 @@ class AtMemoryEnablementUtilsWithGroupsTest
                                               *autofill_client().GetPrefs()));
   }
 
+  ~AtMemoryEnablementUtilsWithGroupsTest() override {
+    // Prevent the pointer that `GoogleGroupsManager` keeps from becoming
+    // dangling.
+    autofill_client().set_google_groups_manager(nullptr);
+  }
+
   static constexpr std::string GetDogfoodGroupsPrefName() {
 #if BUILDFLAG(IS_CHROMEOS)
     return variations::kOsDogfoodGroupsSyncPrefName;
