@@ -11,8 +11,6 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.INVALID_WINDOW_ID;
 
-import android.graphics.Rect;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -385,23 +383,6 @@ public class ChromeMultiInstancePersistentStoreUnitTest {
         assertEquals(1, recoveryData.size());
         assertEquals(INSTANCE_ID_0, recoveryData.get(0).windowId);
         assertTrue(recoveryData.get(0).isVisible);
-        assertNull(recoveryData.get(0).bounds);
-    }
-
-    @Test
-    public void testCrashRecoveryBounds() {
-        Rect bounds = new Rect(10, 20, 100, 200);
-        // Create instance first.
-        ChromeMultiInstancePersistentStore.writeLastAccessedTime(INSTANCE_ID_0);
-
-        ChromeMultiInstancePersistentStore.writeIsRecoverable(INSTANCE_ID_0, true);
-        ChromeMultiInstancePersistentStore.writeBounds(INSTANCE_ID_0, bounds);
-        ChromeMultiInstancePersistentStore.writeTabCount(
-                INSTANCE_ID_0, /* normalTabCount= */ 1, /* incognitoTabCount= */ 0);
-
-        var recoveryData = ChromeMultiInstancePersistentStore.readCrashRecoveryData();
-        assertEquals(1, recoveryData.size());
-        assertEquals(bounds, recoveryData.get(0).bounds);
     }
 
     @Test

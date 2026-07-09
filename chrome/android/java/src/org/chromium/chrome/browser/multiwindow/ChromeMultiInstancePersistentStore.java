@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.INVALID_WINDOW_ID;
 
-import android.graphics.Rect;
-
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
@@ -395,20 +393,6 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
         }
     }
 
-    static void writeBounds(int instanceId, Rect bounds) {
-        if (!hasInstance(instanceId)) return;
-        if (sData != null) {
-            InstanceData.Rect protoRect =
-                    InstanceData.Rect.newBuilder()
-                            .setLeft(bounds.left)
-                            .setTop(bounds.top)
-                            .setRight(bounds.right)
-                            .setBottom(bounds.bottom)
-                            .build();
-            putInstance(instanceId, getInstanceFromProto(instanceId).setBounds(protoRect));
-        }
-    }
-
     static boolean readIsRecoverable(int instanceId) {
         if (sData != null) {
             InstanceData instance = sData.getInstancesMap().get(instanceId);
@@ -464,19 +448,7 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
 
         List<CrashRecoveryWindowInfo> windows = new ArrayList<>();
         for (InstanceDataWithId item : crashedInstances) {
-            Rect bounds = null;
-            if (item.mInstanceData.hasBounds()) {
-                InstanceData.Rect protoBounds = item.mInstanceData.getBounds();
-                bounds =
-                        new Rect(
-                                protoBounds.getLeft(),
-                                protoBounds.getTop(),
-                                protoBounds.getRight(),
-                                protoBounds.getBottom());
-            }
-            windows.add(
-                    new CrashRecoveryWindowInfo(
-                            item.mId, bounds, item.mInstanceData.getIsVisible()));
+            windows.add(new CrashRecoveryWindowInfo(item.mId, item.mInstanceData.getIsVisible()));
         }
         return windows;
     }

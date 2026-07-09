@@ -25,7 +25,6 @@ import android.app.ApplicationExitInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Rect;
 import android.os.Bundle;
 
 import org.junit.After;
@@ -72,7 +71,6 @@ import java.util.List;
 @EnableFeatures(ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH)
 public class TabbedCrashRecoveryDelegateUnitTest {
     private static final int HOST_WINDOW_ID = 0;
-    private static final Rect HOST_BOUNDS = new Rect(0, 0, 800, 600);
     private static final int TEST_WINDOW_WIDTH = 800;
     private static final int TEST_WINDOW_HEIGHT = 600;
 
@@ -105,10 +103,8 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         when(mHostActivity.getWindowId()).thenReturn(HOST_WINDOW_ID);
         mCrashedWindows = new ArrayList<>();
         // Include the recovered host window in the list of crashed windows.
-        mCrashedWindows.add(
-                new CrashRecoveryWindowInfo(HOST_WINDOW_ID, HOST_BOUNDS, /* isVisible= */ true));
+        mCrashedWindows.add(new CrashRecoveryWindowInfo(HOST_WINDOW_ID, /* isVisible= */ true));
         setupPreRecoveryAppTasks(HOST_WINDOW_ID);
-        ChromeMultiInstancePersistentStore.writeBounds(HOST_WINDOW_ID, HOST_BOUNDS);
         ChromeMultiInstancePersistentStore.writeIsVisible(HOST_WINDOW_ID, true);
         ChromeMultiInstancePersistentStore.writeTabCount(HOST_WINDOW_ID, 1, 0);
         ChromeMultiInstancePersistentStore.writeIsRecoverable(HOST_WINDOW_ID, true);
@@ -157,7 +153,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         ChromeMultiInstancePersistentStore.writeTabCount(1, 1, 0);
         ChromeMultiInstancePersistentStore.writeIsVisible(1, true);
         ChromeMultiInstancePersistentStore.writeIsRecoverable(1, true);
-        mCrashedWindows.add(new CrashRecoveryWindowInfo(1, null, /* isVisible= */ true));
+        mCrashedWindows.add(new CrashRecoveryWindowInfo(1, /* isVisible= */ true));
 
         writeCrashExitReasonToPrefs();
 
@@ -184,7 +180,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         ChromeMultiInstancePersistentStore.writeTabCount(1, 1, 0);
         ChromeMultiInstancePersistentStore.writeIsVisible(1, true);
         ChromeMultiInstancePersistentStore.writeIsRecoverable(1, true);
-        mCrashedWindows.add(new CrashRecoveryWindowInfo(1, null, /* isVisible= */ true));
+        mCrashedWindows.add(new CrashRecoveryWindowInfo(1, /* isVisible= */ true));
 
         // Setup: Window 1 has a live task.
         setupPreRecoveryAppTasks(HOST_WINDOW_ID, 1);
@@ -844,24 +840,16 @@ public class TabbedCrashRecoveryDelegateUnitTest {
             ChromeMultiInstancePersistentStore.writeTabCount(i, 1, 0);
             ChromeMultiInstancePersistentStore.writeIsVisible(i, false);
             ChromeMultiInstancePersistentStore.writeIsRecoverable(i, true);
-            mCrashedWindows.add(
-                    new CrashRecoveryWindowInfo(i, /* bounds= */ null, /* isVisible= */ false));
+            mCrashedWindows.add(new CrashRecoveryWindowInfo(i, /* isVisible= */ false));
         }
         start = end;
         end = start + numDefaultDisplayWindows;
         for (int i = start; i < end; i++) {
-            Rect bounds =
-                    new Rect(
-                            i * 10,
-                            i * 10,
-                            i * 10 + TEST_WINDOW_WIDTH,
-                            i * 10 + TEST_WINDOW_HEIGHT);
             ChromeMultiInstancePersistentStore.writeLastAccessedTime(i);
-            ChromeMultiInstancePersistentStore.writeBounds(i, bounds);
             ChromeMultiInstancePersistentStore.writeIsVisible(i, true);
             ChromeMultiInstancePersistentStore.writeTabCount(i, 1, 0);
             ChromeMultiInstancePersistentStore.writeIsRecoverable(i, true);
-            mCrashedWindows.add(new CrashRecoveryWindowInfo(i, bounds, /* isVisible= */ true));
+            mCrashedWindows.add(new CrashRecoveryWindowInfo(i, /* isVisible= */ true));
         }
         start = end;
         end = end + numNonDefaultDisplayWindows;
@@ -870,9 +858,8 @@ public class TabbedCrashRecoveryDelegateUnitTest {
             ChromeMultiInstancePersistentStore.writeIsVisible(i, true);
             ChromeMultiInstancePersistentStore.writeTabCount(i, 1, 0);
             ChromeMultiInstancePersistentStore.writeIsRecoverable(i, true);
-            // Non-default display windows are visible pre-crash but lack tracked bounds.
-            mCrashedWindows.add(
-                    new CrashRecoveryWindowInfo(i, /* bounds= */ null, /* isVisible= */ true));
+            // Non-default display windows are visible pre-crash.
+            mCrashedWindows.add(new CrashRecoveryWindowInfo(i, /* isVisible= */ true));
         }
     }
 

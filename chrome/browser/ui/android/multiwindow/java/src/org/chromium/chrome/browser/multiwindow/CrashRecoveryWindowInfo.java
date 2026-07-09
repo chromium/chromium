@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
-import android.graphics.Rect;
-
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.Locale;
 
@@ -15,12 +12,10 @@ import java.util.Locale;
 @NullMarked
 final class CrashRecoveryWindowInfo {
     public final int windowId;
-    public final @Nullable Rect bounds;
     public final boolean isVisible;
 
-    CrashRecoveryWindowInfo(int windowId, @Nullable Rect bounds, boolean isVisible) {
+    CrashRecoveryWindowInfo(int windowId, boolean isVisible) {
         this.windowId = windowId;
-        this.bounds = bounds;
         this.isVisible = isVisible;
     }
 
@@ -28,9 +23,8 @@ final class CrashRecoveryWindowInfo {
     public String toString() {
         return String.format(
                 Locale.ENGLISH,
-                "CrashRecoveryWindowInfo(windowId=%d, isVisible=%b, bounds=%s)",
+                "CrashRecoveryWindowInfo(windowId=%d, isVisible=%b)",
                 windowId,
-                isVisible,
-                bounds == null ? "null" : bounds.toShortString());
+                isVisible);
     }
 }

@@ -100,13 +100,9 @@ message InstanceData {
 
   // Data to track active window state.
   optional bool is_visible = 14;
-  message Rect {
-    optional int32 left = 1;
-    optional int32 top = 2;
-    optional int32 right = 3;
-    optional int32 bottom = 4;
-  }
-  optional Rect bounds = 15;
+
+  reserved 15;
+  reserved "bounds";
 
   // Determine whether this instance should be considered for recovery on
   // browser process startup. For example, after a crash or based on user
