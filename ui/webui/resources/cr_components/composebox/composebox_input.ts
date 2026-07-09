@@ -113,6 +113,9 @@ export class ComposeboxInputElement extends I18nMixinLit
 
     if (changedProperties.has('input') ||
         changedProperties.has('disableCaretColorAnimation')) {
+      if (!this.input) {
+        this.resetHeight();
+      }
       if (!this.disableCaretColorAnimation) {
         this.updateMirror_();
         this.updateCaret_();

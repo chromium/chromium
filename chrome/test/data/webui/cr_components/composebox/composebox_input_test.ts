@@ -331,39 +331,66 @@ suite('ComposeboxScrollCaret', () => {
     assertEquals('--cursor-char', anchoredSpan.style.anchorName);
   });
 
-  test('inputWrapper minHeight does not shrink after expanding', async () => {
+  test(
+      'inputWrapper minHeight does not shrink when text is partially deleted',
+      async () => {
+        document.body.style.width = '800px';
+        document.body.style.height = '600px';
+
+        const wrapper = inputElement.shadowRoot.getElementById('inputWrapper')!;
+        const input = inputElement.$.input;
+
+        // Initially minHeight is empty.
+        assertEquals('', wrapper.style.minHeight);
+
+        // Type some text to make the textarea grow.
+        input.value = 'line 1\nline 2\nline 3\nline 4\nline 5';
+        input.dispatchEvent(new Event('input', {bubbles: true}));
+        await inputElement.updateComplete;
+
+        // Wait for the ResizeObserver to run and lock the height.
+        await pollUntil(() => wrapper.style.minHeight !== '');
+
+        const initialMinHeight = wrapper.style.minHeight;
+        assertTrue(initialMinHeight !== '');
+
+        // Now partially delete the text (not clearing all text).
+        input.value = 'line 1\nline 2';
+        input.dispatchEvent(new Event('input', {bubbles: true}));
+        await inputElement.updateComplete;
+
+        // Wait a bit to ensure ResizeObserver has chance to run.
+        await new Promise<void>(
+            resolve => requestAnimationFrame(
+                () => requestAnimationFrame(() => resolve())));
+
+        // Verify minHeight is still locked to the larger height.
+        assertEquals(initialMinHeight, wrapper.style.minHeight);
+      });
+
+  test('inputWrapper minHeight resets when all text is cleared', async () => {
     document.body.style.width = '800px';
     document.body.style.height = '600px';
 
     const wrapper = inputElement.shadowRoot.getElementById('inputWrapper')!;
     const input = inputElement.$.input;
 
-    // Initially minHeight is empty.
-    assertEquals('', wrapper.style.minHeight);
-
     // Type some text to make the textarea grow.
     input.value = 'line 1\nline 2\nline 3\nline 4\nline 5';
     input.dispatchEvent(new Event('input', {bubbles: true}));
     await inputElement.updateComplete;
-
-    // Wait for the ResizeObserver to run and lock the height.
     await pollUntil(() => wrapper.style.minHeight !== '');
 
-    const initialMinHeight = wrapper.style.minHeight;
-    assertTrue(initialMinHeight !== '');
+    assertTrue(wrapper.style.minHeight !== '');
 
-    // Now delete the text.
+    // Now clear all the text.
     input.value = '';
     input.dispatchEvent(new Event('input', {bubbles: true}));
     await inputElement.updateComplete;
 
-    // Wait a bit to ensure ResizeObserver has chance to run.
-    await new Promise<void>(
-        resolve => requestAnimationFrame(
-            () => requestAnimationFrame(() => resolve())));
-
-    // Verify minHeight is still locked to the larger height.
-    assertEquals(initialMinHeight, wrapper.style.minHeight);
+    // Verify minHeight resets as soon as text is cleared.
+    assertEquals('', wrapper.style.minHeight);
+    assertEquals('', input.style.minHeight);
   });
 
   test('resetHeight clears minHeight from input and wrapper', async () => {
@@ -439,6 +466,7 @@ suite('ComposeboxCaretGeometry', () => {
     // Force focus to make the caret visible (display: block)
     input.focus();
     await inputElement.updateComplete;
+    await microtasksFinished();
 
     const anchoredSpan = mirror.childNodes[4] as HTMLElement;
     assertTrue(!!anchoredSpan);
@@ -470,6 +498,7 @@ suite('ComposeboxCaretGeometry', () => {
 
     input.focus();
     await inputElement.updateComplete;
+    await microtasksFinished();
 
     const anchoredSpan = mirror.firstChild as HTMLElement;
     assertTrue(!!anchoredSpan);
@@ -501,6 +530,7 @@ suite('ComposeboxCaretGeometry', () => {
 
     input.focus();
     await inputElement.updateComplete;
+    await microtasksFinished();
 
     const firstSpan = mirror.childNodes[0] as HTMLElement;
     const secondSpan = mirror.childNodes[1] as HTMLElement;
@@ -534,6 +564,7 @@ suite('ComposeboxCaretGeometry', () => {
 
     input.focus();
     await inputElement.updateComplete;
+    await microtasksFinished();
 
     const firstSpan = mirror.firstChild as HTMLElement;
     assertTrue(!!firstSpan);
