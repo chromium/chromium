@@ -111,12 +111,12 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
 
   VkMemoryRequirements* requirements = nullptr;
   // TODO support multiple plane
-  bool result = InitializeSingleOrJointPlanes(
+  auto result = InitializeSingleOrJointPlanes(
       device_queue, size, format, usage, flags, image_tiling,
       &external_image_create_info, &import_memory_fd_info, requirements);
-  // If Initialize successfully, the fd in scoped_fd should be owned by vulkan,
-  // otherwise take the ownership of the fd back.
-  if (!result) {
+  // If vkAllocateMemory() returned successfully, the fd in scoped_fd should be
+  // owned by vulkan, otherwise take the ownership of the fd back.
+  if (result == kFailedBeforeAllocateMemory) {
     scoped_fd.reset(memory_fd);
   }
 
