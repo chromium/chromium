@@ -56,11 +56,13 @@ bool PDFiumTestBase::UsingTestFonts() {
 }
 
 void PDFiumTestBase::SetUp() {
+  base::DiscardableMemoryAllocator::SetInstance(&discardable_memory_allocator_);
   InitializePDFiumSDK();
 }
 
 void PDFiumTestBase::TearDown() {
   FPDF_DestroyLibrary();
+  base::DiscardableMemoryAllocator::SetInstance(nullptr);
 }
 
 std::unique_ptr<PDFiumEngine> PDFiumTestBase::InitializeEngine(

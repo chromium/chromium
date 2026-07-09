@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/test_discardable_memory_allocator.h"
 #include "build/build_config.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
@@ -601,28 +600,7 @@ TEST_P(PDFiumPageImageTest, TextAndImagesWithAltText) {
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageImageTest, testing::Bool());
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-class PDFiumPageImageForOcrTest : public PDFiumPageImageTest {
- public:
-  PDFiumPageImageForOcrTest() = default;
-  PDFiumPageImageForOcrTest(const PDFiumPageImageForOcrTest&) = delete;
-  PDFiumPageImageForOcrTest& operator=(const PDFiumPageImageForOcrTest&) =
-      delete;
-  ~PDFiumPageImageForOcrTest() override = default;
-
-  void SetUp() override {
-    PDFiumPageImageTest::SetUp();
-    base::DiscardableMemoryAllocator::SetInstance(
-        &discardable_memory_allocator_);
-  }
-
-  void TearDown() override {
-    base::DiscardableMemoryAllocator::SetInstance(nullptr);
-    PDFiumPageImageTest::TearDown();
-  }
-
- private:
-  base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
-};
+using PDFiumPageImageForOcrTest = PDFiumPageImageTest;
 
 TEST_P(PDFiumPageImageForOcrTest, LowResolutionImage) {
   TestClient client(/*use_skia_renderer=*/GetParam());
