@@ -232,7 +232,13 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   // Should be called only if the resource is using software raster.
   void UploadSoftwareRenderingResults(SkSurface* sk_surface);
 
-  void PrepareForWebGPUDummyMailbox();
+  // Temporary accessors for WebGpuRecyclableResourceProvider refactoring.
+  void set_acquire_sync_token(const gpu::SyncToken& token) {
+    acquire_sync_token_ = token;
+  }
+  const gpu::SyncToken& acquire_sync_token() const {
+    return acquire_sync_token_;
+  }
 
  private:
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()

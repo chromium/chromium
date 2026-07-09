@@ -25,6 +25,7 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -170,7 +171,10 @@ void WebGpuRecyclableResourceProvider::OnContextDestroyed() {
 
 void WebGpuRecyclableResourceProvider::WaitSyncToken(
     const gpu::SyncToken& sync_token) {
-  resource()->WaitSyncToken(sync_token);
+  if (sync_token.HasData()) {
+    resource()->set_acquire_sync_token(sync_token);
+    resource()->GetSharedImage()->UpdateDestructionSyncToken(sync_token);
+  }
 }
 
 gpu::raster::RasterInterface*
@@ -189,7 +193,7 @@ bool WebGpuRecyclableResourceProvider::IsGpuContextLost() const {
 
 void WebGpuRecyclableResourceProvider::PrepareForWebGPUDummyMailbox() {
   if (resource()) {
-    resource()->PrepareForWebGPUDummyMailbox();
+    resource()->SetReleaseSyncToken(resource()->acquire_sync_token());
   }
 }
 
@@ -414,10 +418,27 @@ base::ByteSize WebGpuRecyclableResourceProvider::EstimatedSizeInBytes() const {
 
 void WebGpuRecyclableResourceProvider::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
+  if (!resource() || !resource()->IsValid()) {
+    return;
+  }
+
   std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
                                         reinterpret_cast<uintptr_t>(this));
 
-  resource()->OnMemoryDump(pmd, path);
+  std::string dump_name =
+      base::StringPrintf("%s/CanvasResource_0x%" PRIXPTR, path.c_str(),
+                         reinterpret_cast<uintptr_t>(resource()));
+  auto* dump = pmd->CreateAllocatorDump(dump_name);
+  auto client_si = resource()->GetSharedImage();
+  size_t memory_size =
+      client_si->format().EstimatedSizeInBytes(client_si->size());
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  memory_size);
+
+  client_si->OnMemoryDump(
+      pmd, dump->guid(),
+      static_cast<int>(gpu::TracingImportance::kClientOwner));
 }
 
 size_t WebGpuRecyclableResourceProvider::GetSize() const {

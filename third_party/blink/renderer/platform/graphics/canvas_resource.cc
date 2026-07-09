@@ -488,13 +488,6 @@ void CanvasResourceSharedImage::OnMemoryDump(
       static_cast<int>(gpu::TracingImportance::kClientOwner));
 }
 
-void CanvasResourceSharedImage::PrepareForWebGPUDummyMailbox() {
-  DCHECK(!is_cross_thread());
-  // In the dummy WebGPU mailbox case, we skip write operation to CanvasResource
-  // and therefore did not wait on `acquire_sync_token_`. Instead, the consumer
-  // needs to do it.
-  SetReleaseSyncToken(acquire_sync_token_);
-}
 
 // ExternalCanvasResource
 //==============================================================================
