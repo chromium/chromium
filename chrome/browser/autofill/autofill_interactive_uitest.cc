@@ -953,18 +953,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, FillHiddenSelect) {
   EXPECT_EQ(kDefaultAddressValues.state_short, GetFieldValueById("state"));
 }
 
-class AutofillInteractiveTest_PrefillFormAndFill
-    : public AutofillInteractiveTest {
- public:
-  AutofillInteractiveTest_PrefillFormAndFill() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kAutofillSkipPreFilledFields);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, BasicUndoAutofill) {
   CreateTestProfile();
   SetTestUrlResponse(kTestShippingFormString);
@@ -1111,31 +1099,6 @@ void DoModifySelectFieldAndFill(AutofillInteractiveTest* test) {
 // user.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifySelectFieldAndFill) {
   DoModifySelectFieldAndFill(this);
-}
-
-// Test that autofill works when the website prefills the form.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest_PrefillFormAndFill,
-                       PrefillFormAndFill) {
-  const char kPrefillScript[] =
-      R"( <script>
-            document.getElementById('firstname').value = 'Seb';
-            document.getElementById('lastname').value = 'Bell';
-            document.getElementById('address1').value = '3243 Notre-Dame Ouest';
-            document.getElementById('address2').value = 'apt 843';
-            document.getElementById('city').value = 'Montreal';
-            document.getElementById('zip').value = 'H5D 4D3';
-            document.getElementById('phone').value = '15142223344';
-          </script>)";
-  CreateTestProfile();
-  SetTestUrlResponse(base::StrCat({kTestShippingFormString, kPrefillScript}));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
-
-  // We need to delete the prefilled value and then trigger the autofill.
-  auto Delete = [this] { DeleteElementValue(GetElementById("firstname")); };
-  ASSERT_TRUE(
-      AutofillFlow(GetElementById("firstname"), this,
-                   {.after_focus = base::BindLambdaForTesting(Delete)}));
-  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 }
 
 // Test that form filling can be initiated by pressing the down arrow.

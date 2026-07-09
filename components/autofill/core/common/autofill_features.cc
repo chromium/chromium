@@ -831,9 +831,6 @@ BASE_FEATURE(kAutofillShowBubblesBasedOnPriorities,
 // TODO(crbug.com/530190112): Clean up after September 1, 2026.
 BASE_FEATURE(kAutofillSimplifyFocusCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, a pre-filled field will not be filled.
-BASE_FEATURE(kAutofillSkipPreFilledFields, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, upload votes for sms otp.
 // TODO(crbug.com/453999673): Clean up when launched.
 BASE_FEATURE(kAutofillSmsOtpCrowdsourcing, base::FEATURE_ENABLED_BY_DEFAULT);

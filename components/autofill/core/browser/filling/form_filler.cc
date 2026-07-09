@@ -196,12 +196,11 @@ bool ShouldSkipFieldBecauseOfMeaningfulInitialValue(const AutofillField& field,
     }
   }
 
-  // If kAutofillSkipPreFilledFields is enabled:
   // Fields that are non-empty on page load are not meant to be overwritten.
   //
   // At this point the field is known to contain a non-empty initial value at
   // page load.
-  return base::FeatureList::IsEnabled(features::kAutofillSkipPreFilledFields);
+  return true;
 }
 
 bool AllowPaymentSwapping(const AutofillField& trigger_field,

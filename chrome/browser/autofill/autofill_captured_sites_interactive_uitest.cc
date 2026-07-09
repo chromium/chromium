@@ -417,7 +417,7 @@ class AutofillCapturedSitesInteractiveTest
                "true"},
           }},
          {features::debug::kAutofillCapturedSiteTestsUseAutofillFlow, {}}},
-        /*disabled_features=*/{features::kAutofillSkipPreFilledFields});
+        /*disabled_features=*/{});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");
     AutofillUiTest::SetUpCommandLine(command_line);
