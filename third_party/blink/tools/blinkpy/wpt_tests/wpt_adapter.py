@@ -262,6 +262,7 @@ class WPTAdapter:
 
         # Implicitly pass `--enable-blink-features=MojoJS,MojoJSTest`.
         runner_options.mojojs_path = self.port.generated_sources_directory()
+        runner_options.enable_mojojs = True
 
         # TODO: RWT has subtle control on how tests are retried. For example
         # there won't be automatic retry of failed tests when they are specified
