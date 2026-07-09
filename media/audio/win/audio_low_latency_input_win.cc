@@ -36,6 +36,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/threading/platform_thread.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -2045,14 +2046,32 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
   // however cases when there are glitches anyway and it's avoided by setting a
   // larger buffer size. The larger size does not create higher latency for
   // properly implemented drivers.
-  HRESULT hr = audio_client_->Initialize(
-      AUDCLNT_SHAREMODE_SHARED, flags,
-      100 * 1000 * 10,  // Buffer duration, 100 ms expressed in 100-ns units.
-      0,                // Device period, n/a for shared mode.
-      reinterpret_cast<const WAVEFORMATEX*>(&input_format_),
-      AudioDeviceDescription::IsCommunicationsDevice(device_id_)
-          ? &kCommunicationsSessionId
-          : nullptr);
+  HRESULT hr = S_OK;
+  const int max_initialize_retries =
+      base::FeatureList::IsEnabled(features::kWasapiInputDeviceInUseRetry) ? 2
+                                                                           : 0;
+  constexpr base::TimeDelta kRetryDelay = base::Milliseconds(50);
+
+  for (int attempt = 0; attempt <= max_initialize_retries; ++attempt) {
+    hr = audio_client_->Initialize(
+        AUDCLNT_SHAREMODE_SHARED, flags,
+        100 * 1000 * 10,  // Buffer duration, 100 ms expressed in 100-ns units.
+        0,                // Device period, n/a for shared mode.
+        reinterpret_cast<const WAVEFORMATEX*>(&input_format_),
+        AudioDeviceDescription::IsCommunicationsDevice(device_id_)
+            ? &kCommunicationsSessionId
+            : nullptr);
+
+    // If the device is in use, it might be Chrome's own asynchronous teardown
+    // lagging behind. Sleep briefly and try one more time.
+    if (hr == AUDCLNT_E_DEVICE_IN_USE && attempt < max_initialize_retries) {
+      base::PlatformThread::Sleep(kRetryDelay);
+      continue;
+    }
+
+    // Break on success or any other error.
+    break;
+  }
 
   base::UmaHistogramBoolean(
       "Media.Audio.Capture.Win.InitError.SystemPermissionDenied",

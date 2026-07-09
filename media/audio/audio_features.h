@@ -26,6 +26,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapRestartOnDeviceChange);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapRestartAudioProcessOnTimeout);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kWasapiInputDeviceInUseRetry);
+#endif
+
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebAudioRemoveAudioDestinationResampler);
 
 }  // namespace features

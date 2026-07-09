@@ -46,6 +46,12 @@ BASE_FEATURE(kAudioStereoInputStreamParameters,
 BASE_FEATURE(kAAudioVariableSizedCallbacks, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+// Enable retry loop for WASAPI input stream initialization when the device
+// is in use.
+BASE_FEATURE(kWasapiInputDeviceInUseRetry, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // This feature flag controls whether the WebAudio destination resampler is
 // bypassed. When enabled, if the WebAudio context's sample rate differs from
 // the hardware's sample rate, the resampling step that normally occurs within

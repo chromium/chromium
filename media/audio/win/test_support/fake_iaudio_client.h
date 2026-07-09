@@ -84,6 +84,7 @@ class FakeIAudioClient
   UINT32 buffer_size_frames_ = 0;
   // The size of an audio frame in bytes.
   WORD frame_size_bytes_ = 0;
+  int initialize_attempts_ = 0;
 };
 
 }  // namespace media

@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "media/audio/win/core_audio_util_win.h"
 #include "media/audio/win/test_support/fake_iaudio_capture_client.h"
+#include "media/audio/win/test_support/fake_win_wasapi_environment.h"
 
 namespace {
 
@@ -133,6 +134,22 @@ IFACEMETHODIMP FakeIAudioClient::Initialize(AUDCLNT_SHAREMODE share_mode,
       (format->nSamplesPerSec * kSamplingPeriodMs.InMicroseconds()) /
       base::Time::kMicrosecondsPerSecond);
   frame_size_bytes_ = (format->wBitsPerSample / 8) * format->nChannels;
+
+  initialize_attempts_++;
+  WASAPITestErrorCode error = FakeWinWASAPIEnvironment::GetError();
+
+  if (error == WASAPITestErrorCode::kAudioClientInitializeDeviceInUse) {
+    return AUDCLNT_E_DEVICE_IN_USE;
+  }
+  if (error == WASAPITestErrorCode::kAudioClientInitializeDeviceInUseOnce &&
+      initialize_attempts_ <= 1) {
+    return AUDCLNT_E_DEVICE_IN_USE;
+  }
+  if (error == WASAPITestErrorCode::kAudioClientInitializeDeviceInUseTwice &&
+      initialize_attempts_ <= 2) {
+    return AUDCLNT_E_DEVICE_IN_USE;
+  }
+
   return S_OK;
 }
 

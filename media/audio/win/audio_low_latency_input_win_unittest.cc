@@ -31,6 +31,7 @@
 #include "base/win/scoped_com_initializer.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_device_info_accessor_for_tests.h"
+#include "media/audio/audio_features.h"
 #include "media/audio/audio_input_stream_data_interceptor.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
@@ -1085,6 +1086,53 @@ TEST_P(WinAudioProcessLoopbackTest, OpenStreamAudioClientActivationFailed) {
       "Media.Audio.Capture.Win.TimeToGetAudioClient", 1);
   histogram_tester_.ExpectBucketCount(
       "Media.Audio.Capture.Win.GetAudioClientTimedOut", false, 1);
+}
+
+// Test that one transient failure is successfully mitigated by a retry.
+TEST_P(WinAudioProcessLoopbackTest,
+       OpenStreamInitializeDeviceInUseTransientOnce) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kWasapiInputDeviceInUseRetry);
+
+  fake_wasapi_environment_.SimulateError(
+      WASAPITestErrorCode::kAudioClientInitializeDeviceInUseOnce);
+  EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+}
+
+// Test that two transient failures are successfully mitigated by retries (max
+// retries = 2).
+TEST_P(WinAudioProcessLoopbackTest,
+       OpenStreamInitializeDeviceInUseTransientTwice) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kWasapiInputDeviceInUseRetry);
+
+  fake_wasapi_environment_.SimulateError(
+      WASAPITestErrorCode::kAudioClientInitializeDeviceInUseTwice);
+  EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+}
+
+// Test that persistent failures eventually fail the Open operation after
+// retries are exhausted.
+TEST_P(WinAudioProcessLoopbackTest, OpenStreamInitializeDeviceInUsePersistent) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kWasapiInputDeviceInUseRetry);
+
+  fake_wasapi_environment_.SimulateError(
+      WASAPITestErrorCode::kAudioClientInitializeDeviceInUse);
+  EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kFailedInUse);
+}
+
+// Test that no retries occur when features::kWasapiInputDeviceInUseRetry is
+// disabled.
+TEST_P(WinAudioProcessLoopbackTest,
+       OpenStreamInitializeDeviceInUseDisabledNoRetry) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kWasapiInputDeviceInUseRetry);
+
+  // Even a single transient failure causes immediate failure when disabled.
+  fake_wasapi_environment_.SimulateError(
+      WASAPITestErrorCode::kAudioClientInitializeDeviceInUseOnce);
+  EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kFailedInUse);
 }
 
 TEST_P(WinAudioProcessLoopbackTest, SuccessfulCapture) {
