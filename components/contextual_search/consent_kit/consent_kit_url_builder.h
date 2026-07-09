@@ -6,13 +6,11 @@
 #define COMPONENTS_CONTEXTUAL_SEARCH_CONSENT_KIT_CONSENT_KIT_URL_BUILDER_H_
 
 #include <string>
+#include <vector>
 
 #include "url/gurl.h"
 
 namespace drive {
-
-inline constexpr char kDefaultHostOrigin[] =
-    "chrome-untrusted://drive-picker-host";
 
 // Utility to construct URLs for the ConsentKit embedded UI.
 class ConsentKitUrlBuilder {
@@ -33,7 +31,8 @@ class ConsentKitUrlBuilder {
   void SetFlowId(int32_t flow_id);
   void SetProductId(int32_t product_id);
   void SetEntrypointId(const std::string& entrypoint_id);
-  void SetHostOrigin(const std::string& host_origin);
+  // Sets the allowed host origins for the handshake.
+  void SetHostOrigins(std::vector<std::string> host_origins);
 
   // Builds the ConsentKit URL. Returns an invalid GURL on serialization
   // failure.
@@ -45,7 +44,8 @@ class ConsentKitUrlBuilder {
   int32_t flow_id_ = 0;
   int32_t product_id_ = 0;
   std::string entrypoint_id_;
-  std::string host_origin_ = kDefaultHostOrigin;
+  std::vector<std::string> host_origins_ = {
+      "chrome-untrusted://drive-picker-host", "chrome://drive-picker-host"};
 };
 
 }  // namespace drive

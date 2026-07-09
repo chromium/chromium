@@ -5,12 +5,14 @@
 #include "components/contextual_search/consent_kit/consent_kit_url_builder.h"
 
 #include <string>
+#include <vector>
 
 #include "base/base64.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/uuid.h"
-#include "components/contextual_search/consent_kit/proto/privacy_primitive_config.pb.h"
+#include "base/values.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -20,7 +22,7 @@ namespace {
 
 // Base URL for the embedded ConsentKit UI.
 constexpr char kConsentKitBaseUrl[] =
-    "https://consent.google.com/signedin/embedded/datasets";
+    "https://consent.google.com/signedin/landing";
 
 }  // namespace
 
@@ -47,39 +49,76 @@ void ConsentKitUrlBuilder::SetEntrypointId(const std::string& entrypoint_id) {
   entrypoint_id_ = entrypoint_id;
 }
 
-void ConsentKitUrlBuilder::SetHostOrigin(const std::string& host_origin) {
-  host_origin_ = host_origin;
+void ConsentKitUrlBuilder::SetHostOrigins(
+    std::vector<std::string> host_origins) {
+  host_origins_ = std::move(host_origins);
 }
 
 GURL ConsentKitUrlBuilder::Build() {
-  identity_consent::PrivacyPrimitiveConfig config;
+  // Manually construct 0-indexed JSPB arrays to match the wire format expected
+  // by the ConsentKit server.
+  //
+  // PrivacyPrimitiveConfig layout:
+  // [
+  //   0: FlowParams [flow_id]
+  //   1: ProductEntryPoint [product_id, product_surface, entrypoint_opaque_id]
+  //   2: SessionInfo [ [null, null, session_id] ] (SharedConsentSessionId)
+  //   3: PresentationParams [locale]
+  //   4: WebPlatformParams [ [session_index], integration_type ]
+  // ]
 
-  config.mutable_presentation_params()->set_locale(locale_);
-  config.mutable_web_platform_params();  // Ensures the oneof is set.
+  base::ListValue flow_params;
+  flow_params.Append(flow_id_);
 
-  config.mutable_flow_params()->set_flow_id(flow_id_);
-  config.mutable_product_entry_point()->set_product_id(product_id_);
-  config.mutable_product_entry_point()->set_entrypoint_id(entrypoint_id_);
-  config.mutable_session_info()->set_session_id(
+  base::ListValue product_entry_point;
+  product_entry_point.Append(product_id_);
+  product_entry_point.Append(1);  // DEMO_UI_SURFACE
+  product_entry_point.Append(entrypoint_id_);
+
+  base::ListValue shared_consent_session_id;
+  shared_consent_session_id.Append(base::Value());
+  shared_consent_session_id.Append(base::Value());
+  shared_consent_session_id.Append(
       base::Uuid::GenerateRandomV4().AsLowercaseString());
 
-  std::string serialized_config;
-  if (!config.SerializeToString(&serialized_config)) {
-    DLOG(ERROR) << "Failed to serialize PrivacyPrimitiveConfig";
+  base::ListValue session_info;
+  session_info.Append(std::move(shared_consent_session_id));
+
+  base::ListValue presentation_params;
+  presentation_params.Append(locale_);
+
+  base::ListValue user_info;
+  user_info.Append(session_index_);
+
+  base::ListValue web_platform_params;
+  web_platform_params.Append(std::move(user_info));
+  web_platform_params.Append(1);  // WEB_SEARCH_EMBEDDED
+
+  base::ListValue config_list;
+  config_list.Append(std::move(flow_params));
+  config_list.Append(std::move(product_entry_point));
+  config_list.Append(std::move(session_info));
+  config_list.Append(std::move(presentation_params));
+  config_list.Append(std::move(web_platform_params));
+
+  std::string json_config;
+  if (!base::JSONWriter::Write(config_list, &json_config)) {
+    DLOG(ERROR) << "Failed to serialize PrivacyPrimitiveConfig to JSON";
     return GURL();  // Invalid URL
   }
-
-  std::string base64_config = base::Base64Encode(serialized_config);
 
   // --- Assemble URL ---
   GURL url(kConsentKitBaseUrl);
 
   // Required Parameters:
-  url = net::AppendQueryParameter(url, "ppc", base64_config);
+  url = net::AppendQueryParameter(url, "ppc", json_config);
   url = net::AppendQueryParameter(url, "authuser",
                                   base::NumberToString(session_index_));
   url = net::AppendQueryParameter(url, "hl", locale_);
-  url = net::AppendQueryParameter(url, "origin", host_origin_);
+  for (const auto& origin : host_origins_) {
+    url = net::AppendQueryParameter(url, "origin", origin);
+  }
+  url = net::AppendQueryParameter(url, "allowNonWebView", "true");
 
   return url;
 }
