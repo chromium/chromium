@@ -59,7 +59,7 @@ perfetto::StaticString PageNodeVisibilityToString(const bool& is_visible) {
   if (is_visible) {
     return "Visible";
   } else {
-    return "Not Visible";
+    return nullptr;
   }
 }
 

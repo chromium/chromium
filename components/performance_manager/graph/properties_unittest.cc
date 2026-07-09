@@ -164,4 +164,9 @@ TEST_F(GraphPropertiesDeathTest, DeathOnInvalidSet) {
   EXPECT_DCHECK_DEATH(node_.SetObservedOnlyOnChangesWithPreviousValue(true));
 }
 
+TEST(GraphPropertiesHelperTest, YesNoStateToString) {
+  EXPECT_STREQ(YesNoStateToString(true).value, "yes");
+  EXPECT_EQ(YesNoStateToString(false).value, nullptr);
+}
+
 }  // namespace performance_manager

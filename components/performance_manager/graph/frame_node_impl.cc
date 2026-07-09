@@ -34,7 +34,7 @@ perfetto::StaticString FrameNodeVisibilityToString(
     case FrameNode::Visibility::kVisible:
       return "Visible";
     case FrameNode::Visibility::kNotVisible:
-      return "Not Visible";
+      return nullptr;
   }
   NOTREACHED();
 }
