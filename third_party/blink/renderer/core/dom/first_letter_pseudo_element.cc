@@ -439,7 +439,7 @@ const ComputedStyle* FirstLetterPseudoElement::CustomStyleForLayoutObject(
   return ParentOrShadowHostElement()->StyleForPseudoElement(
       style_recalc_context,
       StyleRequest(GetPseudoId(),
-                   first_letter_text->Parent()->FirstLineStyle()));
+                   &first_letter_text->Parent()->FirstLineStyleRef()));
 }
 
 void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(

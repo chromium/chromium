@@ -97,7 +97,7 @@ void LineInfo::SetLineStyle(const InlineNode& node,
   use_first_line_style_ = use_first_line_style;
   items_data_ = &items_data;
   const LayoutBox* box = node.GetLayoutBox();
-  line_style_ = box->Style(use_first_line_style_);
+  line_style_ = box->StyleRef(use_first_line_style_);
   needs_accurate_end_position_ = ComputeNeedsAccurateEndPosition();
 
   // Reset block start offset related members.

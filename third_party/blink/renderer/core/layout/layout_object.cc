@@ -1685,7 +1685,7 @@ void LayoutObject::ClearIntrinsicLogicalWidthsDirty() {
 bool LayoutObject::IsFontFallbackValid() const {
   NOT_DESTROYED();
   return StyleRef().GetFont()->IsFallbackValid() &&
-         FirstLineStyle()->GetFont()->IsFallbackValid();
+         FirstLineStyleRef().GetFont()->IsFallbackValid();
 }
 
 void LayoutObject::InvalidateSubtreeLayoutForFontUpdates() {

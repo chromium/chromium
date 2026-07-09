@@ -747,14 +747,14 @@ const LayoutObject& TextPainter::SvgTextPaintState::TextDecorationObject()
   const LayoutObject* result = InlineText().Parent();
   while (result) {
     if (style_variant_ == StyleVariant::kFirstLine) {
-      if (const ComputedStyle* style = result->FirstLineStyle()) {
-        if (style->GetTextDecorationLine() != TextDecorationLine::kNone)
-          break;
+      if (result->FirstLineStyleRef().GetTextDecorationLine() !=
+          TextDecorationLine::kNone) {
+        break;
       }
     }
-    if (const ComputedStyle* style = result->Style()) {
-      if (style->GetTextDecorationLine() != TextDecorationLine::kNone)
-        break;
+    if (result->StyleRef().GetTextDecorationLine() !=
+        TextDecorationLine::kNone) {
+      break;
     }
 
     result = result->Parent();
