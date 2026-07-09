@@ -1060,6 +1060,85 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
   // After closing, wait until the explicit state is cleared (reverted).
   EXPECT_FALSE(avatar_button->HasExplicitButtonState());
 }
+IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
+                       ClosesOnSignOut) {
+  AccountInfo account_info = SetPrimaryAccount();
+
+  base::MockCallback<base::OnceClosure> closing_callback;
+  browser()
+      ->GetFeatures()
+      .signin_view_controller()
+      ->ShowCrossDeviceSigninQrBubble(closing_callback.Get());
+
+  views::Widget* bubble_widget =
+      views::ElementTrackerViews::GetInstance()
+          ->GetFirstMatchingView(
+              kCrossDeviceSigninQrBubbleWebViewElementId,
+              views::ElementTrackerViews::GetContextForWidget(
+                  BrowserView::GetBrowserViewForBrowser(browser())
+                      ->GetWidget()))
+          ->GetWidget();
+  ASSERT_TRUE(bubble_widget);
+  EXPECT_TRUE(bubble_widget->IsVisible());
+
+  views::test::WidgetDestroyedWaiter waiter(bubble_widget);
+  identity_test_env()->ClearPrimaryAccount();
+  waiter.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
+                       ClosesOnRefreshTokenRemoved) {
+  AccountInfo account_info = SetPrimaryAccount();
+
+  base::MockCallback<base::OnceClosure> closing_callback;
+  browser()
+      ->GetFeatures()
+      .signin_view_controller()
+      ->ShowCrossDeviceSigninQrBubble(closing_callback.Get());
+
+  views::Widget* bubble_widget =
+      views::ElementTrackerViews::GetInstance()
+          ->GetFirstMatchingView(
+              kCrossDeviceSigninQrBubbleWebViewElementId,
+              views::ElementTrackerViews::GetContextForWidget(
+                  BrowserView::GetBrowserViewForBrowser(browser())
+                      ->GetWidget()))
+          ->GetWidget();
+  ASSERT_TRUE(bubble_widget);
+  EXPECT_TRUE(bubble_widget->IsVisible());
+
+  views::test::WidgetDestroyedWaiter waiter(bubble_widget);
+  identity_test_env()->RemoveRefreshTokenForAccount(account_info.account_id);
+  waiter.Wait();
+}
+IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
+                       ClosesOnRefreshTokenError) {
+  AccountInfo account_info = SetPrimaryAccount();
+
+  base::MockCallback<base::OnceClosure> closing_callback;
+  browser()
+      ->GetFeatures()
+      .signin_view_controller()
+      ->ShowCrossDeviceSigninQrBubble(closing_callback.Get());
+
+  views::Widget* bubble_widget =
+      views::ElementTrackerViews::GetInstance()
+          ->GetFirstMatchingView(
+              kCrossDeviceSigninQrBubbleWebViewElementId,
+              views::ElementTrackerViews::GetContextForWidget(
+                  BrowserView::GetBrowserViewForBrowser(browser())
+                      ->GetWidget()))
+          ->GetWidget();
+  ASSERT_TRUE(bubble_widget);
+  EXPECT_TRUE(bubble_widget->IsVisible());
+
+  views::test::WidgetDestroyedWaiter waiter(bubble_widget);
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      account_info.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  waiter.Wait();
+}
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,

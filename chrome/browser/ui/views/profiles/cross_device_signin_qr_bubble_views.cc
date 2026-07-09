@@ -7,8 +7,10 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -23,6 +25,8 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,9 +45,18 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kCrossDeviceSigninQrBubbleWebViewElementId);
 
 namespace {
 
-class CrossDeviceSigninQrWebView : public views::WebView {
+class CrossDeviceSigninQrWebView : public views::WebView,
+                                   public signin::IdentityManager::Observer {
  public:
-  using views::WebView::WebView;
+  explicit CrossDeviceSigninQrWebView(Profile* profile)
+      : views::WebView(profile), profile_(profile) {
+    if (signin::IdentityManager* identity_manager =
+            IdentityManagerFactory::GetForProfile(profile_)) {
+      identity_manager_observation_.Observe(identity_manager);
+    }
+  }
+
+  ~CrossDeviceSigninQrWebView() override = default;
 
   bool HandleKeyboardEvent(
       content::WebContents* source,
@@ -52,7 +65,48 @@ class CrossDeviceSigninQrWebView : public views::WebView {
         event, GetFocusManager());
   }
 
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override {
+    if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+        signin::PrimaryAccountChangeEvent::Type::kCleared) {
+      if (GetWidget()) {
+        GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+      }
+    }
+  }
+
+  void OnRefreshTokenRemovedForAccount(
+      const CoreAccountId& account_id) override {
+    if (IsPrimaryAccount(account_id) && GetWidget()) {
+      GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+    }
+  }
+
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override {
+    if (error.IsPersistentError() &&
+        IsPrimaryAccount(account_info.account_id)) {
+      if (GetWidget()) {
+        GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+      }
+    }
+  }
+
  private:
+  bool IsPrimaryAccount(const CoreAccountId& account_id) const {
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
+    return identity_manager && identity_manager->GetPrimaryAccountId(
+                                   signin::ConsentLevel::kSignin) == account_id;
+  }
+
+  raw_ptr<Profile> profile_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };
 
