@@ -150,6 +150,7 @@ SkillsInteractiveUiTestBase::UpdateContextualSkillPreviews(
                              std::move(contextual_skill_previews)]() mutable {
     GetGlicInstanceImpl()
         ->host()
+        .instance_delegate()
         .skills_manager()
         .NotifyContextualSkillsChanged(std::move(contextual_skill_previews));
   }));

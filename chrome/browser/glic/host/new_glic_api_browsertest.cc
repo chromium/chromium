@@ -2571,7 +2571,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
 
   GlicInstanceImpl* instance = GetOnlyGlicInstance();
   ASSERT_TRUE(instance);
-  instance->host().skills_manager().NotifyContextualSkillsChanged(
+  instance->skills_manager().NotifyContextualSkillsChanged(
       std::move(skills_batch_1));
 
   ContinueJsTest();
@@ -2581,7 +2581,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
       "contextual_skill_id_3", "contextual_skill_3", "contextual_skill_icon_3",
       mojom::SkillSource::kFirstParty, "contextual_skill_description_3",
       /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com")));
-  instance->host().skills_manager().NotifyContextualSkillsChanged(
+  instance->skills_manager().NotifyContextualSkillsChanged(
       std::move(skills_batch_2));
 
   ContinueJsTest();
@@ -2599,7 +2599,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
       mojom::SkillSource::kFirstParty, "contextual_skill_description_1",
       /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com")));
 
-  instance->host().skills_manager().NotifyContextualSkillsChanged(
+  instance->skills_manager().NotifyContextualSkillsChanged(
       std::move(skills_batch));
 
   ASSERT_OK(WaitForGlicOpen());
@@ -2622,7 +2622,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
       mojom::SkillSource::kFirstParty, "contextual_skill_description_1",
       /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com")));
 
-  instance->host().skills_manager().NotifyContextualSkillsChanged(
+  instance->skills_manager().NotifyContextualSkillsChanged(
       std::move(skills_batch));
 
   // Change the active tab before Glic is opened.

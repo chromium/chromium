@@ -712,14 +712,6 @@ void GlicInstanceImpl::CreateTab(
                                  /*success=*/true, created_tab, source_tab);
 }
 
-void GlicInstanceImpl::CreateActorHandler(
-    mojo::PendingReceiver<mojom::ActorHandler> receiver,
-    mojo::PendingRemote<mojom::ActorClient> client) {
-  if (actor_task_manager_) {
-    actor_task_manager_->Bind(std::move(receiver), std::move(client));
-  }
-}
-
 void GlicInstanceImpl::GetZeroStateSuggestionsAndSubscribe(
     bool has_active_subscription,
     const mojom::ZeroStateSuggestionsOptions& options,

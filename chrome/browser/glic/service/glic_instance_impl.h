@@ -249,9 +249,6 @@ class GlicInstanceImpl : public GlicInstance,
 
   std::unique_ptr<WebUIContentsContainer> CreateWebUIContentsContainer()
       override;
-  void CreateActorHandler(
-      mojo::PendingReceiver<mojom::ActorHandler> receiver,
-      mojo::PendingRemote<mojom::ActorClient> client) override;
 
   // GlicUiEmbedder::Delegate:
   void OnEmbedderWindowActivationChanged(bool has_focus) override;

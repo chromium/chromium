@@ -122,14 +122,8 @@ class Host : public GlicSharingManagerProvider {
 
     virtual GlicSkillsManager& skills_manager() = 0;
 
-    virtual bool IsActive() = 0;
-
     virtual std::unique_ptr<WebUIContentsContainer>
     CreateWebUIContentsContainer() = 0;
-
-    virtual void CreateActorHandler(
-        mojo::PendingReceiver<mojom::ActorHandler> receiver,
-        mojo::PendingRemote<mojom::ActorClient> client) = 0;
     virtual GlicExperimentalTriggeringManager*
     GetExperimentalTriggeringManager() = 0;
   };
@@ -207,10 +201,6 @@ class Host : public GlicSharingManagerProvider {
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback);
 
-  void RegisterConversation(
-      glic::mojom::ConversationInfoPtr info,
-      mojom::WebClientHandler::RegisterConversationCallback callback);
-
   // Delete the owned web contents and prepare for destruction.
   void Shutdown();
 
@@ -236,9 +226,9 @@ class Host : public GlicSharingManagerProvider {
 
   GlicPinCandidateProvider& pin_candidate_provider() override;
 
-  GlicSkillsManager& skills_manager();
-
   Host::InstanceDelegate& instance_delegate();
+
+  GlicInstance& instance() { return *glic_instance_; }
 
   GlicInstanceMetrics& instance_metrics() {
     return instance_delegate().instance_metrics();
@@ -299,9 +289,6 @@ class Host : public GlicSharingManagerProvider {
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
-
-  void AddPanelStateObserver(PanelStateObserver* observer);
-  void RemovePanelStateObserver(PanelStateObserver* observer);
 
   // Returns the current WebUI state, or kUninitialized if there is no active
   // glic WebUI.
@@ -380,8 +367,6 @@ class Host : public GlicSharingManagerProvider {
 
   // Returns true if the widget is visible.
   bool IsWidgetShowing(GlicWebClientAccess* client) const;
-  // Returns the current panel state.
-  mojom::PanelState GetPanelState() const;
 
   base::WeakPtr<Host> GetWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
 

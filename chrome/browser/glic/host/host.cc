@@ -252,31 +252,12 @@ void Host::SwitchConversation(
   delegate_->SwitchConversation(std::move(info), std::move(callback));
 }
 
-void Host::RegisterConversation(
-    glic::mojom::ConversationInfoPtr info,
-    mojom::WebClientHandler::RegisterConversationCallback callback) {
-  instance_delegate().RegisterConversation(std::move(info),
-                                           std::move(callback));
-}
-
 void Host::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
 void Host::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void Host::AddPanelStateObserver(PanelStateObserver* observer) {
-  if (glic_instance_) {
-    glic_instance_->AddStateObserver(observer);
-  }
-}
-
-void Host::RemovePanelStateObserver(PanelStateObserver* observer) {
-  if (glic_instance_) {
-    glic_instance_->RemoveStateObserver(observer);
-  }
 }
 
 void Host::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
@@ -320,9 +301,7 @@ GlicPinCandidateProvider& Host::pin_candidate_provider() {
   return sharing_manager_provider_->pin_candidate_provider();
 }
 
-GlicSkillsManager& Host::skills_manager() {
-  return instance_delegate().skills_manager();
-}
+
 
 Host::InstanceDelegate& Host::instance_delegate() {
   CHECK(instance_delegate_);
@@ -452,7 +431,7 @@ void Host::SetWebClient(GlicWebClientAccess* web_client) {
       web_client->PanelWasClosed(base::DoNothing());
     }
   }
-  skills_manager().UpdateSkillPreviews(std::nullopt);
+  instance_delegate().skills_manager().UpdateSkillPreviews(std::nullopt);
 
   observers_.Notify(&Observer::WebClientConnected);
 }
@@ -676,10 +655,6 @@ void Host::CaptureScreenshot(
 
 bool Host::IsWidgetShowing(GlicWebClientAccess* client) const {
   return delegate_->IsShowing();
-}
-
-mojom::PanelState Host::GetPanelState() const {
-  return glic_instance_ ? glic_instance_->GetPanelState() : mojom::PanelState();
 }
 
 void Host::FloatingPanelCanAttachChanged(bool can_attach) {
