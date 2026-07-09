@@ -1209,17 +1209,15 @@ gfx::ColorSpace VideoFrame::ColorSpace() const {
 
 void VideoFrame::set_color_space(const gfx::ColorSpace& color_space) {
   // Check color spaces are same for video frames created from shared image.
-  if (HasSharedImage() && color_space != shared_image()->color_space()) {
+  if (HasSharedImage()) {
     SCOPED_CRASH_KEY_STRING256("video_frame", "si_color_space",
                                shared_image()->color_space().ToString());
     SCOPED_CRASH_KEY_STRING256("video_frame", "color_space",
                                color_space.ToString());
     SCOPED_CRASH_KEY_STRING256("video_frame", "si_label",
                                shared_image()->debug_label());
-    DUMP_WILL_BE_CHECK(false)
-        << "VideoFrame color space (" << color_space.ToString()
-        << ") does not match SharedImage color_space ("
-        << shared_image()->color_space().ToString() << ")";
+    CHECK_EQ(color_space, shared_image()->color_space(),
+             base::NotFatalUntil::M153);
   }
   color_space_ = color_space;
 }
