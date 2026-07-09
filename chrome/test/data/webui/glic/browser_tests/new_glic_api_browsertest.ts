@@ -617,7 +617,21 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(0, suggestions.suggestions.length);
   }
 
-  async testNoZssWarmingForPromotionPage() {
+  async testNoZssWarmingStateMachine() {
+    assertDefined(this.host.getZeroStateSuggestionsForFocusedTab);
+    const suggestions = await this.host.getZeroStateSuggestionsForFocusedTab();
+    assertDefined(suggestions);
+    assertEquals(3, suggestions.suggestions.length);
+  }
+
+  async testNoZssWarmingStateMachineImplicitPreservesDisabled() {
+    assertDefined(this.host.getZeroStateSuggestionsForFocusedTab);
+    const suggestions = await this.host.getZeroStateSuggestionsForFocusedTab();
+    assertDefined(suggestions);
+    assertEquals(3, suggestions.suggestions.length);
+  }
+
+  async testNoZssWarmingStateMachineImplicitPreservesEnabled() {
     assertDefined(this.host.getZeroStateSuggestionsForFocusedTab);
     const suggestions = await this.host.getZeroStateSuggestionsForFocusedTab();
     assertDefined(suggestions);

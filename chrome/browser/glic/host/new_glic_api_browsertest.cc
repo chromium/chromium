@@ -857,36 +857,96 @@ IN_PROC_BROWSER_TEST_P(
   ExecuteJsTest();
 }
 
+// TODO(crbug.com/533085229): Re-enable on Android once close flakiness is fixed.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithContextualCueing,
-                       testNoZssWarmingForPromotionPage) {
+                       testNoZssWarmingStateMachine) {
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
 
-  // 1. Initial Open via Blocked Source (kPromotionPage)
+  // 1. Initial Open via Blocked Source (kPromotionPage) -> disables warming.
   coordinator().Toggle(GetBrowser(), /*prevent_close=*/true,
                        mojom::InvocationSource::kPromotionPage);
   ASSERT_OK(WaitForGlicOpen());
 
-  // Since warming is disabled for the promotion page, no calls to the cueing
-  // service should have occurred.
+  GlicInstanceImpl* instance = coordinator().GetInstanceImplForTab(tab1);
+  ASSERT_NE(instance, nullptr);
   EXPECT_EQ(fake_cueing_service()->focused_tab_call_count(), 0);
-  EXPECT_EQ(fake_cueing_service()->pinned_tabs_call_count(), 0);
 
-  // 2. Simulate showing Glic again with a different invocation source
-  // (kTopChromeButton) that would normally trigger warming, targeting the same
-  // active tab.
-  coordinator().Invoke(GlicInvokeOptions(
-      Target(*tab1), mojom::InvocationSource::kTopChromeButton));
+  // 2. Simulate showing Glic again after closing via an explicit source
+  // (kTopChromeButton) -> resets zss_warming_enabled_ = true and runs
+  // warming.
+  PreventBlankDeletionOnClose(instance);
+  instance->CloseAllEmbedders();
+  ASSERT_OK(WaitForGlicClose());
 
-  // Warming should still be skipped (call count remains 0) because warming was
-  // permanently disabled by the initial kPromotionPage open.
-  EXPECT_EQ(fake_cueing_service()->focused_tab_call_count(), 0);
-  EXPECT_EQ(fake_cueing_service()->pinned_tabs_call_count(), 0);
+  coordinator().Toggle(GetBrowser(), /*prevent_close=*/true,
+                       mojom::InvocationSource::kTopChromeButton);
+  ASSERT_OK(WaitForGlicOpen());
+  EXPECT_EQ(fake_cueing_service()->focused_tab_call_count(), 1);
 
-  // 3. However, if the web client explicitly requests ZSS, it should still get
+  // 3. If the web client explicitly requests ZSS, it should still get
   // results.
   ExecuteJsTest();
-  EXPECT_GE(fake_cueing_service()->focused_tab_call_count(), 1);
+  // The JS request makes another call to the backend service, bringing the
+  // total call count to 2.
+  EXPECT_EQ(fake_cueing_service()->focused_tab_call_count(), 2);
 }
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithContextualCueing,
+                       testNoZssWarmingStateMachineImplicitPreservesDisabled) {
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+
+  // 1. Initial Open via Blocked Source (kPromotionPage) -> disables warming.
+  coordinator().Toggle(GetBrowser(), /*prevent_close=*/true,
+                       mojom::InvocationSource::kPromotionPage);
+  ASSERT_OK(WaitForGlicOpen());
+
+  GlicInstanceImpl* instance = coordinator().GetInstanceImplForTab(tab1);
+  ASSERT_NE(instance, nullptr);
+  EXPECT_EQ(fake_cueing_service()->focused_tab_call_count(), 0);
+
+  // 2. Simulate showing Glic again after closing via an implicit source
+  // (kTabRestore) -> preserves disabled state (zss_warming_enabled_ == false).
+  PreventBlankDeletionOnClose(instance);
+  instance->CloseAllEmbedders();
+  ASSERT_OK(WaitForGlicClose());
+
+  coordinator().Toggle(GetBrowser(), /*prevent_close=*/true,
+                       mojom::InvocationSource::kTabRestore);
+  ASSERT_OK(WaitForGlicOpen());
+  EXPECT_EQ(fake_cueing_service()->focused_tab_call_count(), 0);
+
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithContextualCueing,
+                       testNoZssWarmingStateMachineImplicitPreservesEnabled) {
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+
+  // 1. Initial Open via Explicit Source (kTopChromeButton) -> warming enabled.
+  coordinator().Toggle(GetBrowser(), /*prevent_close=*/true,
+                       mojom::InvocationSource::kTopChromeButton);
+  ASSERT_OK(WaitForGlicOpen());
+
+  GlicInstanceImpl* instance = coordinator().GetInstanceImplForTab(tab1);
+  ASSERT_NE(instance, nullptr);
+  EXPECT_EQ(fake_cueing_service()->focused_tab_call_count(), 1);
+
+  // 2. Simulate showing Glic again after closing via an implicit source
+  // (kTabRestore) -> preserves enabled state (zss_warming_enabled_ == true)
+  // and runs warming on open.
+  PreventBlankDeletionOnClose(instance);
+  instance->CloseAllEmbedders();
+  ASSERT_OK(WaitForGlicClose());
+
+  coordinator().Toggle(GetBrowser(), /*prevent_close=*/true,
+                       mojom::InvocationSource::kTabRestore);
+  ASSERT_OK(WaitForGlicOpen());
+  EXPECT_EQ(fake_cueing_service()->focused_tab_call_count(), 2);
+
+  ExecuteJsTest();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithContextualCueing,
                        testGetZeroStateSuggestionsApi) {

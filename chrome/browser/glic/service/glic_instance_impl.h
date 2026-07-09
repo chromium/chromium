@@ -429,7 +429,7 @@ class GlicInstanceImpl : public GlicInstance,
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
   base::ScopedObservation<Host, Host::Observer> host_observation_{this};
-  bool zss_warming_disabled_ = false;
+  bool zss_warming_enabled_ = true;
 
   std::unique_ptr<GlicZeroStateSuggestionsManager>
       zero_state_suggestions_manager_;

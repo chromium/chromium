@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <sstream>
@@ -135,6 +136,19 @@ constexpr auto kZssWarmingBlocklist = std::to_array<mojom::InvocationSource>({
     mojom::InvocationSource::kAutoOpenedForPdf,
     mojom::InvocationSource::kPromotionPage,
 });
+
+// Invocation sources that are not a user-triggered entry point and can mean
+// the panel was reopened or reshown due to browser state changes, window
+// management, or layout adjustments (e.g. restoring a tab or re-attaching
+// the panel) rather than a direct, intentional action by the user to open the
+// panel. Because they aren't explicitly user initiated, we preserve the current
+// ZSS warming state.
+constexpr auto kImplicitInvocationSources =
+    std::to_array<mojom::InvocationSource>({
+        mojom::InvocationSource::kTabRestore,
+        mojom::InvocationSource::kReshowInactive,
+        mojom::InvocationSource::kDetachAttachButton,
+    });
 
 EmbedderKey CreateSidePanelEmbedderKey(tabs::TabInterface* tab) {
   CHECK(tab);
@@ -1261,14 +1275,18 @@ void GlicInstanceImpl::MaybeWarmZeroStateSuggestions(
     return;
   }
 
-  for (auto blocked_source : kZssWarmingBlocklist) {
-    if (blocked_source == invocation_source) {
-      zss_warming_disabled_ = true;
-      break;
-    }
+  // ZSS warming state machine logic:
+  // - Blocklisted invocation sources disable ZSS warming.
+  // - Implicit invocation sources preserve the current ZSS warming state.
+  // - ZSS warming is only re-enabled with a non-blocked invocation source.
+  if (std::ranges::contains(kZssWarmingBlocklist, invocation_source)) {
+    zss_warming_enabled_ = false;
+  } else if (!std::ranges::contains(kImplicitInvocationSources,
+                                    invocation_source)) {
+    zss_warming_enabled_ = true;
   }
 
-  if (zss_warming_disabled_) {
+  if (!zss_warming_enabled_) {
     return;
   }
 

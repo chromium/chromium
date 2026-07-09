@@ -294,6 +294,15 @@ class GlicBrowserTestMixin : public T {
     instance->OnUserInputSubmitted(mojom::WebClientMode::kText);
   }
 
+  // Keeps a blank instance alive on close without registering a conversation.
+  void PreventBlankDeletionOnClose(GlicInstanceImpl* instance = nullptr) {
+    if (!instance) {
+      instance = GetOnlyGlicInstance();
+    }
+    CHECK(instance);
+    instance->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  }
+
   void CloseAllEmbeddersAndPreventDeletion(
       GlicInstanceImpl* instance = nullptr) {
     if (!instance) {

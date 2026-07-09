@@ -280,10 +280,8 @@ void GlicZeroStateSuggestionsManager::ObserveZeroStateSuggestions(
         callback) {
   // Subscribe to changes in sharing.
   if (is_notifying) {
-    // Skip ZSS generation for unconsented users or if the panel was auto-opened
-    // for a PDF.
-    if (!GlicEnabling::HasConsentedForProfile(host().profile()) ||
-        WasAutoOpenedForPdf()) {
+    // Skip ZSS generation for unconsented users.
+    if (!GlicEnabling::HasConsentedForProfile(host().profile())) {
       std::move(callback).Run(
           MakeEmptySuggestionsPtr(host().invocation_source()));
       return;
