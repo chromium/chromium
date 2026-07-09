@@ -8,7 +8,12 @@
   const {dp} = await testRunner.startBlank(
       'Tests CDP Emulation.updateScreen() API bounds handling.');
 
-  const screenId = '2';
+  async function getScreenId(index) {
+    const {screenInfos} = (await dp.Emulation.getScreenInfos()).result;
+    return screenInfos[index].id;
+  }
+
+  const screenId = await getScreenId(1);
 
   const {screenInfo} =
       (await dp.Emulation.updateScreen(

@@ -8,7 +8,12 @@
   const {dp} = await testRunner.startBlank(
       'Tests CDP Emulation.updateScreen() API isInternal handling.');
 
-  const screenId = '1';
+  async function getScreenId(index) {
+    const {screenInfos} = (await dp.Emulation.getScreenInfos()).result;
+    return screenInfos[index].id;
+  }
+
+  const screenId = await getScreenId(0);
 
   for (const isInternal of [false, true, false, true]) {
     const {screenInfo} = (await dp.Emulation.updateScreen({

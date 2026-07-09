@@ -8,11 +8,18 @@
   const {dp} = await testRunner.startBlank(
       'Tests CDP Emulation.setPrimaryScreen() API with scaling.');
 
+  async function getScreenId(index) {
+    const {screenInfos} = (await dp.Emulation.getScreenInfos()).result;
+    return screenInfos[index].id;
+  }
+
+  const screenId = await getScreenId(1);
+
   testRunner.log(
       (await dp.Emulation.getScreenInfos()).result,
       'Screens before primary screen is changed: ');
 
-  const result = await dp.Emulation.setPrimaryScreen({screenId: '2'});
+  const result = await dp.Emulation.setPrimaryScreen({screenId});
   testRunner.log(result, 'Emulation.setPrimaryScreen result: ');
 
   testRunner.log(

@@ -19,7 +19,8 @@ HeadlessScreenManager* HeadlessScreenManager::Get() {
 
 // static
 int64_t HeadlessScreenManager::GetNewDisplayId() {
-  static int64_t headless_display_id = 1;
+  // Use larger than max int to catch overflow early.
+  static int64_t headless_display_id = 2300000000LL;
   return headless_display_id++;
 }
 
