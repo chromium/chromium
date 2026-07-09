@@ -41,6 +41,21 @@ cargo_crate("{{this.name}}") {
     {{/each}}
   ]
 
+  {{#if_key_present "cpp_api_from_rust" extra_kv}}
+  {{#with extra_kv.cpp_api_from_rust}}
+  cpp_api_from_rust = {
+    target_name = "cpp_api_from_rust"
+    {{#if_key_present "deps" this}}
+      deps = [
+        {{#each this.deps}}
+          "//third_party/rust/{{this}}:cpp_api_from_rust",
+        {{/each}}
+      ]
+    {{/if_key_present}}
+  }
+  {{/with}}
+  {{/if_key_present}}
+
   build_native_rust_unit_tests = false
   edition = "{{edition}}"
   {{#if cargo_pkg_authors}}

@@ -75,9 +75,9 @@
 #   README.chromium. It defaults to true if the crate is not in the 'test'
 #   group.
 #
-# extra_kv: A dictionary with arbitrary data (i.e. that doesn't come from
-#   `gnrt`).  The following enries are currently supported/used by
-#   `BUILD.gn.hbs`:
+# extra_kv: A dictionary with arbitrary data (i.e. data doesn't come from, nor
+#   is consumed by `gnrt`).  The following entries are currently supported/used
+#   by `BUILD.gn.hbs`:
 #
 #     allow_unsafe: If true, then the crate is allowed to use `unsafe` Rust.
 #
@@ -86,6 +86,11 @@
 #       docs/rust/unstable_rust_feature_usage.md for more details.)
 #
 #     configs_to_remove / configs_to_add: A list of GN config labels.
+#
+#     cpp_api_from_rust: Either a boolean (e.g. `cpp_api_from_rust = true`) or
+#       a sub-table (e.g. `cpp_api_from_rust = { deps = ["png/v0_18"] }`) that
+#       asks for Crubit-based C++ bindings to be generated for the given crate.
+#       See `//docs/rust/crubit.md` for more details.
 #
 #     extra_deps: A list of dependencies to be added to the crate.
 #
@@ -720,6 +725,7 @@ extra_kv = { allow_unsafe = true }
 
 [crate.qr_code.extra_kv]
 allow_unsafe = false
+cpp_api_from_rust = true
 
 [crate.quote.extra_kv]
 allow_unsafe = false

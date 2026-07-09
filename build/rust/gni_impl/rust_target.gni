@@ -754,6 +754,15 @@ template("rust_target") {
           rustc_env_and_flags = _rustc_env_and_flags
           original_attributes = _cpp_api_from_rust_attributes
           crate_name = _crate_name
+
+          # For targets with an explicit `crate_name` (such as
+          # `third_party/rust/...`) use the crate name as the basename of the
+          # generated header file.  This ensures that Chromium uses the same
+          # `#include` paths to these libraries as other major Crubit clients
+          # (e.g. google3).
+          if (defined(invoker.crate_name)) {
+            h_out = "${target_gen_dir}/${_crate_name}.h"
+          }
         }
       }
     }

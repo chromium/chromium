@@ -26,6 +26,9 @@ import("//build/toolchain/kythe.gni")
 #     Name (potentially mangled/auto-generated) of the crate that `rust_target`
 #     is built into.
 #
+#   h_out
+#     Optional path where the generated `.h` file should be written.
+#
 #   original_attributes
 #     The original `cc_bindings_from_rs = { ... }` dictionary (the value of
 #     the `cc_bindings_from_rs` attribute of a target like
@@ -52,7 +55,11 @@ template("cpp_api_from_rust") {
   _rust_target = invoker.rust_target
   _rust_target_name = get_label_info(_rust_target, "name")
   _rust_target_dir = get_label_info(_rust_target, "dir")
-  _h_out = "${target_gen_dir}/${_rust_target_name}.h"
+  if (defined(invoker.h_out)) {
+    _h_out = invoker.h_out
+  } else {
+    _h_out = "${target_gen_dir}/${_rust_target_name}.h"
+  }
   _rs_out = "${_h_out}.impl.rs"
 
   _original_attributes = invoker.original_attributes

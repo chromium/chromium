@@ -174,8 +174,12 @@ impl handlebars::HelperDef for IfKeyPresentHelper {
         let param_not_found =
             |idx| handlebars::RenderErrorReason::ParamNotFoundForIndex("is_key_present", idx);
         let key = h.param(0).and_then(|v| v.value().as_str()).ok_or(param_not_found(0))?;
-        let dict = h.param(1).and_then(|v| v.value().as_object()).ok_or(param_not_found(1))?;
-        let template = if dict.contains_key(key) { h.template() } else { h.inverse() };
+        let maybe_dict = h.param(1).ok_or(param_not_found(1))?;
+        let contains_key = match maybe_dict.value().as_object() {
+            None => false,
+            Some(dict) => dict.contains_key(key),
+        };
+        let template = if contains_key { h.template() } else { h.inverse() };
         match template {
             None => Ok(()),
             Some(t) => t.render(r, ctx, rc, out),

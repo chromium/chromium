@@ -83,6 +83,8 @@ source_set("unittests") {
 ```
 // build/rust/tests/test_cpp_api_from_rust/unittests.cc:
 
+// `rust_lib` part of the `#include` path comes from the target name
+// (i.e. from `rust_static_library("rust_lib")` above).
 #include "build/rust/tests/test_cpp_api_from_rust/rust_lib.h"
 
 void foo() {
@@ -92,7 +94,42 @@ void foo() {
 
 ### Enabling `cpp_api_from_rust` for a `third_party/rust` crate
 
-TODO: This is not implemented yet.
+Set `cpp_api_from_rust = true` in `gnrt_config.toml` as follows:
+
+```
+[crate.qr_code.extra_kv]
+allow_unsafe = false
+cpp_api_from_rust = true
+```
+
+After modifying `gnrt_config.toml` you have to re-run
+`tools/crates/run_gnrt.py gen` to regenerate the crate's `BUILD.gn` file.
+
+At this point you should be able to depend on the bindings and use them
+as follows:
+
+```
+# My BUILD.gn:
+source_set("my_cpp_code") {
+  # ...
+  deps += [ "//third_party/rust/qr_code/v2:cpp_api_from_rust" ]
+}
+```
+
+```
+// my_cpp_code.cc
+
+// The last `qr_code` part of the `#include` path comes from the `crate_name`
+// attribute of the `//third_party/rust/qr_code/v2:lib` target.
+#include "third_party/rust/qr_code/v2/qr_code.h"
+
+void foo() {
+  // ...
+  rs_std::SliceRef<const uint8_t> rs_in(in);
+  auto result = ::qr_code::QrCode::new_(rs_in);
+  // ...
+}
+```
 
 ### Inspecting the generated bindings
 
@@ -177,7 +214,17 @@ in `deps` attribute of `cpp_api_from_rust`.
 
 #### Bindings dependencies for `//third_party/rust` libraries
 
-TODO: `gnrt_config.toml` equivalent for `//third_party/rust` libraries.
+3rd-party Rust crates can specify dependencies of their bindings
+with the following `gnrt_config.toml` entry:
+
+```
+[crate.my_crate_name.extra_kv]
+allow_unsafe = false
+cpp_api_from_rust = { deps = ["some_other_crate/v123"] }
+```
+
+After modifying `gnrt_config.toml` you have to re-run
+`tools/crates/run_gnrt.py gen` to regenerate the crate's `BUILD.gn` file.
 
 #### Bindings dependencies for Rust standard library
 

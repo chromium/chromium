@@ -1,5 +1,7 @@
 include_rules = [
   "+components/vector_icons",
+  "+crubit",
+  "+third_party/rust/qr_code",
   "+third_party/skia/include",
   "+ui/base",
   "+ui/gfx"

@@ -32,6 +32,10 @@ cargo_crate("lib") {
   ]
   inputs = []
 
+  cpp_api_from_rust = {
+    target_name = "cpp_api_from_rust"
+  }
+
   build_native_rust_unit_tests = false
   edition = "2018"
   cargo_pkg_authors = "kennytm <kennytm@gmail.com>, Riccardo Casatta <riccardo.casatta@gmail.com>"

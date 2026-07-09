@@ -33,31 +33,44 @@ source_set("bitmap_generator") {
   ]
 }
 
+buildflag_header("cpp_api_from_rust_buildflags") {
+  header = "cpp_api_from_rust_buildflags.h"
+  flags = [ "ENABLE_CPP_API_FROM_RUST=$enable_cpp_api_from_rust" ]
+  visibility = [ ":qr_code_generator" ]
+}
+
 source_set("qr_code_generator") {
   sources = [
     "qr_code_generator.cc",
     "qr_code_generator.h",
   ]
-  deps = [
-    ":qr_code_generator_ffi_glue",
-    "//base",
-  ]
+  deps = [ ":cpp_api_from_rust_buildflags" ]
+  if (enable_cpp_api_from_rust) {
+    deps += [
+      "//build/rust/crubit",
+      "//third_party/rust/qr_code/v2:cpp_api_from_rust",
+    ]
+  } else {
+    deps += [ ":qr_code_generator_ffi_glue" ]
+  }
   public_deps = [
     ":error",
     "//base",
   ]
 }
 
-rust_static_library("qr_code_generator_ffi_glue") {
-  allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
-  crate_root = "qr_code_generator_ffi_glue.rs"
-  sources = [ "qr_code_generator_ffi_glue.rs" ]
-  cxx_bindings = [ "qr_code_generator_ffi_glue.rs" ]
-  visibility = [ ":qr_code_generator" ]
-  deps = [
-    ":error",
-    "//third_party/rust/qr_code/v2:lib",
-  ]
+if (!enable_cpp_api_from_rust) {
+  rust_static_library("qr_code_generator_ffi_glue") {
+    allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+    crate_root = "qr_code_generator_ffi_glue.rs"
+    sources = [ "qr_code_generator_ffi_glue.rs" ]
+    cxx_bindings = [ "qr_code_generator_ffi_glue.rs" ]
+    visibility = [ ":qr_code_generator" ]
+    deps = [
+      ":error",
+      "//third_party/rust/qr_code/v2:lib",
+    ]
+  }
 }
 
 source_set("unit_tests") {
