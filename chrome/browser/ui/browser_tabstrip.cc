@@ -73,7 +73,7 @@ void AddTabAt(BrowserWindowInterface* browser,
                              pinned);
 }
 
-content::WebContents* AddSelectedTabWithURL(Browser* browser,
+content::WebContents* AddSelectedTabWithURL(BrowserWindowInterface* browser,
                                             const GURL& url,
                                             ui::PageTransition transition) {
   NavigateParams params(browser, url, transition);

@@ -424,7 +424,7 @@ void ZoomBubbleView::ButtonPressed(base::RepeatingClosure closure) {
 void ZoomBubbleView::ImageButtonPressed() {
   DCHECK(extension_info_.icon_image) << "Invalid button press.";
   chrome::AddSelectedTabWithURL(
-      browser_->GetBrowserForMigrationOnly(),
+      browser_,
       GURL(base::StringPrintf("chrome://extensions?id=%s",
                               extension_info_.id.c_str())),
       ui::PAGE_TRANSITION_FROM_API);

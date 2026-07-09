@@ -51,7 +51,7 @@ void AddTabAt(BrowserWindowInterface* browser,
 
 // Adds a selected tab with the specified URL and transition, returns the
 // created WebContents.
-content::WebContents* AddSelectedTabWithURL(Browser* browser,
+content::WebContents* AddSelectedTabWithURL(BrowserWindowInterface* browser,
                                             const GURL& url,
                                             ui::PageTransition transition);
 

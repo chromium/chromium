@@ -878,7 +878,8 @@ void OpenWindowWithRestoredTabs(Profile* profile) {
 void OpenURLOffTheRecord(Profile* profile, const GURL& url) {
   ScopedTabbedBrowserDisplayer displayer(
       profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
-  AddSelectedTabWithURL(displayer.browser(), url, ui::PAGE_TRANSITION_LINK);
+  AddSelectedTabWithURL(displayer.browser_window_interface(), url,
+                        ui::PAGE_TRANSITION_LINK);
 }
 
 bool CanGoBack(const BrowserWindowInterface* browser) {

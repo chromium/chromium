@@ -4998,7 +4998,7 @@ static_library("ui") {
 
       # TODO(crbug.com/434882143): Remove this circular dependency when the
       # following headers get componentized:
-      # c/b/ui/browser.h, browser_command_controller.h, browser_commands.h,
+      # c/b/ui/browser_command_controller.h, browser_commands.h,
       # browser_tabstrip.h, browser_window.h, bubble_anchor_util.h,
       # intent_picker_tab_helper.h, view_ids.h
       # c/b/ui/views/bookmarks/bookmark_bubble_view.h

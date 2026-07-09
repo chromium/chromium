@@ -1840,8 +1840,8 @@ void DevToolsWindow::OpenInNewTab(const GURL& url) {
     NOTIMPLEMENTED();
 #else
     chrome::ScopedTabbedBrowserDisplayer displayer(profile_);
-    chrome::AddSelectedTabWithURL(displayer.browser(), fixed_url,
-                                  ui::PAGE_TRANSITION_LINK);
+    chrome::AddSelectedTabWithURL(displayer.browser_window_interface(),
+                                  fixed_url, ui::PAGE_TRANSITION_LINK);
 #endif
   }
 }
