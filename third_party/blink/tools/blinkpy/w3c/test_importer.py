@@ -52,8 +52,10 @@ from blinkpy.web_tests.models.test_expectations import ParseError, TestExpectati
 from blinkpy.web_tests.port.base import Port
 
 # Settings for how often to check try job results and how long to wait.
-POLL_DELAY_SECONDS = 2 * 60
-TIMEOUT_SECONDS = 210 * 60
+POLL_DELAY_SECONDS = 2 * 60  # 2 minutes
+# TODO(crbug.com/532191936): The temporary increase to 7 hours is to allow a
+# build-up of tests to import successfully.
+TIMEOUT_SECONDS = 420 * 60  # 7 hours
 
 # Sheriff calendar URL, used for getting the ecosystem infra sheriff to cc.
 ROTATIONS_URL = 'https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chromium-wpt-two-way-sync'
