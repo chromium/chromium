@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/actor_container_config.h"
+#include "components/origin_gating/core/actor_container_config.h"
 
 #include <string>
 #include <string_view>
@@ -23,7 +23,7 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-namespace actor {
+namespace origin_gating {
 
 namespace {
 
@@ -251,4 +251,4 @@ bool ActorContainerConfig::IsActuationAllowed(
   return false;
 }
 
-}  // namespace actor
+}  // namespace origin_gating

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/actor_container_config.h"
+#include "components/origin_gating/core/actor_container_config.h"
 
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -13,7 +13,7 @@
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"  // nogncheck
 #endif
 
-namespace actor {
+namespace origin_gating {
 
 using optimization_guide::proto::AgentContainerConfig;
 
@@ -95,7 +95,6 @@ class ActorContainerConfigTest : public testing::Test {
   const url::Origin kCrossSiteWssOrigin =
       url::Origin::Create(GURL("wss://b.foo.com"));
 };
-
 
 TEST_F(ActorContainerConfigTest, EmptyProtoBlocksAll) {
   ActorContainerConfig config((AgentContainerConfig()));
@@ -1018,4 +1017,4 @@ void CanParseAnyProto(
 FUZZ_TEST(ActorContainerConfigFuzzTest, CanParseAnyProto);
 #endif
 
-}  // namespace actor
+}  // namespace origin_gating

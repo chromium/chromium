@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_ACTOR_CONTAINER_CONFIG_H_
-#define CHROME_BROWSER_ACTOR_ACTOR_CONTAINER_CONFIG_H_
+#ifndef COMPONENTS_ORIGIN_GATING_CORE_ACTOR_CONTAINER_CONFIG_H_
+#define COMPONENTS_ORIGIN_GATING_CORE_ACTOR_CONTAINER_CONFIG_H_
 
 #include <optional>
 #include <string_view>
@@ -17,10 +17,10 @@
 #include "net/base/schemeful_site.h"
 #include "url/origin.h"
 
-namespace actor {
+namespace origin_gating {
 
-// ActorContainerConfig manages client-side security boundaries for the actor
-// codebase based on an AgentContainerConfig proto.
+// ActorContainerConfig manages client-side security boundaries for the
+// actor codebase based on an AgentContainerConfig proto.
 class ActorContainerConfig {
  public:
   ActorContainerConfig() = delete;
@@ -100,6 +100,6 @@ class ActorContainerConfig {
   base::flat_map<Location, Rule> rules_;
 };
 
-}  // namespace actor
+}  // namespace origin_gating
 
-#endif  // CHROME_BROWSER_ACTOR_ACTOR_CONTAINER_CONFIG_H_
+#endif  // COMPONENTS_ORIGIN_GATING_CORE_ACTOR_CONTAINER_CONFIG_H_

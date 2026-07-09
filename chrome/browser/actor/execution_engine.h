@@ -19,7 +19,6 @@
 #include "base/types/id_type.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/actor/actor_container_config_slot.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
@@ -30,6 +29,7 @@
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
+#include "components/origin_gating/core/actor_container_config_slot.h"
 #include "components/origin_gating/core/origin_gating_cache.h"
 #include "components/origin_gating/core/origin_gating_checker.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_service.h"
@@ -306,7 +306,7 @@ class ExecutionEngine : public ToolDelegate,
   // restriction for certain tools to function.
   bool TabsCanOpenNewWebContents() const;
 
-  ActorContainerConfigSlot& actor_container_config_slot() {
+  origin_gating::ActorContainerConfigSlot& actor_container_config_slot() {
     return actor_container_config_slot_;
   }
 
@@ -483,7 +483,7 @@ class ExecutionEngine : public ToolDelegate,
   TabObservationStrategy observation_strategy_;
 
   // Manages the container config settings that have been sent by the server.
-  ActorContainerConfigSlot actor_container_config_slot_;
+  origin_gating::ActorContainerConfigSlot actor_container_config_slot_;
 
   // For multi-step login, this is the credential that the user has chosen to
   // allow the actor to use. The key is the

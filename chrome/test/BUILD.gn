@@ -8519,10 +8519,8 @@ test("unit_tests") {
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
-  fuzztests = [
-    "ActorContainerConfigFuzzTest.CanParseAnyProto",
-    "SearchBoxUtilFuzzTest.ParseFrameTokenAndRestrictedIdDoesNotCrash",
-  ]
+  fuzztests =
+      [ "SearchBoxUtilFuzzTest.ParseFrameTokenAndRestrictedIdDoesNotCrash" ]
 
   if (!is_android) {
     deps += [ "//chrome/browser/ui:accelerator_table" ]

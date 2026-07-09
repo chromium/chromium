@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/actor_container_config_slot.h"
+#include "components/origin_gating/core/actor_container_config_slot.h"
 
-#include "chrome/browser/actor/actor_container_config.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/origin_gating/core/actor_container_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -13,7 +13,7 @@
 constexpr std::string_view kExampleHost = "example.com";
 constexpr std::string_view kOtherHost = "other.com";
 
-namespace actor {
+namespace origin_gating {
 
 using optimization_guide::proto::AgentContainerConfig;
 
@@ -84,4 +84,4 @@ TEST_F(ActorContainerConfigSlotTest, Assign_PresentProtoThenIgnoresSecondCall) {
   EXPECT_FALSE(slot.value().IsActuationAllowed(kOtherOrigin));
 }
 
-}  // namespace actor
+}  // namespace origin_gating

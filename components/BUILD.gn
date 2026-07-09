@@ -1042,6 +1042,7 @@ test("components_unittests") {
   }
 
   fuzztests = [
+    "ActorContainerConfigFuzzTest.CanParseAnyProto",
     "AndroidAppDescriptionToolsFuzzTest.MaintainsSingleActivityInvariant",
     "CBORReaderFuzzTest.ReadAndWriteIsIdempotentAndDoesNotCrash",
     "CBORReaderFuzzTest.ReadValidAndTruncatedCBORDoesNotCrash",
