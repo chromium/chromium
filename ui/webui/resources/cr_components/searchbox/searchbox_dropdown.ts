@@ -10,10 +10,11 @@ import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_repor
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {RenderType, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {getCss} from './searchbox_dropdown.css.js';
 import {getHtml} from './searchbox_dropdown.html.js';
+import {kDefaultSelection} from './searchbox_match.js';
 import type {SearchboxMatchElement} from './searchbox_match.js';
 import {renderTypeToClass, sideTypeToClass} from './utils.js';
 
@@ -77,13 +78,22 @@ export class SearchboxDropdownElement extends CrLitElement {
 
       result: {type: Object},
 
-      /** Index of the selected match. */
+      // TODO(crbug.com/519713849): Remove selectedMatchIndex once
+      // kRealboxVirtualFocusNavigation is launched.
       selectedMatchIndex: {
         type: Number,
         notify: true,
       },
 
+      /** Omnibox focused selection state. */
+      selection: {
+        type: Object,
+        notify: true,
+      },
+
       showThumbnail: {type: Boolean},
+
+      virtualFocusEnabled: {type: Boolean},
 
       //========================================================================
       // Private properties
@@ -104,12 +114,20 @@ export class SearchboxDropdownElement extends CrLitElement {
   accessor hasSecondarySide: boolean = false;
   accessor hasEmptyInput: boolean = false;
   accessor result: AutocompleteResult|null = null;
+  // TODO(crbug.com/519713849): Remove selectedMatchIndex once
+  // kRealboxVirtualFocusNavigation is launched.
   accessor selectedMatchIndex: number = -1;
+  accessor selection: OmniboxPopupSelection = kDefaultSelection;
   accessor showThumbnail: boolean = false;
+  accessor virtualFocusEnabled: boolean =
+      loadTimeData.valueExists('realboxVirtualFocusNavigation') &&
+      loadTimeData.getBoolean('realboxVirtualFocusNavigation');
   private accessor showSecondarySide_: boolean = false;
 
   /** The list of selectable match elements. */
   private selectableMatchElements_: SearchboxMatchElement[] = [];
+
+  private availableSelections_: OmniboxPopupSelection[] = [];
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -128,11 +146,19 @@ export class SearchboxDropdownElement extends CrLitElement {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
+    if (changedProperties.has('result')) {
+      this.availableSelections_ = this.getResultSelections();
+    }
+
     this.onResultRepaint_();
 
     // Update the list of selectable match elements.
     this.selectableMatchElements_ =
         [...this.shadowRoot.querySelectorAll('cr-searchbox-match')];
+  }
+
+  getCachedSelections(): OmniboxPopupSelection[] {
+    return this.availableSelections_;
   }
 
   //============================================================================
@@ -149,6 +175,7 @@ export class SearchboxDropdownElement extends CrLitElement {
   /** Unselects the currently selected match, if any. */
   unselect() {
     this.selectedMatchIndex = -1;
+    this.selection = kDefaultSelection;
   }
 
   /** Focuses the selected match, if any. */
@@ -158,31 +185,31 @@ export class SearchboxDropdownElement extends CrLitElement {
 
   /** Selects the first match. */
   selectFirst() {
-    this.selectedMatchIndex = 0;
-    return this.updateComplete;
+    return this.selectIndex(0);
   }
 
   /** Selects the match at the given index. */
   selectIndex(index: number) {
     this.selectedMatchIndex = index;
+    if (this.virtualFocusEnabled && this.selection.line !== index) {
+      const match = this.result?.matches[index];
+      if (match && (!match.isHidden || match.allowedToBeDefaultMatch)) {
+        this.selection = {
+          line: index,
+          state: SelectionLineState.kNormal,
+          actionIndex: 0,
+        };
+      } else {
+        this.selection = kDefaultSelection;
+      }
+    }
     return this.updateComplete;
   }
 
   updateSelection(
-      oldSelection: OmniboxPopupSelection, selection: OmniboxPopupSelection) {
-    // If the updated selection is a new match, remove any remaining selection
-    // on the previously selected match.
-    if (oldSelection.line !== selection.line) {
-      const oldMatch = this.selectableMatchElements[this.selectedMatchIndex];
-      if (oldMatch) {
-        oldMatch.selection = selection;
-      }
-    }
+      _oldSelection: OmniboxPopupSelection, selection: OmniboxPopupSelection) {
     this.selectIndex(selection.line);
-    const newMatch = this.selectableMatchElements[this.selectedMatchIndex];
-    if (newMatch) {
-      newMatch.selection = selection;
-    }
+    this.fire('selection-changed', {value: selection});
   }
 
   /**
@@ -213,6 +240,131 @@ export class SearchboxDropdownElement extends CrLitElement {
     this.selectedMatchIndex =
         remainder(next, this.selectableMatchElements.length);
     return this.updateComplete;
+  }
+
+  stepSelection(direction: SelectionDirection, step: SelectionStep) {
+    if (!this.result) {
+      return;
+    }
+    const available = this.getCachedSelections();
+    if (available.length === 0) {
+      return;
+    }
+    const current = this.selection;
+    const isNormal = (selection: OmniboxPopupSelection) =>
+        selection.state === SelectionLineState.kNormal;
+    const selectionsEqual =
+        (a: OmniboxPopupSelection, b: OmniboxPopupSelection) =>
+            a.line === b.line && a.state === b.state &&
+        a.actionIndex === b.actionIndex;
+
+    let fromIndex = available.findIndex(s => selectionsEqual(current, s));
+
+    // Fallback: If currently in keyword mode, the keyword chip might be hidden
+    // from the match list (as we have transitioned inside that engine search).
+    // Find the normal suggestion line as the starting point for navigation.
+    if (fromIndex < 0 && current.state === SelectionLineState.kKeywordMode) {
+      fromIndex = available.findIndex(
+          s => selectionsEqual(
+              {
+                ...current,
+                state: SelectionLineState.kNormal,
+              },
+              s));
+    }
+    let nextSelection = current;
+    if (fromIndex < 0) {
+      // Create a copy of the available selections array before modifying it
+      // to avoid modifying the cached array.
+      const availableCopy = [...available];
+      availableCopy.splice(0, 0, current);
+      fromIndex = 0;
+      nextSelectionFromAvailable(availableCopy);
+    } else {
+      nextSelectionFromAvailable(available);
+    }
+
+    function nextSelectionFromAvailable(
+        selectionsList: OmniboxPopupSelection[]) {
+      if (step === SelectionStep.kAllLines) {
+        const normalIndex = direction === SelectionDirection.kBackward ?
+            selectionsList.findIndex(isNormal) :
+            selectionsList.findLastIndex(isNormal);
+        nextSelection =
+            normalIndex < 0 ? current : selectionsList[normalIndex]!;
+      } else {
+        const getNextIndex = (idx: number): number => {
+          const stepSize = direction === SelectionDirection.kForward ? 1 : -1;
+          return remainder(idx + stepSize, selectionsList.length);
+        };
+
+        const originalIndex = fromIndex;
+        let index = getNextIndex(originalIndex);
+        do {
+          const candidate = selectionsList[index]!;
+          if (step === SelectionStep.kStateOrLine || isNormal(candidate)) {
+            nextSelection = candidate;
+            break;
+          }
+          index = getNextIndex(index);
+        } while (index !== originalIndex);
+      }
+    }
+
+    const oldSelection = this.selection;
+    this.selection = nextSelection;
+    this.updateSelection(oldSelection, nextSelection);
+  }
+
+  /**
+   * Returns a flat array of all selectable target states in the dropdown
+   * (including normal lines, keyword mode chips, action chips, and remove
+   * buttons) in order.
+   */
+  private getSelectionsForMatch_(match: AutocompleteMatch, matchIndex: number):
+      OmniboxPopupSelection[] {
+    if (match.isHidden && !match.allowedToBeDefaultMatch) {
+      return [];
+    }
+    const selections: OmniboxPopupSelection[] = [{
+      line: matchIndex,
+      state: SelectionLineState.kNormal,
+      actionIndex: 0,
+    }];
+    if (match.keywordChipHint && match.keywordChipHint.length > 0) {
+      selections.push({
+        line: matchIndex,
+        state: SelectionLineState.kKeywordMode,
+        actionIndex: 0,
+      });
+    }
+    if (match.actions) {
+      for (let actionIndex = 0; actionIndex < match.actions.length;
+           actionIndex++) {
+        selections.push({
+          line: matchIndex,
+          state: SelectionLineState.kFocusedButtonAction,
+          actionIndex: actionIndex,
+        });
+      }
+    }
+    if (match.supportsDeletion) {
+      selections.push({
+        line: matchIndex,
+        state: SelectionLineState.kFocusedButtonRemoveSuggestion,
+        actionIndex: 0,
+      });
+    }
+    return selections;
+  }
+
+  getResultSelections(): OmniboxPopupSelection[] {
+    if (!this.result) {
+      return [];
+    }
+    return this.result.matches.flatMap(
+        (match: AutocompleteMatch, matchIndex: number) =>
+            this.getSelectionsForMatch_(match, matchIndex));
   }
 
   //============================================================================

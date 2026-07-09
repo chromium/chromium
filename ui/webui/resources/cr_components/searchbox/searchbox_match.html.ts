@@ -39,7 +39,7 @@ export function getHtml(this: SearchboxMatchElement) {
           icon-path="//resources/images/icon_search.svg"
           aria-label="${this.match.keywordChipA11y}"
           @execute-action="${this.onKeywordExecuteAction_}"
-          tabindex="1">
+          tabindex="${this.virtualFocusEnabled ? -1 : 1}">
       </cr-searchbox-action>
     </div>
   ` : ''}
@@ -53,14 +53,15 @@ export function getHtml(this: SearchboxMatchElement) {
             icon-path="${item.iconPath}"
             aria-label="${item.a11yLabel}"
             action-index="${index}"
-            @execute-action="${this.onExecuteAction_}" tabindex="2">
+            @execute-action="${this.onExecuteAction_}"
+            tabindex="${this.virtualFocusEnabled ? -1 : 2}">
         </cr-searchbox-action>
       </div>
     `)}
   </div>
   <cr-icon-button id="remove"
       class="action-icon icon-clear ${this.getRemoveCssClass_()}"
-      tabindex="3"
+      tabindex="${this.virtualFocusEnabled ? -1 : 3}"
       aria-label="${this.removeButtonAriaLabel_}"
       title="${this.removeButtonTitle_}"
       ?hidden="${!this.match.supportsDeletion}"
