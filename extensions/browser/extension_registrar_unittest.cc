@@ -130,8 +130,7 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     // Mock defaults.
     ON_CALL(delegate_, CanEnableExtension(extension_.get()))
         .WillByDefault(Return(true));
-    ON_CALL(delegate_, CanDisableExtension(extension_.get()))
-        .WillByDefault(Return(true));
+    ON_CALL(delegate_, CanDisableExtension(_)).WillByDefault(Return(true));
     EXPECT_CALL(delegate_, PostActivateExtension(_)).Times(0);
     EXPECT_CALL(delegate_, PostDeactivateExtension(_)).Times(0);
   }
@@ -612,6 +611,23 @@ TEST_F(ExtensionRegistrarTest, Enabledness) {
 
   // TODO(crbug.com/406544103): Test disabling an extension in a profile here.
   // TODO(crbug.com/406544103): Test enabling an extension in a profile here.
+}
+
+TEST_F(ExtensionRegistrarTest, DisableUninstalledExtension) {
+  // Verify that `extension()` has not been added to `ExtensionRegistry`.
+  ExpectInSet(ExtensionRegistry::NONE);
+
+  // Call `ExtensionRegistrar::DisableExtension()` on the uninstalled
+  // extension ID and verify it returns early safely without crashing or
+  // invoking delegate functions.
+  registrar()->DisableExtension(extension()->id(),
+                                {disable_reason::DISABLE_USER_ACTION});
+  ExpectInSet(ExtensionRegistry::NONE);
+
+  // Verify that we didn't write disable reasons to prefs.
+  EXPECT_TRUE(ExtensionPrefs::Get(browser_context())
+                  ->GetDisableReasons(extension()->id())
+                  .empty());
 }
 
 }  // namespace extensions

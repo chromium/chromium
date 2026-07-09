@@ -397,6 +397,14 @@ void ExtensionRegistrar::DisableExtensionWithRawReasons(
   scoped_refptr<const Extension> extension =
       registry_->GetExtensionById(extension_id, ExtensionRegistry::EVERYTHING);
 
+  // Since this can be called from WebUI, this disable request might race with
+  // an extension that has already been uninstalled (e.g. via a non-UI
+  // automated means). If so, we can just return early since the extension is
+  // already uninstalled.
+  if (!extension) {
+    return;
+  }
+
   CHECK(delegate_);
   bool is_controlled_extension =
       !delegate_->CanDisableExtension(extension.get());

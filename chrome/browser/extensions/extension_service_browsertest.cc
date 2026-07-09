@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,17 +17,51 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
 
 class Browser;
 
 namespace extensions {
+
+// A helper WebUIMessageHandler that quits a RunLoop when a "quit" message
+// is received. Used to synchronize WebUI messages in tests.
+class WebUIQuitHandler : public content::WebUIMessageHandler {
+ public:
+  explicit WebUIQuitHandler(base::OnceClosure quit_closure)
+      : quit_closure_(std::move(quit_closure)) {}
+
+  WebUIQuitHandler(const WebUIQuitHandler&) = delete;
+  WebUIQuitHandler& operator=(const WebUIQuitHandler&) = delete;
+
+  ~WebUIQuitHandler() override = default;
+
+  void RegisterMessages() override {
+    web_ui()->RegisterMessageCallback(
+        "quit", base::BindRepeating(&WebUIQuitHandler::HandleQuit,
+                                    base::Unretained(this)));
+  }
+
+ private:
+  void HandleQuit(const base::ListValue& args) {
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  base::OnceClosure quit_closure_;
+};
 
 class BrowserContextShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
@@ -146,5 +181,65 @@ IN_PROC_BROWSER_TEST_F(ExtensionServiceBrowserTest,
   profile_shutdown_waiter.Wait();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+// Verifies that programmatically uninstalling an extension followed immediately
+// by a request from WebUI to disable the extension returns early without
+// crashing.
+IN_PROC_BROWSER_TEST_F(ExtensionServiceBrowserTest,
+                       DisableUninstalledExtensionFromWebUI) {
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("good.crx"));
+  ASSERT_TRUE(extension);
+  const ExtensionId extension_id = extension->id();
+  ASSERT_TRUE(
+      extension_registry()->enabled_extensions().Contains(extension_id));
+
+  // Programmatically uninstall the extension and verify it is removed from
+  // `ExtensionRegistry`.
+  UninstallExtension(extension_id);
+  ASSERT_FALSE(extension_registry()->GetExtensionById(
+      extension_id, ExtensionRegistry::EVERYTHING));
+
+  // Navigate to chrome://settings to ensure ExtensionControlHandler is
+  // registered.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://settings")));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebUI* web_ui = web_contents->GetWebUI();
+  ASSERT_TRUE(web_ui);
+
+  // Add a helper handler to synchronize WebUI messages. Since WebUI messages
+  // are processed in order on the UI thread, sending 'quit' after
+  // 'disableExtension' guarantees that 'disableExtension' has been processed
+  // by the time 'quit' is handled.
+  base::RunLoop web_ui_disable_extension_processed_run_loop;
+  web_ui->AddMessageHandler(std::make_unique<WebUIQuitHandler>(
+      web_ui_disable_extension_processed_run_loop.QuitClosure()));
+
+  // Trigger the disable request as-if from WebUI, followed by 'quit' to
+  // synchronize.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      base::StringPrintf("chrome.send('disableExtension', ['%s']);"
+                         "chrome.send('quit');",
+                         extension_id.c_str())));
+
+  {
+    SCOPED_TRACE(
+        "waiting for disableExtension web UI message to be received and "
+        "processed");
+    web_ui_disable_extension_processed_run_loop.Run();
+  }
+
+  // Verify that the extension remains uninstalled and we didn't crash.
+  EXPECT_FALSE(extension_registry()->GetExtensionById(
+      extension_id, ExtensionRegistry::EVERYTHING));
+
+  // Verify that we didn't write disable reasons to prefs.
+  EXPECT_TRUE(
+      ExtensionPrefs::Get(profile())->GetDisableReasons(extension_id).empty());
+}
 
 }  // namespace extensions

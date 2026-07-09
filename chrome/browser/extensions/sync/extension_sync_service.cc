@@ -595,7 +595,7 @@ void ExtensionSyncService::ApplySyncData(
   } else if (!should_be_enabled) {
     // Note that |disable_reasons| includes any pre-existing reasons that
     // weren't explicitly removed above.
-    if (extension_registrar->IsExtensionEnabled(id)) {
+    if (extension && extension_registrar->IsExtensionEnabled(id)) {
       extension_registrar->DisableExtensionWithRawReasons(passkey, id,
                                                           disable_reasons);
     } else {
