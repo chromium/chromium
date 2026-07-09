@@ -165,6 +165,8 @@ public class LauncherShortcutActivity extends Activity {
                                     "Android.LauncherShortcut.UpdateFailure",
                                     UpdateFailure.LIMIT_EXCEEDED,
                                     UpdateFailure.NUM_ENTRIES);
+                        } catch (IllegalStateException e) {
+                            Log.e(TAG, "Failed to set dynamic shortcuts", e);
                         }
                     } else if (incognitoShortcutAdded) {
                         removeLauncherShortcuts();
@@ -240,8 +242,12 @@ public class LauncherShortcutActivity extends Activity {
 
         ShortcutManager shortcutManager =
                 ContextUtils.getApplicationContext().getSystemService(ShortcutManager.class);
-        shortcutManager.disableShortcuts(shortcutList);
-        shortcutManager.removeDynamicShortcuts(shortcutList);
+        try {
+            shortcutManager.disableShortcuts(shortcutList);
+            shortcutManager.removeDynamicShortcuts(shortcutList);
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Failed to remove dynamic shortcuts", e);
+        }
     }
 
     /**
