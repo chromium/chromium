@@ -9,12 +9,16 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <algorithm>
+#include <array>
 #include <memory>
 #include <tuple>
 #include <type_traits>
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
@@ -210,8 +214,8 @@ BPF_TEST(SandboxBPF,
   BPF_ASSERT(cpu_info_access == 0);
   int cpu_info_fd = open("/proc/cpuinfo", O_RDONLY);
   BPF_ASSERT(cpu_info_fd >= 0);
-  char buf[1024];
-  BPF_ASSERT(HANDLE_EINTR(read(cpu_info_fd, buf, sizeof(buf))) > 0);
+  std::array<char, 1024> buf;
+  BPF_ASSERT(HANDLE_EINTR(read(cpu_info_fd, buf.data(), buf.size())) > 0);
 }
 
 // The rest of the tests do not run under thread sanitizer, as TSAN starts up an
@@ -267,7 +271,7 @@ class Syscaller {
                    bool follow_links,
                    struct stat* statbuf) = 0;
   virtual int Rename(const char* oldpath, const char* newpath) = 0;
-  virtual int Readlink(const char* path, char* buf, size_t bufsize) = 0;
+  virtual int Readlink(const char* path, base::span<char> buf) = 0;
   virtual int Mkdir(const char* pathname, mode_t mode) = 0;
   virtual int Rmdir(const char* path) = 0;
   virtual int Unlink(const char* path) = 0;
@@ -302,8 +306,9 @@ class IPCSyscaller : public Syscaller {
     return broker_->GetBrokerClientSignalBased()->Rename(oldpath, newpath);
   }
 
-  int Readlink(const char* path, char* buf, size_t bufsize) override {
-    return broker_->GetBrokerClientSignalBased()->Readlink(path, buf, bufsize);
+  int Readlink(const char* path, base::span<char> buf) override {
+    return broker_->GetBrokerClientSignalBased()->Readlink(path, buf.data(),
+                                                           buf.size());
   }
 
   int Mkdir(const char* pathname, mode_t mode) override {
@@ -374,8 +379,8 @@ class DirectSyscaller : public Syscaller {
     return ret;
   }
 
-  int Readlink(const char* path, char* buf, size_t bufsize) override {
-    int ret = syscall(__NR_readlink, path, buf, bufsize);
+  int Readlink(const char* path, base::span<char> buf) override {
+    int ret = syscall(__NR_readlink, path, buf.data(), buf.size());
     if (ret < 0)
       return -errno;
     return ret;
@@ -444,8 +449,8 @@ class LibcSyscaller : public Syscaller {
     return ret;
   }
 
-  int Readlink(const char* path, char* buf, size_t bufsize) override {
-    int ret = readlink(path, buf, bufsize);
+  int Readlink(const char* path, base::span<char> buf) override {
+    int ret = readlink(path, buf.data(), buf.size());
     if (ret < 0)
       return -errno;
     return ret;
@@ -953,9 +958,9 @@ class OpenCpuinfoDelegate final : public BrokerTestDelegate {
     // Open cpuinfo directly.
     int cpu_info_fd = HANDLE_EINTR(open(kFileCpuInfo, O_RDONLY));
     BPF_ASSERT_GE(cpu_info_fd, 0);
-    UNSAFE_TODO(memset(cpuinfo_buf_, 1, sizeof(cpuinfo_buf_)));
-    read_len_unsandboxed_ =
-        HANDLE_EINTR(read(cpu_info_fd, cpuinfo_buf_, sizeof(cpuinfo_buf_)));
+    std::ranges::fill(cpuinfo_buf_, 1);
+    read_len_unsandboxed_ = HANDLE_EINTR(
+        read(cpu_info_fd, cpuinfo_buf_.data(), cpuinfo_buf_.size()));
     BPF_ASSERT_GT(read_len_unsandboxed_, 0);
 
     BrokerParams params;
@@ -982,17 +987,20 @@ class OpenCpuinfoDelegate final : public BrokerTestDelegate {
     int cpuinfo_fd = syscaller->Open(kFileCpuInfo, O_RDONLY);
     base::ScopedFD cpuinfo_fd_closer(cpuinfo_fd);
     BPF_ASSERT_GE(cpuinfo_fd, 0);
-    char buf[3];
-    UNSAFE_TODO(memset(buf, 0, sizeof(buf)));
-    int read_len_sandboxed = HANDLE_EINTR(read(cpuinfo_fd, buf, sizeof(buf)));
+    std::array<char, 3> buf;
+    std::ranges::fill(buf, 0);
+    int read_len_sandboxed =
+        HANDLE_EINTR(read(cpuinfo_fd, buf.data(), buf.size()));
     BPF_ASSERT_GT(read_len_sandboxed, 0);
 
     // The following is not guaranteed true, but will be in practice.
     BPF_ASSERT_EQ(read_len_sandboxed, read_len_unsandboxed_);
     // Compare the cpuinfo as returned by the broker with the one we opened
     // ourselves.
-    UNSAFE_TODO(
-        BPF_ASSERT_EQ(memcmp(buf, cpuinfo_buf_, read_len_sandboxed), 0));
+    BPF_ASSERT_EQ(
+        base::span(buf).first(static_cast<size_t>(read_len_sandboxed)),
+        base::span(cpuinfo_buf_)
+            .first(static_cast<size_t>(read_len_sandboxed)));
   }
 
  private:
@@ -1000,7 +1008,7 @@ class OpenCpuinfoDelegate final : public BrokerTestDelegate {
   const char* const kDirProc = "/proc/";
 
   int read_len_unsandboxed_ = -1;
-  char cpuinfo_buf_[3];
+  std::array<char, 3> cpuinfo_buf_;
 };
 
 TEST(BrokerProcessIntegrationTest, OpenCpuinfoRecursive) {
@@ -1040,11 +1048,11 @@ class OpenFileRWDelegate final : public BrokerTestDelegate {
 
     // Read back from the original file descriptor what we wrote through
     // the descriptor provided by the broker.
-    char buf[1024];
-    len = HANDLE_EINTR(read(tempfile.fd(), buf, sizeof(buf)));
+    std::array<char, 1024> buf;
+    len = HANDLE_EINTR(read(tempfile.fd(), buf.data(), buf.size()));
 
     BPF_ASSERT_EQ(len, static_cast<ssize_t>(sizeof(test_text)));
-    UNSAFE_TODO(BPF_ASSERT_EQ(memcmp(test_text, buf, sizeof(test_text)), 0));
+    BPF_ASSERT_EQ(base::span(buf).first(sizeof(test_text)), test_text);
 
     BPF_ASSERT_EQ(close(tempfile2), 0);
   }
@@ -1275,10 +1283,10 @@ class CreateFileDelegate final : public BrokerTestDelegate {
     BPF_ASSERT_GE(fd_check, 0);
     {
       base::ScopedFD scoped_fd(fd_check);
-      char buf[1024];
-      ssize_t len = HANDLE_EINTR(read(fd_check, buf, sizeof(buf)));
+      std::array<char, 1024> buf;
+      ssize_t len = HANDLE_EINTR(read(fd_check, buf.data(), buf.size()));
       BPF_ASSERT_EQ(len, static_cast<ssize_t>(sizeof(kTestText)));
-      UNSAFE_TODO(BPF_ASSERT_EQ(memcmp(kTestText, buf, sizeof(kTestText)), 0));
+      BPF_ASSERT_EQ(base::span(buf).first(sizeof(kTestText)), kTestText);
     }
   }
 
@@ -1307,7 +1315,7 @@ class StatFileDelegate : public BrokerTestDelegate {
  public:
   BrokerParams ChildSetUpPreSandbox() override {
     BPF_ASSERT_EQ(12, HANDLE_EINTR(write(tmp_file_.fd(), "blahblahblah", 12)));
-    UNSAFE_TODO(memset(&sb_, 0, sizeof(sb_)));
+    sb_ = {};
     return BrokerParams();
   }
 
@@ -1760,7 +1768,7 @@ class ReadlinkTestDelegate : public BrokerTestDelegate {
   std::string oldpath_;
   std::string newpath_;
 
-  char readlink_buf_[1024];
+  std::array<char, 1024> readlink_buf_;
 };
 
 // Actual file with permissions to see file but command itself not allowed.
@@ -1782,8 +1790,7 @@ TEST(BrokerProcessIntegrationTest, ReadlinkNoCommand) {
 
 void ReadlinkNoCommandDelegate::RunTestInSandboxedChild(Syscaller* syscaller) {
   BPF_ASSERT_EQ(-kFakeErrnoSentinel,
-                syscaller->Readlink(newpath_.c_str(), readlink_buf_,
-                                    sizeof(readlink_buf_)));
+                syscaller->Readlink(newpath_.c_str(), readlink_buf_));
 }
 
 // Nonexistent file with no permissions to see file.
@@ -1800,8 +1807,7 @@ class ReadlinkNonexistentNoPermissionsDelegate final
 
   void RunTestInSandboxedChild(Syscaller* syscaller) override {
     BPF_ASSERT_EQ(-kFakeErrnoSentinel,
-                  syscaller->Readlink(nonesuch_name, readlink_buf_,
-                                      sizeof(readlink_buf_)));
+                  syscaller->Readlink(nonesuch_name, readlink_buf_));
   }
 };
 
@@ -1822,8 +1828,7 @@ class ReadlinkNoPermissionsDelegate final : public ReadlinkTestDelegate {
 
   void RunTestInSandboxedChild(Syscaller* syscaller) override {
     BPF_ASSERT_EQ(-kFakeErrnoSentinel,
-                  syscaller->Readlink(newpath_.c_str(), readlink_buf_,
-                                      sizeof(readlink_buf_)));
+                  syscaller->Readlink(newpath_.c_str(), readlink_buf_));
   }
 };
 
@@ -1843,8 +1848,7 @@ class ReadlinkNonexistentWithPermissionsDelegate final
     return params;
   }
   void RunTestInSandboxedChild(Syscaller* syscaller) override {
-    BPF_ASSERT_EQ(-ENOENT, syscaller->Readlink(nonesuch_name, readlink_buf_,
-                                               sizeof(readlink_buf_)));
+    BPF_ASSERT_EQ(-ENOENT, syscaller->Readlink(nonesuch_name, readlink_buf_));
   }
 };
 
@@ -1863,11 +1867,10 @@ class ReadlinkFileWithPermissionsDelegate final : public ReadlinkTestDelegate {
     return params;
   }
   void RunTestInSandboxedChild(Syscaller* syscaller) override {
-    ssize_t retlen = syscaller->Readlink(newpath_.c_str(), readlink_buf_,
-                                         sizeof(readlink_buf_));
+    ssize_t retlen = syscaller->Readlink(newpath_.c_str(), readlink_buf_);
     BPF_ASSERT(retlen == static_cast<ssize_t>(oldpath_.length()));
-    UNSAFE_TODO(
-        BPF_ASSERT_EQ(0, memcmp(oldpath_.c_str(), readlink_buf_, retlen)));
+    BPF_ASSERT_EQ(base::span(readlink_buf_).first(static_cast<size_t>(retlen)),
+                  oldpath_);
   }
 };
 
@@ -1887,7 +1890,8 @@ class ReadlinkFileWithPermissionsSmallBufferDelegate final
     return params;
   }
   void RunTestInSandboxedChild(Syscaller* syscaller) override {
-    BPF_ASSERT_EQ(4, syscaller->Readlink(newpath_.c_str(), readlink_buf_, 4));
+    BPF_ASSERT_EQ(4, syscaller->Readlink(newpath_.c_str(),
+                                         base::span(readlink_buf_).first(4u)));
   }
 };
 
@@ -2805,10 +2809,14 @@ class InotifyAddWatchSuccessDelegate final : public InotifyAddWatchDelegate {
     // |wd|. The test will timeout if no inotify notifications are ever
     // generated.
     std::vector<char> buf(4096);
-    BPF_ASSERT_GE(read(inotify_instance.get(), buf.data(), buf.size()), 0);
-    struct inotify_event* event =
-        UNSAFE_TODO(reinterpret_cast<struct inotify_event*>(buf.data()));
-    BPF_ASSERT_EQ(event->wd, wd);
+    ssize_t bytes_read = read(inotify_instance.get(), buf.data(), buf.size());
+    BPF_ASSERT_GE(bytes_read,
+                  static_cast<ssize_t>(sizeof(struct inotify_event)));
+    base::SpanReader reader(
+        base::as_byte_span(buf).first(static_cast<size_t>(bytes_read)));
+    int32_t event_wd;
+    BPF_ASSERT(reader.ReadI32NativeEndian(event_wd));
+    BPF_ASSERT_EQ(event_wd, wd);
 
     // Removing the watch should succeed.
     BPF_ASSERT_GE(inotify_rm_watch(inotify_instance.get(), wd), 0);
