@@ -36,6 +36,20 @@
 
 namespace page_actions {
 
+namespace {
+
+IconLabelBubbleView::AnimationStyle GetViewsAnimationStyle(
+    PageActionAnimationStyle style) {
+  switch (style) {
+    case PageActionAnimationStyle::kStandard:
+      return IconLabelBubbleView::AnimationStyle::kStandard;
+    case PageActionAnimationStyle::kSlideAndCrossfade:
+      return IconLabelBubbleView::AnimationStyle::kSlideAndCrossfade;
+  }
+}
+
+}  // namespace
+
 PageActionView::PageActionView(actions::ActionItem* action_item,
                                const PageActionViewParams& params,
                                PageActionIconType type,
@@ -164,7 +178,6 @@ void PageActionView::OnPageActionModelChanged(
   if (visible) {
     SetLabel(model.GetText(), model.GetAccessibleName());
     SetTooltipText(model.GetTooltipText());
-    UpdateIconImage();
   }
 
   if (model.GetActionActive() && !highlight_) {
@@ -174,22 +187,9 @@ void PageActionView::OnPageActionModelChanged(
   }
 
   const bool was_chip_visible = IsChipVisible();
-  if (!visible) {
-    ResetSlideAnimation(/*show=*/false);
-    NotifyIsChipShowingChange();
-  } else if (model.ShouldShowSuggestionChip()) {
-    if (model.GetShouldAnimateChipIn()) {
-      AnimateIn(/*string_id=*/std::nullopt);
-    } else {
-      ResetSlideAnimation(/*show=*/true);
-      NotifyIsChipShowingChange();
-    }
-  } else if (model.GetShouldAnimateChipOut()) {
-    AnimateOut();
-  } else {
-    ResetSlideAnimation(/*show=*/false);
-    NotifyIsChipShowingChange();
-  }
+
+  UpdateAnimationState(model);
+  UpdateIconImage();
 
   if (visible && model.ShouldShowAnchoredMessage()) {
     CreateAndShowAnchoredMessage(model);
@@ -202,6 +202,54 @@ void PageActionView::OnPageActionModelChanged(
   // newly shown.
   if (model.GetShouldAnnounceChip() && !was_chip_visible && IsChipVisible()) {
     GetViewAccessibility().AnnounceAlert(label()->GetText());
+  }
+}
+
+void PageActionView::UpdateAnimationState(
+    const PageActionModelInterface& model) {
+  const bool visible = model.GetVisible();
+
+  // Configure views style and trailing icon first.
+  const auto views_style = GetViewsAnimationStyle(model.GetAnimationStyle());
+
+  // If hidden, reset the slide animation.
+  if (!visible) {
+    ResetSlideAnimation(/*show=*/false);
+    NotifyIsChipShowingChange();
+    return;
+  }
+
+  // Drive the transitions based on the animation.
+  if (views_style == IconLabelBubbleView::AnimationStyle::kSlideAndCrossfade) {
+    HandleSlideAndCrossfadeTransition(model);
+  } else {
+    HandleSuggestionChipTransition(model);
+  }
+}
+
+void PageActionView::HandleSlideAndCrossfadeTransition(
+    const PageActionModelInterface& model) {
+  if (model.GetShowTrailingIcon()) {
+    AnimateIn(/*string_id=*/std::nullopt);
+  } else {
+    AnimateOut();
+  }
+}
+
+void PageActionView::HandleSuggestionChipTransition(
+    const PageActionModelInterface& model) {
+  if (model.ShouldShowSuggestionChip()) {
+    if (model.GetShouldAnimateChipIn()) {
+      AnimateIn(/*string_id=*/std::nullopt);
+    } else {
+      ResetSlideAnimation(/*show=*/true);
+      NotifyIsChipShowingChange();
+    }
+  } else if (model.GetShouldAnimateChipOut()) {
+    AnimateOut();
+  } else {
+    ResetSlideAnimation(/*show=*/false);
+    NotifyIsChipShowingChange();
   }
 }
 
@@ -335,16 +383,36 @@ void PageActionView::UpdateIconImage() {
     AnimateImage(params.value(), icon_color);
   }
 
+  const int drawing_icon_size =
+      icon_image.IsVectorIcon() ? icon_size_ : icon_image.Size().width();
+
   // If image does not have a vector icon, set it directly.
   if (icon_image.IsVectorIcon()) {
     SetImageModel(ui::ImageModel::FromVectorIcon(
-        *icon_image.GetVectorIcon().vector_icon(), icon_color, icon_size_));
+        *icon_image.GetVectorIcon().vector_icon(), icon_color,
+        drawing_icon_size));
   } else {
     SetImageModel(icon_image);
     // For non-vector icons, the border needs to be updated to accommodate the
     // icon, as the icon size may vary. For vector icons, the border gets
     // set on instantiation and does not need to be updated again.
     UpdateBorder();
+  }
+
+  // Add trailing icon if it is set.
+  std::optional<ui::ImageModel> trailing_image_opt =
+      observation_.GetSource()->GetTrailingImage();
+  if (trailing_image_opt.has_value()) {
+    const auto& trailing_image = trailing_image_opt.value();
+    if (trailing_image.IsVectorIcon()) {
+      SetCrossfadeImage(ui::ImageModel::FromVectorIcon(
+          *trailing_image.GetVectorIcon().vector_icon(), icon_color,
+          drawing_icon_size));
+    } else {
+      SetCrossfadeImage(trailing_image);
+    }
+  } else {
+    SetCrossfadeImage(ui::ImageModel());
   }
 }
 

@@ -263,6 +263,33 @@ void PageActionModel::SetActionActive(PageActionPassKey, bool is_active) {
   NotifyChange(Property::kActionActive);
 }
 
+void PageActionModel::SetAnimationStyle(PageActionPassKey,
+                                        PageActionAnimationStyle style) {
+  if (animation_style_ == style) {
+    return;
+  }
+  animation_style_ = style;
+  NotifyChange(Property::kAnimationStyle);
+}
+
+void PageActionModel::SetTrailingImage(
+    PageActionPassKey,
+    const std::optional<ui::ImageModel>& image) {
+  if (trailing_image_ == image) {
+    return;
+  }
+  trailing_image_ = image;
+  NotifyChange(Property::kTrailingImage);
+}
+
+void PageActionModel::SetShowTrailingIcon(PageActionPassKey, bool show) {
+  if (show_trailing_icon_ == show) {
+    return;
+  }
+  show_trailing_icon_ = show;
+  NotifyChange(Property::kShowTrailingIcon);
+}
+
 void PageActionModel::AddObserver(PageActionModelObserver* observer) {
   observer_list_.AddObserver(observer);
 }
@@ -384,6 +411,18 @@ const std::optional<ui::ImageModel>& PageActionModel::GetAnchoredMessageIcon()
 const std::optional<AnchoredMessageExpandableContent>&
 PageActionModel::GetAnchoredMessageExpandableContent() const {
   return expandable_content_;
+}
+
+PageActionAnimationStyle PageActionModel::GetAnimationStyle() const {
+  return animation_style_;
+}
+
+std::optional<ui::ImageModel> PageActionModel::GetTrailingImage() const {
+  return trailing_image_;
+}
+
+bool PageActionModel::GetShowTrailingIcon() const {
+  return show_trailing_icon_;
 }
 
 }  // namespace page_actions

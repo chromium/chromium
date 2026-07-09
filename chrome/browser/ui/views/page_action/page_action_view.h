@@ -167,6 +167,10 @@ class PageActionView : public IconLabelBubbleView,
 
   void CreateAndShowAnchoredMessage(const PageActionModelInterface& model);
 
+  void UpdateAnimationState(const PageActionModelInterface& model);
+  void HandleSlideAndCrossfadeTransition(const PageActionModelInterface& model);
+  void HandleSuggestionChipTransition(const PageActionModelInterface& model);
+
   base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
   base::ScopedObservation<PageActionModelInterface, PageActionModelObserver>
       observation_{this};

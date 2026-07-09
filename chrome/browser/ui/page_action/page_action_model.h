@@ -99,6 +99,11 @@ class PageActionModelInterface {
   virtual void SetIsAnchoredMessageShowing(
       PageActionPassKey pass_key,
       bool is_anchored_message_showing) = 0;
+  virtual void SetAnimationStyle(PageActionPassKey pass_key,
+                                 PageActionAnimationStyle style) = 0;
+  virtual void SetTrailingImage(PageActionPassKey pass_key,
+                                const std::optional<ui::ImageModel>& image) = 0;
+  virtual void SetShowTrailingIcon(PageActionPassKey pass_key, bool show) = 0;
 
   virtual bool GetVisible() const = 0;
   virtual bool IsChipShowing() const = 0;
@@ -126,6 +131,9 @@ class PageActionModelInterface {
   virtual bool GetActionItemIsShowingBubble() const = 0;
   virtual bool GetActionActive() const = 0;
   virtual PageActionColorSource GetColorSource() const = 0;
+  virtual PageActionAnimationStyle GetAnimationStyle() const = 0;
+  virtual std::optional<ui::ImageModel> GetTrailingImage() const = 0;
+  virtual bool GetShowTrailingIcon() const = 0;
 
   virtual bool IsEphemeral() const = 0;
 };
@@ -208,6 +216,11 @@ class PageActionModel : public PageActionModelInterface {
 
   void SetIsAnchoredMessageShowing(PageActionPassKey pass_key,
                                    bool is_anchored_message_showing) override;
+  void SetAnimationStyle(PageActionPassKey pass_key,
+                         PageActionAnimationStyle style) override;
+  void SetTrailingImage(PageActionPassKey pass_key,
+                        const std::optional<ui::ImageModel>& image) override;
+  void SetShowTrailingIcon(PageActionPassKey pass_key, bool show) override;
 
   // The model distills all visibility properties into a single result.
   bool GetVisible() const override;
@@ -236,6 +249,9 @@ class PageActionModel : public PageActionModelInterface {
   bool GetActionItemIsShowingBubble() const override;
   bool GetActionActive() const override;
   PageActionColorSource GetColorSource() const override;
+  PageActionAnimationStyle GetAnimationStyle() const override;
+  std::optional<ui::ImageModel> GetTrailingImage() const override;
+  bool GetShowTrailingIcon() const override;
 
   bool IsEphemeral() const override;
 
@@ -263,7 +279,10 @@ class PageActionModel : public PageActionModelInterface {
     kIsAnchoredMessageShowing,
     kAnchoredMessageIcon,
     kAnchoredMessageExpandableContent,
-    kMaxValue = kAnchoredMessageExpandableContent,
+    kAnimationStyle,
+    kTrailingImage,
+    kShowTrailingIcon,
+    kMaxValue = kShowTrailingIcon,
   };
   using PropertySet =
       base::EnumSet<Property, Property::kShowRequested, Property::kMaxValue>;
@@ -356,6 +375,11 @@ class PageActionModel : public PageActionModelInterface {
   // Represents whether this page action should ignore visibility override set
   // by `is_suppressed_by_omnibox_` variable (eg. AI mode page action).
   bool is_exempt_from_omnibox_suppression_ = false;
+
+  PageActionAnimationStyle animation_style_ =
+      PageActionAnimationStyle::kStandard;
+  std::optional<ui::ImageModel> trailing_image_;
+  bool show_trailing_icon_ = false;
 
   // Flag used while notifying observers.
   bool is_notifying_observers_ = false;

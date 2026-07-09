@@ -45,6 +45,7 @@
 #include "components/search_engines/ai_mode_button_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/vector_icons/vector_icons.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -277,6 +278,22 @@ void AiModePageActionController::UpdatePageActionUi(bool is_visible) {
   page_action_controller->OverrideTooltip(kActionAiMode, config->tooltip);
   page_action_controller->OverrideAccessibleName(kActionAiMode,
                                                  config->a11y_label);
+
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxDynamicAiModeButton)) {
+    page_action_controller->SetAnimationStyle(
+        kActionAiMode,
+        page_actions::PageActionAnimationStyle::kSlideAndCrossfade);
+    page_action_controller->SetTrailingImage(
+        kActionAiMode,
+        ui::ImageModel::FromVectorIcon(vector_icons::kArrowForwardIcon));
+
+    bool has_user_input = false;
+    if (auto* omnibox_controller = location_bar_view_->GetOmniboxController()) {
+      has_user_input = omnibox_controller->edit_model() &&
+                       !omnibox_controller->edit_model()->user_text().empty();
+    }
+    page_action_controller->SetShowTrailingIcon(kActionAiMode, has_user_input);
+  }
 
   if (config->id == SearchEngineType::SEARCH_ENGINE_GOOGLE) {
     ShowAndOverrideImage(

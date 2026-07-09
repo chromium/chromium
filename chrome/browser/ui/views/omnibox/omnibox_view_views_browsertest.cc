@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base.h"
@@ -1708,6 +1709,58 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsAIMButtonPreferenceTest,
 
   chrome::ToggleShowAiModeOmniboxButton(browser());
   EXPECT_TRUE(ai_mode_icon->GetVisible());
+}
+
+class OmniboxViewViewsAIMButtonDynamicTest
+    : public OmniboxViewViewsAIMBrowserTest {
+ public:
+  OmniboxViewViewsAIMButtonDynamicTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPageActionsMigration, {{"ai_mode", "true"}}},
+         {omnibox::kWebUIOmniboxDynamicAiModeButton, {}}},
+        {lens::features::kLensOverlay});
+  }
+
+ protected:
+  void FocusOmnibox() {
+    omnibox()->SetUserText(u"");
+    OmniboxViewViews* view = static_cast<OmniboxViewViews*>(omnibox());
+    view->RequestFocus();
+    ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
+  }
+
+  OmniboxViewViews* omnibox_views() {
+    return static_cast<OmniboxViewViews*>(omnibox());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsAIMButtonDynamicTest,
+                       QueryShowsArrowIcon) {
+  FocusOmnibox();
+
+  IconLabelBubbleView* ai_mode_icon =
+      omnibox_views()->GetAiModePageActionIconView();
+  ASSERT_TRUE(ai_mode_icon);
+  EXPECT_TRUE(ai_mode_icon->GetVisible());
+
+  // Animation progress starts at 0.0 (Spark icon active)
+  ai_mode_icon->slide_animation_for_testing().SetSlideDuration(
+      base::Seconds(0));
+  EXPECT_EQ(ai_mode_icon->slide_animation_for_testing().GetCurrentValue(), 0.0);
+
+  // Simulate typing in progress
+  auto* edit_model = BrowserWindow::FromBrowser(browser())
+                         ->GetLocationBar()
+                         ->GetOmniboxController()
+                         ->edit_model();
+  edit_model->SetInputInProgress(true);
+  omnibox()->SetUserText(u"a", true);
+
+  // Animation should finish and progress should end at 1.0 (Arrow active)
+  EXPECT_EQ(ai_mode_icon->slide_animation_for_testing().GetCurrentValue(), 1.0);
 }
 
 // OmniboxViewViewsPlaceholderTest
