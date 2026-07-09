@@ -524,10 +524,8 @@ IN_PROC_BROWSER_TEST_F(
   CheckNoResizeHappened();
 }
 
-// TODO(crbug.com/429495554): Flaky on most bots across all platforms.
-IN_PROC_BROWSER_TEST_F(
-    MultiContentsViewWebContentsReLayoutBrowserTest,
-    DISABLED_EnterAndExitFullscreenInSplitTabShouldResizeThreeTimes) {
+IN_PROC_BROWSER_TEST_F(MultiContentsViewWebContentsReLayoutBrowserTest,
+                       EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes) {
 #if BUILDFLAG(IS_OZONE)
   // TODO(crbug.com/429495554): Investigate why this test failed on wayland.
   if (ui::OzonePlatform::RunningOnWaylandForTest()) {
@@ -573,17 +571,9 @@ IN_PROC_BROWSER_TEST_F(
       [this, split_tab]() { return GetResizeCount(split_tab) >= 2; }));
   RunScheduledLayouts();
 
-  // The WebContents is resized three times when entering and exiting fullscreen
-  // due to the layout process involving the new `main_container_`:
-  // 1. `BrowserViewLayout` sets the bounds of `main_container_`. The default
-  //    layout manager for `main_container_` immediately resizes its child,
-  //    `contents_container_`, to fit.
-  // 2. `BrowserViewLayout` then explicitly sets the bounds of
-  //    `contents_container_` itself, triggering a second layout.
-  // 3. `BrowserViewLayout` also updates separators in `MultiContentsView`,
-  //    which calls `InvalidateLayout()`, scheduling a final, asynchronous
-  //    layout pass.
-  EXPECT_EQ(GetResizeCount(split_tab), 3);
+  // The WebContents is resized two times, one each when entering and exiting
+  // fullscreen.
+  EXPECT_EQ(GetResizeCount(split_tab), 2);
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, OnlyFocusTabsInSplitView) {
