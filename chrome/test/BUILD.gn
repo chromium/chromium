@@ -3240,7 +3240,6 @@ if (!is_android) {
       "../browser/page_load_metrics/observers/navigation_initiator_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/prerender_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/use_counter_page_load_metrics_observer_browsertest.cc",
-      "../browser/prefs/tracked/pref_hash_browsertest.cc",
       "../browser/renderer_host/javascript_optimizer_feature_browsertest.cc",
       "../browser/safe_browsing/download_protection/download_protection_service_browsertest.cc",
       "../browser/signin/e2e_tests/live_sign_in_test.cc",

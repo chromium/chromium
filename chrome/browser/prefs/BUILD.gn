@@ -602,17 +602,24 @@ if (!is_android) {
     sources = [
       "pref_functional_browsertest.cc",
       "pref_service_browsertest.cc",
+      "tracked/pref_hash_browsertest.cc",
     ]
 
     deps = [
       "//base",
       "//base/test:test_support",
       "//chrome/browser",
+      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/prefs",
+      "//chrome/browser/prefs:util",
       "//chrome/browser/preloading:prefs",
+      "//chrome/browser/search_engine_choice",
       "//chrome/browser/search_engines",
+      "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common",
       "//chrome/common:constants",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",
@@ -621,17 +628,28 @@ if (!is_android) {
       "//components/content_settings/core/browser",
       "//components/content_settings/core/common",
       "//components/embedder_support",
+      "//components/prefs",
       "//components/safe_browsing/core/common:safe_browsing_prefs",
+      "//components/search_engines",
+      "//components/signin/public/base",
+      "//components/sync/base",
       "//components/sync_preferences",
       "//content/public/browser",
       "//content/test:test_support",
+      "//extensions/browser",
+      "//extensions/common",
       "//net:test_support",
+      "//services/preferences/public/cpp/tracked",
+      "//services/preferences/tracked:features",
       "//testing/gmock",
       "//ui/gfx/geometry",
     ]
 
     if (is_win) {
-      deps += [ "//chrome/browser/win:isolated_browser_support" ]
+      deps += [
+        "//chrome/browser/win:isolated_browser_support",
+        "//chrome/install_static:install_static_util",
+      ]
     }
   }
 }
