@@ -14,6 +14,7 @@
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 
 namespace readaloud {
 
@@ -98,7 +99,7 @@ void ReadAloudService::EnsureServiceConnected() {
     return;
   }
   content::ServiceProcessHost::Launch<
-      read_aloud::mojom::ReadAloudPlayerFactory>(
+      read_aloud::mojom::ReadAloudPlaybackControllerFactory>(
       player_factory_.BindNewPipeAndPassReceiver(),
       content::ServiceProcessHost::Options()
           // TODO(b/525116429): Use localized string resource.
@@ -106,11 +107,11 @@ void ReadAloudService::EnsureServiceConnected() {
           .Pass());
   player_factory_.reset_on_disconnect();
 
-  // Create player in utility process and bind our utility endpoints.
+  // Create controller in utility process and bind our utility endpoints.
   utility_player_.reset();
   utility_observer_receiver_.reset();
 
-  player_factory_->CreatePlayer(
+  player_factory_->CreateController(
       utility_player_.BindNewPipeAndPassReceiver(),
       utility_observer_receiver_.BindNewPipeAndPassRemote());
 
@@ -127,6 +128,23 @@ void ReadAloudService::OnUtilityDisconnect() {
 void ReadAloudService::OnDistillationFailed(
     dom_distiller::DistillationParseResult reason) {
   base::UmaHistogramEnumeration("ReadAloud.Distillation.FailureReason", reason);
+}
+
+void ReadAloudService::OnPlaybackStateChanged(
+    read_aloud::mojom::PlaybackState state) {}
+
+void ReadAloudService::OnPlaybackDurationChanged(base::TimeDelta duration) {}
+
+void ReadAloudService::OnWordBoundaryReached(uint32_t segment_index,
+                                             uint32_t character_offset,
+                                             base::TimeDelta audio_timestamp) {}
+
+void ReadAloudService::RequestSpeechSynthesis(
+    const std::u16string& text_chunk,
+    uint64_t sequence_id,
+    read_aloud::mojom::ReadAloudPlaybackControllerClient::
+        RequestSpeechSynthesisCallback callback) {
+  std::move(callback).Run(mojo_base::BigBuffer(), false);
 }
 
 }  // namespace readaloud

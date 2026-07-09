@@ -4,29 +4,79 @@
 
 module read_aloud.mojom;
 
+import "media/mojo/mojom/audio_data_pipe.mojom";
+import "media/mojo/mojom/audio_output_stream.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/work_in_progress.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
+struct TextSegment {
+  // 0-based index of this segment in reading order. Echoed back in
+  // `OnWordBoundaryReached()` to identify the active DOM/AX node.
+  uint32 segment_index;
+  mojo_base.mojom.String16 text;
+};
+
+enum PlaybackState {
+  kPaused,
+  kBuffering,
+  kPlaying,
+  kError,
+};
+
 // Interface for controlling playback (ReadAloudService [Browser] ->
-// ReadAloudAudioRenderer [Utility])
+// ReadAloudPlaybackController [Utility])
+// TODO(b/529882158): Migrate from kMojomWorkInProgress to a production
+// feature flag.
 [RuntimeFeature=mojo_base.mojom.kMojomWorkInProgress]
-interface ReadAloudPlayer {
-  // TODO(b/524284246): Add playback control methods (Play, Pause, etc.).
+interface ReadAloudPlaybackController {
+  InitializeAudio(pending_remote<media.mojom.AudioOutputStream> stream,
+                  media.mojom.ReadWriteAudioDataPipe data_pipe);
+  // Replaces the article text. If playback is active, cancels in-flight synthesis,
+  // flushes prefetch caches, resets the cursor to index 0, and pauses (`kPaused`).
+  SetTextContent(array<TextSegment> segments);
+  Play();
+  Pause();
+  SeekToWord(uint32 segment_index, uint32 character_offset);
+  SeekToTime(mojo_base.mojom.TimeDelta position);
+  SetVoice(string voice_id);
+  // Sets the speech audio speed multiplier (`1.0` is normal speed).
+  // `rate` must be positive (> 0.0); out-of-bounds rates (< 0.25 or > 4.0) are clamped.
+  SetPlaybackRate(float rate);
+  // Discards all queued audio in both the `ReadWriteAudioDataPipe` (PCM frames)
+  // and the utility process's internal `PrefetchCache` (`BigBuffer` audio payloads).
+  FlushBuffers();
 };
 
 // Interface for receiving status updates
-// (ReadAloudAudioRenderer [Utility] -> ReadAloudService [Browser])
+// (ReadAloudPlaybackController [Utility] -> ReadAloudService [Browser])
+// TODO(b/529882158): Migrate from kMojomWorkInProgress to a production
+// feature flag.
 [RuntimeFeature=mojo_base.mojom.kMojomWorkInProgress]
-interface ReadAloudPlayerObserver {
-  // TODO(b/524284246): Add observer methods (OnProgress, OnError, etc.).
+interface ReadAloudPlaybackControllerClient {
+  OnPlaybackStateChanged(PlaybackState state);
+  OnPlaybackDurationChanged(mojo_base.mojom.TimeDelta duration);
+  OnWordBoundaryReached(uint32 segment_index,
+                        uint32 character_offset,
+                        mojo_base.mojom.TimeDelta audio_timestamp);
+  // Synthesizes `text_chunk` into audio. `sequence_id` is a monotonically increasing
+  // request ID used by the utility process to correlate responses and discard stale callbacks.
+  RequestSpeechSynthesis(mojo_base.mojom.String16 text_chunk,
+                         uint64 sequence_id)
+      => (mojo_base.mojom.BigBuffer response_bytes, bool success);
 };
 
 // Factory interface implemented in the utility process to bootstrap the
-// connection to the ReadAloudPlayer.
+// connection to the ReadAloudPlaybackController.
 [ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
-interface ReadAloudPlayerFactory {
-  // Creates a new player instance. Successive calls to this method will
-  // terminate any existing player instance and replace it with the new one.
-  CreatePlayer(pending_receiver<ReadAloudPlayer>? player,
-               pending_remote<ReadAloudPlayerObserver>? observer);
+interface ReadAloudPlaybackControllerFactory {
+  // TODO(b/529882158): `controller` and `client` parameters form a unified session pair.
+  // They are temporarily nullable (`?`) to satisfy `kMojomWorkInProgress` validation rules.
+  // Make them non-nullable once `kMojomWorkInProgress` is replaced with the production flag.
+  // Creates a new controller instance. Successive calls to this method will
+  // terminate any existing controller instance and replace it with the new one.
+  CreateController(pending_receiver<ReadAloudPlaybackController>? controller,
+                   pending_remote<ReadAloudPlaybackControllerClient>? client);
 };

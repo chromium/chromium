@@ -260,10 +260,7 @@ static_library("utility") {
   }
 
   if (is_android) {
-    sources += [
-      "readaloud/read_aloud_playback_controller.cc",
-      "readaloud/read_aloud_playback_controller.h",
-    ]
+    deps += [ "//chrome/services/readaloud" ]
   }
 }
 

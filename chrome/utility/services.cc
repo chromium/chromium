@@ -32,7 +32,7 @@
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/utility/readaloud/read_aloud_playback_controller.h"
+#include "chrome/services/readaloud/read_aloud_playback_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
@@ -443,8 +443,9 @@ auto RunBabelOrcaTachyonParsingService(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-auto RunReadAloudPlayerFactory(
-    mojo::PendingReceiver<read_aloud::mojom::ReadAloudPlayerFactory> receiver) {
+auto RunReadAloudPlaybackControllerFactory(
+    mojo::PendingReceiver<read_aloud::mojom::ReadAloudPlaybackControllerFactory>
+        receiver) {
   return std::make_unique<readaloud::ReadAloudPlaybackController>(
       std::move(receiver));
 }
@@ -470,7 +471,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunOakSessionService);
 
 #if BUILDFLAG(IS_ANDROID)
-  services.Add(RunReadAloudPlayerFactory);
+  services.Add(RunReadAloudPlaybackControllerFactory);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -1,0 +1,17 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("readaloud") {
+  sources = [
+    "read_aloud_playback_controller.cc",
+    "read_aloud_playback_controller.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common:mojo_bindings",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
