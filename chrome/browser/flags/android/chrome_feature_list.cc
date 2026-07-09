@@ -132,6 +132,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableGradientGoogleLogos,
     &autofill::features::kAutofillEnableNewCardBenefitsToggleText,
     &autofill::features::kAutofillEnableNewFopDisplayAndroid,
+    &autofill::features::kAutofillEnablePayNowPayLaterTabs,
     &autofill::features::kAutofillEnableSecurityTouchEventFilteringAndroid,
     &autofill::features::kAutofillEnableSeparatePixPreferenceItem,
     &autofill::features::kAutofillEnableVirtualCardJavaPaymentsDataManager,

@@ -38,4 +38,11 @@ found in the LICENSE file.
     <dimen name="bnpl_tos_header_item_icon_height">36dp</dimen>
     <dimen name="bnpl_tos_header_item_icon_wallet_branding_height">24dp</dimen>
     <dimen name="bnpl_tos_header_item_icon_margin_vertical">12dp</dimen>
+    <!-- Touch to Fill Tabbed Home Screen Dimensions -->
+    <dimen name="ttf_tab_layout_height">48dp</dimen>
+    <dimen name="ttf_tab_layout_margin_vertical">12dp</dimen>
+    <dimen name="ttf_tab_layout_margin_horizontal">24dp</dimen>
+    <dimen name="ttf_tab_layout_corner_radius">12dp</dimen>
+    <dimen name="ttf_tab_item_inset">4dp</dimen>
+    <dimen name="ttf_tab_item_corner_radius">8dp</dimen>
 </resources>

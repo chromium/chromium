@@ -29,6 +29,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.WALLET_SETTINGS_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TAB_SELECTION_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.content.Context;
@@ -248,6 +249,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 .with(SHEET_ITEMS, new ModelList())
                 .with(BACK_PRESS_HANDLER, mediator::onBackButtonPressed)
                 .with(DISMISS_HANDLER, mediator::onDismissed)
+                .with(TAB_SELECTION_HANDLER, mediator::onTabSelected)
                 .build();
     }
 

@@ -275,6 +275,8 @@ public abstract class ChromeFeatureList {
             "AutofillEnableNewCardBenefitsToggleText";
     public static final String AUTOFILL_ENABLE_NEW_FOP_DISPLAY_ANDROID =
             "AutofillEnableNewFopDisplayAndroid";
+    public static final String AUTOFILL_ENABLE_PAY_NOW_PAY_LATER_TABS =
+            "AutofillEnablePayNowPayLaterTabs";
     public static final String AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID =
             "AutofillEnableSecurityTouchEventFilteringAndroid";
     public static final String AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM =

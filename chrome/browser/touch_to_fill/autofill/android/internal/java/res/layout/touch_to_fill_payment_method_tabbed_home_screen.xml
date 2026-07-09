@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/tabbed_header_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/tabbed_header"
+            layout="@layout/touch_to_fill_payment_method_header_item" />
+
+        <com.google.android.material.tabs.TabLayout
+            style="@style/TabLayoutStyle"
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ttf_tab_layout_height"
+            android:layout_marginStart="@dimen/ttf_tab_layout_margin_horizontal"
+            android:layout_marginEnd="@dimen/ttf_tab_layout_margin_horizontal"
+            android:layout_marginBottom="@dimen/ttf_tab_layout_margin_vertical"
+            android:background="@drawable/touch_to_fill_tab_layout_bg"
+            app:tabIndicator="@drawable/touch_to_fill_tab_item_bg"
+            app:tabIndicatorGravity="stretch"
+            app:tabIndicatorColor="@macro/default_bg_color"
+            app:tabIndicatorFullWidth="true"
+            app:tabSelectedTextColor="@macro/default_text_color"
+            app:tabTextColor="@macro/default_text_color_secondary">
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/pay_now_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/autofill_pay_now" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/pay_later_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/autofill_pay_later" />
+        </com.google.android.material.tabs.TabLayout>
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/touch_to_fill_payment_method_tabbed_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/ttf_sheet_margin"
+        android:layout_marginStart="@dimen/ttf_sheet_margin"
+        android:clipToPadding="false"
+        android:divider="@null"
+        tools:listitem="@layout/touch_to_fill_list_item"/>
+</LinearLayout>

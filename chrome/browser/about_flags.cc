@@ -12675,8 +12675,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"autofill-enable-pay-now-pay-later-tabs",
      flag_descriptions::kAutofillEnablePayNowPayLaterTabsName,
-     flag_descriptions::kAutofillEnablePayNowPayLaterTabsDescription,
-     kOsDesktop,
+     flag_descriptions::kAutofillEnablePayNowPayLaterTabsDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnablePayNowPayLaterTabs)},
 
     {"web-authentication-ambient-signin",

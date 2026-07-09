@@ -1054,10 +1054,10 @@
   <message name="IDS_AUTOFILL_CARD_BNPL_LINKED_ISSUER_PILL_LABEL" desc="Label for the linked issuer pill view, which may be displayed on the BNPL select provider screen that prompts the user to choose a pay later provider. If this label is present, it indicates that the user has previously associated this BNPL provider with their Google account." formatter_data="android_java">
     Linked
   </message>
-  <message name="IDS_AUTOFILL_PAY_NOW" desc="Label for the tab in the autofill dropdown allowing the user to pay using a standard payment method, such as a credit card.">
+  <message name="IDS_AUTOFILL_PAY_NOW" desc="Label for the tab in the autofill dropdown allowing the user to pay using a standard payment method, such as a credit card." formatter_data="android_java">
       Pay now
   </message>
-  <message name="IDS_AUTOFILL_PAY_LATER" desc="Label for the tab in the autofill dropdown allowing the user to pay later using a Buy Now, Pay Later (BNPL) provider.">
+  <message name="IDS_AUTOFILL_PAY_LATER" desc="Label for the tab in the autofill dropdown allowing the user to pay later using a Buy Now, Pay Later (BNPL) provider." formatter_data="android_java">
       Pay later
   </message>
   <message name="IDS_AUTOFILL_PAY_NOW_PAY_LATER_TAB_ACCESSIBILITY_ANNOUNCEMENT" desc="Accessibility announcement when a tab is selected within the Autofill popup tabbed pane.">

@@ -56,6 +56,10 @@ found in the LICENSE file.
         <include
             android:id="@+id/touch_to_fill_bnpl_issuer_tos_screen"
             layout="@layout/touch_to_fill_bnpl_issuer_tos_screen" />
+
+        <include
+            android:id="@+id/touch_to_fill_payment_method_tabbed_home_screen"
+            layout="@layout/touch_to_fill_payment_method_tabbed_home_screen" />
     </ViewFlipper>
 
 

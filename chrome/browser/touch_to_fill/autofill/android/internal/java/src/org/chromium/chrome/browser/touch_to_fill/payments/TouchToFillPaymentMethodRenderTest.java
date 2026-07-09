@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -927,6 +928,23 @@ public class TouchToFillPaymentMethodRenderTest {
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(
                 bottomSheetView, "touch_to_fill_credit_card_sheet_scan_credit_card_hidden");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAY_NOW_PAY_LATER_TABS})
+    public void testRenderTabbedHomeScreen() throws IOException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.showPaymentMethods(
+                            List.of(VISA_SUGGESTION, BNPL_SUGGESTION),
+                            new TouchToFillDisplayOptions());
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
+        mRenderTestRule.render(bottomSheetView, "touch_to_fill_payment_method_tabbed_home_screen");
     }
 
     @Test

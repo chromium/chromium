@@ -29,6 +29,7 @@ android_library("java") {
     "//components/prefs/android:java",
     "//content/public/android:content_full_java",
     "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_browser_browser_java",
@@ -54,6 +55,8 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/touch_to_fill_tab_item_bg.xml",
+    "java/res/drawable/touch_to_fill_tab_layout_bg.xml",
     "java/res/layout/touch_to_fill_all_loyalty_cards_item.xml",
     "java/res/layout/touch_to_fill_bnpl_issuer_selection_screen.xml",
     "java/res/layout/touch_to_fill_bnpl_issuer_selection_sheet_item.xml",
@@ -75,6 +78,7 @@ android_resources("java_resources") {
     "java/res/layout/touch_to_fill_payment_method_header_item.xml",
     "java/res/layout/touch_to_fill_payment_method_home_screen.xml",
     "java/res/layout/touch_to_fill_payment_method_sheet.xml",
+    "java/res/layout/touch_to_fill_payment_method_tabbed_home_screen.xml",
     "java/res/layout/touch_to_fill_progress_icon_sheet_item.xml",
     "java/res/layout/touch_to_fill_progress_screen.xml",
     "java/res/layout/touch_to_fill_terms_label_sheet_item.xml",
@@ -99,6 +103,7 @@ robolectric_library("junit") {
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/autofill/android:java",
     "//chrome/browser/autofill/test:test_support_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/touch_to_fill/autofill/android:public_java",
     "//chrome/browser/touch_to_fill/common/android:java",

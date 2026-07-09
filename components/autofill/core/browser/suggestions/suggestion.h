@@ -544,7 +544,8 @@ struct Suggestion {
       case SuggestionType::kBnplEntry:
         if (base::FeatureList::IsEnabled(
                 features::kAutofillEnablePayNowPayLaterTabs)) {
-          return std::holds_alternative<BnplIssuer>(payload);
+          return std::holds_alternative<BnplIssuer>(payload) ||
+                 std::holds_alternative<PaymentsPayload>(payload);
         }
         return std::holds_alternative<PaymentsPayload>(payload);
       case SuggestionType::kAtMemorySearchResult:

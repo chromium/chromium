@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
@@ -17,6 +19,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -35,6 +39,8 @@ class TouchToFillPaymentMethodProperties {
             new PropertyModel.ReadableObjectPropertyKey<>("back_press_handler");
     static final PropertyModel.ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
             new PropertyModel.ReadableObjectPropertyKey<>("dismiss_handler");
+    static final PropertyModel.ReadableObjectPropertyKey<Callback<Integer>> TAB_SELECTION_HANDLER =
+            new PropertyModel.ReadableObjectPropertyKey<>("tab_selection_handler");
     static final PropertyModel.WritableIntPropertyKey SHEET_CONTENT_DESCRIPTION_ID =
             new PropertyModel.WritableIntPropertyKey("sheet_content_description_id");
     static final PropertyModel.WritableIntPropertyKey SHEET_HALF_HEIGHT_DESCRIPTION_ID =
@@ -43,6 +49,12 @@ class TouchToFillPaymentMethodProperties {
             new PropertyModel.WritableIntPropertyKey("sheet_full_height_description_id");
     static final PropertyModel.WritableIntPropertyKey SHEET_CLOSED_DESCRIPTION_ID =
             new PropertyModel.WritableIntPropertyKey("sheet_closed_description_id");
+    static final PropertyModel.WritableIntPropertyKey SELECTED_TAB_INDEX =
+            new PropertyModel.WritableIntPropertyKey("selected_tab_index");
+    static final PropertyModel.WritableIntPropertyKey TABBED_HEADER_LOGO_DRAWABLE_ID =
+            new PropertyModel.WritableIntPropertyKey("tabbed_header_logo_drawable_id");
+    static final PropertyModel.WritableIntPropertyKey TABBED_HEADER_TITLE_ID =
+            new PropertyModel.WritableIntPropertyKey("tabbed_header_title_id");
 
     static final PropertyKey[] ALL_KEYS = {
         VISIBLE,
@@ -51,10 +63,14 @@ class TouchToFillPaymentMethodProperties {
         SHEET_ITEMS,
         BACK_PRESS_HANDLER,
         DISMISS_HANDLER,
+        TAB_SELECTION_HANDLER,
         SHEET_CONTENT_DESCRIPTION_ID,
         SHEET_HALF_HEIGHT_DESCRIPTION_ID,
         SHEET_FULL_HEIGHT_DESCRIPTION_ID,
-        SHEET_CLOSED_DESCRIPTION_ID
+        SHEET_CLOSED_DESCRIPTION_ID,
+        SELECTED_TAB_INDEX,
+        TABBED_HEADER_LOGO_DRAWABLE_ID,
+        TABBED_HEADER_TITLE_ID
     };
 
     // Identifies different screens that can be dynamically displayed by the payments TTF bottom
@@ -77,6 +93,16 @@ class TouchToFillPaymentMethodProperties {
 
         // The screen displaying the legal messages for linking a new BNPL issuer.
         int BNPL_ISSUER_TOS_SCREEN = 5;
+
+        // The tabbed version of the home screen, showing Pay now and Pay later options.
+        int TABBED_HOME_SCREEN = 6;
+    }
+
+    @IntDef({PaymentMethodTabId.PAY_NOW, PaymentMethodTabId.PAY_LATER})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface PaymentMethodTabId {
+        int PAY_NOW = 0;
+        int PAY_LATER = 1;
     }
 
     @interface ItemType {

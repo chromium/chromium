@@ -58,11 +58,15 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_ICON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.ON_LOYALTY_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ProgressIconProperties.PROGRESS_CONTENT_DESCRIPTION_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SELECTED_TAB_INDEX;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CLOSED_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_FULL_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_HALF_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TABBED_HEADER_LOGO_DRAWABLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TABBED_HEADER_TITLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TAB_SELECTION_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.TERMS_LABEL_TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties.LEGAL_MESSAGE_LINES;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties.LINK_OPENER;
@@ -141,6 +145,8 @@ class TouchToFillPaymentMethodViewBinder {
             PropertyModel model, TouchToFillPaymentMethodView view, PropertyKey propertyKey) {
         if (propertyKey == DISMISS_HANDLER) {
             view.setDismissHandler(model.get(DISMISS_HANDLER));
+        } else if (propertyKey == TAB_SELECTION_HANDLER) {
+            view.setTabSelectionHandler(model.get(TAB_SELECTION_HANDLER));
         } else if (propertyKey == BACK_PRESS_HANDLER) {
             view.setBackPressHandler(model.get(BACK_PRESS_HANDLER));
         } else if (propertyKey == VISIBLE) {
@@ -168,6 +174,24 @@ class TouchToFillPaymentMethodViewBinder {
             view.setSheetFullHeightDescriptionId(model.get(SHEET_FULL_HEIGHT_DESCRIPTION_ID));
         } else if (propertyKey == SHEET_CLOSED_DESCRIPTION_ID) {
             view.setSheetClosedDescriptionId(model.get(SHEET_CLOSED_DESCRIPTION_ID));
+        } else if (propertyKey == SELECTED_TAB_INDEX) {
+            view.setSelectedTab(model.get(SELECTED_TAB_INDEX));
+        } else if (propertyKey == TABBED_HEADER_LOGO_DRAWABLE_ID) {
+            View headerView = view.getContentView().findViewById(R.id.tabbed_header);
+            if (headerView != null) {
+                ImageView logo = headerView.findViewById(R.id.branding_icon);
+                if (logo != null) {
+                    logo.setImageResource(model.get(TABBED_HEADER_LOGO_DRAWABLE_ID));
+                }
+            }
+        } else if (propertyKey == TABBED_HEADER_TITLE_ID) {
+            View headerView = view.getContentView().findViewById(R.id.tabbed_header);
+            if (headerView != null) {
+                TextView title = headerView.findViewById(R.id.touch_to_fill_sheet_title);
+                if (title != null) {
+                    title.setText(model.get(TABBED_HEADER_TITLE_ID));
+                }
+            }
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
