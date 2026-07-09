@@ -7,17 +7,22 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_metrics_helper.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/document_service.h"
 #include "third_party/blink/public/mojom/subapps/sub_apps_service.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 class RenderFrameHost;
@@ -50,6 +55,15 @@ struct SubAppInstallResult {
 
 }  // namespace
 
+// Internal enum to represent error codes of add function.
+// It is remapped to ukm and mojo corresponding enums.
+enum class AddCallErrorCode {
+  kUserDeclined,
+  kUserDeclinedEmbargo,
+  kLimitExceeded,
+  kWebAppsNotUserInstallable,
+};
+
 class SubAppsServiceImpl
     : public content::DocumentService<blink::mojom::SubAppsService> {
  public:
@@ -76,18 +90,24 @@ class SubAppsServiceImpl
               RemoveCallback result_callback) override;
 
  private:
+  using AddResult =
+      base::expected<std::vector<blink::mojom::SubAppsServiceAddResultPtr>,
+                     AddCallErrorCode>;
+
   struct AddCallInfo {
     AddCallInfo();
     ~AddCallInfo();
 
     // The callback to run when the API call is complete.
-    AddCallback mojo_callback;
+    base::OnceCallback<void(AddResult)> mojo_callback;
 
     // The list of results for each requested install.
     std::vector<blink::mojom::SubAppsServiceAddResultPtr> results;
 
     // The list of install infos collected from the install URLs.
     std::vector<std::unique_ptr<WebAppInstallInfo>> install_infos;
+
+    bool install_bypassed_prompt = false;
   };
 
   void CollectInstallData(int add_call_id,
@@ -102,6 +122,10 @@ class SubAppsServiceImpl
   void FinishAddCallOrShowInstallDialog(int add_call_id);
   void FinishAddCall(int add_call_id,
                      std::vector<SubAppInstallResult> install_results);
+  void ReportAddMetricsAndRunCallback(const url::Origin& parent_origin,
+                                      int add_call_id,
+                                      AddCallback original_callback,
+                                      AddResult result);
 
   void RemoveSubApp(
       const std::string& manifest_id,
@@ -111,6 +135,8 @@ class SubAppsServiceImpl
   void NotifyUninstall(
       RemoveCallback result_callback,
       std::vector<blink::mojom::SubAppsServiceRemoveResultPtr> remove_results);
+
+  WebAppProvider& provider() const;
 
   SubAppsServiceImpl(
       content::RenderFrameHost& render_frame_host,

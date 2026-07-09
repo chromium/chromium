@@ -23649,6 +23649,88 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SubApp.CountPerParent">
+  <owner>vkrot@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    Recorded when chrome starts.
+  </summary>
+  <metric name="SubAppsCount">
+    <summary>
+      Sub apps count per parent app, more then 0.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="SubApp.InstallResult">
+  <owner>vkrot@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    Recorded when subApp install either succeeds or fails per subApps.add call.
+  </summary>
+  <metric name="Result" enum="SubAppInstallServiceResult">
+    <summary>
+      Result enum of install operation of a single sub app.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="SubApp.Update.ApplyPendingManifestUpdateResult">
+  <owner>vkrot@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    Records the result of web app manifest updating a security sensitive field
+    (name and icons) for a sub app.
+  </summary>
+  <metric name="Result" enum="WebAppApplyPendingManifestUpdateResult">
+    <summary>
+      Result enum of apply pending update operation of a single sub app.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="SubApp.Update.ManifestSilentUpdateCheckResult">
+  <owner>vkrot@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    Records the result of web app manifest silently updating during page
+    navigations for a sub app.
+  </summary>
+  <metric name="Result" enum="WebAppManifestSilentUpdateCheckResult">
+    <summary>
+      Result enum of manifest silent update operation of a single sub app.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="SubresourceFilter" singular="True">
   <owner>csharrison@chromium.org</owner>
   <summary>

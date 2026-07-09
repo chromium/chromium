@@ -11,6 +11,7 @@
 #include "base/strings/to_string.h"
 #include "base/time/clock.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_metrics_helper.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "url/origin.h"
 
 namespace web_app {
 namespace {
@@ -281,6 +283,17 @@ void ApplyPendingManifestUpdateCommand::DeletePendingUpdateInfoThenComplete(
 
 void ApplyPendingManifestUpdateCommand::CompleteCommandAndSelfDestruct(
     ApplyPendingManifestUpdateResult check_result) {
+  // For sub apps send UKM in addition to UMA that is sent via callback chaining
+  // in the constructor.
+  const WebAppRegistrar& registrar = lock_->registrar();
+  const WebApp* app = registrar.GetAppById(app_id_);
+
+  if (app && app->parent_app_id()) {
+    IsolatedWebAppMetricsHelper::ReportSubAppPendingUpdateResult(
+        url::Origin::Create(registrar.GetAppStartUrl(*app->parent_app_id())),
+        check_result);
+  }
+
   GetMutableDebugValue().Set("result", base::ToString(check_result));
 
   CommandResult command_result;

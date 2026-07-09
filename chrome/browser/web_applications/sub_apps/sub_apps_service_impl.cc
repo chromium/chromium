@@ -28,6 +28,7 @@
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_metrics_helper.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -154,12 +155,10 @@ Profile* GetProfile(content::RenderFrameHost& render_frame_host) {
   return Profile::FromBrowserContext(render_frame_host.GetBrowserContext());
 }
 
-WebAppProvider* GetWebAppProvider(content::RenderFrameHost& render_frame_host) {
+WebAppProvider& GetWebAppProvider(content::RenderFrameHost& render_frame_host) {
   auto* const initiator_web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host);
-  auto* provider = WebAppProvider::GetForWebContents(initiator_web_contents);
-  DCHECK(provider);
-  return provider;
+  return CHECK_DEREF(WebAppProvider::GetForWebContents(initiator_web_contents));
 }
 
 const webapps::AppId* GetAppId(content::RenderFrameHost& render_frame_host) {
@@ -187,7 +186,7 @@ bool IsInstalledNonChildApp(content::RenderFrameHost& render_frame_host) {
   }
 
   return GetWebAppProvider(render_frame_host)
-      ->registrar_unsafe()
+      .registrar_unsafe()
       .AppMatches(*app_id, !WebAppFilter::IsIsolatedSubApp());
 }
 
@@ -239,6 +238,66 @@ ContentSetting GetSubAppsContentSetting(content::RenderFrameHost& frame) {
                                 ContentSettingsType::SUB_APPS_WITHOUT_PROMPTS);
 }
 
+IsolatedWebAppMetricsHelper::LogSubAppInstallResult
+MapAddResultTypeToMetricResult(
+    blink::mojom::SubAppsServiceAddResultType result_type,
+    bool bypassed_prompt) {
+  switch (result_type) {
+    case blink::mojom::SubAppsServiceAddResultType::kSuccess:
+      return bypassed_prompt
+                 ? IsolatedWebAppMetricsHelper::LogSubAppInstallResult::
+                       kSuccessBypassApproval
+                 : IsolatedWebAppMetricsHelper::LogSubAppInstallResult::
+                       kSuccess;
+    case blink::mojom::SubAppsServiceAddResultType::kScopeOverlap:
+      return IsolatedWebAppMetricsHelper::LogSubAppInstallResult::
+          kFailureOverlappingScope;
+    case blink::mojom::SubAppsServiceAddResultType::kRecursiveInstall:
+      return IsolatedWebAppMetricsHelper::LogSubAppInstallResult::
+          kFailureRecursiveInstall;
+    case blink::mojom::SubAppsServiceAddResultType::kInvalidManifest:
+      return IsolatedWebAppMetricsHelper::LogSubAppInstallResult::
+          kFailureInvalidManifest;
+    case blink::mojom::SubAppsServiceAddResultType::kAlreadyInstalled:
+      return IsolatedWebAppMetricsHelper::LogSubAppInstallResult::
+          kFailureAlreadyInstalled;
+    case blink::mojom::SubAppsServiceAddResultType::kGenericError:
+      return IsolatedWebAppMetricsHelper::LogSubAppInstallResult::
+          kFailureGeneral;
+  }
+}
+
+blink::mojom::SubAppsServiceResultCode MapAddCallErrorCodeToMojo(
+    AddCallErrorCode result_code) {
+  switch (result_code) {
+    case AddCallErrorCode::kUserDeclined:
+    case AddCallErrorCode::kUserDeclinedEmbargo:
+      return blink::mojom::SubAppsServiceResultCode::kUserDeclined;
+    case AddCallErrorCode::kLimitExceeded:
+      return blink::mojom::SubAppsServiceResultCode::kLimitExceeded;
+    case AddCallErrorCode::kWebAppsNotUserInstallable:
+      return blink::mojom::SubAppsServiceResultCode::kWebAppsNotUserInstallable;
+  }
+}
+
+IsolatedWebAppMetricsHelper::LogSubAppInstallResult MapAddCallErrorCodeToMetric(
+    AddCallErrorCode result_code) {
+  switch (result_code) {
+    case AddCallErrorCode::kUserDeclined:
+      return IsolatedWebAppMetricsHelper::LogSubAppInstallResult::
+          kFailureUserDeclined;
+    case AddCallErrorCode::kUserDeclinedEmbargo:
+      return IsolatedWebAppMetricsHelper::LogSubAppInstallResult::
+          kFailureUserDeclinedEmbargo;
+    case AddCallErrorCode::kLimitExceeded:
+      return IsolatedWebAppMetricsHelper::LogSubAppInstallResult::
+          kFailureNumberOfSubAppsExceedsLimit;
+    case AddCallErrorCode::kWebAppsNotUserInstallable:
+      return IsolatedWebAppMetricsHelper::LogSubAppInstallResult::
+          kFailureWebAppsNotUserInstallable;
+  }
+}
+
 }  // namespace
 
 SubAppsServiceImpl::SubAppsServiceImpl(
@@ -286,24 +345,38 @@ void SubAppsServiceImpl::Add(const std::vector<std::string>& install_paths,
     return;
   }
 
+  const WebAppRegistrar& registrar = provider().registrar_unsafe();
+  auto* parent_app_id = GetAppId(render_frame_host());
+  url::Origin parent_origin =
+      url::Origin::Create(registrar.GetAppStartUrl(*parent_app_id));
+
+  int add_call_id = next_add_call_id_++;
+  AddCallInfo& add_call_info = add_call_info_[add_call_id];
+
+  // Chain the callback to send metrics.
+  add_call_info.mojo_callback =
+      base::BindOnce(&SubAppsServiceImpl::ReportAddMetricsAndRunCallback,
+                     weak_ptr_factory_.GetWeakPtr(), parent_origin, add_call_id,
+                     std::move(result_callback));
+
   if (GetSubAppsContentSetting(render_frame_host()) == CONTENT_SETTING_BLOCK) {
-    std::move(result_callback)
-        .Run(base::unexpected(SubAppsServiceResultCode::kUserDeclined));
+    std::move(add_call_info.mojo_callback)
+        .Run(base::unexpected(AddCallErrorCode::kUserDeclined));
     return;
   }
 
-  // Check if origin is embargoed because of too many dismissals.
   if (PermissionDecisionAutoBlockerFactory::GetForProfile(
           Profile::FromBrowserContext(render_frame_host().GetBrowserContext()))
           ->IsEmbargoed(render_frame_host().GetLastCommittedOrigin().GetURL(),
                         ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS)) {
-    std::move(result_callback)
-        .Run(base::unexpected(SubAppsServiceResultCode::kUserDeclined));
+    std::move(add_call_info.mojo_callback)
+        .Run(base::unexpected(AddCallErrorCode::kUserDeclinedEmbargo));
     return;
   }
 
   if (install_paths.empty()) {
-    std::move(result_callback).Run(std::vector<SubAppsServiceAddResultPtr>());
+    std::move(add_call_info.mojo_callback)
+        .Run(std::vector<SubAppsServiceAddResultPtr>());
     return;
   }
 
@@ -316,16 +389,12 @@ void SubAppsServiceImpl::Add(const std::vector<std::string>& install_paths,
 
   if (!AreWebAppsUserInstallable(Profile::FromBrowserContext(
           render_frame_host().GetBrowserContext()))) {
-    std::move(result_callback)
-        .Run(base::unexpected(
-            SubAppsServiceResultCode::kWebAppsNotUserInstallable));
+    std::move(add_call_info.mojo_callback)
+        .Run(base::unexpected(AddCallErrorCode::kWebAppsNotUserInstallable));
     return;
   }
 
-  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
-  const WebAppRegistrar& registrar = provider->registrar_unsafe();
-  size_t current_count =
-      registrar.GetAllSubAppIds(*GetAppId(render_frame_host())).size();
+  size_t current_count = registrar.GetAllSubAppIds(*parent_app_id).size();
 
   // Return all as failed if sub app limit is reached.
   // It is possible to check and install only sub apps that do not exceed the
@@ -337,19 +406,12 @@ void SubAppsServiceImpl::Add(const std::vector<std::string>& install_paths,
       std::max(0, static_cast<int>(current_count + install_urls.size()) -
                       sub_apps_limit);
   if (over_the_limit > 0) {
-    std::move(result_callback)
-        .Run(base::unexpected(SubAppsServiceResultCode::kLimitExceeded));
+    std::move(add_call_info.mojo_callback)
+        .Run(base::unexpected(AddCallErrorCode::kLimitExceeded));
     return;
   }
 
-  // Assign id to this add call
-  int add_call_id = next_add_call_id_++;
-  AddCallInfo& add_call_info = add_call_info_[add_call_id];
-  add_call_info.mojo_callback = std::move(result_callback);
-
-  auto parent_manifest_id = provider->registrar_unsafe()
-                                .GetAppById(*GetAppId(render_frame_host()))
-                                ->manifest_id();
+  auto parent_manifest_id = registrar.GetAppById(*parent_app_id)->manifest_id();
   CollectInstallData(add_call_id, std::move(install_urls), parent_manifest_id);
 }
 
@@ -357,7 +419,6 @@ void SubAppsServiceImpl::CollectInstallData(
     int add_call_id,
     std::vector<GURL> requested_installs,
     webapps::ManifestId parent_manifest_id) {
-  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   base::ConcurrentCallbacks<std::pair<GURL, std::unique_ptr<WebAppInstallInfo>>>
       concurrent;
 
@@ -378,7 +439,7 @@ void SubAppsServiceImpl::CollectInstallData(
       continue;
     }
 
-    provider->scheduler().FetchInstallInfoFromInstallUrl(
+    provider().scheduler().FetchInstallInfoFromInstallUrl(
         *manifest_id, url_to_load, parent_manifest_id,
         base::BindOnce(
             [](GURL install_url,
@@ -401,10 +462,9 @@ void SubAppsServiceImpl::ProcessInstallData(
   AddCallInfo& add_call_info =
       CHECK_DEREF(base::FindOrNull(add_call_info_, add_call_id));
   const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
-  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
 
   auto parent_manifest_id =
-      provider->registrar_unsafe().GetAppById(*parent_app_id)->manifest_id();
+      provider().registrar_unsafe().GetAppById(*parent_app_id)->manifest_id();
 
   for (auto& [install_url, install_info] : install_data) {
     if (!install_info) {
@@ -425,7 +485,7 @@ void SubAppsServiceImpl::ProcessInstallData(
     }
 
     // Check if app is already installed as a sub app
-    if (provider->registrar_unsafe().AppMatches(
+    if (provider().registrar_unsafe().AppMatches(
             GenerateAppIdFromManifestId(manifest_id),
             WebAppFilter::IsIsolatedSubApp())) {
       add_call_info.results.emplace_back(SubAppsServiceAddResult::New(
@@ -439,7 +499,7 @@ void SubAppsServiceImpl::ProcessInstallData(
 
     bool scope_overlaps_with_other_apps = AppsScopesOverlap(
         install_info->scope, *parent_app_id, add_call_info.install_infos,
-        provider->registrar_unsafe());
+        provider().registrar_unsafe());
 
     if (scope_overlaps_with_other_apps) {
       add_call_info.results.emplace_back(SubAppsServiceAddResult::New(
@@ -465,6 +525,7 @@ void SubAppsServiceImpl::FinishAddCallOrShowInstallDialog(int add_call_id) {
 
   switch (GetSubAppsContentSetting(render_frame_host())) {
     case CONTENT_SETTING_ALLOW:
+      add_call_info.install_bypassed_prompt = true;
       ProcessDialogResponse(add_call_id, /*dialog_accepted=*/true);
       return;
     case CONTENT_SETTING_BLOCK:
@@ -472,9 +533,8 @@ void SubAppsServiceImpl::FinishAddCallOrShowInstallDialog(int add_call_id) {
       return;
     case CONTENT_SETTING_ASK:
     default:
-      WebAppProvider* provider = GetWebAppProvider(render_frame_host());
       const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
-      provider->ui_manager().ShowSubAppsInstallDialog(
+      provider().ui_manager().ShowSubAppsInstallDialog(
           content::WebContents::FromRenderFrameHost(&render_frame_host()),
           add_call_info.install_infos, *parent_app_id,
           base::BindOnce(&SubAppsServiceImpl::ProcessDialogResponse,
@@ -508,21 +568,20 @@ void SubAppsServiceImpl::ProcessDialogResponse(int add_call_id,
       CHECK_DEREF(base::FindOrNull(add_call_info_, add_call_id));
 
   std::move(add_call_info.mojo_callback)
-      .Run(base::unexpected(SubAppsServiceResultCode::kUserDeclined));
-  add_call_info_.erase(add_call_id);
+      .Run(base::unexpected(AddCallErrorCode::kUserDeclined));
 }
 
 void SubAppsServiceImpl::ScheduleSubAppInstalls(int add_call_id) {
   AddCallInfo& add_call_info =
       CHECK_DEREF(base::FindOrNull(add_call_info_, add_call_id));
 
-  // Schedule install for each install_info that was collected
-  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
+  // Schedule install for each install_info that was collected.
   base::ConcurrentCallbacks<SubAppInstallResult> concurrent;
+  WebAppCommandScheduler& scheduler = provider().scheduler();
   for (auto& install_info : add_call_info.install_infos) {
     GURL install_url = install_info->install_url;
     webapps::ManifestId manifest_id = install_info->manifest_id();
-    provider->scheduler().InstallFromInfoWithParams(
+    scheduler.InstallFromInfoWithParams(
         std::move(install_info), /*overwrite_existing_manifest_fields=*/false,
         webapps::WebappInstallSource::SUB_APP,
         base::BindOnce(
@@ -559,8 +618,6 @@ void SubAppsServiceImpl::FinishAddCall(
   }
 
   std::move(add_call_info.mojo_callback).Run(std::move(add_call_info.results));
-
-  add_call_info_.erase(add_call_id);
 }
 
 void SubAppsServiceImpl::List(ListCallback result_callback) {
@@ -569,8 +626,7 @@ void SubAppsServiceImpl::List(ListCallback result_callback) {
         .Run(base::unexpected(SubAppsServiceResultCode::kWrongContext));
   }
 
-  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
-  const WebAppRegistrar& registrar = provider->registrar_unsafe();
+  const WebAppRegistrar& registrar = provider().registrar_unsafe();
   std::vector<SubAppsServiceListResultEntryPtr> sub_apps_list;
   for (const webapps::AppId& sub_app_id :
        registrar.GetAllSubAppIds(*GetAppId(render_frame_host()))) {
@@ -629,10 +685,10 @@ void SubAppsServiceImpl::RemoveSubApp(
     return ReportBadMessageAndDeleteThis("Parent app id is null");
   }
 
-  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
+  WebAppRegistrar& registrar = provider().registrar_unsafe();
 
   std::optional<webapps::ManifestId> parent_manifest_id =
-      provider->registrar_unsafe().GetAppManifestId(*parent_app_id);
+      registrar.GetAppManifestId(*parent_app_id);
   if (!parent_manifest_id.has_value()) {
     return ReportBadMessageAndDeleteThis("Invalid parent manifest id");
   }
@@ -643,14 +699,14 @@ void SubAppsServiceImpl::RemoveSubApp(
     return ReportBadMessageAndDeleteThis("Invalid manifest id");
   }
   webapps::AppId sub_app_id = GenerateAppIdFromManifestId(*valid_manifest_id);
-  const WebApp* app = provider->registrar_unsafe().GetAppById(sub_app_id);
+  const WebApp* app = registrar.GetAppById(sub_app_id);
 
   // Verify that the app we're trying to remove exists, is installed and that
   // its parent_app is the one doing the current call.
   if (!app || !app->parent_app_id() ||
       *calling_app_id != *app->parent_app_id() ||
-      !provider->registrar_unsafe().AppMatches(
-          sub_app_id, WebAppFilter::IsAppSurfaceableToUser())) {
+      !registrar.AppMatches(sub_app_id,
+                            WebAppFilter::IsAppSurfaceableToUser())) {
     return std::move(callback).Run(SubAppsServiceRemoveResult::New(
         manifest_id, SubAppsServiceRemoveResultType::kNotFound));
   }
@@ -662,7 +718,7 @@ void SubAppsServiceImpl::RemoveSubApp(
   // which would make this effectively the same as the user trying to uninstall
   // the app using chrome://apps. This would NOT remove, say, the kPolicy
   // management source, as we must respect the policy force-installs.
-  provider->scheduler().RemoveInstallManagementMaybeUninstall(
+  provider().scheduler().RemoveInstallManagementMaybeUninstall(
       sub_app_id, WebAppManagement::Type::kSubApp,
       webapps::WebappUninstallSource::kSubApp,
       base::BindOnce(
@@ -687,8 +743,7 @@ void SubAppsServiceImpl::NotifyUninstall(
 
   // If any apps were uninstalled, notify the user.
   if (num_successful_uninstalls > 0) {
-    WebAppRegistrar& registrar =
-        GetWebAppProvider(render_frame_host())->registrar_unsafe();
+    WebAppRegistrar& registrar = provider().registrar_unsafe();
     const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
     const std::u16string parent_app_name =
         base::UTF8ToUTF16(registrar.GetAppShortName(*parent_app_id));
@@ -731,6 +786,46 @@ void SubAppsServiceImpl::NotifyUninstall(
   }
 
   std::move(result_callback).Run(std::move(remove_results));
+}
+
+void SubAppsServiceImpl::ReportAddMetricsAndRunCallback(
+    const url::Origin& parent_origin,
+    int add_call_id,
+    AddCallback original_callback,
+    AddResult result) {
+  std::vector<IsolatedWebAppMetricsHelper::LogSubAppInstallResult>
+      metric_results;
+
+  if (!result.has_value()) {
+    AddCallErrorCode error_code = result.error();
+    metric_results.push_back(MapAddCallErrorCodeToMetric(error_code));
+  } else {
+    AddCallInfo& add_call_info =
+        CHECK_DEREF(base::FindOrNull(add_call_info_, add_call_id));
+    bool bypassed_prompt = add_call_info.install_bypassed_prompt;
+    for (const auto& add_result : result.value()) {
+      metric_results.push_back(MapAddResultTypeToMetricResult(
+          add_result->result_type, bypassed_prompt));
+    }
+  }
+
+  if (!metric_results.empty()) {
+    IsolatedWebAppMetricsHelper::ReportSubAppInstallResults(parent_origin,
+                                                            metric_results);
+  }
+
+  add_call_info_.erase(add_call_id);
+
+  if (result.has_value()) {
+    std::move(original_callback).Run(std::move(result.value()));
+  } else {
+    std::move(original_callback)
+        .Run(base::unexpected(MapAddCallErrorCodeToMojo(result.error())));
+  }
+}
+
+WebAppProvider& SubAppsServiceImpl::provider() const {
+  return GetWebAppProvider(render_frame_host());
 }
 
 }  // namespace web_app

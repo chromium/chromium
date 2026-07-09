@@ -290,6 +290,8 @@ class WebAppProvider : public KeyedService {
 
   void DoDelayedPostStartupWork();
 
+  void ReportSubAppMetricsOnStartup();
+
   void OnDefaultAppUpdateComplete(
       const webapps::AppId& app_id,
       FetchManifestAndUpdateCompletionInfo completion_info);

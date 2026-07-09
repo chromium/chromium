@@ -6,6 +6,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
+#include "chrome/browser/web_applications/scheduler/manifest_silent_update_result.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_page_waiter.h"
@@ -42,6 +44,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/web_package/test_support/signed_web_bundles/signing_keys.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "content/public/browser/storage_partition.h"
@@ -50,6 +53,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -255,6 +259,9 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
         "url": "subapp/shortcut"
       }])");
 
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  base::HistogramTester histogram_tester;
+
   WebAppTestManifestUpdatedObserver manifest_observer(
       &provider().install_manager());
   manifest_observer.BeginListening({sub_app_id});
@@ -276,6 +283,21 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
       testing::ElementsAre(Shortcut(
           u"Shortcut",
           iwa_url_info.origin().GetURL().Resolve("/subapp/shortcut"))));
+
+  // Verify that the UKM metric is sent.
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::SubApp_Update_ManifestSilentUpdateCheckResult::kEntryName);
+  EXPECT_EQ(entries.size(), 1u);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SubApp_Update_ManifestSilentUpdateCheckResult::kResultName,
+      static_cast<int>(ManifestSilentUpdateCheckResult::kAppSilentlyUpdated));
+
+  // Verify that UMA metric is sent.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              base::BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated, 1)));
 }
 
 // In PWA, updating security fields: icon>10% byte by byte comparison/title,
@@ -315,6 +337,9 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
         "url": "subapp/shortcut"
       }])");
 
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  base::HistogramTester histogram_tester;
+
   WebAppTestManifestUpdatedObserver manifest_observer(
       &provider().install_manager());
   manifest_observer.BeginListening({sub_app_id});
@@ -331,6 +356,21 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
       testing::ElementsAre(Shortcut(
           u"Shortcut",
           iwa_url_info.origin().GetURL().Resolve("/subapp/shortcut"))));
+
+  // Verify that the UKM metric is sent.
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::SubApp_Update_ManifestSilentUpdateCheckResult::kEntryName);
+  EXPECT_EQ(entries.size(), 1u);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SubApp_Update_ManifestSilentUpdateCheckResult::kResultName,
+      static_cast<int>(ManifestSilentUpdateCheckResult::kAppSilentlyUpdated));
+
+  // Verify that UMA metric is sent.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              base::BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated, 1)));
 }
 
 // Sub apps must never have overlapping scopes with each other,

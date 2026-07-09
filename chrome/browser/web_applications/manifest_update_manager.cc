@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_metrics_helper.h"
 #include "chrome/browser/web_applications/scheduler/manifest_silent_update_result.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -28,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
@@ -156,6 +158,15 @@ void ManifestUpdateManager::OnManifestSilentUpdateComplete(
     base::WeakPtr<content::WebContents> contents,
     const webapps::AppId& app_id,
     ManifestSilentUpdateCompletionInfo completion_info) {
+  const WebAppRegistrar& registrar = provider_->registrar_unsafe();
+  const WebApp* app = registrar.GetAppById(app_id);
+
+  if (app && app->parent_app_id()) {
+    IsolatedWebAppMetricsHelper::ReportSubAppSilentUpdateResult(
+        url::Origin::Create(registrar.GetAppStartUrl(*app->parent_app_id())),
+        completion_info.result);
+  }
+
   bool any_update_occurred;
   switch (completion_info.result) {
     case ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall:

@@ -32,6 +32,7 @@
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/generated_icon_fix_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_metrics_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_user_installed_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
@@ -73,8 +74,11 @@
 #include "components/webapps/common/manifest_id_constants.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -646,6 +650,8 @@ void WebAppProvider::DoDelayedPostStartupWork() {
     }
   }
 #endif
+
+  ReportSubAppMetricsOnStartup();
 }
 
 void WebAppProvider::OnDefaultAppUpdateComplete(
@@ -657,6 +663,14 @@ void WebAppProvider::OnDefaultAppUpdateComplete(
       WebAppPrefGuardrails::GetForDefaultAppUpdateOnStartup(
           *profile_->GetPrefs());
   guardrails.RecordIgnore(app_id, clock().Now());
+}
+
+void WebAppProvider::ReportSubAppMetricsOnStartup() {
+  if (!content::AreIsolatedWebAppsEnabled(profile_) ||
+      !base::FeatureList::IsEnabled(blink::features::kSubApps)) {
+    return;
+  }
+  IsolatedWebAppMetricsHelper::ReportNumInstalledSubApps(registrar_unsafe());
 }
 
 }  // namespace web_app

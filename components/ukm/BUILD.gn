@@ -46,6 +46,8 @@ static_library("ukm") {
     "app_source_url_recorder.h",
     "field_trials_provider_helper.cc",
     "field_trials_provider_helper.h",
+    "iwa_source_url_recorder.cc",
+    "iwa_source_url_recorder.h",
     "singular_ukm_entry.cc",
     "singular_ukm_entry.h",
     "ukm_pref_names.cc",

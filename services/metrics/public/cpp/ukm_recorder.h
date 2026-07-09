@@ -64,6 +64,7 @@ class NotificationContentDetectionUkmUtil;
 namespace ukm {
 
 class DelegatingUkmRecorder;
+class IwaSourceUrlRecorder;
 class TestRecordingHelper;
 class UkmBackgroundRecorderService;
 
@@ -185,6 +186,11 @@ class METRICS_EXPORT UkmRecorder {
   static SourceId GetSourceIdForChromeOSWebsiteURL(
       base::PassKey<apps::WebsiteMetrics>,
       const GURL& chromeos_website_url);
+
+  // Gets a new SourceId of IWA_BUNDLE_ID type. This should only be used for
+  // recording Isolated Web App metrics.
+  static SourceId GetSourceIdForIwaUrl(base::PassKey<IwaSourceUrlRecorder>,
+                                       const GURL& iwa_url);
 
   // Gets a new SourceId of NOTIFICATION_ID type. This should only be
   // used for recording Permission UKM events related to persistent and

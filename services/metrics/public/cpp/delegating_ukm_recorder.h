@@ -50,6 +50,7 @@ class METRICS_EXPORT DelegatingUkmRecorder : public UkmRecorder {
 
  private:
   friend class AppSourceUrlRecorder;
+  friend class IwaSourceUrlRecorder;
   friend class internal::SourceUrlRecorderWebContentsObserver;
   friend class internal::SourceUrlRecorderWebStateObserver;
 
