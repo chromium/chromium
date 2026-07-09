@@ -2428,6 +2428,9 @@ public class ChromeContextMenuPopulatorTest {
                 "Lens intent parameters has incorrect account name.",
                 TestAccounts.ACCOUNT1.getEmail(),
                 lensIntentParams.getAccountName());
+        assertTrue(
+                "Lens intent parameters should have forceUnlockOrientation true.",
+                lensIntentParams.getForceUnlockOrientation());
 
         // Test Incognito.
         when(mItemDelegate.isIncognito()).thenReturn(true);
@@ -2443,6 +2446,9 @@ public class ChromeContextMenuPopulatorTest {
         assertNull(
                 "Lens intent parameters should have null account name in incognito.",
                 lensIntentParams.getAccountName());
+        assertTrue(
+                "Lens intent parameters should have forceUnlockOrientation true.",
+                lensIntentParams.getForceUnlockOrientation());
     }
 
     @Test

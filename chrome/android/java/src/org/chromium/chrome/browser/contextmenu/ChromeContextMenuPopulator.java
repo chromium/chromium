@@ -1599,6 +1599,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 .withSrcUrl(mParams.getSrcUrl().getValidSpecOrEmpty())
                 .withPageUrl(mParams.getPageUrl().getValidSpecOrEmpty())
                 .withAccountName(LensIdentityUtils.getAccountName(getProfile()))
+                // Unlocking orientation is mainly to help landscape mode (seen in Desktop
+                // Android), but made unconditional here for simplicity and consistency.
+                .withForceUnlockOrientation(true)
                 .build();
     }
 
