@@ -106,7 +106,8 @@ class AtMemoryQueryServiceTest : public testing::Test {
       personal_context::proto::AtMemoryQueryResponse response) {
     personal_context::proto::Any serialized_response;
     serialized_response.set_value(response.SerializeAsString());
-    personal_context::FetchContextResult result(std::move(serialized_response));
+    personal_context::FetchContextResult result(std::move(serialized_response),
+                                                "server request id");
 
     EXPECT_CALL(
         mock_service_,
@@ -237,6 +238,7 @@ TEST_F(AtMemoryQueryServiceTest, Query_NoLocalProviderButHasRemote) {
   ASSERT_EQ(result.entries.size(), 1u);
   EXPECT_EQ(result.entries[0].value, u"Alice");
   EXPECT_EQ(result.entries[0].remote_response_index, 0);
+  EXPECT_EQ(result.server_request_id, "server request id");
 }
 
 // Tests that the query service fetches correct local data types based on the
@@ -274,6 +276,7 @@ TEST_F(AtMemoryQueryServiceTest, Query_FetchesAutofillFetchPlanTypes) {
   ASSERT_EQ(result.entries.size(), 2u);
   EXPECT_EQ(result.entries[0].value, u"123-456");
   EXPECT_EQ(result.entries[1].value, u"John Doe");
+  EXPECT_EQ(result.server_request_id, "server request id");
 }
 
 // Tests that the query service rationalizes AutofillFetchPlan types by removing

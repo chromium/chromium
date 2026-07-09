@@ -67,6 +67,7 @@ class AtMemoryQueryService : public KeyedService {
           void(accessibility_annotator::MemorySearchResults)> callback,
       std::vector<accessibility_annotator::MemorySearchResult> remote_results,
       base::flat_set<std::u16string> filter_words,
+      std::string server_request_id,
       std::vector<accessibility_annotator::MemorySearchResult> local_results);
   std::unique_ptr<AtMemoryQueryServiceDelegate> delegate_;
   std::unique_ptr<AutofillDataProvider> data_provider_;

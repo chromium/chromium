@@ -373,13 +373,16 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded) {
     remote_suggestion.remote_response_index = 0;
     remote_suggestion.sources = {
         MemoryEntrySource(MemoryEntrySourceType::kGmail)};
-    metrics.OnQueryResponseReceived(
-        MemorySearchResults(MemorySearchStatus::kFinalResponseSuccess,
-                            {local_suggestion, remote_suggestion}));
+    MemorySearchResults results(MemorySearchStatus::kFinalResponseSuccess,
+                                {local_suggestion, remote_suggestion});
+    results.server_request_id = "server_request_id";
+    metrics.OnQueryResponseReceived(results);
   }
 
   const auto& uploaded_logs = uploader_service_->uploaded_logs();
   ASSERT_EQ(uploaded_logs.size(), 1u);
+  EXPECT_EQ(uploaded_logs[0]->model_execution_info().execution_id(),
+            "server_request_id");
   const optimization_guide::proto::AtMemoryQuality& quality =
       uploaded_logs[0]->at_memory().quality();
   EXPECT_EQ(quality.query(), "test query");

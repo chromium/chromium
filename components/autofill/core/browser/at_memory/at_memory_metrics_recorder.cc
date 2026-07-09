@@ -229,6 +229,9 @@ void AtMemoryMetricsRecorder::OnQueryResponseReceived(
   if (!pending_log_entry_) {
     return;
   }
+  if (!result.server_request_id.empty()) {
+    pending_log_entry_->set_model_execution_id(result.server_request_id);
+  }
   auto* quality = pending_log_entry_->log_ai_data_request()
                       ->mutable_at_memory()
                       ->mutable_quality();

@@ -154,6 +154,9 @@ struct MemorySearchResults {
 
   // List of suggested entries.
   std::vector<MemorySearchResult> entries;
+
+  // The server request ID, used to identify the request in the logs.
+  std::string server_request_id;
 };
 
 }  // namespace accessibility_annotator
