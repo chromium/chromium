@@ -1301,7 +1301,22 @@
       'filepath': 'fuchsia.*$(?<!sdk_override.txt)',
     },
     'fuzzing': {
-      'filepath': '^(?!third_party/fuzztest/src$).*(fuzz|Fuzz)',
+      'filepath': '^(?!' \
+                  'third_party/fuzztest/src$|' \
+                  'third_party/libFuzzer/src$|' \
+                  'clusterfuzz-data$|' \
+                  'testing/libfuzzer/fuzzers/wasm_corpus$' \
+                  ').*(fuzz|Fuzz)',
+    },
+    'fuzzing_core': {
+      'filepath': 'testing/libfuzzer/|' \
+                  'content/test/fuzzer/|' \
+                  'chrome/test/fuzzing/|' \
+                  'third_party/libFuzzer/(?!src)|' \
+                  'third_party/fuzztest/(?!src)|' \
+                  'agents/skills/fuzzing/|' \
+                  'build/config/sanitizers/|' \
+                  'third_party/libprotobuf-mutator/(?!src)',
     },
     'gamepad': {
       'filepath': 'gamepad',
@@ -3043,8 +3058,10 @@
     'fsp': ['mtomasz+watch@chromium.org'],
     'fuchsia': ['fuchsia-reviews@chromium.org',
                 'zijiehe@google.com'],
-    'fuzzing': ['ortuno+watch@chromium.org',
+    'fuzzing': ['ortuno+watch-fuzzing@chromium.org',
                 'titouan+watch@chromium.org'],
+    'fuzzing_core': ['aakallam+watch@chromium.org',
+                     'ortuno+watch-core@chromium.org'],
     'gamepad': ['mattreynolds+watch@chromium.org'],
     'gcm': ['peter@chromium.org', 'dibyapal+watch-webapps@chromium.org'],
     'gemini_app': ['dmblack+watch@google.com',
