@@ -1400,6 +1400,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_AW_CLASS_PRELOADER,
                 "When enabled, WebView will preload a certain list of classes for performance."),
+        Flag.baseFeature(
+                "SimpleCachePrefetchExperiment2",
+                "Enables fixed-size prefetching of simple cache entry data during open."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
