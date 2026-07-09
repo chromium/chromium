@@ -309,7 +309,9 @@ PostDecodeAction DecoderStreamTraits<DemuxerStream::VIDEO>::OnDecodeDone(
 
 void DecoderStreamTraits<DemuxerStream::VIDEO>::OnOutputReady(
     OutputType* buffer) {
-  buffer->metadata().transformation = transform_;
+  if (!buffer->metadata().transformation.has_value()) {
+    buffer->metadata().transformation = transform_;
+  }
 
   if (!buffer->metadata().decode_begin_time.has_value())
     return;
