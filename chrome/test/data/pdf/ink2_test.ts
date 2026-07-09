@@ -2,17 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationMode, PluginController, PluginControllerEventType, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode, PdfViewerPrivateProxyImpl, PluginController, PluginControllerEventType, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {getNewTestBeforeUnloadProxy} from './test_before_unload_proxy.js';
+import {TestPdfViewerPrivateProxy} from './test_pdf_viewer_private_proxy.js';
 import {createTextBox, getRequiredElement, getTextBox, setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
 const mockPlugin = setupTestMockPluginForInk();
 const mockMetricsPrivate = setupMockMetricsPrivate();
+
+const privateProxy = new TestPdfViewerPrivateProxy();
+PdfViewerPrivateProxyImpl.setInstance(privateProxy);
 
 // Disable beforeunload to avoid hanging after tests succeed.
 getNewTestBeforeUnloadProxy();
@@ -26,6 +30,12 @@ async function enableTextAnnotations(enabled: boolean) {
 async function setAnnotationMode(mode: AnnotationMode) {
   viewerToolbar.setAnnotationMode(mode);
   await microtasksFinished();
+}
+
+function dispatchSendClickEvent() {
+  PluginController.getInstance().getEventTarget().dispatchEvent(new CustomEvent(
+      PluginControllerEventType.PLUGIN_MESSAGE,
+      {detail: {type: 'sendClickEvent', x: 50, y: 50}}));
 }
 
 chrome.test.runTests([
@@ -217,10 +227,7 @@ chrome.test.runTests([
 
     // Simulate clicking the plugin. pdf-viewer should notify Ink2Manager to
     // initialize an annotation, which shows the box.
-    PluginController.getInstance().getEventTarget().dispatchEvent(
-        new CustomEvent(
-            PluginControllerEventType.PLUGIN_MESSAGE,
-            {detail: {type: 'sendClickEvent', x: 50, y: 50}}));
+    dispatchSendClickEvent();
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
 
@@ -429,6 +436,52 @@ chrome.test.runTests([
     // Verify that the PDF content embed now has focus.
     const embed = getRequiredElement(viewer, 'embed');
     chrome.test.assertEq(embed, viewer.shadowRoot.activeElement);
+
+    chrome.test.succeed();
+  },
+
+  async function testCommitOnClick() {
+    mockPlugin.clearMessages();
+    await enableTextAnnotations(true);
+    await setAnnotationMode(AnnotationMode.TEXT);
+
+    // Click to create first textbox.
+    dispatchSendClickEvent();
+    await microtasksFinished();
+    const textbox = getTextBox(viewer);
+    chrome.test.assertTrue(!!textbox);
+    chrome.test.assertTrue(isVisible(textbox));
+    // Edit textbox value.
+    textbox.$.textbox.value = 'Click Outside Test';
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
+
+    // Click to commit the current textbox.
+    // Note: Manually dispatching sendClickEvent simulates clicking in another
+    // location even when reusing the same coordinates, because it simulates
+    // the event falling through to the plugin. This only happens in prod code
+    // for locations outside the current textbox and any existing annotations,
+    // because ink-text-box and ink-text-annotations intercept and handle any
+    // click events that occur on these elements before the click reaches the
+    // plugin.
+    const whenStateChanged = eventToPromise('state-changed', textbox);
+    dispatchSendClickEvent();
+    await whenStateChanged;
+    await microtasksFinished();
+
+    // Verify textbox was committed and hidden.
+    chrome.test.assertFalse(isVisible(textbox));
+    const finishMessage = mockPlugin.findMessage('finishTextAnnotation');
+    chrome.test.assertNe(undefined, finishMessage);
+    mockPlugin.clearMessages();
+
+    // Click again. This should create a new textbox.
+    dispatchSendClickEvent();
+    await microtasksFinished();
+
+    // Empty new textbox is visible.
+    chrome.test.assertTrue(isVisible(textbox));
+    chrome.test.assertEq('', textbox.$.textbox.value);
 
     chrome.test.succeed();
   },
