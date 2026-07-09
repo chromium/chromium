@@ -111,7 +111,6 @@
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/network_service_instance.h"
@@ -835,13 +834,13 @@ int BrowserMainLoop::PreCreateThreads() {
     network::SimpleURLLoader::FileUploadEventCallbacks callbacks;
     callbacks.register_callback = base::BindRepeating(
         [](const base::UnguessableToken& token, const base::FilePath& path) {
-          ChildProcessSecurityPolicy::GetInstance()->GrantFileForBrowserUpload(
-              token, path);
+          ChildProcessSecurityPolicyImpl::GetInstance()
+              ->GrantFileForBrowserUpload(token, path);
         });
     callbacks.revoke_callback =
         base::BindRepeating([](const base::UnguessableToken& token) {
-          ChildProcessSecurityPolicy::GetInstance()->RevokeFileForBrowserUpload(
-              token);
+          ChildProcessSecurityPolicyImpl::GetInstance()
+              ->RevokeFileForBrowserUpload(token);
         });
     network::SimpleURLLoader::SetFileUploadEventCallbacks(callbacks);
   }

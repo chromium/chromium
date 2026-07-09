@@ -37,7 +37,8 @@ void HandleFileUploadRequest(
   std::vector<base::File> files;
   uint32_t file_flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
                         (async ? base::File::FLAG_ASYNC : 0);
-  ChildProcessSecurityPolicy* cpsp = ChildProcessSecurityPolicy::GetInstance();
+  ChildProcessSecurityPolicyImpl* cpsp =
+      ChildProcessSecurityPolicyImpl::GetInstance();
   for (const auto& file_path : file_paths) {
     bool access_denied = false;
     if (base::FeatureList::IsEnabled(
