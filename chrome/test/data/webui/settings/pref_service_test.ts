@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertNull, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNull, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
@@ -22,6 +22,14 @@ suite('PrefService', function() {
       key: 'browser.homepage',
       type: chrome.settingsPrivate.PrefType.STRING,
       value: 'https://google.com',
+    },
+    {
+      key: 'browser.dict_pref',
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {
+        key1: 1,
+        key2: 2,
+      },
     },
   ];
 
@@ -142,6 +150,52 @@ suite('PrefService', function() {
     // Verify observers were notified of the revert.
     assertEquals(1, calledCount);
     assertEquals('https://google.com', observedVal);
+  });
+
+  test('SetPrefDictEntry', async function() {
+    const key = 'browser.dict_pref';
+
+    // Verify initial values.
+    const initialPref = service.getPref<Record<string, number>>(key);
+    assertEquals(1, initialPref.value['key1']);
+    assertEquals(2, initialPref.value['key2']);
+
+    // Set a new entry.
+    let promise = service.setPrefDictEntry<number>(key, 'key3', 3);
+
+    // Verify synchronous update in cache.
+    let updatedPref = service.getPref<Record<string, number>>(key);
+    assertEquals(1, updatedPref.value['key1']);
+    assertEquals(2, updatedPref.value['key2']);
+    assertEquals(3, updatedPref.value['key3']);
+
+    // Verify promise resolves to true.
+    let success = await promise;
+    assertTrue(success);
+
+    // Verify backend is called with correct params (the whole dict).
+    let callArgs = await proxy.fakeApi.whenCalled('setPref');
+    assertEquals(key, callArgs.key);
+    assertDeepEquals({key1: 1, key2: 2, key3: 3}, callArgs.value);
+
+    // Update an existing entry.
+    proxy.fakeApi.resetResolver('setPref');
+    promise = service.setPrefDictEntry<number>(key, 'key1', 10);
+
+    // Verify synchronous update in cache.
+    updatedPref = service.getPref<Record<string, number>>(key);
+    assertEquals(10, updatedPref.value['key1']);
+    assertEquals(2, updatedPref.value['key2']);
+    assertEquals(3, updatedPref.value['key3']);
+
+    // Verify promise resolves to true.
+    success = await promise;
+    assertTrue(success);
+
+    // Verify backend is called with correct params (the whole dict).
+    callArgs = await proxy.fakeApi.whenCalled('setPref');
+    assertEquals(key, callArgs.key);
+    assertDeepEquals({key1: 10, key2: 2, key3: 3}, callArgs.value);
   });
 
   test('addObserverSingleExternalChange', async function() {

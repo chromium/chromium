@@ -77,6 +77,22 @@ export class PrefService {
     return false;
   }
 
+  /**
+   * @param prefKey The key of the PrefObject to be updated. Must be of
+   *     PrefType.DICTIONARY otherwise an assertion error will be thrown.
+   * @param dictKey The key within the dictionary identifying the entry to be
+   *     updated.
+   * @param value The new value of the dictionary entry being updated.
+   */
+  async setPrefDictEntry<T>(prefKey: string, dictKey: string, value: T):
+      Promise<boolean> {
+    const pref = this.getPref<Record<string, T>>(prefKey);
+    assert(pref.type === chrome.settingsPrivate.PrefType.DICTIONARY);
+    const dict = {...pref.value};
+    dict[dictKey] = value;
+    return this.setPrefValue(prefKey, dict);
+  }
+
   getPref<T>(key: string): Readonly<PrefObject<T>> {
     assert(
         this.isInitialized_,

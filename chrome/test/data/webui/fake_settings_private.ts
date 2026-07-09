@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {assertEquals, assertNotEquals} from './chai_assert.js';
+import {assertEquals, assertNotEquals, assertTrue} from './chai_assert.js';
 import {TestBrowserProxy} from './test_browser_proxy.js';
 import {FakeChromeEvent} from './fake_chrome_event.js';
 // clang-format on
@@ -103,15 +103,25 @@ export class FakeSettingsPrivate extends TestBrowserProxy implements
   }
 
   /**
-   * Notifies the listeners of pref changes.
+   * Updates the underlying PrefObject and notifies the listeners of pref
+   * changes. Any PrefObject property that is passed as "undefined" is deleted.
+   * This useful during tests that need to modify 'controlledBy' and
+   * 'enforcement' fields.
    */
-  sendPrefChanges(changes: Array<{key: string, value: any}>) {
+  sendPrefChanges(changes: Array<Partial<PrefObject>&{key: string}>) {
     const prefs = [];
     for (const change of changes) {
       const pref = this.prefs[change.key];
-      assertNotEquals(undefined, pref);
-      pref!.value = change.value;
-      prefs.push(structuredClone(pref!) as PrefObject);
+      assertTrue(!!pref);
+      for (const property in change) {
+        const key = property as keyof PrefObject;
+        if (change[key] === undefined) {
+          delete pref[key];
+        } else {
+          pref[key] = change[key];
+        }
+      }
+      prefs.push(structuredClone(pref) as PrefObject);
     }
     this.onPrefsChanged.callListeners(prefs);
   }

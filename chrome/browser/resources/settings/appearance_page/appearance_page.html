@@ -45,7 +45,7 @@
               label="$i18n{themes}" sub-label="[[themeSublabel_]]"
               on-click="onThemeClick_" external></cr-link-row>
 <if expr="not is_linux">
-          <template is="dom-if" if="[[prefs.extensions.theme.id.value]]">
+          <template is="dom-if" if="[[themeIdPref_.value]]">
             <div class="separator"></div>
             <cr-button id="useDefault" on-click="onUseDefaultClick_"
                 aria-label="$i18n{resetToDefaultTheme}">
@@ -56,23 +56,23 @@
 <if expr="is_linux">
           <div class="settings-row continuation"
               hidden="[[!showThemesSecondary_(
-                  prefs.extensions.theme.id.value, systemTheme_)]]"
+                  themeIdPref_.value, systemTheme_)]]"
               id="themesSecondaryActions">
             <div class="separator"></div>
             <template is="dom-if" if="[[showUseClassic_(
-                prefs.extensions.theme.id.value, systemTheme_)]]" restamp>
+                themeIdPref_.value, systemTheme_)]]" restamp>
               <cr-button id="useDefault" on-click="onUseDefaultClick_">
                 $i18n{useClassicTheme}
               </cr-button>
             </template>
             <template is="dom-if" if="[[showUseGtk_(
-                prefs.extensions.theme.id.value, systemTheme_)]]" restamp>
+                themeIdPref_.value, systemTheme_)]]" restamp>
               <cr-button id="useGtk" on-click="onUseGtkClick_">
                 $i18n{useGtkTheme}
               </cr-button>
             </template>
             <template is="dom-if" if="[[showUseQt_(
-                prefs.extensions.theme.id.value, systemTheme_)]]" restamp>
+                themeIdPref_.value, systemTheme_)]]" restamp>
               <cr-button id="useQt" on-click="onUseQtClick_">
                 $i18n{useQtTheme}
               </cr-button>
@@ -96,7 +96,7 @@
         </div>
         <div id="colorSchemeModeRow" class="cr-row"
 <if expr="is_linux">
-            hidden="[[!showColorSchemeMode_(prefs.extensions.theme.id.value,
+            hidden="[[!showColorSchemeMode_(themeIdPref_.value,
               systemTheme_)]]"
 </if>
         >
@@ -126,11 +126,11 @@
             pref-key="browser.show_home_button"
             label="$i18n{showHomeButton}"
             sub-label="[[getShowHomeSubLabel_(
-                prefs.browser.show_home_button.value,
-                prefs.homepage_is_newtabpage.value,
-                prefs.homepage.value)]]">
+                showHomeButtonPref_.value,
+                homepageIsNewTabPagePref_.value,
+                homepagePref_.value)]]">
         </settings-toggle-button>
-        <template is="dom-if" if="[[prefs.browser.show_home_button.value]]">
+        <template is="dom-if" if="[[showHomeButtonPref_.value]]">
           <div id="home-button-options" class="list-frame"
               hidden="[[!pageVisibility.homeButton]]">
             <settings-radio-group pref-key="homepage_is_newtabpage">
@@ -145,15 +145,15 @@
                      homepage and whether to use the NTP as the homepage are
                      managed. -->
                 <home-url-input id="customHomePage"
-                    can-tab="[[!prefs.homepage_is_newtabpage.value]]">
+                    can-tab="[[!homepageIsNewTabPagePref_.value]]">
                 </home-url-input>
               </controlled-radio-button>
-              <template is="dom-if" if="[[prefs.homepage.extensionId]]">
+              <template is="dom-if" if="[[homepagePref_.extensionId]]">
                 <extension-controlled-indicator
-                    extension-id="[[prefs.homepage.extensionId]]"
+                    extension-id="[[homepagePref_.extensionId]]"
                     extension-can-be-disabled="[[
-                        prefs.homepage.extensionCanBeDisabled]]"
-                    extension-name="[[prefs.homepage.controlledByName]]"
+                        homepagePref_.extensionCanBeDisabled]]"
+                    extension-name="[[homepagePref_.controlledByName]]"
                     on-disable-extension-click="onDisableExtensionClick_">
                 </extension-controlled-indicator>
               </template>
@@ -202,11 +202,11 @@
             </settings-dropdown-menu>
           </div>
           <div class="list-frame indented-toggles"
-               hidden="[[!prefs.vertical_tabs.enabled.value]]">
+               hidden="[[!verticalTabsEnabledPref_.value]]">
             <template is="dom-if"
                 if="[[showVerticalTabsExpandOnHoverSetting_(
-                  showVerticalTabsExpandOnHoverEnabled_,
-                  prefs.vertical_tabs.enabled.value)]]">
+                    showVerticalTabsExpandOnHoverEnabled_,
+                    verticalTabsEnabledPref_.value)]]">
               <settings-toggle-button
                   id="showVerticalTabsExpandOnHover"
                   pref-key="vertical_tabs.expand_on_hover"
@@ -273,8 +273,8 @@
                   pref-key="side_panel.is_right_aligned"
                   no-set-pref
                   value="[[getOverrideValue_(
-                    item.id, prefs.side_panel.alignment_overrides.value,
-                    prefs.side_panel.is_right_aligned.value)]]"
+                    item.id, sidePanelAlignmentOverridesPref_.value,
+                    sidePanelIsRightAlignedPref_.value)]]"
                   on-settings-control-change="onOverrideAlignmentChange_">
               </settings-dropdown-menu>
             </div>
