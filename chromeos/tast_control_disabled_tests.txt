@@ -151,7 +151,4 @@ tast.hwsec.CrossVersionChromeLogin.ti50_r125
 # b/529493526
 tast.secagentd.FileEvents.cookies
 
-# b/531616023
-tast.network.VPNSplitRouting.openvpn
-
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
