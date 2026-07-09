@@ -17568,6 +17568,26 @@
             ]
         }
     ],
+    "OmniboxCrossDeviceTabZeroSuggest": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxCrossDeviceTabZeroSuggest"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxDefaultTypedNavigationsToHttps": [
         {
             "platforms": [
