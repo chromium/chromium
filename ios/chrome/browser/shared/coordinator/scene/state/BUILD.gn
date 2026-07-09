@@ -10,6 +10,8 @@ source_set("state") {
     "layout_state.mm",
     "layout_state_passkey.h",
     "layout_transition_coordinating.h",
+    "lens_overlay_state_notifier.h",
+    "lens_overlay_state_notifier.mm",
     "scene_ui_blocker_state.h",
     "scene_ui_blocker_state.mm",
     "tab_grid_state.h",

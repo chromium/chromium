@@ -1604,6 +1604,8 @@ const char kChromeAppStoreUrl[] =
   [_dispatcher startDispatchingToTarget:viewController
                             forProtocol:@protocol(BrowserCommands)];
   viewController.layoutState = self.browser->GetSceneState().layoutState;
+  viewController.lensOverlayStateNotifier =
+      self.browser->GetSceneState().lensOverlayStateNotifier;
   _browserLayoutCoordinator.browserViewController = viewController;
 }
 

@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -80,6 +81,7 @@
     _tabGridState = [[TabGridState alloc] init];
     _incognitoState = [[IncognitoState alloc] initWithSceneState:self];
     _layoutState = [[LayoutState alloc] init];
+    _lensOverlayStateNotifier = [[LensOverlayStateNotifier alloc] init];
     _prefs = nil;
 
     // AppState might be nil in tests.

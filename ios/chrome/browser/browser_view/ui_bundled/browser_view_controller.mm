@@ -679,6 +679,16 @@ bool IsFullscreenNextIAEnabled() {
   }
 }
 
+- (void)setLensOverlayStateNotifier:
+    (LensOverlayStateNotifier*)lensOverlayStateNotifier {
+  if (_lensOverlayStateNotifier == lensOverlayStateNotifier) {
+    return;
+  }
+  [_lensOverlayStateNotifier removeObserver:self];
+  _lensOverlayStateNotifier = lensOverlayStateNotifier;
+  [_lensOverlayStateNotifier addObserver:self];
+}
+
 #pragma mark - LayoutStateObserver
 
 - (void)layoutState:(LayoutState*)layoutState
@@ -888,6 +898,7 @@ bool IsFullscreenNextIAEnabled() {
   _sideSwipeCoordinator = nil;
   [_voiceSearchController disconnect];
   [_layoutState removeObserver:self];
+  [_lensOverlayStateNotifier removeObserver:self];
   _layoutState = nil;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   _bookmarksCoordinator = nil;
@@ -3179,40 +3190,45 @@ bool IsFullscreenNextIAEnabled() {
        aboveSubview:self.toolbarCoordinator.primaryToolbarViewController.view];
 }
 
-#pragma mark - LensOverlayPresentationEnvironment
+#pragma mark - LensOverlayStateNotifierObserver
 
-- (void)lensOverlayDidPrepare {
-
+- (void)lensOverlayDidPrepare:
+    (LensOverlayStateNotifier*)lensOverlayStateNotifier {
   [self.sceneHandler hideAssistant];
   [self.geminiHandler
       hideFloatyIfInvokedAnimated:NO
                        fromSource:gemini::FloatyUpdateSource::Overlay];
 }
 
-- (void)lensOverlayWillAppear {
+- (void)lensOverlayWillAppear:
+    (LensOverlayStateNotifier*)lensOverlayStateNotifier {
   [_sideSwipeCoordinator setEnabled:NO];
   _lensOverlayVisible = YES;
   self.contentArea.accessibilityElementsHidden = self.contentAreaObstructed;
 }
 
-- (void)lensOverlayWillDisappear {
+- (void)lensOverlayWillDisappear:
+    (LensOverlayStateNotifier*)lensOverlayStateNotifier {
   [_sideSwipeCoordinator setEnabled:YES];
   _lensOverlayVisible = NO;
   [self.sceneHandler revealAssistant];
   self.contentArea.accessibilityElementsHidden = self.contentAreaObstructed;
 }
 
-- (void)lensOverlayDidDisappear {
-
+- (void)lensOverlayDidDisappear:
+    (LensOverlayStateNotifier*)lensOverlayStateNotifier {
   [self.geminiHandler
       updateFloatyVisibilityIfEligibleAnimated:NO
                                     fromSource:gemini::FloatyUpdateSource::
                                                    Overlay];
 }
 
-- (void)lensOverlayDidReadjustPresentation {
+- (void)lensOverlayDidReadjustPresentation:
+    (LensOverlayStateNotifier*)lensOverlayStateNotifier {
   [_browserCoordinatorHandler hideComposebox];
 }
+
+#pragma mark - LensOverlayPresentationEnvironment
 
 - (NSDirectionalEdgeInsets)presentationInsetsForLensOverlay {
   if (IsRegularXRegularSizeClass(self)) {
