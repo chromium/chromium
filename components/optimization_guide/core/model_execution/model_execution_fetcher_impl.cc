@@ -488,6 +488,9 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     case ModelBasedCapabilityKey::kUpdaterChat:
       // TODO(crbug.com/512194219): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
+    case ModelBasedCapabilityKey::kContextHub:
+      // TODO(crbug.com/532549697): Add network traffic annotation.
+      return MISSING_TRAFFIC_ANNOTATION;
   }
 }
 
@@ -521,6 +524,7 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kAnnotationReducerQueryClassifier:
     case ModelBasedCapabilityKey::kContextualCueing:
     case ModelBasedCapabilityKey::kUpdaterChat:
+    case ModelBasedCapabilityKey::kContextHub:
       return true;
     case ModelBasedCapabilityKey::kFormsClassifications:
       return !base::FeatureList::IsEnabled(

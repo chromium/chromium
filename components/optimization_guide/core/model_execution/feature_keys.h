@@ -55,6 +55,8 @@ enum class ModelBasedCapabilityKey {
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_CONTEXTUAL_CUEING,
   kUpdaterChat =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UPDATER_CHAT,
+  kContextHub =
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_CONTEXT_HUB,
 };
 
 inline std::ostream& operator<<(std::ostream& out,
@@ -102,6 +104,8 @@ inline std::ostream& operator<<(std::ostream& out,
       return out << "ContextualCueing";
     case ModelBasedCapabilityKey::kUpdaterChat:
       return out << "UpdaterChat";
+    case ModelBasedCapabilityKey::kContextHub:
+      return out << "ContextHub";
   }
   return out;
 }
@@ -209,6 +213,8 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
           MODEL_EXECUTION_FEATURE_CONTEXTUAL_CUEING;
     case ModelBasedCapabilityKey::kUpdaterChat:
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UPDATER_CHAT;
+    case ModelBasedCapabilityKey::kContextHub:
+      return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_CONTEXT_HUB;
   }
 }
 
