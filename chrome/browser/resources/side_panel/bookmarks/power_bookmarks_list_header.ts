@@ -140,7 +140,12 @@ export class PowerBookmarksListHeaderElement extends CrLitElement {
   }
 
   protected getViewButtonIcon_() {
-    return this.compact ? 'bookmarks:compact-view' : 'bookmarks:visual-view';
+    return this.compact ? (loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+                               'bookmarks:view-list' :
+                               'bookmarks:compact-view-old') :
+                          (loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+                               'bookmarks:list' :
+                               'bookmarks:visual-view-old');
   }
 
   protected getViewButtonTooltip_() {

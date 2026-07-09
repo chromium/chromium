@@ -57,7 +57,11 @@ suite('SidePanelPowerBookmarksLabelsTest', () => {
     await microtasksFinished();
     assertEquals(1, element.labels.length);
     assertEquals('Tracked products', element.labels[0]!.label);
-    assertEquals('bookmarks:price-tracking', element.labels[0]!.icon);
+    assertEquals(
+        loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'bookmarks:notifications-active' :
+            'bookmarks:price-tracking-old',
+        element.labels[0]!.icon);
     assertFalse(element.labels[0]!.active);
   });
 
@@ -92,11 +96,19 @@ suite('SidePanelPowerBookmarksLabelsTest', () => {
 
     const labelChipIcon =
         element.shadowRoot.querySelector<CrIconElement>('cr-chip cr-icon')!;
-    assertEquals('bookmarks:price-tracking', labelChipIcon.icon);
+    assertEquals(
+        loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'bookmarks:notifications-active' :
+            'bookmarks:price-tracking-old',
+        labelChipIcon.icon);
 
     element.shadowRoot.querySelector('cr-chip')!.click();
     await microtasksFinished();
-    assertEquals('bookmarks:check', labelChipIcon.icon);
+    assertEquals(
+        loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'bookmarks:check' :
+            'bookmarks:check-old',
+        labelChipIcon.icon);
   });
 
   test('UpdatesDisabledState', async () => {

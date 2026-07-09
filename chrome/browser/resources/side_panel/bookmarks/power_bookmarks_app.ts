@@ -117,6 +117,7 @@ export class PowerBookmarksAppElement extends CrLitElement implements
       hasSomeActiveFilter_: {type: Boolean},
       hasShownBookmarks_: {type: Boolean},
       sectionVisibility_: {type: Object},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -146,6 +147,8 @@ export class PowerBookmarksAppElement extends CrLitElement implements
   protected accessor hasSomeActiveFilter_: boolean = false;
   protected accessor hasShownBookmarks_: boolean = false;
   protected accessor sectionVisibility_: AppSectionVisibility = {};
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private showUiCalled_: boolean = false;
 
 

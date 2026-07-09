@@ -58,7 +58,10 @@ return html`<!--_html_template_start_-->
     ${this.isPriceTracked ? html`
     <sp-list-item-badge slot="badges"
         ?was-updated="${this.showDiscountedPrice_()}">
-      <cr-icon icon="bookmarks:price-tracking"></cr-icon>
+      <cr-icon
+          icon="${this.webuiRoundedIconsEnabled_
+              ? 'bookmarks:notifications-active'
+              : 'bookmarks:price-tracking-old'}"></cr-icon>
       <div>${this.getCurrentPrice_(this.bookmark)}</div>
       <div slot="previous-badge" ?hidden="${!this.showDiscountedPrice_()}">
         ${this.getPreviousPrice_(this.bookmark)}
@@ -74,11 +77,16 @@ return html`<!--_html_template_start_-->
 
   ${this.isBookmarksBar_() ? html`
     <cr-icon class="bookmark-icon" slot="folder-icon"
-        icon="bookmarks:bookmarks-bar"></cr-icon>
+        icon="${this.webuiRoundedIconsEnabled_
+            ? 'bookmarks:toolbar'
+            : 'bookmarks:bookmarks-bar-old'}"></cr-icon>
   ` :''}
 
   ${this.isShoppingCollection_() ? html`
-    <cr-icon slot="folder-icon" icon="bookmarks:shopping-collection">
+    <cr-icon slot="folder-icon"
+        icon="${this.webuiRoundedIconsEnabled_
+            ? 'bookmarks:shopping-bag'
+            : 'bookmarks:shopping-collection-old'}">
     </cr-icon>
   ` : ''}
 </cr-url-list-item>

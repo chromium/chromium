@@ -8,7 +8,7 @@ import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import {ActionSource} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import type {ShoppingListElement} from 'chrome://bookmarks-side-panel.top-chrome/commerce/shopping_list.js';
-import {ACTION_BUTTON_TRACK_IMAGE, ACTION_BUTTON_UNTRACK_IMAGE, LOCAL_STORAGE_EXPAND_STATUS_KEY} from 'chrome://bookmarks-side-panel.top-chrome/commerce/shopping_list.js';
+import {ACTION_BUTTON_TRACK_IMAGE, ACTION_BUTTON_TRACK_IMAGE_OLD, ACTION_BUTTON_UNTRACK_IMAGE, ACTION_BUTTON_UNTRACK_IMAGE_OLD, LOCAL_STORAGE_EXPAND_STATUS_KEY} from 'chrome://bookmarks-side-panel.top-chrome/commerce/shopping_list.js';
 import {browserProxyFactory as priceTrackingBrowserProxyFactory, PriceTrackingHandlerRemote} from 'chrome://resources/cr_components/commerce/price_tracking.mojom-webui.js';
 import type {PageRemote} from 'chrome://resources/cr_components/commerce/price_tracking.mojom-webui.js';
 import type {BookmarkProductInfo} from 'chrome://resources/cr_components/commerce/shared.mojom-webui.js';
@@ -102,8 +102,11 @@ suite('SidePanelShoppingListTest', () => {
     }
     const actionButton = element.querySelector<HTMLElement>('.action-button');
     assertTrue(!!actionButton);
+    const isRounded = loadTimeData.getBoolean('webuiRoundedIconsEnabled');
     assertEquals(
-        ACTION_BUTTON_UNTRACK_IMAGE, actionButton.getAttribute('iron-icon'));
+        isRounded ? ACTION_BUTTON_UNTRACK_IMAGE :
+                    ACTION_BUTTON_UNTRACK_IMAGE_OLD,
+        actionButton.getAttribute('iron-icon'));
     assertEquals(
         actionButton.getAttribute('title'),
         loadTimeData.getString('shoppingListUntrackPriceButtonDescription'));
@@ -111,15 +114,19 @@ suite('SidePanelShoppingListTest', () => {
 
   function checkActionButtonStatus(
       actionButton: HTMLElement, isTracking: boolean): void {
+    const isRounded = loadTimeData.getBoolean('webuiRoundedIconsEnabled');
     if (isTracking) {
       assertEquals(
-          ACTION_BUTTON_UNTRACK_IMAGE, actionButton.getAttribute('iron-icon'));
+          isRounded ? ACTION_BUTTON_UNTRACK_IMAGE :
+                      ACTION_BUTTON_UNTRACK_IMAGE_OLD,
+          actionButton.getAttribute('iron-icon'));
       assertEquals(
           loadTimeData.getString('shoppingListUntrackPriceButtonDescription'),
           actionButton.getAttribute('title'));
     } else {
       assertEquals(
-          ACTION_BUTTON_TRACK_IMAGE, actionButton.getAttribute('iron-icon'));
+          isRounded ? ACTION_BUTTON_TRACK_IMAGE : ACTION_BUTTON_TRACK_IMAGE_OLD,
+          actionButton.getAttribute('iron-icon'));
       assertEquals(
           loadTimeData.getString('shoppingListTrackPriceButtonDescription'),
           actionButton.getAttribute('title'));

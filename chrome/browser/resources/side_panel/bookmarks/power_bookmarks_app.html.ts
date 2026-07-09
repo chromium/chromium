@@ -74,12 +74,18 @@ export function getHtml(this: PowerBookmarksAppElement) {
         selection-label="${this.getSelectedDescription_()}"
         @clear-selected-items="${this.onClearSelectedItems_}">
       <div class="sp-icon-buttons-row">
-        <cr-icon-button id="deleteButton" iron-icon="bookmarks:delete"
+        <cr-icon-button id="deleteButton"
+            iron-icon="${this.webuiRoundedIconsEnabled_
+                ? 'bookmarks:delete'
+                : 'bookmarks:delete-old'}"
             ?disabled="${!this.getSelectedBookmarksLength_()}"
             title="$i18n{tooltipDelete}" aria-label="$i18n{tooltipDelete}"
             @click="${this.onDeleteClick_}">
         </cr-icon-button>
-        <cr-icon-button iron-icon="bookmarks:move"
+        <cr-icon-button
+            iron-icon="${this.webuiRoundedIconsEnabled_
+                ? 'bookmarks:drive-file-move'
+                : 'bookmarks:move-old'}"
             ?disabled="${!this.getSelectedBookmarksLength_()}"
             title="$i18n{tooltipMove}" aria-label="$i18n{tooltipMove}"
             @click="${this.onMoveClick_}">

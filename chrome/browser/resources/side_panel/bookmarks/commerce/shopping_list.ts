@@ -26,10 +26,13 @@ import {getCss} from './shopping_list.css.js';
 import {getHtml} from './shopping_list.html.js';
 
 export const LOCAL_STORAGE_EXPAND_STATUS_KEY = 'shoppingListExpanded';
-export const ACTION_BUTTON_TRACK_IMAGE =
-    'shopping-list:shopping-list-track-icon';
+export const ACTION_BUTTON_TRACK_IMAGE = 'shopping-list:notification-add';
+export const ACTION_BUTTON_TRACK_IMAGE_OLD =
+    'shopping-list:shopping-list-track-icon-old';
 export const ACTION_BUTTON_UNTRACK_IMAGE =
-    'shopping-list:shopping-list-untrack-icon';
+    'shopping-list:notifications-active-filled';
+export const ACTION_BUTTON_UNTRACK_IMAGE_OLD =
+    'shopping-list:shopping-list-untrack-icon-old';
 
 export interface ShoppingListElement {
   $: {
@@ -55,12 +58,15 @@ export class ShoppingListElement extends CrLitElement {
       open_: {type: Boolean},
       untrackedItems_: {type: Array},
       productInfos: {type: Array},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
   accessor productInfos: BookmarkProductInfo[] = [];
   private accessor untrackedItems_: BookmarkProductInfo[] = [];
   protected accessor open_: boolean = true;
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
   private priceTrackingProxy_: PriceTrackingBrowserProxy =
@@ -202,8 +208,13 @@ export class ShoppingListElement extends CrLitElement {
   }
 
   protected getIconForItem_(item: BookmarkProductInfo): string {
-    return this.untrackedItems_.includes(item) ? ACTION_BUTTON_TRACK_IMAGE :
-                                                 ACTION_BUTTON_UNTRACK_IMAGE;
+    const isUntracked = this.untrackedItems_.includes(item);
+    if (this.webuiRoundedIconsEnabled_) {
+      return isUntracked ? ACTION_BUTTON_TRACK_IMAGE :
+                           ACTION_BUTTON_UNTRACK_IMAGE;
+    }
+    return isUntracked ? ACTION_BUTTON_TRACK_IMAGE_OLD :
+                         ACTION_BUTTON_UNTRACK_IMAGE_OLD;
   }
 
   protected getButtonDescriptionForItem_(item: BookmarkProductInfo): string {

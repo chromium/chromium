@@ -59,7 +59,9 @@ export class PowerBookmarksLabelsElement extends CrLitElement {
       labels.push(Object.assign(
           {}, {
             label: loadTimeData.getString('priceTrackingLabel'),
-            icon: 'bookmarks:price-tracking',
+            icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+                'bookmarks:notifications-active' :
+                'bookmarks:price-tracking-old',
             active: false,
           },
           {active: currentLabel ? currentLabel.active : false}));
@@ -68,7 +70,10 @@ export class PowerBookmarksLabelsElement extends CrLitElement {
   }
 
   protected getLabelIcon(label: Label): string {
-    return label.active ? 'bookmarks:check' : label.icon;
+    return label.active ? (loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+                               'bookmarks:check' :
+                               'bookmarks:check-old') :
+                          label.icon;
   }
 
   protected onLabelClick(event: Event) {

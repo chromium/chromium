@@ -18,7 +18,10 @@ export function getHtml(this: ShoppingListElement) {
           ?open="${this.open_}" tabindex="-1">
       </cr-icon-button>
     </div>
-    <cr-icon class="icon" icon="shopping-list:shopping-list-icon"></cr-icon>
+    <cr-icon class="icon"
+        icon="${this.webuiRoundedIconsEnabled_
+            ? 'shopping-list:notifications-active'
+            : 'shopping-list:shopping-list-icon-old'}"></cr-icon>
     <div class="title">$i18n{shoppingListFolderTitle}</div>
   </button>
   ${this.open_ ? html`

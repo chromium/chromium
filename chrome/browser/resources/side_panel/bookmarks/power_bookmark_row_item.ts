@@ -76,6 +76,7 @@ export class PowerBookmarkRowItemElement extends CrLitElement {
         type: Boolean,
         notify: true,
       },
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -107,6 +108,8 @@ export class PowerBookmarkRowItemElement extends CrLitElement {
   accessor isExpandable: boolean = false;
   accessor expanded: boolean = false;
 
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private bookmarksService_: PowerBookmarksService =
       PowerBookmarksService.getInstance();
 
