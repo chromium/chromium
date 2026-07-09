@@ -1,2 +1,3 @@
-TYPE_VIEW_SCROLLED class_name=android.view.View - [scrollDeltaX=-1, scrollDeltaY=-1] [Horizontal Scroll Container]
-TYPE_VIEW_SCROLLED class_name=android.webkit.WebView - [scrollDeltaX=-1, scrollDeltaY=-1]
+=== END INITIAL PAGE LOAD ===
+TYPE_VIEW_SCROLLED class_name=android.webkit.WebView [scrollDeltaX=-1, scrollDeltaY=-1] on class_name=android.webkit.WebView
+TYPE_VIEW_SCROLLED class_name=android.view.View [scrollDeltaX=-1, scrollDeltaY=-1] on [Horizontal Scroll Container] class_name=android.view.View

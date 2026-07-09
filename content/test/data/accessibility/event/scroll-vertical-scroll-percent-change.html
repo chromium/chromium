@@ -3,6 +3,9 @@
 -->
 <!DOCTYPE html>
 <html>
+<head>
+  <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1.0">
+</head>
 <body>
   <div id="div" aria-label="Vertical Scroll Container" style="width: 200px; height: 200px; overflow: scroll;">
     <div style="height: 400px; background-color: green;">overflow div</div>
@@ -11,11 +14,19 @@
   <div style="height: 150vh; background-color: yellow;">overflow window</div>
 
 <script>
-  function go() {
+    document.getElementById('viewport').setAttribute('content', 'width=device-width, user-scalable=no, initial-scale=' + (1 / window.devicePixelRatio) + '');
+
+    var go_passes = [
     // scroll page in the y direction
-    window.scrollTo(0, 20);
+    () => window.scrollTo(0, 20),
     // scroll the overflow div in the y direction.
-    document.getElementById('div').scrollTo(0, 20);
+        () => document.getElementById('div').scrollTo(0, 20)
+      ];
+
+      var current_pass = 0;
+      function go() {
+        go_passes[current_pass++].call();
+        return current_pass < go_passes.length;
   }
 </script>
 </body>
