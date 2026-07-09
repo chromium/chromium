@@ -83,6 +83,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -372,6 +373,41 @@ void ContextualSearchboxHandler::WaitForTabFaviconLoad(
   tab_favicon_helper_->WaitForTabFaviconLoad(tab_id, std::move(callback));
 }
 
+// Helper class that observes the WebContents of the active tab for navigation.
+// When a navigation is committed in the primary main frame, it runs
+// a callback to trigger a refresh of tab suggestions in the WebUI.
+class ContextualSearchboxHandler::ActiveTabNavigationObserver
+    : public content::WebContentsObserver {
+ public:
+  explicit ActiveTabNavigationObserver(base::RepeatingClosure on_navigation_cb)
+      : on_navigation_cb_(on_navigation_cb) {}
+  ActiveTabNavigationObserver(const ActiveTabNavigationObserver&) = delete;
+  ActiveTabNavigationObserver& operator=(const ActiveTabNavigationObserver&) =
+      delete;
+  ~ActiveTabNavigationObserver() override = default;
+
+  void ObserveTab(tabs::TabInterface* tab) {
+    if (tab) {
+      Observe(tab->GetContents());
+    } else {
+      Observe(nullptr);
+    }
+  }
+
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    if (navigation_handle->IsInPrimaryMainFrame() &&
+        navigation_handle->HasCommitted() &&
+        !navigation_handle->IsSameDocument()) {
+      on_navigation_cb_.Run();
+    }
+  }
+
+ private:
+  base::RepeatingClosure on_navigation_cb_;
+};
+
 ContextualSearchboxHandler::ContextualSearchboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
@@ -389,6 +425,10 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
   InitializeInputStateModel();
   tab_favicon_helper_ = std::make_unique<ContextualSearchboxTabFaviconHelper>();
 
+  active_tab_nav_observer_ = std::make_unique<ActiveTabNavigationObserver>(
+      base::BindRepeating(&ContextualSearchboxHandler::OnActiveTabNavigated,
+                          base::Unretained(this)));
+
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_);
   if (browser_window_interface) {
@@ -400,6 +440,7 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
       // //chrome. The current implementation is likely brittle, as it's not a
       // supported API for external users.
       tab_list_observation_.Observe(tab_list);
+      active_tab_nav_observer_->ObserveTab(tab_list->GetActiveTab());
     }
   }
 
@@ -441,6 +482,11 @@ void ContextualSearchboxHandler::OnTabAdded(TabListInterface& tab_list,
 
 void ContextualSearchboxHandler::OnActiveTabChanged(TabListInterface& tab_list,
                                                     tabs::TabInterface* tab) {
+  active_tab_nav_observer_->ObserveTab(tab);
+  page_->OnTabStripChanged();
+}
+
+void ContextualSearchboxHandler::OnActiveTabNavigated() {
   page_->OnTabStripChanged();
 }
 
