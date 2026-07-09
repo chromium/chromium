@@ -525,7 +525,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
     // Provide ZPS matches (empty query).
     await setupAutocompleteResults(
-        searchboxCallbackRouterRemote, '', mockTimer);
+        searchboxCallbackRouterRemote, composebox.activeQueryId, '', mockTimer);
     await contextualComposebox.updateComplete;
     await composebox.updateComplete;
 
@@ -546,7 +546,8 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
     // Provide typed matches.
     await setupAutocompleteResults(
-        searchboxCallbackRouterRemote, 'test', mockTimer);
+        searchboxCallbackRouterRemote, composebox.activeQueryId, 'test',
+        mockTimer);
     await contextualComposebox.updateComplete;
     await composebox.updateComplete;
 

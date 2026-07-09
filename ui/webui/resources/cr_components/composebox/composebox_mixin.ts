@@ -322,8 +322,11 @@ export const ComposeboxEmbedderMixin =
         showTypedSuggest: boolean =
             loadTimeData.getBoolean('composeboxShowTypedSuggest');
         // Tracks the latest query sent for autocompletion. Used to filter out
-        // stale results.
+        // stale results. `activeQueryId` is reset to -1 when the last query
+        // needs to be abandoned. `nextQueryId_` is monotonically increasing to
+        // avoid reusing IDs.
         activeQueryId: number = -1;
+        private nextQueryId_: number = 0;
         lastQueriedInput: string = '';
         haveReceivedSynchronousAutocompleteResponse: boolean = false;
         lensSendRawFileMediaTypesEnabled: boolean =
@@ -1899,7 +1902,7 @@ export const ComposeboxEmbedderMixin =
           if (clearMatches) {
             this.clearAutocompleteMatches();
           }
-          this.activeQueryId++;
+          this.activeQueryId = this.nextQueryId_++;
           this.lastQueriedInput = this.input;
           this.haveReceivedSynchronousAutocompleteResponse = false;
           // Get the cursor position from the DOM. Since DOM updates are async
@@ -1922,8 +1925,7 @@ export const ComposeboxEmbedderMixin =
           this.getDropdownElement().unselect();
           this.getSearchboxHandler().stopAutocomplete(/*clearResult=*/ true);
           // Autocomplete sends updates once it is stopped. Invalidate those
-          // results by setting the |this.lastQueriedInput| to its default
-          // value.
+          // results by setting `activeQueryId` to -1.
           this.activeQueryId = -1;
           this.lastQueriedInput = '';
         }
