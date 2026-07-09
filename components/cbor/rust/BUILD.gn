@@ -1,0 +1,24 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("cbor") {
+  crate_name = "cbor"
+  crate_root = "lib.rs"
+  sources = [ crate_root ]
+  deps = [ "//base" ]
+}
+
+rust_static_library("cbor_rust_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "cbor_rust_unittests.rs"
+  sources = [ crate_root ]
+  deps = [
+    ":cbor",
+    "//testing/rust_gtest_interop",
+    "//third_party/rust/hex/v0_4:lib",
+  ]
+}

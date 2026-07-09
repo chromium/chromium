@@ -37,6 +37,7 @@ source_set("unit_tests") {
   deps = [
     ":cbor",
     "//base",
+    "//components/cbor/rust:cbor_rust_unittests",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/fuzztest",
