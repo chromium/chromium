@@ -289,9 +289,6 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
     case ApkType::TRICHROME:
       apk_type_string = "Trichrome";
       break;
-    case ApkType::MONOCHROME:
-      apk_type_string = "Monochrome";
-      break;
     case ApkType::STANDALONE:
       apk_type_string = "Standalone";
       break;

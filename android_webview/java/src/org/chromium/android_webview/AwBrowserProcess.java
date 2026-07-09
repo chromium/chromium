@@ -83,7 +83,6 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -381,14 +380,10 @@ public final class AwBrowserProcess {
         }
 
         if (libraryName.contains("libmonochrome")) {
-            // The library name for monochrome and trichrome is "libmonochrome.so"
-            // or "libmonochrome_64.so".
+            // The library name for trichrome is "libmonochrome.so" or "libmonochrome_64.so".
             if (info.sharedLibraryFiles != null && info.sharedLibraryFiles.length > 0) {
                 // Only Trichrome uses shared library files.
                 sApkType = ApkType.TRICHROME;
-            } else if (info.className.toLowerCase(Locale.ROOT).contains("monochrome")) {
-                // Only Monochrome has "monochrome" in the application class name.
-                sApkType = ApkType.MONOCHROME;
             } else {
                 sApkType = ApkType.UNKNOWN;
             }
