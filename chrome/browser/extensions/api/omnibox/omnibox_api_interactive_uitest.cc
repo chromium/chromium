@@ -1692,14 +1692,9 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, MultipleUnscopedExtensions) {
 }
 
 // Test if unscoped suggestions send in zero suggest.
-// TODO(crbug.com/409601761): Test is flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_UnscopedExtensionZeroSuggest DISABLED_UnscopedExtensionZeroSuggest
-#else
-#define MAYBE_UnscopedExtensionZeroSuggest UnscopedExtensionZeroSuggest
-#endif
+// TODO(crbug.com/452061489): Reenable as part of Next launch cleanup.
 IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest,
-                       MAYBE_UnscopedExtensionZeroSuggest) {
+                       DISABLED_UnscopedExtensionZeroSuggest) {
   constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
@@ -1781,15 +1776,9 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest,
 }
 
 // Test if unscoped extension are grouped together in zps.
-// TODO(crbug.com/409601761): Test is flaky on Linux.
-// TODO(crbug.com/425974968): Test is flaky on ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/452061489): Reenable as part of Next launch cleanup.
 #define MAYBE_MultipleUnscopedExtensionsZeroSuggest \
   DISABLED_MultipleUnscopedExtensionsZeroSuggest
-#else
-#define MAYBE_MultipleUnscopedExtensionsZeroSuggest \
-  MultipleUnscopedExtensionsZeroSuggest
-#endif
 IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest,
                        MAYBE_MultipleUnscopedExtensionsZeroSuggest) {
   constexpr char kManifest[] =

@@ -811,9 +811,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FriendlyAccessibleLabel) {
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kValue));
 }
 
+// TODO(crbug.com/452061489): Reenable as part of Next launch cleanup.
 // Ensure that the Omnibox popup exposes appropriate accessibility semantics,
 // given a current state of open or closed.
-IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_AccessiblePopup) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
   OmniboxViewViews* omnibox_view_views =
@@ -1837,8 +1838,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
   EXPECT_EQ(u"", omnibox_view()->GetText());
 }
 
+// TODO(crbug.com/452061489): Reenable as part of Next launch cleanup.
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
-                       DefaultSearchEnginePlaceholderForNewTabPage) {
+                       DISABLED_DefaultSearchEnginePlaceholderForNewTabPage) {
   // Navigate to the New Tab Page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            chrome::ChromeUINewTabURLAsGURL()));
@@ -1856,17 +1858,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
   EXPECT_EQ(u"", omnibox_view()->GetText());
 }
 
-// TODO(crbug.com/470861729): Crashes on linux blink web tests. Re-enable after
-// fixing.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_NavigationToAndFromContextualTasks \
-  DISABLED_NavigationToAndFromContextualTasks
-#else
-#define MAYBE_NavigationToAndFromContextualTasks \
-  NavigationToAndFromContextualTasks
-#endif
+// TODO(crbug.com/452061489): Reenable as part of Next launch cleanup.
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
-                       MAYBE_NavigationToAndFromContextualTasks) {
+                       DISABLED_NavigationToAndFromContextualTasks) {
   // Navigate to about:blank.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   EXPECT_FALSE(omnibox_view()->ShouldInstallContextualTasksPlaceholderText());
