@@ -642,7 +642,7 @@ BASE_FEATURE(kAutofillExtractOnlyNonAdFrames,
 // "choose", or "optional" during profile import.
 // TODO(crbug.com/485170688): Remove when launched.
 BASE_FEATURE(kAutofillFilterPlaceholderValuesOnImport,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, improves heuristic regexes for state classification to avoid
 // misclassification as civil state.
