@@ -4637,7 +4637,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
       self.assertTrue(len(authenticator_id) > 0)
 
     self.assertRaisesRegex(
-        chromedriver.UnsupportedOperation,
+        chromedriver.InvalidArgument,
         'INVALID is not a recognized protocol version',
         self._driver.AddVirtualAuthenticator,
             protocol = 'INVALID',

@@ -157,7 +157,7 @@ Status ExecuteAddVirtualAuthenticator(WebView* web_view,
       *protocol = "ctap2";
       mapped_params.SetByDottedPath("options.ctap2Version", "ctap2_1");
     } else {
-      return Status(kUnsupportedOperation, *protocol + kUnrecognizedProtocol);
+      return Status(kInvalidArgument, *protocol + kUnrecognizedProtocol);
     }
   }
 
