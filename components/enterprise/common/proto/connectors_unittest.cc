@@ -51,9 +51,10 @@ using SdkRule = SdkResult::TriggeredRule;
 
 TEST(EnterpriseConnectorsProtoTest, TriggeredRuleActionEnum) {
   // `ChromiumRule::Action` and `SdkRule::Action` have different sizes due to
-  // the addition of FORCE_SAVE_TO_CLOUD, which is not supported by Local
-  // Content Analysis Connectors, and therefore not added to `SdkRule::Action`.
-  EXPECT_EQ(ChromiumRule::Action_ARRAYSIZE, 5);
+  // the addition of FORCE_SAVE_TO_CLOUD and KEEP_IN_MANAGED_CHROME, which are
+  // not supported by Local Content Analysis Connectors, and therefore not added
+  // to `SdkRule::Action`.
+  EXPECT_EQ(ChromiumRule::Action_ARRAYSIZE, 6);
   EXPECT_EQ(SdkRule::Action_ARRAYSIZE, 4);
 
   EXPECT_EQ((int)ChromiumRule::ACTION_UNSPECIFIED,

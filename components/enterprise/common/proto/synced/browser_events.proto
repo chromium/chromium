@@ -210,6 +210,7 @@ message TriggeredRuleInfo {
     WARN = 2;
     BLOCK = 3;
     FORCE_SAVE_TO_CLOUD = 4;
+    KEEP_IN_MANAGED_CHROME = 5;
   }
 
   Action action = 5;

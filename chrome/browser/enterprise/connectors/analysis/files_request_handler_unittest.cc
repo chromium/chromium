@@ -249,6 +249,9 @@ void PrintTo(const RequestHandlerResult& request_handler_result,
     case FinalContentAnalysisResult::FORCE_SAVE_TO_CLOUD:
       *os << "FORCE_SAVE_TO_CLOUD";
       break;
+    case FinalContentAnalysisResult::KEPT_IN_MANAGED_CHROME:
+      *os << "KEPT_IN_MANAGED_CHROME";
+      break;
     case FinalContentAnalysisResult::CANCELLED:
       *os << "CANCELLED";
       break;

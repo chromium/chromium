@@ -246,6 +246,10 @@ enum class FinalContentAnalysisResult {
 
   // Show that the user cancelled the scan.
   CANCELLED = 7,
+
+  // Show that the copy operation is allowed within managed Chrome, but
+  // blocked from the OS clipboard.
+  KEPT_IN_MANAGED_CHROME = 8,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/histograms.xml)
 

@@ -52,8 +52,9 @@ EventResult GetEventResult(const RequestHandlerResult& result) {
     case FinalContentAnalysisResult::FORCE_SAVE_TO_CLOUD:
       event_result = EventResult::FORCED_SAVE_TO_CLOUD;
       break;
+    case FinalContentAnalysisResult::KEPT_IN_MANAGED_CHROME:
     case FinalContentAnalysisResult::ENCRYPTED_FILES:
-      // Encrypted Files are not supported on iOS.
+      // Kept In Managed Chrome and Encrypted Files are not supported on iOS.
       NOTREACHED();
   }
   return event_result;

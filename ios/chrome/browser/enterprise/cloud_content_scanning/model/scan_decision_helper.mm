@@ -255,9 +255,11 @@ void HandleScanDecision(base::WeakPtr<web::WebState> web_state,
         // users.
         std::move(download_proceed).Run(false);
         break;
+      case FinalContentAnalysisResult::KEPT_IN_MANAGED_CHROME:
       case FinalContentAnalysisResult::ENCRYPTED_FILES:
       case FinalContentAnalysisResult::FORCE_SAVE_TO_CLOUD:
-        // Force Save to Cloud and Encrypted Files are not supported on iOS.
+        // Force Save to Cloud, Kept in Managed Chrome and Encrypted Files are
+        // not supported on iOS.
         NOTREACHED();
       case FinalContentAnalysisResult::SUCCESS:
         NOTREACHED();

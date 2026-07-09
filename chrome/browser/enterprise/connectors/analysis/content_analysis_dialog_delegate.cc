@@ -261,6 +261,9 @@ void ContentAnalysisDialogDelegate::UpdateStateFromFinalResult(
     case FinalContentAnalysisResult::CANCELLED:
       dialog_state_ = State::FAILURE;
       break;
+    // KEPT_IN_MANAGED_CHROME uses toasts and does not use dialogs.
+    // No dialogue is shown to the user.
+    case FinalContentAnalysisResult::KEPT_IN_MANAGED_CHROME:
     case FinalContentAnalysisResult::SUCCESS:
       dialog_state_ = State::SUCCESS;
       break;

@@ -64,6 +64,7 @@ bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
     case TriggeredRule::WARN:
     case TriggeredRule::BLOCK:
     case TriggeredRule::FORCE_SAVE_TO_CLOUD:
+    case TriggeredRule::KEEP_IN_MANAGED_CHROME:
       return false;
   }
 }
@@ -271,10 +272,12 @@ bool IsResumableUpload(const BinaryUploadRequest& request) {
       !request.cloud_or_local_settings().is_cloud_analysis()) {
     return false;
   }
-  // Use the Resumable request protocol only for image pastes and
-  // non-paste requests.
-  return request.content_analysis_request().analysis_connector() !=
-             AnalysisConnector::BULK_DATA_ENTRY ||
+  // Use the Resumable request protocol only for image clipboard actions and
+  // non-clipboard requests (e.g. file attachments or printing).
+  return (request.content_analysis_request().analysis_connector() !=
+              AnalysisConnector::BULK_DATA_ENTRY &&
+          request.content_analysis_request().analysis_connector() !=
+              AnalysisConnector::DATA_COPIED) ||
          request.image_paste();
 }
 
@@ -455,6 +458,8 @@ RequestHandlerResult CalculateRequestHandlerResult(
     result.final_result = FinalContentAnalysisResult::WARNING;
   } else if (action == TriggeredRule::BLOCK) {
     result.final_result = FinalContentAnalysisResult::FAILURE;
+  } else if (action == TriggeredRule::KEEP_IN_MANAGED_CHROME) {
+    result.final_result = FinalContentAnalysisResult::KEPT_IN_MANAGED_CHROME;
   } else if (upload_result == ScanRequestUploadResult::kFileTooLarge) {
     result.final_result = FinalContentAnalysisResult::LARGE_FILES;
   } else if (upload_result == ScanRequestUploadResult::kFileEncrypted) {
