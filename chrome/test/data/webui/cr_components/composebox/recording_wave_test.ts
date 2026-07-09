@@ -112,7 +112,9 @@ suite('RecordingWaveElementTest', () => {
         const lastPill = pills[99] as HTMLElement;
 
         // Dark stop for ratio 1.0 is rgb(55, 70, 109).
-        assertEquals('rgb(55, 70, 109)', lastPill.style.background);
+        assertEquals(
+            'rgb(55, 70, 109)',
+            lastPill.style.getPropertyValue('--javascript-bar-color'));
 
         // Verify that the CSS variable is set to the dark theme color.
         const computedStyle = getComputedStyle(recordingWaveElement);
@@ -139,13 +141,15 @@ suite('RecordingWaveElementTest', () => {
         // Wait for animation frame to apply styles.
         await new Promise(resolve => requestAnimationFrame(resolve));
 
-        const pills =
+        const pills2 =
             recordingWaveElement.$.barsContainer.querySelectorAll('.bar-pill');
-        assertEquals(100, pills.length);
-        const lastPill = pills[99] as HTMLElement;
+        assertEquals(100, pills2.length);
+        const lastPill2 = pills2[99] as HTMLElement;
 
         // Light stop for ratio 1.0 is rgb(236, 240, 255).
-        assertEquals('rgb(236, 240, 255)', lastPill.style.background);
+        assertEquals(
+            'rgb(236, 240, 255)',
+            lastPill2.style.getPropertyValue('--javascript-bar-color'));
 
         // Verify that the CSS variable is NOT set to dark color.
         const computedStyle = getComputedStyle(recordingWaveElement);
