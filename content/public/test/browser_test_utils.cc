@@ -4775,6 +4775,7 @@ WebContents* CreateAndLoadWebContentsObserver::Wait() {
         << "Unexpected WebContents creation";
     // If the expected number of `WebContents` were created; finish waiting.
     if (filtered_web_contents.size() >= num_expected_contents_) {
+      creation_subscription_ = base::CallbackListSubscription();
       return filtered_web_contents[0];
     }
     // If insufficient `WebContents` were created, wait for another to be
