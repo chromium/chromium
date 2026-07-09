@@ -262,7 +262,7 @@ public class BookmarkBarCoordinator
                         mBookmarkBarItemsLayoutManager,
                         mModel,
                         profileSupplier,
-                        currentTab,
+                        currentTabSupplier,
                         bookmarkOpener,
                         bookmarkManagerOpenerSupplier,
                         mItemsContainer,
@@ -637,7 +637,8 @@ public class BookmarkBarCoordinator
         // When fullscreen mode is entered, we need to hide the scene layer and Android widgets.
         // However, if LockTopControls is enabled, we never remove the bookmark bar.
 
-        boolean isLockTopControlsEnabled = BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2(mContext);
+        boolean isLockTopControlsEnabled =
+                BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2(mContext);
         if (!isLockTopControlsEnabled) {
             mIsInFullscreenMode = true;
             updateSceneLayerVisibility();

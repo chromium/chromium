@@ -62,7 +62,8 @@ public class BookmarkBarPopupCoordinatorTest {
                         mActivity,
                         mBookmarkBarView,
                         ObservableSuppliers.createMonotonic(),
-                        () -> new Pair<>(0, 0)); // controlsHeightSupplier
+                        () -> new Pair<>(0, 0), // controlsHeightSupplier
+                        /* currentTabSupplier= */ () -> null);
     }
 
     @Test

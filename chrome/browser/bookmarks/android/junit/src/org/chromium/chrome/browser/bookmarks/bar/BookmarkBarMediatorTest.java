@@ -104,7 +104,7 @@ public class BookmarkBarMediatorTest {
                         mLayoutManager,
                         mPropertyModel,
                         mProfileSupplier,
-                        /* currentTab= */ null,
+                        /* currentTabSupplier= */ () -> null,
                         mBookmarkOpener,
                         ObservableSuppliers.createNonNull(mBookmarkManagerOpener),
                         mItemsRecyclerView,
@@ -114,10 +114,10 @@ public class BookmarkBarMediatorTest {
     @After
     public void tearDown() throws Exception {
         mMediator.destroy();
-        assertNull(mMediator.mFolderIconBitmap);
+        assertNull(mMediator.getFolderIconBitmapForTesting());
     }
 
-    // Tests the behavior of sFolderIconBitmap.
+    // Tests the behavior of mFolderIconBitmap.
     @Test
     @SmallTest
     public void testFolderIconBitmap() throws Exception {
@@ -128,12 +128,12 @@ public class BookmarkBarMediatorTest {
         // Add a child folder to the root folder to ensure the caching logic is triggered.
         mBookmarkModel.addFolder(rootFolderId, 0, "Child Folder");
 
-        assertNull("Cache should be empty initially.", mMediator.mFolderIconBitmap);
+        assertNull("Cache should be empty initially.", mMediator.getFolderIconBitmapForTesting());
 
-        // Trigger #createListItemForBookmarkFolder, which populates the sFolderIconBitmap cache.
+        // Trigger #createListItemForBookmarkFolder, which populates the mFolderIconBitmap cache.
         mMediator.buildMenuModelListForFolder(mBookmarkModel, rootFolderId);
 
-        assertNotNull("Cache should be populated.", mMediator.mFolderIconBitmap);
+        assertNotNull("Cache should be populated.", mMediator.getFolderIconBitmapForTesting());
 
         // Destroy behavior is tested in #tearDown.
     }

@@ -2935,6 +2935,41 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_OPEN_IN_NEW_WINDOW" desc="Context sensitive menu item to open the selected link in a new window. [CHAR_LIMIT=30]">
         Open in new window
       </message>
+      <message name="IDS_CONTEXTMENU_OPEN_ALL_PLURAL" desc="Context sensitive menu item to open all bookmarks. [ICU Syntax]">
+        {NUM_BOOKMARKS, plural,
+          =1 {Open bookmark}
+          other {Open all (#)}}
+      </message>
+      <message name="IDS_CONTEXTMENU_OPEN_ALL" desc="Context sensitive menu item to open all bookmarks when there are no bookmarks. [CHAR_LIMIT=30]">
+        Open all
+      </message>
+      <message name="IDS_CONTEXTMENU_OPEN_ALL_IN_NEW_WINDOW_PLURAL" desc="Context sensitive menu item to open all bookmarks in a new window. [ICU Syntax]">
+        {NUM_BOOKMARKS, plural,
+          =1 {Open in new window}
+          other {Open all (#) in new window}}
+      </message>
+      <message name="IDS_CONTEXTMENU_OPEN_ALL_IN_NEW_WINDOW" desc="Context sensitive menu item to open all bookmarks in a new window when there are no bookmarks. [CHAR_LIMIT=30]">
+        Open all in new window
+      </message>
+      <message name="IDS_CONTEXTMENU_OPEN_ALL_IN_INCOGNITO_WINDOW_PLURAL" desc="Context sensitive menu item to open all bookmarks in an incognito window. [ICU Syntax]">
+        {NUM_BOOKMARKS, plural,
+          =1 {Open in Incognito window}
+          other {Open all (#) in Incognito window}}
+      </message>
+      <message name="IDS_CONTEXTMENU_OPEN_ALL_IN_INCOGNITO_WINDOW" desc="Context sensitive menu item to open all bookmarks in an incognito window when there are no bookmarks. [CHAR_LIMIT=30]">
+        Open all in Incognito window
+      </message>
+      <message name="IDS_CONTEXTMENU_OPEN_ALL_IN_NEW_TAB_GROUP_PLURAL" desc="Context sensitive menu item to open all bookmarks in a new tab group. [ICU Syntax]">
+        {NUM_BOOKMARKS, plural,
+          =1 {Open in new tab group}
+          other {Open all (#) in new tab group}}
+      </message>
+      <message name="IDS_CONTEXTMENU_OPEN_ALL_IN_NEW_TAB_GROUP" desc="Context sensitive menu item to open all bookmarks in a new tab group when there are no bookmarks. [CHAR_LIMIT=30]">
+        Open all in new tab group
+      </message>
+      <message name="IDS_CONTEXTMENU_OPEN_BOOKMARKS_MANAGER" desc="Label for the menu item that opens the bookmarks manager.">
+        Open Bookmarks Manager
+      </message>
       <message name="IDS_CONTEXTMENU_OPEN_IN_NEW_TAB" desc="Context sensitive menu item to open the selected link in a new tab. [CHAR_LIMIT=30]">
         Open in new tab
       </message>
@@ -4279,6 +4314,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_MENU_HIDE_BOOKMARKS_BAR" desc="Menu item for hiding the bookmarks bar. [CHAR_LIMIT=27]">
         Hide bookmarks bar
+      </message>
+      <message name="IDS_CONTEXTMENU_ADD_PAGE" desc="Menu item for adding the current tab page to the current folder. [CHAR_LIMIT=27]">
+        Add page…
+      </message>
+      <message name="IDS_CONTEXTMENU_ADD_FOLDER" desc="Menu item for adding a new folder inside the current folder. [CHAR_LIMIT=27]">
+        Add folder…
+      </message>
+      <message name="IDS_CONTEXTMENU_SHOW_BOOKMARKS_BAR" desc="Menu item for showing the bookmarks bar. [CHAR_LIMIT=27]">
+        Show bookmarks bar
+      </message>
+      <message name="IDS_CONTEXTMENU_EDIT_BOOKMARK_ELLIPSIS" desc="Menu item for editing a bookmark from the context menu. [CHAR_LIMIT=27]">
+        Edit…
       </message>
       <message name="IDS_MENU_READING_LIST" desc="Menu item for showing items related to reading list. [CHAR_LIMIT=27]">
         Reading list

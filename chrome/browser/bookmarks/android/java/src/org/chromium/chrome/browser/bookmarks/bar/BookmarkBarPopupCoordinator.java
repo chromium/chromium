@@ -26,8 +26,10 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -42,6 +44,7 @@ import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.ui.widget.ViewRectUpdater;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /** Coordinates the display of all popup menus anchored to the Bookmarks Bar. */
@@ -53,6 +56,7 @@ public class BookmarkBarPopupCoordinator {
     private final Supplier<Pair<Integer, Integer>> mControlsHeightSupplier;
     private final BrowserControlsRectProvider mBrowserControlsRectProvider;
 
+    private final BookmarkBarContextMenuMediator mContextMenuMediator;
     private @Nullable AnchoredPopupWindow mAnchoredPopupWindow;
     private @Nullable ModelList mActiveBookmarkItems;
     private ListObservable.@Nullable ListObserver<Void> mActiveSizeUpdaterObserver;
@@ -61,22 +65,51 @@ public class BookmarkBarPopupCoordinator {
             Activity activity,
             View bookmarkBarView,
             MonotonicObservableSupplier<Profile> profileSupplier,
-            Supplier<Pair<Integer, Integer>> controlsHeightSupplier) {
+            Supplier<Pair<Integer, Integer>> controlsHeightSupplier,
+            Supplier<@Nullable Tab> currentTabSupplier) {
         mActivity = activity;
         mBookmarkBarView = bookmarkBarView;
         mProfileSupplier = profileSupplier;
         mControlsHeightSupplier = controlsHeightSupplier;
         mBrowserControlsRectProvider = new BrowserControlsRectProvider(activity);
+
+        mContextMenuMediator =
+                new BookmarkBarContextMenuMediator(
+                        activity, profileSupplier, currentTabSupplier, this::dismiss);
     }
 
     /** Shows the right-click context menu for a bookmark item. */
     public void showBookmarkItemContextMenu(View anchorView, BookmarkItem item) {
-        // TODO(crbug.com/465996578): Implement context menu for bookmark items.
+        runWithLoadedModel(
+                model -> {
+                    ModelList menuModel =
+                            mContextMenuMediator.buildContextMenuModelList(item, model);
+                    showPopup(menuModel, anchorView, null);
+                });
     }
 
-    /** Shows the context menu for the Bookmarks Bar empty space. */
+    /** Shows the context menu for the Bookmarks Bar background. */
     public void showBookmarkBarEmptySpaceContextMenu(View anchorView, Point offset) {
-        // TODO(crbug.com/465996578): Implement context menu for bookmarks bar background.
+        runWithLoadedModel(
+                model -> {
+                    ModelList menuModel =
+                            mContextMenuMediator.buildBookmarksBarEmptySpaceContextMenuModelList(
+                                    model);
+                    showPopup(menuModel, anchorView, offset);
+                });
+    }
+
+    /**
+     * Executes the given callback when the {@link BookmarkModel} has finished loading. If it is
+     * already loaded, the callback runs immediately. This is used to handle clicks that occur
+     * during startup or profile-switching transitions to prevent dropped clicks.
+     */
+    private void runWithLoadedModel(Consumer<BookmarkModel> callback) {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
+
+        BookmarkModel model = BookmarkModel.getForProfile(profile);
+        model.finishLoadingBookmarkModel(() -> callback.accept(model));
     }
 
     /**
