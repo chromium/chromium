@@ -548,8 +548,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     // to keep the existing tab if we are returning from another tab.
     const hasTabMismatch = !!this.automaticActiveTab_ && !!tab &&
         this.automaticActiveTab_.url !== tab.url;
+    // TODO(crbug.com/486707842): Move `this.isSidePanel` check to the
+    // Contextual Tasks embedder.
     const shouldDeleteAutomaticActiveTab =
-        this.webUIOmniboxAskGAboutThisPageEnabled_ ?
+        (this.webUIOmniboxAskGAboutThisPageEnabled_ || this.isSidePanel) ?
         hasTabMismatch :
         this.automaticActiveTab_ && (!tab || hasTabMismatch);
 
