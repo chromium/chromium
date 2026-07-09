@@ -161,6 +161,7 @@
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/frame_type.h"
+#include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/javascript_dialog_manager.h"
@@ -10760,7 +10761,8 @@ void WebContentsImpl::OnAdvanceFocus(RenderFrameHostImpl* source_rfh) {
 void WebContentsImpl::OnFocusedElementChangedInFrame(
     RenderFrameHostImpl* frame,
     const gfx::Rect& bounds_in_root_view,
-    blink::mojom::FocusType focus_type) {
+    blink::mojom::FocusType focus_type,
+    blink::DOMNodeIdType editable_dom_node_id) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::OnFocusedElementChangedInFrame",
                         "render_frame_host", frame);
@@ -10786,8 +10788,11 @@ void WebContentsImpl::OnFocusedElementChangedInFrame(
   root_view->FocusedNodeChanged(frame->has_focused_editable_element(),
                                 bounds_in_screen);
 
+  GlobalDOMNodeId global_dom_node_id{frame->GetWeakDocumentPtr(),
+                                     editable_dom_node_id};
   FocusedNodeDetails details = {frame->has_focused_editable_element(),
-                                bounds_in_screen, focus_type};
+                                bounds_in_screen, focus_type,
+                                global_dom_node_id};
   BrowserAccessibilityStateImpl::GetInstance()->OnFocusChangedInPage(details);
   observers_.NotifyObservers(&WebContentsObserver::OnFocusChangedInPage,
                              details);

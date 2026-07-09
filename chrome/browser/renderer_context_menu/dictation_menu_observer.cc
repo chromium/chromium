@@ -15,6 +15,7 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace dictation {
@@ -25,12 +26,12 @@ DictationMenuObserver::DictationMenuObserver(RenderViewContextMenuProxy* proxy)
 DictationMenuObserver::~DictationMenuObserver() = default;
 
 void DictationMenuObserver::InitMenu(const content::ContextMenuParams& params) {
-  // Note that `field_renderer_id` is `DOMNodeId` within blink. Its value is
-  // only meaningful within the renderer that generated it.
+  // Note that `field_renderer_id` is `DOMNodeIdType` within blink. Its value
+  // is only meaningful within the renderer that generated it.
   content::RenderFrameHost* rfh = proxy_->GetRenderFrameHost();
   target_element_dom_id_ = content::GlobalDOMNodeId{
       rfh ? rfh->GetWeakDocumentPtr() : content::WeakDocumentPtr(),
-      content::DOMNodeId(static_cast<int>(params.field_renderer_id))};
+      blink::DOMNodeIdType(static_cast<int>(params.field_renderer_id))};
 
   DictationKeyedService* service = GetDictationService();
   if (service && service->ShouldShowContextMenuItem()) {

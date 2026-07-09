@@ -69,6 +69,7 @@
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
 #include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
+#include "third_party/blink/public/mojom/dom/dom_node_id.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink-forward.h"
@@ -381,6 +382,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -6108,8 +6110,16 @@ void Document::SendFocusNotification(Element* new_focused_element,
     }
   }
 
+  auto dom_node_id = mojom::blink::DOMNodeId::New(kInvalidDOMNodeId);
+  if (base::FeatureList::IsEnabled(
+          features::kPopulateDOMNodeIdInFocusedNodeDetails) &&
+      new_focused_element && (is_editable || is_richly_editable)) {
+    dom_node_id->value = new_focused_element->GetDomNodeId();
+  }
+
   GetFrame()->GetLocalFrameHostRemote().FocusedElementChanged(
-      is_editable, is_richly_editable, element_bounds_in_dips, focus_type);
+      is_editable, is_richly_editable, element_bounds_in_dips, focus_type,
+      std::move(dom_node_id));
 }
 
 void Document::NotifyFocusedElementChanged(Element* old_focused_element,

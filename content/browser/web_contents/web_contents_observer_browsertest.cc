@@ -39,6 +39,8 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/ui_base_switches.h"
 
@@ -848,19 +850,24 @@ class FocusedNodeObserver : public WebContentsObserver {
   explicit FocusedNodeObserver(WebContentsImpl* web_contents)
       : WebContentsObserver(web_contents) {}
 
-  blink::mojom::FocusType last_focus_type() const { return last_focus_type_; }
+  blink::mojom::FocusType last_focus_type() const {
+    return last_details_.focus_type;
+  }
+  blink::DOMNodeIdType last_dom_node_id() const {
+    return last_details_.global_dom_node_id.target_element_dom_id;
+  }
 
   void WaitForFocusChangedInPage() { run_loop_.Run(); }
 
   // WebContentsObserver:
   void OnFocusChangedInPage(const FocusedNodeDetails& details) override {
-    last_focus_type_ = details.focus_type;
+    last_details_ = details;
     run_loop_.Quit();
   }
 
  private:
   base::RunLoop run_loop_;
-  blink::mojom::FocusType last_focus_type_;
+  FocusedNodeDetails last_details_;
 };
 
 // Tests that the focus type is reported correctly in FocusedNodeDetails when
@@ -875,6 +882,33 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   SimulateMouseClickOrTapElementWithId(web_contents(), "text");
   observer.WaitForFocusChangedInPage();
   EXPECT_EQ(blink::mojom::FocusType::kMouse, observer.last_focus_type());
+}
+
+class WebContentsObserverBrowserTestNodeIdEnabled
+    : public WebContentsObserverBrowserTest {
+ public:
+  WebContentsObserverBrowserTestNodeIdEnabled() = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      blink::features::kPopulateDOMNodeIdInFocusedNodeDetails};
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTestNodeIdEnabled,
+                       OnFocusChangedInPageNodeId) {
+  FocusedNodeObserver observer(web_contents());
+  GURL url(embedded_test_server()->GetURL("/form_that_posts_cross_site.html"));
+
+  EXPECT_TRUE(NavigateToURL(web_contents(), url));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
+  std::optional<int> expected_node_id =
+      GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#text");
+  ASSERT_TRUE(expected_node_id.has_value());
+
+  SimulateMouseClickOrTapElementWithId(web_contents(), "text");
+  observer.WaitForFocusChangedInPage();
+
+  EXPECT_EQ(expected_node_id.value(), observer.last_dom_node_id().value());
 }
 
 }  // namespace

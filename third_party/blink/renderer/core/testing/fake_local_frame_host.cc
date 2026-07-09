@@ -7,6 +7,7 @@
 #include "net/storage_access_api/status.h"
 #include "skia/public/mojom/skcolor.mojom-blink.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom-blink.h"
+#include "third_party/blink/public/mojom/dom/dom_node_id.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom-blink.h"
@@ -161,7 +162,8 @@ void FakeLocalFrameHost::FocusedElementChanged(
     bool is_editable_element,
     bool is_richly_editable_element,
     const gfx::Rect& bounds_in_frame_widget,
-    blink::mojom::FocusType focus_type) {}
+    blink::mojom::FocusType focus_type,
+    mojom::blink::DOMNodeIdPtr dom_node_id) {}
 
 void FakeLocalFrameHost::TextSelectionChanged(const String& text,
                                               uint32_t offset,

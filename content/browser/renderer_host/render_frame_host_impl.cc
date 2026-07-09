@@ -9503,7 +9503,8 @@ void RenderFrameHostImpl::FocusedElementChanged(
     bool is_editable_element,
     bool is_richly_editable_element,
     const gfx::Rect& bounds_in_frame_widget,
-    blink::mojom::FocusType focus_type) {
+    blink::mojom::FocusType focus_type,
+    const blink::DOMNodeIdType& editable_dom_node_id) {
   if (!GetView()) {
     return;
   }
@@ -9517,7 +9518,7 @@ void RenderFrameHostImpl::FocusedElementChanged(
       gfx::Rect(GetView()->TransformPointToRootCoordSpace(
                     bounds_in_frame_widget.origin()),
                 bounds_in_frame_widget.size()),
-      focus_type);
+      focus_type, editable_dom_node_id);
 }
 
 void RenderFrameHostImpl::TextSelectionChanged(const std::u16string& text,
