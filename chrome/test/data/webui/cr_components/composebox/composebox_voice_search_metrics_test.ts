@@ -8,7 +8,7 @@ import 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
-import {VoiceSearchAction, VoiceSearchError} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
+import {VoiceSearchAction, VoiceSearchError, VoiceSearchMetricType} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -350,9 +350,10 @@ suite('ComposeboxVoiceSearchMetrics', () => {
     await microtasksFinished();
 
     // Verify: The legacy NewTabPage.VoiceActions metric records
-    // CLOSE_OVERLAY (value 2), instead of the new CANCELED_BY_USER (value 11).
+    // CLOSE_OVERLAY, instead of the new CANCELED_BY_USER.
+    const LEGACY_ACTION_CLOSE_OVERLAY = 2;
     assertEquals(
-        1, metrics.count('NewTabPage.VoiceActions', /* CLOSE_OVERLAY */ 2));
+        1, metrics.count('NewTabPage.VoiceActions', LEGACY_ACTION_CLOSE_OVERLAY));
     assertEquals(
         0,
         metrics.count(
@@ -395,7 +396,8 @@ suite('ComposeboxVoiceSearchMetrics', () => {
 
     // Verify: The legacy NTP histograms are completely ignored and not
     // polluted.
-    assertEquals(0, metrics.count('NewTabPage.VoiceActions', 2));
+    const LEGACY_ACTION_CLOSE_OVERLAY = 2;
+    assertEquals(0, metrics.count('NewTabPage.VoiceActions', LEGACY_ACTION_CLOSE_OVERLAY));
     assertEquals(
         0, metrics.count('NewTabPage.VoiceErrors', VoiceSearchError.NETWORK));
 
@@ -404,4 +406,74 @@ suite('ComposeboxVoiceSearchMetrics', () => {
     mockVoiceSearch.voiceRecognition_.abort();
     await microtasksFinished();
   });
+
+
+  test(
+      'Filters new VoiceSearchAction values from legacy NTP metrics during dual-logging',
+      async () => {
+        const LEGACY_ACTION_CLOSE_OVERLAY = 2;
+        mockVoiceSearch.metricSource = 'NTP_REALBOX';
+
+        // Verify legacy action ACTIVATED_BY_ICON is dual-logged to legacy.
+        voiceSearchElement.start();
+        await microtasksFinished();
+        assertEquals(
+            1,
+            metrics.count(
+                'VoiceSearch.Action.NTP_REALBOX',
+                VoiceSearchAction.ACTIVATED_BY_ICON));
+        assertEquals(
+            1,
+            metrics.count(
+                'NewTabPage.VoiceActions', VoiceSearchAction.ACTIVATED_BY_ICON));
+
+        // Verify CANCELED_BY_USER is mapped to CLOSE_OVERLAY in legacy.
+        mockVoiceSearch.onCloseClick_();
+        await microtasksFinished();
+        assertEquals(
+            1,
+            metrics.count(
+                'VoiceSearch.Action.NTP_REALBOX',
+                VoiceSearchAction.CANCELED_BY_USER));
+        assertEquals(
+            1,
+            metrics.count(
+                'NewTabPage.VoiceActions', LEGACY_ACTION_CLOSE_OVERLAY));
+
+        // Verify new action STOP_BUTTON_CLICKED is NOT logged in legacy.
+        mockVoiceSearch.onStopClick_();
+        await microtasksFinished();
+        assertEquals(
+            1,
+            metrics.count(
+                'VoiceSearch.Action.NTP_REALBOX',
+                VoiceSearchAction.STOP_BUTTON_CLICKED));
+        assertEquals(
+            0,
+            metrics.count(
+                'NewTabPage.VoiceActions',
+                VoiceSearchAction.STOP_BUTTON_CLICKED));
+
+        // Verify new action RESUME_BUTTON_CLICKED is NOT logged in legacy.
+        mockVoiceSearch.recordMetric_(
+            VoiceSearchMetricType.ACTION,
+            VoiceSearchAction.RESUME_BUTTON_CLICKED,
+            VoiceSearchAction.MAX_VALUE + 1);
+        await microtasksFinished();
+        assertEquals(
+            1,
+            metrics.count(
+                'VoiceSearch.Action.NTP_REALBOX',
+                VoiceSearchAction.RESUME_BUTTON_CLICKED));
+        assertEquals(
+            0,
+            metrics.count(
+                'NewTabPage.VoiceActions',
+                VoiceSearchAction.RESUME_BUTTON_CLICKED));
+
+        // Clean up internal state to prevent leaking into the next test.
+        mockVoiceSearch.state_ = -1;
+        mockVoiceSearch.voiceRecognition_.abort();
+        await microtasksFinished();
+      });
 });

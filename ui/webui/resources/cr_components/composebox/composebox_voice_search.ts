@@ -618,6 +618,12 @@ export class ComposeboxVoiceSearchElement extends
         if (metricEnumValue === VoiceSearchAction.CANCELED_BY_USER) {
           legacyMetricEnumValue = 2;
         }
+        // The legacy NewTabPageVoiceAction enum in enums.xml only defines values 0 to 6.
+        // Prevent newly added VoiceSearchAction values (>6, e.g. Stop = 7, Resume = 8)
+        // from leaking into and polluting the legacy NewTabPage.VoiceActions histogram.
+        if (legacyMetricEnumValue > 6) {
+          return;
+        }
         chrome.metricsPrivate.recordEnumerationValue(
             'NewTabPage.VoiceActions', legacyMetricEnumValue, max);
       } else if (type === VoiceSearchMetricType.ERROR) {
