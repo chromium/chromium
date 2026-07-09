@@ -87,6 +87,54 @@ If you only know which source file has missing coverage:
    several covering suites (e.g., `browser_tests`, `unit_tests`) may be returned
    because they all depend on it.
 
+### Workflow C: Mapping at a Past Revision (for historical bug triage)
+
+If you need to know the test suite mapping at the time a bug was reported, you
+must perform the analysis relative to that historical git revision.
+
+To avoid checking out the past revision in your workspace, you should delegate
+the historical file exploration to the `time-travel-code-explorer` skill.
+
+1. **Verify File Existence**: Ensure the target file actually existed at the
+   target revision. Delegate this to the `time-travel-code-explorer` skill
+   (e.g., using its `view_file` command to see if it exists). If it did not, the
+   mapping is invalid.
+2. **Retrieve Historical Isolate Map**: Load the active test suites list
+   (`infra/config/generated/testing/gn_isolate_map.pyl`) as it existed at the
+   target revision. Delegate this to the `time-travel-code-explorer` skill to
+   retrieve the content, and save it to a temporary file.
+3. **Verify Graph Stability (Lightweight Approach)**: Check if any `BUILD.gn`
+   files along the dependency path have been modified since the target revision.
+   *Note: The helper tool automates this check. It will print warnings if it
+   detects changes.*
+4. **Run the Mapping Tool**: Run the `test_suite_mapper.py` tool passing the
+   revision and the retrieved isolate map file:
+
+```bash
+# 1. Retrieve and save the historical isolate map (example path)
+# (Use the time-travel-code-explorer skill to get the contents of
+# 'infra/config/generated/testing/gn_isolate_map.pyl' at revision 'abc123f'
+# and save it to '/tmp/gn_isolate_map.pyl')
+
+# 2. Run the mapping tool
+python3 tools/code_coverage/test_suite_mapper.py \
+  --revision abc123f \
+  --isolate-map-file /tmp/gn_isolate_map.pyl \
+  base/values.cc
+```
+
+*Note: If the build graph has changed and you want 100% accurate results, you
+can bypass the lightweight mapping and force heavyweight resolution. Heavyweight
+resolution does not require `--isolate-map-file` because it checks out a
+worktree and reads the map directly from the worktree disk:*
+
+```bash
+python3 tools/code_coverage/test_suite_mapper.py \
+  --revision abc123f \
+  --force-heavyweight \
+  base/values.cc
+```
+
 ### Customizing the Build Directory
 
 By default, the build directory is assumed to be `out/Default`. You can specify
@@ -97,4 +145,3 @@ Linux): *Example using `--build-dir`:*
 python3 tools/code_coverage/test_suite_mapper.py \
   --build-dir out/coverage base/values.cc
 ```
-

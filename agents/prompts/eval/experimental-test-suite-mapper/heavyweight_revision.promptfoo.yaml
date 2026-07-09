@@ -1,0 +1,20 @@
+description: Verify the experimental-test-suite-mapper skill correctly maps past revisions requiring heavyweight resolution.
+owner: aadarshb@
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - experimental-test-suite-mapper
+tests:
+  - vars:
+      query: "Identify the parent executable test suite for the C++ test file `content/browser/child_process_security_policy_unittest.cc` at revision `d99f70981d955d1fdec7f2d1af74771dbe734256` using the experimental-test-suite-mapper skill."
+    assert:
+      - type: contains
+        value: "content_unittests"
+    metadata:
+      pass_k_threshold: 1
+      runs_per_test: 3
