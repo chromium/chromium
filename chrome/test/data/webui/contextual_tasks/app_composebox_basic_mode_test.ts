@@ -7,22 +7,21 @@ import 'chrome://contextual-tasks/app.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 import {createContextualTasksAppElement, fixtureUrl} from './contextual_tasks_test_utils.js';
 
-// Remove the element to prevent background loadabort events from triggering
-// a race condition with our manual event simulation.
+// Detach the threadFrame load listeners and remove the element so real
+// <webview> events cannot race the manual event simulation below (remove()
+// alone leaves the listeners attached).
 async function removeThreadFrameToPreventRaceConditions() {
   const appElement = document.querySelector('contextual-tasks-app');
+  appElement?.removeThreadFrameListenersForTesting();
   const threadFrame =
       appElement?.shadowRoot.querySelector<HTMLElement>('#threadFrame');
-
-  if (threadFrame && isVisible(threadFrame)) {
-    threadFrame.remove();
-    await microtasksFinished();
-  }
+  threadFrame?.remove();
+  await microtasksFinished();
 }
 
 suite('ContextualTasksAppComposeboxBasicModeTest', function() {
