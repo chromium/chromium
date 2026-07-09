@@ -199,4 +199,41 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       profile_.get(), base::NullCallback());
 }
 
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       GetOrCreateInputStateModel_MultipleSessions) {
+  ContextualTasksWebContentsUserData::CreateForWebContents(web_contents_);
+  auto* user_data =
+      ContextualTasksWebContentsUserData::FromWebContents(web_contents_);
+
+  auto mock_handle_a =
+      std::make_shared<contextual_search::MockContextualSearchSessionHandle>();
+  auto mock_handle_b =
+      std::make_shared<contextual_search::MockContextualSearchSessionHandle>();
+
+  ASSERT_NE(mock_handle_a->session_id(), mock_handle_b->session_id());
+
+  // Create model for Session A
+  auto model_a_weak = user_data->GetOrCreateInputStateModel(*mock_handle_a);
+  ASSERT_TRUE(model_a_weak);
+
+  // Create model for Session B. Model A should not be destroyed.
+  auto model_b_weak = user_data->GetOrCreateInputStateModel(*mock_handle_b);
+  ASSERT_TRUE(model_b_weak);
+  EXPECT_TRUE(model_a_weak);
+
+  // Retrieve Model A again. Verify it returns the existing Model A instance.
+  auto model_a_weak_2 = user_data->GetOrCreateInputStateModel(*mock_handle_a);
+  EXPECT_EQ(model_a_weak.get(), model_a_weak_2.get());
+
+  // Destroy Session A. It should be garbage collected on next GetOrCreate call.
+  mock_handle_a.reset();
+
+  auto mock_handle_c =
+      std::make_shared<contextual_search::MockContextualSearchSessionHandle>();
+  user_data->GetOrCreateInputStateModel(*mock_handle_c);
+
+  // Model A weak pointer should now be null (deleted from map).
+  EXPECT_FALSE(model_a_weak);
+}
+
 }  // namespace contextual_tasks
