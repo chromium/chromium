@@ -28,6 +28,10 @@ class MultistepFilterUiDelegate;
 // This observer detects primary main frame navigations, clears existing
 // suggestions, and requests new suggestions from the MultistepFilterService for
 // eligible URLs.
+// Instances are owned indirectly by ChromeFilterNavigationObserver; one
+// instance exists per tab (via `tabs::TabFeatures`) but is replaced if the
+// tab's WebContents is replaced, making this effectively a one-per-WebContents
+// instance.
 class ContentFilterNavigationObserver : public content::WebContentsObserver {
  public:
   ContentFilterNavigationObserver(

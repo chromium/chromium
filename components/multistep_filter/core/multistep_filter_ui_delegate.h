@@ -16,8 +16,9 @@ namespace multistep_filter {
 // (like suppression) and trigger UI updates (like clearing or showing
 // suggestions).
 //
-// Instances are owned by `ChromeFilterNavigationObserver` in chrome/browser;
-// one instance exists per `WebContents` (i.e. per tab).
+// Instances are owned indirectly by `ChromeFilterNavigationObserver` in
+// chrome/browser; one instance exists per tab (via `tabs::TabFeatures`) but
+// is replaced if the tab's WebContents is replaced in the tab.
 class MultistepFilterUiDelegate {
  public:
   virtual ~MultistepFilterUiDelegate() = default;
