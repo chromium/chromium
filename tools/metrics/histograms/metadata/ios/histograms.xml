@@ -8308,6 +8308,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.WebUI.{Action}" enum="WebUIMojoActions"
+    expires_after="2027-06-15">
+  <owner>alexandrasp@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    Records the outcome of interactions with Mojo through Mojo Facade on iOS.
+  </summary>
+  <token key="Action">
+    <variant name="Mojo.bindInterface"/>
+    <variant name="Mojo.createMessagePipe"/>
+    <variant name="MojoHandle.close"/>
+    <variant name="MojoHandle.readMessage"/>
+    <variant name="MojoHandle.watch"/>
+    <variant name="MojoHandle.writeMessage"/>
+    <variant name="MojoWatcher.cancel"/>
+    <variant name="Unknown"
+        summary="An unrecognized or malformed Mojo message"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.WelcomeBack.ActiveDaysInPast28Days" units="days"
     expires_after="2027-04-01">
   <owner>joemerramos@google.com</owner>

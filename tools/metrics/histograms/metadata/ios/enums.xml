@@ -2818,6 +2818,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Seed used">Seed is applied by variations service</int>
 </enum>
 
+<!-- LINT.IfChange(WebUIMojoActions) -->
+
+<enum name="WebUIMojoActions">
+  <int value="0" label="Success">
+    A Mojo message was processed successfully.
+  </int>
+  <int value="1" label="Failure">
+    An error occurred while processing a Mojo message.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(/ios/web/webui/web_ui_metrics.h:WebUIMojoActions) -->
+
 <!-- LINT.IfChange(WelcomeBackPromoRegistrationResult) -->
 
 <enum name="WelcomeBackPromoRegistrationResult">

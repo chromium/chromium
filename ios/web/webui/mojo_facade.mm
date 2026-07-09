@@ -17,6 +17,7 @@
 #import "base/ios/block_types.h"
 #import "base/json/json_reader.h"
 #import "base/json/json_writer.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
@@ -24,6 +25,7 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/webui/web_ui_metrics.h"
 #import "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
 namespace web {
@@ -44,6 +46,8 @@ std::string MojoFacade::HandleMojoMessage(
       GetMessageNameAndArguments(mojo_message_as_json);
 
   base::Value result;
+  WebUIMojoActions mojo_action_outcome = WebUIMojoActions::kSuccess;
+
   if (name_and_args.name == "Mojo.bindInterface") {
     // HandleMojoBindInterface does not return a value.
     HandleMojoBindInterface(std::move(name_and_args.args));
@@ -52,16 +56,36 @@ std::string MojoFacade::HandleMojoMessage(
     HandleMojoHandleClose(std::move(name_and_args.args));
   } else if (name_and_args.name == "Mojo.createMessagePipe") {
     result = HandleMojoCreateMessagePipe(std::move(name_and_args.args));
+    int create_pipe_result = *result.GetDict().FindInt("result");
+    if (create_pipe_result != MOJO_RESULT_OK) {
+      mojo_action_outcome = WebUIMojoActions::kFailure;
+    }
   } else if (name_and_args.name == "MojoHandle.writeMessage") {
     result = HandleMojoHandleWriteMessage(std::move(name_and_args.args));
+    if (result.GetInt() != MOJO_RESULT_OK) {
+      mojo_action_outcome = WebUIMojoActions::kFailure;
+    }
   } else if (name_and_args.name == "MojoHandle.readMessage") {
     result = HandleMojoHandleReadMessage(std::move(name_and_args.args));
+    int read_result = *result.GetDict().FindInt("result");
+    if (read_result != MOJO_RESULT_OK &&
+        read_result != MOJO_RESULT_SHOULD_WAIT) {
+      mojo_action_outcome = WebUIMojoActions::kFailure;
+    }
   } else if (name_and_args.name == "MojoHandle.watch") {
     result = HandleMojoHandleWatch(std::move(name_and_args.args));
+    if (result.GetInt() == 0) {
+      mojo_action_outcome = WebUIMojoActions::kFailure;
+    }
   } else if (name_and_args.name == "MojoWatcher.cancel") {
     // HandleMojoWatcherCancel does not return a value.
     HandleMojoWatcherCancel(std::move(name_and_args.args));
+  } else {
+    name_and_args.name = "Unknown";
+    mojo_action_outcome = WebUIMojoActions::kFailure;
   }
+
+  RecordWebUIMojoActionOutcome(name_and_args.name, mojo_action_outcome);
 
   if (result.is_none()) {
     return std::string();
