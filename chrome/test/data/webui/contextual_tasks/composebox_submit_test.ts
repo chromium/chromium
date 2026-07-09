@@ -143,53 +143,6 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     mockTimer.uninstall();
   });
 
-  test('submit enabled when tool is Deep Search', async () => {
-    const submitContainer = getSubmitContainer(composebox);
-    assertFalse(
-        isVisible(submitContainer), 'Submit container should be hidden');
-
-    // Ensure we start in Zero State (disabled).
-    testProxy.callbackRouterRemote.onZeroStateChange(true);
-    await microtasksFinished();
-
-    // Verify submit button is disabled and clicking it does nothing.
-    const submitButton = getSubmitButton(composebox);
-    assertTrue(submitButton!.disabled, 'Submit button should be disabled');
-    submitButton!.click();
-    await microtasksFinished();
-    assertEquals(
-        mockSearchboxPageHandler.getCallCount('submitQuery'), 0,
-        'Submit query should not be called when button is disabled');
-
-    // Change tool to Deep Search
-    const inputState = Object.assign({}, new MockInputState(), {
-      activeTool: ToolMode.kDeepSearch,
-    });
-    searchboxCallbackRouterRemote.onInputStateChanged(inputState);
-    await searchboxCallbackRouterRemote.$.flushForTesting();
-
-    await microtasksFinished();
-
-    // Verify submit button is disabled and clicking it still does nothing.
-    assertTrue(submitButton!.disabled, 'Submit button should be disabled');
-    submitButton!.click();
-    await microtasksFinished();
-    assertEquals(
-        mockSearchboxPageHandler.getCallCount('submitQuery'), 0,
-        'Submit query should not be called when button is disabled');
-
-    // Set isZeroState to false (simulating follow-up) to allow empty query
-    // for Deep Search.
-    testProxy.callbackRouterRemote.onZeroStateChange(false);
-    await microtasksFinished();
-    await composebox.updateComplete;
-
-    // Submit should be enabled now, clicking triggers the action.
-    submitButton!.click();
-    await microtasksFinished();
-    assertEquals(mockSearchboxPageHandler.getCallCount('submitQuery'), 1);
-  });
-
   test('InjectInputSubmitAfterInjectionTrue', async () => {
     const TEST_QUERY = 'injected query';
 
@@ -1217,7 +1170,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 // is implemented by both the legacy <cr-composebox> and
 // the <contextual-tasks-inner-composebox>, so this suite runs on both paths.
 // Submit tests depending on behavior the fork does not implement yet (files,
-// inject input, deep search, voice) stay in the flag-off suites above.
+// inject input, voice) stay in the flag-off suites above.
 // =============================================================================
 [true, false].forEach(useFork => {
   suite(
@@ -1370,6 +1323,93 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
           assertEquals(
               null, innerComposebox.getDropdownElement().result,
               'Matches should be cleared');
+        });
+
+        test('empty query submits for Deep Search follow-up', async () => {
+          const {app, innerComposebox} = parts;
+
+          // Zero state with no tool: an empty query is not submittable.
+          testProxy.callbackRouterRemote.onZeroStateChange(true);
+          await microtasksFinished();
+          await app.updateComplete;
+          await innerComposebox.updateComplete;
+          assertFalse(
+              innerComposebox.canSubmitFilesAndInput,
+              'Empty query in zero state is not submittable');
+
+          // Deep Search while still in zero state: still not submittable
+          const deepSearchState = Object.assign({}, new MockInputState(), {
+            activeTool: ToolMode.kDeepSearch,
+          });
+          searchboxCallbackRouterRemote.onInputStateChanged(deepSearchState);
+          await searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+          await innerComposebox.updateComplete;
+          assertFalse(
+              innerComposebox.canSubmitFilesAndInput,
+              'Deep Search in zero state does not allow an empty query');
+
+          // The submit button is rendered but disabled, and clicking it does
+          // not send the query.
+          const disabledButton = getSubmitButton(innerComposebox);
+          assertTrue(disabledButton !== null, 'Submit button should exist');
+          assertTrue(
+              disabledButton.disabled, 'Submit button should be disabled');
+          const submitCountWhileDisabled =
+              mockSearchboxPageHandler.getCallCount('submitQuery');
+          disabledButton.click();
+          await microtasksFinished();
+          await innerComposebox.updateComplete;
+          assertEquals(
+              submitCountWhileDisabled,
+              mockSearchboxPageHandler.getCallCount('submitQuery'),
+              'Clicking the disabled submit button should be a no-op');
+
+          // Deep Search follow-up (not zero state): now submittable.
+          testProxy.callbackRouterRemote.onZeroStateChange(false);
+          await microtasksFinished();
+          await app.updateComplete;
+          await innerComposebox.updateComplete;
+          assertTrue(
+              innerComposebox.canSubmitFilesAndInput,
+              'Deep Search follow-up allows an empty query');
+
+          // The submit button is present, enabled, and clicking it actually
+          // sends the (empty) query once.
+          const submitButton = getSubmitButton(innerComposebox);
+          assertTrue(submitButton !== null, 'Submit button should exist');
+          assertFalse(submitButton.disabled, 'Submit button should be enabled');
+          const submitCountBefore =
+              mockSearchboxPageHandler.getCallCount('submitQuery');
+          submitButton.click();
+          await microtasksFinished();
+          await innerComposebox.updateComplete;
+          assertEquals(
+              submitCountBefore + 1,
+              mockSearchboxPageHandler.getCallCount('submitQuery'),
+              'Clicking the submit button should send the empty query once');
+        });
+
+        test('empty query blocked for non-Deep-Search follow-up', async () => {
+          const {app, innerComposebox} = parts;
+
+          // A non-Deep-Search tool during a follow-up must not allow an empty
+          // query.
+          const noToolState = Object.assign({}, new MockInputState(), {
+            activeTool: ToolMode.kUnspecified,
+          });
+          searchboxCallbackRouterRemote.onInputStateChanged(noToolState);
+          await searchboxCallbackRouterRemote.$.flushForTesting();
+          testProxy.callbackRouterRemote.onZeroStateChange(false);
+          await microtasksFinished();
+          await app.updateComplete;
+          await innerComposebox.updateComplete;
+          assertTrue(
+              innerComposebox.isFollowupQuery,
+              'Follow-up state should have propagated');
+          assertFalse(
+              innerComposebox.canSubmitFilesAndInput,
+              'Non-Deep-Search follow-up does not allow an empty query');
         });
       });
 });
