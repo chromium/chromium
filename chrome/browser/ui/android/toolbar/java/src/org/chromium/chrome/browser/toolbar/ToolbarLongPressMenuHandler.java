@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPosi
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.Clipboard;
@@ -247,17 +248,23 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
                         .withTitleRes(R.string.toolbar_copy_link)
                         .withMenuId(MenuItemType.COPY_LINK)
                         .build());
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)) {
-            GURL url = mUrlSupplier.get();
-            if (url != null && url.isValid() && !url.isEmpty()) {
-                itemList.add(
-                        new ListItemBuilder()
-                                .withTitleRes(R.string.sharing_send_tab_to_self)
-                                .withMenuId(MenuItemType.SEND_TAB_TO_SELF)
-                                .build());
-            }
-        }
+        maybeAddSendTabToSelf(itemList);
         return itemList;
+    }
+
+    private void maybeAddSendTabToSelf(ModelList itemList) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)) {
+            return;
+        }
+        GURL url = mUrlSupplier.get();
+        if (url == null || !url.isValid() || url.isEmpty() || !UrlUtilities.isHttpOrHttps(url)) {
+            return;
+        }
+        itemList.add(
+                new ListItemBuilder()
+                        .withTitleRes(R.string.sharing_send_tab_to_self)
+                        .withMenuId(MenuItemType.SEND_TAB_TO_SELF)
+                        .build());
     }
 
     @VisibleForTesting

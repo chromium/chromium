@@ -229,7 +229,8 @@ public class SendTabToSelfCoordinator
         @EntryPointDisplayReason
         Integer displayReason =
                 SendTabToSelfAndroidBridge.getEntryPointDisplayReason(mProfile, mUrl);
-        assert displayReason != null;
+        // Do not show the UI if the model is not ready or the URL is unsupported.
+        if (displayReason == null) return;
 
         int deviceCount = 0;
         if (displayReason == EntryPointDisplayReason.OFFER_FEATURE) {

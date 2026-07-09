@@ -21,6 +21,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doAnswer;
@@ -561,5 +562,37 @@ public class SendTabToSelfCoordinatorTest {
                 });
 
         histogramWatcher.assertExpected();
+    }
+
+    // Verify that show() returns early without crashing when getEntryPointDisplayReason returns
+    // null.
+    @Test
+    @LargeTest
+    public void testShow_nullDisplayReasonDoesNotCrash() {
+        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
+        WindowAndroid windowAndroid = activity.getWindowAndroid();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertNull(
+                            SendTabToSelfAndroidBridge.getEntryPointDisplayReason(
+                                    ProfileManager.getLastUsedRegularProfile(), "chrome://flags"));
+                    SendTabToSelfCoordinator coordinator =
+                            new SendTabToSelfCoordinator(
+                                    activity,
+                                    windowAndroid,
+                                    "chrome://flags",
+                                    "Flags",
+                                    BottomSheetControllerProvider.from(windowAndroid),
+                                    ProfileManager.getLastUsedRegularProfile(),
+                                    mDeviceLockActivityLauncher,
+                                    activity::getActivityTab,
+                                    activity,
+                                    SigninAndHistorySyncActivityLauncherImpl.get(),
+                                    activity.getActivityResultTracker(),
+                                    activity.getModalDialogManagerSupplier(),
+                                    activity.getSnackbarManager(),
+                                    ShareEntryPoint.SHARE_SHEET);
+                    coordinator.show();
+                });
     }
 }
