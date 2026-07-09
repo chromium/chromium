@@ -57,6 +57,7 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
   SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
+  bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
   scoped_refptr<gfx::NativePixmap> GetNativePixmap() override;
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
   bool IsImportedFromExo() override;
@@ -146,6 +147,7 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
 
 #if BUILDFLAG(USE_DAWN)
   bool UploadFromMemoryGraphite(const std::vector<SkPixmap>& pixmaps);
+  bool ReadbackToMemoryGraphite(const std::vector<SkPixmap>& pixmaps);
 #endif  // BUILDFLAG(USE_DAWN)
 
   uint32_t reads_in_progress_ = 0;

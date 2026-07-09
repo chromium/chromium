@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing_factory.h"
 
+#include "cc/test/pixel_comparator.h"
+#include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -681,6 +683,47 @@ TEST_F(OzoneImageBackingFactoryTest, CreateGpuMemoryBufferHandle) {
       EXPECT_EQ(handle.type, gfx::NATIVE_PIXMAP);
     }
   }
+}
+TEST_F(OzoneImageBackingFactoryTest, UploadAndReadback) {
+  if (!IsEglImageSupported()) {
+    GTEST_SKIP();
+  }
+
+  EXPECT_TRUE(context_state_->MakeCurrent(context_state_->surface(),
+                                          true /* needs_gl*/));
+
+  const Mailbox mailbox = Mailbox::Generate();
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  const gfx::Size size(100, 100);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const auto surface_origin = kTopLeft_GrSurfaceOrigin;
+  const auto alpha_type = kPremul_SkAlphaType;
+  auto usage = SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      gpu::kNullSurfaceHandle, false);
+  ASSERT_TRUE(backing);
+
+  std::vector<SkBitmap> upload_bitmaps = AllocateRedBitmaps(format, size);
+  std::vector<SkPixmap> upload_pixmaps = GetSkPixmaps(upload_bitmaps);
+
+  bool upload_result = backing->UploadFromMemory(upload_pixmaps);
+  EXPECT_TRUE(upload_result);
+
+  std::vector<SkBitmap> readback_bitmaps(1);
+  readback_bitmaps[0].allocPixels(
+      SkImageInfo::Make(size.width(), size.height(),
+                        viz::ToClosestSkColorType(format, 0), alpha_type));
+  std::vector<SkPixmap> readback_pixmaps = GetSkPixmaps(readback_bitmaps);
+
+  bool readback_result = backing->ReadbackToMemory(readback_pixmaps);
+  EXPECT_TRUE(readback_result);
+
+  EXPECT_TRUE(cc::MatchesBitmap(readback_bitmaps[0], upload_bitmaps[0],
+                                cc::ExactPixelComparator()));
 }
 
 }  // namespace gpu
