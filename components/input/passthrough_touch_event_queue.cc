@@ -284,6 +284,8 @@ void PassthroughTouchEventQueue::AckCompletedEvents() {
     return;
   }
   base::AutoReset<bool> process_acks(&processing_acks_, true);
+  base::WeakPtr<PassthroughTouchEventQueue> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   while (!outstanding_touches_.empty()) {
     auto iter = outstanding_touches_.begin();
     if (iter->ack_state() == blink::mojom::InputEventResultState::kUnknown) {
@@ -293,6 +295,9 @@ void PassthroughTouchEventQueue::AckCompletedEvents() {
     TouchEventWithLatencyInfoAndAckState event = *iter;
     outstanding_touches_.erase(iter);
     AckTouchEventToClient(event, event.ack_source(), event.ack_state());
+    if (!weak_this) {
+      return;
+    }
   }
 }
 
