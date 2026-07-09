@@ -50,10 +50,7 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
  public:
   using NotificationStore = std::unique_ptr<CollectionStore<NotificationEntry>>;
 
-  using SchedulerClientTypeEnumSet =
-      base::EnumSet<SchedulerClientType,
-                    SchedulerClientType::kMinValue,
-                    SchedulerClientType::kMaxValue>;
+  using SchedulerClientTypeEnumSet = base::EnumSet<SchedulerClientType>;
 
   ScheduledNotificationManagerImpl(NotificationStore notification_store,
                                    std::unique_ptr<IconStore> icon_store,

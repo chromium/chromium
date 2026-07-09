@@ -41,8 +41,7 @@ class PerformanceDetectionManager {
     kMaxValue = kUnhealthy,
   };
 
-  using ResourceTypeSet = base::
-      EnumSet<ResourceType, ResourceType::kMinValue, ResourceType::kMaxValue>;
+  using ResourceTypeSet = base::EnumSet<ResourceType>;
   using ActionableTabsResult = std::vector<resource_attribution::PageContext>;
 
   class StatusObserver : public base::CheckedObserver {

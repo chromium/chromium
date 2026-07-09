@@ -371,9 +371,7 @@ bool HaveExplicitFileHandlers(Profile* profile,
 }
 
 void RecordMicrosoft365Availability(const char* metric, Profile* profile) {
-  base::EnumSet<Microsoft365Availability, Microsoft365Availability::kMinValue,
-                Microsoft365Availability::kMaxValue>
-      ms365_state;
+  base::EnumSet<Microsoft365Availability> ms365_state;
   if (IsOfficeWebAppInstalled(profile)) {
     ms365_state.Put(Microsoft365Availability::kPWA);
   }

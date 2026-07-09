@@ -43,9 +43,7 @@ class PinFactorEditor : public mojom::PinFactorEditor {
   void BindReceiver(mojo::PendingReceiver<mojom::PinFactorEditor> receiver);
 
  private:
-  using AuthFactorSet = base::EnumSet<mojom::AuthFactor,
-                                      mojom::AuthFactor::kMinValue,
-                                      mojom::AuthFactor::kMaxValue>;
+  using AuthFactorSet = base::EnumSet<mojom::AuthFactor>;
 
   void OnRemovePinConfigured(const std::string& auth_token,
                              ConfigureResultCallback callback,

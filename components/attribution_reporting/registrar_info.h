@@ -33,8 +33,7 @@ enum class IssueType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionRegistrationRegistrarIssue)
 
-using IssueTypes =
-    base::EnumSet<IssueType, IssueType::kMinValue, IssueType::kMaxValue>;
+using IssueTypes = base::EnumSet<IssueType>;
 
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RegistrarInfo {
   static RegistrarInfo Get(bool has_web_header,

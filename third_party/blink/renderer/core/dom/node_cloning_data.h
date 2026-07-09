@@ -26,8 +26,7 @@ enum class CloneOption {
   kMaxValue = kIncludeDescendants,
 };
 
-using CloneOptionSet =
-    base::EnumSet<CloneOption, CloneOption::kMinValue, CloneOption::kMaxValue>;
+using CloneOptionSet = base::EnumSet<CloneOption>;
 
 class CORE_EXPORT NodeCloningData final {
   STACK_ALLOCATED();

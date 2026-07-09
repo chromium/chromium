@@ -129,10 +129,7 @@ class StartupLaunchManager : public StartupLaunchInfoBarManager::Observer {
   size_t lock_counter_ = 0;
 
   // Tracks active launch reasons.
-  base::EnumSet<StartupLaunchReason,
-                StartupLaunchReason::kMinValue,
-                StartupLaunchReason::kMaxValue>
-      registered_launch_reasons_;
+  base::EnumSet<StartupLaunchReason> registered_launch_reasons_;
 
   // Stores the callback to trigger `ForceReleaseAllLocks` when initializing.
   base::OneShotTimer fallback_timer_;

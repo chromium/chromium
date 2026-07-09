@@ -83,9 +83,7 @@ class ScopedSVGPaintState {
     kMaxValue = kReferenceFilter
   };
 
-  using PaintBehavior = base::EnumSet<PaintComponent,
-                                      PaintComponent::kMinValue,
-                                      PaintComponent::kMaxValue>;
+  using PaintBehavior = base::EnumSet<PaintComponent>;
 
   ScopedSVGPaintState(const LayoutObject& object,
                       const PaintInfo& paint_info,

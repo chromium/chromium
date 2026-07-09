@@ -10,9 +10,7 @@
 
 namespace webnn {
 
-using SupportedDataTypes = base::EnumSet<OperandDataType,
-                                         OperandDataType::kMinValue,
-                                         OperandDataType::kMaxValue>;
+using SupportedDataTypes = base::EnumSet<OperandDataType>;
 
 namespace DataTypeConstraint {
 

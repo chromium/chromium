@@ -79,8 +79,7 @@ class CC_EXPORT ScrollJankV4HistogramEmitter {
   // don't count towards the histogram frame count.
   struct SingleFrameData {
     // Reasons why the frame is janky. Might be empty.
-    base::EnumSet<JankReason, JankReason::kMinValue, JankReason::kMaxValue>
-        jank_reasons;
+    base::EnumSet<JankReason> jank_reasons;
 
     // Total number of VSyncs that Chrome missed (for any reason). Whenever a
     // frame is missed, it could be delayed by >=1 vsyncs, this helps us track

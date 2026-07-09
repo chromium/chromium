@@ -31,9 +31,7 @@ enum class HTMLFragmentParsingBehavior {
 };
 
 using HTMLFragmentParsingBehaviorSet =
-    base::EnumSet<HTMLFragmentParsingBehavior,
-                  HTMLFragmentParsingBehavior::kMinValue,
-                  HTMLFragmentParsingBehavior::kMaxValue>;
+    base::EnumSet<HTMLFragmentParsingBehavior>;
 
 // If this fails because of an unsupported tag and
 // `failed_because_unsupported_tag` is non-null, then it is set to true.

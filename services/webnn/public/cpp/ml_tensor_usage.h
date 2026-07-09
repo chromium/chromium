@@ -26,9 +26,7 @@ enum class MLTensorUsageFlags {
   kMaxValue = kGraphConstant,
 };
 
-using MLTensorUsage = base::EnumSet<MLTensorUsageFlags,
-                                    MLTensorUsageFlags::kMinValue,
-                                    MLTensorUsageFlags::kMaxValue>;
+using MLTensorUsage = base::EnumSet<MLTensorUsageFlags>;
 
 }  // namespace webnn
 

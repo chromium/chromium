@@ -43,10 +43,7 @@ class VirtualProbesManager final : public ProbesManager {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::EnumSet<mojom::PressureSource,
-                mojom::PressureSource::kMinValue,
-                mojom::PressureSource::kMaxValue>
-      overridden_sources_;
+  base::EnumSet<mojom::PressureSource> overridden_sources_;
 };
 
 }  // namespace device

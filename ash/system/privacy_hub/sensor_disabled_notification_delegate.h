@@ -27,7 +27,7 @@ class ASH_EXPORT SensorDisabledNotificationDelegate {
     kMaxValue = kMicrophone,
   };
 
-  using SensorSet = base::EnumSet<Sensor, Sensor::kMinValue, Sensor::kMaxValue>;
+  using SensorSet = base::EnumSet<Sensor>;
 
   virtual ~SensorDisabledNotificationDelegate();
 

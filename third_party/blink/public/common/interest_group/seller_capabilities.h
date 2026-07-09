@@ -13,13 +13,11 @@ enum class SellerCapabilities : uint32_t {
   kInterestGroupCounts,
   kLatencyStats,
 
+  kMinValue = kInterestGroupCounts,
   kMaxValue = kLatencyStats
 };
 
-using SellerCapabilitiesType =
-    base::EnumSet<SellerCapabilities,
-                  SellerCapabilities::kInterestGroupCounts,
-                  SellerCapabilities::kMaxValue>;
+using SellerCapabilitiesType = base::EnumSet<SellerCapabilities>;
 
 }  // namespace blink
 

@@ -23,8 +23,7 @@
 
 namespace {
 
-using ToastIdEnumSet =
-    base::EnumSet<ToastId, ToastId::kMinValue, ToastId::kMaxValue>;
+using ToastIdEnumSet = base::EnumSet<ToastId>;
 
 // Toast IDs that have been deprecated and no longer have a registered
 // specification.

@@ -65,9 +65,7 @@ bool IsIwaType(WebAppManagement::Type type);
 
 }  // namespace WebAppManagement
 
-using WebAppManagementTypes = base::EnumSet<WebAppManagement::Type,
-                                            WebAppManagement::kMinValue,
-                                            WebAppManagement::kMaxValue>;
+using WebAppManagementTypes = base::EnumSet<WebAppManagement::Type>;
 
 // Management types that can be uninstalled by the user.
 // Note: These work directly with the `webapps::IsUserUninstall` function - any

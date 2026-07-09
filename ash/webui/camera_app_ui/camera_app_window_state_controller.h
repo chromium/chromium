@@ -56,9 +56,7 @@ class CameraAppWindowStateController
   void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
-  using WindowStateTypeSet = base::EnumSet<WindowStateType,
-                                           WindowStateType::kMinValue,
-                                           WindowStateType::kMaxValue>;
+  using WindowStateTypeSet = base::EnumSet<WindowStateType>;
 
   void OnWindowStateChanged();
   void OnWindowFocusChanged(bool is_focus);

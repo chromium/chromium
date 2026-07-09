@@ -2673,10 +2673,7 @@ enum class PopoverAncestorOptions {
   kMinValue = kExclusive,
   kMaxValue = kIncludeManualPopovers,
 };
-using PopoverAncestorOptionsSet =
-    base::EnumSet<PopoverAncestorOptions,
-                  PopoverAncestorOptions::kMinValue,
-                  PopoverAncestorOptions::kMaxValue>;
+using PopoverAncestorOptionsSet = base::EnumSet<PopoverAncestorOptions>;
 
 template <typename UnaryPredicate>
 const HTMLElement* NearestMatchingAncestor(

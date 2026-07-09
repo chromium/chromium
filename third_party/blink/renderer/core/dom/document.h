@@ -309,8 +309,7 @@ enum class DocumentClass {
   kMaxValue = kText,
 };
 
-using DocumentClassFlags = base::
-    EnumSet<DocumentClass, DocumentClass::kMinValue, DocumentClass::kMaxValue>;
+using DocumentClassFlags = base::EnumSet<DocumentClass>;
 
 // A map of IDL attribute name to Element FrozenArray value, for one particular
 // element.

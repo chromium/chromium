@@ -49,14 +49,10 @@ class WebBundleSigner {
   };
 
   using IntegritySignatureErrorsForTesting =
-      base::EnumSet<IntegritySignatureErrorForTesting,
-                    IntegritySignatureErrorForTesting::kMinValue,
-                    IntegritySignatureErrorForTesting::kMaxValue>;
+      base::EnumSet<IntegritySignatureErrorForTesting>;
 
   using IntegrityBlockErrorsForTesting =
-      base::EnumSet<IntegrityBlockErrorForTesting,
-                    IntegrityBlockErrorForTesting::kMinValue,
-                    IntegrityBlockErrorForTesting::kMaxValue>;
+      base::EnumSet<IntegrityBlockErrorForTesting>;
 
   struct ErrorsForTesting {
     ErrorsForTesting(IntegrityBlockErrorsForTesting integrity_block_errors,

@@ -50,9 +50,7 @@ enum class CookieSettingOverride {
   kMaxValue = kForceEnableThirdPartyCookies,
 };
 
-using CookieSettingOverrides = base::EnumSet<CookieSettingOverride,
-                                             CookieSettingOverride::kMinValue,
-                                             CookieSettingOverride::kMaxValue>;
+using CookieSettingOverrides = base::EnumSet<CookieSettingOverride>;
 
 }  // namespace net
 

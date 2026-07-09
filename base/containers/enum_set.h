@@ -21,7 +21,7 @@
 namespace base {
 
 // Forward declarations needed for friend declarations.
-template <typename E, E MinEnumValue, E MaxEnumValue>
+template <typename E, E MinEnumValue = E::kMinValue, E MaxEnumValue = E::kMaxValue>
 class EnumSet;
 
 template <typename E, E Min, E Max>

@@ -392,10 +392,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   TurnInfo turn_;
   TurnInfo last_turn_;
   mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
-  base::EnumSet<mojom::WebClientMode,
-                mojom::WebClientMode::kMinValue,
-                mojom::WebClientMode::kMaxValue>
-      inputs_modes_used_;
+  base::EnumSet<mojom::WebClientMode> inputs_modes_used_;
 
   // The last web ui state received.
   mojom::WebUiState last_web_ui_state_ = mojom::WebUiState::kUninitialized;

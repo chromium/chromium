@@ -124,9 +124,7 @@ class ActiveSession {
     return it == event_counts_.end() ? 0 : it->second;
   }
   base::TimeTicks start_time() const { return start_time_; }
-  const base::EnumSet<mojom::WebClientMode,
-                      mojom::WebClientMode::kMinValue,
-                      mojom::WebClientMode::kMaxValue>&
+  const base::EnumSet<mojom::WebClientMode>&
   inputs_modes_used() const {
     return inputs_modes_used_;
   }
@@ -218,9 +216,7 @@ class ActiveSession {
   base::OneShotTimer activation_debounce_timer_;
 
   base::TimeTicks start_time_;
-  base::EnumSet<mojom::WebClientMode,
-                mojom::WebClientMode::kMinValue,
-                mojom::WebClientMode::kMaxValue>
+  base::EnumSet<mojom::WebClientMode>
       inputs_modes_used_;
   base::flat_map<GlicInstanceEvent, int> event_counts_;
   int pinned_tab_count_ = 0;

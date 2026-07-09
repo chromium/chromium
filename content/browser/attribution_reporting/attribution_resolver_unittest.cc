@@ -3916,11 +3916,8 @@ TEST_F(AttributionResolverTest, BothRealAndNullAggregatableReports) {
 
 TEST_F(AttributionResolverTest, SourceRegistrationTimeConfig_RoundTrip) {
   for (auto config :
-       base::EnumSet<attribution_reporting::mojom::SourceRegistrationTimeConfig,
-                     attribution_reporting::mojom::
-                         SourceRegistrationTimeConfig::kMinValue,
-                     attribution_reporting::mojom::
-                         SourceRegistrationTimeConfig::kMaxValue>::All()) {
+       base::EnumSet<attribution_reporting::mojom::SourceRegistrationTimeConfig>::
+           All()) {
     SCOPED_TRACE(config);
 
     storage()->StoreSource(

@@ -194,9 +194,7 @@ enum class MLGraphOperatorUma {
   kMaxValue = kIsInfinite,
 };
 
-using MLGraphOperatorUmaSet = base::EnumSet<MLGraphOperatorUma,
-                                            MLGraphOperatorUma::kMinValue,
-                                            MLGraphOperatorUma::kMaxValue>;
+using MLGraphOperatorUmaSet = base::EnumSet<MLGraphOperatorUma>;
 
 MLGraphOperatorUma GetUmaValueForOperation(
     const blink_mojom::Operation& operation) {

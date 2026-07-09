@@ -12,9 +12,7 @@
 namespace ash {
 
 struct ASH_PUBLIC_EXPORT LobsterSystemState {
-  using SystemChecks = base::EnumSet<LobsterSystemCheck,
-                                     LobsterSystemCheck::kMinValue,
-                                     LobsterSystemCheck::kMaxValue>;
+  using SystemChecks = base::EnumSet<LobsterSystemCheck>;
 
   LobsterSystemState(LobsterStatus status, SystemChecks failed_checks);
   ~LobsterSystemState();

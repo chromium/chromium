@@ -221,9 +221,7 @@ class DevToolsURLLoaderInterceptor {
   friend class InterceptionJob;
   friend class DevToolsURLLoaderFactoryProxy;
 
-  using InterceptionStages = base::EnumSet<InterceptionStage,
-                                           InterceptionStage::kMinValue,
-                                           InterceptionStage::kMaxValue>;
+  using InterceptionStages = base::EnumSet<InterceptionStage>;
 
   void CreateJob(
       const base::UnguessableToken& frame_token,

@@ -52,9 +52,7 @@ class BackForwardCacheMetrics
     : public base::RefCounted<BackForwardCacheMetrics> {
  public:
   using NotRestoredReason = BackForwardCache::NotRestoredReason;
-  using NotRestoredReasons = base::EnumSet<NotRestoredReason,
-                                           NotRestoredReason::kMinValue,
-                                           NotRestoredReason::kMaxValue>;
+  using NotRestoredReasons = base::EnumSet<NotRestoredReason>;
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.

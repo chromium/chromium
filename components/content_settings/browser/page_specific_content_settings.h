@@ -139,10 +139,7 @@ class PageSpecificContentSettings
     kMinValue = kMicrophoneAccessed,
     kMaxValue = kCameraBlocked,
   };
-  using MicrophoneCameraState =
-      base::EnumSet<MicrophoneCameraStateFlags,
-                    MicrophoneCameraStateFlags::kMinValue,
-                    MicrophoneCameraStateFlags::kMaxValue>;
+  using MicrophoneCameraState = base::EnumSet<MicrophoneCameraStateFlags>;
 
   class Delegate {
    public:

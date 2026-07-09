@@ -58,9 +58,7 @@ enum class ExperimentalArm {
 };
 
 static constexpr auto kAllExperimentalArmsSet =
-    base::EnumSet<ExperimentalArm,
-                  ExperimentalArm::kMinValue,
-                  ExperimentalArm::kMaxValue>({
+    base::EnumSet<ExperimentalArm>({
         ExperimentalArm::kHoldback,
         ExperimentalArm::kV1,
         ExperimentalArm::kV3,
@@ -82,7 +80,7 @@ enum class Interaction {
 };
 
 static constexpr auto kAllInteractionsSet =
-    base::EnumSet<Interaction, Interaction::kMinValue, Interaction::kMaxValue>({
+    base::EnumSet<Interaction>({
         Interaction::kExploreApp,
         Interaction::kFilesApp,
         Interaction::kLauncher,
@@ -110,9 +108,7 @@ enum class PreventedReason {
 };
 
 static constexpr auto kAllPreventedReasonsSet =
-    base::EnumSet<PreventedReason,
-                  PreventedReason::kMinValue,
-                  PreventedReason::kMaxValue>({
+    base::EnumSet<PreventedReason>({
         PreventedReason::kUnknown,
         PreventedReason::kChromeVoxEnabled,
         PreventedReason::kManagedAccount,

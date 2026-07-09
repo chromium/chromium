@@ -62,10 +62,7 @@ class PrivacySandboxAdsPageLoadMetricsObserver
   void RecordSessionEndHistograms(
       const page_load_metrics::mojom::PageLoadTiming& main_frame_timing);
 
-  base::EnumSet<PrivacySandboxAdsApi,
-                PrivacySandboxAdsApi::kMinValue,
-                PrivacySandboxAdsApi::kMaxValue>
-      used_privacy_sandbox_ads_apis_;
+  base::EnumSet<PrivacySandboxAdsApi> used_privacy_sandbox_ads_apis_;
 };
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_PRIVACY_SANDBOX_ADS_PAGE_LOAD_METRICS_OBSERVER_H_

@@ -49,9 +49,7 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
     const raw_ref<AuthFactorConfig> auth_factor_config_;
   };
 
-  using AuthFactorSet = base::EnumSet<mojom::AuthFactor,
-                                      mojom::AuthFactor::kMinValue,
-                                      mojom::AuthFactor::kMaxValue>;
+  using AuthFactorSet = base::EnumSet<mojom::AuthFactor>;
 
   explicit AuthFactorConfig(QuickUnlockStorageDelegate*,
                             PrefService* local_state);

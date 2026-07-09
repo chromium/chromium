@@ -30,7 +30,7 @@ struct UrlIdentity {
     kMaxValue = kFile
   };
 
-  using TypeSet = base::EnumSet<Type, Type::kMinValue, Type::kMaxValue>;
+  using TypeSet = base::EnumSet<Type>;
 
   // Formatting options for default type.
   enum class DefaultFormatOptions {

@@ -101,8 +101,7 @@ TEST_P(GeminiAppTabHelperTest, RecordsPageVisitHistograms) {
   constexpr char kRelativeFilename[] = "./filename";
 
   // Pages.
-  const auto pages =
-      base::EnumSet<Page, Page::kMinValue, Page::kMaxValue>::All();
+  const auto pages = base::EnumSet<Page>::All();
 
   // Create multiple URLs for each page.
   std::map<GURL, Page> page_urls;

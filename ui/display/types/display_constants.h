@@ -154,8 +154,7 @@ enum class ModesetFlag {
 };
 
 // A bitmask of flags as defined in display::ModesetFlag.
-using ModesetFlags =
-    base::EnumSet<ModesetFlag, ModesetFlag::kMinValue, ModesetFlag::kMaxValue>;
+using ModesetFlags = base::EnumSet<ModesetFlag>;
 
 // Enum of possible states for variable refresh rates pertaining to a display.
 enum class VariableRefreshRateState {

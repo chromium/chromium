@@ -779,9 +779,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
   }
 
   using SpeculationEagerness = blink::mojom::SpeculationEagerness;
-  base::EnumSet<SpeculationEagerness, SpeculationEagerness::kMinValue,
-                SpeculationEagerness::kMaxValue>
-      eagerness_set;
+  base::EnumSet<SpeculationEagerness> eagerness_set;
 
   Vector<mojom::blink::SpeculationCandidatePtr> mojom_candidates;
   mojom_candidates.ReserveInitialCapacity(candidates.size());

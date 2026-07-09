@@ -26,9 +26,7 @@ COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<mojom::DebugDataType, std::monostate> ParseTriggerDebugDataType(
     std::string_view);
 
-using DebugDataTypes = base::EnumSet<mojom::DebugDataType,
-                                     mojom::DebugDataType::kMinValue,
-                                     mojom::DebugDataType::kMaxValue>;
+using DebugDataTypes = base::EnumSet<mojom::DebugDataType>;
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 DebugDataTypes SourceDebugDataTypes();

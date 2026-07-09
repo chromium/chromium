@@ -42,7 +42,7 @@ namespace {
 CampaignsManager* g_instance = nullptr;
 
 static constexpr auto kAllSlotsSet =
-    base::EnumSet<Slot, Slot::kMinValue, Slot::kMaxValue>::All();
+    base::EnumSet<Slot>::All();
 
 inline constexpr char kCampaignFileName[] = "campaigns.json";
 

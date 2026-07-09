@@ -21,9 +21,7 @@ enum class CapabilityFlags {
   kMinValue = kImageInput,
   kMaxValue = kToolUse,
 };
-using Capabilities = base::EnumSet<CapabilityFlags,
-                                   CapabilityFlags::kMinValue,
-                                   CapabilityFlags::kMaxValue>;
+using Capabilities = base::EnumSet<CapabilityFlags>;
 
 }  // namespace on_device_model
 

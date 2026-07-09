@@ -41,10 +41,7 @@ class CONTENT_EXPORT PreloadingDecider
  public:
   using SpeculationCandidateKey =
       std::pair<GURL, blink::mojom::SpeculationAction>;
-  using EagernessSet =
-      base::EnumSet<blink::mojom::SpeculationEagerness,
-                    blink::mojom::SpeculationEagerness::kMinValue,
-                    blink::mojom::SpeculationEagerness::kMaxValue>;
+  using EagernessSet = base::EnumSet<blink::mojom::SpeculationEagerness>;
 
   ~PreloadingDecider() override;
 
