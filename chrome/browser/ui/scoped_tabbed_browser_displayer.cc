@@ -21,10 +21,6 @@ ScopedTabbedBrowserDisplayer::ScopedTabbedBrowserDisplayer(Profile* profile) {
   }
 }
 
-Browser* ScopedTabbedBrowserDisplayer::browser() {
-  return browser_ ? browser_->GetBrowserForMigrationOnly() : nullptr;
-}
-
 ScopedTabbedBrowserDisplayer::~ScopedTabbedBrowserDisplayer() {
   if (!browser_) {
     return;

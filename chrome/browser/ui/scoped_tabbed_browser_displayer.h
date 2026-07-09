@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 
-class Browser;
 class BrowserWindowInterface;
 class Profile;
 
@@ -28,14 +27,8 @@ class ScopedTabbedBrowserDisplayer {
 
   ~ScopedTabbedBrowserDisplayer();
 
-  // Returns the browser as a concrete Browser. Not deprecated, but prefer
-  // browser_window_interface() below; use this only when a Browser-specific
-  // API not (yet) exposed on BrowserWindowInterface is required.
-  Browser* browser();
-
-  // Same browser as browser() above, exposed as a BrowserWindowInterface so
-  // callers need not depend on the concrete Browser type or include
-  // chrome/browser/ui/browser.h. Prefer this in new code.
+  // Returns the browser this displayer found or created, as a
+  // BrowserWindowInterface.
   BrowserWindowInterface* browser_window_interface() { return browser_; }
 
  private:
