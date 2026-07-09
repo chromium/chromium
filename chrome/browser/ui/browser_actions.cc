@@ -27,6 +27,7 @@
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -2176,6 +2177,41 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 glic::GlicVectorIconManager::GetVectorIcon(
                     IDR_GLIC_BUTTON_VECTOR_ICON),
                 ui::kColorIcon))
+            .Build());
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  PrefService* profile_prefs = bwi->GetProfile()->GetPrefs();
+                  profile_prefs->SetBoolean(
+                      glic::prefs::kGlicPinnedToTabstrip,
+                      !profile_prefs->GetBoolean(
+                          glic::prefs::kGlicPinnedToTabstrip));
+                },
+                bwi))
+            .SetActionId(kActionGlicTogglePin)
+            .SetText(l10n_util::GetStringUTF16(IDS_GLIC_PIN))
+            .Build());
+    root_action_item_->AddChild(
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  auto* service =
+                      glic::GlicKeyedService::Get(bwi->GetProfile());
+                  if (service) {
+                    service->ToggleUI(
+                        bwi, /*prevent_close=*/true,
+                        glic::mojom::InvocationSource::kThreeDotsMenu);
+                  }
+                },
+                bwi),
+            kActionOpenGlic, IDS_GLIC_THREE_DOT_MENU_ITEM,
+            IDS_GLIC_THREE_DOT_MENU_ITEM,
+            glic::GlicVectorIconManager::GetVectorIcon(
+                IDR_GLIC_BUTTON_VECTOR_ICON),
+            /*is_pinnable=*/false)
             .Build());
   }
 

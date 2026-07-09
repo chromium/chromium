@@ -520,6 +520,8 @@
   E(kActionSplitTab, IDC_NEW_SPLIT_TAB) \
   E(kActionFederation) \
   E(kActionGlicContextualCueing) \
+  E(kActionGlicTogglePin, IDC_GLIC_TOGGLE_PIN) \
+  E(kActionOpenGlic, IDC_OPEN_GLIC) \
   E(kActionShowAiOverlayDialog) \
   E(kActionWebAuthnAmbientSignin) \
   E(kActionAutofillPayment) \
