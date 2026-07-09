@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Inntaksgildi einkalykils verður að vera gilt snið (RSA-lykill á PKCS#8-sniði með PEM-kóðun).</translation>
-<translation id="765293928828334535">Ekki er hægt að bæta við forritum, viðbótum eða notendaskriftum af þessu vefsvæði</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7766838926148951335">Samþykkja heimildir</translation>
 <translation id="7876803335449432072">Ekki tókst að hlaða skránni „<ph name="RELATIVE_PATH" />“ til að sækja efnisskriftu. Aðeins er hægt að hlaða stílsniði efnisskrifta úr studdum stílsniðsskrám á borð við .css-skrár.</translation>

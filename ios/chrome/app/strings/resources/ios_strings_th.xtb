@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">พื้นที่เก็บข้อมูลเต็ม</translation>
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1190609913194133056">ศูนย์การแจ้งเตือน</translation>
+<translation id="1196534270480620381">สรุปหน้านี้แบบสั้นๆ</translation>
 <translation id="1199631150313925648">ป้อนด้วยตนเอง</translation>
 <translation id="1199963004393929848">ธีมสีเขียว</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">ไม่พบรหัสผ่านหรือพาสคีย์สำหรับเว็บไซต์นี้</translation>
 <translation id="1540800554400757039">ที่อยู่ 1</translation>
 <translation id="154312949627292154">เปิดแท็บที่ได้รับจากอุปกรณ์อื่นๆ ของคุณจากหน้าจอล็อก</translation>
+<translation id="1544653821167545205">สรุปหน้าเว็บ</translation>
 <translation id="1545749641540134597">สแกนโค้ด QR</translation>
 <translation id="1545757265410828525">ประวัติราคา</translation>
 <translation id="1547610699249301703">แชร์รหัสผ่าน</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">การค้นหาบนหน้าจอจะใช้ได้เฉพาะเมื่อตั้งค่า Google เป็นเครื่องมือค้นหาเริ่มต้น คุณเปลี่ยนเครื่องมือค้นหาเริ่มต้นได้ใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="1872096359983322073">แฟลช</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" /></translation>
+<translation id="1876230899304059090">Gemini ทำอะไรใน Chrome ได้บ้าง</translation>
 <translation id="1881621406744213161">เชิญสมาชิกในครอบครัว</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">จัดเรียงแถบเมนูแบบอัจฉริยะ</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">บันทึกรหัสผ่านเพื่อลงชื่อเข้าใช้เว็บไซต์และแอปได้อย่างง่ายดาย</translation>
 <translation id="2468132863574325555">ไดรฟ์</translation>
 <translation id="2468444275314013497">เบราว์เซอร์ของคุณไม่มีปัญหา</translation>
+<translation id="2470654816840674524">ฉันใช้ Gemini ใน Chrome ทำอะไรได้บ้าง</translation>
 <translation id="2473876017985765807">คุณบันทึกรหัสผ่านสำหรับ <ph name="WEBSITE" /> ไว้แล้ว</translation>
 <translation id="247430852844518481">คุณจะตั้งการช่วยเตือนให้กลับมาดูหน้านี้ในภายหลังได้</translation>
 <translation id="2479148705183875116">ไปที่การตั้งค่า</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">ซ่อน "การตรวจสอบความปลอดภัย"</translation>
 <translation id="2625189173221582860">คัดลอกรหัสผ่านแล้ว</translation>
 <translation id="2626236249646841566">ตรวจสอบการเชื่อมต่อและลองลงชื่อเข้าใช้อีกครั้ง</translation>
+<translation id="2629543259235506452">สร้างคำถามที่พบบ่อยสั้นๆ สำหรับหัวข้อนี้โดยใช้ข้อมูลจากหน้านี้และเว็บไซต์ที่คล้ายกัน</translation>
 <translation id="2635918910848538771">ป้อน CVC อัตโนมัติ</translation>
 <translation id="2640733327287333451">ไม่มีชื่อผู้ใช้ ••••••</translation>
 <translation id="264215785133931186">เพิ่งตรวจสอบเมื่อสักครู่นี้</translation>
@@ -967,7 +972,6 @@
 <translation id="4294506173142861371">ลงชื่อเข้าใช้ในชื่อ <ph name="FIRST_NAME" /> ไหม</translation>
 <translation id="4302061870579014542">กำหนดตำแหน่ง</translation>
 <translation id="4304713468139749426">เครื่องมือจัดการรหัสผ่าน</translation>
-<translation id="4306349443295056740">การเซ็นชื่อ OCSP</translation>
 <translation id="4309403553630140242">แตะสองครั้งเพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="4310738531374808763">ปรับแต่งหน้าแรกของคุณ</translation>
 <translation id="4316794575239200608">การสนทนาของคุณกับ Gemini หรือ<ph name="BEGIN_LINK" />ข้อมูลใน Google Workspace<ph name="END_LINK" /> จะไม่ได้รับการตรวจสอบจากเจ้าหน้าที่หรือนำไปใช้เพื่อปรับปรุง Generative AI</translation>
@@ -1098,7 +1102,6 @@
 <translation id="4744428388659507035">หากต้องการรับบุ๊กมาร์กในอุปกรณ์ทุกเครื่อง ให้เปิด "บุ๊กมาร์ก" ในการตั้งค่า</translation>
 <translation id="4746926359847517643">คุณกู้คืนแท็บเหล่านี้ได้เสมอในประวัติการเข้าชม</translation>
 <translation id="4749529195026091676">{count,plural, =1{นำเข้าบัตร {count} ใบแล้ว}other{นำเข้าบัตร {count} ใบแล้ว}}</translation>
-<translation id="4749924365937394956">การตรวจสอบสิทธิ์เซิร์ฟเวอร์</translation>
 <translation id="4751645464639803239">แท็บไม่ระบุตัวตนใหม่</translation>
 <translation id="4752348350801431746">ปิดการแจ้งเตือนการตรวจสอบความปลอดภัย…</translation>
 <translation id="4759238208242260848">ดาวน์โหลด</translation>
@@ -1442,7 +1445,6 @@
 <translation id="5859715514067755465">ไปข้างหน้า</translation>
 <translation id="5860491529813859533">เปิด</translation>
 <translation id="5868644772996939262">ป้อนรหัสผ่านและพาสคีย์อัตโนมัติ</translation>
-<translation id="5869522115854928033">รหัสผ่านที่บันทึกไว้</translation>
 <translation id="5873179562631407582">แตะแท็บที่เปิดอยู่ค้างไว้</translation>
 <translation id="5887400589839399685">บันทึกการ์ดแล้ว</translation>
 <translation id="5888889603768021126">ลงชื่อเข้าใช้ด้วย</translation>
@@ -1486,7 +1488,6 @@
 <translation id="6027619584715411062">ลงชื่อเข้าใช้เพื่อรับบุ๊กมาร์ก รหัสผ่าน และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="6027945736510816438">คุณหมายถึง <ph name="WEBSITE" /> ใช่ไหม</translation>
 <translation id="6032845897905314562">ฟีเจอร์ใหม่</translation>
-<translation id="6037458223703682108">ลายเซ็นดิจิทัล</translation>
 <translation id="6038823991892265570">จัดการพื้นที่เก็บข้อมูลใน Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">ปิด</translation>
@@ -1641,7 +1642,6 @@
 <translation id="6476284679642588870">จัดการวิธีการชำระเงิน</translation>
 <translation id="6476800141292307438">กำลังแปลหน้าเว็บเป็นภาษา<ph name="LANGUAGE" /> ตัวเลือกจะอยู่ทางด้านล่างของหน้าจอ</translation>
 <translation id="647867789226964031">เปลี่ยนรหัสผ่าน</translation>
-<translation id="6480363549849064919">การตรวจสอบสิทธิ์ไคลเอ็นต์</translation>
 <translation id="6489174933860678546">เปิดแท็บที่ไม่ระบุตัวตนเพื่อท่องเว็บอย่างเป็นส่วนตัวมากขึ้น</translation>
 <translation id="6489775505977274806">ซ่อนการเลื่อนระดับ</translation>
 <translation id="6494931198667773526">สิ้นสุด</translation>
@@ -1678,7 +1678,6 @@
 <translation id="6589001036857939353">รวมรายการที่ซ้ำ</translation>
 <translation id="659407965921887085">การ์ดนี้แสดงราคาต่ำลงบนเว็บสำหรับผลิตภัณฑ์ที่คุณกำลังติดตามอยู่</translation>
 <translation id="6596481460663245319">ค้นหารูปภาพด้วย Google</translation>
-<translation id="6598432073497341323">{COUNT,plural, =1{รหัสผ่าน 1 รายการ}other{รหัสผ่าน # รายการ}}</translation>
 <translation id="6601302169302852717">บันทึกรูปภาพสำหรับ <ph name="USER_EMAIL" /> ไว้ใน Google Photos แล้ว</translation>
 <translation id="6602173570135186741">การป้อนข้อความอัตโนมัติและรหัสผ่าน</translation>
 <translation id="6603393121510733479">องค์กรปิดการท่องเว็บแบบส่วนตัวไว้
@@ -1872,7 +1871,6 @@
 <translation id="7233006041370588369">เลือกรหัสผ่านเพื่อกรอก</translation>
 <translation id="723874023660911012">สลับโปรไฟล์</translation>
 <translation id="7241135764990439166">โหมดไม่ระบุตัวตนไม่พร้อมใช้งาน</translation>
-<translation id="7248046129087111453">ระบบอาจบันทึก<ph name="BEGIN_LINK" />ประวัติการค้นหา<ph name="END_LINK" />และ<ph name="BEGIN_LINK" />กิจกรรมรูปแบบอื่น<ph name="END_LINK" />ในบัญชี Google</translation>
 <translation id="7253951228444156601">กำลังตรวจสอบรหัสผ่าน…</translation>
 <translation id="7261217796641151584">แชร์กลุ่ม</translation>
 <translation id="7266578100016339897">ซึ่งจะช่วยให้คุณจัดระเบียบข้อมูลได้ คุณสามารถเปลี่ยนแปลงได้ทุกเมื่อในการตั้งค่า</translation>
@@ -2348,6 +2346,7 @@
 <translation id="8766790350274092814">ระบบจะลบรหัสผ่านสําหรับ <ph name="WEBSITE" /> และ <ph name="SECOND_WEBSITE" /> โดยระบบจะไม่ลบบัญชีของคุณ</translation>
 <translation id="8775144690796719618">URL ไม่ถูกต้อง</translation>
 <translation id="8781834595282316166">แท็บใหม่ในกลุ่ม</translation>
+<translation id="8783445328207519872">สร้างคำถามที่พบบ่อยเกี่ยวกับหัวข้อนี้</translation>
 <translation id="8784653774976848206">เลือกไฟล์</translation>
 <translation id="8786100550345425552">สิทธิ์แก้ไข</translation>
 <translation id="878871978861915380">ซ่อน "การติดตามราคา"</translation>

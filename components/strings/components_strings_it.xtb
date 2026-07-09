@@ -504,6 +504,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="175656076281618225">Magia</translation>
 <translation id="1757773103848038814">Carattere monospazio</translation>
 <translation id="1757935267918149452">Pulsante Cambia la password Google, attiva per cambiare la password del tuo Account Google</translation>
+<translation id="1759776526873274358">Compila automaticamente i codici di verifica usati dai siti per migliorare la tua sicurezza. Chrome può ottenere questi codici da Gmail. <ph name="BEGIN_LINK" />Scopri di più su questa funzionalità<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato attendibile dal sistema operativo del dispositivo. Il problema potrebbe essere dovuto a un'errata configurazione o a un attaccante che intercetta la connessione.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Prova a eseguire lo strumento Diagnostica di rete Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (archivio)</translation>
@@ -2152,6 +2153,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4304049446746819918">{0,plural, =1{La policy dell'amministratore sconsiglia di spostare questo file su <ph name="DESTINATION_NAME" />}other{La policy dell'amministratore sconsiglia di spostare questi file su <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Leggi le valutazioni dei clienti su prodotti, servizi o esperienze per prendere decisioni più consapevoli in merito alle recensioni.</translation>
 <translation id="4305666528087210886">Impossibile accedere al file</translation>
+<translation id="4306349443295056740">Firma OCSP</translation>
 <translation id="4306529830550717874">Salvare l'indirizzo?</translation>
 <translation id="4306812610847412719">appunti</translation>
 <translation id="4308567447483056043">Questa policy viene ignorata perché l'utente non è affiliato. Per applicare questa policy, il browser e il profilo Chrome devono essere gestiti tramite la Console di amministrazione dalla stessa organizzazione.</translation>
@@ -2410,6 +2412,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4744603770635761495">Percorso eseguibile</translation>
 <translation id="4744816391336495134">Puoi usare la tua impronta per verificare la tua identità ogni volta che usi una password salvata</translation>
 <translation id="4749011317274908093">Stai navigando in Incognito</translation>
+<translation id="4749924365937394956">Autenticazione server</translation>
 <translation id="4750671009706599284">questo smartphone</translation>
 <translation id="4750917950439032686">Le tue informazioni (ad esempio password o numeri di carte di credito) restano private quando vengono inviate a questo sito.</translation>
 <translation id="4751249061288707459">Ultimo aggiornamento del consenso:</translation>
@@ -3126,6 +3129,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5860491529813859533">Attiva</translation>
 <translation id="5862579898803147654">Fascicolatore 8</translation>
 <translation id="5863515189965725638">Modifica IBAN</translation>
+<translation id="5863517400058880216">Compila automaticamente i codici di verifica da Gmail</translation>
 <translation id="5863847714970149516">La pagina che segue potrebbe tentare di addebitarti dei costi</translation>
 <translation id="5866257070973731571">Aggiungi numero di telefono</translation>
 <translation id="5866327164731551901">Da <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -3239,6 +3243,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6034000775414344507">Grigio chiaro</translation>
 <translation id="6034514109191629503">Piegatura a fisarmonica</translation>
 <translation id="6035491133925068289">Atletica leggera</translation>
+<translation id="6037458223703682108">Firma digitale</translation>
 <translation id="6039846035001940113">Se il problema persiste, contatta il proprietario del sito.</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6040539895181423374">Insight sul prezzo</translation>
@@ -3549,6 +3554,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6474220430271405609">Test delle policy</translation>
 <translation id="6476284679642588870">Gestisci metodi di pagamento</translation>
 <translation id="647881094269678013">Recitazione e teatro</translation>
+<translation id="6480363549849064919">Autenticazione client</translation>
 <translation id="6480864723214312258">Batterie per uso domestico</translation>
 <translation id="6487678699866233349">Musica internazionale</translation>
 <translation id="6489534406876378309">Avvia caricamento arresti anomali</translation>
@@ -4515,6 +4521,7 @@ Ulteriori dettagli:
 <translation id="7967973398323409409">Nessuno può vedere le informazioni che compili automaticamente</translation>
 <translation id="79682505114836835">Il valore "<ph name="VALUE" />" è un colore esadecimale non valido.</translation>
 <translation id="7968982339740310781">Mostra dettagli</translation>
+<translation id="7971403153351954587">La tua organizzazione monitora le operazioni di copia</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 con crittografia RSA</translation>
 <translation id="7976053965094442846">Emittenti di Buy now, pay later disponibili per il pagamento dilazionato nel tempo. Tastiera nascosta.</translation>
 <translation id="7976214039405368314">Numero eccessivo di richieste</translation>

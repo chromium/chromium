@@ -6,6 +6,7 @@
 <translation id="1061130374843955397">Welcome to your <ph name="DEVICE_TYPE" /></translation>
 <translation id="1069778954840159202">Get account from Android phone automatically</translation>
 <translation id="1076766328672150609">Your child can use a PIN to unlock the device.</translation>
+<translation id="1091767800771861448">Press ESCAPE to skip (Non-official builds only).</translation>
 <translation id="1097658378307015415">Before signing in, please enter as Guest to activate the network <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">Your child can use this PIN to sign in to their device</translation>
 <translation id="1122587596907914265">Style unique wallpapers</translation>
@@ -16,6 +17,7 @@
 <translation id="1177073277575830464">Android quick setup is done. Continue setup on your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1179902906564467236">Follow instructions on your phone or use the camera app</translation>
 <translation id="1185924365081634987">You may also try to <ph name="GUEST_SIGNIN_LINK_START" />browse as guest<ph name="GUEST_SIGNIN_LINK_END" /> to fix this network error.</translation>
+<translation id="1191353342579061195">Choose the theme that fits your needs. To change your theme, wallpaper, screen saver and more, just right-click on the desktop.</translation>
 <translation id="1201402288615127009">Next</translation>
 <translation id="1217114730239853757">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS Flex? If so, press the space bar.</translation>
 <translation id="1222835797152767346">Set a PIN to make it easier to sign in</translation>
@@ -52,6 +54,8 @@
 <translation id="1377600615067678409">Skip for now</translation>
 <translation id="1399261165075500043">Can't load Google Play Terms of Service</translation>
 <translation id="1400243387594338234">You can use this PIN to sign in to your device</translation>
+<translation id="1406500794671479665">Verifying...</translation>
+<translation id="1407069428457324124">Dark theme</translation>
 <translation id="1417497355604638350">Send diagnostic and usage data.</translation>
 <translation id="1418882096915998312">Enterprise enrolment in progress</translation>
 <translation id="1426410128494586442">Yes</translation>
@@ -77,6 +81,7 @@
 <translation id="169675691788639886">Device has SSH server configured. Do not sign in with sensitive accounts.</translation>
 <translation id="1700517974991662022">Visited</translation>
 <translation id="1730666151302379551">Forgot old password</translation>
+<translation id="1741314857973421784">Continue</translation>
 <translation id="1749645492410897998">Installing software</translation>
 <translation id="177053719077591686">Back up Android apps to Google Drive.</translation>
 <translation id="1798832846931769717">Google Beam for Meet</translation>
@@ -89,16 +94,19 @@
 <translation id="185766080319917408">Launcher key is located left of the left alt key</translation>
 <translation id="1868617395637139709">Use location for Android apps and services.</translation>
 <translation id="1877377730633446520">This will use about <ph name="REQUIRED_SPACE" />. You currently have <ph name="FREE_SPACE" /> available.</translation>
+<translation id="1878155070920054810">Looks like your Chromebook will run out of power before the update is complete. Make sure that it's charging correctly to avoid interruption.</translation>
 <translation id="189035593835762169">Terms and Conditions</translation>
 <translation id="189358972401248634">Other languages</translation>
 <translation id="1915734383465415025">Shop number</translation>
 <translation id="1919096511823372013">Insert links, emojis and more. You can also get help writing and creating images with Google AI.</translation>
 <translation id="1922496389170590548">Child’s school account</translation>
+<translation id="1931410639376954712">Installing <ph name="DEVICE_OS" /></translation>
 <translation id="1944528062465413897">Bluetooth pairing code</translation>
 <translation id="1987574314042117472">Select and install popular apps</translation>
 <translation id="1991829061375381344">You do not have enough available licences to enrol this Google Meet hardware device. Please contact your reseller to purchase more. If you believe that you're seeing this message in error, please contact your reseller.</translation>
 <translation id="200928901437634269">Use your child’s Google Account or a school account. You can also set parental controls.</translation>
 <translation id="2013550551806600826">Try it out. Turn the setting on or off, then scroll with two fingers on your touchpad in the test area. You can also find this later in Settings &gt; Device &gt; Mouse and touchpad.</translation>
+<translation id="2016574333161572915">Your Google Meet hardware is ready to set up</translation>
 <translation id="2018189721942291407">Not sure if you should enroll?</translation>
 <translation id="2040460856718599782">Oops!  Something went wrong when trying to authenticate you. Please double-check your sign-in credentials and try again.</translation>
 <translation id="2052572566310583903">Installed on your other devices</translation>
@@ -112,9 +120,13 @@
 <translation id="2173801458090845390">Add requisition ID to this device</translation>
 <translation id="2178585470774851578">You are enabling Chrome OS Flex debugging features which will set up sshd daemon and enable booting from USB drives.</translation>
 <translation id="2183570493397356669">Continue button disabled</translation>
+<translation id="2210462644007531147">Couldn’t complete installation</translation>
 <translation id="221872881068107022">Reverse scrolling</translation>
 <translation id="2219081237089444028">Set a <ph name="DEVICE_TYPE" /> password to make it easier to sign in</translation>
+<translation id="222115440608612541">Switch themes at sunrise and sunset</translation>
 <translation id="2229161054156947610">More than 1 hour left</translation>
+<translation id="2246129643805925002">Your <ph name="DEVICE_TYPE" /> updates automatically in the background to give you the latest features and security improvements. You can review update preferences in Settings.</translation>
+<translation id="2274840746523584236">Charge your Chromebook</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> requires the device to be online when signing into <ph name="EMAIL" /></translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% done</translation>
 <translation id="2319072477089403627">Connecting to your Android phone...</translation>
@@ -124,6 +136,7 @@
 <translation id="2387052489799050037">Go home</translation>
 <translation id="2395616325548404795">Your <ph name="DEVICE_TYPE" /> has successfully been enrolled for enterprise management, but failed to send its asset and location information. Please manually enter this information from your Admin console for this device.</translation>
 <translation id="2408955596600435184">Enter your PIN</translation>
+<translation id="2418307627282545839">Keep things bright and airy</translation>
 <translation id="243179355394256322">Your organisation limits device enrolment to authorised users only. This user is not authorised to enrol devices. Please make sure that the user has the 'Enrol Google Meet hardware' administrator privilege in the Users section of the Admin console.</translation>
 <translation id="2439152382014731627">Reset <ph name="DEVICE_TYPE" /> password</translation>
 <translation id="2450223707519584812">You will not be able to add users because Google API keys are missing. See <ph name="DETAILS_URL" /> for details.</translation>
@@ -131,12 +144,14 @@
 <translation id="2485681265915754872">Google Play Terms of Service</translation>
 <translation id="248676429071089168">Swipe up to move the page down</translation>
 <translation id="2501278716633472235">Go back</translation>
+<translation id="252418934079508528">Install <ph name="DEVICE_OS" /></translation>
 <translation id="2538084450874617176">Who's using this <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> was unable to connect to <ph name="NETWORK_ID" />. Please select another network or try again.</translation>
 <translation id="2565214867520763227">Turn on screen reader</translation>
 <translation id="2569972178052279830">Retailer name</translation>
 <translation id="257779572837908839">Set up as Chromebox for meetings</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
+<translation id="2593499352046705383">Before starting, make sure that you have a backup of your data. Installing <ph name="DEVICE_OS" /> will overwrite your hard drive. Learn more at g.co/flex/InstallGuide.</translation>
 <translation id="2606454609872547359">No, continue without ChromeVox</translation>
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google's location service uses sources like Wi-Fi, mobile networks and sensors to help estimate this device's location.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />You can turn off Android location on this device at any time by going to Settings &gt; Apps &gt; Google Play Store &gt; Manage Android preferences &gt; Security and location &gt; Location. You can also turn off the use of Wi-Fi, mobile networks and sensors for Android location by turning off 'Google Location Accuracy' in the same menu.<ph name="END_PARAGRAPH2" /></translation>
@@ -144,10 +159,12 @@
 <translation id="2687407218262674387">Google Terms of Service</translation>
 <translation id="2688196195245426394">Error when registering the device with the server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">This is a bundled device and cannot be enrolled with Kiosk and signage upgrade.</translation>
+<translation id="2722540561488096675">Your device will shut down in <ph name="TIME_LEFT" />. Remove the USB before turning your device back on. Then you can start using <ph name="DEVICE_OS" />.</translation>
 <translation id="2725200716980197196">Network connectivity restored</translation>
 <translation id="2731700343119398978">Please wait…</translation>
 <translation id="2732134891301408122">Extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2742448780373473567">Installing <ph name="DEVICE_OS" /> will overwrite all data on your device.</translation>
 <translation id="274318651891194348">Searching for keyboard</translation>
 <translation id="2754825024506485820">Find the apps that you need, from productivity to entertainment, on the Google Play Store. You can install apps anytime.</translation>
 <translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />When Location Accuracy is on, information about wireless signals, such as Wi-Fi access points and mobile network towers, along with device sensor data, such as accelerometer and gyroscope, is used to estimate more accurate device location, which Android apps and services use to provide location-based features. To do this, Google periodically collects information about device sensors and wireless signals near this device to contribute to crowdsourced wireless signal locations.<ph name="END_PARAGRAPH1" />
@@ -160,6 +177,9 @@
 <translation id="2849767214114481738">Your PIN has been added</translation>
 <translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Allowing ChromeOS devices to send automatic reports helps us prioritise what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features were enabled and how much memory was typically used.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />You can start or stop allowing these reports at any time in your Chrome device settings. If you’re a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2861301611394761800">System update complete. Please restart the system.</translation>
+<translation id="2870909136778269686">Updating...</translation>
+<translation id="2872961005593481000">Shut down</translation>
 <translation id="2886119409731773154">This may take up to 30 minutes</translation>
 <translation id="2893180576842394309">Google may use your history to personalise Search and other Google services</translation>
 <translation id="2902265136119311513">Browsing as a guest</translation>
@@ -178,6 +198,7 @@
 <translation id="313205617302240621">Forgot password?</translation>
 <translation id="3162070126914310576">This device can't be enrolled at the moment because your organisation unit has reached its initial enrolment limit. Contact your administrator for assistance.</translation>
 <translation id="3163511056918491211">Easily restore your data or switch devices at any time. Your backups are uploaded to Google and encrypted using your Google Account password.</translation>
+<translation id="3169930038976362151">Choose the theme that fits your needs. To change your theme, wallpaper, screen saver and more, just touch and hold on the desktop.</translation>
 <translation id="3170072451822350649">You may also skip signing in and <ph name="LINK_START" />browse as Guest<ph name="LINK_END" />.</translation>
 <translation id="3177914167275935955">Your device includes a Chrome Education upgrade, but your username is not associated with a Google for Education account. Please create a Google for Education account by visiting g.co/workspace/edusignup on a secondary device.</translation>
 <translation id="3196912927885212665">To set up with your Android phone, your Chromebook's Bluetooth needs to be on</translation>
@@ -189,6 +210,7 @@
 <translation id="3261268979727295785">For older children, you can add parental controls once you finish setup. You'll find information on parental controls in the Explore app.</translation>
 <translation id="3278001907972365362">Your Google Account(s) need attention</translation>
 <translation id="3283148363895519428">Follow the instructions on your phone to continue setup. Make sure your phone is nearby and Bluetooth is turned on</translation>
+<translation id="3327050066667856415">Chromebooks are designed for security. Your device is protected from malware automatically – no extra software required.</translation>
 <translation id="3382073616108123819">Oops!  The system failed to determine device identifiers for this device.</translation>
 <translation id="3382200254148930874">Stopping supervision...</translation>
 <translation id="3384362484379805487">Language files are shared among users to save disk space.</translation>
@@ -204,6 +226,8 @@
 <translation id="350397915809787283">If you don't have an account, select the first option to create one.</translation>
 <translation id="3520824492621090923">Confirm kiosk and signage device enrolment?</translation>
 <translation id="3547954654003013442">Proxy settings</translation>
+<translation id="3550915441744863158">Chrome updates automatically so you always have the freshest version</translation>
+<translation id="3559533181353831840">About <ph name="TIME_LEFT" /> left</translation>
 <translation id="3577473026931028326">Something went wrong. Try again.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> hardware data collection</translation>
 <translation id="3602290021589620013">Preview</translation>
@@ -229,24 +253,30 @@
 <translation id="3837569373891539515">You can select all that apply. You can also find these options in Settings after you finish setting up your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="3856470183388031602">Use your Google Account on your <ph name="DEVICE_TYPE" /></translation>
+<translation id="3856800405688283469">Select Time Zone</translation>
 <translation id="3893630138897523026">ChromeVox (spoken feedback)</translation>
 <translation id="3897746662269329507">Your <ph name="DEVICE_TYPE" /> is built for gaming. The Explore app will open next where you can access hundreds of the latest games, see gaming offers and discover gaming features that come with your device.</translation>
 <translation id="389901847090970821">Select keyboard</translation>
 <translation id="3910588685973519483">Create wallpapers with AI</translation>
 <translation id="3924259174674732591">Display and text size <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3950820424414687140">Sign in</translation>
+<translation id="397703832102027365">Finalising...</translation>
 <translation id="3983400541576569538">Data from some apps may be lost</translation>
 <translation id="3984159763196946143">Couldn't start demo mode</translation>
+<translation id="3988996860813292272">Select time zone</translation>
 <translation id="3994318741694670028">Unfortunately, your computer is configured with a malformed hardware ID. This prevents Chrome OS Flex from updating with the latest security fixes and your computer <ph name="BEGIN_BOLD" />may be vulnerable to malicious attacks<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">Pin setup</translation>
+<translation id="403725336528835653">Try it first</translation>
 <translation id="4044883420905480380">You connected to Wi-Fi and signed in to <ph name="USER_EMAIL" /> using your Android phone</translation>
 <translation id="4047726037116394521">Go home</translation>
 <translation id="4062561150282203854">Sync your <ph name="DEVICE_TYPE" /> apps, settings and more</translation>
 <translation id="4089743381329341712">Selected apps will be installed after setup. Find more recommendations later in the Apps &amp; Games app.</translation>
 <translation id="4104944259562794668">You can enable it later in Settings &gt; Security and privacy &gt; Lock screen and sign-in</translation>
+<translation id="4132183752438206707">Find apps on the Google Play Store</translation>
 <translation id="4135746311382563554">Google Chrome and ChromeOS additional Terms of Service</translation>
 <translation id="41365691917097717">Continuing will enable ADB debugging for creating and testing Android apps. Note that this action allows installation of Android apps that haven't been verified by Google, and requires a factory reset to disable.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> does not belong to a valid organization. Contact your administrator. If you are an administrator, you can set up your organisation by visiting: g.co/ChromeEnterpriseAccount</translation>
+<translation id="4167393659000039775">Google isn’t responsible for any data loss, and <ph name="DEVICE_OS" /> may not work on uncertified models. Learn more at g.co/flex/InstallGuide.</translation>
 <translation id="4209092469652827314">Large</translation>
 <translation id="4213918571089943508">Child’s Google Account</translation>
 <translation id="4228071595943929139">Use your organisation’s email address</translation>
@@ -264,6 +294,8 @@
 <translation id="4309165024397827958">Allow Android apps and services with location permission to use your device's location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.</translation>
 <translation id="4317733381297736564">In-app purchases</translation>
 <translation id="4341905082470253054">Checking TPM status…</translation>
+<translation id="434198521554309404">Fast. Secure. Effortless.</translation>
+<translation id="4358643842961018282">Your device is up to date</translation>
 <translation id="4370975561335139969">The email and password that you entered don't match.</translation>
 <translation id="4373418556073552953">Sign in with your Android phone</translation>
 <translation id="4378556263712303865">Device requisition</translation>
@@ -281,6 +313,7 @@
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> detected an active TPM that can store your data more securely.</translation>
 <translation id="4472298120638043495">You can use your preferred Google Account language (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="4472575034687746823">Get started</translation>
+<translation id="4487489714832036847">Chromebooks use apps instead of traditional software. Get apps for productivity, entertainment and more.</translation>
 <translation id="450867954911715010">Accessibility settings</translation>
 <translation id="4519605771716872386">File sync turned on</translation>
 <translation id="4531924570968473143">Who would you like to add to this <ph name="DEVICE_TYPE" />?</translation>
@@ -297,10 +330,12 @@
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> isn't a valid Google for Education account. Contact your administrator. If you are an administrator, you can set up your organisation by visiting: g.co/workspace/edusignup</translation>
 <translation id="4780558987886269159">For work</translation>
 <translation id="4806457879608775995">Review these terms and control your data</translation>
+<translation id="4809927044794281115">Light theme</translation>
 <translation id="4814327014588285482">Skip and remind me later</translation>
 <translation id="4830502475412647084">Installing OS update</translation>
 <translation id="4837926214103741331">You are not authorised to use this device. Please contact the device owner for sign-in permission.</translation>
 <translation id="4844333629810439236">Other keyboards</translation>
+<translation id="484462545196658690">Auto</translation>
 <translation id="4864369630010738180">Signing in...</translation>
 <translation id="4867272607148176509">Parents can approve or block apps, set time limits and control web browsing. A school account can be added later to access most school resources.</translation>
 <translation id="4877652723592270843">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS Flex? If so, press and hold both volume keys for five seconds.</translation>
@@ -369,22 +404,29 @@
 <translation id="5527474464531963247">You may also select another network.</translation>
 <translation id="5539070192556911367">Can't reach Google</translation>
 <translation id="5549511085333906441">Choose your setup</translation>
+<translation id="5554403733534868102">After this, no waiting for updates</translation>
 <translation id="557722062034137776">Resetting your device will not affect your Google accounts or any data synced to these accounts. However, all files saved locally on your device will be deleted.</translation>
+<translation id="5600348067066185292">Installation takes a few easy steps. You’ll have another chance to confirm before changes are made to your computer.</translation>
 <translation id="5626172233890210551">Use password instead</translation>
 <translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />To provide the best experience, <ph name="DEVICE_OS" /> collects hardware data about devices and shares it with Google to determine which updates should be delivered. Optionally, you can allow Google to use this data for additional purposes, like support and improvements to the <ph name="DEVICE_OS" /> experience and service.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />You can log in on this device and view fields listed as chromeosflex_ in chrome://system to see the data sent to Google for update filtering, as well as any other instances where you choose to share data with Google.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />For more details on data that <ph name="DEVICE_OS" /> may share with Google, and how it is used, visit g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">To use <ph name="NETWORK_ID" /> you may first need to <ph name="LINK_START" />visit the network's sign-in page<ph name="LINK_END" />, which will open automatically in a few seconds. If it doesn't happen, the network can't be used.</translation>
+<translation id="5641608986289282154">Start using <ph name="DEVICE_OS" /></translation>
 <translation id="5655296450510165335">Device enrolment</translation>
 <translation id="565899488479822148">Installing the latest update</translation>
 <translation id="5659964844710667266">Create password for this <ph name="DEVICE_TYPE" /></translation>
 <translation id="5684661240348539843">Asset Identifier</translation>
 <translation id="5684950556880280580">Your password has been updated</translation>
+<translation id="5687326903064479980">Time Zone</translation>
+<translation id="5687935527303996204">Make sure that your device is plugged in, and don’t turn it off. Installation may take up to 20 minutes. Your device will automatically shut down when installation is complete.</translation>
 <translation id="5705882733397021510">Go back</translation>
+<translation id="5711010025974903573">Service logs</translation>
 <translation id="5762787084360227629">Enter Google Account info</translation>
 <translation id="5764797882307050727">Please free up some space on your device.</translation>
 <translation id="5765425701854290211">Sorry, some files were damaged and the update wasn’t successful. Your synced files are safe.</translation>
 <translation id="5770125698810550803">Show navigation buttons</translation>
+<translation id="5793339252089865437">If you download the update over your mobile network, it could result in overage charges.</translation>
 <translation id="5799478978078236781">Get <ph name="DEVICE_TYPE" /> tips, offers and updates, and share feedback.</translation>
 <translation id="5800703268655655701">Select Light or Dark theme</translation>
 <translation id="5804259315582798390">Failed to enable local data recovery</translation>
@@ -395,12 +437,14 @@
 <translation id="5856721540245522153">Enable debugging features</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Turn on</translation>
+<translation id="5863445608433396414">Enable debugging features</translation>
 <translation id="5870086504539785141">Close accessibility menu</translation>
 <translation id="5895138241574237353">Restart</translation>
 <translation id="5895335062901455404">Your saved preferences and activity will be ready on any Chrome OS Flex device when you sign in with your Google Account. You can choose what to sync in Settings.</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5919305207330938913">All data collected will be used according to Google's <ph name="BEGIN_LINK" />Privacy Policy<ph name="END_LINK" />.</translation>
 <translation id="5932441198730183141">You do not have enough available licences to enrol this Google Meet hardware device. Please contact sales to purchase more. If you believe that you're seeing this message in error, please contact support.</translation>
+<translation id="5933376509899483611">Time Zone</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="5948536763493709626">Connect a keyboard or mouse, or continue setup using your touchscreen. If you are using Bluetooth devices, make sure that your devices are ready to pair.</translation>
 <translation id="5959471481388474538">Network not available</translation>
@@ -409,8 +453,10 @@
 <translation id="6040143037577758943">Close</translation>
 <translation id="6051354611314852653">Oops!  The system failed to authorise API access for this device.</translation>
 <translation id="6055544610007596637">Install apps for your <ph name="DEVICE_TYPE" /> from the Google Play Store</translation>
+<translation id="6069464830445383022">Your Google Account is your Chromebook sign-in</translation>
 <translation id="6071181508177083058">confirm password</translation>
 <translation id="6075731018162044558">Oops! The system failed to attain a long-term API access token for this device.</translation>
+<translation id="6093888419484831006">Cancelling update...</translation>
 <translation id="6125479973208104919">Unfortunately, you'll need to add your account to this <ph name="DEVICE_TYPE" /> again.</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6170498031581934115">Couldn't enable ADB debugging. Go to Settings and try again.</translation>
@@ -420,6 +466,7 @@
 <translation id="6202304368170870640">You can use your PIN to sign in to or unlock your device.</translation>
 <translation id="6209908325007204267">Your device includes a Chrome Enterprise Upgrade, but your username is not associated with an enterprise account. Please create an enterprise account by visiting g.co/ChromeEnterpriseAccount on a secondary device.</translation>
 <translation id="623261264391834964">Right-click in a text box to use Help me write</translation>
+<translation id="6264520534872750757">Continue to use the device</translation>
 <translation id="6280215091796946657">Sign in with a different account</translation>
 <translation id="6283823201263716145">Demo mode devices automatically send crash reports as well as diagnostic and usage data to Google to help improve features and performance.</translation>
 <translation id="6287713404380454515">For security reasons, your administrator disabled your device PIN and password. From now on, use your <ph name="MANAGER" /> password.</translation>
@@ -428,6 +475,7 @@
 <translation id="6314819609899340042">You have successfully enabled debugging features on this <ph name="IDS_SHORT_PRODUCT_NAME" /> device.</translation>
 <translation id="6343262564968371601">Find what you're looking for by searching Google, files, apps and more</translation>
 <translation id="635609604405270300">Keep device turned on</translation>
+<translation id="6363786367719063276">View logs</translation>
 <translation id="6367097275976877956">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS? If so, press the space bar.</translation>
 <translation id="636850387210749493">Enterprise enrolment</translation>
 <translation id="6380143666419481200">Accept and continue</translation>
@@ -435,6 +483,7 @@
 <translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Allowing your ChromeOS devices to send automatic reports helps us prioritise what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features you use, and how much memory you typically use.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />You can start or stop allowing these reports at any time in your Chrome device settings. If you’re a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Install critical update</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> complete</translation>
 <translation id="6478849105642611893">Quick Insert key is located beneath the Tab key</translation>
 <translation id="6480327114083866287">Managed by <ph name="MANAGER" /></translation>
 <translation id="6488384360522318064">Select language</translation>
@@ -452,6 +501,7 @@
 <translation id="6675665718701918026">Pointing device connected</translation>
 <translation id="667752334740867460">Receiving Wi-Fi info…</translation>
 <translation id="6680442031740878064">Available: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="6684827949542560880">Downloading the latest update</translation>
 <translation id="6722744767592605627">You can recover <ph name="EMAIL" />, but local data will be deleted.</translation>
 <translation id="6748980958975836188">I have read and agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />.</translation>
 <translation id="6749473226660745022">Photos</translation>
@@ -461,15 +511,18 @@
         <ph name="BEGIN_PARAGRAPH2" />You can start or stop allowing these reports at any time in your child's ChromeOS device settings. If you're a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH4" />If the Web &amp; App Activity setting is turned on for your child's Google Account, your child's data may be saved to their Google Account. Learn more about these settings and how to adjust them at families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609">Top apps for your <ph name="DEVICE_TYPE" /></translation>
+<translation id="6818802132960437751">Built-in virus protection</translation>
 <translation id="682971198310367122">Google Privacy Policy</translation>
 <translation id="6835762382653651563">Please connect to the Internet to update your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839916869147598086">Sign-in has changed</translation>
 <translation id="6852529053326738838">Ask your organisation, or enrol with your work email to check if your account is eligible.</translation>
 <translation id="6867671714894555998">Get things done quickly with the new keyboard</translation>
+<translation id="6881845890692344060">Your administrator has logged out. You're in control now.</translation>
 <translation id="6883319974225028188">Oops!  The system failed to save device configuration.</translation>
 <translation id="6888831646723563669">Get connected to enjoy all the features on your new <ph name="DEVICE_TYPE" /></translation>
 <translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />App data can be any data that an app has saved (based on developer settings), including data such as contacts, messages and photos. Backup data will not count towards your child's Drive storage quota.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />You can turn this service off in Settings.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="6897688156970667447">Helpful in low light and saves battery</translation>
 <translation id="6903907808598579934">Turn on sync</translation>
 <translation id="6918733588290914545">Quick setup with Android phone</translation>
 <translation id="6920473853105515518">Make sure that your <ph name="DEVICE_TYPE" /> is connected to the Internet and try again. You can also visit play.google/play-terms on another device.</translation>
@@ -498,6 +551,7 @@
 <translation id="7135729336746831607">Turn on Bluetooth?</translation>
 <translation id="7141105143012495934">Sign-in failed because your account details could not be retrieved. Please contact your administrator or try again.</translation>
 <translation id="7144878232160441200">Retry</translation>
+<translation id="7149839598364933473">Convert this device into a <ph name="DEVICE_OS" /> device.</translation>
 <translation id="7171259390164035663">Don't enrol</translation>
 <translation id="7189451821249468368">You do not have enough upgrades to enrol this device. Please contact sales to purchase more. If you believe that you're seeing this message in error, please contact support.</translation>
 <translation id="7202337678781136582">Scan the QR code with your Android phone</translation>
@@ -532,8 +586,10 @@
 <translation id="7560756177962144929">Sync your <ph name="DEVICE_TYPE" /></translation>
 <translation id="7571643774869182231">Not enough storage for update</translation>
 <translation id="7616214729753637086">Enrolling device…</translation>
+<translation id="7619937211696316184">Maintenance is done</translation>
 <translation id="7622114377921274169">Charging.</translation>
 <translation id="7630426712700473382">This device is managed by <ph name="MANAGER" /> and requires you to sign in every time.</translation>
+<translation id="7633724038415831385">This is the only time that you’ll wait for an update. On Chromebooks, software updates happen in the background.</translation>
 <translation id="7639914187072011620">Failed to fetch the SAML redirect URL from the server</translation>
 <translation id="7643117827468520640">Review these terms</translation>
 <translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />App data can be any data that an app has saved (based on developer settings), including data such as contacts, messages and photos. Backup data will not count towards your Drive storage quota.<ph name="END_PARAGRAPH1" />
@@ -572,7 +628,9 @@
 <translation id="7968982339740310781">View details</translation>
 <translation id="7975504106303186033">You must enrol this Chrome Education device into an education account. To sign up for a new account, please visit g.co/workspace/edusignup.</translation>
 <translation id="7980084013673500153">Asset ID: <ph name="ASSET_ID" /></translation>
+<translation id="7981670705071137488">After this, software updates will happen in the background. You can review update preferences in Settings.</translation>
 <translation id="7982083145464587921">Please restart your device to fix this error.</translation>
+<translation id="7988805580376093356">Keep your OS and run <ph name="DEVICE_OS" /> from USB.</translation>
 <translation id="7990958035181555539">Transfer Wi-Fi automatically from your Android phone</translation>
 <translation id="8022466874160067884">Enter your Google Account and password</translation>
 <translation id="8049029041626250638">Connect a keyboard or mouse. If you are using Bluetooth devices, make sure that your devices are ready to pair.</translation>
@@ -581,6 +639,7 @@
 <translation id="8065144531309810062">Use Google AI to be more creative and productive</translation>
 <translation id="8082106343289440791">Pair with "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8097959162767603171">Your administrator must first accept the Terms of Service in the Admin console Chrome device list.</translation>
+<translation id="8098156986344908134">Install <ph name="DEVICE_OS" /> and erase the hard drive?</translation>
 <translation id="8098616321286360457">Network connection required</translation>
 <translation id="8129265306888404830">To use your email address from your organisation (<ph name="EMAIL_DOMAIN" />), you need to use enterprise enrolment. If this device is for your personal use, sign in with your personal Google Account.</translation>
 <translation id="8131740175452115882">Confirm</translation>
@@ -594,6 +653,7 @@
 <translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Google's location service uses sources like Wi-Fi, mobile networks and sensors to help estimate your device's location.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />You can turn off Android location on your device at any time by going to Settings &gt; Apps &gt; Google Play Store &gt; Manage Android preferences &gt; Security and location &gt; Location. You can also turn off the use of Wi-Fi, mobile networks and sensors for Android location by turning off 'Google Location Accuracy' in the same menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">Please re-enter your password to update your <ph name="DEVICE_TYPE" /> profile.</translation>
+<translation id="822050276545350872">From here on out, no waiting required</translation>
 <translation id="8239032431519548577">Enterprise enrolment complete</translation>
 <translation id="8241806945692107836">Determining device configuration...</translation>
 <translation id="8242426110754782860">Proceed</translation>
@@ -601,11 +661,13 @@
 <translation id="8271379370373330993">Parents, the next few steps are for you. You can hand the <ph name="DEVICE_TYPE" /> back to the child after account setup.</translation>
 <translation id="8274924778568117936">Don’t turn off or close your <ph name="DEVICE_TYPE" /> until the update finishes. Your <ph name="DEVICE_TYPE" /> will restart after installation completes.</translation>
 <translation id="8281886186245836920">Skip</translation>
+<translation id="8289509909262565712">Welcome to <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">For personal use</translation>
 <translation id="8304383784961451596">You are not authorised to use this device. Please contact the administrator for sign-in permission or sign in with a Google Account supervised by Family Link.</translation>
 <translation id="8321837372750396788">This <ph name="DEVICE_TYPE" /> will be managed by <ph name="MANAGER" />.</translation>
 <translation id="8339288417038613756">Display and text size</translation>
 <translation id="8354034204605718473">Your child’s PIN has been added</translation>
+<translation id="8360140320636871023">Personalise your display theme</translation>
 <translation id="8366396658833131068">Your network connectivity is restored. Please select a different network or press 'Continue' button below to launch your kiosk app.</translation>
 <translation id="8401432541486058167">Provide the PIN that’s associated with your smart card.</translation>
 <translation id="8408270600235826886">You can control what data is shared with Google. You can change this at any time in Settings. Data will be used according to Google's <ph name="BEGIN_LINK" />Privacy Policy<ph name="END_LINK" />.</translation>
@@ -617,6 +679,7 @@
 <translation id="8464132254133862871">This user account is not eligible for the service.</translation>
 <translation id="8524841856047224176">Personalise your camera backgrounds for video calls and more</translation>
 <translation id="8527257351549797148">Your organisation may require enrolment so you can access apps, extensions, and more. This also allows your organisation to manage things like security and device settings.</translation>
+<translation id="8549316893834449916">You’ll use your Google Account to sign in to your Chromebook – the same account that you use for Gmail, Drive, YouTube and more.</translation>
 <translation id="8558063527625343224">Set up Google Beam</translation>
 <translation id="8569673829373920831">More about <ph name="APP_NAME" /></translation>
 <translation id="8586421813321819377">Allow ChromeOS and Android apps, websites and services with location permission to use your device's location. Location Accuracy provides more accurate location for Android apps and services. To do this, Google periodically processes information about device sensors and wireless signals from your device to crowdsource wireless signal locations. These are used without identifying you to improve location accuracy and location-based services and to improve, provide and maintain Google's services based on Google's and third parties' legitimate interests to serve users' needs.</translation>
@@ -625,11 +688,13 @@
         <ph name="BR" />
         <ph name="BR" />
         Visible to nearby devices as <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
+<translation id="8637688295594795546">System update available. Preparing to download…</translation>
 <translation id="8655972064210167941">Sign-in failed because your password could not be verified. Please contact your administrator or try again.</translation>
 <translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />When Location Accuracy is on, information about wireless signals, such as Wi-Fi access points and mobile network towers, along with device sensor data, such as accelerometer and gyroscope, is used to estimate more accurate device location, which Android apps and services use to provide location-based features. To do this, Google periodically collects information about device sensors and wireless signals near you to contribute to crowdsourced wireless signal locations.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Google uses this information without identifying you to: improve location accuracy and location-based services; and generally improve, provide and maintain Google's services. We process this information based on the legitimate interests of Google and third parties to serve users' needs.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />You can turn off Location Accuracy at any time in your device's location settings under Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access &gt; Advanced location settings. If Location Accuracy is off, no Location Accuracy data will be collected. For Android apps and services, only the IP address is used, if available, to determine your device's location, which may impact the availability and accuracy of locations for Android apps and services, such as Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">Unfortunately, your computer is configured with a malformed hardware ID. This prevents Chrome OS from updating with the latest security fixes and your computer <ph name="BEGIN_BOLD" />may be vulnerable to malicious attacks<ph name="END_BOLD" />.</translation>
+<translation id="8675704450909805533">The installer couldn’t find a valid destination to install <ph name="DEVICE_OS" />.</translation>
 <translation id="8695139659682234808">Add parental controls after setup</translation>
 <translation id="8698269656364382265">To return to the previous screen, swipe from the left side.</translation>
 <translation id="8718994464069323380">Touchscreen detected</translation>
@@ -639,10 +704,12 @@
 <translation id="8740086188450289493">Use Google Account password</translation>
 <translation id="8740247629089392745">You can hand this Chromebook to <ph name="SUPERVISED_USER_NAME" />. Setup is almost done, then it's time to explore.</translation>
 <translation id="8759753423332885148">Learn more.</translation>
+<translation id="8762886931014513155">Your <ph name="DEVICE_TYPE" /> needs an update</translation>
 <translation id="8777628254805677039">root password</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8783834180813871000">Type the pairing code then press Return or Enter</translation>
 <translation id="8794548468611058947">Instead of entering your Google Account password to sign in, you can create a PIN for this <ph name="DEVICE_TYPE" /></translation>
+<translation id="8830779999439981481">Restarting to apply updates</translation>
 <translation id="8830796635868321089">The update check failed using the current proxy settings. Please adjust your <ph name="PROXY_SETTINGS_LINK_START" />proxy settings<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="8855977033756560989">This Chromebook Enterprise device comes bundled with the Chrome Enterprise upgrade. To take advantage of the enterprise capabilities, enrol this device with a Google Admin account.</translation>
 <translation id="885746075120788020">Your saved preferences and activity will be ready on any Chrome OS device when you sign in with your Google Account. You can choose what to sync in Settings.</translation>
@@ -661,6 +728,7 @@
 <translation id="8975396729541388937">Unsubscribe at any time by clicking the link in the emails that you receive.</translation>
 <translation id="8987305927843254629">Each person can personalise their experience and keep data private.</translation>
 <translation id="8993059306046735527">If you forget your <ph name="DEVICE_TYPE" /> password, you can still restore your local data. You'll need to sign in to your Google Account or use account recovery.</translation>
+<translation id="9018218886431812662">Installation complete</translation>
 <translation id="9033765790910064284">Continue anyway</translation>
 <translation id="903480517321259405">Type the PIN again</translation>
 <translation id="9040473193163777637">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS? If so, press and hold both volume keys for five seconds.</translation>
@@ -678,6 +746,7 @@
         <ph name="BR" />
         <ph name="BR" />
         Visible as <ph name="DEVICE_TYPE" />…</translation>
+<translation id="945522503751344254">Send feedback</translation>
 <translation id="951991426597076286">Decline</translation>
 <translation id="954749761428814584">Language and input method</translation>
 <translation id="960987915827980018">About 1 hour left</translation>

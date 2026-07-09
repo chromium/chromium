@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Nilai masukan untuk kunci pribadi harus dalam format yang valid (kunci RSA dengan enkode PEM format PKCS#8).</translation>
-<translation id="765293928828334535">Aplikasi, ekstensi, dan skrip pengguna tidak dapat ditambahkan dari situs ini</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7766838926148951335">Terima izin</translation>
 <translation id="7876803335449432072">Tidak dapat memuat file '<ph name="RELATIVE_PATH" />' untuk skrip konten. Lembar gaya skrip konten hanya dapat dimuat dari file lembar gaya yang didukung seperti file .css.</translation>

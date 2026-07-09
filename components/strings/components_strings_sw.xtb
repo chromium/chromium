@@ -504,6 +504,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="175656076281618225">Kiinimacho</translation>
 <translation id="1757773103848038814">Fonti ya "Monospace"</translation>
 <translation id="1757935267918149452">Kitufe cha 'Badilisha nenosiri la Google', washa ili ubadilishe nenosiri la Akaunti yako ya Google</translation>
+<translation id="1759776526873274358">Jaza kiotomatiki namba za kuthibitisha ambazo tovuti hutumia ili kuimarisha usalama wako. Chrome inaweza kupata namba hizi kwenye Gmail yako. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu kipengele hiki<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Seva hii haikuweza kuthibitisha kuwa ni <ph name="DOMAIN" />; cheti chake cha usalama hakiaminiwi na mfumo wa uendeshaji wa kifaa chako. Hii inaweza kusababishwa na usanidi usiofaa au mvamizi kuingilia muunganisho wako.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Jaribu kutumia zana ya Kuchunguza Mtandao wa Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Picha (Ya Hifadhi)</translation>
@@ -2155,6 +2156,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4304049446746819918">{0,plural, =1{Sera ya msimamizi haipendekezi kuhamishia faili hii kwenye <ph name="DESTINATION_NAME" />}other{Sera ya msimamizi haipendekezi kuhamishia faili hizi kwenye <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Soma tathmini za wateja za bidhaa, huduma au matumizi ili kusaidia ufanye maamuzi bora kupitia maoni.</translation>
 <translation id="4305666528087210886">Imeshindwa kufikia faili yako</translation>
+<translation id="4306349443295056740">Kuweka Saini ya OCSP</translation>
 <translation id="4306529830550717874">Ungependa kuhifadhi anwani?</translation>
 <translation id="4306812610847412719">ubao wa kunakili</translation>
 <translation id="4308567447483056043">Sera hii imepuuzwa kwa sababu mtumiaji hahusiani na shirika. Ili sera hii itumike, kivinjari na wasifu wa Chrome lazima udhibitiwe na shirika moja katika dashibodi ya Msimamizi.</translation>
@@ -2413,6 +2415,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4744603770635761495">Njia Tekelezi</translation>
 <translation id="4744816391336495134">Unaweza kutumia alama ya kidole kuthibitisha kuwa ni wewe wakati wowote unapotumia nenosiri lililohifadhiwa</translation>
 <translation id="4749011317274908093">Unavinjari katika hali fiche</translation>
+<translation id="4749924365937394956">Uthibitishaji wa Seva</translation>
 <translation id="4750671009706599284">simu hii</translation>
 <translation id="4750917950439032686">Maelezo yako (kwa mfano, manenosiri, au namba za kadi za mikopo) ni ya faragha yanapotumwa kwenye tovuti hii.</translation>
 <translation id="4751249061288707459">Idhini ilisasishwa mara ya mwisho:</translation>
@@ -3129,6 +3132,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="5860491529813859533">Washa</translation>
 <translation id="5862579898803147654">Tupio la kutoa la printa la nane</translation>
 <translation id="5863515189965725638">Badilisha IBAN</translation>
+<translation id="5863517400058880216">Jaza kiotomatiki namba za kuthibitisha kutoka kwenye Gmail</translation>
 <translation id="5863847714970149516">Huenda ukurasa unaofuata ukajaribu kukutoza pesa</translation>
 <translation id="5866257070973731571">Ongeza Nambari ya Simu</translation>
 <translation id="5866327164731551901">Kutoka <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -3242,6 +3246,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="6034000775414344507">Kijivu Isiyokolea</translation>
 <translation id="6034514109191629503">Mkunjo wa kodiani</translation>
 <translation id="6035491133925068289">Michezo ya Riadha na Uwanjani</translation>
+<translation id="6037458223703682108">Sahihi Dijitali</translation>
 <translation id="6039846035001940113">Ikiwa tatizo litaendelea, wasiliana na mmiliki wa tovuti.</translation>
 <translation id="6040143037577758943">Funga</translation>
 <translation id="6040539895181423374">Maarifa ya Bei</translation>
@@ -3553,6 +3558,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="6474220430271405609">Majaribio ya Sera</translation>
 <translation id="6476284679642588870">Dhibiti njia za kulipa</translation>
 <translation id="647881094269678013">Uigizaji na Ukumbi wa Maonyesho</translation>
+<translation id="6480363549849064919">Uthibitishaji wa Kiteja</translation>
 <translation id="6480864723214312258">Betri za Nyumbani</translation>
 <translation id="6487678699866233349">Muziki wa Kimataifa</translation>
 <translation id="6489534406876378309">Anza kupakia matukio ya kuacha kufanya kazi</translation>
@@ -4517,6 +4523,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="7967973398323409409">Hakuna mtu yeyote anayeweza kuona maelezo unayojaza kiotomatiki</translation>
 <translation id="79682505114836835">Thamani ya "<ph name="VALUE" />" ni rangi ya heksadesimali isiyo sahihi.</translation>
 <translation id="7968982339740310781">Ona maelezo</translation>
+<translation id="7971403153351954587">Shirika lako hufuatilia unachonakili</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Na Usimbaji wa RSA</translation>
 <translation id="7976053965094442846">Watoaji wa huduma ya Nunua sasa, lipa baadaye wanapatikana ili ulipie polepole. Kibodi imefichwa.</translation>
 <translation id="7976214039405368314">Maombi mengi mno</translation>

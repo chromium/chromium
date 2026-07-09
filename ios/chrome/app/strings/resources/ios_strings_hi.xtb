@@ -972,7 +972,6 @@
 <translation id="4294506173142861371">क्या आपको <ph name="FIRST_NAME" /> के तौर पर साइन इन करना है?</translation>
 <translation id="4302061870579014542">जगह सेट करें</translation>
 <translation id="4304713468139749426">Password Manager</translation>
-<translation id="4306349443295056740">ओसीएसपी साइनिंग</translation>
 <translation id="4309403553630140242">ज़्यादा जानकारी के लिए दो बार टैप करें</translation>
 <translation id="4310738531374808763">होमपेज को पसंद के मुताबिक बनाएं</translation>
 <translation id="4316794575239200608">समीक्षा करने वाले लोग, आपके निजी डेटा की समीक्षा नहीं करेंगे, फिर चाहे वह Gemini के साथ की गई आपकी बातचीत का डेटा हो या <ph name="BEGIN_LINK" />Google Workspace में मौजूद आपका डेटा<ph name="END_LINK" />. इस डेटा का इस्तेमाल, जनरेटिव एआई मॉडल को बेहतर बनाने के लिए भी नहीं किया जाएगा.</translation>
@@ -1103,7 +1102,6 @@
 <translation id="4744428388659507035">सभी डिवाइसों पर अपने बुकमार्क पाने के लिए, सेटिंग में “बुकमार्क” चालू करें.</translation>
 <translation id="4746926359847517643">इतिहास में जाकर, इन्हें कभी भी देखा जा सकता है.</translation>
 <translation id="4749529195026091676">{count,plural, =1{{count} कार्ड इंपोर्ट किया गया}one{{count} कार्ड इंपोर्ट किया गया}other{{count} कार्ड इंपोर्ट किए गए}}</translation>
-<translation id="4749924365937394956">सर्वर की पुष्टि करना</translation>
 <translation id="4751645464639803239">नया 'गुप्त' टैब</translation>
 <translation id="4752348350801431746">सुरक्षा जांच से जुड़ी सूचनाएं बंद करें…</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
@@ -1447,7 +1445,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="5859715514067755465">आगे बढ़ें</translation>
 <translation id="5860491529813859533">चालू करें</translation>
 <translation id="5868644772996939262">Autofill passwords and passkeys</translation>
-<translation id="5869522115854928033">सेव किए गए पासवर्ड</translation>
 <translation id="5873179562631407582">खुले हुए किसी भी टैब पर टैप करके रखें</translation>
 <translation id="5887400589839399685">कार्ड सेव किया गया</translation>
 <translation id="5888889603768021126">इससे साइन इन किया है</translation>
@@ -1491,7 +1488,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6027619584715411062">अपने सभी डिवाइसों पर बुकमार्क, पासवर्ड वगैरह का ऐक्सेस पाने के लिए साइन इन करें.</translation>
 <translation id="6027945736510816438">क्या आपका मतलब <ph name="WEBSITE" /> से है?</translation>
 <translation id="6032845897905314562">नई सुविधा</translation>
-<translation id="6037458223703682108">डिजिटल हस्ताक्षर</translation>
 <translation id="6038823991892265570">Google खाते का स्टोरेज मैनेज करें</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">बंद करें</translation>
@@ -1646,7 +1642,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6476284679642588870">भुगतान के तरीकों को प्रबंधित करें</translation>
 <translation id="6476800141292307438">पेज <ph name="LANGUAGE" /> में अनुवाद किया जा रहा है. विकल्प, स्क्रीन के निचले हिस्से में मौजूद हैं.</translation>
 <translation id="647867789226964031">अपने पासवर्ड बदलें</translation>
-<translation id="6480363549849064919">क्लाइंट की पुष्टि करना</translation>
 <translation id="6489174933860678546">वेब को ज़्यादा निजी तौर पर ब्राउज़ करने के लिए, गुप्त टैब खोलें.</translation>
 <translation id="6489775505977274806">'लेवल अप' छिपाएं</translation>
 <translation id="6494931198667773526">खत्म हो गया</translation>
@@ -1683,7 +1678,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6589001036857939353">डुप्लीकेट संपर्कों को मर्ज करें</translation>
 <translation id="659407965921887085">इस कार्ड में, वेब पर उन प्रॉडक्ट की कीमत में गिरावट दिखती है जिन्हें आपने ट्रैक किया है</translation>
 <translation id="6596481460663245319">Google की मदद से इमेज खोजें</translation>
-<translation id="6598432073497341323">{COUNT,plural, =1{1 पासवर्ड}one{# पासवर्ड}other{# पासवर्ड}}</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" /> के लिए, Google Photos में इमेज सेव की गई</translation>
 <translation id="6602173570135186741">ऑटोमैटिक तरीके से भरने की सुविधा और पासवर्ड</translation>
 <translation id="6603393121510733479">आपके संगठन ने निजी ब्राउज़िंग की सुविधा बंद कर दी है.
@@ -1877,7 +1871,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="7233006041370588369">भरने के लिए कोई पासवर्ड चुनें.</translation>
 <translation id="723874023660911012">प्रोफ़ाइल स्विच करें</translation>
 <translation id="7241135764990439166">गुप्त मोड उपलब्ध नहीं है</translation>
-<translation id="7248046129087111453"><ph name="BEGIN_LINK" />खोज इतिहास<ph name="END_LINK" /> और <ph name="BEGIN_LINK" />अन्य तरह की गतिविधि<ph name="END_LINK" /> को आपके Google खाते में सेव किया जा सकता है.</translation>
 <translation id="7253951228444156601">पासवर्ड की जांच की जा रही है…</translation>
 <translation id="7261217796641151584">ग्रुप शेयर करें</translation>
 <translation id="7266578100016339897">इससे आपको अपने टैब व्यवस्थित रखने में मदद मिलती है. सेटिंग में जाकर, इसमें कभी भी बदलाव किया जा सकता है.</translation>

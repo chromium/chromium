@@ -504,6 +504,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="175656076281618225">Magie</translation>
 <translation id="1757773103848038814">Police à chasse fixe</translation>
 <translation id="1757935267918149452">Bouton "Changer de mot de passe Google" à activer pour changer le mot de passe de votre compte Google</translation>
+<translation id="1759776526873274358">Saisir automatiquement les codes de validation utilisés par les sites pour améliorer votre sécurité. Chrome peut obtenir ces codes à partir de votre Gmail. <ph name="BEGIN_LINK" />En savoir plus sur cette fonctionnalité<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité n'est pas considéré comme fiable par le système d'exploitation de votre appareil. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Essayez d'exécuter les diagnostics réseau de Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Photo (archive)</translation>
@@ -2155,6 +2156,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4304049446746819918">{0,plural, =1{Une règle de l'administrateur déconseille d'importer ce fichier vers <ph name="DESTINATION_NAME" />}one{Une règle de l'administrateur déconseille d'importer ce fichier vers <ph name="DESTINATION_NAME" />}other{Une règle de l'administrateur déconseille d'importer ces fichiers vers <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Consultez les évaluations des clients sur les produits, services ou expériences pour éclairer vos décisions.</translation>
 <translation id="4305666528087210886">Impossible d'accéder à votre fichier</translation>
+<translation id="4306349443295056740">Signature OCSP</translation>
 <translation id="4306529830550717874">Enregistrer l'adresse ?</translation>
 <translation id="4306812610847412719">presse-papiers</translation>
 <translation id="4308567447483056043">Cette règle est ignorée, car l'utilisateur n'est pas affilié. Pour qu'elle soit appliquée, le profil et le navigateur Chrome doivent être gérés par la même organisation dans la console d'administration.</translation>
@@ -2413,6 +2415,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4744603770635761495">Chemin d'accès exécutable</translation>
 <translation id="4744816391336495134">Vous pouvez utiliser votre empreinte digitale pour confirmer votre identité chaque fois que vous utilisez un mot de passe enregistré</translation>
 <translation id="4749011317274908093">Vous êtes passé en navigation privée</translation>
+<translation id="4749924365937394956">Authentification du serveur</translation>
 <translation id="4750671009706599284">ce téléphone</translation>
 <translation id="4750917950439032686">Vos informations, comme vos mots de passe ou vos numéros de carte de paiement, sont privées lorsqu'elles sont transmises à ce site.</translation>
 <translation id="4751249061288707459">Dernière mise à jour de l'autorisation :</translation>
@@ -3129,6 +3132,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5862579898803147654">Empileur 8</translation>
 <translation id="5863515189965725638">Modifier l'IBAN</translation>
+<translation id="5863517400058880216">Saisir automatiquement les codes de validation depuis Gmail</translation>
 <translation id="5863847714970149516">Il se peut que l'accès à la page suivante engendre des frais</translation>
 <translation id="5866257070973731571">Ajouter un numéro de téléphone</translation>
 <translation id="5866327164731551901">De <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -3242,6 +3246,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6034000775414344507">Gris clair</translation>
 <translation id="6034514109191629503">Pli en accordéon</translation>
 <translation id="6035491133925068289">Athlétisme</translation>
+<translation id="6037458223703682108">Signature numérique</translation>
 <translation id="6039846035001940113">Si le problème persiste, contactez le propriétaire du site.</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6040539895181423374">Tendances des prix</translation>
@@ -3553,6 +3558,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6474220430271405609">Tests des règles</translation>
 <translation id="6476284679642588870">Gérer les modes de paiement</translation>
 <translation id="647881094269678013">Art dramatique</translation>
+<translation id="6480363549849064919">Authentification du client</translation>
 <translation id="6480864723214312258">Piles</translation>
 <translation id="6487678699866233349">Musiques du monde</translation>
 <translation id="6489534406876378309">Lancer l'importation des plantages</translation>
@@ -4520,6 +4526,7 @@ Informations supplémentaires :
 <translation id="7967973398323409409">Personne ne peut voir les informations que vous saisissez automatiquement</translation>
 <translation id="79682505114836835">La couleur hexadécimale "<ph name="VALUE" />" n'est pas valide.</translation>
 <translation id="7968982339740310781">Afficher les détails</translation>
+<translation id="7971403153351954587">Votre organisation surveille les copies</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 avec chiffrement RSA</translation>
 <translation id="7976053965094442846">Émetteurs Acheter maintenant, payer plus tard disponibles pour le paiement échelonné. Clavier masqué.</translation>
 <translation id="7976214039405368314">Trop de demandes</translation>

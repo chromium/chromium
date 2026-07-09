@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Yopiq kalit qiymati yaroqli formatda kiritilishi shart (PKCS#8-format PEM-encoded RSA kalit).</translation>
-<translation id="765293928828334535">Bu saytdan ilova, kengaytma va foydalanuvchi skripti qo‘shib bo‘lmaydi</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7766838926148951335">Ruxsatlarni qabul qilish</translation>
 <translation id="7876803335449432072">Kontentni qayta ishlash skripti uchun “<ph name="RELATIVE_PATH" />” fayli yuklanmadi. Bunday skript uchun uslublar jadvalini faqatgina CSS kabi muvofiq formatdagi fayllardan yuklash mumkin.</translation>

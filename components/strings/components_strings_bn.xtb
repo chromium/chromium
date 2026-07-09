@@ -504,6 +504,7 @@
 <translation id="175656076281618225">ম্যাজিক</translation>
 <translation id="1757773103848038814">Monospace ফন্ট</translation>
 <translation id="1757935267918149452">'Google পাসওয়ার্ড পরিবর্তন করুন' বোতাম, আপনার Google অ্যাকাউন্ট পাসওয়ার্ড পরিবর্তন করতে এটি চালু করুন</translation>
+<translation id="1759776526873274358">আপনার সুরক্ষা উন্নত করতে সাইটগুলি অটোফিল যাচাইকরণ কোড ব্যবহার করে। আপনার Gmail থেকে Chrome এইসব কোড পেতে পারে। <ph name="BEGIN_LINK" />এই ফিচার সম্বন্ধে আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেটটি আপনার ডিভােইসের নিকট বিশ্বাসযোগ্য নয়। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows নেটওয়ার্ক ডায়গনিস্টিক্স চালিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="1777422078676229054">ফটো (আর্কাইভাল)</translation>
@@ -2156,6 +2157,7 @@
 <translation id="4304049446746819918">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল সরানো যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল সরানো যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল সরানো যাবে না}}</translation>
 <translation id="4304485328308299773">রিভিউ সহ আপনার সিদ্ধান্ত জানানোর ব্যাপারে সহায়তা পেতে প্রোডাক্ট, পরিষেবা অথবা অভিজ্ঞতার ব্যাপারে গ্রাহকদের মূল্যায়ন পড়ুন।</translation>
 <translation id="4305666528087210886">আপনার ফাইল অ্যাক্সেস করা যায়নি</translation>
+<translation id="4306349443295056740">OCSP-তে স্বাক্ষর করা</translation>
 <translation id="4306529830550717874">ঠিকানা সেভ করবেন?</translation>
 <translation id="4306812610847412719">ক্লিপবোর্ড</translation>
 <translation id="4308567447483056043">এই নীতিটি উপেক্ষা করা হয়েছে কারণ ব্যবহারকারী অ্যাফিলিয়েট নন। এই নীতি প্রয়োগ করার জন্য, Chrome ব্রাউজার এবং প্রোফাইল একই সংস্থার দ্বারা অ্যাডমিন কনসোলের মাধ্যমে ম্যানেজ করতে হবে।</translation>
@@ -2414,6 +2416,7 @@
 <translation id="4744603770635761495">সম্পাদনযোগ্য পাথ</translation>
 <translation id="4744816391336495134">সেভ করা পাসওয়ার্ড ব্যবহার করার সময় নিজের পরিচয় যাচাই করার জন্য ফিঙ্গারপ্রিন্ট ব্যবহার করতে পারেন</translation>
 <translation id="4749011317274908093">আপনি ছদ্মবেশী মোড ব্যবহার করছেন</translation>
+<translation id="4749924365937394956">সার্ভার যাচাইকরণ</translation>
 <translation id="4750671009706599284">এই ফোন</translation>
 <translation id="4750917950439032686">আপনার তথ্য (উদাহরণস্বরূপ, পাসওয়ার্ড বা ক্রেডিট কার্ড নম্বর) যখন এই সাইটে পাঠানো হয় তখন সেটি ব্যক্তিগত থাকে।</translation>
 <translation id="4751249061288707459">সম্মতি শেষ আপডেট হয়েছে:</translation>
@@ -3130,6 +3133,7 @@
 <translation id="5860491529813859533">চালু করুন</translation>
 <translation id="5862579898803147654">স্ট্যাকার ৮</translation>
 <translation id="5863515189965725638">IBAN এডিট করুন</translation>
+<translation id="5863517400058880216">Gmail-এ পাওয়া অটোফিল যাচাইকরণ কোড</translation>
 <translation id="5863847714970149516">পরের পৃষ্ঠাতে আপনাকে চার্জ করা হতে পারে</translation>
 <translation id="5866257070973731571">ফোন নম্বর যোগ করুন</translation>
 <translation id="5866327164731551901"><ph name="TYPE_1" /> <ph name="TYPE_2" /> থেকে</translation>
@@ -3243,6 +3247,7 @@
 <translation id="6034000775414344507">হালকা ধূসর</translation>
 <translation id="6034514109191629503">অ্যাকর্ডিয়ন ফোল্ড</translation>
 <translation id="6035491133925068289">ট্র্যাক অ্যান্ড ফিল্ড</translation>
+<translation id="6037458223703682108">ডিজিটাল স্বাক্ষর</translation>
 <translation id="6039846035001940113">যদি সমস্যাটি চলতে থাকে তবে সাইট মালিকের সাথে যোগাযোগ করুন।</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="6040539895181423374">প্রাইস ইনসাইট</translation>
@@ -3553,6 +3558,7 @@
 <translation id="6474220430271405609">নীতি সংক্রান্ত টেস্ট</translation>
 <translation id="6476284679642588870">পেমেন্টের পদ্ধতি ম্যানেজ করুন</translation>
 <translation id="647881094269678013">অভিনয় ও থিয়েটার</translation>
+<translation id="6480363549849064919">ক্লায়েন্ট যাচাইকরণ</translation>
 <translation id="6480864723214312258">বাড়িতে ব্যবহারের ব্যাটারি</translation>
 <translation id="6487678699866233349">ওয়ার্ল্ড মিউজিক</translation>
 <translation id="6489534406876378309">ক্র্যাশগুলি আপলোড করা শুরু করুন</translation>
@@ -4519,6 +4525,7 @@
 <translation id="7967973398323409409">আপনার অটোফিল করা তথ্য অন্য কেউ দেখতে পায় না</translation>
 <translation id="79682505114836835"><ph name="VALUE" /> মান ভুল হেক্স কালার কোড।</translation>
 <translation id="7968982339740310781">বিশদ বিবরণ দেখুন</translation>
+<translation id="7971403153351954587">আপনার সংস্থা কপি করা মনিটর করে</translation>
 <translation id="7972714317346275248">RSA এনক্রিপশানের সাথে PKCS #1 SHA-384</translation>
 <translation id="7976053965094442846">কিস্তিতে পেমেন্ট করার সুবিধার ক্ষেত্রে 'এখন কিনুন, পরে পেমেন্ট করুন' ইস্যুকারী উপলভ্য আছে। কীবোর্ড লুকানো রয়েছে।</translation>
 <translation id="7976214039405368314">অত্যধিক অনুরোধ</translation>

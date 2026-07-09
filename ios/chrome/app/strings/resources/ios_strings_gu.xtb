@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">તમારો સ્ટોરેજ ભરાઈ ગયો છે</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
 <translation id="1190609913194133056">સૂચના કેન્દ્ર</translation>
+<translation id="1196534270480620381">મને આ પેજનો ટૂંકો સારાંશ આપો</translation>
 <translation id="1199631150313925648">મેન્યુઅલી દાખલ કરો</translation>
 <translation id="1199963004393929848">ગ્રીન થીમ</translation>
 <translation id="1201402288615127009">આગલું</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">આ સાઇટ માટે કોઈ પાસવર્ડ કે પાસકી મળી નથી</translation>
 <translation id="1540800554400757039">સરનામું 1</translation>
 <translation id="154312949627292154">લૉક સ્ક્રીનમાંથી તમારા અન્ય ડિવાઇસમાંથી પ્રાપ્ત થયેલા ટૅબ ખોલો.</translation>
+<translation id="1544653821167545205">પેજનો સારાંશ આપો</translation>
 <translation id="1545749641540134597">QR કોડ સ્કેન કરો</translation>
 <translation id="1545757265410828525">કિંમતનો ઇતિહાસ</translation>
 <translation id="1547610699249301703">પાસવર્ડ શેર કરો</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">જ્યારે Googleને તમારા ડિફૉલ્ટ શોધ એન્જિન તરીકે સેટ કરવામાં આવે, માત્ર ત્યારે જ સ્ક્રીન પરથી શોધવાની સુવિધા ઉપલબ્ધ થાય છે. તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને તમારું ડિફૉલ્ટ શોધ એન્જિન બદલી શકો છો.</translation>
 <translation id="1872096359983322073">ટોર્ચ</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Chromeમાં Gemini શું કરી શકે છે?</translation>
 <translation id="1881621406744213161">કુટુંબના સભ્યોને આમંત્રિત કરો</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">સ્માર્ટ સૉર્ટ મેનૂ બાર</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરવા માટે તમારા પાસવર્ડ સાચવો.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">તમારા બ્રાઉઝરમાં બધું ઠીક લાગે છે</translation>
+<translation id="2470654816840674524">હું Gemini in Chrome વડે શું કરી શકું?</translation>
 <translation id="2473876017985765807">તમે <ph name="WEBSITE" /> માટેનો પાસવર્ડ પહેલેથી સાચવ્યો છે</translation>
 <translation id="247430852844518481">પછીથી આ પેજની ફરી મુલાકાત લેવા માટે તમે રિમાઇન્ડર સેટ કરી શકો છો</translation>
 <translation id="2479148705183875116">સેટિંગ પર જાઓ</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">“સલામતી માટે તપાસ” છુપાવો</translation>
 <translation id="2625189173221582860">પાસવર્ડ કૉપિ કર્યો</translation>
 <translation id="2626236249646841566">તમારું કનેક્શન ચેક કરો અને સાઇન ઇન કરવાનો ફરી પ્રયાસ કરો.</translation>
+<translation id="2629543259235506452">આ પેજ અને આના જેવી વેબસાઇટ પરની માહિતીનો ઉપયોગ કરીને આ વિષય માટે ટૂંકા સામાન્ય સવાલો બનાવો</translation>
 <translation id="2635918910848538771">CVC ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="2640733327287333451">કોઈ વપરાશકર્તાનું નામ નથી ••••••</translation>
 <translation id="264215785133931186">હમણાં જ ચેક કર્યું</translation>
@@ -967,7 +972,6 @@
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> તરીકે સાઇન ઇન કરીએ?</translation>
 <translation id="4302061870579014542">સ્થાન સેટ કરો</translation>
 <translation id="4304713468139749426">પાસવર્ડ મેનેજર</translation>
-<translation id="4306349443295056740">OCSP પર સહી કરવી</translation>
 <translation id="4309403553630140242">વધુ માહિતી માટે બે વાર ટૅપ કરો</translation>
 <translation id="4310738531374808763">તમારું હોમપેજ કસ્ટમાઇઝ કરો</translation>
 <translation id="4316794575239200608">Gemini સાથેની તમારી વાતચીતો કે તમારા <ph name="BEGIN_LINK" />Google Workspaceના ડેટા<ph name="END_LINK" />નો માનવ રિવ્યૂઅર દ્વારા રિવ્યૂ કરવામાં આવશે નહીં અથવા જનરેટિવ AI મૉડલને બહેતર બનાવવા માટે તેનો ઉપયોગ કરવામાં આવશે નહીં.</translation>
@@ -1098,7 +1102,6 @@
 <translation id="4744428388659507035">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક મેળવવા માટે, સેટિંગમાં “બુકમાર્ક” ચાલુ કરો.</translation>
 <translation id="4746926359847517643">તમે હંમેશા તેમને ઇતિહાસમાં ફરી મેળવી શકો છો.</translation>
 <translation id="4749529195026091676">{count,plural, =1{{count} કાર્ડની આયાત કરી}one{{count} કાર્ડની આયાત કરી}other{{count} કાર્ડની આયાત કરી}}</translation>
-<translation id="4749924365937394956">સર્વર પ્રમાણીકરણ</translation>
 <translation id="4751645464639803239">નવું છૂપું ટૅબ</translation>
 <translation id="4752348350801431746">સલામતી માટે તપાસ સંબંધિત નોટિફિકેશન બંધ કરો…</translation>
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
@@ -1442,7 +1445,6 @@
 <translation id="5859715514067755465">આગળ જાઓ</translation>
 <translation id="5860491529813859533">ચાલુ કરો</translation>
 <translation id="5868644772996939262">પાસવર્ડ અને પાસકી ઑટોમૅટિક રીતે ભરો</translation>
-<translation id="5869522115854928033">સાચવેલા પાસવર્ડ્સ</translation>
 <translation id="5873179562631407582">કોઈપણ ખુલ્લી ટૅબને ટૅપ કરીને દબાવી રાખો</translation>
 <translation id="5887400589839399685">કાર્ડ સાચવ્યું</translation>
 <translation id="5888889603768021126">આમના વડે સાઇન ઇન કરેલું</translation>
@@ -1486,7 +1488,6 @@
 <translation id="6027619584715411062">તમારા બધા ડિવાઇસ પર બુકમાર્ક અને પાસવર્ડ જેવું બીજું ઘણું મેળવવા સાઇન ઇન કરો.</translation>
 <translation id="6027945736510816438">શું તમારો અર્થ <ph name="WEBSITE" /> હતો?</translation>
 <translation id="6032845897905314562">નવી સુવિધા</translation>
-<translation id="6037458223703682108">ડિજિટલ સહી</translation>
 <translation id="6038823991892265570">Google સ્ટોરેજ મેનેજ કરો</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
@@ -1641,7 +1642,6 @@
 <translation id="6476284679642588870">ચુકવણી પદ્ધતિઓ મેનેજ કરો</translation>
 <translation id="6476800141292307438">પેજનો અનુવાદ <ph name="LANGUAGE" />માં કરી રહ્યા છે. વિકલ્પો સ્ક્રીનની નીચેની બાજુએ ઉપલબ્ધ રહે છે.</translation>
 <translation id="647867789226964031">તમારા પાસવર્ડ બદલો</translation>
-<translation id="6480363549849064919">ક્લાયન્ટનું પ્રમાણીકરણ</translation>
 <translation id="6489174933860678546">વેબને વધુ ખાનગી રીતે બ્રાઉઝ કરવા માટે છૂપા ટૅબ ખોલો.</translation>
 <translation id="6489775505977274806">Level Up છુપાવો</translation>
 <translation id="6494931198667773526">સમાપ્તિ તારીખ</translation>
@@ -1678,7 +1678,6 @@
 <translation id="6589001036857939353">ડુપ્લિકેટ હોય તેને મર્જ કરો</translation>
 <translation id="659407965921887085">આ કાર્ડ તમે હાલમાં ટ્રૅક કરતા હો તે પ્રોડક્ટ પર સમગ્ર વેબ પર કિંમતમાં ઘટાડો દર્શાવે છે</translation>
 <translation id="6596481460663245319">Google વડે છબી શોધો</translation>
-<translation id="6598432073497341323">{COUNT,plural, =1{1 પાસવર્ડ}one{# પાસવર્ડ}other{# પાસવર્ડ}}</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" /> માટે Google Photosમાં છબી સાચવી</translation>
 <translation id="6602173570135186741">ઑટોમૅટિક રીતે ભરવાની સુવિધા અને પાસવર્ડ</translation>
 <translation id="6603393121510733479">તમારી સંસ્થાએ ખાનગી બ્રાઉઝિંગ બંધ કર્યું છે.
@@ -1872,7 +1871,6 @@
 <translation id="7233006041370588369">ભરવા માટે પાસવર્ડ પસંદ કરો.</translation>
 <translation id="723874023660911012">પ્રોફાઇલ સ્વિચ કરો</translation>
 <translation id="7241135764990439166">છૂપો મોડ ઉપલબ્ધ નથી</translation>
-<translation id="7248046129087111453"><ph name="BEGIN_LINK" />શોધ ઇતિહાસ<ph name="END_LINK" /> અને <ph name="BEGIN_LINK" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK" /> તમારા Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે.</translation>
 <translation id="7253951228444156601">પાસવર્ડ ચેક કરી રહ્યાં છીએ…</translation>
 <translation id="7261217796641151584">ગ્રૂપ શેર કરો</translation>
 <translation id="7266578100016339897">આ તમને વ્યવસ્થિત રહેવામાં સહાય કરે છે. તમે આને સેટિંગમાં જઈને કોઈપણ સમયે બદલી શકો છો.</translation>
@@ -2348,6 +2346,7 @@
 <translation id="8766790350274092814"><ph name="WEBSITE" /> અને <ph name="SECOND_WEBSITE" /> માટેના પાસવર્ડ ડિલીટ કરવામાં આવશે. તમારા એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
 <translation id="8775144690796719618">અમાન્ય URL</translation>
 <translation id="8781834595282316166">ગ્રૂપમાં નવું ટૅબ</translation>
+<translation id="8783445328207519872">આ વિષય વિશે સામાન્ય સવાલો બનાવો</translation>
 <translation id="8784653774976848206">ફાઇલો પસંદ કરો</translation>
 <translation id="8786100550345425552">પરવાનગીઓમાં ફેરફાર કરો</translation>
 <translation id="878871978861915380">"કિંમતને ટ્રૅક કરવું" છુપાવો</translation>

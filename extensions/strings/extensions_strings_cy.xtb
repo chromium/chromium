@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Rhaid i werth mewnbwn ar gyfer allwedd breifat fod yn fformat dilys (allwedd RSA PKCS # 8-fformat PEM-encoded).</translation>
-<translation id="765293928828334535">Ni ellir ychwanegu apiau, estyniadau na sgriptiau defnyddwyr o'r wefan hon</translation>
 <translation id="7658239707568436148">Canslo</translation>
 <translation id="7766838926148951335">Derbyn caniatadau</translation>
 <translation id="7876803335449432072">Methu â llwytho'r ffeil '<ph name="RELATIVE_PATH" />' ar gyfer sgript cynnwys, dim ond o ffeiliau dalennau arddull a gefnogir megis ffeiliau .css y gellir llwytho dalennau arddull sgript cynnwys.</translation>

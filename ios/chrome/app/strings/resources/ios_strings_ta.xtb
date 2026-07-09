@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">சேமிப்பகம் நிரம்பிவிட்டது</translation>
 <translation id="1181037720776840403">அகற்று</translation>
 <translation id="1190609913194133056">அறிவிப்பு மையம்</translation>
+<translation id="1196534270480620381">இந்தப் பக்கத்தின் சுருக்க விவரத்தை வழங்கு</translation>
 <translation id="1199631150313925648">நீங்களே ஸ்கேன் செய்யுங்கள்</translation>
 <translation id="1199963004393929848">பச்சை தீம்</translation>
 <translation id="1201402288615127009">அடுத்து</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">இந்தத் தளத்திற்கான கடவுச்சொற்களோ கடவுச்சாவிகளோ இல்லை</translation>
 <translation id="1540800554400757039">முகவரி 1</translation>
 <translation id="154312949627292154">பிற சாதனங்களில் இருந்து பெறப்பட்ட பக்கங்களை நீங்கள் பூட்டுத் திரையில் திறக்கலாம்.</translation>
+<translation id="1544653821167545205">பக்கத்தைச் சுருக்கு</translation>
 <translation id="1545749641540134597">QR குறியீட்டை ஸ்கேன் செய்க</translation>
 <translation id="1545757265410828525">இதுவரையிலான விலைகள்</translation>
 <translation id="1547610699249301703">கடவுச்சொற்களைப் பகிருங்கள்</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Googleளை உங்கள் இயல்புத் தேடல் இன்ஜினாக அமைத்திருந்தால் மட்டுமே திரையில் தேடும் அம்சம் கிடைக்கும். <ph name="BEGIN_LINK" />அமைப்புகளில்<ph name="END_LINK" /> உங்கள் இயல்புத் தேடல் இன்ஜினை மாற்றலாம்.</translation>
 <translation id="1872096359983322073">டார்ச்</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Chromeமில் Gemini என்ன செய்ய முடியும்?</translation>
 <translation id="1881621406744213161">குடும்ப உறுப்பினர்களை அழையுங்கள்</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">ஸ்மார்ட்டாக வரிசைப்படுத்தப்படும் மெனு பட்டி</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">தளங்களிலும் ஆப்ஸிலும் எளிதாக உள்நுழைய உங்கள் கடவுச்சொற்களைச் சேமிக்கலாம்.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">உங்கள் உலாவி பாதுகாப்பாக உள்ளது</translation>
+<translation id="2470654816840674524">Chromeமில் Gemini மூலம் நான் என்னவெல்லாம் செய்யலாம்?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> தளத்திற்கான கடவுச்சொல்லை ஏற்கெனவே சேமித்துள்ளீர்கள்</translation>
 <translation id="247430852844518481">இந்தப் பக்கத்தை மீண்டும் வந்து பார்க்க நீங்கள் நினைவூட்டலை அமைக்கலாம்</translation>
 <translation id="2479148705183875116">அமைப்புகளுக்குச் செல்லவும்</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">“பாதுகாப்புச் சரிபார்ப்பை” மறை</translation>
 <translation id="2625189173221582860">கடவுச்சொல் நகலெடுக்கப்பட்டது</translation>
 <translation id="2626236249646841566">இணைப்பைச் சரிபார்த்துவிட்டு மீண்டும் உள்நுழைய முயலவும்.</translation>
+<translation id="2629543259235506452">இந்தப் பக்கத்திலும் இதுபோன்ற இணையதளங்களிலும் உள்ள தகவல்களைப் பயன்படுத்தி இந்தத் தலைப்பிற்கான சிறிய அளவிலான பொதுவான கேள்விகளை உருவாக்கு</translation>
 <translation id="2635918910848538771">CVCயைத் தானாக நிரப்பும்</translation>
 <translation id="2640733327287333451">பயனர்பெயர் இல்லை ••••••</translation>
 <translation id="264215785133931186">சற்றுமுன் சரிபார்க்கப்பட்டது</translation>
@@ -967,7 +972,6 @@
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> ஆக உள்நுழையலாமா?</translation>
 <translation id="4302061870579014542">தோன்றும் இடத்தை அமை</translation>
 <translation id="4304713468139749426">கடவுச்சொல் நிர்வாகி</translation>
-<translation id="4306349443295056740">OCSP கையொப்பமிடல்</translation>
 <translation id="4309403553630140242">மேலும் தகவல்களுக்கு இருமுறை தட்டவும்</translation>
 <translation id="4310738531374808763">முகப்புப் பக்கத்தைப் பிரத்தியேகமாக்குங்கள்</translation>
 <translation id="4316794575239200608">Gemini உடனான உங்கள் உரையாடல்களோ உங்கள் <ph name="BEGIN_LINK" />Google Workspace தரவோ<ph name="END_LINK" /> மதிப்பாய்வாளர்களால் மதிப்பாய்வு செய்யப்படாது, ஜெனரேட்டிவ் AI மாடல்களை மேம்படுத்தப் பயன்படுத்தப்படாது.</translation>
@@ -1098,7 +1102,6 @@
 <translation id="4744428388659507035">உங்கள் புக்மார்க்குகளை உங்களின் அனைத்து சாதனங்களிலும் பெற அமைப்புகளில் “புக்மார்க்குகள்” என்பதை இயக்கவும்.</translation>
 <translation id="4746926359847517643">எப்போது வேண்டுமானாலும் பதிவில் இருந்து அவற்றை மீண்டும் பெறலாம்.</translation>
 <translation id="4749529195026091676">{count,plural, =1{{count} கார்டு இறக்கப்பட்டது}other{{count} கார்டுகள் இறக்கப்பட்டன}}</translation>
-<translation id="4749924365937394956">சேவையக அங்கீகரிப்பு</translation>
 <translation id="4751645464639803239">புதிய மறைநிலைத் தாவல்</translation>
 <translation id="4752348350801431746">பாதுகாப்புச் சரிபார்ப்பிற்கான அறிவிப்புகளை முடக்குங்கள்…</translation>
 <translation id="4759238208242260848">பதிவிறக்கங்கள்</translation>
@@ -1442,7 +1445,6 @@
 <translation id="5859715514067755465">முன்செல்லும்</translation>
 <translation id="5860491529813859533">இயக்கு</translation>
 <translation id="5868644772996939262">கடவுச்சொற்களையும் கடவுச்சாவிகளையும் தானாக நிரப்புதல்</translation>
-<translation id="5869522115854928033">சேமிக்கப்பட்ட கடவுச்சொற்கள்</translation>
 <translation id="5873179562631407582">திறந்திருக்கும் பக்கங்களைத் தட்டிப் பிடிக்கவும்</translation>
 <translation id="5887400589839399685">கார்டு சேமிக்கப்பட்டது</translation>
 <translation id="5888889603768021126">இதன் மூலம் உள்நுழைந்துள்ளீர்கள்:</translation>
@@ -1486,7 +1488,6 @@
 <translation id="6027619584715411062">புக்மார்க்குகள், கடவுச்சொற்கள் மற்றும் பலவற்றை உங்கள் சாதனங்கள் அனைத்திலும் பெற உள்நுழையுங்கள்.</translation>
 <translation id="6027945736510816438"><ph name="WEBSITE" /> தளத்தைக் குறிப்பிடுகிறீர்களா?</translation>
 <translation id="6032845897905314562">புதிய அம்சம்</translation>
-<translation id="6037458223703682108">டிஜிட்டல் கையொப்பம்</translation>
 <translation id="6038823991892265570">Google சேமிப்பகத்தை நிர்வகியுங்கள்</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">மூடு</translation>
@@ -1641,7 +1642,6 @@
 <translation id="6476284679642588870">கட்டண முறைகளை நிர்வகி</translation>
 <translation id="6476800141292307438">பக்கத்தை <ph name="LANGUAGE" /> மொழியில் மொழிபெயர்க்கிறது. திரையின் கீழ்ப்பகுதிக்கு அருகில் விருப்பத்தேர்வுகள் உள்ளன.</translation>
 <translation id="647867789226964031">உங்கள் கடவுச்சொற்களை மாற்றுங்கள்</translation>
-<translation id="6480363549849064919">கிளையண்ட் அங்கீகரிப்பு</translation>
 <translation id="6489174933860678546">மறைநிலைப் பக்கங்களைத் திறந்து இணையத்தில் மிகவும் தனிப்பட்ட முறையில் பிரவுசிங் செய்யலாம்.</translation>
 <translation id="6489775505977274806">அடுத்த நிலைக்குச் செல்வதை மறை</translation>
 <translation id="6494931198667773526">முடியும் நேரம்</translation>
@@ -1678,7 +1678,6 @@
 <translation id="6589001036857939353">நகல்களை ஒன்றிணையுங்கள்</translation>
 <translation id="659407965921887085">இணையம் முழுவதிலும் நீங்கள் தற்போது கன்காணிக்கும் தயாரிப்புகளின் விலைச் சரிவை இந்தக் கார்டு காட்டும்</translation>
 <translation id="6596481460663245319">Google மூலம் படத்தைத் தேடு</translation>
-<translation id="6598432073497341323">{COUNT,plural, =1{1 கடவுச்சொல்}other{# கடவுச்சொற்கள்}}</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" /> கணக்கிற்கான Google Photosஸில் படம் சேமிக்கப்பட்டது</translation>
 <translation id="6602173570135186741">தன்னிரப்பி மற்றும் கடவுச்சொற்கள்</translation>
 <translation id="6603393121510733479">மறைநிலை உலாவலை உங்கள் நிறுவனம் முடக்கியுள்ளது.
@@ -1872,7 +1871,6 @@
 <translation id="7233006041370588369">நிரப்புவதற்கு ஒரு கடவுச்சொல்லைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="723874023660911012">சுயவிவரத்தை மாற்று</translation>
 <translation id="7241135764990439166">மறைநிலைப் பயன்முறையைப் பயன்படுத்த முடியாது</translation>
-<translation id="7248046129087111453"><ph name="BEGIN_LINK" />இதுவரை தேடியவையும்<ph name="END_LINK" /> <ph name="BEGIN_LINK" />பிற வகையான செயல்பாடுகளும்<ph name="END_LINK" /> உங்கள் Google கணக்கில் சேமிக்கப்பட்டிருக்கலாம்.</translation>
 <translation id="7253951228444156601">கடவுச்சொற்களைச் சரிபார்க்கிறது…</translation>
 <translation id="7261217796641151584">குழுவைப் பகிர்</translation>
 <translation id="7266578100016339897">பக்கங்களை ஒழுங்கமைக்க இது உதவுகிறது. இதை எப்போது வேண்டுமானாலும் அமைப்புகளில் மாற்றலாம்.</translation>
@@ -2348,6 +2346,7 @@
 <translation id="8766790350274092814"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ஆகியவற்றுக்கான கடவுச்சொற்கள் நீக்கப்படும். உங்கள் கணக்குகள் நீக்கப்படாது.</translation>
 <translation id="8775144690796719618">தவறான URL</translation>
 <translation id="8781834595282316166">குழுவில் புதிய தாவல்</translation>
+<translation id="8783445328207519872">இந்தத் தலைப்பு குறித்த பொதுவான கேள்விகளை உருவாக்கு</translation>
 <translation id="8784653774976848206">ஃபைல்களைத் தேர்வுசெய்க</translation>
 <translation id="8786100550345425552">அனுமதிகளை மாற்றுங்கள்</translation>
 <translation id="878871978861915380">"விலைக் கண்காணிப்பை" மறை</translation>

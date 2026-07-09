@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Lagringsplassen din er full</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1190609913194133056">Varselsenter</translation>
+<translation id="1196534270480620381">Gi meg et kort sammendrag av denne siden</translation>
 <translation id="1199631150313925648">Angi manuelt</translation>
 <translation id="1199963004393929848">Grønt tema</translation>
 <translation id="1201402288615127009">Neste</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Fant ingen passord eller passnøkler for dette nettstedet</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="154312949627292154">Åpne faner du mottar fra andre enheter, fra låseskjermen.</translation>
+<translation id="1544653821167545205">Oppsummer siden</translation>
 <translation id="1545749641540134597">Skann en QR-kode</translation>
 <translation id="1545757265410828525">Prishistorikk</translation>
 <translation id="1547610699249301703">Del passord</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Søkeskjermen er bare tilgjengelig når Google er angitt som standard søkemotor. Du kan endre standard søkemotor i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Lommelykt</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Hva kan Gemini gjøre i Chrome?</translation>
 <translation id="1881621406744213161">Inviter familiemedlemmer</translation>
 <translation id="188177382966899059">Dypsøk</translation>
 <translation id="188237709236611317">Menylinje for smart sortering</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Lagre passordene dine for å logge på nettsteder og apper enkelt.</translation>
 <translation id="2468132863574325555">Disk</translation>
 <translation id="2468444275314013497">Alt er på stell med nettleseren din</translation>
+<translation id="2470654816840674524">Hva kan jeg gjøre med Gemini i Chrome?</translation>
 <translation id="2473876017985765807">Du har allerede lagret et passord for <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Du kan angi en påminnelse om å komme tilbake til denne siden senere</translation>
 <translation id="2479148705183875116">Gå til Innstillinger</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Skjul «Sikkerhetssjekk»</translation>
 <translation id="2625189173221582860">Passordet er kopiert</translation>
 <translation id="2626236249646841566">Kontroller tilkoblingen din, og prøv å logge på igjen.</translation>
+<translation id="2629543259235506452">Lag en kort liste med vanlige spørsmål om dette emnet basert på informasjon fra denne siden og lignende nettsteder</translation>
 <translation id="2635918910848538771">Fyll ut verifiseringskoden automatisk</translation>
 <translation id="2640733327287333451">Uten brukernavn ••••••</translation>
 <translation id="264215785133931186">Sjekket nettopp</translation>
@@ -967,7 +972,6 @@
 <translation id="4294506173142861371">Vil du logge på som <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Velg posisjon</translation>
 <translation id="4304713468139749426">Passordlagring</translation>
-<translation id="4306349443295056740">OCSP-signering</translation>
 <translation id="4309403553630140242">Dobbelttrykk for å se mer informasjon</translation>
 <translation id="4310738531374808763">Tilpass startsiden din</translation>
 <translation id="4316794575239200608">Verken samtalene dine med Gemini eller <ph name="BEGIN_LINK" />Google Workspace-dataene dine<ph name="END_LINK" /> gjennomgås av menneskelige evaluerere eller brukes på andre måter for å forbedre generativ AI-modeller.</translation>
@@ -1098,7 +1102,6 @@
 <translation id="4744428388659507035">For å få bokmerkene dine på alle enhetene dine, slå på «Bokmerker» i innstillingene.</translation>
 <translation id="4746926359847517643">Du kan alltid få dem tilbake i loggen.</translation>
 <translation id="4749529195026091676">{count,plural, =1{Importerte {count} kort}other{Importerte {count} kort}}</translation>
-<translation id="4749924365937394956">Autentisering av tjener</translation>
 <translation id="4751645464639803239">Ny inkognitofane</translation>
 <translation id="4752348350801431746">Slå av varsler fra sikkerhetssjekk…</translation>
 <translation id="4759238208242260848">Nedlastinger</translation>
@@ -1442,7 +1445,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5859715514067755465">Fremover</translation>
 <translation id="5860491529813859533">Slå på</translation>
 <translation id="5868644772996939262">Fyll ut passord og passnøkler automatisk</translation>
-<translation id="5869522115854928033">Lagrede passord</translation>
 <translation id="5873179562631407582">Trykk og hold på åpne faner</translation>
 <translation id="5887400589839399685">Kortet er lagret</translation>
 <translation id="5888889603768021126">Logget på med</translation>
@@ -1486,7 +1488,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6027619584715411062">Logg på for å få blant annet bokmerkene og passordene dine på alle enhetene dine.</translation>
 <translation id="6027945736510816438">Mente du <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">ny funksjon</translation>
-<translation id="6037458223703682108">Digital signatur</translation>
 <translation id="6038823991892265570">Administrer Google-lagringsplassen</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Lukk</translation>
@@ -1641,7 +1642,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6476284679642588870">Administrer betalingsmåter</translation>
 <translation id="6476800141292307438">Oversetter siden til <ph name="LANGUAGE" />. Du finner alternativer på nedre del av skjermen.</translation>
 <translation id="647867789226964031">Endre passordene dine</translation>
-<translation id="6480363549849064919">Autentisering av klient</translation>
 <translation id="6489174933860678546">Åpne inkognitofaner for å surfe mer privat på nettet.</translation>
 <translation id="6489775505977274806">Skjul Nivå opp</translation>
 <translation id="6494931198667773526">Slutter</translation>
@@ -1678,7 +1678,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6589001036857939353">Slå sammen duplikater</translation>
 <translation id="659407965921887085">Dette kortet viser avslag på nett for produkter du sporer</translation>
 <translation id="6596481460663245319">Søk etter bildet med Google</translation>
-<translation id="6598432073497341323">{COUNT,plural, =1{1 passord}other{# passord}}</translation>
 <translation id="6601302169302852717">Bildet er lagret i Google Foto for <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Autofyll og passord</translation>
 <translation id="6603393121510733479">Organisasjonen din har slått av privat surfing.
@@ -1872,7 +1871,6 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="7233006041370588369">Velg passordet du vil fylle ut.</translation>
 <translation id="723874023660911012">Bytt profil</translation>
 <translation id="7241135764990439166">Inkognitomodus er ikke tilgjengelig</translation>
-<translation id="7248046129087111453"><ph name="BEGIN_LINK" />Søkeloggen<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />andre typer aktivitet<ph name="END_LINK" /> kan lagres i Google-kontoen din.</translation>
 <translation id="7253951228444156601">Sjekker passord …</translation>
 <translation id="7261217796641151584">Del gruppe</translation>
 <translation id="7266578100016339897">Dette hjelper deg med å holde orden. Du kan når som helst endre dette i innstillingene.</translation>
@@ -2348,6 +2346,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="8766790350274092814">Passordene for <ph name="WEBSITE" /> og <ph name="SECOND_WEBSITE" /> slettes. Kontoene dine slettes ikke.</translation>
 <translation id="8775144690796719618">Ugyldig nettadresse</translation>
 <translation id="8781834595282316166">Ny fane i gruppen</translation>
+<translation id="8783445328207519872">Lag en liste med vanlige spørsmål om dette emnet</translation>
 <translation id="8784653774976848206">Velg filer</translation>
 <translation id="8786100550345425552">Endre tillatelser</translation>
 <translation id="878871978861915380">Skjul «Prissporing»</translation>

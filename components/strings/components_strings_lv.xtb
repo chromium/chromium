@@ -504,6 +504,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="175656076281618225">Maģija</translation>
 <translation id="1757773103848038814">Vienplatuma fonts</translation>
 <translation id="1757935267918149452">Poga “Mainīt Google paroli”. Aktivizējiet, lai mainītu sava Google konta paroli.</translation>
+<translation id="1759776526873274358">Automātiski aizpildīt verifikācijas kodus, ko vietnes izmanto, lai uzlabotu jūsu drošību. Chrome var iegūt šos kodus no jūsu Gmail konta. <ph name="BEGIN_LINK" />Uzzināt vairāk par šo funkciju<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts netiek uzskatīts par uzticamu jūsu ierīces operētājsistēmā. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Mēģiniet palaist Windows tīkla diagnostiku<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Fotopapīrs (arhīva)</translation>
@@ -2153,6 +2154,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4304049446746819918">{0,plural, =1{Administratora politika nosaka, ka nav ieteicams pārvietot šo failu šeit: <ph name="DESTINATION_NAME" />}zero{Administratora politika nosaka, ka nav ieteicams pārvietot šos failus šeit: <ph name="DESTINATION_NAME" />}one{Administratora politika nosaka, ka nav ieteicams pārvietot šos failus šeit: <ph name="DESTINATION_NAME" />}other{Administratora politika nosaka, ka nav ieteicams pārvietot šos failus šeit: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Lasīt, kā klienti vērtē produktus, pakalpojumus vai pieredzi, lai pieņemtu pārdomātus lēmumus, izmantojot atsauksmes.</translation>
 <translation id="4305666528087210886">Jūsu failam nevarēja piekļūt</translation>
+<translation id="4306349443295056740">OCSP parakstīšana</translation>
 <translation id="4306529830550717874">Vai saglabāt adresi?</translation>
 <translation id="4306812610847412719">starpliktuve</translation>
 <translation id="4308567447483056043">Šī politika tiek ignorēta, jo lietotājs nav saistīts. Lai šī politika tiktu lietota, pārlūks Chrome un profils ir jāpārvalda administratora konsolē vienā organizācijā.</translation>
@@ -2411,6 +2413,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4744603770635761495">Izpildāms ceļš</translation>
 <translation id="4744816391336495134">Varat izmantot pirksta nospiedumu, lai apstiprinātu savu identitāti ikreiz, kad izmantojat saglabātu paroli.</translation>
 <translation id="4749011317274908093">Jūs esat atvēris inkognito režīmu</translation>
+<translation id="4749924365937394956">Servera autentifikācija</translation>
 <translation id="4750671009706599284">šo tālruni</translation>
 <translation id="4750917950439032686">Jūsu informācija (piemēram, paroles vai kredītkaršu numuri) ir privāta, kad tā tiek nosūtīta uz šo vietni.</translation>
 <translation id="4751249061288707459">Piekrišanas pēdējās atjaunināšanas reize:</translation>
@@ -3127,6 +3130,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5860491529813859533">Ieslēgt</translation>
 <translation id="5862579898803147654">8. izvades vieta</translation>
 <translation id="5863515189965725638">IBAN rediģēšana</translation>
+<translation id="5863517400058880216">Automātiski aizpildīt verifikācijas kodus no Gmail</translation>
 <translation id="5863847714970149516">Nākamajā lapā var tikt mēģināts pieprasīt naudu</translation>
 <translation id="5866257070973731571">Tālruņa numura pievienošana</translation>
 <translation id="5866327164731551901">No: <ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3240,6 +3244,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6034000775414344507">Gaiši pelēka</translation>
 <translation id="6034514109191629503">Sānisks lentes locījums</translation>
 <translation id="6035491133925068289">Vieglatlētika</translation>
+<translation id="6037458223703682108">Ciparparaksts</translation>
 <translation id="6039846035001940113">Ja problēma joprojām pastāv, sazinieties ar vietnes īpašnieku.</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6040539895181423374">Cenu ieskati</translation>
@@ -3551,6 +3556,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6474220430271405609">Politikas pārbaudes</translation>
 <translation id="6476284679642588870">Pārvaldīt maksājumu veidus</translation>
 <translation id="647881094269678013">Aktiermāksla un teātris</translation>
+<translation id="6480363549849064919">Klienta autentifikācija</translation>
 <translation id="6480864723214312258">Mājsaimniecības baterijas un akumulatori</translation>
 <translation id="6487678699866233349">Pasaules mūzika</translation>
 <translation id="6489534406876378309">Sākt avāriju datu augšupielādi</translation>
@@ -4517,6 +4523,7 @@ Papildu informācija:
 <translation id="7967973398323409409">Neviens nekad neredz automātiski aizpildīto informāciju.</translation>
 <translation id="79682505114836835">Vērtība “<ph name="VALUE" />” nav derīga krāsa heksadecimālajā sistēmā.</translation>
 <translation id="7968982339740310781">Skatīt detalizētu informāciju</translation>
+<translation id="7971403153351954587">Jūsu organizācija pārrauga kopēšanu.</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 ar RSA šifrējumu</translation>
 <translation id="7976053965094442846">Maksājumu veida “Pērciet tūlīt, maksājiet vēlāk” pakalpojuma sniedzējs ļauj maksāt pa daļām. Tastatūra ir paslēpta.</translation>
 <translation id="7976214039405368314">Pārāk daudz pieprasījumu</translation>

@@ -6,6 +6,7 @@
 <translation id="1061130374843955397">Et donem la benvinguda al teu dispositiu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1069778954840159202">Obtén automàticament el compte del telèfon Android</translation>
 <translation id="1076766328672150609">El teu fill pot utilitzar un PIN per desbloquejar el dispositiu.</translation>
+<translation id="1091767800771861448">Premeu ESCAPE per ometre (només compilacions no oficials).</translation>
 <translation id="1097658378307015415">Abans d'iniciar la sessió amb el vostre usuari, entreu com a convidat per activar la xarxa <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">El teu fill o filla pot utilitzar aquest PIN per iniciar la sessió al seu dispositiu</translation>
 <translation id="1122587596907914265">Dissenya fons de pantalla únics</translation>
@@ -16,6 +17,7 @@
 <translation id="1177073277575830464">La configuració ràpida d'Android ha finalitzat. Continua la configuració al teu dispositiu (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="1179902906564467236">Segueix les instruccions al telèfon o utilitza l'aplicació de càmera</translation>
 <translation id="1185924365081634987">També podeu provar de <ph name="GUEST_SIGNIN_LINK_START" />navegar com a convidat<ph name="GUEST_SIGNIN_LINK_END" /> per corregir aquest error de la xarxa.</translation>
+<translation id="1191353342579061195">Tria el tema que s'adapti a les teves necessitats. Per canviar el tema, el fons de pantalla, l'estalvi de pantalla i molt més, fes clic amb el botó dret a l'escriptori.</translation>
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1217114730239853757">Vols activar ChromeVox, el lector de pantalla integrat per a ChromeOS Flex? Si és així, prem la barra espaiadora.</translation>
 <translation id="1222835797152767346">Defineix un PIN per iniciar la sessió més fàcilment</translation>
@@ -52,6 +54,8 @@
 <translation id="1377600615067678409">Omet per ara</translation>
 <translation id="1399261165075500043">No es poden carregar les condicions del servei de Google Play</translation>
 <translation id="1400243387594338234">Pots utilitzar aquest PIN per iniciar la sessió al dispositiu</translation>
+<translation id="1406500794671479665">S'està verificant...</translation>
+<translation id="1407069428457324124">Tema fosc</translation>
 <translation id="1417497355604638350">Envia dades de diagnòstic i d'ús.</translation>
 <translation id="1418882096915998312">Inscripció mitjançant Enterprise en curs</translation>
 <translation id="1426410128494586442">Sí</translation>
@@ -77,6 +81,7 @@
 <translation id="169675691788639886">El dispositiu té configurat un servidor SSH. No iniciïs la sessió amb comptes relacionats amb informació sensible.</translation>
 <translation id="1700517974991662022">Visitat</translation>
 <translation id="1730666151302379551">He oblidat la contrasenya antiga</translation>
+<translation id="1741314857973421784">Continua</translation>
 <translation id="1749645492410897998">Instal·lant el programari</translation>
 <translation id="177053719077591686">Crea una còpia de seguretat de les aplicacions d'Android a Google Drive.</translation>
 <translation id="1798832846931769717">Google Beam per a Meet</translation>
@@ -89,16 +94,19 @@
 <translation id="185766080319917408">La tecla del menú d'aplicacions es troba a l'esquerra de la tecla Alt de l'esquerra</translation>
 <translation id="1868617395637139709">Utilitza la ubicació per a les aplicacions i els serveis d'Android.</translation>
 <translation id="1877377730633446520">Aquesta acció utilitzarà aproximadament <ph name="REQUIRED_SPACE" />. Actualment tens <ph name="FREE_SPACE" /> disponibles.</translation>
+<translation id="1878155070920054810">Sembla que la bateria del Chromebook s'esgotarà abans de completar-se l'actualització. Comprova que s'estigui carregant correctament per evitar interrupcions.</translation>
 <translation id="189035593835762169">Termes i condicions</translation>
 <translation id="189358972401248634">Altres idiomes</translation>
 <translation id="1915734383465415025">Número de botiga</translation>
 <translation id="1919096511823372013">Insereix enllaços, emojis i més. També pots obtenir ajuda per crear imatges i escriure amb la IA de Google.</translation>
 <translation id="1922496389170590548">Compte de centre educatiu del nen o nena</translation>
+<translation id="1931410639376954712">S'està instal·lant <ph name="DEVICE_OS" /></translation>
 <translation id="1944528062465413897">Codi de vinculació per Bluetooth:</translation>
 <translation id="1987574314042117472">Selecciona i instal·la aplicacions populars</translation>
 <translation id="1991829061375381344">No tens prou llicències disponibles per inscriure aquest dispositiu de maquinari de Google Meet. Contacta amb el teu distribuïdor per comprar-ne més. Si creus que veus aquest missatge per error, posa't en contacte amb el teu distribuïdor.</translation>
 <translation id="200928901437634269">Utilitza el Compte de Google del teu fill o filla, o un compte de centre educatiu. També pots definir controls parentals.</translation>
 <translation id="2013550551806600826">Prova-ho. Activa o desactiva l'opció de configuració i, a continuació, desplaça't amb dos dits pel ratolí tàctil de l'àrea de prova. També pots fer-ho més tard des de Configuració &gt; Dispositiu &gt; Ratolí i ratolí tàctil.</translation>
+<translation id="2016574333161572915">El maquinari de Google Meet ja es pot configurar</translation>
 <translation id="2018189721942291407">No tens clar si t'has d'inscriure?</translation>
 <translation id="2040460856718599782">S'ha produït un error quan provàvem d'autenticar-te. Comprova les teves credencials d'inici de sessió i torna-ho a provar.</translation>
 <translation id="2052572566310583903">Instal·lada als altres dispositius teus</translation>
@@ -112,9 +120,13 @@
 <translation id="2173801458090845390">Afegeix l'identificador de sol·licitud a aquest dispositiu</translation>
 <translation id="2178585470774851578">Estàs activant les funcions de depuració de ChromeOS Flex, de manera que es configurarà el dimoni SSHD i es permetrà iniciar el sistema des d'unitats USB.</translation>
 <translation id="2183570493397356669">Botó Continua desactivat</translation>
+<translation id="2210462644007531147">No s'ha pogut completar la instal·lació</translation>
 <translation id="221872881068107022">Desplaçament invers</translation>
 <translation id="2219081237089444028">Defineix una contrasenya de <ph name="DEVICE_TYPE" /> per iniciar la sessió més fàcilment</translation>
+<translation id="222115440608612541">Canvia els temes a l'alba i a la posta de sol</translation>
 <translation id="2229161054156947610">Queda més d'una hora</translation>
+<translation id="2246129643805925002">El teu <ph name="DEVICE_TYPE" /> s'actualitza automàticament en segon pla per oferir-te les darreres funcions i millores de seguretat. Pots revisar les preferències d'actualització a Configuració.</translation>
+<translation id="2274840746523584236">Carrega el Chromebook</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> requereix que el dispositiu estigui en línia quan iniciïs la sessió a <ph name="EMAIL" /></translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% complet</translation>
 <translation id="2319072477089403627">S'està connectant al telèfon Android...</translation>
@@ -124,6 +136,7 @@
 <translation id="2387052489799050037">Ves a la pantalla d’inici</translation>
 <translation id="2395616325548404795">El teu dispositiu <ph name="DEVICE_TYPE" /> s'ha inscrit correctament a la gestió empresarial, però no ha pogut enviar la informació d'elements i d'ubicació. Introdueix aquesta informació manualment a la consola d'administració del dispositiu.</translation>
 <translation id="2408955596600435184">Introdueix el PIN</translation>
+<translation id="2418307627282545839">Mostra una aparença vívida i etèria</translation>
 <translation id="243179355394256322">La teva organització limita la inscripció de dispositius només als usuaris autoritzats. Aquest usuari no té autorització per inscriure dispositius. Assegura't que l'usuari tingui el privilegi d'administrador "Inscriure maquinari de Google Meet" a la secció de la consola d'administració Usuaris.</translation>
 <translation id="2439152382014731627">Restableix la contrasenya del dispositiu (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="2450223707519584812">No podreu afegir usuaris perquè falten les claus de l'API de Google. Consulteu <ph name="DETAILS_URL" /> per obtenir-ne més informació.</translation>
@@ -131,12 +144,14 @@
 <translation id="2485681265915754872">Condicions del servei de Google Play</translation>
 <translation id="248676429071089168">Llisca cap amunt per moure la pàgina cap avall</translation>
 <translation id="2501278716633472235">Torna</translation>
+<translation id="252418934079508528">Instal·la <ph name="DEVICE_OS" /></translation>
 <translation id="2538084450874617176">Qui està utilitzant aquest dispositiu <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> no s'ha pogut connectar a <ph name="NETWORK_ID" />. Seleccioneu una altra xarxa o bé torneu-ho a provar.</translation>
 <translation id="2565214867520763227">Activa el lector de pantalla</translation>
 <translation id="2569972178052279830">Nom del comerç al detall</translation>
 <translation id="257779572837908839">Estableix com a Chromebox per a reunions</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (plataforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
+<translation id="2593499352046705383">Abans de començar, assegura't que tinguis una còpia de seguretat de les teves dades. En instal·lar <ph name="DEVICE_OS" />, se sobreescriuran les dades de la unitat de disc dur. Obtén més informació a g.co/flex/InstallGuide.</translation>
 <translation id="2606454609872547359">No, continua sense ChromeVox</translation>
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />El servei d'ubicació de Google utilitza fonts com ara sensors, xarxes mòbils i Wi‑Fi per estimar la ubicació d'aquest dispositiu.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Pots desactivar la ubicació d'Android en aquest dispositiu en qualsevol moment anant a Configuració &gt; Aplicacions &gt; Google Play Store &gt; Gestiona les preferències d'Android &gt; Seguretat i ubicació &gt; Ubicació. També pots desactivar l'ús de sensors, xarxes mòbils i Wi‑Fi per a la ubicació d'Android desactivant l'opció "Precisió de la ubicació de Google" al mateix menú.<ph name="END_PARAGRAPH2" /></translation>
@@ -144,10 +159,12 @@
 <translation id="2687407218262674387">Condicions del servei de Google</translation>
 <translation id="2688196195245426394">Hi ha hagut un error en registrar el dispositiu amb el servidor: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Aquest és un dispositiu amb llicència integrada i no es pot inscriure amb la Llicència de Kiosk i Signage.</translation>
+<translation id="2722540561488096675">El dispositiu s'apagarà d'aquí a <ph name="TIME_LEFT" />. Desconnecta l'USB abans de tornar a encendre el dispositiu. A continuació, pots començar a utilitzar <ph name="DEVICE_OS" />.</translation>
 <translation id="2725200716980197196">S'ha restablert la connectivitat de la xarxa</translation>
 <translation id="2731700343119398978">Espereu...</translation>
 <translation id="2732134891301408122">Contingut addicional, <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">D'acord</translation>
+<translation id="2742448780373473567">En instal·lar <ph name="DEVICE_OS" />, se sobreescriuran totes les dades del dispositiu.</translation>
 <translation id="274318651891194348">S'està cercant el teclat</translation>
 <translation id="2754825024506485820">Troba a Google Play Store les aplicacions que necessites, des de solucions de productivitat fins a aplicacions d'entreteniment. Pots instal·lar-les en qualsevol moment.</translation>
 <translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Quan la precisió de la ubicació està activada, s'utilitzen la informació dels senyals sense fil, com ara els punts d'accés Wi‑Fi i les torres de xarxes mòbils, així com les dades dels sensors del dispositiu, com ara l'acceleròmetre i el giroscopi, per estimar la ubicació del dispositiu de manera més precisa. Les aplicacions i els serveis fan servir aquesta estimació per proporcionar funcions basades en la ubicació. Per aconseguir-ho, Google recull periòdicament informació sobre els sensors del dispositiu i els senyals sense fil que hi ha a prop d'aquest dispositiu amb l'objectiu de contribuir a les ubicacions de senyals sense fil obtingudes de manera participativa.<ph name="END_PARAGRAPH1" />
@@ -160,6 +177,9 @@
 <translation id="2849767214114481738">S'ha afegit el teu PIN</translation>
 <translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Si permets que els dispositius ChromeOS ens enviïn informes automàtics, ens ajudaràs a prioritzar què s'ha de corregir i millorar a ChromeOS. Aquests informes poden incloure dades com ara quan falla ChromeOS, quines funcions s'han fet servir i quanta memòria s'utilitzava normalment.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Pots iniciar o aturar l'enviament d'aquests informes en qualsevol moment a la configuració del dispositiu Chrome. Si ets l'administrador d'un domini, pots canviar aquesta opció de configuració a la consola d'administració.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2861301611394761800">Actualització del sistema completada. Reinicieu el sistema.</translation>
+<translation id="2870909136778269686">S'estan actualitzant...</translation>
+<translation id="2872961005593481000">Apaga</translation>
 <translation id="2886119409731773154">Aquest procés pot tardar fins a 30 minuts</translation>
 <translation id="2893180576842394309">És possible que Google utilitzi el teu historial per personalitzar la Cerca i altres serveis de Google</translation>
 <translation id="2902265136119311513">Navegar com a convidat</translation>
@@ -178,6 +198,7 @@
 <translation id="313205617302240621">Has oblidat la contrasenya?</translation>
 <translation id="3162070126914310576">Aquest dispositiu no es pot inscriure ara mateix perquè la teva unitat organitzativa ha arribat al límit d'inscripció inicial. Contacta amb l'administrador per obtenir assistència.</translation>
 <translation id="3163511056918491211">Canvia de dispositiu o restaura'n les dades fàcilment en qualsevol moment. Les còpies de seguretat es pengen a Google i s'encripten amb la contrasenya del teu Compte de Google.</translation>
+<translation id="3169930038976362151">Tria el tema que s'adapti a les teves necessitats. Per canviar el tema, el fons de pantalla, l'estalvi de pantalla i més, mantén premut l'escriptori.</translation>
 <translation id="3170072451822350649">També podeu <ph name="LINK_START" />navegar com a convidat<ph name="LINK_END" /> sense iniciar sessió.</translation>
 <translation id="3177914167275935955">El teu dispositiu inclou una Llicència de Chrome Education, però el teu nom d'usuari no està associat a cap compte de Google for Education. Ves a g.co/workspace/edusignup des d'un dispositiu secundari i crea un compte de Google for Education.</translation>
 <translation id="3196912927885212665">Per fer la configuració amb el telèfon Android, el Bluetooth del Chromebook ha d'estar activat</translation>
@@ -189,6 +210,7 @@
 <translation id="3261268979727295785">En el cas de nens més grans, pots afegir controls parentals quan acabis la configuració. Trobaràs informació sobre els controls parentals a l'aplicació Explora.</translation>
 <translation id="3278001907972365362">Els teus Comptes de Google requereixen atenció</translation>
 <translation id="3283148363895519428">Segueix les instruccions del telèfon per continuar amb la configuració. Assegura't que el telèfon estigui a prop i que el Bluetooth estigui activat.</translation>
+<translation id="3327050066667856415">Els Chromebook estan dissenyats perquè siguin segurs. El teu dispositiu està protegit del programari maliciós automàticament i no necessita programari addicional.</translation>
 <translation id="3382073616108123819">El sistema no ha pogut determinar els identificadors d'aquest dispositiu.</translation>
 <translation id="3382200254148930874">S'està aturant la supervisió...</translation>
 <translation id="3384362484379805487">Els fitxers d'idioma es comparteixen entre els usuaris per estalviar espai de disc.</translation>
@@ -204,6 +226,11 @@
 <translation id="350397915809787283">Si no tens cap compte, selecciona la primera opció per crear-ne un.</translation>
 <translation id="3520824492621090923">Confirmes la inscripció del dispositiu de quiosc i de cartelleria?</translation>
 <translation id="3547954654003013442">Configuració del servidor intermediari</translation>
+<translation id="3550915441744863158">Chrome s'actualitza automàticament perquè en tingueu sempre la versió més recent.</translation>
+<translation id="3559533181353831840">Temps restant aproximat: <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Introdueix el nom del detallista i el número de la botiga per als quals s'està configurant aquest dispositiu de demostració*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Si no saps el número de la botiga, pots introduir "0000" per continuar la instal·lació del mode de demostració. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />* Nota: Google utilitza aquesta informació per identificar quina versió del mode de demostració ha de rebre el dispositiu i per mesurar l'ús d'aquest mode.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">S'ha produït un error. Torna-ho a provar.</translation>
 <translation id="3577745545227000795">Recollida de dades de maquinari de <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Previsualitza</translation>
@@ -229,24 +256,30 @@
 <translation id="3837569373891539515">Pots seleccionar totes les opcions que corresponguin. També podràs trobar aquestes opcions a Configuració quan hagis acabat de configurar el <ph name="DEVICE_TYPE" />.</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="3856470183388031602">Utilitza el teu Compte de Google al <ph name="DEVICE_TYPE" /></translation>
+<translation id="3856800405688283469">Selecciona la zona horària</translation>
 <translation id="3893630138897523026">ChromeVox (avisos de veu)</translation>
 <translation id="3897746662269329507">El dispositiu <ph name="DEVICE_TYPE" /> està dissenyat per jugar. A continuació s'obrirà l'aplicació Explora, en què podràs accedir a centenars dels jocs més recents, veure ofertes de jocs i descobrir funcions de videojocs que s'inclouen al teu dispositiu.</translation>
 <translation id="389901847090970821">Selecciona el teclat</translation>
 <translation id="3910588685973519483">Crea fons de pantalla amb IA</translation>
 <translation id="3924259174674732591">Mida de la pantalla i del text establerta en un <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3950820424414687140">Inicia la sessió</translation>
+<translation id="397703832102027365">S'està finalitzant...</translation>
 <translation id="3983400541576569538">És possible que es perdin les dades d'algunes aplicacions</translation>
 <translation id="3984159763196946143">No s'ha pogut iniciar el mode de demostració</translation>
+<translation id="3988996860813292272">Selecciona la zona horària</translation>
 <translation id="3994318741694670028">Malauradament, l'ordinador està configurat amb un identificador de maquinari que té un format incorrecte. Això impedeix a ChromeOS Flex actualitzar-se amb les darreres correccions de seguretat i <ph name="BEGIN_BOLD" />pot ser que l'ordinador sigui vulnerable a atacs maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">Configuració del PIN</translation>
+<translation id="403725336528835653">Prova-ho primer</translation>
 <translation id="4044883420905480380">T'has connectat a la Wi‐Fi i has iniciat la sessió a <ph name="USER_EMAIL" /> amb el telèfon Android</translation>
 <translation id="4047726037116394521">Ves a la pàgina d'inici</translation>
 <translation id="4062561150282203854">Sincronitza les aplicacions, la configuració i altres elements del teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4089743381329341712">Les aplicacions seleccionades s'instal·laran després de la configuració. Troba altres recomanacions més endavant a l'aplicació Aplicacions i jocs.</translation>
 <translation id="4104944259562794668">Pots activar-la més tard a Configuració &gt; Seguretat i privadesa &gt; Pantalla de bloqueig i inici de sessió</translation>
+<translation id="4132183752438206707">Troba aplicacions a Google Play Store</translation>
 <translation id="4135746311382563554">Condicions del servei addicionals de Google Chrome i Chrome OS</translation>
 <translation id="41365691917097717">Si continues, s'activarà la depuració d'ADB per crear i provar les aplicacions d'Android. Tingues en compte que aquesta acció permet instal·lar aplicacions d'Android que Google no ha verificat. Per desactivar ADB, hauràs de restablir les dades de fàbrica del dispositiu.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> no pertany a una organització vàlida. Contacta amb l'administrador. Si ets administrador, pots configurar la teva organització a g.co/ChromeEnterpriseAccount.</translation>
+<translation id="4167393659000039775">Google no es fa responsable de cap pèrdua de dades i és possible que <ph name="DEVICE_OS" /> no funcioni en models no certificats. Obtén més informació a g.co/flex/InstallGuide.</translation>
 <translation id="4209092469652827314">Gran</translation>
 <translation id="4213918571089943508">Compte de Google del nen o nena</translation>
 <translation id="4228071595943929139">Utilitza l'adreça electrònica de la teva organització</translation>
@@ -256,6 +289,8 @@
 <translation id="4250680216510889253">No</translation>
 <translation id="4251377547188244181">Inscripció de dispositiu de quiosc i de cartelleria</translation>
 <translation id="4263223596040212967">Comprova la disposició del teclat i torna-ho a provar.</translation>
+<translation id="4268490040465852105">El teu Compte de Google és el mateix que fas servir per a Gmail, YouTube, Chrome i altres productes de Google.
+        Utilitza'l per accedir fàcilment a tots els teus fitxers, adreces d'interès i més.</translation>
 <translation id="4278498748067682896">Utilitzaràs una Llicència de Kiosk i Signage que només permet que el dispositiu funcioni en mode de quiosc o de cartelleria. Si vols que els usuaris iniciïn la sessió al dispositiu, torna enrere i inscriu-lo mitjançant Llicència de Chrome Enterprise.</translation>
 <translation id="4287157641315808225">Sí, activa ChromeVox</translation>
 <translation id="4289732974614035569">Tria un PIN</translation>
@@ -264,6 +299,8 @@
 <translation id="4309165024397827958">Permet que les aplicacions i els serveis d'Android amb permís d'ubicació utilitzin la ubicació del dispositiu. Google pot recollir dades d'ubicació periòdicament i utilitzar-les de manera anònima per millorar la precisió de la ubicació i els serveis basats en la ubicació.</translation>
 <translation id="4317733381297736564">Compres des de l'aplicació</translation>
 <translation id="4341905082470253054">S'està comprovant l'estat del TPM...</translation>
+<translation id="434198521554309404">Ràpid. Segur. Senzill.</translation>
+<translation id="4358643842961018282">El dispositiu està actualitzat</translation>
 <translation id="4370975561335139969">El correu electrònic i la contrasenya indicats no coincideixen</translation>
 <translation id="4373418556073552953">Inicia la sessió amb el telèfon Android</translation>
 <translation id="4378556263712303865">Sol·licitud de dispositiu</translation>
@@ -281,6 +318,7 @@
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ha detectat un TPM actiu que pot emmagatzemar les teves dades de manera més segura.</translation>
 <translation id="4472298120638043495">Pots utilitzar l'idioma que prefereixes per al teu Compte de Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="4472575034687746823">Comença</translation>
+<translation id="4487489714832036847">Els Chromebook utilitzen aplicacions en lloc de programari tradicional. Obtén aplicacions de productivitat, entreteniment i més.</translation>
 <translation id="450867954911715010">Configuració d'accessibilitat</translation>
 <translation id="4519605771716872386">La sincronització de fitxers s'ha activat</translation>
 <translation id="4531924570968473143">A qui t'agradaria afegir al <ph name="DEVICE_TYPE" />?</translation>
@@ -297,10 +335,12 @@
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> no és un compte de Google for Education vàlid. Contacta amb l'administrador. Si ets administrador, pots configurar la teva organització a g.co/workspace/edusignup.</translation>
 <translation id="4780558987886269159">Per a la feina</translation>
 <translation id="4806457879608775995">Revisa aquestes condicions i controla les teves dades</translation>
+<translation id="4809927044794281115">Tema clar</translation>
 <translation id="4814327014588285482">Omet i recorda-m'ho més tard</translation>
 <translation id="4830502475412647084">S'està instal·lant l'actualització del sistema operatiu</translation>
 <translation id="4837926214103741331">No teniu autorització per fer servir aquest dispositiu. Contacteu amb el propietari del dispositiu per obtenir el permís d'inici de sessió.</translation>
 <translation id="4844333629810439236">Altres teclats</translation>
+<translation id="484462545196658690">Automàtic</translation>
 <translation id="4864369630010738180">S'està iniciant la sessió...</translation>
 <translation id="4867272607148176509">Els pares poden aprovar o bloquejar aplicacions, establir límits de temps i controlar la navegació web. Més endavant, es pot afegir un compte de centre educatiu per accedir a la majoria de recursos educatius.</translation>
 <translation id="4877652723592270843">Vols activar ChromeVox, el lector de pantalla integrat per a ChromeOS Flex? Si és així, mantén premudes les dues tecles de volum durant cinc segons.</translation>
@@ -369,48 +409,70 @@
 <translation id="5527474464531963247">També podeu seleccionar una altra xarxa.</translation>
 <translation id="5539070192556911367">No es pot accedir a Google</translation>
 <translation id="5549511085333906441">Tria la configuració</translation>
+<translation id="5554403733534868102">Després d'això, les actualitzacions ja no ocuparan el teu temps</translation>
 <translation id="557722062034137776">Si restabliu el dispositiu, no es produirà cap canvi als vostres comptes de Google ni a les dades sincronitzades en aquests comptes. No obstant això, se suprimiran tots els fitxers desats localment al dispositiu.</translation>
+<translation id="5600348067066185292">La instal·lació suposa uns pocs passos ben senzills. Tindràs una altra oportunitat de confirmar els canvis abans no s'apliquin a l'ordinador.</translation>
 <translation id="5626172233890210551">Prova d'utilitzar la contrasenya</translation>
 <translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />Per oferir la millor experiència possible, <ph name="DEVICE_OS" /> recull dades de maquinari dels dispositius i les comparteix amb Google a fi de determinar quines actualitzacions cal fer. De manera opcional, pots permetre que Google utilitzi aquestes dades per a finalitats addicionals, com ara oferir assistència i millores a l'experiència i el servei de <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Pots iniciar la sessió en aquest dispositiu i fixar-te en els camps que es mostren com a chromeosflex_ a chrome://system per veure les dades que s'han enviat a Google per filtrar les actualitzacions, així com altres casos en què has triat compartir dades amb Google.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Per obtenir més detalls sobre les dades que <ph name="DEVICE_OS" /> pot compartir amb Google i com s'utilitzen, visita g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">Per utilitzar <ph name="NETWORK_ID" />, és possible que abans calgui que <ph name="LINK_START" />visiteu la pàgina d'inici de sessió de la xarxa<ph name="LINK_END" />, que s'obrirà automàticament d'aquí a pocs segons. Si no s'obre, no podreu utilitzar la xarxa.</translation>
+<translation id="5641608986289282154">Comença a utilitzar <ph name="DEVICE_OS" /></translation>
 <translation id="5655296450510165335">Inscripció de dispositius</translation>
 <translation id="565899488479822148">S'està instal·lant la darrera actualització</translation>
 <translation id="5659964844710667266">Crea una contrasenya per a aquest <ph name="DEVICE_TYPE" /></translation>
 <translation id="5684661240348539843">Identificador d'elements</translation>
 <translation id="5684950556880280580">La teva contrasenya s'ha actualitzat</translation>
+<translation id="5687326903064479980">Zona horària</translation>
+<translation id="5687935527303996204">Comprova que el dispositiu estigui endollat i no l'apaguis. La instal·lació pot tardar fins a 20 minuts. El dispositiu s'apagarà automàticament quan la instal·lació es completi.</translation>
 <translation id="5705882733397021510">Enrere</translation>
+<translation id="5711010025974903573">Registres de servei</translation>
 <translation id="5762787084360227629">Introdueix la informació del Compte de Google</translation>
 <translation id="5764797882307050727">Allibera espai al dispositiu.</translation>
 <translation id="5765425701854290211">Alguns fitxers estan malmesos i no s'ha pogut fer l'actualització. Els fitxers sincronitzats estan segurs.</translation>
 <translation id="5770125698810550803">Mostra els botons de navegació</translation>
+<translation id="5793339252089865437">Si baixes l'actualització a través de la xarxa mòbil, se't podrien cobrar càrrecs per excés d'ús.</translation>
 <translation id="5799478978078236781">Obtén consells, ofertes i informació sobre <ph name="DEVICE_TYPE" />, i envia suggeriments.</translation>
 <translation id="5800703268655655701">Selecciona el tema clar o fosc</translation>
 <translation id="5804259315582798390">No s'ha pogut activar la recuperació de dades locals</translation>
 <translation id="5810809306422959727">Aquest compte no és apte per als controls parentals</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />En inscriure els teus dispositius a la teva organització, es configuraran perquè es puguin gestionar de manera centralitzada. És possible que l'organització requereixi que s'inscriguin per diversos motius:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Millorar la seguretat<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />En configurar opcions de seguretat addicionals, l'organització pot protegir els usuaris i les dades dels dispositius. També pot fer accions com ara restablir un comandament o desactivar un dispositiu perdut.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Personalitzar l'experiència<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />El comportament del dispositiu en iniciar-se, a la pantalla d'inici de sessió i després d'iniciar la sessió es pot personalitzar segons les necessitats de l'organització.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Proporcionar assistència<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />L'organització pot accedir de manera remota a la sessió d'un dispositiu per resoldre problemes.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Activar l'accés<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />És possible que les aplicacions, els serveis i les xarxes de l'organització només estiguin disponibles als dispositius inscrits.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Queda cosa de <ph name="TIME" /> minuts</translation>
 <translation id="5852112051279473187">Vaja! Ha fallat alguna cosa en inscriure aquest dispositiu. Torneu-ho a provar o contacteu amb el vostre representant d'assistència.</translation>
 <translation id="5852137567692933493">Reinicia i utilitza Powerwash</translation>
 <translation id="5856721540245522153">Activar les funcions de depuració</translation>
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="5860491529813859533">Activa</translation>
+<translation id="5863445608433396414">Activa les funcions de depuració</translation>
 <translation id="5870086504539785141">Tanca el menú d'accessibilitat</translation>
 <translation id="5895138241574237353">Reinicia</translation>
 <translation id="5895335062901455404">Les teves preferències i activitat desades estaran preparades en qualsevol dispositiu ChromeOS Flex quan hi iniciïs la sessió amb el teu Compte de Google. Per decidir què vols sincronitzar, ves a Configuració.</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5919305207330938913">Totes les dades recollides s'utilitzaran d'acord amb la <ph name="BEGIN_LINK" />política de privadesa<ph name="END_LINK" /> de Google.</translation>
 <translation id="5932441198730183141">No tens prou llicències disponibles per inscriure aquest dispositiu de maquinari de Google Meet. Contacta amb l'equip de vendes per comprar-ne més. Si creus que veus aquest missatge per error, posa't en contacte amb el servei d'assistència.</translation>
+<translation id="5933376509899483611">Zona horària</translation>
 <translation id="5939518447894949180">Restableix</translation>
 <translation id="5948536763493709626">Connecta un teclat o un ratolí, o bé continua amb la configuració mitjançant la pantalla tàctil. Si fas servir dispositius Bluetooth, comprova que estiguin preparats per vincular-se.</translation>
 <translation id="5959471481388474538">Xarxa no disponible</translation>
 <translation id="6016178549409952427">Navega pel contingut addicional, <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Botó per seleccionar l’idioma i el teclat. L'idioma seleccionat actualment és: <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Tanca</translation>
+<translation id="6042193169866365541">El teu Compte de Google és el mateix que fas servir per a Gmail, YouTube, Chrome i altres productes de Google.
+        Utilitza'l per accedir fàcilment a tots els teus fitxers, adreces d'interès i més. Si no tens cap compte, pots crear-ne un a la pantalla següent.</translation>
 <translation id="6051354611314852653">El sistema no ha pogut autoritzar l'accés a l'API per a aquest dispositiu.</translation>
 <translation id="6055544610007596637">Instal·la aplicacions per al teu <ph name="DEVICE_TYPE" /> des de Google Play Store</translation>
+<translation id="6069464830445383022">El Compte de Google és el teu inici de sessió al Chromebook</translation>
 <translation id="6071181508177083058">confirmeu la contrasenya</translation>
 <translation id="6075731018162044558">El sistema no ha pogut obtenir un testimoni d'accés a l'API de llarg termini per a aquest dispositiu.</translation>
+<translation id="6093888419484831006">S’està cancel·lant l’actualització...</translation>
 <translation id="6125479973208104919">Cal que tornis a afegir el teu compte en aquest <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6170498031581934115">No s'ha pogut activar la depuració d'ADB. Ves a Configuració i torna-ho a provar.</translation>
@@ -420,6 +482,7 @@
 <translation id="6202304368170870640">Pots utilitzar el PIN per iniciar la sessió al dispositiu o per desbloquejar-lo.</translation>
 <translation id="6209908325007204267">El teu dispositiu inclou una Llicència de Chrome Enterprise, però el teu nom d'usuari no està associat a un compte d'empresa. En un altre dispositiu, visita g.co/ChromeEnterpriseAccount i crea un compte d'empresa.</translation>
 <translation id="623261264391834964">Fes clic amb el botó dret en un quadre de text per utilitzar Ajuda'm a escriure</translation>
+<translation id="6264520534872750757">Continua utilitzant el dispositiu</translation>
 <translation id="6280215091796946657">Inicia la sessió amb un altre compte</translation>
 <translation id="6283823201263716145">Els dispositius en mode de demostració envien automàticament informes d'error i dades de diagnòstic i d'ús a Google per ajudar a millorar les funcions i el rendiment.</translation>
 <translation id="6287713404380454515">Per motius de seguretat, l'administrador ha desactivat el PIN i la contrasenya del dispositiu. A partir d'ara, utilitza la contrasenya de <ph name="MANAGER" />.</translation>
@@ -428,6 +491,7 @@
 <translation id="6314819609899340042">Heu activat correctament les funcions de depuració en aquest dispositiu <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6343262564968371601">Troba allò que cerques a Google, en fitxers, aplicacions i més</translation>
 <translation id="635609604405270300">Mantén el dispositiu activat</translation>
+<translation id="6363786367719063276">Mostra els registres</translation>
 <translation id="6367097275976877956">Vols activar ChromeVox, el lector de pantalla integrat per a Chrome OS? Si és així, prem la barra espaiadora.</translation>
 <translation id="636850387210749493">Inscripció empresarial</translation>
 <translation id="6380143666419481200">Accepta i continua</translation>
@@ -435,6 +499,7 @@
 <translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Si permets que els dispositius ChromeOS ens enviïn informes automàtics, ens ajudaràs a prioritzar què s'ha de corregir i millorar a ChromeOS. Aquests informes poden incloure dades com ara quan falla ChromeOS, quines funcions fas servir i quanta memòria utilitzes normalment.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Pots iniciar o aturar l'enviament d'aquests informes en qualsevol moment a la configuració del dispositiu Chrome. Si ets l'administrador d'un domini, pots canviar aquesta opció de configuració a la consola d'administració.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Instal·la una actualització crítica</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> completat</translation>
 <translation id="6478849105642611893">La tecla d'inserció ràpida es troba a sota de la tecla Tab</translation>
 <translation id="6480327114083866287">Gestionat per <ph name="MANAGER" /></translation>
 <translation id="6488384360522318064">Selecciona l'idioma</translation>
@@ -452,6 +517,7 @@
 <translation id="6675665718701918026">S'ha connectat un dispositiu per apuntar</translation>
 <translation id="667752334740867460">S'està rebent la informació de la Wi‐Fi...</translation>
 <translation id="6680442031740878064">Disponible: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="6684827949542560880">S'està baixant l'actualització més recent</translation>
 <translation id="6722744767592605627">Pots recuperar <ph name="EMAIL" />, però les dades locals se suprimiran.</translation>
 <translation id="6748980958975836188">He llegit i accepto les <ph name="BEGIN_LINK1" />condicions del servei de Google<ph name="END_LINK1" /> i les <ph name="BEGIN_LINK2" />condicions del servei addicionals de Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6749473226660745022">Fotos</translation>
@@ -461,15 +527,18 @@
         <ph name="BEGIN_PARAGRAPH2" />Pots iniciar o aturar l'enviament d'aquests informes en qualsevol moment a la configuració del dispositiu ChromeOS del teu fill o filla. Si ets l'administrador d'un domini, pots canviar aquesta opció de configuració a la consola d'administració.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH4" />Si l'opció de configuració Activitat al web i en aplicacions està activada per al Compte de Google del teu fill o filla, és possible que les seves dades es desin al seu Compte de Google. Per obtenir més informació sobre aquestes opcions de configuració i sobre com pots ajustar-les, ves a families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609">Les millors aplicacions per al <ph name="DEVICE_TYPE" /></translation>
+<translation id="6818802132960437751">Protecció antivirus integrada</translation>
 <translation id="682971198310367122">Política de privadesa de Google</translation>
 <translation id="6835762382653651563">Connecteu-vos a Internet per actualitzar el dispositiu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839916869147598086">L'inici de sessió ha canviat</translation>
 <translation id="6852529053326738838">Pregunta- a la teva organització si el teu compte és apte o inscriu-te amb el correu electrònic de la feina per comprovar-ho.</translation>
 <translation id="6867671714894555998">Enllesteix tasques ràpidament amb el teclat nou</translation>
+<translation id="6881845890692344060">L'administrador ha tancat la sessió. Ara tens el control.</translation>
 <translation id="6883319974225028188">El sistema no ha pogut desar la configuració del dispositiu.</translation>
 <translation id="6888831646723563669">Connecta't per gaudir de totes les funcions al teu nou dispositiu (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Les dades de les aplicacions poden ser qualsevol mena de dades que hagi desat una aplicació (en funció de la configuració del desenvolupador), incloses dades com ara contactes, missatges i fotos. Les dades de la còpia de seguretat no es tenen en compte per calcular la quota d'emmagatzematge de Drive del teu fill o filla.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Pots desactivar aquest servei a Configuració.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="6897688156970667447">És útil amb poca llum i permet estalviar bateria</translation>
 <translation id="6903907808598579934">Activa la sincronització</translation>
 <translation id="6918733588290914545">Configuració ràpida amb un telèfon Android</translation>
 <translation id="6920473853105515518">Assegura't que el teu dispositiu (<ph name="DEVICE_TYPE" />) estigui connectat a Internet i torna-ho a provar. També pots visitar play.google/play-terms en un altre dispositiu.</translation>
@@ -495,6 +564,7 @@
 <translation id="7135729336746831607">Vols activar el Bluetooth?</translation>
 <translation id="7141105143012495934">Hi ha hagut un problema en iniciar la sessió perquè no s'ha pogut recuperar la informació del compte. Contacteu amb l'administrador o torneu a provar-ho.</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
+<translation id="7149839598364933473">Converteix aquest dispositiu en un dispositiu <ph name="DEVICE_OS" />.</translation>
 <translation id="7171259390164035663">No inscriguis</translation>
 <translation id="7189451821249468368">No tens prou actualitzacions per inscriure aquest dispositiu. Contacta amb l'equip de vendes per comprar-ne més. Si creus que veus aquest missatge per error, posa't en contacte amb el servei d'assistència.</translation>
 <translation id="7202337678781136582">Escaneja el codi QR amb el telèfon Android</translation>
@@ -529,8 +599,10 @@
 <translation id="7560756177962144929">Sincronitza el teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7571643774869182231">No hi ha prou espai d'emmagatzematge per fer l'actualització</translation>
 <translation id="7616214729753637086">S'està registrant el dispositiu...</translation>
+<translation id="7619937211696316184">S'ha fet el manteniment</translation>
 <translation id="7622114377921274169">S'està carregant.</translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> gestiona aquest dispositiu i requereix que hi iniciïs la sessió cada vegada.</translation>
+<translation id="7633724038415831385">Aquest és l'únic cop que hauràs d'esperar que es completi una actualització. Als Chromebook, les actualitzacions de programari es duen a terme en segon pla.</translation>
 <translation id="7639914187072011620">L'URL de redirecció de SAML no s'ha pogut recuperar del servidor</translation>
 <translation id="7643117827468520640">Consulta aquestes condicions</translation>
 <translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />Les dades de les aplicacions poden ser qualsevol mena de dades que hagi desat una aplicació (en funció de la configuració del desenvolupador), incloses dades com ara contactes, missatges i fotos. Les dades de la còpia de seguretat no es tenen en compte per calcular la quota d'emmagatzematge de Drive.<ph name="END_PARAGRAPH1" />
@@ -569,7 +641,9 @@
 <translation id="7968982339740310781">Mostra els detalls</translation>
 <translation id="7975504106303186033">Has d'inscriure aquest dispositiu Chrome Education en un compte de centre educatiu. Per registrar-te i crear un compte nou, visita g.co/workspace/edusignup.</translation>
 <translation id="7980084013673500153">Identificador de l'element: <ph name="ASSET_ID" /></translation>
+<translation id="7981670705071137488">Un cop acabi aquest procés, les actualitzacions del programari es duran a terme en segon pla. Pots revisar les preferències d'actualització a Configuració.</translation>
 <translation id="7982083145464587921">Reinicieu el dispositiu per corregir aquest error.</translation>
+<translation id="7988805580376093356">Conserva el teu sistema operatiu i executa <ph name="DEVICE_OS" /> des d'un USB.</translation>
 <translation id="7990958035181555539">Transfereix la Wi-Fi automàticament des del teu telèfon Android</translation>
 <translation id="8022466874160067884">Introdueix el teu Compte de Google i la contrasenya</translation>
 <translation id="8049029041626250638">Connecta un teclat o un ratolí. Si fas servir dispositius Bluetooth, comprova que estiguin preparats per vincular-se.</translation>
@@ -578,6 +652,7 @@
 <translation id="8065144531309810062">Utilitza la IA de Google per augmentar la teva creativitat i productivitat</translation>
 <translation id="8082106343289440791">El vols vincular amb "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8097959162767603171">Primer, l'administrador ha d'acceptar les condicions del servei de la llista de dispositius Chrome que hi ha a la consola d'administració.</translation>
+<translation id="8098156986344908134">Vols instal·lar <ph name="DEVICE_OS" /> i esborrar les dades de la unitat de disc dur?</translation>
 <translation id="8098616321286360457">Cal una connexió de xarxa</translation>
 <translation id="8129265306888404830">Per utilitzar l'adreça electrònica de la teva organització (<ph name="EMAIL_DOMAIN" />), has d'utilitzar la inscripció d'empresa. Si aquest dispositiu és per a ús personal, inicia la sessió amb el Compte de Google personal.</translation>
 <translation id="8131740175452115882">Confirma</translation>
@@ -591,6 +666,7 @@
 <translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />El servei d'ubicació de Google utilitza fonts com ara sensors, xarxes mòbils i Wi‑Fi per estimar la ubicació del dispositiu.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Pots desactivar la ubicació d'Android al teu dispositiu en qualsevol moment anant a Configuració &gt; Aplicacions &gt; Google Play Store &gt; Gestiona les preferències d'Android &gt; Seguretat i ubicació &gt; Ubicació. També pots desactivar l'ús de sensors, xarxes mòbils i Wi‑Fi per a la ubicació d'Android desactivant l'opció "Precisió de la ubicació de Google" al mateix menú.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">Torneu a introduir la contrasenya per actualitzar el vostre perfil del dispositiu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="822050276545350872">A partir d'ara, ja no hauràs d'esperar més</translation>
 <translation id="8239032431519548577">La inscripció de l'empresa ha finalitzat</translation>
 <translation id="8241806945692107836">S'està determinant la configuració del dispositiu...</translation>
 <translation id="8242426110754782860">Continua</translation>
@@ -598,11 +674,13 @@
 <translation id="8271379370373330993">Els passos següents estan destinats als pares. Poden tornar el dispositiu <ph name="DEVICE_TYPE" /> al nen quan s'acabi de configurar el compte.</translation>
 <translation id="8274924778568117936">No apaguis ni tanquis el dispositiu <ph name="DEVICE_TYPE" /> fins que l'actualització no hagi finalitzat. <ph name="DEVICE_TYPE" /> es reiniciarà un cop finalitzi la instal·lació.</translation>
 <translation id="8281886186245836920">Omet</translation>
+<translation id="8289509909262565712">Et donem la benvinguda a <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">Per a ús personal</translation>
 <translation id="8304383784961451596">No tens autorització per fer servir aquest dispositiu. Contacta amb l'administrador per obtenir el permís d'inici de sessió o accedeix amb un Compte de Google supervisat per Family Link.</translation>
 <translation id="8321837372750396788">Aquest dispositiu <ph name="DEVICE_TYPE" /> estarà gestionat per <ph name="MANAGER" />.</translation>
 <translation id="8339288417038613756">Mida de la pantalla i del text</translation>
 <translation id="8354034204605718473">S'ha afegit el PIN del teu fill</translation>
+<translation id="8360140320636871023">Personalitza el teu tema de visualització</translation>
 <translation id="8366396658833131068">S'ha restablert la vostra connectivitat de xarxa. Seleccioneu una altra xarxa o bé premeu el botó Continua per iniciar l'aplicació de quiosc.</translation>
 <translation id="8401432541486058167">Proporciona el PIN que està associat a la teva targeta intel·ligent.</translation>
 <translation id="8408270600235826886">Pots controlar les dades que es comparteixen amb Google. Pots canviar aquesta opció en qualsevol moment a Configuració. Les dades s'utilitzaran d'acord amb la <ph name="BEGIN_LINK" />política de privadesa<ph name="END_LINK" /> de Google.</translation>
@@ -614,6 +692,7 @@
 <translation id="8464132254133862871">Aquest compte d'usuari no és apte per al servei.</translation>
 <translation id="8524841856047224176">Personalitza els fons de la càmera per a videotrucades i més</translation>
 <translation id="8527257351549797148">És possible que la teva organització requereixi que t'inscriguis per poder accedir a aplicacions, extensions i més. Això també permet a la teva organització gestionar aspectes com la configuració del dispositiu i la seguretat.</translation>
+<translation id="8549316893834449916">Utilitzaràs el teu Compte de Google per iniciar la sessió al Chromebook. És el mateix compte que fas servir per a Gmail, Drive i YouTube, entre d'altres.</translation>
 <translation id="8558063527625343224">Configura Google Beam</translation>
 <translation id="8569673829373920831">Més informació sobre <ph name="APP_NAME" /></translation>
 <translation id="8586421813321819377">Permet que les aplicacions, els llocs web i els serveis de ChromeOS i d'Android que tinguin permís d'accés a la ubicació utilitzin la ubicació del dispositiu. La precisió de la ubicació proporciona una ubicació més precisa a les aplicacions i als serveis d'Android. Per fer-ho, Google tracta periòdicament la informació sobre els sensors i els senyals sense fil del teu dispositiu a fi d'obtenir col·lectivament les ubicacions dels senyals sense fil. Aquestes dades s'utilitzen sense identificar-te per millorar la precisió de la ubicació i els serveis basats en la ubicació. També s'utilitzen per millorar, proporcionar i mantenir els serveis de Google segons els interessos legítims de Google i de tercers a fi de satisfer les necessitats dels usuaris.</translation>
@@ -622,11 +701,13 @@
         <ph name="BR" />
         <ph name="BR" />
         Visible per als dispositius propers com a <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
+<translation id="8637688295594795546">Actualització del sistema disponible. S'està preparant la baixada…</translation>
 <translation id="8655972064210167941">Hi ha hagut un problema en iniciar la sessió perquè no s'ha pogut verificar la contrasenya. Contacteu amb l'administrador o torneu a provar-ho.</translation>
 <translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />Quan la precisió de la ubicació està activada, s'utilitzen la informació dels senyals sense fil, com ara els punts d'accés Wi‑Fi i les torres de xarxes mòbils, així com les dades dels sensors del dispositiu, com ara l'acceleròmetre i el giroscopi, per estimar la ubicació del dispositiu de manera més precisa. Les aplicacions i els serveis fan servir aquesta estimació per proporcionar funcions basades en la ubicació. Per aconseguir-ho, Google recull periòdicament informació sobre els sensors del dispositiu i els senyals sense fil que hi ha a prop teu amb l'objectiu de contribuir a les ubicacions de senyals sense fil obtingudes de manera participativa.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Google utilitza aquesta informació sense identificar-te per millorar la precisió de la ubicació i els serveis basats en la ubicació, i, de manera general, per millorar, proporcionar i mantenir els serveis de Google. Tractem aquesta informació segons els interessos legítims de Google i de tercers per atendre les necessitats dels usuaris.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Pots desactivar la precisió de la ubicació en qualsevol moment a la configuració d'ubicació del teu dispositiu, a Configuració &gt; Privadesa i seguretat &gt; Controls de privadesa &gt; Accés a la ubicació &gt; Configuració d'ubicació avançada. Si la precisió de la ubicació està desactivada, no es recolliran dades d'aquest tipus. En el cas de les aplicacions i dels serveis d'Android, només s'utilitza l'adreça IP, si està disponible, per determinar la ubicació del dispositiu, cosa que pot afectar la disponibilitat i la precisió de les ubicacions per a les aplicacions i els serveis d'Android, com ara Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">Malauradament, l'ordinador està configurat amb un identificador de maquinari que té un format incorrecte. Això impedeix a Chrome OS actualitzar-se amb les darreres correccions de seguretat i <ph name="BEGIN_BOLD" />pot ser que l'ordinador sigui vulnerable a atacs maliciosos<ph name="END_BOLD" />.</translation>
+<translation id="8675704450909805533">L'instal·lador no ha pogut trobar cap destinació vàlida per instal·lar <ph name="DEVICE_OS" />.</translation>
 <translation id="8695139659682234808">Afegeix controls parentals després de la configuració</translation>
 <translation id="8698269656364382265">Per tornar a la pantalla anterior, llisca des de l'esquerra.</translation>
 <translation id="8718994464069323380">S'ha detectat una pantalla tàctil</translation>
@@ -636,10 +717,12 @@
 <translation id="8740086188450289493">Utilitza la contrasenya del Compte de Google</translation>
 <translation id="8740247629089392745">Pots donar aquest Chromebook a <ph name="SUPERVISED_USER_NAME" />. Ja queda poc per finalitzar la configuració. És hora d'explorar.</translation>
 <translation id="8759753423332885148">Més informació</translation>
+<translation id="8762886931014513155">S'ha d'actualitzar <ph name="DEVICE_TYPE" /></translation>
 <translation id="8777628254805677039">contrasenya arrel</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8783834180813871000">Escriu el codi de vinculació per Bluetooth i, a continuació, prem Retorn.</translation>
 <translation id="8794548468611058947">En lloc d'introduir la contrasenya del teu Compte de Google per iniciar la sessió, pots crear un PIN per a aquest <ph name="DEVICE_TYPE" /></translation>
+<translation id="8830779999439981481">S'està reiniciant per aplicar les actualitzacions</translation>
 <translation id="8830796635868321089">No s'ha pogut realitzar la comprovació d'actualitzacions amb la configuració del servidor intermediari actual. Ajusteu la <ph name="PROXY_SETTINGS_LINK_START" />configuració del servidor intermediari<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="8855977033756560989">Aquest dispositiu Chromebook Enterprise inclou una Llicència de Chrome Enterprise. Per treure partit de les capacitats per a empreses, inscriu el dispositiu amb un compte d'administrador de Google.</translation>
 <translation id="885746075120788020">Les teves preferències i activitat desades estaran preparades en qualsevol dispositiu amb Chrome OS quan hi iniciïs la sessió amb el teu Compte de Google. Per decidir què vols sincronitzar, ves a Configuració.</translation>
@@ -658,6 +741,7 @@
 <translation id="8975396729541388937">Pots cancel·lar la subscripció en qualsevol moment fent clic a l'enllaç que trobaràs als correus electrònics que rebis.</translation>
 <translation id="8987305927843254629">Cada persona pot personalitzar la seva experiència i mantenir la privadesa de les dades.</translation>
 <translation id="8993059306046735527">Encara que oblidis la contrasenya del <ph name="DEVICE_TYPE" />, pots restaurar les dades locals. Hauràs d'iniciar la sessió al Compte de Google o utilitzar la recuperació del compte.</translation>
+<translation id="9018218886431812662">La instal·lació s'ha completat</translation>
 <translation id="9033765790910064284">Continua igualment</translation>
 <translation id="903480517321259405">Torna a escriure el PIN</translation>
 <translation id="9040473193163777637">Vols activar ChromeVox, el lector de pantalla integrat per a Chrome OS? Si és així, mantén premudes les dues tecles de volum durant cinc segons.</translation>
@@ -675,6 +759,7 @@
         <ph name="BR" />
         <ph name="BR" />
         Visible com a <ph name="DEVICE_TYPE" />...</translation>
+<translation id="945522503751344254">Envia suggeriments</translation>
 <translation id="951991426597076286">Rebutja</translation>
 <translation id="954749761428814584">Idioma i mètode d'introducció de text</translation>
 <translation id="960987915827980018">Queda cosa d'una hora</translation>

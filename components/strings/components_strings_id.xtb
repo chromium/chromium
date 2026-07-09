@@ -505,6 +505,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="175656076281618225">Sulap</translation>
 <translation id="1757773103848038814">Font Monospace</translation>
 <translation id="1757935267918149452">Tombol Ubah sandi Google, aktifkan untuk mengubah sandi Akun Google Anda</translation>
+<translation id="1759776526873274358">Isi otomatis kode verifikasi yang digunakan situs untuk meningkatkan keamanan Anda. Chrome dapat memperoleh kode ini dari Gmail Anda. <ph name="BEGIN_LINK" />Pelajari lebih lanjut fitur ini<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya tidak dipercaya oleh sistem operasi perangkat Anda. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Coba jalankan Diagnostik Jaringan Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (Arsip)</translation>
@@ -611,7 +612,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1953729392594614704">Memblokir <ph name="TOPIC" /> juga akan memblokir topik terkait, meskipun topik tersebut aktif</translation>
 <translation id="1954847915560574887">A3x3</translation>
 <translation id="1955773397805078763">Tambahkan metode pembayaran</translation>
-<translation id="1956486093533522234">Temukan, amankan, atau hapus perangkat Anda</translation>
+<translation id="1956486093533522234">Temukan dan amankan perangkat, atau hapus datanya</translation>
 <translation id="1957274554973357626">Komedi Live</translation>
 <translation id="1958218078413065209">Skor tertinggi Anda adalah <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Bantu sempurnakan keamanan di web untuk semua orang dengan mengirimkan <ph name="BEGIN_WHITEPAPER_LINK" />URL beberapa halaman yang Anda kunjungi, informasi sistem terbatas, dan beberapa konten halaman<ph name="END_WHITEPAPER_LINK" /> ke Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Kebijakan privasi<ph name="END_PRIVACY_PAGE_LINK" /></translation>
@@ -2155,6 +2156,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4304049446746819918">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk memindahkan file ini ke <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk memindahkan file ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Baca evaluasi pelanggan terkait produk, layanan, atau pengalaman untuk membantu menentukan keputusan Anda dengan ulasan.</translation>
 <translation id="4305666528087210886">File Anda tidak dapat diakses</translation>
+<translation id="4306349443295056740">Penandatanganan OCSP</translation>
 <translation id="4306529830550717874">Simpan alamat?</translation>
 <translation id="4306812610847412719">papan klip</translation>
 <translation id="4308567447483056043">Kebijakan ini diabaikan karena pengguna tidak berafiliasi. Agar kebijakan ini diterapkan, browser dan profil Chrome harus dikelola melalui konsol Admin oleh organisasi yang sama.</translation>
@@ -2413,6 +2415,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4744603770635761495">Jalur Yang Dapat Dijalankan</translation>
 <translation id="4744816391336495134">Anda dapat menggunakan sidik jari untuk memverifikasi diri Anda setiap kali Anda menggunakan sandi tersimpan</translation>
 <translation id="4749011317274908093">Anda masuk mode Samaran</translation>
+<translation id="4749924365937394956">Autentikasi Server</translation>
 <translation id="4750671009706599284">ponsel ini</translation>
 <translation id="4750917950439032686">Informasi Anda (misalnya, sandi atau nomor kartu kredit) bersifat pribadi saat dikirimkan ke situs ini.</translation>
 <translation id="4751249061288707459">Izin terakhir diperbarui:</translation>
@@ -3129,6 +3132,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5860491529813859533">Aktifkan</translation>
 <translation id="5862579898803147654">Tempat kertas 8</translation>
 <translation id="5863515189965725638">Edit IBAN</translation>
+<translation id="5863517400058880216">Isi otomatis kode verifikasi dari Gmail</translation>
 <translation id="5863847714970149516">Halaman berikutnya mungkin mencoba menagih Anda.</translation>
 <translation id="5866257070973731571">Tambahkan Nomor Telepon</translation>
 <translation id="5866327164731551901">Dari <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -3242,6 +3246,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6034000775414344507">Abu-abu Muda</translation>
 <translation id="6034514109191629503">Lipatan akordeon</translation>
 <translation id="6035491133925068289">Atletik</translation>
+<translation id="6037458223703682108">Tanda Tangan Digital</translation>
 <translation id="6039846035001940113">Jika masalah berlanjut, hubungi pemilik situs.</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6040539895181423374">Analisis Harga</translation>
@@ -3553,6 +3558,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6474220430271405609">Pengujian Kebijakan</translation>
 <translation id="6476284679642588870">Kelola metode pembayaran</translation>
 <translation id="647881094269678013">Akting &amp; Teater</translation>
+<translation id="6480363549849064919">Autentikasi Klien</translation>
 <translation id="6480864723214312258">Baterai untuk Kebutuhan Rumah Tangga</translation>
 <translation id="6487678699866233349">Musik Dunia</translation>
 <translation id="6489534406876378309">Mulai mengupload kerusakan</translation>
@@ -4517,6 +4523,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7967973398323409409">Info yang Anda isi otomatis tidak akan dilihat oleh siapa pun</translation>
 <translation id="79682505114836835">Nilai "<ph name="VALUE" />" adalah warna hex yang tidak valid.</translation>
 <translation id="7968982339740310781">Lihat detail</translation>
+<translation id="7971403153351954587">Organisasi Anda memantau penyalinan</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Dengan Enkripsi RSA</translation>
 <translation id="7976053965094442846">Penerbit Beli Sekarang Bayar Nanti tersedia untuk opsi pembayaran dengan cicilan. Keyboard disembunyikan.</translation>
 <translation id="7976214039405368314">Terlalu banyak permintaan</translation>

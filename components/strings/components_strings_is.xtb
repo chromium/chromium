@@ -2156,6 +2156,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4304049446746819918">{0,plural, =1{Regla kerfisstjóra mælir ekki með að flytja þessa skrá yfir á <ph name="DESTINATION_NAME" />}one{Regla kerfisstjóra mælir ekki með að flytja þessar skrár yfir á <ph name="DESTINATION_NAME" />}other{Regla kerfisstjóra mælir ekki með að flytja þessar skrár yfir á <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Lestu mat viðskiptavina á vörum, þjónustum og upplifunum til að hjálpa þér að taka upplýstar ákvarðanir út frá umsögnum.</translation>
 <translation id="4305666528087210886">Ekki var hægt að opna skrána þína</translation>
+<translation id="4306349443295056740">OCSP-undirskrift</translation>
 <translation id="4306529830550717874">Vista heimilisfang?</translation>
 <translation id="4306812610847412719">klippiborð</translation>
 <translation id="4308567447483056043">Þessi regla er hunsuð vegna þess að notandinn er ótengdur. Til að geta notað þessa reglu verður Chrome vafranum og prófílnum að vera stjórnað af sama fyrirtæki/stofnun í gegnum stjórnborð stjórnanda.</translation>
@@ -2414,6 +2415,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4744603770635761495">Keyranleg slóð</translation>
 <translation id="4744816391336495134">Þú getur notað fingrafar til að staðfesta hver þú ert hvenær sem þú notar vistað aðgangsorð</translation>
 <translation id="4749011317274908093">Þú ferð nú huldu höfði</translation>
+<translation id="4749924365937394956">Auðkenning þjóns</translation>
 <translation id="4750671009706599284">þessum síma</translation>
 <translation id="4750917950439032686">Upplýsingarnar þínar (t.d. aðgangsorð eða kreditkortanúmer) eru lokaðar þegar þær eru sendar á þetta vefsvæði.</translation>
 <translation id="4751249061288707459">Samþykki síðast uppfært:</translation>
@@ -3244,6 +3246,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6034000775414344507">Ljósgrár</translation>
 <translation id="6034514109191629503">Harmonikkubrot</translation>
 <translation id="6035491133925068289">Frjálsar íþróttir</translation>
+<translation id="6037458223703682108">Rafræn undirskrift</translation>
 <translation id="6039846035001940113">Hafðu samband við eiganda vefsvæðisins ef vandamálið er viðvarandi.</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6040539895181423374">Verðinnsýn</translation>
@@ -3555,6 +3558,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6474220430271405609">Prófanir á reglum</translation>
 <translation id="6476284679642588870">Stjórna greiðslumátum</translation>
 <translation id="647881094269678013">Leiklist og leikhús</translation>
+<translation id="6480363549849064919">Auðkenning biðlara</translation>
 <translation id="6480864723214312258">Rafhlöður til heimilisnota</translation>
 <translation id="6487678699866233349">Heimstónlist</translation>
 <translation id="6489534406876378309">Byrja að hlaða inn hruntilvikum</translation>

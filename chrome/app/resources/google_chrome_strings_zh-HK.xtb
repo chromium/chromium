@@ -256,7 +256,6 @@
 <translation id="345171907106878721">新增為 Chrome 使用者</translation>
 <translation id="3453763134178591239">Chrome OS 條款</translation>
 <translation id="3475778264501649775">透過手機的 Chrome 應用程式，隨時隨地使用密碼、分頁和其他資料</translation>
-<translation id="3512495006767217696">Chrome 內置此功能，可協助你建立、儲存及自動填入安全度高的密碼。建議新增捷徑，方便隨時使用</translation>
 <translation id="3539955434060988644">在 Chrome 無痕式視窗中開啟連結</translation>
 <translation id="354621070532799440">提提你：隨時暢享 Google 最強大的安全功能</translation>
 <translation id="3547866758548131919">㩒 [總結] 按鈕就可以同 Chrome 版 Gemini 分享呢份文件，以便撮要文件內容同提出後續問題</translation>
@@ -564,6 +563,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6539493053177300926">即使 Chrome 最小化，你亦能輕鬆在裝置上使用 Chrome 版 Gemini。</translation>
 <translation id="6585124893636629274">關閉 Chrome 版 Gemini</translation>
 <translation id="659498884637196217">前往此裝置的「Google 密碼管理工具」進行更新</translation>
+<translation id="6613949864921837107">將 Chrome 設定為預設瀏覽器，讓密碼、書籤和記錄在所有裝置上完美同步。</translation>
 <translation id="6631524303639368205">開啟上次瀏覽的內容：Chrome 已還原上個工作階段的分頁。如要關閉此功能，請前往</translation>
 <translation id="6632473616050862500">ChromeOS Flex 的開發全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />協助才得以面世。</translation>
 <translation id="6634299872736643004">此設定變更會在 Chrome 重新啟動後套用。</translation>

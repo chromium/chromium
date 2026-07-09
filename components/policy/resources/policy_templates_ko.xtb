@@ -4061,7 +4061,6 @@ false로 설정된 경우 기존 및 신규 Crostini 컨테이너에 대한 루�
 <translation id="3591584750136265240">로그인 인증 동작 설정</translation>
 <translation id="3593905652755912452">disabled 양식 컨트롤에서 기존 이벤트 전달 동작이 사용됩니다.</translation>
 <translation id="3596112486106491038">가상 머신 명령줄 액세스 권한 사용 설정</translation>
-<translation id="3600342552601917721">표준 웹 탐색에는 개발자 도구를 사용하도록 허용하지만 엔터프라이즈에서 설치한 확장 프로그램 및 관리 사용자의 기본 제공 확장 프로그램에 대한 사용은 제한합니다. M150 버전부터는 기본 제공 PDF 뷰어를 제외하고 이러한 확장 프로그램을 삽입하는 모든 페이지에서도 차단됩니다.</translation>
 <translation id="3603469950773500315">새로운 <ph name="CORS" /> 구현에서 <ph name="CORS" /> 확인 완화를 사용 설정하여 확장 프로그램이 호환되는 동작을 유지하도록 허용하고 <ph name="PRODUCT_NAME" />에서 <ph name="CORS" /> 확인 없이 지정된 헤더를 전송하도록 허용합니다.
 
       목록이 빈 상태로 설정되어 있으면 <ph name="PRODUCT_NAME" />은 호환되는 방식으로 확장 프로그램을 실행하도록 시도하고 <ph name="WEB_REQUEST_API_MANUAL" />에 설명된 것처럼 <ph name="PRODUCT_NAME" /> 79의 <ph name="API" /> 변경사항을 적용하지 않습니다.

@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">'ব্যক্তিগত কী'-এর জন্য ইনপুট করা মান সঠিক ফর্ম্যাটে হওয়া আবশ্যক (PKCS#8-format PEM-encoded RSA key)।</translation>
-<translation id="765293928828334535">এই ওয়েবসাইট থেকে অ্যাপ, এক্সটেনশান ও ব্যবহারকারী স্ক্রিপ্ট যোগ করা যাবে না</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7766838926148951335">অনুমতিগুলি স্বীকার করুন</translation>
 <translation id="7876803335449432072">কন্টেন্ট স্ক্রিপ্টের জন্য '<ph name="RELATIVE_PATH" />' ফাইল লোড করা যায়নি, .css ফাইলের মতো কাজ করে এমন স্টাইল শিট ফাইল থেকেই শুধু কন্টেন্ট স্ক্রিপ্ট স্টাইল শিট লোড করা যেতে পারে।</translation>

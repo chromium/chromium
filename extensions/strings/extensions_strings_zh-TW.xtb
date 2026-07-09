@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">私密金鑰的輸入值必須是有效格式 (須為採用 PKCS#8 格式和 PEM 編碼的 RSA 金鑰)。</translation>
-<translation id="765293928828334535">無法從這個網站新增應用程式、擴充功能和使用者指令碼</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7766838926148951335">接受權限</translation>
 <translation id="7876803335449432072">無法載入「<ph name="RELATIVE_PATH" />」檔案的內容指令碼，內容指令碼樣式表只能從支援的樣式表檔案 (例如 .css 檔案) 載入。</translation>

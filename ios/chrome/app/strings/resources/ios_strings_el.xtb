@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Ο αποθηκευτικός χώρος είναι πλήρης</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
 <translation id="1190609913194133056">Κέντρο ειδοποιήσεων</translation>
+<translation id="1196534270480620381">Θέλω μια σύντομη σύνοψη αυτής της σελίδας</translation>
 <translation id="1199631150313925648">Μη αυτόματη εισαγωγή</translation>
 <translation id="1199963004393929848">Πράσινο θέμα</translation>
 <translation id="1201402288615127009">Επόμενο</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Δεν βρέθηκαν κωδικοί/κλειδιά πρόσβασης για τον ιστότοπο</translation>
 <translation id="1540800554400757039">Διεύθυνση 1</translation>
 <translation id="154312949627292154">Ανοίξτε καρτέλες που λάβατε από τις άλλες συσκευές σας από την οθόνη κλειδώματος.</translation>
+<translation id="1544653821167545205">Σύνοψη σελίδας</translation>
 <translation id="1545749641540134597">Σάρωση κωδικού QR</translation>
 <translation id="1545757265410828525">Ιστορικό τιμών</translation>
 <translation id="1547610699249301703">Κοινή χρήση κωδικών πρόσβασης</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Η λειτουργία Αναζήτηση στην οθόνη είναι διαθέσιμη μόνο όταν η Google έχει οριστεί ως η προεπιλεγμένη μηχανή αναζήτησης. Μπορείτε να αλλάξετε την προεπιλεγμένη μηχανή αναζήτησης στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Φακός</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Τι μπορεί να κάνει το Gemini στο Chrome;</translation>
 <translation id="1881621406744213161">Προσκαλέστε μέλη της οικογένειας</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Γραμμή μενού έξυπνης ταξινόμησης</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Αποθηκεύστε τους κωδικούς πρόσβασής σας, για να συνδέεστε εύκολα σε ιστοτόπους και εφαρμογές.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Το πρόγραμμα περιήγησής σας φαίνεται εντάξει</translation>
+<translation id="2470654816840674524">Τι μπορώ να κάνω με το Gemini στο Chrome;</translation>
 <translation id="2473876017985765807">Έχετε ήδη αποθηκεύσει έναν κωδικό πρόσβασης για τον ιστότοπο <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Μπορείτε να ορίσετε μια υπενθύμιση, για να επισκεφτείτε ξανά αυτή τη σελίδα αργότερα</translation>
 <translation id="2479148705183875116">Μετάβαση στις Ρυθμίσεις</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Απόκρυψη Ελέγχου ασφαλείας</translation>
 <translation id="2625189173221582860">Ο κωδικός πρόσβασης αντιγράφηκε</translation>
 <translation id="2626236249646841566">Ελέγξτε τη σύνδεσή σας και δοκιμάστε να συνδεθείτε ξανά.</translation>
+<translation id="2629543259235506452">Δημιούργησε σύντομες Συνήθεις ερωτήσεις σχετικά με αυτό το θέμα, χρησιμοποιώντας πληροφορίες από αυτή τη σελίδα και παρόμοιους ιστοτόπους</translation>
 <translation id="2635918910848538771">Αυτόματη συμπλήρωση του CVC</translation>
 <translation id="2640733327287333451">Χωρίς όνομα χρήστη ••••••</translation>
 <translation id="264215785133931186">Ελέγχθηκε μόλις τώρα</translation>
@@ -967,7 +972,6 @@
 <translation id="4294506173142861371">Σύνδεση ως <ph name="FIRST_NAME" />;</translation>
 <translation id="4302061870579014542">Ορισμός θέσης</translation>
 <translation id="4304713468139749426">Διαχείριση κωδικών πρόσβασης</translation>
-<translation id="4306349443295056740">Υπογραφή OCSP</translation>
 <translation id="4309403553630140242">Πατήστε δύο φορές για περισσότερες πληροφορίες.</translation>
 <translation id="4310738531374808763">Προσαρμόστε την αρχική σελίδα σας</translation>
 <translation id="4316794575239200608">Οι συνομιλίες σας με το Gemini και τα <ph name="BEGIN_LINK" />δεδομένα σας στο Google Workspace<ph name="END_LINK" /> δεν θα ελέγχονται από αναθεωρητές ούτε θα χρησιμοποιούνται για τη βελτίωση των μοντέλων παραγωγικού AI.</translation>
@@ -1098,7 +1102,6 @@
 <translation id="4744428388659507035">Για να εμφανίζονται οι σελιδοδείκτες σε όλες τις συσκευές σας, ενεργοποιήστε την επιλογή Σελιδοδείκτες στις ρυθμίσεις.</translation>
 <translation id="4746926359847517643">Μπορείτε να τις επαναφέρετε από το ιστορικό.</translation>
 <translation id="4749529195026091676">{count,plural, =1{Έγινε εισαγωγή {count} κάρτας}other{Έγινε εισαγωγή {count} καρτών}}</translation>
-<translation id="4749924365937394956">Έλεγχος ταυτότητας διακομιστή</translation>
 <translation id="4751645464639803239">Νέα καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="4752348350801431746">Απενεργοποίηση ειδοποιήσεων Ελέγχου ασφαλείας…</translation>
 <translation id="4759238208242260848">Λήψεις</translation>
@@ -1442,7 +1445,6 @@
 <translation id="5859715514067755465">Μετάβαση προς τα εμπρός</translation>
 <translation id="5860491529813859533">Ενεργοποίηση</translation>
 <translation id="5868644772996939262">Αυτόματη συμπλήρωση κωδικών πρόσβασης και κλειδιών πρόσβασης</translation>
-<translation id="5869522115854928033">Αποθηκευμένοι κωδικοί πρόσβασης</translation>
 <translation id="5873179562631407582">Πατήστε παρατεταμένα όλες τις ανοιχτές καρτέλες</translation>
 <translation id="5887400589839399685">Η κάρτα αποθηκεύτηκε</translation>
 <translation id="5888889603768021126">Σε σύνδεση με</translation>
@@ -1486,7 +1488,6 @@
 <translation id="6027619584715411062">Συνδεθείτε για να έχετε τους σελιδοδείκτες, τους κωδικούς πρόσβασης και άλλα δεδομένα διαθέσιμα σε όλες τις συσκευές σας.</translation>
 <translation id="6027945736510816438">Μήπως εννοούσατε <ph name="WEBSITE" />;</translation>
 <translation id="6032845897905314562">νέα λειτουργία</translation>
-<translation id="6037458223703682108">Ψηφιακή υπογραφή</translation>
 <translation id="6038823991892265570">Διαχείριση αποθηκευτικού χώρου Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>
@@ -1642,7 +1643,6 @@
 <translation id="6476284679642588870">Διαχείριση τρόπων πληρωμής</translation>
 <translation id="6476800141292307438">Μετάφραση της σελίδας σε <ph name="LANGUAGE" />. Οι επιλογές είναι διαθέσιμες κοντά στο κάτω μέρος της οθόνης.</translation>
 <translation id="647867789226964031">Αλλαγή κωδικών πρόσβασης</translation>
-<translation id="6480363549849064919">Έλεγχος ταυτότητας εφαρμογής πελάτης</translation>
 <translation id="6489174933860678546">Ανοίξτε καρτέλες ανώνυμης περιήγησης για να περιηγηθείτε στον ιστό πιο ιδιωτικά.</translation>
 <translation id="6489775505977274806">Απόκρυψη Level Up</translation>
 <translation id="6494931198667773526">Λήξη</translation>
@@ -1679,7 +1679,6 @@
 <translation id="6589001036857939353">Συγχώνευση διπλότυπων</translation>
 <translation id="659407965921887085">Αυτή η κάρτα εμφανίζει πτώσεις τιμών από τον ιστό για προϊόντα που παρακολουθείτε αυτή τη στιγμή</translation>
 <translation id="6596481460663245319">Αναζήτηση εικόνας με την Google</translation>
-<translation id="6598432073497341323">{COUNT,plural, =1{1 κωδικός πρόσβασης}other{# κωδικοί πρόσβασης}}</translation>
 <translation id="6601302169302852717">Η εικόνα αποθηκεύτηκε στις Φωτογραφίες Google για τον λογαριασμό <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Αυτόματη συμπλήρωση και κωδικοί πρόσβασης</translation>
 <translation id="6603393121510733479">Ο οργανισμός σας απενεργοποίησε την απόρρητη περιήγηση.
@@ -1873,7 +1872,6 @@
 <translation id="7233006041370588369">Επιλέξτε έναν κωδικό πρόσβασης για συμπλήρωση.</translation>
 <translation id="723874023660911012">Εναλλαγή προφίλ</translation>
 <translation id="7241135764990439166">Η κατάσταση ανώνυμης περιήγησης δεν είναι διαθέσιμη</translation>
-<translation id="7248046129087111453">Το <ph name="BEGIN_LINK" />Ιστορικό αναζήτησης<ph name="END_LINK" /> και <ph name="BEGIN_LINK" />άλλες μορφές δραστηριότητας<ph name="END_LINK" /> ενδέχεται να αποθηκεύονται στον Λογαριασμό σας Google.</translation>
 <translation id="7253951228444156601">Έλεγχος κωδικών πρόσβασης…</translation>
 <translation id="7261217796641151584">Κοινοποίηση ομάδας</translation>
 <translation id="7266578100016339897">Αυτό θα σας βοηθήσει να παραμείνετε οργανωμένοι. Μπορείτε να αλλάξετε αυτή την επιλογή ανά πάσα στιγμή από τις ρυθμίσεις.</translation>
@@ -2349,6 +2347,7 @@
 <translation id="8766790350274092814">Οι κωδικοί πρόσβασης για τους ιστοτόπους <ph name="WEBSITE" /> και <ph name="SECOND_WEBSITE" /> θα διαγραφούν. Οι λογαριασμοί σας δεν θα διαγραφούν.</translation>
 <translation id="8775144690796719618">Μη έγκυρη διεύθ. URL</translation>
 <translation id="8781834595282316166">Νέα καρτέλα στην ομάδα</translation>
+<translation id="8783445328207519872">Δημιούργησε Συνήθεις ερωτήσεις σχετικά με αυτό το θέμα</translation>
 <translation id="8784653774976848206">Επιλογή αρχείων</translation>
 <translation id="8786100550345425552">Επεξεργασία αδειών</translation>
 <translation id="878871978861915380">Απόκρυψη της κάρτας Παρακολούθηση τιμής</translation>

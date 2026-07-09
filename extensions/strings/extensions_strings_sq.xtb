@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Vlera hyrëse për çelësin privat duhet të jetë në një format të vlefshëm (çelësi RSA me enkodim PEM me formatin PKCS#8).</translation>
-<translation id="765293928828334535">Aplikacionet, shtesat dhe skriptet e përdoruesit nuk mund të shtohen nga ky uebsajt</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7766838926148951335">Prano lejet</translation>
 <translation id="7876803335449432072">Skedari "<ph name="RELATIVE_PATH" />" për skriptin e përmbajtjes nuk mund të ngarkohej. Fletët e stilizuara të skripteve të përmbajtjes mund të ngarkohen vetëm nga skedarë të mbështetur të fletëve të stilizuara, si p.sh. skedarët .css.</translation>

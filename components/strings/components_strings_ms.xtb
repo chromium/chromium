@@ -350,6 +350,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1542105669288201090">Pendidikan Perniagaan</translation>
 <translation id="1542830386724426410">Tunjukkan manfaat kad dan ganjaran yang tersedia semasa semak keluar. Syarat pengeluar dikenakan. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Ketahui lebih lanjut<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Sejarah harga</translation>
+<translation id="1546286808622193216">Bandingkan manfaat kad menggunakan Gemini</translation>
 <translation id="1549470594296187301">JavaScript mesti didayakan untuk menggunakan ciri ini.</translation>
 <translation id="1553152622374372421">Sukan Musim Sejuk</translation>
 <translation id="1553358976309200471">Kemas Kini Chrome</translation>
@@ -2157,6 +2158,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4304049446746819918">{0,plural, =1{Dasar pentadbir tidak mengesyorkan anda memindahkan fail ini ke <ph name="DESTINATION_NAME" />}other{Dasar pentadbir tidak mengesyorkan anda memindahkan fail ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Baca penilaian pelanggan tentang produk, perkhidmatan atau pengalaman untuk membantu anda membuat keputusan berdasarkan ulasan.</translation>
 <translation id="4305666528087210886">Fail anda tidak dapat diakses</translation>
+<translation id="4306349443295056740">Penandatanganan OCSP</translation>
 <translation id="4306529830550717874">Simpan alamat?</translation>
 <translation id="4306812610847412719">papan keratan</translation>
 <translation id="4308567447483056043">Dasar ini diabaikan kerana pengguna bukan ahli gabungan. Untuk menggunakan dasar ini, penyemak imbas dan profil Chrome mesti diurus melalui Konsol pentadbiran oleh organisasi yang sama.</translation>
@@ -2326,6 +2328,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4607608436550361748">Lihat petua Chrome</translation>
 <translation id="460848736049414407">Disekat oleh Pentadbir</translation>
 <translation id="4610279718074907952">Laman ini berada dalam kumpulan, ditakrifkan oleh <ph name="SET_OWNER" />, yang boleh melihat aktiviti anda</translation>
+<translation id="4612631413844865947">Terdapat ralat semasa memproses pesanan anda pada <ph name="MERCHANT_ORIGIN" /> melalui <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Peralatan Bola Sepak</translation>
 <translation id="4612904677925722054">Laman ini mungkin mengandungi kandungan matang. Ibu/bapa atau penjaga perlu menyatakan bahawa anda boleh melawati laman web ini.</translation>
 <translation id="4619564267100705184">Sahkan orang itu ialah anda</translation>
@@ -2415,6 +2418,8 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4744603770635761495">Laluan Boleh Laku</translation>
 <translation id="4744816391336495134">Anda boleh menggunakan cap jari anda untuk mengesahkan identiti anda apabila anda menggunakan kata laluan yang disimpan</translation>
 <translation id="4749011317274908093">Anda menggunakan mod Inkognito</translation>
+<translation id="4749620353539006322">Maksimumkan ganjaran</translation>
+<translation id="4749924365937394956">Pengesahan Pelayan</translation>
 <translation id="4750671009706599284">telefon ini</translation>
 <translation id="4750917950439032686">Maklumat anda (contohnya, kata laluan atau nombor kad kredit) adalah berciri peribadi apabila dihantar ke tapak ini.</translation>
 <translation id="4751249061288707459">Persetujuan terakhir dikemas kini:</translation>
@@ -2989,6 +2994,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5611398002774823980">Simpan dalam akaun</translation>
 <translation id="561165882404867731">Terjemahkan halaman ini dengan Google Translate</translation>
 <translation id="5612720917913232150"><ph name="URL" /> mahu menggunakan lokasi komputer anda</translation>
+<translation id="5613958591683399697">Tanya <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Notis Pengguna</translation>
 <translation id="5614520971155863709">Permainan Kad</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> telah terlalu kerap mengubah hala anda.</translation>
@@ -3245,6 +3251,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6034000775414344507">Kelabu Cerah</translation>
 <translation id="6034514109191629503">Lipatan akordion</translation>
 <translation id="6035491133925068289">Balapan &amp; Padang</translation>
+<translation id="6037458223703682108">Tandatangan Digital</translation>
 <translation id="6039846035001940113">Jika masalah berterusan, hubungi pemilik tapak.</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6040539895181423374">Cerapan Harga</translation>
@@ -3556,6 +3563,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6474220430271405609">Ujian Dasar</translation>
 <translation id="6476284679642588870">Urus kaedah pembayaran</translation>
 <translation id="647881094269678013">Lakonan &amp; Teater</translation>
+<translation id="6480363549849064919">Pengesahan Pelanggan</translation>
 <translation id="6480864723214312258">Bateri Isi Rumah</translation>
 <translation id="6487678699866233349">Muzik Dunia</translation>
 <translation id="6489534406876378309">Mulakan muat naik ranap sistem</translation>

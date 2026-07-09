@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Özel anahtarın giriş değeri geçerli bir biçimde (PKCS#8 biçimli PEM kodlamalı RSA anahtarı) olmalıdır.</translation>
-<translation id="765293928828334535">Bu web sitesinden uygulama, uzantı ve kullanıcı komut dosyaları eklenemez</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7766838926148951335">İzinleri kabul et</translation>
 <translation id="7876803335449432072">İçerik komut dosyasının "<ph name="RELATIVE_PATH" />" dosyası yüklenemedi. İçerik komut dosyası stil sayfaları yalnızca .css dosyaları gibi desteklenen stil sayfası dosyalarından yüklenebilir.</translation>

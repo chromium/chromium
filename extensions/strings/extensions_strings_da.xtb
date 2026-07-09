@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Den indtastede værdi for den private nøgle skal være et gyldigt format (PEM-kodet RSA-nøgle i PKCS#8-format).</translation>
-<translation id="765293928828334535">Apps, udvidelser og brugerscripts kan ikke tilføjes fra dette website</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7766838926148951335">Acceptér tilladelser</translation>
 <translation id="7876803335449432072">Filen "<ph name="RELATIVE_PATH" />" til indholdsscript kunne ikke indlæses. Indholdsscripts med stylesheets kan kun indlæses fra understøttede stylesheetfiler, f.eks. .css-filer.</translation>

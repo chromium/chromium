@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Пам’ять заповнена</translation>
 <translation id="1181037720776840403">Видалити</translation>
 <translation id="1190609913194133056">Центр сповіщень</translation>
+<translation id="1196534270480620381">Створи короткий підсумок цієї сторінки</translation>
 <translation id="1199631150313925648">Ввести вручну</translation>
 <translation id="1199963004393929848">Зелена тема</translation>
 <translation id="1201402288615127009">Далі</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Немає паролів або ключів доступу для цього сайту</translation>
 <translation id="1540800554400757039">Адреса 1</translation>
 <translation id="154312949627292154">Відкривайте вкладки, надіслані з інших пристроїв, на екрані блокування.</translation>
+<translation id="1544653821167545205">Підсумуй вміст сторінки</translation>
 <translation id="1545749641540134597">Сканувати QR-код</translation>
 <translation id="1545757265410828525">Історія цін</translation>
 <translation id="1547610699249301703">Діліться паролями</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Пошук на екрані доступний, лише якщо Google є пошуковою системою за умовчанням. Ви можете змінити пошукову систему за умовчанням у <ph name="BEGIN_LINK" />налаштуваннях<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Ліхтарик</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Що може робити Gemini у Chrome?</translation>
 <translation id="1881621406744213161">Запросіть учасників у сімейну групу</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Панель меню розумного сортування</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Зберігайте паролі, щоб легко входити в облікові записи на сайтах і в додатках.</translation>
 <translation id="2468132863574325555">Диск</translation>
 <translation id="2468444275314013497">Ваш вебпереглядач у безпеці</translation>
+<translation id="2470654816840674524">Що можна робити за допомогою Gemini у Chrome?</translation>
 <translation id="2473876017985765807">Ви вже зберегли пароль для сайту <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Ви можете створити нагадування, щоб повернутися на цю сторінку пізніше</translation>
 <translation id="2479148705183875116">Перейти в налаштування</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Сховати опцію "Перевірка безпеки"</translation>
 <translation id="2625189173221582860">Пароль скопійовано</translation>
 <translation id="2626236249646841566">Перевірте з’єднання та спробуйте ввійти знову.</translation>
+<translation id="2629543259235506452">Створи короткий список поширених запитань щодо цієї теми й відповідей на них, використовуючи інформацію з поточної сторінки й схожих вебсайтів</translation>
 <translation id="2635918910848538771">Автоматично заповнити код CVC</translation>
 <translation id="2640733327287333451">Немає імені користувача ••••••</translation>
 <translation id="264215785133931186">Щойно перевірено</translation>
@@ -967,7 +972,6 @@
 <translation id="4294506173142861371">Увійти як <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Вибрати</translation>
 <translation id="4304713468139749426">Менеджер паролів</translation>
-<translation id="4306349443295056740">Підписання OCSP</translation>
 <translation id="4309403553630140242">Двічі торкніться, щоб дізнатися більше</translation>
 <translation id="4310738531374808763">Налаштуйте домашню сторінку</translation>
 <translation id="4316794575239200608">Ані ваші розмови з Gemini, ані <ph name="BEGIN_LINK" />дані з Google Workspace<ph name="END_LINK" /> не будуть перевірятися спеціалістами Google або використовуватися для покращення моделей генеративного штучного інтелекту.</translation>
@@ -1098,7 +1102,6 @@
 <translation id="4744428388659507035">Щоб мати доступ до закладок на всіх своїх пристроях, увімкніть опцію "Закладки" в налаштуваннях.</translation>
 <translation id="4746926359847517643">Їх завжди можна знайти в історії.</translation>
 <translation id="4749529195026091676">{count,plural, =1{Імпортовано {count} картку}one{Імпортовано {count} картку}few{Імпортовано {count} картки}many{Імпортовано {count} карток}other{Імпортовано {count} картки}}</translation>
-<translation id="4749924365937394956">Автентифікація сервера</translation>
 <translation id="4751645464639803239">Нова анонімна вкладка</translation>
 <translation id="4752348350801431746">Вимкнути сповіщення про перевірку безпеки…</translation>
 <translation id="4759238208242260848">Завантаження</translation>
@@ -1442,7 +1445,6 @@
 <translation id="5859715514067755465">Уперед</translation>
 <translation id="5860491529813859533">Увімкнути</translation>
 <translation id="5868644772996939262">Автозаповнення паролів і ключів доступу</translation>
-<translation id="5869522115854928033">Збережені паролі</translation>
 <translation id="5873179562631407582">Натисніть і утримуйте будь-яку відкриту вкладку</translation>
 <translation id="5887400589839399685">Картку збережено</translation>
 <translation id="5888889603768021126">Ви ввійшли за допомогою:</translation>
@@ -1486,7 +1488,6 @@
 <translation id="6027619584715411062">Увійдіть в обліковий запис, щоб отримати доступ до закладок, паролів і інших даних на всіх пристроях.</translation>
 <translation id="6027945736510816438">Можливо, ви мали на увазі <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">нова функція</translation>
-<translation id="6037458223703682108">Цифровий підпис</translation>
 <translation id="6038823991892265570">Керувати сховищем Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Закрити</translation>
@@ -1641,7 +1642,6 @@
 <translation id="6476284679642588870">Керувати способами оплати</translation>
 <translation id="6476800141292307438">Сторінка перекладається такою мовою: <ph name="LANGUAGE" />. Параметри розташовано внизу екрана.</translation>
 <translation id="647867789226964031">Змініть паролі</translation>
-<translation id="6480363549849064919">Автентифікація клієнта</translation>
 <translation id="6489174933860678546">Використовуйте анонімні вкладки, щоб переглядати вебсторінки конфіденційно.</translation>
 <translation id="6489775505977274806">Сховати опцію "Новий рівень"</translation>
 <translation id="6494931198667773526">Завершення</translation>
@@ -1678,7 +1678,6 @@
 <translation id="6589001036857939353">Об’єднати копії</translation>
 <translation id="659407965921887085">На цій картці показано, де в Інтернеті знизилися ціни на товари, які ви зараз відстежуєте</translation>
 <translation id="6596481460663245319">Шукати зображення в Google</translation>
-<translation id="6598432073497341323">{COUNT,plural, =1{1 пароль}one{# пароль}few{# паролі}many{# паролів}other{# пароля}}</translation>
 <translation id="6601302169302852717">Зображення збережено в Google Фото в обліковому записі <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Автозаповнення й паролі</translation>
 <translation id="6603393121510733479">Адміністратор вашої організації вимкнув режим анонімного перегляду.
@@ -1872,7 +1871,6 @@
 <translation id="7233006041370588369">Виберіть пароль.</translation>
 <translation id="723874023660911012">Змінити профіль</translation>
 <translation id="7241135764990439166">Анонімний режим недоступний</translation>
-<translation id="7248046129087111453"><ph name="BEGIN_LINK" />Історія пошуку<ph name="END_LINK" /> й <ph name="BEGIN_LINK" />дані про інші дії<ph name="END_LINK" /> можуть зберігатися в обліковому записі Google.</translation>
 <translation id="7253951228444156601">Перевірка паролів…</translation>
 <translation id="7261217796641151584">Поділитися групою</translation>
 <translation id="7266578100016339897">Так ви зможете краще впорядкувати роботу. Це можна будь-коли змінити в налаштуваннях.</translation>
@@ -2348,6 +2346,7 @@
 <translation id="8766790350274092814">Паролі для веб-сайтів <ph name="WEBSITE" /> і <ph name="SECOND_WEBSITE" /> буде видалено. Ваші облікові записи не буде видалено.</translation>
 <translation id="8775144690796719618">Недійсна URL-адреса</translation>
 <translation id="8781834595282316166">Нова вкладка в групі</translation>
+<translation id="8783445328207519872">Дай відповіді на поширені запитання щодо цієї теми</translation>
 <translation id="8784653774976848206">Вибрати файли</translation>
 <translation id="8786100550345425552">Змінити дозволи</translation>
 <translation id="878871978861915380">Сховати модуль "Відстеження цін"</translation>

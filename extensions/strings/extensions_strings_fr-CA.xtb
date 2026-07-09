@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">La valeur d'entrée pour la clé privée doit être dans un format valide (clé RSA au format PEM chiffré PKCS #8).</translation>
-<translation id="765293928828334535">Les applications, les extensions et les scripts d'utilisateur ne peuvent pas être ajoutés à partir de ce site Web</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7766838926148951335">Accepter les autorisations</translation>
 <translation id="7876803335449432072">Impossible de charger le fichier « <ph name="RELATIVE_PATH" /> » pour le script de contenu; les feuilles de style de script de contenu ne peuvent être chargées qu'à partir de fichiers de feuille de style pris en charge tels que les fichiers .css.</translation>

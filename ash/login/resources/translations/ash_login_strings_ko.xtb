@@ -6,6 +6,7 @@
 <translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> 기기를 구매해 주셔서 감사합니다</translation>
 <translation id="1069778954840159202">Android 휴대전화에서 자동으로 계정 가져오기</translation>
 <translation id="1076766328672150609">자녀가 PIN을 사용해 기기를 잠금 해제할 수 있습니다</translation>
+<translation id="1091767800771861448">건너뛰려면 Esc 키를 누르세요(비공식 빌드만 해당).</translation>
 <translation id="1097658378307015415">로그인하기 전에 게스트로 로그인하여 <ph name="NETWORK_ID" /> 네트워크를 활성화하세요.</translation>
 <translation id="1111932478203988717">자녀가 이 PIN을 사용하여 기기에 로그인할 수 있습니다</translation>
 <translation id="1122587596907914265">나만의 배경화면을 꾸며보세요.</translation>
@@ -16,6 +17,7 @@
 <translation id="1177073277575830464">Android 빠른 설정이 완료되었습니다. <ph name="DEVICE_TYPE" />에서 설정을 계속하세요</translation>
 <translation id="1179902906564467236">휴대전화의 안내를 따르거나 카메라 앱을 사용하세요.</translation>
 <translation id="1185924365081634987"><ph name="GUEST_SIGNIN_LINK_START" />게스트로 로그인<ph name="GUEST_SIGNIN_LINK_END" />하여 네트워크 오류를 수정할 수도 있습니다.</translation>
+<translation id="1191353342579061195">나에게 적합한 테마를 선택하세요. 바탕화면에서 마우스 오른쪽 버튼을 클릭하면 테마, 배경화면, 화면 보호기 등을 변경할 수 있습니다.</translation>
 <translation id="1201402288615127009">다음</translation>
 <translation id="1217114730239853757">ChromeOS Flex의 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 스페이스바를 누르세요.</translation>
 <translation id="1222835797152767346">더 쉽게 로그인할 수 있도록 PIN 설정하기</translation>
@@ -53,6 +55,8 @@
 <translation id="1377600615067678409">건너뛰기</translation>
 <translation id="1399261165075500043">Google Play 서비스 약관을 로드할 수 없습니다</translation>
 <translation id="1400243387594338234">이 PIN을 사용하여 기기에 로그인할 수 있습니다</translation>
+<translation id="1406500794671479665">확인 중...</translation>
+<translation id="1407069428457324124">어두운 테마</translation>
 <translation id="1417497355604638350">진단 및 사용 데이터 전송.</translation>
 <translation id="1418882096915998312">기업용 등록 진행 중</translation>
 <translation id="1426410128494586442">예</translation>
@@ -78,6 +82,7 @@
 <translation id="169675691788639886">기기에 SSH 서버가 구성되어 있습니다. 민감한 계정을 사용하여 로그인하지 마세요.</translation>
 <translation id="1700517974991662022">방문함</translation>
 <translation id="1730666151302379551">이전 비밀번호 지우기</translation>
+<translation id="1741314857973421784">계속</translation>
 <translation id="1749645492410897998">소프트웨어 설치 중</translation>
 <translation id="177053719077591686">Google Drive에 Android 앱 백업.</translation>
 <translation id="1798832846931769717">Google Beam for Meet</translation>
@@ -90,16 +95,19 @@
 <translation id="185766080319917408">런처 키가 왼쪽 Alt 키 왼쪽에 있음</translation>
 <translation id="1868617395637139709">Android 앱과 서비스에 위치 사용.</translation>
 <translation id="1877377730633446520">약 <ph name="REQUIRED_SPACE" />가 사용됩니다. 현재 <ph name="FREE_SPACE" /> 사용 가능합니다.</translation>
+<translation id="1878155070920054810">업데이트가 완료되기 전에 Chromebook의 전원이 부족해질 것 같습니다. 업데이트 중단을 방지하려면 올바르게 충전되고 있는지 확인하세요.</translation>
 <translation id="189035593835762169">이용약관</translation>
 <translation id="189358972401248634">다른 언어</translation>
 <translation id="1915734383465415025">상점 번호</translation>
 <translation id="1919096511823372013">링크, 이모티콘 등 다양한 콘텐츠를 삽입하세요. Google AI의 도움을 받아 글을 작성하고 이미지를 만들 수도 있습니다.</translation>
 <translation id="1922496389170590548">자녀의 학교 계정</translation>
+<translation id="1931410639376954712"><ph name="DEVICE_OS" /> 설치 중</translation>
 <translation id="1944528062465413897">블루투스 페어링 코드:</translation>
 <translation id="1987574314042117472">인기 앱 선택 및 설치</translation>
 <translation id="1991829061375381344">사용 가능한 라이선스가 부족하여 Google Meet 하드웨어 기기를 등록할 수 없습니다. 추가로 구매하려면 리셀러에게 문의하세요. 이 메시지가 잘못 표시되었다고 생각되면 리셀러에게 문의하세요.</translation>
 <translation id="200928901437634269">자녀의 Google 계정 또는 학교 계정을 사용합니다. 자녀 보호 기능을 설정할 수도 있습니다.</translation>
 <translation id="2013550551806600826">직접 해 보세요. 설정을 사용 설정 또는 중지한 다음 테스트 영역의 터치패드에서 두 손가락으로 스크롤합니다. 나중에 설정 &gt; 기기 &gt; 마우스 및 터치패드에서도 찾을 수 있습니다.</translation>
+<translation id="2016574333161572915">Google Meet 하드웨어 설정 준비가 완료되었습니다</translation>
 <translation id="2018189721942291407">등록해야 하는지 잘 모르는 경우</translation>
 <translation id="2040460856718599782">인증을 시도하는 중에 문제가 발생했습니다. 로그인 사용자 인증 정보를 확인하고 다시 시도해 주세요.</translation>
 <translation id="2052572566310583903">다른 기기에서 설치됨</translation>
@@ -113,9 +121,13 @@
 <translation id="2173801458090845390">이 기기에 요청 ID 추가</translation>
 <translation id="2178585470774851578">sshd 데몬을 설정하고 USB 드라이브에서 부팅할 수 있도록 하는 ChromeOS Flex 디버깅 기능을 사용 설정합니다.</translation>
 <translation id="2183570493397356669">계속 버튼 사용 중지됨</translation>
+<translation id="2210462644007531147">설치를 완료할 수 없음</translation>
 <translation id="221872881068107022">역방향 스크롤</translation>
 <translation id="2219081237089444028">더 쉽게 로그인할 수 있도록 <ph name="DEVICE_TYPE" /> 비밀번호 설정하기</translation>
+<translation id="222115440608612541">일출 및 일몰 시 테마를 전환합니다.</translation>
 <translation id="2229161054156947610">1시간 이상 남음</translation>
+<translation id="2246129643805925002">최신 기능과 보안 개선사항을 제공하기 위해 <ph name="DEVICE_TYPE" /> 업데이트는 백그라운드에서 자동으로 실행됩니다. 설정에서 업데이트 환경설정을 확인할 수 있습니다.</translation>
+<translation id="2274840746523584236">Chromebook 충전하기</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" />에서 기기가 온라인 상태여야 <ph name="EMAIL" />에 로그인할 수 있도록 요구합니다.</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% 완료</translation>
 <translation id="2319072477089403627">Android 휴대전화에 연결 중...</translation>
@@ -125,6 +137,7 @@
 <translation id="2387052489799050037">홈으로 이동</translation>
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> 기기가 엔터프라이즈 관리용으로 등록되었지만 애셋과 위치 정보를 전송하지 못했습니다. 기기의 관리 콘솔에서 애셋과 위치 정보를 직접 입력하세요.</translation>
 <translation id="2408955596600435184">PIN 입력</translation>
+<translation id="2418307627282545839">밝고 가벼운 느낌을 줍니다.</translation>
 <translation id="243179355394256322">조직에서 승인된 사용자만 기기를 등록할 수 있도록 제한하고 있습니다. 이 사용자는 기기를 등록할 권한이 없습니다. 관리 콘솔의 사용자 섹션에서 사용자가 'Google Meet 하드웨어 등록' 관리자 권한을 보유하고 있는지 확인하세요.</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> 비밀번호 재설정</translation>
 <translation id="2450223707519584812">Google API 키가 누락되었으므로 사용자를 추가할 수 없습니다. 자세한 내용은 <ph name="DETAILS_URL" /> 페이지를 참조하세요.</translation>
@@ -132,12 +145,14 @@
 <translation id="2485681265915754872">Google Play 서비스 약관</translation>
 <translation id="248676429071089168">위로 스와이프하여 페이지 아래로 이동</translation>
 <translation id="2501278716633472235">뒤로 이동</translation>
+<translation id="252418934079508528"><ph name="DEVICE_OS" /> 설치</translation>
 <translation id="2538084450874617176">이 <ph name="DEVICE_TYPE" /> 기기는 누가 사용하시나요?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />에서 <ph name="NETWORK_ID" />에 연결할 수 없습니다. 다른 네트워크를 선택하거나 다시 시도하세요.</translation>
 <translation id="2565214867520763227">스크린 리더 사용 설정</translation>
 <translation id="2569972178052279830">소매업체 이름</translation>
 <translation id="257779572837908839">Chromebox 화상회의 시스템으로 설정</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" />(플랫폼 <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
+<translation id="2593499352046705383">시작하기 전에 데이터를 백업해 두어야 합니다. <ph name="DEVICE_OS" /> 운영체제를 설치하면 하드 드라이브가 덮어쓰기됩니다. 다음 페이지에서 자세히 알아보세요. g.co/flex/InstallGuide</translation>
 <translation id="2606454609872547359">아니요, ChromeVox 활성화 없이 계속</translation>
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google 위치 서비스는 이 기기의 위치를 파악하는 데 Wi-Fi, 모바일 네트워크, 센서와 같은 소스를 사용합니다.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />언제든지 기기에서 Android 위치를 사용 중지할 수 있습니다. 설정 &gt; 앱 &gt; Google Play 스토어 &gt; Android 환경설정 관리 &gt; 보안 및 위치 &gt; 위치로 이동하세요. 동일한 메뉴에서 'Google 위치 정확도'를 사용 중지하여 Android 위치에 Wi-Fi, 모바일 네트워크, 센서를 사용하지 않도록 할 수도 있습니다.<ph name="END_PARAGRAPH2" /></translation>
@@ -145,10 +160,12 @@
 <translation id="2687407218262674387">Google 서비스 약관</translation>
 <translation id="2688196195245426394">기기를 서버에 등록하는 중에 오류 발생: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">번들 기기이며 Kiosk &amp; Signage 업그레이드에 등록할 수 없습니다.</translation>
+<translation id="2722540561488096675"><ph name="TIME_LEFT" /> 후 기기가 종료됩니다. 기기 전원을 다시 켜기 전에 USB를 제거하세요. 그런 다음 <ph name="DEVICE_OS" /> 사용을 시작할 수 있습니다</translation>
 <translation id="2725200716980197196">네트워크 연결 복원</translation>
 <translation id="2731700343119398978">잠시 기다려 주세요...</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" />개 중 <ph name="CURRENT_ELEMENT" />번째 추가 콘텐츠</translation>
 <translation id="2740531572673183784">확인</translation>
+<translation id="2742448780373473567"><ph name="DEVICE_OS" />을 설치하면 기기의 모든 데이터를 덮어쓰게 됩니다</translation>
 <translation id="274318651891194348">키보드 검색 중</translation>
 <translation id="2754825024506485820">Google Play 스토어에서 생산성, 엔터테인먼트 등 나에게 필요한 다양한 앱을 찾아보세요. 언제든지 앱을 설치할 수 있습니다.</translation>
 <translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />위치 정확도를 사용하면 무선 신호에 대한 정보(예: Wi-Fi 액세스 포인트, 셀룰러 네트워크 기지국)와 기기 센서 데이터(예: 가속도계 및 자이로스코프)가 더 정확한 기기 위치를 추정하기 위해 사용됩니다. 이는 Android 앱 및 서비스에서 위치 정보 기반 기능을 제공하는 데 사용됩니다. 이를 위해 Google은 이 기기 주변의 기기 센서 및 무선 신호에 대한 정보를 주기적으로 수집하여 크라우드소싱된 무선 신호 위치에 기여합니다.<ph name="END_PARAGRAPH1" />
@@ -161,6 +178,9 @@
 <translation id="2849767214114481738">PIN 추가됨</translation>
 <translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 ChromeOS가 언제 다운되는지, 어떤 기능이 사용되었는지, 일반적으로 메모리가 얼마나 많이 사용되는지 등의 정보가 포함됩니다.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />언제든지 Chrome 기기 설정에서 이 보고서의 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2861301611394761800">시스템 업데이트가 완료되었습니다. 시스템을 다시 시작하세요.</translation>
+<translation id="2870909136778269686">업데이트 중...</translation>
+<translation id="2872961005593481000">종료</translation>
 <translation id="2886119409731773154">최대 30분 걸릴 수 있습니다.</translation>
 <translation id="2893180576842394309">Google에서 내 방문 기록을 사용하여 Google 검색 및 다른 Google 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="2902265136119311513">게스트로 탐색하기</translation>
@@ -179,6 +199,7 @@
 <translation id="313205617302240621">비밀번호 찾기</translation>
 <translation id="3162070126914310576">조직 단위의 초기 등록 한도에 도달하여 이 기기를 지금 등록할 수 없습니다. 관리자에게 문의하여 도움을 받으세요.</translation>
 <translation id="3163511056918491211">언제든지 간편하게 데이터를 복원하거나 기기를 전환하세요. 백업 항목은 Google에 업로드되며 내 Google 계정 비밀번호를 사용하여 암호화됩니다.</translation>
+<translation id="3169930038976362151">나에게 적합한 테마를 선택하세요. 바탕화면에서 길게 터치하면 테마, 배경화면, 화면 보호기 등을 변경할 수 있습니다.</translation>
 <translation id="3170072451822350649">로그인을 건너뛰고 <ph name="LINK_START" />게스트로 로그인<ph name="LINK_END" />할 수도 있습니다.</translation>
 <translation id="3177914167275935955">기기에 Chrome Education 업그레이드가 있지만 사용자 이름이 Google for Education 계정과 연결되어 있지 않습니다. 보조 기기에서 g.co/workspace/edusignup을 방문하여 Google for Education 계정을 만드세요.</translation>
 <translation id="3196912927885212665">Android 휴대전화로 설정하려면 Chromebook의 블루투스가 사용 설정되어 있어야 합니다.</translation>
@@ -190,6 +211,7 @@
 <translation id="3261268979727295785">자녀가 청소년이라면 설정이 완료된 후에 자녀 보호 기능을 추가할 수 있습니다. 살펴보기 앱에서 자녀 보호 기능에 관한 정보를 확인하세요.</translation>
 <translation id="3278001907972365362">Google 계정에 주의가 필요합니다.</translation>
 <translation id="3283148363895519428">휴대전화의 안내에 따라 설정을 계속하세요. 휴대전화가 근처에 있고 블루투스가 켜져 있어야 합니다</translation>
+<translation id="3327050066667856415">Chromebook은 안전하게 설계되었습니다. 기기는 멀웨어로부터 자동으로 보호되고 있으며 소프트웨어가 추가로 필요하지 않습니다.</translation>
 <translation id="3382073616108123819">시스템에서 이 기기의 기기 식별자를 확인하지 못했습니다.</translation>
 <translation id="3382200254148930874">감독 기능 중지...</translation>
 <translation id="3384362484379805487">디스크 공간 절약을 위해 언어 파일은 사용자 간에 공유됩니다.</translation>
@@ -205,6 +227,8 @@
 <translation id="350397915809787283">계정이 없는 경우 첫 번째 옵션을 선택하여 계정을 만드세요.</translation>
 <translation id="3520824492621090923">키오스크 및 사이니지 기기를 등록하시겠습니까?</translation>
 <translation id="3547954654003013442">프록시 설정</translation>
+<translation id="3550915441744863158">Chrome은 자동으로 업데이트되므로 항상 최신 버전을 사용할 수 있습니다.</translation>
+<translation id="3559533181353831840">약 <ph name="TIME_LEFT" /> 남음</translation>
 <translation id="3577473026931028326">문제가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> 하드웨어 데이터 수집</translation>
 <translation id="3602290021589620013">미리보기</translation>
@@ -230,24 +254,30 @@
 <translation id="3837569373891539515">해당하는 항목을 모두 선택할 수 있습니다. <ph name="DEVICE_TYPE" /> 설정을 완료한 후 설정에서도 이러한 옵션을 찾을 수 있습니다</translation>
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3856470183388031602"><ph name="DEVICE_TYPE" />에서 Google 계정 사용하기</translation>
+<translation id="3856800405688283469">시간대 선택</translation>
 <translation id="3893630138897523026">ChromeVox(음성 피드백)</translation>
 <translation id="3897746662269329507"><ph name="DEVICE_TYPE" />은 게임용으로 빌드되었습니다. 살펴보기 앱이 열리면 수백 가지의 최신 게임에 액세스하고, 게임 혜택을 확인하고, 기기와 함께 제공되는 게임 기능을 살펴볼 수 있습니다.</translation>
 <translation id="389901847090970821">키보드 선택</translation>
 <translation id="3910588685973519483">AI로 배경화면 만들기</translation>
 <translation id="3924259174674732591">디스플레이 및 텍스트 크기 <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3950820424414687140">로그인</translation>
+<translation id="397703832102027365">완료 중...</translation>
 <translation id="3983400541576569538">일부 앱 데이터가 사라질 수 있습니다.</translation>
 <translation id="3984159763196946143">데모 모드를 시작할 수 없음</translation>
+<translation id="3988996860813292272">시간대 선택</translation>
 <translation id="3994318741694670028">컴퓨터가 잘못된 형식의 하드웨어 ID로 구성되어 있습니다. 이렇게 하면 ChromeOS Flex가 최신 보안 수정사항으로 업데이트되지 않으며 컴퓨터가 <ph name="BEGIN_BOLD" />악의적인 공격에 취약해질 수 있습니다<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">PIN 설정</translation>
+<translation id="403725336528835653">먼저 사용해 보기</translation>
 <translation id="4044883420905480380">Wi-Fi에 연결되어 있으며 Android 휴대전화를 사용하여 <ph name="USER_EMAIL" />에 로그인했습니다</translation>
 <translation id="4047726037116394521">홈으로 이동</translation>
 <translation id="4062561150282203854"><ph name="DEVICE_TYPE" /> 앱, 설정 등을 동기화</translation>
 <translation id="4089743381329341712">선택한 앱은 설정 후에 설치됩니다. 나중에 앱/게임 앱에서 더 많은 추천을 받아보세요</translation>
 <translation id="4104944259562794668">나중에 설정 &gt; 보안 및 개인 정보 보호 &gt; 잠금 화면 및 로그인에서 사용 설정할 수 있습니다.</translation>
+<translation id="4132183752438206707">Google Play 스토어에서 앱 찾기</translation>
 <translation id="4135746311382563554">Chrome 및 Chrome OS 추가 서비스 약관</translation>
 <translation id="41365691917097717">계속하면 Android 앱 생성과 테스트에 ADB 디버깅을 사용 설정합니다. 이렇게 하면 Google에서 확인하지 않은 Android 앱을 설치할 수 있게 되며, 사용 중지하려면 초기화가 필요합니다.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" />님이 유효한 조직에 속해 있지 않습니다. 관리자에게 문의하세요. 관리자인 경우 g.co/ChromeEnterpriseAccount를 방문하여 조직을 설정할 수 있습니다.</translation>
+<translation id="4167393659000039775">Google은 데이터 손실에 대해 책임지지 않으며 <ph name="DEVICE_OS" /> 운영체제는 인증되지 않은 모델에서 작동하지 않을 수 있습니다. 다음 페이지에서 자세히 알아보세요. g.co/flex/InstallGuide</translation>
 <translation id="4209092469652827314">크게</translation>
 <translation id="4213918571089943508">자녀의 Google 계정</translation>
 <translation id="4228071595943929139">조직의 이메일 주소 사용</translation>
@@ -265,6 +295,8 @@
 <translation id="4309165024397827958">위치 정보 액세스 권한이 있는 Android 앱과 서비스가 기기의 위치를 사용하도록 허용합니다. Google에서는 위치 정확도와 위치 기반 서비스를 개선하기 위해 위치 데이터를 주기적으로 수집하여 익명으로 사용할 수 있습니다.</translation>
 <translation id="4317733381297736564">인앱 구매</translation>
 <translation id="4341905082470253054">TPM 상태 확인 중...</translation>
+<translation id="434198521554309404">빠르고 안전하며 편리한 브라우저</translation>
+<translation id="4358643842961018282">기기가 최신 상태임</translation>
 <translation id="4370975561335139969">입력한 이메일과 비밀번호가 일치하지 않습니다.</translation>
 <translation id="4373418556073552953">Android 휴대전화로 로그인</translation>
 <translation id="4378556263712303865">기기 요청</translation>
@@ -282,6 +314,7 @@
 <translation id="445099924538929605"><ph name="DEVICE_OS" />에서 데이터를 더욱 안전하게 저장할 수 있는 활성 상태의 TPM을 감지했습니다.</translation>
 <translation id="4472298120638043495">원하는 Google 계정 언어(<ph name="NEW_LOCALE_FROM_GAIA" />)를 사용할 수 있습니다.</translation>
 <translation id="4472575034687746823">시작하기</translation>
+<translation id="4487489714832036847">Chromebook에서는 기존 소프트웨어 대신 앱을 사용합니다. 생산성, 엔터테인먼트 등을 위한 앱을 활용해 보세요.</translation>
 <translation id="450867954911715010">접근성 설정</translation>
 <translation id="4519605771716872386">파일 동기화 사용 설정됨</translation>
 <translation id="4531924570968473143"><ph name="DEVICE_TYPE" />에 어떤 사용자를 추가할까요?</translation>
@@ -298,10 +331,12 @@
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> 계정은 유효한 Google for Education 계정이 아닙니다. 관리자에게 문의하세요. 관리자인 경우 g.co/workspace/edusignup에서 조직을 설정할 수 있습니다.</translation>
 <translation id="4780558987886269159">업무용</translation>
 <translation id="4806457879608775995">약관을 검토하고 데이터를 관리하세요</translation>
+<translation id="4809927044794281115">밝은 테마</translation>
 <translation id="4814327014588285482">건너뛰고 나중에 알림</translation>
 <translation id="4830502475412647084">OS 업데이트 설치 중</translation>
 <translation id="4837926214103741331">더 이상 이 기기를 사용할 권한이 없습니다. 기기 소유자에게 로그인 권한에 대해 문의하세요.</translation>
 <translation id="4844333629810439236">기타 키보드</translation>
+<translation id="484462545196658690">자동</translation>
 <translation id="4864369630010738180">로그인 중...</translation>
 <translation id="4867272607148176509">부모님은 앱을 승인 또는 차단하고, 시간제한을 설정하고, 웹 탐색을 제어할 수 있습니다. 나중에 학교 계정을 추가하여 대부분의 학교 리소스에 액세스할 수 있습니다.</translation>
 <translation id="4877652723592270843">ChromeOS Flex의 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 볼륨 키 2개를 5초 동안 길게 누르세요.</translation>
@@ -371,22 +406,29 @@
 <translation id="5527474464531963247">다른 네트워크를 선택할 수도 있습니다.</translation>
 <translation id="5539070192556911367">Google에 연결할 수 없음</translation>
 <translation id="5549511085333906441">설정 선택</translation>
+<translation id="5554403733534868102">다음부터는 업데이트를 기다리지 않아도 됩니다</translation>
 <translation id="557722062034137776">기기를 재설정해도 Google 계정 또는 계정에 동기화된 데이터에 영향을 주지 않습니다. 하지만 기기에 로컬로 저장된 파일은 모두 삭제됩니다.</translation>
+<translation id="5600348067066185292">간단한 몇 단계면 설치가 완료됩니다. 컴퓨터를 변경하기 전에 한 번 더 확인할 기회가 있습니다.</translation>
 <translation id="5626172233890210551">대신 비밀번호 사용</translation>
 <translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />최상의 사용자 경험을 제공하기 위해 <ph name="DEVICE_OS" />에서는 어떤 업데이트가 전송되어야 하는지 결정하고자 기기의 하드웨어 데이터를 수집하여 Google과 공유합니다. <ph name="DEVICE_OS" /> 사용자 경험과 서비스 지원 개선이라는 추가적인 목적을 위해 사용자가 Google에서 이 데이터를 사용하도록 허용할 수도 있습니다.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />이 기기에 로그인한 후 chrome://system에서 chromeosflex_로 표시된 입력란을 확인하면 업데이트 필터링을 사용하여 Google에 전송되는 데이터를 확인할 수 있으며, Google과 데이터를 공유하도록 선택한 다른 항목도 살펴볼 수 있습니다.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" />에서 Google과 공유할 수 있는 데이터와 데이터가 사용되는 방식에 관해 자세히 알아보려면 다음 페이지를 참고하세요. g.co/flex/HWDataCollection<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" />을(를) 사용하려면 먼저 몇 초 뒤에 자동으로 열리는 <ph name="LINK_START" />네트워크 로그인 페이지로 이동<ph name="LINK_END" />해야 합니다. 네트워크 로그인 페이지가 자동으로 열리지 않으면 네트워크를 사용할 수 없습니다.</translation>
+<translation id="5641608986289282154"><ph name="DEVICE_OS" /> 사용 시작</translation>
 <translation id="5655296450510165335">기기 등록</translation>
 <translation id="565899488479822148">최신 업데이트 설치 중</translation>
 <translation id="5659964844710667266">이 <ph name="DEVICE_TYPE" />의 비밀번호 생성</translation>
 <translation id="5684661240348539843">자산 식별자</translation>
 <translation id="5684950556880280580">비밀번호가 업데이트됨</translation>
+<translation id="5687326903064479980">시간대</translation>
+<translation id="5687935527303996204">기기가 연결되어 있는지 확인하고 끄지 마세요. 설치는 최대 20분이 소요될 수 있습니다. 설치가 완료되면 기기가 자동으로 종료됩니다</translation>
 <translation id="5705882733397021510">뒤로</translation>
+<translation id="5711010025974903573">서비스 로그</translation>
 <translation id="5762787084360227629">Google 계정 정보 입력</translation>
 <translation id="5764797882307050727">기기의 저장용량을 확보하세요.</translation>
 <translation id="5765425701854290211">죄송합니다. 일부 파일이 손상되어 업데이트에 실패했습니다. 동기화된 파일은 안전하게 유지됩니다.</translation>
 <translation id="5770125698810550803">탐색 버튼 표시</translation>
+<translation id="5793339252089865437">모바일 네트워크를 통해 업데이트를 다운로드하면 요금이 과도하게 부과될 수 있습니다.</translation>
 <translation id="5799478978078236781"><ph name="DEVICE_TYPE" /> 관련 도움말, 혜택 및 소식을 받아 보고 의견을 공유하세요.</translation>
 <translation id="5800703268655655701">밝은 테마 또는 어두운 테마 선택</translation>
 <translation id="5804259315582798390">로컬 데이터 복구를 사용 설정할 수 없음</translation>
@@ -397,12 +439,14 @@
 <translation id="5856721540245522153">디버깅 기능 사용</translation>
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5860491529813859533">사용</translation>
+<translation id="5863445608433396414">디버깅 기능 사용</translation>
 <translation id="5870086504539785141">접근성 메뉴 닫기</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5895335062901455404">Google 계정으로 로그인할 경우 모든 ChromeOS Flex 기기에서 저장된 환경설정 및 활동을 사용할 수 있습니다. 설정에서 동기화할 항목을 선택하세요.</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5919305207330938913">수집된 모든 데이터는 Google <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />에 따라 사용됩니다.</translation>
 <translation id="5932441198730183141">사용 가능한 라이선스가 부족하여 Google Meet 하드웨어 기기를 등록할 수 없습니다. 판매처에 문의하여 추가로 구매하세요. 이 메시지가 잘못 표시되었다고 생각하는 경우 지원팀에 문의하세요.</translation>
+<translation id="5933376509899483611">시간대</translation>
 <translation id="5939518447894949180">초기화</translation>
 <translation id="5948536763493709626">키보드 또는 마우스를 연결하거나 터치스크린을 사용하여 설정을 계속하세요. 블루투스 기기를 사용 중인 경우 기기를 페어링할 준비가 되었는지 확인합니다.</translation>
 <translation id="5959471481388474538">네트워크에 연결할 수 없음</translation>
@@ -411,8 +455,10 @@
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6051354611314852653">시스템에서 이 기기에 대한 API 액세스를 승인하지 못했습니다.</translation>
 <translation id="6055544610007596637">Google Play 스토어에서 <ph name="DEVICE_TYPE" />용 앱 설치</translation>
+<translation id="6069464830445383022">Google 계정으로 Chromebook 로그인하기</translation>
 <translation id="6071181508177083058">비밀번호 확인</translation>
 <translation id="6075731018162044558">시스템이 이 기기에 대한 장기 API 액세스 토큰을 획득하지 못했습니다.</translation>
+<translation id="6093888419484831006">업데이트를 취소하는 중...</translation>
 <translation id="6125479973208104919">이 <ph name="DEVICE_TYPE" />에 계정을 다시 추가해야 합니다.</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6170498031581934115">ADB 디버깅을 사용 설정할 수 없습니다. 설정으로 이동하여 다시 시도해 보세요.</translation>
@@ -422,6 +468,7 @@
 <translation id="6202304368170870640">PIN을 사용하여 로그인하거나 기기를 잠금 해제할 수 있습니다.</translation>
 <translation id="6209908325007204267">기기에 Chrome Enterprise 업그레이드가 있지만 사용자 이름이 엔터프라이즈 계정에 연결되어 있지 않았습니다. 다른 기기에서 다음 페이지를 방문하여 엔터프라이즈 계정을 만드세요. g.co/ChromeEnterpriseAccount</translation>
 <translation id="623261264391834964">작성 지원 기능을 사용하려면 텍스트 상자를 마우스 오른쪽 버튼으로 클릭하세요.</translation>
+<translation id="6264520534872750757">기기 계속 사용</translation>
 <translation id="6280215091796946657">다른 계정으로 로그인</translation>
 <translation id="6283823201263716145">데모 모드 기기는 기능 및 성능 개선을 위해 비정상 종료 보고서와 함께 진단 및 사용 데이터를 Google에 자동으로 전송합니다.</translation>
 <translation id="6287713404380454515">보안상의 이유로 관리자가 기기 PIN 및 비밀번호를 사용 중지했습니다. 이제부터 <ph name="MANAGER" /> 비밀번호를 사용하세요.</translation>
@@ -430,6 +477,7 @@
 <translation id="6314819609899340042">이 <ph name="IDS_SHORT_PRODUCT_NAME" /> 기기에서 디버깅 기능을 사용 설정했습니다.</translation>
 <translation id="6343262564968371601">Google, 파일, 앱 등을 검색하여 원하는 항목을 찾으세요.</translation>
 <translation id="635609604405270300">기기를 계속 켜두세요.</translation>
+<translation id="6363786367719063276">로그 보기</translation>
 <translation id="6367097275976877956">ChromeOS 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 스페이스바를 누르세요.</translation>
 <translation id="636850387210749493">엔터프라이즈 등록</translation>
 <translation id="6380143666419481200">동의 및 계속</translation>
@@ -437,6 +485,7 @@
 <translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 ChromeOS가 언제 다운되는지, 어떤 기능을 사용하는지, 일반적으로 메모리를 얼마나 많이 사용하는지 등의 정보가 포함될 수 있습니다.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />언제든지 Chrome 기기 설정에서 이 보고서의 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">중요한 업데이트 설치</translation>
+<translation id="6452251728599530347"><ph name="PERCENT" /> 완료</translation>
 <translation id="6478849105642611893">빠른 입력 키는 Tab 키 아래에 있습니다</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />에서 관리함</translation>
 <translation id="6488384360522318064">언어 선택</translation>
@@ -454,6 +503,7 @@
 <translation id="6675665718701918026">포인팅 기기 연결됨</translation>
 <translation id="667752334740867460">Wi-Fi 정보 수신 중…</translation>
 <translation id="6680442031740878064">사용 가능한 저장용량: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="6684827949542560880">최신 업데이트 다운로드 중</translation>
 <translation id="6722744767592605627"><ph name="EMAIL" /> 계정을 복구할 수 있지만 로컬 데이터는 삭제됩니다</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />을 읽었으며 이에 동의합니다.</translation>
 <translation id="6749473226660745022">사진</translation>
@@ -463,15 +513,18 @@
         <ph name="BEGIN_PARAGRAPH2" />자녀의 ChromeOS 기기 설정에서 언제든 보고서 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH4" />자녀의 Google 계정에 웹 및 앱 활동이 사용 설정되어 있다면 관련 데이터가 자녀의 Google 계정에 저장될 수 있습니다. families.google.com에서 이러한 설정 및 설정을 조정하는 방법을 자세히 알아보세요.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609"><ph name="DEVICE_TYPE" />에 제공되는 인기 앱</translation>
+<translation id="6818802132960437751">내장 바이러스 보호 기능</translation>
 <translation id="682971198310367122">Google 개인정보처리방침</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />을(를) 업데이트하려면 인터넷에 연결하세요.</translation>
 <translation id="6839916869147598086">로그인 변경됨</translation>
 <translation id="6852529053326738838">조직에 문의하거나 직장 이메일로 등록하여 계정이 자격 요건을 충족하는지 확인하세요.</translation>
 <translation id="6867671714894555998">새 키보드로 빠르게 작업하세요</translation>
+<translation id="6881845890692344060">관리자가 로그아웃했습니다. 사용자가 직접 관리할 수 있습니다.</translation>
 <translation id="6883319974225028188">시스템에서 기기 구성을 저장하지 못했습니다.</translation>
 <translation id="6888831646723563669">연결하여 새 <ph name="DEVICE_TYPE" />의 모든 기능을 이용하세요.</translation>
 <translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />앱 데이터에는 연락처, 메시지, 사진을 비롯하여 개발자 설정에 따라 앱에서 저장한 모든 데이터가 포함될 수 있습니다. 백업 데이터는 자녀의 Drive 스토리지 저장용량에 포함되지 않습니다.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />이 서비스는 설정에서 사용 중지할 수 있습니다.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="6897688156970667447">어두운 곳에서도 잘 보이며 배터리 절약에 도움이 됩니다.</translation>
 <translation id="6903907808598579934">동기화 사용 설정</translation>
 <translation id="6918733588290914545">Android 휴대전화를 사용한 빠른 설정</translation>
 <translation id="6920473853105515518"><ph name="DEVICE_TYPE" /> 기기가 인터넷에 연결되었는지 확인하고 다시 시도하세요. 다른 기기에서 play.google/play-terms를 방문할 수도 있습니다.</translation>
@@ -500,6 +553,7 @@
 <translation id="7135729336746831607">블루투스를 사용 설정하시겠습니까?</translation>
 <translation id="7141105143012495934">계정 세부정보를 가져올 수 없어 로그인할 수 없습니다. 관리자에게 문의하거나 다시 시도해 주세요.</translation>
 <translation id="7144878232160441200">다시 시도</translation>
+<translation id="7149839598364933473">이 기기를 <ph name="DEVICE_OS" /> 기기로 전환합니다</translation>
 <translation id="7171259390164035663">등록하지 않음</translation>
 <translation id="7189451821249468368">기기를 등록하는 데 필요한 업그레이드가 부족합니다. 판매처에 문의하여 추가로 구매하시기 바랍니다. 이 메시지가 잘못 표시되었다고 판단되는 경우 지원팀에 문의하세요.</translation>
 <translation id="7202337678781136582">Android 휴대전화로 QR 코드 스캔</translation>
@@ -534,8 +588,10 @@
 <translation id="7560756177962144929"><ph name="DEVICE_TYPE" /> 동기화</translation>
 <translation id="7571643774869182231">저장용량이 부족하여 업데이트할 수 없음</translation>
 <translation id="7616214729753637086">기기 등록 중...</translation>
+<translation id="7619937211696316184">유지보수가 완료되었습니다.</translation>
 <translation id="7622114377921274169">충전 중</translation>
 <translation id="7630426712700473382">이 기기는 <ph name="MANAGER" />에서 관리하며, 사용할 때마다 로그인해야 합니다.</translation>
+<translation id="7633724038415831385">이번에만 업데이트를 기다리시면 됩니다. Chromebook에서는 소프트웨어 업데이트가 백그라운드에서 이루어집니다.</translation>
 <translation id="7639914187072011620">SAML 리디렉션 URL을 서버에서 가져올 수 없습니다.</translation>
 <translation id="7643117827468520640">약관 검토</translation>
 <translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />앱 데이터에는 연락처, 메시지, 사진을 비롯하여 개발자 설정에 따라 앱에서 저장한 모든 데이터가 포함될 수 있습니다. 백업 데이터는 Drive 스토리지 저장용량에 포함되지 않습니다.<ph name="END_PARAGRAPH1" />
@@ -574,7 +630,9 @@
 <translation id="7968982339740310781">세부정보 보기</translation>
 <translation id="7975504106303186033">Chrome Education 기기를 Education 계정에 등록해야 합니다. 새 계정으로 가입하려면 g.co/workspace/edusignup 페이지로 이동하세요.</translation>
 <translation id="7980084013673500153">애셋 ID: <ph name="ASSET_ID" /></translation>
+<translation id="7981670705071137488">이후로 소프트웨어 업데이트는 백그라운드에서 실행됩니다. 설정에서 업데이트 환경설정을 확인할 수 있습니다.</translation>
 <translation id="7982083145464587921">오류를 해결하려면 기기를 다시 시작하세요.</translation>
+<translation id="7988805580376093356">OS는 그대로 두고 USB에서 <ph name="DEVICE_OS" />을 실행하세요</translation>
 <translation id="7990958035181555539">Android 휴대전화의 Wi-Fi 자동 전송</translation>
 <translation id="8022466874160067884">Google 계정 및 비밀번호 입력</translation>
 <translation id="8049029041626250638">키보드 또는 마우스를 연결하세요. 블루투스 기기를 사용 중인 경우 기기를 페어링할 준비가 되었는지 확인합니다.</translation>
@@ -583,6 +641,7 @@
 <translation id="8065144531309810062">Google AI를 사용하여 창의성과 생산성 높이기</translation>
 <translation id="8082106343289440791">‘<ph name="DEVICE_NAME" />’과(와) 페어링하시겠습니까?</translation>
 <translation id="8097959162767603171">관리자가 먼저 관리 콘솔의 Chrome 기기 목록에서 서비스 약관에 동의해야 합니다.</translation>
+<translation id="8098156986344908134"><ph name="DEVICE_OS" />을 설치하고 하드 드라이브를 삭제할까요?</translation>
 <translation id="8098616321286360457">네트워크 연결 필요</translation>
 <translation id="8129265306888404830">조직(<ph name="EMAIL_DOMAIN" />)의 이메일 주소를 사용하려면 엔터프라이즈 등록을 사용해야 합니다. 이 기기를 개인용으로 사용하는 경우 개인 Google 계정으로 로그인하세요.</translation>
 <translation id="8131740175452115882">확인</translation>
@@ -596,6 +655,7 @@
 <translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Google 위치 서비스는 기기 위치를 파악하는 데 Wi-Fi, 모바일 네트워크, 센서와 같은 소스를 사용합니다.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />언제든지 기기에서 Android 위치를 사용 중지할 수 있습니다. 설정 &gt; 앱 &gt; Google Play 스토어 &gt; Android 환경설정 관리 &gt; 보안 및 위치 &gt; 위치로 이동하세요. 동일한 메뉴에서 'Google 위치 정확도'를 사용 중지하여 Android 위치에 Wi-Fi, 모바일 네트워크, 센서를 사용하지 않도록 할 수도 있습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999"><ph name="DEVICE_TYPE" /> 프로필을 업데이트하려면 비밀번호 다시 입력</translation>
+<translation id="822050276545350872">이제부터는 기다릴 필요 없습니다</translation>
 <translation id="8239032431519548577">기업 등록 완료</translation>
 <translation id="8241806945692107836">기기 설정을 확인하는 중...</translation>
 <translation id="8242426110754782860">계속</translation>
@@ -603,11 +663,13 @@
 <translation id="8271379370373330993">다음 몇 단계는 부모님이 진행하셔야 합니다. 계정 설정이 완료된 후 <ph name="DEVICE_TYPE" /> 기기를 자녀에게 돌려주세요.</translation>
 <translation id="8274924778568117936">업데이트가 완료될 때까지 <ph name="DEVICE_TYPE" />을(를) 끄거나 닫지 마세요. 설치가 완료되면 <ph name="DEVICE_TYPE" />이(가) 다시 시작됩니다.</translation>
 <translation id="8281886186245836920">건너뛰기</translation>
+<translation id="8289509909262565712"><ph name="DEVICE_OS" /> 시작하기</translation>
 <translation id="8291942417224950075">개인용</translation>
 <translation id="8304383784961451596">이 기기를 사용할 권한이 없습니다. 관리자에게 문의하여 로그인 권한을 요청하거나 Family Link의 감독을 받는 Google 계정으로 로그인하세요.</translation>
 <translation id="8321837372750396788">이 <ph name="DEVICE_TYPE" />은(는) <ph name="MANAGER" />에서 관리할 예정입니다.</translation>
 <translation id="8339288417038613756">디스플레이 및 텍스트 크기</translation>
 <translation id="8354034204605718473">자녀의 PIN 추가됨</translation>
+<translation id="8360140320636871023">화면 테마 맞춤설정</translation>
 <translation id="8366396658833131068">네트워크 연결이 복원되었습니다. 키오스크 앱을 실행하려면 다른 네트워크를 선택하거나 아래에서 '계속' 버튼을 누르세요.</translation>
 <translation id="8401432541486058167">스마트 카드와 연결된 PIN을 입력하세요.</translation>
 <translation id="8408270600235826886">사용자는 Google과 어떤 데이터를 공유할지 관리할 수 있으며 언제든지 설정에서 변경할 수 있습니다. 데이터는 Google의 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />에 따라 사용됩니다.</translation>
@@ -619,6 +681,7 @@
 <translation id="8464132254133862871">서비스를 받을 수 없는 사용자 계정입니다.</translation>
 <translation id="8524841856047224176">영상 통화 등을 위한 카메라 배경을 맞춤설정하세요.</translation>
 <translation id="8527257351549797148">앱, 확장 프로그램 등에 액세스하려면 조직에서 등록을 요구할 수도 있습니다. 이를 통해 조직에서 보안 및 기기 설정 등을 관리할 수 있습니다.</translation>
+<translation id="8549316893834449916">Gmail, 드라이브, YouTube 등에 사용하는 계정과 동일한 Google 계정으로 Chromebook에 로그인합니다.</translation>
 <translation id="8558063527625343224">Google Beam 설정</translation>
 <translation id="8569673829373920831"><ph name="APP_NAME" />에 관해 더 알아보기</translation>
 <translation id="8586421813321819377">위치 정보 액세스 권한이 있는 ChromeOS 및 Android의 앱, 웹사이트, 서비스에서 기기의 위치를 사용하도록 허용합니다. 위치 정확도는 Android 앱 및 서비스에 대해 더 정확한 위치 정보를 제공합니다. 이를 위해 Google은 기기 센서 및 기기의 무선 신호에 대한 정보를 주기적으로 처리하여 무선 신호 위치 정보를 크라우드소싱합니다. 이러한 정보는 사용자의 신원을 밝히지 않고 사용되며, 위치 정확도와 위치 기반 서비스를 개선하고, 사용자의 요구사항 충족을 목적으로 Google 및 서드 파티의 적법한 이익에 따라 Google 서비스를 개선, 제공, 유지하는 데 사용됩니다.</translation>
@@ -627,11 +690,13 @@
         <ph name="BR" />
         <ph name="BR" />
         근처 기기에 표시되는 이름: <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
+<translation id="8637688295594795546">시스템 업데이트 사용가능. 다운로드 준비 중…</translation>
 <translation id="8655972064210167941">비밀번호를 확인할 수 없어 로그인할 수 없습니다. 관리자에게 문의하거나 다시 시도해 주세요.</translation>
 <translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />위치 정확도를 사용하면 무선 신호에 대한 정보(예: Wi-Fi 액세스 포인트, 셀룰러 네트워크 기지국)와 기기 센서 데이터(예: 가속도계 및 자이로스코프)가 더 정확한 기기 위치를 추정하기 위해 사용됩니다. 이는 Android 앱 및 서비스에서 위치 정보 기반 기능을 제공하는 데 사용됩니다. 이를 위해 Google은 사용자 주변의 기기 센서 및 무선 신호에 대한 정보를 주기적으로 수집하여 크라우드소싱된 무선 신호 위치에 기여합니다.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Google은 사용자를 식별하지 않고 이 정보를 사용하여 위치 정확도 및 위치 기반 서비스를 개선하고, Google 서비스를 전반적으로 개선, 제공, 유지 관리합니다. Google은 사용자의 요구사항을 충족하기 위해 Google 및 서드 파티의 적법한 이익에 따라 이 정보를 처리합니다.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />언제든지 기기의 위치 설정(설정 &gt; 개인 정보 보호 및 보안 &gt; 개인 정보 보호 설정 &gt; 위치 정보 액세스 &gt; 고급 위치 설정)에서 위치 정확도를 사용 중지할 수 있습니다. 정확도를 사용 중지하면 위치 정확도 데이터가 수집되지 않습니다. Android 앱 및 서비스의 경우 IP 주소만 사용하여 기기 위치를 파악합니다(사용 가능한 경우). 이는 Android 앱 및 서비스(예: Google 지도)의 위치 사용 가능 여부와 정확성에 영향을 줄 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">컴퓨터가 잘못된 형식의 하드웨어 ID로 구성되어 있습니다. 이렇게 하면 ChromeOS가 최신 보안 수정사항으로 업데이트되지 않으며 컴퓨터가 <ph name="BEGIN_BOLD" />악의적인 공격에 취약해질 수 있습니다<ph name="END_BOLD" />.</translation>
+<translation id="8675704450909805533">설치 프로그램이 <ph name="DEVICE_OS" /> 설치를 위한 유효한 위치를 찾을 수 없습니다</translation>
 <translation id="8695139659682234808">설정 완료 후 자녀 보호 기능 추가</translation>
 <translation id="8698269656364382265">이전 화면으로 돌아가려면 왼쪽에서 스와이프하세요.</translation>
 <translation id="8718994464069323380">터치스크린 감지됨</translation>
@@ -641,10 +706,12 @@
 <translation id="8740086188450289493">Google 계정 비밀번호 사용</translation>
 <translation id="8740247629089392745">이 Chromebook을 <ph name="SUPERVISED_USER_NAME" />님에게 전달할 수 있습니다. 설정이 거의 끝났습니다. 기기를 살펴보세요.</translation>
 <translation id="8759753423332885148">자세히 알아보기</translation>
+<translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> 업데이트 필요</translation>
 <translation id="8777628254805677039">루트 비밀번호</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8783834180813871000">블루투스 페어링 코드를 입력하고 Return 또는 Enter 키를 누르세요.</translation>
 <translation id="8794548468611058947">로그인할 때 Google 계정 비밀번호를 입력하는 대신 <ph name="DEVICE_TYPE" /> 기기에서 사용할 PIN을 만들 수 있습니다</translation>
+<translation id="8830779999439981481">업데이트 적용을 위해 다시 시작하는 중</translation>
 <translation id="8830796635868321089">현재 프록시 설정을 사용하여 업데이트를 확인하지 못했습니다. <ph name="PROXY_SETTINGS_LINK_START" />프록시 설정<ph name="PROXY_SETTINGS_LINK_END" />을 조정하세요.</translation>
 <translation id="8855977033756560989">이 Chromebook Enterprise 기기는 Chrome Enterprise 업그레이드와 함께 제공됩니다. 엔터프라이즈 기능을 활용하려면 Google 관리 계정으로 이 기기를 등록하세요.</translation>
 <translation id="885746075120788020">Google 계정을 사용해 로그인할 경우 모든 ChromeOS 기기에서 저장된 환경설정 및 활동을 사용할 수 있습니다. 설정에서 동기화할 항목을 선택하세요</translation>
@@ -663,6 +730,7 @@
 <translation id="8975396729541388937">수신한 이메일의 링크를 클릭하여 언제든지 수신 거부할 수 있습니다.</translation>
 <translation id="8987305927843254629">모든 사용자는 자신의 환경을 맞춤설정하고 데이터를 비공개로 유지할 수 있습니다.</translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> 비밀번호를 잊어버린 경우에도 로컬 데이터를 복원할 수 있습니다. Google 계정에 로그인하거나 계정 복구를 사용해야 합니다.</translation>
+<translation id="9018218886431812662">설치 완료</translation>
 <translation id="9033765790910064284">무시하고 계속</translation>
 <translation id="903480517321259405">PIN 다시 입력</translation>
 <translation id="9040473193163777637">ChromeOS 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 볼륨 키 2개를 5초 동안 동시에 길게 누르세요.</translation>
@@ -680,6 +748,7 @@
         <ph name="BR" />
         <ph name="BR" />
         표시 이름: <ph name="DEVICE_TYPE" />...</translation>
+<translation id="945522503751344254">의견 보내기</translation>
 <translation id="951991426597076286">거부</translation>
 <translation id="954749761428814584">언어 및 입력 방법</translation>
 <translation id="960987915827980018">약 1시간 남음</translation>

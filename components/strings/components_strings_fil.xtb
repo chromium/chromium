@@ -504,6 +504,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="175656076281618225">Magic</translation>
 <translation id="1757773103848038814">Monospace Font</translation>
 <translation id="1757935267918149452">Button na Palitan ang password sa Google, i-activate para mapalitan ang password ng Google Account mo</translation>
+<translation id="1759776526873274358">I-autofill ang mga code sa pag-verify na ginagamit ng mga site para pahusayin ang iyong seguridad. Makukuha ng Chrome ang mga code na ito mula sa iyong Gmail. <ph name="BEGIN_LINK" />Matuto pa tungkol sa feature na ito<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; hindi pinagkakatiwalaan ng operating system ng iyong device ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Subukang patakbuhin ang Windows Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Photo (Archival)</translation>
@@ -2155,6 +2156,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4304049446746819918">{0,plural, =1{Hindi inirerekomenda ng patakaran ng administrator na ilipat ang file na ito sa <ph name="DESTINATION_NAME" />}one{Hindi inirerekomenda ng patakaran ng administrator na ilipat ang mga file na ito sa <ph name="DESTINATION_NAME" />}other{Hindi inirerekomenda ng patakaran ng administrator na ilipat ang mga file na ito sa <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Magbasa ng mga pagsusuri ng customer sa mga produkto, serbisyo, o experience para makatulong na mapahusay ang iyong mga desisyon sa mga review.</translation>
 <translation id="4305666528087210886">Hindi ma-access ang iyong file</translation>
+<translation id="4306349443295056740">Paglagda ng OCSP</translation>
 <translation id="4306529830550717874">I-save ang address?</translation>
 <translation id="4306812610847412719">clipboard</translation>
 <translation id="4308567447483056043">Binalewala ang patakarang ito dahil hindi affiliated ang user. Para malapat ang patakarang ito, dapat pamahalaan ng iisang organisasyon ang Chrome browser at profile sa pamamagitan ng Admin console.</translation>
@@ -2413,6 +2415,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4744603770635761495">Naipapatupad na Path</translation>
 <translation id="4744816391336495134">Magagamit mo ang iyong fingerprint para i-verify na ikaw ito sa tuwing gagamit ka ng naka-save na password</translation>
 <translation id="4749011317274908093">Napunta ka sa Incognito</translation>
+<translation id="4749924365937394956">Pag-authenticate ng Server</translation>
 <translation id="4750671009706599284">ang teleponong ito</translation>
 <translation id="4750917950439032686">Pribado ang iyong impormasyon (halimbawa, mga password o credit card number) kapag ipinadala ito sa site na ito.</translation>
 <translation id="4751249061288707459">Huling na-update ang pahintulot noong:</translation>
@@ -3129,6 +3132,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5860491529813859533">I-on</translation>
 <translation id="5862579898803147654">Stacker 8</translation>
 <translation id="5863515189965725638">I-edit ang IBAN</translation>
+<translation id="5863517400058880216">I-autofill ang mga code sa pag-verify mula sa Gmail</translation>
 <translation id="5863847714970149516">Maaari kang singilin sa susunod na page</translation>
 <translation id="5866257070973731571">Magdagdag ng Numero ng Telepono</translation>
 <translation id="5866327164731551901">Mula sa <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -3242,6 +3246,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6034000775414344507">Light Grey</translation>
 <translation id="6034514109191629503">Accordion fold</translation>
 <translation id="6035491133925068289">Track and Field</translation>
+<translation id="6037458223703682108">Digital na Lagda</translation>
 <translation id="6039846035001940113">Kung magpapatuloy ang problema, makipag-ugnayan sa may-ari ng site.</translation>
 <translation id="6040143037577758943">Isara</translation>
 <translation id="6040539895181423374">Mga Insight sa Presyo</translation>
@@ -3553,6 +3558,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6474220430271405609">Mga Pag-test sa Patakaran</translation>
 <translation id="6476284679642588870">Pamahalaan ang mga paraan ng pagbabayad</translation>
 <translation id="647881094269678013">Pag-arte at Teatro</translation>
+<translation id="6480363549849064919">Pag-authenticate ng Client</translation>
 <translation id="6480864723214312258">Mga Pambahay na Battery</translation>
 <translation id="6487678699866233349">Musika sa Buong Mundo</translation>
 <translation id="6489534406876378309">Simulang mag-upload ng mga pag-crash</translation>
@@ -4519,6 +4525,7 @@ Mga karagdagang detalye:
 <translation id="7967973398323409409">Hindi kailanman makikita ng sinuman ang impormasyong ino-autofill mo</translation>
 <translation id="79682505114836835">Invalid na hex color ang value na "<ph name="VALUE" />."</translation>
 <translation id="7968982339740310781">Tingnan ang mga detalye</translation>
+<translation id="7971403153351954587">Sinusubaybayan ng iyong organisasyon ang pagkopya</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 na May RSA Encryption</translation>
 <translation id="7976053965094442846">Ang mga available na Buy-Now-Pay-Later na issuer para magbayad sa paglipas ng panahon. Naka-hide ang keyboard.</translation>
 <translation id="7976214039405368314">Masyadong maraming kahilingan</translation>

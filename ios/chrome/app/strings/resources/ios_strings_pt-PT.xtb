@@ -972,7 +972,6 @@
 <translation id="4294506173142861371">Iniciar sessão como <ph name="FIRST_NAME" /></translation>
 <translation id="4302061870579014542">Definir posição</translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
-<translation id="4306349443295056740">Assinatura OCSP</translation>
 <translation id="4309403553630140242">Toque duas vezes para obter mais informações.</translation>
 <translation id="4310738531374808763">Personalize a sua Página inicial</translation>
 <translation id="4316794575239200608">Nem as suas conversas com o Gemini nem os seus <ph name="BEGIN_LINK" />dados do Google Workspace<ph name="END_LINK" /> serão revistos por revisores humanos ou usados para melhorar modelos de IA generativa.</translation>
@@ -1103,7 +1102,6 @@
 <translation id="4744428388659507035">Para ver os seus marcadores em todos os dispositivos, ative os "Marcadores" nas definições.</translation>
 <translation id="4746926359847517643">Pode sempre recuperá-los no histórico.</translation>
 <translation id="4749529195026091676">{count,plural, =1{{count} cartão importado}other{{count} cartões importados}}</translation>
-<translation id="4749924365937394956">Autenticação do servidor</translation>
 <translation id="4751645464639803239">Novo separador anónimo</translation>
 <translation id="4752348350801431746">Desativar notificações da verificação de segurança…</translation>
 <translation id="4759238208242260848">Transferências</translation>
@@ -1447,7 +1445,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5859715514067755465">Avançar</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5868644772996939262">Preencha automaticamente palavras-passe e chaves de acesso</translation>
-<translation id="5869522115854928033">Palavras-passe guardadas</translation>
 <translation id="5873179562631407582">Toque sem soltar em qualquer separador aberto</translation>
 <translation id="5887400589839399685">Cartão guardado</translation>
 <translation id="5888889603768021126">Com sessão iniciada com</translation>
@@ -1491,7 +1488,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6027619584715411062">Inicie sessão para obter marcadores, palavras-passe e muito mais em todos os seus dispositivos.</translation>
 <translation id="6027945736510816438">Será que quis dizer <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nova funcionalidade</translation>
-<translation id="6037458223703682108">Assinatura digital</translation>
 <translation id="6038823991892265570">Gerir armazenamento Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Fechar</translation>
@@ -1646,7 +1642,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6476284679642588870">Gerir métodos de pagamento</translation>
 <translation id="6476800141292307438">A traduzir a página para <ph name="LANGUAGE" />. Estão disponíveis opções junto à parte inferior do ecrã.</translation>
 <translation id="647867789226964031">Altere as suas palavras-passe</translation>
-<translation id="6480363549849064919">Autenticação do cliente</translation>
 <translation id="6489174933860678546">Abra separadores de navegação anónima para navegar na Web com mais privacidade.</translation>
 <translation id="6489775505977274806">Ocultar Level Up</translation>
 <translation id="6494931198667773526">Fim</translation>
@@ -1683,7 +1678,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6589001036857939353">Unir duplicados</translation>
 <translation id="659407965921887085">Este cartão mostra as descidas de preços na Web dos produtos que está a acompanhar atualmente</translation>
 <translation id="6596481460663245319">Pesquisar imagem com o Google</translation>
-<translation id="6598432073497341323">{COUNT,plural, =1{1 palavra-passe}other{# palavras-passe}}</translation>
 <translation id="6601302169302852717">Imagem guardada no Google Fotos de <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Preenchimento automático e palavras-passe</translation>
 <translation id="6603393121510733479">A sua entidade desativou a navegação anónima.
@@ -1877,7 +1871,6 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="7233006041370588369">Selecione uma palavra-passe para preencher.</translation>
 <translation id="723874023660911012">Mudar de perfil</translation>
 <translation id="7241135764990439166">O Modo de navegação anónima está indisponível</translation>
-<translation id="7248046129087111453">O <ph name="BEGIN_LINK" />histórico de pesquisas<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />outras formas de atividade<ph name="END_LINK" /> podem ser guardados na sua Conta Google.</translation>
 <translation id="7253951228444156601">A verificar palavras-passe…</translation>
 <translation id="7261217796641151584">Partilhar grupo</translation>
 <translation id="7266578100016339897">Isto ajuda a manter a organização. Pode alterar esta opção nas definições em qualquer altura.</translation>
@@ -2008,6 +2001,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="7696316012653762532">Opções de tradução da página</translation>
 <translation id="7700527812567437847">Pesquisar no ecrã com o Google Lens</translation>
 <translation id="7701040980221191251">Nenhuma</translation>
+<translation id="7702428539671224160">Preenchimento automático de informações de pagamento ativado em <ph name="URL" /></translation>
 <translation id="7708994397325774423">Tenha acesso a todas as suas palavras-passe</translation>
 <translation id="7711440461521638739">Não está a reutilizar nenhuma palavra-passe</translation>
 <translation id="7712361583414030698">Ver a versão offline</translation>

@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Tidak dapat memuatkan halaman perihal '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="424963718355121712">Apl mesti disampaikan daripada hos yang dipengaruhinya</translation>
 <translation id="4306119971288449206">Apl mesti disampaikan dengan jenis kandungan "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4349181963619779233">Sambungan dan apl tidak boleh ditambahkan daripada laman web ini</translation>
 <translation id="4625078469366263107">Dayakan Apl</translation>
 <translation id="4633003931260532286">Sambungan memerlukan "<ph name="IMPORT_NAME" />" dengan versi minimum "<ph name="IMPORT_VERSION" />", tetapi hanya versi "<ph name="INSTALLED_VERSION" />" yang ada dipasang</translation>
 <translation id="4660476621274971848">Versi yang dijangkakan "<ph name="EXPECTED_VERSION" />", tetapi versi sebenar ialah "<ph name="NEW_ID" />"</translation>
@@ -123,7 +124,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Nilai input untuk kunci persendirian mestilah dalam format yang sah (Kunci RSA terkod PEM format PKCS#8).</translation>
-<translation id="765293928828334535">Apl, sambungan dan skrip pengguna tidak boleh ditambahkan daripada laman web ini</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7766838926148951335">Terima kebenaran</translation>
 <translation id="7876803335449432072">Tidak dapat memuatkan fail '<ph name="RELATIVE_PATH" />' untuk skrip kandungan. Helaian gaya skrip kandungan hanya boleh dimuatkan daripada fail helaian gaya yang disokong seperti fail .css.</translation>

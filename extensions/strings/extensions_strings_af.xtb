@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Invoerwaarde vir private sleutel moet 'n geldige formaat wees (PKCS#8-formaat- PEM-geënkodeerde RSA-sleutel).</translation>
-<translation id="765293928828334535">Programme, uitbreidings en gebruikerskripte kan nie van hierdie webwerf af bygevoeg word nie</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7766838926148951335">Aanvaar toestemmings</translation>
 <translation id="7876803335449432072">Kon nie die lêer “<ph name="RELATIVE_PATH" />” vir inhoudskrip laai nie – inhoudskripstylblaaie kan net gelaai word vanaf gesteunde stylbladlêers soos .css-lêers.</translation>

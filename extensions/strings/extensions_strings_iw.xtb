@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">‏ערך הקלט של המפתח הפרטי חייב להיות בפורמט חוקי (מפתח RSA בפורמט PKCS#8 עם קידוד PEM).</translation>
-<translation id="765293928828334535">לא ניתן להוסיף אפליקציות, תוספים וסקריפטים של משתמש מהאתר הזה</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7766838926148951335">אישור הרשאות</translation>
 <translation id="7876803335449432072">‏אי אפשר לטעון את הקובץ "<ph name="RELATIVE_PATH" />" לסקריפט התוכן. אפשר לטעון גיליונות סגנונות של סקריפטים של תוכן רק מקובצי גיליון סגנונות נתמכים, כמו קובצי css.</translation>

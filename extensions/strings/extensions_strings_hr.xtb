@@ -106,7 +106,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="6322279351188361895">Čitanje osobnog ključa nije uspjelo.</translation>
-<translation id="6326175484149238433">Ukloni iz programa Chrome</translation>
+<translation id="6326175484149238433">Ukloni iz Chromea</translation>
 <translation id="6391538222494443604">Mora postojati direktorij za unos.</translation>
 <translation id="641087317769093025">Nije uspjelo raspakiravanje proširenja</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" zahtijeva pristup nekim od vaših uređaja:</translation>
@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Vrijednost unosa osobnog ključa mora biti u važećem formatu (RSA ključ u formatu PKCS#8 s PEM kodiranjem).</translation>
-<translation id="765293928828334535">Aplikacije, proširenja i korisničke skripte ne mogu se dodavati s ove web-lokacije</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7766838926148951335">Prihvati dopuštenja</translation>
 <translation id="7876803335449432072">Nije bilo moguće učitati datoteku <ph name="RELATIVE_PATH" /> za sadržajnu skriptu. Stilske tablice sadržajnih skripti mogu se učitati samo iz podržanih datoteka stilskih tablica kao što su .css datoteke.</translation>

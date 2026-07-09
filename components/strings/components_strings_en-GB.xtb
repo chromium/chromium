@@ -504,6 +504,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="175656076281618225">Magic</translation>
 <translation id="1757773103848038814">Monospace font</translation>
 <translation id="1757935267918149452">Change Google password button, activate to change your Google Account password</translation>
+<translation id="1759776526873274358">Autofill verification codes that sites use to improve your security. Chrome can get these codes from your Gmail. <ph name="BEGIN_LINK" />Learn more about this feature<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not trusted by your device's operating system. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Try running Windows Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Photo (archival)</translation>
@@ -2155,6 +2156,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4304049446746819918">{0,plural, =1{Administrator policy doesn’t recommend moving this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend moving these files to <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Read customer evaluations of products, services or experiences to help inform your decisions with reviews.</translation>
 <translation id="4305666528087210886">Your file couldn’t be accessed</translation>
+<translation id="4306349443295056740">OCSP signing</translation>
 <translation id="4306529830550717874">Save address?</translation>
 <translation id="4306812610847412719">clipboard</translation>
 <translation id="4308567447483056043">This policy is ignored because the user is unaffiliated. For this policy to be applied, the Chrome browser and profile must be managed through the Admin console by the same organisation.</translation>
@@ -2413,6 +2415,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4744603770635761495">Executable Path</translation>
 <translation id="4744816391336495134">You can use your fingerprint to verify that it's you whenever you use a saved password</translation>
 <translation id="4749011317274908093">You’ve gone Incognito</translation>
+<translation id="4749924365937394956">Server authentication</translation>
 <translation id="4750671009706599284">this phone</translation>
 <translation id="4750917950439032686">Your information (for example, passwords or credit card numbers) is private when it is sent to this site.</translation>
 <translation id="4751249061288707459">Consent last updated:</translation>
@@ -3129,6 +3132,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5860491529813859533">Turn on</translation>
 <translation id="5862579898803147654">Stacker 8</translation>
 <translation id="5863515189965725638">Edit IBAN</translation>
+<translation id="5863517400058880216">Autofill verification codes from Gmail</translation>
 <translation id="5863847714970149516">The page ahead may try to charge you money</translation>
 <translation id="5866257070973731571">Add Phone Number</translation>
 <translation id="5866327164731551901">From <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -3242,6 +3246,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6034000775414344507">Light grey</translation>
 <translation id="6034514109191629503">Accordion fold</translation>
 <translation id="6035491133925068289">Track and field</translation>
+<translation id="6037458223703682108">Digital signature</translation>
 <translation id="6039846035001940113">If the problem continues, contact the site owner.</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="6040539895181423374">Price insights</translation>
@@ -3553,6 +3558,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6474220430271405609">Policy tests</translation>
 <translation id="6476284679642588870">Manage payment methods</translation>
 <translation id="647881094269678013">Acting and theatre</translation>
+<translation id="6480363549849064919">Client authentication</translation>
 <translation id="6480864723214312258">Household Batteries</translation>
 <translation id="6487678699866233349">World music</translation>
 <translation id="6489534406876378309">Start uploading crashes</translation>
@@ -4519,6 +4525,7 @@ Additional details:
 <translation id="7967973398323409409">The info that you autofill is never seen by anyone</translation>
 <translation id="79682505114836835">Value '<ph name="VALUE" />' is an invalid hex colour.</translation>
 <translation id="7968982339740310781">View details</translation>
+<translation id="7971403153351954587">Your organisation monitors copying</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 With RSA Encryption</translation>
 <translation id="7976053965094442846">Buy-now, pay-later issuers available for pay over time. Keyboard hidden.</translation>
 <translation id="7976214039405368314">Too many requests</translation>
@@ -5132,6 +5139,7 @@ Additional details:
 <translation id="9001074447101275817">The proxy <ph name="DOMAIN" /> requires a username and password.</translation>
 <translation id="9001701119003382280">Computer peripherals</translation>
 <translation id="9001963517402879850">Jump!</translation>
+<translation id="9003263770394939629">Suggested by Gemini. Manage enhanced autofill in settings.</translation>
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">VR session in progress</translation>
 <translation id="9005998258318286617">Failed to load PDF document.</translation>

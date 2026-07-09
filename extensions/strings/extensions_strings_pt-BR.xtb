@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">O valor inserido para a chave privada precisa ser um formato válido (chave RSA codificada em PEM de formato PKCS#8).</translation>
-<translation id="765293928828334535">Apps, extensões e scripts de usuário não podem ser adicionados a partir deste site</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7766838926148951335">Aceitar permissões</translation>
 <translation id="7876803335449432072">Não foi possível carregar o arquivo "<ph name="RELATIVE_PATH" />" para o script de conteúdo. As folhas de estilo desse tipo de script só podem ser carregadas de arquivos compatíveis, como .css.</translation>

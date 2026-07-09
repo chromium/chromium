@@ -972,7 +972,6 @@
 <translation id="4294506173142861371">Chcesz się zalogować jako <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Ustaw pozycję</translation>
 <translation id="4304713468139749426">Menedżer haseł</translation>
-<translation id="4306349443295056740">Podpisywanie OCSP</translation>
 <translation id="4309403553630140242">Kliknij dwukrotnie, by dowiedzieć się więcej</translation>
 <translation id="4310738531374808763">Dostosowywanie strony głównej</translation>
 <translation id="4316794575239200608">Twoje rozmowy z Gemini ani <ph name="BEGIN_LINK" />dane Google Workspace<ph name="END_LINK" /> nie będą sprawdzane przez weryfikatorów ani używane do ulepszania modeli generatywnej AI.</translation>
@@ -1103,7 +1102,6 @@
 <translation id="4744428388659507035">Aby korzystać ze swoich zakładek na wszystkich urządzeniach, w ustawieniach włącz „Zakładki”.</translation>
 <translation id="4746926359847517643">Zawsze możesz przywrócić je z historii.</translation>
 <translation id="4749529195026091676">{count,plural, =1{Zaimportowano {count} kartę}few{Zaimportowano {count} karty}many{Zaimportowano {count} kart}other{Zaimportowano {count} karty}}</translation>
-<translation id="4749924365937394956">Uwierzytelnianie serwera</translation>
 <translation id="4751645464639803239">Nowa karta incognito</translation>
 <translation id="4752348350801431746">Wyłącz powiadomienia o kontroli zabezpieczeń…</translation>
 <translation id="4759238208242260848">Pobrane pliki</translation>
@@ -1447,7 +1445,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5859715514067755465">Dalej</translation>
 <translation id="5860491529813859533">Włącz</translation>
 <translation id="5868644772996939262">Autouzupełnianie haseł i kluczy dostępu</translation>
-<translation id="5869522115854928033">Zapisane hasła</translation>
 <translation id="5873179562631407582">Naciśnij i przytrzymaj dowolne otwarte karty</translation>
 <translation id="5887400589839399685">Zapisano kartę</translation>
 <translation id="5888889603768021126">Zalogowano za pomocą</translation>
@@ -1491,7 +1488,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6027619584715411062">Zaloguj się, aby mieć dostęp do zakładek, haseł oraz innych ustawień i danych na wszystkich swoich urządzeniach.</translation>
 <translation id="6027945736510816438">Czy chodziło Ci o <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nowa funkcja</translation>
-<translation id="6037458223703682108">Podpis cyfrowy</translation>
 <translation id="6038823991892265570">Zarządzaj miejscem na koncie Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Zamknij</translation>
@@ -1646,7 +1642,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6476284679642588870">Zarządzaj formami płatności</translation>
 <translation id="6476800141292307438">Tłumaczę stronę na <ph name="LANGUAGE" />. Opcje znajdują się na dole ekranu.</translation>
 <translation id="647867789226964031">Zmień hasła</translation>
-<translation id="6480363549849064919">Uwierzytelnianie klienta</translation>
 <translation id="6489174933860678546">Używaj kart incognito, aby przeglądać internet bardziej prywatnie.</translation>
 <translation id="6489775505977274806">Ukryj Level Up</translation>
 <translation id="6494931198667773526">Zakończenie</translation>
@@ -1683,7 +1678,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6589001036857939353">Scal duplikaty</translation>
 <translation id="659407965921887085">Ta karta pokazuje obniżki cen produktów w internecie, które obecnie śledzisz</translation>
 <translation id="6596481460663245319">Szukaj grafiki z Google</translation>
-<translation id="6598432073497341323">{COUNT,plural, =1{1 hasło}few{# hasła}many{# haseł}other{# hasła}}</translation>
 <translation id="6601302169302852717">Obraz został zapisany w Zdjęciach Google użytkownika <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Autouzupełnianie i hasła</translation>
 <translation id="6603393121510733479">Twoja organizacja wyłączyła przeglądanie prywatne.
@@ -1877,7 +1871,6 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="7233006041370588369">Wybierz hasło do wpisania.</translation>
 <translation id="723874023660911012">Przełącz profile</translation>
 <translation id="7241135764990439166">Tryb incognito jest niedostępny</translation>
-<translation id="7248046129087111453"><ph name="BEGIN_LINK" />Historia wyszukiwania<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />inne formy aktywności<ph name="END_LINK" /> mogą być zapisywane na Twoim koncie Google.</translation>
 <translation id="7253951228444156601">Sprawdzam hasła…</translation>
 <translation id="7261217796641151584">Udostępnij grupę</translation>
 <translation id="7266578100016339897">To pomoże Ci zachować porządek. W dowolnej chwili możesz to zmienić w ustawieniach.</translation>
@@ -2008,6 +2001,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="7696316012653762532">Opcje tłumaczenia strony</translation>
 <translation id="7700527812567437847">Przeszukaj ekran za pomocą Obiektywu Google</translation>
 <translation id="7701040980221191251">Brak</translation>
+<translation id="7702428539671224160">Automatycznie uzupełniaj dane do płatności na <ph name="URL" /></translation>
 <translation id="7708994397325774423">Pobierz wszystkie swoje hasła</translation>
 <translation id="7711440461521638739">Nie używasz ponownie żadnych haseł</translation>
 <translation id="7712361583414030698">Wyświetlam wersję offline</translation>

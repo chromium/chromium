@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">നിങ്ങളുടെ സ്റ്റോറേജ് നിറഞ്ഞു</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1190609913194133056">അറിയിപ്പ് കേന്ദ്രം</translation>
+<translation id="1196534270480620381">എനിക്ക് ഈ പേജിന്റെ ഒരു ഹ്രസ്വ സംഗ്രഹം നൽകുക</translation>
 <translation id="1199631150313925648">നേരിട്ട് നൽകുക</translation>
 <translation id="1199963004393929848">പച്ച തീം</translation>
 <translation id="1201402288615127009">അടുത്തത്</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">ഈ സൈറ്റിനായി പാസ്‌വേഡുകളോ പാസ്‌കീകളോ കണ്ടെത്തിയില്ല</translation>
 <translation id="1540800554400757039">വിലാസം 1</translation>
 <translation id="154312949627292154">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ നിന്ന് ലഭിച്ച ടാബുകൾ ലോക്ക് സ്ക്രീനിൽ തുറക്കുക.</translation>
+<translation id="1544653821167545205">പേജ് സംഗ്രഹിക്കുക</translation>
 <translation id="1545749641540134597">QR കോഡ് സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="1545757265410828525">നിരക്ക് ചരിത്രം</translation>
 <translation id="1547610699249301703">പാസ്‍വേഡുകൾ പങ്കിടുക</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Google നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ എഞ്ചിനായി സജ്ജീകരിച്ചിരിക്കുമ്പോൾ മാത്രമേ തിരയൽ സ്ക്രീൻ ലഭ്യമാകൂ. <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ എഞ്ചിൻ മാറ്റാം.</translation>
 <translation id="1872096359983322073">ടോർച്ച്</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Gemini-ക്ക് Chrome-ൽ എന്തൊക്കെ ചെയ്യാനാകും?</translation>
 <translation id="1881621406744213161">കുടുംബാംഗങ്ങളെ ക്ഷണിക്കുക</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">സ്‌മാർട്ട് അടുക്കലിനുള്ള മെനു ബാർ</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">സൈറ്റുകളിലേക്കും ആപ്പുകളിലേക്കും എളുപ്പത്തിൽ സൈൻ ഇൻ ചെയ്യുന്നതിന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുക.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">നിങ്ങളുടെ ബ്രൗസർ നല്ല നിലയിലാണെന്ന് തോന്നുന്നു</translation>
+<translation id="2470654816840674524">Chrome-ലെ Gemini ഉപയോഗിച്ച് എനിക്ക് എന്ത് ചെയ്യാനാകും?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> എന്നതിനുള്ള പാസ്‌വേഡ് നിങ്ങൾ മുമ്പേ സംരക്ഷിച്ചു</translation>
 <translation id="247430852844518481">ഈ പേജ് പിന്നീട് വീണ്ടും സന്ദർശിക്കുന്നതിനായി നിങ്ങൾക്ക് ഒരു റിമൈൻഡർ സജ്ജീകരിക്കാം</translation>
 <translation id="2479148705183875116">ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">“സുരക്ഷാ പരിശോധന” മറയ്ക്കുക</translation>
 <translation id="2625189173221582860">പാസ്‌വേഡ് പകർത്തി</translation>
 <translation id="2626236249646841566">നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച ശേഷം വീണ്ടും സൈൻ ഇൻ ചെയ്ത് നോക്കുക.</translation>
+<translation id="2629543259235506452">ഈ പേജിൽ നിന്നും സമാനമായ വെബ്‌സൈറ്റുകളിൽ നിന്നുമുള്ള വിവരങ്ങൾ ഉപയോഗിച്ച് ഈ വിഷയം സംബന്ധിച്ച് ഹ്രസ്വമായ 'പതിവ് ചോദ്യങ്ങൾ' സൃഷ്ടിക്കുക</translation>
 <translation id="2635918910848538771">CVC സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="2640733327287333451">ഉപയോക്തൃനാമമില്ല ••••••</translation>
 <translation id="264215785133931186">ഇപ്പോൾ പരിശോധിച്ചു</translation>
@@ -967,7 +972,6 @@
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്യണോ?</translation>
 <translation id="4302061870579014542">സ്ഥാനം സജ്ജീകരിക്കുക</translation>
 <translation id="4304713468139749426">പാസ്‌വേഡ് മാനേജർ</translation>
-<translation id="4306349443295056740">OCSP ഒപ്പിടൽ</translation>
 <translation id="4309403553630140242">കൂടുതൽ വിവരങ്ങൾക്ക് ഡബിൾ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="4310738531374808763">നിങ്ങളുടെ ഹോംപേജ് ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="4316794575239200608">Gemini-യുമായുള്ള നിങ്ങളുടെ സംഭാഷണങ്ങളോ <ph name="BEGIN_LINK" />Google Workspace ഡാറ്റയോ<ph name="END_LINK" /> റിവ്യൂവർമാർ അവലോകനം ചെയ്യുകയോ ജനറേറ്റീവ് AI മോഡലുകൾ മെച്ചപ്പെടുത്താൻ ഉപയോഗിക്കുകയോ ചെയ്യില്ല.</translation>
@@ -1098,7 +1102,6 @@
 <translation id="4744428388659507035">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകൾ ലഭിക്കാൻ, ക്രമീകരണത്തിൽ “ബുക്ക്‌മാർക്കുകൾ” ഓണാക്കുക.</translation>
 <translation id="4746926359847517643">നിങ്ങൾക്ക് അവ എപ്പോൾ വേണമെങ്കിലും ചരിത്രത്തിൽ വീണ്ടും നേടാം.</translation>
 <translation id="4749529195026091676">{count,plural, =1{{count} കാർഡ് ഇമ്പോർട്ട് ചെയ്തു}other{{count} കാർഡുകൾ ഇമ്പോർട്ട് ചെയ്തു}}</translation>
-<translation id="4749924365937394956">സെർവർ പരിശോധിച്ചുറപ്പിക്കൽ</translation>
 <translation id="4751645464639803239">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="4752348350801431746">സുരക്ഷാ പരിശോധനാ അറിയിപ്പുകൾ ഓഫാക്കുക…</translation>
 <translation id="4759238208242260848">ഡൌണ്‍ലോഡുകള്‍</translation>
@@ -1442,7 +1445,6 @@
 <translation id="5859715514067755465">മുന്നോട്ട് പോകുക</translation>
 <translation id="5860491529813859533">ഓൺ ചെയ്യുക</translation>
 <translation id="5868644772996939262">പാസ്‌വേഡുകളും പാസ്‌കീകളും സ്വയമേവ പൂരിപ്പിക്കൽ</translation>
-<translation id="5869522115854928033">സംരക്ഷിച്ച പാസ്‌വേഡുകള്‍</translation>
 <translation id="5873179562631407582">തുറന്നിരിക്കുന്ന ഏതെങ്കിലും ടാബുകൾ ടാപ്പ് ചെയ്‌ത് പിടിക്കുക</translation>
 <translation id="5887400589839399685">കാർഡ് സംരക്ഷിച്ചു</translation>
 <translation id="5888889603768021126">ഇതുപയോഗിച്ച് സൈൻ ഇൻ ചെയ്തു</translation>
@@ -1486,7 +1488,6 @@
 <translation id="6027619584715411062">ബുക്ക്‌മാർക്കുകളും പാസ്‍വേഡുകളും മറ്റും നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും നേടുന്നതിന് സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="6027945736510816438"><ph name="WEBSITE" /> ആണോ നിങ്ങൾ ഉദ്ദേശിച്ചത്?</translation>
 <translation id="6032845897905314562">പുതിയ ഫീച്ചർ</translation>
-<translation id="6037458223703682108">ഡിജിറ്റൽ ഒപ്പ്</translation>
 <translation id="6038823991892265570">Google സ്റ്റോറേജ് മാനേജ് ചെയ്യുക</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
@@ -1641,7 +1642,6 @@
 <translation id="6476284679642588870">പേയ്മെൻ്റ് രീതികൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="6476800141292307438">പേജ് <ph name="LANGUAGE" /> എന്ന ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യുന്നു. സ്‌ക്രീനിൻ്റെ ചുവടെ ഓപ്‌ഷനുകൾ ലഭ്യമാണ്.</translation>
 <translation id="647867789226964031">നിങ്ങളുടെ പാസ്‌വേഡുകൾ മാറ്റുക</translation>
-<translation id="6480363549849064919">ക്ലയന്റ് പരിശോധിച്ചുറപ്പിക്കൽ</translation>
 <translation id="6489174933860678546">കൂടുതൽ സ്വകാര്യമായി വെബ് ബ്രൗസ് ചെയ്യാൻ അദൃശ്യ ടാബുകൾ തുറക്കുക.</translation>
 <translation id="6489775505977274806">'നില ഉയർത്തുക' മറയ്ക്കുക</translation>
 <translation id="6494931198667773526">അവസാനിക്കുന്നത്</translation>
@@ -1678,7 +1678,6 @@
 <translation id="6589001036857939353">ഡ്യൂപ്ലിക്കേറ്റുകൾ ലയിപ്പിക്കുക</translation>
 <translation id="659407965921887085">നിങ്ങൾ നിലവിൽ ട്രാക്ക് ചെയ്യുന്ന ഉൽപ്പന്നങ്ങളുടെ വെബിലുടനീളമുള്ള വിലക്കുറവുകൾ ഈ കാർഡ് കാണിക്കുന്നു</translation>
 <translation id="6596481460663245319">Google ഉപയോഗിച്ച് ചിത്രം തിരയുക</translation>
-<translation id="6598432073497341323">{COUNT,plural, =1{ഒരു പാസ്‌വേഡ്}other{# പാസ്‌വേഡുകൾ}}</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" /> എന്ന വിലാസത്തിൽ നിന്ന് Google Photos-ൽ ചിത്രം സംരക്ഷിച്ചു</translation>
 <translation id="6602173570135186741">സ്വയമേവ പൂരിപ്പിക്കലും പാസ്‌വേഡുകളും</translation>
 <translation id="6603393121510733479">നിങ്ങളുടെ സ്ഥാപനം സ്വകാര്യ ബ്രൗസിംഗ് ഓഫാക്കി.
@@ -1872,7 +1871,6 @@
 <translation id="7233006041370588369">പൂരിപ്പിക്കാൻ ഒരു പാസ്‌വേഡ് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="723874023660911012">പ്രൊഫൈലുകൾ മാറുക</translation>
 <translation id="7241135764990439166">അദൃശ്യ മോഡ് ലഭ്യമല്ല</translation>
-<translation id="7248046129087111453"><ph name="BEGIN_LINK" />തിരയൽ ചരിത്രവും<ph name="END_LINK" /> <ph name="BEGIN_LINK" />മറ്റ് തരത്തിലുള്ള ആക്റ്റിവിറ്റിയും<ph name="END_LINK" /> നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിച്ചേക്കാം.</translation>
 <translation id="7253951228444156601">പാസ്‌വേഡുകൾ പരിശോധിക്കുന്നു…</translation>
 <translation id="7261217796641151584">ഗ്രൂപ്പ് പങ്കിടുക</translation>
 <translation id="7266578100016339897">ഓർഗനൈസ് ചെ‌യ്‌ത് തുടരാൻ ഇത് നിങ്ങളെ സഹായിക്കും. ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഇത് ഏത് സമയത്തും മാറ്റാനാകും.</translation>
@@ -2348,6 +2346,7 @@
 <translation id="8766790350274092814"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> എന്നിവയുടെ പാസ്‌വേഡുകൾ ഇല്ലാതാക്കും. നിങ്ങളുടെ അക്കൗണ്ടുകൾ ഇല്ലാതാക്കില്ല.</translation>
 <translation id="8775144690796719618">URL അസാധുവാണ്</translation>
 <translation id="8781834595282316166">ഗ്രൂപ്പിലെ പുതിയ ടാബ്</translation>
+<translation id="8783445328207519872">ഈ വിഷയത്തെക്കുറിച്ചുള്ള പതിവ് ചോദ്യങ്ങൾ സൃഷ്ടിക്കുക</translation>
 <translation id="8784653774976848206">ഫയലുകൾ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8786100550345425552">അനുമതികൾ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="878871978861915380">"നിരക്ക് ട്രാക്ക് ചെയ്യൽ" മറയ്ക്കുക</translation>

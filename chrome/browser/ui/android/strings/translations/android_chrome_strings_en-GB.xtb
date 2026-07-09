@@ -1541,6 +1541,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7248671827512403053">Application</translation>
 <translation id="7253951228444156601">Checking passwords…</translation>
 <translation id="7260367682327802201">Your Android device may include a similar setting. If ads measurement is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across websites that you visit and apps that you use.</translation>
+<translation id="7265857422443387781">Search tab with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Submit <ph name="ONE_TIME_CODE" /> to <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blocked site</translation>
 <translation id="7276868533747677875">If you previously exported passwords, look for a CSV file on your device and import them to your preferred password manager.</translation>
@@ -1883,6 +1884,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="860282621117673749">Price drop alerts</translation>
 <translation id="8611922158252451755">Anyone with the link can edit all tabs, so share wisely. Link expires in 48 hours.</translation>
 <translation id="8616006591992756292">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">Translate to <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Open Chrome menu &gt; Settings</translation>
 <translation id="8634050254805484913">Hidden on narrow screens</translation>
 <translation id="8635399646025169806">Keep tab group?</translation>

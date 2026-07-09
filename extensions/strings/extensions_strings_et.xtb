@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Privaatvõtme jaoks sisestatud väärtus peab olema sobivas vormingus (PKCS#8 vormingus PEM-kodeeringuga RSA-võti).</translation>
-<translation id="765293928828334535">Rakendusi, laiendusi ja kasutaja skripte ei saa sellelt veebisaidilt lisada</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7766838926148951335">Nõustu lubadega</translation>
 <translation id="7876803335449432072">Faili „<ph name="RELATIVE_PATH" />“ ei saanud sisu skripti jaoks laadida. Sisu skripti stiililehti saab laadida ainult toetatud stiililehefailidest (nt CSS-failid).</translation>

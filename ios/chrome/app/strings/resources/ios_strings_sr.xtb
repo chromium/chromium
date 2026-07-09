@@ -972,7 +972,6 @@
 <translation id="4294506173142861371">Желите да се пријавите као <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Подеси позицију</translation>
 <translation id="4304713468139749426">Менаџер лозинки</translation>
-<translation id="4306349443295056740">OCSP потписивање</translation>
 <translation id="4309403553630140242">Двапут додирните за више информација</translation>
 <translation id="4310738531374808763">Прилагодите страницу Почетна</translation>
 <translation id="4316794575239200608">Ваше конверзације са Gemini-јем и <ph name="BEGIN_LINK" />Google Workspace подаци<ph name="END_LINK" /> не подлежу прегледу од стране људи нити ћемо их користити за побољшавање модела генеративне вештачке интелигенције.</translation>
@@ -1103,7 +1102,6 @@
 <translation id="4744428388659507035">Да би вам обележивачи били доступни на свим уређајима, укључите Обележиваче у подешавањима.</translation>
 <translation id="4746926359847517643">Увек можете да их вратите из историје.</translation>
 <translation id="4749529195026091676">{count,plural, =1{Увезена је {count} картица}one{Увезена је {count} картица}few{Увезене су {count} картице}other{Увезено је {count} картица}}</translation>
-<translation id="4749924365937394956">Потврда идентитета сервера</translation>
 <translation id="4751645464639803239">Нова картица без архивирањa</translation>
 <translation id="4752348350801431746">Искључи обавештења Провере безбедности…</translation>
 <translation id="4759238208242260848">Преузимања</translation>
@@ -1447,7 +1445,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5859715514067755465">Напред</translation>
 <translation id="5860491529813859533">Укључи</translation>
 <translation id="5868644772996939262">Аутоматски попуњавајте лозинке и приступне кључеве</translation>
-<translation id="5869522115854928033">Сачуване лозинке</translation>
 <translation id="5873179562631407582">Додирните и задржите све отворене картице</translation>
 <translation id="5887400589839399685">Картица је сачувана</translation>
 <translation id="5888889603768021126">Пријављени сте помоћу:</translation>
@@ -1491,7 +1488,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6027619584715411062">Пријавите се да бисте приступали обележивачима, лозинкама и другом садржају на свим уређајима.</translation>
 <translation id="6027945736510816438">Да ли сте мислили <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">нова функција</translation>
-<translation id="6037458223703682108">Дигитални потпис</translation>
 <translation id="6038823991892265570">Управљајте Google меморијским простором</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Затвори</translation>
@@ -1646,7 +1642,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6476284679642588870">Управљајте начинима плаћања</translation>
 <translation id="6476800141292307438">Страница се преводи на: <ph name="LANGUAGE" />. Опције су доступне у дну екрана.</translation>
 <translation id="647867789226964031">Промените лозинке</translation>
-<translation id="6480363549849064919">Потврда идентитета клијента</translation>
 <translation id="6489174933860678546">Отворите картице без архивирања да бисте приватније прегледали веб.</translation>
 <translation id="6489775505977274806">Сакриј одељак Виши ниво</translation>
 <translation id="6494931198667773526">Завршава се</translation>
@@ -1683,7 +1678,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6589001036857939353">Обједините дупликате</translation>
 <translation id="659407965921887085">Ова картица приказује падове цена на вебу за производе које тренутно пратите</translation>
 <translation id="6596481460663245319">Тражи слику на Google-у</translation>
-<translation id="6598432073497341323">{COUNT,plural, =1{1 лозинка}one{# лозинка}few{# лозинке}other{# лозинки}}</translation>
 <translation id="6601302169302852717">Слика је сачувана у Google сликама налога <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Аутоматско попуњавање и лозинке</translation>
 <translation id="6603393121510733479">Организација је искључила приватно прегледање.
@@ -1877,7 +1871,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7233006041370588369">Изаберите лозинку која ће бити унета.</translation>
 <translation id="723874023660911012">Промени профил</translation>
 <translation id="7241135764990439166">Режим без архивирања није доступан</translation>
-<translation id="7248046129087111453"><ph name="BEGIN_LINK" />Историја претраге<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />други облици активности<ph name="END_LINK" /> могу да буду сачувани на Google налогу</translation>
 <translation id="7253951228444156601">Проверавају се лозинке…</translation>
 <translation id="7261217796641151584">Дели групу</translation>
 <translation id="7266578100016339897">То вам помаже да останете организовани. То можете да промените у подешавањима у било ком тренутку.</translation>

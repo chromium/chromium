@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Yksityisen avaimen syöttöarvon on oltava kelvollisessa muodossa (PEM-merkkijärjestelmää käyttävä PKCS#8-muotoinen RSA-avain).</translation>
-<translation id="765293928828334535">Sovelluksia, laajennuksia ja käyttäjien komentosarjoja ei voi lisätä tältä verkkosivustolta.</translation>
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7766838926148951335">Hyväksy käyttöoikeudet</translation>
 <translation id="7876803335449432072">Tiedostoa <ph name="RELATIVE_PATH" /> ei voitu ladata sisältöskriptille. Sisältöskriptin tyylisivut voidaan ladata vain tuetuista tyylisivutiedostoista, kuten .css-tiedostoista.</translation>

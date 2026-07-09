@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Il valore da inserire per la chiave privata deve essere in un formato valido (chiave RSA con codifica PEM in formato PKCS#8).</translation>
-<translation id="765293928828334535">Non è possibile aggiungere app, estensioni e script utente da questo sito web</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7766838926148951335">Accetta le autorizzazioni</translation>
 <translation id="7876803335449432072">Impossibile caricare il file "<ph name="RELATIVE_PATH" />" per lo script di contenuti. I fogli di stile degli script di contenuti possono essere caricati solo dai file di fogli di stile supportati, ad esempio i file .css.</translation>

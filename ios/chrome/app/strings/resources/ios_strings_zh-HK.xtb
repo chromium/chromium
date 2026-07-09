@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">儲存空間已滿</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1190609913194133056">通知中心</translation>
+<translation id="1196534270480620381">幫我簡單總結呢頁內容</translation>
 <translation id="1199631150313925648">手動輸入</translation>
 <translation id="1199963004393929848">綠色主題</translation>
 <translation id="1201402288615127009">下一個</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">找不到此網站的密碼或密鑰</translation>
 <translation id="1540800554400757039">地址行 1</translation>
 <translation id="154312949627292154">在上鎖畫面開啟其他裝置傳送的分頁。</translation>
+<translation id="1544653821167545205">總結頁面</translation>
 <translation id="1545749641540134597">掃描二維條碼</translation>
 <translation id="1545757265410828525">過往價格</translation>
 <translation id="1547610699249301703">分享密碼</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">只有將 Google 設定為預設搜尋引擎時，才能使用搜尋畫面。你可以在「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」中變更預設搜尋引擎。</translation>
 <translation id="1872096359983322073">閃光燈</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />。</translation>
+<translation id="1876230899304059090">Gemini 可以喺 Chrome 做到啲咩？</translation>
 <translation id="1881621406744213161">邀請家庭成員</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">智能排序選單列</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">儲存密碼，輕鬆登入網站和應用程式。</translation>
 <translation id="2468132863574325555">雲端硬碟</translation>
 <translation id="2468444275314013497">你的瀏覽器安全無虞</translation>
+<translation id="2470654816840674524">我可以用 Chrome 版 Gemini 做到啲咩？</translation>
 <translation id="2473876017985765807">您已儲存 <ph name="WEBSITE" /> 的密碼</translation>
 <translation id="247430852844518481">你可以設定提醒，之後再回來查看</translation>
 <translation id="2479148705183875116">前往「設定」</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">隱藏「安全檢查」</translation>
 <translation id="2625189173221582860">已複製密碼</translation>
 <translation id="2626236249646841566">請檢查您的連線，然後再次嘗試登入。</translation>
+<translation id="2629543259235506452">根據此頁面和類似網站的資料，建立有關此主題的簡短常見問題</translation>
 <translation id="2635918910848538771">自動填寫 CVC</translation>
 <translation id="2640733327287333451">沒有使用者名稱 ••••••</translation>
 <translation id="264215785133931186">剛檢查過</translation>
@@ -967,7 +972,6 @@
 <translation id="4294506173142861371">要以<ph name="FIRST_NAME" />的身分登入嗎？</translation>
 <translation id="4302061870579014542">設定位置</translation>
 <translation id="4304713468139749426">密碼管理工具</translation>
-<translation id="4306349443295056740">OCSP 簽署</translation>
 <translation id="4309403553630140242">㩒兩下就可以了解詳情</translation>
 <translation id="4310738531374808763">自訂首頁</translation>
 <translation id="4316794575239200608">你與 Gemini 的對話或 <ph name="BEGIN_LINK" />Google Workspace 資料<ph name="END_LINK" />都不會送交人手審查，亦不會用於改善生成式 AI 模型。</translation>
@@ -1098,7 +1102,6 @@
 <translation id="4744428388659507035">如要將書籤同步到所有裝置，請在設定中開啟「書籤」。</translation>
 <translation id="4746926359847517643">您可隨時在記錄中重新開啟這些分頁。</translation>
 <translation id="4749529195026091676">{count,plural, =1{已匯入 {count} 張卡}other{已匯入 {count} 張卡}}</translation>
-<translation id="4749924365937394956">伺服器驗證</translation>
 <translation id="4751645464639803239">新無痕式分頁</translation>
 <translation id="4752348350801431746">關閉「安全檢查」通知…</translation>
 <translation id="4759238208242260848">下載</translation>
@@ -1442,7 +1445,6 @@
 <translation id="5859715514067755465">繼續</translation>
 <translation id="5860491529813859533">開啟</translation>
 <translation id="5868644772996939262">自動填入密碼與密鑰</translation>
-<translation id="5869522115854928033">已儲存的密碼</translation>
 <translation id="5873179562631407582">按住任何開啟的分頁</translation>
 <translation id="5887400589839399685">已儲存的付款卡</translation>
 <translation id="5888889603768021126">目前登入身分</translation>
@@ -1486,7 +1488,6 @@
 <translation id="6027619584715411062">登入後，即可從任何裝置取得自己的書籤、密碼等項目。</translation>
 <translation id="6027945736510816438">您是不是要輸入 <ph name="WEBSITE" />？</translation>
 <translation id="6032845897905314562">新功能</translation>
-<translation id="6037458223703682108">數碼簽名</translation>
 <translation id="6038823991892265570">管理 Google 儲存空間</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />，<ph name="PUBLISHER_INFORMATION" />，<ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">關閉</translation>
@@ -1641,7 +1642,6 @@
 <translation id="6476284679642588870">管理付款方法</translation>
 <translation id="6476800141292307438">將網頁翻譯成<ph name="LANGUAGE" />。翻譯選項喺喺接近畫面底部附近。</translation>
 <translation id="647867789226964031">變更密碼</translation>
-<translation id="6480363549849064919">用戶端驗證</translation>
 <translation id="6489174933860678546">開啟無痕式分頁，提升網頁瀏覽私隱。</translation>
 <translation id="6489775505977274806">隱藏「升級」</translation>
 <translation id="6494931198667773526">結束時間</translation>
@@ -1678,7 +1678,6 @@
 <translation id="6589001036857939353">合併重複項目</translation>
 <translation id="659407965921887085">此資訊卡會顯示目前追蹤產品在網絡上的減價資訊</translation>
 <translation id="6596481460663245319">透過 Google 搜尋圖片</translation>
-<translation id="6598432073497341323">{COUNT,plural, =1{1 個密碼}other{# 個密碼}}</translation>
 <translation id="6601302169302852717">圖片已儲存至 <ph name="USER_EMAIL" /> 的「Google 相片」</translation>
 <translation id="6602173570135186741">自動填入和密碼</translation>
 <translation id="6603393121510733479">您的機構已關閉私密瀏覽功能。
@@ -1870,7 +1869,6 @@
 <translation id="7233006041370588369">揀要填入嘅密碼。</translation>
 <translation id="723874023660911012">切換設定檔</translation>
 <translation id="7241135764990439166">無法使用無痕模式</translation>
-<translation id="7248046129087111453"><ph name="BEGIN_LINK" />搜尋記錄<ph name="END_LINK" />和<ph name="BEGIN_LINK" />其他形式的活動<ph name="END_LINK" />可能會儲存至你的 Google 帳戶。</translation>
 <translation id="7253951228444156601">正在檢查密碼…</translation>
 <translation id="7261217796641151584">分享群組</translation>
 <translation id="7266578100016339897">這有助你保持條理。你可隨時在設定中修改。</translation>
@@ -2346,6 +2344,7 @@
 <translation id="8766790350274092814">系統會刪除 <ph name="WEBSITE" /> 和 <ph name="SECOND_WEBSITE" /> 的密碼。但不會刪除您的帳戶。</translation>
 <translation id="8775144690796719618">網址無效</translation>
 <translation id="8781834595282316166">在群組中新增分頁</translation>
+<translation id="8783445328207519872">建立有關此主題的常見問題</translation>
 <translation id="8784653774976848206">選擇檔案</translation>
 <translation id="8786100550345425552">編輯權限</translation>
 <translation id="878871978861915380">隱藏「價格追蹤」</translation>

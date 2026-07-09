@@ -504,6 +504,7 @@
 <translation id="175656076281618225">魔术</translation>
 <translation id="1757773103848038814">等宽字体</translation>
 <translation id="1757935267918149452">“更改 Google 密码”按钮，激活它即可更改您的 Google 账号密码</translation>
+<translation id="1759776526873274358">自动填充网站用来提高安全性的验证码。Chrome 可以从您的 Gmail 中获取这些验证码。<ph name="BEGIN_LINK" />详细了解此功能<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">此服务器无法证明它是<ph name="DOMAIN" />；您设备的操作系统不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />尝试运行 Windows 网络诊断<ph name="END_LINK" />。</translation>
 <translation id="1777422078676229054">相纸（存档用）</translation>
@@ -2151,6 +2152,7 @@
 <translation id="4304049446746819918">{0,plural, =1{管理员政策不建议将这个文件移至<ph name="DESTINATION_NAME" />}other{管理员政策不建议将这些文件移至<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">阅读客户对产品、服务或体验的评估结果，以根据评价做出明智决策。</translation>
 <translation id="4305666528087210886">无法访问您的文件</translation>
+<translation id="4306349443295056740">OCSP 签名</translation>
 <translation id="4306529830550717874">要保存地址吗？</translation>
 <translation id="4306812610847412719">剪贴板</translation>
 <translation id="4308567447483056043">此政策会被忽略，因为该用户是独立用户。若要应用此政策，必须由同一组织通过管理控制台管理 Chrome 浏览器和个人资料。</translation>
@@ -2409,6 +2411,7 @@
 <translation id="4744603770635761495">可执行文件路径</translation>
 <translation id="4744816391336495134">您每次使用保存的密码时，都可以使用指纹验证您的身份</translation>
 <translation id="4749011317274908093">您已进入无痕模式</translation>
+<translation id="4749924365937394956">服务器身份验证</translation>
 <translation id="4750671009706599284">这部手机</translation>
 <translation id="4750917950439032686">您发送给这个网站的信息（例如密码或信用卡号）不会外泄。</translation>
 <translation id="4751249061288707459">用户意见征求的上次更新时间：</translation>
@@ -3125,6 +3128,7 @@
 <translation id="5860491529813859533">开启</translation>
 <translation id="5862579898803147654">堆叠出纸器 8</translation>
 <translation id="5863515189965725638">修改 IBAN</translation>
+<translation id="5863517400058880216">自动填充 Gmail 中的验证码</translation>
 <translation id="5863847714970149516">即将进入的页面可能会向您收取费用</translation>
 <translation id="5866257070973731571">添加电话号码</translation>
 <translation id="5866327164731551901">来自 <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -3238,6 +3242,7 @@
 <translation id="6034000775414344507">浅灰色</translation>
 <translation id="6034514109191629503">风琴折</translation>
 <translation id="6035491133925068289">田径</translation>
+<translation id="6037458223703682108">数字签名</translation>
 <translation id="6039846035001940113">如果问题仍然存在，请与网站所有者联系。</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6040539895181423374">价格分析</translation>
@@ -3548,6 +3553,7 @@
 <translation id="6474220430271405609">政策测试</translation>
 <translation id="6476284679642588870">管理付款方式</translation>
 <translation id="647881094269678013">演出与剧场</translation>
+<translation id="6480363549849064919">客户端身份验证</translation>
 <translation id="6480864723214312258">家用电池</translation>
 <translation id="6487678699866233349">世界音乐</translation>
 <translation id="6489534406876378309">开始上传崩溃数据</translation>
@@ -4514,6 +4520,7 @@
 <translation id="7967973398323409409">您自动填充的信息不会向任何人显示</translation>
 <translation id="79682505114836835">值“<ph name="VALUE" />”是无效的十六进制颜色。</translation>
 <translation id="7968982339740310781">查看详情</translation>
+<translation id="7971403153351954587">您的组织会监控复制操作</translation>
 <translation id="7972714317346275248">PKCS #1，带有 RSA 加密的 SHA-384</translation>
 <translation id="7976053965094442846">提供分期付款服务的“先买后付”发卡机构。键盘已隐藏。</translation>
 <translation id="7976214039405368314">请求次数过多</translation>
@@ -5024,7 +5031,7 @@
 <translation id="8814707942599948500">C8 信封</translation>
 <translation id="881559332211266856">更新身份纠正识别号</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可前往 Chrome 设置以更新 Chrome</translation>
-<translation id="8819155700324279105">增添一层额外的安全保障，防范在线威胁</translation>
+<translation id="8819155700324279105">多一层保障，抵御网络威胁</translation>
 <translation id="8819855907485254989">将交通票券保存到钱包</translation>
 <translation id="8820817407110198400">书签</translation>
 <translation id="882338992931677877">手动插槽</translation>

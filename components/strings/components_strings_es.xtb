@@ -504,6 +504,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="175656076281618225">Magia</translation>
 <translation id="1757773103848038814">Fuente monoespaciada</translation>
 <translation id="1757935267918149452">Botón Cambiar contraseña de Google: actívalo para cambiar la contraseña de tu cuenta de Google</translation>
+<translation id="1759776526873274358">Autocompletar códigos de verificación que usan los sitios para mejorar tu seguridad. Chrome puede obtener estos códigos de tu Gmail. <ph name="BEGIN_LINK" />Más información sobre esta función<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, el sistema operativo de tu dispositivo no confía en su certificado de seguridad. Este problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Prueba a ejecutar Diagnósticos de red de Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (archivo)</translation>
@@ -2155,6 +2156,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4304049446746819918">{0,plural, =1{La política del administrador no recomienda mover este archivo a <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda mover estos archivos a <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Lee las evaluaciones de los clientes sobre productos, servicios o experiencias y toma decisiones más fundamentadas con las reseñas.</translation>
 <translation id="4305666528087210886">No se ha podido acceder al archivo</translation>
+<translation id="4306349443295056740">Firma de OCSP</translation>
 <translation id="4306529830550717874">¿Guardar dirección?</translation>
 <translation id="4306812610847412719">portapapeles</translation>
 <translation id="4308567447483056043">Esta política se ignora porque el usuario no está afiliado. Para que se aplique esta política, una misma organización debe gestionar tanto el navegador Chrome como el perfil de Chrome mediante la consola de administración.</translation>
@@ -2413,6 +2415,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4744603770635761495">Ruta del ejecutable</translation>
 <translation id="4744816391336495134">Puedes usar tu huella digital para verificar que eres tú siempre que uses una contraseña guardada</translation>
 <translation id="4749011317274908093">Estás en modo Incógnito</translation>
+<translation id="4749924365937394956">Autenticación de servidor</translation>
 <translation id="4750671009706599284">este teléfono</translation>
 <translation id="4750917950439032686">Tu información (por ejemplo, tus contraseñas o números de tarjeta de crédito) es privada cuando se envía a este sitio web.</translation>
 <translation id="4751249061288707459">Última actualización del consentimiento:</translation>
@@ -3129,6 +3132,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5862579898803147654">Apilador 8</translation>
 <translation id="5863515189965725638">Editar IBAN</translation>
+<translation id="5863517400058880216">Autocompletar códigos de verificación de Gmail</translation>
 <translation id="5863847714970149516">Es posible que la página a la que vas a acceder intente aplicar algún cargo</translation>
 <translation id="5866257070973731571">Añade un número de teléfono</translation>
 <translation id="5866327164731551901">De <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -3242,6 +3246,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6034000775414344507">Gris claro</translation>
 <translation id="6034514109191629503">Plegado en acordeón</translation>
 <translation id="6035491133925068289">Atletismo</translation>
+<translation id="6037458223703682108">Firma digital</translation>
 <translation id="6039846035001940113">Si el problema persiste, ponte en contacto con el propietario del sitio web.</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6040539895181423374">Estadísticas sobre precios</translation>
@@ -3553,6 +3558,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6474220430271405609">Pruebas de políticas</translation>
 <translation id="6476284679642588870">Gestionar métodos de pago</translation>
 <translation id="647881094269678013">Actuación y teatro</translation>
+<translation id="6480363549849064919">Autenticación de cliente</translation>
 <translation id="6480864723214312258">Pilas y baterías de uso doméstico</translation>
 <translation id="6487678699866233349">Músicas del mundo</translation>
 <translation id="6489534406876378309">Empezar a subir errores</translation>
@@ -4186,7 +4192,7 @@ Más información:
 <translation id="7481312909269577407">Adelante</translation>
 <translation id="748138892655239008">Restricciones básicas del certificado</translation>
 <translation id="7481603210197454575">Sobre italiano</translation>
-<translation id="7482823403440483089">Función Autocompletar mejorada</translation>
+<translation id="7482823403440483089">Función Autocompletar mejorado</translation>
 <translation id="7483482939016730822">Suministros para escuelas y equipamiento para aulas</translation>
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, pulsa Tabulador y, después, Intro para cerrar el consejo de Chrome.</translation>
 <translation id="7485085230273446323">Comercio e industria</translation>
@@ -4519,6 +4525,7 @@ Más información:
 <translation id="7967973398323409409">La información de Autocompletar nunca la ve nadie</translation>
 <translation id="79682505114836835">El valor "<ph name="VALUE" />" no es un color hexadecimal válido.</translation>
 <translation id="7968982339740310781">Ver detalles</translation>
+<translation id="7971403153351954587">Tu organización monitoriza el copiado</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 con cifrado RSA</translation>
 <translation id="7976053965094442846">Emisores de pago aplazado disponibles para pagar a plazos. Teclado oculto.</translation>
 <translation id="7976214039405368314">Demasiadas solicitudes</translation>

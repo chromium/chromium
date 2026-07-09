@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">El valor de entrada de la clave privada debe tener un formato válido (clave RSA con encriptación PEM y formato PKCS#8).</translation>
-<translation id="765293928828334535">Las apps, extensiones y secuencias de comandos de usuario no se pueden agregar desde este sitio web</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7766838926148951335">Aceptar permisos</translation>
 <translation id="7876803335449432072">No se pudo cargar el archivo "<ph name="RELATIVE_PATH" />" para la secuencia de comandos del contenido. Las hojas de estilos de la secuencia de comandos del contenido solo se pueden cargar desde archivos de hoja de estilos admitidos, como archivos .css.</translation>

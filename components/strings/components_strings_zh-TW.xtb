@@ -503,6 +503,7 @@
 <translation id="175656076281618225">魔術</translation>
 <translation id="1757773103848038814">等寬字型</translation>
 <translation id="1757935267918149452">「變更 Google 密碼」按鈕，啟動後即可變更 Google 帳戶密碼</translation>
+<translation id="1759776526873274358">自動填入驗證碼，供網站用來提升安全性。Chrome 可從 Gmail 取得這些驗證碼。<ph name="BEGIN_LINK" />進一步瞭解這項功能<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全憑證未取得你裝置作業系統的信任。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />嘗試執行 Windows 網路診斷<ph name="END_LINK" />。</translation>
 <translation id="1777422078676229054">相紙 (典藏用)</translation>
@@ -2153,6 +2154,7 @@
 <translation id="4304049446746819918">{0,plural, =1{根據管理員政策，建議你不要將這個檔案移到「<ph name="DESTINATION_NAME" />」}other{根據管理員政策，建議你不要將這些檔案移到「<ph name="DESTINATION_NAME" />」}}</translation>
 <translation id="4304485328308299773">閱讀消費者的產品和服務評價或體驗，再根據評論做決定。</translation>
 <translation id="4305666528087210886">無法存取你的檔案</translation>
+<translation id="4306349443295056740">OCSP 簽署</translation>
 <translation id="4306529830550717874">要儲存地址嗎？</translation>
 <translation id="4306812610847412719">剪貼簿</translation>
 <translation id="4308567447483056043">由於使用者無任何聯盟關係，因此系統已忽略這項政策。如要套用這項政策，必須由同一機構透過管理控制台管理 Chrome 瀏覽器和設定檔。</translation>
@@ -2215,7 +2217,7 @@
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4406896451731180161">搜尋結果</translation>
 <translation id="4407758156081352648">為維護安全性，貴機構不允許在 Chrome 中重複使用密碼。Chrome 會將密碼加密處理，以保護使用者隱私。</translation>
-<translation id="4409271659088619928">你的搜尋引擎是 <ph name="DSE" />。如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
+<translation id="4409271659088619928">你的搜尋引擎是 <ph name="DSE" />。你可以查看搜尋引擎的操作說明 (如有)，瞭解如何刪除搜尋記錄。</translation>
 <translation id="4409556632583862731">發起討論串</translation>
 <translation id="4412074349188076601">這項設定標示為可安裝，但沒有映像檔可供這個架構使用，因此無法安裝。</translation>
 <translation id="4412377069090572315">使用者評論</translation>
@@ -2411,6 +2413,7 @@
 <translation id="4744603770635761495">可執行檔的路徑</translation>
 <translation id="4744816391336495134">你隨時可以使用指紋驗證身分，使用已儲存的密碼</translation>
 <translation id="4749011317274908093">你已進入無痕模式</translation>
+<translation id="4749924365937394956">伺服器驗證</translation>
 <translation id="4750671009706599284">這支手機</translation>
 <translation id="4750917950439032686">你傳送給這個網站的資訊 (例如密碼或信用卡號碼) 不會外洩。</translation>
 <translation id="4751249061288707459">同意聲明上次更新時間：</translation>
@@ -3127,6 +3130,7 @@
 <translation id="5860491529813859533">開啟</translation>
 <translation id="5862579898803147654">堆疊出紙器 8</translation>
 <translation id="5863515189965725638">編輯 IBAN</translation>
+<translation id="5863517400058880216">自動填入 Gmail 提供的驗證碼</translation>
 <translation id="5863847714970149516">你要瀏覽的網頁可能會向你收取費用</translation>
 <translation id="5866257070973731571">新增電話號碼</translation>
 <translation id="5866327164731551901">來自 <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -3240,6 +3244,7 @@
 <translation id="6034000775414344507">淺灰色</translation>
 <translation id="6034514109191629503">彈簧摺</translation>
 <translation id="6035491133925068289">田徑運動</translation>
+<translation id="6037458223703682108">數位簽章</translation>
 <translation id="6039846035001940113">如果問題仍未解決，請與網站擁有者聯絡。</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6040539895181423374">價格分析</translation>
@@ -3551,6 +3556,7 @@
 <translation id="6474220430271405609">政策測試</translation>
 <translation id="6476284679642588870">管理付款方式</translation>
 <translation id="647881094269678013">表演與舞台劇</translation>
+<translation id="6480363549849064919">用戶端驗證</translation>
 <translation id="6480864723214312258">家用電池</translation>
 <translation id="6487678699866233349">世界音樂</translation>
 <translation id="6489534406876378309">開始上傳當機報告</translation>
@@ -4517,6 +4523,7 @@
 <translation id="7967973398323409409">自動填入的資訊不會向任何人顯示</translation>
 <translation id="79682505114836835">「<ph name="VALUE" />」是無效的十六進位顏色值。</translation>
 <translation id="7968982339740310781">查看詳細資料</translation>
+<translation id="7971403153351954587">貴機構會監控複製內容</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 (使用 RSA 加密)</translation>
 <translation id="7976053965094442846">提供分期付款服務的「先買後付」發卡機構。鍵盤已隱藏。</translation>
 <translation id="7976214039405368314">要求數量過多</translation>

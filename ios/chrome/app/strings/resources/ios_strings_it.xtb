@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Lo spazio di archiviazione è esaurito</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1190609913194133056">Centro notifiche</translation>
+<translation id="1196534270480620381">Fammi un breve riepilogo di questa pagina</translation>
 <translation id="1199631150313925648">Inserisci manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
 <translation id="1201402288615127009">Avanti</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Nessuna password o passkey trovata per questo sito</translation>
 <translation id="1540800554400757039">Indirizzo 1</translation>
 <translation id="154312949627292154">Apri le schede ricevute dagli altri dispositivi dalla schermata di blocco.</translation>
+<translation id="1544653821167545205">Riassumi la pagina</translation>
 <translation id="1545749641540134597">Scansiona codice QR</translation>
 <translation id="1545757265410828525">Cronologia dei prezzi</translation>
 <translation id="1547610699249301703">Condividi le password</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">La Ricerca dallo schermo è disponibile solo se Google è impostato come motore di ricerca predefinito. Puoi modificare il motore di ricerca predefinito nelle <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Torcia</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Cosa può fare Gemini in Chrome?</translation>
 <translation id="1881621406744213161">Invita membri del gruppo Famiglia</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Barra dei menu con ordine intelligente</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Salva le password per accedere facilmente a siti e app.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Il tuo browser è protetto</translation>
+<translation id="2470654816840674524">Cosa posso fare con Gemini in Chrome?</translation>
 <translation id="2473876017985765807">Hai già salvato una password per <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Puoi impostare un promemoria per tornare a questa pagina più tardi</translation>
 <translation id="2479148705183875116">Vai a Impostazioni</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Nascondi "Controllo di sicurezza"</translation>
 <translation id="2625189173221582860">Password copiata</translation>
 <translation id="2626236249646841566">Controlla la connessione e riprova ad accedere.</translation>
+<translation id="2629543259235506452">Crea una breve sezione di domande frequenti su questo argomento usando le informazioni di questa pagina e di siti web simili</translation>
 <translation id="2635918910848538771">Compila automaticamente il CVC</translation>
 <translation id="2640733327287333451">Nessun nome utente ••••••</translation>
 <translation id="264215785133931186">Controllo appena eseguito</translation>
@@ -967,7 +972,6 @@
 <translation id="4294506173142861371">Accedere come <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Imposta posizione</translation>
 <translation id="4304713468139749426">Gestore delle password</translation>
-<translation id="4306349443295056740">Firma OCSP</translation>
 <translation id="4309403553630140242">Tocca due volte per ulteriori informazioni</translation>
 <translation id="4310738531374808763">Personalizza la tua home page</translation>
 <translation id="4316794575239200608">Le tue conversazioni con Gemini e i tuoi <ph name="BEGIN_LINK" />dati di Google Workspace<ph name="END_LINK" /> non saranno esaminati da revisori umani né usati per migliorare i modelli di AI generativa.</translation>
@@ -1098,7 +1102,6 @@
 <translation id="4744428388659507035">Per trovare i tuoi preferiti su tutti i dispositivi, attiva l'opzione "Preferiti" nelle impostazioni.</translation>
 <translation id="4746926359847517643">Puoi sempre ripristinarle nella cronologia.</translation>
 <translation id="4749529195026091676">{count,plural, =1{{count} carta importata}other{{count} carte importate}}</translation>
-<translation id="4749924365937394956">Autenticazione server</translation>
 <translation id="4751645464639803239">Nuova scheda Incognito</translation>
 <translation id="4752348350801431746">Disattiva le notifiche del controllo di sicurezza…</translation>
 <translation id="4759238208242260848">Download</translation>
@@ -1442,7 +1445,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5859715514067755465">Avanti</translation>
 <translation id="5860491529813859533">Attiva</translation>
 <translation id="5868644772996939262">Inserisci automaticamente password e passkey</translation>
-<translation id="5869522115854928033">Password salvate</translation>
 <translation id="5873179562631407582">Tocca e tieni premute una scheda aperta</translation>
 <translation id="5887400589839399685">Carta salvata</translation>
 <translation id="5888889603768021126">Accesso eseguito con</translation>
@@ -1486,7 +1488,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6027619584715411062">Accedi per avere a disposizione i tuoi preferiti, le password e altri dati su tutti i dispositivi.</translation>
 <translation id="6027945736510816438">Intendevi <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nuova funzionalità</translation>
-<translation id="6037458223703682108">Firma digitale</translation>
 <translation id="6038823991892265570">Gestisci lo spazio di archiviazione di Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Chiudi</translation>
@@ -1641,7 +1642,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6476284679642588870">Gestisci metodi di pagamento</translation>
 <translation id="6476800141292307438">Traduzione della pagina in <ph name="LANGUAGE" />. Opzioni disponibili nella parte inferiore dello schermo.</translation>
 <translation id="647867789226964031">Cambia le password</translation>
-<translation id="6480363549849064919">Autenticazione client</translation>
 <translation id="6489174933860678546">Apri le schede Incognito per navigare sul web in modo più privato.</translation>
 <translation id="6489775505977274806">Nascondi Level Up</translation>
 <translation id="6494931198667773526">Fine</translation>
@@ -1678,7 +1678,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6589001036857939353">Unisci duplicati</translation>
 <translation id="659407965921887085">Questa scheda mostra le riduzioni di prezzo sul web per i prodotti che monitori al momento</translation>
 <translation id="6596481460663245319">Cerca immagine con Google</translation>
-<translation id="6598432073497341323">{COUNT,plural, =1{1 password}other{# password}}</translation>
 <translation id="6601302169302852717">Immagine salvata in Google Foto per <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Compilazione automatica e password</translation>
 <translation id="6603393121510733479">La tua organizzazione ha disattivato la navigazione privata.
@@ -1872,7 +1871,6 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="7233006041370588369">Seleziona una password da inserire.</translation>
 <translation id="723874023660911012">Cambia profilo</translation>
 <translation id="7241135764990439166">Modalità Incognito non disponibile</translation>
-<translation id="7248046129087111453">La <ph name="BEGIN_LINK" />cronologia delle ricerche<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />altri tipi di attività<ph name="END_LINK" /> potrebbero essere salvati nel tuo Account Google.</translation>
 <translation id="7253951228444156601">Controllo delle password…</translation>
 <translation id="7261217796641151584">Condividi gruppo</translation>
 <translation id="7266578100016339897">In questo modo, è più semplice organizzarsi. Puoi modificare questa opzione nelle impostazioni in qualsiasi momento.</translation>
@@ -2348,6 +2346,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="8766790350274092814">Le password di <ph name="WEBSITE" /> e <ph name="SECOND_WEBSITE" /> verranno eliminate. I tuoi account non verranno eliminati.</translation>
 <translation id="8775144690796719618">URL non valido</translation>
 <translation id="8781834595282316166">Nuova scheda nel gruppo</translation>
+<translation id="8783445328207519872">Crea domande frequenti su questo argomento</translation>
 <translation id="8784653774976848206">Scegli file</translation>
 <translation id="8786100550345425552">Modifica autorizzazioni</translation>
 <translation id="878871978861915380">Nascondi "Monitoraggio del prezzo"</translation>

@@ -6,6 +6,7 @@
 <translation id="1061130374843955397">Добре дошли във вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="1069778954840159202">Автоматично получаване на профил от телефон с Android</translation>
 <translation id="1076766328672150609">Детето ви може да отключва това устройство с ПИН код.</translation>
+<translation id="1091767800771861448">Натиснете „ESCAPE“ за пропускане (само в неофициалните версии).</translation>
 <translation id="1097658378307015415">Преди да влезете в профила си, моля, влезте като гост, за да активирате мрежата <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">Детето ви може да използва този ПИН код, за да влиза в профила си на устройството си</translation>
 <translation id="1122587596907914265">Стилизирайте уникални тапети</translation>
@@ -16,6 +17,7 @@
 <translation id="1177073277575830464">Бързото настройване на Android завърши. Продължете настройването на устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1179902906564467236">Изпълнете инструкциите на телефона си или използвайте приложението за камера</translation>
 <translation id="1185924365081634987">Може също да опитате <ph name="GUEST_SIGNIN_LINK_START" />да сърфирате като гост<ph name="GUEST_SIGNIN_LINK_END" />, за да се отстрани тази грешка в мрежата.</translation>
+<translation id="1191353342579061195">Изберете темата, която отговаря на нуждите ви. За да промените темата, тапета, скрийнсейвъра и др., трябва само да кликнете с десния бутон на мишката върху работния плот.</translation>
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1217114730239853757">Искате ли да активирате ChromeVox – вградения екранен четец на ChromeOS Flex? Ако е така, натиснете клавиша за интервал.</translation>
 <translation id="1222835797152767346">Задайте ПИН код, за да улесните влизането в профила си</translation>
@@ -52,6 +54,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="1377600615067678409">Пропускане засега</translation>
 <translation id="1399261165075500043">Общите условия на Google Play не могат да се заредят</translation>
 <translation id="1400243387594338234">Можете да използвате този ПИН код, за да влезете в профила си на устройството си</translation>
+<translation id="1406500794671479665">Потвърждава се...</translation>
+<translation id="1407069428457324124">Тъмна тема</translation>
 <translation id="1417497355604638350">Изпращане на диагностична информация и данни за употребата.</translation>
 <translation id="1418882096915998312">Регистрирането посредством Enterprise е в ход</translation>
 <translation id="1426410128494586442">Да</translation>
@@ -77,6 +81,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="169675691788639886">На устройството е конфигуриран SSH сървър. Не влизайте с поверителни профили.</translation>
 <translation id="1700517974991662022">Посетено</translation>
 <translation id="1730666151302379551">Забравена стара парола</translation>
+<translation id="1741314857973421784">Напред</translation>
 <translation id="1749645492410897998">Софтуерът се инсталира</translation>
 <translation id="177053719077591686">Създаване в Google Диск на резервно копие на приложенията за Android.</translation>
 <translation id="1798832846931769717">Google Beam за Meet</translation>
@@ -89,16 +94,19 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="185766080319917408">Клавишът за стартовия панел се намира вляво от левия клавиш Alt</translation>
 <translation id="1868617395637139709">Използване на местоположението за приложения и услуги за Android.</translation>
 <translation id="1877377730633446520">Това ще използва около <ph name="REQUIRED_SPACE" />. Понастоящем разполагате с(ъс) <ph name="FREE_SPACE" />.</translation>
+<translation id="1878155070920054810">Изглежда, че батерията на вашия Chromebook ще се изтощи, преди актуализацията да завърши. Уверете се, че устройството се зарежда, за да избегнете прекъсване.</translation>
 <translation id="189035593835762169">Общи условия</translation>
 <translation id="189358972401248634">Други езици</translation>
 <translation id="1915734383465415025">Номер на магазина</translation>
 <translation id="1919096511823372013">Вмъквайте връзки, емоджита и др. Можете също да получите помощ при писане и създаване на изображения с AI на Google.</translation>
 <translation id="1922496389170590548">Училищен профил на дете</translation>
+<translation id="1931410639376954712"><ph name="DEVICE_OS" /> се инсталира</translation>
 <translation id="1944528062465413897">Код за сдвояване през Bluetooth:</translation>
 <translation id="1987574314042117472">Избиране и инсталиране на популярни приложения</translation>
 <translation id="1991829061375381344">Нямате достатъчно налични лицензи, за да регистрирате това хардуерно устройство за Google Meet. Моля, свържете се с дистрибутора си, за да купите още. Ако смятате, че виждате това съобщение по погрешка, обърнете се към дистрибутора си.</translation>
 <translation id="200928901437634269">Използвайте профила в Google на детето си или училищен профил. Можете също да зададете родителски контроли.</translation>
 <translation id="2013550551806600826">Изпробвайте. Включете или изключете настройката, след което превъртете, като прекарате два пръста през областта за тестване в сензорния панел. Можете да намерите тази опция и по-късно от „Настройки &gt; Устройство &gt; Мишка и сензорен панел“.</translation>
+<translation id="2016574333161572915">Хардуерът Google Meet е готов за настройване.</translation>
 <translation id="2018189721942291407">Не знаете дали да се регистрирате?</translation>
 <translation id="2040460856718599782">Ами сега! При опита да ви удостоверим нещо се обърка. Моля, проверете идентификационните си данни за вход и опитайте отново.</translation>
 <translation id="2052572566310583903">Инсталирани на другите ви устройства</translation>
@@ -112,9 +120,13 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2173801458090845390">Добавяне на идентификационен номер на заявка към това устройство</translation>
 <translation id="2178585470774851578">Активирате функциите за отстраняване на грешки в ChromeOS Flex, които ще настроят sshd daemon и ще позволят стартирането от USB устройства.</translation>
 <translation id="2183570493397356669">Бутонът „Напред“ е деактивиран</translation>
+<translation id="2210462644007531147">Инсталацията не завърши</translation>
 <translation id="221872881068107022">Обръщане на посоката на превъртане</translation>
 <translation id="2219081237089444028">Задайте парола за <ph name="DEVICE_TYPE" />, за да улесните влизането в профила си</translation>
+<translation id="222115440608612541">Превключване на темите при изгрев и залез</translation>
 <translation id="2229161054156947610">Остава повече от 1 час</translation>
+<translation id="2246129643805925002">Устройството ви <ph name="DEVICE_TYPE" /> се актуализира автоматично на заден план, за да получавате най-новите функции и подобрения в сигурността. Можете да прегледате предпочитанията за актуализациите в настройките.</translation>
+<translation id="2274840746523584236">Заредете своя Chromebook</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> изисква устройството да е онлайн, когато влизате в <ph name="EMAIL" /></translation>
 <translation id="2317842250900878657">Завършено: <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2319072477089403627">Установява се връзка с телефона ви с Android...</translation>
@@ -124,6 +136,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2387052489799050037">Преминаване към началния екран</translation>
 <translation id="2395616325548404795">Устройството ви <ph name="DEVICE_TYPE" /> е успешно записано за корпоративно управление, но не успя да изпрати идентификатора на актива и информацията за местоположението си. Моля, въведете ръчно съответните данни от Admin Console.</translation>
 <translation id="2408955596600435184">Въведете своя ПИН</translation>
+<translation id="2418307627282545839">Всичко изглежда ярко и ефирно</translation>
 <translation id="243179355394256322">Организацията ви разрешава регистрирането на устройства само от упълномощени потребители. Този потребител не е упълномощен да регистрира устройства. Той трябва да има администраторски права за регистриране на хардуерни устройства за Google Meet в секцията „Потребители“ в конзолата за администратори.</translation>
 <translation id="2439152382014731627">Задаване на нова парола за <ph name="DEVICE_TYPE" /></translation>
 <translation id="2450223707519584812">Няма да можете да добавяте потребители, тъй като липсват ключове за приложните програмни интерфейси (API) на Google. За подробности вижте <ph name="DETAILS_URL" />.</translation>
@@ -131,12 +144,14 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2485681265915754872">Общи условия на Google Play</translation>
 <translation id="248676429071089168">Прекарайте пръст нагоре, за да преместите страницата надолу</translation>
 <translation id="2501278716633472235">Назад</translation>
+<translation id="252418934079508528">Инсталиране на <ph name="DEVICE_OS" /></translation>
 <translation id="2538084450874617176">Кой използва това устройство <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> не успя да се свърже с: <ph name="NETWORK_ID" />. Моля, изберете друга мрежа или опитайте отново.</translation>
 <translation id="2565214867520763227">Включете екранния четец</translation>
 <translation id="2569972178052279830">Име на търговеца</translation>
 <translation id="257779572837908839">Настройване като Chromebox за срещи</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
+<translation id="2593499352046705383">Преди да започнете, уверете се, че имате резервно копие на данните си. При инсталирането на <ph name="DEVICE_OS" /> твърдият ви диск ще бъде презаписан. Научете повече на адрес g.co/flex/InstallGuide.</translation>
 <translation id="2606454609872547359">Не, продължаване без ChromeVox</translation>
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Услугата на Google за местоположение използва източници като Wi-Fi, мобилни мрежи и сензори, за да помага за определянето на местоположението на това устройство.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />По всяко време можете да изключите настройката за местоположението за Android на това устройство, като отворите „Настройки &gt; Приложения &gt; Google Play Магазин &gt; Управление на предпочитанията за Android &gt; Сигурност и местоположение &gt; Местоположение“. Също така от това меню имате възможност да изключите функцията за определяне на местоположението за Android чрез Wi-Fi, мобилни мрежи и сензори, като деактивирате настройката „Google: Точност на местоположението“.<ph name="END_PARAGRAPH2" /></translation>
@@ -144,10 +159,12 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2687407218262674387">Общи условия на Google</translation>
 <translation id="2688196195245426394">Грешка при регистрирането на устройството в сървъра: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Това устройство се предлага в пакет и не може да бъде регистрирано в Kiosk &amp; Signage Upgrade.</translation>
+<translation id="2722540561488096675">Устройството ви ще се изключи след <ph name="TIME_LEFT" />. Преди да го включите отново, премахнете USB кабела. След това можете да започнете да използвате <ph name="DEVICE_OS" />.</translation>
 <translation id="2725200716980197196">Връзката с мрежата е възстановена</translation>
 <translation id="2731700343119398978">Моля, изчакайте...</translation>
 <translation id="2732134891301408122">Допълнително съдържание <ph name="CURRENT_ELEMENT" /> от <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2742448780373473567">При инсталирането на <ph name="DEVICE_OS" /> всички данни на устройството ви ще бъдат презаписани.</translation>
 <translation id="274318651891194348">Търси се клавиатура</translation>
 <translation id="2754825024506485820">От приложения за продуктивност до такива за развлечение – намерете тези, от които имате нужда, в Google Play Магазин. Можете да инсталирате приложения по всяко време.</translation>
 <translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Когато настройката „Точност на местоположението“ е включена, за по-точно определяне на местоположението на устройството се използва информация за безжични сигнали, като точки за достъп до Wi-Fi и клетъчни кули, заедно с данни от сензорите на устройството, например акселерометър и жироскоп. Така приложенията и услугите за Android предоставят базиращи се на местоположението функции. За целта Google периодично събира информация за сензорите на устройството и безжичните сигнали в близост до него, за да допринася за местоположенията на съответните сигнали, получени чрез краудсорсинг.<ph name="END_PARAGRAPH1" />
@@ -160,6 +177,9 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2849767214114481738">ПИН кодът ви е добавен</translation>
 <translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Разрешаването на устройства с ChromeOS да изпращат автоматични сигнали ни помага да разбираме какво е най-важно да поправим и подобрим в операционната система. Тези сигнали могат да включват различни неща, като например информация за възникнали сривове в ChromeOS, използваните функции и количеството памет, което обикновено ползвате.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Имате възможност да разрешите или забраните сигналите по всяко време от настройките на устройството си с Chrome. Ако сте администратор на домейн, можете да извършите тази промяна от администраторската конзола.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2861301611394761800">Системната актуализация е завършена. Моля, рестартирайте системата.</translation>
+<translation id="2870909136778269686">Актуализира се...</translation>
+<translation id="2872961005593481000">Изключване</translation>
 <translation id="2886119409731773154">Това може да отнеме до 30 минути</translation>
 <translation id="2893180576842394309">Възможно е да използваме историята ви, за да персонализираме търсенето и други услуги на Google</translation>
 <translation id="2902265136119311513">Сърфиране като гост</translation>
@@ -178,6 +198,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="313205617302240621">Забравили сте паролата си?</translation>
 <translation id="3162070126914310576">Това устройство не може да бъде регистрирано в момента, защото за организационната единица е достигнато ограничението за първоначална регистрация. За помощ се свържете с администратора си.</translation>
 <translation id="3163511056918491211">По всяко време можете лесно да възстановите данните на устройството си или да го замените с друго. Резервните ви копия се качват в Google и се шифроват посредством паролата за профила ви в Google.</translation>
+<translation id="3169930038976362151">Изберете темата, която отговаря на нуждите ви. За да промените темата, тапета, скрийнсейвъра и др., трябва само да докоснете и да задържите работния плот.</translation>
 <translation id="3170072451822350649">Може също да пропуснете влизането и <ph name="LINK_START" />да сърфирате като гост<ph name="LINK_END" />.</translation>
 <translation id="3177914167275935955">Устройството ви включва Chrome Education Upgrade, но потребителското ви име не е свързано с профил в Google for Education. Създайте такъв, като посетите g.co/workspace/edusignup от алтернативно устройство.</translation>
 <translation id="3196912927885212665">За да настроите чрез телефона си с Android, функцията за Bluetooth на вашия Chromebook трябва да е включена</translation>
@@ -189,6 +210,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3261268979727295785">За по-големи деца можете да добавите родителски контроли, след като завършите настройването. Ще намерите информация за тях в приложението Explore.</translation>
 <translation id="3278001907972365362">Профилите ви в Google изискват внимание</translation>
 <translation id="3283148363895519428">Изпълнете инструкциите на телефона си, за да продължите настройването. Уверете се, че той е в близост и функцията за Bluetooth е включена.</translation>
+<translation id="3327050066667856415">Устройствата Chromebook са проектирани с мисъл за сигурността. Устройството ви е автоматично защитено от злонамерен софтуер – няма нужда от допълнителни програми.</translation>
 <translation id="3382073616108123819">Ами сега! Системата не успя да определи идентификаторите за това устройство.</translation>
 <translation id="3382200254148930874">Контролирането се прекратява...</translation>
 <translation id="3384362484379805487">Езиковите файлове се споделят между потребителите с цел пестене на място на диска.</translation>
@@ -204,6 +226,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="350397915809787283">Ако нямате профил, изберете първата опция, за да си създадете такъв.</translation>
 <translation id="3520824492621090923">Потвърждавате ли регистрирането на устройството за павилионен режим или режим за дигитални знаци и надписи?</translation>
 <translation id="3547954654003013442">Настройки за прокси сървър</translation>
+<translation id="3550915441744863158">Chrome се актуализира автоматично, така че винаги имате най-новата версия</translation>
+<translation id="3559533181353831840">Оставащото време е около <ph name="TIME_LEFT" /></translation>
 <translation id="3577473026931028326">Нещо се обърка. Опитайте отново.</translation>
 <translation id="3577745545227000795">Събиране на данни за хардуера от <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Визуализация</translation>
@@ -229,24 +253,30 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3837569373891539515">Можете да изберете всички приложими. Можете да намерите тези опции и в „Настройки“, след като завършите настройването на своя <ph name="DEVICE_TYPE" /></translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3856470183388031602">Използване на профила ви в Google на вашия <ph name="DEVICE_TYPE" /></translation>
+<translation id="3856800405688283469">Изберете часова зона</translation>
 <translation id="3893630138897523026">ChromeVox (обратна връзка с говор)</translation>
 <translation id="3897746662269329507">Устройството ви <ph name="DEVICE_TYPE" /> е създадено за игри. Сега ще се отвори приложението Explore. То ви дава възможност да осъществявате достъп до стотици от най-новите игри, да преглеждате оферти за тях и да откривате функции за игри, които се предлагат с устройството ви.</translation>
 <translation id="389901847090970821">Изберете клавиатура</translation>
 <translation id="3910588685973519483">Създаване на тапети с AI</translation>
 <translation id="3924259174674732591">Размер на текста и елементите на екрана: <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3950820424414687140">Вход</translation>
+<translation id="397703832102027365">Довършва се...</translation>
 <translation id="3983400541576569538">Данните от някои приложения може да бъдат заличени</translation>
 <translation id="3984159763196946143">Демонстрационният режим не можа да стартира</translation>
+<translation id="3988996860813292272">Избиране на часова зона</translation>
 <translation id="3994318741694670028">За съжаление, компютърът ви е конфигуриран с неправилно образуван идентификационен номер на хардуера. Това не позволява на ChromeOS Flex да се актуализира с най-новите корекции за сигурност и устройството ви <ph name="BEGIN_BOLD" />може да е уязвимо на злонамерени атаки<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">Настройване на ПИН код</translation>
+<translation id="403725336528835653">Изпробване</translation>
 <translation id="4044883420905480380">Свързахте се с Wi-Fi и влязохте в профила <ph name="USER_EMAIL" /> на телефона си с Android</translation>
 <translation id="4047726037116394521">Към началния екран</translation>
 <translation id="4062561150282203854">Синхронизиране на приложенията, настройките и др. на вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="4089743381329341712">Избраните приложения ще бъдат инсталирани след настройването. Можете да намерите още препоръки по-късно в „Прил. и игри“.</translation>
 <translation id="4104944259562794668">Можете да активирате функцията по-късно от „Настройки &gt; Сигурност и поверителност &gt; Заключен екран и влизане в профила“</translation>
+<translation id="4132183752438206707">Ще намерите приложения в Google Play Магазин</translation>
 <translation id="4135746311382563554">Допълнителни общи условия на Google Chrome и Chrome OS</translation>
 <translation id="41365691917097717">Ако продължите, отстраняването на грешки през ADB ще бъде активирано, за да създавате и тествате приложения за Android. Обърнете внимание, че това действие позволява инсталирането на приложения за Android, които не са удостоверени от Google. За деактивирането на ADB е необходимо да бъдат възстановени фабричните настройки.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> не принадлежи на валидна организация. Обърнете се към администратора си. Ако вие сте администратор, можете да настроите организацията си на адрес: g.co/ChromeEnterpriseAccount</translation>
+<translation id="4167393659000039775">Google не носи отговорност за евентуална загуба на данни. Възможно е <ph name="DEVICE_OS" /> да не работи на несертифицирани модели. Научете повече на адрес g.co/flex/InstallGuide.</translation>
 <translation id="4209092469652827314">Голям</translation>
 <translation id="4213918571089943508">Профил в Google на дете</translation>
 <translation id="4228071595943929139">Използване на имейл адреса на организацията ви</translation>
@@ -264,6 +294,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4309165024397827958">Позволете на приложенията и услугите за Android да ползват местоположението на устройството ви, ако имат съответното разрешение. Google може периодично да събира информация за местоположението и да я използва по анонимен начин с цел подобряване на точността му и базиращите се на него услуги.</translation>
 <translation id="4317733381297736564">Покупки в приложения</translation>
 <translation id="4341905082470253054">Проверява се състоянието на TPM...</translation>
+<translation id="434198521554309404">Бързо. Сигурно. Лесно.</translation>
+<translation id="4358643842961018282">Устройството ви е актуално</translation>
 <translation id="4370975561335139969">Въведените имейл адрес и парола не съвпадат</translation>
 <translation id="4373418556073552953">Вход с телефона ви с Android</translation>
 <translation id="4378556263712303865">Заявка за устройството</translation>
@@ -281,6 +313,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> откри активен TPM, който може да съхранява данните ви по-сигурно.</translation>
 <translation id="4472298120638043495">Можете да използвате предпочитания от вас език за профила в Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="4472575034687746823">Първи стъпки</translation>
+<translation id="4487489714832036847">Chromebook работи с приложения вместо с традиционен софтуер. Получете приложения за продуктивност, забавления и др.</translation>
 <translation id="450867954911715010">Настройки за достъпност</translation>
 <translation id="4519605771716872386">Синхронизирането на файловете е включено</translation>
 <translation id="4531924570968473143">Кого искате да добавите към това устройство <ph name="DEVICE_TYPE" />?</translation>
@@ -297,10 +330,12 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> не е валиден профил в Google for Education. Обърнете се към администратора си. Ако сте администратор, можете да настроите организацията си на адрес: g.co/workspace/edusignup</translation>
 <translation id="4780558987886269159">За работа</translation>
 <translation id="4806457879608775995">Прегледайте тези условия и управлявайте данните си</translation>
+<translation id="4809927044794281115">Светла тема</translation>
 <translation id="4814327014588285482">Пропускане и напомняне по-късно</translation>
 <translation id="4830502475412647084">Актуализацията на операционната система се инсталира</translation>
 <translation id="4837926214103741331">Не сте упълномощени да използвате това устройство. За разрешение за вход се свържете със собственика му.</translation>
 <translation id="4844333629810439236">Други клавиатури</translation>
+<translation id="484462545196658690">Автоматично</translation>
 <translation id="4864369630010738180">Извършва се влизане...</translation>
 <translation id="4867272607148176509">Родителите могат да одобряват или блокират приложения, да задават времеви ограничения и да контролират сърфирането в мрежата. По-късно можете да добавите училищен профил за достъп до повечето училищни ресурси.</translation>
 <translation id="4877652723592270843">Искате ли да активирате ChromeVox – вградения екранен четец на ChromeOS Flex? Ако е така, натиснете и двата бутона за силата на звука и ги задръжте за пет секунди.</translation>
@@ -369,22 +404,29 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5527474464531963247">Можете също да изберете друга мрежа.</translation>
 <translation id="5539070192556911367">Няма връзка с Google</translation>
 <translation id="5549511085333906441">Избиране на настройки</translation>
+<translation id="5554403733534868102">Повече няма да чакате актуализации</translation>
 <translation id="557722062034137776">Нулирането на устройството ви няма да засегне профилите ви в Google или данните, синхронизирани с тях. Всички файлове, запазени локално на устройството ви, обаче ще бъдат изтрити.</translation>
+<translation id="5600348067066185292">Инсталирането се извършва в няколко лесни стъпки. Ще имате друга възможност да потвърдите, преди да бъдат извършени промени в компютъра ви.</translation>
 <translation id="5626172233890210551">Използване на парола</translation>
 <translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />За да работи по най-добрия начин, <ph name="DEVICE_OS" /> събира данни за хардуера на устройствата и ги споделя с Google с цел определяне на подходящите актуализации. По избор можете да разрешите на Google да използва тези данни за други цели, като например поддръжка и подобрения на функциите и услугите на <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Имате възможност да влезете в профила си на това устройство и да прегледате полетата, посочени като chromeosflex_ в chrome://system, за да видите данните, които се изпращат до Google за филтриране на актуализациите, както и другите данни, които сте избрали да споделяте с нас.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />За повече подробности относно данните, които <ph name="DEVICE_OS" /> може да споделя с Google, и начините, по които се използват, посетете g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">За да използвате „<ph name="NETWORK_ID" />“, може да се наложи първо <ph name="LINK_START" />да посетите страницата за вход в мрежата<ph name="LINK_END" />, която ще се отвори автоматично след няколко секунди. Ако това не се случи, мрежата не може да се ползва.</translation>
+<translation id="5641608986289282154">Първи стъпки с <ph name="DEVICE_OS" /></translation>
 <translation id="5655296450510165335">Регистриране на устройството</translation>
 <translation id="565899488479822148">Най-новата актуализация се инсталира</translation>
 <translation id="5659964844710667266">Създаване на парола за това устройство <ph name="DEVICE_TYPE" /></translation>
 <translation id="5684661240348539843">Идентификатор на актива</translation>
 <translation id="5684950556880280580">Паролата ви е актуализирана</translation>
+<translation id="5687326903064479980">Часова зона</translation>
+<translation id="5687935527303996204">Проверете дали устройството ви е включено в електрическата мрежа и не го изключвайте. Инсталацията може да трае до 20 минути. Устройството ще се изключи автоматично, щом инсталацията завърши.</translation>
 <translation id="5705882733397021510">Назад</translation>
+<translation id="5711010025974903573">Регистрационни файлове за услугата</translation>
 <translation id="5762787084360227629">Въвеждане на данни за профил в Google</translation>
 <translation id="5764797882307050727">Моля, освободете място на устройството си.</translation>
 <translation id="5765425701854290211">За съжаление, някой файлове бяха повредени и актуализирането не бе успешно. Синхронизираните ви данни са в безопасност.</translation>
 <translation id="5770125698810550803">Показване на бутоните за навигация</translation>
+<translation id="5793339252089865437">Ако изтеглите актуализацията през мобилната си мрежа, може да бъдете таксувани допълнително.</translation>
 <translation id="5799478978078236781">Получавайте съвети, оферти и актуална информация за <ph name="DEVICE_TYPE" /> и споделяйте отзиви.</translation>
 <translation id="5800703268655655701">Изберете светла или тъмна тема</translation>
 <translation id="5804259315582798390">Активирането на функцията за възстановяване на локалните данни не бе успешно</translation>
@@ -395,12 +437,14 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5856721540245522153">Активиране на функциите за отстраняване на грешки</translation>
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5860491529813859533">Включване</translation>
+<translation id="5863445608433396414">Активиране на функциите за отстраняване на грешки</translation>
 <translation id="5870086504539785141">Затваряне на менюто за достъпност</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="5895335062901455404">Запазените ви предпочитания и активност ще са достъпни на всяко устройство с ChromeOS Flex, след като влезете в профила си в Google. Можете да изберете какво да се синхронизира от настройките.</translation>
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5919305207330938913">Всички събрани данни ще се използват в съответствие с <ph name="BEGIN_LINK" />Декларацията за поверителност<ph name="END_LINK" /> на Google.</translation>
 <translation id="5932441198730183141">Нямате достатъчно налични лицензи, за да регистрирате това хардуерно устройство за Google Meet. Моля, свържете се с екипа за продажби, за да купите още. Ако смятате, че виждате това съобщение по погрешка, обърнете се към екипа за поддръжка.</translation>
+<translation id="5933376509899483611">Часова зона</translation>
 <translation id="5939518447894949180">Нулиране</translation>
 <translation id="5948536763493709626">Свържете клавиатура или мишка или продължете настройването посредством сензорния екран. Ако използвате устройства с Bluetooth, проверете дали са готови за сдвояване.</translation>
 <translation id="5959471481388474538">Мрежата не е налице</translation>
@@ -409,8 +453,10 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6051354611314852653">Ами сега!  Системата не успя да удостовери достъпа на това устройство до приложния програмен интерфейс (API).</translation>
 <translation id="6055544610007596637">Инсталирайте приложения за вашия <ph name="DEVICE_TYPE" /> от Google Play Магазин</translation>
+<translation id="6069464830445383022">Влизате в Chromebook с профила си в Google</translation>
 <translation id="6071181508177083058">потвърждаване на паролата</translation>
 <translation id="6075731018162044558">Ами сега!  Системата не успя да получи дългосрочно означение за достъп на това устройство до приложния програмен интерфейс (API).</translation>
+<translation id="6093888419484831006">Актуализирането се анулира...</translation>
 <translation id="6125479973208104919">За съжаление, трябва отново да добавите профила си към това устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6165508094623778733">Научете повече</translation>
 <translation id="6170498031581934115">Отстраняването на грешки през ADB не бе активирано. Отворете настройките и опитайте отново.</translation>
@@ -420,6 +466,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6202304368170870640">Можете да използвате ПИН кода си, за да влизате в устройството си и да го отключвате.</translation>
 <translation id="6209908325007204267">Устройството ви включва надстройка за Chrome Enterprise, но потребителското ви име не е свързано с корпоративен профил. Моля, създайте си такъв, като посетите g.co/ChromeEnterpriseAccount на алтернативно устройство.</translation>
 <translation id="623261264391834964">Кликнете с десния бутон в текстово поле, за да използвате „Помощ при писане“</translation>
+<translation id="6264520534872750757">Продължете да използвате устройството</translation>
 <translation id="6280215091796946657">Влизане с друг профил</translation>
 <translation id="6283823201263716145">Устройствата в демонстрационен режим автоматично изпращат до Google сигнали за сривове, както и диагностична информация и данни за използването, за да помогнат за подобряването на функциите и ефективността.</translation>
 <translation id="6287713404380454515">От съображения за сигурност администраторът деактивира ПИН кода и паролата на устройството ви. От сега нататък използвайте паролата си за <ph name="MANAGER" />.</translation>
@@ -428,6 +475,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6314819609899340042">Успешно активирахте функциите за отстраняване на грешки на това устройство <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6343262564968371601">Намирайте това, което търсите, като търсите в Google, файлове, приложения и др.</translation>
 <translation id="635609604405270300">Не изключвайте устройството</translation>
+<translation id="6363786367719063276">Преглед на регистрационните файлове</translation>
 <translation id="6367097275976877956">Искате ли да активирате ChromeVox – вградения екранен четец на Chrome OS? Ако е така, натиснете клавиша за интервал.</translation>
 <translation id="636850387210749493">Корпоративно записване</translation>
 <translation id="6380143666419481200">Приемам и продължавам</translation>
@@ -435,6 +483,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Като разрешите на устройствата си с ChromeOS да изпращат автоматични сигнали, ни помагате да разбираме какво е най-важно да поправим и подобрим в операционната система. Тези сигнали могат да включват различни неща, като например информация за възникнали сривове в ChromeOS, с кои функции работите и колко памет използвате обичайно.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Имате възможност да разрешите или забраните сигналите по всяко време от настройките на устройството си с Chrome. Ако сте администратор на домейн, можете да извършите тази промяна от администраторската конзола.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Инсталиране на критична актуализация</translation>
+<translation id="6452251728599530347">Завършено: <ph name="PERCENT" /></translation>
 <translation id="6478849105642611893">Клавишът за бързо вмъкване се намира под клавиша за Tab</translation>
 <translation id="6480327114083866287">Управлява се от <ph name="MANAGER" /></translation>
 <translation id="6488384360522318064">Изберете език</translation>
@@ -452,6 +501,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6675665718701918026">Свързано е посочващо устройство</translation>
 <translation id="667752334740867460">Получава се информация за Wi-Fi…</translation>
 <translation id="6680442031740878064">Свободно място: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="6684827949542560880">Изтегля се най-новата актуализация</translation>
 <translation id="6722744767592605627">Можете да възстановите <ph name="EMAIL" />, но локалните данни ще бъдат изтрити.</translation>
 <translation id="6748980958975836188">Прочетох и приемам <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6749473226660745022">Снимки</translation>
@@ -461,15 +511,18 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
         <ph name="BEGIN_PARAGRAPH2" />Имате възможност да разрешите или забраните сигналите по всяко време от настройките на устройството с ChromeOS на детето си. Ако сте администратор на домейн, можете да извършите тази промяна от администраторската конзола.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH4" />Ако настройката „Активност в мрежата и приложенията“ е включена за профила в Google на детето ви, данните му може да се запазват в профила му в Google. На адрес families.google.com можете да научите повече за тези настройки и как да ги коригирате.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609">Водещи приложения за вашия <ph name="DEVICE_TYPE" /></translation>
+<translation id="6818802132960437751">Вградена защита от вируси</translation>
 <translation id="682971198310367122">Декларация за поверителност на Google</translation>
 <translation id="6835762382653651563">Моля, свържете се с интернет, за да актуализирате устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839916869147598086">Функцията за влизане в профил е променена</translation>
 <translation id="6852529053326738838">Попитайте организацията си или се регистрирайте със служебния си имейл адрес, за да проверите дали профилът ви отговаря на условията.</translation>
 <translation id="6867671714894555998">Изпълнявайте задачи бързо с новата клавиатура</translation>
+<translation id="6881845890692344060">Администраторът ви излезе от профила си. Контролът вече е във ваши ръце.</translation>
 <translation id="6883319974225028188">Ами сега! Системата не успя да запази конфигурацията на устройството.</translation>
 <translation id="6888831646723563669">Свържете новото си устройство <ph name="DEVICE_TYPE" /> с мрежа, за да се възползвате от всичките му функции</translation>
 <translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Данните от приложенията могат да бъдат всяка запазена от тях информация (въз основа на настройките за програмисти), включително контакти, съобщения и снимки. Данните в резервното копие не се отчитат в квотата за хранилището на детето ви в Диск.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Можете да изключите тази услуга от настройките.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="6897688156970667447">Полезно при слаба светлина и пести батерията</translation>
 <translation id="6903907808598579934">Включване на синхронизирането</translation>
 <translation id="6918733588290914545">Бързо настройване посредством телефон с Android</translation>
 <translation id="6920473853105515518">Проверете дали устройството ви <ph name="DEVICE_TYPE" /> е свързано с интернет и опитайте отново. Можете също да посетите play.google/play-terms от друго устройство.</translation>
@@ -498,6 +551,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7135729336746831607">Да се включи ли Bluetooth?</translation>
 <translation id="7141105143012495934">Влизането не бе успешно, тъй като данните за профила ви не можаха да се извлекат. Моля, свържете се с администратора си или опитайте отново.</translation>
 <translation id="7144878232160441200">Повторен опит</translation>
+<translation id="7149839598364933473">Преобразуване на това устройство в такова с <ph name="DEVICE_OS" />.</translation>
 <translation id="7171259390164035663">Без регистриране</translation>
 <translation id="7189451821249468368">Нямате достатъчно надстройки, за да запишете това устройство. Моля, свържете се с екипа за продажби, за да купите още. Ако смятате, че виждате това съобщение по погрешка, обърнете се към екипа за поддръжка.</translation>
 <translation id="7202337678781136582">Сканирайте QR кода с телефона си с Android</translation>
@@ -532,8 +586,10 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7560756177962144929">Синхронизиране на вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="7571643774869182231">Мястото в хранилището не е достатъчно за актуализацията</translation>
 <translation id="7616214729753637086">Устрой­ството се регистрира...</translation>
+<translation id="7619937211696316184">Поддръжката е извършена</translation>
 <translation id="7622114377921274169">Зарежда се.</translation>
 <translation id="7630426712700473382">Това устройство се управлява от <ph name="MANAGER" /> и трябва всеки път да влизате в профила си.</translation>
+<translation id="7633724038415831385">Никога повече няма да чакате актуализация. На Chromebook актуализациите на софтуера се извършват на заден план.</translation>
 <translation id="7639914187072011620">Извличането от сървъра на URL адреса за пренасочване на SAML не бе успешно</translation>
 <translation id="7643117827468520640">Преглед на тези условия</translation>
 <translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />Данните от приложенията могат да бъдат всяка запазена от тях информация (въз основа на настройките за програмисти), включително контакти, съобщения и снимки. Данните в резервното копие не се отчитат в квотата за хранилището ви в Диск.<ph name="END_PARAGRAPH1" />
@@ -572,7 +628,9 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7968982339740310781">Преглед на подробностите</translation>
 <translation id="7975504106303186033">Трябва да регистрирате това устройство с Chrome Education към профил в Education. За да регистрирате нов профил, моля, посетете g.co/workspace/edusignup.</translation>
 <translation id="7980084013673500153">Идент. № на актива: <ph name="ASSET_ID" /></translation>
+<translation id="7981670705071137488">След това софтуерните актуализации ще се извършват на заден план. Можете да прегледате предпочитанията за тях в настройките.</translation>
 <translation id="7982083145464587921">Моля, рестартирайте устройството си, за да поправите тази грешка.</translation>
+<translation id="7988805580376093356">Запазване на операционната ви система и изпълняване на <ph name="DEVICE_OS" /> от USB.</translation>
 <translation id="7990958035181555539">Автоматично прехвърляне на Wi-Fi от телефона ви с Android</translation>
 <translation id="8022466874160067884">Въведете профила си в Google и паролата за него</translation>
 <translation id="8049029041626250638">Свържете клавиатура или мишка. Ако използвате устройства с Bluetooth, проверете дали са готови за сдвояване.</translation>
@@ -581,6 +639,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8065144531309810062">Използвайте AI на Google, за да повишите креативността и продуктивността си</translation>
 <translation id="8082106343289440791">Искате ли да сдвоите с(ъс) „<ph name="DEVICE_NAME" />“?</translation>
 <translation id="8097959162767603171">Администраторът ви първо трябва да приеме общите условия в списъка с устройства с Chrome в администраторската конзола.</translation>
+<translation id="8098156986344908134">Да се инсталира ли <ph name="DEVICE_OS" /> и да се изтрие ли твърдият диск?</translation>
 <translation id="8098616321286360457">Изисква се връзка с мрежата</translation>
 <translation id="8129265306888404830">За да ползвате имейл адреса от организацията си (<ph name="EMAIL_DOMAIN" />), трябва да използвате корпоративното регистриране. Ако това устройство е за лична употреба, влезте с личния си профил в Google.</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
@@ -594,6 +653,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Услугата на Google за местоположение използва източници като Wi-Fi, мобилни мрежи и сензори, за да помага за определянето на местоположението на устройството ви.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />По всяко време можете да изключите настройката за местоположението за Android на устройството си, като отворите „Настройки &gt; Приложения &gt; Google Play Магазин &gt; Управление на предпочитанията за Android &gt; Сигурност и местоположение &gt; Местоположение“. Също така от това меню имате възможност да изключите функцията за определяне на местоположението за Android чрез Wi-Fi, мобилни мрежи и сензори, като деактивирате настройката „Google: Точност на местоположението“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">Моля, въведете отново паролата си, за да актуализирате потребителския си профил за <ph name="DEVICE_TYPE" />.</translation>
+<translation id="822050276545350872">Оттук нататък не се изисква чакане</translation>
 <translation id="8239032431519548577">Корпоративното записване завърши</translation>
 <translation id="8241806945692107836">Конфигурацията на устройството се определя...</translation>
 <translation id="8242426110754782860">Продължаване</translation>
@@ -601,11 +661,13 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8271379370373330993">Родители, следващите няколко стъпки са предназначени за вас. След настройването на профила можете да върнете устройството <ph name="DEVICE_TYPE" /> на детето.</translation>
 <translation id="8274924778568117936">Не изключвайте, нито затваряйте устройството си <ph name="DEVICE_TYPE" />, докато актуализирането не завърши. <ph name="DEVICE_TYPE" /> ще се рестартира след завършване на инсталирането.</translation>
 <translation id="8281886186245836920">Пропускане</translation>
+<translation id="8289509909262565712">Добре дошли в <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">За лична употреба</translation>
 <translation id="8304383784961451596">Нямате пълномощия да използвате това устройство. За разрешение за вход се обърнете към администратора или използвайте профил в Google, контролиран чрез Family Link.</translation>
 <translation id="8321837372750396788">Това устройство <ph name="DEVICE_TYPE" /> ще се управлява от <ph name="MANAGER" />.</translation>
 <translation id="8339288417038613756">Размер на текста и елементите на екрана</translation>
 <translation id="8354034204605718473">ПИН кодът на детето ви е добавен</translation>
+<translation id="8360140320636871023">Персонализиране на темата на екрана</translation>
 <translation id="8366396658833131068">Връзката ви с мрежата е възстановена. Моля, изберете друга мрежа или натиснете бутона „Напред“ по-долу, за да стартирате павилионното си приложение.</translation>
 <translation id="8401432541486058167">Въведете ПИН, свързан със смарткартата ви</translation>
 <translation id="8408270600235826886">Имате възможност да контролирате каква информация се споделя с Google. Можете да промените това по всяко време от настройките. Данните ще се използват в съответствие с <ph name="BEGIN_LINK" />Декларацията ни за поверителност<ph name="END_LINK" />.</translation>
@@ -617,6 +679,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8464132254133862871">Този профил на потребител не отговаря на условията за услугата.</translation>
 <translation id="8524841856047224176">Персонализирайте фоновете за камерата си за видеообаждания и др.</translation>
 <translation id="8527257351549797148">Организацията ви може да изисква регистрация, за да имате достъп до приложения, разширения и др. Тя ще има възможност и да управлява различни неща, като например настройките за сигурност и тези на устройството.</translation>
+<translation id="8549316893834449916">За вход в Chromebook ще използвате профила си в Google, същия, с който работите в Gmail, Диск, YouTube и др.</translation>
 <translation id="8558063527625343224">Настройване на Google Beam</translation>
 <translation id="8569673829373920831">Повече за <ph name="APP_NAME" /></translation>
 <translation id="8586421813321819377">Позволете на ChromeOS, приложенията за Android, уебсайтовете и услугите да ползват местоположението на устройството ви, ако имат съответното разрешение. „Точност на местоположението“ предоставя на приложенията и услугите за Android по-точни данни за местоположението. За целта Google периодично обработва информацията от сензорите на устройството ви и безжичните сигнали от него, за да определя местоположенията на съответните сигнали посредством отворена ангажираност. Използваме тези данни, без да ви идентифицираме, за да подобряваме точността на местоположението и базиращите се на него услуги, както и да подобряваме, предоставяме и поддържаме услугите на Google въз основа на законните си интереси и тези на трети страни, така че да обслужваме нуждите на потребителите.</translation>
@@ -625,11 +688,13 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
         <ph name="BR" />
 <ph name="BR" />
 Видимо за устройствата в близост като <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
+<translation id="8637688295594795546">Налице е системна актуализация. Подготвя се за изтегляне...</translation>
 <translation id="8655972064210167941">Влизането не бе успешно, тъй като паролата ви не можа да се потвърди. Моля, свържете се с администратора си или опитайте отново.</translation>
 <translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />Когато настройката „Точност на местоположението“ е включена, за по-точно определяне на местоположението на устройството се използва информация за безжични сигнали, като точки за достъп до Wi-Fi и клетъчни кули, заедно с данни от сензорите на устройството, например акселерометър и жироскоп. Така приложенията и услугите за Android предоставят базиращи се на местоположението функции. За целта Google периодично събира информация за сензорите на устройството и безжичните сигнали в района, за да допринася за местоположенията на съответните сигнали, получени чрез краудсорсинг.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Използваме тези данни, без да ви идентифицираме, за да подобряваме точността на местоположението и базиращите се на него услуги, както и да подобряваме, предоставяме и поддържаме услугите на Google за всички. Обработваме тази информация въз основа на законните си интереси и тези на трети страни, така че да обслужваме нуждите на потребителите.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Можете да изключите настройката „Точност на местоположението“ по всяко време от настройките за местоположението на устройството си. За целта отворете „Настройки &gt; Поверителност и сигурност &gt; Контроли за поверителност &gt; Достъп до местоположението &gt; Разширени настройки за местоположението“. Ако настройката „Точност на местоположението“ е изключена, тя няма да събира данни. За определяне на местоположението на устройството ви за приложенията и услугите за Android се използва само IP адресът, ако е налице. Това може да повлияе на наличността и точността на местоположенията за съответните приложения и услуги, като например Google Карти.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">За съжаление, компютърът ви е конфигуриран с неправилно образуван идентификационен номер на хардуера. Това не позволява на Chrome OS да се актуализира с най-новите корекции за сигурност и устройството ви <ph name="BEGIN_BOLD" />може да е уязвимо на злонамерени атаки<ph name="END_BOLD" />.</translation>
+<translation id="8675704450909805533">Инсталационната програма не можа да намери валидно място, където да инсталира <ph name="DEVICE_OS" />.</translation>
 <translation id="8695139659682234808">Добавете родителски контроли след настройването</translation>
 <translation id="8698269656364382265">За да се върнете на предишния екран, прекарайте пръст от лявата страна.</translation>
 <translation id="8718994464069323380">Открит е сензорен екран</translation>
@@ -639,10 +704,12 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8740086188450289493">Използване на паролата за профила в Google</translation>
 <translation id="8740247629089392745">Можете да дадете този Chromebook на <ph name="SUPERVISED_USER_NAME" />. Настройването почти завърши и устройството скоро ще е готово за използване.</translation>
 <translation id="8759753423332885148">Научете повече.</translation>
+<translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> се нуждае от актуализация</translation>
 <translation id="8777628254805677039">парола на root</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8783834180813871000">Въведете кода за сдвояване през Bluetooth, след което натиснете Return или Enter.</translation>
 <translation id="8794548468611058947">Вместо да влизате чрез паролата за профила си в Google, можете да създадете ПИН код за това устройство <ph name="DEVICE_TYPE" /></translation>
+<translation id="8830779999439981481">Рестартира се, за да се приложат актуализациите</translation>
 <translation id="8830796635868321089">Проверката за актуализации не бе успешна посредством текущите настройки на прокси сървъра. Моля, <ph name="PROXY_SETTINGS_LINK_START" />коригирайте ги<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="8855977033756560989">Това устройство Chromebook Enterprise се предлага в пакет с Chrome Enterprise Upgrade. За да се възползвате от корпоративните възможности, регистрирайте това устройство с администраторски профил в Google.</translation>
 <translation id="885746075120788020">Запазените ви предпочитания и активност ще са достъпни на всяко устройство с Chrome OS, след като влезете в профила си в Google. Можете да изберете какво да се синхронизира от настройките.</translation>
@@ -661,6 +728,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8975396729541388937">Можете да се отпишете по всяко време, като кликнете върху връзката в получените от вас имейли.</translation>
 <translation id="8987305927843254629">Всеки човек има възможност да персонализира практическата си работа и да запази данните си частни.</translation>
 <translation id="8993059306046735527">Дори да забравите паролата си за <ph name="DEVICE_TYPE" />, можете да възстановите локалните си данни. Ще се наложи да влезете в профила си в Google или да използвате функцията за възстановяването му.</translation>
+<translation id="9018218886431812662">Инсталирането завърши</translation>
 <translation id="9033765790910064284">Напред въпреки това</translation>
 <translation id="903480517321259405">Въведете ПИН кода отново</translation>
 <translation id="9040473193163777637">Искате ли да активирате ChromeVox – вградения екранен четец на Chrome OS? Ако е така, натиснете и двата бутона за силата на звука и ги задръжте за пет секунди.</translation>
@@ -678,6 +746,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
         <ph name="BR" />
 <ph name="BR" />
 Вижда се като <ph name="DEVICE_TYPE" />…</translation>
+<translation id="945522503751344254">Изпращане на отзиви</translation>
 <translation id="951991426597076286">Отхвърляне</translation>
 <translation id="954749761428814584">Език и метод на въвеждане</translation>
 <translation id="960987915827980018">Остава около 1 час</translation>

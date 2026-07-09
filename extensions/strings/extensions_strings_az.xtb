@@ -120,7 +120,6 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Şəxsi açar üçün giriş dəyəri düzgün format olmalıdır.
 (PKCS#8-format PEM-encoded RSA key).</translation>
-<translation id="765293928828334535">Tətbiqlər, artırmalar və istifadəçi skriptləri bu veb saytdan əlavə edilə bilməz</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7766838926148951335">İcazələri qəbul edin</translation>
 <translation id="7876803335449432072">Kontent skripti üçün "<ph name="RELATIVE_PATH" />" faylını yükləmək mümkün olmadı. Kontent skripti üzrə üslub cədvəlləri yalnız .css faylları kimi dəstəklənən üslüb cədvəllərindən yüklənə bilər.</translation>

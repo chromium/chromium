@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">የግል ቁልፍ የግቤት እሴት የሚሠራ ቅርጸት (PKCS#8-format በPEM-የተመሠጠረ የRSA ቁልፍ) መሆን አለበት።</translation>
-<translation id="765293928828334535">መተግበሪያዎች፣ ቅጥያዎች እና የተጠቃሚ ስክሪፕቶች ከዚህ ድር ጣቢያ ሊታከሉ አይችሉም</translation>
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7766838926148951335">ፈቃዶችን ተቀበል</translation>
 <translation id="7876803335449432072">ለይዘት ስክሪፕት «<ph name="RELATIVE_PATH" />» ፋይልን መጫን አልተቻለም፣ የይዘት ስክሪፕቶች መጫን የሚችሉት እንደ .css ፋይሎች ካሉ የሚደገፉ የቅጥ ሉህ ፋይሎች ላይ ብቻ ነው።</translation>

@@ -504,6 +504,7 @@
 <translation id="175656076281618225">Sehr</translation>
 <translation id="1757773103848038814">Sabit Ölçülü Şrift</translation>
 <translation id="1757935267918149452">"Google parolunu dəyişin" düyməsi, aktivləşdirərək Google Hesabı parolunu dəyişin</translation>
+<translation id="1759776526873274358">Saytların təhlükəsizliyinizi artırmaq üçün istifadə etdiyi doğrulama kodlarını avtomatik doldurun. Chrome bu kodları Gmail-dən əldə edə bilər. <ph name="BEGIN_LINK" />Bu funksiya haqqında ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmədi; onun təhlükəsizlik sertifikatı cihazınızın əməliyyat sistemi tərəfindən doğrulanmayıb. Buna səbəb yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantınızın ələ keçirilməsi ola bilər.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows Şəbəkə Diaqnostikasını işlətməyə çalışın<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (arxiv)</translation>
@@ -2151,6 +2152,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4304049446746819918">{0,plural, =1{Administrator siyasəti bu faylı <ph name="DESTINATION_NAME" /> bölməsinə köçürməyi tövsiyə etmir}other{Administrator siyasəti bu faylları <ph name="DESTINATION_NAME" /> bölməsinə köçürməyi tövsiyə etmir}}</translation>
 <translation id="4304485328308299773">Rəy əsasında qərar vermək üçün məhsul, xidmət və ya təcrübələrlə bağlı müştəri dəyərləndirmələrini oxuyun.</translation>
 <translation id="4305666528087210886">Faylınıza giriş mümkün olmadı</translation>
+<translation id="4306349443295056740">OCSP-nin imzalanması</translation>
 <translation id="4306529830550717874">Ünvan saxlanılsın?</translation>
 <translation id="4306812610847412719">mübadilə buferi</translation>
 <translation id="4308567447483056043">İstifadəçinin təşkilatla əlaqəsi olmadığı üçün bu siyasət nəzərə alınmır. Bu siyasətin tətbiq edilməsi üçün Chrome brauzeri və profili eyni təşkilat tərəfindən Admin konsolu vasitəsilə idarə olunmalıdır.</translation>
@@ -2409,6 +2411,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4744603770635761495">İcra olunan yol</translation>
 <translation id="4744816391336495134">Yadda saxlanmış paroldan istifadə etdiyiniz zaman kimliyinizi doğrulamaq üçün barmaq izindən istifadə edə bilərsiniz</translation>
 <translation id="4749011317274908093">Anonim rejimə keçdiniz</translation>
+<translation id="4749924365937394956">Serverin doğrulanması</translation>
 <translation id="4750671009706599284">bu telefon</translation>
 <translation id="4750917950439032686">Bu saytda göndərildiyi zaman məlumatınız (məsələn, parol və ya kredit kartı nömrəsi) gizli saxlanır.</translation>
 <translation id="4751249061288707459">Razılıq son dəfə bu vaxt güncəllənib:</translation>
@@ -3125,6 +3128,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5860491529813859533">Aktiv edin</translation>
 <translation id="5862579898803147654">Yığıcı 8</translation>
 <translation id="5863515189965725638">IBAN-a düzəliş edin</translation>
+<translation id="5863517400058880216">Gmail-dən əldə edilən doğrulama kodlarını avtomatik doldurun</translation>
 <translation id="5863847714970149516">Növbəti səhifədə Sizdən ödəniş tutula bilər</translation>
 <translation id="5866257070973731571">Telefon Nömrəsi Əlavə Edin</translation>
 <translation id="5866327164731551901"><ph name="TYPE_1" /> <ph name="TYPE_2" /> platformasından</translation>
@@ -3238,6 +3242,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6034000775414344507">Açıq-boz</translation>
 <translation id="6034514109191629503">Akkordion qatlama</translation>
 <translation id="6035491133925068289">Trek və Sahə</translation>
+<translation id="6037458223703682108">Elektron imza</translation>
 <translation id="6039846035001940113">Problem davam edərsə, sayt sahibi ilə əlaqə saxlayın.</translation>
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6040539895181423374">Qiymət Məlumatları</translation>
@@ -3549,6 +3554,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6474220430271405609">Siyasət testləri</translation>
 <translation id="6476284679642588870">Ödəniş metodlarını idarə edin</translation>
 <translation id="647881094269678013">Aktyorluq və Teatr</translation>
+<translation id="6480363549849064919">Müştərinin doğrulanması</translation>
 <translation id="6480864723214312258">Məişət batareyaları</translation>
 <translation id="6487678699866233349">Dünya Musiqisi</translation>
 <translation id="6489534406876378309">Dəyişiklikləri yükləməyə başlayın</translation>
@@ -4514,6 +4520,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7967973398323409409">Avtomatik doldurduğunuz məlumatları heç kəs görmür</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" dəyəri yanlış altılıq rəngdir.</translation>
 <translation id="7968982339740310781">Detallara baxın</translation>
+<translation id="7971403153351954587">Təşkilatınız kopiyalamağa nəzarət edir</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA Şifrələmə ilə</translation>
 <translation id="7976053965094442846">Hissə-hissə ödəmə üçün əlçatan olan "İndi al, sonra ödə" emitentləri. Klaviatura gizlədilib.</translation>
 <translation id="7976214039405368314">Həddən çox sorğu var</translation>

@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Der Eingabewert für den privaten Schlüssel muss ein gültiges Format haben (PEM-codierter RSA-Schlüssel im PKCS#8-Format).</translation>
-<translation id="765293928828334535">Von dieser Website können keine Apps, Erweiterungen und Nutzerskripte hinzugefügt werden</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7766838926148951335">Berechtigungen akzeptieren</translation>
 <translation id="7876803335449432072">Die Datei „<ph name="RELATIVE_PATH" />“ konnte für das Content-Script nicht geladen werden. Content-Script-Stylesheets können nur aus unterstützten Stylesheet-Dateien wie CSS-Dateien geladen werden.</translation>

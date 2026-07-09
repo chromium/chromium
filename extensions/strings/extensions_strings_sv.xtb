@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Det angivna värdet för den privata nyckeln måste ha giltigt format (PEM-kodad RSA-nyckel i PKCS#8-format).</translation>
-<translation id="765293928828334535">Appar, tillägg och användarskript kan inte läggas till från webbplatsen</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7766838926148951335">Godkänn behörigheterna</translation>
 <translation id="7876803335449432072">Det gick inte att läsa in filen <ph name="RELATIVE_PATH" /> för innehållsskriptet. Innehållsskriptets stilmallar kan endast läsas in från stilmallsfiler som stöds, t.ex. .css-filer.</translation>

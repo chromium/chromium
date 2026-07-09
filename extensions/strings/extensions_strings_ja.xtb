@@ -117,7 +117,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">秘密鍵の入力値は有効な形式でなければなりません（PKCS#8 形式の PEM エンコード RSA 鍵）。</translation>
-<translation id="765293928828334535">このウェブサイトからアプリ、拡張機能、ユーザー スクリプトを追加することはできません</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7766838926148951335">権限を許可</translation>
 <translation id="7876803335449432072">コンテンツ スクリプトのファイル「<ph name="RELATIVE_PATH" />」を読み込めませんでした。コンテンツ スクリプトのスタイルシートは、.css ファイルなどのサポートされているスタイルシート ファイルからのみ読み込むことができます。</translation>

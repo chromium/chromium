@@ -6,6 +6,7 @@
 <translation id="1061130374843955397">欢迎使用 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1069778954840159202">自动从 Android 手机获取账号</translation>
 <translation id="1076766328672150609">您的孩子可以使用 PIN 码解锁此设备。</translation>
+<translation id="1091767800771861448">按 ESC 键可跳过更新（仅限非官方版本）。</translation>
 <translation id="1097658378307015415">登录前，请先以访客身份进入，以便激活“<ph name="NETWORK_ID" />”网络。</translation>
 <translation id="1111932478203988717">您的孩子可以使用此 PIN 码登录其设备</translation>
 <translation id="1122587596907914265">风格独特的壁纸</translation>
@@ -16,6 +17,7 @@
 <translation id="1177073277575830464">Android 快速设置已完成。请在 <ph name="DEVICE_TYPE" /> 上继续设置。</translation>
 <translation id="1179902906564467236">按照手机上的说明操作或使用相机应用</translation>
 <translation id="1185924365081634987">您也可以尝试<ph name="GUEST_SIGNIN_LINK_START" />以访客身份浏览<ph name="GUEST_SIGNIN_LINK_END" />，以便修复该网络错误。</translation>
+<translation id="1191353342579061195">选择与您的需求相符的主题。若要更改主题、壁纸、屏保等等，只需右键点击桌面即可执行所需操作。</translation>
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1217114730239853757">您想为 ChromeOS Flex 启用 ChromeVox（内置屏幕阅读器）吗？如要启用，请按空格键。</translation>
 <translation id="1222835797152767346">设置 PIN 码即可轻松登录</translation>
@@ -52,6 +54,8 @@
 <translation id="1377600615067678409">暂时跳过</translation>
 <translation id="1399261165075500043">无法加载《Google Play 服务条款》</translation>
 <translation id="1400243387594338234">您可以使用此 PIN 码登录设备</translation>
+<translation id="1406500794671479665">正在验证...</translation>
+<translation id="1407069428457324124">深色主题</translation>
 <translation id="1417497355604638350">发送诊断数据和使用情况数据。</translation>
 <translation id="1418882096915998312">正在注册企业版</translation>
 <translation id="1426410128494586442">是</translation>
@@ -77,6 +81,7 @@
 <translation id="169675691788639886">设备已配置了 SSH 服务器。请勿使用敏感账号登录。</translation>
 <translation id="1700517974991662022">访问过</translation>
 <translation id="1730666151302379551">忘记了旧密码</translation>
+<translation id="1741314857973421784">继续</translation>
 <translation id="1749645492410897998">正在安装软件</translation>
 <translation id="177053719077591686">将 Android 应用备份到 Google 云端硬盘。</translation>
 <translation id="1798832846931769717">Google Beam for Meet</translation>
@@ -89,16 +94,19 @@
 <translation id="185766080319917408">启动器键位于左侧 alt 键的左侧</translation>
 <translation id="1868617395637139709">允许 Android 应用和服务使用位置信息。</translation>
 <translation id="1877377730633446520">这将占用大约 <ph name="REQUIRED_SPACE" /> 的存储空间。您目前有 <ph name="FREE_SPACE" /> 的可用空间。</translation>
+<translation id="1878155070920054810">您的 Chromebook 似乎会在完成更新前耗尽电量。请确保它已在正确充电，以免更新中断。</translation>
 <translation id="189035593835762169">条款及条件</translation>
 <translation id="189358972401248634">其他语言</translation>
 <translation id="1915734383465415025">商店编号</translation>
 <translation id="1919096511823372013">插入链接、表情符号等内容。您还可以借助 Google AI 进行写作和创建图片。</translation>
 <translation id="1922496389170590548">孩子的学校账号</translation>
+<translation id="1931410639376954712">正在安装 <ph name="DEVICE_OS" /></translation>
 <translation id="1944528062465413897">蓝牙配对码：</translation>
 <translation id="1987574314042117472">选择并安装热门应用</translation>
 <translation id="1991829061375381344">您的可用许可数量不足，无法注册此 Google Meet 设备。请与您的转销商联系，购买更多许可。如果您认为此消息有误，请与您的转销商联系。</translation>
 <translation id="200928901437634269">使用孩子的 Google 账号或学校账号。您还可以设置家长控制功能。</translation>
 <translation id="2013550551806600826">试试看！开启/关闭这项设置，然后在触控板上的测试区域用两根手指进行滚动。日后您还可在“设置”&gt;“设备”&gt;“鼠标和触控板”下找到此设置。</translation>
+<translation id="2016574333161572915">现在可以设置您的 Google Meet 设备了</translation>
 <translation id="2018189721942291407">不确定是否应注册？</translation>
 <translation id="2040460856718599782">糟糕！尝试验证您的身份时出现错误。请仔细检查您的登录凭据，然后重试。</translation>
 <translation id="2052572566310583903">已安装在您的其他设备上</translation>
@@ -112,9 +120,13 @@
 <translation id="2173801458090845390">向此设备添加申请 ID</translation>
 <translation id="2178585470774851578">您正在启用 ChromeOS Flex 调试功能，这些功能将设置 sshd 守护程序并允许从 U 盘启动设备。</translation>
 <translation id="2183570493397356669">已停用“继续”按钮</translation>
+<translation id="2210462644007531147">无法完成安装</translation>
 <translation id="221872881068107022">反向滚动</translation>
 <translation id="2219081237089444028">设置 <ph name="DEVICE_TYPE" /> 密码，以便更轻松地登录</translation>
+<translation id="222115440608612541">在日出和日落时切换主题</translation>
 <translation id="2229161054156947610">剩余时间超过 1 小时</translation>
+<translation id="2246129643805925002">您的 <ph name="DEVICE_TYPE" /> 会自动在后台更新，以便为您提供最新的功能和安全性方面的改进。您可在“设置”中查看更新偏好设置。</translation>
+<translation id="2274840746523584236">您的 Chromebook 需要充电</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> 禁止在该设备离线时登录 <ph name="EMAIL" /></translation>
 <translation id="2317842250900878657">已迁移 <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2319072477089403627">正在连接到您的 Android 手机…</translation>
@@ -124,6 +136,7 @@
 <translation id="2387052489799050037">转到主屏幕</translation>
 <translation id="2395616325548404795">您的 <ph name="DEVICE_TYPE" /> 已成功注册企业管理服务，但未能发送其资产和位置信息。请通过管理控制台为此设备手动输入这些信息。</translation>
 <translation id="2408955596600435184">输入您的 PIN 码</translation>
+<translation id="2418307627282545839">让屏幕保持明快轻盈的色调</translation>
 <translation id="243179355394256322">贵单位仅允许已获授权的用户注册设备。此用户无权注册设备。请确保此用户在管理控制台的“用户”部分中拥有“注册 Google Meet 设备”管理员权限。</translation>
 <translation id="2439152382014731627">重置 <ph name="DEVICE_TYPE" /> 密码</translation>
 <translation id="2450223707519584812">您将无法添加用户，因为缺少 Google API 密钥。详情请见 <ph name="DETAILS_URL" />。</translation>
@@ -131,12 +144,14 @@
 <translation id="2485681265915754872">Google Play 服务条款</translation>
 <translation id="248676429071089168">向上滑动手指可使页面向下移动</translation>
 <translation id="2501278716633472235">返回</translation>
+<translation id="252418934079508528">安装 <ph name="DEVICE_OS" /></translation>
 <translation id="2538084450874617176">谁在使用此 <ph name="DEVICE_TYPE" />？</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />无法连接到<ph name="NETWORK_ID" />。请选择其他网络或重试。</translation>
 <translation id="2565214867520763227">开启屏幕阅读器</translation>
 <translation id="2569972178052279830">零售商名称</translation>
 <translation id="257779572837908839">设为 Chromebox 会易设备</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" />（平台：<ph name="PLATFORM_VERSION" />）<ph name="DEVICE_SERIAL_NUMBER" /></translation>
+<translation id="2593499352046705383">在开始之前，请确保已备份数据。安装 <ph name="DEVICE_OS" /> 会覆盖您的硬盘。如需了解详情，请访问 g.co/flex/InstallGuide。</translation>
 <translation id="2606454609872547359">否，不启用 ChromeVox 并继续操作</translation>
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google 的位置信息服务会使用 Wi-Fi、移动网络和传感器等来源协助推测此设备所在的位置。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />您随时可在此设备上关闭 Android 位置信息，方法是依次前往“设置”&gt;“应用”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“安全性和位置信息”&gt;“位置信息”。您还可在同一菜单中关闭“Google 位置信息精确度”，禁止系统使用 Wi-Fi、移动网络和传感器获取 Android 位置信息。<ph name="END_PARAGRAPH2" /></translation>
@@ -144,10 +159,12 @@
 <translation id="2687407218262674387">Google 服务条款</translation>
 <translation id="2688196195245426394">向服务器注册设备时出错：<ph name="CLIENT_ERROR" />。</translation>
 <translation id="2698147581454716013">这是一个套装设备，无法注册自助服务终端和数字标牌升级服务。</translation>
+<translation id="2722540561488096675">您的设备将在 <ph name="TIME_LEFT" />后关闭。届时，请先拔掉 USB，再重新开启您的设备。然后，您便可开始使用 <ph name="DEVICE_OS" /> 了。</translation>
 <translation id="2725200716980197196">网络连接已恢复</translation>
 <translation id="2731700343119398978">请稍候...</translation>
 <translation id="2732134891301408122">第 <ph name="CURRENT_ELEMENT" /> 项附加内容，共 <ph name="TOTAL_ELEMENTS" /> 项</translation>
 <translation id="2740531572673183784">确定</translation>
+<translation id="2742448780373473567">安装 <ph name="DEVICE_OS" /> 会覆盖您的设备上的所有数据。</translation>
 <translation id="274318651891194348">正在搜索键盘</translation>
 <translation id="2754825024506485820">查找您所需的应用 - 从办公类应用到娱乐类应用，Google Play 商店应有尽有。您随时可安装应用。</translation>
 <translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />“位置信息精确度”处于开启状态时，系统会使用无线信号来源（例如 Wi-Fi 接入点和移动基站）的相关信息以及设备传感器（例如加速度计和陀螺仪）数据来更精确地推测设备位置，以便 Android 应用和服务使用这些位置信息提供基于地理位置的功能。为此，Google 会定期收集此设备附近的设备传感器和无线信号来源的相关信息，以便为众包无线信号位置信息做出贡献。<ph name="END_PARAGRAPH1" />
@@ -160,6 +177,9 @@
 <translation id="2849767214114481738">您的 PIN 码已添加完毕</translation>
 <translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含 ChromeOS 崩溃情况、使用的功能、通常占用的内存量，等等。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />您随时可在 Chrome 设备设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2861301611394761800">系统更新已完成。请重新启动系统。</translation>
+<translation id="2870909136778269686">正在更新…</translation>
+<translation id="2872961005593481000">关机</translation>
 <translation id="2886119409731773154">此过程最多可能需要 30 分钟</translation>
 <translation id="2893180576842394309">Google 可能会利用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
 <translation id="2902265136119311513">以访客身份浏览</translation>
@@ -178,6 +198,7 @@
 <translation id="313205617302240621">忘记了密码？</translation>
 <translation id="3162070126914310576">由于您的组织部门已达到初始注册上限，因此无法立即注册此设备。请与您的管理员联系，以获取帮助。</translation>
 <translation id="3163511056918491211">随时轻松恢复数据或更换设备。您的备份内容将上传到 Google 并使用您的 Google 账号密码进行加密。</translation>
+<translation id="3169930038976362151">选择与您的需求相符的主题。若要更改主题、壁纸、屏保等，轻触并按住桌面即可执行所需操作。</translation>
 <translation id="3170072451822350649">您也可以跳过登录步骤，<ph name="LINK_START" />以访客身份浏览<ph name="LINK_END" />。</translation>
 <translation id="3177914167275935955">您的设备随附了一份 Chrome 教育版升级许可，但您的用户名并未与 Google for Education 账号关联。请先在辅助设备上前往 g.co/workspace/edusignup 创建一个 Google for Education 账号。</translation>
 <translation id="3196912927885212665">您需要开启 Chromebook 的蓝牙，才能使用 Android 手机进行设置</translation>
@@ -189,6 +210,7 @@
 <translation id="3261268979727295785">对于年龄较大的孩子，您只需完成设置，便可添加家长控制功能。您可在“探索”应用内找到与此功能相关的信息。</translation>
 <translation id="3278001907972365362">您需要注意自己的 Google 账号</translation>
 <translation id="3283148363895519428">按照手机上的说明继续设置。确保您的手机就在附近且已开启蓝牙。</translation>
+<translation id="3327050066667856415">Chromebook 旨在确保安全。您的设备会自动防范恶意软件 - 无需安装其他软件。</translation>
 <translation id="3382073616108123819">糟糕！系统无法识别此设备的标识符。</translation>
 <translation id="3382200254148930874">正在停用监管功能…</translation>
 <translation id="3384362484379805487">为节省磁盘可用空间，系统会让用户共用语言包文件。</translation>
@@ -204,6 +226,8 @@
 <translation id="350397915809787283">如果您没有账号，请选择第一个选项创建一个。</translation>
 <translation id="3520824492621090923">确认进行自助服务终端和数字标牌设备注册？</translation>
 <translation id="3547954654003013442">代理设置</translation>
+<translation id="3550915441744863158">Chrome会自动更新，因此您使用的始终都是最新版本</translation>
+<translation id="3559533181353831840">还需大约 <ph name="TIME_LEFT" /></translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> 硬件数据收集</translation>
 <translation id="3602290021589620013">预览</translation>
@@ -229,24 +253,30 @@
 <translation id="3837569373891539515">您可以选择所有适用的选项。完成 <ph name="DEVICE_TYPE" /> 设置后，您也可在“设置”中找到这些选项。</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3856470183388031602">在 <ph name="DEVICE_TYPE" /> 上使用您的 Google 账号</translation>
+<translation id="3856800405688283469">选择时区</translation>
 <translation id="3893630138897523026">ChromeVox（语音反馈）</translation>
 <translation id="3897746662269329507">您的 <ph name="DEVICE_TYPE" /> 专为游戏打造。接下来系统会打开“探索”应用，以便您从中获取数百款最新游戏、查看游戏优惠，以及发现设备自带的游戏功能。</translation>
 <translation id="389901847090970821">选择键盘</translation>
 <translation id="3910588685973519483">利用 AI 制作壁纸</translation>
 <translation id="3924259174674732591">显示大小和文字大小：<ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3950820424414687140">登录</translation>
+<translation id="397703832102027365">正在完成...</translation>
 <translation id="3983400541576569538">某些应用中的数据可能会丢失</translation>
 <translation id="3984159763196946143">无法启动演示模式</translation>
+<translation id="3988996860813292272">选择时区</translation>
 <translation id="3994318741694670028">很遗憾，您的计算机配置了格式错误的硬件 ID。这导致 ChromeOS Flex 无法使用最新的安全修正程序进行更新，以致您的计算机<ph name="BEGIN_BOLD" />很容易遭到恶意攻击<ph name="END_BOLD" />。</translation>
 <translation id="4002440992267487163">PIN 码设置</translation>
+<translation id="403725336528835653">先试用一下</translation>
 <translation id="4044883420905480380">您已使用 Android 手机连接到 Wi-Fi 并以 <ph name="USER_EMAIL" /> 的身份登录</translation>
 <translation id="4047726037116394521">转到主屏幕</translation>
 <translation id="4062561150282203854">同步您的 <ph name="DEVICE_TYPE" /> 应用、设置等内容</translation>
 <translation id="4089743381329341712">所选应用将在设置完毕后安装。您稍后可以在“应用和游戏”应用中找到更多推荐内容。</translation>
 <translation id="4104944259562794668">您可等到需要时再前往“设置”&gt;“安全和隐私设置”&gt;“锁定屏幕和登录”部分中启用该功能</translation>
+<translation id="4132183752438206707">在 Google Play 商店中查找所需应用</translation>
 <translation id="4135746311382563554">Google Chrome 和 Chrome 操作系统附加服务条款</translation>
 <translation id="41365691917097717">继续操作会启用 ADB 调试，以创建和测试 Android 应用。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且一旦安装就无法停用，除非将设备恢复到出厂设置。</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> 不属于任何有效的组织。请与您的管理员联系。如果您本人就是管理员，则可通过访问 g.co/ChromeEnterpriseAccount 来设置贵组织</translation>
+<translation id="4167393659000039775">Google 不对任何数据损失承担责任，<ph name="DEVICE_OS" /> 在未经认证的型号上可能无法正常运行。如需了解详情，请访问 g.co/flex/InstallGuide。</translation>
 <translation id="4209092469652827314">大</translation>
 <translation id="4213918571089943508">孩子的 Google 账号</translation>
 <translation id="4228071595943929139">使用您组织的电子邮件地址</translation>
@@ -264,6 +294,8 @@
 <translation id="4309165024397827958">允许有位置信息权限的 Android 应用和服务使用您设备的位置信息。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。</translation>
 <translation id="4317733381297736564">应用内购买</translation>
 <translation id="4341905082470253054">正在检查 TPM 状态…</translation>
+<translation id="434198521554309404">快速、安全、易用。</translation>
+<translation id="4358643842961018282">您的设备已更新到最新版本</translation>
 <translation id="4370975561335139969">您输入的电子邮件地址和密码不匹配。</translation>
 <translation id="4373418556073552953">通过 Android 手机登录</translation>
 <translation id="4378556263712303865">设备申请</translation>
@@ -281,6 +313,7 @@
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> 检测到一个处于活动状态的 TPM，它可以更安全地存储您的数据。</translation>
 <translation id="4472298120638043495">您可以使用您的首选 Google 账号语言（<ph name="NEW_LOCALE_FROM_GAIA" />）</translation>
 <translation id="4472575034687746823">开始使用</translation>
+<translation id="4487489714832036847">Chromebook 使用应用代替传统软件。无论您是想提高办公效率、娱乐身心还是有其他需求，都能在这里找到合适的应用。</translation>
 <translation id="450867954911715010">无障碍设置</translation>
 <translation id="4519605771716872386">已开启文件同步</translation>
 <translation id="4531924570968473143">您想将谁添加到此 <ph name="DEVICE_TYPE" />？</translation>
@@ -297,10 +330,12 @@
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> 不是有效的 Google for Education 账号。请与您的管理员联系。如果您本人就是管理员，则可通过访问 g.co/workspace/edusignup 来设置贵组织</translation>
 <translation id="4780558987886269159">用于工作</translation>
 <translation id="4806457879608775995">查看这些条款并控制您的数据</translation>
+<translation id="4809927044794281115">浅色主题</translation>
 <translation id="4814327014588285482">跳过，稍后再提醒我</translation>
 <translation id="4830502475412647084">正在安装操作系统更新</translation>
 <translation id="4837926214103741331">您无权使用此设备。请向此设备的所有者申请登录权限。</translation>
 <translation id="4844333629810439236">其他键盘布局</translation>
+<translation id="484462545196658690">自动</translation>
 <translation id="4864369630010738180">正在登录…</translation>
 <translation id="4867272607148176509">家长可以批准或屏蔽应用、设置使用时限，以及控制网络浏览。日后需要时，您还可添加学校账号以用于访问大多数学校资源。</translation>
 <translation id="4877652723592270843">您想为 ChromeOS Flex 启用 ChromeVox（内置屏幕阅读器）吗？如要启用，请同时按住两个音量键 5 秒钟。</translation>
@@ -369,22 +404,29 @@
 <translation id="5527474464531963247">您也可以选择其他网络。</translation>
 <translation id="5539070192556911367">无法连接到 Google</translation>
 <translation id="5549511085333906441">选择您的设置</translation>
+<translation id="5554403733534868102">此后，再也不必等待系统完成更新</translation>
 <translation id="557722062034137776">重置您的设备不会影响您的 Google 账号或已同步到这些账号的任何数据，但您的设备中本地保存的所有文件都将被删除。</translation>
+<translation id="5600348067066185292">只需执行几个简单的步骤即可完成安装。在更改计算机之前，您还有一次机会进行确认。</translation>
 <translation id="5626172233890210551">改用密码</translation>
 <translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />为了提供最佳体验，<ph name="DEVICE_OS" /> 会收集与设备有关的硬件数据并将其分享给 Google，以确定应提供哪些更新。您也可允许 Google 将这些数据用于其他用途，例如提供支持以及改进 <ph name="DEVICE_OS" /> 体验和服务。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />您可在此设备上登录并前往 chrome://system，查看其中列出的 chromeosflex_ 字段，以此了解系统向 Google 发送了哪些用于更新过滤机制的数据；您还可以通过此方式查看您选择与 Google 分享数据的其他情况。<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />如需详细了解 <ph name="DEVICE_OS" /> 可能会与 Google 分享的数据及其使用方式，请访问 g.co/flex/HWDataCollection。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">要使用“<ph name="NETWORK_ID" />”，您可能需要先<ph name="LINK_START" />访问该网络的登录页面<ph name="LINK_END" />，该页面会在几秒钟后自动打开。如果未打开，就表示该网络无法使用。</translation>
+<translation id="5641608986289282154">开始使用 <ph name="DEVICE_OS" /></translation>
 <translation id="5655296450510165335">设备注册</translation>
 <translation id="565899488479822148">正在安装最新更新</translation>
 <translation id="5659964844710667266">为此 <ph name="DEVICE_TYPE" /> 创建密码</translation>
 <translation id="5684661240348539843">资产标识符</translation>
 <translation id="5684950556880280580">您的密码已更新</translation>
+<translation id="5687326903064479980">时区</translation>
+<translation id="5687935527303996204">请确保已正确插入您的设备，且不要关闭它。整个安装流程最多可能需要 20 分钟的时间。待安装完毕后，您的设备将会自动关闭。</translation>
 <translation id="5705882733397021510">返回</translation>
+<translation id="5711010025974903573">服务日志</translation>
 <translation id="5762787084360227629">输入 Google 账号信息</translation>
 <translation id="5764797882307050727">请释放部分设备空间。</translation>
 <translation id="5765425701854290211">抱歉，由于某些文件已损坏，系统未能成功完成更新。但请放心，您的已同步文件不会受到影响。</translation>
 <translation id="5770125698810550803">显示导航按钮</translation>
+<translation id="5793339252089865437">如果您通过移动网络下载更新，则可能需要支付超额费用。</translation>
 <translation id="5799478978078236781">接收与 <ph name="DEVICE_TYPE" />相关的提示、优惠和动态，并分享反馈。</translation>
 <translation id="5800703268655655701">选择浅色或深色主题</translation>
 <translation id="5804259315582798390">未能启用本地数据恢复功能</translation>
@@ -395,12 +437,14 @@
 <translation id="5856721540245522153">启用调试功能</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5860491529813859533">开启</translation>
+<translation id="5863445608433396414">启用调试功能</translation>
 <translation id="5870086504539785141">关闭辅助功能菜单</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5895335062901455404">无论是在哪部 ChromeOS Flex 设备上，您只需登录自己的 Google 账号，便能使用您保存的偏好设置和活动记录。您可在“设置”中选择要同步的内容。</translation>
 <translation id="5916664084637901428">已启用</translation>
 <translation id="5919305207330938913">收集的所有数据都会遵照 Google<ph name="BEGIN_LINK" />《隐私权政策》<ph name="END_LINK" />加以使用。</translation>
 <translation id="5932441198730183141">您没有足够的可用许可来注册此 Google Meet 设备。请与销售代表联系，以购买更多许可。如果您认为自己不该看到这条消息，请与支持人员联系。</translation>
+<translation id="5933376509899483611">时区</translation>
 <translation id="5939518447894949180">重置</translation>
 <translation id="5948536763493709626">您可以连接一个键盘或鼠标，也可以继续使用触摸屏进行设置。如果您使用的是蓝牙设备，请确保您的设备已准备好进行配对。</translation>
 <translation id="5959471481388474538">网络不可用</translation>
@@ -409,8 +453,10 @@
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6051354611314852653">糟糕！系统无法将 API 访问权限授予此设备。</translation>
 <translation id="6055544610007596637">从 Google Play 商店为您的 <ph name="DEVICE_TYPE" /> 安装应用</translation>
+<translation id="6069464830445383022">您将使用 Google 账号登录 Chromebook</translation>
 <translation id="6071181508177083058">确认密码</translation>
 <translation id="6075731018162044558">糟糕！系统无法为此设备获得长期的 API 访问令牌。</translation>
+<translation id="6093888419484831006">正在取消更新...</translation>
 <translation id="6125479973208104919">抱歉，您需要再次向此 <ph name="DEVICE_TYPE" /> 添加您的账号。</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6170498031581934115">无法启用 ADB 调试。请转到“设置”，然后重试。</translation>
@@ -420,6 +466,7 @@
 <translation id="6202304368170870640">您可以使用 PIN 码登录或解锁您的设备。</translation>
 <translation id="6209908325007204267">您的设备随附了一份 Chrome 企业版升级许可，但您的用户名并未与任何企业账号关联。请先在辅助设备上前往 g.co/ChromeEnterpriseAccount 创建一个企业账号。</translation>
 <translation id="623261264391834964">右键点击文本框即可使用“帮我写”功能</translation>
+<translation id="6264520534872750757">继续使用设备</translation>
 <translation id="6280215091796946657">使用其他账号登录</translation>
 <translation id="6283823201263716145">处于演示模式的设备会自动向 Google 发送崩溃报告以及诊断数据和使用情况数据，以帮助改进功能和性能。</translation>
 <translation id="6287713404380454515">出于安全考虑，您的管理员已停用设备的 PIN 码和密码。从现在开始，请使用您的 <ph name="MANAGER" /> 密码。</translation>
@@ -428,6 +475,7 @@
 <translation id="6314819609899340042">已在此<ph name="IDS_SHORT_PRODUCT_NAME" />设备上成功启用调试功能。</translation>
 <translation id="6343262564968371601">通过在 Google、文件、应用等中搜索，找到您要找的内容</translation>
 <translation id="635609604405270300">请勿关闭设备</translation>
+<translation id="6363786367719063276">查看日志</translation>
 <translation id="6367097275976877956">您想为 Chrome 操作系统启用 ChromeVox（内置屏幕阅读器）吗？如要启用，请按空格键。</translation>
 <translation id="636850387210749493">企业注册</translation>
 <translation id="6380143666419481200">接受并继续</translation>
@@ -435,6 +483,7 @@
 <translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含 ChromeOS 崩溃情况、使用的功能、通常占用的内存量，等等。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />您随时可在 Chrome 设备设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">安装重要更新</translation>
+<translation id="6452251728599530347">已完成 <ph name="PERCENT" /></translation>
 <translation id="6478849105642611893">快捷插入键位于 Tab 键下方</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="6488384360522318064">选择语言</translation>
@@ -452,6 +501,7 @@
 <translation id="6675665718701918026">已连接指针设备</translation>
 <translation id="667752334740867460">正在接收 Wi-Fi 信息…</translation>
 <translation id="6680442031740878064">可用空间：<ph name="AVAILABLE_SPACE" /></translation>
+<translation id="6684827949542560880">正在下载最新更新</translation>
 <translation id="6722744767592605627">您可以恢复 <ph name="EMAIL" />，但本地数据将被删除。</translation>
 <translation id="6748980958975836188">我已阅读并同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。</translation>
 <translation id="6749473226660745022">照片</translation>
@@ -461,15 +511,18 @@
         <ph name="BEGIN_PARAGRAPH2" />您随时可在孩子的 ChromeOS 设备设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH4" />如果您已为孩子的 Google 账号开启“网络与应用活动记录”设置，孩子的数据可能会保存到其 Google 账号中。访问 families.google.com 可详细了解这些设置及调整方法。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609">适合 <ph name="DEVICE_TYPE" /> 的热门应用</translation>
+<translation id="6818802132960437751">内置病毒防护功能</translation>
 <translation id="682971198310367122">Google 隐私权政策</translation>
 <translation id="6835762382653651563">请连接到互联网，以便更新您的<ph name="DEVICE_TYPE" />。</translation>
 <translation id="6839916869147598086">登录发生变化</translation>
 <translation id="6852529053326738838">请询问您的组织，或使用您的工作邮箱进行注册，以检查您的账号是否符合条件。</translation>
 <translation id="6867671714894555998">使用新键盘快速处理各种任务</translation>
+<translation id="6881845890692344060">您的管理员已退出账号。现在一切由您掌控。</translation>
 <translation id="6883319974225028188">糟糕！系统未能保存设备配置。</translation>
 <translation id="6888831646723563669">连接到网络即可使用您的新 <ph name="DEVICE_TYPE" /> 上的所有功能</translation>
 <translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />应用数据可以是应用根据开发者设置而保存的任何数据，包括通讯录、消息、照片等数据。备份数据不会计入孩子的云端硬盘存储空间配额。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />您可在“设置”中关闭此服务。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="6897688156970667447">适应弱光条件并节省电量</translation>
 <translation id="6903907808598579934">开启同步功能</translation>
 <translation id="6918733588290914545">使用 Android 手机快速设置</translation>
 <translation id="6920473853105515518">请确保您的 <ph name="DEVICE_TYPE" /> 已连接到互联网，然后重试您还可以在其他设备上访问 play.google/play-terms。</translation>
@@ -495,6 +548,7 @@
 <translation id="7135729336746831607">要开启蓝牙吗？</translation>
 <translation id="7141105143012495934">由于无法获取您的账号详情，因此登录失败了。请与管理员联系或重试。</translation>
 <translation id="7144878232160441200">重试</translation>
+<translation id="7149839598364933473">将此设备转换成一部 <ph name="DEVICE_OS" /> 设备。</translation>
 <translation id="7171259390164035663">不注册</translation>
 <translation id="7189451821249468368">您没有足够的升级许可来注册此设备。请与销售代表联系，以购买更多升级许可。如果您认为自己不应看到这条消息，请与支持人员联系。</translation>
 <translation id="7202337678781136582">使用您的 Android 手机扫描二维码</translation>
@@ -529,8 +583,10 @@
 <translation id="7560756177962144929">同步您的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7571643774869182231">存储空间不足，无法更新</translation>
 <translation id="7616214729753637086">正在注册设备…</translation>
+<translation id="7619937211696316184">维护已完成</translation>
 <translation id="7622114377921274169">正在充电。</translation>
 <translation id="7630426712700473382">此设备由 <ph name="MANAGER" /> 管理，要求您每次使用前必须先登录。</translation>
+<translation id="7633724038415831385">只有这一次，您需要等待系统完成更新。Chromebook 上的软件更新会在后台进行。</translation>
 <translation id="7639914187072011620">未能从服务器中提取 SAML 重定向网址</translation>
 <translation id="7643117827468520640">查看这些条款</translation>
 <translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />应用数据可以是应用根据开发者设置而保存的任何数据，包括通讯录、消息、照片等数据。备份数据不会计入云端硬盘存储空间配额。<ph name="END_PARAGRAPH1" />
@@ -569,7 +625,9 @@
 <translation id="7968982339740310781">查看详情</translation>
 <translation id="7975504106303186033">您必须将这部 Chrome 教育版设备注册到一个教育版账号。若要注册新账号，请访问 g.co/workspace/edusignup。</translation>
 <translation id="7980084013673500153">资源 ID：<ph name="ASSET_ID" /></translation>
+<translation id="7981670705071137488">之后，软件更新将在后台进行。您可在“设置”中查看更新偏好设置。</translation>
 <translation id="7982083145464587921">请重新启动您的设备以修复此错误。</translation>
+<translation id="7988805580376093356">请从 USB（而非您的操作系统）中运行 <ph name="DEVICE_OS" />。</translation>
 <translation id="7990958035181555539">从您的 Android 手机自动传输 Wi-Fi 凭证</translation>
 <translation id="8022466874160067884">输入您的 Google 账号和密码</translation>
 <translation id="8049029041626250638">您可以连接一个键盘或鼠标。如果您使用的是蓝牙设备，请确保您的设备已准备好进行配对。</translation>
@@ -578,6 +636,7 @@
 <translation id="8065144531309810062">使用 Google AI 提高创造力和效率</translation>
 <translation id="8082106343289440791">与“<ph name="DEVICE_NAME" />”配对？</translation>
 <translation id="8097959162767603171">您的管理员必须先接受管理控制台 Chrome 设备列表中的服务条款。</translation>
+<translation id="8098156986344908134">安装 <ph name="DEVICE_OS" /> 并清空硬盘？</translation>
 <translation id="8098616321286360457">需要连接网络</translation>
 <translation id="8129265306888404830">如果想通过贵组织 (<ph name="EMAIL_DOMAIN" />) 使用电子邮件地址，您需要使用企业注册。如果此设备是用于个人用途，请使用您的个人 Google 账号登录。</translation>
 <translation id="8131740175452115882">确认</translation>
@@ -591,6 +650,7 @@
 <translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Google 的位置信息服务会使用 Wi-Fi、移动网络和传感器等来源协助推测您的设备所在的位置。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />您随时可在设备上关闭 Android 位置信息，方法是依次前往“设置”&gt;“应用”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“安全性和位置信息”&gt;“位置信息”。您还可在同一菜单中关闭“Google 位置信息精确度”，禁止系统使用 Wi-Fi、移动网络和传感器获取 Android 位置信息。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">请重新输入密码，以便更新您的<ph name="DEVICE_TYPE" />资料。</translation>
+<translation id="822050276545350872">从现在开始，无需再等待</translation>
 <translation id="8239032431519548577">企业注册已完成</translation>
 <translation id="8241806945692107836">正在确定设备配置…</translation>
 <translation id="8242426110754782860">继续</translation>
@@ -598,11 +658,13 @@
 <translation id="8271379370373330993">接下来的几个步骤需由家长完成。家长可在设置好账号后将 <ph name="DEVICE_TYPE" /> 交还给孩子。</translation>
 <translation id="8274924778568117936">在完成更新之前，请勿关闭您的 <ph name="DEVICE_TYPE" />。您的 <ph name="DEVICE_TYPE" /> 将会于安装完毕后重启。</translation>
 <translation id="8281886186245836920">跳过</translation>
+<translation id="8289509909262565712">欢迎使用 <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">个人使用</translation>
 <translation id="8304383784961451596">您无权使用此设备。请与管理员联系以获取登录权限，或者使用受 Family Link 监管的 Google 账号登录。</translation>
 <translation id="8321837372750396788">此 <ph name="DEVICE_TYPE" /> 将由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="8339288417038613756">显示大小和文字大小</translation>
 <translation id="8354034204605718473">您孩子的 PIN 码已添加完毕</translation>
+<translation id="8360140320636871023">打造个性化的显示屏主题</translation>
 <translation id="8366396658833131068">您的网络连接已恢复。要启动自助服务终端应用，请选择其他网络或按下方的“继续”按钮。</translation>
 <translation id="8401432541486058167">请提供与您的智能卡关联的 PIN 码。</translation>
 <translation id="8408270600235826886">您可以控制与 Google 分享哪些数据，并且随时可在“设置”中进行更改。我们会遵照 Google 的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" />使用相关数据。</translation>
@@ -614,6 +676,7 @@
 <translation id="8464132254133862871">此用户账号不能使用该服务。</translation>
 <translation id="8524841856047224176">对视频通话等场景的背景进行个性化设置</translation>
 <translation id="8527257351549797148">您的组织可能要求注册，以便您使用应用、扩展程序等。这样一来，您的组织还可以管理安全和设备设置等事项。</translation>
+<translation id="8549316893834449916">您将使用自己的 Google 账号登录 Chromebook - 此账号与您登录 Gmail、Google 云端硬盘、YouTube 等服务时使用的账号相同。</translation>
 <translation id="8558063527625343224">设置 Google Beam</translation>
 <translation id="8569673829373920831">关于“<ph name="APP_NAME" />”的更多内容</translation>
 <translation id="8586421813321819377">允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用设备的位置信息。开启“位置信息精确度”设置可为 Android 应用和服务提供更精确的位置信息。为此，Google 会定期处理来自您设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别您个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。</translation>
@@ -622,11 +685,13 @@
         <ph name="BR" />
         <ph name="BR" />
         向附近的设备显示为“<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />”…</translation>
+<translation id="8637688295594795546">有系统更新，开始下载...</translation>
 <translation id="8655972064210167941">由于无法验证您的密码，因此登录失败了。请与管理员联系或重试。</translation>
 <translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />“位置信息精确度”处于开启状态时，系统会使用无线信号来源（例如 Wi-Fi 接入点和移动基站）的相关信息以及设备传感器（例如加速度计和陀螺仪）数据来更精确地推测设备位置，以便 Android 应用和服务使用这些位置信息提供基于地理位置的功能。为此，Google 会定期收集您附近的设备传感器和无线信号来源的相关信息，以便为众包无线信号位置信息做出贡献。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Google 会在不识别您身份的情况下，将这些信息用于以下目的：提高位置信息精确度和改善基于地理位置的服务；以及改进、提供和维护 Google 服务。我们会根据 Google 和第三方的合法权益处理这些信息，以满足用户的需求。<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />您随时可在设备的位置信息设置中关闭“位置信息精确度”；为此，请前往“设置”&gt;“隐私与安全”&gt;“隐私控制”&gt;“位置信息使用权”&gt;“高级位置信息设置”。如果“位置信息精确度”处于关闭状态，则系统不会收集任何位置信息精确度数据。对于 Android 应用和服务，系统仅会使用 IP 地址（如果可用）来确定您设备的位置，这可能会影响 Google 地图等 Android 应用和服务中位置信息的可用性和精确度。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">很遗憾，您的计算机配置了格式错误的硬件 ID。这导致 Chrome 操作系统无法使用最新的安全修正程序进行更新，以致您的计算机<ph name="BEGIN_BOLD" />很容易遭到恶意攻击<ph name="END_BOLD" />。</translation>
+<translation id="8675704450909805533">安装程序找不到可安装 <ph name="DEVICE_OS" /> 的有效目的地。</translation>
 <translation id="8695139659682234808">在完成设置后添加家长控制功能</translation>
 <translation id="8698269656364382265">要返回到上一个屏幕，请从屏幕左侧向右侧滑动。</translation>
 <translation id="8718994464069323380">检测到触摸屏</translation>
@@ -636,10 +701,12 @@
 <translation id="8740086188450289493">使用 Google 账号密码</translation>
 <translation id="8740247629089392745">您可将这部 Chromebook 交给<ph name="SUPERVISED_USER_NAME" />。即将设置完毕，然后就能尽情探索了。</translation>
 <translation id="8759753423332885148">了解详情。</translation>
+<translation id="8762886931014513155">您的 <ph name="DEVICE_TYPE" /> 需要更新</translation>
 <translation id="8777628254805677039">根密码</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8783834180813871000">输入蓝牙配对码，然后按回车键。</translation>
 <translation id="8794548468611058947">您可以为此 <ph name="DEVICE_TYPE" /> 创建 PIN 码，而无需输入您的 Google 账号密码进行登录</translation>
+<translation id="8830779999439981481">正在重启以应用更新</translation>
 <translation id="8830796635868321089">无法使用当前代理设置来检查更新，请调整您的<ph name="PROXY_SETTINGS_LINK_START" />代理设置<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
 <translation id="8855977033756560989">该 Chromebook 企业版设备捆绑了 Chrome 企业版升级许可。要充分利用企业版功能，请使用 Google 管理控制台账号注册该设备。</translation>
 <translation id="885746075120788020">无论是在哪部 Chrome 操作系统设备上，您只需登录自己的 Google 账号，便能使用您保存的偏好设置和活动记录。您可在“设置”中选择要同步的内容。</translation>
@@ -658,6 +725,7 @@
 <translation id="8975396729541388937">您可以随时退订，只需点击您收到的电子邮件中的链接即可。</translation>
 <translation id="8987305927843254629">每个人都可对自己的体验进行个性化设置并确保数据的私密性。</translation>
 <translation id="8993059306046735527">如果您忘记了 <ph name="DEVICE_TYPE" /> 密码，您仍然可以恢复本地数据。您需要登录自己的 Google 账号或使用账号恢复功能。</translation>
+<translation id="9018218886431812662">安装完成</translation>
 <translation id="9033765790910064284">仍然继续</translation>
 <translation id="903480517321259405">重新输入 PIN 码</translation>
 <translation id="9040473193163777637">您想为 Chrome 操作系统启用 ChromeVox（内置屏幕阅读器）吗？如要启用，请同时按住两个音量键 5 秒钟。</translation>
@@ -675,6 +743,7 @@
         <ph name="BR" />
         <ph name="BR" />
         显示为：<ph name="DEVICE_TYPE" />…</translation>
+<translation id="945522503751344254">发送反馈</translation>
 <translation id="951991426597076286">拒绝</translation>
 <translation id="954749761428814584">语言和输入法</translation>
 <translation id="960987915827980018">约剩 1 小时</translation>

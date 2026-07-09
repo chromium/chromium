@@ -504,6 +504,7 @@
 <translation id="175656076281618225">මැජික්</translation>
 <translation id="1757773103848038814">Monospace ෆොන්ට</translation>
 <translation id="1757935267918149452">Google මුරපදය වෙනස් කරන්න බොත්තම, ඔබේ Google ගිණුමේ මුරපදය වෙනස් කිරීමට සක්‍රිය කරන්න</translation>
+<translation id="1759776526873274358">ඔබේ ආරක්ෂාව වැඩි දියුණු කිරීමට අඩවි භාවිතා කරන ස්වයං පිරවුම් සත්‍යාපන කේත. Chrome හට මෙම කේත ඔබේ Gmail වෙතින් ලබා ගත හැක. <ph name="BEGIN_LINK" />මෙම විශේෂාංගය පිළිබඳ වැඩිදුර දැනගන්න<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කිරීමට නොහැකි විය; එහි ආරක්ෂණ සහතිකය ඔබගේ උපාංගයෙහි මෙහෙයුම් පද්ධතිය මගින් විශ්වාස නොකරයි. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows ජාල දෝෂහරණ ධාවනය කිරීමට උත්සාහ කරන්න<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">ඡායාරූපය (ලේඛනාගාරය)</translation>
@@ -2155,6 +2156,7 @@
 <translation id="4304049446746819918">{0,plural, =1{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනුව <ph name="DESTINATION_NAME" /> වෙත ගෙන යාම නිර්දේශ නොකරයි}one{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> වෙත ගෙන යාම නිර්දේශ නොකරයි}other{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> වෙත ගෙන යාම නිර්දේශ නොකරයි}}</translation>
 <translation id="4304485328308299773">සමාලෝචන සමග ඔබේ තීරණ දැනුම් දීම සඳහා නිෂ්පාදන, සේවා, හෝ අත්දැකීම් පිළිබඳ පාරිභෝගික ඇගයීම් කියවන්න.</translation>
 <translation id="4305666528087210886">ඔබගේ ගොනුවට පිවිසීමට නොහැකි විය.</translation>
+<translation id="4306349443295056740">OCSP අත්සන් කිරීම</translation>
 <translation id="4306529830550717874">ලිපිනය සුරකින්නද?</translation>
 <translation id="4306812610847412719">පසුරු පුවරුව</translation>
 <translation id="4308567447483056043">පරිශීලකයා සම්බන්ධ නැති නිසා මෙම ප්‍රතිපත්තිය නොසලකා හරිනු ලැබේ. මෙම ප්‍රතිපත්තිය යෙදීම සඳහා, Chrome බ්‍රව්සරය සහ පැතිකඩ එකම සංවිධානය විසින් පරිපාලක කොන්සෝලය හරහා කළමනාකරණය කළ යුතු වේ.</translation>
@@ -2413,6 +2415,7 @@
 <translation id="4744603770635761495">විධානගතකළහැකි මඟ</translation>
 <translation id="4744816391336495134">ඔබ සුරකින ලද මුරපදයක් භාවිතා කරන සෑම විට ම ඒ ඔබ බව සත්‍යාපනය කිරීමට ඔබට ඔබේ ඇඟිලි සලකුණ භාවිත කළ හැක</translation>
 <translation id="4749011317274908093">ඔබ අප්‍රසිද්ධව ඇත</translation>
+<translation id="4749924365937394956">සේවාදායක සත්‍යාපනය</translation>
 <translation id="4750671009706599284">මෙම දුරකථනය</translation>
 <translation id="4750917950439032686">ඔබගේ තොරතුරු (උදාහරණයක් ලෙස, මුරපද හෝ ණය කාඩ්පත් අංක) මෙම අඩවිය වෙත යවන විට රහසිගත වේ.</translation>
 <translation id="4751249061288707459">කැමැත්ත අවසන් වරට යාවත්කාලීන කළේ:</translation>
@@ -3129,6 +3132,7 @@
 <translation id="5860491529813859533">ක්‍රියාත්මක කරන්න</translation>
 <translation id="5862579898803147654">අට්ටිය 8</translation>
 <translation id="5863515189965725638">IBAN සංස්කරණය කරන්න</translation>
+<translation id="5863517400058880216">Gmail වෙතින් ලැබෙන සත්‍යාපන කේත ස්වයං පිරවුම මගින් ඇතුළත් කරන්න</translation>
 <translation id="5863847714970149516">ඉදිරියෙන් ඇති පිටුව ඔබගෙන් මුදල් අය කිරීමට උත්සාහ කරනු ඇත</translation>
 <translation id="5866257070973731571">දුරකථන අංකය එක් කරන්න</translation>
 <translation id="5866327164731551901"><ph name="TYPE_1" /> <ph name="TYPE_2" /> වෙතින්</translation>
@@ -3242,6 +3246,7 @@
 <translation id="6034000775414344507">ලා අළු</translation>
 <translation id="6034514109191629503">ඇකෝඩියන් නැමීම</translation>
 <translation id="6035491133925068289">ජවන සහ පිටිය</translation>
+<translation id="6037458223703682108">ඩිජිටල් අත්සන</translation>
 <translation id="6039846035001940113">ගැටලුව දිගටම පවතින්නේ නම්, අඩවියේ හිමිකරු සම්බන්ධ කර ගන්න.</translation>
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="6040539895181423374">මිල ඇතුළාන්ත</translation>
@@ -3553,6 +3558,7 @@
 <translation id="6474220430271405609">ප්‍ර තිපත්ති පරීක්ෂණ</translation>
 <translation id="6476284679642588870">ගෙවීමේ ක්‍රම කළමනා කරන්න</translation>
 <translation id="647881094269678013">රංගනය සහ රංග ශාලාව</translation>
+<translation id="6480363549849064919">සේවාලාභී සත්‍යාපනය</translation>
 <translation id="6480864723214312258">ගෘහස්ථ බැටරි</translation>
 <translation id="6487678699866233349">ලෝක සංගීතය</translation>
 <translation id="6489534406876378309">බිඳ වැටීම් උඩුගත කිරීම අරඹන්න</translation>
@@ -4518,6 +4524,7 @@
 <translation id="7967973398323409409">ඔබ ස්වයංව පුරවන තතු කිසිවිට කිසිවෙකුට නොපෙනේ</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" අගය වලංගු නොවන ෂඩ් වර්ණයකි.</translation>
 <translation id="7968982339740310781">විස්තර පෙන්වන්න</translation>
+<translation id="7971403153351954587">ඔබේ සංවිධානය පිටපත් කිරීම නිරීක්ෂණය කරයි</translation>
 <translation id="7972714317346275248">RSA සංකේතනය සහිත PKCS #1 SHA-384</translation>
 <translation id="7976053965094442846">කාලයත් සමග ගෙවීම සඳහා ලබා ගත හැකි දැන් මිල දී ගන්න-පසුව ගෙවන්න නිකුත් කරන්නන් සිටී. යතුරු පුවරුව සැඟවී ඇත.</translation>
 <translation id="7976214039405368314">ඉල්ලීම් ඉතා වැඩිය</translation>

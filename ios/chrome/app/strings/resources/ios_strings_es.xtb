@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Tu almacenamiento está lleno</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1190609913194133056">Centro de notificaciones</translation>
+<translation id="1196534270480620381">Hazme un breve resumen de esta página</translation>
 <translation id="1199631150313925648">Introducir manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
 <translation id="1201402288615127009">Siguiente</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">No se han encontrado contraseñas ni llaves de acceso para este sitio</translation>
 <translation id="1540800554400757039">Dirección 1</translation>
 <translation id="154312949627292154">Abre las pestañas recibidas de tus otros dispositivos desde la pantalla de bloqueo.</translation>
+<translation id="1544653821167545205">Resumir página</translation>
 <translation id="1545749641540134597">Escanea el código QR</translation>
 <translation id="1545757265410828525">Historial de precios</translation>
 <translation id="1547610699249301703">Comparte contraseñas</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">La pantalla de búsqueda solo está disponible cuando Google está configurado como tu buscador predeterminado. Puedes cambiar tu buscador predeterminado en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Linterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">¿Qué puede hacer Gemini en Chrome?</translation>
 <translation id="1881621406744213161">Invita a miembros de la familia</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Barra de menú con ordenación inteligente</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Guarda tus contraseñas para iniciar sesión fácilmente en sitios y aplicaciones.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Parece que todo está correcto en tu navegador</translation>
+<translation id="2470654816840674524">¿Qué puedo hacer con Gemini en Chrome?</translation>
 <translation id="2473876017985765807">Ya has guardado una contraseña para <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Puedes configurar un recordatorio para volver a visitar esta página más adelante</translation>
 <translation id="2479148705183875116">Ve a Ajustes</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Ocultar Comprobación de tu estado</translation>
 <translation id="2625189173221582860">Se ha copiado la contraseña</translation>
 <translation id="2626236249646841566">Comprueba tu conexión y prueba a iniciar sesión de nuevo.</translation>
+<translation id="2629543259235506452">Crea una breve sección de preguntas frecuentes sobre este tema usando información de esta página y de sitios web similares</translation>
 <translation id="2635918910848538771">Autocompletar el CVC</translation>
 <translation id="2640733327287333451">Sin nombre de usuario ••••••</translation>
 <translation id="264215785133931186">Comprobado justo ahora</translation>
@@ -967,7 +972,6 @@
 <translation id="4294506173142861371">¿Iniciar sesión como <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Establecer posición</translation>
 <translation id="4304713468139749426">Gestor de contraseñas</translation>
-<translation id="4306349443295056740">Firma de OCSP</translation>
 <translation id="4309403553630140242">Toca dos veces para consultar más información</translation>
 <translation id="4310738531374808763">Personaliza tu página principal</translation>
 <translation id="4316794575239200608">Ni tus conversaciones con Gemini ni tus <ph name="BEGIN_LINK" />datos de Google Workspace<ph name="END_LINK" /> serán examinados por revisores humanos ni se usarán de ningún otro modo para mejorar los modelos de IA generativa.</translation>
@@ -1098,7 +1102,6 @@
 <translation id="4744428388659507035">Para acceder a tus marcadores en todos tus dispositivos, activa Marcadores en los ajustes.</translation>
 <translation id="4746926359847517643">Siempre puedes recuperarlas desde el historial.</translation>
 <translation id="4749529195026091676">{count,plural, =1{{count} tarjeta importada}other{{count} tarjetas importadas}}</translation>
-<translation id="4749924365937394956">Autenticación de servidor</translation>
 <translation id="4751645464639803239">Nueva pestaña de Incógnito</translation>
 <translation id="4752348350801431746">Desactiva las notificaciones de Comprobación de tu estado…</translation>
 <translation id="4759238208242260848">Descargas</translation>
@@ -1442,7 +1445,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5859715514067755465">Avanzar</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5868644772996939262">Autocompletar contraseñas y llaves de acceso</translation>
-<translation id="5869522115854928033">Contraseñas guardadas</translation>
 <translation id="5873179562631407582">Mantén pulsada cualquier pestaña abierta</translation>
 <translation id="5887400589839399685">Tarjeta guardada</translation>
 <translation id="5888889603768021126">Sesión iniciada con</translation>
@@ -1486,7 +1488,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6027619584715411062">Inicia sesión para acceder a tus marcadores, contraseñas y más en todos tus dispositivos.</translation>
 <translation id="6027945736510816438">¿Quieres decir <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nueva función</translation>
-<translation id="6037458223703682108">Firma digital</translation>
 <translation id="6038823991892265570">Gestionar almacenamiento de Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Cerrar</translation>
@@ -1641,7 +1642,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6476284679642588870">Gestionar métodos de pago</translation>
 <translation id="6476800141292307438">La página se está traduciendo al <ph name="LANGUAGE" />. Encontrarás opciones disponibles cerca de la parte inferior de la pantalla.</translation>
 <translation id="647867789226964031">Cambia tus contraseñas</translation>
-<translation id="6480363549849064919">Autenticación de cliente</translation>
 <translation id="6489174933860678546">Abre pestañas de Incógnito para navegar por la Web de forma más privada.</translation>
 <translation id="6489775505977274806">Ocultar Subir de nivel</translation>
 <translation id="6494931198667773526">A</translation>
@@ -1678,7 +1678,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6589001036857939353">Combinar duplicados</translation>
 <translation id="659407965921887085">Esta tarjeta muestra las bajadas de precio de los productos que sigues en la Web</translation>
 <translation id="6596481460663245319">Buscar imagen con Google</translation>
-<translation id="6598432073497341323">{COUNT,plural, =1{1 contraseña}other{# contraseñas}}</translation>
 <translation id="6601302169302852717">Imagen de <ph name="USER_EMAIL" /> guardada en Google Fotos</translation>
 <translation id="6602173570135186741">Autocompletar y contraseñas</translation>
 <translation id="6603393121510733479">Tu organización ha desactivado la navegación privada.
@@ -1872,7 +1871,6 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="7233006041370588369">Selecciona la contraseña que quieras rellenar.</translation>
 <translation id="723874023660911012">Cambiar de perfil</translation>
 <translation id="7241135764990439166">El modo Incógnito no está disponible</translation>
-<translation id="7248046129087111453">Puede que el <ph name="BEGIN_LINK" />historial de búsqueda<ph name="END_LINK" /> y <ph name="BEGIN_LINK" />otros tipos de actividad<ph name="END_LINK" /> se guarden en tu cuenta de Google.</translation>
 <translation id="7253951228444156601">Comprobando contraseñas…</translation>
 <translation id="7261217796641151584">Compartir grupo</translation>
 <translation id="7266578100016339897">Esto te ayuda a mantener el orden. Puedes cambiarlo en los ajustes en cualquier momento.</translation>
@@ -2348,6 +2346,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="8766790350274092814">Se eliminarán las contraseñas de <ph name="WEBSITE" /> y <ph name="SECOND_WEBSITE" />. Tus cuentas no se eliminarán.</translation>
 <translation id="8775144690796719618">La URL no es válida</translation>
 <translation id="8781834595282316166">Nueva pestaña en el grupo</translation>
+<translation id="8783445328207519872">Crear preguntas frecuentes sobre este tema</translation>
 <translation id="8784653774976848206">Elegir archivos</translation>
 <translation id="8786100550345425552">Editar permisos</translation>
 <translation id="878871978861915380">Ocultar Seguimiento de precios</translation>

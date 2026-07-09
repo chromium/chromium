@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">私钥的输入值必须采用有效格式（必须是采用 PKCS#8 格式且经过 PEM 编码的 RSA 密钥）。</translation>
-<translation id="765293928828334535">无法从该网站添加应用、扩展程序和用户脚本</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7766838926148951335">接受权限</translation>
 <translation id="7876803335449432072">无法为内容脚本加载“<ph name="RELATIVE_PATH" />”文件，内容脚本样式表只能从受支持的样式表文件（例如 .css 文件）加载。</translation>

@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Privačiojo rakto įvesties vertė turi būti galiojančio formato (PKCS#8 formato PEM koduotas RSA raktas).</translation>
-<translation id="765293928828334535">Negalima pridėti programų, plėtinių ir naudotojo scenarijų iš šios svetainės</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7766838926148951335">Priimti leidimus</translation>
 <translation id="7876803335449432072">Nepavyko įkelti turinio scenarijaus failo „<ph name="RELATIVE_PATH" />“, turinio scenarijaus stiliaus failus galima įkelti tik iš palaikomų stiliaus failų, pvz., .css failų.</translation>

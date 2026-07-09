@@ -504,6 +504,7 @@
 <translation id="175656076281618225">Сиқыр</translation>
 <translation id="1757773103848038814">Monospace қарпі</translation>
 <translation id="1757935267918149452">"Google құпия сөзін өзгерту" түймесі, Google аккаунтыңыздың құпия сөзін өзгерту үшін белсендіріңіз</translation>
+<translation id="1759776526873274358">Сайттар қауіпсіздікті арттыру үшін пайдаланатын растау кодтарын автоматты түрде толтырыңыз. Chrome бұл кодтарды Gmail-ден ала алады. <ph name="BEGIN_LINK" />Осы функция туралы толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Бұл сервер оның <ph name="DOMAIN" /> екендігін дәлелдей алмайды; оның қауіпсіздік сертификаты құрылғының операциялық жүйесі арқылы тексерілмеген. Бұған конфигурация ақаулығы немесе қаскүнемнің қосылымыңызды тоқтатуы себеп болуы мүмкін.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows Network Diagnostics құралын пайдаланып көріңіз<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Фотосурет (мұрағат)</translation>
@@ -2154,6 +2155,7 @@
 <translation id="4304049446746819918">{0,plural, =1{Әкімші саясатына сәйкес бұл файлды <ph name="DESTINATION_NAME" /> қалтасына ауыстырмаған жөн.}other{Әкімші саясатына сәйкес бұл файлдарды <ph name="DESTINATION_NAME" /> қалтасына ауыстырмаған жөн.}}</translation>
 <translation id="4304485328308299773">Пікірлер арқылы шешімдер қабылдауға көмектесу үшін өнімдер, қызметтер немесе тәжірибелер туралы тұтынушы бағалауларын оқыңыз.</translation>
 <translation id="4305666528087210886">Файлға кіру мүмкін болмады</translation>
+<translation id="4306349443295056740">OCSP қолтаңбасы</translation>
 <translation id="4306529830550717874">Мекенжайды сақтау керек пе?</translation>
 <translation id="4306812610847412719">буфер</translation>
 <translation id="4308567447483056043">Пайдаланушы үлестес тұлға болмағандықтан, бұл саясат еленбейді. Бұл саясат қолданылуы үшін, Chrome браузері мен профилі сол ұйымдағы әкімші консолі арқылы басқарылуы қажет.</translation>
@@ -2412,6 +2414,7 @@
 <translation id="4744603770635761495">Орындалатын жол</translation>
 <translation id="4744816391336495134">Сақталған құпия сөзді пайдаланатын кезде жеке басыңызды саусағыңыздың ізімен растай аласыз.</translation>
 <translation id="4749011317274908093">Инкогнито режиміне өттіңіз</translation>
+<translation id="4749924365937394956">Сервер аутентификациясы</translation>
 <translation id="4750671009706599284">осы телефон</translation>
 <translation id="4750917950439032686">Бұл сайтқа жіберілетін жеке ақпаратыңыз (мысалы, құпия сөздер не несиелік карта нөмірлері) құпия сақталады.</translation>
 <translation id="4751249061288707459">Соңғы жаңартылған келісім:</translation>
@@ -3128,6 +3131,7 @@
 <translation id="5860491529813859533">Қосу</translation>
 <translation id="5862579898803147654">8-жинастырушы</translation>
 <translation id="5863515189965725638">IBAN нөмірін өңдеу</translation>
+<translation id="5863517400058880216">Растау кодтарын Gmail-ден автоматты түрде толтыру</translation>
 <translation id="5863847714970149516">Бұл бет сізден ақшалай ақы алуға тырысуы мүмкін</translation>
 <translation id="5866257070973731571">Телефон нөмірін қосу</translation>
 <translation id="5866327164731551901">Дереккөз: <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -3241,6 +3245,7 @@
 <translation id="6034000775414344507">Ашық сұр</translation>
 <translation id="6034514109191629503">Ирек бүктеу</translation>
 <translation id="6035491133925068289">Жеңіл атлетика</translation>
+<translation id="6037458223703682108">Цифрлық қолтаңба</translation>
 <translation id="6039846035001940113">Мәселе шешілмесе, сайт иесіне хабарласыңыз.</translation>
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6040539895181423374">Баға статистикасы</translation>
@@ -3552,6 +3557,7 @@
 <translation id="6474220430271405609">Саясат сынақтары</translation>
 <translation id="6476284679642588870">Төлеу әдістерін басқару</translation>
 <translation id="647881094269678013">Актерлік өнер және театр</translation>
+<translation id="6480363549849064919">Клиент аутентификациясы</translation>
 <translation id="6480864723214312258">Тұрмыстық батареялар</translation>
 <translation id="6487678699866233349">Әлемдік музыка</translation>
 <translation id="6489534406876378309">Жаңылыстарды жүктеп салуды бастау</translation>
@@ -4517,6 +4523,7 @@
 <translation id="7967973398323409409">Автотолтыру арқылы енгізген ақпаратыңызды ешкім көрмейді.</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" мәні – жарамсыз он алтылық түс.</translation>
 <translation id="7968982339740310781">Мәліметтерді көру</translation>
+<translation id="7971403153351954587">Ұйымыңыз көшіруді бақылайды.</translation>
 <translation id="7972714317346275248">RSA шифрлауы бар PKCS #1 SHA-384</translation>
 <translation id="7976053965094442846">Бөліп төлеу қызметтері қолжетімді. Пернетақта жасырылды.</translation>
 <translation id="7976214039405368314">Сұраулар саны өте көп.</translation>

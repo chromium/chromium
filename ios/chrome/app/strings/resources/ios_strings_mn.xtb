@@ -972,7 +972,6 @@
 <translation id="4294506173142861371"><ph name="FIRST_NAME" />-р нэвтрэх үү?</translation>
 <translation id="4302061870579014542">Байрлал тохируулах</translation>
 <translation id="4304713468139749426">Нууц үгний менежер</translation>
-<translation id="4306349443295056740">OCSP-н хариултад гарын үсэг зурах</translation>
 <translation id="4309403553630140242">Дэлгэрэнгүй мэдээлэл авахын тулд хоёр товшино уу</translation>
 <translation id="4310738531374808763">Нүүр хуудсаа тусгайлан өөрчлөх</translation>
 <translation id="4316794575239200608">Таны Gemini-тай хийсэн харилцан яриа, <ph name="BEGIN_LINK" />Google Workspace-н өгөгдлийн<ph name="END_LINK" /> аль алиныг хянагч хүн хянахгүй бөгөөд үүсгэгч ХОУ-ы загварыг сайжруулахад ашиглахгүй.</translation>
@@ -1103,7 +1102,6 @@
 <translation id="4744428388659507035">Хавчуургаа бүх төхөөрөмждөө авахын тулд тохиргоонд “Хавчуурга”-ыг асаана уу.</translation>
 <translation id="4746926359847517643">Та тэдгээрийг хүссэн үедээ түүхээс буцааж авах боломжтой.</translation>
 <translation id="4749529195026091676">{count,plural, =1{{count} картыг импортолсон}other{{count} картыг импортолсон}}</translation>
-<translation id="4749924365937394956">Серверийн баталгаажуулалт</translation>
 <translation id="4751645464639803239">Нууцлалын шинэ таб</translation>
 <translation id="4752348350801431746">Аюулгүй байдлын шалгалтын мэдэгдлийг унтраах…</translation>
 <translation id="4759238208242260848">Таталтууд:</translation>
@@ -1447,7 +1445,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5859715514067755465">Урагшлуулах</translation>
 <translation id="5860491529813859533">Асаах</translation>
 <translation id="5868644772996939262">Нууц үг, нэвтрэх түлхүүрийг автоматаар бөглөх</translation>
-<translation id="5869522115854928033">Хадгалагдсан нууц үг</translation>
 <translation id="5873179562631407582">Дурын нээлттэй таб дээр товшоод, удаан дарна уу</translation>
 <translation id="5887400589839399685">Картыг хадгалсан</translation>
 <translation id="5888889603768021126">Дараахаар нэвтэрсэн</translation>
@@ -1491,7 +1488,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6027619584715411062">Хавчуурга, нууц үг болон бусад зүйлийг бүх төхөөрөмждөө авахын тулд нэвтэрнэ үү.</translation>
 <translation id="6027945736510816438">Та <ph name="WEBSITE" />-г хэлж байна уу?</translation>
 <translation id="6032845897905314562">шинэ онцлог</translation>
-<translation id="6037458223703682108">Дижитал гарын үсэг</translation>
 <translation id="6038823991892265570">Google хадгалах санг удирдах</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Хаах</translation>
@@ -1646,7 +1642,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6476284679642588870">Төлбөрийн хэрэгсэл удирдах</translation>
 <translation id="6476800141292307438">Хуудсыг <ph name="LANGUAGE" /> руу орчуулж байна. Дэлгэцийн доод хэсгийн ойролцоо сонголт хийх боломжтой.</translation>
 <translation id="647867789226964031">Нууц үгнүүдээ өөрчлөх</translation>
-<translation id="6480363549849064919">Клиентийн баталгаажуулалт</translation>
 <translation id="6489174933860678546">Вебийг илүү нууцлалтайгаар үзэхийн тулд Нууцлалтай таб нээнэ үү.</translation>
 <translation id="6489775505977274806">Level Up-г нуух</translation>
 <translation id="6494931198667773526">Дуусна</translation>
@@ -1683,7 +1678,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6589001036857939353">Хуулбаруудыг нэгтгэх</translation>
 <translation id="659407965921887085">Энэ карт таны одоогийн хянаж буй бүтээгдэхүүний веб дээрх үнийн бууралтыг харуулдаг</translation>
 <translation id="6596481460663245319">Google-р зураг хайх</translation>
-<translation id="6598432073497341323">{COUNT,plural, =1{1 нууц үг}other{# нууц үг}}</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" />-д зориулж зургийг Google Зурагт хадгалсан</translation>
 <translation id="6602173570135186741">Автоматаар бөглөх хэсэг болон нууц үгнүүд</translation>
 <translation id="6603393121510733479">Танай байгууллага хувийн хөтчийг унтраасан.
@@ -1877,7 +1871,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7233006041370588369">Бөглөх нууц үгийг сонгоно уу.</translation>
 <translation id="723874023660911012">Профайл сэлгэх</translation>
 <translation id="7241135764990439166">Нууцлалын горим боломжгүй байна</translation>
-<translation id="7248046129087111453"><ph name="BEGIN_LINK" />Хайлтын түүх<ph name="END_LINK" /> болон <ph name="BEGIN_LINK" />бусад хэлбэрийн үйл ажиллагааг<ph name="END_LINK" /> Google Бүртгэлд тань хадгалж магадгүй.</translation>
 <translation id="7253951228444156601">Нууц үгсийг шалгаж байна…</translation>
 <translation id="7261217796641151584">Бүлэг хуваалцах</translation>
 <translation id="7266578100016339897">Энэ нь танд цэгцтэй байхад тусална. Та үүнийг тохиргоонд хүссэн үедээ өөрчлөх боломжтой.</translation>

@@ -504,6 +504,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="175656076281618225">Magie</translation>
 <translation id="1757773103848038814">Písmo s pevnou šířkou</translation>
 <translation id="1757935267918149452">Tlačítko Změnit heslo Google, aktivací změníte heslo svého účtu Google</translation>
+<translation id="1759776526873274358">Automaticky vyplňovat ověřovací kódy, které weby používají k lepšímu zabezpečení. Chrome může tyhle kódy načítat z Gmailu. <ph name="BEGIN_LINK" />Další informace o této funkci<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Operační systém vašeho zařízení nedůvěřuje jeho bezpečnostnímu certifikátu. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Zkuste spustit Diagnostiku sítě systému Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Fotografie (archivační)</translation>
@@ -2151,6 +2152,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4304049446746819918">{0,plural, =1{Zásady administrátora nedoporučují přesun tohoto souboru do následujícího cíle: <ph name="DESTINATION_NAME" />}few{Zásady administrátora nedoporučují přesun těchto souborů do následujícího cíle: <ph name="DESTINATION_NAME" />}many{Zásady administrátora nedoporučují přesun těchto souborů do následujícího cíle: <ph name="DESTINATION_NAME" />}other{Zásady administrátora nedoporučují přesun těchto souborů do následujícího cíle: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Zobrazit zákaznická hodnocení produktů, služeb nebo zkušeností, abyste se podle recenzí mohli lépe rozhodnout.</translation>
 <translation id="4305666528087210886">K souboru nelze získat přístup</translation>
+<translation id="4306349443295056740">Podepisování OCSP</translation>
 <translation id="4306529830550717874">Uložit adresu?</translation>
 <translation id="4306812610847412719">schránka</translation>
 <translation id="4308567447483056043">Tato zásada se ignoruje, protože uživatel není přidružený. Aby se tato zásada uplatnila, musí prohlížeč Chrome a profil prostřednictvím administrátorské konzole spravovat stejná organizace.</translation>
@@ -2409,6 +2411,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4744603770635761495">Spustitelná cesta</translation>
 <translation id="4744816391336495134">Při každém použití uloženého hesla můžete ověřovat svou totožnost otiskem prstu</translation>
 <translation id="4749011317274908093">Jste v anonymním režimu</translation>
+<translation id="4749924365937394956">Ověření serveru</translation>
 <translation id="4750671009706599284">tento telefon</translation>
 <translation id="4750917950439032686">Vaše údaje (například hesla nebo čísla platebních karet) jsou při odesílání na tento web soukromé.</translation>
 <translation id="4751249061288707459">Poslední aktualizace souhlasu:</translation>
@@ -3125,6 +3128,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5860491529813859533">Zapnout</translation>
 <translation id="5862579898803147654">Stohovač 8</translation>
 <translation id="5863515189965725638">Úprava čísla IBAN</translation>
+<translation id="5863517400058880216">Automaticky vyplňovat ověřovací kódy z Gmailu</translation>
 <translation id="5863847714970149516">Následující stránka se vám může pokusit naúčtovat poplatky</translation>
 <translation id="5866257070973731571">Přidání telefonního čísla</translation>
 <translation id="5866327164731551901">Zdroj: <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -3238,6 +3242,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6034000775414344507">Světle šedá</translation>
 <translation id="6034514109191629503">Harmonikové přeložení</translation>
 <translation id="6035491133925068289">Lehká atletika</translation>
+<translation id="6037458223703682108">Digitální podpis</translation>
 <translation id="6039846035001940113">Pokud problém přetrvává, kontaktujte vlastníka webu.</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6040539895181423374">Informace o ceně</translation>
@@ -3548,6 +3553,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6474220430271405609">Testy zásad</translation>
 <translation id="6476284679642588870">Správa platebních metod</translation>
 <translation id="647881094269678013">Herectví a divadlo</translation>
+<translation id="6480363549849064919">Ověření klienta</translation>
 <translation id="6480864723214312258">Baterie pro domácnost</translation>
 <translation id="6487678699866233349">Světová hudba</translation>
 <translation id="6489534406876378309">Začít nahrávat zprávy o selhání</translation>
@@ -4513,6 +4519,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7967973398323409409">Informace, které automaticky vyplníte, nikdo neuvidí</translation>
 <translation id="79682505114836835">„<ph name="VALUE" />“ není platná hexadecimální hodnota barvy.</translation>
 <translation id="7968982339740310781">Zobrazit podrobnosti</translation>
+<translation id="7971403153351954587">Vaše organizace kopírování sleduje</translation>
 <translation id="7972714317346275248">Šifrování PKCS #1 SHA-384 s RSA</translation>
 <translation id="7976053965094442846">Dostupní poskytovatelé financování na splátky. Klávesnice je skrytá.</translation>
 <translation id="7976214039405368314">Příliš mnoho požadavků</translation>

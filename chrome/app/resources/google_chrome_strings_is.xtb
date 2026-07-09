@@ -256,7 +256,6 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="345171907106878721">Bættu þér við Chrome</translation>
 <translation id="3453763134178591239">Skilmálar ChromeOS</translation>
 <translation id="3475778264501649775">Hafðu aðgangsorðin þín, flipa og fleira með þér á ferðinni með Chrome-forritinu í símanum þínum</translation>
-<translation id="3512495006767217696">Innbyggt í Chrome til að auðvelda þér að búa til, vista og færa sjálfkrafa inn traust aðgangsorð. Bættu flýtileiðinni við til að hafa greiðan aðgang</translation>
 <translation id="3539955434060988644">Opna tengil í huliðsglugga í Chrome</translation>
 <translation id="354621070532799440">Áminning: Bestu öryggiseiginleikar Google í vasanum</translation>
 <translation id="3547866758548131919">Smelltu á hnappinn „Taka saman“ til að deila þessu skjali með Gemini í Chrome til að fá snöggt yfirlit og spyrja frekari spurninga</translation>
@@ -565,6 +564,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6539493053177300926">Auðvelt aðgengi að Gemini í Chrome í öðrum tækjum, jafnvel þó Chrome sé minnkað.</translation>
 <translation id="6585124893636629274">Loka Gemini í Chrome</translation>
 <translation id="659498884637196217">Í Aðgangsorðastjórnun Google í þessu tæki</translation>
+<translation id="6613949864921837107">Samstilltu aðgangsorðin þín, bókamerki og feril á milli tækja með því að velja Chrome sem sjálfgefinn vafra.</translation>
 <translation id="6631524303639368205">Haltu áfram þaðan sem frá var horfið: Chrome endurheimtir flipana sem þú varst með opna síðast. Þú getur slökkt á þessu í</translation>
 <translation id="6632473616050862500">ChromeOS Flex á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Breytingar á þessari stillingu taka gildi þegar Chrome endurræsist.</translation>

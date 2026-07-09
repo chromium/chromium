@@ -504,6 +504,7 @@
 <translation id="175656076281618225">ເວດມົນ</translation>
 <translation id="1757773103848038814">ຟອນ Monospace</translation>
 <translation id="1757935267918149452">ປຸ່ມປ່ຽນລະຫັດຜ່ານ Google, ເປີດນຳໃຊ້ເພື່ອປ່ຽນລະຫັດຜ່ານບັນຊີ Google ຂອງທ່ານ</translation>
+<translation id="1759776526873274358">ຕື່ມຂໍ້ມູນລະຫັດການຢັ້ງຢືນທີ່ເວັບໄຊໃຊ້ໂດຍອັດຕະໂນມັດເພື່ອເພີ່ມຄວາມປອດໄພຂອງທ່ານ. Chrome ສາມາດຮັບລະຫັດເຫຼົ່ານີ້ໄດ້ຈາກ Gmail ຂອງທ່ານ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຸນສົມບັດນີ້<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນບໍ່ໄດ້ຮັບການເຊື່ອໝັ້ນໂດຍລະບົບການດໍາເນີນງານຂອງອຸປະກອນຂອງທ່ານ. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />ລອງເປີດໃຊ້ Windows Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">ຮູບພາບ (Archival)</translation>
@@ -2155,6 +2156,7 @@
 <translation id="4304049446746819918">{0,plural, =1{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ຍ້າຍໄຟລ໌ນີ້ໄປໃສ່ <ph name="DESTINATION_NAME" />}other{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ຍ້າຍໄຟລ໌ເຫຼົ່ານີ້ໄປໃສ່ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">ອ່ານການປະເມີນຜະລິດຕະພັນ, ບໍລິການ ຫຼື ປະສົບການຂອງລູກຄ້າເພື່ອຊ່ວຍແຈ້ງການຕັດສິນໃຈຂອງທ່ານດ້ວຍຄຳຕິຊົມ.</translation>
 <translation id="4305666528087210886">ບໍ່ສາມາດເຂົ້າເຖິງໄຟລ໌ຂອງທ່ານໄດ້</translation>
+<translation id="4306349443295056740">ການເຊັນຊື່ OCSP</translation>
 <translation id="4306529830550717874">ບັນທຶກທີ່ຢູ່ບໍ?</translation>
 <translation id="4306812610847412719">ຄລິບບອດ</translation>
 <translation id="4308567447483056043">ນະໂຍບາຍນີ້ຖືກລະເລີຍເນື່ອງຈາກຜູ້ໃຊ້ບໍ່ກ່ຽວຂ້ອງ. ຖ້າຕ້ອງການໃຊ້ນະໂຍບາຍນີ້, ອົງກອນດຽວກັນຈະຕ້ອງຈັດການໂປຣແກຣມທ່ອງເວັບ Chrome ແລະ ໂປຣໄຟລ໌ຜ່ານຄອນໂຊຜູ້ເບິ່ງແຍງລະບົບ.</translation>
@@ -2413,6 +2415,7 @@
 <translation id="4744603770635761495">ຊ່ອງ​ທາງ​ທີ່ປະ​ຕິ​ບັດໄດ້</translation>
 <translation id="4744816391336495134">ທ່ານສາມາດໃຊ້ລາຍນິ້ວມືຂອງທ່ານເພື່ອຢັ້ງຢືນວ່າແມ່ນທ່ານເມື່ອໃດກໍຕາມທີ່ທ່ານໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໄດ້</translation>
 <translation id="4749011317274908093">ທ່ານເຂົ້າໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນແລ້ວ</translation>
+<translation id="4749924365937394956">ການພິສູດຢືນຢັນເຊີບເວີ</translation>
 <translation id="4750671009706599284">ໂທລະສັບນີ້</translation>
 <translation id="4750917950439032686">ຂໍ້ມູນຂອງທ່ານ (ຕົວຢ່າງ: ລະຫັດຜ່ານ ຫຼື ເລກບັດເຄຣດິດ) ແມ່ນເປັນຄວາມລັບເມື່ອມັນຖືກສົ່ງຫາເວັບໄຊນີ້.</translation>
 <translation id="4751249061288707459">ອັບເດດຄວາມຍິນຍອມເທື່ອຫຼ້າສຸດ:</translation>
@@ -3129,6 +3132,7 @@
 <translation id="5860491529813859533">ເປີດ</translation>
 <translation id="5862579898803147654">ສະແຕັກເກີ້ 8</translation>
 <translation id="5863515189965725638">ແກ້ໄຂ IBAN</translation>
+<translation id="5863517400058880216">ຕື່ມຂໍ້ມູນລະຫັດການຢັ້ງຢືນຈາກ Gmail ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="5863847714970149516">ໜ້າທີ່ຈະໄປຫາອາດຈະພະຍາຍາມເກັບເງິນນຳທ່ານ</translation>
 <translation id="5866257070973731571">ເພີ່ມເບີໂທລະສັບ</translation>
 <translation id="5866327164731551901">ຈາກ <ph name="TYPE_1" /> ແລະ <ph name="TYPE_2" /></translation>
@@ -3242,6 +3246,7 @@
 <translation id="6034000775414344507">ສີເທົາອ່ອນ</translation>
 <translation id="6034514109191629503">ພັບແບບຫີບເພງ</translation>
 <translation id="6035491133925068289">ແລ່ນ ແລະ ລານ</translation>
+<translation id="6037458223703682108">ລາຍເຊັນດິຈິຕອນ</translation>
 <translation id="6039846035001940113">ຖ້າບັນຫາຍັງຢູ່, ກະລຸນາຕິດຕໍ່ຫາເຈົ້າຂອງເວັບໄຊ.</translation>
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6040539895181423374">ຂໍ້ມູນເຈາະເລິກດ້ານລາຄາ</translation>
@@ -3553,6 +3558,7 @@
 <translation id="6474220430271405609">ການທົດສອບນະໂຍບາຍ</translation>
 <translation id="6476284679642588870">ຈັດການວິທີການຈ່າຍເງິນ</translation>
 <translation id="647881094269678013">ການສະແດງ ແລະ ໂຮງລະຄອນ</translation>
+<translation id="6480363549849064919">ການພິສູດຢືນຢັນລູກຂ່າຍ</translation>
 <translation id="6480864723214312258">ແບັດເຕີຣີຄົວເຮືອນ</translation>
 <translation id="6487678699866233349">ເພງຈາກທົ່ວໂລກ</translation>
 <translation id="6489534406876378309">ການເລີ່ມຕົ້ນອັບໂຫຼດ​ເກີດ​ຂັດຂ້ອງ</translation>
@@ -4518,6 +4524,7 @@
 <translation id="7967973398323409409">ຂໍ້ມູນທີ່ທ່ານຕື່ມຂໍ້ມູນອັດຕະໂນມັດຈະບໍ່ມີໃຜເຫັນ</translation>
 <translation id="79682505114836835">ຄ່າ "<ph name="VALUE" />" ເປັນສີ hex ທີ່ບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="7968982339740310781">ເບິ່ງລາຍ​ລະ​ອຽດ​</translation>
+<translation id="7971403153351954587">ອົງກອນຂອງທ່ານຕິດຕາມການສຳເນົາ</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 ດ້ວຍການໃສ່ລະຫັດ RSA</translation>
 <translation id="7976053965094442846">ຜູ້ອອກບໍລິການຊື້ກ່ອນຈ່າຍນຳຫຼັງທີ່ພ້ອມໃຫ້ຈ່າຍຜ່ອນ. ແປ້ນພິມຖືກເຊື່ອງຢູ່.</translation>
 <translation id="7976214039405368314">ມີການຮ້ອງຂໍຫຼາຍເກີນໄປ</translation>

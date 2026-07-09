@@ -4166,7 +4166,6 @@ Recuerda que no debes mantener habilitada esta política todo el tiempo, especia
 <translation id="3591584750136265240">Configurar el comportamiento de autenticación en el acceso</translation>
 <translation id="3593905652755912452">Usar el comportamiento anterior de envío de eventos en los controles de formularios inhabilitados</translation>
 <translation id="3596112486106491038">Habilitar el acceso a la línea de comandos de la máquina virtual</translation>
-<translation id="3600342552601917721">Permitir el uso de las Herramientas para desarrolladores para la navegación web estándar, pero restringir el uso para las extensiones instaladas por la empresa y las extensiones integradas del usuario administrado. A partir de la versión M150, también se bloquean en cualquier página que incorpore estas extensiones, con la única excepción del lector de PDF integrado.</translation>
 <translation id="3603469950773500315">Habilita las mitigaciones de comprobación de <ph name="CORS" /> en la nueva implementación de <ph name="CORS" />, lo que permite que las extensiones mantengan su compatibilidad y que <ph name="PRODUCT_NAME" /> envíe encabezados específicos sin las comprobaciones de <ph name="CORS" />.
 
       Si esta lista se deja vacía, <ph name="PRODUCT_NAME" /> intentará ejecutar las extensiones de forma compatible y no introducirá cambios de <ph name="API" /> para <ph name="PRODUCT_NAME" /> 79, como se explica en el <ph name="WEB_REQUEST_API_MANUAL" />.

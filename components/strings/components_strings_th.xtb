@@ -504,6 +504,7 @@
 <translation id="175656076281618225">มายากล</translation>
 <translation id="1757773103848038814">แบบอักษรที่มีความกว้างคงที่</translation>
 <translation id="1757935267918149452">ปุ่มเปลี่ยนรหัสผ่าน Google เปิดใช้งานเพื่อเปลี่ยนรหัสผ่านของบัญชี Google</translation>
+<translation id="1759776526873274358">ป้อนรหัสยืนยันที่เว็บไซต์ใช้โดยอัตโนมัติเพื่อเพิ่มความปลอดภัย Chrome รับรหัสเหล่านี้ได้จาก Gmail ของคุณ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับฟีเจอร์นี้<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะระบบปฏิบัติการของอุปกรณ์ของคุณไม่เชื่อถือใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />ลองเรียกใช้การวินิจฉัยเครือข่ายของ Windows<ph name="END_LINK" /></translation>
 <translation id="1777422078676229054">รูปภาพ (Archival)</translation>
@@ -2154,6 +2155,7 @@
 <translation id="4304049446746819918">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้ย้ายไฟล์นี้ไปยัง <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้ย้ายไฟล์เหล่านี้ไปยัง <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">อ่านการประเมินผลิตภัณฑ์ บริการ หรือประสบการณ์ของลูกค้าเพื่อช่วยในการตัดสินด้วยรีวิว</translation>
 <translation id="4305666528087210886">เข้าถึงไฟล์ไม่ได้</translation>
+<translation id="4306349443295056740">การเซ็นชื่อ OCSP</translation>
 <translation id="4306529830550717874">บันทึกที่อยู่ไหม</translation>
 <translation id="4306812610847412719">คลิปบอร์ด</translation>
 <translation id="4308567447483056043">ระบบจะไม่สนใจนโยบายนี้เนื่องจากเป็นผู้ใช้ที่ไม่ได้เชื่อมโยง เบราว์เซอร์และโปรไฟล์ Chrome ต้องมีการจัดการผ่านคอนโซลผู้ดูแลระบบโดยองค์กรเดียวกันจึงจะใช้นโยบายนี้ได้</translation>
@@ -2412,6 +2414,7 @@
 <translation id="4744603770635761495">เส้นทางปฏิบัติการ</translation>
 <translation id="4744816391336495134">คุณสามารถใช้ลายนิ้วมือเพื่อยืนยันตัวตนทุกครั้งที่ใช้รหัสผ่านที่บันทึกไว้</translation>
 <translation id="4749011317274908093">คุณเข้าสู่โหมดไม่ระบุตัวตนแล้ว</translation>
+<translation id="4749924365937394956">การตรวจสอบสิทธิ์เซิร์ฟเวอร์</translation>
 <translation id="4750671009706599284">โทรศัพท์เครื่องนี้</translation>
 <translation id="4750917950439032686">ข้อมูลของคุณ (ตัวอย่างเช่น รหัสผ่านหรือหมายเลขบัตรเครดิต) จะเป็นส่วนตัวเมื่อส่งมายังเว็บไซต์นี้</translation>
 <translation id="4751249061288707459">อัปเดตความยินยอมครั้งล่าสุด:</translation>
@@ -3128,6 +3131,7 @@
 <translation id="5860491529813859533">เปิด</translation>
 <translation id="5862579898803147654">สแต็กเกอร์ 8</translation>
 <translation id="5863515189965725638">แก้ไข IBAN</translation>
+<translation id="5863517400058880216">ป้อนรหัสยืนยันจาก Gmail โดยอัตโนมัติ</translation>
 <translation id="5863847714970149516">ระบบอาจพยายามเรียกเก็บเงินจากคุณในหน้าถัดไป</translation>
 <translation id="5866257070973731571">เพิ่มหมายเลขโทรศัพท์</translation>
 <translation id="5866327164731551901">จาก <ph name="TYPE_1" /> และ <ph name="TYPE_2" /></translation>
@@ -3241,6 +3245,7 @@
 <translation id="6034000775414344507">เทาอ่อน</translation>
 <translation id="6034514109191629503">พับแบบหีบเพลง</translation>
 <translation id="6035491133925068289">ลู่และลาน</translation>
+<translation id="6037458223703682108">ลายเซ็นดิจิทัล</translation>
 <translation id="6039846035001940113">หากยังคงพบปัญหา ให้ติดต่อเจ้าของเว็บไซต์</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6040539895181423374">ข้อมูลเชิงลึกด้านราคา</translation>
@@ -3552,6 +3557,7 @@
 <translation id="6474220430271405609">การทดสอบนโยบาย</translation>
 <translation id="6476284679642588870">จัดการวิธีการชำระเงิน</translation>
 <translation id="647881094269678013">การแสดงและโรงละคร</translation>
+<translation id="6480363549849064919">การตรวจสอบสิทธิ์ไคลเอ็นต์</translation>
 <translation id="6480864723214312258">แบตเตอรี่ในครัวเรือน</translation>
 <translation id="6487678699866233349">เวิลด์มิวสิก</translation>
 <translation id="6489534406876378309">เริ่มอัปโหลดข้อขัดข้อง</translation>
@@ -4518,6 +4524,7 @@
 <translation id="7967973398323409409">ข้อมูลที่คุณป้อนอัตโนมัติจะไม่มีใครเห็น</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" ไม่ใช่ค่าสีแบบเลขฐานสิบหกที่ถูกต้อง</translation>
 <translation id="7968982339740310781">ดูรายละเอียด</translation>
+<translation id="7971403153351954587">องค์กรของคุณตรวจสอบการคัดลอก</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 พร้อมการเข้ารหัส RSA</translation>
 <translation id="7976053965094442846">ผู้ออกบริการ "ซื้อก่อน จ่ายทีหลัง" ที่พร้อมให้ผ่อนชำระ แป้นพิมพ์ซ่อนอยู่</translation>
 <translation id="7976214039405368314">มีคำขอมากเกินไป</translation>

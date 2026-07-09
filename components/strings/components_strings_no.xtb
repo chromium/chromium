@@ -504,6 +504,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="175656076281618225">Magi</translation>
 <translation id="1757773103848038814">Monospace-skrifttype</translation>
 <translation id="1757935267918149452">Knappen «Bytt Google-passord» – aktiver for å endre passordet for Google-kontoen din</translation>
+<translation id="1759776526873274358">Autofyll bekreftelseskoder som nettsteder bruker for å øke sikkerheten. Chrome kan hente disse kodene fra Gmail-kontoen din. <ph name="BEGIN_LINK" />Finn ut mer om denne funksjonen<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke klarert av enhetens operativsystem. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Prøv å kjøre Windows Nettverksdiagnose<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (arkiv)</translation>
@@ -2155,6 +2156,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4304049446746819918">{0,plural, =1{Administratorreglene anbefaler ikke at du flytter denne filen til <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du flytter disse filene til <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Med anmeldelser kan du lese kundevurderinger av produkter, tjenester eller opplevelser for å gjøre det lettere å ta beslutninger.</translation>
 <translation id="4305666528087210886">Kunne ikke åpne filen</translation>
+<translation id="4306349443295056740">OCSP-signering</translation>
 <translation id="4306529830550717874">Vil du lagre adressen?</translation>
 <translation id="4306812610847412719">utklippstavle</translation>
 <translation id="4308567447483056043">Denne regelen ignoreres fordi brukeren ikke er tilknyttet. For at denne regelen skal gjelde, må Chrome-nettleseren og -profilen være administrert av den samme organisasjonen via administrasjonskonsollen.</translation>
@@ -2413,6 +2415,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4744603770635761495">Kjørbar sti</translation>
 <translation id="4744816391336495134">Du kan bruke fingeravtrykket til å bekrefte at det er deg, når du bruker lagrede passord</translation>
 <translation id="4749011317274908093">Nå er du inkognito</translation>
+<translation id="4749924365937394956">Autentisering av tjener</translation>
 <translation id="4750671009706599284">denne telefonen</translation>
 <translation id="4750917950439032686">Informasjonen din (for eksempel passord eller kredittkortnumre) er privat når den sendes til dette nettstedet.</translation>
 <translation id="4751249061288707459">Samtykke sist oppdatert:</translation>
@@ -3129,6 +3132,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5860491529813859533">Slå på</translation>
 <translation id="5862579898803147654">Hylle 8</translation>
 <translation id="5863515189965725638">Endre IBAN-nummeret</translation>
+<translation id="5863517400058880216">Autofyll bekreftelseskoder fra Gmail</translation>
 <translation id="5863847714970149516">Den neste siden kan prøve å belaste deg for penger</translation>
 <translation id="5866257070973731571">Legg til telefonnummer</translation>
 <translation id="5866327164731551901">Fra <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -3242,6 +3246,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6034000775414344507">Lysegrå</translation>
 <translation id="6034514109191629503">Trekkspillfals</translation>
 <translation id="6035491133925068289">Friidrett</translation>
+<translation id="6037458223703682108">Digital signatur</translation>
 <translation id="6039846035001940113">Hvis problemet fortsetter, kan du kontakte nettstedseieren.</translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="6040539895181423374">Prisstatistikk</translation>
@@ -3553,6 +3558,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6474220430271405609">Regeltester</translation>
 <translation id="6476284679642588870">Administrer betalingsmåter</translation>
 <translation id="647881094269678013">Skuespill og teater</translation>
+<translation id="6480363549849064919">Autentisering av klient</translation>
 <translation id="6480864723214312258">Husholdningsbatterier</translation>
 <translation id="6487678699866233349">Verdensmusikk</translation>
 <translation id="6489534406876378309">Start opplastingen av krasj</translation>
@@ -4518,6 +4524,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7967973398323409409">Informasjonen du autofyller blir aldri sett av noen</translation>
 <translation id="79682505114836835">Verdien «<ph name="VALUE" />» er en ugyldig heksadesimal fargekode.</translation>
 <translation id="7968982339740310781">Se detaljer</translation>
+<translation id="7971403153351954587">Organisasjonen din overvåker kopiering</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 med RSA-kryptering</translation>
 <translation id="7976053965094442846">Utstedere av «Kjøp nå, betal senere» som er tilgjengelige for betaling over tid. Tastaturet er skjult.</translation>
 <translation id="7976214039405368314">For mange forespørsler</translation>

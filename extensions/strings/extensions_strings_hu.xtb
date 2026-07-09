@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">A privát kulcs beviteli értékét érvényes formátumban kell megadnia (PKCS#8 formátumú, PEM-kódolású RSA-kulcs).</translation>
-<translation id="765293928828334535">Erről a webhelyről nem lehet alkalmazásokat, bővítményeket és felhasználói szkripteket hozzáadni</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7766838926148951335">Engedélyek elfogadása</translation>
 <translation id="7876803335449432072">A(z) „<ph name="RELATIVE_PATH" />” fájlt nem sikerült betölteni a tartalomszkripthez. A tartalomszkriptek stíluslapjait csak támogatott stíluslapfájlokból (például .css fájlokból) lehet betölteni.</translation>

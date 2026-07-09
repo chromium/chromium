@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Privātās atslēgas ievades vērtībai jābūt derīgam formātam (PKCS#8-formāta PEM-kodēta RSA atslēga).</translation>
-<translation id="765293928828334535">No šīs vietnes nevar pievienot lietotnes, paplašinājumus un lietotāja skriptus.</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7766838926148951335">Piekrist atļaujām</translation>
 <translation id="7876803335449432072">Nevarēja ielādēt failu “<ph name="RELATIVE_PATH" />” satura apstrādes skriptam. Satura apstrādes skriptu stilu lapas var ielādēt tikai no atbalstītiem stilu lapu failiem, piemēram, .css failiem.</translation>

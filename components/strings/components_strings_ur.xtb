@@ -504,6 +504,7 @@
 <translation id="175656076281618225">جادو</translation>
 <translation id="1757773103848038814">مونو اسپیس فونٹ</translation>
 <translation id="1757935267918149452">‏Google کا پاس ورڈ تبدیل کریں بٹن، اپنے Google اکاؤنٹ کا پاس ورڈ تبدیل کرنے کیلئے فعال کریں</translation>
+<translation id="1759776526873274358">‏توثیقی کوڈز کو آٹو فل کریں جنہیں سائٹس آپ کی سیکیورٹی بہتر بنانے کے لیے استعمال کرتی ہیں۔ ‫Chrome آپ کے Gmail سے یہ کوڈز حاصل کر سکتا ہے۔ <ph name="BEGIN_LINK" />اس خصوصیت کے بارے میں مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کا سیکیورٹی سرٹیفیکیٹ آپ کے آلہ کے آپریٹنگ سسٹم کے ذریعے بھروسہ مند نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="1768211456781949159">‏<ph name="BEGIN_LINK" />Windows نیٹ ورک کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="1777422078676229054">تصویر (آرکائیول)</translation>
@@ -2156,6 +2157,7 @@
 <translation id="4304049446746819918">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں منتقل کرنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں منتقل کرنے کی تجویز نہیں کرتی ہے}}</translation>
 <translation id="4304485328308299773">کسٹمر کے پروڈکٹس، سروسز یا تجربوں کے تجزیے پڑھیں تاکہ تجزیوں کے ساتھ اپنے فیصلوں کو مطلع کرنے میں مدد مل سکے۔</translation>
 <translation id="4305666528087210886">آپ کی فائل تک رسائی نہیں ہو سکی</translation>
+<translation id="4306349443295056740">‏‫OCSP پر دستخط کرنا</translation>
 <translation id="4306529830550717874">پتہ محفوظ کریں؟</translation>
 <translation id="4306812610847412719">کلپ بورڈ</translation>
 <translation id="4308567447483056043">‏اس پالیسی کو نظر انداز کر دیا گیا ہے کیونکہ صارف غیر الحاق یافتہ ہے۔ اس پالیسی کو لاگو کرنے کے لیے Chrome براؤزر اور پروفائل کا نظم منتظم کونسول کے ذریعے ایک ہی تنظیم کے سے کیا جانا چاہیے۔</translation>
@@ -2414,6 +2416,7 @@
 <translation id="4744603770635761495">قابل کارروائی پاتھ</translation>
 <translation id="4744816391336495134">جب بھی آپ محفوظ کردہ پاس ورڈ استعمال کرتے ہیں تو آپ اپنے فنگر پرنٹ کا استعمال کر کے تصدیق کر سکتے ہیں کہ یہ آپ ہی ہیں</translation>
 <translation id="4749011317274908093">آپ پوشیدگی وضع میں چلے گئے ہیں</translation>
+<translation id="4749924365937394956">سرور کی تصدیق</translation>
 <translation id="4750671009706599284">یہ فون</translation>
 <translation id="4750917950439032686">جب آپ کی معلومات (مثلاً، پاس ورڈز یا کریڈٹ کارڈ نمبرز) اس سائٹ پر بھیجی جاتی ہے تو اس وقت وہ نجی ہوتی ہے۔</translation>
 <translation id="4751249061288707459">منظوری کو آخری بار اپ ڈیٹ کیا گیا:</translation>
@@ -3130,6 +3133,7 @@
 <translation id="5860491529813859533">آن کریں</translation>
 <translation id="5862579898803147654">اسٹیکر 8</translation>
 <translation id="5863515189965725638">‏IBAN میں ترمیم کریں</translation>
+<translation id="5863517400058880216">‏‫Gmail سے توثیقی کوڈز کو آٹو فل کریں</translation>
 <translation id="5863847714970149516">آگے کا صفحہ آپ سے رقم چارج کرنے کی کوشش کر سکتا ہے</translation>
 <translation id="5866257070973731571">فون نمبر شامل کریں</translation>
 <translation id="5866327164731551901">‫<ph name="TYPE_1" /> <ph name="TYPE_2" /> سے</translation>
@@ -3243,6 +3247,7 @@
 <translation id="6034000775414344507">ہلکا خاکستری</translation>
 <translation id="6034514109191629503">ایکورڈین فولڈ</translation>
 <translation id="6035491133925068289">ٹریک اور فیلڈ</translation>
+<translation id="6037458223703682108">ڈیجیٹل دستخط</translation>
 <translation id="6039846035001940113">اگر مسئلہ بر قرار رہتا ہے تو سائٹ کے مالک سے رابطہ کریں۔</translation>
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="6040539895181423374">قیمت سے متعلق حقائق</translation>
@@ -3555,6 +3560,7 @@
 <translation id="6474220430271405609">پالیسی ٹیسٹس</translation>
 <translation id="6476284679642588870">ادائیگی کے طریقوں کا نظم کریں</translation>
 <translation id="647881094269678013">اداکاری اور تھیٹر</translation>
+<translation id="6480363549849064919">کلائنٹ کی تصدیق</translation>
 <translation id="6480864723214312258">گھریلو بیٹریاں</translation>
 <translation id="6487678699866233349">عالمی موسیقی</translation>
 <translation id="6489534406876378309">کریشز اپ لوڈ کرنا شروع کریں</translation>
@@ -4520,6 +4526,7 @@
 <translation id="7967973398323409409">آپ کی آٹو فل کردہ معلومات کو کوئی نہیں دیکھ سکتا</translation>
 <translation id="79682505114836835">قدر "<ph name="VALUE" />" ایک غلط ہیکس رنگ ہے۔</translation>
 <translation id="7968982339740310781">تفصیلات دیکھیں</translation>
+<translation id="7971403153351954587">آپ کی تنظیم مواد کاپی کرنے کی نگرانی کرتی ہے</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 مع RSA مرموز کاری</translation>
 <translation id="7976053965094442846">ابھی خریدیں، ادائیگی بعد میں کریں جاری کنندگان وقت کے ساتھ ادائیگی کے لیے دستیاب ہیں۔ کی بورڈ پوشیدہ ہے۔</translation>
 <translation id="7976214039405368314">بہت زیادہ درخواستیں</translation>

@@ -972,7 +972,6 @@
 <translation id="4294506173142861371">ចូលគណនី​ជា <ph name="FIRST_NAME" /> ឬ?</translation>
 <translation id="4302061870579014542">កំណត់ទីតាំង</translation>
 <translation id="4304713468139749426">កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់</translation>
-<translation id="4306349443295056740">ការចុះ​ហត្ថលេខា OCSP</translation>
 <translation id="4309403553630140242">ចុចពីរដង ដើម្បីទទួលបាន​ព័ត៌មានបន្ថែម</translation>
 <translation id="4310738531374808763">ប្ដូរ​ទំព័រដើម​របស់អ្នក​តាមបំណង</translation>
 <translation id="4316794575239200608">ទាំង​ការសន្ទនា​របស់អ្នក​ជាមួយ Gemini និង<ph name="BEGIN_LINK" />ទិន្នន័យ Google Workspace<ph name="END_LINK" /> របស់អ្នក​នឹងមិន​ត្រូវបាន​ត្រួតពិនិត្យដោយ​អ្នកត្រួតពិនិត្យ​ជាមនុស្ស ឬ​ត្រូវបានប្រើ ដើម្បី​កែលម្អ​គំរូ AI ដែលមាន​សមត្ថភាព​បង្កើត​ឡើយ។</translation>
@@ -1103,7 +1102,6 @@
 <translation id="4744428388659507035">ដើម្បីទទួលបានចំណាំរបស់អ្នកនៅលើឧបករណ៍ទាំងអស់របស់អ្នក សូមបើក “ចំណាំ” នៅក្នុងការកំណត់។</translation>
 <translation id="4746926359847517643">អ្នក​អាច​យក​ផ្ទាំង​ទាំង​នោះ​មកវិញ​នៅ​ក្នុង​ប្រវត្តិ​បាន​ជា​និច្ច។</translation>
 <translation id="4749529195026091676">{count,plural, =1{បាន​នាំចូល​កាត {count}}other{បាន​នាំចូល​កាត {count}}}</translation>
-<translation id="4749924365937394956">ការផ្ទៀងផ្ទាត់​ម៉ាស៊ីនមេ</translation>
 <translation id="4751645464639803239">ផ្ទាំងឯកជនថ្មី</translation>
 <translation id="4752348350801431746">បិទការ​ជូនដំណឹងអំពីការពិនិត្យ​សុវត្ថិភាព…</translation>
 <translation id="4759238208242260848">ទាញយក</translation>
@@ -1447,7 +1445,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="5859715514067755465">ទៅមុខ</translation>
 <translation id="5860491529813859533">បើក</translation>
 <translation id="5868644772996939262">បំពេញ​កូដសម្ងាត់ និង​ពាក្យ​សម្ងាត់​ដោយ​ស្វ័យប្រវត្តិ</translation>
-<translation id="5869522115854928033">ពាក្យសម្ងាត់ដែលបានរក្សាទុក</translation>
 <translation id="5873179562631407582">ចុចឱ្យជាប់​លើ​ផ្ទាំង​ដែលបើក</translation>
 <translation id="5887400589839399685">បានរក្សាទុក​កាត</translation>
 <translation id="5888889603768021126">បានចូល​គណនី​ដោយប្រើ</translation>
@@ -1491,7 +1488,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6027619584715411062">ចូលគណនី ដើម្បី​ទទួលបាន​ចំណាំ ពាក្យសម្ងាត់​របស់អ្នក និងអ្វីៗជាច្រើនទៀត​នៅលើឧបករណ៍​ទាំងអស់​របស់អ្នក។</translation>
 <translation id="6027945736510816438">តើ​អ្នក​ចង់​មានន័យ​ថា <ph name="WEBSITE" /> មែនទេ?</translation>
 <translation id="6032845897905314562">មុខងារថ្មី</translation>
-<translation id="6037458223703682108">ហត្ថលេខា​ឌីជីថល</translation>
 <translation id="6038823991892265570">គ្រប់គ្រងទំហំផ្ទុក Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">បិទ</translation>
@@ -1646,7 +1642,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6476284679642588870">គ្រប់គ្រង​វិធីបង់ប្រាក់</translation>
 <translation id="6476800141292307438">កំពុងបកប្រែទំព័រ​ទៅភាសា<ph name="LANGUAGE" />។ ជម្រើសមាននៅជិត​ផ្នែកខាងក្រោមបំផុតរបស់​អេក្រង់។</translation>
 <translation id="647867789226964031">ប្ដូរ​ពាក្យសម្ងាត់​របស់អ្នក</translation>
-<translation id="6480363549849064919">ការផ្ទៀងផ្ទាត់​កម្មវិធីភ្ញៀវ</translation>
 <translation id="6489174933860678546">បើក​ផ្ទាំងឯកជន ដើម្បីរុករក​នៅលើ​បណ្ដាញ​កាន់តែ​មានលក្ខណៈ​ឯកជន។</translation>
 <translation id="6489775505977274806">លាក់ Level Up</translation>
 <translation id="6494931198667773526">ចុងបញ្ចប់</translation>
@@ -1683,7 +1678,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6589001036857939353">ដាក់​ព័ត៌មាន​ផ្ទៀងផ្ទាត់​ស្ទួនចូល​គ្នា</translation>
 <translation id="659407965921887085">កាតនេះ​បង្ហាញ​ការធ្លាក់ថ្លៃ​នៃ​ផលិតផល​ដែលអ្នក​តាមដាន​បច្ចុប្បន្ននេះ​នៅលើ​បណ្ដាញ</translation>
 <translation id="6596481460663245319">ស្វែងរករូបភាពតាម Google</translation>
-<translation id="6598432073497341323">{COUNT,plural, =1{ពាក្យសម្ងាត់ 1}other{ពាក្យសម្ងាត់ #}}</translation>
 <translation id="6601302169302852717">បានរក្សាទុក​រូបភាព​នៅក្នុង Google រូបថត​សម្រាប់ <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">ការបំពេញ​ស្វ័យប្រវត្តិ និង​ពាក្យសម្ងាត់</translation>
 <translation id="6603393121510733479">ស្ថាប័នរបស់អ្នកបានបិទការរុករកលក្ខណៈឯកជន។
@@ -1877,7 +1871,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7233006041370588369">ជ្រើសរើសពាក្យ​សម្ងាត់ដែលត្រូវបំពេញ។</translation>
 <translation id="723874023660911012">ប្ដូរកម្រងព័ត៌មាន</translation>
 <translation id="7241135764990439166">មិនអាចប្រើមុខងារ​ឯកជនបានទេ</translation>
-<translation id="7248046129087111453"><ph name="BEGIN_LINK" />ប្រវត្តិ​ស្វែងរក<ph name="END_LINK" /> និង<ph name="BEGIN_LINK" />ទម្រង់សកម្មភាព​ផ្សេងទៀត<ph name="END_LINK" />អាចត្រូវបានរក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក។</translation>
 <translation id="7253951228444156601">កំពុងពិនិត្យពាក្យសម្ងាត់…</translation>
 <translation id="7261217796641151584">ចែករំលែក​ក្រុម</translation>
 <translation id="7266578100016339897">លក្ខណៈនេះ​ជួយអ្នក​ក្នុងការ​រក្សារបៀប​រៀបរយ។ អ្នក​អាចប្ដូរ​លក្ខណៈនេះ​នៅក្នុង​ការកំណត់​នៅពេល​ណាក៏បាន។</translation>
@@ -2008,6 +2001,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7696316012653762532">ជម្រើស​សម្រាប់​បកប្រែទំព័រ</translation>
 <translation id="7700527812567437847">ស្វែងរកនៅលើអេក្រង់ដោយប្រើ Google Lens</translation>
 <translation id="7701040980221191251">គ្មាន</translation>
+<translation id="7702428539671224160">បំពេញព័ត៌មាននៃការទូទាត់ប្រាក់ដោយស្វ័យប្រវត្តិនៅលើ <ph name="URL" /></translation>
 <translation id="7708994397325774423">យក​ពាក្យសម្ងាត់​ទាំងអស់​របស់អ្នក</translation>
 <translation id="7711440461521638739">អ្នកមិនកំពុងប្រើពាក្យសម្ងាត់​ណា​មួយ​​ឡើងវិញទេ</translation>
 <translation id="7712361583414030698">កំពុង​មើល​កំណែ​គ្មាន​អ៊ីនធឺណិត</translation>

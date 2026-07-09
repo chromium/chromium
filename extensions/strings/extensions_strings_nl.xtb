@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">De invoerwaarde voor de privésleutel moet een geldige indeling hebben (PKCS#8-indeling met PEM-gecodeerde RSA-sleutel).</translation>
-<translation id="765293928828334535">Apps, extensies en gebruikersscripts kunnen niet worden toegevoegd vanaf deze website</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7766838926148951335">Rechten accepteren</translation>
 <translation id="7876803335449432072">Kan bestand <ph name="RELATIVE_PATH" /> niet laden voor het contentscript. Stylesheets van contentscripts kunnen alleen worden geladen vanuit ondersteunde stylesheetbestanden, zoals css-bestanden.</translation>

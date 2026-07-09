@@ -504,6 +504,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="175656076281618225">Màgia</translation>
 <translation id="1757773103848038814">Tipus de lletra monoespaiada</translation>
 <translation id="1757935267918149452">Botó Canvia la contrasenya de Google: activa'l per canviar la contrasenya del teu Compte de Google</translation>
+<translation id="1759776526873274358">Emplena automàticament els codis de verificació que els llocs web utilitzen per millorar la teva seguretat. Chrome pot obtenir aquests codis a partir del teu compte de Gmail. <ph name="BEGIN_LINK" />Més informació sobre aquesta funció<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè el sistema operatiu del vostre dispositiu considera que el seu certificat de seguretat no és de confiança. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Prova d'executar el diagnòstic de xarxes de Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (arxiu)</translation>
@@ -2155,6 +2156,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4304049446746819918">{0,plural, =1{La política de l'administrador no recomana moure aquest fitxer a <ph name="DESTINATION_NAME" />}other{La política de l'administrador no recomana moure aquests fitxers a <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Llegeix les avaluacions dels clients sobre productes, serveis o experiències per ajudar-te a prendre decisions.</translation>
 <translation id="4305666528087210886">No s'ha pogut accedir al fitxer</translation>
+<translation id="4306349443295056740">Signatura OCSP</translation>
 <translation id="4306529830550717874">Vols desar l'adreça?</translation>
 <translation id="4306812610847412719">porta-retalls</translation>
 <translation id="4308567447483056043">Aquesta política s'ignora perquè l'usuari no està afiliat. Perquè s'apliqui aquesta política, el navegador i el perfil de Chrome han d'estar gestionats per la mateixa organització a través de la consola d'administració.</translation>
@@ -2324,6 +2326,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4607608436550361748">Mostra consells per a Chrome</translation>
 <translation id="460848736049414407">Bloquejat per l'administrador</translation>
 <translation id="4610279718074907952">Aquest lloc web forma part d'un grup, definit per <ph name="SET_OWNER" />, que pot veure la teva activitat</translation>
+<translation id="4612631413844865947">Hi ha hagut un error en processar la comanda a <ph name="MERCHANT_ORIGIN" /> a través de <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Equipament per a futbol</translation>
 <translation id="4612904677925722054">És possible que aquest lloc web inclogui contingut no apte per a menors. El teu pare, mare o tutor ha de dir si pots visitar-lo.</translation>
 <translation id="4619564267100705184">Verifica la teva identitat</translation>
@@ -2413,6 +2416,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4744603770635761495">Camí executable</translation>
 <translation id="4744816391336495134">Pots utilitzar l'empremta digital per verificar la teva identitat sempre que utilitzis una contrasenya desada</translation>
 <translation id="4749011317274908093">Has passat al mode d'incògnit</translation>
+<translation id="4749924365937394956">Autenticació del servidor</translation>
 <translation id="4750671009706599284">aquest telèfon</translation>
 <translation id="4750917950439032686">La teva informació (com ara les contrasenyes o els números de targeta de crèdit) és privada quan s'envia a aquest lloc web.</translation>
 <translation id="4751249061288707459">Darrera actualització del consentiment:</translation>
@@ -3129,6 +3133,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5860491529813859533">Activa</translation>
 <translation id="5862579898803147654">Apiladora 8</translation>
 <translation id="5863515189965725638">Edita l'IBAN</translation>
+<translation id="5863517400058880216">Emplena automàticament els codis de verificació a partir de Gmail</translation>
 <translation id="5863847714970149516">És possible que aquesta pàgina provi de fer-te algun càrrec</translation>
 <translation id="5866257070973731571">Afegeix un número de telèfon</translation>
 <translation id="5866327164731551901">De <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -3242,6 +3247,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6034000775414344507">Gris clar</translation>
 <translation id="6034514109191629503">Plegat en acordió</translation>
 <translation id="6035491133925068289">Atletisme</translation>
+<translation id="6037458223703682108">Signatura digital</translation>
 <translation id="6039846035001940113">Si el problema continua, contacta amb el propietari del lloc web.</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6040539895181423374">Estadístiques de preus</translation>
@@ -3553,6 +3559,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6474220430271405609">Proves de la política</translation>
 <translation id="6476284679642588870">Gestiona les formes de pagament</translation>
 <translation id="647881094269678013">Interpretació i teatre</translation>
+<translation id="6480363549849064919">Autenticació del client</translation>
 <translation id="6480864723214312258">Piles i bateries</translation>
 <translation id="6487678699866233349">Música del món</translation>
 <translation id="6489534406876378309">Comença a penjar els errors</translation>
@@ -4519,6 +4526,7 @@ Detalls addicionals:
 <translation id="7967973398323409409">La informació d'emplenament automàtic no la veu mai ningú</translation>
 <translation id="79682505114836835">El valor "<ph name="VALUE" />" no és un color hexadecimal vàlid.</translation>
 <translation id="7968982339740310781">Mostra els detalls</translation>
+<translation id="7971403153351954587">La teva organització supervisa la còpia</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 amb encriptació RSA</translation>
 <translation id="7976053965094442846">Llista d'emissors de Compra ara, paga més tard disponibles per pagar a terminis. El teclat està amagat.</translation>
 <translation id="7976214039405368314">Hi ha massa sol·licituds</translation>

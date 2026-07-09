@@ -123,7 +123,6 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7612608473764576263">Vstupná hodnota pre súkromný kľúč musí mať platný formát (kľúč RSA vo formáte PKCS#8 so šifrovaním PEM).</translation>
-<translation id="765293928828334535">Aplikácie, rozšírenia a skripty používateľa sa nedajú pridať z tohto webu</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7766838926148951335">Prijať povolenia</translation>
 <translation id="7876803335449432072">Pre skript obsahu sa nepodarilo načítať súbor <ph name="RELATIVE_PATH" />. Šablóny kaskádových štýlov skriptu obsahu sa dajú načítať iba zo súborov podporovaných šablónami kaskádových štýlov, napríklad súborov .css.</translation>

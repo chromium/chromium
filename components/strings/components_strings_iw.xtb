@@ -504,6 +504,7 @@
 <translation id="175656076281618225">קסם</translation>
 <translation id="1757773103848038814">‏גופן Monospace</translation>
 <translation id="1757935267918149452">‏הכפתור לשינוי הסיסמה ל-Google, מפעילים אותו כדי לשנות את הסיסמה לחשבון Google</translation>
+<translation id="1759776526873274358">‏מילוי אוטומטי של קודי אימות שאתרים משתמשים בהם כדי לשפר את האבטחה שלך. ‫Chrome יכול לקבל את קודי האימות האלה מ-Gmail. <ph name="BEGIN_LINK" />מידע נוסף על התכונה הזו<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. אישור האבטחה שלו לא נחשב כמהימן על ידי מערכת ההפעלה של המכשיר. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="1768211456781949159">‏<ph name="BEGIN_LINK" />יש לנסות להפעיל את אבחון הרשת של Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Photo (Archival)</translation>
@@ -2155,6 +2156,7 @@
 <translation id="4304049446746819918">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקובץ הזה אל <ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">כדאי לקרוא הערכות של לקוחות לגבי מוצרים, שירותים או חוויות שימוש. על סמך ביקורות כאלה ניתן לקבל החלטות מושכלות יותר.</translation>
 <translation id="4305666528087210886">לא ניתן לגשת לקובץ</translation>
+<translation id="4306349443295056740">‏חתימת OCSP</translation>
 <translation id="4306529830550717874">לשמור את הכתובת?</translation>
 <translation id="4306812610847412719">לוח</translation>
 <translation id="4308567447483056043">‏המערכת מתעלמת מהמדיניות הזו כי המשתמש לא משויך. כדי להחיל את המדיניות צריך לנהל את הדפדפן והפרופיל ב-Chrome דרך מסוף Admin של אותו ארגון.</translation>
@@ -2413,6 +2415,7 @@
 <translation id="4744603770635761495">נתיב להפעלה</translation>
 <translation id="4744816391336495134">יש לך אפשרות להשתמש בטביעת האצבע כדי לאמת את זהותך בכל שימוש בסיסמה שמורה</translation>
 <translation id="4749011317274908093">עברת למצב פרטי</translation>
+<translation id="4749924365937394956">אימות שרת</translation>
 <translation id="4750671009706599284">הטלפון הזה</translation>
 <translation id="4750917950439032686">הפרטים שלך (כמו סיסמאות או מספרי כרטיסי אשראי) נשלחים לאתר הזה במצב פרטי.</translation>
 <translation id="4751249061288707459">תאריך העדכון האחרון של סטטוס ההסכמה:</translation>
@@ -3134,6 +3137,7 @@ Del</translation>
 <translation id="5860491529813859533">הפעלה</translation>
 <translation id="5862579898803147654">מערים 8</translation>
 <translation id="5863515189965725638">‏עריכת ה-IBAN</translation>
+<translation id="5863517400058880216">‏מילוי אוטומטי של קודי אימות מ-Gmail</translation>
 <translation id="5863847714970149516">בדף הבא עשויה להיות דרישה לתשלום</translation>
 <translation id="5866257070973731571">הוספת מספר טלפון</translation>
 <translation id="5866327164731551901">מ-<ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -3247,6 +3251,7 @@ Del</translation>
 <translation id="6034000775414344507">אפור בהיר</translation>
 <translation id="6034514109191629503">קיפול אקורדיון</translation>
 <translation id="6035491133925068289">אתלטיקה</translation>
+<translation id="6037458223703682108">חתימה דיגיטלית</translation>
 <translation id="6039846035001940113">אם הבעיה ממשיכה, יש לפנות אל בעל האתר.</translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6040539895181423374">מדדי מחירים</translation>
@@ -3558,6 +3563,7 @@ Del</translation>
 <translation id="6474220430271405609">בדיקות מדיניות</translation>
 <translation id="6476284679642588870">ניהול אמצעי תשלום</translation>
 <translation id="647881094269678013">משחק ותיאטרון</translation>
+<translation id="6480363549849064919">אימות לקוח</translation>
 <translation id="6480864723214312258">סוללות לשימוש ביתי</translation>
 <translation id="6487678699866233349">מוזיקת עולם</translation>
 <translation id="6489534406876378309">התחלת ההעלאה של קריסות</translation>
@@ -4524,6 +4530,7 @@ Del</translation>
 <translation id="7967973398323409409">אף אחד לא יכול לראות את הפרטים שמילאת אוטומטית</translation>
 <translation id="79682505114836835">הערך "<ph name="VALUE" />" הוא צבע הקסדצימלי לא חוקי.</translation>
 <translation id="7968982339740310781">הצגת פרטים</translation>
+<translation id="7971403153351954587">הארגון שלך עוקב אחרי פעולות ההעתקה</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 עם הצפנת RSA</translation>
 <translation id="7976053965094442846">‏מנפיקים של האפשרות "קונים עכשיו, משלמים אחר כך (BNPL)" שזמינים כדי לשלם בתשלומים. המקלדת מוסתרת.</translation>
 <translation id="7976214039405368314">יותר מדי בקשות</translation>
@@ -5137,6 +5144,7 @@ Del</translation>
 <translation id="9001074447101275817">‏שרת ה-proxy ‏<ph name="DOMAIN" /> מצריך שם משתמש וסיסמה.</translation>
 <translation id="9001701119003382280">ציוד היקפי למחשב</translation>
 <translation id="9001963517402879850">צריך לקפוץ!</translation>
+<translation id="9003263770394939629">‏הצעה של Gemini. אפשר לנהל את המילוי האוטומטי המשופר בהגדרות.</translation>
 <translation id="9003639428623471314">‏מעטפה – Kahu</translation>
 <translation id="9004367719664099443">‏יש עכשיו סשן VR פעיל</translation>
 <translation id="9005998258318286617">‏הטעינה של מסמך ה-PDF נכשלה.</translation>

@@ -250,7 +250,6 @@
 <translation id="345171907106878721">Chrome に自分を追加</translation>
 <translation id="3453763134178591239">ChromeOS 利用規約</translation>
 <translation id="3475778264501649775">スマートフォンの Chrome アプリで、パスワードやタブなどを外出先でも使用できます</translation>
-<translation id="3512495006767217696">Chrome に組み込まれており、安全なパスワードを作成、保存、自動入力できます。ショートカットを追加すると、簡単にアクセスできます。</translation>
 <translation id="3539955434060988644">Chrome のシークレット ウインドウでリンクを開く(&amp;G)</translation>
 <translation id="354621070532799440">リマインダー: Google の優れた安全機能をポケットに</translation>
 <translation id="3547866758548131919">[要約] ボタンをクリックしてこのドキュメントを Gemini in Chrome と共有すると、概要の確認や追加の質問ができます</translation>
@@ -554,6 +553,7 @@
 <translation id="6539493053177300926">Chrome を最小化している場合でも、デバイスのさまざまな場所から Gemini in Chrome にすばやくアクセスできます。</translation>
 <translation id="6585124893636629274">Gemini in Chrome を閉じる</translation>
 <translation id="659498884637196217">このデバイスの Google パスワード マネージャー</translation>
+<translation id="6613949864921837107">Chrome を既定のブラウザに設定すると、パスワード、ブックマーク、履歴をデバイス間で完全に同期できます。</translation>
 <translation id="6631524303639368205">前回開いていたページを開く: Chrome で前回のセッションからタブが復元されました。この機能をオフにするには、</translation>
 <translation id="6632473616050862500">ChromeOS Flex は、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="6634299872736643004">この設定の変更内容は、Chrome を再起動すると適用されます。</translation>

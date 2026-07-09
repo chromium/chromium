@@ -504,6 +504,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="175656076281618225">Mágia</translation>
 <translation id="1757773103848038814">Neproporcionálne písmo</translation>
 <translation id="1757935267918149452">Tlačidlo Zmeniť heslo Google, ktorého aktivovaním zmeníte heslo účtu Google</translation>
+<translation id="1759776526873274358">Využívajte automatické dopĺňanie overovacích kódov, pomocou ktorých weby zlepšujú vaše zabezpečenie. Chrome môže tieto kódy získať z vášho Gmailu. <ph name="BEGIN_LINK" />Ďalšie informácie o tejto funkcii<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Server nedokáže overiť, či ide o doménu <ph name="DOMAIN" />, operačný systém vášho zariadenia nedôveruje jej bezpečnostnému certifikátu. Môže to byť spôsobené nesprávnou konfiguráciou alebo tým, že vaše pripojenie zachytil útočník.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Skúste spustiť nástroj Diagnostika siete systému Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Fotka (archivačná)</translation>
@@ -2151,6 +2152,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4304049446746819918">{0,plural, =1{Pravidlá správcu presun tohto súboru do úložiska <ph name="DESTINATION_NAME" /> neodporúčajú}few{Pravidlá správcu presun týchto súborov do úložiska <ph name="DESTINATION_NAME" /> neodporúčajú}many{Pravidlá správcu presun týchto súborov do úložiska <ph name="DESTINATION_NAME" /> neodporúčajú}other{Pravidlá správcu presun týchto súborov do úložiska <ph name="DESTINATION_NAME" /> neodporúčajú}}</translation>
 <translation id="4304485328308299773">Prečítajte si hodnotenia zákazníkov týkajúce sa výrobkov, služieb alebo ich skúseností,. Na základe týchto recenzií sa potom budete môcť informovane rozhodovať.</translation>
 <translation id="4305666528087210886">Súbor sa nepodarilo otvoriť</translation>
+<translation id="4306349443295056740">Podpisovanie protokolom OCSP</translation>
 <translation id="4306529830550717874">Chcete adresu uložiť?</translation>
 <translation id="4306812610847412719">schránka</translation>
 <translation id="4308567447483056043">Toto pravidlo je ignorované, pretože používateľ nie je pridružený. Ak chcete, aby bolo toto pravidlo použité, prehliadač Chrome a profil musí spravovať v správcovskej konzole rovnaká organizácia.</translation>
@@ -2409,6 +2411,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4744603770635761495">Spustiteľná cesta</translation>
 <translation id="4744816391336495134">Pri použití uloženého hesla môžete overiť svoju totožnosť odtlačkom prsta</translation>
 <translation id="4749011317274908093">Ste v režime inkognito</translation>
+<translation id="4749924365937394956">Overenie servera</translation>
 <translation id="4750671009706599284">tohto telefónu</translation>
 <translation id="4750917950439032686">Vaše údaje, napríklad heslá alebo čísla kreditných kariet, sú pri odosielaní na tento web utajené.</translation>
 <translation id="4751249061288707459">Posledná aktualizácia súhlasu:</translation>
@@ -3125,6 +3128,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5860491529813859533">Zapnúť</translation>
 <translation id="5862579898803147654">Odkladač č. 8</translation>
 <translation id="5863515189965725638">Úprava čísla IBAN</translation>
+<translation id="5863517400058880216">Automaticky dopĺňať overovacie kódy z Gmailu</translation>
 <translation id="5863847714970149516">Stránka, na ktorú sa chystáte prejsť, vám môže účtovať poplatky</translation>
 <translation id="5866257070973731571">Pridanie telefónneho čísla</translation>
 <translation id="5866327164731551901">Z webu <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -3238,6 +3242,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6034000775414344507">Svetlosivá</translation>
 <translation id="6034514109191629503">Harmonikový záhyb</translation>
 <translation id="6035491133925068289">Ľahká atletika</translation>
+<translation id="6037458223703682108">Digitálny podpis</translation>
 <translation id="6039846035001940113">Ak problém naďalej pretrváva, kontaktujte vlastníka webu.</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6040539895181423374">Cenové štatistiky</translation>
@@ -3548,6 +3553,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6474220430271405609">Testy pravidiel</translation>
 <translation id="6476284679642588870">Spravovať spôsoby platby</translation>
 <translation id="647881094269678013">Herectvo a divadlo</translation>
+<translation id="6480363549849064919">Overenie klienta</translation>
 <translation id="6480864723214312258">Batérie do domácnosti</translation>
 <translation id="6487678699866233349">Svetová hudba</translation>
 <translation id="6489534406876378309">Spustiť nahrávanie správ o zlyhaní</translation>
@@ -4514,6 +4520,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7967973398323409409">Informácie, ktoré automaticky dopĺňate, sa nikomu nezobrazujú</translation>
 <translation id="79682505114836835">Hodnota <ph name="VALUE" /> nie je platný hex kód farby.</translation>
 <translation id="7968982339740310781">Zobraziť podrobnosti</translation>
+<translation id="7971403153351954587">Vaša organizácia monitoruje kopírovanie</translation>
 <translation id="7972714317346275248">Štandard PKCS #1 SHA-384 so šifrovaním RSA</translation>
 <translation id="7976053965094442846">Vydavatelia spôsobov platby Kúpte hneď, plaťte neskôr umožňujú platiť priebežne. Klávesnica je skrytá.</translation>
 <translation id="7976214039405368314">Príliš veľa žiadostí</translation>
