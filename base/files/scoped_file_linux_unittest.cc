@@ -19,7 +19,7 @@ class ScopedFDOwnershipTrackingTest : public testing::Test {
   ScopedFD OpenFD() {
     FilePath dont_care;
     return CreateAndOpenFdForTemporaryFileInDir(temp_dir_.GetPath(),
-                                                &dont_care);
+                                                /*name_prefix=*/{}, &dont_care);
   }
 
  private:

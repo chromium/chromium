@@ -807,8 +807,8 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
     return false;
 
   base::FilePath ppd_file_path;
-  base::ScopedFD ppd_fd =
-      base::CreateAndOpenFdForTemporaryFileInDir(temp_dir, &ppd_file_path);
+  base::ScopedFD ppd_fd = base::CreateAndOpenFdForTemporaryFileInDir(
+      temp_dir, /*name_prefix=*/{}, &ppd_file_path);
   if (!ppd_fd.is_valid())
     return false;
 

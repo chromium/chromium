@@ -267,8 +267,9 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(
   // as target file, so it can be moved in one step, and that the temp file
   // is securely created.
   FilePath tmp_file_path;
-  File tmp_file =
-      CreateAndOpenTemporaryFileInDir(path.DirName(), &tmp_file_path);
+  File tmp_file = CreateAndOpenTemporaryFileInDir(
+      path.DirName(), &tmp_file_path, /*additional_flags=*/0,
+      path.BaseName().value());
   if (!tmp_file.IsValid()) {
     DPLOG(WARNING) << "Failed to create temporary file to update " << path;
     return false;

@@ -19,6 +19,7 @@ TestFdFactory::~TestFdFactory() {
 base::ScopedFD TestFdFactory::CreateFd() {
   base::FilePath dont_care;
   return base::CreateAndOpenFdForTemporaryFileInDir(temp_dir_.GetPath(),
+                                                    /*name_prefix=*/{},
                                                     &dont_care);
 }
 

@@ -60,7 +60,7 @@ TEST(CopyFromFileDescriptorTest, Basic) {
 
   base::FilePath temp_file_path;
   base::ScopedFD scoped_fd = base::CreateAndOpenFdForTemporaryFileInDir(
-      temp_dir.GetPath(), &temp_file_path);
+      temp_dir.GetPath(), /*name_prefix=*/{}, &temp_file_path);
   ASSERT_TRUE(scoped_fd.is_valid());
   ASSERT_EQ(write(scoped_fd.get(), "abcdefghij", 10), 10);
   ASSERT_EQ(lseek(scoped_fd.get(), 3, SEEK_SET), 3);

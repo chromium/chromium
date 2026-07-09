@@ -69,6 +69,11 @@ int g_extra_allowed_path_for_no_execute = 0;
 constexpr DWORD kFileShareAll =
     FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
 constexpr std::wstring_view kDefaultTempDirPrefix = L"ChromiumTemp";
+constexpr FilePath::StringViewType kTemporaryFileSuffix =
+    FILE_PATH_LITERAL(".tmp");
+// Temporary file names end with a version 4 GUID in canonical string form:
+// xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
+constexpr size_t kGuidLength = 36u;
 
 // Result of ReplaceFile for logging histograms. These values are persisted to
 // logs. Entries should not be renumbered and numeric values should never be
@@ -816,9 +821,11 @@ FilePath GetHomeDir() {
   return FilePath(FILE_PATH_LITERAL("C:\\"));
 }
 
-File CreateAndOpenTemporaryFileInDirWithFlags(const FilePath& dir,
-                                              FilePath* temp_file,
-                                              uint32_t flags) {
+File CreateAndOpenTemporaryFileInDirWithFlags(
+    const FilePath& dir,
+    FilePath* temp_file,
+    uint32_t flags,
+    FilePath::StringViewType name_prefix) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
   flags |= File::FLAG_CREATE;
@@ -829,8 +836,11 @@ File CreateAndOpenTemporaryFileInDirWithFlags(const FilePath& dir,
   // Although it is nearly impossible to get a duplicate name with GUID, we
   // still use a loop here in case it happens.
   for (int i = 0; i < 100; ++i) {
-    temp_name = dir.Append(FormatTemporaryFileName(
-        UTF8ToWide(Uuid::GenerateRandomV4().AsLowercaseString()), true));
+    temp_name = dir.Append(FilePath(StrCat(
+        {name_prefix,
+         FormatTemporaryFileName(
+             ASCIIToWide(Uuid::GenerateRandomV4().AsLowercaseString()), true)
+             .value()})));
     file.Initialize(temp_name, flags);
     if (file.IsValid()) {
       break;
@@ -858,12 +868,48 @@ File CreateAndOpenTemporaryFileInDirWithFlags(const FilePath& dir,
 
 File CreateAndOpenTemporaryFileInDir(const FilePath& dir,
                                      FilePath* temp_file,
-                                     uint32_t additional_flags) {
+                                     uint32_t additional_flags,
+                                     FilePath::StringViewType name_prefix) {
   constexpr uint32_t default_flags =
       File::FLAG_READ | File::FLAG_WRITE | File::FLAG_WIN_EXCLUSIVE_READ |
       File::FLAG_WIN_EXCLUSIVE_WRITE | File::FLAG_CAN_DELETE_ON_CLOSE;
   return CreateAndOpenTemporaryFileInDirWithFlags(
-      dir, temp_file, default_flags | additional_flags);
+      dir, temp_file, default_flags | additional_flags, name_prefix);
+}
+
+// Windows temp files use one of these forms:
+//   <guid>.tmp
+//   <name_prefix><guid>.tmp
+// This method extracts `name_prefix` by stripping the fixed `.tmp` suffix and
+// then checking whether the remaining tail is a GUID.
+std::optional<FilePath::StringType> GetNamePrefixForTemporaryFile(
+    const FilePath& temp_file) {
+  const FilePath::StringType basename = temp_file.BaseName().value();
+
+  // The basename must end with the fixed `.tmp` suffix.
+  if (!EndsWith(basename, kTemporaryFileSuffix, CompareCase::SENSITIVE)) {
+    return std::nullopt;
+  }
+
+  // Remove the fixed `.tmp` extension first.
+  const FilePath::StringType stem =
+      basename.substr(0, basename.size() - kTemporaryFileSuffix.size());
+
+  // If it has a name prefix, the remaining stem must be longer than the GUID
+  // length.
+  if (stem.size() <= kGuidLength) {
+    return std::nullopt;
+  }
+
+  // The last 36 characters must be the GUID generated for the temporary file.
+  const std::wstring_view possible_guid =
+      std::wstring_view(stem).substr(stem.size() - kGuidLength, kGuidLength);
+  if (!Uuid::ParseCaseInsensitive(WideToUTF8(possible_guid)).is_valid()) {
+    return std::nullopt;
+  }
+
+  // Whatever remains before the GUID is the non-empty name prefix.
+  return stem.substr(0, stem.size() - kGuidLength);
 }
 
 bool CreateTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {

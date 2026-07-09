@@ -206,7 +206,8 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
   }
 
   FilePath path;
-  ScopedFD fd = CreateAndOpenFdForTemporaryFileInDir(directory, &path);
+  ScopedFD fd = CreateAndOpenFdForTemporaryFileInDir(directory,
+                                                     /*name_prefix=*/{}, &path);
   File shm_file(fd.release());
 
   if (!shm_file.IsValid()) {

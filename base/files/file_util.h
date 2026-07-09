@@ -301,8 +301,11 @@ BASE_EXPORT bool ReadFromFD(int fd, span<char> buffer);
 // wrapped in a ScopedFILE.
 // The caller is responsible for deleting the file `path` points to, if
 // appropriate.
-BASE_EXPORT ScopedFD CreateAndOpenFdForTemporaryFileInDir(const FilePath& dir,
-                                                          FilePath* path);
+// `name_prefix`: refer to `CreateAndOpenTemporaryFileInDir` for details.
+BASE_EXPORT ScopedFD
+CreateAndOpenFdForTemporaryFileInDir(const FilePath& dir,
+                                     FilePath::StringViewType name_prefix,
+                                     FilePath* path);
 
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
@@ -410,9 +413,16 @@ BASE_EXPORT FilePath GetHomeDir();
 //
 // On Windows, `additional_flags` will be combined with the default flags when
 // opening the file.
-BASE_EXPORT File CreateAndOpenTemporaryFileInDir(const FilePath& dir,
-                                                 FilePath* temp_file,
-                                                 uint32_t additional_flags = 0);
+//
+// `name_prefix`, when non-empty, is incorporated into the generated temporary
+// file name. On Windows it is prepended directly to the generated file name; on
+// POSIX it is appended after the platform-specific fixed prefix used by
+// FormatTemporaryFileName().
+BASE_EXPORT File
+CreateAndOpenTemporaryFileInDir(const FilePath& dir,
+                                FilePath* temp_file,
+                                uint32_t additional_flags = 0,
+                                FilePath::StringViewType name_prefix = {});
 
 #if BUILDFLAG(IS_WIN)
 // Similar to `CreateAndOpenTemporaryFileInDir`, but allows the caller to
@@ -422,10 +432,19 @@ BASE_EXPORT File CreateAndOpenTemporaryFileInDir(const FilePath& dir,
 // creation (i.e. it will fail if the file already exists).
 // These custom |flags| completely replace the default flags used by
 // `CreateAndOpenTemporaryFileInDir`.
-BASE_EXPORT File CreateAndOpenTemporaryFileInDirWithFlags(const FilePath& dir,
-                                                          FilePath* temp_file,
-                                                          uint32_t flags);
+// `name_prefix`: refer to `CreateAndOpenTemporaryFileInDir` for details.
+BASE_EXPORT File CreateAndOpenTemporaryFileInDirWithFlags(
+    const FilePath& dir,
+    FilePath* temp_file,
+    uint32_t flags,
+    FilePath::StringViewType name_prefix = {});
 #endif
+
+// Returns the non-empty name prefix that can be inferred from `temp_file`
+// if the file is generated using CreateAndOpenTemporaryFileInDir(). Returns
+// nullopt for files with an empty prefix.
+BASE_EXPORT std::optional<FilePath::StringType> GetNamePrefixForTemporaryFile(
+    const FilePath& temp_file);
 
 // Creates a temporary file. The full path is placed in `path`, and the
 // function returns true if was successful in creating the file. The file will

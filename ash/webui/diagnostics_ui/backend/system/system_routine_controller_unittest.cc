@@ -311,8 +311,8 @@ class SystemRoutineControllerTest : public AshTestBase {
     DCHECK(temp_success);
 
     base::FilePath path;
-    base::ScopedFD fd =
-        base::CreateAndOpenFdForTemporaryFileInDir(temp_dir_.GetPath(), &path);
+    base::ScopedFD fd = base::CreateAndOpenFdForTemporaryFileInDir(
+        temp_dir_.GetPath(), /*name_prefix=*/{}, &path);
     DCHECK(fd.is_valid());
     const bool write_success = base::WriteFileDescriptor(fd.get(), contents);
     DCHECK(write_success);

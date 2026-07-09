@@ -152,8 +152,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   test_api.SyncDisplay();
 
   base::FilePath temp_dir, temp_path;
-  base::ScopedFD fd =
-      base::CreateAndOpenFdForTemporaryFileInDir(temp_dir, &temp_path);
+  base::ScopedFD fd = base::CreateAndOpenFdForTemporaryFileInDir(
+      temp_dir, /*name_prefix=*/{}, &temp_path);
   EXPECT_TRUE(fd.is_valid());
 
   // 10K screens are reality these days.

@@ -84,6 +84,10 @@ extern "C" char* mkdtemp(char* path);
 namespace base {
 namespace {
 
+// mkstemp() requires a template ending in exactly six trailing 'X' characters,
+// which it replaces in place with a unique suffix.
+constexpr size_t kMkstempSuffixLength = 6u;
+
 #if BUILDFLAG(IS_MAC)
 // Helper for VerifyPathControlledByUser.
 bool VerifySpecificPathControlledByUser(const FilePath& path,
@@ -671,12 +675,14 @@ bool ReadFromFD(int fd, span<char> buffer) {
   return true;
 }
 
-ScopedFD CreateAndOpenFdForTemporaryFileInDir(const FilePath& directory,
-                                              FilePath* path) {
+ScopedFD CreateAndOpenFdForTemporaryFileInDir(
+    const FilePath& directory,
+    FilePath::StringViewType name_prefix,
+    FilePath* path) {
   ScopedBlockingCall scoped_blocking_call(
       FROM_HERE,
       BlockingType::MAY_BLOCK);  // For call to mkstemp().
-  *path = directory.Append(GetTempTemplate("", true));
+  *path = directory.Append(GetTempTemplate(name_prefix, true));
   const std::string& tmpdir_string = path->value();
   // this should be OK since mkstemp just replaces characters in place
   char* buffer = const_cast<char*>(tmpdir_string.c_str());
@@ -853,17 +859,57 @@ FilePath GetHomeDir() {
 
 File CreateAndOpenTemporaryFileInDir(const FilePath& dir,
                                      FilePath* temp_file,
-                                     uint32_t /*additional_flags*/) {
+                                     uint32_t /*additional_flags*/,
+                                     FilePath::StringViewType name_prefix) {
   // For call to close() inside ScopedFD.
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  ScopedFD fd = CreateAndOpenFdForTemporaryFileInDir(dir, temp_file);
+  ScopedFD fd =
+      CreateAndOpenFdForTemporaryFileInDir(dir, name_prefix, temp_file);
   return fd.is_valid() ? File(std::move(fd)) : File(File::GetLastFileError());
+}
+
+// POSIX temp files created use one of these forms:
+//   .<platform_prefix>.<random6>
+//   .<platform_prefix>.<name_prefix>.<random6>
+// where `<random6>` is the mkstemp() suffix.
+// This method extracts `name_prefix` by stripping the fixed platform-specific
+// prefix and then the final `.<random6>` segment.
+std::optional<FilePath::StringType> GetNamePrefixForTemporaryFile(
+    const FilePath& temp_file) {
+  const FilePath::StringType basename = temp_file.BaseName().value();
+  const FilePath::StringType platform_prefix =
+      FormatTemporaryFileName({}, true).value();
+  // The basename must start with the fixed `.<platform_prefix>.` prefix.
+  if (!StartsWith(basename, platform_prefix, CompareCase::SENSITIVE)) {
+    return std::nullopt;
+  }
+
+  // Remove the fixed `.<platform_prefix>.` prefix first.
+  const FilePath::StringType remainder =
+      basename.substr(platform_prefix.size());
+  if (remainder.size() <= kMkstempSuffixLength) {
+    return std::nullopt;
+  }
+
+  // The remaining name must end in `.<random6>`, so the separator before the
+  // mkstemp() suffix must be present here.
+  const size_t separator_index = remainder.size() - kMkstempSuffixLength - 1;
+  if (remainder[separator_index] != '.') {
+    return std::nullopt;
+  }
+
+  const FilePath::StringType prefix = remainder.substr(0, separator_index);
+  if (prefix.empty()) {
+    return std::nullopt;
+  }
+  return prefix;
 }
 
 bool CreateTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
   // For call to close() inside ScopedFD.
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  ScopedFD fd = CreateAndOpenFdForTemporaryFileInDir(dir, temp_file);
+  ScopedFD fd =
+      CreateAndOpenFdForTemporaryFileInDir(dir, /*name_prefix=*/{}, temp_file);
   return fd.is_valid();
 }
 
@@ -881,7 +927,8 @@ FilePath FormatTemporaryFileName(FilePath::StringViewType identifier,
 
 ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
                                              FilePath* path) {
-  ScopedFD scoped_fd = CreateAndOpenFdForTemporaryFileInDir(dir, path);
+  ScopedFD scoped_fd =
+      CreateAndOpenFdForTemporaryFileInDir(dir, /*name_prefix=*/{}, path);
   if (!scoped_fd.is_valid()) {
     return nullptr;
   }
@@ -1570,7 +1617,8 @@ BASE_EXPORT bool IsPathExecutable(const FilePath& path) {
   bool result = false;
   FilePath tmp_file_path;
 
-  ScopedFD fd = CreateAndOpenFdForTemporaryFileInDir(path, &tmp_file_path);
+  ScopedFD fd = CreateAndOpenFdForTemporaryFileInDir(path, /*name_prefix=*/{},
+                                                     &tmp_file_path);
   if (fd.is_valid()) {
     DeleteFile(tmp_file_path);
     long sysconf_result = sysconf(_SC_PAGESIZE);
