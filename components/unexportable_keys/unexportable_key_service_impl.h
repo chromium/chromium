@@ -9,6 +9,7 @@
 #include <concepts>
 #include <functional>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -170,13 +171,30 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   using SpareAttestationKeyPool =
       SpareKeyPool<RefCountedUnexportableAttestationKey>;
 
-  // Returns a pointer to the unexportable key with the given ID, or an error
-  // if it is not found. The returned pointer is guaranteed to be non-null on
-  // success. The returned pointer is only valid for as long as the key is
-  // present in the service (i.e., not deleted and not garbage collected).
-  ServiceErrorOr<const crypto::UnexportableSigningKey*> GetKey(
-      UnexportableSigningKeyId key_id) const;
-  ServiceErrorOr<const crypto::StatefulKey*> GetStatefulKey(
+  // Identifies which internal repository or map holds the unexportable key.
+  enum class KeyMap {
+    // Look up key in `signing_keys_`.
+    kSigning = 0,
+    // Look up key in `attestation_keys_`.
+    kAttestation = 1,
+    // Look up key in `all_gc_keys_by_key_id_`.
+    kGarbageCollection = 2,
+  };
+
+  using KeyMapSet =
+      base::EnumSet<KeyMap, KeyMap::kSigning, KeyMap::kGarbageCollection>;
+
+  // Convenient set to search all non-GC keys.
+  static constexpr KeyMapSet kSigningAndAttestationKeyMaps = {
+      KeyMap::kSigning,
+      KeyMap::kAttestation,
+  };
+
+  // Returns the ref-counted key wrapper corresponding to `key_id`. Performs
+  // lookup in the key maps specified in `key_map_set`. Returns nullptr if the
+  // key is not found in any set.
+  RefCountedUnexportableSigningKey* GetKey(
+      KeyMapSet key_map_set,
       UnexportableSigningKeyId key_id) const;
 
   // Removes the key with `key_id` from the in-memory maps.

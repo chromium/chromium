@@ -108,6 +108,30 @@ WrappedKeyAndTag Materialize(WrappedKeyAndTagView view) {
   return {base::ToVector(wrapped_key), std::string(tag)};
 }
 
+// Convenience method to get the raw key from the reference counted wrapper or
+// an error if null.
+ServiceErrorOr<const crypto::UnexportableSigningKey*> AsRawKey(
+    const RefCountedUnexportableSigningKey* key) {
+  if (const crypto::UnexportableSigningKey* raw_key =
+          key ? &key->key() : nullptr) {
+    return raw_key;
+  }
+
+  return base::unexpected(ServiceError::kKeyNotFound);
+}
+
+// Convenience method to get the stateful key from the reference counted wrapper
+// or an error if null.
+ServiceErrorOr<const crypto::StatefulKey*> AsStatefulKey(
+    const RefCountedUnexportableSigningKey* key) {
+  if (const crypto::StatefulKey* stateful_key =
+          key ? key->key().AsStatefulKey() : nullptr) {
+    return stateful_key;
+  }
+
+  return base::unexpected(ServiceError::kOperationNotSupported);
+}
+
 // Returns the application tag from the config on Mac if the provider supports
 // stateful unexportable keys. Otherwise, returns an empty string.
 std::string_view GetApplicationTag(
@@ -795,7 +819,7 @@ void UnexportableKeyServiceImpl::SignSlowlyAsync(
     base::span<const uint8_t> data,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback) {
-  if (auto* key = signing_keys_->GetKey(key_id)) {
+  if (auto* key = GetKey(kSigningAndAttestationKeyMaps, key_id)) {
     task_manager_->SignSlowlyAsync(
         task_origin_, base::WrapRefCounted(key), data, priority,
         WrapCallbackWithErrorIfCancelled(std::move(callback)));
@@ -818,7 +842,7 @@ void UnexportableKeyServiceImpl::CertifySlowlyAsync(
     return;
   }
 
-  auto* signing_key = signing_keys_->GetKey(signing_key_id);
+  auto* signing_key = GetKey(kSigningAndAttestationKeyMaps, signing_key_id);
   if (!signing_key) {
     std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
     return;
@@ -874,60 +898,64 @@ void UnexportableKeyServiceImpl::DeleteAllKeysSlowlyAsync(
 ServiceErrorOr<std::vector<uint8_t>>
 UnexportableKeyServiceImpl::GetSubjectPublicKeyInfo(
     UnexportableSigningKeyId key_id) const {
-  ASSIGN_OR_RETURN(const crypto::UnexportableSigningKey* key, GetKey(key_id));
+  ASSIGN_OR_RETURN(const crypto::UnexportableSigningKey* key,
+                   AsRawKey(GetKey(KeyMapSet::All(), key_id)));
   return key->GetSubjectPublicKeyInfo();
 }
 
 ServiceErrorOr<std::vector<uint8_t>> UnexportableKeyServiceImpl::GetWrappedKey(
     UnexportableSigningKeyId key_id) const {
-  ASSIGN_OR_RETURN(const crypto::UnexportableSigningKey* key, GetKey(key_id));
+  ASSIGN_OR_RETURN(const crypto::UnexportableSigningKey* key,
+                   AsRawKey(GetKey(KeyMapSet::All(), key_id)));
   return key->GetWrappedKey();
 }
 
 ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm>
 UnexportableKeyServiceImpl::GetAlgorithm(
     UnexportableSigningKeyId key_id) const {
-  ASSIGN_OR_RETURN(const crypto::UnexportableSigningKey* key, GetKey(key_id));
+  ASSIGN_OR_RETURN(const crypto::UnexportableSigningKey* key,
+                   AsRawKey(GetKey(KeyMapSet::All(), key_id)));
   return key->Algorithm();
 }
 
 ServiceErrorOr<std::string> UnexportableKeyServiceImpl::GetKeyTag(
     UnexportableSigningKeyId key_id) const {
   ASSIGN_OR_RETURN(const crypto::StatefulKey* stateful_key,
-                   GetStatefulKey(key_id));
+                   AsStatefulKey(GetKey(KeyMapSet::All(), key_id)));
   return stateful_key->GetKeyTag();
 }
 
 ServiceErrorOr<base::Time> UnexportableKeyServiceImpl::GetCreationTime(
     UnexportableSigningKeyId key_id) const {
   ASSIGN_OR_RETURN(const crypto::StatefulKey* stateful_key,
-                   GetStatefulKey(key_id));
+                   AsStatefulKey(GetKey(KeyMapSet::All(), key_id)));
   return stateful_key->GetCreationTime();
 }
 
-ServiceErrorOr<const crypto::UnexportableSigningKey*>
-UnexportableKeyServiceImpl::GetKey(UnexportableSigningKeyId key_id) const {
-  if (auto* key = signing_keys_->GetKey(key_id)) {
-    return &key->key();
-  }
-  if (auto* key =
-          attestation_keys_->GetKey(UnexportableAttestationKeyId(key_id))) {
-    return &key->key();
-  }
-  if (const auto* key = base::FindOrNull(all_gc_keys_by_key_id_, key_id)) {
-    return &(*key)->key();
-  }
-  return base::unexpected(ServiceError::kKeyNotFound);
-}
-
-ServiceErrorOr<const crypto::StatefulKey*>
-UnexportableKeyServiceImpl::GetStatefulKey(
+RefCountedUnexportableSigningKey* UnexportableKeyServiceImpl::GetKey(
+    KeyMapSet key_map_set,
     UnexportableSigningKeyId key_id) const {
-  ASSIGN_OR_RETURN(const crypto::UnexportableSigningKey* key, GetKey(key_id));
-  if (const crypto::StatefulKey* stateful_key = key->AsStatefulKey()) {
-    return stateful_key;
+  for (KeyMap map_type : key_map_set) {
+    switch (map_type) {
+      case KeyMap::kSigning:
+        if (auto* key = signing_keys_->GetKey(key_id)) {
+          return key;
+        }
+        break;
+      case KeyMap::kAttestation:
+        if (auto* key = attestation_keys_->GetKey(
+                UnexportableAttestationKeyId(key_id))) {
+          return key;
+        }
+        break;
+      case KeyMap::kGarbageCollection:
+        if (auto* key = base::FindOrNull(all_gc_keys_by_key_id_, key_id)) {
+          return key->get();
+        }
+        break;
+    }
   }
-  return base::unexpected(ServiceError::kOperationNotSupported);
+  return nullptr;
 }
 
 ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>

@@ -751,6 +751,22 @@ TEST_F(UnexportableKeyServiceImplTest, Sign) {
   EXPECT_OK(sign_future.Get());
 }
 
+TEST_F(UnexportableKeyServiceImplTest, SignSlowlyAsyncWithAttestationKey) {
+  base::test::TestFuture<ServiceErrorOr<UnexportableAttestationKeyId>>
+      generate_future;
+  service().GenerateAttestationKeySlowlyAsync(
+      kAcceptableAlgorithms, kTaskPriority, generate_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_OK_AND_ASSIGN(UnexportableAttestationKeyId key_id,
+                       generate_future.Get());
+
+  base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
+  service().SignSlowlyAsync(key_id, {1, 2, 3, 4}, kTaskPriority,
+                            sign_future.GetCallback());
+  RunBackgroundTasks();
+  EXPECT_OK(sign_future.Get());
+}
+
 TEST_F(UnexportableKeyServiceImplTest,
        SignSlowlyAsyncCallbackIsCancelledOnServiceDestruction) {
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
@@ -1011,6 +1027,41 @@ TEST_F(UnexportableKeyServiceImplTest, CertifyTypeMismatch) {
                                certify_future.GetCallback());
   EXPECT_TRUE(certify_future.IsReady());
   EXPECT_THAT(certify_future.Get(), ErrorIs(ServiceError::kKeyNotFound));
+}
+
+TEST_F(UnexportableKeyServiceImplTest, CertifyAttestationKey) {
+  // 1. Generate two attestation keys.
+  base::test::TestFuture<ServiceErrorOr<UnexportableAttestationKeyId>>
+      generate_attestation1_future;
+  service().GenerateAttestationKeySlowlyAsync(
+      kAcceptableAlgorithms, kTaskPriority,
+      generate_attestation1_future.GetCallback());
+  base::test::TestFuture<ServiceErrorOr<UnexportableAttestationKeyId>>
+      generate_attestation2_future;
+  service().GenerateAttestationKeySlowlyAsync(
+      kAcceptableAlgorithms, kTaskPriority,
+      generate_attestation2_future.GetCallback());
+
+  RunBackgroundTasks();
+  ASSERT_OK_AND_ASSIGN(UnexportableAttestationKeyId attestation_key_id1,
+                       generate_attestation1_future.Get());
+  ASSERT_OK_AND_ASSIGN(UnexportableAttestationKeyId attestation_key_id2,
+                       generate_attestation2_future.Get());
+
+  // 2. Certify one attestation key with the other.
+  base::test::TestFuture<ServiceErrorOr<crypto::AttestationStatement>>
+      certify_future;
+  service().CertifySlowlyAsync(attestation_key_id1, attestation_key_id2,
+                               {7, 8, 9}, kTaskPriority,
+                               certify_future.GetCallback());
+  EXPECT_FALSE(certify_future.IsReady());
+  RunBackgroundTasks();
+  EXPECT_TRUE(certify_future.IsReady());
+  ASSERT_OK_AND_ASSIGN(crypto::AttestationStatement result,
+                       certify_future.Get());
+  EXPECT_EQ(result.format, crypto::AttestationStatement::kTpm);
+  EXPECT_FALSE(result.statement.empty());
+  EXPECT_FALSE(result.signature.empty());
 }
 
 TEST_F(UnexportableKeyServiceImplTest, CertifyFailed) {
