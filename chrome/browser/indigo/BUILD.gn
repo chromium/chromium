@@ -210,3 +210,31 @@ source_set("browser_tests") {
     "//ui/display",
   ]
 }
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "indigo_interactive_uitest.cc" ]
+  deps = [
+    ":impl",
+    ":indigo",
+    ":test_support",
+    "//base",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/signin:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/views/indigo",
+    "//chrome/browser/ui/views/page_action",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
