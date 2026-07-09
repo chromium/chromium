@@ -198,6 +198,32 @@ void UnsetFullscreenFlag(const Element& element) {
   FullscreenParamsMap().erase(&element);
 }
 
+// https://fullscreen.spec.whatwg.org/#iframe-fullscreen-flag
+// All iframe elements have an associated iframe fullscreen flag. Unless stated
+// otherwise it is unset. Stored separately from FullscreenParamsMap since only
+// iframe elements can have this flag, and it must be cleared independently.
+using IframeFullscreenFlagSet =
+    HeapHashSet<WeakMember<const HTMLIFrameElement>>;
+
+IframeFullscreenFlagSet& IframeFullscreenFlagElements() {
+  using Holder = DisallowNewWrapper<IframeFullscreenFlagSet>;
+  DEFINE_STATIC_LOCAL(Persistent<Holder>, holder,
+                      (MakeGarbageCollected<Holder>()));
+  return holder->Value();
+}
+
+bool HasIframeFullscreenFlag(const HTMLIFrameElement& element) {
+  return IframeFullscreenFlagElements().Contains(&element);
+}
+
+void SetIframeFullscreenFlag(const HTMLIFrameElement& element) {
+  IframeFullscreenFlagElements().insert(&element);
+}
+
+void UnsetIframeFullscreenFlag(const HTMLIFrameElement& element) {
+  IframeFullscreenFlagElements().erase(&element);
+}
+
 FullscreenRequestType GetRequestType(const Element& element) {
   return FullscreenParamsMap().find(&element)->value->request_type();
 }
@@ -252,6 +278,9 @@ void Unfullscreen(Element& element) {
   DCHECK(element.IsInTopLayer());
   DCHECK(HasFullscreenFlag(element));
   UnsetFullscreenFlag(element);
+  if (auto* iframe = DynamicTo<HTMLIFrameElement>(element)) {
+    UnsetIframeFullscreenFlag(*iframe);
+  }
   document.ScheduleForTopLayerRemoval(&element,
                                       Document::TopLayerReason::kFullscreen);
 
@@ -455,21 +484,34 @@ HeapVector<Member<Document>> CollectDocumentsToUnfullscreen(Document& doc) {
 
     // 2.4. Let |container| be |lastDoc|'s browsing context container, if any,
     // and otherwise break.
-    //
-    // OOPIF: Skip over remote frames, assuming that they have exactly one
-    // element in their fullscreen element stacks, thereby erring on the side of
-    // exiting fullscreen. TODO(alexmos): Deal with nested fullscreen cases, see
-    // https://crbug.com/617369.
-    lastDoc = NextLocalAncestor(*lastDoc);
-    if (!lastDoc)
+    Frame* frame = lastDoc->GetFrame();
+    if (!frame) {
       break;
+    }
+    Element* container = DynamicTo<HTMLFrameOwnerElement>(frame->Owner());
+    if (!container) {
+      lastDoc = NextLocalAncestor(*lastDoc);
+      // OOPIF: Skip over remote frames, assuming that they have exactly one
+      // element in their fullscreen element stacks, thereby erring on the side
+      // of exiting fullscreen.
+      if (!lastDoc) {
+        break;
+      }
+      docs.push_back(lastDoc);
+      continue;
+    }
 
     // 2.5. If |container|'s iframe fullscreen flag is set, break.
-    // TODO(foolip): Support the iframe fullscreen flag.
-    // https://crbug.com/644695
+    if (auto* iframe = DynamicTo<HTMLIFrameElement>(container)) {
+      if (HasIframeFullscreenFlag(*iframe)) {
+        break;
+      }
+    }
 
     // 2.6. Append |container|'s node document to |docs|.
-    docs.push_back(lastDoc);
+    Document& parentDoc = container->GetDocument();
+    docs.push_back(&parentDoc);
+    lastDoc = &parentDoc;
   }
 
   // 3. Return |docs|.
@@ -975,8 +1017,11 @@ void Fullscreen::ContinueRequestFullscreen(
 
     // 13.3. If |element| is |pending| and |pending| is an iframe element, set
     // |element|'s iframe fullscreen flag.
-    // TODO(foolip): Support the iframe fullscreen flag.
-    // https://crbug.com/644695
+    if (element == &pending) {
+      if (auto* iframe = DynamicTo<HTMLIFrameElement>(pending)) {
+        SetIframeFullscreenFlag(*iframe);
+      }
+    }
 
     // 13.4. Fullscreen |element| within |doc|.
     GoFullscreen(*element, request_type, options);
