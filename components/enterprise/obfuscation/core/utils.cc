@@ -235,7 +235,7 @@ base::expected<void, Error> DeobfuscateFileInPlace(
                                base::File::FLAG_OPEN | base::File::FLAG_APPEND);
 
   // Get header data
-  if (static_cast<size_t>(file.GetLength()) < kHeaderSize) {
+  if (file.GetLength() < static_cast<int64_t>(kHeaderSize)) {
     return RecordAndReturn<void>(base::unexpected(Error::kDeobfuscationFailed));
   }
   std::vector<uint8_t> header(kHeaderSize);
@@ -254,13 +254,12 @@ base::expected<void, Error> DeobfuscateFileInPlace(
     return RecordAndReturn<void>(base::unexpected(Error::kSchemeError));
   }
   uint32_t counter = 0;
-  size_t total_bytes_read = header_read.value();
+  int64_t total_bytes_read = header_read.value();
 
-  int64_t file_length = file.GetLength();
-  if (file_length < 0) {
+  int64_t file_size = file.GetLength();
+  if (file_size < 0) {
     return RecordAndReturn<void>(base::unexpected(Error::kFileOperationError));
   }
-  const size_t file_size = static_cast<size_t>(file_length);
 
   // Deobfuscate to temporary file.
   while (total_bytes_read < file_size) {
@@ -301,7 +300,10 @@ base::expected<void, Error> DeobfuscateFileInPlace(
       return RecordAndReturn<void>(
           base::unexpected(Error::kDeobfuscationFailed));
     }
-    deobfuscated_file.WriteAtCurrentPos(plaintext.value());
+    if (!deobfuscated_file.WriteAtCurrentPosAndCheck(plaintext.value())) {
+      return RecordAndReturn<void>(
+          base::unexpected(Error::kFileOperationError));
+    }
   }
   file.Close();
   deobfuscated_file.Close();

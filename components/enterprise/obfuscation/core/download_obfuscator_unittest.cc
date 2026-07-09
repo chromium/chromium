@@ -241,4 +241,13 @@ TEST_F(DownloadObfuscatorEnabledTest, PartialDeobfuscation) {
   EXPECT_EQ(deobfuscated_chunk.value(), std::vector<uint8_t>());
 }
 
+TEST_F(DownloadObfuscatorEnabledTest,
+       CalculateDeobfuscationOverheadInvalidFile) {
+  DownloadObfuscator obfuscator;
+  base::File invalid_file;
+  auto result = obfuscator.CalculateDeobfuscationOverhead(invalid_file);
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), Error::kFileOperationError);
+}
+
 }  // namespace enterprise_obfuscation

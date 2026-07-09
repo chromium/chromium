@@ -2670,6 +2670,48 @@ TEST_F(ChromeDownloadManagerDelegateTest, DeobfuscationBeforeCompletion) {
             std::vector<uint8_t>(deobfuscated_content.begin(),
                                  deobfuscated_content.end()));
 }
+
+TEST_F(ChromeDownloadManagerDelegateTest,
+       DeobfuscationBeforeCompletion_Failure) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Setup file with invalid dummy data so deobfuscation fails.
+  std::vector<uint8_t> original_contents(5000, 'a');
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("obfuscated");
+  ASSERT_TRUE(base::WriteFile(file_path, original_contents));
+
+  // Create a validated dangerous download item.
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      CreateActiveDownloadItem(0);
+  EXPECT_CALL(*download_item, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED));
+  EXPECT_CALL(*download_item, GetFullPath())
+      .WillRepeatedly(ReturnRef(file_path));
+  // Set up obfuscation data as user validation should happen after this is set.
+  auto obfuscation_data =
+      std::make_unique<enterprise_obfuscation::DownloadObfuscationData>(true);
+  download_item->SetUserData(
+      enterprise_obfuscation::DownloadObfuscationData::kUserDataKey,
+      std::move(obfuscation_data));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*download_item, Cancel(false)).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
+
+  EXPECT_FALSE(delegate()->ShouldCompleteDownload(download_item.get(),
+                                                  run_loop.QuitClosure()));
+  run_loop.Run();
+
+  // Verify obfuscation flag was cleared.
+  auto* final_data =
+      static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
+          download_item->GetUserData(
+              enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
+  ASSERT_TRUE(final_data);
+  EXPECT_FALSE(final_data->is_obfuscated);
+}
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_ANDROID)

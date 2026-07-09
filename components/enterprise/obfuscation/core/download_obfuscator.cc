@@ -13,14 +13,14 @@ namespace {
 // source.
 template <typename ReadFunc>
 base::expected<int64_t, Error> CalculateDeobfuscationOverheadImpl(
-    size_t total_size,
+    int64_t total_size,
     ReadFunc read_func) {
-  if (total_size < kHeaderSize + kChunkSizePrefixSize) {
+  if (total_size < static_cast<int64_t>(kHeaderSize + kChunkSizePrefixSize)) {
     return RecordAndReturn<int64_t>(
         base::unexpected(Error::kDeobfuscationFailed));
   }
-  size_t offset = kHeaderSize;
-  int num_chunks = 0;
+  int64_t offset = kHeaderSize;
+  int64_t num_chunks = 0;
   while (offset < total_size) {
     // Read the chunk size prefix.
     auto size_data_result = read_func(offset, kChunkSizePrefixSize);
@@ -163,26 +163,35 @@ base::expected<int64_t, Error>
 DownloadObfuscator::CalculateDeobfuscationOverhead(
     base::span<const uint8_t> data) {
   return CalculateDeobfuscationOverheadImpl(
-      data.size(),
-      [&data](size_t offset,
+      static_cast<int64_t>(data.size()),
+      [&data](int64_t offset,
               size_t size) -> base::expected<base::span<const uint8_t>, Error> {
-        if (offset + size > data.size()) {
+        size_t u_offset = base::checked_cast<size_t>(offset);
+        if (u_offset + size > data.size()) {
           return RecordAndReturn<base::span<const uint8_t>>(
               base::unexpected(Error::kDeobfuscationFailed));
         }
-        return data.subspan(offset, size);
+        return data.subspan(u_offset, size);
       });
 }
 
 base::expected<int64_t, Error>
 DownloadObfuscator::CalculateDeobfuscationOverhead(base::File& file) {
-  size_t file_size = file.GetLength();
+  if (!file.IsValid()) {
+    return RecordAndReturn<int64_t>(
+        base::unexpected(Error::kFileOperationError));
+  }
+  int64_t file_size = file.GetLength();
+  if (file_size < 0) {
+    return RecordAndReturn<int64_t>(
+        base::unexpected(Error::kFileOperationError));
+  }
   std::array<char, kChunkSizePrefixSize> size_buffer;
   return CalculateDeobfuscationOverheadImpl(
       file_size,
-      [&file, &size_buffer](size_t offset, size_t size)
+      [&file, &size_buffer](int64_t offset, size_t size)
           -> base::expected<base::span<const uint8_t>, Error> {
-        if (!file.Seek(base::File::FROM_BEGIN, offset)) {
+        if (file.Seek(base::File::FROM_BEGIN, offset) != offset) {
           return RecordAndReturn<base::span<const uint8_t>>(
               base::unexpected(Error::kDeobfuscationFailed));
         }

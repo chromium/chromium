@@ -919,19 +919,17 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
                 enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
 
     if (obfuscation_data && obfuscation_data->is_obfuscated) {
+      // Ensure that deobfuscation is run only once.
+      obfuscation_data->is_obfuscated = false;
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
           base::BindOnce(&enterprise_obfuscation::DeobfuscateFileInPlace,
                          item->GetFullPath()),
           base::BindOnce(
               &ChromeDownloadManagerDelegate::OnDeobfuscationComplete,
-              weak_ptr_factory_.GetWeakPtr(),
+              weak_ptr_factory_.GetWeakPtr(), item->GetId(),
               std::move(internal_complete_callback)));
 
-      // Ensure that deobfuscation is ran only once.
-      // TODO(crbug.com/367259664): Move to `OnDeobfuscationComplete` after
-      // adding better error handling.
-      obfuscation_data->is_obfuscated = false;
       return false;
     }
   }
@@ -1028,11 +1026,19 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 void ChromeDownloadManagerDelegate::OnDeobfuscationComplete(
+    uint32_t download_id,
     base::OnceClosure callback,
     base::expected<void, enterprise_obfuscation::Error> deobfuscation_result) {
+  download::DownloadItem* item =
+      download_manager_ ? download_manager_->GetDownload(download_id) : nullptr;
+  if (!item) {
+    return;
+  }
+
   if (!deobfuscation_result.has_value()) {
-    // TODO(crbug.com/367259664): Add better error handling for deobfuscation.
     DVLOG(1) << "Failed to deobfuscate download file.";
+    item->Cancel(/*user_cancel=*/false);
+    return;
   }
 
   if (callback) {

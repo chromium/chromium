@@ -329,6 +329,7 @@ class ChromeDownloadManagerDelegate
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   // Called when obfuscated download files are deobfuscated.
   void OnDeobfuscationComplete(
+      uint32_t download_id,
       base::OnceClosure callback,
       base::expected<void, enterprise_obfuscation::Error> deobfuscation_result);
 #endif
