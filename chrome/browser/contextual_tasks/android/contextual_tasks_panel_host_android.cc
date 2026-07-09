@@ -30,7 +30,11 @@ ContextualTasksPanelHostAndroid::ContextualTasksPanelHostAndroid(
 }
 
 ContextualTasksPanelHostAndroid::~ContextualTasksPanelHostAndroid() {
-  SetWebContents(nullptr);
+  if (web_contents_) {
+    webui::SetBrowserWindowInterface(web_contents_, nullptr);
+    web_contents_->SetDelegate(nullptr);
+    web_contents_ = nullptr;
+  }
 }
 
 void ContextualTasksPanelHostAndroid::AddObserver(

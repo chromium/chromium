@@ -250,6 +250,15 @@ class ContextualTasksSidePanelCoordinator
   // Browser window of the current panel.
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
 
+  // WebContents cache for each task.
+  // Must be declared before contextual_tasks_panel_host_ so that in automated
+  // C++ reverse destruction order, the panel host is destroyed before cached
+  // WebContents objects are deleted.
+  // It's okay to assume there is only 1 WebContents per task per window.
+  // Different windows do not share the WebContents with the same task.
+  std::map<base::Uuid, std::unique_ptr<WebContentsCacheItem>>
+      task_id_to_web_contents_cache_;
+
   // Interface to interact with/get state about the panel UI. Own the unique_ptr
   // so that its lifetime is tied to `this`.
   const std::unique_ptr<ContextualTasksPanelHost> contextual_tasks_panel_host_;
@@ -264,12 +273,6 @@ class ContextualTasksSidePanelCoordinator
   const raw_ptr<PrefService> pref_service_;
 
   const raw_ptr<ActiveTaskContextProvider> active_task_context_provider_;
-
-  // WebContents cache for each task.
-  // It's okay to assume there is only 1 WebContents per task per window.
-  // Different windows do not share the WebContents with the same task.
-  std::map<base::Uuid, std::unique_ptr<WebContentsCacheItem>>
-      task_id_to_web_contents_cache_;
 
   base::CallbackListSubscription eligibility_change_subscription_;
 

@@ -44,7 +44,10 @@ ContextualTasksPanelHostDesktopAndroid::ContextualTasksPanelHostDesktopAndroid(
 
 ContextualTasksPanelHostDesktopAndroid::
     ~ContextualTasksPanelHostDesktopAndroid() {
-  SetWebContents(nullptr);
+  if (web_contents_) {
+    web_contents_->SetDelegate(nullptr);
+    web_contents_ = nullptr;
+  }
 }
 
 void ContextualTasksPanelHostDesktopAndroid::AddObserver(
