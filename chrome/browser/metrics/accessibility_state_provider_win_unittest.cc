@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/accessibility_state_provider.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,7 +56,13 @@ TEST_F(AccessibilityStateProviderWinTest, RecordsUiaOnly) {
       ui::AXPlatform::ActiveClientApi::kUiaOnly, 1);
 }
 
-TEST_F(AccessibilityStateProviderWinTest, RecordsBoth) {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/532802060): Re-enable this test on Windows ARM64.
+#define MAYBE_RecordsBoth DISABLED_RecordsBoth
+#else
+#define MAYBE_RecordsBoth RecordsBoth
+#endif
+TEST_F(AccessibilityStateProviderWinTest, MAYBE_RecordsBoth) {
   content::ScopedAccessibilityModeOverride mode_override(
       ui::AXMode{ui::AXMode::kNativeAPIs});
   ui::AXPlatform::GetInstance().SetMsaaActive();
@@ -77,7 +84,13 @@ TEST_F(AccessibilityStateProviderWinTest, NoRecordWhenNativeApisNotActive) {
   histogram_tester_.ExpectTotalCount(kActiveClientApisHistogram, 0);
 }
 
-TEST_F(AccessibilityStateProviderWinTest, NoRecordWhenNoApiUsed) {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/532802060): Re-enable this test on Windows ARM64.
+#define MAYBE_NoRecordWhenNoApiUsed DISABLED_NoRecordWhenNoApiUsed
+#else
+#define MAYBE_NoRecordWhenNoApiUsed NoRecordWhenNoApiUsed
+#endif
+TEST_F(AccessibilityStateProviderWinTest, MAYBE_NoRecordWhenNoApiUsed) {
   content::ScopedAccessibilityModeOverride mode_override(
       ui::AXMode{ui::AXMode::kNativeAPIs});
 
