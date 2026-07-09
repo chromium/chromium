@@ -109,13 +109,17 @@ void ComponentInstaller::Register(ComponentUpdateService* cus,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(cus);
 
-  std::vector<uint8_t> public_key_hash;
-  installer_policy_->GetHash(&public_key_hash);
-  const auto crx_id = update_client::GetCrxIdFromPublicKeyHash(public_key_hash);
-  Register(base::BindOnce(&ComponentUpdateService::RegisterComponent,
-                          base::Unretained(cus)),
-           std::move(callback), cus->GetRegisteredVersion(crx_id),
-           cus->GetMaxPreviousProductVersion(crx_id));
+  auto registration_info = base::MakeRefCounted<RegistrationInfo>();
+  installer_policy_->GetHash(&registration_info->public_key_hash);
+  registration_info->crx_id = update_client::GetCrxIdFromPublicKeyHash(
+      registration_info->public_key_hash);
+  RegisterWithInfo(
+      registration_info,
+      base::BindOnce(&ComponentUpdateService::RegisterComponent,
+                     base::Unretained(cus)),
+      std::move(callback),
+      cus->GetRegisteredVersion(registration_info->crx_id),
+      cus->GetMaxPreviousProductVersion(registration_info->crx_id));
 }
 
 void ComponentInstaller::Register(
@@ -132,6 +136,20 @@ void ComponentInstaller::Register(
   }
 
   auto registration_info = base::MakeRefCounted<RegistrationInfo>();
+  installer_policy_->GetHash(&registration_info->public_key_hash);
+  registration_info->crx_id = update_client::GetCrxIdFromPublicKeyHash(
+      registration_info->public_key_hash);
+  RegisterWithInfo(registration_info, std::move(register_callback),
+                   std::move(callback), registered_version,
+                   max_previous_product_version);
+}
+
+void ComponentInstaller::RegisterWithInfo(
+    scoped_refptr<RegistrationInfo> registration_info,
+    RegisterCallback register_callback,
+    base::OnceClosure callback,
+    const base::Version& registered_version,
+    const base::Version& max_previous_product_version) {
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&ComponentInstaller::StartRegistration, this,
@@ -552,13 +570,10 @@ void ComponentInstaller::FinishRegistration(
   current_version_ = registration_info->version;
   current_fingerprint_ = registration_info->fingerprint;
 
-  std::vector<uint8_t> public_key_hash;
-  installer_policy_->GetHash(&public_key_hash);
-
   if (!std::move(register_callback)
            .Run(ComponentRegistration(
-               update_client::GetCrxIdFromPublicKeyHash(public_key_hash),
-               installer_policy_->GetName(), public_key_hash, current_version_,
+               registration_info->crx_id, installer_policy_->GetName(),
+               registration_info->public_key_hash, current_version_,
                current_fingerprint_,
                installer_policy_->GetInstallerAttributes(), action_handler_,
                this, installer_policy_->RequiresNetworkEncryption(),

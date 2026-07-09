@@ -185,6 +185,8 @@ class ComponentInstaller final : public update_client::CrxInstaller {
     base::FilePath install_dir;
     base::Version version;
     std::string fingerprint;
+    std::string crx_id;
+    std::vector<uint8_t> public_key_hash;
     std::optional<base::DictValue> manifest;
 
    private:
@@ -209,6 +211,11 @@ class ComponentInstaller final : public update_client::CrxInstaller {
   void StartRegistration(const base::Version& registered_version,
                          const base::Version& max_previous_product_version,
                          scoped_refptr<RegistrationInfo> registration_info);
+  void RegisterWithInfo(scoped_refptr<RegistrationInfo> registration_info,
+                        RegisterCallback register_callback,
+                        base::OnceClosure callback,
+                        const base::Version& registered_version,
+                        const base::Version& max_previous_product_version);
   void FinishRegistration(scoped_refptr<RegistrationInfo> registration_info,
                           RegisterCallback register_callback,
                           base::OnceClosure callback);
