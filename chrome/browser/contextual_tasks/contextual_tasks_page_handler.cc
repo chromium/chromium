@@ -580,6 +580,15 @@ void ContextualTasksPageHandler::OnboardingTooltipDismissed() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+void ContextualTasksPageHandler::LensSearchTooltipDismissed() {
+  PrefService* prefs = web_ui_controller_->GetProfile()->GetPrefs();
+  int count = prefs->GetInteger(
+      contextual_tasks::kContextualTasksLensSearchTooltipDismissedCount);
+  prefs->SetInteger(
+      contextual_tasks::kContextualTasksLensSearchTooltipDismissedCount,
+      count + 1);
+}
+
 void ContextualTasksPageHandler::ReopenTabs() {
   // TODO(crbug.com/489832161): Implement tab restoration logic.
 }

@@ -77,6 +77,7 @@ class ContextualTasksPageHandler
                              bool is_side_panel,
                              GetCommonSearchParamsCallback callback) override;
   void OnboardingTooltipDismissed() override;
+  void LensSearchTooltipDismissed() override;
   void ReopenTabs() override;
   void PinSidePanel() override;
   void UnpinSidePanel() override;

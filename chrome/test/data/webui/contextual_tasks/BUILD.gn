@@ -36,7 +36,10 @@ build_webui_tests("build") {
   }
 
   if (!is_android) {
-    files += [ "onboarding_tooltip_test.ts" ]
+    files += [
+      "lens_search_tooltip_test.ts",
+      "onboarding_tooltip_test.ts",
+    ]
   }
 
   static_files = [ "test.html" ]

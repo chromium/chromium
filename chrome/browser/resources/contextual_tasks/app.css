@@ -900,7 +900,8 @@ error-page {
   display: none;
 }
 
-#onboardingTooltip {
+#onboardingTooltip,
+#lensSearchTooltip {
   pointer-events: all;
 }
 

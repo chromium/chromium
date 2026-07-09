@@ -579,6 +579,21 @@ suite('TopToolbarTest', () => {
           assertEquals(
               0, proxy.handler.getCallCount('maybeTriggerPinningPromo'));
         });
+
+    test(
+        'does not call maybeTriggerPinningPromo when lens search tooltip is showing',
+        async () => {
+          topToolbar.isAiPage = false;
+          topToolbar.lensSearchTooltipShowing = true;
+          await microtasksFinished();
+          proxy.handler.reset();
+
+          topToolbar.isAiPage = true;
+          await microtasksFinished();
+
+          assertEquals(
+              0, proxy.handler.getCallCount('maybeTriggerPinningPromo'));
+        });
   });
 
   (loadTimeData.getBoolean('isSmallDeviceFormFactor') ? suite.skip : suite)(
