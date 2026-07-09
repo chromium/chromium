@@ -4,12 +4,22 @@
 
 static_library("sync_tab_context") {
   sources = [
+    "container_id.h",
+    "tab_context_container_sync_bridge.cc",
+    "tab_context_container_sync_bridge.h",
     "tab_context_sync_service.cc",
     "tab_context_sync_service.h",
+    "tab_context_sync_service_impl.cc",
+    "tab_context_sync_service_impl.h",
   ]
 
   public_deps = [
     "//base",
     "//components/keyed_service/core",
+  ]
+
+  deps = [
+    "//components/sync/model",
+    "//components/sync/protocol",
   ]
 }

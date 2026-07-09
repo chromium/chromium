@@ -9,7 +9,13 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync_tab_context/container_id.h"
+
+namespace syncer {
+class DataTypeControllerDelegate;
+}  // namespace syncer
 
 namespace sync_tab_context {
 
@@ -42,6 +48,10 @@ class TabContextSyncService : public KeyedService {
   virtual void GetContainerAccessToken(
       const ContainerId& container_id,
       base::OnceCallback<void(std::optional<std::string>)> cb) = 0;
+
+  // Returns the delegate responsible for integrating with sync.
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetSyncControllerDelegate() = 0;
 };
 
 }  // namespace sync_tab_context
