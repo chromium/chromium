@@ -427,7 +427,10 @@ void ContextualCueingController::InitiateModelExecutionRequest() {
       base::BindOnce(
           &ContextualCueingController::OnModelExecutionResponseReceived,
           weak_ptr_factory_.GetWeakPtr(),
-          GetTabProtoFromWebContents(active_web_contents)));
+          GetTabProtoFromWebContents(active_web_contents),
+          std::vector<optimization_guide::proto::Tab>(
+              request.background_tabs().begin(),
+              request.background_tabs().end())));
 }
 
 void ContextualCueingController::FetchFavicon(
@@ -446,6 +449,7 @@ void ContextualCueingController::FetchFavicon(
 
 void ContextualCueingController::OnModelExecutionResponseReceived(
     optimization_guide::proto::Tab active_tab,
+    std::vector<optimization_guide::proto::Tab> background_tabs,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   tabs::TabInterface* current_active_tab = tab_list_interface_->GetActiveTab();
@@ -526,7 +530,7 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
   }
 
   if (IsAllowedToShowCue() == ContextualCueingDecision::kUnspecified) {
-    ShowCue(*target_type, *target, cue);
+    ShowCue(*target_type, *target, cue, background_tabs);
   }
 }
 
@@ -733,7 +737,8 @@ ContextualCueingController::GetTabsToShow(
 void ContextualCueingController::ShowCue(
     CueTargetType cue_type,
     const CueTarget& target,
-    const optimization_guide::proto::ContextualCue& cue) {
+    const optimization_guide::proto::ContextualCue& cue,
+    const std::vector<optimization_guide::proto::Tab>& background_tabs) {
   auto [tabs_to_show, tab_metrics] = GetTabsToShow(cue);
   std::string cue_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   CueActionData action_data =
@@ -756,7 +761,7 @@ void ContextualCueingController::ShowCue(
 
   RecordCueShownToPrivateInsights(browser_window_interface_->GetProfile(),
                                   cue_id, cue_type, cue, active_tab,
-                                  tabs_to_show);
+                                  tabs_to_show, background_tabs);
 
   cue_hidden_time_ = base::TimeTicks();
 #if BUILDFLAG(IS_ANDROID)

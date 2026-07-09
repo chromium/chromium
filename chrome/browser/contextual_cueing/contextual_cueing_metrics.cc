@@ -144,7 +144,8 @@ void RecordCueShownToPrivateInsights(
     CueTargetType cue_type,
     const optimization_guide::proto::ContextualCue& cue,
     tabs::TabInterface* active_tab,
-    const std::vector<tabs::TabHandle>& tabs_to_show) {
+    const std::vector<tabs::TabHandle>& tabs_to_show,
+    const std::vector<optimization_guide::proto::Tab>& background_tabs) {
   if (!kEnablePrivateInsightsLogging.Get()) {
     return;
   }
@@ -171,15 +172,11 @@ void RecordCueShownToPrivateInsights(
 
   std::vector<private_insights::events::ContextualCueLogEvent::PageInfo>
       recent_pages;
-  for (const auto& handle : tabs_to_show) {
-    if (auto* tab = handle.Get()) {
-      if (tab->GetContents()) {
-        private_insights::events::ContextualCueLogEvent::PageInfo page_info;
-        page_info.set_url(tab->GetContents()->GetLastCommittedURL().spec());
-        page_info.set_title(base::UTF16ToUTF8(tab->GetTitle()));
-        recent_pages.push_back(std::move(page_info));
-      }
-    }
+  for (const auto& tab : background_tabs) {
+    private_insights::events::ContextualCueLogEvent::PageInfo page_info;
+    page_info.set_url(tab.url());
+    page_info.set_title(tab.title());
+    recent_pages.push_back(std::move(page_info));
   }
   event.mutable_cue_context()->set_recent_pages(
       private_insights::SerializePageInfoListToJson(recent_pages));

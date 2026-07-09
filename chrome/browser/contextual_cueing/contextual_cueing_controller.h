@@ -140,6 +140,7 @@ class ContextualCueingController
   // Callback for when the model execution response is received.
   void OnModelExecutionResponseReceived(
       optimization_guide::proto::Tab active_tab,
+      std::vector<optimization_guide::proto::Tab> background_tabs,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
@@ -160,9 +161,11 @@ class ContextualCueingController
   std::pair<std::vector<tabs::TabHandle>, CueTabMetrics> GetTabsToShow(
       const optimization_guide::proto::ContextualCue& cue);
 
-  void ShowCue(CueTargetType cue_type,
-               const CueTarget& target,
-               const optimization_guide::proto::ContextualCue& cue);
+  void ShowCue(
+      CueTargetType cue_type,
+      const CueTarget& target,
+      const optimization_guide::proto::ContextualCue& cue,
+      const std::vector<optimization_guide::proto::Tab>& background_tabs);
 #if !BUILDFLAG(IS_ANDROID)
   void MaybeShowTabList(
       page_actions::PageActionController* page_action_controller,
