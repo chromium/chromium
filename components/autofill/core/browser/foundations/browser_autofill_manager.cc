@@ -275,6 +275,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kAtMemoryGenericError:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAtMemoryNoConnection:
@@ -711,6 +712,7 @@ bool IsManagementFooterOption(const Suggestion& suggestion) {
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kAtMemoryGenericError:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAtMemoryNoConnection:

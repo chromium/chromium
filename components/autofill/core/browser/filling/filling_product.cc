@@ -103,6 +103,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
       return FillingProduct::kCompose;
     case SuggestionType::kDatalistEntry:
       return FillingProduct::kDataList;
+    case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kAtMemoryGenericError:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAtMemoryNoConnection:

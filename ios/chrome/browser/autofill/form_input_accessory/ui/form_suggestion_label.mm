@@ -306,6 +306,7 @@ bool IsPasswordSuggestion(FormSuggestion* suggestion) {
     case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kOneTimePasswordEntry:
     case SuggestionType::kLoadingThrobber:
+    case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kAtMemorySearchResult:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kBnplFootnote:

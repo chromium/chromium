@@ -211,6 +211,7 @@ bool HasAutofillSuggestionsForA11y(SuggestionType type) {
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kAtMemoryGenericError:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAtMemoryNoConnection:
@@ -308,6 +309,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kAtMemoryGenericError:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAtMemoryNoConnection:
@@ -735,6 +737,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
                                                 last_query_.field_id);
       break;
     case SuggestionType::kAllLoyaltyCardsEntry:
+    case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kAtMemoryGenericError:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAtMemoryNoConnection:
@@ -1045,6 +1048,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       return;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kAtMemoryGenericError:
     case SuggestionType::kAtMemoryNoConnection:
     case SuggestionType::kAutofillAiOtherOrders:
@@ -1128,6 +1132,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kAtMemoryGenericError:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAtMemoryNoConnection:

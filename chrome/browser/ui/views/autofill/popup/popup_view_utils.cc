@@ -577,6 +577,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kAtMemoryGenericError:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAtMemoryNoConnection:
@@ -649,6 +650,7 @@ bool IsSuggestionTypeAutoselected(SuggestionType type) {
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kAtMemoryGenericError:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAtMemoryNoConnection:

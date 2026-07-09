@@ -52,6 +52,7 @@ SuggestionSection GetSuggestionSection(SuggestionType type) {
     // Footer items.
     case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kAutocompleteAtMemoryButton:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kFreeformFooter:

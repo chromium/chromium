@@ -751,6 +751,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
 
   switch (type) {
     // These `type` should never be displayed in a `PopupRowView`.
+    case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kSeparator:

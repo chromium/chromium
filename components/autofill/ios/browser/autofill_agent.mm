@@ -663,6 +663,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
       case SuggestionType::kAddressEntryOnTyping:
       case SuggestionType::kAllLoyaltyCardsEntry:
       case SuggestionType::kAllSavedPasswordsEntry:
+      case SuggestionType::kAtMemoryAiDisclosure:
       case SuggestionType::kAtMemoryGenericError:
       case SuggestionType::kAtMemoryInactivityNudge:
       case SuggestionType::kAtMemoryNoConnection:
