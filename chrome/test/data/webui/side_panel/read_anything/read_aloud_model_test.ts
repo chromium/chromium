@@ -128,6 +128,33 @@ suite('ReadAloudModel', () => {
     assertTextEmpty();
   });
 
+  test('getCurrentText separates table cells', async () => {
+    const table = document.createElement('table');
+    const row = document.createElement('tr');
+    const cell1 = document.createElement('td');
+    cell1.textContent = 'Siblings';
+    const cell2 = document.createElement('td');
+    cell2.textContent = 'Hestia';
+
+    row.appendChild(cell1);
+    row.appendChild(cell2);
+    table.appendChild(row);
+    document.body.appendChild(table);
+
+    await microtasksFinished();
+
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+    assertEquals(
+        'Siblings', getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals('Hestia', getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
+
   test(
       'getCurrentText separates nested superscripts with no spaces',
       async () => {

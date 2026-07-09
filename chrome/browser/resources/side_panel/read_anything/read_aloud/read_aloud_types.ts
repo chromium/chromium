@@ -12,8 +12,19 @@ import {ReadAloudNodeStore} from './read_aloud_node_store.js';
 // with different text segmentation strategies.
 
 // Display types that should signal a line break.
-const LINE_BREAKING_DISPLAY_TYPES =
-    ['block', 'list-item', 'flex', 'grid', 'table'];
+const LINE_BREAKING_DISPLAY_TYPES = [
+  'block',
+  'list-item',
+  'flex',
+  'grid',
+  'table',
+  'table-row',
+  'table-cell',
+  'table-caption',
+  'table-row-group',
+  'table-header-group',
+  'table-footer-group',
+];
 
 // Wrapper class to represent a node used by read aloud. The type of node
 // could be either a DOM node or an AXNode depending on what type of text
