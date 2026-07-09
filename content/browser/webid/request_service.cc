@@ -74,7 +74,7 @@ RequestService::~RequestService() {
   // Destroy the active request first, while weak pointers are still valid,
   // so that its destructor can successfully run the pending token request
   // callback via OnTokenRequestComplete.
-  active_request_.reset();
+  SetActiveRequestAndResetController(nullptr);
 
   // Invalidate weak pointers before clearing `user_info_requests_` to prevent
   // the destroying UserInfoRequests from calling back re-entrantly into
@@ -109,7 +109,7 @@ void RequestService::SetDelegatesForTesting(
 Request* RequestService::GetOrCreateActiveRequest() {
   if (!active_request_) {
     RenderFrameHost& rfh = render_frame_host();
-    active_request_ = std::make_unique<Request>(&rfh, *this);
+    SetActiveRequestAndResetController(std::make_unique<Request>(&rfh, *this));
   }
   return active_request_.get();
 }
@@ -119,10 +119,7 @@ Request* RequestService::GetActiveRequestForTesting() const {
 }
 
 void RequestService::DestroyActiveRequestForTesting() {
-  if (dialog_controller_) {
-    dialog_controller_.reset();
-  }
-  active_request_.reset();
+  SetActiveRequestAndResetController(nullptr);
 }
 
 // static
@@ -248,15 +245,18 @@ bool RequestService::InitiateTokenRequest(
       &RequestService::OnTokenRequestCompleteInternal,
       weak_ptr_factory_.GetWeakPtr(), new_request.get(), std::move(callback));
 
-  // Temporarily hold the old active request on the stack. This keeps it alive
-  // and valid during the RequestToken() checks, preventing dangling pointers
-  // or Use-After-Free if the new request is rejected or replaces the old one.
+  // Temporarily hold the old active request and dialog controller on the
+  // stack. This keeps it alive and valid during the RequestToken() checks,
+  // preventing dangling pointers or Use-After-Free if the new request is
+  // rejected or replaces the old one.
   std::unique_ptr<Request> old_request = std::move(active_request_);
+  std::unique_ptr<IdentityRequestDialogController> old_dialog_controller =
+      std::move(dialog_controller_);
 
   // Pre-assign the new request as active. This ensures that if the request
   // completes synchronously (e.g. in tests or synchronous error cases), the
   // completion callback will find it in `active_request_` and clean it up.
-  active_request_ = std::move(new_request);
+  SetActiveRequestAndResetController(std::move(new_request));
 
   // Call RequestToken on the new request.
   if (active_request_->RequestToken(std::move(idp_get_params), requirement,
@@ -270,7 +270,7 @@ bool RequestService::InitiateTokenRequest(
     // If it failed immediately, discard the new request and restore the old
     // one.
     active_request_ = std::move(old_request);
-    MaybeDestroyDialogController();
+    dialog_controller_ = std::move(old_dialog_controller);
     return false;
   }
 }
@@ -290,19 +290,13 @@ void RequestService::OnTokenRequestCompleteInternal(
 
 void RequestService::CleanUpActiveRequest(Request* request) {
   if (active_request_.get() == request) {
-    if (dialog_controller_) {
-      // Reset the dialog controller synchronously. While this carries a
-      // potential Use-After-Free risk if the completion callback was triggered
-      // synchronously from the dialog controller itself, doing it synchronously
-      // is necessary to avoid asynchronous overlap where a subsequent request
-      // could instantiate and display a new dialog before the old one is
-      // destroyed.
-      dialog_controller_.reset();
-    }
+    std::unique_ptr<Request> completed_request = std::move(active_request_);
+    // Invoke this to also reset the dialog controller.
+    SetActiveRequestAndResetController(nullptr);
     // Release ownership synchronously to prevent race conditions with
     // subsequent requests, but keep it in completed_requests_ to ensure it does
     // not outlive RequestService.
-    completed_requests_.push_back(std::move(active_request_));
+    completed_requests_.push_back(std::move(completed_request));
 
     // Destroy the request asynchronously to allow the C++ call stack to unwind
     // safely.
@@ -312,10 +306,22 @@ void RequestService::CleanUpActiveRequest(Request* request) {
   }
 }
 
+void RequestService::SetActiveRequestAndResetController(
+    std::unique_ptr<Request> request) {
+  // Reset the dialog controller synchronously when changing the active request.
+  // While this carries a potential Use-After-Free risk if the completion
+  // callback was triggered synchronously from the dialog controller itself,
+  // doing it synchronously is necessary to avoid asynchronous overlap where a
+  // subsequent request could instantiate and display a new dialog before the
+  // old one is destroyed, and ensures the dialog controller's data members are
+  // kept clean for each new active request.
+  dialog_controller_.reset();
+  active_request_ = std::move(request);
+}
+
 void RequestService::CleanUpCompletedRequest(Request* request) {
   std::erase_if(completed_requests_,
                 [&](const auto& r) { return r.get() == request; });
-  MaybeDestroyDialogController();
 }
 
 bool RequestService::ShouldCancelNewRequest(
@@ -730,12 +736,6 @@ RequestService::CreateDialogController() {
 
   return GetContentClient()->browser()->CreateIdentityRequestDialogController(
       web_contents);
-}
-
-void RequestService::MaybeDestroyDialogController() {
-  if (!active_request_ && completed_requests_.empty()) {
-    dialog_controller_.reset();
-  }
 }
 
 void RequestService::SetDialogControllerForTests(

@@ -2074,11 +2074,12 @@ class RequestTest : public RenderViewHostImplTestHarness {
   // each run of RunAuthTest().
   TestDialogController::State dialog_controller_state_;
 
+  base::WeakPtr<TestDialogController> active_mock_dialog_controller_;
+
   base::HistogramTester histogram_tester_;
 
  private:
   std::unique_ptr<TestDialogController> custom_dialog_controller_;
-  base::WeakPtr<TestDialogController> active_mock_dialog_controller_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
@@ -5771,6 +5772,51 @@ TEST_F(RequestTest, PassiveReplacedByActiveFlow) {
   // Metrics for each request should be recorded separately with different
   // session IDs.
   ExpectTwoUniqueSessionIDs();
+}
+
+TEST_F(RequestTest, ControllerDestroyedOnReplacedByActiveFlow) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_dialog_action = AccountsDialogAction::kNone;
+
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, configuration);
+  EXPECT_TRUE(did_show_accounts_dialog());
+  EXPECT_TRUE(active_mock_dialog_controller_);
+
+  // Store a weak pointer to the first mock controller.
+  base::WeakPtr<TestDialogController> old_dialog_controller =
+      active_mock_dialog_controller_;
+  active_mock_dialog_controller_ = nullptr;
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+
+  RequestExpectations active_flow_expectations = kExpectationSuccess;
+  active_flow_expectations.standalone_console_message =
+      "The request is replaced by a new one with active mode.";
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  // Create new test helpers so that we can send the second request.
+  SetNetworkRequestManager(std::make_unique<TestIdpNetworkRequestManager>());
+  std::unique_ptr<AuthRequestCallbackHelper> active_flow_auth_helper =
+      std::make_unique<AuthRequestCallbackHelper>();
+  mojo::Remote<FederatedRequest> concurrent_remote;
+
+  // Run the active flow. This will replace the passive flow.
+  RunAuthTest(parameters, active_flow_expectations, kConfigurationValid,
+              active_flow_auth_helper.get(), &concurrent_remote);
+
+  // The active flow replacement should destroy the old controller.
+  EXPECT_FALSE(old_dialog_controller);
+
+  // Check that the passive flow completed with kReplacedByActiveMode.
+  RequestExpectations passive_flow_expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kReplacedByActiveMode,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+  CheckAuthExpectations(configuration, passive_flow_expectations);
 }
 
 // TestIdpNetworkRequestManager subclass which records requests to metrics

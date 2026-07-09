@@ -193,6 +193,7 @@ class CONTENT_EXPORT RequestService
       bool is_auto_selected);
   void CleanUpCompletedRequest(Request* request);
   void CleanUpActiveRequest(Request* request);
+  void SetActiveRequestAndResetController(std::unique_ptr<Request> request);
   bool ShouldCancelNewRequest(
       Request* new_request,
       const std::vector<blink::mojom::IdentityProviderGetParametersPtr>&
@@ -201,7 +202,6 @@ class CONTENT_EXPORT RequestService
       NavigationHandle* navigation_handle);
   std::unique_ptr<Metrics> CreateFedCmMetrics();
   std::unique_ptr<IdentityRequestDialogController> CreateDialogController();
-  void MaybeDestroyDialogController();
 
   std::unique_ptr<Request> active_request_;
   // Temporary storage for completed requests pending destruction.
