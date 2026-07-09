@@ -1250,7 +1250,7 @@ static_library("ui") {
 
     # TODO(crbug.com/353332589): Remove this circular dependency when the
     # following headers get componentized:
-    # c/b/ui/browser.h, scoped_tabbed_browser_displayer.h
+    # c/b/ui/scoped_tabbed_browser_displayer.h
     # c/b/ui/settings_window_manager_chromeos.h
     "//chrome/browser/ui/bluetooth:impl",
 

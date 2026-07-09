@@ -379,7 +379,7 @@ void DownloadItemNotification::Click(
 
     if (command == DownloadCommands::REVIEW) {
       content::WebContents* contents =
-          GetBrowser()->tab_strip_model()->GetActiveWebContents();
+          GetBrowser()->GetTabStripModel()->GetActiveWebContents();
 
       // If there is no currently active web contents, just show the user the
       // downloads page so they get more context on the warned download needing
@@ -1196,10 +1196,10 @@ bool DownloadItemNotification::AllowedToOpenWhileScanning() const {
              enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
 }
 
-Browser* DownloadItemNotification::GetBrowser() const {
+BrowserWindowInterface* DownloadItemNotification::GetBrowser() const {
   chrome::ScopedTabbedBrowserDisplayer browser_displayer(profile());
-  DCHECK(browser_displayer.browser());
-  return browser_displayer.browser();
+  DCHECK(browser_displayer.browser_window_interface());
+  return browser_displayer.browser_window_interface();
 }
 
 Profile* DownloadItemNotification::profile() const {

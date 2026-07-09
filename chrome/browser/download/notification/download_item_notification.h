@@ -115,7 +115,7 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
   bool IsScanning() const;
   bool AllowedToOpenWhileScanning() const;
 
-  Browser* GetBrowser() const;
+  BrowserWindowInterface* GetBrowser() const;
   Profile* profile() const;
 
   // Returns the list of possible extra (all except the default) actions.

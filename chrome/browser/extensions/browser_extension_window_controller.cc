@@ -298,11 +298,11 @@ bool BrowserExtensionWindowController::OpenOptionsPage(
   // running in split mode, because it won't be able to save settings from OTR.
   // This version of OpenOptionsPage() can be called from an OTR window via e.g.
   // the action menu, since that's not initiated by the extension.
-  Browser* browser_to_use = GetBrowser();
+  BrowserWindowInterface* browser_to_use = GetBrowser();
   std::optional<chrome::ScopedTabbedBrowserDisplayer> displayer;
   if (profile()->IsOffTheRecord() && !IncognitoInfo::IsSplitMode(extension)) {
     displayer.emplace(profile()->GetOriginalProfile());
-    browser_to_use = displayer->browser();
+    browser_to_use = displayer->browser_window_interface();
   }
 
   // We need to respect path differences because we don't want opening the

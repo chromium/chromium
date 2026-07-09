@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -50,8 +49,8 @@ namespace {
 
 BrowserWindowInterface* FindOrCreateVisibleBrowser(Profile* profile) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  Browser* browser = displayer.browser();
-  if (browser->tab_strip_model()->count() == 0) {
+  BrowserWindowInterface* browser = displayer.browser_window_interface();
+  if (browser->GetTabStripModel()->count() == 0) {
     chrome::AddTabAt(browser, GURL(), -1, true);
   }
   return browser;

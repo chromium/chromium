@@ -42,7 +42,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"  // nogncheck crbug.com/423799622
 #endif
@@ -173,7 +173,7 @@ void IdentityAPI::MaybeShowChromeSigninDialog(
   }
 
   chrome::ScopedTabbedBrowserDisplayer displayer(profile_);
-  Browser* browser = displayer.browser();
+  BrowserWindowInterface* browser = displayer.browser_window_interface();
   if (!browser) {
     DVLOG(1) << "Could not create a browser to show Extensions Chrome Sign in "
                 "dialog.";

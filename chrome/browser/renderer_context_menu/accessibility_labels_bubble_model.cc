@@ -8,7 +8,7 @@
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -104,7 +104,8 @@ void AccessibilityLabelsBubbleModel::OpenHelpPage() {
     return;
   }
   // The web contents used to open this dialog have been destroyed.
-  Browser* browser = chrome::ScopedTabbedBrowserDisplayer(profile_).browser();
+  BrowserWindowInterface* browser =
+      chrome::ScopedTabbedBrowserDisplayer(profile_).browser_window_interface();
   browser->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 

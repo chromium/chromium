@@ -5,7 +5,7 @@
 #include "chrome/browser/renderer_context_menu/spelling_bubble_model.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -68,7 +68,8 @@ void SpellingBubbleModel::OpenHelpPage() {
     return;
   }
   // The web contents used to open this dialog have been destroyed.
-  Browser* browser = chrome::ScopedTabbedBrowserDisplayer(profile_).browser();
+  BrowserWindowInterface* browser =
+      chrome::ScopedTabbedBrowserDisplayer(profile_).browser_window_interface();
   browser->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
