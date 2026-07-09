@@ -273,15 +273,12 @@ public class SharedWebViewChromium {
         RecordHistogram.recordBooleanHistogram(
                 "Android.WebView.Startup.CheckNeedsPost.IsChromiumInitialized",
                 mAwInit.isChromiumInitialized());
-        boolean needsPost = !mAwInit.isChromiumInitialized() || !ThreadUtils.runningOnUiThread();
-        if (!needsPost && mAwContents == null) {
-            throw new IllegalStateException("AwContents must be created if we are not posting!");
-        }
         if (mAwInit.isChromiumInitialized()) {
             RecordHistogram.recordBooleanHistogram(
                     "Android.WebView.Startup.CheckNeedsPost.CalledOnUiThread",
                     ThreadUtils.runningOnUiThread());
         }
+        boolean needsPost = mAwContents == null || !ThreadUtils.runningOnUiThread();
         return needsPost;
     }
 
