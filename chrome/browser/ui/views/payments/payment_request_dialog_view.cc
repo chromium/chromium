@@ -137,6 +137,7 @@ bool PaymentRequestDialogView::ShouldShowCloseButton() const {
 
 void PaymentRequestDialogView::ShowDialog() {
   if (!DialogFitsInBrowserWindow()) {
+    VLOG(2) << "ShowDialog: Rejected because dialog does not fit";
     request_->SetWindowSizeCheckRejectionReason(
         JourneyLogger::WindowSizeCheckRejectionReason::kRejectedAtShow);
 
@@ -239,6 +240,7 @@ void PaymentRequestDialogView::ShowPaymentHandlerScreen(
   // Once we have resized the dialog, re-check that it still fits in the
   // available window space.
   if (!DialogFitsInBrowserWindow()) {
+    VLOG(2) << "ShowPaymentHandlerScreen: Rejected because dialog does not fit";
     request_->SetWindowSizeCheckRejectionReason(
         JourneyLogger::WindowSizeCheckRejectionReason::
             kRejectedAtPaymentHandlerTransition);
@@ -769,6 +771,7 @@ void PaymentRequestDialogView::ResizeDialogWindow() {
 void PaymentRequestDialogView::CheckIfDialogFitsInBrowserWindow() {
   last_check_for_too_small_window_time_ = base::TimeTicks::Now();
   if (!DialogFitsInBrowserWindow()) {
+    VLOG(2) << "After browser resize: Rejected because dialog does not fit";
     request_->SetWindowSizeCheckRejectionReason(
         JourneyLogger::WindowSizeCheckRejectionReason::kRejectedAtResize);
     request_->OnInternalError(errors::kBrowserWindowTooSmall);
@@ -776,18 +779,23 @@ void PaymentRequestDialogView::CheckIfDialogFitsInBrowserWindow() {
 }
 
 bool PaymentRequestDialogView::DialogFitsInBrowserWindow() const {
+  VLOG(2) << "DialogFitsInBrowserWindow called";
   if (!base::FeatureList::IsEnabled(
           features::kPaymentRequestRejectTooSmallWindows)) {
+    VLOG(2) << "DialogFitsInBrowserWindow: Feature disabled, returning true";
     return true;
   }
 
   // This method may trigger from the timer after our PaymentRequest is no
   // longer valid but before we ourselves have been torn down.
   if (!request_) {
+    VLOG(2) << "DialogFitsInBrowserWindow: request_ is null, returning true";
     return true;
   }
 
   if (!request_->window_size_check_enabled()) {
+    VLOG(2) << "DialogFitsInBrowserWindow: Window size check disabled, "
+               "returning true";
     return true;
   }
 
@@ -810,20 +818,41 @@ bool PaymentRequestDialogView::DialogFitsInBrowserWindow() const {
       payment_request_size =
           gfx::Size(origin_in_browser.x() + dialog_bounds.width(),
                     origin_in_browser.y() + dialog_bounds.height());
+      VLOG(2) << "DialogFitsInBrowserWindow: Dialog widget exists. "
+              << "Dialog bounds: " << dialog_bounds.ToString()
+              << ", origin in browser: " << origin_in_browser.ToString();
+    } else {
+      VLOG(2) << "DialogFitsInBrowserWindow: Dialog widget does not exist. "
+              << "Preferred size: " << payment_request_size.ToString();
     }
 
+    gfx::Size unscaled_payment_request_size = payment_request_size;
     // Add a small buffer, as even if the Payment Request/Dialog can technically
     // fit in the window, it is a bad experience if it consumes the entire
     // window - the user should remain aware of the background context.
     payment_request_size = gfx::ScaleToRoundedSize(payment_request_size,
                                                    kMinimumWindowToDialogRatio);
 
+    VLOG(2) << "DialogFitsInBrowserWindow: "
+            << "Browser bounds: " << browser_bounds.ToString()
+            << ", Payment Request size (unscaled): "
+            << unscaled_payment_request_size.ToString()
+            << ", Payment Request size (scaled): "
+            << payment_request_size.ToString();
+
     if (browser_bounds.width() < payment_request_size.width() ||
         browser_bounds.height() < payment_request_size.height()) {
+      VLOG(2)
+          << "DialogFitsInBrowserWindow: Dialog does NOT fit, returning false";
       return false;
     }
+  } else {
+    VLOG(2) << "DialogFitsInBrowserWindow: Browser widget is null, will return "
+               "true by default";
+    return true;
   }
 
+  VLOG(2) << "DialogFitsInBrowserWindow: Dialog fits, returning true";
   return true;
 }
 
