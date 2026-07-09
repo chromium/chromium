@@ -12,6 +12,11 @@
         width: 40px;
       }
 
+      #account-subpage-row > #profile-icon {
+        margin-inline-end: 16px;
+        order: -1;
+      }
+
       #sync-setup {
         --cr-secondary-text-color: var(--settings-error-color);
       }
@@ -137,19 +142,15 @@
 
         <!-- Shared Elements -->
         <cr-link-row id="account-subpage-row" on-click="onAccountClick_"
+            label="[[primaryAccountName_]]"
+            sub-label="[[getAccountRowSubtitle_(primaryAccountEmail_, syncStatus)]]"
+            role-description="$i18n{subpageArrowRoleDescription}"
+            button-aria-description="$i18n{accountPageTitle}"
             hidden="[[!shouldLinkToAccountSettingsPage_(
               syncStatus.signedInState)]]">
           <div id="profile-icon"
               style="background-image: [[getIconImageSet_(
                   primaryAccountIconUrl_)]]">
-          </div>
-          <div class="cr-row-gap cr-padded-text flex no-min-width">
-            <div id="account-name" class="text-elide">
-              [[primaryAccountName_]]
-            </div>
-            <div id="account-subtitle" class="secondary">
-              [[getAccountRowSubtitle_(primaryAccountEmail_, syncStatus)]]
-            </div>
           </div>
         </cr-link-row>
 

@@ -8,7 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
-import type {SettingsPeoplePageElement} from 'chrome://settings/settings.js';
+import type {CrLinkRowElement, SettingsPeoplePageElement} from 'chrome://settings/settings.js';
 import {ProfileInfoBrowserProxyImpl, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -628,15 +628,11 @@ suite('PeoplePageAccountSettings', function() {
     };
     await simulateSignedInState(SignedInState.SIGNED_IN, [expectedAccount]);
 
-    const accountName =
-        peoplePage.shadowRoot!.querySelector(
-                                  '#account-name')!.textContent.trim();
-    const accountEmail =
-        peoplePage.shadowRoot!.querySelector(
-                                  '#account-subtitle')!.textContent.trim();
+    const accountRow = peoplePage.shadowRoot!.querySelector<CrLinkRowElement>(
+        '#account-subpage-row')!;
 
-    assertEquals(expectedAccount.fullName, accountName);
-    assertEquals(expectedAccount.email, accountEmail);
+    assertEquals(expectedAccount.fullName, accountRow.label);
+    assertEquals(expectedAccount.email, accountRow.subLabel);
 
     const bgImage =
         peoplePage.shadowRoot!.querySelector<HTMLElement>(
@@ -649,9 +645,9 @@ suite('PeoplePageAccountSettings', function() {
     await simulateSignedInState(SignedInState.SIGNED_IN, [{email: testEmail}]);
 
     // First, it shows the user's email.
-    const accountSubtitle =
-        peoplePage.shadowRoot!.querySelector('#account-subtitle')!;
-    assertEquals(testEmail, accountSubtitle.textContent.trim());
+    const accountRow = peoplePage.shadowRoot!.querySelector<CrLinkRowElement>(
+        '#account-subpage-row')!;
+    assertEquals(testEmail, accountRow.subLabel);
 
     // When the passphrase needs to be entered, a message is displayed instead.
     simulateSyncStatus({
@@ -662,7 +658,7 @@ suite('PeoplePageAccountSettings', function() {
     assertEquals(
         loadTimeData.substituteString(
             peoplePage.syncStatus!.statusText!, testEmail),
-        accountSubtitle.textContent.trim());
+        accountRow.subLabel);
   });
 
   test('AccountRowSubtitleUpdatedForBookmarksLimitError_AccountSettings',
@@ -671,9 +667,10 @@ suite('PeoplePageAccountSettings', function() {
          await simulateSignedInState(SignedInState.SIGNED_IN, [{email: testEmail}]);
 
     // First, it shows the user's email.
-    const accountSubtitle =
-        peoplePage.shadowRoot!.querySelector('#account-subtitle')!;
-    assertEquals(testEmail, accountSubtitle.textContent.trim());
+    const accountRow =
+        peoplePage.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#account-subpage-row')!;
+    assertEquals(testEmail, accountRow.subLabel);
 
     const bookmarksLimitError =
         'To save bookmarks in your account, delete your unused bookmarks';
@@ -682,7 +679,7 @@ suite('PeoplePageAccountSettings', function() {
       statusAction: StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE,
       statusText: bookmarksLimitError,
     });
-    assertEquals(bookmarksLimitError, accountSubtitle.textContent.trim());
+    assertEquals(bookmarksLimitError, accountRow.subLabel);
   });
 
   // <if expr="not is_chromeos">
