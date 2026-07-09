@@ -24,6 +24,9 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_op.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
+#include "cc/paint/record_paint_canvas.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/test/test_context_provider.h"
@@ -369,6 +372,58 @@ TEST_F(PaintCanvasVideoRendererTest, RGBAF16) {
   params.dest_rect = kNaturalRect;
   renderer_.Paint(frame, &canvas, flags, params, nullptr);
   EXPECT_EQ(SK_ColorRED, bitmap.getColor(0, 0));
+}
+
+TEST_F(PaintCanvasVideoRendererTest, YUVToRGBAF16) {
+  SkBitmap bitmap = AllocBitmap(kWidth, kHeight, kRGBA_F16_SkColorType);
+  cc::SkiaPaintCanvas canvas(bitmap);
+
+  ASSERT_EQ(natural_frame()->format(), PIXEL_FORMAT_I420);
+  FillFrameWithColor(natural_frame(), kRed);
+
+  cc::PaintFlags flags;
+  flags.setBlendMode(SkBlendMode::kSrcOver);
+  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
+
+  PaintCanvasVideoRenderer::PaintParams params;
+  params.dest_rect = kNaturalRect;
+  renderer_.Paint(natural_frame(), &canvas, flags, params, nullptr);
+  EXPECT_EQ(SK_ColorRED, bitmap.getColor(0, 0));
+}
+
+TEST_F(PaintCanvasVideoRendererTest, LazyYUVToRGBAF16) {
+  ASSERT_EQ(natural_frame()->format(), PIXEL_FORMAT_I420);
+  FillFrameWithColor(natural_frame(), kRed);
+
+  cc::RecordPaintCanvas record_canvas;
+  PaintCanvasVideoRenderer::PaintParams params;
+  params.dest_rect = kNaturalRect;
+  renderer_.Paint(natural_frame(), &record_canvas, cc::PaintFlags(), params,
+                  nullptr);
+
+  cc::PaintRecord record = record_canvas.ReleaseAsRecord();
+
+  cc::PaintImage paint_image;
+  for (const cc::PaintOp& op : record.buffer()) {
+    if (op.GetType() == cc::PaintOpType::kDrawImageRect) {
+      paint_image = static_cast<const cc::DrawImageRectOp*>(&op)->image;
+      break;
+    } else if (op.GetType() == cc::PaintOpType::kDrawImage) {
+      paint_image = static_cast<const cc::DrawImageOp*>(&op)->image;
+      break;
+    }
+  }
+  ASSERT_TRUE(paint_image);
+  EXPECT_TRUE(paint_image.IsLazyGenerated());
+
+  SkImageInfo dst_info = SkImageInfo::Make(
+      kWidth, kHeight, kRGBA_F16_SkColorType, kPremul_SkAlphaType);
+  std::vector<uint8_t> dst_pixels(dst_info.computeMinByteSize());
+  SkPixmap dst_pixmap(dst_info, dst_pixels.data(), dst_info.minRowBytes());
+
+  bool success = paint_image.Decode(dst_pixmap, 0, cc::AuxImage::kDefault,
+                                    cc::PaintImage::kDefaultGeneratorClientId);
+  EXPECT_TRUE(success);
 }
 
 TEST_F(PaintCanvasVideoRendererTest, RGBAF16_N32_Output) {

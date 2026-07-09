@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "media/renderers/paint_canvas_video_renderer.h"
 
 #include <GLES3/gl3.h>
@@ -55,6 +54,7 @@
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "third_party/fp16/src/include/fp16.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageGenerator.h"
@@ -593,9 +593,12 @@ SkImageInfo GetVideoImageGeneratorSkImageInfo(
   const auto color_type = frame->format() == PIXEL_FORMAT_RGBAF16
                               ? kRGBA_F16_SkColorType
                               : kN32_SkColorType;
-  return SkImageInfo::Make(
-      frame->visible_rect().width(), frame->visible_rect().height(), color_type,
-      kPremul_SkAlphaType, frame_color_space.ToSkColorSpace());
+  const auto alpha_type = media::IsOpaque(frame->format())
+                              ? kOpaque_SkAlphaType
+                              : kPremul_SkAlphaType;
+  return SkImageInfo::Make(frame->visible_rect().width(),
+                           frame->visible_rect().height(), color_type,
+                           alpha_type, frame_color_space.ToSkColorSpace());
 }
 
 }  // anonymous namespace
@@ -624,6 +627,21 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
                  cc::PaintImage::GeneratorClientId client_id,
                  uint32_t lazy_pixel_ref) override {
     DCHECK_EQ(frame_index, 0u);
+
+    if (IsYuvPlanar(frame_->format()) &&
+        dst_pixmap.colorType() != kN32_SkColorType) {
+      SkBitmap temp_bitmap;
+      if (!temp_bitmap.tryAllocPixels(
+              dst_pixmap.info()
+                  .makeColorType(kN32_SkColorType)
+                  .makeColorSpace(GetSkImageInfo().refColorSpace()))) {
+        return false;
+      }
+      PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
+          frame_.get(), UNSAFE_SKBITMAP_TO_BYTES_SPAN(temp_bitmap),
+          temp_bitmap.rowBytes(), kN32_SkColorType);
+      return temp_bitmap.pixmap().readPixels(dst_pixmap);
+    }
 
     // If skia couldn't do the YUV conversion on GPU, we will on CPU.
     PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
