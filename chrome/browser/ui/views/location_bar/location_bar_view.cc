@@ -525,14 +525,9 @@ void LocationBarView::Init() {
     if (!apps::features::ShouldShowLinkCapturingUX()) {
       params.types_enabled.push_back(PageActionIconType::kIntentPicker);
     }
-    params.types_enabled.push_back(PageActionIconType::kPwaInstall);
-    params.types_enabled.push_back(PageActionIconType::kTranslate);
     params.types_enabled.push_back(PageActionIconType::kZoom);
 
     params.types_enabled.push_back(PageActionIconType::kCookieControls);
-    params.types_enabled.push_back(
-        PageActionIconType::kPaymentsOfferNotification);
-    params.types_enabled.push_back(PageActionIconType::kMemorySaver);
     params.types_enabled.push_back(PageActionIconType::kFederation);
   }
   params.types_enabled.push_back(PageActionIconType::kSaveCard);
@@ -540,21 +535,6 @@ void LocationBarView::Init() {
   params.types_enabled.push_back(PageActionIconType::kFilledCardInformation);
   params.types_enabled.push_back(PageActionIconType::kVirtualCardEnroll);
   params.types_enabled.push_back(PageActionIconType::kMandatoryReauth);
-
-  if (browser_ && lens::features::IsOmniboxEntryPointEnabled()) {
-    // The persistent compact entrypoint should be positioned directly before
-    // the star icon and the prominent expanding entrypoint should be
-    // positioned in the leading position. This entrypoint will be suppressed
-    // if the AIM page action is enabled and the user meets AIM eligibility
-    // criteria, since we want to avoid both showing up when the user focuses
-    // the Omnibox.
-    if (lens::features::IsOmniboxEntrypointAlwaysVisible()) {
-      params.types_enabled.push_back(PageActionIconType::kLensOverlay);
-    } else {
-      params.types_enabled.insert(params.types_enabled.begin(),
-                                  PageActionIconType::kLensOverlay);
-    }
-  }
 
   if (browser_ && lens::features::IsLensOverlayEduActionChipEnabled()) {
     // Position in the leading position, like the expanding entrypoint for
