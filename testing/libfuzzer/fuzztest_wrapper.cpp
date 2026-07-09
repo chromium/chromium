@@ -6,6 +6,7 @@
 // executable that contains multiple fuzzers.
 // The fuzzer binary is assumed to be in the same directory as this binary.
 
+#include <cerrno>
 #include <iostream>
 
 #include "base/command_line.h"
@@ -17,14 +18,24 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "testing/libfuzzer/buildflags.h"
+
+#if BUILDFLAG(IS_POSIX)
+#include <unistd.h>
+
+#include "base/posix/safe_strerror.h"
+#endif
 
 extern const char* kFuzzerBinary;
 extern const char* kFuzzerArgs;
 
+namespace {
+
+constexpr int kErrorExitCode = -1;  // equal to 255
+
 #if BUILDFLAG(USE_CENTIPEDE)
 
-namespace {
 void HandleReplayMode(auto& args) {
   // We're handling a centipede based fuzzer. If the last argument is a
   // filepath, we're trying to replay a testcase, since it doesn't make sense
@@ -52,15 +63,18 @@ void HandleReplayMode(auto& args) {
   // parsed correctly by centipede.
   args.pop_back();
 }
-}  // namespace
 
 #endif  // BUILDFLAG(USE_CENTIPEDE)
+
+}  // namespace
 
 int main(int argc, const char* const* argv) {
   base::CommandLine::Init(argc, argv);
   base::FilePath fuzzer_path;
   if (!base::PathService::Get(base::DIR_EXE, &fuzzer_path)) {
-    return -1;
+    std::cerr << "[FuzzTest Wrapper] ERROR: Failed to obtain base::DIR_EXE via "
+                 "PathService.\n";
+    return kErrorExitCode;
   }
   fuzzer_path = fuzzer_path.AppendASCII(kFuzzerBinary);
   base::LaunchOptions launch_options;
@@ -84,11 +98,50 @@ int main(int argc, const char* const* argv) {
     // We avoid AppendArguments because it parses switches then reorders things.
     cmdline.AppendArgNative(arg);
   }
+  // Pre-flight diagnostic checks before launching the underlying test binary.
+  if (!base::PathExists(fuzzer_path)) {
+    std::cerr
+        << "[FuzzTest Wrapper] ERROR: Target fuzzer binary not found at path: "
+        << fuzzer_path.value() << "\n"
+        << "[FuzzTest Wrapper] Please ensure that '" << kFuzzerBinary
+        << "' is listed in this wrapper's .runtime_deps and was unpacked "
+           "correctly by the bot.\n";
+    return kErrorExitCode;
+  }
+
+#if BUILDFLAG(IS_POSIX)
+  if (access(fuzzer_path.value().c_str(), X_OK) != 0) {
+    int access_err = errno;
+    std::cerr << "[FuzzTest Wrapper] ERROR: Target fuzzer binary exists at "
+              << fuzzer_path.value() << " but is not executable (errno "
+              << access_err << ": " << base::safe_strerror(access_err)
+              << ").\n";
+    return kErrorExitCode;
+  }
+#endif
+
   std::cerr << "FuzzTest wrapper launching:" << cmdline.GetCommandLineString()
             << "\n";
   base::Process p = base::LaunchProcess(cmdline, launch_options);
+  if (!p.IsValid()) {
+    std::cerr
+        << "[FuzzTest Wrapper] ERROR: base::LaunchProcess failed to launch: "
+        << fuzzer_path.value() << "\n"
+        << "[FuzzTest Wrapper] Check system logs or execvp/CreateProcess "
+           "errors above.\n";
+    return kErrorExitCode;
+  }
   int exit_code;
-  p.WaitForExit(&exit_code);
+  if (!p.WaitForExit(&exit_code)) {
+    std::cerr
+        << "[FuzzTest Wrapper] ERROR: WaitForExit failed on child process.\n";
+    return kErrorExitCode;
+  }
+  if (exit_code != 0) {
+    std::cerr << "[FuzzTest Wrapper] NOTICE: Underlying fuzzer binary exited "
+                 "with non-zero code "
+              << exit_code << "\n";
+  }
   return exit_code;
 }
 
