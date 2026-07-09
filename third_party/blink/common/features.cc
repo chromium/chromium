@@ -2657,17 +2657,13 @@ BASE_FEATURE(kVisualRectMappingApplyLocalVisualViewportTransform,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebBluetoothCancelConnect,
-// TODO(382556910): Enable on Windows when DCHECK issue is resolved.
 // TODO(40502943): Enable on Android when connect callback can be called when
 // cancelled.
-// GATT connect on Windows/Android will timeout after a few seconds if the
-// device is unreachable, so it does not have hang issue like MacOS which
-// definitely needs cancel to get from the hang state.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT);
 #else
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kWebRtcUseCaptureBeginTimestamp, base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -66,6 +66,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDiscovererWinrt {
       uint16_t characteristic_attribute_handle) const;
 
  private:
+  void OnGetGattServicesError(HRESULT hr);
+
   void OnGetGattServices(
       Microsoft::WRL::ComPtr<
           ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
@@ -95,6 +97,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDiscovererWinrt {
 
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::IBluetoothLEDevice>
       ble_device_;
+  Microsoft::WRL::ComPtr<ABI::Windows::Foundation::IAsyncOperation<
+      ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
+          GattDeviceServicesResult*>>
+      get_gatt_services_op_;
 
   GattDiscoveryCallback callback_;
   GattServiceList gatt_services_;

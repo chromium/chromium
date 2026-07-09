@@ -69,6 +69,12 @@ void ScheduleAsynchronousRejectPairing(BluetoothDevice* device) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+class TestBluetoothDevice : public MockBluetoothDevice {
+ public:
+  using BluetoothDevice::DidDisconnectGatt;
+  using MockBluetoothDevice::MockBluetoothDevice;
+};
+
 }  // namespace
 
 
@@ -137,6 +143,39 @@ TEST(BluetoothDeviceTest, CanonicalizeAddressFormat_RejectsInvalidFormats) {
     std::array<uint8_t, 6> parsed;
     EXPECT_FALSE(ParseBluetoothAddress(kInvalidFormats[i], parsed));
   }
+}
+
+TEST(BluetoothDeviceTest, GattDisconnectionFailsPendingConnection) {
+  constexpr char kTestDeviceAddress[] = "00:11:22:33:44:55";
+
+  auto adapter = base::MakeRefCounted<MockBluetoothAdapter>();
+  TestBluetoothDevice device(adapter.get(),
+                             /*bluetooth_class=*/0, "Test Device",
+                             kTestDeviceAddress,
+                             /*initially_paired=*/false,
+                             /*connected=*/false);
+
+  EXPECT_CALL(*adapter, GetDevice(kTestDeviceAddress))
+      .WillRepeatedly(Return(&device));
+  EXPECT_CALL(device, CreateGattConnection(_, _))
+      .WillOnce([&](BluetoothDevice::GattConnectionCallback callback,
+                    std::optional<BluetoothUUID> service_uuid) {
+        device.BluetoothDevice::CreateGattConnection(std::move(callback),
+                                                     service_uuid);
+      });
+  EXPECT_CALL(device, IsGattConnected()).WillRepeatedly(Return(false));
+  EXPECT_CALL(device, CreateGattConnectionImpl(_))
+      .WillOnce([&](std::optional<BluetoothUUID> service_uuid) {
+        device.DidDisconnectGatt();
+      });
+
+  base::test::TestFuture<std::unique_ptr<BluetoothGattConnection>,
+                         std::optional<BluetoothDevice::ConnectErrorCode>>
+      future;
+  device.CreateGattConnection(future.GetCallback(),
+                              /*service_uuid=*/std::nullopt);
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_EQ(future.Get<1>(), BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
 }
 
 TEST(BluetoothDeviceTest, GattConnectionErrorReentrancy) {
