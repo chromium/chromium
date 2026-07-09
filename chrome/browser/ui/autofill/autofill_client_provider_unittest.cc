@@ -119,8 +119,7 @@ class AutofillClientProviderTest : public AutofillClientProviderBaseTest {
   AutofillClientProviderTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kAutofillThirdPartyModeContentProvider,
-         features::kAutofillDeepLinkAutofillOptions,
-         features::kAutofillThirdPartyModeRestoredOnStart},
+         features::kAutofillDeepLinkAutofillOptions},
         {});
   }
 

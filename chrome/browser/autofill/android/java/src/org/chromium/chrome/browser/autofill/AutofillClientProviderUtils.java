@@ -21,7 +21,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -152,9 +151,7 @@ public class AutofillClientProviderUtils {
     @CalledByNative
     public static void updatePackageUsedForAutofill(
             @JniType("PrefService*") PrefService prefs, boolean currentlyUsesPlatformAutofill) {
-        if (currentlyUsesPlatformAutofill
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_THIRD_PARTY_MODE_RESTORED_ON_START)) {
+        if (currentlyUsesPlatformAutofill) {
             saveThirdPartyPackageUsedForAutofill(prefs, currentlyUsesPlatformAutofill);
         } else {
             prefs.setString(Pref.AUTOFILL_THIRD_PARTY_PACKAGE_USED_FOR_PLATFORM_AUTOFILL, "");
