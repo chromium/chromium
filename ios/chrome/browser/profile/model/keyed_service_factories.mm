@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/autofill/model/autocomplete_history_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/autofill_image_fetcher_factory.h"
 #import "ios/chrome/browser/autofill/model/autofill_log_router_factory.h"
+#import "ios/chrome/browser/autofill/model/autofill_policy_service_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_ai_model_cache_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_ai_model_executor_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
@@ -232,6 +233,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   autofill::AutocompleteHistoryManagerFactory::GetInstance();
   autofill::AutofillImageFetcherFactory::GetInstance();
   autofill::AutofillLogRouterFactory::GetInstance();
+  autofill::AutofillPolicyServiceFactory::GetInstance();
   autofill::PersonalDataManagerFactory::GetInstance();
   autofill::StrikeDatabaseFactory::GetInstance();
   client_certificates::CertificateStoreFactory::GetInstance();

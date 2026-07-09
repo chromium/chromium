@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+components/account_settings",
+  "+components/keyed_service/ios",
   "+components/personal_context",
   "+components/subscription_eligibility",
   "+components/wallet/core/browser",

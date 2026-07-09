@@ -143,6 +143,9 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
                        std::optional<FillingProduct> product) override;
   bool IsAutofillEnabled() const override;
   bool IsAutofillProfileEnabled() const override;
+  bool IsAutofillTypeBlockedByPolicy(
+      const GURL& url,
+      AutofillPolicyDataCategory category) const override;
   bool IsWalletPublicPassStorageEnabled() const override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() const override;

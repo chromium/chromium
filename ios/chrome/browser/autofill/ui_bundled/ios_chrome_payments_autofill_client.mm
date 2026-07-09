@@ -47,6 +47,7 @@
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
@@ -496,7 +497,17 @@ void IOSChromePaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
 void IOSChromePaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {}
 
 bool IOSChromePaymentsAutofillClient::IsAutofillPaymentMethodsEnabled() const {
-  return prefs::IsAutofillPaymentMethodsEnabled(pref_service_);
+  if (!prefs::IsAutofillPaymentMethodsEnabled(pref_service_)) {
+    return false;
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableAutofillSettingsEnterprisePolicy) &&
+      client_->IsAutofillTypeBlockedByPolicy(
+          client_->GetLastCommittedPrimaryMainFrameURL(),
+          AutofillClient::AutofillPolicyDataCategory::kPayments)) {
+    return false;
+  }
+  return true;
 }
 
 void IOSChromePaymentsAutofillClient::DisablePaymentsAutofill() {

@@ -20,6 +20,8 @@ source_set("model") {
     "autofill_image_fetcher_impl.mm",
     "autofill_log_router_factory.cc",
     "autofill_log_router_factory.h",
+    "autofill_policy_service_factory.h",
+    "autofill_policy_service_factory.mm",
     "form_input_suggestions_provider.h",
     "form_suggestion_controller.h",
     "form_suggestion_controller.mm",
@@ -100,7 +102,10 @@ source_set("model") {
     "//ui/base",
     "//url",
   ]
-  public_deps = [ ":constants" ]
+  public_deps = [
+    ":constants",
+    "//components/keyed_service/ios",
+  ]
   frameworks = [ "QuartzCore.framework" ]
 }
 

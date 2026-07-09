@@ -10,7 +10,9 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
+#import "base/values.h"
 #import "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
@@ -28,6 +30,7 @@
 #import "components/infobars/core/infobar_delegate.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "ios/chrome/browser/autofill/model/autofill_agent_delegate.h"
+#import "ios/chrome/browser/autofill/model/autofill_policy_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -136,11 +139,14 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
   id autofill_agent_delegate_;
   id mock_snackbar_handler_;
 
+  TestProfileIOS* profile() { return profile_.get(); }
+
  private:
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};
-  web::WebTaskEnvironment task_environment_;
+
   web::ScopedTestingWebClient web_client_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<ChromeAutofillClientIOS> autofill_client_;
@@ -270,6 +276,100 @@ TEST_F(ChromeAutofillClientIOSTest, ShowAutofillAiPreFetchFailureNotification) {
   // Calling it again should replace the existing one, so count remains 1.
   client().ShowAutofillAiPreFetchFailureNotification();
   EXPECT_EQ(infobar_manager->infobars().size(), 1u);
+}
+
+// Tests that IsAutofillTypeBlockedByPolicy returns true when a domain
+// is blocked by enterprise policy, and false otherwise.
+TEST_F(ChromeAutofillClientIOSTest, IsAutofillTypeBlockedByPolicy) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy);
+
+  // Default is not blocked.
+  EXPECT_FALSE(client().IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.example.com"),
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo));
+  EXPECT_TRUE(client().IsAutofillProfileEnabled());
+
+  // Block the domain.
+  base::ListValue blocked_list;
+  base::DictValue entry;
+  entry.Set("url_pattern", "https://[*.]example.com");
+  base::ListValue blocked_types;
+  blocked_types.Append("contact_info");
+  entry.Set("blocked_types", std::move(blocked_types));
+  blocked_list.Append(std::move(entry));
+  profile()->GetPrefs()->SetList(prefs::kAutofillTypesBlocked,
+                                 std::move(blocked_list));
+
+  EXPECT_TRUE(client().IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.example.com"),
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo));
+
+  // Navigate to blocked domain.
+  web::test::LoadHtml(@"<body></body>", GURL("https://www.example.com"),
+                      web_state());
+  EXPECT_FALSE(client().IsAutofillProfileEnabled());
+
+  // Different category is not blocked.
+  EXPECT_FALSE(client().IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.example.com"),
+      AutofillClient::AutofillPolicyDataCategory::kPayments));
+
+  // Different domain is not blocked.
+  EXPECT_FALSE(client().IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.google.com"),
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo));
+
+  // Navigate to unblocked domain.
+  web::test::LoadHtml(@"<body></body>", GURL("https://www.google.com"),
+                      web_state());
+  EXPECT_TRUE(client().IsAutofillProfileEnabled());
+}
+
+// Tests that IsAutofillTypeBlockedByPolicy correctly applies the original
+// profile's enterprise policy settings when queried from an incognito profile.
+TEST_F(ChromeAutofillClientIOSTest, IsAutofillTypeBlockedByPolicy_Incognito) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy);
+
+  // Block the domain on the regular profile.
+  base::ListValue blocked_list;
+  base::DictValue entry;
+  entry.Set("url_pattern", "https://[*.]example.com");
+  base::ListValue blocked_types;
+  blocked_types.Append("contact_info");
+  entry.Set("blocked_types", std::move(blocked_types));
+  blocked_list.Append(std::move(entry));
+  profile()->GetPrefs()->SetList(prefs::kAutofillTypesBlocked,
+                                 std::move(blocked_list));
+
+  // Create an incognito profile.
+  TestProfileIOS* otr_profile =
+      profile()->CreateOffTheRecordProfileWithTestingFactories();
+
+  // Ensure the policy service maps to the regular profile's policy service.
+  EXPECT_EQ(AutofillPolicyServiceFactory::GetForProfile(profile()),
+            AutofillPolicyServiceFactory::GetForProfile(otr_profile));
+
+  // Create a client for the incognito profile.
+  web::WebState::CreateParams params(otr_profile);
+  std::unique_ptr<web::WebState> otr_web_state = web::WebState::Create(params);
+  otr_web_state->GetView();
+  otr_web_state->SetKeepRenderProcessAlive(true);
+
+  AutofillAgent* otr_autofill_agent =
+      [[AutofillAgent alloc] initWithPrefService:otr_profile->GetPrefs()
+                                        webState:otr_web_state.get()];
+  InfoBarManagerImpl::CreateForWebState(otr_web_state.get());
+  WithFakedFromWebState<ChromeAutofillClientIOS> otr_client(
+      otr_profile, otr_web_state.get(),
+      InfoBarManagerImpl::FromWebState(otr_web_state.get()),
+      otr_autofill_agent);
+
+  // The incognito client should correctly report the blocked policy.
+  EXPECT_TRUE(otr_client.IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.example.com"),
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo));
 }
 
 }  // namespace autofill

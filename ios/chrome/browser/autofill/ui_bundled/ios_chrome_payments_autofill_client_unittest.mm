@@ -17,6 +17,7 @@
 #import "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/strings/grit/components_strings.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -166,11 +168,27 @@ class TestChromeAutofillClient
 
   bool DidRemoveSaveCardInfobar() { return removed_save_card_infobar_; }
 
+  void set_last_committed_primary_main_frame_url(const GURL& url) {
+    last_committed_primary_main_frame_url_ = url;
+  }
+
+  const GURL& GetLastCommittedPrimaryMainFrameURL() const override {
+    if (!last_committed_primary_main_frame_url_.is_empty()) {
+      return last_committed_primary_main_frame_url_;
+    }
+    return ChromeAutofillClientIOS::GetLastCommittedPrimaryMainFrameURL();
+  }
+
  private:
   bool removed_save_card_infobar_ = false;
+  GURL last_committed_primary_main_frame_url_;
 };
 
 class IOSChromePaymentsAutofillClientTest : public PlatformTest {
+ private:
+  web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+
  public:
   void SetUp() override {
     PlatformTest::SetUp();
@@ -219,11 +237,9 @@ class IOSChromePaymentsAutofillClientTest : public PlatformTest {
 
  protected:
   FakeAutofillCommands* autofill_commands_;
+  std::unique_ptr<TestProfileIOS> profile_;
 
  private:
-  web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestProfileIOS> profile_;
   AutofillAgent* autofill_agent_;
   std::unique_ptr<TestChromeAutofillClient> autofill_client_;
 
@@ -830,6 +846,40 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
       cache->GetUnmaskedCard(card.server_id(), test_origin);
   ASSERT_TRUE(cached_card);
   EXPECT_EQ(cached_card->cvc(), u"123");
+}
+
+// Tests that IsAutofillPaymentMethodsEnabled returns true when a domain
+// is not blocked by enterprise policy, and false when blocked.
+TEST_F(IOSChromePaymentsAutofillClientTest, IsAutofillPaymentMethodsEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy);
+
+  // Default is enabled (not blocked).
+  EXPECT_TRUE(payments_client()->IsAutofillPaymentMethodsEnabled());
+
+  // Block the domain for payments category.
+  base::ListValue blocked_list;
+  base::DictValue entry;
+  entry.Set("url_pattern", "https://[*.]example.com");
+  base::ListValue blocked_types;
+  blocked_types.Append("payments");
+  entry.Set("blocked_types", std::move(blocked_types));
+  blocked_list.Append(std::move(entry));
+  profile_->GetPrefs()->SetList(prefs::kAutofillTypesBlocked,
+                                std::move(blocked_list));
+
+  // Navigate to blocked domain.
+  client()->set_last_committed_primary_main_frame_url(
+      GURL("https://www.example.com"));
+
+  EXPECT_FALSE(payments_client()->IsAutofillPaymentMethodsEnabled());
+
+  // Navigate to unblocked domain.
+  client()->set_last_committed_primary_main_frame_url(
+      GURL("https://www.google.com"));
+
+  EXPECT_TRUE(payments_client()->IsAutofillPaymentMethodsEnabled());
 }
 
 }  // namespace
