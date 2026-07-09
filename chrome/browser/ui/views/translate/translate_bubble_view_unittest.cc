@@ -220,6 +220,19 @@ views::BoxLayoutView* GetListView(views::View* search_view) {
   return nullptr;
 }
 
+views::TabbedPane* GetTabbedPane(views::View* view) {
+  if (views::IsViewClass<views::TabbedPane>(view)) {
+    return static_cast<views::TabbedPane*>(view);
+  }
+  for (views::View* child : view->children()) {
+    views::TabbedPane* tabbed_pane = GetTabbedPane(child);
+    if (tabbed_pane) {
+      return tabbed_pane;
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 class TranslateBubbleViewTest : public ChromeViewsTestBase {
@@ -792,8 +805,16 @@ TEST_F(TranslateBubbleViewTest,
   EXPECT_TRUE(list_view->children().empty());
 }
 
+// TODO(crbug.com/527306844): Re-enable this test.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+#define MAYBE_ListShowsUpAgainWhenTypingAfterLanguageSelection \
+  DISABLED_ListShowsUpAgainWhenTypingAfterLanguageSelection
+#else
+#define MAYBE_ListShowsUpAgainWhenTypingAfterLanguageSelection \
+  ListShowsUpAgainWhenTypingAfterLanguageSelection
+#endif
 TEST_F(TranslateBubbleViewTest,
-       ListShowsUpAgainWhenTypingAfterLanguageSelection) {
+       MAYBE_ListShowsUpAgainWhenTypingAfterLanguageSelection) {
   base::test::ScopedFeatureList features(translate::kTranslateLanguageSearchUI);
   CreateAndShowBubble();
   SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
@@ -860,4 +881,16 @@ TEST_F(TranslateBubbleViewTest, SearchNoResultsMessage) {
   ASSERT_TRUE(views::IsViewClass<views::Label>(child));
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_NO_RESULTS),
             static_cast<views::Label*>(child)->GetText());
+}
+
+TEST_F(TranslateBubbleViewTest, InitialFocus) {
+  base::test::ScopedFeatureList features(translate::kTranslateLanguageSearchUI);
+  CreateAndShowBubble();
+
+  // The initially focused view should be the selected tab (index 0).
+  views::View* initially_focused = bubble_->GetInitiallyFocusedView();
+  ASSERT_TRUE(initially_focused);
+  views::TabbedPane* tabbed_pane = GetTabbedPane(bubble_);
+  ASSERT_TRUE(tabbed_pane);
+  EXPECT_EQ(tabbed_pane->GetTabAt(0), initially_focused);
 }

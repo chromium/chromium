@@ -240,6 +240,14 @@ void TranslateBubbleView::Init() {
 }
 
 views::View* TranslateBubbleView::GetInitiallyFocusedView() {
+  // Focus the selected tab of the tabbed pane (source / target language tabs)
+  // initially when visible. Focus should not fall back to default focus
+  // traversal because it may set focus to the "Choose target language" button.
+  if (tabbed_pane_ && tabbed_pane_->GetVisible() &&
+      tabbed_pane_->GetSelectedTabIndex() !=
+          views::TabbedPaneTabStrip::kNoSelectedTab) {
+    return tabbed_pane_->GetTabAt(tabbed_pane_->GetSelectedTabIndex());
+  }
   return GetCurrentView()->GetNextFocusableView();
 }
 
