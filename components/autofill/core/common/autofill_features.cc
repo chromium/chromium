@@ -577,18 +577,6 @@ BASE_FEATURE(kAutofillEnableAddressFieldParserNG,
 BASE_FEATURE(kAutofillEnableAutofillSettingsEnterprisePolicy,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, FormFieldParser::MatchesRegexWithCache tries to avoid
-// re-computing whether a regex matches an input string by caching the result.
-// The result size is controlled by
-// kAutofillEnableCacheForRegexMatchingCacheSizeParam.
-BASE_FEATURE(kAutofillEnableCacheForRegexMatching,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kAutofillEnableCacheForRegexMatchingCacheSizeParam,
-                   &kAutofillEnableCacheForRegexMatching,
-                   "cache_size",
-                   1000);
-
 // Controls whether the deduplication process for Autofill profiles is run on a
 // background thread to avoid blocking the UI thread.
 // TODO(crbug.com/496889243): Remove when launched.

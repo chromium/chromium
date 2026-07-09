@@ -132,7 +132,7 @@ struct ParsingContext {
   const bool better_placeholder_support{base::FeatureList::IsEnabled(
       features::kAutofillBetterLocalHeuristicPlaceholderSupport)};
 
-  std::optional<RegexMatchesCache> matches_cache;
+  RegexMatchesCache matches_cache{1000};
   raw_ref<AutofillRegexCache> regex_cache;
 
   raw_ptr<LogManager> log_manager;

@@ -159,13 +159,7 @@ ParsingContext::ParsingContext(base::span<const FormFieldData> fields,
       pattern_file(pattern_file),
       active_features(active_features),
       regex_cache(GetAutofillRegexCache()),
-      log_manager(log_manager) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableCacheForRegexMatching)) {
-    matches_cache.emplace(
-        features::kAutofillEnableCacheForRegexMatchingCacheSizeParam.Get());
-  }
-}
+      log_manager(log_manager) {}
 
 ParsingContext::ParsingContext(
     base::span<const std::unique_ptr<AutofillField>> fields,
@@ -180,13 +174,7 @@ ParsingContext::ParsingContext(
       pattern_file(pattern_file),
       active_features(active_features),
       regex_cache(GetAutofillRegexCache()),
-      log_manager(log_manager) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableCacheForRegexMatching)) {
-    matches_cache.emplace(
-        features::kAutofillEnableCacheForRegexMatchingCacheSizeParam.Get());
-  }
-}
+      log_manager(log_manager) {}
 
 ParsingContext::~ParsingContext() = default;
 
@@ -197,9 +185,9 @@ bool FormFieldParser::MatchesRegexWithCache(
     std::u16string_view pattern,
     std::vector<std::u16string>* groups) {
   RegexMatchesCache::Key key;
-  if (!groups && context.matches_cache) {
+  if (!groups) {
     key = RegexMatchesCache::BuildKey(input, pattern);
-    std::optional<bool> cache_entry = context.matches_cache->Get(key);
+    std::optional<bool> cache_entry = context.matches_cache.Get(key);
     if (cache_entry.has_value()) {
       return cache_entry.value();
     }
@@ -207,8 +195,8 @@ bool FormFieldParser::MatchesRegexWithCache(
   const icu::RegexPattern* regex_pattern =
       context.regex_cache->GetRegexPattern(pattern);
   bool result = MatchesRegex(input, regex_pattern, groups);
-  if (!groups && context.matches_cache) {
-    context.matches_cache->Put(key, result);
+  if (!groups) {
+    context.matches_cache.Put(key, result);
   }
   return result;
 }
