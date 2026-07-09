@@ -8,6 +8,7 @@ import type {ReadLaterEntry} from './reading_list.mojom-webui.js';
 import type {ReadingListAppElement} from './reading_list_app.js';
 
 export function getHtml(this: ReadingListAppElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="content" ?hidden="${this.loadingContent_}">
   <div class="sp-scroller sp-scroller-top-of-page"
@@ -20,18 +21,19 @@ export function getHtml(this: ReadingListAppElement) {
     </sp-empty-state>
   </div>
 
-  <div class="sp-scroller sp-scroller-top-of-page" ?hidden="${!this.getAllItems_().length}">
+  <div id="scroller" class="sp-scroller sp-scroller-top-of-page"
+      ?hidden="${!this.getAllItems_().length}">
     <cr-lazy-list id="readingListList" class="sp-card"
         .items="${this.getAllItems_()}"
         .itemSize="${this.itemSize_}"
-        .minViewportHeight="${this.minViewportHeight_}"
         .scrollTarget="${this.scrollTarget_}"
         ?hidden="${!this.shouldShowList_()}"
         @keydown="${this.onItemKeydown_}"
         @viewport-filled="${this.onViewportFilled_}"
         .restoreFocusElement="${this.focusedItem_}"
         .template="${
-      (item: ReadLaterEntry, index: number) => !item.url ? html`
+      (item: ReadLaterEntry, index: number) => !item.url ?
+      html`
       <sp-heading compact hide-back-button>
         <h2 slot="heading">${item.title}</h2>
         <cr-icon-button slot="buttons"
@@ -43,7 +45,7 @@ export function getHtml(this: ReadingListAppElement) {
         </cr-icon-button>
       </sp-heading>
     ` :
-                                                           html`
+      html`
       <reading-list-item data-url="${item.url}" data-index="${index}"
           @focus="${this.onItemFocus_}"
           aria-label="${this.ariaLabel_(item)}" class="unread-item"
@@ -68,4 +70,5 @@ export function getHtml(this: ReadingListAppElement) {
   </sp-footer>
 </div>
 <!--_html_template_end_-->`;
+  // clang-format on
 }

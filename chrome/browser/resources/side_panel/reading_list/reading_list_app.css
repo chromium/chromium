@@ -16,6 +16,11 @@
   height: 100vh;
 }
 
+.sp-scroller {
+  flex: 1;
+  min-height: 0;
+}
+
 cr-icon-button {
   --cr-icon-button-icon-size: var(--mwb-icon-size);
   --cr-icon-button-size: calc(var(--mwb-icon-size) * 1.5);

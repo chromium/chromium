@@ -39,6 +39,7 @@ export interface ReadingListAppElement {
   $: {
     footer: HTMLElement,
     readingListList: CrLazyListElement<ReadLaterEntry>,
+    scroller: HTMLElement,
   };
 }
 
@@ -70,7 +71,6 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
       buttonRipples: {type: Boolean},
       loadingContent_: {type: Boolean},
       itemSize_: {type: Number},
-      minViewportHeight_: {type: Number},
       scrollTarget_: {type: Object},
       unreadHeader_: {type: String},
       readHeader_: {type: String},
@@ -89,7 +89,6 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
   accessor buttonRipples: boolean = loadTimeData.getBoolean('useRipples');
   protected accessor loadingContent_: boolean = true;
   protected accessor itemSize_: number = 48;
-  protected accessor minViewportHeight_: number = 0;
   protected accessor scrollTarget_: HTMLElement = document.documentElement;
   private accessor unreadHeader_: string =
       loadTimeData.getString('unreadHeader');
@@ -113,7 +112,6 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
       // state.
       if (document.visibilityState === 'visible') {
         this.updateReadLaterEntries_();
-        this.updateViewportHeight_();
       }
     };
   }
@@ -137,9 +135,8 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
             (state: CurrentPageActionButtonState) =>
                 this.updateCurrentPageActionButton_(state)));
 
-    this.scrollTarget_ = this.$.readingListList;
+    this.scrollTarget_ = this.$.scroller;
     this.updateReadLaterEntries_();
-    this.updateViewportHeight_();
     this.apiProxy_.updateCurrentPageActionButtonState();
 
     this.readingListEventTracker_.add(
@@ -199,15 +196,6 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     if (changedPrivateProperties.has('focusedIndex_')) {
       this.updateFocusedItem_();
     }
-  }
-
-  private updateViewportHeight_() {
-    this.apiProxy_.getWindowData().then(({windows}) => {
-      const activeWindow = windows.find((w) => w.active);
-      const windowHeight =
-          activeWindow ? activeWindow.height : windows[0]!.height;
-      this.minViewportHeight_ = windowHeight - this.$.footer.offsetHeight;
-    });
   }
 
   getFocusedIndexForTesting() {
