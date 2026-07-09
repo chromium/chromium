@@ -189,6 +189,68 @@ TEST_F(JavaScriptAutofillTrackerTest, AutofillAndRefillIgnored) {
   EXPECT_TRUE(logs.empty());
 }
 
+// Test that if JavaScript modifies fields in a different form than the
+// currently focused field, the modifications are ignored when the timer fires.
+TEST_F(JavaScriptAutofillTrackerTest, IgnoreCrossFormModifications) {
+  LoadHTML(R"(
+      <form id="form_1">
+        <input id="text_1_1">
+      </form>
+      <form id="form_2">
+        <input id="text_2_1">
+        <input id="text_2_2">
+        <input id="text_2_3">
+      </form>)");
+
+  EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(0);
+
+  // Helper to trigger JS set value.
+  auto js_set_value = [this](const char* id, const char* value) {
+    ExecuteJavaScriptForTests(base::StringPrintf(
+        R"(document.getElementById('%s').value = '%s';)", id, value));
+  };
+
+  const std::vector<JavaScriptAutofillTracker::JsChangeRecord>& logs =
+      test_api(test_api(autofill_agent()).javascript_autofill_tracker())
+          .js_logs();
+
+  GetMainFrame()->NotifyUserActivation(
+      blink::mojom::UserActivationNotificationType::kInteraction);
+
+  // Focus a field in form_1.
+  Focus("text_1_1");
+
+  // Modify 3 fields in form_2.
+  js_set_value("text_2_1", "val_1");
+  js_set_value("text_2_2", "val_2");
+  js_set_value("text_2_3", "val_3");
+
+  ASSERT_EQ(logs.size(), 3u);
+
+  // Fast forward time so the timer fires. Because the focused field belongs to
+  // form_1 while the modified fields belong to form_2,
+  // DidDetectJavaScriptAutofill() should not be called and logs should be
+  // cleared.
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  EXPECT_TRUE(logs.empty());
+  testing::Mock::VerifyAndClearExpectations(&autofill_driver());
+
+  // Focus a field in form_2 and modify the same fields in form_2.
+  // Now that the focused field belongs to the same form as the modified fields,
+  // DidDetectJavaScriptAutofill() should be called.
+  EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(1);
+
+  Focus("text_2_1");
+  js_set_value("text_2_1", "val_1_new");
+  js_set_value("text_2_2", "val_2_new");
+  js_set_value("text_2_3", "val_3_new");
+
+  ASSERT_EQ(logs.size(), 3u);
+
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  EXPECT_TRUE(logs.empty());
+}
+
 }  // namespace
 
 }  // namespace autofill

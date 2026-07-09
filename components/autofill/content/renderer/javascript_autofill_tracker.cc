@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -153,14 +154,8 @@ void JavaScriptAutofillTracker::DetectJavaScriptAutofill() {
       return;
   }
 
-  blink::WebFormControlElement first_modified_field =
-      form_util::GetFormControlByRendererId(logs.front().modified_field_id);
-  if (!first_modified_field) {
-    return;
-  }
-
   blink::WebFormElement target_form =
-      first_modified_field.GetOwningFormForAutofill();
+      first_focused_field.GetOwningFormForAutofill();
   std::erase_if(logs, [&](const JsChangeRecord& record) {
     blink::WebFormControlElement element =
         form_util::GetFormControlByRendererId(record.modified_field_id);
@@ -176,9 +171,7 @@ void JavaScriptAutofillTracker::DetectJavaScriptAutofill() {
     return;
   }
 
-  callback_.Run(
-      form_util::GetFormRendererId(target_form), logs.front().focused_field_id,
-      std::vector<FieldRendererId>(unique_fields.begin(), unique_fields.end()));
+  callback_.Run(first_focused_field, base::ToVector(unique_fields));
 }
 
 }  // namespace autofill
