@@ -221,7 +221,19 @@ void WebGpuRecyclableResourceProvider::EndExternalWrite(
     return;
   }
 
-  resource()->EndExternalWrite(external_write_sync_token);
+  // Ensure that any subsequent internal accesses wait for the external write to
+  // complete.
+  WaitSyncToken(external_write_sync_token);
+
+  // Additionally ensure that the next external read waits for the external
+  // write to complete by ensuring that a new sync token is generated on the
+  // internal interface. This new sync token will be chained after
+  // `external_write_sync_token` thanks to the wait above.
+  auto access = resource()->GetSharedImage()->BeginRasterAccess(
+      RasterInterface(), resource()->acquire_sync_token(), /*readonly=*/true);
+  auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
+  resource()->SetReleaseSyncToken(sync_token);
+  resource()->GetSharedImage()->UpdateDestructionSyncToken(sync_token);
 }
 
 void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
