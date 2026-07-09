@@ -35,6 +35,9 @@ message ReadAloudGenerateTextRequest {
 
   // Text segments extracted from the webpage's distilled content.
   repeated string page_content = 2;
+
+  // Sanitized origin or URL of the webpage (query params scrubbed by client).
+  string page_url = 3 [features = { field_presence: EXPLICIT }];
 }
 
 // Response message containing the generated text for Read Aloud AI Playback
@@ -42,4 +45,10 @@ message ReadAloudGenerateTextRequest {
 message ReadAloudGenerateTextResponse {
   // The generated text output ready to be sent for speech synthesis.
   string generated_text = 1 [features = { field_presence: EXPLICIT }];
+
+  // Inferred title of the article/document.
+  string title = 2 [features = { field_presence: EXPLICIT }];
+
+  // Inferred publisher or domain of the article/document.
+  string publisher = 3 [features = { field_presence: EXPLICIT }];
 }
