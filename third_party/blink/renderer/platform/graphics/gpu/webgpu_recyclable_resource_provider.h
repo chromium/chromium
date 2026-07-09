@@ -54,7 +54,6 @@ class CanvasImageProvider;
 
 class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
     : public CanvasMemoryDumpClient,
-      public CanvasResourceSharedImage::Client,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver {
  public:
   static std::unique_ptr<WebGpuRecyclableResourceProvider> Create(
@@ -123,17 +122,11 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
       const gfx::HDRMetadata&,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
 
-  void ClearUnusedResources();
   bool IsGpuContextLost() const;
   CanvasImageProvider* GetOrCreateImageProvider();
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
-
-  // CanvasResourceSharedImage::Client implementation.
-  void OnResourceRefReturned(
-      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
-  void OnDestroyResource() override {}
 
   // CanvasMemoryDumpClient implementation.
   base::ByteSize EstimatedSizeInBytes() const;
@@ -144,8 +137,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   bool IsValid() const;
 
   gpu::raster::RasterInterface* RasterInterface() const;
-  base::WeakPtr<WebGpuRecyclableResourceProvider> CreateWeakPtr();
-
 
   CanvasResourceSharedImage* resource() {
     return static_cast<CanvasResourceSharedImage*>(resource_.get());
@@ -178,9 +169,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   bool is_cleared_ = false;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
-
-  base::WeakPtrFactory<WebGpuRecyclableResourceProvider> weak_ptr_factory_{
-      this};
 };
 
 }  // namespace blink

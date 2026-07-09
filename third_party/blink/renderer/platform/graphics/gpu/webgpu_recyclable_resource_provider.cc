@@ -41,11 +41,6 @@
 
 namespace blink {
 
-base::WeakPtr<WebGpuRecyclableResourceProvider>
-WebGpuRecyclableResourceProvider::CreateWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 std::unique_ptr<WebGpuRecyclableResourceProvider>
 WebGpuRecyclableResourceProvider::Create(gfx::Size size,
                                          viz::SharedImageFormat format,
@@ -150,7 +145,7 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
       if (client_shared_image) {
         resource_ = base::MakeRefCounted<CanvasResourceSharedImage>(
             std::move(client_shared_image));
-        resource_->Initialize(CreateWeakPtr(), context_provider_wrapper_,
+        resource_->Initialize(/*client=*/nullptr, context_provider_wrapper_,
                               hdr_metadata_, /*is_accelerated=*/true);
       }
     }
@@ -177,9 +172,6 @@ void WebGpuRecyclableResourceProvider::WaitSyncToken(
     const gpu::SyncToken& sync_token) {
   resource()->WaitSyncToken(sync_token);
 }
-
-void WebGpuRecyclableResourceProvider::OnResourceRefReturned(
-    scoped_refptr<CanvasResourceSharedImage>&& resource) {}
 
 gpu::raster::RasterInterface*
 WebGpuRecyclableResourceProvider::RasterInterface() const {
