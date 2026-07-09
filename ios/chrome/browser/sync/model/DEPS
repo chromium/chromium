@@ -7,6 +7,7 @@ include_rules = [
   "+components/saved_tab_groups/public/tab_group_sync_service.h",
   "+components/sharing_message",
   "+components/skills",
+  "+components/sync_tab_context",
   "+components/trusted_vault",
   "+components/webauthn/core/browser",
   "+ios/chrome/browser/account_settings/model",

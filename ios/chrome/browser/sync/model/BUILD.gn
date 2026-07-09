@@ -18,6 +18,8 @@ source_set("model") {
     "sync_observer_bridge.mm",
     "sync_service_factory.h",
     "sync_service_factory.mm",
+    "tab_context_sync_service_factory.h",
+    "tab_context_sync_service_factory.mm",
   ]
   deps = [
     ":data_type_store_service_factory",
@@ -50,6 +52,7 @@ source_set("model") {
     "//components/sync_device_info",
     "//components/sync_preferences",
     "//components/sync_sessions",
+    "//components/sync_tab_context",
     "//components/sync_user_events",
     "//components/trusted_vault",
     "//components/variations/service",
