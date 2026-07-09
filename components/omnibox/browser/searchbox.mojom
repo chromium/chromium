@@ -451,6 +451,9 @@ interface PageHandler {
   DeleteContext(
       mojo_base.mojom.UnguessableToken token, bool from_automatic_chip);
 
+  // Notify handler of tab context deletion by tab ID.
+  DeleteTabContext(int32 tab_id);
+
   // Clears all files from cache.
   // `clear_auto_suggested_tabs` indicates whether the URLs of auto suggested
   // tabs should be blocked from being suggested again.

@@ -384,6 +384,7 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
     return;
   }
 
+  // TODO(crbug.com/528416084): Move this recontextualization logic to a helper.
   std::vector<contextual_tasks::QueryContextualizer::TabId>
       tabs_to_recontextualize;
   // Get the active tab handle now, as recontextualization is an async process
@@ -397,7 +398,21 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
     if (tab_list) {
       active_tab = tab_list->GetActiveTab();
       if (active_tab && !has_visual_selection) {
-        tabs_to_recontextualize.push_back(active_tab->GetHandle().raw_value());
+        bool should_block_recontextualize = false;
+        if (omnibox::IsTabDeselectionInComposeboxEnabled()) {
+          if (session_handle) {
+            SessionID session_id =
+                sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+            GURL current_url = active_tab->GetContents()->GetLastCommittedURL();
+            should_block_recontextualize = session_handle->IsTabDeselected(
+                session_id, current_url,
+                base::UTF16ToUTF8(active_tab->GetTitle()));
+          }
+        }
+        if (!should_block_recontextualize) {
+          tabs_to_recontextualize.push_back(
+              active_tab->GetHandle().raw_value());
+        }
       }
     }
 

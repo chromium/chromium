@@ -715,6 +715,7 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
                 for (const auto& item : context_items) {
                   if (item->is_tab() && item->get_tab()->has_chrome_tab_data) {
                     auto tab_info = searchbox::mojom::TabInfo::New();
+                    tab_info->tab_id = item->get_tab()->tab_id;
                     tab_info->url = item->get_tab()->url;
                     tab_info->title = item->get_tab()->title;
                     tab_info->tab_id =

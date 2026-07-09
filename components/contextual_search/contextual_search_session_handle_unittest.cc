@@ -13,6 +13,7 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
@@ -29,6 +30,11 @@ namespace contextual_search {
 class MockTabValidator : public ContextualSearchSessionHandle::TabValidator {
  public:
   MOCK_METHOD(bool, IsTabValidAndPointingToUrl, (const FileInfo&), (override));
+  MOCK_METHOD(
+      bool,
+      AreUrlsEquivalent,
+      (const GURL&, const std::string&, const GURL&, const std::string&),
+      (override));
 };
 
 class ContextualSearchSessionHandleTest : public testing::Test {
@@ -818,6 +824,208 @@ TEST_F(ContextualSearchSessionHandleTest, IsTabToken_ValidatesTabSessionId) {
   EXPECT_FALSE(local_handle->IsTabTokenForTesting(file_token));
   EXPECT_FALSE(local_handle->IsTabTokenForTesting(invalid_tab_token));
   EXPECT_FALSE(local_handle->IsTabTokenForTesting(unknown_token));
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       DeleteTabContext_RestoredTab_Succeeds) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kContextManagementInComposebox,
+      {{"enable_tab_deselection", "true"}});
+
+  auto local_mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  auto* local_mock_controller_ptr = local_mock_controller.get();
+
+  auto local_handle = service_->CreateSessionForTesting(
+      std::move(local_mock_controller),
+      std::make_unique<ContextualSearchMetricsRecorder>(
+          ContextualSearchSource::kUnknown));
+  local_handle->CheckSearchContentSharingSettings(&prefs_);
+
+  // Populate submitted_tabs_ to mock a restored tab.
+  base::UnguessableToken token1 = base::UnguessableToken::Create();
+  SessionID session_id1 = SessionID::NewUnique();
+  lens::LensOverlayRequestId req_id1;
+  local_handle->set_submitted_tabs({{session_id1, {token1, req_id1}}});
+  local_handle->set_submitted_context_tokens({token1});
+
+  // Verify GetTokenForTab can find it.
+  EXPECT_EQ(local_handle->GetTokenForTab(session_id1), token1);
+
+  FileInfo file_info1;
+  file_info1.file_token = token1;
+  file_info1.tab_session_id = session_id1;
+  file_info1.tab_url = GURL("https://example.com");
+  EXPECT_CALL(*local_mock_controller_ptr, GetFileInfo(token1))
+      .WillRepeatedly(testing::Return(&file_info1));
+
+  // Perform deletion of the restored tab.
+  EXPECT_TRUE(local_handle->DeleteFile(token1));
+
+  // Verify it is deselected.
+  EXPECT_TRUE(local_handle->IsTabDeselected(session_id1,
+                                            GURL("https://example.com"), ""));
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       GetSubmittedContextFileInfos_FiltersDeselectedTabs) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kContextManagementInComposebox,
+      {{"enable_tab_deselection", "true"}});
+
+  auto local_mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  auto* local_mock_controller_ptr = local_mock_controller.get();
+
+  auto local_handle = service_->CreateSessionForTesting(
+      std::move(local_mock_controller),
+      std::make_unique<ContextualSearchMetricsRecorder>(
+          ContextualSearchSource::kUnknown));
+  local_handle->CheckSearchContentSharingSettings(&prefs_);
+
+  base::UnguessableToken token1 = base::UnguessableToken::Create();
+  SessionID session_id1 = SessionID::NewUnique();
+  lens::LensOverlayRequestId req_id1;
+  local_handle->set_submitted_tabs({{session_id1, {token1, req_id1}}});
+  local_handle->set_submitted_context_tokens({token1});
+
+  FileInfo file_info1;
+  file_info1.file_token = token1;
+  file_info1.tab_session_id = session_id1;
+  file_info1.tab_url = GURL("https://example.com");
+  EXPECT_CALL(*local_mock_controller_ptr, GetFileInfo(token1))
+      .WillRepeatedly(testing::Return(&file_info1));
+
+  // Initially it should be returned.
+  EXPECT_EQ(local_handle->GetSubmittedContextFileInfos().size(), 1u);
+
+  // Deselect it.
+  EXPECT_TRUE(local_handle->DeleteFile(token1));
+
+  // Now it should be filtered out.
+  EXPECT_EQ(local_handle->GetSubmittedContextFileInfos().size(), 0u);
+}
+
+TEST_F(ContextualSearchSessionHandleTest, IsTabDeselected_ClearsOnNavigation) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kContextManagementInComposebox,
+      {{"enable_tab_deselection", "true"}});
+
+  auto local_mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  auto* local_mock_controller_ptr = local_mock_controller.get();
+
+  auto local_handle = service_->CreateSessionForTesting(
+      std::move(local_mock_controller),
+      std::make_unique<ContextualSearchMetricsRecorder>(
+          ContextualSearchSource::kUnknown));
+  local_handle->CheckSearchContentSharingSettings(&prefs_);
+
+  base::UnguessableToken token1 = local_handle->CreateContextToken();
+  SessionID session_id1 = SessionID::NewUnique();
+  FileInfo file_info1;
+  file_info1.file_token = token1;
+  file_info1.tab_session_id = session_id1;
+  file_info1.tab_url = GURL("https://google.com");
+  EXPECT_CALL(*local_mock_controller_ptr, GetFileInfo(token1))
+      .WillRepeatedly(testing::Return(&file_info1));
+  EXPECT_CALL(*local_mock_controller_ptr, DeleteFile(token1))
+      .WillOnce(testing::Return(true));
+
+  // Deselect the tab context.
+  EXPECT_TRUE(local_handle->DeleteFile(token1));
+
+  // Tab is deselected for the old URL.
+  EXPECT_TRUE(local_handle->IsTabDeselected(session_id1,
+                                            GURL("https://google.com"), ""));
+
+  // Tab is NOT deselected if it navigated to a new URL (should lazily clear
+  // deselection).
+  EXPECT_FALSE(local_handle->IsTabDeselected(
+      session_id1, GURL("https://wikipedia.org"), ""));
+
+  // Verify that querying with the old URL again also returns false (since it
+  // was cleared).
+  EXPECT_FALSE(local_handle->IsTabDeselected(session_id1,
+                                             GURL("https://google.com"), ""));
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       CreateClientToAimRequest_UserRemovedTab_SignalsDeletion) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kContextManagementInComposebox,
+      {{"enable_tab_deselection", "true"}});
+
+  auto mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  MockContextualSearchContextController* local_mock_controller_ptr =
+      mock_controller.get();
+
+  auto mock_validator = std::make_unique<MockTabValidator>();
+  MockTabValidator* mock_validator_ptr = mock_validator.get();
+  auto local_service = std::make_unique<ContextualSearchService>(
+      nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "",
+      std::move(mock_validator));
+
+  auto local_handle = local_service->CreateSessionForTesting(
+      std::move(mock_controller), nullptr);
+  local_handle->CheckSearchContentSharingSettings(&prefs_);
+  EXPECT_CALL(*mock_validator_ptr, AreUrlsEquivalent(_, _, _, _))
+      .WillRepeatedly(testing::Return(true));
+
+  // 1. Create a tab context token.
+  base::UnguessableToken tab_token = local_handle->CreateContextToken();
+
+  FileInfo tab_file_info;
+  tab_file_info.file_token = tab_token;
+  tab_file_info.tab_session_id = SessionID::FromSerializedValue(1);
+  tab_file_info.tab_url = GURL("https://google.com");
+  lens::LensOverlayRequestId req_id;
+  req_id.set_uuid(12345);
+  tab_file_info.request_id = req_id;
+
+  EXPECT_CALL(*local_mock_controller_ptr, GetFileInfo(tab_token))
+      .WillRepeatedly(testing::Return(&tab_file_info));
+
+  // 2. Submit Turn 1.
+  auto request_info1 = std::make_unique<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>();
+  EXPECT_CALL(*local_mock_controller_ptr, CreateClientToAimRequest(_))
+      .WillOnce(
+          [](std::unique_ptr<
+              ContextualSearchContextController::CreateClientToAimRequestInfo>
+                 info) { return lens::ClientToAimMessage(); });
+  local_handle->CreateClientToAimRequest(std::move(request_info1));
+
+  // 3. User explicitly deletes tab context.
+  EXPECT_TRUE(local_handle->DeleteFile(tab_token));
+  EXPECT_TRUE(local_handle->IsTabDeselected(SessionID::FromSerializedValue(1),
+                                            GURL("https://google.com"), ""));
+
+  // 4. Submit Turn 2.
+  auto request_info2 = std::make_unique<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>();
+  std::unique_ptr<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>
+      captured_info;
+  EXPECT_CALL(*local_mock_controller_ptr, CreateClientToAimRequest(_))
+      .WillOnce(
+          [&](std::unique_ptr<
+              ContextualSearchContextController::CreateClientToAimRequestInfo>
+                  info) {
+            captured_info = std::move(info);
+            return lens::ClientToAimMessage();
+          });
+
+  local_handle->CreateClientToAimRequest(std::move(request_info2));
+
+  ASSERT_TRUE(captured_info);
+  ASSERT_EQ(captured_info->removed_contexts.size(), 1u);
+  EXPECT_EQ(captured_info->removed_contexts[0].uuid(), 12345u);
 }
 
 }  // namespace contextual_search

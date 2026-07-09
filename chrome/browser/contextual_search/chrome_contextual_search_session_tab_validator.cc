@@ -56,3 +56,15 @@ bool ChromeContextualSearchSessionTabValidator::IsTabValidAndPointingToUrl(
 
   return current_key == expected_key;
 }
+
+bool ChromeContextualSearchSessionTabValidator::AreUrlsEquivalent(
+    const GURL& url1,
+    const std::string& title1,
+    const GURL& url2,
+    const std::string& title2) {
+  std::string key1 =
+      deduplication_helper_->ComputeURLDeduplicationKey(url1, title1);
+  std::string key2 =
+      deduplication_helper_->ComputeURLDeduplicationKey(url2, title2);
+  return key1 == key2;
+}

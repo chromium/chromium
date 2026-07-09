@@ -47,6 +47,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'addTabContext',
       'onDriveUploadClicked',
       'deleteContext',
+      'deleteTabContext',
       'clearFiles',
       'submitQuery',
       'openLensSearch',
@@ -221,6 +222,10 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   deleteContext(fileToken: UnguessableToken) {
     this.methodCalled('deleteContext', {fileToken});
+  }
+
+  deleteTabContext(tabId: number) {
+    this.methodCalled('deleteTabContext', {tabId});
   }
 
   clearFiles() {

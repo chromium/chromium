@@ -920,6 +920,10 @@ void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
         contextual_search::ContextUploadErrorType::kBrowserProcessingError));
     return;
   }
+  if (omnibox::IsTabDeselectionInComposeboxEnabled()) {
+    contextual_session_handle->RemoveDeselectedTab(
+        SessionID::FromSerializedValue(tab_id));
+  }
   auto context_token = contextual_session_handle->CreateContextToken();
 
   ContinueAddTabContext(tab_id, delay_upload, context_token,
@@ -1411,6 +1415,59 @@ void ContextualSearchboxHandler::DeleteContext(
   if (input_state_model_) {
     input_state_model_->OnContextChanged();
   }
+
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    if (auto* active_task_context_provider = GetActiveTaskContextProvider()) {
+      // Trigger a refresh of the active task context provider to ensure that
+      // the tab strip underlines are updated immediately to reflect the
+      // deletion (e.g. removing the underline of the deselected tab).
+      active_task_context_provider->RefreshContext();
+    }
+  }
+}
+
+void ContextualSearchboxHandler::DeleteTabContext(int32_t tab_id) {
+  if (!omnibox::IsTabDeselectionInComposeboxEnabled()) {
+    return;
+  }
+
+  SessionID session_id = SessionID::InvalidValue();
+
+  // Try to resolve tab_id as a TabHandle first.
+  auto* browser_window = webui::GetBrowserWindowInterface(web_contents_);
+  auto* tab_list =
+      browser_window ? TabListInterface::From(browser_window) : nullptr;
+  if (tab_list) {
+    for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+      tabs::TabInterface* tab = tab_list->GetTab(i);
+      if (tab && tab->GetHandle() == tabs::TabHandle(tab_id)) {
+        session_id = sessions::SessionTabHelper::IdForTab(tab->GetContents());
+        break;
+      }
+    }
+  }
+
+  // Fallback to treating tab_id as SessionID directly.
+  if (!session_id.is_valid()) {
+    session_id = SessionID::FromSerializedValue(tab_id);
+  }
+
+  // TODO(crbug.com/528416084): Consider standardizing on SessionID instead of
+  // TabHandle to avoid translation.
+
+  if (!session_id.is_valid()) {
+    mojo::ReportBadMessage("Invalid tab ID in DeleteTabContext.");
+    return;
+  }
+
+  auto* contextual_session_handle = GetContextualSessionHandle();
+  if (contextual_session_handle) {
+    base::UnguessableToken token =
+        contextual_session_handle->GetTokenForTab(session_id);
+    if (!token.is_empty()) {
+      DeleteContext(token, /*from_automatic_chip=*/false);
+    }
+  }
 }
 
 void ContextualSearchboxHandler::DeleteContextFromBrowser(
@@ -1895,6 +1952,8 @@ void ContextualSearchboxHandler::OpenUrl(
       contextual_session_handle->GetSubmittedContextTokens());
   new_contextual_session_handle->set_submitted_tabs(
       contextual_session_handle->submitted_tabs());
+  new_contextual_session_handle->set_deselected_tabs_urls(
+      contextual_session_handle->deselected_tabs_urls());
 
   // TODO(crbug.com/470404040): Determine what to do with the return
   // value of this call, or move this call to a different location.

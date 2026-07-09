@@ -1356,15 +1356,30 @@ const FeatureEntry::FeatureParam
         {"ContextManagementInComposebox", "true"},
         {"KeepMenuOpenOnTabSelectForRealboxComposebox", "true"}};
 
+const FeatureEntry::FeatureParam
+    kContextManagementEnableTabDeselectionParams[] = {
+        {"enable_tab_deselection", "true"}};
+
+const FeatureEntry::FeatureParam
+    kContextManagementKeepMenuOpenAndTabDeselectionParams[] = {
+        {"KeepMenuOpenOnTabSelectForRealboxComposebox", "true"},
+        {"enable_tab_deselection", "true"}};
+
 // Normal 'Enabled' option is just the flag enabled with param 'realbox closes
 // menu on tab select' enabled by default. 'Disabled' option disables the flag, and thus
 // the context menu and 'realbox closes menu on tab select'.
 const FeatureEntry::FeatureVariation
     kContextManagementInComposeboxVariations[] = {
-        {"Context Management in composebox (realbox closes menu on tab select)", {}},
+        {"Context Management in composebox (realbox closes menu on tab select)",
+         {}},
         {"Context management in composebox (realbox keeps menu open on tab "
          "select)",
-         kContextManagementKeepMenuOpenOnTabSelectForRealboxParams, nullptr}};
+         kContextManagementKeepMenuOpenOnTabSelectForRealboxParams, nullptr},
+        {"Context Management in composebox (with tab deselection)",
+         kContextManagementEnableTabDeselectionParams, nullptr},
+        {"Context Management in composebox (keeps menu open, with tab "
+         "deselection)",
+         kContextManagementKeepMenuOpenAndTabDeselectionParams, nullptr}};
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)

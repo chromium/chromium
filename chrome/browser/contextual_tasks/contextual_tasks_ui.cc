@@ -618,6 +618,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowLensSearchChip", false);
   source->AddBoolean("composeboxShowContextMenuTabPreviews", false);
   source->AddBoolean("composeboxContextMenuEnableMultiTabSelection", true);
+  source->AddBoolean("composeboxContextMenuEnableTabDeselection",
+                     omnibox::IsTabDeselectionInComposeboxEnabled());
   source->AddBoolean("enableGhostLoader",
                      contextual_tasks::GetIsGhostLoaderEnabled());
   source->AddBoolean(
