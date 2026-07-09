@@ -484,48 +484,65 @@ void ChromePasswordProtectionService::ShowModalWarning(
           ReusedPasswordAccountType::SAVED_PASSWORD));
   PasswordProtectionRequestContent* request_content =
       static_cast<PasswordProtectionRequestContent*>(request);
-  content::WebContents* web_contents = request_content->web_contents();
+  content::WebContents* raw_web_contents = request_content->web_contents();
+  if (!raw_web_contents) {
+    return;
+  }
+  base::WeakPtr<content::WebContents> web_contents =
+      raw_web_contents->GetWeakPtr();
   RequestOutcome outcome = request->request_outcome();
   // Don't show warning again if there is already a modal warning showing.
-  if (IsModalWarningShowingInWebContents(web_contents))
+  if (IsModalWarningShowingInWebContents(web_contents.get())) {
     return;
+  }
 
   // Exit fullscreen if this |web_contents| is showing in fullscreen mode.
   if (web_contents->IsFullscreen())
     web_contents->ExitFullscreen(true);
+  // On MacOS, displaying a modal triggers a nested run loop where WebContents
+  // could have been destroyed. So, if WebContents was destroyed, return early.
+  if (!web_contents) {
+    return;
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   (new PasswordReuseControllerAndroid(
-       web_contents, this, profile_->GetPrefs(), password_type,
+       web_contents.get(), this, profile_->GetPrefs(), password_type,
        base::BindOnce(&ChromePasswordProtectionService::OnUserAction,
-                      base::Unretained(this), web_contents, password_type,
-                      outcome, verdict_type, verdict_token,
+                      weak_ptr_factory_.GetWeakPtr(), web_contents,
+                      password_type, outcome, verdict_type, verdict_token,
                       WarningUIType::MODAL_DIALOG)))
       ->ShowDialog();
 #else   // !BUILDFLAG(IS_ANDROID)
   ShowPasswordReuseModalWarningDialog(
-      web_contents, this, password_type,
+      web_contents.get(), this, password_type,
       base::BindOnce(&ChromePasswordProtectionService::OnUserAction,
-                     base::Unretained(this), web_contents, password_type,
-                     outcome, verdict_type, verdict_token,
+                     weak_ptr_factory_.GetWeakPtr(), web_contents,
+                     password_type, outcome, verdict_type, verdict_token,
                      WarningUIType::MODAL_DIALOG));
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // If web_contents was destroyed during the nested run loop (e.g. on Mac),
+  // we must not proceed.
+  if (!web_contents) {
+    return;
+  }
 
   LogWarningAction(WarningUIType::MODAL_DIALOG, WarningAction::SHOWN,
                    password_type);
   switch (password_type.account_type()) {
     case ReusedPasswordAccountType::SAVED_PASSWORD:
-      OnModalWarningShownForSavedPassword(web_contents, password_type,
+      OnModalWarningShownForSavedPassword(web_contents.get(), password_type,
                                           verdict_token);
       break;
     case ReusedPasswordAccountType::GMAIL:
     case ReusedPasswordAccountType::GSUITE:
-      OnModalWarningShownForGaiaPassword(web_contents, password_type,
+      OnModalWarningShownForGaiaPassword(web_contents.get(), password_type,
                                          verdict_token);
       break;
     case ReusedPasswordAccountType::NON_GAIA_ENTERPRISE:
-      OnModalWarningShownForEnterprisePassword(web_contents, password_type,
-                                               verdict_token);
+      OnModalWarningShownForEnterprisePassword(web_contents.get(),
+                                               password_type, verdict_token);
       break;
     default:
       return;
@@ -617,13 +634,16 @@ void ChromePasswordProtectionService::MaybeTriggerClientSideDetectionScan(
 }
 
 void ChromePasswordProtectionService::OnUserAction(
-    content::WebContents* web_contents,
+    base::WeakPtr<content::WebContents> web_contents,
     ReusedPasswordAccountType password_type,
     RequestOutcome outcome,
     LoginReputationClientResponse::VerdictType verdict_type,
     const std::string& verdict_token,
     WarningUIType ui_type,
     WarningAction action) {
+  if (!web_contents || web_contents->IsBeingDestroyed()) {
+    return;
+  }
   // Only log modal warning dialog action for all password types except for
   // signed-in non-syncing type for now. We log for signed-in non-syncing type
   // only when we are about to send the event to SecurityEventRecorder because
@@ -638,15 +658,15 @@ void ChromePasswordProtectionService::OnUserAction(
 
   switch (ui_type) {
     case WarningUIType::PAGE_INFO:
-      HandleUserActionOnPageInfo(web_contents, password_type, action);
+      HandleUserActionOnPageInfo(web_contents.get(), password_type, action);
       break;
     case WarningUIType::MODAL_DIALOG:
-      HandleUserActionOnModalWarning(web_contents, password_type, outcome,
+      HandleUserActionOnModalWarning(web_contents.get(), password_type, outcome,
                                      verdict_type, verdict_token, action);
       break;
     case WarningUIType::INTERSTITIAL:
       DCHECK_EQ(WarningAction::CHANGE_PASSWORD, action);
-      HandleResetPasswordOnInterstitial(web_contents, action);
+      HandleResetPasswordOnInterstitial(web_contents.get(), action);
       break;
     default:
       NOTREACHED();

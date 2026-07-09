@@ -78,7 +78,7 @@ class ResetPasswordHandlerImpl : public mojom::ResetPasswordHandler {
         ChromePasswordProtectionService::GetPasswordProtectionService(profile);
     if (service) {
       service->OnUserAction(
-          web_contents_,
+          web_contents_->GetWeakPtr(),
           service->reused_password_account_type_for_last_shown_warning(),
           RequestOutcome::UNKNOWN,
           LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,

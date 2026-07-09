@@ -178,7 +178,7 @@ void ChromePageInfoDelegate::OnUserActionOnPasswordUi(
   DCHECK(chrome_password_protection_service);
 
   chrome_password_protection_service->OnUserAction(
-      web_contents_,
+      web_contents_->GetWeakPtr(),
       chrome_password_protection_service
           ->reused_password_account_type_for_last_shown_warning(),
       safe_browsing::RequestOutcome::UNKNOWN,

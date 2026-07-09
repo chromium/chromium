@@ -1938,7 +1938,8 @@ class PasswordCheckupWithPhishGuardTest
     password_account_type.set_is_account_syncing(is_syncing);
 
     service_->OnUserAction(
-        web_contents(), password_account_type, RequestOutcome::UNKNOWN,
+        web_contents()->GetWeakPtr(), password_account_type,
+        RequestOutcome::UNKNOWN,
         LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED, "unused_token",
         WarningUIType::MODAL_DIALOG, WarningAction::CHANGE_PASSWORD);
   }

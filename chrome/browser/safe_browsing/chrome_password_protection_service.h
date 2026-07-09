@@ -137,7 +137,7 @@ class ChromePasswordProtectionService
       content::WebContents* web_contents) override;
 
   // Called when user interacts with password protection UIs.
-  void OnUserAction(content::WebContents* web_contents,
+  void OnUserAction(base::WeakPtr<content::WebContents> web_contents,
                     ReusedPasswordAccountType password_type,
                     RequestOutcome outcome,
                     LoginReputationClientResponse::VerdictType verdict_type,

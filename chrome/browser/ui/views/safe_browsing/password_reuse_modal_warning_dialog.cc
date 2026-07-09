@@ -153,13 +153,13 @@ PasswordReuseModalWarningDialog::PasswordReuseModalWarningDialog(
 
   // The set_*_callback() methods below need a OnceCallback each and we only
   // have one (done_callback_), so create a proxy callback that references
-  // done_callback_ and use it for each of the set_*_callback() callbacks. Note
-  // that since only one of the three callbacks can ever be invoked,
-  // done_callback_ is still run at most once.
+  // done_callback_ and use it for each of the set_*_callback() callbacks.
   auto make_done_callback = [this](safe_browsing::WarningAction value) {
     return base::BindOnce(
         [](OnWarningDone* callback, safe_browsing::WarningAction value) {
-          std::move(*callback).Run(value);
+          if (*callback) {
+            std::move(*callback).Run(value);
+          }
         },
         base::Unretained(&done_callback_), value);
   };
