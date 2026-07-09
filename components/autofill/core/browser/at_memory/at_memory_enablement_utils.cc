@@ -108,11 +108,6 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
         personal_context_service,
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_eligibility_service) {
-  if (base::FeatureList::IsEnabled(
-          features::debug::kAtMemorySkipEligibilityChecks)) {
-    return base::FeatureList::IsEnabled(features::kAutofillAtMemory);
-  }
-
   if constexpr (!BUILDFLAG(GOOGLE_CHROME_BRANDING)) {
     return false;
   }
@@ -192,6 +187,10 @@ bool MayPerformAtMemoryAction(
     const GoogleGroupsManager* google_groups_manager,
     AutofillOptimizationGuideDecider* decider,
     base::optional_ref<const GURL> url) {
+  if (base::FeatureList::IsEnabled(
+          features::debug::kAtMemorySkipEnablementChecks)) {
+    return base::FeatureList::IsEnabled(features::kAutofillAtMemory);
+  }
   if (!IsAtMemorySupported(personal_context_service,
                            subscription_eligibility_service)) {
     return false;

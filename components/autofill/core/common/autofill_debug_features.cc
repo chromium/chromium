@@ -11,9 +11,9 @@
 
 namespace autofill::features::debug {
 
-// Bypasses the eligibility checks (PersonalContext, Gemini subscription tier
+// Bypasses the enablement checks (PersonalContext, Gemini subscription tier
 // and other) for local testing and teamfooding.
-BASE_FEATURE(kAtMemorySkipEligibilityChecks, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAtMemorySkipEnablementChecks, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, Wallet private passes are supported on devices without re-auth.
 BASE_FEATURE(kAutofillAiDisableReauthRequirement,

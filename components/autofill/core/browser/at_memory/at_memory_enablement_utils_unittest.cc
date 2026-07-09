@@ -270,13 +270,13 @@ TEST_F(AtMemoryEnablementUtilsTest,
       autofill_client().GetLastCommittedPrimaryMainFrameURL()));
 }
 
-// Tests that when `kAtMemorySkipEligibilityChecks` is enabled,
+// Tests that when `kAtMemorySkipEnablementChecks` is enabled,
 // `MayPerformAtMemoryAction` returns true even if the user is not eligible,
 // provided that the base `kAutofillAtMemory` feature is enabled.
 TEST_F(AtMemoryEnablementUtilsTest,
-       MayPerformAtMemoryAction_SkipEligibilityChecks) {
+       MayPerformAtMemoryAction_SkipEnablementChecks) {
   base::test::ScopedFeatureList debug_features(
-      features::debug::kAtMemorySkipEligibilityChecks);
+      features::debug::kAtMemorySkipEnablementChecks);
 
   EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillRepeatedly(Return(personal_context::PersonalContextEligibilityState::
