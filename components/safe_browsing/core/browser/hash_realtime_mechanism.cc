@@ -114,7 +114,7 @@ void HashRealTimeMechanism::OnLookupResponse(
   }
   DCHECK(threat_type.has_value());
   CompleteCheck(std::make_unique<CompleteCheckResult>(
-      url_, threat_type.value(), ThreatMetadata(),
+      url_, threat_type.value(),
       /*threat_source=*/ThreatSource::NATIVE_PVER5_REAL_TIME,
       /*url_real_time_lookup_response=*/nullptr));
   // NOTE: Calling CompleteCheck results in the synchronous destruction of this
@@ -135,7 +135,7 @@ void HashRealTimeMechanism::PerformHashBasedCheck(
   if (result.is_safe_synchronously) {
     // No match found in the database, so conclude this is safe.
     OnHashDatabaseCompleteCheckResultInternal(
-        SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata(),
+        SBThreatType::SB_THREAT_TYPE_SAFE,
         /*threat_source=*/result.threat_source, fallback_trigger);
     // NOTE: Calling OnHashDatabaseCompleteCheckResultInternal results in the
     // synchronous destruction of this object, so there is nothing safe to do
@@ -147,8 +147,7 @@ void HashRealTimeMechanism::OnHashDatabaseCompleteCheckResult(
     HashDatabaseFallbackTrigger fallback_trigger,
     std::unique_ptr<SafeBrowsingLookupMechanism::CompleteCheckResult> result) {
   OnHashDatabaseCompleteCheckResultInternal(
-      result->threat_type, result->metadata, result->threat_source,
-      fallback_trigger);
+      result->threat_type, result->threat_source, fallback_trigger);
   // NOTE: Calling OnHashDatabaseCompleteCheckResultInternal results in the
   // synchronous destruction of this object, so there is nothing safe to do here
   // but return.
@@ -156,14 +155,13 @@ void HashRealTimeMechanism::OnHashDatabaseCompleteCheckResult(
 
 void HashRealTimeMechanism::OnHashDatabaseCompleteCheckResultInternal(
     SBThreatType threat_type,
-    const ThreatMetadata& metadata,
     std::optional<ThreatSource> threat_source,
     HashDatabaseFallbackTrigger fallback_trigger) {
   CHECK(fallback_trigger == HashDatabaseFallbackTrigger::kAllowlistMatch ||
         fallback_trigger == HashDatabaseFallbackTrigger::kOriginalCheckFailed);
   LogHashDatabaseFallbackResult("HPRT", fallback_trigger, threat_type);
   CompleteCheck(std::make_unique<CompleteCheckResult>(
-      url_, threat_type, metadata, threat_source,
+      url_, threat_type, threat_source,
       /*url_real_time_lookup_response=*/nullptr));
   // NOTE: Calling CompleteCheck results in the synchronous destruction of this
   // object, so there is nothing safe to do here but return.

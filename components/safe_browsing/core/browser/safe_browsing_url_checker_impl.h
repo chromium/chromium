@@ -192,7 +192,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   void OnUrlResultInternalAndMaybeDeleteSelf(
       const GURL& url,
       SBThreatType threat_type,
-      const ThreatMetadata& metadata,
       std::optional<ThreatSource> threat_source,
       std::unique_ptr<RTLookupResponse> rt_lookup_response,
       bool timed_out,
@@ -241,7 +240,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   security_interstitials::UnsafeResource MakeUnsafeResource(
       const GURL& url,
       SBThreatType threat_type,
-      const ThreatMetadata& metadata,
       ThreatSource threat_source,
       std::unique_ptr<RTLookupResponse> rt_lookup_response,
       PerformedCheck performed_check);

@@ -261,8 +261,8 @@ void UrlRealTimeMechanism::OnLookupResponse(
     // return.
   } else {
     CompleteCheckInternal(std::make_unique<CompleteCheckResult>(
-        url_, sb_threat_type, ThreatMetadata(),
-        ThreatSource::URL_REAL_TIME_CHECK, std::move(response)));
+        url_, sb_threat_type, ThreatSource::URL_REAL_TIME_CHECK,
+        std::move(response)));
     // NOTE: Calling CompleteCheckInternal results in the synchronous
     // destruction of this object, so there is nothing safe to do here but
     // return.
@@ -382,7 +382,7 @@ void UrlRealTimeMechanism::PerformHashBasedCheck(
   if (result.is_safe_synchronously || !can_check_db_) {
     // No match found in the database, so conclude this is safe.
     OnHashDatabaseCompleteCheckResultInternal(
-        SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata(),
+        SBThreatType::SB_THREAT_TYPE_SAFE,
         /*threat_source=*/result.threat_source, fallback_trigger);
     // NOTE: Calling OnHashDatabaseCompleteCheckResultInternal results in the
     // synchronous destruction of this object, so there is nothing safe to do
@@ -394,8 +394,7 @@ void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResult(
     HashDatabaseFallbackTrigger fallback_trigger,
     std::unique_ptr<SafeBrowsingLookupMechanism::CompleteCheckResult> result) {
   OnHashDatabaseCompleteCheckResultInternal(
-      result->threat_type, result->metadata, result->threat_source,
-      fallback_trigger);
+      result->threat_type, result->threat_source, fallback_trigger);
   // NOTE: Calling OnHashDatabaseCompleteCheckResultInternal results in the
   // synchronous destruction of this object, so there is nothing safe to do here
   // but return.
@@ -403,7 +402,6 @@ void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResult(
 
 void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResultInternal(
     SBThreatType threat_type,
-    const ThreatMetadata& metadata,
     std::optional<ThreatSource> threat_source,
     HashDatabaseFallbackTrigger fallback_trigger) {
   if (is_cached_safe_url_) {
@@ -412,7 +410,7 @@ void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResultInternal(
   }
   LogHashDatabaseFallbackResult("RT", fallback_trigger, threat_type);
   CompleteCheckInternal(std::make_unique<CompleteCheckResult>(
-      url_, threat_type, metadata, threat_source,
+      url_, threat_type, threat_source,
       /*url_real_time_lookup_response=*/nullptr));
   // NOTE: Calling CompleteCheckInternal results in the synchronous destruction
   // of this object, so there is nothing safe to do here but return.

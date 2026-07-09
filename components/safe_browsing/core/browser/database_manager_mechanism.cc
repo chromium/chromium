@@ -60,7 +60,7 @@ void DatabaseManagerMechanism::OnCheckUrlForHighConfidenceAllowlist(
 
   if (did_match_allowlist) {
     CompleteCheck(std::make_unique<CompleteCheckResult>(
-        url_, SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata(),
+        url_, SBThreatType::SB_THREAT_TYPE_SAFE,
         /*threat_source=*/std::nullopt,
         /*url_real_time_lookup_response=*/nullptr));
     // NOTE: Calling CompleteCheck results in the synchronous destruction of
@@ -90,7 +90,7 @@ void DatabaseManagerMechanism::StartBlocklistCheckAfterAllowlistCheck() {
       database_manager_->CheckBrowseUrl(url_, threat_types_, this, check_type_);
   if (is_safe_synchronously) {
     CompleteCheck(std::make_unique<CompleteCheckResult>(
-        url_, SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata(),
+        url_, SBThreatType::SB_THREAT_TYPE_SAFE,
         /*threat_source=*/std::nullopt,
         /*url_real_time_lookup_response=*/nullptr));
     // NOTE: Calling CompleteCheck results in the synchronous destruction of
@@ -107,7 +107,7 @@ void DatabaseManagerMechanism::OnCheckBrowseUrlResult(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_async_blocklist_check_in_progress_ = false;
   CompleteCheck(std::make_unique<CompleteCheckResult>(
-      url, threat_type, ThreatMetadata(), GetThreatSource(),
+      url, threat_type, GetThreatSource(),
       /*url_real_time_lookup_response=*/nullptr));
   // NOTE: Calling CompleteCheck results in the synchronous destruction of this
   // object, so there is nothing safe to do here but return.

@@ -70,7 +70,6 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
       std::unique_ptr<SafeBrowsingLookupMechanism::CompleteCheckResult> result);
   void OnHashDatabaseCompleteCheckResultInternal(
       SBThreatType threat_type,
-      const ThreatMetadata& metadata,
       std::optional<ThreatSource> threat_source,
       HashDatabaseFallbackTrigger fallback_trigger);
 
