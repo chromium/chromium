@@ -1082,6 +1082,17 @@ source_set("unit_tests") {
     sources += [ "guest_mode_policy_handler_unittest.cc" ]
   }
 
+  if (!is_android) {
+    sources += [
+      "profile_avatar_icon_util_unittest.cc",
+      "profile_destroyer_unittest.cc",
+    ]
+    deps += [
+      "//chrome/app/theme:theme_resources",
+      "//ui/gfx:test_support",
+    ]
+  }
+
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
