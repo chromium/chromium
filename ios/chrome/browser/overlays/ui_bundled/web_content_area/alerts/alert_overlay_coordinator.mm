@@ -73,7 +73,10 @@ using alert_overlays::AlertRequest;
 - (void)containedPresenterDidDismiss:(id<ContainedPresenter>)presenter {
   self.alertViewController = nil;
   self.presenter = nil;
-  if (IsPageActionMenuEnabled()) {
+  if (IsPageActionMenuEnabled() &&
+      [_geminiHandler
+          respondsToSelector:@selector(updateFloatyVisibilityIfEligibleAnimated:
+                                       fromSource:)]) {
     [_geminiHandler
         updateFloatyVisibilityIfEligibleAnimated:NO
                                       fromSource:gemini::FloatyUpdateSource::

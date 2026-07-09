@@ -925,7 +925,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 // Checks that the bottom bar is positioned above the App Bar in portrait mode
 // when ChromeNextIA is enabled.
 // TODO(crbug.com/525850722): Re-enable when the crash during teardown is fixed.
-- (void)DISABLED_testBottomBarLayoutWithChromeNextIA {
+- (void)testBottomBarLayoutWithChromeNextIA {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test not applicable for iPad.");
   }
@@ -940,6 +940,8 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   config.additional_args.push_back("true");
   config.features_enabled.push_back(kChromeNextIa);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [ChromeEarlGrey waitForInactiveTabCount:1];
 
   // Open the Tab Grid.
   [ChromeEarlGreyUI openTabGrid];
