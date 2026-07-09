@@ -73,7 +73,7 @@ wheel: <
   version: "version:6.33.0"
 >
 
-# Used by test_suite_mapper_test.py
+# Used by test_suite_mapper_test.py and ci_only_validator_test.py
 wheel: <
   name: "infra/python/wheels/pyfakefs-py3"
   version: "version:5.5.0"

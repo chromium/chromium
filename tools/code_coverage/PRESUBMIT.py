@@ -16,6 +16,7 @@ def _CommonChecks(input_api, output_api):
   files = [path.basename(f.LocalPath()) for f in input_api.AffectedFiles()]
   if files and not input_api.is_windows:
     tests = [
+        path.join(cwd, 'ci_only_validator_test.py'),
         path.join(cwd, 'code_coverage_installer_test.py'),
         path.join(cwd, 'download_fuzz_corpora_test.py'),
         path.join(cwd, 'find_affected_coverage_guided_fuzzers_test.py'),
