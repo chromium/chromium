@@ -217,10 +217,10 @@ std::unique_ptr<ui::DialogModel> OnboardingDialogController::CreateDialogModel(
       .Build();
 }
 
-// TODO(crbug.com/530948293): add Learn More url here
 void OnboardingDialogController::OnLearnMoreLinkClicked() {
   tab_->GetBrowserWindowInterface()->OpenGURL(
-      GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      GURL("https://support.google.com/chrome?p=voice_typing"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
 
 void OnboardingDialogController::OnDialogAccepted(
