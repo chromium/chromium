@@ -177,6 +177,12 @@ message Shipment {
 
   // The date on which the shipment was shipped.
   Date ship_date = 7;
+
+  // The name of the merchant.
+  string merchant_name = 8;
+
+  // The names of the products in the shipment.
+  repeated string product_names = 9;
 }
 
 // Represents a government-issued driver's license.
