@@ -6,9 +6,11 @@
 
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
@@ -19,8 +21,17 @@ namespace safe_browsing {
 
 const char kArtificialHashRealTimeUnsafeUrl[] = "https://example.test";
 
-class V5SearchHashesCacheTest : public PlatformTest {
+class V5SearchHashesCacheTest : public PlatformTest,
+                                public ::testing::WithParamInterface<bool> {
  protected:
+  void SetUp() override {
+    PlatformTest::SetUp();
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(kLocalListsUseSBv5);
+    } else {
+      feature_list_.InitAndDisableFeature(kLocalListsUseSBv5);
+    }
+  }
   V5::Duration CreateCacheDuration(int seconds, int nanos) {
     V5::Duration cache_duration;
     cache_duration.set_seconds(seconds);
@@ -48,10 +59,12 @@ class V5SearchHashesCacheTest : public PlatformTest {
     }
   }
   void CheckAndResetCacheHitsAndMisses(int num_hits, int num_misses) {
-    histogram_tester_->ExpectBucketCount("SafeBrowsing.HPRT.CacheHit",
+    std::string prefix =
+        GetParam() ? "SafeBrowsing.V5Cache" : "SafeBrowsing.HPRT";
+    histogram_tester_->ExpectBucketCount(prefix + ".CacheHit",
                                          /*sample=*/true,
                                          /*expected_count=*/num_hits);
-    histogram_tester_->ExpectBucketCount("SafeBrowsing.HPRT.CacheHit",
+    histogram_tester_->ExpectBucketCount(prefix + ".CacheHit",
                                          /*sample=*/false,
                                          /*expected_count=*/num_misses);
     histogram_tester_ = std::make_unique<base::HistogramTester>();
@@ -59,38 +72,50 @@ class V5SearchHashesCacheTest : public PlatformTest {
   void CheckAndResetCacheDurationLogs(
       std::optional<int> initial_cache_duration_sec,
       std::optional<int> remaining_cache_duration_sec) {
+    std::string prefix =
+        GetParam() ? "SafeBrowsing.V5Cache" : "SafeBrowsing.HPRT";
     if (initial_cache_duration_sec.has_value()) {
       histogram_tester_->ExpectUniqueSample(
-          /*name=*/"SafeBrowsing.HPRT.CacheDuration.InitialOnSet",
+          /*name=*/prefix + ".CacheDuration.InitialOnSet",
           /*sample=*/initial_cache_duration_sec.value() * 1000,  // sec to ms
           /*expected_bucket_count=*/1);
     } else {
       histogram_tester_->ExpectTotalCount(
-          /*name=*/"SafeBrowsing.HPRT.CacheDuration.InitialOnSet",
+          /*name=*/prefix + ".CacheDuration.InitialOnSet",
           /*expected_count=*/0);
     }
     if (remaining_cache_duration_sec.has_value()) {
       histogram_tester_->ExpectUniqueSample(
-          /*name=*/"SafeBrowsing.HPRT.CacheDuration.RemainingOnHit",
+          /*name=*/prefix + ".CacheDuration.RemainingOnHit",
           /*sample=*/remaining_cache_duration_sec.value() * 1000,  // sec to ms
           /*expected_bucket_count=*/1);
     } else {
       histogram_tester_->ExpectTotalCount(
-          /*name=*/"SafeBrowsing.HPRT.CacheDuration.RemainingOnHit",
+          /*name=*/prefix + ".CacheDuration.RemainingOnHit",
           /*expected_count=*/0);
     }
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
   void CheckAndResetCacheSizeOnClear(int num_hash_prefixes,
                                      int num_full_hashes) {
-    histogram_tester_->ExpectBucketCount(
-        "SafeBrowsing.HPRT.Cache.HashPrefixCount",
-        /*sample=*/num_hash_prefixes,
-        /*expected_count=*/1);
-    histogram_tester_->ExpectBucketCount(
-        "SafeBrowsing.HPRT.Cache.FullHashCount",
-        /*sample=*/num_full_hashes,
-        /*expected_count=*/1);
+    if (GetParam()) {
+      histogram_tester_->ExpectBucketCount(
+          "SafeBrowsing.V5Cache.HashPrefixCount",
+          /*sample=*/num_hash_prefixes,
+          /*expected_count=*/1);
+      histogram_tester_->ExpectBucketCount("SafeBrowsing.V5Cache.FullHashCount",
+                                           /*sample=*/num_full_hashes,
+                                           /*expected_count=*/1);
+    } else {
+      histogram_tester_->ExpectBucketCount(
+          "SafeBrowsing.HPRT.Cache.HashPrefixCount",
+          /*sample=*/num_hash_prefixes,
+          /*expected_count=*/1);
+      histogram_tester_->ExpectBucketCount(
+          "SafeBrowsing.HPRT.Cache.FullHashCount",
+          /*sample=*/num_full_hashes,
+          /*expected_count=*/1);
+    }
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
   int GetNumCacheEntries(std::unique_ptr<V5SearchHashesCache>& cache) {
@@ -110,13 +135,14 @@ class V5SearchHashesCacheTest : public PlatformTest {
         CreateCacheDuration(cache_duration_seconds, 0));
   }
 
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<base::HistogramTester> histogram_tester_ =
       std::make_unique<base::HistogramTester>();
 };
 
-TEST_F(V5SearchHashesCacheTest, TestCacheMatching_EmptyCache) {
+TEST_P(V5SearchHashesCacheTest, TestCacheMatching_EmptyCache) {
   auto cache = std::make_unique<V5SearchHashesCache>();
   EXPECT_TRUE(cache->SearchCache({}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/0);
@@ -126,7 +152,7 @@ TEST_F(V5SearchHashesCacheTest, TestCacheMatching_EmptyCache) {
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/2);
 }
 
-TEST_F(V5SearchHashesCacheTest, TestCacheMatching_BasicFunctionality) {
+TEST_P(V5SearchHashesCacheTest, TestCacheMatching_BasicFunctionality) {
   auto cache = std::make_unique<V5SearchHashesCache>();
   // The below is done within a block to ensure that the cache works even once
   // the inputs to CacheSearchHashesResponse have been destructed.
@@ -211,7 +237,7 @@ TEST_F(V5SearchHashesCacheTest, TestCacheMatching_BasicFunctionality) {
   EXPECT_TRUE(aaaa2_details[0].attributes().empty());
 }
 
-TEST_F(V5SearchHashesCacheTest, TestCacheMatching_Expiration) {
+TEST_P(V5SearchHashesCacheTest, TestCacheMatching_Expiration) {
   auto cache = std::make_unique<V5SearchHashesCache>();
   // The below are done within blocks to ensure that the cache works even once
   // the inputs to CacheSearchHashesResponse have been destructed.
@@ -274,7 +300,7 @@ TEST_F(V5SearchHashesCacheTest, TestCacheMatching_Expiration) {
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/2);
 }
 
-TEST_F(V5SearchHashesCacheTest, TestCacheMatching_ExpirationNanos) {
+TEST_P(V5SearchHashesCacheTest, TestCacheMatching_ExpirationNanos) {
   auto cache = std::make_unique<V5SearchHashesCache>();
   // The below are done within blocks to ensure that the cache works even once
   // the inputs to CacheSearchHashesResponse have been destructed.
@@ -303,7 +329,7 @@ TEST_F(V5SearchHashesCacheTest, TestCacheMatching_ExpirationNanos) {
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
 }
 
-TEST_F(V5SearchHashesCacheTest, TestCacheMatching_Attributes) {
+TEST_P(V5SearchHashesCacheTest, TestCacheMatching_Attributes) {
   auto cache = std::make_unique<V5SearchHashesCache>();
   // The below is done within a block to ensure that the cache works even once
   // the inputs to CacheSearchHashesResponse have been destructed.
@@ -364,7 +390,7 @@ TEST_F(V5SearchHashesCacheTest, TestCacheMatching_Attributes) {
   EXPECT_TRUE(aaaa2_details[0].attributes().empty());
 }
 
-TEST_F(V5SearchHashesCacheTest, TestCacheMatching_OverwrittenEntry) {
+TEST_P(V5SearchHashesCacheTest, TestCacheMatching_OverwrittenEntry) {
   auto cache = std::make_unique<V5SearchHashesCache>();
   // The below are done within blocks to ensure that the cache works even once
   // the inputs to CacheSearchHashesResponse have been destructed.
@@ -445,7 +471,7 @@ TEST_F(V5SearchHashesCacheTest, TestCacheMatching_OverwrittenEntry) {
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
 }
 
-TEST_F(V5SearchHashesCacheTest, TestCacheMatching_CacheDurationLogging) {
+TEST_P(V5SearchHashesCacheTest, TestCacheMatching_CacheDurationLogging) {
   auto cache = std::make_unique<V5SearchHashesCache>();
   std::vector<std::string> requested_hash_prefixes = {"aaaa"};
   std::vector<V5::FullHash> response_full_hashes = {
@@ -473,14 +499,14 @@ TEST_F(V5SearchHashesCacheTest, TestCacheMatching_CacheDurationLogging) {
       /*remaining_cache_duration_sec=*/std::nullopt);
 }
 
-TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_EmptyCache) {
+TEST_P(V5SearchHashesCacheTest, TestClearExpiredResults_EmptyCache) {
   auto cache = std::make_unique<V5SearchHashesCache>();
   EXPECT_EQ(GetNumCacheEntries(cache), 0);
   ClearExpiredResultsHelper(cache);
   EXPECT_EQ(GetNumCacheEntries(cache), 0);
 }
 
-TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_NoExpiredResults) {
+TEST_P(V5SearchHashesCacheTest, TestClearExpiredResults_NoExpiredResults) {
   auto cache = std::make_unique<V5SearchHashesCache>();
   CacheEntry(cache, "aaaa1111111111111111111111111111", 300);
   CacheEntry(cache, "cccc1111111111111111111111111111", 500);
@@ -494,7 +520,7 @@ TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_NoExpiredResults) {
   EXPECT_TRUE(cache->SearchCache({"cccc"}).contains("cccc"));
 }
 
-TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_OneExpiredResult) {
+TEST_P(V5SearchHashesCacheTest, TestClearExpiredResults_OneExpiredResult) {
   auto cache = std::make_unique<V5SearchHashesCache>();
   CacheEntry(cache, "aaaa1111111111111111111111111111", 300);
   CacheEntry(cache, "cccc1111111111111111111111111111", 500);
@@ -510,7 +536,7 @@ TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_OneExpiredResult) {
   EXPECT_TRUE(cache->SearchCache({"cccc"}).contains("cccc"));
 }
 
-TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_SomeExpiredResults) {
+TEST_P(V5SearchHashesCacheTest, TestClearExpiredResults_SomeExpiredResults) {
   auto cache = std::make_unique<V5SearchHashesCache>();
   auto soon = 300;
   auto later = 500;
@@ -545,7 +571,7 @@ TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_SomeExpiredResults) {
   validate_cache_contents(cache);
 }
 
-TEST_F(V5SearchHashesCacheTest,
+TEST_P(V5SearchHashesCacheTest,
        TestClearExpiredResults_SomeExpiredResultsReversed) {
   // The main difference between TestClearExpiredResults_SomeExpiredResults
   // above and this one is that whether an entry is expired is reversed. This is
@@ -585,7 +611,7 @@ TEST_F(V5SearchHashesCacheTest,
   validate_cache_contents(cache);
 }
 
-TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_AllExpiredResults) {
+TEST_P(V5SearchHashesCacheTest, TestClearExpiredResults_AllExpiredResults) {
   auto cache = std::make_unique<V5SearchHashesCache>();
   CacheEntry(cache, "aaaa1111111111111111111111111111", 300);
   CacheEntry(cache, "cccc1111111111111111111111111111", 500);
@@ -601,7 +627,7 @@ TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_AllExpiredResults) {
   EXPECT_FALSE(cache->SearchCache({"cccc"}).contains("cccc"));
 }
 
-TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_Logging) {
+TEST_P(V5SearchHashesCacheTest, TestClearExpiredResults_Logging) {
   auto cache = std::make_unique<V5SearchHashesCache>();
 
   // Cache is empty.
@@ -661,7 +687,7 @@ TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_Logging) {
   CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/0, /*num_full_hashes=*/0);
 }
 
-TEST_F(V5SearchHashesCacheTest, TestBackgroundCleanup) {
+TEST_P(V5SearchHashesCacheTest, TestBackgroundCleanup) {
   auto cache = std::make_unique<V5SearchHashesCache>();
   CacheEntry(cache, "aaaa1111111111111111111111111111", 10);
 
@@ -697,7 +723,7 @@ class ArtificialV5SearchHashesCacheTest : public V5SearchHashesCacheTest {
   }
 };
 
-TEST_F(ArtificialV5SearchHashesCacheTest, TestCachePopulated) {
+TEST_P(ArtificialV5SearchHashesCacheTest, TestCachePopulated) {
   auto cache = std::make_unique<V5SearchHashesCache>();
   ASSERT_TRUE(V5SearchHashesCache::has_artificial_cached_url());
 
@@ -713,5 +739,10 @@ TEST_F(ArtificialV5SearchHashesCacheTest, TestCachePopulated) {
   EXPECT_TRUE(cache_results.contains(hash_prefix));
   EXPECT_EQ(cache_results[hash_prefix][0].full_hash(), full_hash);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, V5SearchHashesCacheTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         ArtificialV5SearchHashesCacheTest,
+                         ::testing::Bool());
 
 }  // namespace safe_browsing

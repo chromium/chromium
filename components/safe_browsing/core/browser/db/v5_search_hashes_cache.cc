@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
 
@@ -19,19 +20,35 @@ namespace {
 
 // TODO(crbug.com/362791941): Rename HPRT logs.
 void LogCacheHitOrMiss(bool is_hit) {
-  base::UmaHistogramBoolean("SafeBrowsing.HPRT.CacheHit", is_hit);
+  if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    base::UmaHistogramBoolean("SafeBrowsing.V5Cache.CacheHit", is_hit);
+  } else {
+    base::UmaHistogramBoolean("SafeBrowsing.HPRT.CacheHit", is_hit);
+  }
 }
 void LogInitialCacheDurationOnSet(base::TimeDelta cache_duration) {
   // The cache is only expected to last a few minutes, but we allow logging up
   // to 1 hour to confirm that there aren't unexpected times.
-  base::UmaHistogramLongTimes("SafeBrowsing.HPRT.CacheDuration.InitialOnSet",
-                              cache_duration);
+  if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    base::UmaHistogramLongTimes(
+        "SafeBrowsing.V5Cache.CacheDuration.InitialOnSet", cache_duration);
+  } else {
+    base::UmaHistogramLongTimes("SafeBrowsing.HPRT.CacheDuration.InitialOnSet",
+                                cache_duration);
+  }
 }
 void LogRemainingCacheDurationOnHit(base::Time expiration_time) {
   // The cache is only expected to last a few minutes, but we allow logging up
   // to 1 hour to confirm that there aren't unexpected times.
-  base::UmaHistogramLongTimes("SafeBrowsing.HPRT.CacheDuration.RemainingOnHit",
-                              expiration_time - base::Time::Now());
+  if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    base::UmaHistogramLongTimes(
+        "SafeBrowsing.V5Cache.CacheDuration.RemainingOnHit",
+        expiration_time - base::Time::Now());
+  } else {
+    base::UmaHistogramLongTimes(
+        "SafeBrowsing.HPRT.CacheDuration.RemainingOnHit",
+        expiration_time - base::Time::Now());
+  }
 }
 
 }  // namespace
@@ -145,10 +162,17 @@ void V5SearchHashesCache::ClearExpiredResults() {
       ++it;
     }
   }
-  base::UmaHistogramCounts10000("SafeBrowsing.HPRT.Cache.HashPrefixCount",
-                                num_hash_prefixes);
-  base::UmaHistogramCounts10000("SafeBrowsing.HPRT.Cache.FullHashCount",
-                                num_full_hashes);
+  if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    base::UmaHistogramCounts10000("SafeBrowsing.V5Cache.HashPrefixCount",
+                                  num_hash_prefixes);
+    base::UmaHistogramCounts10000("SafeBrowsing.V5Cache.FullHashCount",
+                                  num_full_hashes);
+  } else {
+    base::UmaHistogramCounts10000("SafeBrowsing.HPRT.Cache.HashPrefixCount",
+                                  num_hash_prefixes);
+    base::UmaHistogramCounts10000("SafeBrowsing.HPRT.Cache.FullHashCount",
+                                  num_full_hashes);
+  }
 }
 
 void V5SearchHashesCache::ScheduleNextCleanUp() {

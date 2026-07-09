@@ -180,6 +180,16 @@ chromium-metrics-reviews@google.com.
       summary="time spent parsing and handling response on UI thread"/>
 </variants>
 
+<variants name="V5CacheType">
+  <variant name="HPRT" summary="hash-prefix real-time lookup"/>
+  <variant name="V5Cache" summary="local lists v5 lookup"/>
+</variants>
+
+<variants name="V5CacheTypeForCounts">
+  <variant name="HPRT.Cache" summary="hash-prefix real-time lookup"/>
+  <variant name="V5Cache" summary="local lists v5 lookup"/>
+</variants>
+
 <variants name="V5ProcessUpdateType">
   <variant name="V5ProcessFullUpdate" summary="full update"/>
   <variant name="V5ProcessPartialUpdate" summary="partial update"/>
@@ -1810,64 +1820,6 @@ useful for Chirp alerts (go/crca-alerts). -->
     state due to previous errors. Logs whenever a hash-prefix real-time request
     is about to be attempted, which will not go through if the service is in
     backoff mode.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.HPRT.Cache.FullHashCount" units="entries"
-    expires_after="2027-02-05">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the number of full hashes in the local hash-prefix real-time lookup
-    cache for this profile. Logged each time cleanup of expired entries is
-    performed on the cache, which happens every 30 minutes. The value represents
-    the count before cleanup and includes expired entries.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.HPRT.Cache.HashPrefixCount" units="entries"
-    expires_after="2027-02-05">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the number of hash prefixes in the local hash-prefix real-time
-    lookup cache for this profile. Logged each time cleanup of expired entries
-    is performed on the cache, which happens every 30 minutes. The value
-    represents the count before cleanup and includes expired entries.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.HPRT.CacheDuration.InitialOnSet" units="ms"
-    expires_after="2027-02-05">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the cache duration that an item will have for a hash-prefix real-time
-    lookup. Logged when the item is added to the cache.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.HPRT.CacheDuration.RemainingOnHit" units="ms"
-    expires_after="2027-02-05">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the remaining cache duration that an item has for a hash-prefix
-    real-time lookup. Logged when there is a cache hit for the item.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.HPRT.CacheHit" enum="BooleanCacheHit"
-    expires_after="2027-02-05">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether there was a cache hit when a hash prefix was searched for in
-    the local cache for hash-prefix real-time lookups. A cache hit means the
-    prefix was found in the cache (whether or not it has associated full
-    hashes), which allows for that prefix not to be re-requested. This histogram
-    is false in the case of a cache miss for the hash prefix. This is logged for
-    each hash prefix in a lookup when the cache is searched.
   </summary>
 </histogram>
 
@@ -4601,6 +4553,69 @@ failing to fetch the updates which puts users' security at risk. -->
     the query, which is called once per WebView global process startup,
     completes successfully or errors out.
   </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.{CacheTypeForCounts}.FullHashCount"
+    units="entries" expires_after="2027-02-05">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of full hashes in the local cache for
+    {CacheTypeForCounts} for this profile. Logged each time cleanup of expired
+    entries is performed on the cache, which happens every 30 minutes. The value
+    represents the count before cleanup and includes expired entries.
+  </summary>
+  <token key="CacheTypeForCounts" variants="V5CacheTypeForCounts"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{CacheTypeForCounts}.HashPrefixCount"
+    units="entries" expires_after="2027-02-05">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of hash prefixes in the local cache for
+    {CacheTypeForCounts} for this profile. Logged each time cleanup of expired
+    entries is performed on the cache, which happens every 30 minutes. The value
+    represents the count before cleanup and includes expired entries.
+  </summary>
+  <token key="CacheTypeForCounts" variants="V5CacheTypeForCounts"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{CacheType}.CacheDuration.InitialOnSet"
+    units="ms" expires_after="2027-02-05">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the cache duration that an item will have for a {CacheType}. Logged
+    when the item is added to the cache.
+  </summary>
+  <token key="CacheType" variants="V5CacheType"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{CacheType}.CacheDuration.RemainingOnHit"
+    units="ms" expires_after="2027-02-05">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the remaining cache duration that an item has for a {CacheType}. Logged
+    when there is a cache hit for the item.
+  </summary>
+  <token key="CacheType" variants="V5CacheType"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{CacheType}.CacheHit" enum="BooleanCacheHit"
+    expires_after="2027-02-05">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether there was a cache hit when a hash prefix was searched for in
+    the local cache for {CacheType}. A cache hit means the prefix was found in
+    the cache (whether or not it has associated full hashes), which allows for
+    that prefix not to be re-requested. This histogram is false in the case of a
+    cache miss for the hash prefix. This is logged for each hash prefix in a
+    lookup when the cache is searched.
+  </summary>
+  <token key="CacheType" variants="V5CacheType"/>
 </histogram>
 
 <histogram
