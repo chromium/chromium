@@ -120,7 +120,10 @@ class TestPDFiumEngine : public PDFiumEngine {
               (override));
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  MOCK_METHOD(void, AddFont, (FontId, base::span<const uint8_t>), (override));
+  MOCK_METHOD(void,
+              AddFont,
+              (FontId, const std::string&, base::span<const uint8_t>),
+              (override));
 
   MOCK_METHOD(void,
               DrawText,

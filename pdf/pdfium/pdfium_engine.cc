@@ -111,6 +111,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+#include "base/debug/crash_logging.h"
 #include "base/rand_util.h"
 #include "pdf/pdf_ink_metrics_handler.h"
 #include "pdf/pdf_ink_transform.h"
@@ -5270,7 +5271,9 @@ std::optional<AccessibilityTextRunInfo> PDFiumEngine::GetFirstVisibleTextRun(
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 void PDFiumEngine::AddFont(FontId font_id,
+                           const std::string& font_name,
                            base::span<const uint8_t> serialized_typeface) {
+  SCOPED_CRASH_KEY_STRING256("pdf", "font_name", font_name);
   SkMemoryStream serialized_typeface_stream(
       gfx::MakeSkDataFromSpanWithoutCopy(serialized_typeface));
   sk_sp<SkTypeface> typeface = SkTypeface::MakeDeserialize(

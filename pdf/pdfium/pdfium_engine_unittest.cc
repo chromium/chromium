@@ -2845,7 +2845,7 @@ TEST_P(PDFiumEngineInkTest, AddFont) {
   sk_sp<SkData> serialized_font = default_font->serialize();
   FontId id = static_cast<FontId>(default_font->uniqueID());
 
-  engine->AddFont(id, gfx::SkDataToSpan(serialized_font));
+  engine->AddFont(id, "test", gfx::SkDataToSpan(serialized_font));
   FPDF_FONT font = engine->GetAddedFont(id);
   ASSERT_TRUE(font);
 
@@ -3426,7 +3426,7 @@ class PDFiumEngineInkDrawTextTest : public PDFiumTestBase {
     sk_sp<SkTypeface> default_font = skia::DefaultTypeface();
     sk_sp<SkData> serialized_font = default_font->serialize();
     FontId font_id = static_cast<FontId>(default_font->uniqueID());
-    engine->AddFont(font_id, gfx::SkDataToSpan(serialized_font));
+    engine->AddFont(font_id, "default", gfx::SkDataToSpan(serialized_font));
     return font_id;
   }
 

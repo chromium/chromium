@@ -60,6 +60,7 @@ class PdfInkModuleClient {
 
   // Tells the client about a new font. The data is a serialized SkTypeface.
   virtual void AddFont(FontId font_id,
+                       const std::string& font_name,
                        base::span<const uint8_t> serialized_typeface) {}
 
   // Notifies the client to clear the current text selection.
