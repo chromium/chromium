@@ -3752,6 +3752,18 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksComposeboxHandlerTestWithContextManagementEnabled,
     CacheSubmittedTabsOnInit) {
+  class TestSupportsTabHandles : public tabs::SupportsTabHandles {
+   public:
+    void SetSessionId(int32_t session_id) {
+      tabs::SupportsTabHandles::SetSessionId(session_id);
+    }
+  };
+
+  TestSupportsTabHandles tab1;
+  tab1.SetSessionId(42);
+  TestSupportsTabHandles tab2;
+  tab2.SetSessionId(43);
+
   auto mock_session = std::make_unique<testing::NiceMock<
       contextual_search::MockContextualSearchSessionHandle>>();
 
@@ -3788,10 +3800,10 @@ IN_PROC_BROWSER_TEST_F(
         EXPECT_EQ(tabs.size(), 2u);
         EXPECT_EQ(tabs[0]->url, GURL("about:blank#1"));
         EXPECT_EQ(tabs[0]->title, "About Blank 1");
-        EXPECT_EQ(tabs[0]->tab_id, 42);
+        EXPECT_EQ(tabs[0]->tab_id, 3);
         EXPECT_EQ(tabs[1]->url, GURL("about:blank#2"));
         EXPECT_EQ(tabs[1]->title, "About Blank 2");
-        EXPECT_EQ(tabs[1]->tab_id, 43);
+        EXPECT_EQ(tabs[1]->tab_id, 4);
       });
 
   SetUpHandler();

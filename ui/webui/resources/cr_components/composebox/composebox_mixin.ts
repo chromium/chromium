@@ -707,7 +707,7 @@ export const ComposeboxEmbedderMixin =
         setAimThreadRestoredTabs(tabs: TabInfo[]) {
           this.aimThreadRestoredTabs = tabs;
           if (tabs.length > 0) {
-            this.refreshTabSuggestions();
+            this.refreshTabSuggestions(/*forceRefresh=*/ true);
           }
           this.requestUpdate();
         }
@@ -1366,12 +1366,19 @@ export const ComposeboxEmbedderMixin =
           this.contextMenuOpened = true;
           if (this.tabSuggestionsState === TabSuggestionsState.LOADED) {
             const selectedTabIds = new Set(this.addedTabsIds.keys());
-            this.tabSuggestions = [
-              ...this.tabSuggestions.filter(
-                  tab => selectedTabIds.has(tab.tabId)),
-              ...this.tabSuggestions.filter(
-                  tab => !selectedTabIds.has(tab.tabId)),
-            ];
+            const restoredTabIds = new Set(
+                (this.aimThreadRestoredTabs || []).map(tab => tab.tabId));
+
+            const selected = this.tabSuggestions.filter(
+                tab => selectedTabIds.has(tab.tabId));
+            const restored = this.tabSuggestions.filter(
+                tab => restoredTabIds.has(tab.tabId) &&
+                    !selectedTabIds.has(tab.tabId));
+            const other = this.tabSuggestions.filter(
+                tab => !selectedTabIds.has(tab.tabId) &&
+                    !restoredTabIds.has(tab.tabId));
+
+            this.tabSuggestions = [...selected, ...restored, ...other];
             if (this.inputState) {
               const {allowedInputTypes, disabledInputTypes} = this.inputState;
               if (allowedInputTypes.includes(InputType.kBrowserTab) &&
@@ -2316,20 +2323,20 @@ export const ComposeboxEmbedderMixin =
 
             const restored = this.aimThreadRestoredTabs || [];
 
-            let processedRecentTabs = dedupeTabs(restored, tabs);
+            const processedRecentTabs = dedupeTabs(restored, tabs);
 
-            if (this.contextMenuOpened) {
-              // Order tabs in submenu presubmission: selected tabs are first.
-              const selectedTabIds = new Set(this.addedTabsIds.keys());
-              processedRecentTabs = [
-                ...processedRecentTabs.filter(
-                    tab => selectedTabIds.has(tab.tabId)),
-                ...processedRecentTabs.filter(
-                    tab => !selectedTabIds.has(tab.tabId)),
-              ];
-            }
+            const selectedTabIds = new Set(this.addedTabsIds.keys());
 
-            this.tabSuggestions = [...restored, ...processedRecentTabs];
+            const selectedRecent = processedRecentTabs.filter(
+                tab => selectedTabIds.has(tab.tabId));
+            const unselectedRecent = processedRecentTabs.filter(
+                tab => !selectedTabIds.has(tab.tabId));
+
+            this.tabSuggestions = [
+              ...selectedRecent,
+              ...restored,
+              ...unselectedRecent,
+            ];
             this.tabSuggestionsState = TabSuggestionsState.LOADED;
 
             if (this.inputState) {

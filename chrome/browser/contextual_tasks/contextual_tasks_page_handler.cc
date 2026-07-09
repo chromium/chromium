@@ -53,6 +53,7 @@
 #include "components/omnibox/common/logger.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_handle_factory.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -716,6 +717,9 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
                     auto tab_info = searchbox::mojom::TabInfo::New();
                     tab_info->url = item->get_tab()->url;
                     tab_info->title = item->get_tab()->title;
+                    tab_info->tab_id =
+                        tabs::SessionMappedTabHandleFactory::GetInstance()
+                            .GetHandleForSessionId(item->get_tab()->tab_id);
                     tabs.push_back(std::move(tab_info));
                   }
                 }

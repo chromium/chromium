@@ -294,6 +294,39 @@ suite('ComposeboxMixinTest', () => {
         assertEquals(2, element.aimThreadRestoredTabs[2]!.tabId);
       });
 
+  test(
+      'setAimThreadRestoredTabs force-refreshes suggestions when tabs restored',
+      async () => {
+        searchboxHandler.resetResolver('getRecentTabs');
+        searchboxHandler.setPromiseResolveFor('getRecentTabs', {tabs: []});
+
+        const tab1 = {
+          tabId: 1,
+          title: 'Tab 1',
+          url: 'about:blank?1',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+
+        // Emit setAimThreadRestoredTabs callback with non-empty list.
+        searchboxCallbackRouterRemote.setAimThreadRestoredTabs([tab1]);
+        await microtasksFinished();
+
+        // Verify: refreshTabSuggestions(true) was triggered, so getRecentTabs
+        // is called.
+        assertEquals(1, searchboxHandler.getCallCount('getRecentTabs'));
+
+        // Reset call count and test with empty list.
+        searchboxHandler.resetResolver('getRecentTabs');
+        searchboxHandler.setPromiseResolveFor('getRecentTabs', {tabs: []});
+        searchboxCallbackRouterRemote.setAimThreadRestoredTabs([]);
+        await microtasksFinished();
+
+        // Verify: refreshTabSuggestions is NOT called when list is empty.
+        assertEquals(0, searchboxHandler.getCallCount('getRecentTabs'));
+      });
+
   test('queryAutocomplete passes cursor position', async () => {
     element.input = 'hello';
     await microtasksFinished();
