@@ -191,6 +191,10 @@ TEST_F(IdentityDocsMediatorTest, PrefChangeUpdatesConsumer) {
 // Tests that a preference change for address autofill updates the consumer
 // toggle enabled state.
 TEST_F(IdentityDocsMediatorTest, AutofillProfilePrefChangeUpdatesConsumer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillEnableAutofillSettingsEnterprisePolicy);
+
   profile_->GetPrefs()->SetBoolean(autofill::prefs::kAutofillProfileEnabled,
                                    true);
   profile_->GetPrefs()->SetBoolean(
@@ -205,6 +209,25 @@ TEST_F(IdentityDocsMediatorTest, AutofillProfilePrefChangeUpdatesConsumer) {
   OCMExpect([consumer_ setIdentityDocsToggleState:YES enabled:YES managed:NO]);
   profile_->GetPrefs()->SetBoolean(autofill::prefs::kAutofillProfileEnabled,
                                    true);
+  [consumer_ verify];
+}
+
+// Tests that a preference change for address autofill does not affect the
+// consumer toggle enabled state when the enterprise policy feature is enabled.
+TEST_F(IdentityDocsMediatorTest,
+       AutofillProfilePrefChangeUpdatesConsumer_EnterprisePolicy) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillEnableAutofillSettingsEnterprisePolicy);
+
+  profile_->GetPrefs()->SetBoolean(autofill::prefs::kAutofillProfileEnabled,
+                                   true);
+  profile_->GetPrefs()->SetBoolean(
+      autofill::prefs::kAutofillAiIdentityEntitiesEnabled, true);
+  mediator_.consumer = consumer_;
+
+  OCMExpect([consumer_ setIdentityDocsToggleState:YES enabled:YES managed:NO]);
+  profile_->GetPrefs()->SetBoolean(autofill::prefs::kAutofillProfileEnabled,
+                                   false);
   [consumer_ verify];
 }
 

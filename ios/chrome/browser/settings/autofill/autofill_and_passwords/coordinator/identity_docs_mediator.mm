@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/identity_docs_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/notreached.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_item.h"
@@ -98,10 +100,19 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kIdentityDocs = {
   BOOL identityDocsEnabled =
       _identityDocsEnabled ? _identityDocsEnabled.value : YES;
   BOOL managed = [self isAutofillAiDisabledByEnterprisePolicy];
-  [self.consumer
-      setIdentityDocsToggleState:identityDocsEnabled && profileEnabled
-                         enabled:profileEnabled
-                         managed:managed];
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::
+              kAutofillEnableAutofillSettingsEnterprisePolicy)) {
+    [self.consumer setIdentityDocsToggleState:identityDocsEnabled
+                                      enabled:YES
+                                      managed:managed];
+  } else {
+    [self.consumer
+        setIdentityDocsToggleState:identityDocsEnabled && profileEnabled
+                           enabled:profileEnabled
+                           managed:managed];
+  }
 }
 
 #pragma mark - IdentityDocsMutator

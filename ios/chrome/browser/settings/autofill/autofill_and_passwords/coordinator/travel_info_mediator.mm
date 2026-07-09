@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/travel_info_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/notreached.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_item.h"
@@ -98,9 +100,18 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kTravelInfo = {
       _autofillProfileEnabled ? _autofillProfileEnabled.value : YES;
   BOOL travelInfoEnabled = _travelInfoEnabled ? _travelInfoEnabled.value : YES;
   BOOL managed = [self isAutofillAiDisabledByEnterprisePolicy];
-  [self.consumer setTravelInfoToggleState:travelInfoEnabled && profileEnabled
-                                  enabled:profileEnabled
-                                  managed:managed];
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::
+              kAutofillEnableAutofillSettingsEnterprisePolicy)) {
+    [self.consumer setTravelInfoToggleState:travelInfoEnabled
+                                    enabled:YES
+                                    managed:managed];
+  } else {
+    [self.consumer setTravelInfoToggleState:travelInfoEnabled && profileEnabled
+                                    enabled:profileEnabled
+                                    managed:managed];
+  }
 }
 
 #pragma mark - TravelInfoMutator
