@@ -21,11 +21,9 @@ class ComposeboxEverywhereClient final : public ComposeboxOmniboxClient {
 
   ~ComposeboxEverywhereClient() override = default;
 
-  // OmniboxClient:
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       bool is_prefetch) const override {
-    // TODO(crbug.com/526629960): Add correct page classification.
-    return metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX;
+    return metrics::OmniboxEventProto::COMPOSEBOX_EVERYWHERE;
   }
 };
 

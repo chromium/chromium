@@ -259,6 +259,7 @@ class AutocompleteInput {
       case metrics::OmniboxEventProto::SRP_OMNIBOX_COMPOSEBOX:
       case metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX:
       case metrics::OmniboxEventProto::CO_BROWSING_COMPOSEBOX:
+      case metrics::OmniboxEventProto::COMPOSEBOX_EVERYWHERE:
         return SearchTermsData::RequestSource::NTP_COMPOSEBOX;
       default:
         return SearchTermsData::RequestSource::SEARCHBOX;
