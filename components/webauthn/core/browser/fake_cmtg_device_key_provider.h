@@ -41,6 +41,14 @@ class FakeCmtgDeviceKeyProvider : public CmtgDeviceKeyProvider {
   // If true, incoming requests will not schedule the callback.
   void SetHoldCallback(bool hold);
 
+  // Resolves the pending callback with keys.
+  void ResolvePending(std::vector<std::vector<uint8_t>> keys);
+
+  // Rejects the pending callback with error.
+  void RejectPending(Error error);
+
+  bool has_pending_callback() const { return !pending_callback_.is_null(); }
+
  private:
   // Executes the provided callback with either the configured next error or
   // keys.
@@ -54,6 +62,10 @@ class FakeCmtgDeviceKeyProvider : public CmtgDeviceKeyProvider {
 
   // If true, incoming requests will not schedule the callback.
   bool hold_callback_ = false;
+
+  // Stores the callback when `hold_callback_` is true, allowing tests to
+  // manually trigger it via `ResolvePending` or `RejectPending`.
+  Callback pending_callback_;
 
   base::WeakPtrFactory<FakeCmtgDeviceKeyProvider> weak_ptr_factory_{this};
 };

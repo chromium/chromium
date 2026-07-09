@@ -46,6 +46,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/change_pin_controller_impl.h"
 #include "chrome/browser/webauthn/cmtg_device_key_provider_factory.h"
+#include "chrome/browser/webauthn/cmtg_key_fetcher.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/gpm_enclave_transaction.h"
@@ -413,8 +414,6 @@ GPMEnclaveController::GPMEnclaveController(
           EnclaveManagerFactory::GetAsEnclaveManagerForProfile(GetProfile())),
       model_(model),
       loading_timeout_(
-          GpmTickAndTaskRunnerProvider::GetTickClock(render_frame_host)),
-      fetch_cmtg_keys_timeout_(
           GpmTickAndTaskRunnerProvider::GetTickClock(render_frame_host)) {
   enclave_manager_observer_.Observe(enclave_manager_);
   model_observer_.Observe(model_);
@@ -454,17 +453,10 @@ GPMEnclaveController::GPMEnclaveController(
   SetActive(EnclaveEnabledStatus::kEnabled);
 
   if (cmtg_key_requested) {
-    if (webauthn::CmtgDeviceKeyProvider* cmtg_provider =
-            CmtgDeviceKeyProviderFactory::GetForProfile(profile)) {
-      FIDO_LOG(EVENT) << "Fetching CMTG device keys";
-      fetch_cmtg_keys_timeout_.Start(
-          FROM_HERE, kFetchDeviceKeysTimeout,
-          base::BindOnce(&GPMEnclaveController::OnCmtgDeviceKeysTimeout,
-                         weak_ptr_factory_.GetWeakPtr()));
-      fetch_cmtg_keys_request_ = cmtg_provider->GetDeviceKeys(
-          base::BindOnce(&GPMEnclaveController::OnCmtgDeviceKeysFetched,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
+    cmtg_key_fetcher_ = std::make_unique<CmtgKeyFetcher>(
+        CmtgDeviceKeyProviderFactory::GetForProfile(profile),
+        GpmTickAndTaskRunnerProvider::GetTickClock(render_frame_host));
+    cmtg_key_fetcher_->Start();
   }
 
   FIDO_LOG(EVENT) << "Checking for UV key capability";
@@ -743,36 +735,8 @@ void GPMEnclaveController::OnAccountStateDownloaded(
   user_gaia_id_ = std::move(gaia_id);
 }
 
-void GPMEnclaveController::OnCmtgDeviceKeysFetched(
-    base::expected<std::vector<std::vector<uint8_t>>,
-                   webauthn::CmtgDeviceKeyProvider::Error> keys) {
-  fetch_cmtg_keys_request_.reset();
-  fetch_cmtg_keys_timeout_.Stop();
-  if (keys.has_value()) {
-    FIDO_LOG(EVENT) << "Successfully fetched " << keys->size()
-                    << " CMTG device keys";
-    cmtg_device_keys_ = std::move(*keys);
-  } else {
-    FIDO_LOG(ERROR) << "Failed to fetch CMTG device keys from Cryptauth: error "
-                    << static_cast<int>(keys.error());
-  }
-  if (transaction_waiting_for_cmtg_device_keys_) {
-    base::UmaHistogramTimes("WebAuthentication.Cmtg.BlockedDelay",
-                            cmtg_blocking_timer_.Elapsed());
-    transaction_waiting_for_cmtg_device_keys_ = false;
-    StartTransaction();
-  }
-}
-
-void GPMEnclaveController::OnCmtgDeviceKeysTimeout() {
-  FIDO_LOG(EVENT) << "CMTG device key fetch timed out";
-  fetch_cmtg_keys_request_.reset();
-  if (transaction_waiting_for_cmtg_device_keys_) {
-    base::UmaHistogramTimes("WebAuthentication.Cmtg.BlockedDelay",
-                            cmtg_blocking_timer_.Elapsed());
-    transaction_waiting_for_cmtg_device_keys_ = false;
-    StartTransaction();
-  }
+void GPMEnclaveController::OnCmtgKeysReady() {
+  StartTransaction();
 }
 
 void GPMEnclaveController::SetActive(EnclaveEnabledStatus status) {
@@ -1421,10 +1385,16 @@ void GPMEnclaveController::OnGPMReauthComplete(std::string rapt) {
 }
 
 void GPMEnclaveController::StartTransaction() {
-  if (fetch_cmtg_keys_request_) {
+  if (cmtg_key_fetcher_ && !cmtg_key_fetcher_->is_ready()) {
     FIDO_LOG(EVENT) << "Deferring transaction start until CMTG keys are ready";
-    transaction_waiting_for_cmtg_device_keys_ = true;
-    cmtg_blocking_timer_ = base::ElapsedTimer();
+    if (cmtg_key_fetcher_->is_waiting_for_keys()) {
+      // The controller is already waiting for CMTG device keys from a previous
+      // `StartTransaction` call. No need to invoke `WaitForKeys` again.
+      return;
+    }
+    cmtg_key_fetcher_->WaitForKeys(
+        base::BindOnce(&GPMEnclaveController::OnCmtgKeysReady,
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
@@ -1434,7 +1404,8 @@ void GPMEnclaveController::StartTransaction() {
   pending_enclave_transaction_ = std::make_unique<GPMEnclaveTransaction>(
       /*delegate=*/this, PasskeyModelFactory::GetForProfile(GetProfile()),
       request_type_, rp_id_, enclave_manager_, pin_, selected_cred_id_,
-      enclave_request_callback_, cmtg_device_keys_);
+      enclave_request_callback_,
+      cmtg_key_fetcher_ ? cmtg_key_fetcher_->keys() : std::nullopt);
   pending_enclave_transaction_->Start();
 }
 

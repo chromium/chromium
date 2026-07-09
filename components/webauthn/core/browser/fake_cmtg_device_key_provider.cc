@@ -18,7 +18,9 @@ FakeCmtgDeviceKeyProvider::~FakeCmtgDeviceKeyProvider() = default;
 
 std::unique_ptr<CmtgDeviceKeyProvider::Request>
 FakeCmtgDeviceKeyProvider::GetDeviceKeys(Callback callback) {
-  if (!hold_callback_) {
+  if (hold_callback_) {
+    pending_callback_ = std::move(callback);
+  } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeCmtgDeviceKeyProvider::DeliverResult,
@@ -40,6 +42,17 @@ void FakeCmtgDeviceKeyProvider::SetNextError(std::optional<Error> error) {
 
 void FakeCmtgDeviceKeyProvider::SetHoldCallback(bool hold) {
   hold_callback_ = hold;
+}
+
+void FakeCmtgDeviceKeyProvider::ResolvePending(
+    std::vector<std::vector<uint8_t>> keys) {
+  CHECK(pending_callback_);
+  std::move(pending_callback_).Run(std::move(keys));
+}
+
+void FakeCmtgDeviceKeyProvider::RejectPending(Error error) {
+  CHECK(pending_callback_);
+  std::move(pending_callback_).Run(base::unexpected(error));
 }
 
 void FakeCmtgDeviceKeyProvider::DeliverResult(Callback callback) {

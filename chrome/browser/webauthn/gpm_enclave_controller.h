@@ -24,7 +24,6 @@
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/gpm_enclave_transaction.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
-#include "components/webauthn/core/browser/cmtg_device_key_provider.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/global_routing_id.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -59,6 +58,7 @@ class ICloudRecoveryKey;
 enum class EnclaveEnabledStatus;
 enum class EnclaveChangePinEvent;
 class Profile;
+class CmtgKeyFetcher;
 
 // Provides a TrustedVaultConnection for a given RenderFrameHost.
 // This allows tests to override the connection used by GPMEnclaveController.
@@ -238,13 +238,8 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
           result);
 
-  // Called when CMTG device keys have finished fetching.
-  void OnCmtgDeviceKeysFetched(
-      base::expected<std::vector<std::vector<uint8_t>>,
-                     webauthn::CmtgDeviceKeyProvider::Error> keys);
-
-  // Called when the CMTG device key fetch timer fires.
-  void OnCmtgDeviceKeysTimeout();
+  // Called when CMTG device keys are ready.
+  void OnCmtgKeysReady();
 
   // Called when enough state has been loaded that the initial UI can be shown.
   // If `kEnabled` then the enclave will be a valid mechanism.
@@ -439,26 +434,8 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   // The gaia id of the user at the time the account state was downloaded.
   GaiaId user_gaia_id_;
 
-  // True if `StartTransaction()` was called while still waiting for CMTG device
-  // keys, so it needs to be delayed until the keys are ready or the fetch has
-  // timed out.
-  bool transaction_waiting_for_cmtg_device_keys_ = false;
-
-  // Cached CMTG device keys.
-  std::optional<std::vector<std::vector<uint8_t>>> cmtg_device_keys_;
-
-  // CMTG device keys request. Present while the request is still running, and
-  // only for operations requiring fetching CMTG device keys.
-  std::unique_ptr<webauthn::CmtgDeviceKeyProvider::Request>
-      fetch_cmtg_keys_request_;
-
-  // CMTG device keys timer.
-  base::OneShotTimer fetch_cmtg_keys_timeout_;
-
-  // Measures the added user-facing UI latency when the WebAuthn transaction
-  // must defer execution awaiting the completion of the CMTG device keys fetch.
-  // Counts both successful fetches and timed out fetches.
-  base::ElapsedTimer cmtg_blocking_timer_;
+  // Handles fetching CMTG device keys.
+  std::unique_ptr<CmtgKeyFetcher> cmtg_key_fetcher_;
 
   base::WeakPtrFactory<GPMEnclaveController> weak_ptr_factory_{this};
 };
