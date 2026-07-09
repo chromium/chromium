@@ -2725,8 +2725,6 @@ data/accessibility/event/button-click-expected-android.txt
 data/accessibility/event/button-click-expected-auralinux.txt
 data/accessibility/event/button-click-expected-uia-win.txt
 data/accessibility/event/button-click.html
-data/accessibility/event/button-haspopup-checked-state-changed-expected-uia-win.txt
-data/accessibility/event/button-haspopup-checked-state-changed.html
 data/accessibility/event/button-remove-children-expected-android.txt
 data/accessibility/event/button-remove-children-expected-auralinux.txt
 data/accessibility/event/button-remove-children-expected-uia-win.txt

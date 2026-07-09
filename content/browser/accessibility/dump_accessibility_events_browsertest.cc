@@ -725,11 +725,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsButtonHasPopupCheckedStateChanged) {
-  RunEventTest(FILE_PATH_LITERAL("button-haspopup-checked-state-changed.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsCheckedMixedChanged) {
   RunEventTest(FILE_PATH_LITERAL("checked-mixed-changed.html"));
 }

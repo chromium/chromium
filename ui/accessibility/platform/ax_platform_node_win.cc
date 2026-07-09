@@ -9140,7 +9140,7 @@ bool AXPlatformNodeWin::IsToggleSupported() const {
   //
   // [2]:https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-supportbuttoncontroltype#required-control-patterns
   // [3]:https://github.com/microsoft/axe-windows/blob/main/src/Rules/Library/ButtonInvokeAndExpandeCollapsePatterns.cs
-  if (IsExpandCollapseButton()) {
+  if (GetData().SupportsExpandCollapse() && IsButton(role)) {
     return false;
   }
 
@@ -9149,10 +9149,6 @@ bool AXPlatformNodeWin::IsToggleSupported() const {
   //
   // [4]:https://w3c.github.io/core-aam/#mapping_state-property_table
   return IsPlatformCheckable() || SupportsToggle(role);
-}
-
-bool AXPlatformNodeWin::IsExpandCollapseButton() const {
-  return GetData().SupportsExpandCollapse() && IsButton(GetRole());
 }
 
 bool AXPlatformNodeWin::IsInvokeSupported() const {

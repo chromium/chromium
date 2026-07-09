@@ -1211,11 +1211,6 @@ class COMPONENT_EXPORT(AX_PLATFORM)
 
   bool IsUIAControl() const;
 
-  // Whether this node is a button that exposes the ExpandCollapse pattern
-  // instead of Toggle (e.g. menu buttons, expandable popup buttons). Such
-  // buttons suppress Toggle per the UIA button spec; see IsToggleSupported().
-  bool IsExpandCollapseButton() const;
-
  protected:
   AXPlatformNodeWin();
   ~AXPlatformNodeWin() override;

@@ -25,7 +25,6 @@
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_utils_win.h"
 #include "ui/accessibility/platform/ax_platform_node_textprovider_win.h"
-#include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/browser_accessibility_win.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
@@ -368,17 +367,6 @@ void BrowserAccessibilityManagerWin::FireSourceEvent(
   }
 }
 
-// static
-LONG BrowserAccessibilityManagerWin::GetCheckedStateChangedUiaProperty(
-    const BrowserAccessibility& node) {
-  // Buttons that expose ExpandCollapse suppress Toggle (see IsToggleSupported),
-  // so their state change is reported through ExpandCollapseState.
-  if (ToBrowserAccessibilityWin(&node)->GetCOM()->IsExpandCollapseButton()) {
-    return UIA_ExpandCollapseExpandCollapseStatePropertyId;
-  }
-  return UIA_ToggleToggleStatePropertyId;
-}
-
 void BrowserAccessibilityManagerWin::FireGeneratedEvent(
     AXEventGenerator::Event event_type,
     const AXNode* node) {
@@ -413,8 +401,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
         HandleSelectedStateChanged(uia_selection_events_, wrapper,
                                    IsUIANodeSelected(wrapper));
       }
-      FireUiaPropertyChangedEvent(GetCheckedStateChangedUiaProperty(*wrapper),
-                                  wrapper);
+      FireUiaPropertyChangedEvent(UIA_ToggleToggleStatePropertyId, wrapper);
       HandleAriaPropertiesChangedEvent(*wrapper);
       break;
     case AXEventGenerator::Event::CHILDREN_CHANGED: {
