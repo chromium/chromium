@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -415,9 +417,14 @@ bool ShouldShowSaveCardBottomSheet(
     int num_strikes,
     bool should_request_name_from_user,
     bool should_request_expiration_date_from_user) {
+  int max_strikes = 1;
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSaveCardBottomSheetStrikeLimitIos)) {
+    max_strikes = features::kMaxStrikesForSaveCardBottomSheetIos.Get();
+  }
   return source_feature == SourceFeature::kScanCardSaveAndFill ||
-         (card_save_type != CardSaveType::kCvcSaveOnly && num_strikes == 0 &&
-          !should_request_name_from_user &&
+         (card_save_type != CardSaveType::kCvcSaveOnly &&
+          num_strikes < max_strikes && !should_request_name_from_user &&
           !should_request_expiration_date_from_user);
 }
 #endif  // BUILDFLAG(IS_IOS)

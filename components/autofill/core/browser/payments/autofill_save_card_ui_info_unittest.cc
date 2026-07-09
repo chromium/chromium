@@ -8,6 +8,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -107,6 +108,72 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
   AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
       options, test::GetCreditCard());
   EXPECT_TRUE(ui_info.is_for_bottom_sheet);
+}
+
+// Tests that the bottom sheet is only shown when there are 0 strikes when the
+// strike limit experiment is disabled.
+TEST(AutofillSaveCardUiInfoTestForLocalSave,
+     ShouldShowBottomSheetWhenStrikeLimitExperimentDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      features::kAutofillSaveCardBottomSheetStrikeLimitIos);
+
+  // 0 strikes -> Bottom sheet should be shown.
+  AutofillSaveCardUiInfo ui_info_0_strikes =
+      AutofillSaveCardUiInfo::CreateForLocalSave(
+          payments::PaymentsAutofillClient::SaveCreditCardOptions()
+              .with_num_strikes(0),
+          test::GetCreditCard());
+  EXPECT_TRUE(ui_info_0_strikes.is_for_bottom_sheet);
+
+  // 1 strike -> Bottom sheet should NOT be shown (falls back to banner).
+  AutofillSaveCardUiInfo ui_info_1_strike =
+      AutofillSaveCardUiInfo::CreateForLocalSave(
+          payments::PaymentsAutofillClient::SaveCreditCardOptions()
+              .with_num_strikes(1),
+          test::GetCreditCard());
+  EXPECT_FALSE(ui_info_1_strike.is_for_bottom_sheet);
+}
+
+// Tests that the bottom sheet is shown up to the 3rd attempt when the strike
+// limit experiment is enabled with default parameter (max strikes = 3).
+TEST(AutofillSaveCardUiInfoTestForLocalSave,
+     ShouldShowBottomSheetWhenStrikeLimitExperimentEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      features::kAutofillSaveCardBottomSheetStrikeLimitIos);
+
+  // 0 strikes -> Bottom sheet should be shown.
+  AutofillSaveCardUiInfo ui_info_0_strikes =
+      AutofillSaveCardUiInfo::CreateForLocalSave(
+          payments::PaymentsAutofillClient::SaveCreditCardOptions()
+              .with_num_strikes(0),
+          test::GetCreditCard());
+  EXPECT_TRUE(ui_info_0_strikes.is_for_bottom_sheet);
+
+  // 1 strike -> Bottom sheet should be shown.
+  AutofillSaveCardUiInfo ui_info_1_strike =
+      AutofillSaveCardUiInfo::CreateForLocalSave(
+          payments::PaymentsAutofillClient::SaveCreditCardOptions()
+              .with_num_strikes(1),
+          test::GetCreditCard());
+  EXPECT_TRUE(ui_info_1_strike.is_for_bottom_sheet);
+
+  // 2 strikes -> Bottom sheet should be shown.
+  AutofillSaveCardUiInfo ui_info_2_strikes =
+      AutofillSaveCardUiInfo::CreateForLocalSave(
+          payments::PaymentsAutofillClient::SaveCreditCardOptions()
+              .with_num_strikes(2),
+          test::GetCreditCard());
+  EXPECT_TRUE(ui_info_2_strikes.is_for_bottom_sheet);
+
+  // 3 strikes -> Bottom sheet should NOT be shown.
+  AutofillSaveCardUiInfo ui_info_3_strikes =
+      AutofillSaveCardUiInfo::CreateForLocalSave(
+          payments::PaymentsAutofillClient::SaveCreditCardOptions()
+              .with_num_strikes(3),
+          test::GetCreditCard());
+  EXPECT_FALSE(ui_info_3_strikes.is_for_bottom_sheet);
 }
 
 // Only applicable for local save bottomsheet since AutofillSaveCardUiInfo's
