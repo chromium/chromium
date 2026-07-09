@@ -20,6 +20,9 @@ import java.util.Set;
  */
 @NullMarked
 public interface ActorForegroundServiceController {
+    /** Starts the service. */
+    void startService();
+
     /**
      * Starts the service and binds to it.
      *

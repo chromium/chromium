@@ -32,10 +32,12 @@ class ActorKeyedServiceAndroid : public base::SupportsUserData::Data {
 
  private:
   void OnTaskStateChanged(ActorTask& task);
+  void EnsureForegroundServiceStarted();
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
   raw_ptr<ActorKeyedService> service_;
   base::CallbackListSubscription task_state_subscription_;
+  base::CallbackListSubscription ensure_fgs_started_subscription_;
 };
 
 }  // namespace actor

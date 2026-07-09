@@ -16,12 +16,18 @@ import android.os.SystemClock;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ServiceCompat;
 
+import org.chromium.base.Log;
 import org.chromium.base.SplitCompatService;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorForegroundServiceUmaHelper.ForegroundLifecycle;
 import org.chromium.chrome.browser.actor.ActorForegroundServiceUmaHelper.StopReason;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
+import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
+import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 
 /** Implementation of ActorForegroundService. */
 @NullMarked
@@ -30,6 +36,9 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
     private long mStartTime;
     private boolean mIsForeground;
     private boolean mStopReasonRecorded;
+
+    private static final int PLACEHOLDER_NOTIFICATION_ID = 101;
+    private static final String TAG = "Actor";
 
     /**
      * Start the foreground service with this given context.
@@ -89,13 +98,41 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
 
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+        Log.d(TAG, "GlicTrigger: ActorForegroundService onStartCommand");
         if (mStartTime == 0) {
             mStartTime = SystemClock.elapsedRealtime();
+        }
+
+        if (!mIsForeground
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING)) {
+            Log.d(TAG, "GlicTrigger: Promoting to foreground");
+            Notification placeholderNotification = buildPlaceholderNotification();
+            if (placeholderNotification != null) {
+                startOrUpdateForegroundService(
+                    PLACEHOLDER_NOTIFICATION_ID, placeholderNotification, -1, false);
+            }
         }
 
         // Return START_NOT_STICKY so the system doesn't attempt to recreate the service if it is
         // killed.
         return Service.START_NOT_STICKY;
+    }
+
+    // TODO(crbug.com/530286130): Move this to ActorNotificationFactory.
+    @Nullable
+    private Notification buildPlaceholderNotification() {
+        NotificationMetadata metadata =
+                new NotificationMetadata(
+                        NotificationUmaTracker.SystemNotificationType.ACTOR,
+                        /* notificationTag= */ null,
+                        PLACEHOLDER_NOTIFICATION_ID);
+        Log.d(TAG, "GlicTrigger: build notification");
+        return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
+                        ChromeChannelDefinitions.ChannelId.BROWSER, metadata)
+                .setSmallIcon(org.chromium.chrome.R.drawable.ic_chrome)
+                .setContentTitle("Task will start soon.")
+                .setContentText("Your task will start soon.")
+                .build();
     }
 
     @Override

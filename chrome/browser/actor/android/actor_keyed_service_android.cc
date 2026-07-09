@@ -64,6 +64,11 @@ ActorKeyedServiceAndroid::ActorKeyedServiceAndroid(ActorKeyedService* service)
   task_state_subscription_ = service_->AddTaskStateChangedCallback(
       base::BindRepeating(&ActorKeyedServiceAndroid::OnTaskStateChanged,
                           base::Unretained(this)));
+
+  ensure_fgs_started_subscription_ =
+      service_->AddForegroundServiceStartedCallback(base::BindRepeating(
+          &ActorKeyedServiceAndroid::EnsureForegroundServiceStarted,
+          base::Unretained(this)));
 }
 
 ActorKeyedServiceAndroid::~ActorKeyedServiceAndroid() {
@@ -117,6 +122,11 @@ void ActorKeyedServiceAndroid::OnTaskStateChanged(ActorTask& task) {
   Java_ActorKeyedService_onTaskStateChanged(env, java_obj_,
                                             task.id().GetUnsafeValue(),
                                             static_cast<int>(task.GetState()));
+}
+
+void ActorKeyedServiceAndroid::EnsureForegroundServiceStarted() {
+  JNIEnv* env = AttachCurrentThread();
+  Java_ActorKeyedService_ensureForegroundServiceStarted(env, java_obj_);
 }
 
 }  // namespace actor

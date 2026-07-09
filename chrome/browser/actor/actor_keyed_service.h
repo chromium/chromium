@@ -181,6 +181,13 @@ class ActorKeyedService : public KeyedService,
   // download::AllDownloadItemNotifier::Observer
   void OnProfileInitializationComplete(Profile* profile) override;
 
+#if BUILDFLAG(IS_ANDROID)
+  using EnsureForegroundServiceStartedCallback = base::RepeatingClosure;
+  base::CallbackListSubscription AddForegroundServiceStartedCallback(
+      EnsureForegroundServiceStartedCallback callback);
+  void EnsureForegroundServiceStarted();
+#endif
+
   base::WeakPtr<ActorKeyedService> GetWeakPtr();
 
  private:
@@ -222,6 +229,10 @@ class ActorKeyedService : public KeyedService,
 
   base::RepeatingCallbackList<void(ActorTask&)>
       task_state_change_callback_list_;
+
+#if BUILDFLAG(IS_ANDROID)
+  base::RepeatingClosureList ensure_foreground_service_started_callbacks_;
+#endif
 
   // Owns this.
   raw_ptr<Profile> profile_;

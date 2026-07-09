@@ -116,6 +116,11 @@ public class ActorKeyedService {
     }
 
     @CalledByNative
+    private void ensureForegroundServiceStarted() {
+        ActorForegroundServiceController.get().startService();
+    }
+
+    @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
     }

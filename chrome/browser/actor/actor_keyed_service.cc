@@ -699,4 +699,16 @@ void ActorKeyedService::OnDownloadCreated(content::DownloadManager* manager,
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+base::CallbackListSubscription
+ActorKeyedService::AddForegroundServiceStartedCallback(
+    EnsureForegroundServiceStartedCallback callback) {
+  return ensure_foreground_service_started_callbacks_.Add(std::move(callback));
+}
+
+void ActorKeyedService::EnsureForegroundServiceStarted() {
+  ensure_foreground_service_started_callbacks_.Notify();
+}
+#endif
+
 }  // namespace actor

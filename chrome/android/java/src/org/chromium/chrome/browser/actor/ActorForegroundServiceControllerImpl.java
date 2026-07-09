@@ -63,6 +63,12 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
             };
 
     @Override
+    public void startService() {
+        Context context = ContextUtils.getApplicationContext();
+        ActorForegroundServiceImpl.startActorForegroundService(context);
+    }
+
+    @Override
     public void startAndBindService(Runnable onConnected) {
         mOnConnectedRunnable = onConnected;
         Context context = ContextUtils.getApplicationContext();
