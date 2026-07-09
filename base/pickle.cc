@@ -432,7 +432,7 @@ Pickle& Pickle::operator=(const Pickle& other) {
 }
 
 void Pickle::WriteString(std::string_view value) {
-  WriteData(value.data(), value.size());
+  WriteData(value);
 }
 
 void Pickle::WriteString16(std::u16string_view value) {
