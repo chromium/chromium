@@ -66,7 +66,9 @@ public class EntitySuggestionProcessor extends BasicSuggestionProcessor {
     @VisibleForTesting
     @Override
     public OmniboxDrawableState getFallbackIcon(AutocompleteMatch match) {
-        if (OmniboxCapabilities.isLowMemoryDevice()) return super.getFallbackIcon(match);
+        if (OmniboxCapabilities.isLowMemoryDevice() || OmniboxCapabilities.isDesktopPlatform()) {
+            return super.getFallbackIcon(match);
+        }
 
         var colorSpec = match.getImageDominantColor();
         if (TextUtils.isEmpty(colorSpec)) return super.getFallbackIcon(match);

@@ -182,6 +182,16 @@ public class EntitySuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
+    public void decorationTest_validHexColor_desktopDevice() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        SuggestionTestHelper suggHelper = createSuggestion("", "", "#fedcba", SEARCH_URL);
+        processSuggestion(suggHelper);
+
+        assertThat(suggHelper.getIcon(), instanceOf(VectorDrawable.class));
+    }
+
+    @Test
+    @SmallTest
     public void decorationTest_validNamedColor() {
         SuggestionTestHelper suggHelper = createSuggestion("", "", "red", SEARCH_URL);
         processSuggestion(suggHelper);
