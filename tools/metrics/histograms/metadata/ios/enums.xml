@@ -619,6 +619,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Default Browser Settings"/>
   <int value="3" label="Skipped Default Browser Settings For NTP"/>
   <int value="4" label="App Store Event For Gemini Promo"/>
+  <int value="5" label="Gemini AI Summarization"/>
 </enum>
 
 <enum name="IOSFilePickerDriveAccountSelection">
@@ -829,6 +830,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="AI Hub Sign-in Sheet"/>
   <int value="11" label="External App Store Event"/>
   <int value="12" label="Toolbar"/>
+  <int value="13" label="App Switcher AI Summarization"/>
   <int value="100" label="Unknown"/>
 </enum>
 

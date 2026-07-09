@@ -73,7 +73,9 @@
 #import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
 #import "ios/chrome/browser/google_one/shared/google_one_deep_link_util.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
 #import "ios/chrome/browser/intents/model/user_activity_compatibility_util.h"
@@ -179,11 +181,13 @@
 #import "ios/web/public/js_image_transcoder/java_script_image_transcoder.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_id.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/page_transition_types.h"
 
 namespace {
@@ -694,6 +698,10 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
       }
       return nil;
     }
+    case START_GEMINI_AI_SUMMARIZATION:
+      return ^{
+        [weakSelf startGeminiFlowForAppSwitcherIntent];
+      };
     default:
       return nil;
   }
@@ -2603,11 +2611,11 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     return;
   }
 
-  id<GeminiCommands> geminiHandler = HandlerForProtocol(
-      self.currentInterface.browser->GetCommandDispatcher(), GeminiCommands);
   GeminiStartupState* startupState = [[GeminiStartupState alloc]
       initWithEntryPoint:gemini::EntryPoint::ExternalAppStoreEvent];
 
+  id<GeminiCommands> geminiHandler = HandlerForProtocol(
+      self.currentInterface.browser->GetCommandDispatcher(), GeminiCommands);
   if (IsGeneralizedGeminiEntryFlowEnabled()) {
     [geminiHandler
         startGeminiEntryFlowWithStartupState:startupState
@@ -2617,10 +2625,41 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
                     showSnackbarOnCompletion:YES
                                   completion:nil];
   } else {
-    // TODO(crbug.com/515476625): Remove this fallback path, the associated
-    // method and string when the generalized Gemini entry flow is rolled out.
+    // TODO(crbug.com/515476625): Remove this legacy fallback path when the
+    // generalized Gemini entry flow is fully rolled out.
     [geminiHandler startGeminiFlowWithStartupState:startupState];
   }
+}
+
+// TODO(crbug.com/526644569): Handle user waiting for page to load.
+// Starts the Gemini flow when an App Switcher intent occurs.
+- (void)startGeminiFlowForAppSwitcherIntent {
+  CHECK(IsAppSwitcherAISummarizationEnabled());
+  Browser* browser = self.currentInterface.browser;
+  if (!browser) {
+    return;
+  }
+
+  web::WebState* activeWebState =
+      browser->GetWebStateList()->GetActiveWebState();
+  if (!activeWebState) {
+    return;
+  }
+
+  GeminiStartupState* startupState = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::AppSwitcherAISummarization];
+  startupState.prepopulatedPrompt =
+      l10n_util::GetNSString(IDS_IOS_GEMINI_SUMMARIZE_PAGE_PROMPT);
+
+  id<GeminiCommands> geminiHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), GeminiCommands);
+  [geminiHandler
+      startGeminiEntryFlowWithStartupState:startupState
+                        baseViewController:self.activeViewController
+                               accessPoint:signin_metrics::AccessPoint::
+                                               kDeepLinkDefault
+                  showSnackbarOnCompletion:YES
+                                completion:nil];
 }
 
 // Returns the condition to check in order to show the `IncognitoIntertitial`

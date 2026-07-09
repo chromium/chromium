@@ -39,6 +39,8 @@ enum class EntryPoint {
   ExternalAppStoreEvent = 11,
   // Gemini was opened from the Toolbar.
   Toolbar = 12,
+  // Gemini was opened via App Switcher AI Summarization entry point.
+  AppSwitcherAISummarization = 13,
   // The entry point is unknown.
   Unknown = 100,
   kMaxValue = Unknown,

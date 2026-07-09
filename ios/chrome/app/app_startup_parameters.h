@@ -51,6 +51,7 @@ enum TabOpeningPostOpeningAction {
   CREDENTIAL_EXCHANGE_IMPORT,
   TRIGGER_GEMINI_PROMO,
   SHOW_GOOGLE_ONE_SCREEN,
+  START_GEMINI_AI_SUMMARIZATION,
 };
 
 // Represents the status of a request to change the application mode.

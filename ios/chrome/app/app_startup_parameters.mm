@@ -207,6 +207,9 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
     case SHOW_GOOGLE_ONE_SCREEN:
       [description appendString:@", should show Google One screen"];
       break;
+    case START_GEMINI_AI_SUMMARIZATION:
+      [description appendString:@", should launch Gemini AI summarization"];
+      break;
     default:
       break;
   }
@@ -230,6 +233,7 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
     case SEARCH_PASSWORDS:
     case CREDENTIAL_EXCHANGE_IMPORT:
     case TRIGGER_GEMINI_PROMO:
+    case START_GEMINI_AI_SUMMARIZATION:
       return YES;
 
       // Lens action are valid on empty URLs, in addition to

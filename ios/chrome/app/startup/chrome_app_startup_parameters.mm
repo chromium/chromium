@@ -46,6 +46,9 @@ NSString* const kExternalActionOpenNTP = @"OpenNTP";
 // Action path string for Gemini Promo using external actions.
 NSString* const kExternalActionAppStoreGeminiPromo = @"appstoregeminipromo";
 
+// Action path string for App Switcher testing using external actions.
+NSString* const kExternalActionAppSwitcherTesting = @"appswitchertesting";
+
 // URL Query String parameter to indicate that this openURL: request arrived
 // here due to a Smart App Banner presentation on a Google.com page.
 NSString* const kSmartAppBannerKey = @"safarisab";
@@ -471,6 +474,28 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                                                         kGeminiAppStorePromoURL)
                                forceApplicationMode:forceApplicationMode];
     params.postOpeningAction = TRIGGER_GEMINI_PROMO;
+  } else if (IsAppSwitcherAISummarizationEnabled() &&
+             [path isEqualToString:kExternalActionAppSwitcherTesting]) {
+    // TODO(crbug.com/527016607): Remove this entire testing path when the
+    // feature is enabled by default.
+    action = IOSExternalAction::ACTION_START_GEMINI_AI_SUMMARIZATION;
+
+    GURL externalURL = GURL(kGeminiAppStorePromoURL);
+    std::string queryURLString;
+    if (net::GetValueForKeyInQuery(net::GURLWithNSURL(completeURL), "url",
+                                   &queryURLString)) {
+      GURL parsedQueryURL(queryURLString);
+      if (parsedQueryURL.is_valid() && parsedQueryURL.SchemeIsHTTPOrHTTPS()) {
+        externalURL = parsedQueryURL;
+      }
+    }
+
+    params =
+        [self startupParametersForExternalActionWithAppID:appID
+                                              completeURL:completeURL
+                                              externalURL:externalURL
+                                     forceApplicationMode:forceApplicationMode];
+    params.postOpeningAction = START_GEMINI_AI_SUMMARIZATION;
   } else {
     action = IOSExternalAction::ACTION_INVALID;
     params = nil;

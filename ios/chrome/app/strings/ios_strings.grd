@@ -3455,6 +3455,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_GEMINI_SIGN_IN_REQUIRED_SNACKBAR" desc="Snackbar message shown when the user tries to use Gemini but is not signed in.">
         You need to sign in to use Gemini
       </message>
+      <message name="IDS_IOS_GEMINI_SUMMARIZE_PAGE_PROMPT" desc="The prepopulated prompt text when initiating Gemini summarization from the App Switcher.">
+        Give me a short summary of this page
+      </message>
       <message name="IDS_IOS_GENERIC_PASSKIT_ERROR" desc="Generic error message on failure reading a PassKit object. [Length: 60em] [iOS only]">
         Sorry, your Pass cannot be installed to Passbook at this time.
       </message>
