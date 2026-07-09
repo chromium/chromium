@@ -134,7 +134,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   size_t GetSize() const override;
 
 
-  bool IsValid() const;
 
   gpu::raster::RasterInterface* RasterInterface() const;
 

@@ -83,7 +83,10 @@ WebGpuRecyclableResourceProvider::Create(gfx::Size size,
       size, format, alpha_type, color_space, hdr_metadata,
       context_provider_wrapper));
 
-  return provider->IsValid() ? std::move(provider) : nullptr;
+  if (provider->IsGpuContextLost()) {
+    return nullptr;
+  }
+  return provider;
 }
 
 WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
@@ -161,9 +164,6 @@ WebGpuRecyclableResourceProvider::~WebGpuRecyclableResourceProvider() {
   }
 }
 
-bool WebGpuRecyclableResourceProvider::IsValid() const {
-  return !IsGpuContextLost();
-}
 
 void WebGpuRecyclableResourceProvider::OnContextDestroyed() {
   canvas_image_provider_.reset();
