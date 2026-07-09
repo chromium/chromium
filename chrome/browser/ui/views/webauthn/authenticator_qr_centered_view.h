@@ -17,7 +17,12 @@ class AuthenticatorQrCenteredView : public views::View {
   METADATA_HEADER(AuthenticatorQrCenteredView, views::View)
 
  public:
-  explicit AuthenticatorQrCenteredView(const std::string& qr_string);
+  static constexpr int kDefaultQrCodeImageSize = 240;
+  static constexpr int kDefaultQrCodeMargin = 40;
+
+  explicit AuthenticatorQrCenteredView(const std::string& qr_string,
+                                       int qr_size = kDefaultQrCodeImageSize,
+                                       int qr_margin = kDefaultQrCodeMargin);
   ~AuthenticatorQrCenteredView() override;
 
   AuthenticatorQrCenteredView(const AuthenticatorQrCenteredView&) = delete;
@@ -27,9 +32,6 @@ class AuthenticatorQrCenteredView : public views::View {
   void OnThemeChanged() override;
 
  private:
-  gfx::Size qrCodeImageSize() const;
-
-  const std::string qr_string_;
   raw_ptr<views::ImageView> qr_code_image_;
 };
 

@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "chrome/browser/ui/signin/signin_qrcode_infobar_delegate.h"
+#include "chrome/browser/ui/signin/signin_qrcode_model.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_qr_centered_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -23,17 +25,22 @@ namespace {
 constexpr int kBetweenChildSpacing = 24;
 constexpr int kHorizontalMargin = 24;
 constexpr int kVerticalMargin = 8;
-constexpr int kTargetHeight = 133;
-constexpr int kQrContainerWidth = 113;
-constexpr int kQrContainerHeight = 117;
-constexpr int kTextSpacing = 10;
+constexpr int kTargetHeight = 136;
+constexpr int kQrContainerWidth = 120;
+constexpr int kQrContainerHeight = 120;
+constexpr int kLogoBottomSpacing = 10;
+constexpr int kTitleDescriptionSpacing = 4;
 constexpr int kLogoSize = 32;
+constexpr int kQrCodeImageSize = 100;
+constexpr int kQrCodeMargin = 20;
 
 }  // namespace
 
 SigninQRCodeInfoBar::SigninQRCodeInfoBar(
-    std::unique_ptr<SigninQRCodeInfoBarDelegate> delegate)
+    std::unique_ptr<SigninQRCodeInfoBarDelegate> delegate,
+    SigninQRCodeModel* model)
     : InfoBarView(std::move(delegate)) {
+  CHECK(model);
   // Override InfoBarView default layout manager.
   auto* layout =
       content_container()->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -57,32 +64,42 @@ SigninQRCodeInfoBar::SigninQRCodeInfoBar(
           .Build());
 
   // Add the throbber (spinner) initially.
-  throbber_ = qr_container_->AddChildView(
-      views::Builder<views::Throbber>().Build());
-  throbber_->Start();
+  qr_container_->AddChildView(views::Builder<views::Throbber>().Build())
+      ->Start();
 
   content_container()->AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
-          .SetBetweenChildSpacing(kTextSpacing)
+          .SetBetweenChildSpacing(kLogoBottomSpacing)
           .AddChildren(
               views::Builder<views::ImageView>()
                   .SetImage(ui::ImageModel::FromResourceId(IDR_PRODUCT_LOGO_32))
                   .SetImageSize(gfx::Size(kLogoSize, kLogoSize)),
-              views::Builder<views::Label>()
-                  .SetText(
-                      l10n_util::GetStringUTF16(IDS_SIGNIN_QRCODE_BANNER_TITLE))
-                  .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
-                  .SetTextStyle(views::style::STYLE_HEADLINE_2),
-              views::Builder<views::Label>()
-                  .SetText(l10n_util::GetStringUTF16(
-                      IDS_SIGNIN_QRCODE_BANNER_DESCRIPTION))
-                  .SetTextContext(views::style::CONTEXT_LABEL)
-                  .SetTextStyle(views::style::STYLE_BODY_1)
-                  .SetMultiLine(true))
+              views::Builder<views::BoxLayoutView>()
+                  .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                  .SetCrossAxisAlignment(
+                      views::BoxLayout::CrossAxisAlignment::kStart)
+                  .SetBetweenChildSpacing(kTitleDescriptionSpacing)
+                  .AddChildren(
+                      views::Builder<views::Label>()
+                          .SetText(l10n_util::GetStringUTF16(
+                              IDS_SIGNIN_QRCODE_BANNER_TITLE))
+                          .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
+                          .SetTextStyle(views::style::STYLE_HEADLINE_4),
+                      views::Builder<views::Label>()
+                          .SetText(l10n_util::GetStringUTF16(
+                              IDS_SIGNIN_QRCODE_BANNER_DESCRIPTION))
+                          .SetTextContext(views::style::CONTEXT_LABEL)
+                          .SetTextStyle(views::style::STYLE_BODY_3)
+                          .SetMultiLine(true)))
           .Build());
+
+  model_observation_.Observe(model);
+  if (model->qr_code_string().has_value()) {
+    OnQrCodeReady(*model->qr_code_string());
+  }
 }
 
 SigninQRCodeInfoBar::~SigninQRCodeInfoBar() = default;
@@ -95,6 +112,29 @@ void SigninQRCodeInfoBar::PlatformSpecificShow(bool animate) {
       shadow->SetVisible(false);
     }
   }
+}
+
+void SigninQRCodeInfoBar::OnQrCodeReady(std::string_view qr_string) {
+  qr_container_->RemoveAllChildViews();
+
+  auto qr_code_view = std::make_unique<AuthenticatorQrCenteredView>(
+      std::string(qr_string), kQrCodeImageSize, kQrCodeMargin);
+  qr_container_->AddChildView(std::move(qr_code_view));
+
+  // Re-layout the container.
+  InvalidateLayout();
+}
+
+void SigninQRCodeInfoBar::OnQrCodeChanged(std::string_view qr_code_string) {
+  OnQrCodeReady(qr_code_string);
+}
+
+void SigninQRCodeInfoBar::OnQrCodeReset() {
+  RemoveSelf();
+}
+
+void SigninQRCodeInfoBar::OnModelDestroyed(SigninQRCodeModel* model) {
+  model_observation_.Reset();
 }
 
 BEGIN_METADATA(SigninQRCodeInfoBar)

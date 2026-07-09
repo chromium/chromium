@@ -699,8 +699,10 @@ void SigninViewController::ShowDiceSigninTab(
           if (infobar_manager) {
             auto delegate = std::make_unique<SigninQRCodeInfoBarDelegate>(
                 web_contents.get());
-            infobar_manager->AddInfoBar(
-                std::make_unique<SigninQRCodeInfoBar>(std::move(delegate)));
+            auto* model = SigninQRCodeModel::GetOrCreateForWebContents(
+                web_contents.get());
+            infobar_manager->AddInfoBar(std::make_unique<SigninQRCodeInfoBar>(
+                std::move(delegate), model));
           }
         },
         active_contents->GetWeakPtr()));
