@@ -391,6 +391,67 @@ TEST_F(CompoundImageBackingTest, ReadbackToMemory) {
   EXPECT_TRUE(GetGpuHasLatestContent(compound_backing));
 }
 
+TEST_F(CompoundImageBackingTest, AccessFailsOnCopyFailure) {
+  auto backing = CreateCompoundBacking(
+      {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_DISPLAY_READ});
+  auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
+
+  auto factory_rep =
+      manager_.Register(std::move(backing), &memory_type_tracker_);
+
+  auto gl_rep = manager_.ProduceGLTexturePassthrough(
+      compound_backing->mailbox(), &memory_type_tracker_);
+  ASSERT_TRUE(gl_rep);
+  ASSERT_TRUE(HasGpuBacking(compound_backing));
+
+  auto* gpu_backing = GetGpuBacking(compound_backing);
+  gpu_backing->set_upload_from_memory_succeeds(false);
+
+  // Read access should fail since the GPU backing could not be updated with
+  // the latest content from shared memory.
+  {
+    auto gl_access = gl_rep->BeginScopedAccess(
+        GLTextureImageRepresentationBase::kReadAccessMode,
+        SharedImageRepresentation::AllowUnclearedAccess::kNo);
+    EXPECT_FALSE(gl_access);
+  }
+  EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+  EXPECT_FALSE(GetGpuHasLatestContent(compound_backing));
+
+  // The Skia read path should also fail.
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  auto skia_rep = manager_.ProduceSkia(compound_backing->mailbox(),
+                                       &memory_type_tracker_, nullptr, {});
+  {
+    auto skia_read =
+        skia_rep->BeginScopedReadAccess(&begin_semaphores, &end_semaphores);
+    EXPECT_FALSE(skia_read);
+  }
+
+  // Write access should also fail since the GPU backing could not be
+  // initialized from shared memory ahead of a partial write.
+  {
+    auto skia_write = skia_rep->BeginScopedWriteAccess(
+        &begin_semaphores, &end_semaphores,
+        SharedImageRepresentation::AllowUnclearedAccess::kNo);
+    EXPECT_FALSE(skia_write);
+  }
+  EXPECT_FALSE(GetGpuHasLatestContent(compound_backing));
+  EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
+
+  // Once the copy succeeds again, read access should succeed.
+  gpu_backing->set_upload_from_memory_succeeds(true);
+  {
+    auto gl_access = gl_rep->BeginScopedAccess(
+        GLTextureImageRepresentationBase::kReadAccessMode,
+        SharedImageRepresentation::AllowUnclearedAccess::kNo);
+    EXPECT_TRUE(gl_access);
+  }
+  EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+  EXPECT_TRUE(GetGpuHasLatestContent(compound_backing));
+}
+
 TEST_F(CompoundImageBackingTest, LazyAllocationFailsCreate) {
   auto backing = CreateCompoundBacking({SHARED_IMAGE_USAGE_GLES2_READ});
   auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());

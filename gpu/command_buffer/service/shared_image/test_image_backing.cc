@@ -245,7 +245,7 @@ void TestImageBacking::SetPurgeable(bool purgeable) {
 bool TestImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmap) {
   DCHECK_EQ(format().NumberOfPlanes(), static_cast<int>(pixmap.size()));
   upload_from_memory_called_ = true;
-  return true;
+  return upload_from_memory_succeeds_;
 }
 
 bool TestImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {

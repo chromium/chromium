@@ -152,8 +152,10 @@ class WrappedGLTextureCompoundImageRepresentation
   bool BeginAccess(GLenum mode) final {
     AccessMode access_mode =
         mode == kReadAccessMode ? AccessMode::kRead : AccessMode::kWrite;
-    compound_backing()->NotifyBeginAccess(wrapped_->backing(), access_mode,
-                                          SharedImageAccessStream::kGL);
+    if (!compound_backing()->NotifyBeginAccess(wrapped_->backing(), access_mode,
+                                               SharedImageAccessStream::kGL)) {
+      return false;
+    }
     access_mode_ = access_mode;
     return wrapped_->BeginAccess(mode);
   }
@@ -216,8 +218,10 @@ class WrappedGLTexturePassthroughCompoundImageRepresentation
   bool BeginAccess(GLenum mode) override {
     AccessMode access_mode =
         mode == kReadAccessMode ? AccessMode::kRead : AccessMode::kWrite;
-    compound_backing()->NotifyBeginAccess(wrapped_->backing(), access_mode,
-                                          SharedImageAccessStream::kGL);
+    if (!compound_backing()->NotifyBeginAccess(wrapped_->backing(), access_mode,
+                                               SharedImageAccessStream::kGL)) {
+      return false;
+    }
     access_mode_ = access_mode;
     return wrapped_->BeginAccess(mode);
   }
@@ -289,9 +293,11 @@ class WrappedSkiaGaneshCompoundImageRepresentation
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<skgpu::MutableTextureState>* end_state) final {
-    compound_backing()->NotifyBeginAccess(wrapped_->backing(),
-                                          AccessMode::kWrite,
-                                          SharedImageAccessStream::kSkia);
+    if (!compound_backing()->NotifyBeginAccess(
+            wrapped_->backing(), AccessMode::kWrite,
+            SharedImageAccessStream::kSkia)) {
+      return {};
+    }
     return wrapped_->BeginWriteAccess(final_msaa_count, surface_props,
                                       update_rect, begin_semaphores,
                                       end_semaphores, end_state);
@@ -300,9 +306,11 @@ class WrappedSkiaGaneshCompoundImageRepresentation
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<skgpu::MutableTextureState>* end_state) final {
-    compound_backing()->NotifyBeginAccess(wrapped_->backing(),
-                                          AccessMode::kWrite,
-                                          SharedImageAccessStream::kSkia);
+    if (!compound_backing()->NotifyBeginAccess(
+            wrapped_->backing(), AccessMode::kWrite,
+            SharedImageAccessStream::kSkia)) {
+      return {};
+    }
     return wrapped_->BeginWriteAccess(begin_semaphores, end_semaphores,
                                       end_state);
   }
@@ -316,8 +324,11 @@ class WrappedSkiaGaneshCompoundImageRepresentation
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<skgpu::MutableTextureState>* end_state) final {
-    compound_backing()->NotifyBeginAccess(
-        wrapped_->backing(), AccessMode::kRead, SharedImageAccessStream::kSkia);
+    if (!compound_backing()->NotifyBeginAccess(
+            wrapped_->backing(), AccessMode::kRead,
+            SharedImageAccessStream::kSkia)) {
+      return {};
+    }
     return wrapped_->BeginReadAccess(begin_semaphores, end_semaphores,
                                      end_state);
   }
@@ -373,15 +384,19 @@ class WrappedSkiaGraphiteCompoundImageRepresentation
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       const SkSurfaceProps& surface_props,
       const gfx::Rect& update_rect) final {
-    compound_backing()->NotifyBeginAccess(wrapped_->backing(),
-                                          AccessMode::kWrite,
-                                          SharedImageAccessStream::kSkia);
+    if (!compound_backing()->NotifyBeginAccess(
+            wrapped_->backing(), AccessMode::kWrite,
+            SharedImageAccessStream::kSkia)) {
+      return {};
+    }
     return wrapped_->BeginWriteAccess(surface_props, update_rect);
   }
   std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess() final {
-    compound_backing()->NotifyBeginAccess(wrapped_->backing(),
-                                          AccessMode::kWrite,
-                                          SharedImageAccessStream::kSkia);
+    if (!compound_backing()->NotifyBeginAccess(
+            wrapped_->backing(), AccessMode::kWrite,
+            SharedImageAccessStream::kSkia)) {
+      return {};
+    }
     return wrapped_->BeginWriteAccess();
   }
   void EndWriteAccess() final {
@@ -391,8 +406,11 @@ class WrappedSkiaGraphiteCompoundImageRepresentation
   }
 
   std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() final {
-    compound_backing()->NotifyBeginAccess(
-        wrapped_->backing(), AccessMode::kRead, SharedImageAccessStream::kSkia);
+    if (!compound_backing()->NotifyBeginAccess(
+            wrapped_->backing(), AccessMode::kRead,
+            SharedImageAccessStream::kSkia)) {
+      return {};
+    }
     return wrapped_->BeginReadAccess();
   }
   void EndReadAccess() final {
@@ -443,8 +461,10 @@ class WrappedDawnCompoundImageRepresentation : public DawnImageRepresentation {
     if (internal_usage & kWriteUsage) {
       access_mode = AccessMode::kWrite;
     }
-    compound_backing()->NotifyBeginAccess(wrapped_->backing(), access_mode,
-                                          SharedImageAccessStream::kDawn);
+    if (!compound_backing()->NotifyBeginAccess(
+            wrapped_->backing(), access_mode, SharedImageAccessStream::kDawn)) {
+      return nullptr;
+    }
     access_mode_ = access_mode;
     return wrapped_->BeginAccess(webgpu_usage, internal_usage);
   }
@@ -502,8 +522,11 @@ class WrappedDawnBufferCompoundImageRepresentation
     AccessMode access_mode = usage & wgpu::BufferUsage::MapWrite
                                  ? AccessMode::kWrite
                                  : AccessMode::kRead;
-    compound_backing()->NotifyBeginAccess(wrapped_->backing(), access_mode,
-                                          SharedImageAccessStream::kDawnBuffer);
+    if (!compound_backing()->NotifyBeginAccess(
+            wrapped_->backing(), access_mode,
+            SharedImageAccessStream::kDawnBuffer)) {
+      return nullptr;
+    }
     access_mode_ = access_mode;
     return wrapped_->BeginAccess(usage);
   }
@@ -544,10 +567,11 @@ class WrappedOverlayCompoundImageRepresentation
 
   // OverlayImageRepresentation implementation.
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) final {
-    compound_backing()->NotifyBeginAccess(wrapped_->backing(),
-                                          AccessMode::kRead,
-                                          SharedImageAccessStream::kOverlay);
-
+    if (!compound_backing()->NotifyBeginAccess(
+            wrapped_->backing(), AccessMode::kRead,
+            SharedImageAccessStream::kOverlay)) {
+      return false;
+    }
     return wrapped_->BeginReadAccess(acquire_fence);
   }
   void EndReadAccess(gfx::GpuFenceHandle release_fence) final {
@@ -651,9 +675,11 @@ class WrappedWebNNTensorCompoundImageRepresentation
   }
 
   bool BeginAccess() override {
-    compound_backing()->NotifyBeginAccess(
-        wrapped_->backing(), AccessMode::kWrite,
-        SharedImageAccessStream::kWebNNTensor);
+    if (!compound_backing()->NotifyBeginAccess(
+            wrapped_->backing(), AccessMode::kWrite,
+            SharedImageAccessStream::kWebNNTensor)) {
+      return false;
+    }
     return wrapped_->BeginAccess();
   }
 
@@ -687,9 +713,11 @@ class WrappedMemoryCompoundImageRepresentation
   }
 
   SkPixmap BeginReadAccess() override {
-    compound_backing()->NotifyBeginAccess(wrapped_->backing(),
-                                          AccessMode::kRead,
-                                          SharedImageAccessStream::kMemory);
+    if (!compound_backing()->NotifyBeginAccess(
+            wrapped_->backing(), AccessMode::kRead,
+            SharedImageAccessStream::kMemory)) {
+      return SkPixmap();
+    }
     return wrapped_->BeginReadAccess();
   }
 
@@ -730,9 +758,11 @@ class WrappedVideoCompoundImageRepresentation
   }
 
   bool BeginWriteAccess() override {
-    compound_backing()->NotifyBeginAccess(wrapped_->backing(),
-                                          AccessMode::kWrite,
-                                          SharedImageAccessStream::kVaapi);
+    if (!compound_backing()->NotifyBeginAccess(
+            wrapped_->backing(), AccessMode::kWrite,
+            SharedImageAccessStream::kVaapi)) {
+      return false;
+    }
     return wrapped_->BeginWriteAccess();
   }
   void EndWriteAccess() override {
@@ -741,9 +771,11 @@ class WrappedVideoCompoundImageRepresentation
                                         AccessMode::kWrite);
   }
   bool BeginReadAccess() override {
-    compound_backing()->NotifyBeginAccess(wrapped_->backing(),
-                                          AccessMode::kRead,
-                                          SharedImageAccessStream::kVaapi);
+    if (!compound_backing()->NotifyBeginAccess(
+            wrapped_->backing(), AccessMode::kRead,
+            SharedImageAccessStream::kVaapi)) {
+      return false;
+    }
     return wrapped_->BeginReadAccess();
   }
   void EndReadAccess() override {
@@ -808,8 +840,11 @@ class WrappedVulkanCompoundImageRepresentation
   bool BeginAccess(AccessMode access_mode,
                    std::vector<VkSemaphore>& begin_semaphores,
                    std::vector<VkSemaphore>& end_semaphores) override {
-    compound_backing()->NotifyBeginAccess(wrapped_->backing(), access_mode,
-                                          SharedImageAccessStream::kVulkan);
+    if (!compound_backing()->NotifyBeginAccess(
+            wrapped_->backing(), access_mode,
+            SharedImageAccessStream::kVulkan)) {
+      return false;
+    }
     if (!wrapped_->BeginAccess(access_mode, begin_semaphores, end_semaphores)) {
       return false;
     }
@@ -1184,7 +1219,7 @@ CompoundImageBacking::~CompoundImageBacking() {
   }
 }
 
-void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
+bool CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
                                              RepresentationAccessMode mode,
                                              SharedImageAccessStream stream) {
   AutoLock auto_lock(this);
@@ -1201,7 +1236,7 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
       ++latest_content_id_;
       access_element->content_id_ = latest_content_id_;
     }
-    return;
+    return true;
   }
 
   // STALE OR TRANSIENT PATH: Either this permanent backing is out-of-date, or
@@ -1235,7 +1270,7 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
     } else {
       LOG(ERROR) << "Failed to copy from "
                  << latest_content_element->GetBacking()->GetName() << " to "
-                 << backing->GetName() << ". Backing can be using stale data";
+                 << backing->GetName();
     }
 
     UMA_HISTOGRAM_BOOLEAN("GPU.CompoundImageBacking.ContentSync.Success",
@@ -1255,6 +1290,13 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
     UMA_HISTOGRAM_SPARSE(
         "GPU.CompoundImageBacking.ContentSync.InitialSharedImageUsage",
         static_cast<int32_t>(static_cast<uint32_t>(this->usage())));
+
+    if (!copy_succeeded) {
+      // The destination backing was not updated so it must not be exposed to
+      // the caller. Do not advance versioning so a future access can retry
+      // the sync.
+      return false;
+    }
   }
 
   // UPDATE VERSIONING:
@@ -1272,6 +1314,7 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
   } else if (updated_backing && access_element) {
     access_element->content_id_ = latest_content_id_;
   }
+  return true;
 }
 
 void CompoundImageBacking::NotifyEndAccess(SharedImageBacking* backing,

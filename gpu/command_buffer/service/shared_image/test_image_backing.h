@@ -51,6 +51,9 @@ class TestImageBacking : public SharedImageBacking {
   GLuint service_id() const { return textures_[0]->service_id(); }
   void set_can_access(bool can_access) { can_access_ = can_access; }
   bool can_access() const { return can_access_; }
+  void set_upload_from_memory_succeeds(bool succeeds) {
+    upload_from_memory_succeeds_ = succeeds;
+  }
 
 #if BUILDFLAG(IS_APPLE)
   void set_in_use_by_window_server(bool in_use_by_window_server) {
@@ -101,6 +104,7 @@ class TestImageBacking : public SharedImageBacking {
 #endif
 
   bool upload_from_memory_called_ = false;
+  bool upload_from_memory_succeeds_ = true;
   bool readback_to_memory_called_ = false;
   PurgeableCallback set_purgeable_callback_;
   PurgeableCallback set_not_purgeable_callback_;
