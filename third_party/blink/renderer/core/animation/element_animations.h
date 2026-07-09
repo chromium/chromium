@@ -108,6 +108,12 @@ class CORE_EXPORT ElementAnimations final
   // TODO(crbug.com/1301961): Consider converting to an array or flat map of
   // fields for paint properties that can be composited.
 
+  Animation* PaintWorkletBackgroundColorAnimation() {
+    return background_color_npw_data_
+               ? background_color_npw_data_->GetAnimation()
+               : nullptr;
+  }
+
   NativePaintWorkletData* EnsureBackgroundColorNpwData(Element* element);
 
   CompositedPaintStatus CompositedBackgroundColorStatus() {

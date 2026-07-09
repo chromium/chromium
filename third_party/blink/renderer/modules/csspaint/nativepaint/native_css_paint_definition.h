@@ -29,15 +29,6 @@ class MODULES_EXPORT NativeCssPaintDefinition : public NativePaintDefinition {
                const CSSValue* value,
                const TypedInterpolationValue* interpolation_value);
 
-  // Returns an animation for the given property, if it is compositable
-  // excepting additional checks in CheckCanStartAnimationOnCompositor. Used
-  // as a base for NativePaintImageGenerator::GetAnimationIfCompositable methods
-  // which are implemented in the different Native Paint Definitions
-  static Animation* GetAnimationForProperty(
-      const Element* element,
-      const CSSProperty& property,
-      ValueFilter filter = DefaultValueFilter);
-
   // Used by GetAnimationForProperty and others to verify that the given
   // animation meets compositable paint-worklet animation criteria, excluding
   // additional checks in CheckCanStartAnimationOnCompositor which are the

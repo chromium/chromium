@@ -240,8 +240,24 @@ Animation* BackgroundColorPaintDefinition::GetAnimationIfCompositable(
     return nullptr;
   }
 
-  return GetAnimationForProperty(element, GetCSSPropertyBackgroundColor(),
-                                 ValidateColorValue);
+  ElementAnimations* element_animations = element->GetElementAnimations();
+  if (!element_animations) {
+    return nullptr;
+  }
+
+  Animation* candidate =
+      element_animations->PaintWorkletBackgroundColorAnimation();
+  if (!candidate) {
+    return nullptr;
+  }
+
+  if (!AnimationIsValidForPaintWorklets(candidate, element,
+                                        GetCSSPropertyBackgroundColor(),
+                                        ValidateColorValue)) {
+    return nullptr;
+  }
+
+  return candidate;
 }
 
 // static
@@ -288,6 +304,7 @@ scoped_refptr<Image> BackgroundColorPaintDefinition::Paint(
     const gfx::SizeF& container_size,
     const Node* node) {
   const Element* element = To<Element>(node);
+  // Runs only NPW-specific checks on eligibility.
   Animation* compositable_animation = GetAnimationIfCompositable(element);
   if (!compositable_animation) {
     return nullptr;

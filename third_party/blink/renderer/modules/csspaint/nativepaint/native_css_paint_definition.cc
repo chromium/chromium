@@ -35,39 +35,6 @@ bool NativeCssPaintDefinition::CanGetValueFromKeyframe(
   }
 }
 
-Animation* NativeCssPaintDefinition::GetAnimationForProperty(
-    const Element* element,
-    const CSSProperty& property,
-    ValueFilter filter) {
-  if (!element->GetElementAnimations()) {
-    return nullptr;
-  }
-  Animation* compositable_animation = nullptr;
-
-  // We'd composite only if it is the only animation of its type on
-  // this element.
-  unsigned count = 0;
-  for (const auto& animation : element->GetElementAnimations()->Animations()) {
-    if (animation.key->CalculateAnimationPlayState() ==
-            V8AnimationPlayState::Enum::kIdle ||
-        !animation.key->Affects(*element, property)) {
-      continue;
-    }
-    count++;
-    compositable_animation = animation.key;
-  }
-  if (!compositable_animation || count > 1) {
-    return nullptr;
-  }
-
-  if (!AnimationIsValidForPaintWorklets(compositable_animation, element,
-                                        property, filter)) {
-    return nullptr;
-  }
-
-  return compositable_animation;
-}
-
 bool NativeCssPaintDefinition::AnimationIsValidForPaintWorklets(
     Animation* compositable_animation,
     const Element* element,
