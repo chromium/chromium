@@ -197,10 +197,12 @@ GlicWebContentsWarmingPool::CreateContainer() {
 
 void GlicWebContentsWarmingPool::OnContainerExpired() {
   CHECK(warmed_container_);
-  CHECK(IsWarmingAllowedByMemoryPressure());
   TRACE_EVENT_INSTANT("glic", "GlicWebContentsWarmingPool::OnContainerExpired");
   metrics_->OnContainerExpired();
   Clear(std::nullopt);
+  if (!IsWarmingAllowedByMemoryPressure()) {
+    return;
+  }
   // This only happens if there was a warmed contents at the time of expiry.
   // If the warmed contents had been removed because of memory pressure or
   // some other mechanism, we wouldn't rewarm.
