@@ -44,6 +44,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.common.field.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.common.field.FieldView;
@@ -380,6 +381,7 @@ public final class TextFieldViewUnitTest {
      * required.
      */
     @Test
+    @DisabledTest(message = "crbug.com/533068290")
     public void testRequiredFieldHasCorrectLabelAndAccessibilityScreenReaderOff() {
         PropertyModel model = buildDefaultPropertyModel();
         model.set(IS_REQUIRED, true);
@@ -398,6 +400,7 @@ public final class TextFieldViewUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/533068290")
     public void testRequiredFieldHasCorrectLabelAndAccessibilityScreenReaderOn() {
         PropertyModel model = buildDefaultPropertyModel();
         model.set(IS_REQUIRED, true);
