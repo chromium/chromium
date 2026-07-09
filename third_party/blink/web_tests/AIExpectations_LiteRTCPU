@@ -38,11 +38,6 @@ crbug.com/513585708 external/wpt/ai/language-model/prompt/prompt-simple-question
 crbug.com/513585708 external/wpt/ai/language-model/prompt/streaming/empty-object-input.tentative.https.window.html [ Failure Timeout Pass ]
 crbug.com/513585708 external/wpt/ai/language-model/prompt/streaming/empty-sequence-input.tentative.https.window.html [ Failure Timeout Pass ]
 crbug.com/513585708 external/wpt/ai/language-model/prompt/streaming/garbage-collection.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/language-model/response-constraint/json-schema/response-schema-omitted-from-input.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/language-model/response-constraint/json-schema/valid-schema-success.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/language-model/response-constraint/json-schema/valid-schema-with-prefix-success.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/language-model/response-constraint/regex/decimal.tentative.https.window.html [ Failure Timeout Pass ]
-crbug.com/513585708 external/wpt/ai/language-model/response-constraint/regex/email.tentative.https.window.html [ Failure Timeout Pass ]
 crbug.com/513585708 external/wpt/ai/rewriter/rewriter-abort.tentative.https.window.html [ Failure Timeout Pass ]
 crbug.com/513585708 external/wpt/ai/rewriter/rewriter-rewrite-streaming.tentative.https.window.html [ Failure Timeout Pass ]
 crbug.com/513585708 external/wpt/ai/rewriter/rewriter-rewrite.tentative.https.window.html [ Failure Timeout Pass ]
@@ -50,15 +45,6 @@ crbug.com/513585708 external/wpt/ai/summarizer/summarizer-summarize-streaming.te
 crbug.com/513585708 external/wpt/ai/summarizer/summarizer-summarize.tentative.https.window.html [ Failure Timeout Pass ]
 crbug.com/513585708 external/wpt/ai/writer/writer-write-streaming.tentative.https.window.html [ Failure Timeout Pass ]
 crbug.com/513585708 external/wpt/ai/writer/writer-write.tentative.https.window.html [ Failure Timeout Pass ]
-
-# Several of the response constraint tests constantly timeout for the LiteRT-LM CPU suite.
-crbug.com/522950022 external/wpt/ai/language-model/response-constraint/json-schema/number-bounded.tentative.https.window.html [ Timeout ]
-crbug.com/522950022 external/wpt/ai/language-model/response-constraint/json-schema/number.tentative.https.window.html [ Timeout ]
-crbug.com/522950022 external/wpt/ai/language-model/response-constraint/json-schema/object.tentative.https.window.html [ Timeout Pass ]
-crbug.com/522950022 external/wpt/ai/language-model/response-constraint/regex/exact-length.tentative.https.window.html [ Timeout Pass ]
-crbug.com/522950022 external/wpt/ai/language-model/response-constraint/regex/list.tentative.https.window.html [ Timeout ]
-crbug.com/522950022 external/wpt/ai/language-model/response-constraint/regex/prefix-bad.tentative.https.window.html [ Timeout Pass ]
-crbug.com/522950022 external/wpt/ai/language-model/response-constraint/regex/word.tentative.https.window.html [ Timeout ]
 
 # Audio inputs are currently disabled by default for the CPU model via feature flags; image and video should be re-assessed.
 crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/audio/* [ Failure Pass ]
