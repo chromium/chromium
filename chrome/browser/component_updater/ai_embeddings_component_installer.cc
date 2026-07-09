@@ -14,18 +14,25 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/ai/ai_semantic_embedder_service_launcher.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/passage_embeddings_model_metadata.pb.h"
 #include "components/passage_embeddings/core/passage_embeddings_service_controller.h"
+#include "components/prefs/pref_service.h"
 
 namespace {
 // CRX ID: ddkjpondgmdhgaiodldnoebnfcjbckih
@@ -132,9 +139,26 @@ GetAIEmbeddingsComponentInstallerPolicyForTesting() {
   return std::make_unique<AIEmbeddingsComponentInstallerPolicy>();
 }
 
-void RegisterAIEmbeddingsComponent(ComponentUpdateService* cus) {
+void RegisterAIEmbeddingsComponent(ComponentUpdateService* cus,
+                                   PrefService* local_state) {
+  CHECK(local_state);
+  if (optimization_guide::
+          GetGenAILocalFoundationalModelEnterprisePolicySettings(local_state) ==
+      optimization_guide::model_execution::prefs::
+          GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed) {
+    return;
+  }
+
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<AIEmbeddingsComponentInstallerPolicy>());
   installer->Register(cus, base::OnceClosure());
 }
+
+void DeleteAIEmbeddingsComponent(const base::FilePath& user_data_dir) {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(base::IgnoreResult(&base::DeletePathRecursively),
+                     user_data_dir.Append(FILE_PATH_LITERAL("AIEmbeddings"))));
+}
+
 }  // namespace component_updater

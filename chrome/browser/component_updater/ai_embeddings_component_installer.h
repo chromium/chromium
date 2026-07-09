@@ -7,6 +7,9 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
+class PrefService;
+
 namespace component_updater {
 
 class ComponentInstallerPolicy;
@@ -17,7 +20,11 @@ std::unique_ptr<ComponentInstallerPolicy>
 GetAIEmbeddingsComponentInstallerPolicyForTesting();
 
 // Registers the AI Embeddings component with the component update service.
-void RegisterAIEmbeddingsComponent(ComponentUpdateService* cus);
+void RegisterAIEmbeddingsComponent(ComponentUpdateService* cus,
+                                   PrefService* local_state);
+
+// Delete the AI Embeddings component.
+void DeleteAIEmbeddingsComponent(const base::FilePath& user_data_dir);
 
 }  // namespace component_updater
 

@@ -44,6 +44,9 @@
 #include "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #include "components/on_device_translation/buildflags/buildflags.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/model_execution_util.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
@@ -170,7 +173,7 @@ void RegisterComponentsForUpdate() {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   RegisterOriginTrialsComponent(cus);
-  RegisterAIEmbeddingsComponent(cus);
+  RegisterAIEmbeddingsComponent(cus, g_browser_process->local_state());
   RegisterMediaEngagementPreloadComponent(cus, base::OnceClosure());
 
   MaybeRegisterPKIMetadataComponent(cus);
@@ -233,6 +236,14 @@ void RegisterComponentsForUpdate() {
 
   base::FilePath path;
   if (base::PathService::Get(chrome::DIR_USER_DATA, &path)) {
+    if (optimization_guide::
+            GetGenAILocalFoundationalModelEnterprisePolicySettings(
+                g_browser_process->local_state()) ==
+        optimization_guide::model_execution::prefs::
+            GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed) {
+      DeleteAIEmbeddingsComponent(path);
+    }
+
     if (!history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
       DeleteHistorySearchStringsComponent(path);
     }
