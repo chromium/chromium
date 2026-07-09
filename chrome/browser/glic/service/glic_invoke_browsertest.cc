@@ -776,6 +776,44 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithInvalidContextData) {
             GlicInvokeError::kAdditionalContextNoClipboardMetadata);
   EXPECT_TRUE(GetInstanceForTab(tab));
 }
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeHiddenClientRevertsVisibilityOnFailure) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), GURL("about:blank")));
+
+  // Set up invocation that we know will fail (PastePolicyCheck).
+  auto context_mojom = CreateMockAdditionalContext(
+      "image/jpeg", std::vector<uint8_t>{0xFF, 0xD8, 0xFF, 0xE0});
+
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+
+  content::RenderFrameHost* rfh = tab->GetContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+
+  options.additional_context = AdditionalTabContext(
+      std::move(context_mojom), rfh->GetGlobalId(), PolicyCheck::kClipboard);
+
+  GlicInvokeWithAutoSubmitOptions auto_submit_options;
+  auto_submit_options.show_panel = false;
+
+  auto instance_wp = coordinator().InvokeWithAutoSubmit(
+      GetPassKey(), std::move(options), std::move(auto_submit_options));
+
+  // Will fail in PastePolicyCheck
+  EXPECT_EQ(error_future.Get(),
+            GlicInvokeError::kAdditionalContextNoClipboardMetadata);
+
+  ASSERT_TRUE(instance_wp);
+  auto* ui_contents = static_cast<GlicInstanceImpl*>(instance_wp.get())
+                          ->host()
+                          .webui_contents();
+  ASSERT_TRUE(ui_contents);
+  EXPECT_EQ(ui_contents->GetVisibility(), content::Visibility::HIDDEN);
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithTabsToPin) {
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
