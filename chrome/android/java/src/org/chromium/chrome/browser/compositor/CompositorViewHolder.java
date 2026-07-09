@@ -98,6 +98,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.components.content_capture.OnscreenContentProvider;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -1564,6 +1565,10 @@ public class CompositorViewHolder extends FrameLayout
     private void disableClipToPaddingForCurrentTab() {
         if (mView == null) return;
         if (mResetClipToPaddingRunnable != null) resetClipToPadding();
+
+        // Skip for NTP as the scrollable MV tiles depend on padding clipping.
+        Tab tab = getCurrentTab();
+        if (tab != null && UrlUtilities.isNtpUrl(tab.getUrl())) return;
 
         Map<ViewGroup, Boolean> initialClipToPadding = new ArrayMap<>();
         Collection<View> descendants = new ArrayList<>();
