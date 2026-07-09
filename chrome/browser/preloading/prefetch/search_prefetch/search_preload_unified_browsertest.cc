@@ -804,8 +804,6 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
       GetCanonicalSearchURL(GetSearchUrl(prerender_query, UrlType::kPrerender)),
       {SearchPrefetchStatus::kRequestFailed});
 
-  histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.FetchResult.SuggestionPrefetch", false, 1);
   EXPECT_FALSE(prerender_manager()->HasSearchResultPagePrerendered());
 
   auto entries = GetMergedUkmEntries(PrerenderPageLoad::kEntryName);

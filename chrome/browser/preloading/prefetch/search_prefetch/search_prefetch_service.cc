@@ -631,8 +631,6 @@ void SearchPrefetchService::DeletePrefetch(GURL canonical_search_url) {
 }
 
 void SearchPrefetchService::ReportFetchResult(bool error) {
-  UMA_HISTOGRAM_BOOLEAN("Omnibox.SearchPrefetch.FetchResult.SuggestionPrefetch",
-                        !error);
   if (!error)
     return;
   last_error_time_ticks_ = base::TimeTicks::Now();

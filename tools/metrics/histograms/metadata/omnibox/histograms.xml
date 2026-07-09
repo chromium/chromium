@@ -432,13 +432,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
                initiate the search suggestion navigation earlier."/>
 </variants>
 
-<variants name="SuggestionPrefetchOnly">
-  <variant name="SuggestionPrefetch"
-      summary="Recorded for prefetches where an omnibox suggestion from the
-               suggestion server recommends a prefetch of a suggestion
-               results page."/>
-</variants>
-
 <histogram
     name="MobileOmnibox.PressedClipboardSuggestionAge{ClipboardSuggestionType}"
     units="ms" expires_after="2026-08-30">
@@ -5838,22 +5831,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
     kNoFallback.
   </summary>
   <token key="SearchPrefetch" variants="SearchPrefetch"/>
-</histogram>
-
-<histogram name="Omnibox.{SearchPrefetch}.FetchResult.{SuggestionPrefetchOnly}"
-    enum="BooleanSuccess" expires_after="2023-10-15">
-  <owner>ryansturm@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    {SearchPrefetch}
-
-    Whether a search prefetch request finished with a success status or a status
-    that could be served. Recorded when prefetch requests receive headers.
-
-    {SuggestionPrefetchOnly}
-  </summary>
-  <token key="SearchPrefetch" variants="SearchPrefetch"/>
-  <token key="SuggestionPrefetchOnly" variants="SuggestionPrefetchOnly"/>
 </histogram>
 
 <histogram
