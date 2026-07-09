@@ -75,7 +75,7 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
       int buffers_need_alpha_initialization_count);
 
   friend class DXGISwapChainOverlayImageRepresentation;
-  bool Present(bool should_synchronize_present_with_vblank);
+  bool Present();
   std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() {
     return std::make_optional<gl::DCLayerOverlayImage>(size(),
                                                        dxgi_swap_chain_);

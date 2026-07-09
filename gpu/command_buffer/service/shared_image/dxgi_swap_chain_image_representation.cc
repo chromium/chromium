@@ -38,13 +38,7 @@ DXGISwapChainOverlayImageRepresentation::GetDCLayerOverlayImage() {
 
 bool DXGISwapChainOverlayImageRepresentation::BeginReadAccess(
     gfx::GpuFenceHandle& acquire_fence) {
-  // For the time being, let's use present interval 0.
-  const bool should_synchronize_present_with_vblank = false;
-
-  bool success = static_cast<DXGISwapChainImageBacking*>(backing())->Present(
-      should_synchronize_present_with_vblank);
-
-  return success;
+  return static_cast<DXGISwapChainImageBacking*>(backing())->Present();
 }
 
 void DXGISwapChainOverlayImageRepresentation::EndReadAccess(

@@ -6,7 +6,6 @@
 
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -31,7 +30,6 @@
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/direct_composition_support.h"
-#include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
 
 #if BUILDFLAG(SKIA_USE_DAWN)
@@ -177,7 +175,7 @@ bool DXGISwapChainImageBacking::DidBeginWriteAccess(
     // debugging.
     LOG(WARNING) << "Multiple skia write accesses per overlay access, flushing "
                     "pending swap.";
-    if (!Present(false)) {
+    if (!Present()) {
       return false;
     }
   }
@@ -238,8 +236,7 @@ bool DXGISwapChainImageBacking::DidBeginWriteAccess(
   return true;
 }
 
-bool DXGISwapChainImageBacking::Present(
-    bool should_synchronize_present_with_vblank) {
+bool DXGISwapChainImageBacking::Present() {
   if (!pending_swap_rect_.has_value() || pending_swap_rect_.value().IsEmpty()) {
     DVLOG(1) << "Skipping present without an update rect";
     return true;
@@ -248,12 +245,9 @@ bool DXGISwapChainImageBacking::Present(
   HRESULT hr, device_removed_reason;
   const bool use_swap_chain_tearing =
       gl::DirectCompositionSwapChainTearingEnabled();
-  const bool force_present_interval_0 =
-      base::FeatureList::IsEnabled(features::kDXGISwapChainPresentInterval0);
-  UINT interval = first_swap_ || !should_synchronize_present_with_vblank ||
-                          use_swap_chain_tearing || force_present_interval_0
-                      ? 0
-                      : 1;
+  // Always present with interval 0, i.e. don't synchronize with vblank. Frames
+  // may be discarded if they are presented more frequently than one per vblank.
+  const UINT interval = 0;
   UINT flags = use_swap_chain_tearing ? DXGI_PRESENT_ALLOW_TEARING : 0;
 
   TRACE_EVENT2("gpu", "DXGISwapChainImageBacking::Present", "has_alpha",
