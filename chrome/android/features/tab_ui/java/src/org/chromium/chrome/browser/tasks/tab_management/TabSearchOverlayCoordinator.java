@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.Browser;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -137,6 +139,7 @@ public class TabSearchOverlayCoordinator {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @VisibleForTesting
     void ensureInitialized() {
         if (mPanelContainer != null) return;
@@ -153,6 +156,16 @@ public class TabSearchOverlayCoordinator {
         View panelView = panelContainer.findViewById(R.id.tab_search_overlay_panel);
         View searchActivityView = panelContainer.findViewById(R.id.search_activity_container);
         mParentContainer.addView(panelContainer);
+
+        // Consume all unhandled touch, hover, generic motion, and context click events to prevent
+        // them from bleeding through to sibling views underneath the overlay (i.e. Vertical Tabs).
+        // This makes the search box have focus the entire time the overlay panel is visible. If the
+        // desire is to remove focus when clicking on empty space on the panel, the bleed through
+        // bug will need to be addressed and input preservation logic added in LocationBarMediator.
+        panelView.setOnTouchListener(this::consumeMotionEvent);
+        panelView.setOnHoverListener(this::consumeMotionEvent);
+        panelView.setOnGenericMotionListener(this::consumeMotionEvent);
+        panelView.setOnContextClickListener(this::consumeContextClick);
 
         if (mSearchUiCoordinator == null) {
             boolean isIncognito =
@@ -250,6 +263,14 @@ public class TabSearchOverlayCoordinator {
         return true;
     }
 
+    private boolean consumeMotionEvent(View v, MotionEvent event) {
+        return true;
+    }
+
+    private boolean consumeContextClick(View v) {
+        return true;
+    }
+
     private void bringTabToFront(TabWindowInfo tabWindowInfo, GURL url) {
         SearchActivityUtils.bringTabToFront(
                 mActivity, mTabModelSelectorSupplier.get(), tabWindowInfo, url, this::hide);
@@ -278,9 +299,7 @@ public class TabSearchOverlayCoordinator {
         mModel.set(TabSearchOverlayProperties.VISIBLE, false);
         if (mSearchUiCoordinator != null) {
             var locationBar = mSearchUiCoordinator.getLocationBarCoordinator();
-            if (locationBar != null) {
-                locationBar.clearOmniboxFocus();
-            }
+            locationBar.clearOmniboxFocus();
         }
     }
 

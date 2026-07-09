@@ -17,6 +17,8 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -154,6 +156,30 @@ public class TabSearchOverlayCoordinatorUnitTest {
         showOverlay();
         mScrim.performClick();
         assertOverlayHidden();
+    }
+
+    @Test
+    public void testPanelEventsConsumed() {
+        showOverlay();
+        View panelView = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);
+
+        // Verify Touch event is consumed
+        MotionEvent touchEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0f, 0f, 0);
+        assertTrue(panelView.dispatchTouchEvent(touchEvent));
+
+        // Verify Hover event is consumed
+        MotionEvent hoverEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
+        assertTrue(panelView.dispatchGenericMotionEvent(hoverEvent));
+
+        // Verify Generic Motion event is consumed
+        MotionEvent motionEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_SCROLL, 0f, 0f, 0);
+        assertTrue(panelView.dispatchGenericMotionEvent(motionEvent));
+
+        // Verify Context Click is consumed (requires API 23+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            assertTrue(panelView.performContextClick());
+        }
     }
 
     @Test
