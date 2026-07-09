@@ -290,7 +290,11 @@ bool IsAutofillGmailOtpFillingEnabled(const PrefService* prefs) {
 }
 
 void SetAutofillGmailOtpFillingEnabled(PrefService* prefs, bool enabled) {
+  if (prefs->GetBoolean(kAutofillGmailOtpFillingEnabled) == enabled) {
+    return;
+  }
   prefs->SetBoolean(kAutofillGmailOtpFillingEnabled, enabled);
+  base::UmaHistogramBoolean("Autofill.GmailOtpOptIn.SettingsChange", enabled);
 }
 
 base::Time GetAutofillGmailOtpFillingActivationDismissalTimestamp(

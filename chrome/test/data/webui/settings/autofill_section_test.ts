@@ -586,6 +586,7 @@ suite('AutofillSectionUiTest', function() {
   });
 
   test('OtpFillingToggleDisabledThenToggledAndEnabled', async function() {
+    const metricsTracker = fakeMetricsPrivate();
     loadTimeData.overrideValues({autofillGmailOtpFillingEnabled: true});
     const {section, toggle} = await createAutofillSectionForGmailOtpFilling();
     assertTrue(!!toggle);
@@ -601,6 +602,14 @@ suite('AutofillSectionUiTest', function() {
     assertTrue(toggle.checked);
     assertTrue(
         section.getPref<boolean>('autofill.gmail_otp_filling.enabled').value);
+    assertEquals(
+        1, metricsTracker.count('Autofill.GmailOtpOptIn.SettingsChange', true));
+
+    toggle.click();
+    assertFalse(toggle.checked);
+    assertEquals(
+        1,
+        metricsTracker.count('Autofill.GmailOtpOptIn.SettingsChange', false));
   });
 });
 

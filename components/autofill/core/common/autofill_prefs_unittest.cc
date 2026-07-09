@@ -63,10 +63,28 @@ TEST_F(AutofillProfilePrefsTest, AutofillGmailOtpFillingEnabled_Default) {
 
 TEST_F(AutofillProfilePrefsTest, AutofillGmailOtpFillingEnabled_Set) {
   ASSERT_FALSE(IsAutofillGmailOtpFillingEnabled(pref_service()));
-  SetAutofillGmailOtpFillingEnabled(pref_service(), true);
-  EXPECT_TRUE(IsAutofillGmailOtpFillingEnabled(pref_service()));
+  {
+    base::HistogramTester histogram_tester;
+    SetAutofillGmailOtpFillingEnabled(pref_service(), true);
+    EXPECT_TRUE(IsAutofillGmailOtpFillingEnabled(pref_service()));
+    histogram_tester.ExpectUniqueSample("Autofill.GmailOtpOptIn.SettingsChange",
+                                        true, 1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    SetAutofillGmailOtpFillingEnabled(pref_service(), false);
+    EXPECT_FALSE(IsAutofillGmailOtpFillingEnabled(pref_service()));
+    histogram_tester.ExpectUniqueSample("Autofill.GmailOtpOptIn.SettingsChange",
+                                        false, 1);
+  }
+}
+
+TEST_F(AutofillProfilePrefsTest, AutofillGmailOtpFillingEnabled_SetAsNoOp) {
+  ASSERT_FALSE(IsAutofillGmailOtpFillingEnabled(pref_service()));
+  base::HistogramTester histogram_tester;
   SetAutofillGmailOtpFillingEnabled(pref_service(), false);
   EXPECT_FALSE(IsAutofillGmailOtpFillingEnabled(pref_service()));
+  histogram_tester.ExpectTotalCount("Autofill.GmailOtpOptIn.SettingsChange", 0);
 }
 
 TEST_F(AutofillProfilePrefsTest,

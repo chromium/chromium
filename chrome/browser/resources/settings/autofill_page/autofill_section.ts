@@ -635,6 +635,12 @@ export class SettingsAutofillSectionElement extends
         loadTimeData.getString('gmailOtpFillingLearnMoreUrl'));
   }
 
+  private onAutofillOtpFillingToggleChanged_(event: Event) {
+    const toggle = event.target as SettingsToggleButtonElement;
+    chrome.metricsPrivate.recordBoolean(
+        'Autofill.GmailOtpOptIn.SettingsChange', toggle.checked);
+  }
+
   // SettingsViewMixin implementation.
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();

@@ -4867,6 +4867,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="FormType" variants="AutofillFormType.Fillable"/>
 </histogram>
 
+<histogram name="Autofill.GmailOtpOptIn.SettingsChange" enum="Boolean"
+    expires_after="2027-08-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>sdrab@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records whether the user opted in or opted out of Gmail OTP filling when the
+    setting was changed. True indicates opt in, false indicates opt out. Is
+    emitted whenever the user toggles the setting and the value and the value
+    changes compared to what's currently persisted.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.HomeAndWork.ProfileFiltered" enum="BooleanFiltered"
     expires_after="2026-11-15">
   <owner>jsobiech@google.com</owner>
