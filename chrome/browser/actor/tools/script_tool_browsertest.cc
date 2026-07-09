@@ -623,7 +623,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   ASSERT_TRUE(content::ExecJs(web_contents(), R"(
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
       execute: async () => {
         window.location.href = '/title1.html';
         return new Promise(r => {});

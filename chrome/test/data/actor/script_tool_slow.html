@@ -6,7 +6,7 @@
       return new Promise(r => setTimeout(() => r(obj.text), 1000));
     }
 
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
       execute: echo, name: "echo", description: "echo input",
       inputSchema: {
         type: "object",

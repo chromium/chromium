@@ -12,8 +12,6 @@
 
 namespace blink {
 
-class Navigator;
-
 class CORE_EXPORT ModelContextSupplement final
     : public GarbageCollected<ModelContextSupplement>,
       public Supplement<Document> {
@@ -22,7 +20,6 @@ class CORE_EXPORT ModelContextSupplement final
 
   static ModelContextSupplement& From(Document&);
   static ModelContext* GetIfExists(Document&);
-  static ModelContext* modelContext(Navigator&);
   static ModelContext* modelContext(Document&);
 
   explicit ModelContextSupplement(Document&);

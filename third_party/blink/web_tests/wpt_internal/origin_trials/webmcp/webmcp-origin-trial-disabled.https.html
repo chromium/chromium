@@ -8,8 +8,8 @@
 <body>
 <script>
 test(t => {
-  assert_false("modelContext" in navigator, "navigator.modelContext should NOT be exposed when no origin trial token is present");
-}, "navigator.modelContext is not exposed by default");
+  assert_false("modelContext" in document, "document.modelContext should NOT be exposed when no origin trial token is present");
+}, "document.modelContext is not exposed by default");
 </script>
 </body>
 </html>

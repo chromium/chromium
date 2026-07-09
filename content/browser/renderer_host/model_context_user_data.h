@@ -112,7 +112,7 @@ class CONTENT_EXPORT ModelContextPageUserData
 
 // `ModelContextUserData` tracks registered tools and handles communication with
 // `blink::ModelContext` It is created on-demand when the renderer first
-// accesses `navigator.modelContext`. If it does not exist for a frame, it means
+// accesses `document.modelContext`. If it does not exist for a frame, it means
 // that frame has not used the API yet and does not need to receive broadcasts
 // like `toolchange`.
 class CONTENT_EXPORT ModelContextUserData

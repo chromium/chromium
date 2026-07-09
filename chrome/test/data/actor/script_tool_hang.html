@@ -6,7 +6,7 @@
       return new Promise(() => { }); // never resolves
     }
 
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
       execute: echo,
       name: "echo",
       description: "echo input",

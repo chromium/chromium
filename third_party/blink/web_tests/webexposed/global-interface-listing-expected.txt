@@ -7065,7 +7065,6 @@ interface Navigator
     getter mediaDevices
     getter mediaSession
     getter mimeTypes
-    getter modelContext
     getter onLine
     getter pdfViewerEnabled
     getter permissions

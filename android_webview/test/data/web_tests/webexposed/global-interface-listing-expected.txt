@@ -6711,7 +6711,6 @@ interface Navigator
     getter mediaCapabilities
     getter mediaDevices
     getter mimeTypes
-    getter modelContext
     getter onLine
     getter pdfViewerEnabled
     getter permissions

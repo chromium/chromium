@@ -4,14 +4,6 @@
 
 // https://webmachinelearning.github.io/webmcp/#navigator-extension
 
-// TODO(https://crbug.com/515330187): Remove the getter on `Navigator`.
-[
-  RuntimeEnabled=WebMCP,
-  ImplementedAs=ModelContextSupplement
-] partial interface Navigator {
-  [SecureContext, SameObject] readonly attribute ModelContext modelContext;
-};
-
 [
   RuntimeEnabled=WebMCP,
   ImplementedAs=ModelContextSupplement

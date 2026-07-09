@@ -9,7 +9,7 @@
       return new Promise(r => setTimeout(r, 10000));
     }
 
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
       execute: navigate, name: "navigate_delayed", description: "navigate",
       inputSchema: {
         type: "object",

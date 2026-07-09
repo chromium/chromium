@@ -195,7 +195,7 @@ TEST_F(ModelContextTest, ExecuteTool) {
       return obj.text;
     }
 
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
       execute: echo,
       name: "echo",
       description: "echo input",
@@ -243,7 +243,7 @@ TEST_F(ModelContextTest, GetTools_InsecureOrigin) {
     <body>
     <script>
       window.test_error = "";
-      navigator.modelContext.getTools({ fromOrigins: ["http://insecure.com"] })
+      document.modelContext.getTools({ fromOrigins: ["http://insecure.com"] })
         .then(() => { window.test_error = "Success"; })
         .catch(err => { window.test_error = err.name; });
     </script>
@@ -263,7 +263,7 @@ TEST_F(ModelContextTest, ExecuteToolReturnsObject) {
     async function echo(obj) {
       return obj;
     }
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
       execute: echo,
       name: "echo",
       description: "echo input",
@@ -1001,7 +1001,7 @@ TEST_F(ModelContextTest, CancelTool) {
       return obj.text;
     }
 
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
       execute: echo,
       name: "echo",
       description: "echo input",
@@ -1052,7 +1052,7 @@ TEST_F(ModelContextTest, ToolEventsDispatched) {
       return "done";
     }
 
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
       execute: longRunning,
       name: "slow",
       description: "slow tool",
@@ -1251,14 +1251,14 @@ TEST_F(ModelContextTest, CancelToolReentrancy) {
       return new Promise(() => {});
     }
 
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
       execute: hang,
       name: "hang",
       description: "never resolves",
     });
 
     // We also need another tool that can be executed.
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
       execute: async () => "done",
       name: "echo",
       description: "echo",
@@ -1355,17 +1355,17 @@ TEST_F(ModelContextTest, ListTools) {
 
   main_resource.Complete(R"(<!DOCTYPE html>
     <script>
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
       execute: () => "true",
       name: "delete",
       description: "Delete everything",
     });
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
       execute: () => "true",
       name: "squash",
       description: "Squash history",
     });
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
       execute: () => "true",
       name: "append",
       description: "Append something",
@@ -1389,12 +1389,12 @@ TEST_F(ModelContextTest, SourceLocation) {
 
   main_resource.Complete(R"(<!DOCTYPE html>
     <script>
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
       execute: () => "true",
       name: "append",
       description: "Append something",
     });
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
       execute: () => "true",
       name: "delete",
       description: "Delete everything",
@@ -1494,7 +1494,7 @@ TEST_F(ModelContextMetricsTest, RecordToolCountHistogram) {
       ToScriptStateForMainWorld(Window().GetFrame()));
 
   task_environment().FastForwardBy(base::Seconds(2));
-  EvalJsString(R"JS(navigator.modelContext.registerTool({
+  EvalJsString(R"JS(document.modelContext.registerTool({
       execute: () => "true",
       name: "tool1",
       description: "Tool1",
@@ -1503,7 +1503,7 @@ TEST_F(ModelContextMetricsTest, RecordToolCountHistogram) {
   task_environment().FastForwardBy(base::Seconds(2));
   for (int i = 2; i <= 4; i++) {
     // clang-format off
-    EvalJsString(String::Format(R"JS(navigator.modelContext.registerTool({
+    EvalJsString(String::Format(R"JS(document.modelContext.registerTool({
       execute: () => "true",
       name: "tool%d",
       description: "Tool%d",
@@ -1535,7 +1535,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_ToolChangeOnNameChange) {
       </form>
       <script>
         window.toolchangeCount = 0;
-        navigator.modelContext.addEventListener('toolchange', () => {
+        document.modelContext.addEventListener('toolchange', () => {
           window.toolchangeCount++;
         });
 
@@ -1605,7 +1605,7 @@ TEST_F(ModelContextTest,
     </form>
     <script>
       window.toolchangeCount = 0;
-      navigator.modelContext.addEventListener('toolchange', () => {
+      document.modelContext.addEventListener('toolchange', () => {
         window.toolchangeCount++;
       });
     </script>
@@ -1656,7 +1656,7 @@ TEST_F(ModelContextTest,
 
   MainFrame().ExecuteScript(WebScriptSource(
       "window.toolchangeCount = 0;"
-      "navigator.modelContext.addEventListener('toolchange', () => {"
+      "document.modelContext.addEventListener('toolchange', () => {"
       "  window.toolchangeCount++;"
       "});"
       "document.getElementById('input1').setAttribute('data-unrelated', "
@@ -1684,7 +1684,7 @@ TEST_F(ModelContextTest,
 
   MainFrame().ExecuteScript(WebScriptSource(
       "window.toolchangeCount = 0;"
-      "navigator.modelContext.addEventListener('toolchange', () => {"
+      "document.modelContext.addEventListener('toolchange', () => {"
       "  window.toolchangeCount++;"
       "});"
       "const input = document.getElementById('input1');"

@@ -12,8 +12,8 @@ tools/origin_trials/generate_token.py https://web-platform.test:8444/ WebMCP --e
 <body>
 <script>
 test(t => {
-  assert_true("modelContext" in navigator, "navigator.modelContext should be exposed when the origin trial token is present");
-}, "navigator.modelContext is exposed via Origin Trial");
+  assert_true("modelContext" in document, "document.modelContext should be exposed when the origin trial token is present");
+}, "document.modelContext is exposed via Origin Trial");
 </script>
 </body>
 </html>

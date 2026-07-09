@@ -7,7 +7,7 @@
       return new Promise((r) => setTimeout(r, 10000));
     }
 
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
       execute: navigate,
       name: 'navigate',
       description: 'navigate tool',

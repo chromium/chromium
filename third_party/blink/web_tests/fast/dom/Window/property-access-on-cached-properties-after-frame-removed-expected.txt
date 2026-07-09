@@ -1,4 +1,3 @@
-CONSOLE WARNING: navigator.modelContext is deprecated. Please use document.modelContext instead.
 Tests access of cached DOMWindow properties after the associated frame is no longer in a web page. Test should not crash and properties should be set to reasonable defaults as appropriate.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
@@ -64,7 +63,6 @@ PASS window.cached_navigator_managed.onmanagedconfigurationchange is null
 PASS window.cached_navigator_mediaDevices.ondevicechange is null
 PASS window.cached_navigator_mediaSession.metadata is null
 PASS window.cached_navigator_mediaSession.playbackState is 'none'
-PASS window.cached_navigator_modelContext.ontoolchange is null
 PASS window.cached_navigator_preferences_colorScheme.onchange is null
 PASS window.cached_navigator_preferences_colorScheme.override is null
 PASS window.cached_navigator_preferences_colorScheme.value is ''
