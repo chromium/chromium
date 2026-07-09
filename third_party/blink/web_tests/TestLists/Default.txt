@@ -53,7 +53,6 @@ css3/masking/mask-serializing.html
 css3/motion-path/use-count-offset.html
 css3/motion-path/use-count-offset-position.html
 css3/style-zoomed-image.html
-css3/supports-crash.html
 css-parser/color-escape-parsing.html
 css-parser/font-size-adjust.html
 custom-elements/array-squat-crash.html
@@ -126,6 +125,7 @@ external/wpt/css/css-align/content-distribution/place-content-shorthand-002.html
 external/wpt/css/css-align/content-distribution/place-content-shorthand-003.html
 external/wpt/css/css-align/default-alignment/place-items-shorthand-001.html
 external/wpt/css/css-backgrounds/background-clip/clip-text-constrain-geometry.html
+external/wpt/css/css-conditional/crashtests/supports-malformed.html
 external/wpt/css/css-display/display-contents-computed-style.html
 external/wpt/css/css-grid/grid-definition/grid-template-columns-rows-resolved-values-001.xht
 external/wpt/css/css-grid/grid-layout-properties.html

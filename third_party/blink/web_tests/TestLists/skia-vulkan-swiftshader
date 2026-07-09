@@ -594,7 +594,6 @@ css3/selectors3/html/css3-modsel-169a.html
 css3/selectors3/html/css3-modsel-175c.html
 css3/selectors3/html/css3-modsel-184c.html
 css3/selectors3/html/css3-modsel-184e.html
-css3/supports-crash.html
 css3/tab-size-span.html
 css3/viewport-percentage-lengths/css3-viewport-percentage-lengths-getStyle.html
 css3/viewport-percentage-lengths/css3-viewport-percentage-lengths-vmax-absolute.html
@@ -603,6 +602,7 @@ cssom/elementfrompoint-scrolloffset.html
 external/wpt/css/css-animations/crashtests/animation-transition-collision-crash.html
 external/wpt/css/css-animations/crashtests/keyframe-timing-function-unset-crash.html
 external/wpt/css/css-animations/crashtests/option-opacity-inherit-crash.html
+external/wpt/css/css-conditional/crashtests/supports-malformed.html
 external/wpt/css/css-fonts/animations/font-size-composition.html
 external/wpt/css/css-transforms/crashtests/transformed-scroller-snapping-crash.html
 external/wpt/svg/geometry/animations/x-composition.html
