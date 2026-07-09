@@ -20,12 +20,6 @@ void FakeSafeBrowsingDatabaseManager::AddDangerousUrl(
   dangerous_urls_[dangerous_url] = threat_type;
 }
 
-void FakeSafeBrowsingDatabaseManager::AddDangerousUrlPattern(
-    const GURL& dangerous_url,
-    ThreatPatternType pattern_type) {
-  dangerous_patterns_[dangerous_url] = pattern_type;
-}
-
 void FakeSafeBrowsingDatabaseManager::ClearDangerousUrl(
     const GURL& dangerous_url) {
   dangerous_urls_.erase(dangerous_url);
@@ -51,16 +45,10 @@ bool FakeSafeBrowsingDatabaseManager::CheckBrowseUrl(
     return true;
   }
 
-  ThreatPatternType pattern_type = ThreatPatternType::NONE;
-  const auto it1 = dangerous_patterns_.find(url);
-  if (it1 != dangerous_patterns_.end()) {
-    pattern_type = it1->second;
-  }
-
   ui_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeSafeBrowsingDatabaseManager::CheckBrowseURLAsync, url,
-                     result_threat_type, pattern_type, client));
+                     result_threat_type, client));
   return false;
 }
 
@@ -126,10 +114,8 @@ FakeSafeBrowsingDatabaseManager::GetNonBrowseUrlThreatSource() const {
 void FakeSafeBrowsingDatabaseManager::CheckBrowseURLAsync(
     GURL url,
     SBThreatType result_threat_type,
-    ThreatPatternType pattern_type,
     Client* client) {
   ThreatMetadata metadata;
-  metadata.threat_pattern_type = pattern_type;
   client->OnCheckBrowseUrlResult(url, result_threat_type, metadata);
 }
 

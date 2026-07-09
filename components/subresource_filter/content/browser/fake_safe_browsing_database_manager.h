@@ -28,11 +28,8 @@ class FakeSafeBrowsingDatabaseManager
 
   void AddBlocklistedUrl(const GURL& url,
                          safe_browsing::SBThreatType threat_type,
-                         const safe_browsing::ThreatMetadata& metadata);
-  void AddBlocklistedUrl(const GURL& url,
-                         safe_browsing::SBThreatType threat_type,
-                         safe_browsing::ThreatPatternType pattern_type =
-                             safe_browsing::ThreatPatternType::NONE);
+                         const safe_browsing::ThreatMetadata& metadata =
+                             safe_browsing::ThreatMetadata());
   void RemoveBlocklistedUrl(const GURL& url);
   void RemoveAllBlocklistedUrls();
 

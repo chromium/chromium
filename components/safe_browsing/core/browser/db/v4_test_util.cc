@@ -30,8 +30,7 @@ V4ProtocolConfig GetTestV4ProtocolConfig(bool disable_auto_update) {
 }
 
 std::ostream& operator<<(std::ostream& os, const ThreatMetadata& meta) {
-  os << "{threat_pattern_type=" << static_cast<int>(meta.threat_pattern_type)
-     << ", api_permissions=[";
+  os << "{api_permissions=[";
   for (auto p : meta.api_permissions)
     os << p << ",";
   os << "subresource_filter_match=[";

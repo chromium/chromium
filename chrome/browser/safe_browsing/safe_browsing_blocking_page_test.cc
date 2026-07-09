@@ -432,16 +432,6 @@ class SafeBrowsingBlockingPageBrowserTest
         ->AddDangerousUrl(url, threat_type);
   }
 
-  void SetURLThreatPatternType(const GURL& url,
-                               ThreatPatternType threat_pattern_type) {
-    TestSafeBrowsingService* service = factory_.test_safe_browsing_service();
-    ASSERT_TRUE(service);
-
-    static_cast<FakeSafeBrowsingDatabaseManager*>(
-        service->database_manager().get())
-        ->AddDangerousUrlPattern(url, threat_pattern_type);
-  }
-
   void ClearBadURL(const GURL& url) {
     TestSafeBrowsingService* service = factory_.test_safe_browsing_service();
     ASSERT_TRUE(service);

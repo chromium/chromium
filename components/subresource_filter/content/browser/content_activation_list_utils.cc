@@ -67,13 +67,7 @@ ActivationList GetListForThreatTypeAndMetadata(
   CHECK(warning);
   bool is_phishing_interstitial =
       (threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
-  bool is_soc_engineering_ads_interstitial =
-      threat_type_metadata.threat_pattern_type ==
-      safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS;
   if (is_phishing_interstitial) {
-    if (is_soc_engineering_ads_interstitial) {
-      return ActivationList::SOCIAL_ENG_ADS_INTERSTITIAL;
-    }
     return ActivationList::PHISHING_INTERSTITIAL;
   } else if (threat_type ==
              safe_browsing::SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER) {

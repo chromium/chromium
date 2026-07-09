@@ -134,14 +134,6 @@ void RecordV4GetHashCheckResult(V4GetHashCheckResultType result_type) {
 }
 
 const char kPermission[] = "permission";
-const char kPhaPatternType[] = "pha_pattern_type";
-const char kMalwareThreatType[] = "malware_threat_type";
-const char kSePatternType[] = "se_pattern_type";
-const char kLanding[] = "LANDING";
-const char kDistribution[] = "DISTRIBUTION";
-const char kSocialEngineeringAds[] = "SOCIAL_ENGINEERING_ADS";
-const char kSocialEngineeringLanding[] = "SOCIAL_ENGINEERING_LANDING";
-const char kPhishing[] = "PHISHING";
 
 }  // namespace
 
@@ -641,45 +633,6 @@ void V4GetHashProtocolManager::ParseMetadata(const ThreatMatch& match,
         return;
       }
       metadata->api_permissions.insert(m.value());
-    }
-  } else if (match.threat_type() == MALWARE_THREAT ||
-             match.threat_type() == POTENTIALLY_HARMFUL_APPLICATION) {
-    for (const ThreatEntryMetadata::MetadataEntry& m :
-         match.threat_entry_metadata().entries()) {
-      if (m.key() == kPhaPatternType || m.key() == kMalwareThreatType) {
-        if (m.value() == kLanding) {
-          metadata->threat_pattern_type = ThreatPatternType::MALWARE_LANDING;
-          break;
-        } else if (m.value() == kDistribution) {
-          metadata->threat_pattern_type =
-              ThreatPatternType::MALWARE_DISTRIBUTION;
-          break;
-        } else {
-          RecordParseGetHashResult(UNEXPECTED_METADATA_VALUE_ERROR);
-          return;
-        }
-      }
-    }
-  } else if (match.threat_type() == SOCIAL_ENGINEERING) {
-    for (const ThreatEntryMetadata::MetadataEntry& m :
-         match.threat_entry_metadata().entries()) {
-      if (m.key() == kSePatternType) {
-        if (m.value() == kSocialEngineeringAds) {
-          metadata->threat_pattern_type =
-              ThreatPatternType::SOCIAL_ENGINEERING_ADS;
-          break;
-        } else if (m.value() == kSocialEngineeringLanding) {
-          metadata->threat_pattern_type =
-              ThreatPatternType::SOCIAL_ENGINEERING_LANDING;
-          break;
-        } else if (m.value() == kPhishing) {
-          metadata->threat_pattern_type = ThreatPatternType::PHISHING;
-          break;
-        } else {
-          RecordParseGetHashResult(UNEXPECTED_METADATA_VALUE_ERROR);
-          return;
-        }
-      }
     }
   } else if (match.threat_type() == SUBRESOURCE_FILTER) {
     for (const ThreatEntryMetadata::MetadataEntry& m :

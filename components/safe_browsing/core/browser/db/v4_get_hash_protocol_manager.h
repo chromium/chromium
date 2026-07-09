@@ -205,8 +205,6 @@ class V4GetHashProtocolManager {
   FRIEND_TEST_ALL_PREFIXES(V4GetHashProtocolManagerTest,
                            TestParseHashResponseWrongThreatEntryType);
   FRIEND_TEST_ALL_PREFIXES(V4GetHashProtocolManagerTest,
-                           TestParseHashThreatPatternType);
-  FRIEND_TEST_ALL_PREFIXES(V4GetHashProtocolManagerTest,
                            TestParseSubresourceFilterMetadata);
   FRIEND_TEST_ALL_PREFIXES(V4GetHashProtocolManagerTest,
                            TestParseHashResponseNonPermissionMetadata);

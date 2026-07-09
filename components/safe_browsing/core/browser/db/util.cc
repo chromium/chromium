@@ -8,8 +8,7 @@
 
 namespace safe_browsing {
 
-ThreatMetadata::ThreatMetadata()
-    : threat_pattern_type(ThreatPatternType::NONE) {}
+ThreatMetadata::ThreatMetadata() = default;
 
 ThreatMetadata::ThreatMetadata(const ThreatMetadata& other) = default;
 
@@ -25,9 +24,6 @@ ThreatMetadata::~ThreatMetadata() = default;
 std::unique_ptr<base::trace_event::TracedValue> ThreatMetadata::ToTracedValue()
     const {
   auto value = std::make_unique<base::trace_event::TracedValue>();
-
-  value->SetInteger("threat_pattern_type",
-                    static_cast<int>(threat_pattern_type));
 
   value->BeginArray("api_permissions");
   for (const std::string& permission : api_permissions) {

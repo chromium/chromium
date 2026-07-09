@@ -8,7 +8,6 @@
 #import "ios/web/public/web_state.h"
 #import "services/network/public/mojom/fetch_api.mojom.h"
 
-using safe_browsing::ThreatPatternType;
 using security_interstitials::BaseSafeBrowsingErrorUI;
 using security_interstitials::UnsafeResource;
 

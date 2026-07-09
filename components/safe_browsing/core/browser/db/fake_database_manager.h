@@ -25,8 +25,6 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   void AddDangerousUrl(const GURL& dangerous_url, SBThreatType threat_type);
-  void AddDangerousUrlPattern(const GURL& dangerous_url,
-                              ThreatPatternType pattern_type);
   void ClearDangerousUrl(const GURL& dangerous_url);
   void SetHighConfidenceAllowlistMatchResult(const GURL& url,
                                              bool match_allowlist);
@@ -55,14 +53,12 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
 
   static void CheckBrowseURLAsync(GURL url,
                                   SBThreatType result_threat_type,
-                                  ThreatPatternType pattern_type,
                                   Client* client);
   static void CheckDownloadURLAsync(const std::vector<GURL>& url_chain,
                                     SBThreatType result_threat_type,
                                     Client* client);
 
   base::flat_map<GURL, SBThreatType> dangerous_urls_;
-  base::flat_map<GURL, ThreatPatternType> dangerous_patterns_;
   base::flat_map<GURL, bool> high_confidence_allowlist_match_urls_;
 };
 
