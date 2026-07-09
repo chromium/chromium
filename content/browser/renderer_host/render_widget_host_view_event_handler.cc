@@ -750,8 +750,9 @@ void RenderWidgetHostViewEventHandler::HandleMouseEventWhileLocked(
   aura::client::CursorClient* cursor_client =
       aura::client::GetCursorClient(window_->GetRootWindow());
 
-  CHECK(!cursor_client || !cursor_client->IsCursorVisible(),
-        base::NotFatalUntil::M152);
+  // TODO(crbug.com/532557323): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!cursor_client || !cursor_client->IsCursorVisible());
 
   if (event->type() == ui::EventType::kMousewheel) {
     HandleMouseWheelEvent(event);
