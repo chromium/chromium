@@ -27,7 +27,6 @@ source_set("browser_ui") {
 
   if (!is_android) {
     sources += [
-      "anchored_nudge_controller.h",
       "glic_actor_nudge_controller.h",
       "glic_actor_task_icon_manager.h",
       "glic_actor_task_icon_manager_factory.h",
@@ -63,7 +62,6 @@ source_set("impl") {
   ]
   if (!is_android) {
     sources += [
-      "anchored_nudge_controller.cc",
       "glic_actor_nudge_controller.cc",
       "glic_actor_task_icon_manager.cc",
       "glic_actor_task_icon_manager_factory.cc",

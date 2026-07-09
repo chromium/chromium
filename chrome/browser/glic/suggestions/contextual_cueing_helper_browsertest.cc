@@ -147,7 +147,7 @@ class ContextualCueingHelperBrowserTest
          {page_content_annotations::features::kAnnotatedPageContentExtraction,
           {}},
          {contextual_tasks::kContextualTasks, {}}},
-        {contextual_cueing::kContextualCueingV2, glic::kUseAnchoredMessage});
+        {contextual_cueing::kContextualCueingV2});
   }
 };
 

@@ -34,7 +34,6 @@ class GlicNudgeControllerDesktop : public GlicNudgeController,
   void UpdateNudgeLabel(content::WebContents* web_contents,
                         const std::string& nudge_label,
                         std::optional<std::string> prompt_suggestion,
-                        const std::string& anchored_message_text,
                         std::optional<GlicNudgeActivity> activity,
                         GlicNudgeActivityCallback callback) override;
   void OnNudgeActivity(GlicNudgeActivity activity) override;
@@ -62,7 +61,6 @@ class GlicNudgeControllerDesktop : public GlicNudgeController,
   raw_ptr<GlicSplitButtonDelegate> tab_strip_delegate_ = nullptr;
   raw_ptr<GlicSplitButtonDelegate> toolbar_delegate_ = nullptr;
 
-  std::unique_ptr<GlicSplitButtonDelegate> anchored_nudge_controller_;
   std::optional<std::string> prompt_suggestion_;
   GlicNudgeActivityCallback nudge_activity_callback_;
 

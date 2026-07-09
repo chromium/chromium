@@ -36,7 +36,6 @@ class SkillsInvocationInteractiveUiTest;
 
 namespace glic {
 
-class AnchoredNudgeController;
 class GlicInternalsPageHandler;
 
 template <mojom::InvocationSource Source>
@@ -54,7 +53,6 @@ class InvokeWithAutoSubmitPasskeyProvider {
   // Example of how to add new friends:
   // friend class SomeClassThatNeedsAutoSubmit;
   // friend void SomeClass::SomeFunctionThatNeedsAutoSubmit();
-  friend class AnchoredNudgeController;
   friend void GlicContextMenuInvocationHelper::HandleContextualMenuClick(
       tabs::TabInterface* tab, const std::u16string& selection_text,
       content::GlobalRenderFrameHostId rfh_id);

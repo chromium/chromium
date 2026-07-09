@@ -200,7 +200,6 @@ void ContextualCueingHelper::DidFinishNavigation(
   if (glic_nudge_controller) {
     glic_nudge_controller->UpdateNudgeLabel(
         web_contents(), std::string(), /*prompt_suggestion=*/std::nullopt,
-        /*anchored_message_text=*/std::string(),
         glic::GlicNudgeActivity::kNudgeIgnoredNavigation, base::DoNothing());
   }
 
@@ -460,7 +459,6 @@ void ContextualCueingHelper::OnCueingDecision(
       decision_result->prompt_suggestion.empty()
           ? std::nullopt
           : std::make_optional(decision_result->prompt_suggestion),
-      decision_result->anchored_message_text,
       /*activity=*/std::nullopt,
       base::BindRepeating(&ContextualCueingService::OnNudgeActivity,
                           contextual_cueing_service_->GetWeakPtr(),

@@ -238,8 +238,8 @@ void ChromeRecordReplayClient::OnShouldOfferTask(bool offered) {
     if (metadata.has_value()) {
       nudge_controller->UpdateNudgeLabel(
           tab().GetContents(), metadata->title,
-          std::make_optional(metadata->instructions),
-          metadata->anchored_message, /*task=*/std::nullopt, base::DoNothing());
+          std::make_optional(metadata->instructions), /*task=*/std::nullopt,
+          base::DoNothing());
     }
   }
 }

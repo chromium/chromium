@@ -107,7 +107,6 @@ void DoUpdateNudgeLabel(
     base::WeakPtr<content::WebContents> web_contents,
     std::string text,
     std::optional<std::string> prompt_suggestion,
-    std::string anchored_message_text,
     std::optional<GlicNudgeActivity> activity,
     GlicNudgeController::GlicNudgeActivityCallback invoke_glic) {
   if (!web_contents) {
@@ -127,23 +126,21 @@ void DoUpdateNudgeLabel(
     return;
   }
 
-  controller->UpdateNudgeLabel(
-      web_contents.get(), std::move(text), std::move(prompt_suggestion),
-      std::move(anchored_message_text), activity, std::move(invoke_glic));
+  controller->UpdateNudgeLabel(web_contents.get(), std::move(text),
+                               std::move(prompt_suggestion), activity,
+                               std::move(invoke_glic));
 }
 
 void PostUpdateNudgeLabel(
     content::WebContents* web_contents,
     std::string text,
     std::optional<std::string> prompt_suggestion,
-    std::string anchored_message_text,
     std::optional<GlicNudgeActivity> activity,
     GlicNudgeController::GlicNudgeActivityCallback invoke_glic) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DoUpdateNudgeLabel, web_contents->GetWeakPtr(),
                                 std::move(text), std::move(prompt_suggestion),
-                                std::move(anchored_message_text), activity,
-                                std::move(invoke_glic)));
+                                activity, std::move(invoke_glic)));
 }
 
 mojom::AdditionalContextPtr CreateAdditionalContext(
@@ -539,7 +536,6 @@ void GlicSelectionObserver::DismissUI(bool keep_nudge) {
   // scrolling.
   if (!keep_nudge && !features::kGlicSelectionPromptUpdatesOnly.Get()) {
     PostUpdateNudgeLabel(web_contents(), "", std::nullopt,
-                         /*anchored_message_text=*/std::string(),
                          GlicNudgeActivity::kNudgeDismissed, base::DoNothing());
   }
 }
@@ -647,7 +643,6 @@ void GlicSelectionObserver::UpdateSelectionState(
 
     if (!features::kGlicSelectionPromptUpdatesOnly.Get()) {
       PostUpdateNudgeLabel(web_contents(), "", std::nullopt,
-                           /*anchored_message_text=*/std::string(),
                            GlicNudgeActivity::kNudgeDismissed,
                            base::DoNothing());
     }
@@ -720,7 +715,6 @@ void GlicSelectionObserver::ShowSelectionAffordance(
           /*is_widget=*/false, web_contents()->GetWeakPtr());
       PostUpdateNudgeLabel(web_contents(), base::UTF16ToUTF8(label),
                            std::nullopt,
-                           /*anchored_message_text=*/std::string(),
                            std::nullopt, std::move(invoke_glic));
     } else {
       // Show selection widget

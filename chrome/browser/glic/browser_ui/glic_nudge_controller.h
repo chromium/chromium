@@ -56,7 +56,6 @@ class GlicNudgeController {
   virtual void UpdateNudgeLabel(content::WebContents* web_contents,
                                 const std::string& nudge_label,
                                 std::optional<std::string> prompt_suggestion,
-                                const std::string& anchored_message_text,
                                 std::optional<GlicNudgeActivity> activity,
                                 GlicNudgeActivityCallback callback) = 0;
 

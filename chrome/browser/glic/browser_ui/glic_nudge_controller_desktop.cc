@@ -5,7 +5,6 @@
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller_desktop.h"
 
 #include "chrome/browser/contextual_cueing/features.h"
-#include "chrome/browser/glic/browser_ui/anchored_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -38,12 +37,6 @@ GlicNudgeControllerDesktop::GlicNudgeControllerDesktop(
     glic::GlicCueTarget::Register(*browser_window_interface);
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  if (!cue_v2_enabled && base::FeatureList::IsEnabled(kUseAnchoredMessage)) {
-    anchored_nudge_controller_ =
-        std::make_unique<AnchoredNudgeController>(*browser_window_interface);
-  }
-#endif
 }
 
 GlicNudgeControllerDesktop::~GlicNudgeControllerDesktop() = default;
@@ -70,7 +63,6 @@ void GlicNudgeControllerDesktop::UpdateNudgeLabel(
     content::WebContents* web_contents,
     const std::string& nudge_label,
     std::optional<std::string> prompt_suggestion,
-    const std::string& anchored_message_text,
     std::optional<GlicNudgeActivity> activity,
     GlicNudgeActivityCallback callback) {
   tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
@@ -124,10 +116,6 @@ void GlicNudgeControllerDesktop::UpdateNudgeLabel(
     if (delegate) {
       if (nudge_label.empty() && delegate->GetIsShowingGlicNudge()) {
         delegate->OnHideGlicNudgeUI();
-      } else if (base::FeatureList::IsEnabled(kUseAnchoredMessage) &&
-                 !anchored_message_text.empty()) {
-        anchored_nudge_controller_->OnTriggerGlicNudgeUI(NudgeParams(
-            nudge_label, anchored_message_text, std::move(prompt_suggestion)));
       } else {
         delegate->OnTriggerGlicNudgeUI(NudgeParams(nudge_label));
       }
@@ -200,10 +188,6 @@ void GlicNudgeControllerDesktop::OnTabListDestroyed(
 }
 
 GlicSplitButtonDelegate* GlicNudgeControllerDesktop::GetActiveDelegate() {
-  if (anchored_nudge_controller_) {
-    return anchored_nudge_controller_.get();
-  }
-
   auto* vertical_tab_strip_state_controller =
       tabs::VerticalTabStripStateController::From(browser_window_interface_);
 
