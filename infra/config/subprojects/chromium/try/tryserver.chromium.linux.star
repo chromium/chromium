@@ -691,14 +691,7 @@ try_.orchestrator_builder(
         "ci/Linux ASan LSan Builder",
         "ci/Linux ASan LSan Tests (1)",
     ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/Linux ASan LSan Builder",
-            # TODO(crbug.com/507993636): Restore symbol_level=1 if/when CAS
-            # uploads and downloads are no longer slow.
-            "no_symbols",
-        ],
-    ),
+    gn_args = "ci/Linux ASan LSan Builder",
     compilator = "linux_chromium_asan_rel_ng-compilator",
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
