@@ -4049,10 +4049,6 @@ source_set("browser") {
       "//ui/wm/public",
     ]
 
-    if (is_chrome_branded) {
-      deps += [ "//chrome/browser/nearby_sharing/internal/icons:vector_icons" ]
-    }
-
     if (!is_official_build) {
       deps += [
         "//ash/webui/sample_system_web_app_ui",
