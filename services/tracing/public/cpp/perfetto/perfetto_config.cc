@@ -248,19 +248,19 @@ void AdaptDataSourceConfig(
 
 }  // namespace
 
-base::ByteCount GetDefaultTraceBufferSize() {
+base::ByteSize GetDefaultTraceBufferSize() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   std::string switch_value = command_line->GetSwitchValueASCII(
       switches::kDefaultTraceBufferSizeLimitInKb);
   size_t switch_kilobytes;
   if (!switch_value.empty() &&
       base::StringToSizeT(switch_value, &switch_kilobytes)) {
-    return base::KiB(switch_kilobytes);
+    return base::KiBU(switch_kilobytes);
   } else {
     // TODO(eseckler): Reduce the default buffer size after benchmarks set
     // what they require. Should also invest some time to reduce the overhead
     // of begin/end pairs further.
-    return base::MiB(200);
+    return base::MiBU(200);
   }
 }
 
@@ -274,8 +274,7 @@ perfetto::TraceConfig GetDefaultPerfettoConfig(
   base::ByteSize size_limit = chrome_config.GetTraceBufferSizeInBytes();
   if (size_limit.is_zero()) {
     // If trace config did not provide trace buffer size, we will use default
-    size_limit =
-        base::ByteSize::FromDeprecatedByteCount(GetDefaultTraceBufferSize());
+    size_limit = GetDefaultTraceBufferSize();
   }
   auto* buffer_config = perfetto_config.add_buffers();
   buffer_config->set_size_kb(size_limit.InKiB());

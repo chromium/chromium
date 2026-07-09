@@ -8,7 +8,7 @@
 #include <set>
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/component_export.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/chrome_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
@@ -21,9 +21,9 @@ class TraceConfig;
 
 namespace tracing {
 
-inline constexpr base::ByteCount kMetadataBufferSize = base::KiB(256);
+inline constexpr base::ByteSize kMetadataBufferSize = base::KiBU(256);
 
-base::ByteCount COMPONENT_EXPORT(TRACING_CPP) GetDefaultTraceBufferSize();
+base::ByteSize COMPONENT_EXPORT(TRACING_CPP) GetDefaultTraceBufferSize();
 
 // Creates a perfetto trace config.
 perfetto::TraceConfig COMPONENT_EXPORT(TRACING_CPP) GetDefaultPerfettoConfig(
