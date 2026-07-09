@@ -54,6 +54,7 @@ enum FeatureName {
   FEATURE_NAME_CHROME_FORMS_AI = 701;
 
   FEATURE_NAME_CHROME_CONTEXTUAL_CUEING = 703;
+  FEATURE_NAME_CHROME_AUTOMATED_PASSWORD_CHANGE = 704;
 }
 // LINT.ThenChange(
 //     //tools/metrics/histograms/enums.xml:PrivateAiFeatureName,

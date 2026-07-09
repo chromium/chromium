@@ -30,6 +30,8 @@ std::string FeatureNameToString(proto::FeatureName feature_name) {
       return "FormsAi";
     case proto::FEATURE_NAME_CHROME_CONTEXTUAL_CUEING:
       return "ContextualCueing";
+    case proto::FEATURE_NAME_CHROME_AUTOMATED_PASSWORD_CHANGE:
+      return "AutomatedPasswordChange";
     case proto::FEATURE_NAME_UNSPECIFIED:
     case proto::FeatureName_INT_MAX_SENTINEL_DO_NOT_USE_:
     case proto::FeatureName_INT_MIN_SENTINEL_DO_NOT_USE_:

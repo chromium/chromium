@@ -22,6 +22,7 @@ reviewer.
 <!-- LINT.IfChange(PrivateAiFeatures) -->
 
 <variants name="PrivateAiFeatures">
+  <variant name="AutomatedPasswordChange"/>
   <variant name="ContextualCueing"/>
   <variant name="DemoGenerateContent"/>
   <variant name="FormsAi"/>
