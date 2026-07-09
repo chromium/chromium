@@ -121,6 +121,10 @@ class CreateSemanticEmbedderClient
     Cleanup();
   }
 
+  void OnConnectionError() {
+    OnError(mojom::blink::AIManagerCreateClientError::kUnableToCreateSession);
+  }
+
  protected:
   void ResetReceiver() override { receiver_.reset(); }
 
@@ -156,6 +160,9 @@ class CreateSemanticEmbedderClient
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    task_runner_);
+    receiver_.set_disconnect_handler(
+        BindOnce(&CreateSemanticEmbedderClient::OnConnectionError,
+                 WrapWeakPersistent(this)));
     ai_manager_remote->CreateSemanticEmbedder(std::move(client_remote));
   }
 
@@ -211,16 +218,18 @@ ScriptPromise<V8Availability> SemanticEmbedder::availability(
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
       AIInterfaceProxy::GetAIManagerRemote(execution_context);
 
-  ai_manager_remote->CanCreateSemanticEmbedder(BindOnce(
-      [](ScriptPromiseResolver<V8Availability>* resolver,
-         ExecutionContext* execution_context,
-         mojom::blink::ModelAvailabilityCheckResult result) {
-        Availability availability = HandleModelAvailabilityCheckResult(
-            execution_context, AIMetrics::AISessionType::kSemanticEmbedder,
-            result);
-        resolver->Resolve(AvailabilityToV8(availability));
-      },
-      WrapPersistent(resolver), WrapPersistent(execution_context)));
+  ai_manager_remote->CanCreateSemanticEmbedder(
+      BindOnce(
+          [](ScriptPromiseResolver<V8Availability>* resolver,
+             ExecutionContext* execution_context,
+             mojom::blink::ModelAvailabilityCheckResult result) {
+            Availability availability = HandleModelAvailabilityCheckResult(
+                execution_context, AIMetrics::AISessionType::kSemanticEmbedder,
+                result);
+            resolver->Resolve(AvailabilityToV8(availability));
+          },
+          WrapPersistent(resolver), WrapPersistent(execution_context))
+          .Then(RejectOnDestruction(resolver)));
   return promise;
 }
 
