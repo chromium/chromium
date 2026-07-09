@@ -18,7 +18,7 @@ constexpr base::FeatureState kFeatureEnabledOnlyOnAndroid =
 }  // namespace
 
 // Whether to update the predictor database asynchronously.
-BASE_FEATURE(kAsyncPredictorDbUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAsyncPredictorDbUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether local predictions should be used to make preconnect predictions.
 BASE_FEATURE(kLoadingPredictorUseLocalPredictions,
