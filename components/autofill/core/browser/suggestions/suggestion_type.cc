@@ -33,6 +33,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kManageAutofillAiShopping";
     case SuggestionType::kManageAutofillAiTravel:
       return "kManageAutofillAiTravel";
+    case SuggestionType::kManageEnhancedAutofill:
+      return "kManageEnhancedAutofill";
     case SuggestionType::kManageCreditCard:
       return "kManageCreditCard";
     case SuggestionType::kManageIban:

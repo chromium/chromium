@@ -354,8 +354,23 @@ struct Suggestion {
 
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.suggestion
   enum class Icon {
+    // kNoIcon is kept at the top of the list.
     kNoIcon,
+
+    // 1P Google services start
+    kGmail,
+    kGoogleCalendar,
+    kGooglePhotos,
+    // 1P Google services end
+
+    // Address profile icons start
+    kHome,
+    kWork,
+    // Address profile icons end
+
+    // Generic icons start
     kAccount,
+    kAndroidMessages,
     // TODO(crbug.com/40266549): Rename to Undo.
     kClear,
     kCode,
@@ -373,7 +388,6 @@ struct Suggestion {
     kGooglePay,
     kGoogleWallet,
     kGoogleWalletMonochrome,
-    kHome,
     kIdCard,
     kIdCard2,
     kIdCard2Spark,
@@ -392,19 +406,19 @@ struct Suggestion {
     kPersonCheck,
     kQuestionMark,
     kRecoveryPassword,
+    kSadTab,
     kScanCreditCard,
     kSettings,
     kShipment,
     kShipmentSpark,
+    kSpark,
     kTextSpark,
     kUndo,
     kVehicle,
     kVehicleSpark,
-    kWork,
-    kGmail,
-    kGooglePhotos,
-    kGoogleCalendar,
-    // Payment method icons
+    // Generic icons end
+
+    // Payment method icons start
     kCardGeneric,
     kCardGenericSpark,
     // A vector representation of the generic card icon, which is used when a
@@ -430,9 +444,7 @@ struct Suggestion {
     kBnplKlarna,
     kBnplZip,
     kSaveAndFill,
-    kAndroidMessages,
-    kSpark,
-    kSadTab,
+    // Payment method icons end
   };
 
   // This enum is used to control filtration of suggestions (see it's used in

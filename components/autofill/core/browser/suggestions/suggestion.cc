@@ -67,8 +67,31 @@ std::string_view ConvertAcceptabilityToPrintableString(
 
 std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
   switch (icon) {
+    // kNoIcon is kept at the top of the list.
+    case Suggestion::Icon::kNoIcon:
+      return "kNoIcon";
+
+    // 1P Google services start
+    case Suggestion::Icon::kGmail:
+      return "kGmail";
+    case Suggestion::Icon::kGoogleCalendar:
+      return "kGoogleCalendar";
+    case Suggestion::Icon::kGooglePhotos:
+      return "kGooglePhotos";
+    // 1P Google services end
+
+    // Address profile icons start
+    case Suggestion::Icon::kHome:
+      return "kHome";
+    case Suggestion::Icon::kWork:
+      return "kWork";
+    // Address profile icons end
+
+    // Generic icons start
     case Suggestion::Icon::kAccount:
       return "kAccount";
+    case Suggestion::Icon::kAndroidMessages:
+      return "kAndroidMessages";
     case Suggestion::Icon::kClear:
       return "kClear";
     case Suggestion::Icon::kCode:
@@ -101,8 +124,6 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kGoogleWallet";
     case Suggestion::Icon::kGoogleWalletMonochrome:
       return "kGoogleWalletMonochrome";
-    case Suggestion::Icon::kHome:
-      return "kHome";
     case Suggestion::Icon::kIdCard:
       return "kIdCard";
     case Suggestion::Icon::kIdCard2:
@@ -139,6 +160,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kQuestionMark";
     case Suggestion::Icon::kRecoveryPassword:
       return "kRecoveryPassword";
+    case Suggestion::Icon::kSadTab:
+      return "kSadTab";
     case Suggestion::Icon::kScanCreditCard:
       return "kScanCreditCard";
     case Suggestion::Icon::kSettings:
@@ -157,14 +180,9 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kVehicle";
     case Suggestion::Icon::kVehicleSpark:
       return "kVehicleSpark";
-    case Suggestion::Icon::kWork:
-      return "kWork";
-    case Suggestion::Icon::kGmail:
-      return "kGmail";
-    case Suggestion::Icon::kGooglePhotos:
-      return "kGooglePhotos";
-    case Suggestion::Icon::kGoogleCalendar:
-      return "kGoogleCalendar";
+    // Generic icons end
+
+    // Payment method icons start
     case Suggestion::Icon::kCardGeneric:
       return "kCardGeneric";
     case Suggestion::Icon::kCardGenericSpark:
@@ -195,8 +213,6 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kCardVisa";
     case Suggestion::Icon::kIban:
       return "kIban";
-    case Suggestion::Icon::kNoIcon:
-      return "kNoIcon";
     case Suggestion::Icon::kBnplGeneric:
       return "kBnplGeneric";
     case Suggestion::Icon::kBnplAffirm:
@@ -209,10 +225,7 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kBnplZip";
     case Suggestion::Icon::kSaveAndFill:
       return "kSaveAndFill";
-    case Suggestion::Icon::kAndroidMessages:
-      return "kAndroidMessages";
-    case Suggestion::Icon::kSadTab:
-      return "kSadTab";
+      // Payment method icons end
   }
   NOTREACHED();
 }

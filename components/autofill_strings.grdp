@@ -237,6 +237,10 @@
     <message name="IDS_AUTOFILL_MANAGE_LOYALTY_CARDS" desc="The text displayed at the bottom of the Autofill popup to allow the user to manage loyalty cards that can be used by Chrome Autofill. Imperative. When the user clicks on it, opens the Wallet page." meaning="Manage loyalty cards in the user wallet that can be used by Chrome Autofill.">
       Manage loyalty cards...
     </message>
+
+    <message name="IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL" desc="Hyperlink text that redirects the user to the central Chrome settings page where they can manage permissions, connected apps, and clear data features.">
+      Manage enhanced autofill
+    </message>
   </if>
   <if expr="use_titlecase">
     <message name="IDS_AUTOFILL_MANAGE_ADDRESSES" desc="In Title Case: The text displayed at the bottom of the Autofill popup to allow the user to manage their Autofill preferences for addresses. Imperative. When the user clicks on it, opens the Autofill settings page." meaning="Manage addresses in the user profile that can be used by Chrome Autofill.">
@@ -249,6 +253,10 @@
 
     <message name="IDS_AUTOFILL_MANAGE_LOYALTY_CARDS" desc="In Title Case: The text displayed at the bottom of the Autofill popup to allow the user to manage loyalty cards that can be used by Chrome Autofill. Imperative. When the user clicks on it, opens the Wallet page." meaning="Manage loyalty cards in the user wallet that can be used by Chrome Autofill.">
       Manage Loyalty Cards...
+    </message>
+
+    <message name="IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL" desc="In Title Case: Hyperlink text that redirects the user to the central Chrome settings page where they can manage permissions, connected apps, and clear data features.">
+      Manage Enhanced Autofill
     </message>
   </if>
 
