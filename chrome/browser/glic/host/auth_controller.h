@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -127,6 +128,7 @@ class AuthController : public signin::IdentityManager::Observer {
                           signin::IdentityManager::Observer>
       observation_;
   base::TimeTicks last_sync_on_error_time_;
+  base::OneShotTimer token_change_sync_timer_;
   base::WeakPtrFactory<AuthController> weak_ptr_factory_{this};
 };
 

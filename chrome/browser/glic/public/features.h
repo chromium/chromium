@@ -87,6 +87,8 @@ BASE_DECLARE_FEATURE(kGlicGetTabFaviconById);
 
 BASE_DECLARE_FEATURE(kGlicSkipCookieSyncOnOpen);
 BASE_DECLARE_FEATURE(kGlicCookieSyncOnTokenChange);
+extern const base::FeatureParam<base::TimeDelta>
+    kGlicCookieSyncOnTokenChangeDelay;
 BASE_DECLARE_FEATURE(kGlicCookieSyncOnError);
 extern const base::FeatureParam<base::TimeDelta>
     kGlicCookieSyncOnErrorMinInterval;
