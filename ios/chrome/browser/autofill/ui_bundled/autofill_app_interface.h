@@ -175,6 +175,12 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Saves a Vehicle entity with test data.
 + (BOOL)saveVehicleEntity;
 
+// Returns YES if there is at least one form cached in the AutofillManager.
++ (BOOL)isFormCachedInMainFrame;
+
+// Wait until a form is cached in the AutofillManager.
++ (BOOL)waitForFormToBeCachedInMainFrame;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_APP_INTERFACE_H_

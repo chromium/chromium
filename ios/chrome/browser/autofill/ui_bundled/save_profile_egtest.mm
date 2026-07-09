@@ -256,6 +256,11 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   GREYAssertEqual(0U, [AutofillAppInterface profilesCount],
                   @"There should be no saved profile.");
 
+  [ChromeEarlGrey waitForWebStateContainingText:"Profile Autofill"];
+
+  GREYAssertTrue([AutofillAppInterface waitForFormToBeCachedInMainFrame],
+                 @"Forms were not parsed and cached.");
+
   [ChromeEarlGrey tapWebStateElementWithID:@"fill_profile_president"];
   [ChromeEarlGrey tapWebStateElementWithID:@"submit_profile"];
   [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
@@ -344,12 +349,9 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 
   // Load the URL and wait for its content to be loaded.
   [ChromeEarlGrey loadURL:fullURL];
-
-  // Wait until the expected content is loaded in the DOM. If the page is in an
-  // error state this verification will fail.
-  NSString* wait_content_script =
-      @"document.body.innerText.includes('Address Form Test Page')";
-  [ChromeEarlGrey waitForJavaScriptCondition:wait_content_script];
+  [ChromeEarlGrey waitForWebStateContainingText:"Address Form Test Page"];
+  GREYAssertTrue([AutofillAppInterface waitForFormToBeCachedInMainFrame],
+                 @"Forms were not parsed and cached.");
 
   // Call the helper function embedded in the page content to fill the form.
   [ChromeEarlGrey evaluateJavaScriptForSideEffect:@"FillForm();"];
