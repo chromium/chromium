@@ -1160,22 +1160,18 @@ base::PlatformThreadId RendererBlinkPlatformImpl::GetIOThreadId() const {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 RendererBlinkPlatformImpl::VideoFrameCompositorTaskRunner() {
-  auto compositor_task_runner = CompositorThreadTaskRunner();
-  if (::features::UseSurfaceLayerForVideo() || !compositor_task_runner) {
-    if (!video_frame_compositor_thread_) {
-      // All of Chromium's GPU code must know which thread it's running on, and
-      // be the same thread on which the rendering context was initialized. This
-      // is why this must be a SingleThreadTaskRunner instead of a
-      // SequencedTaskRunner.
-      video_frame_compositor_thread_ =
-          std::make_unique<base::Thread>("VideoFrameCompositor");
-      video_frame_compositor_thread_->StartWithOptions(
-          base::Thread::Options(base::ThreadType::kPresentation));
-    }
-
-    return video_frame_compositor_thread_->task_runner();
+  if (!video_frame_compositor_thread_) {
+    // All of Chromium's GPU code must know which thread it's running on, and
+    // be the same thread on which the rendering context was initialized. This
+    // is why this must be a SingleThreadTaskRunner instead of a
+    // SequencedTaskRunner.
+    video_frame_compositor_thread_ =
+        std::make_unique<base::Thread>("VideoFrameCompositor");
+    video_frame_compositor_thread_->StartWithOptions(
+        base::Thread::Options(base::ThreadType::kPresentation));
   }
-  return compositor_task_runner;
+
+  return video_frame_compositor_thread_->task_runner();
 }
 
 #if BUILDFLAG(IS_ANDROID)

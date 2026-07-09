@@ -1879,12 +1879,10 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       static_cast<blink::WebEffectiveConnectionType>(
           prefs.low_priority_iframes_threshold));
 
-  settings->SetPictureInPictureEnabled(prefs.picture_in_picture_enabled &&
-                                       ::features::UseSurfaceLayerForVideo());
+  settings->SetPictureInPictureEnabled(prefs.picture_in_picture_enabled);
 
   settings->SetImmersiveVideoPlaybackEnabled(
-      prefs.immersive_video_playback_enabled &&
-      ::features::UseSurfaceLayerForVideo());
+      prefs.immersive_video_playback_enabled);
 
   settings->SetRootScrollbarThemeColor(prefs.root_scrollbar_theme_color);
   settings->SetLazyLoadEnabled(prefs.lazy_load_enabled);

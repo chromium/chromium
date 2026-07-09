@@ -464,10 +464,6 @@ bool ShouldWebRtcLogCapturePipeline() {
   return base::FeatureList::IsEnabled(kWebRtcLogCapturePipeline);
 }
 
-bool UseSurfaceLayerForVideo() {
-  return true;
-}
-
 int MaxOverlaysConsidered() {
   if (!base::FeatureList::IsEnabled(kUseMultipleOverlays)) {
     return 1;

@@ -1269,8 +1269,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
       active_tree()->property_trees()->effect_tree().HasCopyRequests();
 
   bool have_missing_animated_tiles = false;
-  const bool compute_video_layer_preferred_interval =
-      !features::UseSurfaceLayerForVideo();
 
   if (settings_.enable_compositing_based_throttling) {
     throttle_decider_.Prepare();
@@ -1378,16 +1376,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
         // LayerTreeHostImpl::DidDrawAllLayers().
         frame->will_draw_layers.push_back(layer);
 
-        if (output_frame_data && compute_video_layer_preferred_interval &&
-            layer->GetLayerType() == mojom::LayerType::kVideo) {
-          VideoLayerImpl* video_layer = static_cast<VideoLayerImpl*>(layer);
-          std::optional<base::TimeDelta> video_preferred_interval =
-              video_layer->GetPreferredRenderInterval();
-          if (video_preferred_interval) {
-            frame->video_layer_preferred_intervals[video_preferred_interval
-                                                       .value()]++;
-          }
-        }
         layer->NotifyKnownResourceIdsBeforeAppendQuads(known_resource_ids);
         if (output_frame_data) {
           layer->AppendQuads(context, target_render_pass, &append_quads_data);
