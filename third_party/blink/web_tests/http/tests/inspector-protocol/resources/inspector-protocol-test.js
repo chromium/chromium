@@ -10,11 +10,16 @@
  *
  * Note that `devtools-protocol` package won't include your local changes
  * to the protocol and might be slightly out-of-date. Update it from time to time.
+ *
+ * @typedef {import("devtools-protocol/types/protocol").Protocol} Protocol
+ * @typedef {import("devtools-protocol/types/protocol-tests-proxy-api").ProtocolTestsProxyApi} ProtocolTestsProxyApi
  */
 var TestRunner = class {
+  _dumpInspectorProtocolMessages = false;
+  _protocolTimeout = 0;
+  _stableValues = new Map();
+
   constructor(testBaseURL, targetBaseURL, log, completeTest, fetch, params) {
-    this._dumpInspectorProtocolMessages = false;
-    this._protocolTimeout = 0;
     this._testBaseURL = testBaseURL;
     this._targetBaseURL = targetBaseURL;
     this._log = log;
@@ -22,7 +27,6 @@ var TestRunner = class {
     this._fetch = fetch;
     this._params = params;
     this._browserSession = new TestRunner.Session(this, '');
-    this._stableValues = new Map();
   }
 
   static get stabilizeNames() {
@@ -78,8 +82,9 @@ var TestRunner = class {
   }
 
   log(item, title, stabilizeNames, stabilizeValues) {
-    if (typeof item === 'object')
+    if (typeof item === 'object') {
       return this._logObject(item, title, stabilizeNames, stabilizeValues);
+    }
     this._log.call(null, item);
   }
 
@@ -429,13 +434,14 @@ TestRunner.Page = class {
 };
 
 TestRunner.Session = class {
+  _requestId = 0;
+  _eventHandlers = new Map();
+  _parentSessionId = null;
+
   constructor(testRunner, sessionId) {
     this._testRunner = testRunner;
     this._sessionId = sessionId;
-    this._requestId = 0;
-    this._eventHandlers = new Map();
     this.protocol = this._setupProtocol();
-    this._parentSessionId = null;
     DevToolsAPI._sessions.set(sessionId, this);
   }
 
@@ -518,7 +524,7 @@ TestRunner.Session = class {
   }
 
   /**
-   * @returns {import("devtools-protocol/types/protocol-tests-proxy-api").ProtocolTestsProxyApi.ProtocolApi}
+   * @returns {ProtocolTestsProxyApi.ProtocolApi}
    */
   _setupProtocol() {
     return new Proxy({}, {
@@ -575,22 +581,28 @@ TestRunner.Session = class {
   }
 };
 
-// Helper class to collect information of auto attached targets and
-// create `TestRunner.Session` from them.
+/**
+ * Helper class to collect information of auto attached targets and
+ * create `TestRunner.Session` from them.
+ */
 TestRunner.ChildTargetManager = class {
-  // @param {TestRunner} testRunner
-  // @param {Session} session
+  /**
+   * @param {TestRunner} testRunner
+   * @param {TestRunner.Session} session
+   */
   constructor(testRunner, session) {
     this._testRunner = testRunner;
     this._session = session;
     this._attachedTargets = [];
   }
 
-  // @param {object|undefined} autoAttachParams
-  // @return {void}
-  //
-  // Issues `Target.setAutoAttach` and starts collecting auto attached
-  // `TargetInfo`.
+  /**
+   * Issues `Target.setAutoAttach` and starts collecting auto attached
+   * `TargetInfo`.
+   *
+   * @param {Protocol.Target.SetAutoAttachRequest=} autoAttachParams
+   * @returns {void}
+   */
   async startAutoAttach(autoAttachParams) {
     autoAttachParams = autoAttachParams ||
         {autoAttach: true, flatten: true, waitForDebuggerOnStart: false};
@@ -600,22 +612,28 @@ TestRunner.ChildTargetManager = class {
     await this._session.protocol.Target.setAutoAttach(autoAttachParams);
   }
 
-  // @param {(TargetInfo): bool} pred
-  // @return {TestRunner.Session|null}
+  /**
+   * @param {function(Protocol.Target.TargetInfo): boolean} pred
+   * @returns {TestRunner.Session|null}
+   */
   findAttachedSession(pred) {
     const found =
         this._attachedTargets.find(({targetInfo}) => pred(targetInfo));
     return found ? this._session.createChild(found.sessionId) : null;
   }
 
-  // @return {TestRunner.Session|null}
+  /**
+   * @returns {TestRunner.Session|null}
+   */
   findAttachedSessionPrimaryMainFrame() {
     return this.findAttachedSession(
         targetInfo =>
             targetInfo.type === 'page' && targetInfo.subtype === undefined);
   }
 
-  // @return {TestRunner.Session|null}
+  /**
+   * @returns {TestRunner.Session|null}
+   */
   findAttachedSessionPrerender() {
     return this.findAttachedSession(
         targetInfo =>
@@ -623,107 +641,148 @@ TestRunner.ChildTargetManager = class {
   }
 };
 
-var DevToolsAPI = {};
-DevToolsAPI._requestId = 0;
-DevToolsAPI._embedderMessageId = 0;
-DevToolsAPI._dispatchTable = new Map();
-DevToolsAPI._sessions = new Map();
-DevToolsAPI._outputElement = null;
+class DevToolsAPI {
+  static _requestId = 0;
+  static _embedderMessageId = 0;
+  static _dispatchTable = new Map();
+  static _sessions = new Map();
+  static _outputElement = null;
 
-DevToolsAPI._log = function(text) {
-  if (!DevToolsAPI._outputElement) {
-    var intermediate = document.createElement('div');
-    document.body.appendChild(intermediate);
-    var intermediate2 = document.createElement('div');
-    intermediate.appendChild(intermediate2);
-    DevToolsAPI._outputElement = document.createElement('div');
-    DevToolsAPI._outputElement.className = 'output';
-    DevToolsAPI._outputElement.id = 'output';
-    DevToolsAPI._outputElement.style.whiteSpace = 'pre';
-    intermediate2.appendChild(DevToolsAPI._outputElement);
-  }
-  DevToolsAPI._outputElement.appendChild(document.createTextNode(text));
-  DevToolsAPI._outputElement.appendChild(document.createElement('br'));
-};
-
-DevToolsAPI._completeTest = function() {
-  testRunner.notifyDone();
-};
-
-DevToolsAPI._die = function(message, error) {
-  DevToolsAPI._log(`${message}: ${error}\n${error.stack}`);
-  DevToolsAPI._completeTest();
-  throw new Error();
-};
-
-DevToolsAPI.dispatchMessage = function(messageOrObject) {
-  var messageObject = (typeof messageOrObject === 'string' ? JSON.parse(messageOrObject) : messageOrObject);
-  var messageId = messageObject.id;
-  try {
-    if (typeof messageId === 'number') {
-      var handler = DevToolsAPI._dispatchTable.get(messageId);
-      if (handler) {
-        DevToolsAPI._dispatchTable.delete(messageId);
-        handler(messageObject);
-      } else {
-        DevToolsAPI._die(`Unexpected result id ${messageId}`);
-      }
-    } else {
-      var session = DevToolsAPI._sessions.get(messageObject.sessionId || '');
-      if (session)
-        session._dispatchMessage(messageObject);
+  /**
+   * @param {string} text
+   */
+  static _log(text) {
+    if (!DevToolsAPI._outputElement) {
+      var intermediate = document.createElement('div');
+      document.body.appendChild(intermediate);
+      var intermediate2 = document.createElement('div');
+      intermediate.appendChild(intermediate2);
+      DevToolsAPI._outputElement = document.createElement('div');
+      DevToolsAPI._outputElement.className = 'output';
+      DevToolsAPI._outputElement.id = 'output';
+      DevToolsAPI._outputElement.style.whiteSpace = 'pre';
+      intermediate2.appendChild(DevToolsAPI._outputElement);
     }
-  } catch(e) {
-    DevToolsAPI._die(`Exception when dispatching message\n${JSON.stringify(messageObject)}`, e);
+    DevToolsAPI._outputElement.appendChild(document.createTextNode(text));
+    DevToolsAPI._outputElement.appendChild(document.createElement('br'));
   }
-};
 
-DevToolsAPI.setAllowUnsafeOperations = function (enabled) {
-  const embedderMessage = {
-    method: 'setAllowUnsafeOperations',
-    params: [enabled],
-  };
-  DevToolsHost.sendMessageToEmbedder(JSON.stringify(embedderMessage));
-}
+  /**
+   * @returns {void}
+   */
+  static _completeTest() {
+    testRunner.notifyDone();
+  }
 
-DevToolsAPI._sendCommand = function(sessionId, method, params, timeout = 0) {
-  var requestId = ++DevToolsAPI._requestId;
-  var messageObject = {'id': requestId, 'method': method, 'params': params};
-  if (sessionId)
-    messageObject.sessionId = sessionId;
-  var embedderMessage = {'id': ++DevToolsAPI._embedderMessageId, 'method': 'dispatchProtocolMessage', 'params': [JSON.stringify(messageObject)]};
-  DevToolsHost.sendMessageToEmbedder(JSON.stringify(embedderMessage));
-  return TestRunner.wrapPromiseWithTimeout(
-      new Promise(f => DevToolsAPI._dispatchTable.set(requestId, f)), timeout,
-      `${method} command timed out`);
-};
+  /**
+   * @param {string} message
+   * @param {Error} error
+   * @returns {void}
+   */
+  static _die(message, error) {
+    DevToolsAPI._log(`${message}: ${error}\n${error.stack}`);
+    DevToolsAPI._completeTest();
+    throw new Error();
+  }
 
-DevToolsAPI._sendCommandOrDie = function(sessionId, method, params, timeout) {
-  return DevToolsAPI._sendCommand(sessionId, method, params, timeout)
-      .then(message => {
-        if (message.error)
-          DevToolsAPI._die(
-              'Error communicating with harness',
-              new Error(JSON.stringify(message.error)));
-        return message.result;
-      });
-};
+  /**
+   * @param {string|object} messageOrObject
+   */
+  static dispatchMessage(messageOrObject) {
+    var messageObject = (typeof messageOrObject === 'string' ? JSON.parse(messageOrObject) : messageOrObject);
+    var messageId = messageObject.id;
+    try {
+      if (typeof messageId === 'number') {
+        var handler = DevToolsAPI._dispatchTable.get(messageId);
+        if (handler) {
+          DevToolsAPI._dispatchTable.delete(messageId);
+          handler(messageObject);
+        } else {
+          DevToolsAPI._die(`Unexpected result id ${messageId}`);
+        }
+      } else {
+        var session = DevToolsAPI._sessions.get(messageObject.sessionId || '');
+        if (session)
+          session._dispatchMessage(messageObject);
+      }
+    } catch(e) {
+      DevToolsAPI._die(`Exception when dispatching message\n${JSON.stringify(messageObject)}`, e);
+    }
+  }
 
-DevToolsAPI._fetch = function(url) {
-  return new Promise(fulfill => {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.onreadystatechange = e => {
-      if (xhr.readyState !== XMLHttpRequest.DONE)
-        return;
-      if ([0, 200, 304].indexOf(xhr.status) === -1)  // Testing harness file:/// results in 0.
-        DevToolsAPI._die(`${xhr.status} while fetching ${url}`, new Error());
-      else
-        fulfill(e.target.response);
+  /**
+   * @param {boolean} enabled
+   */
+  static setAllowUnsafeOperations(enabled) {
+    const embedderMessage = {
+      method: 'setAllowUnsafeOperations',
+      params: [enabled],
     };
-    xhr.send(null);
-  });
-};
+    DevToolsHost.sendMessageToEmbedder(JSON.stringify(embedderMessage));
+  }
+
+  /**
+   * @param {string} sessionId
+   * @param {string} method
+   * @param {object} params
+   * @param {number=} timeout
+   * @returns {Promise<any>}
+   */
+  static _sendCommand(sessionId, method, params, timeout = 0) {
+    var requestId = ++DevToolsAPI._requestId;
+    var messageObject = {'id': requestId, 'method': method, 'params': params};
+    if (sessionId)
+      messageObject.sessionId = sessionId;
+    var embedderMessage = {
+      'id': ++DevToolsAPI._embedderMessageId,
+      'method': 'dispatchProtocolMessage',
+      'params': [JSON.stringify(messageObject)],
+    };
+    DevToolsHost.sendMessageToEmbedder(JSON.stringify(embedderMessage));
+    return TestRunner.wrapPromiseWithTimeout(
+        new Promise(f => DevToolsAPI._dispatchTable.set(requestId, f)), timeout,
+        `${method} command timed out`);
+  }
+
+  /**
+   * @param {string} sessionId
+   * @param {string} method
+   * @param {object} params
+   * @param {number=} timeout
+   * @returns {Promise<any>}
+   */
+  static _sendCommandOrDie(sessionId, method, params, timeout) {
+    return DevToolsAPI._sendCommand(sessionId, method, params, timeout)
+        .then(message => {
+          if (message.error)
+            DevToolsAPI._die('Error communicating with harness',
+                             new Error(JSON.stringify(message.error)));
+          return message.result;
+        });
+  }
+
+  /**
+   * @param {string} url
+   * @returns {Promise<string>}
+   */
+  static _fetch(url) {
+    return new Promise(fulfill => {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', url, true);
+      xhr.onreadystatechange = e => {
+        if (xhr.readyState !== XMLHttpRequest.DONE)
+          return;
+        // Testing harness file:/// results in 0.
+        if ([0, 200, 304].indexOf(xhr.status) === -1) {
+          DevToolsAPI._die(`${xhr.status} while fetching ${url}`, new Error());
+        } else {
+          fulfill(e.target.response);
+        }
+      };
+      xhr.send(null);
+    });
+  }
+}
 
 if (window["testRunner"]) {
   testRunner.dumpAsText();
