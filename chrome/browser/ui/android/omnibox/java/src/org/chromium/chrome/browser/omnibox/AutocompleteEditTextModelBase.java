@@ -232,7 +232,6 @@ public interface AutocompleteEditTextModelBase {
     /**
      * @return Whether any autocomplete information is specified on the current text.
      */
-    @VisibleForTesting
     boolean hasAutocomplete();
 
     /**

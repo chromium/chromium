@@ -170,7 +170,6 @@ public class AutocompleteEditText extends EditTextWithLeading
     /**
      * @return Whether any autocomplete information is specified on the current text.
      */
-    @VisibleForTesting
     public boolean hasAutocomplete() {
         if (mModel == null) return false;
         return mModel.hasAutocomplete();
@@ -369,6 +368,11 @@ public class AutocompleteEditText extends EditTextWithLeading
         return mOnKeyListener;
     }
 
+    private void dispatchKeyEventToModel(KeyEvent event) {
+        if (mModel == null) return;
+        mModel.dispatchKeyEvent(event);
+    }
+
     @Override
     public boolean super_dispatchKeyEvent(KeyEvent event) {
         return super.dispatchKeyEvent(event);
@@ -423,5 +427,14 @@ public class AutocompleteEditText extends EditTextWithLeading
         }
         Drawable[] drawables = getCompoundDrawablesRelative();
         setCompoundDrawablesRelative(drawable, drawables[1], drawables[2], drawables[3]);
+    }
+
+    public void maybeAcceptInlineSuggestion(KeyEvent event) {
+        OnKeyListener onKeyListener = getOnKeyListener();
+        // Set our key listener to null because this method can be called in the process of handling
+        // a key event; if we don't set it to null we may recurse infinitely.
+        setOnKeyListener(null);
+        dispatchKeyEventToModel(event);
+        setOnKeyListener(onKeyListener);
     }
 }

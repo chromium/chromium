@@ -3534,6 +3534,27 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testHandleKeyNavigationEvent_urlBarAutocomplete() {
+        doReturn(KeyEvent.KEYCODE_TAB).when(mKeyEvent).getKeyCode();
+        doReturn(true).when(mKeyEvent).hasNoModifiers();
+        doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
+
+        doReturn(View.VISIBLE).when(mUrlBar).getVisibility();
+        doReturn(View.VISIBLE).when(mPlusButton).getVisibility();
+        doReturn(View.VISIBLE).when(mDeleteButton).getVisibility();
+        doReturn(View.GONE).when(mActivationChip).getVisibility();
+        doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
+        doReturn(true).when(mUrlCoordinator).hasAutocomplete();
+
+        var input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.SEARCH).setUserText("user text");
+        mMediator.beginInput(input);
+
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
+        verify(mUrlCoordinator).maybeAcceptInlineSuggestion(mKeyEvent);
+    }
+
+    @Test
     public void testHandleKeyNavigationEvent_navigateToFirstItemInTypedState() {
         doReturn(KeyEvent.KEYCODE_TAB).when(mKeyEvent).getKeyCode();
         doReturn(true).when(mKeyEvent).hasNoModifiers();

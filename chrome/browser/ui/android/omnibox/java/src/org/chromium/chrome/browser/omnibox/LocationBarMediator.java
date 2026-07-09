@@ -2532,6 +2532,13 @@ class LocationBarMediator
         boolean isBackwardsTab = KeyNavigationUtil.isTabBackward(event);
         boolean isForwardTab = KeyNavigationUtil.isTabForward(event);
         boolean isActivation = KeyNavigationUtil.isButtonActivate(event);
+
+        if (isForwardTab
+                && mSelectionController.getSelectedView() == mUrlBarSelectableView
+                && mUrlCoordinator.hasAutocomplete()) {
+            mUrlCoordinator.maybeAcceptInlineSuggestion(event);
+        }
+
         boolean isTypedStateConventionalRequest =
                 mCurrentInput != null
                         && !mCurrentInput.isInZeroPrefixContext()

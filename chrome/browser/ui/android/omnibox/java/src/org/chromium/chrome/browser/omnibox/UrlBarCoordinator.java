@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
 import android.view.ActionMode;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.View.OnLongClickListener;
@@ -472,5 +473,14 @@ public class UrlBarCoordinator
         // reparenting and the target post-reparenting focus is false, there is no apparent change
         // from the View's point of view, but the mediator still needs to know.
         onUrlFocusChangeInternal(new UrlBarFocusChangeInfo(postReparentingFocus, View.FOCUS_DOWN));
+    }
+
+    public void maybeAcceptInlineSuggestion(KeyEvent event) {
+        mUrlBar.maybeAcceptInlineSuggestion(event);
+    }
+
+    /** Returns whether the url bar has inline autocomplete text. */
+    public boolean hasAutocomplete() {
+        return mUrlBar.hasAutocomplete();
     }
 }
