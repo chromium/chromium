@@ -162,8 +162,8 @@ TEST_F(PredictionModelComponentUpdateListenerTest, AddObserverAndNotify) {
   EXPECT_EQ(observer.call_count(), 1);
   EXPECT_EQ(observer.last_target(), target);
   ASSERT_TRUE(observer.last_model_info());
-  EXPECT_EQ(observer.last_model_info()->GetVersion(), 123);
-  EXPECT_EQ(observer.last_model_info()->GetModelFilePath(),
+  EXPECT_EQ(observer.last_model_info()->version, 123);
+  EXPECT_EQ(observer.last_model_info()->model_file_path,
             install_dir.Append(GetBaseFileNameForModels()));
 
   listener_->RemoveObserverForOptimizationTargetModel(target, &observer);
@@ -180,7 +180,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, AddObserverAfterReady) {
   listener_->MaybeUpdateModel(target, version, install_dir);
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return listener_->GetModelForTesting(target) &&
-           listener_->GetModelForTesting(target)->GetVersion() == 123;
+           listener_->GetModelForTesting(target)->version == 123;
   }));
 
   // Notification should happen synchronously during AddObserver because the
@@ -191,7 +191,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, AddObserverAfterReady) {
   EXPECT_EQ(observer.call_count(), 1);
   EXPECT_EQ(observer.last_target(), target);
   ASSERT_TRUE(observer.last_model_info());
-  EXPECT_EQ(observer.last_model_info()->GetVersion(), 123);
+  EXPECT_EQ(observer.last_model_info()->version, 123);
 
   listener_->RemoveObserverForOptimizationTargetModel(target, &observer);
 }
@@ -210,7 +210,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, UpdateWithOlderVersion) {
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return observer.call_count() == 1; }));
   EXPECT_EQ(observer.call_count(), 1);
-  EXPECT_EQ(observer.last_model_info()->GetVersion(), 200);
+  EXPECT_EQ(observer.last_model_info()->version, 200);
   observer.Reset();
 
   base::Version version1("1.0.0");
@@ -232,12 +232,12 @@ TEST_F(PredictionModelComponentUpdateListenerTest, GetModelWithoutObserver) {
   listener_->MaybeUpdateModel(target, version, install_dir);
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return listener_->GetModelForTesting(target) &&
-           listener_->GetModelForTesting(target)->GetVersion() == 123;
+           listener_->GetModelForTesting(target)->version == 123;
   }));
 
   const ModelInfo* model_info = listener_->GetModelForTesting(target);
   ASSERT_NE(model_info, nullptr);
-  EXPECT_EQ(model_info->GetVersion(), 123);
+  EXPECT_EQ(model_info->version, 123);
 }
 
 TEST_F(PredictionModelComponentUpdateListenerTest,
@@ -260,7 +260,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
   EXPECT_EQ(observer.call_count(), 1);
   EXPECT_EQ(observer.last_target(), target);
   ASSERT_TRUE(observer.last_model_info());
-  EXPECT_EQ(observer.last_model_info()->GetVersion(), 123);
+  EXPECT_EQ(observer.last_model_info()->version, 123);
 
   // Triggering it again should not notify because observer is removed.
   base::Version version2("2.0.0.0");
@@ -268,7 +268,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
   listener_->MaybeUpdateModel(target, version2, install_dir2);
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return listener_->GetModelForTesting(target) &&
-           listener_->GetModelForTesting(target)->GetVersion() == 200;
+           listener_->GetModelForTesting(target)->version == 200;
   }));
   EXPECT_EQ(observer.call_count(), 1);
 }
@@ -296,7 +296,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
   // Run all pending tasks.
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return listener_->GetModelForTesting(target) &&
-           listener_->GetModelForTesting(target)->GetVersion() == 200;
+           listener_->GetModelForTesting(target)->version == 200;
   }));
 
   // Observer should only be notified for version 2 (latest).
@@ -307,7 +307,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
   // So it should only be notified for version 2.
   EXPECT_EQ(observer.call_count(), 1);
   ASSERT_TRUE(observer.last_model_info());
-  EXPECT_EQ(observer.last_model_info()->GetVersion(), 200);
+  EXPECT_EQ(observer.last_model_info()->version, 200);
 
   listener_->RemoveObserverForOptimizationTargetModel(target, &observer);
 }
@@ -333,7 +333,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return listener_->GetModelForTesting(target) &&
-           listener_->GetModelForTesting(target)->GetVersion() == 123;
+           listener_->GetModelForTesting(target)->version == 123;
   }));
 
   // Observer should not have been called.
@@ -351,7 +351,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, OnModelUninstalled) {
   listener_->MaybeUpdateModel(target, version, install_dir);
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return listener_->GetModelForTesting(target) &&
-           listener_->GetModelForTesting(target)->GetVersion() == 123;
+           listener_->GetModelForTesting(target)->version == 123;
   }));
 
   listener_->AddObserverForOptimizationTargetModel(target, std::nullopt,
@@ -416,7 +416,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
   listener_->MaybeUpdateModel(target, version, install_dir);
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return listener_->GetModelForTesting(target) &&
-           listener_->GetModelForTesting(target)->GetVersion() == 123;
+           listener_->GetModelForTesting(target)->version == 123;
   }));
 
   SelfRemovingOptimizationTargetModelObserver observer(listener_.get());
@@ -427,7 +427,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
   EXPECT_EQ(observer.call_count(), 1);
   EXPECT_EQ(observer.last_target(), target);
   ASSERT_TRUE(observer.last_model_info());
-  EXPECT_EQ(observer.last_model_info()->GetVersion(), 123);
+  EXPECT_EQ(observer.last_model_info()->version, 123);
 
   // Triggering it again should not notify because observer is removed.
   base::Version version2("2.0.0.0");
@@ -435,7 +435,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
   listener_->MaybeUpdateModel(target, version2, install_dir2);
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return listener_->GetModelForTesting(target) &&
-           listener_->GetModelForTesting(target)->GetVersion() == 200;
+           listener_->GetModelForTesting(target)->version == 200;
   }));
   EXPECT_EQ(observer.call_count(), 1);
 }
@@ -451,14 +451,14 @@ TEST_F(PredictionModelComponentUpdateListenerTest, LoadFailure) {
   listener_->MaybeUpdateModel(target, version1, install_dir1);
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return listener_->GetModelForTesting(target) &&
-           listener_->GetModelForTesting(target)->GetVersion() == 100;
+           listener_->GetModelForTesting(target)->version == 100;
   }));
 
   listener_->AddObserverForOptimizationTargetModel(target, std::nullopt,
                                                    nullptr, &observer);
   EXPECT_EQ(observer.call_count(), 1);
   EXPECT_NE(observer.last_model_info(), nullptr);
-  EXPECT_EQ(observer.last_model_info()->GetVersion(), 100);
+  EXPECT_EQ(observer.last_model_info()->version, 100);
 
   // Now trigger update with non-existent directory.
   base::Version version2("2.0.0");
@@ -484,14 +484,14 @@ TEST_F(PredictionModelComponentUpdateListenerTest, EmptyInstallDirIgnored) {
   listener_->MaybeUpdateModel(target, version1, install_dir1);
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return listener_->GetModelForTesting(target) &&
-           listener_->GetModelForTesting(target)->GetVersion() == 100;
+           listener_->GetModelForTesting(target)->version == 100;
   }));
 
   listener_->AddObserverForOptimizationTargetModel(target, std::nullopt,
                                                    nullptr, &observer);
   EXPECT_EQ(observer.call_count(), 1);
   ASSERT_TRUE(observer.last_model_info());
-  EXPECT_EQ(observer.last_model_info()->GetVersion(), 100);
+  EXPECT_EQ(observer.last_model_info()->version, 100);
 
   // Now trigger update with an empty directory.
   base::Version version2("2.0.0");
@@ -512,7 +512,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, EmptyInstallDirIgnored) {
   // Observer should NOT be notified, and the old model should still be active.
   EXPECT_EQ(observer.call_count(), 1);
   ASSERT_TRUE(listener_->GetModelForTesting(target));
-  EXPECT_EQ(listener_->GetModelForTesting(target)->GetVersion(), 100);
+  EXPECT_EQ(listener_->GetModelForTesting(target)->version, 100);
 
   listener_->RemoveObserverForOptimizationTargetModel(target, &observer);
 }
@@ -528,14 +528,14 @@ TEST_F(PredictionModelComponentUpdateListenerTest, CorruptModelInfo) {
   listener_->MaybeUpdateModel(target, version1, install_dir1);
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return listener_->GetModelForTesting(target) &&
-           listener_->GetModelForTesting(target)->GetVersion() == 100;
+           listener_->GetModelForTesting(target)->version == 100;
   }));
 
   listener_->AddObserverForOptimizationTargetModel(target, std::nullopt,
                                                    nullptr, &observer);
   EXPECT_EQ(observer.call_count(), 1);
   ASSERT_TRUE(observer.last_model_info());
-  EXPECT_EQ(observer.last_model_info()->GetVersion(), 100);
+  EXPECT_EQ(observer.last_model_info()->version, 100);
 
   // Now trigger update with corrupt model info.
   base::Version version2("2.0.0");
@@ -579,7 +579,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, UseObserverTaskRunner) {
 
   EXPECT_EQ(observer.call_count(), 1);
   ASSERT_TRUE(observer.last_model_info());
-  EXPECT_EQ(observer.last_model_info()->GetVersion(), 123);
+  EXPECT_EQ(observer.last_model_info()->version, 123);
 
   listener_->RemoveObserverForOptimizationTargetModel(target, &observer);
 }
@@ -611,7 +611,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
   // The model should still load eventually via the default task runner.
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return listener_->GetModelForTesting(target) &&
-           listener_->GetModelForTesting(target)->GetVersion() == 123;
+           listener_->GetModelForTesting(target)->version == 123;
   }));
 }
 
@@ -708,16 +708,16 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
   }));
   EXPECT_EQ(observer1.last_target(), target1);
   ASSERT_TRUE(observer1.last_model_info());
-  EXPECT_EQ(observer1.last_model_info()->GetVersion(), 100);
+  EXPECT_EQ(observer1.last_model_info()->version, 100);
   EXPECT_EQ(observer2.last_target(), target2);
   ASSERT_TRUE(observer2.last_model_info());
-  EXPECT_EQ(observer2.last_model_info()->GetVersion(), 200);
+  EXPECT_EQ(observer2.last_model_info()->version, 200);
 
   // Verify GetModelForTesting returns the isolated models.
   ASSERT_TRUE(listener_->GetModelForTesting(target1));
-  EXPECT_EQ(listener_->GetModelForTesting(target1)->GetVersion(), 100);
+  EXPECT_EQ(listener_->GetModelForTesting(target1)->version, 100);
   ASSERT_TRUE(listener_->GetModelForTesting(target2));
-  EXPECT_EQ(listener_->GetModelForTesting(target2)->GetVersion(), 200);
+  EXPECT_EQ(listener_->GetModelForTesting(target2)->version, 200);
 
   // Uninstalling target1 should only affect target1.
   listener_->OnModelUninstalled(target1);
@@ -728,7 +728,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
   EXPECT_EQ(listener_->GetModelForTesting(target1), nullptr);
   EXPECT_EQ(observer2.call_count(), 1);
   ASSERT_TRUE(listener_->GetModelForTesting(target2));
-  EXPECT_EQ(listener_->GetModelForTesting(target2)->GetVersion(), 200);
+  EXPECT_EQ(listener_->GetModelForTesting(target2)->version, 200);
 
   // Clean up observers.
   listener_->RemoveObserverForOptimizationTargetModel(target1, &observer1);

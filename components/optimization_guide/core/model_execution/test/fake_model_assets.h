@@ -133,7 +133,7 @@ class FakeSafetyModelAsset {
   const ModelInfo& model_info() const { return *model_info_; }
 
   base::flat_set<base::FilePath> AdditionalFiles() const {
-    return model_info_->GetAdditionalFiles();
+    return model_info_->additional_files;
   }
 
  private:

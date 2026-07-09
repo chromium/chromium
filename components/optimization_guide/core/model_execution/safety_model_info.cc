@@ -48,14 +48,14 @@ std::unique_ptr<SafetyModelInfo> SafetyModelInfo::Load(
   const ModelInfo& model_info = *opt_model_info;
   ScopedTextSafetyModelMetadataValidityLogger logger;
 
-  if (!model_info.GetModelMetadata()) {
+  if (!model_info.model_metadata) {
     logger.set_validity(TextSafetyModelMetadataValidity::kNoMetadata);
     return nullptr;
   }
 
   std::optional<proto::TextSafetyModelMetadata> model_metadata =
       ParsedAnyMetadata<proto::TextSafetyModelMetadata>(
-          *model_info.GetModelMetadata());
+          *model_info.model_metadata);
   if (!model_metadata) {
     logger.set_validity(TextSafetyModelMetadataValidity::kMetadataWrongType);
     return nullptr;
@@ -88,11 +88,11 @@ std::optional<proto::FeatureTextSafetyConfiguration> SafetyModelInfo::GetConfig(
 }
 
 base::FilePath SafetyModelInfo::GetDataPath() const {
-  return model_info_.GetModelFilePath();
+  return model_info_.model_file_path;
 }
 
 int64_t SafetyModelInfo::GetVersion() const {
-  return model_info_.GetVersion();
+  return model_info_.version;
 }
 
 SafetyModelInfo::SafetyModelInfo(

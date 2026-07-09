@@ -113,7 +113,7 @@ void DependencyParserModelLoader::OnModelUpdated(
     return;
   }
   background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&LoadModelFile, model_info->GetModelFilePath()),
+      FROM_HERE, base::BindOnce(&LoadModelFile, model_info->model_file_path),
       base::BindOnce(&DependencyParserModelLoader::OnModelFileLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }

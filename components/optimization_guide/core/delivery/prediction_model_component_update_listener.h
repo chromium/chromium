@@ -24,7 +24,7 @@
 
 namespace optimization_guide {
 
-class ModelInfo;
+struct ModelInfo;
 
 // Tracks component updater updates for prediction models, loads them in the
 // background, and notifies observers via OptimizationGuideModelProvider

@@ -664,9 +664,9 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
     std::optional<ModelInfo> received_model =
         observer.last_received_model_for_target(
             proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-    EXPECT_EQ(received_model->GetModelMetadata()->type_url(), "sometypeurl");
+    EXPECT_EQ(received_model->model_metadata->type_url(), "sometypeurl");
     EXPECT_EQ(base_model_dir.Append(GetBaseFileNameForModels()),
-              received_model->GetModelFilePath());
+              received_model->model_file_path);
     auto additional_file = received_model->GetAdditionalFileWithBaseName(
         base::FilePath::StringType(FILE_PATH_LITERAL("additional_file.txt")));
     ASSERT_TRUE(additional_file);
@@ -744,7 +744,7 @@ TEST_F(PredictionManagerTest,
             observer1
                 .last_received_model_for_target(
                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
-                ->GetModelFilePath());
+                ->model_file_path);
 
   // Now, register a new observer. It should get the model.
   FakeOptimizationTargetModelObserver observer2;
@@ -756,7 +756,7 @@ TEST_F(PredictionManagerTest,
             observer2
                 .last_received_model_for_target(
                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
-                ->GetModelFilePath());
+                ->model_file_path);
 
   // Now send a new model and make sure both get it.
   auto base_model_dir2 =
@@ -775,12 +775,12 @@ TEST_F(PredictionManagerTest,
             observer1
                 .last_received_model_for_target(
                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
-                ->GetModelFilePath());
+                ->model_file_path);
   EXPECT_EQ(base_model_dir2.Append(GetBaseFileNameForModels()),
             observer2
                 .last_received_model_for_target(
                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
-                ->GetModelFilePath());
+                ->model_file_path);
 }
 
 // See crbug/1227996.
@@ -835,14 +835,13 @@ TEST_F(PredictionManagerTest,
       observer
           .last_received_model_for_target(
               proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
-          ->GetModelMetadata()
-          ->type_url(),
+          ->model_metadata->type_url(),
       "type.googleapis.com/"
       "google.internal.chrome.optimizationguide.v1.PageTopicsModelMetadata");
   EXPECT_EQ(observer
                 .last_received_model_for_target(
                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
-                ->GetModelFilePath(),
+                ->model_file_path,
             fake_path);
 
   // Now reset observer. New model downloads should not update the observer.

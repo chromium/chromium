@@ -257,11 +257,11 @@ void ClientSidePhishingModel::OnModelUpdated(
     background_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&LoadModelAndVisualTfLiteFile,
-                       model_info->GetModelFilePath(),
-                       model_info->GetAdditionalFiles()),
+                       model_info->model_file_path,
+                       model_info->additional_files),
         base::BindOnce(
             &ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded,
-            weak_ptr_factory_.GetWeakPtr(), model_info->GetModelMetadata()));
+            weak_ptr_factory_.GetWeakPtr(), model_info->model_metadata));
   } else if (optimization_target ==
              optimization_guide::proto::
                  OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER) {
@@ -285,12 +285,12 @@ void ClientSidePhishingModel::OnModelUpdated(
     background_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&LoadImageEmbeddingModelFileAndEmbeddingList,
-                       model_info->GetModelFilePath(),
-                       model_info->GetAdditionalFiles()),
+                       model_info->model_file_path,
+                       model_info->additional_files),
         base::BindOnce(&ClientSidePhishingModel::
                            OnImageEmbeddingModelFileAndEmbeddingListLoaded,
                        weak_ptr_factory_.GetWeakPtr(),
-                       model_info->GetModelMetadata()));
+                       model_info->model_metadata));
   }
 }
 
