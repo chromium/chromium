@@ -119,7 +119,7 @@ public class OmniboxFeatures {
                     FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sOmniboxAimImageDownscaling =
-            newFlag(OmniboxFeatureList.OMNIBOX_AIM_IMAGE_DOWNSCALING, FeatureState.ENABLED_IN_TEST);
+            newFlag(OmniboxFeatureList.OMNIBOX_AIM_IMAGE_DOWNSCALING, FeatureState.DISABLED);
 
     public static final CachedFlag sJumpStartOmnibox =
             newFlag(OmniboxFeatureList.JUMP_START_OMNIBOX, FeatureState.ENABLED_IN_TEST);
