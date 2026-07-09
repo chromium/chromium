@@ -162,6 +162,9 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
     // Match fails because it's a cross-world extension resource request.
     kCrossWorldExtensionResourceMismatch,
+
+    // Match fails because it's a cross-world service worker resource request.
+    kCrossWorldServiceWorkerResourceMismatch,
   };
 
   Resource(const Resource&) = delete;

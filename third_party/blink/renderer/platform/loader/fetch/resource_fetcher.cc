@@ -1971,6 +1971,10 @@ void ResourceFetcher::PrintPreloadMismatch(Resource* resource,
       builder.Append(
           "because it is a cross-world extension resource mismatch.");
       break;
+    case Resource::MatchStatus::kCrossWorldServiceWorkerResourceMismatch:
+      builder.Append(
+          "because it is a cross-world service worker resource mismatch.");
+      break;
   }
   console_logger_->AddConsoleMessage(mojom::ConsoleMessageSource::kOther,
                                      mojom::ConsoleMessageLevel::kWarning,

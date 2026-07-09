@@ -2443,4 +2443,56 @@ TEST_P(ResourceFetcherTest, CrossWorldExtensionResourceMismatch) {
   CommonSchemeRegistry::RemoveURLSchemeAsExtensionForTest("chrome-extension");
 }
 
+// Tests that a preloaded resource fetched via a Service Worker is not reused
+// by a request from a different script world, even if the URL and resource
+// type match.
+//
+// Practical Example:
+// A main world page preloads a script from a CDN
+// (e.g., `https://cdn.com/lib.js`) which is served with a custom response by
+// the page's Service Worker. Later, an extension content script (isolated
+// world) attempts to fetch the same CDN script. Rather than fetch and reuse
+// the Service Worker cached script, the extension should perform a fresh fetch
+// to obtain the resource.
+TEST_P(ResourceFetcherTest, PreloadMatchServiceWorkerWorldMismatch) {
+  auto* fetcher = CreateFetcher();
+  KURL url("http://127.0.0.1:8000/foo.js");
+
+  // Register mock response with `SetWasFetchedViaServiceWorker(true)`.
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+  response.SetWasFetchedViaServiceWorker(true);
+  platform_->GetURLLoaderMockFactory()->RegisterURL(
+      url, WrappedResourceResponse(response),
+      test::PlatformTestDataPath(kTestResourceFilename));
+
+  // 1. Trigger Preload in main world (default world_for_csp is null)
+  FetchParameters fetch_params_preload =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  fetch_params_preload.SetLinkPreload(true);
+  Resource* preload_resource =
+      MockResource::Fetch(fetch_params_preload, fetcher, nullptr);
+  ASSERT_TRUE(preload_resource);
+  EXPECT_TRUE(preload_resource->IsLinkPreload());
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  EXPECT_TRUE(preload_resource->IsLoaded());
+
+  // 2. Fetch in isolated world (different world_for_csp)
+  FetchParameters fetch_params_load =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+      /*v8::Isolate=*/nullptr, blink::kIsolatedWorldIdLimit - 1);
+  fetch_params_load.MutableOptions().world_for_csp = isolated_world;
+
+  // Verify that the loader detects the script world mismatch for the
+  // Service Worker-fetched resource (returning
+  // `kCrossWorldServiceWorkerResourceMismatch`). The preload should be
+  // rejected for reuse, forcing a new load to start and returning a different
+  // resource instance.
+  Resource* load_resource =
+      MockResource::Fetch(fetch_params_load, fetcher, nullptr);
+
+  EXPECT_NE(preload_resource, load_resource);
+}
+
 }  // namespace blink

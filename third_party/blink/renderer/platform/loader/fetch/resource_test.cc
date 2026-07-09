@@ -8,7 +8,9 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -16,6 +18,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource_client.h"
 #include "third_party/blink/renderer/platform/scheduler/test/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
@@ -557,6 +560,50 @@ TEST_F(ResourceTest, GarbageCollection) {
 
   EXPECT_FALSE(weak_client);
   EXPECT_FALSE(weak_resource);
+}
+
+// Tests that resources fetched via a Service Worker are only reused if the
+// requesting world matches the world that fetched the resource. This prevents
+// unexpected cross-world resource reuse.
+TEST_F(ResourceTest, CanReuseServiceWorkerResource) {
+  KURL url("http://127.0.0.1:8000/foo.html");
+  scoped_refptr<const SecurityOrigin> origin = SecurityOrigin::Create(url);
+
+  // Set up the cached resource which was fetched via a Service Worker.
+  ResourceRequest cache_request(url);
+  cache_request.SetRequestorOrigin(origin);
+
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+  response.SetWasFetchedViaServiceWorker(true);
+
+  auto* resource = MakeGarbageCollected<MockResource>(cache_request);
+  resource->ResponseReceived(response);
+  resource->FinishForTest();
+
+  // Verify that a request from the same world (both have null `world_for_csp`
+  // which represents the main world) can reuse the cached resource.
+  {
+    ResourceRequest request(url);
+    request.SetRequestorOrigin(origin);
+    FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+    EXPECT_EQ(Resource::MatchStatus::kOk, resource->CanReuse(params));
+  }
+
+  // Verify that a request from a different isolated world (e.g., an extension
+  // or devtools) cannot reuse the cached resource, returning
+  // `Resource::MatchStatus::kCrossWorldServiceWorkerResourceMismatch`.
+  {
+    ResourceRequest request(url);
+    request.SetRequestorOrigin(origin);
+    FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+    DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+        /*v8::Isolate=*/nullptr, blink::kIsolatedWorldIdLimit - 1);
+    params.MutableOptions().world_for_csp = isolated_world;
+
+    EXPECT_EQ(Resource::MatchStatus::kCrossWorldServiceWorkerResourceMismatch,
+              resource->CanReuse(params));
+  }
 }
 
 }  // namespace blink
