@@ -23,6 +23,8 @@
 #include "ash/system/tray/tray_utils.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
@@ -78,7 +80,8 @@ const int kVerticalClockMinutesTopOffset = -2;
 std::u16string FormatDate(const base::Time& time) {
   // Use 'short' month format (e.g., "Oct") followed by non-padded day of
   // month (e.g., "2", "10").
-  return base::LocalizedTimeFormatWithPattern(time, "LLLd");
+  return base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
+      time, base::i18n::datetime_options::MD::Medium());
 }
 
 // Returns the time to show by the time view.

@@ -12,6 +12,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -97,6 +98,7 @@ class TimeViewTest : public AshTestBase {
   // Creates a time view with horizontal or vertical |clock_layout|.
   void CreateTimeView(TimeView::ClockLayout clock_layout,
                       TimeView::Type type = TimeView::kTime) {
+    time_view_ = nullptr;
     time_view_ = widget_->SetContentsView(std::make_unique<TimeView>(
         clock_layout, Shell::Get()->system_tray_model()->clock(), type));
   }
@@ -425,6 +427,21 @@ TEST_F(TimeViewTest, DateViewFiresAccessibilityEvents) {
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged,
                                 vertical_date_label()));
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, time_view()));
+}
+
+TEST_F(TimeViewTest, DateTimeFormat) {
+  // Use UTC to ensure the test is timezone-independent.
+  base::test::ScopedRestoreDefaultTimezone timezone("UTC");
+
+  // Set current time to Oct 2nd, 2023, 3:00 PM.
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromUTCString("2023-10-02 15:00:00", &date));
+  task_environment()->AdvanceClock(date - base::Time::Now());
+
+  // Test Date View
+  CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK, TimeView::kDate);
+  // The expected format for MD::Medium() in en-US is "Oct 2".
+  EXPECT_EQ(horizontal_date_label()->GetText(), u"Oct 2");
 }
 
 TEST_F(TimeViewTest, AccessibleProperties) {
