@@ -2054,9 +2054,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Navigation.Prerender.ActivationCommitDeferTime{PreloadingTriggerType}"
-    units="ms" expires_after="2026-06-09">
+    units="ms" expires_after="2027-07-08">
   <owner>nhiroki@chromium.org</owner>
-  <owner>chrome-prerendering@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
   <summary>
     Measures time a PrerenderCommitDeferringCondition defers activation waiting
     to commit an ongoing mainframe prerender navigation. Logged every time a
@@ -2074,7 +2074,7 @@ chromium-metrics-reviews@google.com.
     name="Navigation.Prerender.NoVarySearchCommitDeferTime.{NVSTriggerType}"
     units="ms" expires_after="2027-01-03">
   <owner>lingqi@chromium.org</owner>
-  <owner>chrome-prerendering@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
   <summary>
     Measures time a PrerenderNoVarySearchCommitDeferringCondition defers
     activation waiting to commit an ongoing mainframe prerender navigation.
@@ -3062,7 +3062,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-11-29">
   <owner>nhiroki@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
-  <owner>chrome-prerendering@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
   <summary>
     The time needed to commit a navigation using prerender activation. This is
     the time from the beginning of NavigationStart to the end of
@@ -3735,7 +3735,7 @@ chromium-metrics-reviews@google.com.
     name="Prerender.CanceledForInactivePageRestriction.DisallowActivationReason{PreloadingTriggerType}"
     enum="InactiveFrameDisallowActivationReason" expires_after="2026-11-29">
   <owner>lingqi@chromium.org</owner>
-  <owner>chrome-prerendering@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
   <summary>
     Warning: this histogram was expired from 2024-03-01 to 2025-02-20, and
     2025-08-01 to 2025-09-16; data may be missing.
