@@ -489,8 +489,8 @@ class Generator(generator.Generator):
       webui_factory = self._FindWebUiFactory()
       is_handler_for_factory = (webui_factory
                                 and webui_factory['handler_name'] == kind.name)
-      is_router_for_factory = (webui_factory
-                               and webui_factory['router_name'] == kind.name)
+      is_router_for_factory = (webui_factory and
+                               webui_factory.get('router_name') == kind.name)
 
       if is_handler_for_factory:
         imports.append(make_import(kind.name, 'Interface'))
@@ -724,24 +724,40 @@ class Generator(generator.Generator):
         continue
 
       for method in interface.methods:
-        if len(method.parameters) != 2:
+        router_kind = None
+        handler_kind = None
+
+        if len(method.parameters) == 2:
+          p1 = method.parameters[0]
+          p2 = method.parameters[1]
+          if mojom.IsPendingRemoteKind(p1.kind) and mojom.IsPendingReceiverKind(
+              p2.kind):
+            router_kind = p1.kind.kind
+            handler_kind = p2.kind.kind
+        elif len(method.parameters) == 1:
+          p1 = method.parameters[0]
+          if mojom.IsPendingReceiverKind(p1.kind):
+            handler_kind = p1.kind.kind
+
+        if not handler_kind:
           continue
 
-        p1 = method.parameters[0]
-        p2 = method.parameters[1]
-        if mojom.IsPendingRemoteKind(p1.kind) and mojom.IsPendingReceiverKind(
-            p2.kind):
-          router_kind = p1.kind.kind
-          handler_kind = p2.kind.kind
-          return {
-              'factory_interface':
-              get_ts_identifier(interface),
-              'factory_method':
-              generator.ToCamel(method.name, lower_initial=True),
+        webui_factory = {
+            'factory_interface': get_ts_identifier(interface),
+            'factory_method': generator.ToCamel(method.name,
+                                                lower_initial=True),
+            'handler_name': handler_kind.name,
+            'handler_interface': get_ts_identifier(handler_kind, 'Interface'),
+            'handler_remote': get_ts_identifier(handler_kind, 'Remote'),
+            'handler_receiver': get_ts_identifier(handler_kind,
+                                                  'PendingReceiver'),
+            'has_callback_router': router_kind is not None,
+        }
+
+        if router_kind:
+          webui_factory.update({
               'router_name':
               router_kind.name,
-              'handler_name':
-              handler_kind.name,
               'router_interface':
               get_ts_identifier(router_kind, 'Interface'),
               'router_remote':
@@ -750,13 +766,8 @@ class Generator(generator.Generator):
               get_ts_identifier(router_kind, 'PendingReceiver'),
               'router_router':
               get_ts_identifier(router_kind, 'CallbackRouter'),
-              'handler_interface':
-              get_ts_identifier(handler_kind, 'Interface'),
-              'handler_remote':
-              get_ts_identifier(handler_kind, 'Remote'),
-              'handler_receiver':
-              get_ts_identifier(handler_kind, 'PendingReceiver'),
-          }
+          })
+        return webui_factory
     return None
 
   def _GetStructsFromMethods(self):

@@ -1,3 +1,4 @@
+{%- if webui_factory.has_callback_router -%}
 export type BrowserProxy = MojoBrowserProxy<{{webui_factory.handler_interface}}, {{webui_factory.router_router}}>;
 
 export const browserProxyFactory = new MojoBrowserProxyFactory<
@@ -10,3 +11,15 @@ export const browserProxyFactory = new MojoBrowserProxyFactory<
     {{webui_factory.handler_remote}},
     {{webui_factory.router_router}},
     (remote: {{webui_factory.router_remote}}, receiver: {{webui_factory.handler_receiver}}) => {{webui_factory.factory_interface}}.getRemote().{{webui_factory.factory_method}}(remote, receiver));
+{%- else -%}
+export type BrowserProxy = MojoHandlerProxy<{{webui_factory.handler_interface}}>;
+
+export const browserProxyFactory = new MojoHandlerProxyFactory<
+    {{webui_factory.handler_interface}},
+    {{webui_factory.handler_receiver}},
+    {{webui_factory.handler_remote}}>(
+    {{webui_factory.handler_remote}},
+    (receiver: {{webui_factory.handler_receiver}}) => {{webui_factory.factory_interface}}.getRemote().{{webui_factory.factory_method}}(receiver));
+{%- endif -%}
+
+

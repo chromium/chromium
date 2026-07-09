@@ -20,6 +20,14 @@ export interface MojoBrowserProxy<HandlerInterface, CallbackRouter> {
 }
 
 /**
+ * Generic container holding only a WebUI page handler (for pages without a
+ * callback router).
+ */
+export interface MojoHandlerProxy<HandlerInterface> {
+  handler: HandlerInterface;
+}
+
+/**
  * Reusable factory that encapsulates singleton management, production Mojo pipe
  * binding, and test mock creation for WebUI browser proxies with precise Mojo
  * pipe types.
@@ -43,8 +51,8 @@ export class MojoBrowserProxyFactory<
    *     factory.
    */
   constructor(
-      private handlerRemoteCtor_: new() => HandlerRemote,
-      private callbackRouterCtor_: new() => CallbackRouter,
+      private handlerRemoteCtor_: new () => HandlerRemote,
+      private callbackRouterCtor_: new () => CallbackRouter,
       private bindFn_: (remote: Remote, receiver: Receiver) => void) {}
 
   /**
@@ -84,3 +92,44 @@ export class MojoBrowserProxyFactory<
     };
   }
 }
+
+/**
+ * Reusable factory that encapsulates singleton management, production Mojo pipe
+ * binding, and test mock creation for WebUI browser proxies without callback
+ * routers.
+ */
+export class MojoHandlerProxyFactory<
+    HandlerInterface, Receiver,
+    HandlerRemote extends HandlerInterface&{$: RemoteBaseWrapper<Receiver>}> {
+  private instance_: MojoHandlerProxy<HandlerInterface>|null = null;
+
+  /**
+   * @param handlerRemoteCtor Constructor for the production Mojo remote (e.g.,
+   *     PageHandlerRemote).
+   * @param bindFn Callback invoked in production to bind the pipes via the
+   *     factory.
+   */
+  constructor(
+      private handlerRemoteCtor_: new () => HandlerRemote,
+      private bindFn_: (receiver: Receiver) => void) {}
+
+  /**
+   * Retrieves or creates the production singleton instance.
+   */
+  getInstance(): MojoHandlerProxy<HandlerInterface> {
+    if (!this.instance_) {
+      const handler = new this.handlerRemoteCtor_();
+      this.bindFn_(handler.$.bindNewPipeAndPassReceiver());
+      this.instance_ = {handler};
+    }
+    return this.instance_;
+  }
+
+  /**
+   * Sets the singleton instance directly (used during test setup).
+   */
+  setInstance(proxy: MojoHandlerProxy<HandlerInterface>) {
+    this.instance_ = proxy;
+  }
+}
+

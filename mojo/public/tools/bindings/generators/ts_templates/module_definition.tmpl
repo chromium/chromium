@@ -8,8 +8,13 @@
 import {mojo} from '{{bindings_library_path}}';
 {%- endif %}
 {%- if webui_factory %}
+{%-   if webui_factory.has_callback_router %}
 import {MojoBrowserProxyFactory} from '{{mojo_browser_proxy_import}}';
 import type {MojoBrowserProxy} from '{{mojo_browser_proxy_import}}';
+{%-   else %}
+import {MojoHandlerProxyFactory} from '{{mojo_browser_proxy_import}}';
+import type {MojoHandlerProxy} from '{{mojo_browser_proxy_import}}';
+{%-   endif %}
 {%- endif %}
 
 {% for path, kinds in js_module_imports.items()|sort -%}
