@@ -69,12 +69,6 @@ AutofillEntityDataManagerFactory::~AutofillEntityDataManagerFactory() = default;
 std::unique_ptr<KeyedService>
 AutofillEntityDataManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  // LINT.IfChange(AutofillAiCreateDataManager)
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAiCreateEntityDataManager) &&
-      !base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
-    return nullptr;
-  }
   Profile* profile = Profile::FromBrowserContext(context);
   scoped_refptr<AutofillWebDataService> local_storage =
       WebDataServiceFactory::GetAutofillWebDataForProfile(
@@ -92,7 +86,6 @@ AutofillEntityDataManagerFactory::BuildServiceInstanceForBrowserContext(
       PersonalContextAccessManagerFactory::GetForProfile(profile),
       StrikeDatabaseFactory::GetForProfile(profile),
       GeoIpCountryCode(GetCountryCodeFromVariations()));
-  // LINT.ThenChange(//chrome/browser/autofill/android/java/src/org/chromium/chrome/browser/autofill/autofill_ai/EntityDataManagerFactory.java:AutofillAiCreateDataManager)
 }
 
 bool AutofillEntityDataManagerFactory::ServiceIsCreatedWithBrowserContext()

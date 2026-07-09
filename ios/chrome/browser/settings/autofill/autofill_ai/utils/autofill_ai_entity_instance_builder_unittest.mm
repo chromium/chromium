@@ -25,11 +25,6 @@ namespace {
 class EntityInstanceBuilderTest : public PlatformTest {
  public:
   EntityInstanceBuilderTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kAutofillAiWithDataSchema,
-         features::kAutofillAiCreateEntityDataManager},
-        {});
-
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
                               ios::WebDataServiceFactory::GetDefaultFactory());
@@ -64,7 +59,8 @@ class EntityInstanceBuilderTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillAiWithDataSchema};
   std::unique_ptr<TestProfileIOS> profile_;
 };
 

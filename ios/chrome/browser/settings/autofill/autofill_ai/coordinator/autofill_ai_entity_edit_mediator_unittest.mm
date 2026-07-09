@@ -53,7 +53,6 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
   AutofillAIEntityEditMediatorTest() {
     scoped_feature_list_.InitWithFeatures(
         {autofill::features::kAutofillAiWithDataSchema,
-         autofill::features::kAutofillAiCreateEntityDataManager,
          wallet::features::kWalletApiPrivatePassesConsent},
         {});
 

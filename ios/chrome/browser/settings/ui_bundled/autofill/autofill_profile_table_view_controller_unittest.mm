@@ -85,8 +85,7 @@ class AutofillProfileTableViewControllerTest
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
     feature_list_.InitWithFeatures(
-        {autofill::features::kAutofillAiCreateEntityDataManager,
-         autofill::features::kAutofillAiWithDataSchema,
+        {autofill::features::kAutofillAiWithDataSchema,
          autofill::features::kAutofillAiReauthRequired},
         /*disabled_features=*/{});
   }
@@ -445,7 +444,6 @@ class AutofillProfileTableViewControllerYourSavedInfoEnabledTest
     LegacyChromeTableViewControllerTest::SetUp();
     feature_list_.InitWithFeatures(
         {kYourSavedInfoSettingsPageIos,
-         autofill::features::kAutofillAiCreateEntityDataManager,
          autofill::features::kAutofillAiWithDataSchema,
          autofill::features::kAutofillAiReauthRequired},
         /*disabled_features=*/{});

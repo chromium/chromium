@@ -12519,12 +12519,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillAiAvailableByDefaultDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillAiAvailableByDefault)},
 
-    {"autofill-ai-create-entity-data-manager",
-     flag_descriptions::kAutofillAiCreateEntityDataManagerName,
-     flag_descriptions::kAutofillAiCreateEntityDataManagerDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillAiCreateEntityDataManager)},
-
     {"autofill-ai-dedupe-entities",
      flag_descriptions::kAutofillAiDedupeEntitiesName,
      flag_descriptions::kAutofillAiDedupeEntitiesDescription, kOsAll,

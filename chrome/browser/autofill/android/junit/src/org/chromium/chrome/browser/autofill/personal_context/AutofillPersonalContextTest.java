@@ -43,8 +43,7 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
-    ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
-    ChromeFeatureList.AUTOFILL_AI_CREATE_ENTITY_DATA_MANAGER
+    ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
 })
 public class AutofillPersonalContextTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

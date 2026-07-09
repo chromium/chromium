@@ -143,8 +143,6 @@ void VerifySaveNewEntityFlow() {
   config.features_enabled.push_back(
       autofill::features::kAutofillAiWithDataSchema);
   config.features_enabled.push_back(
-      autofill::features::kAutofillAiCreateEntityDataManager);
-  config.features_enabled.push_back(
       autofill::features::kAutofillAiReauthRequired);
 
   if ([self isRunningTest:@selector(testSubmitRedressForm)] ||

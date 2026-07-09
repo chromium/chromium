@@ -904,12 +904,6 @@ inline constexpr char kAutofillAiAvailableByDefaultDescription[] =
     "Makes Autofill AI available by default, with the enable toggle "
     "controlling online model runs and logging.";
 
-inline constexpr char kAutofillAiCreateEntityDataManagerName[] =
-    "Autofill AI create entity data manager";
-inline constexpr char kAutofillAiCreateEntityDataManagerDescription[] =
-    "Ensures the EntityDataManager for Autofill AI is created regardless of "
-    "other feature states. Useful for data cleanup.";
-
 inline constexpr char kAutofillAiDedupeEntitiesName[] =
     "Autofill AI dedupe entities";
 inline constexpr char kAutofillAiDedupeEntitiesDescription[] =

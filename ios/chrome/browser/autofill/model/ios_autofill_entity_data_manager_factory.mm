@@ -50,11 +50,6 @@ IOSAutofillEntityDataManagerFactory::~IOSAutofillEntityDataManagerFactory() =
 std::unique_ptr<KeyedService>
 IOSAutofillEntityDataManagerFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAiCreateEntityDataManager)) {
-    return nullptr;
-  }
-
   return std::make_unique<autofill::EntityDataManager>(
       profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile),

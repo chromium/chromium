@@ -169,12 +169,6 @@ BASE_FEATURE(kAutofillAiAvailableByDefault,
              IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
                                      : base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch. If enabled, the EntityDataManager is created irrespective of
-// whether other features are enabled. This is necessary so that cleaning up the
-// browsing data also removes data if the user left the study.
-BASE_FEATURE(kAutofillAiCreateEntityDataManager,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, AutofillAi entities will be deduped on every major milestone.
 BASE_FEATURE(kAutofillAiDedupeEntities,
              IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT

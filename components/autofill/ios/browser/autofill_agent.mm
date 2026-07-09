@@ -408,9 +408,6 @@ bool HasGuid(const Suggestion::Payload& payload) {
       (base::FeatureList::IsEnabled(
            autofill::features::kAutofillEnableBottomSheetScanCardAndFill) &&
        suggestion.type == SuggestionType::kSaveAndFillCreditCardEntry)) {
-    CHECK(suggestion.type != SuggestionType::kFillAutofillAi ||
-          base::FeatureList::IsEnabled(
-              autofill::features::kAutofillAiCreateEntityDataManager));
 
     if (_suggestionDelegate) {
       Suggestion autofill_suggestion(suggestion.type);

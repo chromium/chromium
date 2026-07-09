@@ -171,8 +171,6 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
                               testDeleteLastEntityInSectionRemovesSection)] ||
       [self isRunningTest:@selector(testSimultaneousRowAndSectionDeletion)]) {
     config.features_enabled.push_back(
-        autofill::features::kAutofillAiCreateEntityDataManager);
-    config.features_enabled.push_back(
         autofill::features::kAutofillAiWithDataSchema);
   }
 
@@ -192,8 +190,6 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
       [self isRunningTest:@selector(testToggleToolbarAddButtonBySwitch)]) {
     config.features_disabled.push_back(
         autofill::features::kAutofillAiWithDataSchema);
-    config.features_disabled.push_back(
-        autofill::features::kAutofillAiCreateEntityDataManager);
   }
 
   return config;

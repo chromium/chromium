@@ -30,8 +30,6 @@ class AutofillAndPasswordsMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        {autofill::features::kAutofillAiCreateEntityDataManager}, {});
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
@@ -81,7 +79,6 @@ class AutofillAndPasswordsMediatorTest : public PlatformTest {
         }));
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<PrefService> pref_service_;
