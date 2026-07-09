@@ -179,6 +179,12 @@ struct BASE_EXPORT LaunchOptions {
   // the entire call fails as well.
   UserTokenHandle as_user = nullptr;
 
+  // If non-null, runs the application using this token.
+  // The token must have the same user SID as the current process.
+  // The child process will inherit the environment from the current process,
+  // unlike `as_user` which takes the default environment of the user.
+  UserTokenHandle using_token = nullptr;
+
   // If true, use an empty string for the desktop name.
   bool empty_desktop_name = false;
 

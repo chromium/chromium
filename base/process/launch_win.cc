@@ -20,6 +20,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
@@ -38,6 +39,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/startup_information.h"
@@ -390,7 +392,10 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
       << "Creating a suspended process can lead to hung processes if the "
       << "launching process is killed before it assigns the process to the"
       << "job. https://crbug.com/820996";
+  BOOL launched = FALSE;
   if (options.as_user) {
+    CHECK(!options.using_token)
+        << "Cannot specify both as_user and using_token.";
     flags |= CREATE_UNICODE_ENVIRONMENT;
     void* environment_block = nullptr;
 
@@ -403,16 +408,11 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
     DCHECK(!options.clear_environment);
     DCHECK(options.environment.empty());
 
-    BOOL launched = CreateProcessAsUser(
+    launched = CreateProcessAsUser(
         options.as_user, nullptr, data(writable_cmdline), nullptr, nullptr,
         inherit_handles, flags, environment_block, current_directory,
         startup_info, &temp_process_info);
     DestroyEnvironmentBlock(environment_block);
-    if (!launched) {
-      DPLOG(ERROR) << "Command line:" << std::endl
-                   << WideToUTF8(cmdline) << std::endl;
-      return Process();
-    }
   } else {
     wchar_t* new_environment = nullptr;
     std::wstring env_storage;
@@ -428,12 +428,34 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
       flags |= CREATE_UNICODE_ENVIRONMENT;
     }
 
-    if (!CreateProcess(nullptr, data(writable_cmdline), nullptr, nullptr,
-                       inherit_handles, flags, new_environment,
-                       current_directory, startup_info, &temp_process_info)) {
-      DPLOG(ERROR) << "Command line:" << std::endl << cmdline << std::endl;
-      return Process();
+    if (options.using_token) {
+      CHECK(!options.as_user) << "Cannot specify both as_user and using_token.";
+      std::optional<base::win::AccessToken> process_token =
+          base::win::AccessToken::FromCurrentProcess();
+      std::optional<base::win::AccessToken> using_token =
+          base::win::AccessToken::FromToken(options.using_token);
+      if (!process_token || !using_token ||
+          process_token->User() != using_token->User()) {
+        DPLOG(ERROR) << "using_token does not have the same user SID as the "
+                        "current process";
+        return Process();
+      }
+
+      launched = CreateProcessAsUser(
+          options.using_token, nullptr, data(writable_cmdline), nullptr,
+          nullptr, inherit_handles, flags, new_environment, current_directory,
+          startup_info, &temp_process_info);
+    } else {
+      launched =
+          CreateProcess(nullptr, data(writable_cmdline), nullptr, nullptr,
+                        inherit_handles, flags, new_environment,
+                        current_directory, startup_info, &temp_process_info);
     }
+  }
+
+  if (!launched) {
+    DPLOG(ERROR) << "Command line:" << std::endl << cmdline << std::endl;
+    return Process();
   }
   win::ScopedProcessInformation process_info(temp_process_info);
 
