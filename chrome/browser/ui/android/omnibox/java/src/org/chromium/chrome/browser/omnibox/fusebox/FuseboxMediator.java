@@ -115,6 +115,8 @@ import java.util.function.Supplier;
             this::onAutocompleteRequestTypeChanged;
     private final Callback<@Nullable SiteSearchData> mOnSiteSearchDataChanged =
             this::onSiteSearchDataChanged;
+    private final Callback<@AutocompleteState Integer> mOnAutocompleteStateChanged =
+            (state) -> updateFuseboxState();
     private final Callback<InputState> mOnInputStateChanged = this::onInputStateChange;
     private final Callback<List<SuggestedTabInfo>> mOnSuggestedTabsChanged =
             this::reconcileSuggestedTabs;
@@ -406,6 +408,7 @@ import java.util.function.Supplier;
         if (mInput != null) {
             mInput.getRequestTypeSupplier().removeObserver(mOnAutocompleteRequestTypeChanged);
             mInput.getSiteSearchDataSupplier().removeObserver(mOnSiteSearchDataChanged);
+            mInput.getAutocompleteStateSupplier().removeObserver(mOnAutocompleteStateChanged);
         }
         mInput = input;
         if (mInput == null) {
@@ -426,6 +429,8 @@ import java.util.function.Supplier;
                     .addSyncObserverAndCallIfNonNull(mOnAutocompleteRequestTypeChanged);
             mInput.getSiteSearchDataSupplier()
                     .addSyncObserverAndCallIfNonNull(mOnSiteSearchDataChanged);
+            mInput.getAutocompleteStateSupplier()
+                    .addSyncObserverAndCallIfNonNull(mOnAutocompleteStateChanged);
         }
     }
 

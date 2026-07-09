@@ -477,6 +477,19 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void testAutocompleteStateChange_updatesFuseboxState() {
+        mInput.setAutocompleteState(AutocompleteState.STANDBY);
+        recreateMediator();
+        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+
+        mInput.setAutocompleteState(AutocompleteState.ENABLED);
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+
+        mInput.setAutocompleteState(AutocompleteState.STANDBY);
+        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+    }
+
+    @Test
     public void beginInput_withStandbyNoFocusState_isDisabled() {
         mInput.setAutocompleteState(AutocompleteState.STANDBY_NO_FOCUS);
         recreateMediator();
