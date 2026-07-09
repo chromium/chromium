@@ -767,8 +767,7 @@ AnnotationMetrics ComputeAnnotationOverflow(
       if (style->GetTextEmphasisMark() != TextEmphasisMark::kNone) {
         if (RuntimeEnabledFeatures::TextEmphasisAsRubyEnabled()) {
           const auto emphasis_mark_height =
-              InlineBoxState::ComputeEmphasisMarkOutsets(
-                  *style, used_font.GetFont(), used_font.ScalingFactor())
+              InlineBoxState::ComputeEmphasisMarkOutsets(*style, used_font)
                   .LineHeight();
           if (style->GetTextEmphasisLineLogicalSide() ==
               LineLogicalSide::kOver) {
@@ -782,8 +781,7 @@ AnnotationMetrics ComputeAnnotationOverflow(
           }
         } else if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled()) {
           const auto emphasis_mark_height =
-              InlineBoxState::ComputeEmphasisMarkOutsets(
-                  *style, used_font.GetFont(), used_font.ScalingFactor())
+              InlineBoxState::ComputeEmphasisMarkOutsets(*style, used_font)
                   .LineHeight();
           if (style->GetTextEmphasisLineLogicalSide() ==
               LineLogicalSide::kOver) {
@@ -984,9 +982,8 @@ FontHeight ComputeEmphasisHeights(const LogicalLineItems& line_items) {
     if (!style || style->GetTextEmphasisMark() == TextEmphasisMark::kNone) {
       continue;
     }
-    UsedFont used_font = item.GetUsedFont();
-    heights.Unite(InlineBoxState::ComputeEmphasisMarkOutsets(
-        *style, used_font.GetFont(), used_font.ScalingFactor()));
+    heights.Unite(
+        InlineBoxState::ComputeEmphasisMarkOutsets(*style, item.GetUsedFont()));
   }
   return heights;
 }
@@ -1008,9 +1005,8 @@ FontHeight ComputeEmphasisHeights(const LogicalLineItems& line_items,
     if (!style || style->GetTextEmphasisMark() == TextEmphasisMark::kNone) {
       continue;
     }
-    UsedFont used_font = item.GetUsedFont();
-    heights.Unite(InlineBoxState::ComputeEmphasisMarkOutsets(
-        *style, used_font.GetFont(), used_font.ScalingFactor()));
+    heights.Unite(
+        InlineBoxState::ComputeEmphasisMarkOutsets(*style, item.GetUsedFont()));
   }
   return heights;
 }

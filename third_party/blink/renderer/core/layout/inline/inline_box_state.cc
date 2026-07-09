@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/inline/line_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 #include "third_party/blink/renderer/core/layout/inline/line_utils.h"
+#include "third_party/blink/renderer/core/layout/inline/used_font.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -138,7 +139,8 @@ void InlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
   FontHeight emphasis_marks_outsets =
       RuntimeEnabledFeatures::TextEmphasisAsRubyEnabled()
           ? FontHeight::Empty()
-          : ComputeEmphasisMarkOutsets(styleref, base_font, paint_scale);
+          : ComputeEmphasisMarkOutsets(styleref,
+                                       UsedFont(base_font, paint_scale));
   LayoutUnit line_height = styleref.ComputedLineHeightAsFixed(base_font);
   if (!styleref.LineHeight().IsFixed() && paint_scale != 1.0f) {
     line_height *= paint_scale;
@@ -218,14 +220,14 @@ void InlineBoxState::AdjustEdges(const ComputedStyle& style,
 
 FontHeight InlineBoxState::ComputeEmphasisMarkOutsets(
     const ComputedStyle& style,
-    const Font& font,
-    float paint_scale) {
+    const UsedFont& used_font) {
   if (style.GetTextEmphasisMark() == TextEmphasisMark::kNone) {
     return FontHeight::Empty();
   }
 
   LayoutUnit emphasis_mark_height = LayoutUnit(
-      font.EmphasisMarkHeight(style.TextEmphasisMarkString()) * paint_scale);
+      used_font.GetFont().EmphasisMarkHeight(style.TextEmphasisMarkString()) *
+      used_font.ScalingFactor());
   DCHECK_GE(emphasis_mark_height, LayoutUnit());
   return style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver
              ? FontHeight(emphasis_mark_height, LayoutUnit())

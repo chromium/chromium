@@ -26,6 +26,7 @@ class InlineNode;
 class LineInfo;
 class LogicalLineItems;
 class ShapeResultView;
+class UsedFont;
 struct LogicalRubyColumn;
 struct TextFitBlockScale;
 
@@ -157,8 +158,7 @@ struct InlineBoxState {
                           FontHeight& metrics);
 
   static FontHeight ComputeEmphasisMarkOutsets(const ComputedStyle& style,
-                                               const Font& font,
-                                               float paint_scale);
+                                               const UsedFont& used_font);
 
 #if DCHECK_IS_ON()
   void CheckSame(const InlineBoxState&) const;
