@@ -34,7 +34,7 @@ void P2PSocketDispatcherHost::StartRtpDump(
     bool incoming,
     bool outgoing,
     RenderProcessHost::WebRtcRtpPacketCallback packet_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M153);
   if ((!dump_incoming_rtp_packet_ && incoming) ||
       (!dump_outgoing_rtp_packet_ && outgoing)) {
     if (incoming)
@@ -51,7 +51,7 @@ void P2PSocketDispatcherHost::StartRtpDump(
 }
 
 void P2PSocketDispatcherHost::StopRtpDump(bool incoming, bool outgoing) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M153);
   if ((dump_incoming_rtp_packet_ && incoming) ||
       (dump_outgoing_rtp_packet_ && outgoing)) {
     if (incoming)
@@ -74,7 +74,8 @@ void P2PSocketDispatcherHost::BindReceiver(
     mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver,
     net::NetworkAnonymizationKey anonymization_key,
     const GlobalRenderFrameHostId& render_frame_host_id) {
-  DCHECK_EQ(process.GetDeprecatedID(), render_process_id_);
+  CHECK_EQ(process.GetDeprecatedID(), render_process_id_,
+           base::NotFatalUntil::M153);
 
   mojo::PendingRemote<network::mojom::P2PTrustedSocketManagerClient>
       trusted_socket_manager_client;

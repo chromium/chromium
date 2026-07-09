@@ -106,7 +106,7 @@ std::string RendererSandboxedProcessLauncherDelegateWin::GetSandboxTag() {
 
 bool RendererSandboxedProcessLauncherDelegateWin::InitializeConfig(
     sandbox::TargetConfig* config) {
-  DCHECK(!config->IsConfigured());
+  CHECK(!config->IsConfigured(), base::NotFatalUntil::M153);
 
   sandbox::policy::SandboxWin::AddBaseHandleClosePolicy(config);
 

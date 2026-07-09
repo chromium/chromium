@@ -80,7 +80,8 @@ TokenFrameMap& GetTokenFrameProxyMap() {
 // static
 void RenderFrameProxyHost::SetObserverForTesting(TestObserver* observer) {
   // Prevent clobbering by previously set TestObserver.
-  DCHECK(!observer || (observer && !g_observer_for_testing));
+  CHECK(!observer || (observer && !g_observer_for_testing),
+        base::NotFatalUntil::M153);
   g_observer_for_testing = observer;
 }
 

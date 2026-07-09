@@ -501,7 +501,8 @@ void CompositorImpl::HandlePendingLayerTreeFrameSinkRequest() {
     return;
   }
 
-  DCHECK(is_offscreen_rendering_ || surface_handle_ != gpu::kNullSurfaceHandle);
+  CHECK(is_offscreen_rendering_ || surface_handle_ != gpu::kNullSurfaceHandle,
+        base::NotFatalUntil::M153);
   BrowserGpuChannelHostFactory::instance()->EstablishGpuChannel(base::BindOnce(
       &CompositorImpl::OnGpuChannelEstablished, weak_factory_.GetWeakPtr()));
 }
@@ -530,8 +531,9 @@ void CompositorImpl::OnGpuChannelEstablished(
   }
 
   if (!is_offscreen_rendering_) {
-    DCHECK(window_);
-    DCHECK_NE(surface_handle_, gpu::kNullSurfaceHandle);
+    CHECK(window_, base::NotFatalUntil::M153);
+    CHECK_NE(surface_handle_, gpu::kNullSurfaceHandle,
+             base::NotFatalUntil::M153);
   }
 
   int32_t stream_id = kGpuStreamIdDefault;
@@ -613,7 +615,7 @@ void CompositorImpl::DidSubmitCompositorFrame() {
 
 void CompositorImpl::DidReceiveCompositorFrameAck() {
   TRACE_EVENT0("compositor", "CompositorImpl::DidReceiveCompositorFrameAck");
-  DCHECK_GT(pending_frames_, 0U);
+  CHECK_GT(pending_frames_, 0U, base::NotFatalUntil::M153);
   pending_frames_--;
   client_->DidSwapFrame(pending_frames_);
 }
@@ -627,7 +629,7 @@ void CompositorImpl::DidLoseLayerTreeFrameSink() {
 ui::WindowAndroidCompositor::ScopedKeepSurfaceAliveCallback
 CompositorImpl::TakeScopedKeepSurfaceAliveCallback(
     const viz::SurfaceId& surface_id) {
-  DCHECK(surface_id.is_valid());
+  CHECK(surface_id.is_valid(), base::NotFatalUntil::M153);
   CHECK(pending_surface_copies_.find(pending_surface_copy_id_) ==
         pending_surface_copies_.end());
   pending_surface_copies_[pending_surface_copy_id_] =
@@ -666,7 +668,7 @@ void CompositorImpl::AddChildFrameSink(const viz::FrameSinkId& frame_sink_id) {
   if (GetHostFrameSinkManager()->IsFrameSinkIdRegistered(frame_sink_id_)) {
     bool result = GetHostFrameSinkManager()->RegisterFrameSinkHierarchy(
         frame_sink_id_, frame_sink_id);
-    DCHECK(result);
+    CHECK(result, base::NotFatalUntil::M153);
   } else {
     pending_child_frame_sink_ids_.insert(frame_sink_id);
   }
@@ -762,7 +764,7 @@ void CompositorImpl::OnUpdateOverlayTransform() {
 
 void CompositorImpl::InitializeVizLayerTreeFrameSink(
     scoped_refptr<viz::ContextProviderCommandBuffer> context_provider) {
-  DCHECK(root_window_);
+  CHECK(root_window_, base::NotFatalUntil::M153);
 
   pending_frames_ = 0;
   gpu_capabilities_ = context_provider->ContextCapabilities();
@@ -847,7 +849,8 @@ void CompositorImpl::OnContextCreationResult(
 
 void CompositorImpl::OnFatalOrSurfaceContextCreationFailure(
     gpu::ContextResult context_result) {
-  DCHECK(gpu::IsFatalOrSurfaceFailure(context_result));
+  CHECK(gpu::IsFatalOrSurfaceFailure(context_result),
+        base::NotFatalUntil::M153);
   LOG_IF(FATAL, context_result == gpu::ContextResult::kFatalFailure)
       << "Fatal error making Gpu context";
 
@@ -921,14 +924,14 @@ void CompositorImpl::SetDidSwapBuffersCallbackEnabled(bool enable) {
 
 void CompositorImpl::AddSimpleBeginFrameObserver(
     ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs) {
-  DCHECK(obs);
+  CHECK(obs, base::NotFatalUntil::M153);
   simple_begin_frame_observers_.AddObserver(obs);
   MaybeUpdateObserveBeginFrame();
 }
 
 void CompositorImpl::RemoveSimpleBeginFrameObserver(
     ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs) {
-  DCHECK(obs);
+  CHECK(obs, base::NotFatalUntil::M153);
   simple_begin_frame_observers_.RemoveObserver(obs);
   MaybeUpdateObserveBeginFrame();
 }
