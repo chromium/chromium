@@ -2,8 +2,8 @@
   "extends": "../../tools/typescript/tsconfig_base.json",
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
-    "module": "ESNext",
-    "moduleResolution": "classic",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "noUncheckedSideEffectImports": false,
     "useDefineForClassFields": false
   }
