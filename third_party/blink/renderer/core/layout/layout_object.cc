@@ -4487,7 +4487,7 @@ void LayoutObject::AddDraggableRegions(Vector<DraggableRegionValue>& regions) {
 
   DraggableRegionValue region;
   region.draggable =
-      StyleRef().DraggableRegionMode() == EDraggableRegionMode::kDrag;
+      StyleRef().DraggableRegionMode() == EDraggableRegionMode::kMove;
   region.bounds = abs_bounds;
   regions.push_back(region);
 }

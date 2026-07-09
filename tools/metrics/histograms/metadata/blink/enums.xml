@@ -8586,6 +8586,7 @@ Called by update_use_counter_css.py.-->
   <int value="959" label="corner-block-end"/>
   <int value="960" label="corner-inline-start"/>
   <int value="961" label="corner-inline-end"/>
+  <int value="962" label="window-drag"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

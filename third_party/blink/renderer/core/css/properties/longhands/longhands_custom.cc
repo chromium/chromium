@@ -10981,27 +10981,54 @@ const CSSValue* AppRegion::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.DraggableRegionMode() == EDraggableRegionMode::kNone) {
-    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  switch (style.DraggableRegionMode()) {
+    case EDraggableRegionMode::kNone:
+      return CSSIdentifierValue::Create(CSSValueID::kNone);
+    case EDraggableRegionMode::kMove:
+      return CSSIdentifierValue::Create(CSSValueID::kDrag);
+    case EDraggableRegionMode::kNoDrag:
+      // `kNoDrag` emits an explicit non-draggable region (subtracting from an
+      // ancestor's drag region), as distinct from `kNone` which emits nothing.
+      // It is produced by `app-region: no-drag` and, via the legacy quirk in
+      // `WindowDrag::ApplyValue`, by an explicit `none` on either property.
+      // `window-drag` serializes this state back as `none` (it cannot express
+      // `no-drag`), so only `app-region` round-trips it as `no-drag`.
+      return CSSIdentifierValue::Create(CSSValueID::kNoDrag);
   }
-  return CSSIdentifierValue::Create(style.DraggableRegionMode() ==
-                                            EDraggableRegionMode::kDrag
-                                        ? CSSValueID::kDrag
-                                        : CSSValueID::kNoDrag);
+  NOTREACHED();
 }
 
-void AppRegion::ApplyInitial(StyleResolverState& state) const {}
+const CSSValue* WindowDrag::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.DraggableRegionMode() ==
+                                            EDraggableRegionMode::kMove
+                                        ? CSSValueID::kMove
+                                        : CSSValueID::kNone);
+}
 
-void AppRegion::ApplyInherit(StyleResolverState& state) const {}
-
-void AppRegion::ApplyValue(StyleResolverState& state,
-                           const CSSValue& value,
-                           ValueModeFlags) const {
+void WindowDrag::ApplyValue(StyleResolverState& state,
+                            const CSSValue& value,
+                            ValueModeFlags) const {
   const auto& identifier_value = To<CSSIdentifierValue>(value);
-  state.StyleBuilder().SetDraggableRegionMode(
-      identifier_value.GetValueID() == CSSValueID::kDrag
-          ? EDraggableRegionMode::kDrag
-          : EDraggableRegionMode::kNoDrag);
+  // `window-drag` accepts {none, move}; the surrogate `app-region` routes its
+  // {drag, no-drag, none} keywords here as well. `move`/`drag` both map to the
+  // shared `kMove` (draggable) state, while any other explicit value (`none` or
+  // `no-drag`) maps to kNoDrag, preserving the legacy `app-region` behavior
+  // where setting the property to any value emits a region.
+  EDraggableRegionMode mode;
+  switch (identifier_value.GetValueID()) {
+    case CSSValueID::kMove:
+    case CSSValueID::kDrag:
+      mode = EDraggableRegionMode::kMove;
+      break;
+    default:
+      mode = EDraggableRegionMode::kNoDrag;
+      break;
+  }
+  state.StyleBuilder().SetDraggableRegionMode(mode);
   state.GetDocument().SetHasDraggableRegions(true);
 }
 

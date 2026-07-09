@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<div id="parent">
+  <div id="child"></div>
+</div>
+<script>
+const parent = document.getElementById('parent');
+const child = document.getElementById('child');
+
+function reset() {
+  for (const el of [parent, child]) {
+    el.style.removeProperty('window-drag');
+    el.style.removeProperty('app-region');
+    el.style.removeProperty('-webkit-app-region');
+  }
+}
+
+// --- initial keyword ---
+
+test(() => {
+  reset();
+  parent.style.setProperty('window-drag', 'move');
+  parent.style.setProperty('window-drag', 'initial');
+  assert_equals(getComputedStyle(parent).getPropertyValue('window-drag'),
+                'none');
+}, 'window-drag: initial computes to none');
+
+test(() => {
+  reset();
+  parent.style.setProperty('window-drag', 'move');
+  child.style.setProperty('window-drag', 'initial');
+  assert_equals(getComputedStyle(child).getPropertyValue('window-drag'),
+                'none',
+                'child explicitly initial overrides inherited move');
+}, 'window-drag: initial on child resets to none even when parent is move');
+
+// --- inherit keyword and default inheritance ---
+
+test(() => {
+  reset();
+  parent.style.setProperty('window-drag', 'move');
+  // Child has no window-drag set; since the property is inherited, it should
+  // pick up the parent's computed value automatically.
+  assert_equals(getComputedStyle(child).getPropertyValue('window-drag'),
+                'move');
+}, 'window-drag inherits from parent by default');
+
+test(() => {
+  reset();
+  parent.style.setProperty('window-drag', 'move');
+  child.style.setProperty('window-drag', 'none');
+  child.style.setProperty('window-drag', 'inherit');
+  assert_equals(getComputedStyle(child).getPropertyValue('window-drag'),
+                'move');
+}, 'window-drag: inherit on child takes parent value');
+
+test(() => {
+  reset();
+  // Parent unset (initial = none); child explicitly inherits.
+  child.style.setProperty('window-drag', 'inherit');
+  assert_equals(getComputedStyle(child).getPropertyValue('window-drag'),
+                'none');
+}, 'window-drag: inherit when parent is initial computes to none');
+
+// --- Surrogate (app-region) interaction with inheritance ---
+
+test(() => {
+  reset();
+  // app-region is the surrogate of the inherited canonical window-drag, so
+  // setting app-region on the parent should be visible on the child via
+  // inheritance through the shared underlying field.
+  parent.style.setProperty('app-region', 'drag');
+  assert_equals(getComputedStyle(child).getPropertyValue('window-drag'),
+                'move');
+  assert_equals(getComputedStyle(child).getPropertyValue('app-region'),
+                'drag');
+}, 'app-region: drag on parent inherits to child via canonical window-drag');
+
+test(() => {
+  reset();
+  parent.style.setProperty('window-drag', 'move');
+  child.style.setProperty('app-region', 'no-drag');
+  // Child explicitly opts out; window-drag serializes 'none' for kNoDrag.
+  assert_equals(getComputedStyle(child).getPropertyValue('app-region'),
+                'no-drag');
+  assert_equals(getComputedStyle(child).getPropertyValue('window-drag'),
+                'none');
+}, 'Child app-region: no-drag overrides inherited window-drag: move');
+
+</script>

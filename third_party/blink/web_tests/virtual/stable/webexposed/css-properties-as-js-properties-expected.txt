@@ -738,6 +738,7 @@ whiteSpaceCollapse
 widows
 width
 willChange
+windowDrag
 wordBreak
 wordSpacing
 wordWrap

@@ -6885,17 +6885,30 @@
     {
       name: "app-region",
       property_methods: ["CSSValueFromComputedStyleInternal"],
-      field_group: "*",
-      field_template: "keyword",
-      keywords: ["none", "drag", "no-drag"],
-      default_value: "none",
-      name_for_methods: "DraggableRegionMode",
-      style_builder_custom_functions: ["initial", "inherit", "value"],
-      invalidate: ["layout"],
+      surrogate_for: "window-drag",
     },
     {
       name: "-webkit-app-region",
       alias_for: "app-region",
+    },
+    {
+      name: "window-drag",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "keyword",
+      type_name: "EDraggableRegionMode",
+      default_value: "none",
+      inherited: true,
+      // `window-drag` only exposes `none` and `move`; the parser rejects the
+      // extra `no-drag` keyword (see css_parser_fast_paths.cc). It is listed
+      // here solely so the auto-generated enum includes a `kNoDrag` state for
+      // the `app-region` surrogate. `app-region: drag` maps to the shared
+      // `kMove` state.
+      keywords: ["none", "move", "no-drag"],
+      name_for_methods: "DraggableRegionMode",
+      style_builder_custom_functions: ["value"],
+      invalidate: ["layout"],
+      runtime_flag: "CSSWindowDrag",
     },
     {
       name: "-webkit-border-horizontal-spacing",

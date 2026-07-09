@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<div id="target"></div>
+<script>
+const target= document.getElementById('target');
+
+// Set a property via inline style and return the specified value.
+function parseValue(property, value) {
+  target.style.removeProperty(property);
+  target.style.setProperty(property, value);
+  return target.style.getPropertyValue(property);
+}
+
+// Set a property via inline style and return the computed value
+// of a (possibly different) property.
+function computedAfterSet(setProperty, setValue, getProperty) {
+  target.style.removeProperty('app-region');
+  target.style.removeProperty('-webkit-app-region');
+  target.style.removeProperty('window-drag');
+  target.style.setProperty(setProperty, setValue);
+  return getComputedStyle(target).getPropertyValue(getProperty);
+}
+
+// --- Verify all three are recognized CSS properties ---
+
+test(() => {
+  assert_true(CSS.supports('app-region', 'drag'));
+  assert_true(CSS.supports('-webkit-app-region', 'drag'));
+  assert_true(CSS.supports('window-drag', 'move'));
+}, 'All three properties are recognized via CSS.supports()');
+
+test(() => {
+  assert_false(CSS.supports('app-region', 'move'));
+  assert_false(CSS.supports('window-drag', 'drag'));
+  assert_false(CSS.supports('window-drag', 'no-drag'));
+}, 'CSS.supports() rejects cross-property keywords');
+
+// --- Parsing tests for app-region (surrogate) ---
+
+test(() => {
+  assert_equals(parseValue('app-region', 'drag'), 'drag');
+  assert_equals(parseValue('app-region', 'no-drag'), 'no-drag');
+  assert_equals(parseValue('app-region', 'none'), 'none');
+}, 'app-region accepts valid keywords: none, drag, no-drag');
+
+test(() => {
+  assert_equals(parseValue('app-region', 'move'), '');
+  assert_equals(parseValue('app-region', 'invalid'), '');
+}, 'app-region rejects invalid keywords');
+
+// --- Parsing tests for -webkit-app-region (alias) ---
+
+test(() => {
+  assert_equals(parseValue('-webkit-app-region', 'drag'), 'drag');
+  assert_equals(parseValue('-webkit-app-region', 'no-drag'), 'no-drag');
+  assert_equals(parseValue('-webkit-app-region', 'none'), 'none');
+}, '-webkit-app-region accepts valid keywords as alias for app-region');
+
+test(() => {
+  assert_equals(parseValue('-webkit-app-region', 'move'), '');
+  assert_equals(parseValue('-webkit-app-region', 'invalid'), '');
+}, '-webkit-app-region rejects invalid keywords');
+
+// --- Parsing tests for window-drag ---
+
+test(() => {
+  assert_equals(parseValue('window-drag', 'move'), 'move');
+  assert_equals(parseValue('window-drag', 'none'), 'none');
+}, 'window-drag accepts valid keywords: none, move');
+
+test(() => {
+  assert_equals(parseValue('window-drag', 'drag'), '');
+  assert_equals(parseValue('window-drag', 'no-drag'), '');
+  assert_equals(parseValue('window-drag', 'invalid'), '');
+}, 'window-drag rejects invalid keywords (including app-region keywords)');
+
+// --- Computed style tests: app-region → window-drag mapping ---
+
+test(() => {
+  assert_equals(computedAfterSet('app-region', 'drag', 'window-drag'), 'move');
+}, 'Setting app-region: drag results in computed window-drag: move');
+
+test(() => {
+  assert_equals(computedAfterSet('app-region', 'no-drag', 'window-drag'), 'none');
+}, 'Setting app-region: no-drag results in computed window-drag: none');
+
+test(() => {
+  assert_equals(computedAfterSet('app-region', 'none', 'window-drag'), 'none');
+}, 'Setting app-region: none results in computed window-drag: none');
+
+// --- Computed style tests: window-drag → app-region mapping ---
+
+test(() => {
+  assert_equals(computedAfterSet('window-drag', 'move', 'app-region'), 'drag');
+}, 'Setting window-drag: move results in computed app-region: drag');
+
+test(() => {
+  // window-drag: none maps to kNoDrag in the style system, so app-region
+  // reports 'no-drag' (not 'none', which is the initial unset state).
+  assert_equals(computedAfterSet('window-drag', 'none', 'app-region'), 'no-drag');
+}, 'Setting window-drag: none results in computed app-region: no-drag');
+
+// --- Computed style tests: -webkit-app-region → both ---
+
+test(() => {
+  assert_equals(computedAfterSet('-webkit-app-region', 'drag', 'app-region'), 'drag');
+  assert_equals(computedAfterSet('-webkit-app-region', 'drag', 'window-drag'), 'move');
+}, '-webkit-app-region: drag maps to app-region: drag and window-drag: move');
+
+test(() => {
+  assert_equals(computedAfterSet('-webkit-app-region', 'no-drag', 'app-region'), 'no-drag');
+  assert_equals(computedAfterSet('-webkit-app-region', 'no-drag', 'window-drag'), 'none');
+}, '-webkit-app-region: no-drag maps to app-region: no-drag and window-drag: none');
+
+
+</script>

@@ -225,6 +225,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAppearance:
       return a.Appearance() == b.Appearance();
     case CSSPropertyID::kAppRegion:
+    case CSSPropertyID::kWindowDrag:
       return a.DraggableRegionMode() == b.DraggableRegionMode();
     case CSSPropertyID::kBackfaceVisibility:
       return a.BackfaceVisibility() == b.BackfaceVisibility();
