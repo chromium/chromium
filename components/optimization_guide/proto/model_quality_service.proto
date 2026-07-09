@@ -11,12 +11,13 @@ import "components/optimization_guide/proto/features/amount_extraction.proto";
 import "components/optimization_guide/proto/features/annotation_reducer_live_tab_resolver.proto";
 import "components/optimization_guide/proto/features/annotation_reducer_one_p_resolver.proto";
 import "components/optimization_guide/proto/features/annotation_reducer_query_classifier.proto";
-import "components/optimization_guide/proto/features/atmem_query_analyzer.proto";
 import "components/optimization_guide/proto/features/at_memory.proto";
+import "components/optimization_guide/proto/features/atmem_query_analyzer.proto";
 import "components/optimization_guide/proto/features/bling_prototyping.proto";
 import "components/optimization_guide/proto/features/classify_api.proto";
 import "components/optimization_guide/proto/features/compose.proto";
 import "components/optimization_guide/proto/features/content_annotation.proto";
+import "components/optimization_guide/proto/features/context_hub.proto";
 import "components/optimization_guide/proto/features/contextual_cueing.proto";
 import "components/optimization_guide/proto/features/contextual_tasks_context.proto";
 import "components/optimization_guide/proto/features/default.proto";
@@ -34,6 +35,8 @@ import "components/optimization_guide/proto/features/password_change_submission.
 import "components/optimization_guide/proto/features/product_specifications.proto";
 import "components/optimization_guide/proto/features/prompt_api.proto";
 import "components/optimization_guide/proto/features/proofreader_api.proto";
+import "components/optimization_guide/proto/features/read_aloud_generate_text.proto";
+import "components/optimization_guide/proto/features/read_aloud_synthesize.proto";
 import "components/optimization_guide/proto/features/scam_detection.proto";
 import "components/optimization_guide/proto/features/skills.proto";
 import "components/optimization_guide/proto/features/summarize.proto";
@@ -138,6 +141,12 @@ message LogAiDataRequest {
     AtmemQueryAnalyzerLoggingData atmem_query_analyzer = 43;
 
     AtMemoryLoggingData at_memory = 44;
+
+    ReadAloudGenerateTextLoggingData read_aloud_generate_text = 45;
+
+    ReadAloudSynthesizeLoggingData read_aloud_synthesize = 46;
+
+    ContextHubLoggingData context_hub = 47;
 
     DefaultLoggingData default = 1000;
   }
