@@ -288,7 +288,11 @@ export enum UserAction {
   EXIT_INK2_TEXT_ANNOTATION_MODE_FIRST = 103,
   EXIT_INK2_TEXT_ANNOTATION_MODE = 104,
 
-  NUMBER_OF_ACTIONS = 105,
+  // Recorded when the user adds a new, non-empty text annotation.
+  ADD_INK2_TEXT_ANNOTATION_FIRST = 105,
+  ADD_INK2_TEXT_ANNOTATION = 106,
+
+  NUMBER_OF_ACTIONS = 107,
 }
 
 function createFirstMap(): Map<UserAction, UserAction> {

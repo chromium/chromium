@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TextBoxState, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {TextBoxState, TextTypeface, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {TextAnnotation} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {dragHandle, getTestAnnotation, initializeBox, reactivateBox, setupTextBoxTest, verifyFinishTextAnnotationMessage} from './ink2_text_box_test_utils.js';
-import {assertDeepEquals} from './test_util.js';
+import {assertDeepEquals, setupMockMetricsPrivate} from './test_util.js';
 
 chrome.test.runTests([
   async function testCommit() {
+    const mockMetricsPrivate = setupMockMetricsPrivate();
     const {manager, mockPlugin, textbox, viewport} = await setupTextBoxTest();
     // Initialize a new 100x100 box at 50, 60 (Box A).
     initializeBox(100, 100, 50, 60);
@@ -60,6 +61,7 @@ chrome.test.runTests([
     textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
     await microtasksFinished();
     await startNewAnnotationAndVerifyMessage(expectedAnnotation, true);
+    mockMetricsPrivate.assertCount(UserAction.ADD_INK2_TEXT_ANNOTATION, 1);
 
     // --- (1) Re-activate and edit the text of the existing annotation ---
     reactivateBox(textbox, viewport, expectedAnnotation);
@@ -77,6 +79,7 @@ chrome.test.runTests([
     // Commit it by starting a new annotation and verify.
     await startNewAnnotationAndVerifyMessage(
         expectedAnnotationEditedText, true);
+    mockMetricsPrivate.assertCount(UserAction.ADD_INK2_TEXT_ANNOTATION, 1);
 
     // --- (2) Re-activate and apply Move/Resize Edit ---
     reactivateBox(textbox, viewport, expectedAnnotationEditedText);
@@ -130,6 +133,7 @@ chrome.test.runTests([
   },
 
   async function testCloseAndEvents() {
+    const mockMetricsPrivate = setupMockMetricsPrivate();
     const {mockPlugin, textbox, viewport} = await setupTextBoxTest();
     viewport.setZoom(2.0);
     await microtasksFinished();
@@ -154,6 +158,8 @@ chrome.test.runTests([
     chrome.test.assertEq(
         undefined, mockPlugin.findMessage('finishTextAnnotation'));
     assertDeepEquals([TextBoxState.NEW, TextBoxState.INACTIVE], textBoxStates);
+    // No edits also does not count as an add event in the metrics.
+    mockMetricsPrivate.assertCount(UserAction.ADD_INK2_TEXT_ANNOTATION, 0);
 
     // When text is edited, commitTextAnnotation() will trigger a plugin
     // message.
@@ -180,6 +186,7 @@ chrome.test.runTests([
         [TextBoxState.NEW, TextBoxState.EDITED, TextBoxState.INACTIVE],
         textBoxStates);
     verifyFinishTextAnnotationMessage(mockPlugin, expectedAnnotation, true);
+    mockMetricsPrivate.assertCount(UserAction.ADD_INK2_TEXT_ANNOTATION, 1);
     mockPlugin.clearMessages();
 
     // When existing text is not edited, commitTextAnnotation() will trigger a
@@ -197,6 +204,9 @@ chrome.test.runTests([
     // The annotation has not changed.
     assertDeepEquals([TextBoxState.NEW, TextBoxState.INACTIVE], textBoxStates);
     verifyFinishTextAnnotationMessage(mockPlugin, expectedAnnotation, false);
+    // No edits also does not count as an add event in the metrics. So the count
+    // stays at 1 here.
+    mockMetricsPrivate.assertCount(UserAction.ADD_INK2_TEXT_ANNOTATION, 1);
     mockPlugin.clearMessages();
 
     chrome.test.succeed();
