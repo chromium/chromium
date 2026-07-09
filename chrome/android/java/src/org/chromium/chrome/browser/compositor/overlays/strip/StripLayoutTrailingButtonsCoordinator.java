@@ -1077,6 +1077,8 @@ public class StripLayoutTrailingButtonsCoordinator {
                         ? mContext.getResources()
                                 .getFloat(R.dimen.tab_strip_glic_button_icon_unfocused_alpha)
                         : 1.0f;
+        mGlicButton.setClickableOpacityThreshold(targetOpacity);
+        mGlicActorButton.setClickableOpacityThreshold(targetOpacity);
         boolean targetActorVisible = shouldGlicActorBeVisible();
 
         if (animate) {
@@ -1287,7 +1289,9 @@ public class StripLayoutTrailingButtonsCoordinator {
                                 .getFloat(R.dimen.tab_strip_glic_button_icon_unfocused_alpha)
                         : 1.0f;
         mGlicButton.setOpacity(targetOpacity);
+        mGlicButton.setClickableOpacityThreshold(targetOpacity);
         mGlicActorButton.setOpacity(targetOpacity);
+        mGlicActorButton.setClickableOpacityThreshold(targetOpacity);
     }
 
     /** Returns the total width used by the trailing buttons including padding. */

@@ -517,6 +517,11 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 1.0f,
                 mGlicButton.getOpacity(),
                 MathUtils.EPSILON);
+        assertEquals(
+                "Glic button clickable threshold should be 1.0 when focused.",
+                1.0f,
+                mGlicButton.getClickableOpacityThreshold(),
+                MathUtils.EPSILON);
 
         // Unfocused state
         mCoordinator.updateGlicButtonOpacity(
@@ -525,6 +530,11 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 "Glic button opacity should be 0.65 when unfocused in desktop windowing mode.",
                 0.65f,
                 mGlicButton.getOpacity(),
+                MathUtils.EPSILON);
+        assertEquals(
+                "Glic button clickable threshold should be 0.65 when unfocused.",
+                0.65f,
+                mGlicButton.getClickableOpacityThreshold(),
                 MathUtils.EPSILON);
     }
 

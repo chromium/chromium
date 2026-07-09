@@ -77,6 +77,7 @@ public class CompositorButton extends StripLayoutView {
     private final float mClickSlop;
 
     private float mOpacity;
+    private float mClickableOpacityThreshold = 1.0f;
     private boolean mIsPressed;
     private boolean mIsPressedFromMouse;
     private boolean mIsHovered;
@@ -174,8 +175,22 @@ public class CompositorButton extends StripLayoutView {
 
     @Override
     public boolean checkClickedOrHovered(float x, float y) {
-        if (mOpacity < 1.f) return false;
+        if (mOpacity < mClickableOpacityThreshold) return false;
         return super.checkClickedOrHovered(x, y);
+    }
+
+    /**
+     * @param threshold The minimum opacity required for the button to accept clicks/hovers.
+     */
+    public void setClickableOpacityThreshold(float threshold) {
+        mClickableOpacityThreshold = threshold;
+    }
+
+    /**
+     * @return The minimum opacity required for the button to accept clicks/hovers.
+     */
+    public float getClickableOpacityThreshold() {
+        return mClickableOpacityThreshold;
     }
 
     /**
