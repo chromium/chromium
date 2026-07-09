@@ -864,6 +864,23 @@ void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
          web_contents_changed ? "ChangedThreads" : "StayedOnThread"}));
   }
 
+  if (!is_panel_currently_open && tab && tab->GetContents()) {
+    // If this tab was opened from a contextual tasks page (e.g. clicking a link
+    // on a full tab AIM page), we should not log OpenFullTab.
+    tabs::TabInterface* opener = tab_list.GetOpenerForTab(tab->GetHandle());
+    bool opened_from_contextual_tasks =
+        opener && opener->GetContents() &&
+        ContextualTasksUiService::IsContextualTasksUrl(
+            opener->GetContents()->GetLastCommittedURL());
+
+    if (!opened_from_contextual_tasks &&
+        ContextualTasksUiService::IsContextualTasksUrl(
+            tab->GetContents()->GetLastCommittedURL())) {
+      base::RecordAction(base::UserMetricsAction(
+          "ContextualTasks.TabChange.UserAction.OpenFullTab"));
+    }
+  }
+
   ObserveWebContentsOnActiveTab();
 
   NotifyActiveTaskContextProvider();

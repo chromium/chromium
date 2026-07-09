@@ -1766,6 +1766,7 @@ TEST_F(ContextualTasksUiServiceTest,
 }
 
 TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
+  base::UserActionTester user_action_tester;
   ContextualTasksUiService service(
       profile_.get(), /*delegate=*/nullptr, contextual_tasks_service_.get(),
       /*identity_manager=*/nullptr, aim_eligibility_service_.get(),
@@ -1798,6 +1799,9 @@ TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
 
   service.OnNavigationToAiPageIntercepted(intercepted_url,
                                           weak_factory.GetWeakPtr(), false);
+
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("ContextualTasks.AimFullTab.Shown"), 1);
 
   GURL expected_initial_url(
       "https://google.com/search?udm=50&q=test+query&sourceid=chrome&ccb=1");
