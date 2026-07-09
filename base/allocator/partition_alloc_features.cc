@@ -139,7 +139,9 @@ constinit const FeatureParam<std::string>
               "enable-quarantine":true,
               "enable-zapping":true,
               "leak-on-destruction":false
-            },
+            }
+          },
+          "*":{
             "amsc":{
               "branch-capacity-in-bytes":524288,
               "enable-quarantine":true,
@@ -149,7 +151,6 @@ constinit const FeatureParam<std::string>
             }
           }
         })"};
-
 
 BASE_FEATURE(kPartitionAllocEventuallyZeroFreedMemory,
              FEATURE_DISABLED_BY_DEFAULT);
