@@ -2439,25 +2439,16 @@ mojom::AutofillDriver* AutofillAgent::unsafe_autofill_driver() {
 }
 
 void AutofillAgent::OnJavaScriptAutofillDetected(
-    FormRendererId form_id,
-    FieldRendererId trigger_field_id,
+    blink::WebFormControlElement trigger_field,
     const std::vector<FieldRendererId>& field_ids) {
-  if (field_ids.empty()) {
-    return;
-  }
-  blink::WebFormControlElement element =
-      form_util::GetFormControlByRendererId(field_ids.front());
-  if (!element) {
-    return;
-  }
   if (std::optional<FormAndField> form_and_field =
           form_util::FindFormAndFieldForFormControlElement(
-              element, field_data_manager(),
+              trigger_field, field_data_manager(),
               GetCallTimerState(kOnJavaScriptAutofillDetected),
               button_titles_cache(), /*form_cache=*/{})) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->DidDetectJavaScriptAutofill(form, trigger_field_id,
+      autofill_driver->DidDetectJavaScriptAutofill(form, field->renderer_id(),
                                                    field_ids);
     }
   }

@@ -474,8 +474,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Called when a custom JavaScript autofill is detected by
   // `JavaScriptAutofillTracker`.
   void OnJavaScriptAutofillDetected(
-      FormRendererId form_id,
-      FieldRendererId trigger_field_id,
+      blink::WebFormControlElement trigger_field,
       const std::vector<FieldRendererId>& field_ids);
 
   // Stores immutable configuration this agent was created with. It contains
