@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
@@ -20,6 +22,24 @@
 #endif
 
 namespace smart_restart {
+
+namespace {
+
+#if BUILDFLAG(IS_MAC)
+bool IsZeroWindowRestartAllowedByPolicy() {
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
+  if (local_state &&
+      local_state->IsManagedPreference(prefs::kUpdateOnZeroWindowEnabled)) {
+    return local_state->GetBoolean(prefs::kUpdateOnZeroWindowEnabled);
+  }
+
+  // If the policy is unset, default to true (allow relaunch).
+  return true;
+}
+#endif
+
+}  // namespace
 
 // static
 ExecutionOutcome SmartRestartPolicy::ShouldRestart(
@@ -90,9 +110,8 @@ ExtendedExecutionOutcome SmartRestartPolicy::CanLockScreenRestartProceed(
 #if BUILDFLAG(IS_MAC)
 // static
 bool SmartRestartPolicy::CanZeroWindowRestartProceed() {
-  // Exclude managed enterprise environments to respect administrative update
-  // controls.
-  if (policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
+  // Respect administrative update controls via enterprise policy.
+  if (!IsZeroWindowRestartAllowedByPolicy()) {
     return false;
   }
 

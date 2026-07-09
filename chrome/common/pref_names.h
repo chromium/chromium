@@ -1584,6 +1584,12 @@ static_assert(std::string_view(kWasRestarted) ==
 inline constexpr char kPreSmartRestartSessionState[] =
     "session.pre_smart_restart_session_state";
 
+#if BUILDFLAG(IS_MAC)
+// Boolean preference controlling zero window relaunch per enterprise policy.
+inline constexpr char kUpdateOnZeroWindowEnabled[] =
+    "policy.update_on_zero_window_enabled";
+#endif  //  BUILDFLAG(IS_MAC)
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Whether Extensions are enabled.

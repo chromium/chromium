@@ -13,6 +13,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/restartability_monitor.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,6 +34,7 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "content/public/test/browser_test.h"
@@ -171,14 +173,15 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
-                       BlocksRestartOnZeroWindowWhenManaged) {
+                       AllowsRestartOnZeroWindowWhenManagedByDefault) {
   base::HistogramTester histogram_tester;
+  // 1. Setup: Pending update.
+  fake_upgrade_detector_.SetUpgradeAvailable();
+
+  // Mark device as managed.
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForPlatform(),
       policy::EnterpriseManagementAuthority::CLOUD);
-
-  // 1. Setup: Pending update.
-  fake_upgrade_detector_.SetUpgradeAvailable();
 
   // 2. Action: Close all windows.
   PrefService* local_state = g_browser_process->local_state();
@@ -186,22 +189,25 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
 
   CloseBrowserSynchronously(browser());
 
-  // 3. Verification: Manager should not start zero-window timer or set prefs
-  // when managed. Wait brief duration to ensure no timer fires or background
-  // restart is triggered.
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::Seconds(2));
-  run_loop.Run();
+  // 3. Verification: Zero-window timer should fire and trigger restart because
+  // it is allowed by default even when managed.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return local_state->GetBoolean(prefs::kRestartInBackgroundOnShutdown);
+  }));
 
-  EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartInBackgroundOnShutdown));
-  EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartLastSessionOnShutdown));
+  EXPECT_TRUE(local_state->GetBoolean(prefs::kRestartLastSessionOnShutdown));
+
+  histogram_tester.ExpectUniqueSample(
+      "Session.SmartRestart.ZeroWindow.ExecutionOutcome",
+      ExecutionOutcome::kExecuted, 1);
 
   histogram_tester.ExpectTotalCount(
-      "Session.SmartRestart.ZeroWindow.ExecutionOutcome", 0);
+      "Session.SmartRestart.ZeroWindow.TimeSinceUpgradeDetected", 1);
 
   // Cleanup to prevent actual restart during teardown.
   browser_shutdown::SetTryingToQuit(false);
+  local_state->SetBoolean(prefs::kRestartLastSessionOnShutdown, false);
+  local_state->SetBoolean(prefs::kRestartInBackgroundOnShutdown, false);
 }
 
 IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
@@ -310,6 +316,109 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
   browser_shutdown::SetTryingToQuit(false);
   local_state->SetBoolean(prefs::kRestartLastSessionOnShutdown, false);
   local_state->SetBoolean(prefs::kRestartInBackgroundOnShutdown, false);
+}
+
+class SmartRestartManagerPolicyBrowserTest : public policy::PolicyTest {
+ public:
+  SmartRestartManagerPolicyBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSmartRestart, {{"restart_delay", "1s"}}},
+         {features::kSmartRestartLockScreen, {{"lock_restart_delay", "1s"}}}},
+        {});
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    policy::PolicyTest::SetUpOnMainThread();
+
+    // Inject our fake detector into the manager.
+    manager_ = std::make_unique<SmartRestartManager>(&fake_upgrade_detector_);
+  }
+
+  void TearDownOnMainThread() override {
+    manager_.reset();
+    policy::PolicyTest::TearDownOnMainThread();
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  FakeUpgradeDetector fake_upgrade_detector_;
+  std::unique_ptr<SmartRestartManager> manager_;
+};
+
+IN_PROC_BROWSER_TEST_F(SmartRestartManagerPolicyBrowserTest,
+                       BlocksRestartOnZeroWindowByEnterprisePolicyDisabled) {
+  base::HistogramTester histogram_tester;
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kUpdateOnZeroWindowEnabled,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  UpdateProviderPolicy(policies);
+
+  // 1. Setup: Pending update.
+  fake_upgrade_detector_.SetUpgradeAvailable();
+
+  // 2. Action: Close all windows.
+  PrefService* local_state = g_browser_process->local_state();
+  EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartInBackgroundOnShutdown));
+
+  CloseBrowserSynchronously(browser());
+
+  // 3. Verification: Manager should not start zero-window timer or set prefs.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(2));
+  run_loop.Run();
+
+  EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartInBackgroundOnShutdown));
+  EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartLastSessionOnShutdown));
+
+  histogram_tester.ExpectTotalCount(
+      "Session.SmartRestart.ZeroWindow.ExecutionOutcome", 0);
+
+  // Cleanup to prevent actual restart during teardown.
+  browser_shutdown::SetTryingToQuit(false);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartRestartManagerPolicyBrowserTest,
+                       AllowsRestartOnZeroWindowByEnterprisePolicyEnabled) {
+  base::HistogramTester histogram_tester;
+
+  // Explicitly mark device as managed to trigger default block.
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  // Enable policy explicitly.
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kUpdateOnZeroWindowEnabled,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  UpdateProviderPolicy(policies);
+
+  // 1. Setup: Pending update.
+  fake_upgrade_detector_.SetUpgradeAvailable();
+
+  // 2. Action: Close all windows.
+  PrefService* local_state = g_browser_process->local_state();
+  EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartInBackgroundOnShutdown));
+
+  CloseBrowserSynchronously(browser());
+
+  // 3. Verification: Zero-window timer should fire and trigger restart because
+  // policy overrides the managed block.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return local_state->GetBoolean(prefs::kRestartInBackgroundOnShutdown);
+  }));
+
+  EXPECT_TRUE(local_state->GetBoolean(prefs::kRestartLastSessionOnShutdown));
+
+  histogram_tester.ExpectUniqueSample(
+      "Session.SmartRestart.ZeroWindow.ExecutionOutcome",
+      ExecutionOutcome::kExecuted, 1);
+
+  // Cleanup to prevent actual restart during teardown.
+  browser_shutdown::SetTryingToQuit(false);
+  local_state->SetBoolean(prefs::kRestartLastSessionOnShutdown, false);
 }
 #endif  // BUILDFLAG(IS_MAC)
 

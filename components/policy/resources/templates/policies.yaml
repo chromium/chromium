@@ -1469,6 +1469,7 @@ policies:
   1468: ProcessIsolationEnabled
   1469: Indigo
   1470: DeviceOnlinePasswordMismatchBehavior
+  1471: UpdateOnZeroWindowEnabled
 
 atomic_groups:
   1: Homepage

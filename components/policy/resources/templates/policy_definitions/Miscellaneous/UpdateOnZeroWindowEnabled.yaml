@@ -1,0 +1,29 @@
+caption: Controls background automatic relaunch when all browser windows are closed
+default: true
+desc: |-
+  Controls the background automatic restart behavior on macOS when a security update is pending and all browser windows are closed.
+
+  If this policy is set to True or left unset, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is allowed to automatically relaunch to apply pending updates when all browser windows are closed.
+
+  If this policy is set to False, automatic relaunches are disabled when all browser windows are closed.
+example_value: true
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Enable automatic relaunches when all windows are closed
+  value: true
+- caption: Disable automatic relaunches when all windows are closed
+  value: false
+owners:
+- victortan@chromium.org
+- miketaylr@chromium.org
+- file://chrome/browser/lifetime/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome.mac:152-
+tags:
+- system-security
+type: main

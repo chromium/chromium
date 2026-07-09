@@ -2502,6 +2502,7 @@ chromium-metrics-reviews@google.com.
   <int value="1468" label="ProcessIsolationEnabled"/>
   <int value="1469" label="Indigo"/>
   <int value="1470" label="DeviceOnlinePasswordMismatchBehavior"/>
+  <int value="1471" label="UpdateOnZeroWindowEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

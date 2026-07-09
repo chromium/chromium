@@ -1,0 +1,15 @@
+[
+  {
+    "os": [
+      "mac"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "default_value": true,
+      "pref_name": "policy.update_on_zero_window_enabled",
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

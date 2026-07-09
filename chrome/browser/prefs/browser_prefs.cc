@@ -1578,6 +1578,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   // it is explicitly set by an enterprise policy.
   registry->RegisterBooleanPref(prefs::kWebAppsUseAdHocCodeSigningForAppShims,
                                 false);
+  registry->RegisterBooleanPref(prefs::kUpdateOnZeroWindowEnabled, true);
 #endif
 
 #if BUILDFLAG(IS_WIN)

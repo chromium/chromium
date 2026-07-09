@@ -2325,6 +2325,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kCreatePasskeysInICloudKeychain,
     prefs::kCreatePasskeysInICloudKeychain,
     base::Value::Type::BOOLEAN },
+  { key::kUpdateOnZeroWindowEnabled,
+    prefs::kUpdateOnZeroWindowEnabled,
+    base::Value::Type::BOOLEAN },
 #endif
   { key::kAccessControlAllowMethodsInCORSPreflightSpecConformant,
     prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant,
