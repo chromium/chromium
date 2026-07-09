@@ -67,39 +67,36 @@ GURL ConsentKitUrlBuilder::Build() {
   //   4: WebPlatformParams [ [session_index], integration_type ]
   // ]
 
-  base::ListValue flow_params;
-  flow_params.Append(flow_id_);
+  base::ListValue flow_params = base::ListValue().Append(flow_id_);
 
-  base::ListValue product_entry_point;
-  product_entry_point.Append(product_id_);
-  product_entry_point.Append(1);  // DEMO_UI_SURFACE
-  product_entry_point.Append(entrypoint_id_);
+  base::ListValue product_entry_point = base::ListValue::with_capacity(3)
+                                            .Append(product_id_)
+                                            .Append(1)  // DEMO_UI_SURFACE
+                                            .Append(entrypoint_id_);
 
-  base::ListValue shared_consent_session_id;
-  shared_consent_session_id.Append(base::Value());
-  shared_consent_session_id.Append(base::Value());
-  shared_consent_session_id.Append(
-      base::Uuid::GenerateRandomV4().AsLowercaseString());
+  base::ListValue shared_consent_session_id =
+      base::ListValue::with_capacity(3)
+          .Append(base::Value())
+          .Append(base::Value())
+          .Append(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
-  base::ListValue session_info;
-  session_info.Append(std::move(shared_consent_session_id));
+  base::ListValue session_info =
+      base::ListValue().Append(std::move(shared_consent_session_id));
 
-  base::ListValue presentation_params;
-  presentation_params.Append(locale_);
+  base::ListValue presentation_params = base::ListValue().Append(locale_);
 
-  base::ListValue user_info;
-  user_info.Append(session_index_);
+  base::ListValue user_info = base::ListValue().Append(session_index_);
 
-  base::ListValue web_platform_params;
-  web_platform_params.Append(std::move(user_info));
-  web_platform_params.Append(1);  // WEB_SEARCH_EMBEDDED
+  base::ListValue web_platform_params = base::ListValue::with_capacity(2)
+                                            .Append(std::move(user_info))
+                                            .Append(1);  // WEB_SEARCH_EMBEDDED
 
-  base::ListValue config_list;
-  config_list.Append(std::move(flow_params));
-  config_list.Append(std::move(product_entry_point));
-  config_list.Append(std::move(session_info));
-  config_list.Append(std::move(presentation_params));
-  config_list.Append(std::move(web_platform_params));
+  base::ListValue config_list = base::ListValue::with_capacity(5)
+                                    .Append(std::move(flow_params))
+                                    .Append(std::move(product_entry_point))
+                                    .Append(std::move(session_info))
+                                    .Append(std::move(presentation_params))
+                                    .Append(std::move(web_platform_params));
 
   std::string json_config;
   if (!base::JSONWriter::Write(config_list, &json_config)) {
