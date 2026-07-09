@@ -10,6 +10,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Sources from 'devtools/panels/sources/sources.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(`Tests that scripts panel UI elements work as intended.\n`);
@@ -21,7 +22,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
   }
 
   function createNavigatorView() {
-    var navigatorView = new Sources.SourcesNavigator.NetworkNavigatorView();
+    var navigatorView = new Sources.SourcesNavigator.NetworkNavigatorView(Main.MainImpl.MainImpl.universeForTest.networkProjectManager);
     navigatorView.show(UI.InspectorView.InspectorView.instance().element);
     return navigatorView;
   }

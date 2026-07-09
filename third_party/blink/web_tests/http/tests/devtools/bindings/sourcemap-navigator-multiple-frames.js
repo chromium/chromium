@@ -8,6 +8,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 
 import * as Sources from 'devtools/panels/sources/sources.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 const GC = async () => {
   await TestRunner.evaluateInPageAsync(`new Promise(resolve =>
@@ -17,7 +18,7 @@ const GC = async () => {
 (async function () {
   TestRunner.addResult(`Verify that SourceMap sources are correctly displayed in navigator.\n`);
 
-  var sourcesNavigator = new Sources.SourcesNavigator.NetworkNavigatorView();
+  var sourcesNavigator = new Sources.SourcesNavigator.NetworkNavigatorView(Main.MainImpl.MainImpl.universeForTest.networkProjectManager);
   sourcesNavigator.show(UI.InspectorView.InspectorView.instance().element);
 
   TestRunner.markStep('initialWorkspace');

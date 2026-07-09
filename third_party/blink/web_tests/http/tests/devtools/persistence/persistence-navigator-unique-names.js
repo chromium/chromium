@@ -8,11 +8,12 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 
 import * as Sources from 'devtools/panels/sources/sources.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(`Verify that navigator view removes mapped UISourceCodes.\n`);
 
-  var filesNavigator = new Sources.SourcesNavigator.FilesNavigatorView();
+  var filesNavigator = new Sources.SourcesNavigator.FilesNavigatorView(Main.MainImpl.MainImpl.universeForTest.networkProjectManager);
   filesNavigator.show(UI.InspectorView.InspectorView.instance().element);
   var fs1 = new BindingsTestRunner.TestFileSystem('/home/workspace/good/foo/bar');
   fs1.addFile('1.js', '');

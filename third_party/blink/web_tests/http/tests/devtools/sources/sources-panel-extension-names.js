@@ -7,12 +7,13 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Sources from 'devtools/panels/sources/sources.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(`The test verifies that extension names are resolved properly in navigator view.\n`);
   await TestRunner.showPanel('sources');
 
-  var contentScriptsNavigatorView = new Sources.SourcesNavigator.ContentScriptsNavigatorView();
+  var contentScriptsNavigatorView = new Sources.SourcesNavigator.ContentScriptsNavigatorView(Main.MainImpl.MainImpl.universeForTest.networkProjectManager);
   contentScriptsNavigatorView.show(UI.InspectorView.InspectorView.instance().element);
 
   var mockExecutionContext =

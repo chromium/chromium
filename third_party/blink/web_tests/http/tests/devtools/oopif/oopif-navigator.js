@@ -7,12 +7,13 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Sources from 'devtools/panels/sources/sources.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(`Verify navigator rendering with OOPIFs`);
   await TestRunner.showPanel('sources');
 
-  var sourcesNavigatorView = new Sources.SourcesNavigator.NetworkNavigatorView();
+  var sourcesNavigatorView = new Sources.SourcesNavigator.NetworkNavigatorView(Main.MainImpl.MainImpl.universeForTest.networkProjectManager);
   sourcesNavigatorView.show(UI.InspectorView.InspectorView.instance().element);
 
   await TestRunner.navigatePromise('resources/page.html');

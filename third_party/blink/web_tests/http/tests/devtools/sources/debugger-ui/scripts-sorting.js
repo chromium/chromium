@@ -8,6 +8,7 @@ import {SDKTestRunner} from 'sdk_test_runner';
 
 import * as Sources from 'devtools/panels/sources/sources.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   'use strict';
@@ -15,7 +16,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   await TestRunner.showPanel('sources');
 
   function createNavigatorView(constructor) {
-    var navigatorView = new constructor();
+    var navigatorView = new constructor(Main.MainImpl.MainImpl.universeForTest.networkProjectManager);
     navigatorView.show(UI.InspectorView.InspectorView.instance().element);
     return navigatorView;
   }

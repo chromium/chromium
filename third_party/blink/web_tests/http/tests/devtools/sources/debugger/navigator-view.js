@@ -11,6 +11,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Sources from 'devtools/panels/sources/sources.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(`Tests scripts panel file selectors.\n`);
@@ -23,9 +24,9 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
 
   var subframe = TestRunner.mainFrame().childFrames[0];
 
-  var sourcesNavigatorView = new Sources.SourcesNavigator.NetworkNavigatorView();
+  var sourcesNavigatorView = new Sources.SourcesNavigator.NetworkNavigatorView(Main.MainImpl.MainImpl.universeForTest.networkProjectManager);
   sourcesNavigatorView.show(UI.InspectorView.InspectorView.instance().element);
-  var contentScriptsNavigatorView = new Sources.SourcesNavigator.ContentScriptsNavigatorView();
+  var contentScriptsNavigatorView = new Sources.SourcesNavigator.ContentScriptsNavigatorView(Main.MainImpl.MainImpl.universeForTest.networkProjectManager);
   contentScriptsNavigatorView.show(UI.InspectorView.InspectorView.instance().element);
 
   var uiSourceCodes = [];

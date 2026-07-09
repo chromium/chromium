@@ -8,11 +8,12 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 
 import * as Sources from 'devtools/panels/sources/sources.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function () {
   TestRunner.addResult(`Verify that SourceMap bindings are generating UISourceCodes properly.\n`);
 
-  var contentScriptsNavigator = new Sources.SourcesNavigator.ContentScriptsNavigatorView();
+  var contentScriptsNavigator = new Sources.SourcesNavigator.ContentScriptsNavigatorView(Main.MainImpl.MainImpl.universeForTest.networkProjectManager);
   contentScriptsNavigator.show(UI.InspectorView.InspectorView.instance().element);
 
   TestRunner.markStep('initialWorkspace');

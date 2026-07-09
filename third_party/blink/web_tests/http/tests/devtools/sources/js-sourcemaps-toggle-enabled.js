@@ -14,7 +14,7 @@ import * as Main from 'devtools/entrypoints/main/main.js';
   TestRunner.addResult(`Verify that JavaScript sourcemap enabling and disabling adds/removes sourcemap sources.\n`);
   await TestRunner.showPanel('sources');
 
-  var sourcesNavigator = new Sources.SourcesNavigator.NetworkNavigatorView();
+  var sourcesNavigator = new Sources.SourcesNavigator.NetworkNavigatorView(Main.MainImpl.MainImpl.universeForTest.networkProjectManager);
   sourcesNavigator.show(UI.InspectorView.InspectorView.instance().element);
 
   Main.MainImpl.MainImpl.universeForTest.settings.moduleSetting('js-source-maps-enabled').set(true);

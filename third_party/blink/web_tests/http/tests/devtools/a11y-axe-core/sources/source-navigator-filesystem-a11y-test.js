@@ -9,6 +9,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Sources from 'devtools/panels/sources/sources.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult('Tests accessibility in the Sources panel Navigator pane FileSystem tab using axe-core.');
@@ -37,7 +38,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
 
   async function testA11yForView(ruleSet) {
     await UI.ViewManager.ViewManager.instance().showView('navigator-files');
-    const sourcesNavigatorView = new Sources.SourcesNavigator.FilesNavigatorView();
+    const sourcesNavigatorView = new Sources.SourcesNavigator.FilesNavigatorView(Main.MainImpl.MainImpl.universeForTest.networkProjectManager);
 
     sourcesNavigatorView.show(UI.InspectorView.InspectorView.instance().element);
     SourcesTestRunner.dumpNavigatorView(sourcesNavigatorView);
