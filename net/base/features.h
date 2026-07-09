@@ -739,9 +739,6 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
 // The percentage of noise to add/subtract from the probability.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
                                       kTcpSocketPoolLimitRandomizationNoise);
-// Whether or not the randomization is enabled for proxy socket pools. This has
-// no impact if `kTcpSocketPoolLimitRandomization` is disabled.
-NET_EXPORT BASE_DECLARE_FEATURE(kTcpSocketPoolLimitRandomizationForProxy);
 
 // When enabled, Net Task Scheduler is enabled on the network thread.
 NET_EXPORT BASE_DECLARE_FEATURE(kNetTaskScheduler);

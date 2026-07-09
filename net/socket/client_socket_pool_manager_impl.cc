@@ -79,9 +79,7 @@ ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
     sockets_per_proxy_chain = max_sockets_per_proxy_chain(pool_type_);
     sockets_per_group =
         std::min(sockets_per_proxy_chain, max_sockets_per_group(pool_type_));
-    if (base::FeatureList::IsEnabled(
-            features::kTcpSocketPoolLimitRandomizationForProxy) &&
-        allow_size_randomization_for_proxy()) {
+    if (allow_size_randomization_for_proxy()) {
       additional_capacity = SocketPoolAdditionalCapacity::Create(
           max_sockets_per_proxy_chain(pool_type_));
     }
