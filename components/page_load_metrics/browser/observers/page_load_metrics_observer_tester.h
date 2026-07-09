@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/byte_count.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -155,10 +154,6 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
                              const GURL& first_party_url,
                              bool blocked_by_policy,
                              StorageType storage_type);
-
-  // Simulate a V8 per-frame memory update.
-  void SimulateMemoryUpdate(content::RenderFrameHost* render_frame_host,
-                            base::ByteCount delta_bytes);
 
   MetricsWebContentsObserver* metrics_web_contents_observer() {
     return metrics_web_contents_observer_;

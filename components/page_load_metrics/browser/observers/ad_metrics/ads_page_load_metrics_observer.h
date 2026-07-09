@@ -9,7 +9,7 @@
 #include <map>
 #include <memory>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -78,12 +78,12 @@ class AdsPageLoadMetricsObserver
     // Gets a random amount of noise to add to a threshold. The generated noise
     // is uniform random over the range 0 to kMaxThresholdNoiseBytes. Virtual
     // for testing.
-    virtual base::ByteCount GetNetworkThresholdNoiseForFrame() const;
+    virtual base::ByteSize GetNetworkThresholdNoiseForFrame() const;
 
     // Maximum amount of additive noise to add to the network threshold to
     // obscure cross origin resource sizes: 1303 KB.
-    static constexpr base::ByteCount kMaxNetworkThresholdNoiseBytes =
-        base::KiB(1303);
+    static constexpr base::ByteSize kMaxNetworkThresholdNoiseBytes =
+        base::KiBU(1303);
 
    private:
     // Whether to use noise.
@@ -250,7 +250,7 @@ class AdsPageLoadMetricsObserver
 
   // Gets the number of bytes that we may have not attributed to ad
   // resources due to the resource being reported as an ad late.
-  base::ByteCount GetUnaccountedAdBytes(
+  base::ByteSize GetUnaccountedAdBytes(
       int process_id,
       const mojom::ResourceDataUpdatePtr& resource) const;
 

@@ -42,30 +42,29 @@ ResourceMimeType ResourceLoadAggregator::GetResourceMimeType(
 
 void ResourceLoadAggregator::ProcessResourceLoad(
     const mojom::ResourceDataUpdatePtr& resource) {
-  bytes_ += resource->delta_bytes.AsDeprecatedByteCount();
-  network_bytes_ += resource->delta_bytes.AsDeprecatedByteCount();
+  bytes_ += resource->delta_bytes;
+  network_bytes_ += resource->delta_bytes;
 
   // Report cached resource body bytes to overall frame bytes.
   if (resource->is_complete &&
       resource->cache_type != mojom::CacheType::kNotCached) {
-    bytes_ += resource->encoded_body_length.AsDeprecatedByteCount();
+    bytes_ += resource->encoded_body_length;
   }
 
   if (resource->reported_as_ad_resource) {
-    ad_network_bytes_ += resource->delta_bytes.AsDeprecatedByteCount();
-    ad_bytes_ += resource->delta_bytes.AsDeprecatedByteCount();
+    ad_network_bytes_ += resource->delta_bytes;
+    ad_bytes_ += resource->delta_bytes;
     // Report cached resource body bytes to overall frame bytes.
     if (resource->is_complete &&
         resource->cache_type != mojom::CacheType::kNotCached)
-      ad_bytes_ += resource->encoded_body_length.AsDeprecatedByteCount();
+      ad_bytes_ += resource->encoded_body_length;
 
     ResourceMimeType mime_type = GetResourceMimeType(resource);
-    ad_bytes_by_mime_[static_cast<size_t>(mime_type)] +=
-        resource->delta_bytes.AsDeprecatedByteCount();
+    ad_bytes_by_mime_[static_cast<size_t>(mime_type)] += resource->delta_bytes;
   }
 }
 
-void ResourceLoadAggregator::AdjustAdBytes(base::ByteCount unaccounted_ad_bytes,
+void ResourceLoadAggregator::AdjustAdBytes(base::ByteSize unaccounted_ad_bytes,
                                            ResourceMimeType mime_type) {
   ad_network_bytes_ += unaccounted_ad_bytes;
   ad_bytes_ += unaccounted_ad_bytes;

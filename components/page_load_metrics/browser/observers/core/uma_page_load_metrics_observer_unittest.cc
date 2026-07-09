@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
@@ -542,7 +542,7 @@ TEST_P(UmaPageLoadMetricsObserverTest, Reload) {
   tester()->SimulateTimingUpdate(timing);
 
   auto resources =
-      GetSampleResourceDataUpdateForTesting(/*resource_size=*/base::KiB(10));
+      GetSampleResourceDataUpdateForTesting(/*resource_size=*/base::KiBU(10));
   tester()->SimulateResourceDataUseUpdate(resources);
 
   tester()->NavigateToUntrackedUrl();
@@ -586,7 +586,7 @@ TEST_P(UmaPageLoadMetricsObserverTest, ForwardBack) {
   tester()->SimulateTimingUpdate(timing);
 
   auto resources =
-      GetSampleResourceDataUpdateForTesting(/*resource_size=*/base::KiB(10));
+      GetSampleResourceDataUpdateForTesting(/*resource_size=*/base::KiBU(10));
   tester()->SimulateResourceDataUseUpdate(resources);
 
   tester()->NavigateToUntrackedUrl();
@@ -652,7 +652,7 @@ TEST_P(UmaPageLoadMetricsObserverTest, NewNavigation) {
   tester()->SimulateTimingUpdate(timing);
 
   auto resources =
-      GetSampleResourceDataUpdateForTesting(/*resource_size=*/base::KiB(10));
+      GetSampleResourceDataUpdateForTesting(/*resource_size=*/base::KiBU(10));
   tester()->SimulateResourceDataUseUpdate(resources);
 
   tester()->NavigateToUntrackedUrl();

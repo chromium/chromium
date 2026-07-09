@@ -8,7 +8,7 @@
 #include <string>
 #include <tuple>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1911,7 +1911,7 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
       EXPECT_FALSE(error_observer.last_navigation_succeeded());
     } else {
       // Otherwise load the resource, ensuring enough bytes were loaded.
-      base::ByteCount current_network_bytes = waiter->current_network_bytes();
+      base::ByteSize current_network_bytes = waiter->current_network_bytes();
       page_load_metrics::LoadLargeResource(
           large_resource, page_load_metrics::kMaxHeavyAdNetworkSize);
       waiter->AddMinimumNetworkBytesExpectation(
@@ -2032,7 +2032,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
                              ui::PAGE_TRANSITION_TYPED, false),
       /*navigation_handle_callback=*/{});
 
-  waiter->AddMinimumNetworkBytesExpectation(base::ByteCount(5000));
+  waiter->AddMinimumNetworkBytesExpectation(base::ByteSize(5000));
 
   std::vector<network::mojom::PermissionsPolicyFeature> features = {
       network::mojom::PermissionsPolicyFeature::kBluetooth,
@@ -2125,7 +2125,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   vanilla_script_response->WaitForRequest();
   vanilla_script_response->Send(page_load_metrics::kHttpOkResponseHeader);
   vanilla_script_response->Send(std::string(1024, ' '));
-  waiter->AddMinimumNetworkBytesExpectation(base::ByteCount(5000));
+  waiter->AddMinimumNetworkBytesExpectation(base::ByteSize(5000));
   waiter->Wait();
 
   // Close all tabs instead of navigating as the embedded_test_server will
@@ -2169,11 +2169,11 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
 
   waiter->AddMinimumCompleteResourcesExpectation(3);
   waiter->Wait();
-  base::ByteCount initial_page_bytes = waiter->current_network_bytes();
+  base::ByteSize initial_page_bytes = waiter->current_network_bytes();
 
   // Make the response large enough so that normal editing to the resource files
   // won't interfere with the test expectations.
-  const base::ByteCount response_size = base::KiB(64);
+  const base::ByteSize response_size = base::KiBU(64);
 
   // Ad resource will not finish loading but should be reported to metrics.
   incomplete_resource_response->WaitForRequest();
@@ -2190,7 +2190,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   // ControllableHttpResponse.
   CloseAllTabs();
 
-  base::ByteCount expected_page_size = initial_page_bytes + response_size;
+  base::ByteSize expected_page_size = initial_page_bytes + response_size;
 
   histogram_tester.ExpectBucketCount(
       "PageLoad.Clients.Ads.Bytes.FullPage.Network", expected_page_size.InKiB(),

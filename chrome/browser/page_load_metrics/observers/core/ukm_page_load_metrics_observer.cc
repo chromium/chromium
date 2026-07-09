@@ -512,36 +512,32 @@ void UkmPageLoadMetricsObserver::OnResourceDataUseObserved(
   if (was_hidden_)
     return;
   for (auto const& resource : resources) {
-    const base::ByteCount delta_byte_count =
-        resource->delta_bytes.AsDeprecatedByteCount();
-    network_bytes_ += delta_byte_count;
+    network_bytes_ += resource->delta_bytes;
 
     if (blink::IsSupportedImageMimeType(resource->mime_type)) {
-      image_total_bytes_ += delta_byte_count;
+      image_total_bytes_ += resource->delta_bytes;
       if (!resource->is_main_frame_resource)
-        image_subframe_bytes_ += delta_byte_count;
+        image_subframe_bytes_ += resource->delta_bytes;
     } else if (media::IsSupportedMediaMimeType(resource->mime_type) ||
                base::StartsWith(resource->mime_type, "audio/",
                                 base::CompareCase::SENSITIVE) ||
                base::StartsWith(resource->mime_type, "video/",
                                 base::CompareCase::SENSITIVE)) {
-      media_bytes_ += delta_byte_count;
+      media_bytes_ += resource->delta_bytes;
     }
 
     // Only sum body lengths for completed resources.
     if (!resource->is_complete)
       continue;
     if (blink::IsSupportedJavascriptMimeType(resource->mime_type)) {
-      const base::ByteCount decoded_body_byte_count =
-          resource->decoded_body_length.AsDeprecatedByteCount();
-      js_decoded_bytes_ += decoded_body_byte_count;
-      if (decoded_body_byte_count > js_max_decoded_bytes_) {
-        js_max_decoded_bytes_ = decoded_body_byte_count;
+      js_decoded_bytes_ += resource->decoded_body_length;
+      if (resource->decoded_body_length > js_max_decoded_bytes_) {
+        js_max_decoded_bytes_ = resource->decoded_body_length;
       }
     }
     if (resource->cache_type !=
         page_load_metrics::mojom::CacheType::kNotCached) {
-      cache_bytes_ += resource->encoded_body_length.AsDeprecatedByteCount();
+      cache_bytes_ += resource->encoded_body_length;
     }
   }
 }

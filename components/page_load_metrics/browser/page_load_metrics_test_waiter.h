@@ -9,6 +9,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -120,7 +121,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
 
   // Add aggregate received resource bytes expectation.
   void AddMinimumNetworkBytesExpectation(
-      base::ByteCount expected_minimum_network_bytes);
+      base::ByteSize expected_minimum_network_bytes);
 
   // Add aggregate time spent in cpu for page expectation.
   void AddMinimumAggregateCpuTimeExpectation(base::TimeDelta minimum);
@@ -166,11 +167,11 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   // All expectations are reset when the wait ends.
   void Wait();
 
-  base::ByteCount current_network_bytes() const {
+  base::ByteSize current_network_bytes() const {
     return current_network_bytes_;
   }
 
-  base::ByteCount current_network_body_bytes() const {
+  base::ByteSize current_network_body_bytes() const {
     return current_network_body_bytes_;
   }
 
@@ -380,16 +381,16 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   State observed_;
 
   int current_complete_resources_ = 0;
-  base::ByteCount current_network_bytes_;
+  base::ByteSize current_network_bytes_;
 
   // The last observed main frame ad rectangle for each id. This doesn't
   // get reset in `ResetExpectations`.
   base::flat_map<int, gfx::Rect> main_frame_ad_rects_;
 
   // Network body bytes are only counted for complete resources.
-  base::ByteCount current_network_body_bytes_;
+  base::ByteSize current_network_body_bytes_;
   int expected_minimum_complete_resources_ = 0;
-  base::ByteCount expected_minimum_network_bytes_;
+  base::ByteSize expected_minimum_network_bytes_;
 
   // Total time spent int the cpu aggregated across the frames on the page.
   base::TimeDelta current_aggregate_cpu_time_;

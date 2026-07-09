@@ -251,12 +251,12 @@ AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
     HeavyAdThresholdNoiseProvider(bool use_noise)
     : use_noise_(use_noise) {}
 
-base::ByteCount AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
+base::ByteSize AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
     GetNetworkThresholdNoiseForFrame() const {
-  return base::ByteCount(
+  return base::ByteSize(
       use_noise_
-          ? base::RandIntInclusive(0, kMaxNetworkThresholdNoiseBytes.InBytes())
-          : 0);
+          ? base::RandGenerator(kMaxNetworkThresholdNoiseBytes.InBytes() + 1)
+          : 0u);
 }
 
 const char AdsPageLoadMetricsObserver::kObserverName[] =
@@ -863,11 +863,11 @@ void AdsPageLoadMetricsObserver::OnPageActivationComputed(
   }
 }
 
-base::ByteCount AdsPageLoadMetricsObserver::GetUnaccountedAdBytes(
+base::ByteSize AdsPageLoadMetricsObserver::GetUnaccountedAdBytes(
     int process_id,
     const mojom::ResourceDataUpdatePtr& resource) const {
   if (!resource->reported_as_ad_resource) {
-    return base::ByteCount(0);
+    return base::ByteSize(0);
   }
   content::GlobalRequestID global_request_id(
       content::ToOriginatingProcessIdUnsafe(process_id), resource->request_id);
@@ -875,7 +875,7 @@ base::ByteCount AdsPageLoadMetricsObserver::GetUnaccountedAdBytes(
   // Resource just started loading.
   if (!GetDelegate().GetResourceTracker().HasPreviousUpdateForResource(
           global_request_id)) {
-    return base::ByteCount(0);
+    return base::ByteSize(0);
   }
 
   // If the resource had already started loading, and is now labeled as an ad,
@@ -885,9 +885,10 @@ base::ByteCount AdsPageLoadMetricsObserver::GetUnaccountedAdBytes(
       GetDelegate().GetResourceTracker().GetPreviousUpdateForResource(
           global_request_id);
   bool is_new_ad = !previous_update->reported_as_ad_resource;
+  // AsByteSize() will CHECK if `delta_bytes` > `received_data_length`.
   return is_new_ad ? (resource->received_data_length - resource->delta_bytes)
-                         .AsDeprecatedByteCount()
-                   : base::ByteCount(0);
+                         .AsByteSize()
+                   : base::ByteSize(0);
 }
 
 void AdsPageLoadMetricsObserver::ProcessResourceForPage(
@@ -895,7 +896,7 @@ void AdsPageLoadMetricsObserver::ProcessResourceForPage(
     const mojom::ResourceDataUpdatePtr& resource) {
   int process_id = render_frame_host->GetProcess()->GetDeprecatedID();
   auto mime_type = ResourceLoadAggregator::GetResourceMimeType(resource);
-  base::ByteCount unaccounted_ad_bytes =
+  base::ByteSize unaccounted_ad_bytes =
       GetUnaccountedAdBytes(process_id, resource);
   bool is_outermost_main_frame = !render_frame_host->GetParentOrOuterDocument();
   aggregate_frame_data_->ProcessResourceLoadInFrame(resource,
@@ -944,7 +945,7 @@ void AdsPageLoadMetricsObserver::ProcessResourceForFrame(
   }
 
   auto mime_type = ResourceLoadAggregator::GetResourceMimeType(resource);
-  base::ByteCount unaccounted_ad_bytes = GetUnaccountedAdBytes(
+  base::ByteSize unaccounted_ad_bytes = GetUnaccountedAdBytes(
       render_frame_host->GetProcess()->GetDeprecatedID(), resource);
   if (!unaccounted_ad_bytes.is_zero()) {
     ancestor_data->AdjustAdBytes(unaccounted_ad_bytes, mime_type);

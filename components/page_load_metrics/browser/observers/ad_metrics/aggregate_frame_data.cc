@@ -61,7 +61,7 @@ void AggregateFrameData::ProcessResourceLoadInFrame(
   }
 }
 
-void AggregateFrameData::AdjustAdBytes(base::ByteCount unaccounted_ad_bytes,
+void AggregateFrameData::AdjustAdBytes(base::ByteSize unaccounted_ad_bytes,
                                        ResourceMimeType mime_type,
                                        bool is_outermost_main_frame) {
   // TODO(crbug.com/40216775): Test coverage isn't enough for this

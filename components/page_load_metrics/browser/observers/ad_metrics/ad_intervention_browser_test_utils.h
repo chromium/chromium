@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_AD_INTERVENTION_BROWSER_TEST_UTILS_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_AD_INTERVENTION_BROWSER_TEST_UTILS_H_
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 
 class GURL;
@@ -29,7 +29,7 @@ extern const char kHttpOkResponseHeader[];
 
 // The maximum possible threshold beyond which an ad resource will be classified
 // as heavy from the network perspective.
-extern const base::ByteCount kMaxHeavyAdNetworkSize;
+extern const base::ByteSize kMaxHeavyAdNetworkSize;
 
 class PageLoadMetricsTestWaiter;
 
@@ -68,7 +68,7 @@ void TriggerAndDetectOverlayPopupAd(content::WebContents* web_contents);
 
 // Loads a resource of size |bytes| in |response|.
 void LoadLargeResource(net::test_server::ControllableHttpResponse* response,
-                       base::ByteCount bytes);
+                       base::ByteSize bytes);
 
 }  // namespace page_load_metrics
 

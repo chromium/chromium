@@ -11,7 +11,7 @@
 #include <array>
 #include <optional>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_data_utils.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
@@ -32,7 +32,7 @@ class AggregateFrameData {
                                   bool is_outermost_main_frame);
 
   // Adjusts the overall page and potentially main frame ad bytes.
-  void AdjustAdBytes(base::ByteCount unaccounted_ad_bytes,
+  void AdjustAdBytes(base::ByteSize unaccounted_ad_bytes,
                      ResourceMimeType mime_type,
                      bool is_outermost_main_frame);
 
@@ -75,11 +75,10 @@ class AggregateFrameData {
     return total_peak_cpu_.peak_windowed_percent();
   }
 
-  // TODO(crbug.com/40152120): The size_t members should probably be int64_t.
   struct AdDataByVisibility {
     // The following are aggregated when metrics are recorded on navigation.
-    base::ByteCount bytes;
-    base::ByteCount network_bytes;
+    base::ByteSize bytes;
+    base::ByteSize network_bytes;
     size_t frames = 0;
   };
 
@@ -92,11 +91,11 @@ class AggregateFrameData {
   // These functions update the various members of AdDataByVisibility given the
   // visibility.  They all increment the current value.
   void update_ad_bytes_by_visibility(FrameVisibility visibility,
-                                     base::ByteCount bytes) {
+                                     base::ByteSize bytes) {
     ad_data_[static_cast<size_t>(visibility)].bytes += bytes;
   }
   void update_ad_network_bytes_by_visibility(FrameVisibility visibility,
-                                             base::ByteCount network_bytes) {
+                                             base::ByteSize network_bytes) {
     ad_data_[static_cast<size_t>(visibility)].network_bytes += network_bytes;
   }
   void update_ad_frames_by_visibility(FrameVisibility visibility,

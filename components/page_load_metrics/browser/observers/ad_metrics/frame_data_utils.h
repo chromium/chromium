@@ -11,7 +11,7 @@
 
 #include <array>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/containers/queue.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
@@ -48,7 +48,7 @@ class ResourceLoadAggregator {
   // Adds additional bytes to the ad resource byte counts. This
   // is used to notify the frame that some bytes were tagged as ad bytes after
   // they were loaded.
-  void AdjustAdBytes(base::ByteCount unaccounted_ad_bytes,
+  void AdjustAdBytes(base::ByteSize unaccounted_ad_bytes,
                      ResourceMimeType mime_type);
 
   // Get the mime type of a resource. This only returns a subset of mime types,
@@ -61,33 +61,33 @@ class ResourceLoadAggregator {
 
   // Accessors for the various data stored in the class.
 
-  base::ByteCount bytes() const { return bytes_; }
+  base::ByteSize bytes() const { return bytes_; }
 
-  base::ByteCount network_bytes() const { return network_bytes_; }
+  base::ByteSize network_bytes() const { return network_bytes_; }
 
-  base::ByteCount ad_bytes() const { return ad_bytes_; }
+  base::ByteSize ad_bytes() const { return ad_bytes_; }
 
-  base::ByteCount ad_network_bytes() const { return ad_network_bytes_; }
+  base::ByteSize ad_network_bytes() const { return ad_network_bytes_; }
 
-  base::ByteCount GetAdNetworkBytesForMime(ResourceMimeType mime_type) const {
+  base::ByteSize GetAdNetworkBytesForMime(ResourceMimeType mime_type) const {
     return ad_bytes_by_mime_[static_cast<size_t>(mime_type)];
   }
 
  private:
   // Total bytes used to load resources in the frame, including headers.
-  base::ByteCount bytes_;
-  base::ByteCount network_bytes_;
+  base::ByteSize bytes_;
+  base::ByteSize network_bytes_;
 
   // Ad network bytes for different mime type resources loaded in the frame.
-  std::array<base::ByteCount,
+  std::array<base::ByteSize,
              static_cast<size_t>(ResourceMimeType::kMaxValue) + 1>
       ad_bytes_by_mime_;
 
   // Tracks the number of bytes that were used to load resources which were
   // detected to be ads inside of this frame. For ad frames, these counts should
   // match |frame_bytes| and |frame_network_bytes|.
-  base::ByteCount ad_bytes_;
-  base::ByteCount ad_network_bytes_;
+  base::ByteSize ad_bytes_;
+  base::ByteSize ad_network_bytes_;
 };
 
 class PeakCpuAggregator {

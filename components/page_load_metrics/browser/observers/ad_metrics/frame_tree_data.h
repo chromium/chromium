@@ -11,7 +11,7 @@
 #include <array>
 #include <optional>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -32,7 +32,7 @@ namespace heavy_ad_thresholds {
 // PageLoad.Clients.Ads.Bytes.AdFrames.PerFrame.Network histogram on mobile and
 // desktop. Additive noise is added to this threshold, see
 // AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider.
-inline constexpr base::ByteCount kMaxNetworkBytes = base::MiB(4);
+inline constexpr base::ByteSize kMaxNetworkBytes = base::MiBU(4);
 
 // CPU thresholds are selected from AdFrameLoad UKM, and are intended to target
 // 1 in 1000 ad iframes combined, with each threshold responsible for roughly
@@ -131,7 +131,7 @@ class FrameTreeData final {
   // |root_frame_tree_node_id| is the root frame of the subtree that
   // FrameTreeData stores information for.
   explicit FrameTreeData(content::FrameTreeNodeId root_frame_tree_node_id,
-                         base::ByteCount heavy_ad_network_threshold_noise);
+                         base::ByteSize heavy_ad_network_threshold_noise);
   ~FrameTreeData();
 
   // Processes a resource load in frame, calling ResourceLoadAggregator.
@@ -141,7 +141,7 @@ class FrameTreeData final {
 
   // Adjusts ad bytes after call to ProcessResourceLoadInFrame, calling
   // ResourceLoadAggregator.
-  void AdjustAdBytes(base::ByteCount unaccounted_ad_bytes,
+  void AdjustAdBytes(base::ByteSize unaccounted_ad_bytes,
                      ResourceMimeType mime_type);
 
   // Updates the cpu usage of this frame.
@@ -353,7 +353,7 @@ class FrameTreeData final {
   HeavyAdAction heavy_ad_action_ = HeavyAdAction::kNone;
 
   // Number of bytes of noise that should be added to the network threshold.
-  const base::ByteCount heavy_ad_network_threshold_noise_;
+  const base::ByteSize heavy_ad_network_threshold_noise_;
 
   // Whether or not the frame has been activated (clicked on).
   UserActivationStatus user_activation_status_ =

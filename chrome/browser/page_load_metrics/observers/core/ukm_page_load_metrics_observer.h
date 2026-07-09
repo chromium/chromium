@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -257,19 +257,19 @@ class UkmPageLoadMetricsObserver
 
   // The number of body (not header) prefilter bytes consumed by requests for
   // the page.
-  base::ByteCount cache_bytes_;
-  base::ByteCount network_bytes_;
+  base::ByteSize cache_bytes_;
+  base::ByteSize network_bytes_;
 
   // Sum of decoded body lengths of JS resources.
-  base::ByteCount js_decoded_bytes_;
+  base::ByteSize js_decoded_bytes_;
 
   // Max decoded body length of JS resources.
-  base::ByteCount js_max_decoded_bytes_;
+  base::ByteSize js_max_decoded_bytes_;
 
   // Network data use broken down by resource type.
-  base::ByteCount image_total_bytes_;
-  base::ByteCount image_subframe_bytes_;
-  base::ByteCount media_bytes_;
+  base::ByteSize image_total_bytes_;
+  base::ByteSize image_subframe_bytes_;
+  base::ByteSize media_bytes_;
 
   // Network quality estimates.
   net::EffectiveConnectionType effective_connection_type_ =
