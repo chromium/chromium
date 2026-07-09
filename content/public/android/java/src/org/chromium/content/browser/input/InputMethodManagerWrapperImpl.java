@@ -6,6 +6,7 @@ package org.chromium.content.browser.input;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.os.StrictMode;
@@ -119,13 +120,19 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
         if (DEBUG_LOGS) Log.i(TAG, "showSoftInput");
         mPendingRunnableOnInputConnection = null;
         Activity activity = getActivityFromWindowAndroid(mWindowAndroid);
-        if (activity != null && !hasCorrectDisplayId(mContext, activity)) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA
+                && activity != null
+                && !hasCorrectDisplayId(mContext, activity)) {
             // https://crbug.com/1021403
             // This is a workaround for multi-display case. We need this as long as
             // Chrome uses the application context for creating the content view.
             // Note that this will create a few ms delay in showing keyboard.
+            // b/525387925: This workaround may not be needed with later versions of Android FW.
+            // Also this workaround breaks a CUJ where WebView exists within a dialog on a secondary
+            // display. This happens because we are forcing focus on the activity window which
+            // causes a mismatch between window focus and IME input focus. We are removing this
+            // workaround for Baklava and above to fix that CUJ.
             activity.getWindow().setLocalFocus(true, true);
-
             if (mDelegate != null && !mDelegate.hasInputConnection()) {
                 // Delay keyboard showing until input connection is established.
                 mPendingRunnableOnInputConnection =
