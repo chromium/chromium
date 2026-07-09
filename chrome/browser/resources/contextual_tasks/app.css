@@ -592,14 +592,14 @@ error-page {
   height: 52%;
 }
 
-:host([is-zero-state_][is-shown-in-tab_]) #flexCenterContainer {
+:host([is-zero-state_][is-shown-in-tab_]:not([in-nlm_])) #flexCenterContainer {
   height: calc(var(--flex-center-height) - 88px);
   inset-inline-start: 76px;
   top: 88px;
   width: calc(100% - 76px);
 }
 
-:host([is-zero-state_]:not([is-shown-in-tab_])) #flexCenterContainer {
+:host([is-zero-state_]:not([is-shown-in-tab_]):not([in-nlm_])) #flexCenterContainer {
   --wrapper-indent_: 20px;
   align-items: flex-start;
   gap: 24px;
@@ -619,7 +619,7 @@ error-page {
 }
 
 @media (min-width: 789px) {
-  :host([is-zero-state_]:not([is-shown-in-tab_])[is-ai-page_]) #flexCenterContainer {
+  :host([is-zero-state_]:not([is-shown-in-tab_])[is-ai-page_]:not([in-nlm_])) #flexCenterContainer {
     /* 96px gutter + 5px for text indentation in thread. */
     --wrapper-indent_: 101px;
     inset-inline-start: var(--wrapper-indent_);
@@ -633,7 +633,7 @@ error-page {
  * composebox.css min-width: 1420px for full explanation.
  */
 @media (min-width: 1420px) {
-  :host(:not([is-shown-in-tab_])[is-zero-state_][is-ai-page_]) #flexCenterContainer {
+  :host(:not([is-shown-in-tab_])[is-zero-state_][is-ai-page_]:not([in-nlm_])) #flexCenterContainer {
     --wrapper-indent_: max(285px, calc(50% - 570px));
     inset-inline-start: var(--wrapper-indent_);
     width: calc(100% - var(--wrapper-indent_));
@@ -949,7 +949,7 @@ error-page {
     var(--standard-accelerate-curve) 100ms both;
 }
 
-:host(.play-zero-state) #flexCenterContainer {
+:host(.play-zero-state:not([in-nlm_])) #flexCenterContainer {
   animation: zero-state-slide-up 500ms var(--emphasized-decelerate-curve) both;
 }
 

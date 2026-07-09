@@ -212,7 +212,7 @@
   transform: translateY(0);
 }
 
-:host([is-zero-state]) #composebox,
+:host([is-zero-state]:not([in-nlm])) #composebox,
 :host([is-zero-state]) #contextualTasksSuggestionsContainer {
   opacity: 0;
   transform: translateY(12px);
@@ -230,7 +230,7 @@
   }
 }
 
-:host(.play-zero-state[is-zero-state]) #composebox,
+:host(.play-zero-state[is-zero-state]:not([in-nlm])) #composebox,
 :host(.play-zero-state[is-zero-state]) #contextualTasksSuggestionsContainer {
   animation: zero-state-enter-composebox 900ms var(--emphasized-curve) both;
 }
