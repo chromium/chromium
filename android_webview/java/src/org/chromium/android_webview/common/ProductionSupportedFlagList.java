@@ -1403,6 +1403,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "SimpleCachePrefetchExperiment2",
                 "Enables fixed-size prefetching of simple cache entry data during open."),
+        Flag.baseFeature(
+                "QuicUseReadMultiple", "Utilizes recvmmsg over recvmsg for Quic UDP sockets.")
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
