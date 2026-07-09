@@ -95,6 +95,7 @@ source_set("impl") {
     "//components/policy/core/common",
     "//components/signin/public/identity_manager",
     "//components/skills/public",
+    "//components/variations/service",
     "//content/public/browser",
     "//google_apis/common",
     "//net",
