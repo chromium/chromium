@@ -7,6 +7,8 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/file_system_chooser_test_helpers.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/browser_features.h"
@@ -371,6 +373,27 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxFileCarousel) {
 
 IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxFileThumbnail) {
   RunTest("cr_components/composebox/file_thumbnail_test.js", "mocha.run()");
+}
+
+class CrComponentsComposeboxFileInputsTest : public CrComponentsComposeboxTest {
+ public:
+  void SetUpOnMainThread() override {
+    CrComponentsComposeboxTest::SetUpOnMainThread();
+    ui::SelectFileDialog::SetFactory(
+        std::make_unique<content::FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{}));
+  }
+
+  void TearDownOnMainThread() override {
+    ui::SelectFileDialog::SetFactory(nullptr);
+    CrComponentsComposeboxTest::TearDownOnMainThread();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxFileInputsTest,
+                       ComposeboxFileInputs) {
+  RunTest("cr_components/composebox/composebox_file_inputs_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxInput) {
