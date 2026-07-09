@@ -109,8 +109,6 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
-    raster_context_provider_ = base::WrapRefCounted(
-        context_provider_wrapper_->ContextProvider().RasterContextProvider());
     // Graphite can handle a large buffer size.
     if (context_provider_wrapper_->ContextProvider()
             .GetGpuFeatureInfo()
@@ -118,10 +116,6 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
         gpu::kGpuFeatureStatusEnabled) {
       recorder_for_external_draws_->DisableLineDrawingAsPaths();
     }
-  }
-
-  if (raster_context_provider_) {
-    raster_context_provider_->AddObserver(this);
   }
 
   if (context_provider_wrapper_) {
@@ -173,9 +167,6 @@ WebGpuRecyclableResourceProvider::~WebGpuRecyclableResourceProvider() {
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
   }
-  if (raster_context_provider_) {
-    raster_context_provider_->RemoveObserver(this);
-  }
 
   UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
                              max_inflight_resources_, 20);
@@ -183,15 +174,6 @@ WebGpuRecyclableResourceProvider::~WebGpuRecyclableResourceProvider() {
 
 bool WebGpuRecyclableResourceProvider::IsValid() const {
   return !IsGpuContextLost();
-}
-
-
-
-void WebGpuRecyclableResourceProvider::OnContextLost() {
-  if (notified_context_lost_) {
-    return;
-  }
-  notified_context_lost_ = true;
 }
 
 void WebGpuRecyclableResourceProvider::OnContextDestroyed() {

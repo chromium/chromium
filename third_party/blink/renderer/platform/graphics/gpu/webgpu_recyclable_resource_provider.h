@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "cc/paint/paint_image.h"
-#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -56,8 +55,7 @@ class CanvasImageProvider;
 class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
     : public CanvasMemoryDumpClient,
       public CanvasResourceSharedImage::Client,
-      public WebGraphicsContext3DProviderWrapper::DestructionObserver,
-      public viz::ContextLostObserver {
+      public WebGraphicsContext3DProviderWrapper::DestructionObserver {
  public:
   static std::unique_ptr<WebGpuRecyclableResourceProvider> Create(
       gfx::Size size,
@@ -161,8 +159,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
     return context_provider_wrapper_;
   }
 
-  // viz::ContextLostObserver implementation.
-  void OnContextLost() override;
 
 
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
@@ -180,16 +176,8 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   scoped_refptr<CanvasResourceSharedImage> resource_;
 
   bool is_cleared_ = false;
-  bool notified_context_lost_ = false;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
-
-  // `raster_context_provider_` holds a reference on the shared
-  // `RasterContextProvider`, to keep it alive until it notifies us after the
-  // GPU context is lost. Without this, instances of this class would not get
-  // notified after the shared `WebGraphicsContext3DProviderWrapper` instance is
-  // recreated.
-  scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
 
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
