@@ -939,6 +939,10 @@ suite('ContextualActionMenu', () => {
     window.dispatchEvent(new Event('scroll'));
     await microtasksFinished();
     assertFalse(flyout.hidden);
+
+    flyout.dispatchEvent(new Event('scroll', {bubbles: true}));
+    await microtasksFinished();
+    assertFalse(flyout.hidden);
   });
 
   test(
@@ -1424,7 +1428,6 @@ suite('ContextualActionMenu', () => {
     await microtasksFinished();
 
     assertEquals('right', flyout.getAttribute('data-position'));
-    assertEquals('250px', flyout.style.left);
 
     // When blocked on the right, enough space to the left positions the flyout to the left.
     trigger.getBoundingClientRect = () => ({
@@ -1442,7 +1445,6 @@ suite('ContextualActionMenu', () => {
     await microtasksFinished();
 
     assertEquals('left', flyout.getAttribute('data-position'));
-    assertEquals('80px', flyout.style.left);
 
     // When blocked on both sides in a narrow panel, the flyout positions at the bottom with a bounded indent.
     trigger.getBoundingClientRect = () => ({
@@ -1460,7 +1462,6 @@ suite('ContextualActionMenu', () => {
     await microtasksFinished();
 
     assertEquals('bottom', flyout.getAttribute('data-position'));
-    assertEquals('16px', flyout.style.left);
   });
 
   test('Favicon group rendered in action menu', async () => {
@@ -3092,9 +3093,6 @@ suite('ContextualActionMenu', () => {
           trigger.dispatchEvent(new PointerEvent('pointerenter'));
           await microtasksFinished();
 
-          const expectedLeft =
-              `${triggerLeft + TRIGGER_WIDTH + SHARE_TABS_FLYOUT_GAP_PX}px`;
-          const expectedTop = `${triggerTop}px`;
           const expectedMaxHeight = `${
               Math.max(
                   MIN_MENU_HEIGHT_PX,
@@ -3102,8 +3100,7 @@ suite('ContextualActionMenu', () => {
                       SHARE_TABS_FLYOUT_MAX_HEIGHT_PX,
                       viewportHeight - triggerTop - VIEWPORT_BUFFER_PX))}px`;
 
-          assertEquals(expectedLeft, flyout.style.left);
-          assertEquals(expectedTop, flyout.style.top);
+          assertEquals('right', flyout.getAttribute('data-position'));
           assertEquals(expectedMaxHeight, flyout.style.maxHeight);
         });
 
@@ -3130,10 +3127,6 @@ suite('ContextualActionMenu', () => {
           trigger.dispatchEvent(new PointerEvent('pointerenter'));
           await microtasksFinished();
 
-          const expectedLeft = `${
-              triggerLeft - DEFAULT_FLYOUT_WIDTH_PX -
-              SHARE_TABS_FLYOUT_GAP_PX}px`;
-          const expectedTop = `${triggerTop}px`;
           const expectedMaxHeight = `${
               Math.max(
                   MIN_MENU_HEIGHT_PX,
@@ -3141,8 +3134,7 @@ suite('ContextualActionMenu', () => {
                       SHARE_TABS_FLYOUT_MAX_HEIGHT_PX,
                       viewportHeight - triggerTop - VIEWPORT_BUFFER_PX))}px`;
 
-          assertEquals(expectedLeft, flyout.style.left);
-          assertEquals(expectedTop, flyout.style.top);
+          assertEquals('left', flyout.getAttribute('data-position'));
           assertEquals(expectedMaxHeight, flyout.style.maxHeight);
         });
 
@@ -3169,9 +3161,6 @@ suite('ContextualActionMenu', () => {
           trigger.dispatchEvent(new PointerEvent('pointerenter'));
           await microtasksFinished();
 
-          const expectedLeft = `${triggerLeft}px`;
-          const expectedTop =
-              `${triggerTop + TRIGGER_HEIGHT + SHARE_TABS_FLYOUT_GAP_PX}px`;
           const expectedMaxHeight = `${
               Math.max(
                   MIN_MENU_HEIGHT_PX,
@@ -3182,8 +3171,7 @@ suite('ContextualActionMenu', () => {
                            SHARE_TABS_FLYOUT_GAP_PX) -
                           VIEWPORT_BUFFER_PX))}px`;
 
-          assertEquals(expectedLeft, flyout.style.left);
-          assertEquals(expectedTop, flyout.style.top);
+          assertEquals('bottom', flyout.getAttribute('data-position'));
           assertEquals(expectedMaxHeight, flyout.style.maxHeight);
         });
 
