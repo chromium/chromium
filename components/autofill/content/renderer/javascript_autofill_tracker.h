@@ -37,8 +37,7 @@ class JavaScriptAutofillTracker {
 
   // Callback signature invoked when a JS-autofill event is detected.
   using DidDetectCallback = base::RepeatingCallback<void(
-      FormRendererId form_id,
-      FieldRendererId trigger_field_id,
+      blink::WebFormControlElement trigger_field,
       const std::vector<FieldRendererId>& field_ids)>;
 
   JavaScriptAutofillTracker(blink::WebLocalFrame* web_frame,
