@@ -167,6 +167,7 @@ source_set("sync") {
     "//components/sync_preferences:features",
     "//components/sync_preferences/cross_device_pref_tracker",
     "//components/sync_user_events",
+    "//components/themes/cross_device",
     "//components/user_manager",
     "//components/variations/service",
     "//components/webauthn/core/browser:passkey_model",
@@ -230,7 +231,6 @@ source_set("sync") {
       "//chrome/browser/ui/read_anything:prefs",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/saved_tab_groups",
-      "//components/themes/cross_device",
     ]
   }
   if (enable_extensions_core) {

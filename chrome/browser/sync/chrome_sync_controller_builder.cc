@@ -17,10 +17,6 @@
 #include "chrome/browser/themes/theme_local_data_batch_uploader.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "components/sync/protocol/theme_specifics.pb.h"
-#include "components/themes/cross_device/cross_device_theme_tracker.h"  // nogncheck
-#endif
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -34,8 +30,11 @@
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_store_service.h"
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
+#include "components/sync/protocol/theme_android_specifics.pb.h"
+#include "components/sync/protocol/theme_specifics.pb.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/syncable_service_based_data_type_controller.h"
+#include "components/themes/cross_device/cross_device_theme_tracker.h"
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -76,6 +75,12 @@
 ChromeSyncControllerBuilder::ChromeSyncControllerBuilder() = default;
 
 ChromeSyncControllerBuilder::~ChromeSyncControllerBuilder() = default;
+
+void ChromeSyncControllerBuilder::SetCrossDeviceThemeTracker(
+    themes::CrossDeviceThemeTracker<LocalThemeSpecifics>*
+        cross_device_theme_tracker) {
+  cross_device_theme_tracker_.Set(cross_device_theme_tracker);
+}
 
 void ChromeSyncControllerBuilder::SetDataTypeStoreService(
     syncer::DataTypeStoreService* data_type_store_service) {
@@ -173,13 +178,6 @@ void ChromeSyncControllerBuilder::SetWifiConfigurationSyncService(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID)
-void ChromeSyncControllerBuilder::SetCrossDeviceThemeTracker(
-    themes::CrossDeviceThemeTracker<sync_pb::ThemeSpecifics>*
-        cross_device_theme_tracker) {
-  cross_device_theme_tracker_.Set(cross_device_theme_tracker);
-}
-#endif
 
 std::vector<std::unique_ptr<syncer::DataTypeController>>
 ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
