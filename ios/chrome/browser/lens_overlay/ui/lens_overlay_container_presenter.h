@@ -62,6 +62,11 @@
 - (void)lensOverlayContainerPresenterWillDismissPresentation:
     (LensOverlayContainerPresenter*)containerPresenter;
 
+// Notifies the delegate that the container presentation has been
+// dismissed.
+- (void)lensOverlayContainerPresenterDidDismissPresentation:
+    (LensOverlayContainerPresenter*)containerPresenter;
+
 // Informs the delegate that the container presentation was readjusted.
 - (void)lensOverlayContainerPresenterDidReadjustPresentation:
     (LensOverlayContainerPresenter*)containerPresenter;
