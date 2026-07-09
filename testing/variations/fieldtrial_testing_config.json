@@ -12387,8 +12387,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "arm": "3",
-                        "use_long_button_text": "true"
+                        "arm": "3"
                     },
                     "enable_features": [
                         "PdfGlicSummarize"
