@@ -6,9 +6,14 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "components/sync/base/command_line_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 
 namespace syncer {
 
@@ -47,5 +52,15 @@ TEST(SyncUtilTest, FormatUserAgentForSync) {
   ASSERT_TRUE(base::StartsWith(user_agent, "Chrome TEST",
                                base::CompareCase::SENSITIVE));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST(SyncUtilTest, MakeUserAgentForSyncAndroidDesktop) {
+  base::android::device_info::set_is_desktop_for_testing(true);
+  std::string user_agent = MakeUserAgentForSync(version_info::Channel::UNKNOWN);
+  EXPECT_TRUE(base::StartsWith(user_agent, "Chrome ANDROID-DESKTOP",
+                               base::CompareCase::SENSITIVE));
+  base::android::device_info::reset_is_desktop_for_testing();
+}
+#endif
 
 }  // namespace syncer
