@@ -152,8 +152,14 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeInteractiveUiTest,
                   true));
 }
 
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/532713867): Re-enable this test on Windows ARM64.
+#define MAYBE_ClosingTabsUpdatesHoverState DISABLED_ClosingTabsUpdatesHoverState
+#else
+#define MAYBE_ClosingTabsUpdatesHoverState ClosingTabsUpdatesHoverState
+#endif
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeInteractiveUiTest,
-                       ClosingTabsUpdatesHoverState) {
+                       MAYBE_ClosingTabsUpdatesHoverState) {
   for (size_t i = 0; i < 2; ++i) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
