@@ -666,6 +666,9 @@ Status ExecuteWindowCommand(const WindowCommand& command,
   Status status = session->GetTargetWindow(&web_view);
   if (status.IsError())
     return status;
+  std::unique_ptr<WebViewHolder> scoped_web_view_lock =
+      web_view->GetHolder();  // need to keep a handle, so that the webview
+                              // isn't disposed during execution
 
   status = web_view->HandleReceivedEvents();
   if (status.IsError())
