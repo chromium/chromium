@@ -23,14 +23,11 @@ const uint64 kMaxMessageBytes = 67108864;  // 64 * 1024 * 1024
 // NOTE: To obtain this for message sending purposes use
 // `messaging_util::GetSerializationFormat()`.
 enum SerializationFormat {
-  // Serialized using the structured clone algorithm. (If
-  // `extensions_features::kStructuredCloningForMessaging` is enabled) Used for
+  // Serialized using the structured clone algorithm. Used for
   // standard extension messaging channels (`ChannelType::kSendMessage`,
   // `ChannelType::kConnect`) to support richer data types.
   kStructuredClone,
-  // Serialized using JSON. Used for all `ChannelType`s (if
-  // `extensions_features::kStructuredCloningForMessaging` is disabled).
-  // Otherwise only used for `ChannelType::kNative` messaging (which
+  // Serialized using JSON. Used for `ChannelType::kNative` messaging (which
   // requires JSON) and legacy methods (`ChannelType::kSendRequest`).
   kJson,
 };

@@ -7,9 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 
 namespace extensions {
@@ -25,10 +23,7 @@ bool MessageSerializationInfo::UsesStructuredClone(const Extension* extension) {
   const MessageSerializationInfo* info =
       static_cast<const MessageSerializationInfo*>(
           extension->GetManifestData(manifest_keys::kMessageSerialization));
-  bool is_opted_in = info && info->opts_in_structured_clone;
-  return is_opted_in &&
-         base::FeatureList::IsEnabled(
-             extensions_features::kStructuredCloningForMessaging);
+  return info && info->opts_in_structured_clone;
 }
 
 MessageSerializationHandler::MessageSerializationHandler() = default;

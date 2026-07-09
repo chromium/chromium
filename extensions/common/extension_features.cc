@@ -169,7 +169,6 @@ BASE_FEATURE(kLaunchWindowsNativeHostsDirectly,
 BASE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kStructuredCloningForMessaging, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(https://crbug.com/328494022): Disable this on ChromeOS, too, and then
 // eventually remove it.

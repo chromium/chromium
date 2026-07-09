@@ -12,9 +12,11 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -24,6 +26,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/browsertest_util.h"
@@ -55,6 +58,7 @@
 #include "extensions/common/api/runtime.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_paths.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -667,25 +671,88 @@ class MessagingApiTestWithPageUrlLoad
                : testing::AssertionFailure();
   }
 
+  // Runs the extension test located at `extension_dir` but first loads a tab
+  // to //chrome/test/data/extensions/test_file.html.
+  testing::AssertionResult RunMessagingTest(
+      const base::FilePath& extension_dir) {
+    return RunExtensionTest(extension_dir, {.page_url = url_.spec().c_str()},
+                            {})
+               ? testing::AssertionSuccess()
+               : testing::AssertionFailure();
+  }
+
+ protected:
+  const GURL& url() const { return url_; }
+
  private:
   GURL url_;
 };
 
-class MessagingSerializationApiTest : public base::test::WithFeatureOverride,
-                                      public MessagingApiTestWithPageUrlLoad {
- public:
-  MessagingSerializationApiTest()
-      : base::test::WithFeatureOverride(
-            extensions_features::kStructuredCloningForMessaging) {}
-};
+using MessagingSerializationApiTest = MessagingApiTestWithPageUrlLoad;
 
-// Tests that various objects can be JSON and Structure Clone serialized to/from
+// Tests that various objects can be Structure Clone serialized to/from
 // v8 for one-time and long-lived messaging APIs. It tests both the `runtime`
 // and `tabs` APIs by sending messages from a content script to the extension
 // background and then vice versa.
 IN_PROC_BROWSER_TEST_P(MessagingSerializationApiTest, MessageSerialization) {
-  // Sets the feature state in the JS tests.
-  SetCustomArg(IsParamFeatureEnabled() ? "true" : "false");
+  bool is_structured_clone = GetParam();
+  // Sets whether to test structured clone serialization or JSON serialization.
+  SetCustomArg(is_structured_clone ? "true" : "false");
+
+  TestExtensionDir test_dir;
+  base::FilePath extension_dir;
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath source_dir;
+    base::PathService::Get(extensions::DIR_TEST_DATA, &source_dir);
+    source_dir = source_dir.AppendASCII("api_test/messaging/serialization");
+
+    // Since we want to test both JSON and structured clone serialization
+    // formats using the exact same JavaScript test logic, we dynamically copy
+    // the extension's files into a temporary unpacked directory. We then
+    // dynamically generate the `manifest.json` file to specify the correct
+    // serialization format. This avoids duplicating the test files and
+    // hardcoding the manifest.
+    //
+    // `base::CopyDirectory` creates a `serialization` subdirectory inside
+    // `test_dir.UnpackedPath()`. Therefore, our extension directory and our
+    // dynamic manifest file must reside within this newly created subdirectory.
+    base::CopyDirectory(source_dir, test_dir.UnpackedPath(),
+                        /*recursive=*/true);
+    extension_dir = test_dir.UnpackedPath().AppendASCII("serialization");
+
+    std::string message_serialization_manifest_key =
+        is_structured_clone ? R"("message_serialization": "structured_clone",)"
+                            : R"("message_serialization": "json",)";
+    std::string manifest_content = base::StringPrintf(
+        R"({
+      "name": "messaging_serialization",
+      "version": "1.0",
+      "manifest_version": 3,
+      %s
+      "background": {
+        "service_worker": "background.js",
+         "type": "module"
+      },
+      "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js": ["content_script.js"],
+        "run_at": "document_start"
+      }],
+      "web_accessible_resources": [{
+         "matches": ["<all_urls>"],
+         "resources": [
+            "serialization_common_tests.js",
+            "test_cases.js"
+         ]
+      }]
+    })",
+        message_serialization_manifest_key.c_str());
+
+    base::WriteFile(extension_dir.AppendASCII("manifest.json"),
+                    manifest_content);
+  }
 
   // Waiters that confirm the background test can run.
   // `content_script_ready_for_background_tests` confirms the message listeners
@@ -700,7 +767,7 @@ IN_PROC_BROWSER_TEST_P(MessagingSerializationApiTest, MessageSerialization) {
 
   // This first runs the `runtime` API tests sending messages from a content
   // script to the extension's background.
-  EXPECT_TRUE(RunMessagingTest("messaging/serialization")) << message_;
+  EXPECT_TRUE(RunMessagingTest(extension_dir)) << message_;
 
   // After the above tests have finished the below runs the `tab` API tests
   // sending messages from the extension's background to the content script in a
@@ -716,18 +783,14 @@ IN_PROC_BROWSER_TEST_P(MessagingSerializationApiTest, MessageSerialization) {
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(MessagingSerializationApiTest);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MessagingSerializationApiTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<MessagingSerializationApiTest::ParamType>&
+           info) { return info.param ? "StructuredClone" : "Json"; });
 
-class StructuredCloneMessageSerializationApiTest : public MessagingApiTest {
- public:
-  StructuredCloneMessageSerializationApiTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kStructuredCloningForMessaging);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using StructuredCloneMessageSerializationApiTest = MessagingApiTest;
 
 // Tests that `SharedArrayBuffer` cannot be serialized correctly with structured
 // clone even when the sending and receiving context are cross-origin isolated.
@@ -789,9 +852,8 @@ IN_PROC_BROWSER_TEST_F(StructuredCloneMessageSerializationApiTest,
                                /*load_options=*/{}));
 }
 
-// Tests that even if the structured cloning feature is enabled an extension
-// must still opt-in with the manifest key otherwise they will be unable to send
-// structured clone objects.
+// Tests that an extension must opt-in with the manifest key otherwise they
+// will be unable to send structured clone objects.
 IN_PROC_BROWSER_TEST_F(StructuredCloneMessageSerializationApiTest,
                        MessageSerialization_OptOut) {
   static constexpr char kManifest[] = R"(

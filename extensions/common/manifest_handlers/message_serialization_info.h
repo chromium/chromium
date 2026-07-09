@@ -19,7 +19,7 @@ struct MessageSerializationInfo : public Extension::ManifestData {
   ~MessageSerializationInfo() override;
 
   // Returns true if the extension should use structured clone message
-  // serialization (the extension has opted in and the feature is enabled).
+  // serialization (the extension has opted in).
   static bool UsesStructuredClone(const Extension* extension);
 
   // Whether the extension has indicated in its manifest that it would like to

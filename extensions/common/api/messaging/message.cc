@@ -6,8 +6,6 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
-#include "extensions/common/extension_features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -42,12 +40,7 @@ Message::Message(MessageData data,
                  bool from_privileged_context)
     : data_(std::move(data)),
       user_gesture_(user_gesture),
-      from_privileged_context_(from_privileged_context) {
-  if (std::holds_alternative<StructuredCloneMessageData>(data_)) {
-    CHECK(base::FeatureList::IsEnabled(
-        extensions_features::kStructuredCloningForMessaging));
-  }
-}
+      from_privileged_context_(from_privileged_context) {}
 
 Message::Message(Message&& other) = default;
 
@@ -64,8 +57,6 @@ bool Message::EqualsForTesting(const Message& other) const {
     case mojom::SerializationFormat::kJson:
       return std::get<std::string>(data_) == other.data();
     case mojom::SerializationFormat::kStructuredClone: {
-      CHECK(base::FeatureList::IsEnabled(
-          extensions_features::kStructuredCloningForMessaging));
       const auto& this_msg = std::get<StructuredCloneMessageData>(data_);
       const auto& other_msg = other.structured_message();
       // For JS `Blobs`: this `encoded_message` comparison checks that the JS

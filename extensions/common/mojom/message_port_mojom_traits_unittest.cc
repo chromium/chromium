@@ -6,10 +6,8 @@
 
 #include "base/containers/span.h"
 #include "base/notreached.h"
-#include "base/test/scoped_feature_list.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/mojom/message_port.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -91,18 +89,7 @@ TEST(MessagePortMojomTraitsTest, MessageDataJson) {
   EXPECT_EQ(std::get<std::string>(input), std::get<std::string>(output));
 }
 
-class StructuredMessagePortMojomTraitsTest : public testing::Test {
- public:
-  StructuredMessagePortMojomTraitsTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kStructuredCloningForMessaging);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(StructuredMessagePortMojomTraitsTest, StructuredMessageValues) {
+TEST(MessagePortMojomTraitsTest, StructuredMessageValues) {
   const std::string kData("text");
   StructuredCloneMessageData message_data;
   message_data.owned_encoded_message =
@@ -125,7 +112,7 @@ TEST_F(StructuredMessagePortMojomTraitsTest, StructuredMessageValues) {
   EXPECT_EQ(input.from_privileged_context(), output.from_privileged_context());
 }
 
-TEST_F(StructuredMessagePortMojomTraitsTest, MessageDataStructured) {
+TEST(MessagePortMojomTraitsTest, MessageDataStructured) {
   const std::string kData("text");
   StructuredCloneMessageData message_data;
   message_data.owned_encoded_message =

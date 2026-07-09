@@ -204,10 +204,6 @@ BASE_DECLARE_FEATURE(kExperimentalOmniboxLabs);
 // out of the allowlist.
 BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable);
 
-// When enabled, cause extensions to use structured cloning (instead of JSON
-// serialization) for extension messaging, except when communicating with native
-// messaging hosts.
-BASE_DECLARE_FEATURE(kStructuredCloningForMessaging);
 
 // Controls whether the component webstore hosted app is loaded.
 BASE_DECLARE_FEATURE(kWebstoreHostedApp);
