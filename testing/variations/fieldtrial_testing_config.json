@@ -7263,8 +7263,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ContextualTasks",
-                        "HappinessTrackingSurveysForDesktopNextPanel"
+                        "ContextualTasks"
                     ]
                 }
             ]
@@ -7304,6 +7303,7 @@
                     },
                     "enable_features": [
                         "ContextualTasksEnableSpatialModelToolbarLayout",
+                        "ContextualTasksEphemeralBrandedEntryPoint",
                         "EnableContextualTasksPinButtonInToolbar"
                     ],
                     "disable_features": [
