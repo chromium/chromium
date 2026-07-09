@@ -498,8 +498,8 @@ ci.builder(
     triggered_by = [],
     pool = "luci.chromium.provenance.ci",
     builderless = False,
-    cores = 8,
-    os = os.LINUX_NOBLE,
+    cores = None,
+    os = os.LINUX_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "packager|crowbar",
         short_name = "ssci",
