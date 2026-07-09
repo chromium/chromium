@@ -1259,8 +1259,13 @@ void HintsManager::CanApplyOptimizationOnDemand(
                              optimization_guide_logger_);
 
   if (request_context_metadata != std::nullopt) {
-    if (request_context != proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB ||
-        !request_context_metadata->has_page_insights_hub_metadata()) {
+    bool has_valid_metadata =
+        (request_context ==
+             proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB &&
+         request_context_metadata->has_page_insights_hub_metadata()) ||
+        (request_context == proto::RequestContext::CONTEXT_FILTER_EXECUTION &&
+         request_context_metadata->has_filter_execution_metadata());
+    if (!has_valid_metadata) {
       request_context_metadata = std::nullopt;
     }
   }
