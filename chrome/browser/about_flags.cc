@@ -889,6 +889,15 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::Choice kDynamicAiModeButtonChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
+     "WebUIOmniboxDynamicAiModeButton,NtpRealboxDynamicAiModeButton"},
+    {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
+     "WebUIOmniboxDynamicAiModeButton,NtpRealboxDynamicAiModeButton"}};
+#endif
+
 const FeatureEntry::FeatureParam
     kWebIdentityDigitalIdentityCredentialNoDialogParam[] = {
         {"dialog", "no_dialog"}};
@@ -9378,6 +9387,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAiModeEntryPointAlwaysNavigatesName,
      flag_descriptions::kAiModeEntryPointAlwaysNavigatesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kAiModeEntryPointAlwaysNavigates)},
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"dynamic-ai-mode-button", flag_descriptions::kDynamicAiModeButtonName,
+     flag_descriptions::kDynamicAiModeButtonDescription, kOsDesktop,
+     MULTI_VALUE_TYPE(kDynamicAiModeButtonChoices)},
+#endif
 
     {"omnibox-ai-mode-space-does-not-activate",
      flag_descriptions::kOmniboxAiModeSpaceDoesNotActivateName,

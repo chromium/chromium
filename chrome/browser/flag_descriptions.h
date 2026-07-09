@@ -52,6 +52,11 @@ inline constexpr char kAiModeEntryPointAlwaysNavigatesDescription[] =
     "If enabled, clicking aim button in omnibox always navigates directly to "
     "google.com/aimode.";
 
+inline constexpr char kDynamicAiModeButtonName[] = "Dynamic AI Mode Button";
+inline constexpr char kDynamicAiModeButtonDescription[] =
+    "Enables dynamic behaviour for the AI mode button in the Omnibox and NTP "
+    "Realbox.";
+
 inline constexpr char kOmniboxDynamicAimSubmitName[] = "Dynamic Aim Submit";
 inline constexpr char kOmniboxDynamicAimSubmitDescription[] =
     "Enables dynamic aim button submission variants.";
