@@ -6226,6 +6226,17 @@ shown properly on the user-facing crash UI.
   <int value="2" label="User leaves the interstitial by closing the page"/>
 </enum>
 
+<!-- LINT.IfChange(IOSAppBarAssistantButtonState) -->
+
+<enum name="IOSAppBarAssistantButtonState">
+  <int value="0" label="Lens"/>
+  <int value="1" label="Ask (Gemini)"/>
+  <int value="2" label="AIM SRP"/>
+  <int value="3" label="Account"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/app_bar/ui/app_bar_consumer.h:AppBarAssistantButtonState) -->
+
 <!-- LINT.IfChange(IOSContentSizeCategory) -->
 
 <enum name="IOSContentSizeCategory">

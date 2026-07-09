@@ -29,3 +29,9 @@ NSString* const kAppBarTabGridButtonIdentifier =
     @"kAppBarTabGridButtonIdentifier";
 NSString* const kAppBarNewTabButtonIdentifier =
     @"kAppBarNewTabButtonIdentifier";
+
+const char kAppBarAssistantButtonTappedHistogram[] =
+    "IOS.AppBar.AssistantButtonTapped";
+
+const char kAppBarAssistantButtonStateOnLoadHistogram[] =
+    "IOS.AppBar.AssistantButtonStateOnLoad";

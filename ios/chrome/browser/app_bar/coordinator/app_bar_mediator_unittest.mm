@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
@@ -18,6 +19,7 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
@@ -311,6 +313,7 @@ class AppBarMediatorTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   IOSChromeScopedTestingVariationsService scoped_variations_service_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<TestProfileIOS> regular_profile_;
   std::unique_ptr<TestProfileIOS> incognito_profile_;
   std::unique_ptr<TestBrowser> regular_browser_;
@@ -835,6 +838,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonTappedEligible) {
   [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAsk
                                    fromView:nil];
   EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
+  histogram_tester_.ExpectUniqueSample(kAppBarAssistantButtonTappedHistogram,
+                                       AppBarAssistantButtonState::kAsk, 1);
 }
 
 // Tests that the assistant button is in the kAIM state when the correct
@@ -897,6 +902,17 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAIM) {
                                       signedIn:NO]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that tapping the assistant button in the kAIM state dispatches
+// the show assistant command.
+TEST_F(AppBarMediatorTest, TestAssistantButtonTappedAIM) {
+  OCMExpect([mock_scene_handler_ showAssistant]);
+  [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAIM
+                                   fromView:nil];
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+  histogram_tester_.ExpectUniqueSample(kAppBarAssistantButtonTappedHistogram,
+                                       AppBarAssistantButtonState::kAIM, 1);
 }
 
 // Tests that the assistant button is in the kLens state when location is
@@ -1060,6 +1076,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonTappedLens) {
   [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kLens
                                    fromView:nil];
   EXPECT_OCMOCK_VERIFY(mock_lens_handler_);
+  histogram_tester_.ExpectUniqueSample(kAppBarAssistantButtonTappedHistogram,
+                                       AppBarAssistantButtonState::kLens, 1);
 }
 
 // Tests that the assistant button is in the kAccount state by default.
@@ -1087,6 +1105,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonTappedAccountSignedOut) {
   [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAccount
                                    fromView:dummy_view];
   EXPECT_OCMOCK_VERIFY(mock_delegate);
+  histogram_tester_.ExpectUniqueSample(kAppBarAssistantButtonTappedHistogram,
+                                       AppBarAssistantButtonState::kAccount, 1);
 }
 
 // Tests that tapping the assistant button in the kAccount state calls the
@@ -1103,6 +1123,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonTappedAccountSignedIn) {
   [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAccount
                                    fromView:dummy_view];
   EXPECT_OCMOCK_VERIFY(mock_delegate);
+  histogram_tester_.ExpectUniqueSample(kAppBarAssistantButtonTappedHistogram,
+                                       AppBarAssistantButtonState::kAccount, 1);
 }
 
 // Tests that the assistant button is in the kAccount state with an avatar when
@@ -1405,4 +1427,198 @@ TEST_F(AppBarMediatorTest,
 
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests assistant button on-load metrics.
+TEST_F(AppBarMediatorTest, TestAssistantButtonStateOnLoadMetric) {
+  histogram_tester_.ExpectUniqueSample(
+      kAppBarAssistantButtonStateOnLoadHistogram,
+      AppBarAssistantButtonState::kAsk, 1);
+}
+
+// Tests the Lens state on-load metric. Recreates the mediator to reset SetUp's
+// recording.
+TEST_F(AppBarMediatorTest, TestAssistantButtonStateOnLoadMetric_Lens) {
+  // Disable Gemini via policy.
+  regular_profile_->GetTestingPrefService()->SetInteger(
+      prefs::kGeminiEnabledByPolicy,
+      static_cast<int>(gemini::SettingsPolicy::kNotAllowed));
+
+  // Recreate the mediator.
+  BrowserActionFactory* regular_action_factory =
+      [[BrowserActionFactory alloc] initWithBrowser:regular_browser_.get()
+                                           scenario:kTestMenuScenario];
+  BrowserActionFactory* incognito_action_factory =
+      [[BrowserActionFactory alloc] initWithBrowser:incognito_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  base::HistogramTester local_histogram_tester;
+  AppBarMediator* local_mediator = [[AppBarMediator alloc]
+          initWithRegularWebStateList:regular_web_state_list_.get()
+                incognitoWebStateList:incognito_web_state_list_.get()
+          regularFullscreenController:TestFullscreenController::FromBrowser(
+                                          regular_browser_.get())
+        incognitoFullscreenController:TestFullscreenController::FromBrowser(
+                                          incognito_browser_.get())
+        regularFullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(
+                                          regular_browser_.get())
+      incognitoFullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(
+                                          incognito_browser_.get())
+                 regularActionFactory:regular_action_factory
+               incognitoActionFactory:incognito_action_factory
+                          prefService:regular_profile_->GetTestingPrefService()
+                   templateURLService:search_engines_test_environment_
+                                          .template_url_service()
+                authenticationService:auth_service_
+                      identityManager:IdentityManagerFactory::GetForProfile(
+                                          regular_profile_.get())
+                        geminiService:gemini_service_ptr_.get()
+                   geminiBrowserAgent:GeminiBrowserAgent::FromBrowser(
+                                          regular_browser_.get())
+                            URLLoader:url_loader_
+                         tabGridState:tab_grid_state_
+                       incognitoState:incognito_state_];
+
+  local_mediator.overrideLensAvailabilityForTesting = YES;
+
+  id local_consumer = OCMProtocolMock(@protocol(TestAppBarConsumer));
+  OCMExpect([local_consumer
+      setAssistantButtonState:AppBarAssistantButtonState::kLens
+                  highlighted:NO
+                      enabled:YES
+                       avatar:nil
+                     signedIn:NO]);
+
+  local_mediator.consumer = local_consumer;
+  EXPECT_OCMOCK_VERIFY(local_consumer);
+
+  local_histogram_tester.ExpectUniqueSample(
+      kAppBarAssistantButtonStateOnLoadHistogram,
+      AppBarAssistantButtonState::kLens, 1);
+
+  [local_mediator disconnect];
+}
+
+// Tests the Account state on-load metric. Recreates the mediator to reset
+// SetUp's recording.
+TEST_F(AppBarMediatorTest, TestAssistantButtonStateOnLoadMetric_Account) {
+  // Disable Gemini via policy.
+  regular_profile_->GetTestingPrefService()->SetInteger(
+      prefs::kGeminiEnabledByPolicy,
+      static_cast<int>(gemini::SettingsPolicy::kNotAllowed));
+
+  // Recreate the mediator.
+  BrowserActionFactory* regular_action_factory =
+      [[BrowserActionFactory alloc] initWithBrowser:regular_browser_.get()
+                                           scenario:kTestMenuScenario];
+  BrowserActionFactory* incognito_action_factory =
+      [[BrowserActionFactory alloc] initWithBrowser:incognito_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  base::HistogramTester local_histogram_tester;
+  AppBarMediator* local_mediator = [[AppBarMediator alloc]
+          initWithRegularWebStateList:regular_web_state_list_.get()
+                incognitoWebStateList:incognito_web_state_list_.get()
+          regularFullscreenController:TestFullscreenController::FromBrowser(
+                                          regular_browser_.get())
+        incognitoFullscreenController:TestFullscreenController::FromBrowser(
+                                          incognito_browser_.get())
+        regularFullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(
+                                          regular_browser_.get())
+      incognitoFullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(
+                                          incognito_browser_.get())
+                 regularActionFactory:regular_action_factory
+               incognitoActionFactory:incognito_action_factory
+                          prefService:regular_profile_->GetTestingPrefService()
+                   templateURLService:search_engines_test_environment_
+                                          .template_url_service()
+                authenticationService:auth_service_
+                      identityManager:IdentityManagerFactory::GetForProfile(
+                                          regular_profile_.get())
+                        geminiService:gemini_service_ptr_.get()
+                   geminiBrowserAgent:GeminiBrowserAgent::FromBrowser(
+                                          regular_browser_.get())
+                            URLLoader:url_loader_
+                         tabGridState:tab_grid_state_
+                       incognitoState:incognito_state_];
+
+  local_mediator.overrideLensAvailabilityForTesting = NO;
+  SetLocationEligible(false);
+
+  id local_consumer = OCMProtocolMock(@protocol(TestAppBarConsumer));
+  OCMExpect([local_consumer
+      setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                  highlighted:NO
+                      enabled:YES
+                       avatar:nil
+                     signedIn:NO]);
+
+  local_mediator.consumer = local_consumer;
+  EXPECT_OCMOCK_VERIFY(local_consumer);
+
+  local_histogram_tester.ExpectUniqueSample(
+      kAppBarAssistantButtonStateOnLoadHistogram,
+      AppBarAssistantButtonState::kAccount, 1);
+
+  [local_mediator disconnect];
+}
+
+// Tests the AIM state on-load metric.
+TEST_F(AppBarMediatorTest, TestAssistantButtonStateOnLoadMetric_AIM) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kAssistantContainer, kAimCobrowse, kGeminiKillSwitch},
+      {kPageActionMenu});
+
+  // Recreate the mediator.
+  BrowserActionFactory* regular_action_factory =
+      [[BrowserActionFactory alloc] initWithBrowser:regular_browser_.get()
+                                           scenario:kTestMenuScenario];
+  BrowserActionFactory* incognito_action_factory =
+      [[BrowserActionFactory alloc] initWithBrowser:incognito_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  base::HistogramTester local_histogram_tester;
+  AppBarMediator* local_mediator = [[AppBarMediator alloc]
+          initWithRegularWebStateList:regular_web_state_list_.get()
+                incognitoWebStateList:incognito_web_state_list_.get()
+          regularFullscreenController:TestFullscreenController::FromBrowser(
+                                          regular_browser_.get())
+        incognitoFullscreenController:TestFullscreenController::FromBrowser(
+                                          incognito_browser_.get())
+        regularFullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(
+                                          regular_browser_.get())
+      incognitoFullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(
+                                          incognito_browser_.get())
+                 regularActionFactory:regular_action_factory
+               incognitoActionFactory:incognito_action_factory
+                          prefService:regular_profile_->GetTestingPrefService()
+                   templateURLService:search_engines_test_environment_
+                                          .template_url_service()
+                authenticationService:auth_service_
+                      identityManager:IdentityManagerFactory::GetForProfile(
+                                          regular_profile_.get())
+                        geminiService:gemini_service_ptr_.get()
+                   geminiBrowserAgent:GeminiBrowserAgent::FromBrowser(
+                                          regular_browser_.get())
+                            URLLoader:url_loader_
+                         tabGridState:tab_grid_state_
+                       incognitoState:incognito_state_];
+
+  id local_consumer = OCMProtocolMock(@protocol(TestAppBarConsumer));
+  OCMExpect([local_consumer
+      setAssistantButtonState:AppBarAssistantButtonState::kAIM
+                  highlighted:NO
+                      enabled:YES
+                       avatar:nil
+                     signedIn:NO]);
+
+  local_mediator.consumer = local_consumer;
+  EXPECT_OCMOCK_VERIFY(local_consumer);
+
+  local_histogram_tester.ExpectUniqueSample(
+      kAppBarAssistantButtonStateOnLoadHistogram,
+      AppBarAssistantButtonState::kAIM, 1);
+
+  [local_mediator disconnect];
 }

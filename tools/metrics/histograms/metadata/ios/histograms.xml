@@ -326,6 +326,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.AppBar.AssistantButtonStateOnLoad"
+    enum="IOSAppBarAssistantButtonState" expires_after="2026-12-31">
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-meridian@google.com</owner>
+  <summary>
+    The settled state of the assistant button in the App Bar after startup
+    checks have completed. Recorded once per App Bar initialization.
+  </summary>
+</histogram>
+
+<histogram name="IOS.AppBar.AssistantButtonTapped"
+    enum="IOSAppBarAssistantButtonState" expires_after="2026-12-31">
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-meridian@google.com</owner>
+  <summary>
+    The state of the assistant button in the App Bar when the user taps it.
+    Recorded when the user taps the assistant button.
+  </summary>
+</histogram>
+
 <histogram name="IOS.AppLauncher.AppURLHasChromeLaunchScheme" enum="Boolean"
     expires_after="2026-12-08">
   <owner>michaeldo@chromium.org</owner>
