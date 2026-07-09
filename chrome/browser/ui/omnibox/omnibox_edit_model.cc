@@ -2883,6 +2883,12 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
     }
   }
 
+  if (auto* geolocation_header_service = autocomplete_controller()
+                                             ->autocomplete_provider_client()
+                                             ->GetGeolocationHeaderService()) {
+    geolocation_header_service->RecordInlineLocationSuggestionClicked(match);
+  }
+
   TemplateURLService* template_url_service =
       controller_->client()->GetTemplateURLService();
   if (action) {
@@ -2950,12 +2956,6 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
               autocomplete_controller()->autocomplete_provider_client(),
               alternate_input, alternate_nav_url, false));
     }
-  }
-
-  if (auto* geolocation_header_service = autocomplete_controller()
-                                             ->autocomplete_provider_client()
-                                             ->GetGeolocationHeaderService()) {
-    geolocation_header_service->RecordInlineLocationSuggestionClicked(match);
   }
 }
 
