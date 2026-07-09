@@ -88,6 +88,14 @@ export function getHtml(this: NtpComposeboxElement) {
             @input-focusin="${this.onInputFocusin}"
             @cancel-click="${this.onCancelClick}"
             @clear-smart-compose="${this.onClearSmartCompose}">
+          ${this.shouldShowVoiceSearch() ? html`
+            <cr-icon-button id="voiceSearchButton" class="voice-icon"
+                slot="action-buttons"
+                part="voice-icon" iron-icon="cr:mic"
+                @click="${this.onVoiceSearchButtonClick}"
+                title="${this.i18n('voiceSearchButtonLabel')}">
+            </cr-icon-button>
+          ` : ''}
         </cr-composebox-input>
         <div id="context" part="context-entrypoint">
           <cr-composebox-file-inputs id="fileInputs"

@@ -43,6 +43,7 @@ export function getHtml(this: ComposeboxInputElement) {
           `: ''}
         </div>
       </div>
+      <slot name="action-buttons"></slot>
       <!-- A seperate container is needed for the submit button so the
       expand/collapse animation can be applied without affecting the submit
       button enabled/disabled state. -->
