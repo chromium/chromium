@@ -65,18 +65,20 @@ bool OnboardingManager::ShowOnboardingIfNeeded(
 
 void OnboardingManager::OnOnboardingCompleted() {
   pref_service_->SetBoolean(prefs::kPrefDictationOnboardingCompleted, true);
-  if (pending_tab_) {
-    CHECK(pending_target_id_);
-    CHECK(pending_entry_point_);
-    service_->StartSession(*pending_tab_, *pending_target_id_,
-                           *pending_entry_point_);
+}
+
+void OnboardingManager::OnDialogClosed() {
+  if (pref_service_->GetBoolean(prefs::kPrefDictationOnboardingCompleted)) {
+    if (pending_tab_) {
+      CHECK(pending_target_id_);
+      CHECK(pending_entry_point_);
+      service_->StartSession(*pending_tab_, *pending_target_id_,
+                             *pending_entry_point_);
+    }
   }
   pending_tab_.reset();
   pending_target_id_.reset();
   pending_entry_point_.reset();
-}
-
-void OnboardingManager::OnDialogClosed() {
   dialog_controller_.reset();
 }
 
