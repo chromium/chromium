@@ -419,12 +419,12 @@ bool DocumentPipHost::IsWebContentsCreationOverridden(
   return false;
 }
 
-void DocumentPipHost::WebContentsCreated(content::WebContents* source_contents,
-                                         int opener_render_process_id,
-                                         int opener_render_frame_id,
-                                         const std::string& frame_name,
-                                         const GURL& target_url,
-                                         content::WebContents* new_contents) {
+void DocumentPipHost::WebContentsCreated(
+    content::WebContents* source_contents,
+    const content::GlobalRenderFrameHostId& opener_id,
+    const std::string& frame_name,
+    const GURL& target_url,
+    content::WebContents* new_contents) {
   // No-op - popup tracking is handled by AddNewContents.
 }
 

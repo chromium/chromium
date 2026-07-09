@@ -72,8 +72,7 @@ class NearbyShareDialogUI : public ui::MojoWebUIController,
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
   void WebContentsCreated(content::WebContents* source_contents,
-                          int opener_render_process_id,
-                          int opener_render_frame_id,
+                          const content::GlobalRenderFrameHostId& opener_id,
                           const std::string& frame_name,
                           const GURL& target_url,
                           content::WebContents* new_contents) override;

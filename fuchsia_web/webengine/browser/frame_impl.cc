@@ -680,12 +680,12 @@ content::WebContents* FrameImpl::AddNewContents(
   }
 }
 
-void FrameImpl::WebContentsCreated(content::WebContents* source_contents,
-                                   int opener_render_process_id,
-                                   int opener_render_frame_id,
-                                   const std::string& frame_name,
-                                   const GURL& target_url,
-                                   content::WebContents* new_contents) {
+void FrameImpl::WebContentsCreated(
+    content::WebContents* source_contents,
+    const content::GlobalRenderFrameHostId& opener_id,
+    const std::string& frame_name,
+    const GURL& target_url,
+    content::WebContents* new_contents) {
   auto creation_info = std::make_unique<PopupFrameCreationInfoUserData>();
   creation_info->info.set_initial_url(target_url.spec());
   new_contents->SetUserData(kPopupCreationInfo, std::move(creation_info));

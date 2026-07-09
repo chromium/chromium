@@ -92,6 +92,7 @@
 #include "url/url_constants.h"
 
 using base::UserMetricsAction;
+using content::GlobalRenderFrameHostId;
 using content::GlobalRequestID;
 using content::RenderFrameHost;
 using content::RenderProcessHost;
@@ -2064,8 +2065,7 @@ WebContents* WebViewGuest::OpenURLFromTab(
 }
 
 void WebViewGuest::WebContentsCreated(WebContents* source_contents,
-                                      int opener_render_process_id,
-                                      int opener_render_frame_id,
+                                      const GlobalRenderFrameHostId& opener_id,
                                       const std::string& frame_name,
                                       const GURL& target_url,
                                       WebContents* new_contents) {

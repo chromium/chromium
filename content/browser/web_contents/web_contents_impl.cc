@@ -5687,10 +5687,10 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   }
 
   if (delegate_) {
-    // TODO(crbug.com/379869738): Remove GetUnsafeValue.
-    delegate_->WebContentsCreated(this, render_process_id.GetUnsafeValue(),
-                                  opener->GetRoutingID(), params.frame_name,
-                                  params.target_url, new_contents_impl);
+    delegate_->WebContentsCreated(
+        this,
+        GlobalRenderFrameHostId(render_process_id, opener->GetRoutingID()),
+        params.frame_name, params.target_url, new_contents_impl);
   }
 
   observers_.NotifyObservers(&WebContentsObserver::DidOpenRequestedURL,

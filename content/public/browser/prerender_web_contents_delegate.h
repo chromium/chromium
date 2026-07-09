@@ -38,8 +38,7 @@ class CONTENT_EXPORT PrerenderWebContentsDelegate : public WebContentsDelegate {
   bool ShouldFocusPageAfterCrash(WebContents* source) override;
   bool TakeFocus(WebContents* source, bool reverse) override;
   void WebContentsCreated(WebContents* source_contents,
-                          int opener_render_process_id,
-                          int opener_render_frame_id,
+                          const GlobalRenderFrameHostId& opener_id,
                           const std::string& frame_name,
                           const GURL& target_url,
                           WebContents* new_contents) override;

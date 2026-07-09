@@ -52,6 +52,7 @@ using base::android::ScopedJavaLocalRef;
 using blink::mojom::FileChooserFileInfo;
 using blink::mojom::FileChooserFileInfoPtr;
 using blink::mojom::FileChooserParams;
+using content::GlobalRenderFrameHostId;
 using content::WebContents;
 
 namespace android_webview {
@@ -223,8 +224,7 @@ void AwWebContentsDelegate::NavigationStateChanged(
 // typically happens when popups are created.
 void AwWebContentsDelegate::WebContentsCreated(
     WebContents* source_contents,
-    int opener_render_process_id,
-    int opener_render_frame_id,
+    const GlobalRenderFrameHostId& opener_id,
     const std::string& frame_name,
     const GURL& target_url,
     content::WebContents* new_contents) {
