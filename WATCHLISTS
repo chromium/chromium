@@ -2402,6 +2402,9 @@
       'filepath': 'components/unified_consent/'\
                   '|chrome/browser/unified_consent/',
     },
+    'url_constant_resolver': {
+      'filepath': 'chrome/browser/url_constants/android/',
+    },
     'usb': {
       'filepath': '/usb/',
     },
@@ -3436,6 +3439,7 @@
     'ui_views': ['robliao+watch@chromium.org',
                  'sky+watch@chromium.org'],
     'unified_consent': ['wfh+watch@chromuium.org'],
+    'url_constant_resolver': ['mfiaz+watch@google.com'],
     'usb': ['mattreynolds+watch@chromium.org',
             'odejesush+watch@chromium.org'],
     'user_education': ['cros-system-ui-productivity-eng+reviews@google.com'],
