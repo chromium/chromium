@@ -384,6 +384,12 @@ void AutoplayPolicy::OnIntersectionChangedForAutoplay(
       if (!self)
         return;
 
+      // Keep playing if the frames are still being consumed (e.g. by canvas).
+      WebMediaPlayer* player = self->element_->GetWebMediaPlayer();
+      if (player && player->IsVideoBeingCaptured()) {
+        return;
+      }
+
       if (self->element_->can_autoplay_ && self->element_->Autoplay()) {
         self->element_->PauseInternal(
             WebMediaPlayer::PauseReason::kAutoplayAutoPause);

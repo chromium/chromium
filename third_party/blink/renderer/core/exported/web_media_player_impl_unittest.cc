@@ -3060,6 +3060,14 @@ TEST_F(WebMediaPlayerImplTest, DisabledFlagShouldPauseWhenFrameIsHidden) {
   EXPECT_FALSE(IsPausedBecauseFrameHidden());
 }
 
+TEST_F(WebMediaPlayerImplTest, IsVideoBeingCapturedTracksCanvasReadback) {
+  InitializeWebMediaPlayerImpl();
+  EXPECT_FALSE(wmpi_->IsVideoBeingCaptured());
+
+  wmpi_->GetCurrentFrameThenUpdate();
+  EXPECT_TRUE(wmpi_->IsVideoBeingCaptured());
+}
+
 TEST_F(WebMediaPlayerImplTest, NotifiesObserverWhenFrozen) {
   InitializeWebMediaPlayerImpl();
   EXPECT_CALL(mock_observer_, OnFrozen());

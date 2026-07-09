@@ -48,6 +48,7 @@ class EmptyWebMediaPlayer : public WebMediaPlayer {
   }
   bool HasVideo() const override { return false; }
   bool HasAudio() const override { return false; }
+  bool IsVideoBeingCaptured() const override { return false; }
   gfx::Size NaturalSize() const override;
   gfx::Size VisibleSize() const override;
   bool Paused() const override { return false; }

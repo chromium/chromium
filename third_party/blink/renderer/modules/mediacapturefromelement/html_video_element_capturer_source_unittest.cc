@@ -70,6 +70,7 @@ class MockWebMediaPlayer : public WebMediaPlayer {
   }
   bool HasVideo() const override { return true; }
   bool HasAudio() const override { return false; }
+  bool IsVideoBeingCaptured() const override { return false; }
   gfx::Size NaturalSize() const override { return size_; }
   gfx::Size VisibleSize() const override { return size_; }
   bool Paused() const override { return false; }

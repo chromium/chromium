@@ -68,6 +68,10 @@ namespace blink {
 
 namespace {
 
+// A video frame request within this interval is considered a sign that the
+// video is actively being captured.
+constexpr base::TimeDelta kVideoBeingCapturedThreshold = base::Seconds(5);
+
 enum class RendererReloadAction {
   KEEP_RENDERER,
   REMOVE_RENDERER,
@@ -1010,6 +1014,12 @@ bool WebMediaPlayerMS::HasAudio() const {
   return !!audio_renderer_;
 }
 
+bool WebMediaPlayerMS::IsVideoBeingCaptured() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return base::TimeTicks::Now() - last_frame_request_time_ <
+         kVideoBeingCapturedThreshold;
+}
+
 gfx::Size WebMediaPlayerMS::NaturalSize() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!video_frame_provider_)
@@ -1132,6 +1142,7 @@ void WebMediaPlayerMS::Paint(cc::PaintCanvas* canvas,
 scoped_refptr<media::VideoFrame> WebMediaPlayerMS::GetCurrentFrameThenUpdate() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  last_frame_request_time_ = base::TimeTicks::Now();
   return compositor_->GetCurrentFrame();
 }
 

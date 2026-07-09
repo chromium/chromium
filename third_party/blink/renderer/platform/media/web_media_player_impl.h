@@ -211,6 +211,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // True if the loaded media has a playable video/audio track.
   bool HasVideo() const override;
   bool HasAudio() const override;
+  bool IsVideoBeingCaptured() const override;
 
   void EnabledAudioTracksChanged(
       std::optional<WebMediaPlayer::TrackId> enabled_track_id) override;
@@ -728,8 +729,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // allowed to play it.
   bool HasUnmutedAudio() const;
 
-  // Returns true if the video frame from this player are being captured.
-  bool IsVideoBeingCaptured() const;
 
   // Report UMAs when this object instance is destroyed.
   void ReportSessionUMAs() const;

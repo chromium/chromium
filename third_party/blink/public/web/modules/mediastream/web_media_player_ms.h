@@ -148,6 +148,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   // True if the loaded media has a playable video/audio track.
   bool HasVideo() const override;
   bool HasAudio() const override;
+  bool IsVideoBeingCaptured() const override;
 
   // Dimensions of the video.
   gfx::Size NaturalSize() const override;
@@ -393,6 +394,8 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   base::TimeDelta compositor_last_time_;
   base::TimeDelta audio_initial_time_;
   base::TimeDelta audio_last_time_;
+
+  base::TimeTicks last_frame_request_time_;
 
   base::WeakPtr<WebMediaPlayerMS> weak_this_;
   base::WeakPtrFactory<WebMediaPlayerMS> weak_factory_{this};
