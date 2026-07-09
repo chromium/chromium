@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_request.h"
@@ -28,6 +29,8 @@
 #include <optional>
 #include <string>
 
+#include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
@@ -47,9 +50,18 @@ class ChromePermissionsClientTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
 #if !BUILDFLAG(IS_ANDROID)
     permissions::PermissionHatsTriggerHelper::SetIsTest();
+    TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        profile(),
+        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
 #endif
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+ private:
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
+#endif
 };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -191,7 +203,7 @@ TEST_F(ChromePermissionsClientTest, HaTSUrlReportedOnlyIfOptedIn) {
       static_cast<MockHatsService*>(HatsServiceFactory::GetForProfile(
           profile(), /*create_if_necessary=*/true));
 
-  GURL kTestUrl("https://example.com");
+  GURL kTestUrl("about:blank");
   NavigateAndCommit(kTestUrl);
 
   // Case 1: User is opted out of URL-keyed anonymized data collection.
@@ -236,5 +248,173 @@ TEST_F(ChromePermissionsClientTest, HaTSUrlReportedOnlyIfOptedIn) {
       permissions::PermissionRequestGestureType::GESTURE, base::Minutes(1),
       /*is_post_prompt=*/true, kTestUrl, std::nullopt, CONTENT_SETTING_DEFAULT,
       base::DoNothing(), std::monostate());
+}
+
+TEST_F(ChromePermissionsClientTest, CanBypassEmbeddingOriginCheckWebUI) {
+  auto* client = ChromePermissionsClient::GetInstance();
+  GURL dummy_requesting("about:blank");
+
+  // NTP / New Tab:
+  EXPECT_TRUE(client->CanBypassEmbeddingOriginCheck(
+      dummy_requesting, chrome::ChromeUINewTabURLAsGURL()));
+  EXPECT_TRUE(client->CanBypassEmbeddingOriginCheck(
+      dummy_requesting, chrome::ChromeUINewTabPageURLAsGURL()));
+
+  // Omnibox Popup & Contextual Tasks:
+  EXPECT_TRUE(client->CanBypassEmbeddingOriginCheck(
+      dummy_requesting, GURL(chrome::kChromeUIOmniboxPopupURL)));
+  EXPECT_TRUE(client->CanBypassEmbeddingOriginCheck(
+      dummy_requesting, GURL(chrome::kChromeUIContextualTasksURL)));
+
+  // Non-WebUI origin should not bypass:
+  EXPECT_FALSE(client->CanBypassEmbeddingOriginCheck(dummy_requesting,
+                                                     GURL("about:blank")));
+}
+
+// Test that GURL is converted to origin so that way subpaths are ignored
+// and only identity is compared.
+TEST_F(ChromePermissionsClientTest,
+       CanBypassEmbeddingOriginCheckWebUIWithSubpaths) {
+  auto* client = ChromePermissionsClient::GetInstance();
+  GURL dummy_requesting("about:blank");
+
+  // New Tab, NTP, Omnibox Popup, and Contextual Tasks with subpaths/query
+  // strings:
+  GURL newtab_subpath =
+      chrome::ChromeUINewTabURLAsGURL().Resolve("subpath/page?param=1#hash");
+  GURL ntp_subpath = GURL(chrome::ChromeUINewTabPageURLAsGURL().spec())
+                         .Resolve("subpath/page?param=1#hash");
+  GURL omnibox_subpath = GURL(chrome::kChromeUIOmniboxPopupURL)
+                             .Resolve("subpath/page?param=1#hash");
+  GURL contextual_tasks_subpath = GURL(chrome::kChromeUIContextualTasksURL)
+                                      .Resolve("subpath/page?param=1#hash");
+
+  EXPECT_TRUE(
+      client->CanBypassEmbeddingOriginCheck(dummy_requesting, newtab_subpath));
+  EXPECT_TRUE(
+      client->CanBypassEmbeddingOriginCheck(dummy_requesting, ntp_subpath));
+  EXPECT_TRUE(
+      client->CanBypassEmbeddingOriginCheck(dummy_requesting, omnibox_subpath));
+  EXPECT_TRUE(client->CanBypassEmbeddingOriginCheck(dummy_requesting,
+                                                    contextual_tasks_subpath));
+}
+
+TEST_F(ChromePermissionsClientTest, GetCanonicalOriginOverrideWebUI) {
+  auto* client = ChromePermissionsClient::GetInstance();
+
+  GURL ntp_url = chrome::ChromeUINewTabPageURLAsGURL();
+  GURL newtab_url = chrome::ChromeUINewTabURLAsGURL();
+  GURL omnibox_url(chrome::kChromeUIOmniboxPopupURL);
+  GURL contextual_tasks_url(chrome::kChromeUIContextualTasksURL);
+
+  // NTP embedder + NTP requester -> Overridden to DSE (Google) origin:
+  std::optional<GURL> ntp_override =
+      client->GetCanonicalOriginOverride(ntp_url, newtab_url);
+  EXPECT_TRUE(ntp_override.has_value());
+  EXPECT_EQ(ntp_override->host(), "www.google.com");
+
+  // Omnibox popup embedder + requester -> Overridden to DSE (Google) origin:
+  std::optional<GURL> omnibox_override =
+      client->GetCanonicalOriginOverride(omnibox_url, omnibox_url);
+  EXPECT_TRUE(omnibox_override.has_value());
+  EXPECT_EQ(omnibox_override->host(), "www.google.com");
+
+  // Contextual tasks embedder + requester -> Overridden to DSE (Google) origin:
+  std::optional<GURL> contextual_override = client->GetCanonicalOriginOverride(
+      contextual_tasks_url, contextual_tasks_url);
+  EXPECT_TRUE(contextual_override.has_value());
+  EXPECT_EQ(contextual_override->host(), "www.google.com");
+
+  // Unmatched requester:
+  GURL other_url("about:blank");
+  std::optional<GURL> other_override =
+      client->GetCanonicalOriginOverride(other_url, newtab_url);
+  EXPECT_EQ(other_override, other_url);
+}
+
+// Test that GURL is converted to origin so that way subpaths are ignored
+// and only identity is compared.
+TEST_F(ChromePermissionsClientTest,
+       GetCanonicalOriginOverrideWebUIWithSubpaths) {
+  auto* client = ChromePermissionsClient::GetInstance();
+
+  GURL newtab_subpath =
+      chrome::ChromeUINewTabURLAsGURL().Resolve("subpath/page?param=1#hash");
+
+  // Add trailing slash via spec since `ChromeUINewTabPageAsGURL()` does not
+  // have trailing slash.
+  GURL ntp_subpath = GURL(chrome::ChromeUINewTabPageURLAsGURL().spec())
+                         .Resolve("subpath/page?param=1#hash");
+  GURL omnibox_subpath = GURL(chrome::kChromeUIOmniboxPopupURL)
+                             .Resolve("subpath/page?param=1#hash");
+  GURL contextual_tasks_subpath = GURL(chrome::kChromeUIContextualTasksURL)
+                                      .Resolve("subpath/page?param=1#hash");
+
+  // NTP subpath embedder + NTP subpath requester -> Overridden to DSE (Google)
+  // origin:
+  std::optional<GURL> ntp_override =
+      client->GetCanonicalOriginOverride(ntp_subpath, newtab_subpath);
+  EXPECT_TRUE(ntp_override.has_value());
+  EXPECT_EQ(ntp_override->host(), "www.google.com");
+
+  // Omnibox popup subpath embedder + requester -> Overridden to DSE (Google)
+  // origin:
+  std::optional<GURL> omnibox_override =
+      client->GetCanonicalOriginOverride(omnibox_subpath, omnibox_subpath);
+  EXPECT_TRUE(omnibox_override.has_value());
+  EXPECT_EQ(omnibox_override->host(), "www.google.com");
+
+  // Contextual tasks subpath embedder + requester -> Overridden to DSE (Google)
+  // origin:
+  std::optional<GURL> contextual_override = client->GetCanonicalOriginOverride(
+      contextual_tasks_subpath, contextual_tasks_subpath);
+  EXPECT_TRUE(contextual_override.has_value());
+  EXPECT_EQ(contextual_override->host(), "www.google.com");
+}
+
+// Test that GURL is converted to origin so that way subpaths are ignored
+// and only identity is compared.
+TEST_F(ChromePermissionsClientTest, IsFromNewTabPageWebUIWithSubpaths) {
+  auto* client = ChromePermissionsClient::GetInstance();
+
+  // Add trailing slash via spec since `ChromeUINewTabPageAsGURL()` does not
+  // have trailing slash.
+  GURL ntp_subpath = GURL(chrome::ChromeUINewTabPageURLAsGURL().spec())
+                         .Resolve("subpath/page?param=1#hash");
+  GURL newtab_subpath =
+      chrome::ChromeUINewTabURLAsGURL().Resolve("subpath/page?param=1#hash");
+
+  content::OverrideLastCommittedOrigin(web_contents()->GetPrimaryMainFrame(),
+                                       url::Origin::Create(ntp_subpath));
+
+  EXPECT_TRUE(client->IsFromNewTabPage(web_contents(), ntp_subpath,
+                                       /*already_overrode_requester=*/false));
+  EXPECT_TRUE(client->IsFromNewTabPage(web_contents(), newtab_subpath,
+                                       /*already_overrode_requester=*/false));
+}
+
+// Test that GURL is converted to origin so that way subpaths are ignored
+// and only identity is compared.
+TEST_F(ChromePermissionsClientTest, IsPrivilegedInternalWebUIWithSubpaths) {
+  auto* client = ChromePermissionsClient::GetInstance();
+
+  GURL omnibox_subpath = GURL(chrome::kChromeUIOmniboxPopupURL)
+                             .Resolve("subpath/page?param=1#hash");
+  GURL contextual_tasks_subpath = GURL(chrome::kChromeUIContextualTasksURL)
+                                      .Resolve("subpath/page?param=1#hash");
+
+  content::OverrideLastCommittedOrigin(web_contents()->GetPrimaryMainFrame(),
+                                       url::Origin::Create(omnibox_subpath));
+  EXPECT_TRUE(client->IsPrivilegedInternalWebUI(
+      web_contents(), omnibox_subpath, /*already_overrode_requester=*/false));
+  EXPECT_TRUE(client->IsPrivilegedInternalWebUIForUIRouting(web_contents()));
+
+  content::OverrideLastCommittedOrigin(
+      web_contents()->GetPrimaryMainFrame(),
+      url::Origin::Create(contextual_tasks_subpath));
+  EXPECT_TRUE(client->IsPrivilegedInternalWebUI(
+      web_contents(), contextual_tasks_subpath,
+      /*already_overrode_requester=*/false));
+  EXPECT_TRUE(client->IsPrivilegedInternalWebUIForUIRouting(web_contents()));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
