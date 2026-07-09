@@ -289,9 +289,11 @@ TEST_F(ComposeboxHandlerTest, SubmitQueryWithToolMetric) {
 
 TEST_F(ComposeboxHandlerTest, SetSmartTabSharingActive) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      contextual_tasks::kContextualTasksContext,
-      {{"ContextualTasksContextSmartTabSharing", "true"}});
+  feature_list.InitWithFeaturesAndParameters(
+      {{contextual_tasks::kContextualTasksContext,
+        {{"ContextualTasksContextSmartTabSharing", "true"}}},
+       {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
+      {});
 
   EXPECT_FALSE(handler().IsSmartTabSharingActive());
 

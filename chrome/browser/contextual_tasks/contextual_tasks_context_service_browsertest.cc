@@ -2023,6 +2023,7 @@ class ContextualTasksContextServiceSmartTabSharingTest
               {"ContextualTasksContextTabSelectionScoreThreshold", "0.8"},
               {"ContextualTasksContextContentVisibilityThreshold", "0.8"}}},
             {kContextualTasksContextLogging, {}},
+            {kContextualTasksForceEntryPointEligibility, {}},
         },
         /*disabled_features=*/{});
   }

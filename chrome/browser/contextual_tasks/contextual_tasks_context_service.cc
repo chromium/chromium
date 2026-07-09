@@ -35,6 +35,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
+#include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/site_exclusion_detail.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -349,8 +350,18 @@ ContextualTasksContextService::~ContextualTasksContextService() = default;
 
 // static
 bool ContextualTasksContextService::GetIsSmartTabSharingEnabled(
-    const Profile* profile) {
-  if (profile && profile->GetPrefs() &&
+    Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+  // Users can open the Contextual Tasks side panel even when they are not
+  // eligible for cobrowsing (and thus not eligible to add tabs or use Smart Tab
+  // Sharing). Explicitly check entry point eligibility here so Smart Tab
+  // Sharing UI and features are hidden when ineligible.
+  if (!EntryPointEligibilityManager::IsEligible(profile)) {
+    return false;
+  }
+  if (profile->GetPrefs() &&
       profile->GetPrefs()->GetInteger(
           kContextualTasksSmartTabSharingSettings) ==
           static_cast<int>(SmartTabSharingSettingsValue::kDisabled)) {
