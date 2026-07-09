@@ -77,6 +77,7 @@ class LocationBarPhone extends LocationBarLayout {
         if (isToolbarUiRefactorEnabled()) {
             setClickable(true);
             setLongClickable(true);
+            setUrlAndStatusGroupVisibility(false);
         }
     }
 
@@ -254,7 +255,17 @@ class LocationBarPhone extends LocationBarLayout {
         ConstraintLayout.LayoutParams urlBarLayoutParams =
                 (ConstraintLayout.LayoutParams) mUrlBar.getLayoutParams();
         if (mIsCenteringApplied) {
-            int maxComponentWidth = totalWidth - 2 * mCenteringSpacePx;
+            int backButtonWidth = getMeasuredWidthWithMargins(mBackButton, heightMeasureSpec);
+            int optButtonWidth =
+                    mOptionalButton != null
+                            ? getMeasuredWidthWithMargins(mOptionalButton, heightMeasureSpec)
+                            : 0;
+
+            int buttonSpace = Math.max(backButtonWidth, optButtonWidth);
+            // Ensure we have at least some minimum spacing.
+            buttonSpace = Math.max(buttonSpace, mCenteringSpacePx);
+
+            int maxComponentWidth = totalWidth - 2 * buttonSpace;
             int maxUrlWidth =
                     getMaxUrlWidth(mLocationBarStatusView, maxComponentWidth, heightMeasureSpec);
             maxUrlWidth = Math.max(mMinUrlWidthPx, maxUrlWidth);
@@ -295,6 +306,28 @@ class LocationBarPhone extends LocationBarLayout {
                     /* finalUrlWidth= */ 0,
                     urlBarLayoutParams);
         }
+    }
+
+    /**
+     * Returns the measured width of the view including its margins. If the view has not been
+     * measured yet (measured width is 0), it forces a measurement pass with UNSPECIFIED specs.
+     */
+    private int getMeasuredWidthWithMargins(View view, int heightMeasureSpec) {
+        if (view.getVisibility() == View.GONE) {
+            return 0;
+        }
+        MarginLayoutParams params = (MarginLayoutParams) view.getLayoutParams();
+        int width = view.getMeasuredWidth();
+        if (width == 0) {
+            if (params.width > 0) {
+                width = params.width;
+            } else {
+                int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+                view.measure(widthSpec, heightMeasureSpec);
+                width = view.getMeasuredWidth();
+            }
+        }
+        return width + params.getMarginStart() + params.getMarginEnd();
     }
 
     /**
@@ -386,6 +419,10 @@ class LocationBarPhone extends LocationBarLayout {
 
     /** Calculates the maximum allowed width for the UrlBar. */
     private int getMaxUrlWidth(View statusView, int maxComponentWidth, int heightMeasureSpec) {
+        if (statusView.getVisibility() == View.GONE) {
+            return maxComponentWidth;
+        }
+
         statusView.measure(
                 MeasureSpec.makeMeasureSpec(maxComponentWidth, MeasureSpec.AT_MOST),
                 heightMeasureSpec);

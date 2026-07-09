@@ -260,7 +260,9 @@ class LocationBarMediator
     private final @Nullable OmniboxChipManager mOmniboxChipManager;
     private final SettableNullableObservableSupplier<GURL> mExactMatchUrlSupplier;
     private final HintTextUpdater mHintTextUpdater;
+
     private SelectableView mUrlBarSelectableView;
+    private boolean mWaitingForInitialUrl;
     private @Nullable Boolean mIsLensOnOmniboxEnabled;
     private @Nullable ViewGroup mToolbarParent;
     private int mIndexInToolbar;
@@ -420,6 +422,21 @@ class LocationBarMediator
                         mFuseboxCoordinator,
                         mProfileSupplier,
                         (hint) -> mUrlCoordinator.setUrlBarHintText(hint));
+
+        int pageClass = mLocationBarDataProvider.getPageClassification(/* prefetch= */ false);
+        if (ToolbarVariationUtils.isToolbarUiRefactorEnabled(mContext)
+                && OmniboxViewUtil.isRegularTabContext(pageClass)) {
+            GURL currentUrl = mLocationBarDataProvider.getCurrentGurl();
+            if (UrlUtilities.isNtpUrl(currentUrl)
+                    || (!GURL.isEmptyOrInvalid(currentUrl) && mLocationBarDataProvider.hasTab())) {
+                mWaitingForInitialUrl = false;
+                mLocationBarLayout.setUrlAndStatusGroupVisibility(true);
+            } else {
+                mWaitingForInitialUrl = true;
+            }
+        } else {
+            mWaitingForInitialUrl = false;
+        }
     }
 
     /**
@@ -1165,6 +1182,12 @@ class LocationBarMediator
         // If the URL is currently focused, do not replace the text they have entered with the URL.
         // Once they stop editing the URL, the current tab's URL will automatically be filled in.
         mOriginalUrl = currentUrl;
+
+        if (mWaitingForInitialUrl && !GURL.isEmptyOrInvalid(currentUrl)) {
+            mWaitingForInitialUrl = false;
+            mLocationBarLayout.setUrlAndStatusGroupVisibility(true);
+        }
+
         if (mCurrentInput != null) {
             return;
         }

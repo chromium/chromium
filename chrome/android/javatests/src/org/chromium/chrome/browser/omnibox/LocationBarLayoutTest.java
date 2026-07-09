@@ -320,12 +320,14 @@ public class LocationBarLayoutTest {
     @Restriction({DeviceFormFactor.PHONE})
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testPhoneUrlBarCentering_EnabledAndUnfocused() {
+        UrlBar urlBar = getUrlBar();
+        CriteriaHelper.pollUiThread(
+                () -> urlBar.getVisibility() == View.VISIBLE, "URL bar failed to become visible");
+
         CriteriaHelper.pollUiThread(
                 () -> {
                     LocationBarLayout locationBar = getLocationBar();
                     View statusView = locationBar.findViewById(R.id.location_bar_status);
-                    View urlBar = getUrlBar();
-
                     boolean isStatusVisible = statusView.getVisibility() == View.VISIBLE;
 
                     int leftSpace = isStatusVisible ? statusView.getLeft() : urlBar.getLeft();
@@ -337,7 +339,6 @@ public class LocationBarLayoutTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    UrlBar urlBar = getUrlBar();
                     assertFalse(urlBar.isHorizontallyScrollable());
                     assertEquals(0, urlBar.getScrollX());
                 });
@@ -458,6 +459,9 @@ public class LocationBarLayoutTest {
         View urlBar = getUrlBar();
         View statusView = getLocationBar().findViewById(R.id.location_bar_status);
 
+        CriteriaHelper.pollUiThread(
+                () -> urlBar.getVisibility() == View.VISIBLE, "URL bar failed to become visible");
+
         // Wait for initial centering to apply
         CriteriaHelper.pollUiThread(() -> urlBar.getLeft() != 0, "URL bar failed to layout");
 
@@ -488,6 +492,9 @@ public class LocationBarLayoutTest {
     public void testPhoneUrlBarCentering_UrlChange() {
         UrlBar urlBar = getUrlBar();
         LocationBarLayout locationBar = getLocationBar();
+
+        CriteriaHelper.pollUiThread(
+                () -> urlBar.getVisibility() == View.VISIBLE, "URL bar failed to become visible");
 
         // 1. Set short URL
         ThreadUtils.runOnUiThreadBlocking(

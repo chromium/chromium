@@ -565,6 +565,13 @@ public class LocationBarLayout extends ConstraintLayout {
      */
     void setFuseboxLayoutMode(@FuseboxLayoutMode int layoutMode) {}
 
+    /** Sets the visibility of the UrlBar and StatusView group. */
+    /* package */ void setUrlAndStatusGroupVisibility(boolean visible) {
+        int visibility = visible ? View.VISIBLE : View.INVISIBLE;
+        mUrlBar.setVisibility(visibility);
+        mLocationBarStatusView.setVisibility(visibility);
+    }
+
     /**
      * Informs the location bar whether the autocomplete system is in "standby" i.e. accepting input
      * but not showing suggestions until input is received.
