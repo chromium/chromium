@@ -43,6 +43,9 @@ class CORE_EXPORT HTMLUserMediaElement
                                 mojom::blink::PermissionStatus status) override;
   void OnEmbeddedPermissionsDecided(
       mojom::blink::EmbeddedPermissionControlResult result) override;
+
+  Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
+
   void DefaultEventHandler(Event& event) override;
   mojom::blink::EmbeddedPermissionRequestDescriptorPtr
   CreateEmbeddedPermissionRequestDescriptor() override;
@@ -58,7 +61,7 @@ class CORE_EXPORT HTMLUserMediaElement
   // <usermedia> element is stable.
   bool IsLegacyMode() const;
 
-  void OnConstraintsSet(bool has_video, bool has_audio);
+  void ApplyDefaultConstraints();
 
   void ResetMediaStreamRequestTime();
 
@@ -72,7 +75,7 @@ class CORE_EXPORT HTMLUserMediaElement
 
  private:
   void StartMediaStreamRequest();
-  bool has_constraints_ = false;
+
   base::TimeTicks media_stream_request_start_time_;
   Member<DOMException> error_;
 };

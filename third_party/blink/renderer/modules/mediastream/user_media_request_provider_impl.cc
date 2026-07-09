@@ -128,10 +128,11 @@ void UserMediaRequestProviderImpl::StartRequest(
       UserMediaElementConstraints::From(*element).Constraints();
 
   if (!constraints) {
-    element->SetError(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError, "No constraints set"));
-    element->DispatchEvent(*Event::Create(event_type_names::kError));
-    return;
+    HTMLMediaStreamConstraints* default_constraints =
+        HTMLMediaStreamConstraints::Create();
+    default_constraints->setVideo(MediaTrackConstraints::Create());
+    default_constraints->setAudio(MediaTrackConstraints::Create());
+    constraints = default_constraints;
   }
 
   // Constraints that will be used for the UserMediaRequest.

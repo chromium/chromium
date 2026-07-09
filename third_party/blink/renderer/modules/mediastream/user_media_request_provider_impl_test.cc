@@ -187,35 +187,5 @@ TEST_F(UserMediaRequestProviderImplTest, CallbacksOnCancel) {
   EXPECT_EQ(stored_error->message(), "User denied");
 }
 
-TEST_F(UserMediaRequestProviderImplTest, StartRequestNoConstraintsError) {
-  V8TestingScope scope;
-  auto* provider = UserMediaRequestProvider::From(*GetDocument().domWindow());
-
-  auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-
-  // Set up event listeners
-  auto* error_listener = MakeGarbageCollected<TestEventListener>();
-  auto* stream_listener = MakeGarbageCollected<TestEventListener>();
-  element->addEventListener(event_type_names::kError, error_listener);
-  element->addEventListener(event_type_names::kStream, stream_listener);
-
-  Vector<mojom::blink::PermissionDescriptorPtr> descriptors;
-  auto descriptor = mojom::blink::PermissionDescriptor::New();
-  descriptor->name = mojom::blink::PermissionName::VIDEO_CAPTURE;
-  descriptors.push_back(std::move(descriptor));
-
-  provider->StartRequest(element, descriptors);
-
-  test::RunPendingTasks();
-
-  // Verify events
-  EXPECT_TRUE(error_listener->fired());
-  EXPECT_FALSE(stream_listener->fired());
-
-  DOMException* stored_error = element->error();
-  ASSERT_TRUE(stored_error);
-  EXPECT_EQ(stored_error->name(), "NotSupportedError");
-  EXPECT_EQ(stored_error->message(), "No constraints set");
-}
 
 }  // namespace blink

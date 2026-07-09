@@ -141,17 +141,19 @@ void UserMediaElementConstraints::setConstraints(
   if (constraints->hasVideo()) {
     sanitized_constraints->setVideo(
         SanitizeTrackConstraints(constraints->video()));
+  } else {
+    sanitized_constraints->setVideo(MediaTrackConstraints::Create());
   }
 
   if (constraints->hasAudio()) {
     sanitized_constraints->setAudio(
         SanitizeTrackConstraints(constraints->audio()));
+  } else {
+    sanitized_constraints->setAudio(MediaTrackConstraints::Create());
   }
 
   self.SetConstraints(sanitized_constraints);
   self.did_set_constraints_ = true;
-  element.OnConstraintsSet(sanitized_constraints->hasVideo(),
-                           sanitized_constraints->hasAudio());
 }
 
 }  // namespace blink

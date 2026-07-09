@@ -675,49 +675,6 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
 
-      // Initially the "ask" view is displayed.
-      DoPromptAndCheckHistograms(
-          "camera", EmbeddedPermissionPromptAskView::kAllowId, tester,
-          permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
-          /*accepted_count=*/1, /*accepted_once_count=*/0),
-      WaitForChipText(IDS_CAMERA_IN_USE),
-
-      CheckLastSampleAndResetTester(
-          variant_tester,
-          "Permissions.Prompt.VideoCapture.ElementAnchoredBubble.Variant",
-          static_cast<base::HistogramBase::Sample32>(
-              permissions::ElementAnchoredBubbleVariant::kAsk)),
-
-      Do([&, this]() {
-        SetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA,
-                          CONTENT_SETTING_DEFAULT);
-      }),
-      // Other permissions are not affected, check that the microphone
-      // permission has no histograms.
-      CheckHistogram(tester,
-                     permissions::PermissionUmaUtil::kPermissionsPromptAccepted,
-                     permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC,
-                     /*count=*/0),
-      CheckHistogram(
-          tester,
-          permissions::PermissionUmaUtil::kPermissionsPromptAcceptedOnce,
-          permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC,
-          /*count=*/0),
-
-      // Trigger and check a microphone "ask" prompt with allow-once.
-      DoPromptAndCheckHistograms(
-          "microphone", EmbeddedPermissionPromptAskView::kAllowThisTimeId,
-          tester, permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC,
-          /*accepted_count=*/0,
-          /*accepted_once_count=*/1),
-      WaitForChipText(IDS_MICROPHONE_IN_USE),
-
-      CheckLastSampleAndResetTester(
-          variant_tester,
-          "Permissions.Prompt.AudioCapture.ElementAnchoredBubble.Variant",
-          static_cast<base::HistogramBase::Sample32>(
-              permissions::ElementAnchoredBubbleVariant::kAsk)),
-
       Do([&, this]() {
         SetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA,
                           CONTENT_SETTING_BLOCK);
@@ -734,25 +691,12 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
           /*accepted_count=*/0,
           /*accepted_once_count=*/0),
 
-      // Wait for gUM request to complete before resetting content settings.
-      WaitForChipText(IDS_MICROPHONE_CAMERA_IN_USE),
       CheckLastSampleAndResetTester(
           variant_tester,
           "Permissions.Prompt.AudioAndVideoCapture.ElementAnchoredBubble."
           "Variant",
           static_cast<base::HistogramBase::Sample32>(
               permissions::ElementAnchoredBubbleVariant::kPreviouslyDenied)),
-
-      CheckHistogram(
-          tester,
-          permissions::PermissionUmaUtil::kPermissionsPromptAcceptedOnce,
-          permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
-          /*count=*/0),
-      CheckHistogram(
-          tester,
-          permissions::PermissionUmaUtil::kPermissionsPromptAcceptedOnce,
-          permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC,
-          /*count=*/1),
 
       // Reset permissions and show the combined prompt, now in "ask" mode.
       // First check the allow action, then the allow-once action.
@@ -780,7 +724,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
           static_cast<base::HistogramBase::Sample32>(
               permissions::ElementAnchoredBubbleVariant::kAsk)),
 
-      WaitForChipText(IDS_MICROPHONE_CAMERA_IN_USE), Do([&, this]() {
+      Do([&, this]() {
         SetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA,
                           CONTENT_SETTING_DEFAULT);
         SetContentSetting(ContentSettingsType::MEDIASTREAM_MIC,
@@ -802,27 +746,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
           "Permissions.Prompt.AudioAndVideoCapture.ElementAnchoredBubble."
           "Variant",
           static_cast<base::HistogramBase::Sample32>(
-              permissions::ElementAnchoredBubbleVariant::kAsk)),
-
-      // Check that all other histograms are unmodified.
-      CheckHistogram(
-          tester, permissions::PermissionUmaUtil::kPermissionsPromptAccepted,
-          permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
-          /*count=*/1),
-      CheckHistogram(
-          tester,
-          permissions::PermissionUmaUtil::kPermissionsPromptAcceptedOnce,
-          permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
-          /*count=*/0),
-      CheckHistogram(tester,
-                     permissions::PermissionUmaUtil::kPermissionsPromptAccepted,
-                     permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC,
-                     /*count=*/0),
-      CheckHistogram(
-          tester,
-          permissions::PermissionUmaUtil::kPermissionsPromptAcceptedOnce,
-          permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC,
-          /*count=*/1));
+              permissions::ElementAnchoredBubbleVariant::kAsk)));
 }
 
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
