@@ -628,12 +628,10 @@ void TestRenderFrameHost::SimulateCommitProcessed(
       same_document);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void TestRenderFrameHost::CreateHidServiceForTesting(
     mojo::PendingReceiver<blink::mojom::HidService> receiver) {
   RenderFrameHostImpl::GetHidService(std::move(receiver));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void TestRenderFrameHost::CreateWebUsbServiceForTesting(
     mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {

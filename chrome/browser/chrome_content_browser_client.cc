@@ -7202,6 +7202,13 @@ ChromeContentBrowserClient::GetWebAuthenticationDelegate() {
   return web_authentication_delegate_.get();
 }
 
+content::HidDelegate* ChromeContentBrowserClient::GetHidDelegate() {
+  if (!hid_delegate_) {
+    hid_delegate_ = std::make_unique<ChromeHidDelegate>();
+  }
+  return hid_delegate_.get();
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void ChromeContentBrowserClient::CreateDeviceInfoService(
     content::RenderFrameHost* render_frame_host,
@@ -7216,13 +7223,6 @@ void ChromeContentBrowserClient::CreateManagedConfigurationService(
   DCHECK(render_frame_host);
   ManagedConfigurationServiceImpl::Create(render_frame_host,
                                           std::move(receiver));
-}
-
-content::HidDelegate* ChromeContentBrowserClient::GetHidDelegate() {
-  if (!hid_delegate_) {
-    hid_delegate_ = std::make_unique<ChromeHidDelegate>();
-  }
-  return hid_delegate_.get();
 }
 
 content::DirectSocketsDelegate*

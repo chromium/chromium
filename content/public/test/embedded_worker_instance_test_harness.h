@@ -72,11 +72,9 @@ class EmbeddedWorkerInstanceTestHarness : public testing::Test {
 
   void StopAndResetWorker();
 
-#if !BUILDFLAG(IS_ANDROID)
   void BindHidServiceToWorker(
       const GURL& origin,
       mojo::PendingReceiver<blink::mojom::HidService> receiver);
-#endif
 
   void BindUsbServiceToWorker(
       const GURL& origin,

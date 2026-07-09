@@ -140,14 +140,10 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "hid_chooser_context_unittest.cc" ]
-
-  if (!is_android) {
-    sources += [
-      "chrome_hid_delegate_unittest.cc",
-      "hid_policy_allowed_devices_unittest.cc",
-    ]
-  }
+  sources = [
+    "chrome_hid_delegate_unittest.cc",
+    "hid_chooser_context_unittest.cc",
+  ]
 
   deps = [
     ":hid",
@@ -164,6 +160,10 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [ "hid_policy_allowed_devices_unittest.cc" ]
+  }
+
   if (is_chromeos) {
     sources += [ "hid_pinned_notification_unittest.cc" ]
     deps += [
@@ -176,7 +176,9 @@ source_set("unit_tests") {
       "//content/test:test_support",
       "//testing/gtest",
     ]
-  } else if (!is_android) {
+  }
+
+  if (is_win || is_mac || is_linux) {
     sources += [ "hid_status_icon_unittest.cc" ]
     deps += [ "//chrome/browser/device_notifications:unit_tests" ]
   }

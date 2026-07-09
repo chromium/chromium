@@ -91,7 +91,6 @@ void EmbeddedWorkerInstanceTestHarness::StopAndResetWorker() {
   worker_version_.reset();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void EmbeddedWorkerInstanceTestHarness::BindHidServiceToWorker(
     const GURL& origin,
     mojo::PendingReceiver<blink::mojom::HidService> receiver) {
@@ -99,7 +98,6 @@ void EmbeddedWorkerInstanceTestHarness::BindHidServiceToWorker(
   EXPECT_NE(worker, nullptr);
   worker->BindHidService(url::Origin::Create(origin), std::move(receiver));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void EmbeddedWorkerInstanceTestHarness::BindUsbServiceToWorker(
     const GURL& origin,

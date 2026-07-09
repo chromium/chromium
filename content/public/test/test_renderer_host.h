@@ -22,16 +22,13 @@
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
+#include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/test/aura_test_helper.h"
 #endif
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace aura {
 namespace test {
@@ -154,11 +151,9 @@ class RenderFrameHostTester {
   // Creates and appends a fenced frame.
   virtual RenderFrameHost* AppendFencedFrame() = 0;
 
-#if !BUILDFLAG(IS_ANDROID)
   // Creates the HidService and binds `receiver`.
   virtual void CreateHidServiceForTesting(
       mojo::PendingReceiver<blink::mojom::HidService> receiever) = 0;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Creates the WebUsbService and binds `receiver`.
   virtual void CreateWebUsbServiceForTesting(

@@ -117,10 +117,8 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) override;
   void ResetLocalFrame() override;
 
-#if !BUILDFLAG(IS_ANDROID)
   void CreateHidServiceForTesting(
       mojo::PendingReceiver<blink::mojom::HidService> receiver) override;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   void SendNavigate(int nav_entry_id,
                     bool did_create_new_entry,

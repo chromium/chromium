@@ -796,6 +796,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::RenderFrameHost* rfh,
       const url::Origin& caller_origin) override;
   content::WebAuthenticationDelegate* GetWebAuthenticationDelegate() override;
+  content::HidDelegate* GetHidDelegate() override;
 #if !BUILDFLAG(IS_ANDROID)
   void CreateDeviceInfoService(
       content::RenderFrameHost* render_frame_host,
@@ -804,7 +805,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::ManagedConfigurationService> receiver)
       override;
-  content::HidDelegate* GetHidDelegate() override;
   content::DirectSocketsDelegate* GetDirectSocketsDelegate() override;
   content::SensorDelegate* GetSensorDelegate() override;
   std::unique_ptr<content::AuthenticatorRequestClientDelegate>
@@ -1410,8 +1410,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   std::unique_ptr<ChromeWebAuthenticationDelegateBase>
       web_authentication_delegate_;
-#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ChromeHidDelegate> hid_delegate_;
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ChromeDirectSocketsDelegate> direct_sockets_delegate_;
   std::unique_ptr<ChromeSensorDelegate> sensor_delegate_;
 #endif
