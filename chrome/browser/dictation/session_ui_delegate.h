@@ -36,6 +36,9 @@ class SessionUiDelegate {
   // Registers a callback to be notified of session state changes.
   virtual base::CallbackListSubscription AddSessionStateChangedCallback(
       SessionStateChangedCallback callback) = 0;
+
+  // Called when the tab hosting the UI is closing.
+  virtual void HostTabDidClose() = 0;
 };
 
 }  // namespace dictation

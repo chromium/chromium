@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/dictation/dictation_bubble_ui.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "components/tabs/public/tab_interface.h"
@@ -43,6 +45,7 @@ SessionUiImpl::SessionUiImpl(tabs::TabInterface& tab,
   BrowserWindowInterface* window = tab.GetBrowserWindowInterface();
   CHECK(window);
 
+  // TODO(b/529143806): This should be anchoring to a Tab/WebContents View.
   views::View* anchor_view =
       BrowserElementsViews::From(window)->GetView(kTopContainerElementId);
   if (!anchor_view) {
@@ -62,7 +65,25 @@ SessionUiImpl::SessionUiImpl(tabs::TabInterface& tab,
 
   // TODO(b/510778034): Determine what we need to make this accessibility
   // friendly.
-  bubble_ui_->Show();
+
+  // TODO(bokan): Handle the case where !tab_dialog_manager()->CanShowDialog().
+  // Should we be using a TabDialog? This might be temporary.
+
+  auto params = std::make_unique<tabs::TabDialogManager::Params>();
+  params->disable_input = false;
+  params->block_new_modal = false;
+  params->close_on_detach = false;
+  params->get_dialog_bounds = base::BindRepeating(
+      &DictationBubbleUi::GetBubbleBounds, base::Unretained(bubble_ui_.get()));
+
+  tab.GetTabFeatures()->tab_dialog_manager()->ShowDialog(
+      bubble_ui_->GetWidget(), std::move(params));
+
+  tab_detach_subscription_ = tab.RegisterWillDetach(base::BindRepeating(
+      &SessionUiImpl::OnTabWillDetach, base::Unretained(this)));
+
+  tab_insert_subscription_ = tab.RegisterDidInsert(base::BindRepeating(
+      &SessionUiImpl::OnTabInserted, base::Unretained(this)));
 }
 
 SessionUiImpl::~SessionUiImpl() = default;
@@ -87,6 +108,28 @@ void SessionUiImpl::OnToggleActiveStreamClicked() {
     case SessionState::kFinalizing:
       // The toggle button should be disabled while finalizing.
       NOTREACHED();
+  }
+}
+
+void SessionUiImpl::OnTabWillDetach(tabs::TabInterface* tab,
+                                    tabs::TabInterface::DetachReason reason) {
+  if (reason == tabs::TabInterface::DetachReason::kDelete) {
+    controller_->HostTabDidClose();
+    // WARNING: Do not add code below, `this` is deleted.
+  }
+}
+
+void SessionUiImpl::OnTabInserted(tabs::TabInterface* tab) {
+  BrowserWindowInterface* window = tab->GetBrowserWindowInterface();
+  if (!window) {
+    return;
+  }
+  // TODO(b/529143806): This would likely be unneeded if the anchor was based on
+  // the Tab/WebContents View.
+  views::View* new_anchor_view =
+      BrowserElementsViews::From(window)->GetView(kTopContainerElementId);
+  if (new_anchor_view) {
+    bubble_ui_->SetAnchorView(new_anchor_view);
   }
 }
 

@@ -11,10 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/dictation/session_state.h"
 #include "chrome/browser/dictation/session_ui.h"
-
-namespace tabs {
-class TabInterface;
-}
+#include "components/tabs/public/tab_interface.h"
 
 namespace dictation {
 
@@ -34,10 +31,15 @@ class SessionUiImpl : public SessionUi {
   void OnDictationBubbleCloseClicked();
   void OnToggleActiveStreamClicked();
   void OnSessionStateChanged(SessionState state);
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
+  void OnTabInserted(tabs::TabInterface* tab);
 
   const base::raw_ref<SessionUiDelegate> controller_;
 
   base::CallbackListSubscription session_state_changed_subscription_;
+  base::CallbackListSubscription tab_detach_subscription_;
+  base::CallbackListSubscription tab_insert_subscription_;
 
   // This is the main bubble/toast that shows up at the top-center of the
   // screen.

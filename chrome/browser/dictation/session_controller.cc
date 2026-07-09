@@ -99,6 +99,13 @@ SessionState SessionController::GetState() const {
   return state_;
 }
 
+void SessionController::HostTabDidClose() {
+  // Intentionally end the session synchronously in this path to avoid dangling
+  // pointers to deleted UI components.
+  delegate_->EndSession();
+  // WARNING: `this` is deleted, do not add code below here.
+}
+
 void SessionController::DidUpdateStreamProviderState(
     StreamProvider& stream_provider,
     StreamProvider::StreamState old_state) {

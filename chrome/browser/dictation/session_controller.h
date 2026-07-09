@@ -46,6 +46,7 @@ class SessionController : public SessionUiDelegate,
   SessionState GetState() const override;
   base::CallbackListSubscription AddSessionStateChangedCallback(
       SessionStateChangedCallback callback) override;
+  void HostTabDidClose() override;
 
   // StreamProviderDelegate:
   void DidUpdateStreamProviderState(

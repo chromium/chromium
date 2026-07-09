@@ -16,7 +16,10 @@
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/dictation/dictation_bubble_ui.h"
 #include "chrome/common/extensions/api/dictation_private.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -25,6 +28,7 @@
 #include "extensions/common/switches.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/button/label_button.h"
+#include "url/gurl.h"
 
 namespace dictation {
 
@@ -33,6 +37,20 @@ class DictationSessionUiImplBrowserTest
  public:
   DictationSessionUiImplBrowserTest() = default;
   ~DictationSessionUiImplBrowserTest() override = default;
+
+ protected:
+  auto CloseTab(int index) {
+    return Do([this, index]() {
+      browser()->tab_strip_model()->CloseWebContentsAt(
+          index, TabCloseTypes::CLOSE_USER_GESTURE);
+    });
+  }
+
+  auto MoveTabToWindow(Browser* source, Browser* target, int index) {
+    return Do([source, target, index]() {
+      chrome::MoveTabsToExistingWindow(source, target, {index});
+    });
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
@@ -150,6 +168,70 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
     PressButton(DictationBubbleUi::kToggleButtonElementIdForTesting),
     CheckResult(GetSessionState(), SessionState::kFinalizing),
     CheckResult(HasAttachedStreamProvider(), false)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, TabSwitchHidesUI) {
+  // Add a second tab with the first tab in the foreground.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+
+    // Switch to the second tab and ensure the UI hides.
+    SelectTab(kTabStripElementId, 1),
+    WaitForHide(DictationBubbleUi::kViewElementIdForTesting)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, CloseTabEndsSession) {
+  // Add a second tab with the first tab in the foreground.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+
+    // Close the active tab (tab 0).
+    CloseTab(0),
+
+    // The UI should hide and the session should be ended.
+    WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
+    CheckHasSession(false)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+                       UiFollowsDetachedTab) {
+  // Add a second tab with the first tab in the foreground.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  // Create a second browser window.
+  Browser* second_browser = CreateBrowser(browser()->profile());
+
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+
+    // Move the dictating tab to the second window.
+    MoveTabToWindow(browser(), second_browser, 0),
+
+    // Ensure the UI follows the tab to the new window.
+    InContext(BrowserElements::From(second_browser)->GetContext(),
+              WaitForShow(DictationBubbleUi::kViewElementIdForTesting)),
+    InContext(BrowserElements::From(browser())->GetContext(),
+              EnsureNotPresent(DictationBubbleUi::kViewElementIdForTesting)),
+    CheckHasSession(true)
   );
   // clang-format on
 }

@@ -202,6 +202,7 @@ DictationBubbleUi::DictationBubbleUi(
   set_close_on_deactivate(false);
   SetContentsView(std::make_unique<DictationToastView>(
       std::move(close_callback), std::move(toggle_active_stream_callback)));
+  SetCanActivate(false);
 
   // TODO(crbug.com/509983464): Update this to call an undeprecated factory
   // function when this bug is fixed.
