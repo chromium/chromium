@@ -198,7 +198,7 @@ void WebGpuRecyclableResourceProvider::OnContextDestroyed() {
   canvas_image_provider_.reset();
 }
 
-void WebGpuRecyclableResourceProvider::OnDestroyRecyclableCanvasResource(
+void WebGpuRecyclableResourceProvider::WaitSyncToken(
     const gpu::SyncToken& sync_token) {
   resource()->WaitSyncToken(sync_token);
 }

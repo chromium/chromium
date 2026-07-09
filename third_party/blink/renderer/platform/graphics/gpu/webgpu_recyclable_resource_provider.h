@@ -84,9 +84,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   void DoExternalOverdraw(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
-  // For WebGpu RecyclableCanvasResource.
-  void OnDestroyRecyclableCanvasResource(const gpu::SyncToken& sync_token);
-
   // This is a workaround to ensure WaitSyncToken() is still called even when
   // copying is effectively skipped due to a dummy WebGPU texture.
   void PrepareForWebGPUDummyMailbox();
@@ -117,6 +114,7 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   // write have completed. Ensures that the next read of this resource (whether
   // via raster or the compositor) waits on this token.
   void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
+  void WaitSyncToken(const gpu::SyncToken& sync_token);
 
  private:
   WebGpuRecyclableResourceProvider(

@@ -71,8 +71,7 @@ void WebGPURecyclableResourceCache::OnDestroyRecyclableResource(
   if (context_provider_) {
     total_unused_resources_in_bytes_ += resource_size;
 
-    // WaitSyncToken on the canvas resource.
-    resource_provider->OnDestroyRecyclableCanvasResource(completion_sync_token);
+    resource_provider->WaitSyncToken(completion_sync_token);
 
     unused_providers_.push_front(Resource(std::move(resource_provider),
                                           current_timer_id_, resource_size));
