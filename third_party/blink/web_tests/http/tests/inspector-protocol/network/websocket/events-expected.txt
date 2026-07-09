@@ -1,0 +1,30 @@
+Tests that WebSocket related CDP events are emitted.
+WebSocketCreated
+  url: ws://localhost:8880/echo
+  has requestId: true
+  has initiator: true
+WebSocketWillSendHandshakeRequest
+  has wallTime: true
+  has request headers: true
+WebSocketHandshakeResponseReceived
+  status: 101
+  has response headers: true
+WebSocketFrameSent
+  payload: test
+  opcode: 1
+  mask: true
+WebSocketFrameSent
+  payload: exit
+  opcode: 1
+  mask: true
+WebSocketFrameReceived
+  payload: test
+  opcode: 1
+  mask: false
+WebSocketFrameReceived
+  payload: exit
+  opcode: 1
+  mask: false
+WebSocketClosed
+  has timestamp: true
+
