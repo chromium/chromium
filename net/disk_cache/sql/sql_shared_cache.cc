@@ -26,13 +26,7 @@ SqlSharedCache::SqlSharedCache(
       on_unreferenced_callback_(std::move(on_unreferenced_callback)),
       db_task_runner_(std::move(db_task_runner)) {}
 
-SqlSharedCache::~SqlSharedCache() {
-  // Invoking AsyncCall() via Cleanup() upon destruction ensures that DB closure
-  // completion is reported to SqlAsyncTaskManager. This guarantees that calling
-  // SqlAsyncTaskManager::RunUntilAllTasksCompleteForTest() in tests ensures
-  // the DB is fully closed, preventing errors when re-opening the same DB.
-  Cleanup(base::DoNothing());
-}
+SqlSharedCache::~SqlSharedCache() = default;
 
 void SqlSharedCache::Cleanup(base::OnceClosure callback) {
   if (!isolated_database_) {
