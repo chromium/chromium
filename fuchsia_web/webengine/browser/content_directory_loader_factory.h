@@ -9,12 +9,14 @@
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_handle.h>
 
+#include "base/files/file_path.h"
 #include "base/memory/self_deleting.h"
 #include "base/task/sequenced_task_runner.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
@@ -54,8 +56,18 @@ class ContentDirectoryLoaderFactory
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) final;
 
+  net::Error OpenFileFromDirectory(
+      const std::string& content_directory_name,
+      const base::FilePath& relative_file_path,
+      fidl::InterfaceRequest<fuchsia::io::Node> file_request);
+
   // Used for executing blocking URLLoader routines.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  fidl::InterfaceHandle<fuchsia::io::Directory> content_directories_handle_;
+
+  std::string cached_directory_name_;
+  fidl::InterfaceHandle<fuchsia::io::Directory> cached_directory_;
 };
 
 #endif  // FUCHSIA_WEB_WEBENGINE_BROWSER_CONTENT_DIRECTORY_LOADER_FACTORY_H_

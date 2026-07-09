@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
@@ -303,34 +304,6 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
   std::unique_ptr<mojo::DataPipeProducer> body_writer_;
 };
 
-net::Error OpenFileFromDirectory(
-    const std::string& content_directory_name,
-    const base::FilePath& relative_file_path,
-    fidl::InterfaceRequest<fuchsia::io::Node> file_request) {
-  DCHECK(file_request);
-  DCHECK(!relative_file_path.IsAbsolute());
-
-  if (!IsValidContentDirectoryName(content_directory_name)) {
-    return net::ERR_FILE_NOT_FOUND;
-  }
-
-  auto absolute_file_path =
-      base::FilePath(ContentDirectoryLoaderFactory::kContentDirectoriesPath)
-          .Append(content_directory_name)
-          .Append(relative_file_path);
-
-  const zx_status_t status =
-      fdio_open3(absolute_file_path.value().c_str(),
-                 static_cast<uint64_t>(fuchsia::io::PERM_READABLE),
-                 file_request.TakeChannel().release());
-  if (status != ZX_OK) {
-    ZX_DLOG(WARNING, status) << "fdio_open3";
-    return net::ERR_FILE_NOT_FOUND;
-  }
-
-  return net::OK;
-}
-
 }  // namespace
 
 // static
@@ -357,9 +330,56 @@ ContentDirectoryLoaderFactory::ContentDirectoryLoaderFactory(
     : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver), key),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {}
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
+  content_directories_handle_ =
+      base::OpenDirectoryHandle(base::FilePath(kContentDirectoriesPath));
+}
 
 ContentDirectoryLoaderFactory::~ContentDirectoryLoaderFactory() = default;
+
+net::Error ContentDirectoryLoaderFactory::OpenFileFromDirectory(
+    const std::string& content_directory_name,
+    const base::FilePath& relative_file_path,
+    fidl::InterfaceRequest<fuchsia::io::Node> file_request) {
+  DCHECK(file_request);
+  DCHECK(!relative_file_path.IsAbsolute());
+  DCHECK(!content_directory_name.empty());
+
+  if (!IsValidContentDirectoryName(content_directory_name)) {
+    return net::ERR_FILE_NOT_FOUND;
+  }
+
+  if (!content_directories_handle_.is_valid()) {
+    return net::ERR_FILE_NOT_FOUND;
+  }
+
+  if (content_directory_name != cached_directory_name_ ||
+      !cached_directory_.is_valid()) {
+    fidl::InterfaceHandle<fuchsia::io::Directory> directory_handle;
+    const zx_status_t status =
+        fdio_open3_at(content_directories_handle_.channel().get(),
+                      content_directory_name.c_str(),
+                      static_cast<uint64_t>(fuchsia::io::PERM_READABLE),
+                      directory_handle.NewRequest().TakeChannel().release());
+    if (status != ZX_OK) {
+      ZX_LOG(WARNING, status) << "fdio_open3_at " << content_directory_name;
+      return net::ERR_FILE_NOT_FOUND;
+    }
+    cached_directory_ = std::move(directory_handle);
+    cached_directory_name_ = content_directory_name;
+  }
+
+  const zx_status_t status = fdio_open3_at(
+      cached_directory_.channel().get(), relative_file_path.value().c_str(),
+      static_cast<uint64_t>(fuchsia::io::PERM_READABLE),
+      file_request.TakeChannel().release());
+  if (status != ZX_OK) {
+    ZX_LOG(WARNING, status) << "fdio_open3_at " << relative_file_path;
+    return net::ERR_FILE_NOT_FOUND;
+  }
+
+  return net::OK;
+}
 
 void ContentDirectoryLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
@@ -388,9 +408,9 @@ void ContentDirectoryLoaderFactory::CreateLoaderAndStart(
   requested_path.remove_prefix(1);
 
   fidl::InterfaceHandle<fuchsia::io::Node> file_handle;
-  net::Error open_result = OpenFileFromDirectory(
-      request.url.DeprecatedGetOriginAsURL().GetHost(),
-      base::FilePath(requested_path), file_handle.NewRequest());
+  net::Error open_result = OpenFileFromDirectory(request.url.GetHost(),
+                                                 base::FilePath(requested_path),
+                                                 file_handle.NewRequest());
   if (open_result != net::OK) {
     mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
         ->OnComplete(network::URLLoaderCompletionStatus(open_result));
@@ -403,7 +423,7 @@ void ContentDirectoryLoaderFactory::CreateLoaderAndStart(
   // ContentDirectoryURLLoader::Start().
   fidl::InterfaceHandle<fuchsia::io::Node> metadata_handle;
   open_result = OpenFileFromDirectory(
-      request.url.DeprecatedGetOriginAsURL().GetHost(),
+      request.url.GetHost(),
       base::FilePath(base::StrCat({requested_path, "._metadata"})),
       metadata_handle.NewRequest());
   if (open_result != net::OK) {
