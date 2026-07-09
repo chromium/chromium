@@ -374,6 +374,7 @@ source_set("unit_tests") {
     "api/messaging/native_renderer_messaging_service_unittest.cc",
     "api/messaging/one_time_message_handler_unittest.cc",
     "api/runtime_hooks_delegate_unittest.cc",
+    "api/web_request_natives_unittest.cc",
     "api_activity_logger_unittest.cc",
     "bindings/api_binding_bridge_unittest.cc",
     "bindings/api_binding_hooks_test_delegate.cc",
