@@ -17,9 +17,10 @@ class V4GetHashProtocolManagerFuzzer {
     std::string input(reinterpret_cast<const char*>(data), size);
     if (!response.ParseFromString(input))
       return 0;
-    safe_browsing::ThreatMetadata metadata;
+    safe_browsing::FullHashInfo full_hash_info("", GetChromeUrlApiId(),
+                                               base::Time());
     for (const ThreatMatch& match : response.matches()) {
-      V4GetHashProtocolManager::ParseMetadata(match, &metadata);
+      V4GetHashProtocolManager::ParseMetadata(match, &full_hash_info);
     }
     return 0;
   }

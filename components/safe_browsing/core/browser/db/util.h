@@ -46,9 +46,6 @@ struct ThreatMetadata {
   // Returns the metadata in a format tracing can support.
   std::unique_ptr<base::trace_event::TracedValue> ToTracedValue() const;
 
-  // Set of permissions blocked. Used with threat_type API_ABUSE.
-  // This will be empty if it wasn't present in the response.
-  std::set<std::string> api_permissions;
 
   // Map of list sub-types related to the SUBRESOURCE_FILTER threat type.
   SubresourceFilterMatch subresource_filter_match;

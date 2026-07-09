@@ -351,7 +351,7 @@ class SafeBrowsingDatabaseManager
   // notification abuse results for prefixes of the |url| argument in
   // CheckNotificationAbuseUrl. This should be called on the UI thread.
   void OnThreatMetadataResponse(std::unique_ptr<NotificationAbuseCheck> check,
-                                const ThreatMetadata& md);
+                                bool is_abusive);
 
   // SafeBrowsingDatabaseManager passes its |ui_task_runner| construction
   // parameter to its RefCountedDeleteOnSequence base class, which exposes its

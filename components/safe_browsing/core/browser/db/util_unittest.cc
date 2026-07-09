@@ -9,23 +9,26 @@ namespace {
 
 TEST(ThreatMetadataTest, Equality) {
   ThreatMetadata t1;
-  t1.api_permissions = {"API_ABUSE"};
+  t1.subresource_filter_match = {
+      {SubresourceFilterType::ABUSIVE, SubresourceFilterLevel::ENFORCE}};
   ThreatMetadata t2;
-  t2.api_permissions = {"API_ABUSE"};
+  t2.subresource_filter_match = {
+      {SubresourceFilterType::ABUSIVE, SubresourceFilterLevel::ENFORCE}};
   EXPECT_TRUE(t1 == t2);
 }
 
 TEST(ThreatMetadataTest, Inequality) {
   ThreatMetadata t1;
-  t1.api_permissions = {"API_ABUSE"};
+  t1.subresource_filter_match = {
+      {SubresourceFilterType::ABUSIVE, SubresourceFilterLevel::ENFORCE}};
   ThreatMetadata t2;
-  t2.api_permissions = {"OTHER_API"};
+  t2.subresource_filter_match = {
+      {SubresourceFilterType::ABUSIVE, SubresourceFilterLevel::WARN}};
   EXPECT_TRUE(t1 != t2);
 }
 
 TEST(ThreatMetadataTest, ToTracedValue) {
   ThreatMetadata t1;
-  t1.api_permissions = {"API_ABUSE"};
   t1.subresource_filter_match = {
       {SubresourceFilterType::ABUSIVE, SubresourceFilterLevel::ENFORCE}};
   std::unique_ptr<base::trace_event::TracedValue> v1 = t1.ToTracedValue();
@@ -33,7 +36,6 @@ TEST(ThreatMetadataTest, ToTracedValue) {
   v1->AppendAsTraceFormat(&json);
   EXPECT_EQ(
       "{"
-      "\"api_permissions\":[\"API_ABUSE\"],"
       "\"subresource_filter_match\":{\"match_metadata\":[0,1]}"
       "}",
       json);

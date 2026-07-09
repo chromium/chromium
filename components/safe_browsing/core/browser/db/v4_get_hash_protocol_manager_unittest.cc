@@ -104,9 +104,9 @@ class V4GetHashProtocolManagerTest : public PlatformTest {
     pm->SetClockForTests(&clock_);
   }
 
-  void ValidateGetV4ApiResults(const ThreatMetadata& expected_md,
-                               const ThreatMetadata& actual_md) {
-    EXPECT_EQ(expected_md, actual_md);
+  void ValidateNotificationAbuseResults(bool expected_is_abusive,
+                                        bool actual_is_abusive) {
+    EXPECT_EQ(expected_is_abusive, actual_is_abusive);
     callback_called_ = true;
   }
 
@@ -302,7 +302,7 @@ TEST_F(V4GetHashProtocolManagerTest, TestGetHashErrorHandlingOK) {
       StoreAndHashPrefix(GetChromeUrlApiId(), prefix));
   std::vector<FullHashInfo> expected_results;
   FullHashInfo fhi(full_hash, GetChromeUrlApiId(), now + base::Seconds(300));
-  fhi.metadata.api_permissions.insert("NOTIFICATIONS");
+  fhi.is_notification_abusive = true;
   expected_results.push_back(fhi);
 
   pm->GetFullHashes(
@@ -436,8 +436,7 @@ TEST_F(V4GetHashProtocolManagerTest, TestParseHashResponse) {
   const FullHashInfo& fhi = full_hash_infos[0];
   EXPECT_EQ(full_hash, fhi.full_hash);
   EXPECT_EQ(GetChromeUrlApiId(), fhi.list_id);
-  EXPECT_EQ(1ul, fhi.metadata.api_permissions.size());
-  EXPECT_EQ(1ul, fhi.metadata.api_permissions.count("NOTIFICATIONS"));
+  EXPECT_TRUE(fhi.is_notification_abusive);
   EXPECT_EQ(now + base::Seconds(300), fhi.positive_expiry);
   EXPECT_EQ(now + base::Seconds(400), pm->next_gethash_time_);
 }
@@ -581,7 +580,7 @@ TEST_F(V4GetHashProtocolManagerTest,
   const auto& fhi = full_hash_infos[0];
   EXPECT_EQ(full_hash, fhi.full_hash);
   EXPECT_EQ(GetChromeUrlApiId(), fhi.list_id);
-  EXPECT_TRUE(fhi.metadata.api_permissions.empty());
+  EXPECT_FALSE(fhi.is_notification_abusive);
 }
 
 TEST_F(V4GetHashProtocolManagerTest,
@@ -736,7 +735,7 @@ TEST_F(V4GetHashProtocolManagerTest, TestUpdatesAreMerged) {
                                 now + base::Seconds(200));
   expected_results.emplace_back(full_hash_2, GetChromeUrlApiId(),
                                 now + base::Seconds(300));
-  expected_results[1].metadata.api_permissions.insert("NOTIFICATIONS");
+  expected_results[1].is_notification_abusive = true;
 
   pm->GetFullHashes(
       matched_locally, {},
@@ -767,16 +766,15 @@ TEST_F(V4GetHashProtocolManagerTest, TestUpdatesAreMerged) {
 
 // The server responds back with full hash information containing metadata
 // information for one of the full hashes for the URL in test.
-TEST_F(V4GetHashProtocolManagerTest, TestGetFullHashesWithApisMergesMetadata) {
+TEST_F(V4GetHashProtocolManagerTest,
+       TestGetFullHashesForNotificationAbuse_Abusive) {
   const GURL url("https://www.example.com/more");
-  ThreatMetadata expected_md;
-  expected_md.api_permissions.insert("NOTIFICATIONS");
-  expected_md.api_permissions.insert("AUDIO_CAPTURE");
   std::unique_ptr<V4GetHashProtocolManager> pm(CreateProtocolManager());
-  pm->GetFullHashesWithApis(
+  pm->GetFullHashesForNotificationAbuse(
       url, {} /* list_client_states */,
-      base::BindOnce(&V4GetHashProtocolManagerTest::ValidateGetV4ApiResults,
-                     base::Unretained(this), expected_md));
+      base::BindOnce(
+          &V4GetHashProtocolManagerTest::ValidateNotificationAbuseResults,
+          base::Unretained(this), /*expected_is_abusive=*/true));
 
   // The following two random looking strings value are two of the full hashes
   // produced by UrlToFullHashes in v4_protocol_manager_util.h for the URL:
@@ -799,6 +797,29 @@ TEST_F(V4GetHashProtocolManagerTest, TestGetFullHashesWithApisMergesMetadata) {
   info = TestV4HashResponseInfo(full_hash, GetChromeUrlApiId());
   info.key_values.emplace_back("permission", "GEOLOCATION");
   infos.push_back(info);
+  SetupFetcherToReturnOKResponse(pm.get(), infos);
+
+  EXPECT_TRUE(callback_called());
+}
+
+TEST_F(V4GetHashProtocolManagerTest,
+       TestGetFullHashesForNotificationAbuse_NotAbusive) {
+  const GURL url("https://www.example.com/more");
+  std::unique_ptr<V4GetHashProtocolManager> pm(CreateProtocolManager());
+  pm->GetFullHashesForNotificationAbuse(
+      url, {} /* list_client_states */,
+      base::BindOnce(
+          &V4GetHashProtocolManagerTest::ValidateNotificationAbuseResults,
+          base::Unretained(this), /*expected_is_abusive=*/false));
+
+  std::vector<TestV4HashResponseInfo> infos;
+  FullHashStr full_hash;
+  base::Base64Decode("1ZzJ0/7NjPkg6t0DAS8L5Jf7jA48Pn7opQcP4UXYeXc=",
+                     &full_hash);
+  TestV4HashResponseInfo info(full_hash, GetChromeUrlApiId());
+  info.key_values.emplace_back("permission", "GEOLOCATION");
+  infos.push_back(info);
+
   SetupFetcherToReturnOKResponse(pm.get(), infos);
 
   EXPECT_TRUE(callback_called());

@@ -74,7 +74,7 @@ bool SafeBrowsingDatabaseManager::CheckNotificationAbuseUrl(const GURL& url,
   SBProtocolManagerUtil::GetListClientStatesFromStoreStateMap(
       GetStoreStateMap(), &list_client_states);
 
-  v4_get_hash_protocol_manager_->GetFullHashesWithApis(
+  v4_get_hash_protocol_manager_->GetFullHashesForNotificationAbuse(
       url, list_client_states,
       base::BindOnce(&SafeBrowsingDatabaseManager::OnThreatMetadataResponse,
                      base::Unretained(this), std::move(check)));
@@ -112,7 +112,7 @@ std::unique_ptr<StoreStateMap> SafeBrowsingDatabaseManager::GetStoreStateMap() {
 
 void SafeBrowsingDatabaseManager::OnThreatMetadataResponse(
     std::unique_ptr<NotificationAbuseCheck> check,
-    const ThreatMetadata& md) {
+    bool is_abusive) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(check);
 
@@ -123,7 +123,6 @@ void SafeBrowsingDatabaseManager::OnThreatMetadataResponse(
     return;
   }
 
-  bool is_abusive = md.api_permissions.count("NOTIFICATIONS") > 0;
   check->client()->OnCheckNotificationAbuseUrlResult(is_abusive);
   notification_abuse_checks_.erase(it);
 }

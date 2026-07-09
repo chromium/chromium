@@ -25,11 +25,6 @@ std::unique_ptr<base::trace_event::TracedValue> ThreatMetadata::ToTracedValue()
     const {
   auto value = std::make_unique<base::trace_event::TracedValue>();
 
-  value->BeginArray("api_permissions");
-  for (const std::string& permission : api_permissions) {
-    value->AppendString(permission);
-  }
-  value->EndArray();
 
   value->BeginDictionary("subresource_filter_match");
   for (const auto& it : subresource_filter_match) {
