@@ -409,12 +409,29 @@ public class BottomSheetObserverTest {
         callbackHelper.waitForCallback(callbackCount, 1);
         assertEquals(1f, mObserver.getLastOffsetChangedValue(), MathUtils.EPSILON);
 
-        // Halfway between peek and full should send 0.5.
+        // Halfway between peek and full should send 0.5 (adjusted for display pixel rounding and
+        // browser controls).
+        // We must wait for the sheet to transition out of FULL state into HALF state before
+        // calculating expectedMidFraction. While in FULL state, getOffsetFromBrowserControls()
+        // returns 0; once in HALF state, it returns the active controls offset needed for exact
+        // math.
         callbackCount = callbackHelper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mTestSupport.setSheetOffsetFromBottom(midPeekFull, StateChangeReason.NONE));
         callbackHelper.waitForCallback(callbackCount, 1);
-        assertEquals(0.5f, mObserver.getLastOffsetChangedValue(), MathUtils.EPSILON);
+
+        float containerHeight = mBottomSheetController.getContainerHeight();
+        float offsetWithControls =
+                mTestSupport.getCurrentOffsetPx() - mTestSupport.getOffsetFromBrowserControls();
+        float screenRatio = containerHeight > 0 ? offsetWithControls / containerHeight : 0;
+        float expectedMidFraction =
+                MathUtils.clamp(
+                        (screenRatio - mTestSupport.getHiddenRatio())
+                                / (mTestSupport.getFullRatio() - mTestSupport.getHiddenRatio()),
+                        0,
+                        1);
+
+        assertEquals(expectedMidFraction, mObserver.getLastOffsetChangedValue(), MathUtils.EPSILON);
     }
 
     @Test

@@ -73,6 +73,10 @@ public class BottomSheetTestSupport {
         return getBottomSheet().getCurrentOffsetPx();
     }
 
+    public float getOffsetFromBrowserControls() {
+        return getBottomSheet().getOffsetFromBrowserControls();
+    }
+
     /**
      * @see {@link BottomSheet#getFullRatio()}
      */

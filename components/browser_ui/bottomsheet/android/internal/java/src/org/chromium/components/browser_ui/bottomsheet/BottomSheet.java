@@ -843,8 +843,10 @@ class BottomSheet extends FrameLayout
         mSettleAnimator.start();
     }
 
-    /** @return Get the height in px that the sheet is offset due to the browser controls. */
-    private float getOffsetFromBrowserControls() {
+    /**
+     * @return Get the height in px that the sheet is offset due to the browser controls.
+     */
+    float getOffsetFromBrowserControls() {
         if (mSheetContent == null || !mSheetContent.hideOnScroll()) return 0;
 
         // We only care about peek/half state.
