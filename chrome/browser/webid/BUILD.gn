@@ -198,6 +198,22 @@ if (!is_android) {
   }
 }
 
+if (is_android) {
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "identity_provider_service_browsertest.cc" ]
+    deps = [
+      ":webid",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui_android",
+      "//content/test:test_support",
+    ]
+  }
+}
+
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("fedcm_clickthrough_rate_metadata_proto") {
