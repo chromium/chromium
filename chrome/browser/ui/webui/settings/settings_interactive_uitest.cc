@@ -175,8 +175,16 @@ class ThemeSettingsInteractiveUiTest : public SettingsInteractiveUiTest {
   }
 };
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/532692432): Re-enable this test on Mac.
+#define MAYBE_CheckChromeThemeCanBeResetToDefault \
+  DISABLED_CheckChromeThemeCanBeResetToDefault
+#else
+#define MAYBE_CheckChromeThemeCanBeResetToDefault \
+  CheckChromeThemeCanBeResetToDefault
+#endif
 IN_PROC_BROWSER_TEST_F(ThemeSettingsInteractiveUiTest,
-                       CheckChromeThemeCanBeResetToDefault) {
+                       MAYBE_CheckChromeThemeCanBeResetToDefault) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
