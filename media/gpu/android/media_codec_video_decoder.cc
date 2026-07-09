@@ -38,6 +38,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_transformation.h"
 #include "media/gpu/android/android_video_surface_chooser.h"
 #include "media/gpu/android/codec_allocator.h"
 #include "media/gpu/android/video_accelerator_util.h"
@@ -1277,8 +1278,7 @@ void MediaCodecVideoDecoder::ForwardVideoFrame(
   // already applied the rotation. We clear the transformation metadata to
   // prevent double-rotation in the compositor (e.g., squashing portrait
   // videos).
-  if (decoder_config_.video_transformation().rotation == VIDEO_ROTATION_90 ||
-      decoder_config_.video_transformation().rotation == VIDEO_ROTATION_270) {
+  if (decoder_config_.video_transformation().IsOrthogonal()) {
     if (frame->visible_rect().size() ==
         gfx::TransposeSize(decoder_config_.visible_rect().size())) {
       frame->metadata().transformation = kNoTransformation;

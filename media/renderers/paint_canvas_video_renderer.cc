@@ -50,6 +50,7 @@
 #include "media/base/data_buffer.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_transformation.h"
 #include "media/base/video_util.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "third_party/fp16/src/include/fp16.h"
@@ -966,9 +967,7 @@ void PaintCanvasVideoRenderer::Paint(
 
     gfx::SizeF rotated_dest_size = dest_rect.size();
 
-    const bool has_flipped_size =
-        params.transformation.rotation == VIDEO_ROTATION_90 ||
-        params.transformation.rotation == VIDEO_ROTATION_270;
+    const bool has_flipped_size = params.transformation.IsOrthogonal();
     if (has_flipped_size) {
       rotated_dest_size =
           gfx::SizeF(rotated_dest_size.height(), rotated_dest_size.width());

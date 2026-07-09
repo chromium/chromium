@@ -195,4 +195,23 @@ TEST_F(VideoTransformationTest, Add) {
             VideoTransformation(VIDEO_ROTATION_180, false));
 }
 
+TEST_F(VideoTransformationTest, IsOrthogonal) {
+  // Test standalone IsOrthogonal(VideoRotation)
+  EXPECT_FALSE(IsOrthogonal(VIDEO_ROTATION_0));
+  EXPECT_TRUE(IsOrthogonal(VIDEO_ROTATION_90));
+  EXPECT_FALSE(IsOrthogonal(VIDEO_ROTATION_180));
+  EXPECT_TRUE(IsOrthogonal(VIDEO_ROTATION_270));
+
+  // Test member VideoTransformation::IsOrthogonal()
+  EXPECT_FALSE(VideoTransformation(VIDEO_ROTATION_0, false).IsOrthogonal());
+  EXPECT_TRUE(VideoTransformation(VIDEO_ROTATION_90, false).IsOrthogonal());
+  EXPECT_FALSE(VideoTransformation(VIDEO_ROTATION_180, false).IsOrthogonal());
+  EXPECT_TRUE(VideoTransformation(VIDEO_ROTATION_270, false).IsOrthogonal());
+
+  EXPECT_FALSE(VideoTransformation(VIDEO_ROTATION_0, true).IsOrthogonal());
+  EXPECT_TRUE(VideoTransformation(VIDEO_ROTATION_90, true).IsOrthogonal());
+  EXPECT_FALSE(VideoTransformation(VIDEO_ROTATION_180, true).IsOrthogonal());
+  EXPECT_TRUE(VideoTransformation(VIDEO_ROTATION_270, true).IsOrthogonal());
+}
+
 }  // namespace media

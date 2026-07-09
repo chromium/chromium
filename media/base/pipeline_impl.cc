@@ -36,6 +36,7 @@
 #include "media/base/serial_runner.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_decoder_config.h"
+#include "media/base/video_transformation.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "media/base/win/mf_feature_checks.h"
@@ -49,8 +50,9 @@ namespace media {
 namespace {
 
 gfx::Size GetRotatedVideoSize(VideoRotation rotation, gfx::Size natural_size) {
-  if (rotation == VIDEO_ROTATION_90 || rotation == VIDEO_ROTATION_270)
+  if (IsOrthogonal(rotation)) {
     return gfx::Size(natural_size.height(), natural_size.width());
+  }
   return natural_size;
 }
 
