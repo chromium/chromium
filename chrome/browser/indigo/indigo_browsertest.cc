@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/indigo/fake_api.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
@@ -181,7 +182,8 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
           {{features::kIndigoGenerateUrl.name,
             fake_api_.GetGenerateUrl().spec()},
            {features::kIndigoSkipEnterpriseCheck.name, "true"}}},
-         {blink::features::kImageReplacement, {}}},
+         {blink::features::kImageReplacement, {}},
+         {contextual_cueing::kContextualCueingV2, {}}},
         {});
     InteractiveBrowserTest::SetUp();
   }
@@ -917,7 +919,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, SuggestionChipClickFlow) {
       IndigoServiceFactory::GetForProfile(browser()->profile());
   // Set anchored message as already shown so the suggestion chip shows
   // automatically instead of the anchored message.
-  service->AnchoredMessageShown();
+  service->ContextualCueShown();
   const GURL main_tab_url = embedded_test_server()->GetURL("/image.html");
   RunTestSequence(
       InstrumentTab(kWebContentsId),
