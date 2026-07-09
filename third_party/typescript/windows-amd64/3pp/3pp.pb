@@ -12,8 +12,8 @@
 create {
   source {
     url {
-      download_url: "https://registry.npmjs.org/@typescript/native-preview-win32-x64/-/native-preview-win32-x64-7.0.0-dev.20260421.2.tgz"
-      version: "7.0.0-dev.20260421.2"
+      download_url: "https://registry.npmjs.org/@typescript/typescript-win32-x64/-/typescript-win32-x64-7.0.1-rc.tgz"
+      version: "7.0.1-rc"
       extension: ".tgz"
     }
     unpack_archive: true

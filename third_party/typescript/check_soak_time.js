@@ -21,9 +21,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 function main() {
-  const pbFile = path.join(__dirname, '3pp', '3pp.pb');
+  const pbFile = path.join(__dirname, 'linux-amd64', '3pp', '3pp.pb');
 
-  assert.ok(fs.existsSync(pbFile, `Error: Could not find ${pbFile}`));
+  assert.ok(fs.existsSync(pbFile), `Error: Could not find ${pbFile}`);
 
   const content = fs.readFileSync(pbFile, 'utf-8');
 
