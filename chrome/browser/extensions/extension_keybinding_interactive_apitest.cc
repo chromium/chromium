@@ -484,13 +484,6 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, DontOverwriteSystemShortcuts) {
 // web pages.
 IN_PROC_BROWSER_TEST_F(CommandsApiTest,
                        OverwriteBookmarkShortcutByUserOverridesWebKeybinding) {
-#if defined(MEMORY_SANITIZER)
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
-                    "See crbug.com/477426026.";
-  }
-#endif
-
   ASSERT_TRUE(embedded_test_server()->Start());
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
