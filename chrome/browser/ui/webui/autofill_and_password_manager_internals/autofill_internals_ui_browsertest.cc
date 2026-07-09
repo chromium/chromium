@@ -79,4 +79,45 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest, ResetCache) {
   }
 }
 
+// Tests the "Check AtMemory permissions" button works as expected.
+IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,
+                       CheckAtMemoryPermissions) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://autofill-internals")));
+
+  // Wait for check-at-memory-permissions button to become visible.
+  constexpr char kGetButtonDisplayStyle[] =
+      "document.getElementById('check-at-memory-permissions').style.display";
+  while ("inline" != EvalJs(kGetButtonDisplayStyle)) {
+    SpinRunLoop();
+  }
+
+  // Trigger check button to open dialog.
+  constexpr char kClickButton[] =
+      "document.getElementById('check-at-memory-permissions').click();";
+  EXPECT_TRUE(ExecJs(kClickButton));
+
+  // Wait for dialog to appear.
+  constexpr char kDialogVisible[] =
+      "document.getElementsByClassName('modal-dialog').length > 0";
+  while (!EvalJs(kDialogVisible).ExtractBool()) {
+    SpinRunLoop();
+  }
+
+  // Click check button inside modal dialog.
+  constexpr char kClickCheck[] =
+      "document.querySelector('.modal-dialog "
+      ".fake-button:not(.modal-dialog-close-button)').click();";
+  EXPECT_TRUE(ExecJs(kClickCheck));
+
+  // Wait for result text.
+  constexpr char kGetResultText[] =
+      "document.getElementById('at-memory-permission-result').innerText";
+  while ("" == EvalJs(kGetResultText)) {
+    SpinRunLoop();
+  }
+
+  EXPECT_NE("", EvalJs(kGetResultText));
+}
+
 }  // namespace

@@ -269,6 +269,7 @@ function setUpAutofillInternals(onLoadArgument: OnLoadArgument) {
   setUpDumpAddressesButton();
   setUpSubmittedFormsJSONDataDownload();
   setUpCheckAutofillAiPermissions();
+  setUpCheckAtMemoryPermissions();
   if (onLoadArgument.showDomNodeIDsEnabled) {
     setUpButtonForDomNodeIdCapture();
   }
@@ -546,6 +547,83 @@ function setUpCheckAutofillAiPermissions() {
   // </if>
 }
 
+function setUpCheckAtMemoryPermissions() {
+  // <if expr="not is_ios" >
+  function showAtMemoryPermissionsDialog() {
+    const dialog = document.createElement('div');
+    dialog.className = 'modal-dialog';
+    dialog.style.height = 'auto';
+    dialog.style.minHeight = '100px';
+
+    const content = document.createElement('div');
+    content.className = 'modal-dialog-content';
+
+    const closeButton = document.createElement('span');
+    closeButton.className = 'modal-dialog-close-button fake-button';
+    closeButton.innerText = 'Close';
+
+    const select = document.createElement('select');
+    select.style.marginRight = '10px';
+    // LINT.IfChange(AtMemoryAction)
+    const actions = [
+      {value: 'kTriggerSearchUI', text: 'Trigger search UI'},
+      {value: 'kShowAtMemoryInSettings', text: 'Show AtMemory in settings'},
+      {
+        value: 'kAllowCustomizeAtMemoryShortcut',
+        text: 'Allow customize AtMemory shortcut',
+      },
+      {value: 'kShowIph', text: 'Show IPH'},
+      {
+        value: 'kShowAutocompleteAtMemoryButton',
+        text: 'Show autocomplete AtMemory button',
+      },
+    ];
+    // LINT.ThenChange(/components/autofill/core/browser/at_memory/at_memory_enablement_utils.h:AtMemoryAction)
+    for (const action of actions) {
+      const option = document.createElement('option');
+      option.value = action.value;
+      option.innerText = action.text;
+      select.appendChild(option);
+    }
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = 'https://example.com';
+    input.style.marginRight = '10px';
+    input.style.width = '250px';
+
+    const checkButton = document.createElement('span');
+    checkButton.className = 'fake-button';
+    checkButton.innerText = 'Check';
+    checkButton.addEventListener('click', () => {
+      chrome.send('checkAtMemoryPermissions', [select.value, input.value]);
+    });
+
+    const resultContainer = document.createElement('p');
+    resultContainer.id = 'at-memory-permission-result';
+    resultContainer.className = 'modal-dialog-text';
+
+    content.appendChild(closeButton);
+    content.appendChild(select);
+    content.appendChild(input);
+    content.appendChild(checkButton);
+    content.appendChild(resultContainer);
+    dialog.appendChild(content);
+    window.document.body.append(dialog);
+
+    closeButton.addEventListener('click', () => {
+      window.document.body.removeChild(dialog);
+    });
+  }
+
+  const button = document.getElementById('check-at-memory-permissions')!;
+  button.style.display = 'inline';
+  button.addEventListener('click', () => {
+    showAtMemoryPermissionsDialog();
+  });
+  // </if>
+}
+
 function setUpButtonForDomNodeIdCapture() {
   // <if expr="not is_android and not is_ios" >
   const button = document.getElementById('set-dom-node-id')!;
@@ -773,6 +851,12 @@ document.addEventListener('DOMContentLoaded', () => {
   addWebUiListener(
       'on-autofill-ai-permission-check-done',
       (message: string) => showModalDialog(message));
+  addWebUiListener('on-at-memory-permission-check-done', (message: string) => {
+    const resultEl = document.getElementById('at-memory-permission-result');
+    if (resultEl) {
+      resultEl.innerText = message;
+    }
+  });
   addWebUiListener('add-structured-log', addStructuredLog);
   addWebUiListener('display-autofill-ai-cache', displayAutofillAiCache);
   addWebUiListener('setup-autofill-internals', setUpAutofillInternals);

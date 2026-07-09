@@ -25,6 +25,7 @@ class SubscriptionEligibilityService;
 namespace autofill {
 
 // An AtMemory-related action that a user may take (directly or indirectly).
+// LINT.IfChange(AtMemoryAction)
 enum class AtMemoryAction {
   // Trigger main AtMemory component using the keyboard invocation.
   kTriggerSearchUI,
@@ -45,6 +46,8 @@ enum class AtMemoryAction {
   // Show the AtMemory button in the Autocomplete dialog.
   kShowAutocompleteAtMemoryButton,
 };
+// LINT.ThenChange(/chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.cc:AtMemoryAction,
+// /components/autofill/core/browser/autofill_and_password_manager_internals/autofill_and_password_manager_internals.ts:AtMemoryAction)
 
 class AutofillOptimizationGuideDecider;
 
