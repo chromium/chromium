@@ -998,14 +998,21 @@ void PaintCanvasVideoRenderer::Paint(
   // This if is a special handling of video for SkiaPaintcanvas backend, where
   // the video does not need any transform and it is enough to draw the frame
   // directly into the skia canvas
+  const SkColorType canvas_color_type = info.colorType();
+  const bool is_yuv = media::IsYuvPlanar(video_frame->format());
+  const bool color_type_compatible =
+      is_yuv ? (canvas_color_type == kN32_SkColorType)
+             : (canvas_color_type == kBGRA_8888_SkColorType ||
+                canvas_color_type == kRGBA_8888_SkColorType);
+
   if (!need_transform && !params.reinterpret_as_srgb &&
       video_frame->HasDirectCpuAccess() && flags.isOpaque() &&
       flags.getBlendMode() == SkBlendMode::kSrc &&
       flags.getFilterQuality() == cc::PaintFlags::FilterQuality::kLow &&
-      !pixels.empty() && info.colorType() == kBGRA_8888_SkColorType) {
+      !pixels.empty() && color_type_compatible) {
     const size_t offset = info.computeOffset(origin.x(), origin.y(), row_bytes);
     ConvertVideoFrameToRGBPixels(video_frame.get(), pixels.subspan(offset),
-                                 row_bytes, kBGRA_8888_SkColorType);
+                                 row_bytes, canvas_color_type);
   } else if (video_frame->HasSharedImage()) {
     DCHECK_EQ(video_frame->coded_size(),
               gfx::Size(image.width(), image.height()));

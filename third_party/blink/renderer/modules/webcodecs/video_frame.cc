@@ -1299,8 +1299,6 @@ void VideoFrame::ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
                                      base::span<uint8_t> buffer,
                                      PredefinedColorSpace target_color_space) {
   DCHECK(media::IsRGB(dest_layout.Format()));
-  SkColorType skia_pixel_format = media::SkColorTypeForPlane(
-      dest_layout.Format(), media::VideoFrame::Plane::kARGB);
 
   if (frame->visible_rect() != src_rect) {
     frame = media::VideoFrame::WrapVideoFrame(frame, frame->format(), src_rect,
@@ -1308,9 +1306,21 @@ void VideoFrame::ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
   }
 
   auto sk_color_space = PredefinedColorSpaceToSkColorSpace(target_color_space);
-  SkImageInfo dst_image_info =
-      SkImageInfo::Make(src_rect.width(), src_rect.height(), skia_pixel_format,
-                        kUnpremul_SkAlphaType, sk_color_space);
+  bool same_color_space =
+      SkColorSpace::Equals(sk_color_space.get(),
+                           frame->CompatRGBColorSpace().ToSkColorSpace().get());
+  bool same_format = frame->format() == dest_layout.Format();
+
+  if (frame->HasDirectCpuAccess() && same_color_space && same_format) {
+    CopyMappablePlanes(*frame, src_rect, dest_layout, buffer);
+    return;
+  }
+
+  SkImageInfo dst_image_info = SkImageInfo::Make(
+      src_rect.width(), src_rect.height(),
+      media::SkColorTypeForPlane(dest_layout.Format(),
+                                 media::VideoFrame::Plane::kARGB),
+      kUnpremul_SkAlphaType, sk_color_space);
 
   const wtf_size_t plane = 0;
   DCHECK_EQ(dest_layout.NumPlanes(), 1u);
