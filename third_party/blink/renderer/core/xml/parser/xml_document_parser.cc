@@ -419,7 +419,7 @@ void XMLDocumentParser::Append(const String& input_source) {
   if (IsStopped() || saw_xsl_transform_)
     return;
 
-  if (parser_paused_) {
+  if (parser_paused_ || in_parse_chunk_) {
     pending_src_.Append(source);
     return;
   }
@@ -969,6 +969,13 @@ void XMLDocumentParser::DoWrite(const String& parse_string) {
 
   // Protect the libxml context from deletion during a callback
   scoped_refptr<XMLParserContext> context = context_;
+
+  // libxml2's push parser is not re-entrant: xmlParseEndTag2 holds multiple
+  // raw pointers inside ctxt, and a nested xmlParseChunk can xmlRealloc()
+  // those buffers. Crash safely rather than corrupt the heap. (Append()
+  // routes re-entrant data to pending_src_ so this should be unreachable.)
+  CHECK(!in_parse_chunk_);
+  base::AutoReset<bool> reentrancy_guard(&in_parse_chunk_, true);
 
   // libXML throws an error if you try to switch the encoding for an empty
   // string.
