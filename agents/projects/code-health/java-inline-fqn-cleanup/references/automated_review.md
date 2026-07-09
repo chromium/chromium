@@ -10,8 +10,8 @@ Delegate the review to the **`generalist`** sub-agent with this exact prompt:
 > "Follow the **Shared Automated Review Protocol** in
 > `../../hub/references/automated_review.md`.
 >
-> In addition to the generic checks, you MUST evaluate the patch against these
-> **Specific Cleanup Rules** for Clean up inline FQNs:
+> In addition to the generic checks, evaluate the patch against these **Specific
+> Cleanup Rules** for Clean up inline FQNs:
 >
 > - **Collision Avoidance:** Verify that replacing an inline FQN (e.g., `a.b.C`)
 >   did not introduce a collision with another class `C` imported from a

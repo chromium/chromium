@@ -10,8 +10,8 @@ Delegate the review to the **`generalist`** sub-agent with this exact prompt:
 > "Follow the **Shared Automated Review Protocol** in
 > `../../hub/references/automated_review.md`.
 >
-> In addition to the generic checks, you MUST evaluate the patch against these
-> **Specific Cleanup Rules** for Accessibility Cleanup:
+> In addition to the generic checks, evaluate the patch against these **Specific
+> Cleanup Rules** for Accessibility Cleanup:
 >
 > - **No Regressions:** Ensure that the end-user behavior has no regressions and
 >   is expected to improve from more accurate API usage.

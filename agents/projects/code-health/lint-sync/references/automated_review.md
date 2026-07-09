@@ -10,13 +10,13 @@ Delegate the review to the **`generalist`** sub-agent with this exact prompt:
 > "Follow the **Shared Automated Review Protocol** in
 > `../../hub/references/automated_review.md`.
 >
-> In addition to the generic checks, you MUST evaluate the patch against these
-> **Specific Cleanup Rules** for Lint Sync Guards:
+> In addition to the generic checks, evaluate the patch against these **Specific
+> Cleanup Rules** for Lint Sync Guards:
 >
 > - **Strict Scope:** Focus ONLY on the LINT guards that were added in this
 >   specific patch. Do NOT suggest adding guards to other pre-existing unguarded
 >   enums in the file.
-> - **Data Integrity:** If you identify missing entries in the XML, your
+> - **Data Integrity:** If missing entries are identified in the XML, the
 >   remediation MUST ONLY suggest appending them. Never suggest modifying or
 >   removing existing names or values in either the source or the XML.
 > - **Syntax & Placement:** Verify that the `LINT.IfChange` and

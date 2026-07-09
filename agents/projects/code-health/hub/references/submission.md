@@ -6,9 +6,9 @@ When invoked, the calling skill provides specific context variables (Skill Name,
 Branch Name, Commit Hashtag, Cleanup Title, Cleanup Description, Parent Bug,
 Cleaned Component, File Count, and optionally a pre-resolved `Bug ID`).
 
-First, prompt the user using `ask_question` with the question: *"Do you want to
-create a branch, commit these changes, file a bug, and upload a CL to Gerrit?"*
-and choices "Yes, submit this cleanup" and "No, keep local changes uncommitted".
+First, prompt the user using `ask_question` with the question: *"Create a
+branch, commit these changes, file a bug, and upload a CL to Gerrit?"* and
+choices "Yes, submit this cleanup" and "No, keep local changes uncommitted".
 
 - **If the user chooses "No":** Print a summary of the changes, print a success
   message, leave the changes uncommitted in the local working directory, and end

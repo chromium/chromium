@@ -38,20 +38,19 @@ all code recording sites.
 - **Primary Scope:** Focus exclusively on the identified histogram by default.
   Do NOT suggest removing random additional histograms across the file or
   component just because they are expired.
-- **Exception for Coupled/Shared Recording Code:** If you discover that other
-  histograms share the exact same recording logic, helper methods, or calculated
-  variables (e.g., co-located in the same helper function or branching from the
-  same condition) as the target histogram, you MAY bundle their removal into the
-  same cleanup plan IF AND ONLY IF:
-  1. **Expiry Verification:** You confirm in `histograms.xml` that the
-     co-located histograms are also expired and lack the
-     `<expired_intentionally>` tag.
-  2. **Safety Verification:** You perform the same safety checks (no test
+- **Exception for Coupled/Shared Recording Code:** If other histograms share the
+  exact same recording logic, helper methods, or calculated variables (e.g.,
+  co-located in the same helper function or branching from the same condition)
+  as the target histogram, their removal MAY be bundled into the same cleanup
+  plan IF AND ONLY IF:
+  1. **Expiry Verification:** Confirm in `histograms.xml` that the co-located
+     histograms are also expired and lack the `<expired_intentionally>` tag.
+  2. **Safety Verification:** Perform the same safety checks (no test
      dependencies, no external repo references) for each bundled histogram.
   3. **Atomic Benefit:** Removing them together cleanly eliminates shared
      boilerplate (e.g., timer calculations, string building, parameter passing)
      that would otherwise be left as dead or awkward code.
-- **Related Dead Code:** If you find dead code (e.g., constants, enums, or
+- **Related Dead Code:** If dead code is found (e.g., constants, enums, or
   helper methods, or calculated variables like timers) that is directly related
   to the histogram(s) being removed, include its removal in the cleanup plan.
   Present these as part of the primary task, not as separate "proactive
@@ -107,10 +106,10 @@ workflow.
          phase.
        - If "Discard": Stop the workflow.
    - **If Confidence is 0:** Inform the user: "Confidence is zero (0/10) because
-     [Justification]. I will find an alternate expired histogram for you."
-     Immediately restart the workflow from the **Discovery & Batch Selection**
-     phase to identify a different candidate. Ensure the same histogram is not
-     selected again in this session.
+     [Justification]. An alternate expired histogram will be found." Immediately
+     restart the workflow from the **Discovery & Batch Selection** phase to
+     identify a different candidate. Ensure the same histogram is not selected
+     again in this session.
 
 ### Step 4: Refactoring & Implementation
 
