@@ -95,9 +95,6 @@ public interface TabModel extends TabList {
      */
     @Nullable Tab getNextTabIfClosed(@TabId int id, boolean uponExit);
 
-    /**
-     * @return Whether or not this model supports pending closures.
-     */
     boolean supportsPendingClosures();
 
     /**

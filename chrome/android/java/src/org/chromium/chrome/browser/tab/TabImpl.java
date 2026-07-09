@@ -1280,13 +1280,14 @@ class TabImpl implements Tab, TabInternal {
         TabImplJni.get().getMemoryUsageBytes(mNativeTabAndroid, callback);
     }
 
+    @CalledByNative
     @Override
-    public void destroy() {
-        destroyInternal(/* deleteNativeWebContents= */ true);
+    public @TabDestroyStatus int destroy() {
+        return destroyInternal(/* deleteNativeWebContents= */ true);
     }
 
     @CalledByNative
-    private void destroyInternal(boolean deleteNativeWebContents) {
+    private @TabDestroyStatus int destroyInternal(boolean deleteNativeWebContents) {
         ThreadUtils.assertOnUiThread();
 
         // Ensure the tab signals to C++ it was removed from the TabModel. This should be a no-op
@@ -1311,16 +1312,19 @@ class TabImpl implements Tab, TabInternal {
         for (TabObserver observer : mObservers) observer.onDestroyed(this);
         boolean abortNavigationsFromTabClosures =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.ABORT_NAVIGATIONS_FROM_TAB_CLOSURES);
+        @TabDestroyStatus int status = TabDestroyStatus.NO_SHUTDOWN;
         if (abortNavigationsFromTabClosures) {
             mUserDataHost.destroy();
-            destroyWebContents(deleteNativeWebContents);
+            status = destroyWebContents(deleteNativeWebContents);
         }
 
         mObservers.clear();
         if (!abortNavigationsFromTabClosures) mUserDataHost.destroy();
         mTabViewManager.destroy();
         hideNativePage(false, null);
-        if (!abortNavigationsFromTabClosures) destroyWebContents(deleteNativeWebContents);
+        if (!abortNavigationsFromTabClosures) {
+            status = destroyWebContents(deleteNativeWebContents);
+        }
         if (mWebContentsState != null) {
             mWebContentsState.destroy();
             mWebContentsState = null;
@@ -1334,6 +1338,7 @@ class TabImpl implements Tab, TabInternal {
             TabImplJni.get().destroy(mNativeTabAndroid);
             assert mNativeTabAndroid == 0;
         }
+        return status;
     }
 
     /**
@@ -2811,8 +2816,8 @@ class TabImpl implements Tab, TabInternal {
      *
      * @param deleteNativeWebContents Whether or not to delete the native WebContents pointer.
      */
-    private void destroyWebContents(boolean deleteNativeWebContents) {
-        if (mWebContents == null) return;
+    private @TabDestroyStatus int destroyWebContents(boolean deleteNativeWebContents) {
+        if (mWebContents == null) return TabDestroyStatus.NO_SHUTDOWN;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
                 && ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
@@ -2844,11 +2849,15 @@ class TabImpl implements Tab, TabInternal {
             mWebContentsDelegate = null;
         }
 
+        @TabDestroyStatus int status = TabDestroyStatus.NO_SHUTDOWN;
         assert mNativeTabAndroid != 0;
         if (deleteNativeWebContents) {
             // Destruction of the native WebContents will call back into Java to destroy the Java
             // WebContents.
-            TabImplJni.get().destroyWebContents(mNativeTabAndroid);
+            status = TabImplJni.get().destroyWebContents(mNativeTabAndroid);
+            if (status == TabDestroyStatus.SLOW_SHUTDOWN) {
+                contentsToDestroy.setTopLevelNativeWindow(null);
+            }
         } else {
             // This branch is to not delete the WebContents, but just to release the WebContent from
             // the Tab and clear the WebContents for two different cases a) The WebContents will be
@@ -2867,6 +2876,7 @@ class TabImpl implements Tab, TabInternal {
                     /* windowAndroid= */ null,
                     WebContents.createDefaultInternalsHolder());
         }
+        return status;
     }
 
     public @UserAgentOverrideOption int calculateUserAgentOverrideOption(@Nullable GURL url) {
@@ -3196,7 +3206,8 @@ class TabImpl implements Tab, TabInternal {
                 TabWebContentsDelegateAndroidImpl delegate,
                 ContextMenuPopulatorFactory contextMenuPopulatorFactory);
 
-        void destroyWebContents(long nativeTabAndroid);
+        @JniType("tabs::TabDestroyStatus")
+        int destroyWebContents(long nativeTabAndroid);
 
         void releaseWebContents(long nativeTabAndroid);
 

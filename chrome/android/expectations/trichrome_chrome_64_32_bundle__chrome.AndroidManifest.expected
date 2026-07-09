@@ -883,6 +883,11 @@
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: 2553238b
     <service android:name="androidx.browser.customtabs.PostMessageService"/>
+    <service  # DIFF-ANCHOR: 70fcecc3
+        android:name="org.chromium.chrome.browser.GracefulShutdownService"
+        android:exported="false"
+        android:foregroundServiceType="shortService|dataSync">
+    </service>  # DIFF-ANCHOR: 70fcecc3
     <service  # DIFF-ANCHOR: 293d124f
         android:name="org.chromium.chrome.browser.actor.ActorForegroundService"
         android:exported="false"

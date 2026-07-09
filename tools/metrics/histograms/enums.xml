@@ -15094,6 +15094,7 @@ from previous Chrome versions.
   <int value="165912610"
       label="PrivateNetworkAccessForWorkersWarningOnly:enabled"/>
   <int value="165962668" label="EnablePreferencesAccountStorage:enabled"/>
+  <int value="167951987" label="TabAndroidGracefulShutdown:disabled"/>
   <int value="168025622" label="EnableInputEventLogging:enabled"/>
   <int value="168052820" label="PermissionsAndroidClapperQuiet:disabled"/>
   <int value="168429629" label="ContentIndexingNTP:enabled"/>
@@ -18449,6 +18450,7 @@ from previous Chrome versions.
   <int value="1246049397" label="CrOSLateBootAudioHFPSwb:enabled"/>
   <int value="1246486472"
       label="SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid:disabled"/>
+  <int value="1246504071" label="TabAndroidGracefulShutdown:enabled"/>
   <int value="1247293682" label="topchrome-md"/>
   <int value="1247309454" label="PasswordGenerationExperiment:enabled"/>
   <int value="1247679812" label="VCTrayMicIndicator:enabled"/>

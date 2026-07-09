@@ -673,6 +673,7 @@ public abstract class ChromeFeatureList {
     public static final String SYNC_TAB_SCREENSHOTS = "SyncTabScreenshots";
     public static final String SYNC_TRUSTED_VAULT_ERROR_MESSAGE_DURATION =
             "SyncTrustedVaultErrorMessageDuration";
+    public static final String TAB_ANDROID_GRACEFUL_SHUTDOWN = "TabAndroidGracefulShutdown";
     public static final String TAB_BOTTOM_SHEET = "TabBottomSheet";
     public static final String TAB_BOTTOM_SHEET_RESIZE_WEBVIEW = "TabBottomSheetResizeWebview";
     public static final String TAB_CLOSURE_METHOD_REFACTOR = "TabClosureMethodRefactor";
@@ -1528,6 +1529,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SCHEDULE_WINDOW_CLEANING, false);
     public static final MutableFlagWithSafeDefault sShowTabListAnimations =
             newMutableFlagWithSafeDefault(SHOW_TAB_LIST_ANIMATIONS, false);
+    public static final MutableFlagWithSafeDefault sTabAndroidGracefulShutdown =
+            newMutableFlagWithSafeDefault(TAB_ANDROID_GRACEFUL_SHUTDOWN, false);
     public static final MutableFlagWithSafeDefault sTabBottomSheet =
             newMutableFlagWithSafeDefault(TAB_BOTTOM_SHEET, false);
     public static final MutableFlagWithSafeDefault sTabBottomSheetResizeWebview =

@@ -21,6 +21,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
@@ -108,8 +109,8 @@ public class TabModelOrchestrator {
     }
 
     /** Destroy the {@link TabPersistentStore} and {@link TabModelSelectorImpl} members. */
-    public void destroy() {
-        if (mIsDestroyed) return;
+    public @TabDestroyStatus int destroy() {
+        if (mIsDestroyed) return TabDestroyStatus.NO_SHUTDOWN;
         mIsDestroyed = true;
 
         if (mShadowTabPersistentStore != null) {
@@ -121,11 +122,13 @@ public class TabModelOrchestrator {
             mTabPersistentStore.destroy();
         }
 
+        @TabDestroyStatus int status = TabDestroyStatus.NO_SHUTDOWN;
         if (mTabModelSelector != null) {
-            mTabModelSelector.destroy();
+            status = mTabModelSelector.destroy();
         }
 
         mTabModelsInitialized = false;
+        return status;
     }
 
     /**

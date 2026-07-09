@@ -9160,6 +9160,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "tab-android-graceful-shutdown",
+    "owners": [ "ckitagawa@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "tab-bottom-sheet",
     "owners": [ "hitarthkothari@google.com", "ckitagawa@google.com", "clank-tab-dev@google.com"],
     "expiry_milestone": 155

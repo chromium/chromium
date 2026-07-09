@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
@@ -107,11 +108,11 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
     }
 
     @Override
-    public void destroy() {
+    public @TabDestroyStatus int destroy() {
         assert mTabModelSelector != null;
         TabWindowManagerSingleton.getInstance()
                 .unregisterCustomTabsTabModelSelector(mTabModelSelector);
-        super.destroy();
+        return super.destroy();
     }
 
     @Override

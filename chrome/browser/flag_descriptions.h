@@ -6257,6 +6257,12 @@ inline constexpr char kTabBottomSheetName[] = "Tab bottom sheet";
 inline constexpr char kTabBottomSheetDescription[] =
     "Enables the tab bottom sheet feature.";
 
+inline constexpr char kTabAndroidGracefulShutdownName[] =
+    "Tab Android Graceful Shutdown";
+inline constexpr char kTabAndroidGracefulShutdownDescription[] =
+    "Enables Graceful Shutdown of WebContents on Android to allow pagehide and "
+    "keepalive fetches to complete.";
+
 inline constexpr char kTabBottomSheetResizeWebviewName[] =
     "Tab bottom sheet - Resize WebView";
 inline constexpr char kTabBottomSheetResizeWebviewDescription[] =

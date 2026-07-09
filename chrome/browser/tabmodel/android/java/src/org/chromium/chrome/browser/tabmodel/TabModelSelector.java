@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.tabs.TabStripCollection;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -234,7 +235,8 @@ public interface TabModelSelector {
     void resetTabModelListForTesting(); // IN-TEST
 
     /** Destroy all owned {@link TabModel}s and {@link Tab}s referenced by this selector. */
-    void destroy();
+    @TabDestroyStatus
+    int destroy();
 
     /**
      * Returns the profile for the selector.

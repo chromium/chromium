@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -93,10 +94,11 @@ public class CustomTabActivityTabFactory {
         return mTabModelOrchestrator;
     }
 
-    public void destroyTabModelOrchestrator() {
+    public @TabDestroyStatus int destroyTabModelOrchestrator() {
         if (mTabModelOrchestrator != null) {
-            mTabModelOrchestrator.destroy();
+            return mTabModelOrchestrator.destroy();
         }
+        return TabDestroyStatus.NO_SHUTDOWN;
     }
 
     /** Calls the {@link TabModelOrchestrator} to create TabModels and TabPersistentStore. */

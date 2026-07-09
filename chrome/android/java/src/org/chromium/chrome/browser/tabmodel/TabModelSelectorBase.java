@@ -21,6 +21,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.components.tabs.TabStripCollection;
@@ -379,7 +380,7 @@ public abstract class TabModelSelectorBase
     }
 
     @Override
-    public void destroy() {
+    public @TabDestroyStatus int destroy() {
         for (TabModelSelectorObserver listener : mObservers) listener.onDestroyed();
         mTabModelSupplier.removeObserver(mIncognitoReauthDialogDelegateCallback);
 
@@ -388,9 +389,19 @@ public abstract class TabModelSelectorBase
         if (mIncognitoTabModel != null) {
             mIncognitoTabModel.removeIncognitoObserver(this);
         }
-        for (int i = 0; i < getModels().size(); i++) mTabModelInternals.get(i).destroy();
+        @TabDestroyStatus int status = TabDestroyStatus.NO_SHUTDOWN;
+        for (int i = 0; i < getModels().size(); i++) {
+            @TabDestroyStatus int modelStatus = mTabModelInternals.get(i).destroy();
+            if (modelStatus == TabDestroyStatus.SLOW_SHUTDOWN) {
+                status = TabDestroyStatus.SLOW_SHUTDOWN;
+            } else if (modelStatus == TabDestroyStatus.FAST_SHUTDOWN
+                    && status != TabDestroyStatus.SLOW_SHUTDOWN) {
+                status = TabDestroyStatus.FAST_SHUTDOWN;
+            }
+        }
         mTabModelInternals.clear();
         mTabModels.clear();
+        return status;
     }
 
     /**

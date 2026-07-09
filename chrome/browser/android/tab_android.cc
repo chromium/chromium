@@ -33,6 +33,7 @@
 #include "chrome/browser/android/web_contents_theme_client.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
@@ -518,48 +519,93 @@ void WillRemoveWebContentsFromTab(content::WebContents* contents,
     contents->SetDelegate(nullptr);
   }
 }
+
+class TabWebContentsDestroyer : public content::WebContentsDelegate {
+ public:
+  explicit TabWebContentsDestroyer(
+      std::unique_ptr<content::WebContents> web_contents)
+      : web_contents_(std::move(web_contents)) {
+    web_contents_->SetDelegate(this);
+    web_contents_->ClosePage();
+    // 2 seconds was chosen to give sufficient time for unload handlers to run
+    // during window closure (see DEFAULT_SHUTDOWN_TIMEOUT_MS in
+    // GracefulShutdownServiceImpl which matches this duration).
+    // Fallback timer in case the renderer never responds.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&TabWebContentsDestroyer::Destroy,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::Seconds(2));
+  }
+
+  ~TabWebContentsDestroyer() override = default;
+
+  void CloseContents(content::WebContents* source) override {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&TabWebContentsDestroyer::Destroy,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  }
+
+ private:
+  void Destroy() { delete this; }
+
+  std::unique_ptr<content::WebContents> web_contents_;
+  base::WeakPtrFactory<TabWebContentsDestroyer> weak_ptr_factory_{this};
+};
 }  // namespace
 
-void TabAndroid::DestroyWebContents() {
+tabs::TabDestroyStatus TabAndroid::DestroyWebContents() {
   WillRemoveWebContentsFromTab(web_contents(), /*clear_delegate=*/false);
 
-  // Terminate the renderer process if this is the last tab.
-  // If there's no unload listener, FastShutdownIfPossible kills the
-  // renderer process. Otherwise, we go with the slow path where renderer
-  // process shuts down itself when ref count becomes 0.
-  // This helps the render process exit quickly which avoids some issues
-  // during shutdown. See https://codereview.chromium.org/146693011/
-  // and http://crbug.com/41086630 for details.
   content::RenderProcessHost* process =
-      web_contents()->GetPrimaryMainFrame()->GetProcess();
-  if (process) {
-    process->FastShutdownIfPossible(1, false);
+      web_contents() ? web_contents()->GetPrimaryMainFrame()->GetProcess()
+                     : nullptr;
+  bool enable_graceful_shutdown = base::FeatureList::IsEnabled(
+      chrome::android::kTabAndroidGracefulShutdown);
+  bool fast_shutdown_succeeded =
+      process && process->FastShutdownIfPossible(1, false);
+
+  if (!fast_shutdown_succeeded && enable_graceful_shutdown && web_contents()) {
+    std::unique_ptr<content::WebContents> contents =
+        ReleaseWebContentsInternal(/*keep_session_id=*/true,
+                                   /*clear_delegate=*/true);
+    new TabWebContentsDestroyer(std::move(contents));
+    return tabs::TabDestroyStatus::SLOW_SHUTDOWN;
   }
 
   tab_features_.reset();
   web_contents_.reset();
-
   synced_tab_delegate_->ResetWebContents();
+
+  return tabs::TabDestroyStatus::FAST_SHUTDOWN;
 }
 
 void TabAndroid::ReleaseWebContents() {
-  WillRemoveWebContentsFromTab(web_contents(), /*clear_delegate=*/true);
+  ReleaseWebContentsInternal(/*keep_session_id=*/false,
+                             /*clear_delegate=*/true)
+      .release();
+}
 
-  // Ownership of |released_contents| is assumed by the code that initiated the
-  // release.
+std::unique_ptr<content::WebContents> TabAndroid::ReleaseWebContentsInternal(
+    bool keep_session_id,
+    bool clear_delegate) {
+  WillRemoveWebContentsFromTab(web_contents(), clear_delegate);
+
   tab_features_.reset();
-  content::WebContents* released_contents = web_contents_.release();
+  std::unique_ptr<content::WebContents> released_contents =
+      std::move(web_contents_);
   if (released_contents) {
     released_contents->SetOwnerLocationForDebug(std::nullopt);
+    released_contents->RemoveUserData(
+        tabs::TabLookupFromWebContents::UserDataKey());
   }
 
-  // Remove the link from the native WebContents to |this|, since the
-  // lifetimes of the two objects are no longer intertwined.
-  released_contents->RemoveUserData(
-      tabs::TabLookupFromWebContents::UserDataKey());
-  ClearSessionId();
+  if (!keep_session_id) {
+    ClearSessionId();
+  }
 
   synced_tab_delegate_->ResetWebContents();
+  return released_contents;
 }
 
 // static

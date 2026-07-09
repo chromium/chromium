@@ -1220,6 +1220,9 @@ by a child template that "extends" this file.
             android:foregroundServiceType="camera|microphone"
             {% endif %}
             android:exported="false"/>
+        <service android:name="org.chromium.chrome.browser.GracefulShutdownService"
+            android:foregroundServiceType="shortService|dataSync"
+            android:exported="false"/>
         <service android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$PlaybackListenerService"
             android:foregroundServiceType="mediaPlayback" android:exported="false">
             <intent-filter>

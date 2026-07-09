@@ -23,7 +23,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.task.PostTask;
@@ -41,6 +40,7 @@ import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabArchiver;
 import org.chromium.chrome.browser.tab.TabArchiverImpl;
+import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -80,7 +80,7 @@ import java.util.function.Supplier;
  * goes away.
  */
 @NullMarked
-public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implements Destroyable {
+public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
     /** Observer for the ArchivedTabModelOrchestrator class. */
     public interface Observer {
         /**
@@ -183,8 +183,9 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         if (sProfileMap == null) {
             ThreadUtils.assertOnUiThread();
             sProfileMap =
-                    ProfileKeyedMap.createMapOfDestroyables(
-                            ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL);
+                    new ProfileKeyedMap<>(
+                            ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL,
+                            (orchestrator) -> orchestrator.destroy());
             ApplicationStatus.registerApplicationStateListener(sApplicationStateListener);
         }
 
@@ -232,7 +233,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     @SuppressWarnings("NullAway")
     @Override
-    public void destroy() {
+    public @TabDestroyStatus int destroy() {
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
@@ -271,7 +272,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             mArchivedTabCountTracker = null;
         }
 
-        super.destroy();
+        return super.destroy();
     }
 
     /** Adds an observer. */

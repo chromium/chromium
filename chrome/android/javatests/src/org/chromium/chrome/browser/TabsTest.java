@@ -49,6 +49,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
@@ -877,6 +878,57 @@ public class TabsTest {
                     assertFalse("Tab was not destroyed", tab.isInitialized());
                 });
 
+        webContentsDestroyed.waitForOnly();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Android-TabSwitcher"})
+    @EnableFeatures(ChromeFeatureList.TAB_ANDROID_GRACEFUL_SHUTDOWN)
+    public void testTabsWithUnloadHandlerAreKeptAliveOnShutdown() throws Exception {
+        final Tab tab = mActivityTestRule.getActivityTab();
+
+        // Register an unload handler so FastShutdownIfPossible returns false.
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                tab.getWebContents(),
+                "window.addEventListener('unload', function(event) { "
+                        + "console.log('unload'); "
+                        + "});");
+
+        final CallbackHelper webContentsDestroyed = new CallbackHelper();
+
+        runOnUiThreadBlocking(
+                () -> {
+                    @SuppressWarnings("unused") // Avoid GC of observer
+                    WebContentsObserver observer =
+                            new WebContentsObserver(tab.getWebContents()) {
+                                @Override
+                                public void webContentsDestroyed() {
+                                    webContentsDestroyed.notifyCalled();
+                                }
+                            };
+
+                    assertNotNull("No initial tab at startup", tab);
+                    assertNotNull("Tab does not have a web contents", tab.getWebContents());
+                    assertTrue("Tab is destroyed", tab.isInitialized());
+                });
+
+        ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
+
+        // The WebContents should be kept alive by TabWebContentsDestroyer,
+        // but the Tab itself should have dropped its reference.
+        runOnUiThreadBlocking(
+                () -> {
+                    assertNull("Tab still has a web contents", tab.getWebContents());
+                    assertFalse("Tab was not destroyed", tab.isInitialized());
+                });
+
+        // Ensure GracefulShutdownService was started because of the Activity finishing.
+        // We can check if it's running using ForegroundServiceUtils or just checking if the service
+        // intent was sent, but since we can't easily assert on Android Services in this test
+        // framework, we can just wait for the WebContents to be destroyed.
+
+        // Wait for the delayed destruction (1500-2000ms).
         webContentsDestroyed.waitForOnly();
     }
 

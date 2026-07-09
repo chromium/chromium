@@ -63,9 +63,10 @@ public interface TabLifecycle {
 
     /**
      * Cleans up all internal state, destroying any {@link NativePage} or {@link WebContents}
-     * currently associated with this {@link Tab}.  This also destroys the native counterpart
-     * to this class, which means that all subclasses should erase their native pointers after
-     * this method is called.  Once this call is made this {@link Tab} should no longer be used.
+     * currently associated with this {@link Tab}. This also destroys the native counterpart to this
+     * class, which means that all subclasses should erase their native pointers after this method
+     * is called. Once this call is made this {@link Tab} should no longer be used.
      */
-    void destroy();
+    @TabDestroyStatus
+    int destroy();
 }

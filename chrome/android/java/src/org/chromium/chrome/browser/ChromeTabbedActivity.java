@@ -265,6 +265,7 @@ import org.chromium.chrome.browser.tab.TabAttributeKeys;
 import org.chromium.chrome.browser.tab.TabAttributes;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -5198,10 +5199,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     @Override
-    protected void destroyTabModels() {
+    protected @TabDestroyStatus int destroyTabModels() {
         if (mTabModelOrchestrator != null) {
-            mTabModelOrchestrator.destroy();
+            return mTabModelOrchestrator.destroy();
         }
+        return TabDestroyStatus.NO_SHUTDOWN;
     }
 
     @Override

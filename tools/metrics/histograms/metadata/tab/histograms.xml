@@ -389,6 +389,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.Android.GracefulShutdownStatus"
+    enum="GracefulShutdownStatus" expires_after="2027-02-20">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@chromium.org</owner>
+  <summary>
+    [Android] Records lifecycle milestones and failure states of the
+    GracefulShutdownService during window closure.
+  </summary>
+</histogram>
+
 <histogram name="Tab.Android.MediaState" enum="AndroidTabMediaState"
     expires_after="2027-02-20">
   <owner>polardz@google.com</owner>

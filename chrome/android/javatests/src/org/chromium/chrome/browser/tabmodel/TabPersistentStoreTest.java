@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.MockTabAttributes;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
@@ -345,7 +346,9 @@ public class TabPersistentStoreTest {
                                 protected void createTabModels() {}
 
                                 @Override
-                                protected void destroyTabModels() {}
+                                protected @TabDestroyStatus int destroyTabModels() {
+                                    return TabDestroyStatus.NO_SHUTDOWN;
+                                }
 
                                 @Override
                                 protected LaunchCauseMetrics createLaunchCauseMetrics() {

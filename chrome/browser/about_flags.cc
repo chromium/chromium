@@ -10096,6 +10096,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBottomSheetOnDesktopWindowingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kBottomSheetOnDesktopWindowing)},
 
+    {"tab-android-graceful-shutdown",
+     flag_descriptions::kTabAndroidGracefulShutdownName,
+     flag_descriptions::kTabAndroidGracefulShutdownDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabAndroidGracefulShutdown)},
     {"tab-bottom-sheet", flag_descriptions::kTabBottomSheetName,
      flag_descriptions::kTabBottomSheetDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabBottomSheet,

@@ -6,14 +6,14 @@ package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabDestroyStatus;
 
 /** Package private internal methods for {@link TabModel}. */
 @NullMarked
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-public interface TabModelInternal extends Destroyable, TabModel {
+public interface TabModelInternal extends TabModel {
     /**
      * This method moves the Tab with {@code sourceTabId} out of the group it belongs to in the
      * specified direction.
@@ -48,4 +48,8 @@ public interface TabModelInternal extends Destroyable, TabModel {
      * @param active Whether the tab model is active.
      */
     /* package */ void setActive(boolean active);
+
+    /** Destroy the model and return the destroy status. */
+    @TabDestroyStatus
+    int destroy();
 }

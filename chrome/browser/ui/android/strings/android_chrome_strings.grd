@@ -7824,6 +7824,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_EXIT_IMMERSIVE_PLAYBACK" desc="Content description for a button that exits immersive video playback." translateable="false">
         Exit immersive playback
       </message>
+
+      <!-- Graceful Shutdown strings -->
+      <message name="IDS_GRACEFUL_SHUTDOWN_TITLE" desc="Title of the notification shown when Chrome is finishing shutting down.">
+        Finishing shut down
+      </message>
     </messages>
   </release>
 </grit>

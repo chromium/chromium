@@ -112,6 +112,7 @@ import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
@@ -987,13 +988,14 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     @Override
-    protected void destroyTabModels() {
+    protected @TabDestroyStatus int destroyTabModels() {
+        @TabDestroyStatus int status = TabDestroyStatus.NO_SHUTDOWN;
         if (mTabFactory != null) {
-            mTabFactory.destroyTabModelOrchestrator();
+            status = mTabFactory.destroyTabModelOrchestrator();
         }
 
         if (mTabProvider == null || mTabProvider.getTab() == null) {
-            return;
+            return status;
         }
 
         final var tabModelSelector = getTabModelSelectorSupplier().get();
@@ -1006,8 +1008,15 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                                 .hasParamsForTabId(tab.getId());
         // If tab models have not been initialized, any early created tabs would leak.
         if (!tab.isDestroyed() && !isReparenting) {
-            tab.destroy();
+            @TabDestroyStatus int tabStatus = tab.destroy();
+            if (tabStatus == TabDestroyStatus.SLOW_SHUTDOWN) {
+                status = TabDestroyStatus.SLOW_SHUTDOWN;
+            } else if (tabStatus == TabDestroyStatus.FAST_SHUTDOWN
+                    && status != TabDestroyStatus.SLOW_SHUTDOWN) {
+                status = TabDestroyStatus.FAST_SHUTDOWN;
+            }
         }
+        return status;
     }
 
     @Override

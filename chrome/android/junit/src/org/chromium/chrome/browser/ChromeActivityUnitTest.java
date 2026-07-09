@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -129,7 +130,9 @@ public class ChromeActivityUnitTest {
         protected void createTabModels() {}
 
         @Override
-        protected void destroyTabModels() {}
+        protected @TabDestroyStatus int destroyTabModels() {
+            return TabDestroyStatus.NO_SHUTDOWN;
+        }
 
         @Override
         protected Pair<? extends TabCreator, ? extends TabCreator> createTabCreators() {

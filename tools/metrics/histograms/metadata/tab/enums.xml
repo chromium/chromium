@@ -149,6 +149,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Found"/>
 </enum>
 
+<!-- LINT.IfChange(GracefulShutdownStatus) -->
+
+<enum name="GracefulShutdownStatus">
+  <int value="0" label="Launch Attempted"/>
+  <int value="1" label="Launch Failed"/>
+  <int value="2" label="Started"/>
+  <int value="3" label="Start Foreground Failed"/>
+  <int value="4" label="Timed Out"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/GracefulShutdownService.java:GracefulShutdownStatus) -->
+
 <!-- LINT.IfChange(GroupClosingSource) -->
 
 <enum name="GroupClosingSource">

@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.ScopedStorageBatch;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -402,7 +403,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public void destroy() {
+    public @TabDestroyStatus int destroy() {
         assertOnUiThread();
         commitAllTabClosures();
 
@@ -419,13 +420,22 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             invalidateCache();
         }
 
+        @TabDestroyStatus int status = TabDestroyStatus.NO_SHUTDOWN;
         for (Tab tab : tabs) {
             if (mModelDelegate.isReparentingInProgress()
                     && mAsyncTabParamsManager.hasParamsForTabId(tab.getId())) {
                 continue;
             }
 
-            if (tab.isInitialized()) tab.destroy();
+            if (tab.isInitialized()) {
+                @TabDestroyStatus int tabStatus = tab.destroy();
+                if (tabStatus == TabDestroyStatus.SLOW_SHUTDOWN) {
+                    status = TabDestroyStatus.SLOW_SHUTDOWN;
+                } else if (tabStatus == TabDestroyStatus.FAST_SHUTDOWN
+                        && status != TabDestroyStatus.SLOW_SHUTDOWN) {
+                    status = TabDestroyStatus.FAST_SHUTDOWN;
+                }
+            }
         }
 
         if (mPendingTabClosureManager != null) {
@@ -443,6 +453,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         mClosingTabsCount = null;
 
         super.destroy();
+        return status;
     }
 
     // TabList overrides except those overridden by TabModelJniBridge.

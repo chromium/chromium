@@ -106,11 +106,11 @@ class TabAndroidTest : public testing::Test {
       ASSERT_FALSE(tab_impl_class.is_null());
 
       jmethodID destroy_method =
-          env_->GetMethodID(tab_impl_class.obj(), "destroy", "()V");
+          env_->GetMethodID(tab_impl_class.obj(), "destroy", "()I");
       ASSERT_NE(nullptr, destroy_method)
           << "Failed to find TabImpl.destroy() method";
 
-      env_->CallVoidMethod(java_tab_.obj(), destroy_method);
+      env_->CallIntMethod(java_tab_.obj(), destroy_method);
       // TabAndroid::Destroy calls 'delete this', so tab_android_ is now
       // dangling.
       tab_android_ = nullptr;

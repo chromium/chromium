@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
@@ -107,13 +108,13 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     }
 
     @Override
-    public void destroy() {
+    public @TabDestroyStatus int destroy() {
         if (mArchivedTabModelOrchestrator != null) {
             mArchivedTabModelOrchestrator.removeHistoricalTabModelObserver(
                     assumeNonNull(mArchivedHistoricalObserverSupplier));
             mArchivedTabModelOrchestrator.unregisterTabModelOrchestrator(this);
         }
-        super.destroy();
+        return super.destroy();
     }
 
     @EnsuresNonNull({

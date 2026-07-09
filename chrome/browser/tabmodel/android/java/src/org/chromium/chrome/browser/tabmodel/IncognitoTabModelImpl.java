@@ -19,6 +19,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.tabs.TabStripCollection;
@@ -310,8 +311,8 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void destroy() {
-        mDelegateModel.destroy();
+    public @TabDestroyStatus int destroy() {
+        return mDelegateModel.destroy();
     }
 
     @Override
