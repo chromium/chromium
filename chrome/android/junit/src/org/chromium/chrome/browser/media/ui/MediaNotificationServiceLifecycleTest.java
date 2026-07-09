@@ -247,6 +247,7 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         setUpService();
         getController().mService = mService;
         getController().mMediaNotificationInfo = mMediaNotificationInfoBuilder.build();
+        getController().setIsForegroundForTesting(true);
         getController().updateNotification(false, false);
 
         waitForAsync();

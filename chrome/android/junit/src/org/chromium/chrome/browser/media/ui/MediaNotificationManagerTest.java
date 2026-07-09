@@ -7,7 +7,15 @@ package org.chromium.chrome.browser.media.ui;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import android.util.SparseArray;
 
@@ -24,6 +32,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.media.MediaNotificationController;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
+import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -41,6 +51,7 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
         super.setUp();
         // Clean up the controller set by MediaNotificationTestBase to start clean.
         MediaNotificationManager.hideForAllTabs(getNotificationId());
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
     }
 
     @After
@@ -157,38 +168,139 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
-    public void testIsNotificationActive() throws Exception {
-        // Show Tab 1 (playing)
+    public void testFGSPromotionAndDemotion_SingleTab() throws Exception {
+        startAndRegisterService();
+
+        // 1. Show notification for Tab 1 (playing)
         MediaNotificationInfo info1 =
                 mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(false).build();
         ChromeMediaNotificationManager.show(info1);
+
+        int uniqueId1 = MediaNotificationManager.getUniqueId(1, getNotificationId());
+        MediaNotificationController controller1 = MediaNotificationManager.getController(uniqueId1);
+        assertNotNull(controller1);
+
+        // Manually initialize PendingIntent to bypass Robolectric timing issues
+        controller1.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+
+        // Trigger throttler task to run immediately
         advanceTimeByMillis(500);
 
-        // Get the unique ID for Tab 1
-        Map<?, ?> uniqueIdMap = getUniqueIdMap();
-        int id1 = (Integer) uniqueIdMap.get(android.util.Pair.create(1, getNotificationId()));
+        // Verify Tab 1 is promoted to FGS
+        assertTrue(controller1.isForeground());
+        verify(mMockForegroundServiceUtils, times(1))
+                .startForeground(any(), eq(uniqueId1), any(), anyInt());
 
-        // Verify Tab 1 is active
-        assertTrue(MediaNotificationManager.isNotificationActive(id1));
+        // 2. Pause Tab 1 (paused, supports swipe away)
+        MediaNotificationInfo info1Paused =
+                mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(true).build();
+        ChromeMediaNotificationManager.show(info1Paused);
 
-        // Show Tab 2 (playing)
+        // Trigger throttler task
+        advanceTimeByMillis(500);
+
+        // Verify Tab 1 is demoted from FGS
+        assertFalse(controller1.isForeground());
+        verify(mMockForegroundServiceUtils, times(1))
+                .stopForeground(any(), eq(android.app.Service.STOP_FOREGROUND_DETACH));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testFGSPromotionAndDemotion_MultiTab() throws Exception {
+        startAndRegisterService();
+
+        // 1. Show notification for Tab 1 (playing)
+        MediaNotificationInfo info1 =
+                mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info1);
+
+        int uniqueId1 = MediaNotificationManager.getUniqueId(1, getNotificationId());
+        MediaNotificationController controller1 = MediaNotificationManager.getController(uniqueId1);
+        assertNotNull(controller1);
+        controller1.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(500);
+
+        // Verify Tab 1 is FGS
+        assertTrue(controller1.isForeground());
+
+        // 2. Show notification for Tab 2 (playing)
         MediaNotificationInfo info2 =
                 mMediaNotificationInfoBuilder.setInstanceId(2).setPaused(false).build();
         ChromeMediaNotificationManager.show(info2);
+
+        int uniqueId2 = MediaNotificationManager.getUniqueId(2, getNotificationId());
+        MediaNotificationController controller2 = MediaNotificationManager.getController(uniqueId2);
+        assertNotNull(controller2);
+        controller2.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
         advanceTimeByMillis(500);
 
-        int id2 = (Integer) uniqueIdMap.get(android.util.Pair.create(2, getNotificationId()));
+        // Verify Tab 2 is now the active FGS, and Tab 1 is demoted
+        assertTrue(controller2.isForeground());
+        assertFalse(controller1.isForeground());
+        verify(mMockForegroundServiceUtils, times(1))
+                .startForeground(any(), eq(uniqueId2), any(), anyInt());
 
-        // Tab 2 should now be active because it was shown last and is playing.
-        assertTrue(MediaNotificationManager.isNotificationActive(id2));
-        assertFalse(MediaNotificationManager.isNotificationActive(id1));
+        // 3. Pause Tab 2 (active tab paused)
+        MediaNotificationInfo info2Paused =
+                mMediaNotificationInfoBuilder.setInstanceId(2).setPaused(true).build();
+        ChromeMediaNotificationManager.show(info2Paused);
+        advanceTimeByMillis(500);
 
-        // Pause Tab 2. Tab 1 (which is still playing) should be promoted.
+        // Verify Tab 2 is demoted. Tab 1 is still playing, so the manager should automatically
+        // fall back and promote it to FGS to protect its background playback.
+        assertFalse(controller2.isForeground());
+        assertTrue(controller1.isForeground());
+
+        // 4. Play Tab 1 again (making it active)
+        ChromeMediaNotificationManager.show(info1);
+        advanceTimeByMillis(500);
+
+        // Verify Tab 1 is promoted to FGS again
+        assertTrue(controller1.isForeground());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testBackgroundTabProtection() throws Exception {
+        startAndRegisterService();
+
+        // 1. Show notification for Tab 1 (playing) -> Active
+        MediaNotificationInfo info1 =
+                mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info1);
+
+        int uniqueId1 = MediaNotificationManager.getUniqueId(1, getNotificationId());
+        MediaNotificationController controller1 = MediaNotificationManager.getController(uniqueId1);
+        assertNotNull(controller1);
+        controller1.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(500);
+
+        // Verify Tab 1 is FGS
+        assertTrue(controller1.isForeground());
+
+        // 2. Show notification for Tab 2 (paused) -> Background
         MediaNotificationInfo info2Paused =
                 mMediaNotificationInfoBuilder.setInstanceId(2).setPaused(true).build();
         ChromeMediaNotificationManager.show(info2Paused);
 
-        assertTrue(MediaNotificationManager.isNotificationActive(id1));
-        assertFalse(MediaNotificationManager.isNotificationActive(id2));
+        int uniqueId2 = MediaNotificationManager.getUniqueId(2, getNotificationId());
+        MediaNotificationController controller2 = MediaNotificationManager.getController(uniqueId2);
+        assertNotNull(controller2);
+        controller2.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(500);
+
+        // Verify Tab 2 is still NOT FGS, and Tab 1 remains FGS
+        assertFalse(controller2.isForeground());
+        assertTrue(controller1.isForeground());
+
+        // Verify startForeground was NOT called for Tab 2
+        verify(mMockForegroundServiceUtils, never())
+                .startForeground(any(), eq(uniqueId2), any(), anyInt());
+    }
+
+    private void startAndRegisterService() {
+        ensureService();
+        MediaNotificationManager.setService(getNotificationId(), mService);
     }
 }

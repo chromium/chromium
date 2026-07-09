@@ -9,6 +9,8 @@ import android.util.Pair;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -103,7 +105,8 @@ public class MediaNotificationManager {
         return uniqueId;
     }
 
-    private static int getUniqueId(int tabId, int mediaTypeId) {
+    @VisibleForTesting
+    public static int getUniqueId(int tabId, int mediaTypeId) {
         Pair<Integer, Integer> key = Pair.create(tabId, mediaTypeId);
         Integer uniqueId = sUniqueIdMap.get(key);
         return uniqueId != null ? uniqueId : mediaTypeId;
@@ -182,7 +185,7 @@ public class MediaNotificationManager {
                     MediaNotificationController previousController =
                             sControllers.get(previousActiveId);
                     if (previousController != null) {
-                        previousController.demote();
+                        previousController.demote(/* stopFgs= */ false);
                     }
                 }
             }
@@ -340,6 +343,18 @@ public class MediaNotificationManager {
     public static boolean isServiceNeeded(int mediaTypeId, int excludeUniqueId) {
         return getFallbackPlayingControllerId(mediaTypeId, excludeUniqueId)
                 != MediaNotificationInfo.INVALID_ID;
+    }
+
+    public static boolean hasPlayingController(int mediaTypeId) {
+        return getFallbackPlayingControllerId(mediaTypeId, MediaNotificationInfo.INVALID_ID)
+                != MediaNotificationInfo.INVALID_ID;
+    }
+
+    public static void resetForTesting() {
+        sControllers.clear();
+        sUniqueIdMap.clear();
+        sActiveNotificationIds.clear();
+        sServices.clear();
     }
 
     public static @Nullable MediaNotificationController getController(int notificationId) {

@@ -109,7 +109,6 @@ public class MediaNotificationTestBase {
         // MediaNotificationManager.setMultipleMediaNotificationsEnabled. In the test, this is not
         // happening, so we have to do it manually.
         MediaNotificationManager.setMultipleMediaNotificationsEnabled(false);
-
         mMockContext = spy(RuntimeEnvironment.application);
         ContextUtils.initApplicationContextForTests(mMockContext);
 
@@ -219,7 +218,7 @@ public class MediaNotificationTestBase {
         mService.onStartCommand(intent, 0, 0);
     }
 
-    private void ensureService() {
+    void ensureService() {
         if (mService != null) return;
         mService = spy(new MockListenerService());
         MockListenerServiceImpl impl = mService.getImpl();

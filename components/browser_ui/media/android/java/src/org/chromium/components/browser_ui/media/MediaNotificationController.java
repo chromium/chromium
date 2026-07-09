@@ -113,6 +113,8 @@ public class MediaNotificationController {
     // |mMediaNotificationInfo| should be not null if and only if the notification is showing.
     @VisibleForTesting public @Nullable MediaNotificationInfo mMediaNotificationInfo;
 
+    private boolean mIsForeground;
+
     @VisibleForTesting public @Nullable MediaSessionCompat mMediaSession;
 
     @VisibleForTesting public Throttler mThrottler;
@@ -776,6 +778,7 @@ public class MediaNotificationController {
                 .stopForeground(mService, Service.STOP_FOREGROUND_REMOVE);
         mService.stopSelf();
         mService = null;
+        mIsForeground = false;
     }
 
     @VisibleForTesting
@@ -844,27 +847,20 @@ public class MediaNotificationController {
         // While the service is in foreground, the associated notification can't be swipped away.
         // Moving it back to background allows the user to remove the notification.
         if (mMediaNotificationInfo.supportsSwipeAway() && mMediaNotificationInfo.isPaused) {
-            ForegroundServiceUtils.getInstance()
-                    .stopForeground(mService, Service.STOP_FOREGROUND_DETACH);
+            if (mIsForeground) {
+                boolean stopFgs = true;
+                if (MediaNotificationManager.isMultipleMediaNotificationsEnabled()) {
+                    stopFgs = !MediaNotificationManager.hasPlayingController(getMediaTypeId());
+                }
+                demoteInternal(stopFgs);
+            }
             BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
             manager.notify(notification);
-        } else if (!finishedForegroundingService) {
-            // We did not foreground the service and update the notification above, so we should do
-            // so here.  On S and later, we cannot foreground the service if we're not currently
-            // in the foreground, and on Q and later the background activity start restrictions
-            // prevent us from launching a trampoline to fix it.  Try it, and see if it works.  If
-            // not, then update the notification and leave the service in the background.
-            try {
-                ForegroundServiceUtils.getInstance()
-                        .startForeground(
-                                mService,
-                                mMediaNotificationInfo.id,
-                                notification.getNotification(),
-                                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
-            } catch (RuntimeException e) {
-                BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
-                manager.notify(notification);
-            }
+        } else if (isActive() && !finishedForegroundingService) {
+            promoteInternal(notification);
+        } else {
+            BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
+            manager.notify(notification);
         }
         if (shouldLogNotification) {
             mDelegate.logNotificationShown(notification);
@@ -1194,21 +1190,85 @@ public class MediaNotificationController {
     }
 
     /**
+     * Internal helper to detach FGS status and update state without re-entering
+     * updateNotification().
+     */
+    private void demoteInternal(boolean stopFgs) {
+        if (mService == null) return;
+        if (stopFgs) {
+            ForegroundServiceUtils.getInstance()
+                    .stopForeground(mService, Service.STOP_FOREGROUND_DETACH);
+        }
+        mIsForeground = false;
+    }
+
+    /** Internal helper to start FGS and update state using a pre-built notification wrapper. */
+    private boolean promoteInternal(NotificationWrapper notification) {
+        if (mService == null || mMediaNotificationInfo == null) return false;
+        try {
+            ForegroundServiceUtils.getInstance()
+                    .startForeground(
+                            mService,
+                            mMediaNotificationInfo.id,
+                            notification.getNotification(),
+                            ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+            mIsForeground = true;
+            return true;
+        } catch (RuntimeException e) {
+            // Android S+ background execution restrictions or OEM-specific rules may throw an
+            // exception (e.g. ForegroundServiceStartNotAllowedException or IllegalStateException)
+            // if trying to start a foreground service from the background. Fall back to showing
+            // a normal background notification so media controls remain visible.
+            BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
+            manager.notify(notification);
+            return false;
+        }
+    }
+
+    /**
      * Promotes this controller's notification to own the Foreground Service (FGS). This transitions
      * the shared service to the foreground and displays this notification as the active,
      * non-swipeable FGS notification to protect playback.
      */
     public void promote() {
-        // TODO(crbug.com/522397811): Implement promotion logic.
+        if (mService == null || mMediaNotificationInfo == null) return;
+        if (mIsForeground) return;
+
+        NotificationWrapper notification =
+                mDelegate.createNotificationWrapperBuilder().buildNotificationWrapper();
+        promoteInternal(notification);
     }
 
     /**
      * Demotes this controller's notification from the Foreground Service (FGS). This transitions
      * the shared service to the background, making this notification a normal background
      * notification that the user can swipe away.
+     *
+     * @param stopFgs If true, stops the Foreground Service FGS status entirely. If false, keeps the
+     *     service running in the background.
      */
-    public void demote() {
-        // TODO(crbug.com/522397811): Implement demotion logic.
+    public void demote(boolean stopFgs) {
+        if (mService == null) return;
+        if (!mIsForeground) return;
+
+        demoteInternal(stopFgs);
+        updateNotification(false, false);
+    }
+
+    public boolean isForeground() {
+        return mIsForeground;
+    }
+
+    public void setIsForegroundForTesting(boolean isForeground) {
+        mIsForeground = isForeground;
+    }
+
+    private boolean isActive() {
+        if (!MediaNotificationManager.isMultipleMediaNotificationsEnabled()) {
+            return true;
+        }
+        return mMediaNotificationInfo != null
+                && MediaNotificationManager.isNotificationActive(mMediaNotificationInfo.id);
     }
 
     private static Context getContext() {
