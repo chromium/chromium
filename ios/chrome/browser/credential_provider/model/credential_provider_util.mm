@@ -6,6 +6,7 @@
 
 #import <CommonCrypto/CommonDigest.h>
 
+#import "base/apple/backup_util.h"
 #import "base/apple/foundation_util.h"
 #import "base/check_is_test.h"
 #import "base/metrics/histogram_functions.h"
@@ -152,6 +153,11 @@ void SaveFaviconToSharedAppContainer(FaviconAttributes* attributes,
                                attributes:nil
                                     error:nil];
     }
+
+    // The favicon set reveals which sites the user has credentials for; keep
+    // it out of device backups (matches archivable_credential_store.mm). Set
+    // unconditionally so folders created before this fix are covered too.
+    base::apple::SetBackupExclusion(base::apple::NSStringToFilePath(path));
 
     // Create or overwrite the favicon file.
     [file_manager createFileAtPath:[file_url path]
