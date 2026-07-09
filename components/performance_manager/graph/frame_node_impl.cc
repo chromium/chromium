@@ -361,10 +361,11 @@ void FrameNodeImpl::OnTraceSessionStart() {
 }
 
 void FrameNodeImpl::TraceEdges() {
-  TRACE_EVENT_INSTANT("performance_manager.graph", "AttachPage",
-                      perfetto::NamedTrack("Edges", 0, tracing_track_),
-                      perfetto::Flow::FromPointer(this));
   page_node_->TraceFrame(base::PassKey<FrameNodeImpl>(), this);
+  TRACE_EVENT_BEGIN("performance_manager.graph", "AttachedPage",
+                    perfetto::NamedTrack("Page", 0, tracing_track_),
+                    perfetto::Flow::Global(
+                        base::UnguessableTokenHash()(frame_token_.value())));
 }
 
 FrameNodeImpl* FrameNodeImpl::parent_frame_node() const {
@@ -845,10 +846,9 @@ void FrameNodeImpl::OnUninitializingEdges() {
 
   // Leave the page.
   DCHECK(graph()->NodeInGraph(page_node_));
+  TRACE_EVENT_END("performance_manager.graph",
+                  perfetto::NamedTrack("Page", 0, tracing_track_));
   page_node_->RemoveFrame(base::PassKey<FrameNodeImpl>(), this);
-  TRACE_EVENT_INSTANT("performance_manager.graph", "DetachPage",
-                      perfetto::NamedTrack("Edges", 0, tracing_track_),
-                      perfetto::TerminatingFlow::FromPointer(this));
 
   // Leave the frame hierarchy.
   if (parent_frame_node_) {
