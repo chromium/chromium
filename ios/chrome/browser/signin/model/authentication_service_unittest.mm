@@ -443,8 +443,9 @@ TEST_F(AuthenticationServiceTest, MDMErrorsClearedOnForeground) {
 
   SetCachedMDMInfo(identity(0), CreateRefreshAccessTokenError(identity(0)));
 
-  GoogleServiceAuthError error(
-      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_manager(), GetAccountId(identity(0)), error);
 
@@ -586,8 +587,9 @@ TEST_F(AuthenticationServiceTest, MDMErrorsDontSeedEmptyAccountIds) {
   // not loaded.
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2u);
 
-  GoogleServiceAuthError error(
-      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_manager(), GetAccountId(identity(0)), error);
   FireApplicationWillEnterForeground();
@@ -646,8 +648,9 @@ TEST_F(AuthenticationServiceTest, HandleMDMNotification) {
                                    signin_metrics::AccessPoint::kStartPage);
   VerifyLastSigninTimestamp();
 
-  GoogleServiceAuthError error(
-      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_manager(), GetAccountId(identity(0)), error);
 
@@ -711,8 +714,9 @@ TEST_F(AuthenticationServiceTest, HandleMDMNotificationSuppressed) {
 TEST_F(AuthenticationServiceTest, HandleMDMBlockedNotification) {
   authentication_service()->SignIn(identity(0),
                                    signin_metrics::AccessPoint::kStartPage);
-  GoogleServiceAuthError error(
-      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_manager(), GetAccountId(identity(0)), error);
   VerifyLastSigninTimestamp();
@@ -758,8 +762,9 @@ TEST_F(AuthenticationServiceTest, ShowMDMErrorDialogInvalidCachedError) {
 TEST_F(AuthenticationServiceTest, ShowMDMErrorDialog) {
   authentication_service()->SignIn(identity(0),
                                    signin_metrics::AccessPoint::kStartPage);
-  GoogleServiceAuthError error(
-      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_manager(), GetAccountId(identity(0)), error);
   VerifyLastSigninTimestamp();

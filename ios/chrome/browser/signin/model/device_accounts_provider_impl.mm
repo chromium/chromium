@@ -184,8 +184,8 @@ void DeviceAccountsProviderImpl::GetAccessToken(
   // If the identity is unknown, there is no need to try to fetch the access
   // token as it will fail immediately. Post the callback with a failure.
   if (!identity) {
-    GoogleServiceAuthError auth_error(
-        GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND);
+    GoogleServiceAuthError auth_error =
+        GoogleServiceAuthError::CreateAccountNotFound();
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), base::unexpected(auth_error)));

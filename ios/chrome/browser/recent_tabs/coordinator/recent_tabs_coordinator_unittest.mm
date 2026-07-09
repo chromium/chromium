@@ -115,7 +115,7 @@ class GlobalIdMapperMock : public syncer::GlobalIdMapper {
 class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
  public:
   RecentTabsTableCoordinatorTest()
-      : no_error_(GoogleServiceAuthError::NONE),
+      : no_error_(GoogleServiceAuthError::AuthErrorNone()),
         fake_controller_delegate_(syncer::SESSIONS) {}
 
  protected:
