@@ -1,23 +1,20 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<title>No crash when changing text node data in size-contained element</title>
+<link rel="help" href="https://crbug.com/40559894">
 <style>
 #test {
   contain: layout size;
   line-height: 1;
 }
 </style>
-<p>The test passes if you see the word "PASS" below and it doesn't crash in debug.</p>
 <div id="test">
   <div style="display: inline-block;"></div>
 </div>
 <script>
-  if (window.testRunner)
-    testRunner.dumpAsText();
-
   let contentNode = document.createTextNode("");
-  contentNode.data = "FAIL";
-  test.appendChild(contentNode);
-
+  contentNode.data = "foo";
+  document.getElementById('test').appendChild(contentNode);
   document.body.offsetLeft;
-  contentNode.data = "PASS";
+  contentNode.data = "bar";
 </script>

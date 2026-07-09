@@ -1,3 +1,0 @@
-The test passes if you see the word "PASS" below and it doesn't crash in debug.
-
- PASS
