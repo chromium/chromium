@@ -2771,12 +2771,10 @@
     "AutofillAndroidKeyboardAccessoryDynamicPositioning": [
         {
             "platforms": [
-                "android",
-                "android_webview",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "android"
+            ],
+            "form_factors": [
+                "desktop"
             ],
             "experiments": [
                 {
