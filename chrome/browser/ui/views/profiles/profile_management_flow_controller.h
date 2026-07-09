@@ -73,7 +73,12 @@ class ProfileManagementFlowController
     // the First Run Experience.
     kFinishOrContinue = 11,
 
-    kMaxValue = kFinishOrContinue,
+    // Renders the device signals disclaimer. The disclaimer is displayed once
+    // an existing profile is picked from the profile picker. This step is not
+    // part of any profile creation flow.
+    kDeviceSignalsDisclaimer = 12,
+
+    kMaxValue = kDeviceSignalsDisclaimer,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileManagementFlowStep)
 

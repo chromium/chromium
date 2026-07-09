@@ -18,6 +18,10 @@
 class ProfilePickerPostSignInAdapter;
 class ProfilePickerWebContentsHost;
 
+namespace signin {
+enum class DeviceSignalsDisclaimerResult;
+}
+
 namespace content {
 class WebContents;
 }
@@ -69,6 +73,12 @@ class ProfileManagementStepController {
   CreateForFinishFlowAndRunInBrowser(
       ProfilePickerWebContentsHost* host,
       base::OnceClosure finish_flow_and_run_in_browser_callback);
+
+  static std::unique_ptr<ProfileManagementStepController>
+  CreateForDeviceSignalsDisclaimer(
+      ProfilePickerWebContentsHost* host,
+      content::WebContents* web_contents,
+      base::OnceCallback<void(signin::DeviceSignalsDisclaimerResult)> callback);
 
   explicit ProfileManagementStepController(ProfilePickerWebContentsHost* host);
   virtual ~ProfileManagementStepController();

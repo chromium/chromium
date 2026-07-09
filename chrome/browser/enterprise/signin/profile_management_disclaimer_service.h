@@ -85,7 +85,14 @@ class ProfileManagementDisclaimerService
   [[nodiscard]] base::ScopedClosureRunner
   AutoAcceptManagementDisclaimerUntilReset();
 
-  // Device signals dialog is gated behind --no-first-run switch.
+  // Returns whether the device signals disclaimer is required for this profile.
+  bool IsDeviceSignalsDisclaimerRequired() const;
+
+  // Marks the consent as granted in the profile preferences.
+  void OnDeviceSignalsCollectionConsentGranted();
+
+  // The device signals disclaimer is gated behind --no-first-run, however for
+  // accurate browser tests it can be bypassed using this function.
   inline void SetBypassNoFirstRunForTesting(bool new_value) {
     bypass_no_first_run_ = new_value;
   }
