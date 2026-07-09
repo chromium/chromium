@@ -1475,11 +1475,6 @@ CanvasResourceDispatcher* HTMLCanvasElement::GetOrCreateResourceDispatcher() {
   return frame_dispatcher_.get();
 }
 
-bool HTMLCanvasElement::PushFrame(scoped_refptr<CanvasResource>&& image) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 bool HTMLCanvasElement::ShouldAccelerate() const {
   if (context_ && !IsRenderingContext2D())
     return false;
