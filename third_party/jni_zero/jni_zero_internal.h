@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef JNI_ZERO_JNI_ZERO_INTERNAL_H
 #define JNI_ZERO_JNI_ZERO_INTERNAL_H
 
@@ -15,6 +10,7 @@
 #include <cstdint>
 #include <utility>  // for std::forward
 
+#include "third_party/jni_zero/compiler_specific.h"
 #include "third_party/jni_zero/default_conversions.h"
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -109,8 +105,9 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContext {
                                   std::atomic<jmethodID>* atomic_method_id) {
     env_ = env;
 
-    // Make sure compiler doesn't optimize out the assignment.
-    memcpy(&marker_, &kJniStackMarkerValue, sizeof(kJniStackMarkerValue));
+    // marker_ is volatile to prevent the compiler from optimizing out this
+    // write, which is scanned on the stack by crash reporting tools.
+    marker_ = kJniStackMarkerValue;
     // Gets PC of the calling function.
     pc_ = reinterpret_cast<uintptr_t>(__builtin_return_address(0));
 
@@ -119,8 +116,9 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContext {
   }
 
   JNI_ZERO_NEVER_INLINE ~JniJavaCallContext() {
-    // Reset so that spurious marker finds are avoided.
-    memset(&marker_, 0, sizeof(marker_));
+    // Reset to prevent spurious marker finds in stack scans. Volatile ensures
+    // the compiler does not optimize this out as a dead store.
+    marker_ = 0;
     if (checked) {
       CheckException(env_);
     }
@@ -129,7 +127,7 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContext {
   jmethodID method_id() { return method_id_; }
 
  private:
-  uint64_t marker_;
+  volatile uint64_t marker_;
   uintptr_t sp_;
   uintptr_t pc_;
   JNIEnv* env_;

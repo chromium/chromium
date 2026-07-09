@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/jni_zero/logging.h"
 
 #include <stdarg.h>
 #include <stdio.h>
+
 #include <atomic>
 #include <memory>
+
 #ifndef JNI_ZERO_IS_ROBOLECTRIC
 #include <android/log.h>
 #include <android/set_abort_message.h>
@@ -41,14 +38,15 @@ void LogMessage(LogLev level,
   for (size_t max_len = sizeof(stack_buf);;) {
     va_list args;
     va_start(args, fmt);
-    int res = vsnprintf(log_msg, max_len, fmt, args);
+    int res = JNI_ZERO_UNSAFE_TODO(vsnprintf(log_msg, max_len, fmt, args));
     va_end(args);
 
     // If for any reason the print fails, overwrite the message but still print
     // it. The code below will attach the filename and line, which is still
     // useful.
     if (res < 0) {
-      snprintf(log_msg, max_len, "%s", "[printf format error]");
+      JNI_ZERO_UNSAFE_TODO(
+          snprintf(log_msg, max_len, "%s", "[printf format error]"));
       break;
     }
     // if res == max_len, vsnprintf saturated the input buffer. Retry with a
@@ -69,10 +67,11 @@ void LogMessage(LogLev level,
   }
 
 #ifdef JNI_ZERO_IS_ROBOLECTRIC
-  fprintf(stderr, "%s:%d %s\n", fname, line, log_msg);
+  JNI_ZERO_UNSAFE_TODO(fprintf(stderr, "%s:%d %s\n", fname, line, log_msg));
 #else
-  __android_log_print(int{ANDROID_LOG_DEBUG} + level, "jni_zero", "%s:%d %s",
-                      fname, line, log_msg);
+  JNI_ZERO_UNSAFE_TODO(__android_log_print(int{ANDROID_LOG_DEBUG} + level,
+                                           "jni_zero", "%s:%d %s", fname, line,
+                                           log_msg));
   if (level >= kLogFatal) {
     android_set_abort_message(log_msg);
   }
