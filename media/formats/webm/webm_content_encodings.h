@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -72,7 +73,7 @@ class MEDIA_EXPORT ContentEncoding {
   }
 
   const std::string& encryption_key_id() const { return encryption_key_id_; }
-  void SetEncryptionKeyId(const uint8_t* encryption_key_id, int size);
+  void SetEncryptionKeyId(base::span<const uint8_t> encryption_key_id);
 
   CipherMode cipher_mode() const { return cipher_mode_; }
   void set_cipher_mode(CipherMode mode) { cipher_mode_ = mode; }

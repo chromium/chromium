@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "base/containers/span.h"
 #include "media/base/mock_media_log.h"
 #include "media/formats/webm/webm_constants.h"
 #include "media/formats/webm/webm_video_client.h"
@@ -106,8 +107,8 @@ class WebMProjectionParserTest : public testing::Test {
     return projection_parser_.OnFloat(id, val);
   }
 
-  bool OnBinary(int id, const uint8_t* data, int size) {
-    return projection_parser_.OnBinary(id, data, size);
+  bool OnBinary(int id, base::span<const uint8_t> data) {
+    return projection_parser_.OnBinary(id, data);
   }
 
   WebMParserClient* VideoClientOnListStart(int id) {
@@ -178,9 +179,7 @@ TEST_F(WebMProjectionParserTest, MissingProjectionType) {
 
 TEST_F(WebMProjectionParserTest, PartialProjectionPose) {
   auto* parser = VideoClientOnListStart(kWebMIdProjection);
-  EXPECT_TRUE(parser->OnBinary(kWebMIdProjectionPrivate,
-                               kEquirectPrivateData.data(),
-                               kEquirectPrivateData.size()));
+  EXPECT_TRUE(parser->OnBinary(kWebMIdProjectionPrivate, kEquirectPrivateData));
   parser->OnUInt(kWebMIdProjectionType, 1);
   parser->OnFloat(kWebMIdProjectionPoseYaw, 90);
   VideoClientOnListEnd(kWebMIdProjection);
@@ -196,7 +195,7 @@ TEST_F(WebMProjectionParserTest, PartialProjectionPose) {
 TEST_F(WebMProjectionParserTest, ProjectionPrivateUnexpectedId) {
   EXPECT_MEDIA_LOG(UnexpectedProjectionId());
   static constexpr auto kData = std::to_array<uint8_t>({0});
-  OnBinary(kWebMIdPrimaryBChromaticityX, kData.data(), kData.size());
+  OnBinary(kWebMIdPrimaryBChromaticityX, kData);
 }
 
 TEST_F(WebMProjectionParserTest, ProjectionPrivateRectangular) {
@@ -204,9 +203,7 @@ TEST_F(WebMProjectionParserTest, ProjectionPrivateRectangular) {
   parser->OnUInt(kWebMIdProjectionType, 0);
   parser->OnFloat(kWebMIdProjectionPoseYaw, 0.0);
   parser->OnFloat(kWebMIdProjectionPoseRoll, 0.0);
-  EXPECT_TRUE(parser->OnBinary(kWebMIdProjectionPrivate,
-                               kEquirectPrivateData.data(),
-                               kEquirectPrivateData.size()));
+  EXPECT_TRUE(parser->OnBinary(kWebMIdProjectionPrivate, kEquirectPrivateData));
   EXPECT_MEDIA_LOG(ProjectionPrivateMustNotBePresent());
   VideoClientOnListEnd(kWebMIdProjection);
   EXPECT_EQ(static_cast<WebMProjectionParser*>(parser)->GetProjectionType(),
@@ -224,21 +221,17 @@ TEST_F(WebMProjectionParserTest, ProjectionPrivateInvalidSize) {
       0x00, 0x00, 0x00, 0x00,  // bottom
       0x00, 0x00               // left (incomplete)
   });
-  EXPECT_TRUE(
-      parser->OnBinary(kWebMIdProjectionPrivate, kData.data(), kData.size()));
+  EXPECT_TRUE(parser->OnBinary(kWebMIdProjectionPrivate, kData));
   VideoClientOnListEnd(kWebMIdProjection);
 }
 
 TEST_F(WebMProjectionParserTest, MultipleProjectionPrivate) {
   auto* parser = VideoClientOnListStart(kWebMIdProjection);
   parser->OnUInt(kWebMIdProjectionType, 1);
-  EXPECT_TRUE(parser->OnBinary(kWebMIdProjectionPrivate,
-                               kEquirectPrivateData.data(),
-                               kEquirectPrivateData.size()));
+  EXPECT_TRUE(parser->OnBinary(kWebMIdProjectionPrivate, kEquirectPrivateData));
   EXPECT_MEDIA_LOG(UnexpectedMultipleValuesForProjectionPrivate());
-  EXPECT_FALSE(parser->OnBinary(kWebMIdProjectionPrivate,
-                                kEquirectPrivateData.data(),
-                                kEquirectPrivateData.size()));
+  EXPECT_FALSE(
+      parser->OnBinary(kWebMIdProjectionPrivate, kEquirectPrivateData));
 }
 
 TEST_F(WebMProjectionParserTest, ProjectionPrivateEquirect360) {
@@ -246,9 +239,7 @@ TEST_F(WebMProjectionParserTest, ProjectionPrivateEquirect360) {
   parser->OnUInt(kWebMIdProjectionType, 1);
   parser->OnFloat(kWebMIdProjectionPoseYaw, 0.0);
   parser->OnFloat(kWebMIdProjectionPoseRoll, 0.0);
-  EXPECT_TRUE(parser->OnBinary(kWebMIdProjectionPrivate,
-                               kEquirectPrivateData.data(),
-                               kEquirectPrivateData.size()));
+  EXPECT_TRUE(parser->OnBinary(kWebMIdProjectionPrivate, kEquirectPrivateData));
   VideoClientOnListEnd(kWebMIdProjection);
   EXPECT_EQ(static_cast<WebMProjectionParser*>(parser)->GetProjectionType(),
             VideoProjectionType::kEquirect360);
@@ -259,9 +250,8 @@ TEST_F(WebMProjectionParserTest, ProjectionPrivateEquirect180) {
   parser->OnUInt(kWebMIdProjectionType, 1);
   parser->OnFloat(kWebMIdProjectionPoseYaw, 0.0);
   parser->OnFloat(kWebMIdProjectionPoseRoll, 0.0);
-  EXPECT_TRUE(parser->OnBinary(kWebMIdProjectionPrivate,
-                               kEquirect180PrivateData.data(),
-                               kEquirect180PrivateData.size()));
+  EXPECT_TRUE(
+      parser->OnBinary(kWebMIdProjectionPrivate, kEquirect180PrivateData));
   VideoClientOnListEnd(kWebMIdProjection);
   EXPECT_EQ(static_cast<WebMProjectionParser*>(parser)->GetProjectionType(),
             VideoProjectionType::kEquirect180);
@@ -269,9 +259,7 @@ TEST_F(WebMProjectionParserTest, ProjectionPrivateEquirect180) {
 
 TEST_F(WebMProjectionParserTest, ProjectionPrivateBeforeProjectionType) {
   auto* parser = VideoClientOnListStart(kWebMIdProjection);
-  EXPECT_TRUE(parser->OnBinary(kWebMIdProjectionPrivate,
-                               kEquirectPrivateData.data(),
-                               kEquirectPrivateData.size()));
+  EXPECT_TRUE(parser->OnBinary(kWebMIdProjectionPrivate, kEquirectPrivateData));
   parser->OnUInt(kWebMIdProjectionType, 1);
   parser->OnFloat(kWebMIdProjectionPoseYaw, 0.0);
   parser->OnFloat(kWebMIdProjectionPoseRoll, 0.0);
@@ -283,9 +271,7 @@ TEST_F(WebMProjectionParserTest, ProjectionPrivateBeforeProjectionType) {
 TEST_F(WebMProjectionParserTest, ProjectionTypeBeforeProjectionPrivate) {
   auto* parser = VideoClientOnListStart(kWebMIdProjection);
   parser->OnUInt(kWebMIdProjectionType, 1);
-  EXPECT_TRUE(parser->OnBinary(kWebMIdProjectionPrivate,
-                               kEquirectPrivateData.data(),
-                               kEquirectPrivateData.size()));
+  EXPECT_TRUE(parser->OnBinary(kWebMIdProjectionPrivate, kEquirectPrivateData));
   parser->OnFloat(kWebMIdProjectionPoseYaw, 0.0);
   parser->OnFloat(kWebMIdProjectionPoseRoll, 0.0);
   VideoClientOnListEnd(kWebMIdProjection);
@@ -295,9 +281,8 @@ TEST_F(WebMProjectionParserTest, ProjectionTypeBeforeProjectionPrivate) {
 
 TEST_F(WebMProjectionParserTest, ProjectionPrivate180BeforeProjectionType) {
   auto* parser = VideoClientOnListStart(kWebMIdProjection);
-  EXPECT_TRUE(parser->OnBinary(kWebMIdProjectionPrivate,
-                               kEquirect180PrivateData.data(),
-                               kEquirect180PrivateData.size()));
+  EXPECT_TRUE(
+      parser->OnBinary(kWebMIdProjectionPrivate, kEquirect180PrivateData));
   parser->OnUInt(kWebMIdProjectionType, 1);
   parser->OnFloat(kWebMIdProjectionPoseYaw, 0.0);
   parser->OnFloat(kWebMIdProjectionPoseRoll, 0.0);

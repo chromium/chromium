@@ -4,7 +4,6 @@
 
 #include "media/formats/webm/webm_info_parser.h"
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "media/formats/webm/webm_constants.h"
 
@@ -76,14 +75,16 @@ bool WebMInfoParser::OnFloat(int id, double val) {
   return true;
 }
 
-bool WebMInfoParser::OnBinary(int id, const uint8_t* data, int size) {
+bool WebMInfoParser::OnBinary(int id, base::span<const uint8_t> data) {
   if (id == kWebMIdDateUTC) {
-    if (size != 8)
+    if (data.size() != 8) {
       return false;
+    }
 
     int64_t date_in_nanoseconds = 0;
-    for (int i = 0; i < size; ++i)
-      date_in_nanoseconds = (date_in_nanoseconds << 8) | UNSAFE_TODO(data[i]);
+    for (uint8_t byte : data) {
+      date_in_nanoseconds = (date_in_nanoseconds << 8) | byte;
+    }
 
     static constexpr base::Time::Exploded kExplodedEpoch = {
         .year = 2001, .month = 1, .day_of_week = 1, .day_of_month = 1};

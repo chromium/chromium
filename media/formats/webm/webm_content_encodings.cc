@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "media/formats/webm/webm_content_encodings.h"
+
 #include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 
 namespace media {
 
@@ -17,12 +20,10 @@ ContentEncoding::ContentEncoding()
 
 ContentEncoding::~ContentEncoding() = default;
 
-void ContentEncoding::SetEncryptionKeyId(const uint8_t* encryption_key_id,
-                                         int size) {
-  DCHECK(encryption_key_id);
-  DCHECK_GT(size, 0);
-  encryption_key_id_.assign(reinterpret_cast<const char*>(encryption_key_id),
-                            size);
+void ContentEncoding::SetEncryptionKeyId(
+    base::span<const uint8_t> encryption_key_id) {
+  DCHECK(!encryption_key_id.empty());
+  encryption_key_id_ = std::string(base::as_string_view(encryption_key_id));
 }
 
 }  // namespace media

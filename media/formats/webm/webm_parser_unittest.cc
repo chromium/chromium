@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "media/formats/webm/cluster_builder.h"
 #include "media/formats/webm/webm_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -35,7 +36,7 @@ class MockWebMParserClient : public WebMParserClient {
   MOCK_METHOD1(OnListEnd, bool(int));
   MOCK_METHOD2(OnUInt, bool(int, int64_t));
   MOCK_METHOD2(OnFloat, bool(int, double));
-  MOCK_METHOD3(OnBinary, bool(int, const uint8_t*, int));
+  MOCK_METHOD2(OnBinary, bool(int, base::span<const uint8_t>));
   MOCK_METHOD2(OnString, bool(int, const std::string&));
 };
 
@@ -66,7 +67,7 @@ static void CreateClusterExpectations(int block_count,
       .WillOnce(Return(true));
 
   for (int i = 0; i < block_count; i++) {
-    EXPECT_CALL(*client, OnBinary(kWebMIdSimpleBlock, _, _))
+    EXPECT_CALL(*client, OnBinary(kWebMIdSimpleBlock, _))
         .WillOnce(Return(true));
   }
 

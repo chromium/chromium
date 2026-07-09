@@ -38,7 +38,7 @@ class MEDIA_EXPORT WebMProjectionParser : public WebMParserClient {
   // WebMParserClient implementation.
   bool OnUInt(int id, int64_t val) override;
   bool OnFloat(int id, double val) override;
-  bool OnBinary(int id, const uint8_t* data, int size) override;
+  bool OnBinary(int id, base::span<const uint8_t> data) override;
 
   // private data
   const std::unique_ptr<MediaLog> media_log_;

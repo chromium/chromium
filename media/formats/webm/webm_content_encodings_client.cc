@@ -247,10 +247,8 @@ bool WebMContentEncodingsClient::OnUInt(int id, int64_t val) {
 // Multiple occurrence restriction is checked in this function.  Mandatory
 // restriction is checked in OnListEnd.
 bool WebMContentEncodingsClient::OnBinary(int id,
-                                          const uint8_t* data,
-                                          int size) {
+                                          base::span<const uint8_t> data) {
   DCHECK(cur_content_encoding_.get());
-  DCHECK(data);
 
   if (id != kWebMIdContentEncKeyID) {
     MEDIA_LOG(ERROR, media_log_) << "Unsupported element " << id;
@@ -262,12 +260,12 @@ bool WebMContentEncodingsClient::OnBinary(int id,
     return false;
   }
 
-  if (size <= 0) {
-    MEDIA_LOG(ERROR, media_log_) << "Invalid ContentEncKeyID size: " << size;
+  if (data.empty()) {
+    MEDIA_LOG(ERROR, media_log_) << "Invalid ContentEncKeyID size: 0";
     return false;
   }
 
-  cur_content_encoding_->SetEncryptionKeyId(data, size);
+  cur_content_encoding_->SetEncryptionKeyId(data);
   return true;
 }
 

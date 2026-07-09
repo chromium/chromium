@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 
@@ -38,7 +39,7 @@ class MEDIA_EXPORT WebMParserClient {
   virtual bool OnListEnd(int id);
   virtual bool OnUInt(int id, int64_t val);
   virtual bool OnFloat(int id, double val);
-  virtual bool OnBinary(int id, const uint8_t* data, int size);
+  virtual bool OnBinary(int id, base::span<const uint8_t> data);
 
   // Note that |str| is not necessarily a valid WebM string-value; various EBML
   // "s" or "8" string elements are specified as either ASCII-printable (0x20 -

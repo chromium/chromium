@@ -671,7 +671,9 @@ static int ParseBinary(const uint8_t* buf,
                        int size,
                        int id,
                        WebMParserClient* client) {
-  return client->OnBinary(id, buf, size) ? size : -1;
+  auto data = UNSAFE_TODO(
+      base::span<const uint8_t>(buf, base::checked_cast<size_t>(size)));
+  return client->OnBinary(id, data) ? size : -1;
 }
 
 static int ParseString(const uint8_t* buf,
@@ -746,7 +748,7 @@ bool WebMParserClient::OnFloat(int id, double val) {
   return false;
 }
 
-bool WebMParserClient::OnBinary(int id, const uint8_t* data, int size) {
+bool WebMParserClient::OnBinary(int id, base::span<const uint8_t> data) {
   DVLOG(1) << "Unexpected binary element with ID " << std::hex << id;
   return false;
 }

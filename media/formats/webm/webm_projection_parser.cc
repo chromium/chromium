@@ -5,7 +5,6 @@
 #include "media/formats/webm/webm_projection_parser.h"
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
 #include "media/formats/webm/webm_constants.h"
@@ -70,7 +69,7 @@ bool WebMProjectionParser::OnUInt(int id, int64_t val) {
 }
 
 // WebMParserClient
-bool WebMProjectionParser::OnBinary(int id, const uint8_t* data, int size) {
+bool WebMProjectionParser::OnBinary(int id, base::span<const uint8_t> data) {
   if (id != kWebMIdProjectionPrivate) {
     MEDIA_LOG(ERROR, media_log_)
         << "Unexpected id in Projection: 0x" << std::hex << id;
@@ -83,12 +82,7 @@ bool WebMProjectionParser::OnBinary(int id, const uint8_t* data, int size) {
     return false;
   }
 
-  // SAFETY: The EBML parser guarantees that `data` points to a valid buffer
-  // of at least `size` bytes.
-  auto data_span = UNSAFE_BUFFERS(
-      base::span<const uint8_t>(data, base::checked_cast<size_t>(size)));
-  projection_private_ =
-      std::vector<uint8_t>(data_span.begin(), data_span.end());
+  projection_private_ = std::vector<uint8_t>(data.begin(), data.end());
 
   return true;
 }

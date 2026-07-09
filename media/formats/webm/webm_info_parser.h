@@ -41,7 +41,7 @@ class MEDIA_EXPORT WebMInfoParser : public WebMParserClient {
   bool OnListEnd(int id) override;
   bool OnUInt(int id, int64_t val) override;
   bool OnFloat(int id, double val) override;
-  bool OnBinary(int id, const uint8_t* data, int size) override;
+  bool OnBinary(int id, base::span<const uint8_t> data) override;
   bool OnString(int id, const std::string& str) override;
 
   int64_t timecode_scale_ns_;
