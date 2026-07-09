@@ -11,8 +11,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "content/browser/media/session/media_session_player_observer.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/media_session_player_observer.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/picture_in_picture_events_info.h"
 #include "services/media_session/public/cpp/media_position.h"

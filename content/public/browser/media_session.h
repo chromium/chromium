@@ -15,8 +15,9 @@
 namespace content {
 
 class BrowserContext;
-class WebContents;
+class MediaSessionPlayerObserver;
 class RenderFrameHost;
+class WebContents;
 
 // MediaSession manages the media session and audio focus for a given
 // WebContents. There is only one MediaSession per WebContents.
@@ -64,6 +65,19 @@ class MediaSession : public media_session::mojom::MediaSession {
   // Tell the media session a user action has performed.
   virtual void DidReceiveAction(
       media_session::mojom::MediaSessionAction action) = 0;
+
+  // Adds the given player to the current media session. Returns whether the
+  // player was successfully added.
+  virtual bool AddPlayer(MediaSessionPlayerObserver* observer,
+                         int player_id) = 0;
+
+  // Removes the given player from the current media session.
+  virtual void RemovePlayer(MediaSessionPlayerObserver* observer,
+                            int player_id) = 0;
+
+  // Called when a player is paused in the content.
+  virtual void OnPlayerPaused(MediaSessionPlayerObserver* observer,
+                              int player_id) = 0;
 
   // Set the volume multiplier applied during ducking.
   virtual void SetDuckingVolumeMultiplier(double multiplier) = 0;

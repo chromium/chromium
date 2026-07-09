@@ -1507,7 +1507,6 @@ source_set("browser") {
     "media/session/media_session_controllers_manager.h",
     "media/session/media_session_impl.cc",
     "media/session/media_session_impl.h",
-    "media/session/media_session_player_observer.h",
     "media/session/media_session_service_impl.cc",
     "media/session/media_session_service_impl.h",
     "media/session/media_session_uma_helper.cc",

@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_PLAYER_OBSERVER_H_
-#define CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_PLAYER_OBSERVER_H_
+#ifndef CONTENT_PUBLIC_BROWSER_MEDIA_SESSION_PLAYER_OBSERVER_H_
+#define CONTENT_PUBLIC_BROWSER_MEDIA_SESSION_PLAYER_OBSERVER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "content/common/content_export.h"
 #include "media/base/picture_in_picture_events_info.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -24,7 +26,7 @@ namespace content {
 
 class RenderFrameHost;
 
-class MediaSessionPlayerObserver {
+class CONTENT_EXPORT MediaSessionPlayerObserver {
  public:
   MediaSessionPlayerObserver() = default;
   virtual ~MediaSessionPlayerObserver() = default;
@@ -122,4 +124,4 @@ class MediaSessionPlayerObserver {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_PLAYER_OBSERVER_H_
+#endif  // CONTENT_PUBLIC_BROWSER_MEDIA_SESSION_PLAYER_OBSERVER_H_

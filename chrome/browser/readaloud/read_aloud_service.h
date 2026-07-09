@@ -28,6 +28,8 @@ class Profile;
 
 namespace readaloud {
 
+class ReadAloudPlaybackSession;
+
 // Central lifecycle and state orchestrator for Read Aloud.
 class ReadAloudService
     : public KeyedService,
@@ -175,6 +177,11 @@ class ReadAloudService
   // Initiates an asynchronous check to determine if the URL is readable.
   void CheckReadability(const GURL& url);
 
+  // Methods called by ReadAloudPlaybackSession:
+  void OnSessionSuspended();
+  void OnSessionResumed();
+
+  bool IsPlaybackPaused() const;
 
   // KeyedService:
   void Shutdown() override;
@@ -212,6 +219,7 @@ class ReadAloudService
 
   void EnsureServiceConnected();
   void OnUtilityDisconnect();
+  PlaybackState GetCurrentPlaybackState() const;
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<dom_distiller::ViewerHandle> viewer_handle_;
@@ -226,6 +234,9 @@ class ReadAloudService
   mojo::Remote<read_aloud::mojom::ReadAloudPlaybackController> utility_player_;
   mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackControllerClient>
       utility_observer_receiver_{this};
+
+  std::unique_ptr<ReadAloudPlaybackSession> active_session_;
+  base::WeakPtr<content::WebContents> web_contents_;
 
   base::WeakPtrFactory<ReadAloudService> weak_factory_{this};
 };

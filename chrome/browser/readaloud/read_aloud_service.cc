@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/readaloud/read_aloud_playback_session.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "content/public/browser/service_process_host.h"
@@ -26,9 +27,42 @@ void ReadAloudService::SetDelegate(std::unique_ptr<Delegate> delegate) {
   delegate_ = std::move(delegate);
 }
 
-void ReadAloudService::Play() {}
-void ReadAloudService::Pause() {}
-void ReadAloudService::Stop() {}
+void ReadAloudService::Play() {
+  PlaybackState previous_state = GetCurrentPlaybackState();
+  if (!active_session_ && web_contents_) {
+    active_session_ =
+        std::make_unique<ReadAloudPlaybackSession>(web_contents_.get(), this);
+  }
+  if (active_session_) {
+    active_session_->NotifyPlaybackStarted();
+  }
+  PlaybackState current_state = GetCurrentPlaybackState();
+  if (current_state != previous_state && delegate_) {
+    delegate_->OnPlaybackStateChanged(current_state);
+  }
+}
+
+void ReadAloudService::Pause() {
+  PlaybackState previous_state = GetCurrentPlaybackState();
+  if (active_session_) {
+    active_session_->NotifyPlaybackPaused();
+  }
+  PlaybackState current_state = GetCurrentPlaybackState();
+  if (current_state != previous_state && delegate_) {
+    delegate_->OnPlaybackStateChanged(current_state);
+  }
+}
+
+void ReadAloudService::Stop() {
+  PlaybackState previous_state = GetCurrentPlaybackState();
+  if (active_session_) {
+    active_session_->NotifyPlaybackStopped();
+  }
+  PlaybackState current_state = GetCurrentPlaybackState();
+  if (current_state != previous_state && delegate_) {
+    delegate_->OnPlaybackStateChanged(current_state);
+  }
+}
 void ReadAloudService::SeekToWordIndex(int word_index) {}
 void ReadAloudService::Seek(base::TimeDelta absolute_time) {}
 void ReadAloudService::SeekRelative(base::TimeDelta offset) {}
@@ -41,8 +75,33 @@ void ReadAloudService::SetHighlightingEnabled(bool enabled) {}
 void ReadAloudService::SendFeedback(FeedbackType feedback_type) {}
 void ReadAloudService::CheckReadability(const GURL& url) {}
 
+void ReadAloudService::OnSessionSuspended() {
+  Pause();
+}
+
+void ReadAloudService::OnSessionResumed() {
+  Play();
+}
+
+bool ReadAloudService::IsPlaybackPaused() const {
+  return !active_session_ || active_session_->is_paused();
+}
+
+ReadAloudService::PlaybackState ReadAloudService::GetCurrentPlaybackState()
+    const {
+  if (!active_session_) {
+    return PlaybackState::kStopped;
+  }
+  if (!active_session_->is_playback_in_progress()) {
+    return PlaybackState::kStopped;
+  }
+  return active_session_->is_paused() ? PlaybackState::kPaused
+                                      : PlaybackState::kPlaying;
+}
+
 void ReadAloudService::Shutdown() {
   weak_factory_.InvalidateWeakPtrs();
+  active_session_.reset();
   if (delegate_) {
     delegate_->OnNativeDestroyed();
     delegate_.reset();

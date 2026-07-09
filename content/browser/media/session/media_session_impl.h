@@ -100,26 +100,9 @@ class MediaSessionImpl : public MediaSession,
 
   void NotifyMediaSessionMetadataChange();
 
-  // Adds the given player to the current media session. Returns whether the
-  // player was successfully added. If it returns false, AddPlayer() should be
-  // called again later.
-  CONTENT_EXPORT bool AddPlayer(MediaSessionPlayerObserver* observer,
-                                int player_id);
-
-  // Removes the given player from the current media session. Abandons audio
-  // focus if that was the last player in the session.
-  CONTENT_EXPORT void RemovePlayer(MediaSessionPlayerObserver* observer,
-                                   int player_id);
-
   // Removes all the players associated with |observer|. Abandons audio focus if
   // these were the last players in the session.
   CONTENT_EXPORT void RemovePlayers(MediaSessionPlayerObserver* observer);
-
-  // Called when a player is paused in the content.
-  // If the paused player is the last player, we suspend the MediaSession.
-  // Otherwise, the paused player will be removed from the MediaSession.
-  CONTENT_EXPORT void OnPlayerPaused(MediaSessionPlayerObserver* observer,
-                                     int player_id);
 
   // Called when the position state of the session might have changed.
   CONTENT_EXPORT void RebuildAndNotifyMediaPositionChanged();
@@ -185,6 +168,23 @@ class MediaSessionImpl : public MediaSession,
   CONTENT_EXPORT bool IsControllable() const;
 
   // MediaSession overrides ---------------------------------------------------
+
+  // Adds the given player to the current media session. Returns whether the
+  // player was successfully added. If it returns false, AddPlayer() should be
+  // called again later.
+  CONTENT_EXPORT bool AddPlayer(MediaSessionPlayerObserver* observer,
+                                int player_id) override;
+
+  // Removes the given player from the current media session. Abandons audio
+  // focus if that was the last player in the session.
+  CONTENT_EXPORT void RemovePlayer(MediaSessionPlayerObserver* observer,
+                                   int player_id) override;
+
+  // Called when a player is paused in the content.
+  // If the paused player is the last player, we suspend the MediaSession.
+  // Otherwise, the paused player will be removed from the MediaSession.
+  CONTENT_EXPORT void OnPlayerPaused(MediaSessionPlayerObserver* observer,
+                                     int player_id) override;
 
   // Resume the media session.
   // |type| represents the origin of the request.
