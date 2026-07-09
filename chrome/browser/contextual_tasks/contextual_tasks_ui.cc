@@ -1510,6 +1510,14 @@ void ContextualTasksUI::TransferNavigationToEmbeddedPage(
       embedded_web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId();
   OMNIBOX_LOG("nav_trace") << "ContextualTasks navigation trace: "
              "TransferNavigationToEmbeddedPage opening URL in embedded page";
+  // Exit basic mode when transferring navigation to the embedded page.
+  // Without this call, if the side panel entered basic mode previously (such
+  // as when viewing an in-page viewer link), basic mode remains active on the
+  // new query, causing the embedded webview to stack above the composebox in
+  // z-order and visually hide it.
+  if (page_) {
+    page_->ExitBasicMode();
+  }
   embedded_web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
