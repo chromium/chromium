@@ -8,14 +8,14 @@
 
 namespace media {
 
-base::ByteCount GetDemuxerStreamAudioMemoryLimit(
+base::ByteSize GetDemuxerStreamAudioMemoryLimit(
     const AudioDecoderConfig* /*audio_config*/) {
   return base::SysInfo::IsLowEndDevice()
              ? internal::kDemuxerStreamAudioMemoryLimitLow
              : internal::kDemuxerStreamAudioMemoryLimitDefault;
 }
 
-base::ByteCount GetDemuxerStreamVideoMemoryLimit(
+base::ByteSize GetDemuxerStreamVideoMemoryLimit(
     DemuxerType /*demuxer_type*/,
     const VideoDecoderConfig* /*video_config*/) {
   return base::SysInfo::IsLowEndDevice()
@@ -23,7 +23,7 @@ base::ByteCount GetDemuxerStreamVideoMemoryLimit(
              : internal::kDemuxerStreamVideoMemoryLimitDefault;
 }
 
-base::ByteCount GetDemuxerMemoryLimit(DemuxerType demuxer_type) {
+base::ByteSize GetDemuxerMemoryLimit(DemuxerType demuxer_type) {
   return GetDemuxerStreamAudioMemoryLimit(nullptr) +
          GetDemuxerStreamVideoMemoryLimit(demuxer_type, nullptr);
 }
