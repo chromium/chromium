@@ -102,6 +102,10 @@ void ContextualTasksEligibilityManager::OnAccountsCookieDeletedByUserAction() {
   MaybeNotifyEligibilityChanged();
 }
 
+void ContextualTasksEligibilityManager::OnRefreshTokensLoaded() {
+  MaybeNotifyEligibilityChanged();
+}
+
 bool ContextualTasksEligibilityManager::IsEligible() const {
   return is_eligible_;
 }

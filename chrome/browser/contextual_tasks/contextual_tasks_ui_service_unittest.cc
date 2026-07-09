@@ -2801,6 +2801,24 @@ TEST_F(ContextualTasksUiServiceTest,
   }));
 }
 
+TEST_F(ContextualTasksUiServiceTest, HandleNavigation_WebUI_TokensNotLoaded) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasks);
+  GURL webui_url(chrome::kChromeUIContextualTasksURL);
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+      .WillRepeatedly(Return(true));
+
+  identity_test_env_->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  identity_test_env_->ResetToAccountsNotYetLoadedFromDiskState();
+  EXPECT_FALSE(real_service_->HandleNavigation(
+      CreateOpenUrlParams(webui_url, false), web_contents.get(), false, false,
+      true, false, std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
+}
+
 TEST_F(
     ContextualTasksUiServiceTest,
     HandleNavigation_WebUI_CobrowseNotEligible_NoRedirect_WhenLensSessionUnderUnification) {

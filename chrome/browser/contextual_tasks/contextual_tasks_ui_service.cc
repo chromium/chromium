@@ -1087,9 +1087,17 @@ bool ContextualTasksUiService::ShouldRedirectIneligibleRequest(
     content::WebContents* source_contents) const {
   // If it's a top-level frame refresh/navigation while viewing an internal
   // context, and the user environment isn't eligible, bounce immediately.
-  bool is_eligible = eligibility_manager_ && eligibility_manager_->IsEligible();
+  if (eligibility_manager_ && eligibility_manager_->IsEligible()) {
+    return false;
+  }
 
-  if (is_eligible) {
+  // If the user is signed in and eligible without identity, but identity token
+  // loading is still pending (e.g. during cold start on Android), do not
+  // redirect yet.
+  if (eligibility_manager_ &&
+      eligibility_manager_->IsEligibleWithoutIdentity() && identity_manager_ &&
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      !identity_manager_->AreRefreshTokensLoaded()) {
     return false;
   }
 

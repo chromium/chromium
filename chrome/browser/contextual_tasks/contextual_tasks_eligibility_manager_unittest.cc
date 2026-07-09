@@ -220,4 +220,29 @@ TEST_F(ContextualTasksEligibilityManagerTest, NoRedundantNotifications) {
   EXPECT_TRUE(manager_->IsEligible());
 }
 
+TEST_F(ContextualTasksEligibilityManagerTest, Transition_RefreshTokensLoaded) {
+  auto account_info =
+      identity_test_env_->MakeAccountAvailable("test@example.com");
+  identity_test_env_->SetCookieAccounts(
+      {{.email = account_info.email, .gaia_id = account_info.gaia}});
+
+  CreateManager();
+  EXPECT_FALSE(manager_->IsEligible());
+
+  base::test::TestFuture<bool> eligibility_future;
+  auto subscription = manager_->RegisterEligibilityChangedCallback(
+      eligibility_future.GetRepeatingCallback());
+
+  // Make primary (Sign in).
+  identity_test_env_->SetPrimaryAccount(account_info.email,
+                                        signin::ConsentLevel::kSignin);
+
+  EXPECT_TRUE(eligibility_future.Get());
+  EXPECT_TRUE(manager_->IsEligible());
+
+  // Trigger OnRefreshTokensLoaded directly on Observer interface.
+  manager_->OnRefreshTokensLoaded();
+  EXPECT_TRUE(manager_->IsEligible());
+}
+
 }  // namespace contextual_tasks

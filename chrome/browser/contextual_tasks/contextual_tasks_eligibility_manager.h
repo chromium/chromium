@@ -47,6 +47,7 @@ class ContextualTasksEligibilityManager
       signin_metrics::SourceForRefreshTokenOperation token_operation_source)
       override;
   void OnAccountsCookieDeletedByUserAction() override;
+  void OnRefreshTokensLoaded() override;
 
   // Returns true if the user is eligible for Contextual Tasks.
   bool IsEligible() const;
