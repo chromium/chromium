@@ -61,6 +61,7 @@
   background-color: transparent;
   border: none;
   flex: 1;
+  font-size: var(--cr-composebox-font-size, 16px);
   height: 100%;
   /* Overflow scroll blur top/bottom. */
   mask-image: linear-gradient(to bottom,
@@ -81,7 +82,6 @@
   color: var(--color-composebox-voice-search-font, rgba(71, 71, 71, 1));
   flex-grow: 1;
   font-family: inherit;
-  font-size: 18px;
   line-height: 24px;
   overflow-x: hidden;
   overflow-y: auto;
@@ -93,7 +93,8 @@
 }
 
 #error-container {
- display: none;
+  display: none;
+  font-size: 18px;
 }
 
 #error-container:not([hidden]) {
