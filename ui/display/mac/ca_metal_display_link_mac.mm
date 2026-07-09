@@ -103,7 +103,7 @@ ui::VSyncParamsMac ComputeVSyncParametersMac(CAMetalDisplayLink* display_link,
   base::TimeDelta interval = target_time - last_target_time;
   if (target_time.is_null() || last_target_time.is_null() ||
       !interval.is_positive()) {
-    interval = display::GetNSScreenRefreshInterval(display_id);
+    interval = display::GetCGRefreshInterval(display_id);
   }
 
   // The time the system estimates until the display of the next frame.
@@ -175,7 +175,7 @@ void CAMetalDisplayLinkMac::MetalPresentationCallback(
 }
 
 base::TimeDelta CAMetalDisplayLinkMac::GetRefreshInterval() const {
-  return display::GetNSScreenRefreshInterval(display_id_);
+  return display::GetCGRefreshInterval(display_id_);
 }
 
 void CAMetalDisplayLinkMac::GetRefreshIntervalRange(

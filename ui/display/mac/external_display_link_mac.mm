@@ -119,15 +119,14 @@ void ExternalDisplayLinkMac::UnregisterCallback(VSyncCallbackMac* callback) {
 }
 
 base::TimeDelta ExternalDisplayLinkMac::GetRefreshInterval() const {
-  return display::GetNSScreenRefreshInterval(display_id_);
+  return display::GetCGRefreshInterval(display_id_);
 }
 
 void ExternalDisplayLinkMac::GetRefreshIntervalRange(
     base::TimeDelta& min_interval,
     base::TimeDelta& max_interval,
     base::TimeDelta& granularity) const {
-  display::GetNSScreenRefreshIntervalRange(display_id_, min_interval,
-                                           max_interval, granularity);
+  min_interval = max_interval = granularity = GetRefreshInterval();
 }
 
 base::TimeTicks ExternalDisplayLinkMac::GetCurrentTime() const {

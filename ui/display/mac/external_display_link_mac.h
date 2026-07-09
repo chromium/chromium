@@ -18,9 +18,9 @@
 namespace ui {
 
 // Unlike CADisplayLinkMac and CVDisplayLinkMac, ExternalDisplayLinkMac itself
-// does not register a CADisplaylink directly from CoreAnimation. Instead,
-// ExternalDisplayLinkMac creates an DisplayLinkMac object and gets its VSync
-// from VSyncProviderMac.
+// does not register a CADisplayLink directly from CoreAnimation. Instead,
+// ExternalDisplayLinkMac creates a DisplayLinkMac object and receives VSync
+// ticks from VSyncProviderMac.
 class ExternalDisplayLinkMac : public DisplayLinkMac {
  public:
   // Return a new ExternalDisplayLinkMac for each call.

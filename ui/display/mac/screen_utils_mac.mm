@@ -38,7 +38,7 @@ base::TimeDelta GetNSScreenRefreshInterval(CGDirectDisplayID display_id) {
   if (interval.is_positive()) {
     return interval;
   } else {
-    return base::Seconds(1) / 60.0;
+    return base::Hertz(60);
   }
 }
 
@@ -55,6 +55,26 @@ void GetNSScreenRefreshIntervalRange(CGDirectDisplayID display_id,
   } else {
     min_interval = max_interval = granularity = base::Seconds(1) / 60.0;
   }
+}
+
+base::TimeDelta GetCGRefreshInterval(CGDirectDisplayID display_id) {
+  // Query the current display mode to retrieve its refresh rate.
+  CGDisplayModeRef mode = CGDisplayCopyDisplayMode(display_id);
+  if (mode == nullptr) {
+    return base::Hertz(60);
+  }
+
+  double refresh_rate = CGDisplayModeGetRefreshRate(mode);
+  CGDisplayModeRelease(mode);
+
+  // A refresh rate of 0 could indicate that the display does not have a fixed
+  // refresh rate (e.g., variable refresh rate displays) or the query failed.
+  // Fall back to a default of 60Hz.
+  if (refresh_rate == 0.0) {
+    return base::Hertz(60);
+  }
+
+  return base::Hertz(refresh_rate);
 }
 
 }  // namespace display

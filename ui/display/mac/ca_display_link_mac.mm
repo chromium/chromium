@@ -70,7 +70,7 @@ ui::VSyncParamsMac ComputeVSyncParametersMac(CADisplayLink* display_link,
   // Sanity check. Inputs should always be valid. Use the default values if this
   // is not the case.
   if (!interval.is_positive()) {
-    interval = display::GetNSScreenRefreshInterval(display_id);
+    interval = display::GetCGRefreshInterval(display_id);
   }
   if (callback_time.is_null() || target_time.is_null()) {
     callback_time = base::TimeTicks() + base::Seconds(CACurrentMediaTime());
@@ -112,7 +112,7 @@ void CADisplayLinkMac::Step() {
 }
 
 base::TimeDelta CADisplayLinkMac::GetRefreshInterval() const {
-  return display::GetNSScreenRefreshInterval(display_id_);
+  return display::GetCGRefreshInterval(display_id_);
 }
 
 void CADisplayLinkMac::GetRefreshIntervalRange(
