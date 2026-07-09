@@ -257,6 +257,12 @@ class FakeDataProtectionNavigationController
 
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
+    // Actual controller only instantiates observer for primary main
+    // navigations.
+    if (!navigation_handle->IsInPrimaryMainFrame() ||
+        navigation_handle->IsSameDocument()) {
+      return;
+    }
     EXPECT_EQ(web_contents(), navigation_handle->GetWebContents());
     auto navigation_observer =
         std::make_unique<DataProtectionNavigationObserver>(
@@ -564,6 +570,44 @@ TEST_F(DataProtectionNavigationObserverTest,
     EXPECT_NE(future.Get().watermark_text.find("custom_message"),
               std::string::npos);
   }
+}
+
+TEST_F(DataProtectionNavigationObserverTest,
+       SubframeNavigation_DoesNotDestroyObserver) {
+  // Disable real-time check so the verdict is received immediately upon
+  // observer creation.
+  profile()->GetPrefs()->SetInteger(
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
+      enterprise_connectors::REAL_TIME_CHECK_DISABLED);
+
+  SetContents(CreateTestWebContents());
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com"), web_contents()->GetPrimaryMainFrame());
+
+  base::test::TestFuture<const UrlSettings&> future;
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, future.GetCallback());
+
+  // Start the main frame navigation. This creates the observer.
+  simulator->Start();
+
+  // Create a subframe and simulate a complete navigation on it.
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
+  auto subframe_simulator =
+      content::NavigationSimulator::CreateRendererInitiated(
+          GURL("https://subframe.com"), subframe);
+  subframe_simulator->Start();
+  subframe_simulator->Commit();
+
+  // Commit the main frame navigation. If the observer was prematurely destroyed
+  // by the subframe navigation, the callback would be dropped and this would
+  // hang/fail.
+  simulator->Commit();
+
+  EXPECT_TRUE(future.IsReady());
 }
 
 TEST_F(DataProtectionNavigationObserverTest, ApplyDataProtectionSettings) {

@@ -397,6 +397,10 @@ bool DataProtectionNavigationObserver::ShouldPerformRealTimeUrlCheck(
 
 void DataProtectionNavigationObserver::DidRedirectNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->GetNavigationId() != navigation_id_) {
+    return;
+  }
+
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!is_from_cache_);
 
@@ -423,6 +427,10 @@ void DataProtectionNavigationObserver::MaybeCleanup() {
 
 void DataProtectionNavigationObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->GetNavigationId() != navigation_id_) {
+    return;
+  }
+
   is_navigation_finished_ = true;
   base::ScopedClosureRunner done(
       base::BindOnce(&DataProtectionNavigationObserver::MaybeCleanup,
