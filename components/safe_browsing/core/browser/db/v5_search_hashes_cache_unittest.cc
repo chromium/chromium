@@ -608,6 +608,9 @@ TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_Logging) {
   ClearExpiredResultsHelper(cache);
   CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/0, /*num_full_hashes=*/0);
 
+  // Fast forward to get close to the first cleanup (occurs at 30 minutes).
+  task_environment_.FastForwardBy(base::Minutes(28));
+
   // Cache has 1 hash prefix with 1 full hash in it.
   cache->CacheSearchHashesResponse(
       {"aaaa"},
@@ -664,7 +667,7 @@ TEST_F(V5SearchHashesCacheTest, TestBackgroundCleanup) {
 
   EXPECT_EQ(GetNumCacheEntries(cache), 1);
 
-  task_environment_.FastForwardBy(base::Seconds(119));
+  task_environment_.FastForwardBy(base::Seconds(1799));
   EXPECT_EQ(GetNumCacheEntries(cache), 1);
 
   task_environment_.FastForwardBy(base::Seconds(1));

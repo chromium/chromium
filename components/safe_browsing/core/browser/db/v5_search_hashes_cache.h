@@ -73,8 +73,8 @@ class V5SearchHashesCache : public KeyedService {
   // for memory management.
   void ClearExpiredResults();
 
-  // Schedules the next cleanup task to run after the given `interval`.
-  void ScheduleNextCleanUpAfterInterval(base::TimeDelta interval);
+  // Schedules the next cleanup task. Runs every 30 minutes.
+  void ScheduleNextCleanUp();
 
   // This adds a cached verdict for a URL that has artificially been marked as
   // unsafe using the command line flag

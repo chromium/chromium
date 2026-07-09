@@ -50,10 +50,7 @@ void V5SearchHashesCache::ResetHasArtificialCachedUrlForTesting() {
 }
 
 V5SearchHashesCache::V5SearchHashesCache() {
-  // TODO(crbug.com/362791941): There's really no need for HPRT or HPD to start
-  // at 2 minutes. This was needed previously because VerdictCacheManager was
-  // clearing URT as well. Change this to clear after 30 mins instead.
-  ScheduleNextCleanUpAfterInterval(base::Seconds(120));
+  ScheduleNextCleanUp();
   CacheArtificialUnsafeV5SearchHashesLookupVerdictFromSwitch();
 }
 
@@ -154,17 +151,15 @@ void V5SearchHashesCache::ClearExpiredResults() {
                                 num_full_hashes);
 }
 
-void V5SearchHashesCache::ScheduleNextCleanUpAfterInterval(
-    base::TimeDelta interval) {
+void V5SearchHashesCache::ScheduleNextCleanUp() {
   cleanup_timer_.Stop();
-  cleanup_timer_.Start(
-      FROM_HERE, interval,
-      base::BindOnce(
-          [](V5SearchHashesCache* cache) {
-            cache->ClearExpiredResults();
-            cache->ScheduleNextCleanUpAfterInterval(base::Seconds(1800));
-          },
-          base::Unretained(this)));
+  cleanup_timer_.Start(FROM_HERE, base::Minutes(30),
+                       base::BindOnce(
+                           [](V5SearchHashesCache* cache) {
+                             cache->ClearExpiredResults();
+                             cache->ScheduleNextCleanUp();
+                           },
+                           base::Unretained(this)));
 }
 
 void V5SearchHashesCache::CacheArtificialV5SearchHashesLookupVerdict(
