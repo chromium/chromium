@@ -11,6 +11,7 @@
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "device/gamepad/public/mojom/gamepad_hardware_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_listener.h"
@@ -19,6 +20,8 @@ namespace blink {
 
 GamepadSharedMemoryReader::GamepadSharedMemoryReader(LocalDOMWindow& window)
     : receiver_(this, &window), gamepad_monitor_remote_(&window) {
+  CHECK(window.IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kGamepad));
   // See https://bit.ly/2S0zRAS for task types
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       window.GetTaskRunner(TaskType::kMiscPlatformAPI);

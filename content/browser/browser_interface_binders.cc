@@ -81,6 +81,7 @@
 #include "content/browser/worker_host/shared_worker_connector_impl.h"
 #include "content/browser/worker_host/shared_worker_host.h"
 #include "content/browser/xr/service/vr_service_impl.h"
+#include "content/common/features.h"
 #include "content/common/input/input_injector.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -959,8 +960,22 @@ void PopulateBinderMapWithContext(
         &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetFontAccessManager>);
   }
 
-  map->Add<device::mojom::GamepadHapticsManager>(
-      &device::GamepadHapticsManager::Create);
+  map->Add<device::mojom::GamepadHapticsManager>(base::BindRepeating(
+      [](RenderFrameHost* host,
+         mojo::PendingReceiver<device::mojom::GamepadHapticsManager> receiver) {
+        if (!host->IsFeatureEnabled(
+                network::mojom::PermissionsPolicyFeature::kGamepad)) {
+          if (base::FeatureList::IsEnabled(
+                  features::kEnforceGamepadPermissionsPolicy)) {
+            bad_message::ReceivedBadMessage(
+                host->GetProcess(),
+                bad_message::BadMessageReason::
+                    BIBI_BIND_GAMEPAD_HAPTICS_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY);
+            return;
+          }
+        }
+        device::GamepadHapticsManager::Create(host, std::move(receiver));
+      }));
 
   map->Add<blink::mojom::GeolocationService>(
       &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetGeolocationService>);
@@ -1074,7 +1089,22 @@ void PopulateBinderMapWithContext(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
 
-  map->Add<device::mojom::GamepadMonitor>(&device::GamepadMonitor::Create);
+  map->Add<device::mojom::GamepadMonitor>(base::BindRepeating(
+      [](RenderFrameHost* host,
+         mojo::PendingReceiver<device::mojom::GamepadMonitor> receiver) {
+        if (!host->IsFeatureEnabled(
+                network::mojom::PermissionsPolicyFeature::kGamepad)) {
+          if (base::FeatureList::IsEnabled(
+                  features::kEnforceGamepadPermissionsPolicy)) {
+            bad_message::ReceivedBadMessage(
+                host->GetProcess(),
+                bad_message::BadMessageReason::
+                    BIBI_BIND_GAMEPAD_MONITOR_BLOCKED_BY_PERMISSIONS_POLICY);
+            return;
+          }
+        }
+        device::GamepadMonitor::Create(host, std::move(receiver));
+      }));
 
   map->Add<blink::mojom::WebSensorProvider>(
       &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetSensorProvider>);

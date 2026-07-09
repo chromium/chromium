@@ -527,6 +527,10 @@ Called by update_bad_message_reasons.py.-->
   <int value="354"
       label="BIBI_BIND_WEBNN_WEIGHTS_FILE_CREATOR_BLOCKED_BY_PERMISSIONS_POLICY"/>
   <int value="355" label="RFH_AUTHENTICATOR_PDF_PROCESS_BLOCKED"/>
+  <int value="356"
+      label="BIBI_BIND_GAMEPAD_MONITOR_BLOCKED_BY_PERMISSIONS_POLICY"/>
+  <int value="357"
+      label="BIBI_BIND_GAMEPAD_HAPTICS_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
