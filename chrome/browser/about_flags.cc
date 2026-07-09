@@ -1198,7 +1198,6 @@ const FeatureEntry::FeatureVariation kStartupLaunchVariations[] = {
 const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"ai_mode", "true"},
     {"bookmark_star", "true"},
-    {"cookie_controls", "true"},
     {"file_system_access", "true"},
     {"filled_card_information", "true"},
     {"intent_picker", "true"},

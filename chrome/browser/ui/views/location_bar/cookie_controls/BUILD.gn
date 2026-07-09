@@ -16,7 +16,6 @@ source_set("cookie_controls") {
       "cookie_controls_bubble_view_controller.h",
       "cookie_controls_bubble_view_impl.h",
       "cookie_controls_content_view.h",
-      "cookie_controls_icon_view.h",
       "cookie_controls_page_action_controller.h",
     ]
 
@@ -50,7 +49,6 @@ source_set("impl") {
       "cookie_controls_bubble_view_controller.cc",
       "cookie_controls_bubble_view_impl.cc",
       "cookie_controls_content_view.cc",
-      "cookie_controls_icon_view.cc",
       "cookie_controls_page_action_controller.cc",
     ]
 
@@ -145,10 +143,7 @@ source_set("unit_tests") {
   sources = []
 
   if (toolkit_views) {
-    sources += [
-      "cookie_controls_icon_view_unittest.cc",
-      "cookie_controls_page_action_controller_unittest.cc",
-    ]
+    sources += [ "cookie_controls_page_action_controller_unittest.cc" ]
 
     deps = [
       ":cookie_controls",

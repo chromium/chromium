@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -102,11 +101,6 @@ class FakeBubbleDelegate
 class CookieControlsPageActionControllerTestBase : public testing::Test {
  public:
   CookieControlsPageActionControllerTestBase() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPageActionsMigration,
-          {{features::kPageActionsMigrationCookieControls.name, "true"}}}},
-        {});
-
     auto fake_bubble_delegate = std::make_unique<FakeBubbleDelegate>();
     fake_bubble_delegate_ = fake_bubble_delegate.get();
 
@@ -183,7 +177,6 @@ class CookieControlsPageActionControllerTestBase : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler rvh_test_enabler_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   ui::UnownedUserDataHost user_data_host_;
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> web_contents_;
