@@ -1332,6 +1332,52 @@ TEST_F(HlsRenditionImplUnittest, TestManifestUpdateWaitWithEmptyQueue) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(HlsRenditionImplUnittest,
+       TestTryFillingBuffersRespectsManifestUpdateDelay) {
+  auto rendition =
+      MakeLiveRendition(GURL("http://example.com"), kSingleSegmentPlaylist);
+  ASSERT_NE(rendition, nullptr);
+
+  // Consume the only segment in the playlist.
+  std::string tscontent = "tscontent";
+  RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", tscontent);
+  RequireAppend(base::as_byte_span(tscontent));
+  // After fetch, ranges are [0, 2), which is less than the ideal 10s buffer.
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
+                        base::Seconds(2));
+  rendition->CheckState(base::Seconds(0), 1.0,
+                        BindCheckState(base::Seconds(0)));
+  task_environment_.RunUntilIdle();
+
+  // Now QueueSize is 0, so segments_->Exhausted() is true.
+  // Ranges are still [0, 2). Since buffer_duration (2s) < ideal_buffer_duration
+  // (10s), CheckState will call TryFillingBuffers.
+  Ranges<base::TimeDelta> loaded_ranges;
+  loaded_ranges.Add(base::Seconds(0), base::Seconds(2));
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges(_))
+      .WillRepeatedly(Return(loaded_ranges));
+
+  // Because TryFillingBuffers now uses MaybeFetchManifestUpdates instead of
+  // unconditionally fetching, it should respect the target duration delay (2s)
+  // and NOT fetch a new manifest immediately.
+  EXPECT_CALL(*mock_hrh_, UpdateRenditionManifestUri(_, _, _)).Times(0);
+  rendition->CheckState(base::Seconds(0), 1.0,
+                        BindCheckState(base::Seconds(2)));
+  task_environment_.RunUntilIdle();
+
+  // Advance time by 2.1s (past the 2s target duration).
+  task_environment_.FastForwardBy(base::Milliseconds(2100));
+
+  // Now CheckState should trigger a manifest update.
+  EXPECT_CALL(*mock_hrh_, UpdateRenditionManifestUri("test", _, _))
+      .WillOnce([](std::string role, GURL uri, HlsDemuxerStatusCallback cb) {
+        std::move(cb).Run(OkStatus());
+      });
+  rendition->CheckState(base::Seconds(0), 1.0,
+                        BindCheckState(base::Seconds(0)));
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(HlsRenditionImplUnittest, TestLiveToVodAdaptation) {
   auto manifest_uri = GURL("http://example.com");
   auto rendition = MakeLiveRendition(manifest_uri, kInitialFetchLongPlaylist);

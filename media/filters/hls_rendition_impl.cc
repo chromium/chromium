@@ -239,7 +239,7 @@ void HlsRenditionImpl::TryFillingBuffers(ManifestDemuxer::DelayCallback delay,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Live content should fetch an update if the segment queue is exhausted.
   if (IsLive() && segments_->Exhausted()) {
-    FetchManifestUpdates(std::move(delay), base::Seconds(0));
+    MaybeFetchManifestUpdates(std::move(delay), std::nullopt);
     return;
   }
 
