@@ -940,7 +940,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         List<Integer> indexes = new ArrayList<>();
         for (int i = 0; i < mModelList.size(); i++) {
             PropertyModel model = mModelList.get(i).model;
-            if (TabListModel.isTabOrTabGroup(model) && tabIdSet.contains(model.get(TAB_ID))) {
+            if (TabProperties.isTabOrTabGroup(model) && tabIdSet.contains(model.get(TAB_ID))) {
                 indexes.add(i);
             }
         }

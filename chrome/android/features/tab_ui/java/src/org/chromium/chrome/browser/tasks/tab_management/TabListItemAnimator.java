@@ -482,7 +482,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
     private static boolean shouldUseShrinkCloseAnimation(ViewHolder holder) {
         if (holder instanceof SimpleRecyclerViewAdapter.ViewHolder adapterHolder) {
             var model = assumeNonNull(adapterHolder.model);
-            if (TabListModel.isTabOrTabGroup(model)) {
+            if (TabProperties.isTabOrTabGroup(model)) {
                 return model.get(USE_SHRINK_CLOSE_ANIMATION);
             }
         }

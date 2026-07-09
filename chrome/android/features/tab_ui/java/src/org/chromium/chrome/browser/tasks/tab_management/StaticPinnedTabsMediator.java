@@ -57,7 +57,7 @@ public class StaticPinnedTabsMediator {
 
                         for (int i = 0; i < count; i++) {
                             ListItem item = mMainModelList.get(index + i);
-                            if (item.model.get(TabProperties.IS_PINNED)) {
+                            if (TabProperties.isPinnedTab(item.model)) {
                                 addListItemToPinnedModelList(item);
                             }
                         }
@@ -79,14 +79,17 @@ public class StaticPinnedTabsMediator {
                         // loop below.
                         Set<Integer> mainTabIds = new HashSet<>();
                         for (int i = 0; i < mMainModelList.size(); i++) {
-                            mainTabIds.add(mMainModelList.get(i).model.get(TabProperties.TAB_ID));
+                            int tabId = TabProperties.getTabId(mMainModelList.get(i).model);
+                            if (tabId != Tab.INVALID_TAB_ID) {
+                                mainTabIds.add(tabId);
+                            }
                         }
 
                         // Scan and remove any items from the pinned list that are no longer
                         // present in the main model list.
                         for (int i = mPinnedModelList.size() - 1; i >= 0; i--) {
                             ListItem item = mPinnedModelList.get(i);
-                            int tabId = item.model.get(TabProperties.TAB_ID);
+                            int tabId = TabProperties.getTabId(item.model);
                             if (!mainTabIds.contains(tabId)) {
                                 mPinnedModelList.removeAt(i);
                             }
@@ -103,19 +106,11 @@ public class StaticPinnedTabsMediator {
                     @Override
                     public void onItemMoved(ListObservable source, int curIndex, int newIndex) {
                         ListItem item = mMainModelList.get(newIndex);
-                        if (!item.model.get(TabProperties.IS_PINNED)) return;
-
-                        int currentPinnedIndex = mPinnedModelList.indexOf(item);
+                        if (!TabProperties.isPinnedTab(item.model)) return;
 
                         // If newIndex >= mPinnedModelList.size(), it's being unpinned and will be
                         // removed by didChangePinState shortly.
-                        if (currentPinnedIndex != TabModel.INVALID_TAB_INDEX
-                                && newIndex >= 0
-                                && newIndex < mPinnedModelList.size()) {
-                            if (currentPinnedIndex != newIndex) {
-                                mPinnedModelList.move(currentPinnedIndex, newIndex);
-                            }
-                        }
+                        mPinnedModelList.moveItem(mPinnedModelList.indexOf(item), newIndex);
                     }
                 };
 
@@ -186,7 +181,7 @@ public class StaticPinnedTabsMediator {
         mPinnedModelList.clear();
         for (int i = 0; i < mMainModelList.size(); i++) {
             ListItem item = mMainModelList.get(i);
-            if (item.model.get(TabProperties.IS_PINNED)) {
+            if (TabProperties.isPinnedTab(item.model)) {
                 mPinnedModelList.add(item);
             }
         }
@@ -198,7 +193,7 @@ public class StaticPinnedTabsMediator {
 
         int insertionIndex = mPinnedModelList.size();
         if (mTabModel != null) {
-            int tabId = item.model.get(TabProperties.TAB_ID);
+            int tabId = TabProperties.getTabId(item.model);
             Map<Integer, Integer> tabIdToModelIndex = new HashMap<>();
             for (int i = 0; i < mTabModel.getCount(); i++) {
                 Tab tab = mTabModel.getTabAt(i);
@@ -211,7 +206,7 @@ public class StaticPinnedTabsMediator {
                 insertionIndex = 0;
                 while (insertionIndex < mPinnedModelList.size()) {
                     ListItem currentItem = mPinnedModelList.get(insertionIndex);
-                    int currentTabId = currentItem.model.get(TabProperties.TAB_ID);
+                    int currentTabId = TabProperties.getTabId(currentItem.model);
                     int currentIndexInModel =
                             tabIdToModelIndex.getOrDefault(
                                     currentTabId, TabModel.INVALID_TAB_INDEX);

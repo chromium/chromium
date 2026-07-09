@@ -356,7 +356,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
             if (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX
                     && mSelectedTabIndex < mModel.size()
                     && !mActionAttempted
-                    && TabListModel.isTabOrTabGroup(mModel.get(mSelectedTabIndex).model)) {
+                    && TabProperties.isTabOrTabGroup(mModel.get(mSelectedTabIndex).model)) {
                 // If the child was ever dragged or swiped do not consume the next action, as the
                 // longpress will resolve safely due to the listener intercepting the DRAG event
                 // and negating any further action. However, if we just release the tab without
@@ -440,7 +440,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
             if (viewHolderModel == null) return;
 
             @Nullable PropertyModel cardModel = null;
-            if (TabListModel.isTabOrTabGroup(viewHolderModel)) {
+            if (TabProperties.isTabOrTabGroup(viewHolderModel)) {
                 cardModel = mModel.getModelFromTabId(viewHolderModel.get(TabProperties.TAB_ID));
             } else if (viewHolderModel.get(CARD_TYPE) == MESSAGE) {
                 int index =
@@ -528,7 +528,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
             mRecentlySwipedTabIdSupplier.set(tabId);
         }
 
-        if (TabListModel.isTabOrTabGroup(model)) {
+        if (TabProperties.isTabOrTabGroup(model)) {
             mTabClosedListener.run(
                     viewHolder.itemView,
                     model.get(TabProperties.TAB_ID),

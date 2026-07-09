@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
@@ -46,7 +44,7 @@ class NestedTabGroupObserverDelegate extends TabGroupObserverDelegate {
         if (headerIndex == TabModel.INVALID_TAB_INDEX) return;
         PropertyModel model = mModelList.get(headerIndex).model;
 
-        if (isCollapsed == Boolean.TRUE.equals(model.get(TabProperties.IS_COLLAPSED))) {
+        if (isCollapsed == TabProperties.isTabGroupCollapsed(model)) {
             return;
         }
 
@@ -89,7 +87,7 @@ class NestedTabGroupObserverDelegate extends TabGroupObserverDelegate {
 
         int itemsToMove = 1;
         PropertyModel headerModel = mModelList.get(sourceUiIndex).model;
-        boolean isCollapsed = headerModel.get(TabProperties.IS_COLLAPSED);
+        boolean isCollapsed = TabProperties.isTabGroupCollapsed(headerModel);
         if (!isCollapsed) {
             itemsToMove += relatedTabs.size();
         }
@@ -174,12 +172,9 @@ class NestedTabGroupObserverDelegate extends TabGroupObserverDelegate {
         } else if (srcIndex != TabModel.INVALID_TAB_INDEX) {
             PropertyModel model = mModelList.get(srcIndex).model;
             mMediator.setupGroupPropertiesForChildTab(tab, model);
-
             mMediator.bindTabActionStateProperties(mMediator.getTabActionState(), tab, model);
 
-            if (srcIndex != desIndex) {
-                mModelList.move(srcIndex, desIndex);
-            }
+            mModelList.moveItem(srcIndex, desIndex);
 
             if (newTabGroupId != null) {
                 int newTabUiIndex = mModelList.indexFromTabId(tab.getId());
@@ -252,17 +247,13 @@ class NestedTabGroupObserverDelegate extends TabGroupObserverDelegate {
      */
     private void updateColorForChildTabsInNestedLayout(
             Token tabGroupId, @TabGroupColorId int newColor) {
-        // TODO(crbug.com/509226293): Consider defining a method in TabListModel that fetches all
-        // child tabs in a group.
+        EitherGroupId eitherGroupId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
         boolean foundGroup = false;
         for (int i = 0; i < mModelList.size(); i++) {
             PropertyModel childModel = mModelList.get(i).model;
-            if (childModel.get(CARD_TYPE) == TAB
+            if (TabProperties.isTabInGroup(childModel)
                     && tabGroupId.equals(childModel.get(TabProperties.TAB_GROUP_ID))) {
-                mMediator.updateTabGroupColorViewProvider(
-                        EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId)),
-                        childModel,
-                        newColor);
+                mMediator.updateTabGroupColorViewProvider(eitherGroupId, childModel, newColor);
                 foundGroup = true;
             } else if (foundGroup) {
                 break;

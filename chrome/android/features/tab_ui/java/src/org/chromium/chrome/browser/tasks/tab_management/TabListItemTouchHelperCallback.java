@@ -199,7 +199,7 @@ public abstract class TabListItemTouchHelperCallback extends ItemTouchHelper2.Si
         if (viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
             PropertyModel model = simpleViewHolder.model;
             assumeNonNull(model);
-            return TabListModel.isTabOrTabGroup(model);
+            return TabProperties.isTabOrTabGroup(model);
         }
         return false;
     }
@@ -214,8 +214,8 @@ public abstract class TabListItemTouchHelperCallback extends ItemTouchHelper2.Si
     protected boolean isPinnedRegularTab(RecyclerView.@Nullable ViewHolder viewHolder) {
         if (viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
             PropertyModel model = simpleViewHolder.model;
-            if (model != null && TabListModel.isTabOrTabGroup(model)) {
-                return model.get(TabProperties.IS_PINNED);
+            if (model != null) {
+                return TabProperties.isPinnedTab(model);
             }
         }
         return false;
@@ -231,7 +231,7 @@ public abstract class TabListItemTouchHelperCallback extends ItemTouchHelper2.Si
         if (viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
             PropertyModel model = simpleViewHolder.model;
             assumeNonNull(model);
-            if (TabListModel.isTabOrTabGroup(model)) {
+            if (TabProperties.isTabOrTabGroup(model)) {
                 @Nullable TabGroupColorViewProvider provider =
                         model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
                 return provider != null && provider.hasCollaborationId();

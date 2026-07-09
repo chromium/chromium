@@ -184,9 +184,9 @@ public class VerticalTabListCoordinator {
                     public int getItemViewType(int position) {
                         ListItem item = mModelList.get(position);
                         if (item.type == UiType.TAB) {
-                            if (item.model.get(TabProperties.IS_PINNED)) {
+                            if (TabProperties.isPinnedTab(item.model)) {
                                 return UiType.PINNED_TAB;
-                            } else if (item.model.get(TabProperties.TAB_GROUP_HEADER_ID) != null) {
+                            } else if (TabProperties.isTabGroupHeader(item.model)) {
                                 return UiType.TAB_GROUP;
                             }
                         }
@@ -738,7 +738,7 @@ public class VerticalTabListCoordinator {
                 assumeNonNull(recyclerView.getAdapter()).getItemViewType(position);
         if (resolvedItemViewType == UiType.TAB || resolvedItemViewType == UiType.PINNED_TAB) {
             // The user clicked directly on a tab item (regular tab, pinned tab, or child tab).
-            int tabId = item.model.get(TabProperties.TAB_ID);
+            int tabId = TabProperties.getTabId(item.model);
             showTabItemContextMenu(activity, recyclerView, childView, tabId);
             return true;
         } else if (resolvedItemViewType == UiType.TAB_GROUP) {

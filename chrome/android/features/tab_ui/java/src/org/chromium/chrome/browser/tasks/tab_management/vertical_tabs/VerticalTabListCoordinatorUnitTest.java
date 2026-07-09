@@ -101,7 +101,6 @@ import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.widget.RectProvider;
@@ -947,10 +946,7 @@ public class VerticalTabListCoordinatorUnitTest {
         assertNotNull(adapter);
 
         PropertyModel model =
-                new PropertyModel.Builder(
-                                PropertyModel.concatKeys(
-                                        TabProperties.ALL_KEYS_VERTICAL_TAB,
-                                        new PropertyKey[] {CardProperties.CARD_TYPE}))
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
                         .with(CardProperties.CARD_TYPE, CardProperties.ModelType.TAB)
                         .with(TabProperties.TAB_ID, regTabId)
                         .build();

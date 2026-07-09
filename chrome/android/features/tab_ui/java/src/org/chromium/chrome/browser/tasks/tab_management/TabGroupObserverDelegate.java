@@ -68,7 +68,6 @@ abstract class TabGroupObserverDelegate implements TabGroupObserver {
         assumeNonNull(destinationTab);
         int newPosition = mModelList.indexFromTabId(destinationTab.getId());
 
-        if (!mModelList.isValidIndex(newPosition)) return;
-        mModelList.move(curPosition, newPosition);
+        mModelList.moveItem(curPosition, newPosition);
     }
 }

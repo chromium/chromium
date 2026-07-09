@@ -181,9 +181,7 @@ class GroupedTabGroupObserverDelegate extends TabGroupObserverDelegate {
             mModelList.updateTabListModelIdForGroup(destinationGroupSelectedTab, indexToUpdate);
             newPosition = mModelList.indexFromTabId(destinationGroupSelectedTab.getId());
         }
-        if (!mModelList.isValidIndex(newPosition) || newPosition == curPosition) return;
-
-        mModelList.move(curPosition, newPosition);
+        mModelList.moveItem(curPosition, newPosition);
     }
 
     @Override
