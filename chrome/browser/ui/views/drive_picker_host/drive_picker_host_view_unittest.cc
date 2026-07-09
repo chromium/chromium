@@ -87,8 +87,9 @@ class DrivePickerHostViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(DrivePickerHostViewTest, Initialization) {
-  auto view = std::make_unique<DrivePickerHostView>(profile(),
-                                                    browser_window_interface());
+  auto view = std::make_unique<DrivePickerHostView>(
+      profile(), browser_window_interface(),
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi);
 
   EXPECT_EQ(view->children().size(), 1u);
   EXPECT_FALSE(view->GetBackground());
@@ -101,8 +102,9 @@ TEST_F(DrivePickerHostViewTest, TriggerDrivePickerHostUi) {
   content::ScopedWebUIConfigRegistration registration(
       std::make_unique<MockDrivePickerHostUIConfig>());
 
-  auto view = std::make_unique<DrivePickerHostView>(profile(),
-                                                    browser_window_interface());
+  auto view = std::make_unique<DrivePickerHostView>(
+      profile(), browser_window_interface(),
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi);
 
   content::WebContents* contents =
       views::AsViewClass<views::WebView>(view->view_tracker_.view())
@@ -127,8 +129,9 @@ TEST_F(DrivePickerHostViewTest, TriggerDrivePickerHostUi) {
 }
 
 TEST_F(DrivePickerHostViewTest, SetsCornerRadiusOnAddedToWidget) {
-  auto view = std::make_unique<DrivePickerHostView>(profile(),
-                                                    browser_window_interface());
+  auto view = std::make_unique<DrivePickerHostView>(
+      profile(), browser_window_interface(),
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi);
 
   auto widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
@@ -156,8 +159,9 @@ TEST_F(DrivePickerHostViewTest, SetsCornerRadiusOnAddedToWidget) {
 }
 
 TEST_F(DrivePickerHostViewTest, EscapeAcceleratorClosesWidget) {
-  auto view = std::make_unique<DrivePickerHostView>(profile(),
-                                                    browser_window_interface());
+  auto view = std::make_unique<DrivePickerHostView>(
+      profile(), browser_window_interface(),
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi);
 
   auto widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(

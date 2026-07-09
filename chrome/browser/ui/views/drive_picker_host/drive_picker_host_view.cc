@@ -26,12 +26,12 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
-
-
 DrivePickerHostView::DrivePickerHostView(
     Profile* profile,
-    BrowserWindowInterface* browser_window_interface)
-    : browser_window_interface_(browser_window_interface) {
+    BrowserWindowInterface* browser_window_interface,
+    drive_picker_host::DrivePickerHostRequest::RequestType initial_ui_type)
+    : browser_window_interface_(browser_window_interface),
+      current_ui_type_(initial_ui_type) {
   // Set the view to paint to a layer so that the view can be transparent over
   // the web contents. This allows the web contents to appear like a floating
   // dialog over the browser window.
@@ -57,7 +57,16 @@ DrivePickerHostView::DrivePickerHostView(
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 }
 
-DrivePickerHostView::~DrivePickerHostView() = default;
+DrivePickerHostView::~DrivePickerHostView() {
+  content::WebContents* contents = GetWebContents();
+  if (contents && contents->GetWebUI()) {
+    auto* drive_picker_host_ui =
+        contents->GetWebUI()->GetController()->GetAs<DrivePickerHostUI>();
+    if (drive_picker_host_ui) {
+      drive_picker_host_ui->set_delegate(nullptr);
+    }
+  }
+}
 
 content::WebContents* DrivePickerHostView::GetWebContents() {
   if (!view_tracker_.view()) {
@@ -69,7 +78,25 @@ content::WebContents* DrivePickerHostView::GetWebContents() {
 
 gfx::Size DrivePickerHostView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return gfx::Size(830, 600);
+  gfx::Size size;
+  if (current_ui_type_ ==
+      drive_picker_host::DrivePickerHostRequest::RequestType::kConsentDialog) {
+    // Tight fit for the Google ConsentKit card
+    size = gfx::Size(520, 580);
+  } else {
+    // Standard size for the Google Drive Picker UI
+    size = gfx::Size(830, 600);
+  }
+  return size;
+}
+
+void DrivePickerHostView::OnTransitionToPicker() {
+  current_ui_type_ =
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi;
+  PreferredSizeChanged();
+  if (GetWidget()) {
+    GetWidget()->CenterWindow(GetPreferredSize());
+  }
 }
 
 void DrivePickerHostView::RequestFocus() {
@@ -110,6 +137,12 @@ bool DrivePickerHostView::AcceleratorPressed(
 
 void DrivePickerHostView::TriggerDrivePickerHostUi(
     std::unique_ptr<drive_picker_host::DrivePickerHostRequest> request) {
+  current_ui_type_ = request->type();
+  PreferredSizeChanged();
+  if (GetWidget()) {
+    GetWidget()->CenterWindow(GetPreferredSize());
+  }
+
   if (!view_tracker_.view()) {
     mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
         handler = request->TakeResultHandler();
@@ -137,6 +170,7 @@ void DrivePickerHostView::TriggerDrivePickerHostUi(
     auto* drive_picker_host_ui =
         contents->GetWebUI()->GetController()->GetAs<DrivePickerHostUI>();
     if (drive_picker_host_ui) {
+      drive_picker_host_ui->set_delegate(this);
       drive_picker_host_ui->TriggerDrivePickerHost(std::move(request));
       return;
     }
