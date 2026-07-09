@@ -691,6 +691,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.FirstRunPermissionNotice.Shown"
+    enum="BooleanShown" expires_after="2026-11-22">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <summary>
+    Recorded each time the Lens First Run Permission Notice is requested to be
+    shown. 'Shown' is recorded when the Lens First Run Permission Notice is
+    successfully shown.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.FirstRunPermissionNotice.UserAction"
+    enum="LensPermissionBubbleUserAction" expires_after="2026-11-22">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <summary>
+    Recorded each time the user interacts with the Lens First Run Permission
+    Notice, enumerated by those actions.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.GeneratedTab" enum="LensOverlayNewTabSource"
     expires_after="2026-11-29">
   <owner>christianxu@chromium.org</owner>

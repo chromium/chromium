@@ -45,6 +45,9 @@ TEST_F(GoogleLensHandlerTest, EnablesGoogleLens) {
   histogram_tester_.ExpectUniqueSample(
       "ProfilePicker.FREFlow.FeatureShowcase.StepUserAction.GoogleLens",
       FeatureShowcaseStepUserAction::kAccepted, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Lens.Overlay.FirstRunPermissionNotice.UserAction",
+      lens::LensPermissionUserAction::kAcceptButtonPressed, 1);
 }
 
 TEST_F(GoogleLensHandlerTest, SkipsGoogleLens) {
@@ -57,4 +60,19 @@ TEST_F(GoogleLensHandlerTest, SkipsGoogleLens) {
   histogram_tester_.ExpectUniqueSample(
       "ProfilePicker.FREFlow.FeatureShowcase.StepUserAction.GoogleLens",
       FeatureShowcaseStepUserAction::kDeclined, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Lens.Overlay.FirstRunPermissionNotice.UserAction",
+      lens::LensPermissionUserAction::kCancelButtonPressed, 1);
+}
+
+TEST_F(GoogleLensHandlerTest, LogsEscKeyPressedOnDestruction) {
+  mojo::PendingReceiver<feature_showcase::mojom::GoogleLensPageHandler>
+      receiver;
+  {
+    GoogleLensHandler handler(std::move(receiver), profile());
+  }
+
+  histogram_tester_.ExpectUniqueSample(
+      "Lens.Overlay.FirstRunPermissionNotice.UserAction",
+      lens::LensPermissionUserAction::kEscKeyPressed, 1);
 }

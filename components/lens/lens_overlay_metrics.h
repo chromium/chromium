@@ -101,6 +101,10 @@ void RecordPermissionRequestedToBeShown(
     bool shown,
     LensOverlayInvocationSource invocation_source);
 
+// Recorded when first run permission is requested to be shown. Both sliced and
+// unsliced.
+void RecordFirstRunPermissionNoticeToBeShown();
+
 // Recorded when non-blocking privacy notice is requested to be shown.
 void RecordNonBlockingPrivacyNoticeToBeShown(
     LensOverlayInvocationSource invocation_source);
@@ -114,6 +118,11 @@ void RecordNonBlockingPrivacyNoticeAccepted(
 // Records user action in lens permission. Both sliced and unsliced.
 void RecordPermissionUserAction(LensPermissionUserAction user_action,
                                 LensOverlayInvocationSource invocation_source);
+
+// Records user action in lens first run permission notice. Both sliced and
+// unsliced.
+void RecordFirstRunPermissionNoticeUserAction(
+    LensPermissionUserAction user_action);
 
 // Records lens overlay invocation.
 void RecordInvocation(LensOverlayInvocationSource invocation_source,
