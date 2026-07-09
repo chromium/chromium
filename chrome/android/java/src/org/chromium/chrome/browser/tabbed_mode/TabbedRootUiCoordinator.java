@@ -2456,6 +2456,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return VerticalTabUtils.isVerticalTabsEnabled(mActivity);
     }
 
+    @Override
+    protected boolean isBottomSheetAsBrowserControlsEnabled() {
+        return ChromeFeatureList.sBottomSheetAsBrowserControls.isEnabled();
+    }
+
     public @Nullable StatusIndicatorCoordinator getStatusIndicatorCoordinatorForTesting() {
         return mStatusIndicatorCoordinator;
     }

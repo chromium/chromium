@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
@@ -383,7 +384,9 @@ public class BottomAttachedUiObserver
     private boolean shouldMatchBottomSheetColor() {
         if (!mBottomSheetVisible) return false;
 
-        if (BottomSheetUtils.isContentActingAsBrowserControls(mBottomSheetController)) {
+        if (BottomSheetUtils.isContentActingAsBrowserControls(
+                mBottomSheetController,
+                ChromeFeatureList.sBottomSheetAsBrowserControls.isEnabled())) {
             return false;
         }
 
