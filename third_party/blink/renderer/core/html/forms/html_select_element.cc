@@ -863,6 +863,7 @@ int HTMLSelectElement::SelectedListIndex() const {
 }
 
 void HTMLSelectElement::DidChangeIsCanvasOrInCanvasSubtree() {
+  HTMLFormControlElementWithState::DidChangeIsCanvasOrInCanvasSubtree();
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext()) &&
       IsInCanvasSubtree()) {
     // Hide suggested values when under canvas, to prevent leaking this

@@ -692,6 +692,7 @@ void HTMLTextAreaElement::SetSuggestedValue(const String& value) {
 }
 
 void HTMLTextAreaElement::DidChangeIsCanvasOrInCanvasSubtree() {
+  TextControlElement::DidChangeIsCanvasOrInCanvasSubtree();
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext()) &&
       IsInCanvasSubtree()) {
     // Hide suggested values when under canvas, to prevent leaking this
