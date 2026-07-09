@@ -47,8 +47,8 @@ import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
-import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
 import org.chromium.components.browser_ui.widget.containment.ContainerStyle;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -225,9 +225,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                             return true;
                         });
 
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_EXPERIMENTAL_LOCATION)) {
-            locationPref.setVisible(false);
-        } else if (locationPref.isChecked()) {
+        if (locationPref.isChecked()) {
             ensureFineLocationPermissionGranted();
         }
 
@@ -594,10 +592,6 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                         indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON);
                     } else {
                         indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON_TOGGLE);
-                    }
-                    if (!ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.GLIC_EXPERIMENTAL_LOCATION)) {
-                        indexData.removeEntryForKey(prefFrag, PERMISSION_LOCATION);
                     }
                     if (!ChromeFeatureList.isEnabled(
                             ChromeFeatureList.ACTOR_LOGIN_PERMISSIONS_UI)) {

@@ -155,9 +155,6 @@
 #include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/flags/android/chrome_feature_list.h"
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/feedback/system_logs/chrome_system_logs_fetcher.h"
@@ -1039,15 +1036,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void SetLocationPermissionState(
       bool enabled,
       SetLocationPermissionStateCallback callback) override {
-#if BUILDFLAG(IS_ANDROID)
-    // Glic WebUI should not set location on Android if this flag is disabled.
-    // See b/523326989 for context.
-    if (!base::FeatureList::IsEnabled(
-            chrome::android::kGlicExperimentalLocation)) {
-      std::move(callback).Run();
-      return;
-    }
-#endif
     pref_service_->SetBoolean(prefs::kGlicGeolocationEnabled, enabled);
     if (enabled) {
       base::RecordAction(
@@ -1106,15 +1094,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void ShouldAllowGeolocationPermissionRequest(
       ShouldAllowGeolocationPermissionRequestCallback callback) override {
-#if BUILDFLAG(IS_ANDROID)
-    // This should not be called when the flag is disabled, but added fallback
-    // to be safe.
-    if (!base::FeatureList::IsEnabled(
-            chrome::android::kGlicExperimentalLocation)) {
-      std::move(callback).Run(false);
-      return;
-    }
-#endif
     std::move(callback).Run(
         pref_service_->GetBoolean(prefs::kGlicGeolocationEnabled) &&
         host().IsWidgetShowing(this));

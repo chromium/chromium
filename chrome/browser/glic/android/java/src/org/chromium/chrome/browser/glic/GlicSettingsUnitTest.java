@@ -59,8 +59,7 @@ import org.chromium.ui.base.TestActivity;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({
     ChromeFeatureList.ANDROID_BOTTOM_BAR,
-    ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
-    ChromeFeatureList.GLIC_EXPERIMENTAL_LOCATION
+    ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL
 })
 @EnableFeatures(ChromeFeatureList.ACTOR_LOGIN_PERMISSIONS_UI)
 public class GlicSettingsUnitTest {
@@ -132,7 +131,6 @@ public class GlicSettingsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.GLIC_EXPERIMENTAL_LOCATION)
     public void testLocationHighlightParam() {
         Bundle args = new Bundle();
         args.putString(
