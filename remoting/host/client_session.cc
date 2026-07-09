@@ -23,10 +23,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/notimplemented.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -70,6 +70,7 @@
 #include "remoting/host/security_key/security_key_data_channel_handler.h"
 #include "remoting/host/security_key/security_key_extension.h"
 #include "remoting/host/security_key/security_key_extension_session.h"
+#include "remoting/host/terminal_session_manager.h"
 #include "remoting/host/webauthn/remote_webauthn_constants.h"
 #include "remoting/host/webauthn/remote_webauthn_message_handler.h"
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
@@ -195,6 +196,7 @@ ClientSession::~ClientSession() {
   DCHECK(!desktop_environment_);
   DCHECK(!input_injector_);
   DCHECK(!screen_controls_);
+  DCHECK(!terminal_session_manager_);
   DCHECK(video_streams_.empty());
 }
 
@@ -542,7 +544,66 @@ void ClientSession::SetVideoLayout(const protocol::VideoLayout& video_layout) {
 
 void ClientSession::ControlTerminal(
     const protocol::TerminalControl& terminal_control) {
-  NOTIMPLEMENTED(); // Will be implemented in a later CL.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!HasCapability(capabilities_, protocol::kTerminalModeCapability)) {
+    return;
+  }
+  if (!terminal_session_manager_) {
+    terminal_session_manager_ = std::make_unique<TerminalSessionManager>();
+  }
+
+  if (terminal_control.has_create_request()) {
+    // Create a new terminal session and store the ID. We'll use this ID to
+    // identify the terminal session when sending output to the client. Bind the
+    // callbacks to the weak factory to ensure that the callbacks are not
+    // called after the client session is disconnected.
+    int32_t id = terminal_session_manager_->CreateTerminal(
+        base::BindRepeating(&ClientSession::SendTerminalOutput,
+                            weak_factory_.GetWeakPtr()),
+        base::BindOnce(&ClientSession::OnTerminalExited,
+                       weak_factory_.GetWeakPtr()));
+
+    protocol::TerminalControl response;
+    auto* create_response = response.mutable_create_response();
+    if (id != -1) {
+      create_response->set_terminal_id(id);
+    } else {
+      create_response->mutable_error()->set_reason(
+          protocol::TerminalControl::CreateTerminalResponse::Error::FAILED);
+    }
+    connection_->client_stub()->DeliverTerminalControl(response);
+
+  } else if (terminal_control.has_terminal_input()) {
+    const auto& input = terminal_control.terminal_input();
+    terminal_session_manager_->WriteTerminal(input.terminal_id(),
+                                             input.input());
+
+  } else if (terminal_control.has_resize_terminal()) {
+    const auto& resize = terminal_control.resize_terminal();
+    terminal_session_manager_->ResizeTerminal(resize.terminal_id(),
+                                              resize.width(), resize.height());
+
+  } else if (terminal_control.has_remove_request()) {
+    int32_t terminal_id = terminal_control.remove_request().terminal_id();
+    terminal_session_manager_->CloseTerminal(terminal_id);
+  }
+}
+
+void ClientSession::SendTerminalOutput(int32_t terminal_id,
+                                       const std::string& data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  protocol::TerminalControl response;
+  auto* output = response.mutable_terminal_output();
+  output->set_terminal_id(terminal_id);
+  output->set_output(data);
+  connection_->client_stub()->DeliverTerminalControl(response);
+}
+
+void ClientSession::OnTerminalExited(int32_t terminal_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  protocol::TerminalControl response;
+  response.mutable_close_terminal()->set_terminal_id(terminal_id);
+  connection_->client_stub()->DeliverTerminalControl(response);
 }
 
 void ClientSession::OnConnectionAuthenticating() {
@@ -839,6 +900,7 @@ void ClientSession::OnConnectionClosed(protocol::ErrorCode error) {
   input_injector_.reset();
   screen_controls_.reset();
   desktop_environment_.reset();
+  terminal_session_manager_.reset();
 
   // Notify the ChromotingHost that this client is disconnected.
   event_handler_->OnSessionClosed(this);

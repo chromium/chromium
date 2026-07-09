@@ -50,7 +50,7 @@ class TerminalSessionManager {
   void CloseTerminal(const int32_t terminal_id);
 
   // Called when a client session is disconnected.
-  void OnClientDisconnected(const int32_t terminal_id);
+  void OnClientDisconnected();
 
   // Returns the terminal session with the given ID.
   TerminalSession* GetTerminalSession(const int32_t terminal_id);
@@ -59,6 +59,9 @@ class TerminalSessionManager {
   std::vector<int32_t> GetTerminalSessionIds();
 
  private:
+  // Intercepts the exit callback from the TerminalSession.
+  void OnTerminalExited(ExitCallback client_callback, int32_t terminal_id);
+
   int32_t next_terminal_id_ = 1;
   std::map<int32_t, std::unique_ptr<TerminalSession>> terminal_sessions_;
 };

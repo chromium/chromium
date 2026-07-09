@@ -74,6 +74,7 @@ class MouseShapePump;
 class RemoteOpenUrlMessageHandler;
 class RemoteWebAuthnMessageHandler;
 class ScreenControls;
+class TerminalSessionManager;
 
 namespace protocol {
 class AudioStream;
@@ -338,6 +339,10 @@ class ClientSession : public protocol::HostStub,
   // clientRenderedHostCursor capability is fully rolled out.
   void SetComposeEnabledOnVideoStreams(bool enabled);
 
+  void SendTerminalOutput(int32_t terminal_id, const std::string& data);
+
+  void OnTerminalExited(int32_t terminal_id);
+
   raw_ptr<EventHandler> event_handler_;
 
   // Used to create a DesktopEnvironment instance for this session.
@@ -497,6 +502,8 @@ class ClientSession : public protocol::HostStub,
 
   bool host_cursor_rendered_by_client_ = false;
   bool cursor_visible_ = false;
+
+  std::unique_ptr<TerminalSessionManager> terminal_session_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -35,6 +35,7 @@
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/fake_desktop_environment.h"
 #include "remoting/host/fake_host_extension.h"
+#include "remoting/host/fake_terminal_session.h"
 #include "remoting/host/host_extension.h"
 #include "remoting/host/host_extension_session.h"
 #include "remoting/host/host_mock_objects.h"
@@ -1078,6 +1079,176 @@ TEST_F(ClientSessionTest, SetVideoLayout_Bad) {
   invalid_track_height->set_screen_id(kDisplay1Id);
   client_session_->SetVideoLayout(invalid_layout_height);
   EXPECT_FALSE(screen_controls->set_video_layout_called());
+}
+
+TEST_F(ClientSessionTest, ControlTerminal_CreateTerminal) {
+  CreateClientSession();
+  ConnectClientSession();
+
+  protocol::Capabilities capabilities;
+  capabilities.set_capabilities(protocol::kTerminalModeCapability);
+  client_session_->SetCapabilities(capabilities);
+
+  // Expect client_stub to receive the create response.
+  protocol::TerminalControl create_response;
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_))
+      .WillOnce([&create_response](const protocol::TerminalControl& control) {
+        create_response = control;
+      });
+
+  protocol::TerminalControl create_req;
+  create_req.mutable_create_request();
+  client_session_->ControlTerminal(create_req);
+
+  // We should have a valid terminal ID returned.
+  ASSERT_TRUE(create_response.has_create_response());
+  EXPECT_EQ(create_response.create_response().terminal_id(), 1);
+
+  client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
+  client_session_.reset();
+}
+
+TEST_F(ClientSessionTest, ControlTerminal_InputAndResize) {
+  CreateClientSession();
+  ConnectClientSession();
+
+  protocol::Capabilities capabilities;
+  capabilities.set_capabilities(protocol::kTerminalModeCapability);
+  client_session_->SetCapabilities(capabilities);
+
+  // Create a terminal
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_)).Times(1);
+  protocol::TerminalControl create_req;
+  create_req.mutable_create_request();
+  client_session_->ControlTerminal(create_req);
+
+  auto sessions = FakeTerminalSession::GetActiveSessions();
+  ASSERT_EQ(sessions.size(), 1u);
+  ASSERT_NE(sessions[0], nullptr);
+  EXPECT_EQ(sessions[0]->id(), 1);
+
+  // Send input
+  protocol::TerminalControl input_req;
+  auto* input = input_req.mutable_terminal_input();
+  input->set_terminal_id(1);
+  input->set_input("hello");
+  client_session_->ControlTerminal(input_req);
+
+  EXPECT_EQ(sessions[0]->inputs().size(), 1u);
+  EXPECT_EQ(sessions[0]->inputs()[0], "hello");
+
+  // Send resize
+  protocol::TerminalControl resize_req;
+  auto* resize = resize_req.mutable_resize_terminal();
+  resize->set_terminal_id(1);
+  resize->set_width(80);
+  resize->set_height(24);
+  client_session_->ControlTerminal(resize_req);
+
+  EXPECT_EQ(sessions[0]->resizes().size(), 1u);
+  EXPECT_EQ(sessions[0]->resizes()[0].first, 80u);
+  EXPECT_EQ(sessions[0]->resizes()[0].second, 24u);
+
+  client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
+  client_session_.reset();
+}
+
+TEST_F(ClientSessionTest, ControlTerminal_OutputAndExit) {
+  CreateClientSession();
+  ConnectClientSession();
+
+  protocol::Capabilities capabilities;
+  capabilities.set_capabilities(protocol::kTerminalModeCapability);
+  client_session_->SetCapabilities(capabilities);
+
+  // Create a terminal
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_)).Times(1);
+  protocol::TerminalControl create_req;
+  create_req.mutable_create_request();
+  client_session_->ControlTerminal(create_req);
+
+  auto sessions = FakeTerminalSession::GetActiveSessions();
+  ASSERT_EQ(sessions.size(), 1u);
+  ASSERT_NE(sessions[0], nullptr);
+
+  // Trigger output from the terminal
+  protocol::TerminalControl output_received;
+  base::test::TestFuture<void> output_future;
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_))
+      .WillOnce([&output_received,
+                 &output_future](const protocol::TerminalControl& control) {
+        output_received = control;
+        output_future.SetValue();
+      });
+
+  sessions[0]->TriggerOutput("world");
+  output_future.Get();
+
+  ASSERT_TRUE(output_received.has_terminal_output());
+  EXPECT_EQ(output_received.terminal_output().terminal_id(), 1);
+  EXPECT_EQ(output_received.terminal_output().output(), "world");
+
+  // Trigger terminal exit
+  protocol::TerminalControl close_received;
+  base::test::TestFuture<void> exit_future;
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_))
+      .WillOnce([&close_received,
+                 &exit_future](const protocol::TerminalControl& control) {
+        close_received = control;
+        exit_future.SetValue();
+      });
+
+  sessions[0]->TriggerExit();
+  exit_future.Get();
+
+  // Task to delete the terminal in TerminalSessionManager runs asynchronously.
+  task_environment_.RunUntilIdle();
+
+  ASSERT_TRUE(close_received.has_close_terminal());
+  EXPECT_EQ(close_received.close_terminal().terminal_id(), 1);
+  EXPECT_EQ(sessions[0], nullptr);
+
+  client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
+  client_session_.reset();
+}
+
+TEST_F(ClientSessionTest, ControlTerminal_RemoveRequest) {
+  CreateClientSession();
+  ConnectClientSession();
+
+  protocol::Capabilities capabilities;
+  capabilities.set_capabilities(protocol::kTerminalModeCapability);
+  client_session_->SetCapabilities(capabilities);
+
+  // Create two terminals
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_)).Times(2);
+  protocol::TerminalControl create_req;
+  create_req.mutable_create_request();
+  client_session_->ControlTerminal(create_req);
+  client_session_->ControlTerminal(create_req);
+
+  auto sessions = FakeTerminalSession::GetActiveSessions();
+  ASSERT_EQ(sessions.size(), 2u);
+  ASSERT_NE(sessions[0], nullptr);
+  ASSERT_NE(sessions[1], nullptr);
+
+  // Send remove_request for terminal 1
+  protocol::TerminalControl remove_req1;
+  remove_req1.mutable_remove_request()->set_terminal_id(1);
+  client_session_->ControlTerminal(remove_req1);
+
+  EXPECT_TRUE(FakeTerminalSession::WasTerminated(1));
+
+  // Send remove_request for terminal 2
+  protocol::TerminalControl remove_req2;
+  remove_req2.mutable_remove_request()->set_terminal_id(2);
+  client_session_->ControlTerminal(remove_req2);
+
+  EXPECT_TRUE(FakeTerminalSession::WasTerminated(2));
+  EXPECT_TRUE(FakeTerminalSession::GetActiveSessions().empty());
+
+  client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
+  client_session_.reset();
 }
 
 }  // namespace remoting
