@@ -94,6 +94,8 @@ const char* GetNameForProcessType(CurrentProcessType process_type) {
       return "Service: shape_detection.mojom.ShapeDetectionService";
     case CurrentProcessType::PROCESS_RENDERER_EXTENSION:
       return "Extension Renderer";
+    case CurrentProcessType::PROCESS_RENDERER_TOP_WEBUI:
+      return "WebUI Top Renderer";
   }
 }
 
@@ -108,6 +110,7 @@ ShortProcessType CurrentProcess::GetShortType(TypeKey key) {
     case CurrentProcessType::PROCESS_BROWSER:
       return ShortProcessType::kBrowser;
     case CurrentProcessType::PROCESS_RENDERER:
+    case CurrentProcessType::PROCESS_RENDERER_TOP_WEBUI:
       return ShortProcessType::kRenderer;
     case CurrentProcessType::PROCESS_UTILITY:
       return ShortProcessType::kUtility;

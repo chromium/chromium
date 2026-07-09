@@ -344,6 +344,11 @@ bool IsStandaloneContentExtensionProcess() {
 #endif
 }
 
+bool IsTopChromeWebUiProcess() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kTopChromeWebUI);
+}
+
 std::unique_ptr<base::Unwinder> CreateV8Unwinder(v8::Isolate* isolate) {
   return std::make_unique<V8Unwinder>(isolate);
 }
@@ -393,6 +398,11 @@ void ChromeContentRendererClient::RenderThreadStarted() {
     // "Extension Renderer" to highlight that it's hosting an extension.
     base::CurrentProcess::GetInstance().SetProcessType(
         base::CurrentProcessType::PROCESS_RENDERER_EXTENSION);
+  }
+
+  if (IsTopChromeWebUiProcess()) {
+    base::CurrentProcess::GetInstance().SetProcessType(
+        base::CurrentProcessType::PROCESS_RENDERER_TOP_WEBUI);
   }
 
 #if BUILDFLAG(IS_WIN)

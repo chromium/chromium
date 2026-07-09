@@ -62,7 +62,8 @@ enum class ShortProcessType {
   kServiceStorage = 10,
   kService = 11,
   kRendererExtension = 12,
-  kMaxValue = kRendererExtension,
+  kRendererTopWebUI = 13,
+  kMaxValue = kRendererTopWebUI,
 };
 
 // CurrentProcess class provides access to set of current process properties
