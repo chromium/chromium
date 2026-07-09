@@ -23,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
@@ -1398,6 +1399,83 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceChanged) {
   media_stream_manager_->StopStreamDevice(kRenderFrameHostId, requester_id,
                                           video_device.id,
                                           video_device.session_id());
+}
+
+TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceChangeDeniedThenCancel) {
+  const std::string tab_id =
+      DesktopMediaID(DesktopMediaID::TYPE_WEB_CONTENTS, /*id=*/0,
+                     WebContentsMediaCaptureId(5, 5))
+          .ToString();
+  media_stream_manager_->UseFakeUIFactoryForTests(
+      base::BindLambdaForTesting([&]() {
+        auto fake_ui = std::make_unique<FakeMediaStreamUIProxy>(
+            /*tests_use_fake_render_frame_hosts=*/true);
+        fake_ui->AddAvailableDevices({blink::MediaStreamDevice(
+            blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE, tab_id,
+            "Tab")});
+        return std::unique_ptr<FakeMediaStreamUIProxy>(std::move(fake_ui));
+      }));
+
+  blink::StreamControls controls(false /* request_audio */,
+                                 true /* request_video */);
+  controls.video.stream_type =
+      blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE;
+  const int requester_id = 1;
+  const int page_request_id = 1;
+
+  blink::MediaStreamDevice video_device;
+  MediaStreamManager::GenerateStreamsCallback generate_stream_callback =
+      base::BindOnce(GenerateStreamsCallback, &run_loop_,
+                     /*request_audio=*/false,
+                     /*request_video=*/true, /*audio_device=*/nullptr,
+                     &video_device,
+                     /*audio_share=*/true);
+  EXPECT_CALL(*media_observer_, OnMediaRequestStateChanged(_, _, _, _, _, _))
+      .Times(testing::AtLeast(1));
+
+  media_stream_manager_->GenerateStreams(
+      kRenderFrameHostId, requester_id, page_request_id, controls,
+      MediaDeviceSaltAndOrigin::Empty(), false /* user_gesture */,
+      StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
+      std::move(generate_stream_callback),
+      MediaStreamManager::DeviceStoppedCallback(),
+      MediaStreamManager::DeviceChangedCallback(),
+      MediaStreamManager::DeviceRequestStateChangeCallback(),
+      MediaStreamManager::DeviceCaptureConfigurationChangeCallback(),
+      MediaStreamManager::DeviceCaptureHandleChangeCallback(),
+      MediaStreamManager::ZoomLevelChangeCallback());
+  run_loop_.Run();
+  EXPECT_EQ(controls.video.stream_type, video_device.type);
+
+  const std::string request_label = GetLatestLabel();
+  const base::UnguessableToken session_id = video_device.session_id();
+  media::VideoCaptureFormats formats;
+  ASSERT_TRUE(
+      media_stream_manager_->video_capture_manager()->GetDeviceSupportedFormats(
+          session_id, &formats));
+
+  // Request a source change but have the picker dismiss it without making a
+  // new selection. The original capture is expected to continue unchanged.
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kUseFakeUIForMediaStream, "deny");
+  media_stream_manager_->ChangeMediaStreamSourceFromBrowser(
+      request_label, DesktopMediaID(),
+      /*captured_surface_control_active=*/false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      1u,
+      media_stream_manager_->GetDevicesOpenedByRequest(request_label).size());
+
+  // Cancelling the request must close the underlying capture session.
+  media_stream_manager_->CancelRequest(request_label);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(
+      media_stream_manager_->GetDevicesOpenedByRequest(request_label).empty());
+  formats.clear();
+  EXPECT_FALSE(
+      media_stream_manager_->video_capture_manager()->GetDeviceSupportedFormats(
+          session_id, &formats));
 }
 
 TEST_F(MediaStreamManagerTest, MultiCaptureOnMediaStreamUIWindowId) {
