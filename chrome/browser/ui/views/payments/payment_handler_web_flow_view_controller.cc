@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/payments/payment_handler_header_view_util.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "components/omnibox/browser/location_bar_model_util.h"
@@ -89,145 +90,7 @@ std::u16string GetPaymentHandlerDialogTitle(
              : title;
 }
 
-// Returns a Google color closest to light_mode_color or dark_mode_color based
-// on whether background_color is considered dark mode, with a minimum
-// contrast_ratio between the returned color and the background_color.
-SkColor GetContrastingGoogleColor(SkColor light_mode_color,
-                                  SkColor dark_mode_color,
-                                  SkColor background_color,
-                                  float contrast_ratio) {
-  const SkColor preferred_color = color_utils::IsDark(background_color)
-                                      ? dark_mode_color
-                                      : light_mode_color;
-  return color_utils::PickGoogleColor(preferred_color, background_color,
-                                      contrast_ratio);
-}
-
 }  // namespace
-
-// The progress bar used in the Payment Handler UI.
-class PaymentHandlerProgressBar : public views::ProgressBar {
-  METADATA_HEADER(PaymentHandlerProgressBar, views::ProgressBar)
-
- public:
-  PaymentHandlerProgressBar() { SetPreferredHeight(2); }
-  ~PaymentHandlerProgressBar() override = default;
-
-  // Set the progress bar colors based on the header background color. The
-  // progress bar's background color serves as a separator between the header
-  // and content.
-  void SetColorBasedOnBackground(SkColor background_color) {
-    // Get the closest progress bar color to kColorProgressBar, with a minimum
-    // contrast ratio used for glyphs.
-    const SkColor progress_bar_color = GetContrastingGoogleColor(
-        gfx::kGoogleBlue600, gfx::kGoogleBlue300, background_color,
-        color_utils::kMinimumVisibleContrastRatio);
-
-    // Get the closest separator color to kColorSeparator, with a minimum
-    // contrast ratio of the default light separator contrast on white, which is
-    // less than color_utils::kMinimumVisibleContrastRatio.
-    const SkColor separator_color = GetContrastingGoogleColor(
-        gfx::kGoogleGrey300, gfx::kGoogleGrey800, background_color,
-        color_utils::GetContrastRatio(gfx::kGoogleGrey300, SK_ColorWHITE));
-
-    SetForegroundColor(progress_bar_color);
-    SetBackgroundColor(separator_color);
-  }
-
-  base::WeakPtr<PaymentHandlerProgressBar> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  base::WeakPtrFactory<PaymentHandlerProgressBar> weak_ptr_factory_{this};
-};
-
-BEGIN_METADATA(PaymentHandlerProgressBar)
-END_METADATA
-
-// The origin label used in the header of the Payment Handler UI.
-class PaymentHandlerOriginLabel : public views::Label {
-  METADATA_HEADER(PaymentHandlerOriginLabel, views::Label)
-
- public:
-  PaymentHandlerOriginLabel() {
-    SetElideBehavior(gfx::ELIDE_HEAD);
-    SetID(static_cast<int>(DialogViewID::SHEET_TITLE));
-    SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-  }
-  ~PaymentHandlerOriginLabel() override = default;
-
-  // Set the color based on the background color of the header.
-  void SetColorBasedOnBackground(SkColor background_color) {
-    // Get the closest label color to kColorPrimaryForeground, with a minimum
-    // readable contrast ratio.
-    SkColor foreground = GetContrastingGoogleColor(
-        gfx::kGoogleGrey900, gfx::kGoogleGrey200, background_color,
-        color_utils::kMinimumReadableContrastRatio);
-    SetAutoColorReadabilityEnabled(false);
-    SetEnabledColor(foreground);
-    SetBackgroundColor(background_color);
-  }
-
-  base::WeakPtr<PaymentHandlerOriginLabel> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  base::WeakPtrFactory<PaymentHandlerOriginLabel> weak_ptr_factory_{this};
-};
-
-BEGIN_METADATA(PaymentHandlerOriginLabel)
-END_METADATA
-
-// The close ('X') button used in the header of the Payment Handler UI.
-class PaymentHandlerCloseButton : public views::ImageButton {
-  METADATA_HEADER(PaymentHandlerCloseButton, views::ImageButton)
-
- public:
-  explicit PaymentHandlerCloseButton(
-      views::Button::PressedCallback pressed_callback)
-      : views::ImageButton(std::move(pressed_callback)) {
-    ConfigureVectorImageButton(this);
-    views::InstallCircleHighlightPathGenerator(this);
-    constexpr int kCloseButtonSize = 16;
-    SetSize(gfx::Size(kCloseButtonSize, kCloseButtonSize));
-    SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-    SetID(static_cast<int>(DialogViewID::CANCEL_BUTTON));
-    GetViewAccessibility().SetName(
-        l10n_util::GetStringUTF16(IDS_PAYMENTS_CLOSE));
-  }
-  ~PaymentHandlerCloseButton() override = default;
-
-  // Set the colors based on the header's background color.
-  void SetColorBasedOnBackground(SkColor background_color) {
-    // Get the closest icon color to kColorIcon, with a minimum contrast ratio
-    // used for glyphs.
-    const SkColor enabled_color = GetContrastingGoogleColor(
-        gfx::kGoogleGrey500, gfx::kGoogleGrey700, background_color,
-        color_utils::kMinimumVisibleContrastRatio);
-    const SkColor disabled_color = color_utils::AlphaBlend(
-        enabled_color, background_color, gfx::kDisabledControlAlpha);
-
-    // This view does not set its color using the browser theme color, as this
-    // may differ from the header color, which is based on the web view theme.
-    views::SetImageFromVectorIconWithColor(this,
-                                           ::features::IsRoundedIconsEnabled()
-                                               ? vector_icons::kCloseIcon
-                                               : vector_icons::kCloseOldIcon,
-                                           {enabled_color, disabled_color});
-  }
-
-  base::WeakPtr<PaymentHandlerCloseButton> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  base::WeakPtrFactory<PaymentHandlerCloseButton> weak_ptr_factory_{this};
-};
-
-BEGIN_METADATA(PaymentHandlerCloseButton)
-END_METADATA
 
 // Ensures that the views::WebView created by this class has its corners
 // properly rounded. This class is a ViewsObserver that waits until the view
@@ -383,91 +246,19 @@ bool PaymentHandlerWebFlowViewController::ShouldShowSecondaryButton() {
 
 void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
     views::View* container) {
-  // The PaymentHandler header consists of the payment app icon (if available),
-  // the current web contents origin, and a close button. The origin is centered
-  // on the dialog, whilst the icon and close are aligned with the LHS and RHS
-  // respectively.
-  //
-  // +-----------------------------------------+
-  // | ICON |          origin          | CLOSE |
-  // +-----------------------------------------+
-
-  container->SetID(static_cast<int>(DialogViewID::PAYMENT_APP_HEADER));
-  constexpr int kVerticalInset = 8;
-  constexpr int kHeaderHorizontalInset = 16;
-  container->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kVerticalInset, kHeaderHorizontalInset, kVerticalInset,
-                        kHeaderHorizontalInset)));
-
-  views::TableLayout* layout =
-      container->SetLayoutManager(std::make_unique<views::TableLayout>());
-
-  // Icon column.
   const SkBitmap* icon_bitmap = state()->selected_app()->icon_bitmap();
-  const bool has_icon = icon_bitmap && !icon_bitmap->drawsNothing();
-  constexpr int kHeaderIconWidth = 32;
-  if (has_icon) {
-    layout->AddColumn(views::LayoutAlignment::kStart,
-                      views::LayoutAlignment::kCenter,
-                      views::TableLayout::kFixedSize,
-                      views::TableLayout::ColumnSize::kFixed, kHeaderIconWidth,
-                      /*min_width=*/0);
-  } else {
-    layout->AddPaddingColumn(views::TableLayout::kFixedSize, kHeaderIconWidth);
-  }
+  std::u16string origin_text = url_formatter::FormatOriginForSecurityDisplay(
+      web_contents()
+          ? web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()
+          : url::Origin::Create(target_),
+      url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 
-  // Origin column.
-  layout->AddColumn(
-      views::LayoutAlignment::kStretch, views::LayoutAlignment::kStretch,
-      /*horizontal_resize=*/1.0, views::TableLayout::ColumnSize::kUsePreferred,
-      /*fixed_width=*/0,
-      /*min_width=*/0);
-
-  // Close button column.
-  layout->AddColumn(
-      views::LayoutAlignment::kEnd, views::LayoutAlignment::kCenter,
-      views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
-      /*fixed_width=*/32,
-      /*min_width=*/0);
-
-  layout->AddRows(1, views::TableLayout::kFixedSize);
-
-  // Add the icon to the header. As we support non-square icons, resize it to
-  // fit the target header height.
-  //
-  // We should set image size in density independent pixels here, since
-  // views::ImageView objects are rastered at the device scale factor.
-  if (has_icon) {
-    views::ImageView* app_icon_view = container->AddChildView(CreateAppIconView(
-        /*icon_resource_id=*/0, icon_bitmap,
-        /*tooltip_text=*/l10n_util::GetStringUTF16(IDS_PAYMENT_HANDLER_ICON)));
-    app_icon_view->SetID(
-        static_cast<int>(DialogViewID::PAYMENT_APP_HEADER_ICON));
-    // TODO(crbug.com/40259861): If the downloaded app icon was a vector image,
-    // see if we can store and rasterize it here instead of at download time.
-    float adjusted_width =
-        icon_bitmap->width() *
-        (IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight /
-         base::checked_cast<float>(icon_bitmap->height()));
-    app_icon_view->SetImageSize(gfx::Size(
-        adjusted_width,
-        IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight));
-  }
-
-  // Add the origin label.
-  origin_label_ =
-      container->AddChildView(std::make_unique<PaymentHandlerOriginLabel>())
-          ->GetWeakPtr();
-
-  // Finally, add the close button.
-  close_button_ =
-      container
-          ->AddChildView(
-              std::make_unique<PaymentHandlerCloseButton>(base::BindRepeating(
-                  &PaymentRequestSheetController::CloseButtonPressed,
-                  GetWeakPtr())))
-          ->GetWeakPtr();
-
+  PaymentHandlerHeaderViews header_views = PopulatePaymentHandlerHeaderView(
+      container, icon_bitmap, origin_text,
+      base::BindRepeating(&PaymentRequestSheetController::CloseButtonPressed,
+                          GetWeakPtr()));
+  origin_label_ = header_views.origin_label;
+  close_button_ = header_views.close_button;
   SetHeaderColorsAndOriginLabelText();
 }
 
@@ -620,21 +411,13 @@ void PaymentHandlerWebFlowViewController::AbortPayment() {
 }
 
 void PaymentHandlerWebFlowViewController::SetHeaderColorsAndOriginLabelText() {
-  // Calculates the header background based on the web contents theme, if any,
-  // otherwise the Chrome theme.
-  header_view()->SetBackground(
-      web_contents() && header_view()->GetWidget()
-          ? views::CreateSolidBackground(color_utils::GetResultingPaintColor(
-                web_contents()->GetThemeColor().value_or(SK_ColorTRANSPARENT),
-                header_view()->GetColorProvider()->GetColor(
-                    ui::kColorDialogBackground)))
-          : views::CreateSolidBackground(ui::kColorDialogBackground));
+  std::optional<SkColor> theme_color;
+  if (web_contents()) {
+    theme_color = web_contents()->GetThemeColor();
+  }
 
-  SkColor background_color =
-      header_view()->GetWidget()
-          ? header_view()->background()->color().ResolveToSkColor(
-                header_view()->GetColorProvider())
-          : gfx::kPlaceholderColor;
+  SetHeaderColors(header_view(), origin_label_.get(), progress_bar_.get(),
+                  close_button_.get(), theme_color);
 
   if (origin_label_) {
     origin_label_->SetText(url_formatter::FormatOriginForSecurityDisplay(
@@ -642,16 +425,6 @@ void PaymentHandlerWebFlowViewController::SetHeaderColorsAndOriginLabelText() {
             ? web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()
             : url::Origin::Create(target_),
         url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-
-    origin_label_->SetColorBasedOnBackground(background_color);
-  }
-
-  if (progress_bar_) {
-    progress_bar_->SetColorBasedOnBackground(background_color);
-  }
-
-  if (close_button_) {
-    close_button_->SetColorBasedOnBackground(background_color);
   }
 }
 
