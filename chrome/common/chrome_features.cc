@@ -114,6 +114,15 @@ BASE_FEATURE(kCrostini, base::FEATURE_DISABLED_BY_DEFAULT);
 // needed for security, but may be required by some organizations.
 BASE_FEATURE(kCryptographyComplianceCnsa, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Delays BEST_EFFORT tasks during startup until tabs are loaded/idle and first
+// paint.
+BASE_FEATURE(kImprovedStartupBestEffortDelay,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kSessionRestoreDelaysBestEffort{
+    &kImprovedStartupBestEffortDelay, "session_restore_delays_best_effort",
+    true};
+
 #if !BUILDFLAG(IS_ANDROID)
 // Whether to allow installed-by-default web apps to be installed or not.
 BASE_FEATURE(kPreinstalledWebAppInstallation,

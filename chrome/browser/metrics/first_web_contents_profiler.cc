@@ -8,10 +8,12 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/metrics/first_web_contents_profiler_base.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -50,6 +52,9 @@ class FirstWebContentsProfiler : public FirstWebContentsProfilerBase {
 
  private:
   ~FirstWebContentsProfiler() override = default;
+
+  std::unique_ptr<AfterStartupTaskUtils::StartupInProgressRef>
+      startup_in_progress_ref_;
 };
 
 // FirstWebContentsProfiler is created before the main MessageLoop starts
@@ -68,7 +73,12 @@ class FirstWebContentsProfiler : public FirstWebContentsProfilerBase {
 // `BeginFirstWebContentsProfiling`.
 FirstWebContentsProfiler::FirstWebContentsProfiler(
     content::WebContents* web_contents)
-    : FirstWebContentsProfilerBase(web_contents) {}
+    : FirstWebContentsProfilerBase(web_contents) {
+  if (base::FeatureList::IsEnabled(features::kImprovedStartupBestEffortDelay)) {
+    startup_in_progress_ref_ =
+        AfterStartupTaskUtils::RegisterStartupInProgressRef();
+  }
+}
 
 void FirstWebContentsProfiler::RecordFinishReason(
     StartupProfilingFinishReason finish_reason) {

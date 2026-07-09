@@ -122,6 +122,7 @@ source_set("impl") {
     ]
 
     deps += [
+      "//chrome/browser:after_startup_task_utils",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/devtools",
       "//chrome/browser/extensions",

@@ -8,5 +8,6 @@ specific_include_rules = {
   "session_restore\\.cc": [
     "+ash/shell.h",
     "+ash/metrics/login_unlock_throughput_recorder.h",
+    "+chrome/browser/after_startup_task_utils.h",
   ],
 }

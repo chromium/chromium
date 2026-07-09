@@ -1,4 +1,5 @@
 include_rules = [
+  "+chrome/browser/after_startup_task_utils.h",
   "+chrome/browser/performance_manager/metrics/metrics_provider_common.h",
   "+chrome/browser/performance_manager/metrics/metrics_provider_desktop.h",
   "+chrome/services/util_win/util_win_impl.h",

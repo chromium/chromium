@@ -366,6 +366,7 @@ source_set("impl") {
     ]
     deps += [
       ":browser_activity_watcher",
+      "//chrome/browser:after_startup_task_utils",
       "//chrome/browser/performance_manager/public/user_tuning",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/performance_controls",

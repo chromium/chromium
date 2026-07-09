@@ -399,6 +399,7 @@ source_set("startup_data") {
 source_set("chrome_browser_main") {
   public = [ "chrome_browser_main.h" ]
   deps = [
+    ":after_startup_task_utils",
     ":buildflags",
     "//base",
     "//build:buildflag_header_h",
@@ -5421,6 +5422,7 @@ if (!is_android) {
       "//chrome/browser/login_detection",
       "//chrome/browser/pdf:pdf_extension_test_utils",
       "//chrome/browser/policy:test_support",
+      "//chrome/browser/prefs:util",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/login",

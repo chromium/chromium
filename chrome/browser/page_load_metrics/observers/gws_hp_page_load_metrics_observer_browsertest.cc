@@ -68,8 +68,8 @@ class GWSHpPageLoadMetricsObserverBrowserTest : public MetricIntegrationTest {
         base::BindRepeating(&RequestHandler));
     Start();
 
-    // Wait until the browser init is complete.
-    AfterStartupTaskUtils::StartMonitoringStartup();
+    // Ensure startup monitoring has started (idempotent for testing).
+    AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting();
   }
 };
 

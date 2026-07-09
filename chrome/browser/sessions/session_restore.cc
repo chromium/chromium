@@ -28,6 +28,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -36,6 +37,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -209,6 +211,14 @@ std::set<SessionRestoreImpl*>& GetActiveSessionRestorers() {
 // Tracks whether any session has been restored during the current process
 // lifetime.
 static bool g_is_any_session_restored = false;
+
+std::unique_ptr<AfterStartupTaskUtils::StartupInProgressRef>&
+GetSessionRestoreStartupRef() {
+  static base::NoDestructor<
+      std::unique_ptr<AfterStartupTaskUtils::StartupInProgressRef>>
+      ref;
+  return *ref;
+}
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Helper to pause occlusion tracking while it is alive and updates occlusion
@@ -1625,6 +1635,8 @@ void SessionRestore::OnTabLoaderFinishedLoadingTabs() {
     return;
   }
 
+  GetSessionRestoreStartupRef().reset();
+
   session_restore_started_ = false;
   for (auto& observer : *observers()) {
     observer.OnSessionRestoreFinishedLoadingTabs();
@@ -1635,6 +1647,12 @@ void SessionRestore::OnTabLoaderFinishedLoadingTabs() {
 void SessionRestore::NotifySessionRestoreStartedLoadingTabs() {
   if (session_restore_started_) {
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kImprovedStartupBestEffortDelay) &&
+      features::kSessionRestoreDelaysBestEffort.Get()) {
+    GetSessionRestoreStartupRef() =
+        AfterStartupTaskUtils::RegisterStartupInProgressRef();
   }
 
   session_restore_started_ = true;
