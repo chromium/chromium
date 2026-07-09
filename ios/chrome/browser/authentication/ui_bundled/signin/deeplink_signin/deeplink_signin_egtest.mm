@@ -4,11 +4,13 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/policy_constants.h"
+#import "components/signin/public/base/signin_deep_link_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -24,7 +26,9 @@
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::FullscreenSigninPrimaryButtonMatcher;
+using chrome_test_util::GREYAssertErrorNil;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
+using signin_metrics::CrossDeviceInitialState;
 
 namespace {
 
@@ -99,8 +103,14 @@ void CheckAccountSwitch(FakeSystemIdentity* signedInIdentity,
 
 @implementation DeeplinkSigninTestCase
 
+- (void)setUp {
+  [super setUp];
+  GREYAssertErrorNil([MetricsAppInterface setupHistogramTester]);
+}
+
 - (void)tearDownHelper {
   [ChromeEarlGrey resetDataForLocalStatePref:prefs::kSigninAllowedOnDevice];
+  GREYAssertErrorNil([MetricsAppInterface releaseHistogramTester]);
 
   [super tearDownHelper];
 }
@@ -290,6 +300,53 @@ void CheckAccountSwitch(FakeSystemIdentity* signedInIdentity,
                                                fakeIdentity2.userEmail)];
 
   CheckAccountSwitch(fakeIdentity1, fakeIdentity2);
+}
+
+// Tests that opening a cross-device sign-in deep link with an unknown entry
+// point.
+- (void)testCrossDeviceSigninUnknownEntryPoint {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  NSString* urlString =
+      [NSString stringWithFormat:@"%s?email=%@&entry_point_id=42",
+                                 kCrossDeviceSigninUrl, fakeIdentity.userEmail];
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningWithURL:[NSURL URLWithString:urlString]];
+
+  [ChromeEarlGrey waitForMatcher:chrome_test_util::SigninScreenPromoMatcher()];
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:1
+                         forHistogram:
+                             @"Signin.CrossDevice.InitialAccountsNumber"],
+      @"Failed to record InitialAccountsNumber");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:1
+                         forHistogram:@"Signin.CrossDevice."
+                                      @"InitialAccountsNumber.Unknown"],
+      @"Failed to record InitialAccountsNumber");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          CrossDeviceInitialState::
+                                              kSignedOutTargetAccountOnDevice)
+                         forHistogram:@"Signin.CrossDevice.InitialState"],
+      @"Failed to record InitialState");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          CrossDeviceInitialState::
+                                              kSignedOutTargetAccountOnDevice)
+                         forHistogram:
+                             @"Signin.CrossDevice.InitialState.Unknown"],
+      @"Failed to record InitialState");
 }
 
 // Tests that opening a cross-device sign-in deep link and cancelling the "Add
