@@ -28,7 +28,15 @@ class AutofillPolicyService : public KeyedService {
   ~AutofillPolicyService() override;
 
   // Returns true if the specified Autofill data category is blocked by either
-  // user settings or enterprise policy for the given `url`.
+  // user settings or enterprise policy for the given `url`. This static method
+  // is suitable for one-off checks (e.g., at startup) as it parses the policy
+  // list directly from `prefs` without caching.
+  [[nodiscard]] static bool IsAutofillTypeBlockedByPolicyFromPref(
+      const PrefService& prefs,
+      const GURL& url,
+      AutofillClient::AutofillPolicyDataCategory category);
+
+  // Evaluates the policy using the cached patterns in this service.
   [[nodiscard]] bool IsAutofillTypeBlockedByPolicy(
       const GURL& url,
       AutofillClient::AutofillPolicyDataCategory category) const;
@@ -36,7 +44,7 @@ class AutofillPolicyService : public KeyedService {
  private:
   void OnAutofillPolicyChanged();
 
-  const base::raw_ref<PrefService> prefs_;
+  const base::raw_ref<const PrefService> prefs_;
   PrefChangeRegistrar autofill_types_blocked_change_registrar_;
 
   struct BlockedPatternEntry {

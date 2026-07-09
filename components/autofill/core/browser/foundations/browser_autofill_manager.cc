@@ -926,8 +926,7 @@ bool BrowserAutofillManager::ShouldParseForms() {
         client().IsAutofillProfileEnabled(),
         metrics_->signin_state_for_metrics);
     if (!client().IsAutofillProfileEnabled()) {
-      autofill_metrics::LogAutofillProfileDisabledReasonAtPageLoad(
-          CHECK_DEREF(client().GetPrefs()));
+      autofill_metrics::LogAutofillProfileDisabledReasonAtPageLoad(client());
     }
     autofill_metrics::LogIsAutofillPaymentMethodsEnabledAtPageLoad(
         client().GetPaymentsAutofillClient()->IsAutofillPaymentMethodsEnabled(),
@@ -936,7 +935,7 @@ bool BrowserAutofillManager::ShouldParseForms() {
              .GetPaymentsAutofillClient()
              ->IsAutofillPaymentMethodsEnabled()) {
       autofill_metrics::LogAutofillPaymentMethodsDisabledReasonAtPageLoad(
-          CHECK_DEREF(client().GetPrefs()));
+          client());
     }
     metrics_->has_logged_autofill_enabled = true;
   }
