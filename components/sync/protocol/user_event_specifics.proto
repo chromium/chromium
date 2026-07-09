@@ -34,64 +34,6 @@ message UserEventSpecifics {
   // Used for testing and debugging EventLog system.
   message Test {}
 
-  // Language detection output.
-  message LanguageDetection {
-    option deprecated = true;
-
-    message Language {
-      // ISO 639 language code will be used.
-      optional string language_code = 1;
-      // Whether the detected language is reliable, note this is determined by
-      // the CLD3.
-      optional bool is_reliable = 2;
-    }
-    // Top n languages. Typically we just log the top language, but for page
-    // that we're not confident about, we may log up to 3 top languages in
-    // descending order.
-    repeated Language detected_languages = 1;
-    // Adopted language code is the code of final determined language.
-    // It will be stored only if it's different from the first detected
-    // language.
-    optional string adopted_language_code = 2;
-  }
-
-  // User translated a page or interacted with translate suggestion.
-  message Translation {
-    option deprecated = true;
-
-    // Source language of the translation.
-    optional string from_language_code = 1;
-    // Target language of the translation.
-    optional string to_language_code = 2;
-    enum Interaction {
-      UNKNOWN = 0;
-      ACCEPT = 1;
-      DECLINE = 2;
-      // This happens when user scroll or click outside the UI without
-      // translation.
-      IGNORED = 3;
-      // This happens when user choose to close the translation window without
-      // translation.
-      DISMISSED = 4;
-      // User manually entered either language.
-      // In this case, from_language_code and to_language_code will be user
-      // chosen values.
-      MANUAL = 5;
-      // User choose to revert the translation, in this case, from_language_code
-      // and to_language_code will be previous chosen values.
-      TRANSLATION_REVERTED = 6;
-      // Automatically triggered translation.
-      // User sets always translate in user settings.
-      AUTO_TRANSLATION_BY_PREF = 7;
-      // User navigated through a click from a translated page.
-      AUTO_TRANSLATION_BY_LINK = 8;
-      // Failed to initialize the translate script, this can happen for iOS due
-      // to CSPs.
-      INITIALIZATION_ERROR = 9;
-    }
-    optional Interaction interaction = 3;
-  }
-
   // Logged when the user logs into Google, and at least once per 28d.
   message GaiaPasswordCaptured {
     enum EventTrigger {
@@ -124,8 +66,6 @@ message UserEventSpecifics {
 
   oneof event {
     Test test_event = 8;
-    LanguageDetection language_detection_event = 10 [deprecated = true];
-    Translation translation_event = 11 [deprecated = true];
     // Happens when a user types their Google account password on another site.
     GaiaPasswordReuse gaia_password_reuse_event = 104;
     GaiaPasswordCaptured gaia_password_captured_event = 15;
@@ -137,4 +77,10 @@ message UserEventSpecifics {
 
   reserved "user_consent";
   reserved 12;
+
+  reserved "language_detection_event";
+  reserved 10;
+
+  reserved "translation_event";
+  reserved 11;
 }

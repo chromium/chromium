@@ -33,10 +33,8 @@ NavigationPresence GetNavigationPresence(
     case UserEventSpecifics::kGaiaPasswordCapturedEvent:
     case UserEventSpecifics::kFlocIdComputedEvent:
       return kCannotHave;
-    // The event types below are not recorded anymore, so are not handled here
-    // (will fall through to the NOTREACHED() below).
-    case UserEventSpecifics::kLanguageDetectionEvent:
-    case UserEventSpecifics::kTranslationEvent:
+    // EVENT_NOT_SET is not recorded, so is not handled here (will fall through
+    // to the NOTREACHED() below).
     case UserEventSpecifics::EVENT_NOT_SET:
       break;
   }
@@ -77,10 +75,8 @@ EventTypeForUMA GetEventTypeForUMA(UserEventSpecifics::EventCase event_case) {
       return EventTypeForUMA::kGaiaPasswordCapturedEvent;
     case UserEventSpecifics::kFlocIdComputedEvent:
       return EventTypeForUMA::kFlocIdComputedEvent;
-    // The event types below are not recorded anymore, so are not handled here
-    // (will fall through to the NOTREACHED() below).
-    case UserEventSpecifics::kLanguageDetectionEvent:
-    case UserEventSpecifics::kTranslationEvent:
+    // EVENT_NOT_SET is not recorded, so is not handled here (will fall through
+    // to the NOTREACHED() below).
     case UserEventSpecifics::EVENT_NOT_SET:
       break;
   }
