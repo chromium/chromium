@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -97,9 +98,15 @@ class UsbDevice : public base::RefCountedThreadSafe<UsbDevice> {
   }
   const mojom::UsbConfigurationInfo* GetActiveConfiguration() const;
 
-  bool state_change_in_progress() const { return state_change_in_progress_; }
-  void set_state_change_in_progress(bool in_progress) {
-    state_change_in_progress_ = in_progress;
+  // Returns true if a device-wide state change (e.g. SetConfiguration, Reset)
+  // is in progress.
+  bool device_state_change_in_progress() const {
+    return device_state_change_in_progress_;
+  }
+
+  // Sets whether a device-wide state change is in progress.
+  void set_device_state_change_in_progress(bool in_progress) {
+    device_state_change_in_progress_ = in_progress;
   }
 
   // On ChromeOS the permission_broker service must be used to open USB devices.
@@ -173,7 +180,7 @@ class UsbDevice : public base::RefCountedThreadSafe<UsbDevice> {
 
   base::ObserverList<Observer, true>::Unchecked observer_list_;
 
-  bool state_change_in_progress_ = false;
+  bool device_state_change_in_progress_ = false;
 };
 
 }  // namespace device
