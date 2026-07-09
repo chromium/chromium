@@ -257,10 +257,17 @@ void GnomeDesktopResizer::DoSetResolution(const ScreenResolution& resolution,
     preferred_layout_ = current_display_config_.GetLayoutInfo();
     MaybeDelayClearPreferredConfig();
   }
+
+  ScreenResolution clamped_resolution = ScreenResolution(
+      webrtc::DesktopSize(std::max(640, resolution.dimensions().width()),
+                          std::max(480, resolution.dimensions().height())),
+      resolution.dpi());
+
   // Note: When changing a monitor's resolution via PipeWire, the monitor order
   // will also be reset. We could try to preserve the monitor order, but that
   // will cause existing apps to act strangely. See crbug.com/441824091.
-  SetResolutionAndPosition(resolution, /*position=*/std::nullopt, screen_id);
+  SetResolutionAndPosition(clamped_resolution, /*position=*/std::nullopt,
+                           screen_id);
 }
 
 void GnomeDesktopResizer::RestoreResolution(const ScreenResolution& original,
@@ -379,9 +386,15 @@ void GnomeDesktopResizer::DoSetVideoLayout(
             ? scale
             : 1.0;
 
-    webrtc::DesktopSize physical_resolution{
+    webrtc::DesktopSize original_physical_resolution{
         static_cast<int>(track.width() * physical_resolution_multiplier),
         static_cast<int>(track.height() * physical_resolution_multiplier)};
+    ScreenResolution original_screen_resolution{original_physical_resolution,
+                                                {track.x_dpi(), track.y_dpi()}};
+
+    webrtc::DesktopSize physical_resolution = original_physical_resolution;
+    physical_resolution.set(std::max(640, physical_resolution.width()),
+                            std::max(480, physical_resolution.height()));
     ScreenResolution screen_resolution{physical_resolution,
                                        {track.x_dpi(), track.y_dpi()}};
     screen_resolution =
@@ -411,8 +424,12 @@ void GnomeDesktopResizer::DoSetVideoLayout(
                              .scale = scale,
                          }));
     }
+    // |display_config_for_layout_calculation| is only used to calculate the
+    // layout direction and alignment, which is used--with the clamped sizes
+    // and positions--to pack the displays later. Since the packed displays
+    // may not form a valid layout, we use the original screen resolution here.
     AddMonitorForLayoutCalculation(display_config_for_layout_calculation,
-                                   position, screen_resolution);
+                                   position, original_screen_resolution);
   }
   preferred_layout_ = display_config_for_layout_calculation.GetLayoutInfo();
   MaybeDelayClearPreferredConfig();

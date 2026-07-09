@@ -84,10 +84,10 @@ class GnomeDesktopResizerTest : public testing::Test {
 GnomeDesktopResizerTest::GnomeDesktopResizerTest() {
   display_config_.layout_mode = GnomeDisplayConfig::LayoutMode::kLogical;
   display_config_.monitors = {
-      {kMeta0, CreateMonitorInfo(0, 0, 100, 100, 2.0)},
-      {kMeta1, CreateMonitorInfo(50, 0, 150, 150, 2.0)}};
-  stream_manager_.AddVirtualStream(kMeta0ScreenId, {100, 100});
-  stream_manager_.AddVirtualStream(kMeta1ScreenId, {150, 150});
+      {kMeta0, CreateMonitorInfo(0, 0, 800, 800, 2.0)},
+      {kMeta1, CreateMonitorInfo(400, 0, 1200, 1200, 2.0)}};
+  stream_manager_.AddVirtualStream(kMeta0ScreenId, {800, 800});
+  stream_manager_.AddVirtualStream(kMeta1ScreenId, {1200, 1200});
   SimulateMonitorsChangedAndWaitForPossibleNewConfig();
 }
 
@@ -123,9 +123,9 @@ void GnomeDesktopResizerTest::ApplyMonitorsConfig(
 
 TEST_F(GnomeDesktopResizerTest, GetCurrentResolution) {
   ASSERT_EQ(resizer_.GetCurrentResolution(kMeta0ScreenId),
-            ScreenResolution({100, 100}, GetDpiForScale(2)));
+            ScreenResolution({800, 800}, GetDpiForScale(2)));
   ASSERT_EQ(resizer_.GetCurrentResolution(kMeta1ScreenId),
-            ScreenResolution({150, 150}, GetDpiForScale(2)));
+            ScreenResolution({1200, 1200}, GetDpiForScale(2)));
   ASSERT_TRUE(
       resizer_.GetCurrentResolution(GnomeDisplayConfig::GetScreenId("Meta-2"))
           .IsEmpty());
@@ -192,12 +192,12 @@ TEST_F(
     GnomeDesktopResizerTest,
     SetResolution_EverythingMatchesExpectedValue_ApplyMonitorsConfigNotCalled) {
   // See constructor for the initial display config.
-  resizer_.SetResolution({{150, 150}, GetDpiForScale(1.5)}, kMeta0ScreenId);
+  resizer_.SetResolution({{1200, 1200}, GetDpiForScale(1.5)}, kMeta0ScreenId);
   ASSERT_EQ(GetTestResolutionForStream(kMeta0ScreenId),
-            TestDesktopSize(150, 150));
+            TestDesktopSize(1200, 1200));
 
-  MonitorMap monitors = {{kMeta0, CreateMonitorInfo(0, 0, 150, 150, 1.5)},
-                         {kMeta1, CreateMonitorInfo(100, 0, 150, 150, 2.0)}};
+  MonitorMap monitors = {{kMeta0, CreateMonitorInfo(0, 0, 1200, 1200, 1.5)},
+                         {kMeta1, CreateMonitorInfo(800, 0, 1200, 1200, 2.0)}};
   display_config_.monitors = monitors;
   SimulateMonitorsChangedAndWaitForPossibleNewConfig();
 
@@ -207,71 +207,71 @@ TEST_F(
 
 TEST_F(GnomeDesktopResizerTest,
        SetResolution_ScaleRevertedTo1_AppliesMonitorsConfig) {
-  resizer_.SetResolution({{150, 150}, GetDpiForScale(1.5)}, kMeta0ScreenId);
+  resizer_.SetResolution({{1200, 1200}, GetDpiForScale(1.5)}, kMeta0ScreenId);
   ASSERT_EQ(GetTestResolutionForStream(kMeta0ScreenId),
-            TestDesktopSize(150, 150));
+            TestDesktopSize(1200, 1200));
 
   display_config_.monitors = {
-      {kMeta0, CreateMonitorInfo(0, 0, 150, 150, 1.0)},
-      {kMeta1, CreateMonitorInfo(150, 0, 150, 150, 2.0)}};
+      {kMeta0, CreateMonitorInfo(0, 0, 1200, 1200, 1.0)},
+      {kMeta1, CreateMonitorInfo(1200, 0, 1200, 1200, 2.0)}};
   SimulateMonitorsChangedAndWaitForPossibleNewConfig();
 
   MonitorMap expected_monitors = {
-      {kMeta0, CreateMonitorInfo(0, 0, 150, 150, 1.5)},
-      {kMeta1, CreateMonitorInfo(100, 0, 150, 150, 2.0)}};
+      {kMeta0, CreateMonitorInfo(0, 0, 1200, 1200, 1.5)},
+      {kMeta1, CreateMonitorInfo(800, 0, 1200, 1200, 2.0)}};
   ASSERT_EQ(display_config_.monitors, expected_monitors);
 }
 
 TEST_F(GnomeDesktopResizerTest, SetResolution_UseClosestSupportedScale) {
-  resizer_.SetResolution({{150, 150}, GetDpiForScale(1.33)}, kMeta1ScreenId);
+  resizer_.SetResolution({{1200, 1200}, GetDpiForScale(1.33)}, kMeta1ScreenId);
   ASSERT_EQ(GetTestResolutionForStream(kMeta1ScreenId),
-            TestDesktopSize(150, 150));
+            TestDesktopSize(1200, 1200));
   WaitForPossibleNewConfig();
 
   // The supported scale that is closest to 1.33 is 1.5.
   MonitorMap expected_monitors = {
-      {kMeta0, CreateMonitorInfo(0, 0, 100, 100, 2.0)},
-      {kMeta1, CreateMonitorInfo(50, 0, 150, 150, 1.5)}};
+      {kMeta0, CreateMonitorInfo(0, 0, 800, 800, 2.0)},
+      {kMeta1, CreateMonitorInfo(400, 0, 1200, 1200, 1.5)}};
   ASSERT_EQ(display_config_.monitors, expected_monitors);
 }
 
 TEST_F(GnomeDesktopResizerTest,
        SetResolution_OnlyChangingScale_AppliesMonitorsConfigImmediately) {
   // 2.0 => 1.0
-  resizer_.SetResolution({{100, 100}, GetDpiForScale(1.0)}, kMeta0ScreenId);
+  resizer_.SetResolution({{800, 800}, GetDpiForScale(1.0)}, kMeta0ScreenId);
   ASSERT_EQ(GetTestResolutionForStream(kMeta0ScreenId),
-            TestDesktopSize(100, 100));
+            TestDesktopSize(800, 800));
   WaitForPossibleNewConfig();
 
   MonitorMap expected_monitors = {
-      {kMeta0, CreateMonitorInfo(0, 0, 100, 100, 1.0)},
-      {kMeta1, CreateMonitorInfo(100, 0, 150, 150, 2.0)}};
+      {kMeta0, CreateMonitorInfo(0, 0, 800, 800, 1.0)},
+      {kMeta1, CreateMonitorInfo(800, 0, 1200, 1200, 2.0)}};
   ASSERT_EQ(display_config_.monitors, expected_monitors);
 }
 
 TEST_F(GnomeDesktopResizerTest, SetResolution_MaintainsPreferredLayout) {
   // Vertical end-aligned.
   display_config_.monitors = {
-      {kMeta0, CreateMonitorInfo(25, 0, 100, 100, 2.0)},
-      {kMeta1, CreateMonitorInfo(0, 50, 150, 150, 2.0)}};
+      {kMeta0, CreateMonitorInfo(200, 0, 800, 800, 2.0)},
+      {kMeta1, CreateMonitorInfo(0, 400, 1200, 1200, 2.0)}};
   SimulateMonitorsChangedAndWaitForPossibleNewConfig();
 
-  resizer_.SetResolution({{300, 300}, GetDpiForScale(1.5)}, kMeta0ScreenId);
+  resizer_.SetResolution({{2400, 2400}, GetDpiForScale(1.5)}, kMeta0ScreenId);
   ASSERT_EQ(GetTestResolutionForStream(kMeta0ScreenId),
-            TestDesktopSize(300, 300));
+            TestDesktopSize(2400, 2400));
 
   // Simulate resolution changed but layout reverted to horizontal start-aligned
   // and scale reverted to 1.
   display_config_.monitors = {
-      {kMeta0, CreateMonitorInfo(0, 0, 300, 300, 1.0)},
-      {kMeta1, CreateMonitorInfo(300, 0, 150, 150, 2.0)}};
+      {kMeta0, CreateMonitorInfo(0, 0, 2400, 2400, 1.0)},
+      {kMeta1, CreateMonitorInfo(2400, 0, 1200, 1200, 2.0)}};
   SimulateMonitorsChangedAndWaitForPossibleNewConfig();
 
   // Verify that the resizer changes the layout back to vertical end-aligned
   // and the scale is updated correctly.
   MonitorMap expected_monitors = {
-      {kMeta0, CreateMonitorInfo(0, 0, 300, 300, 1.5)},
-      {kMeta1, CreateMonitorInfo(125, 200, 150, 150, 2.0)}};
+      {kMeta0, CreateMonitorInfo(0, 0, 2400, 2400, 1.5)},
+      {kMeta1, CreateMonitorInfo(1000, 1600, 1200, 1200, 2.0)}};
   ASSERT_EQ(display_config_.monitors, expected_monitors);
 }
 
@@ -448,10 +448,10 @@ TEST_F(GnomeDesktopResizerTest, SetVideoLayout_RemovesStreamThenResizes) {
   // Resizes are not applied until the stream is removed. This is the initial
   // resolution set in the constructor.
   ASSERT_EQ(GetTestResolutionForStream(kMeta1ScreenId),
-            TestDesktopSize(150, 150));
+            TestDesktopSize(1200, 1200));
 
   // Simulate that Meta-0 is removed.
-  display_config_.monitors = {{kMeta1, CreateMonitorInfo(0, 0, 150, 150, 2.0)}};
+  display_config_.monitors = {{kMeta1, CreateMonitorInfo(0, 0, 1200, 1200, 2.0)}};
   SimulateMonitorsChangedAndWaitForPossibleNewConfig();
 
   // Now Meta-0 is being resized.
@@ -509,17 +509,17 @@ TEST_F(GnomeDesktopResizerTest, SetVideoLayout_ReusesRemovedMonitors) {
 
 TEST_F(GnomeDesktopResizerTest, BlockAndQueueDisplayChanges_SetResolution) {
   resizer_.BlockAndQueueDisplayChanges();
-  resizer_.SetResolution({{150, 150}, GetDpiForScale(1.5)}, kMeta0ScreenId);
+  resizer_.SetResolution({{1200, 1200}, GetDpiForScale(1.5)}, kMeta0ScreenId);
 
   // New resolution is not immediately applied.
   ASSERT_NE(GetTestResolutionForStream(kMeta0ScreenId),
-            TestDesktopSize(150, 150));
+            TestDesktopSize(1200, 1200));
 
   resizer_.UnblockAndFlushDisplayChanges();
 
   // New resolution is applied now.
   ASSERT_EQ(GetTestResolutionForStream(kMeta0ScreenId),
-            TestDesktopSize(150, 150));
+            TestDesktopSize(1200, 1200));
 
   // Monitor DPI changes are covered by tests above.
 }
@@ -535,33 +535,33 @@ TEST_F(GnomeDesktopResizerTest, BlockAndQueueDisplayChanges_SetVideoLayout) {
   meta_0->set_screen_id(kMeta0ScreenId);
   meta_0->set_position_x(0);
   meta_0->set_position_y(0);
-  meta_0->set_width(300);
-  meta_0->set_height(300);
+  meta_0->set_width(800);
+  meta_0->set_height(800);
   meta_0->set_x_dpi(GetDpiNumberForScale(1.5));
   meta_0->set_y_dpi(GetDpiNumberForScale(1.5));
   protocol::VideoTrackLayout* meta_1 = layout.add_video_track();
   meta_1->set_screen_id(kMeta1ScreenId);
-  meta_1->set_position_x(100);
-  meta_1->set_position_y(300);
-  meta_1->set_width(200);
-  meta_1->set_height(200);
+  meta_1->set_position_x(400);
+  meta_1->set_position_y(800);
+  meta_1->set_width(500);
+  meta_1->set_height(500);
   meta_1->set_x_dpi(GetDpiNumberForScale(2.0));
   meta_1->set_y_dpi(GetDpiNumberForScale(2.0));
   resizer_.SetVideoLayout(layout);
 
   // New resolutions are not immediately applied.
   ASSERT_NE(GetTestResolutionForStream(kMeta0ScreenId),
-            TestDesktopSize(450, 450));
+            TestDesktopSize(1200, 1200));
   ASSERT_NE(GetTestResolutionForStream(kMeta1ScreenId),
-            TestDesktopSize(400, 400));
+            TestDesktopSize(1000, 1000));
 
   resizer_.UnblockAndFlushDisplayChanges();
 
   // New resolutions are applied now.
   ASSERT_EQ(GetTestResolutionForStream(kMeta0ScreenId),
-            TestDesktopSize(450, 450));
+            TestDesktopSize(1200, 1200));
   ASSERT_EQ(GetTestResolutionForStream(kMeta1ScreenId),
-            TestDesktopSize(400, 400));
+            TestDesktopSize(1000, 1000));
 
   // Monitor DPI changes are covered by tests above.
 }
@@ -596,6 +596,60 @@ TEST_F(GnomeDesktopResizerTest, SetVideoLayout_TweaksResolutions) {
             TestDesktopSize(900, 900));
   ASSERT_EQ(GetTestResolutionForStream(kMeta1ScreenId),
             TestDesktopSize(1200, 1200));
+}
+
+TEST_F(GnomeDesktopResizerTest, SetResolution_MinimumSizeClamped) {
+  resizer_.SetResolution({{150, 150}, GetDpiForScale(1.0)}, kMeta0ScreenId);
+  EXPECT_EQ(GetTestResolutionForStream(kMeta0ScreenId),
+            TestDesktopSize(640, 480));
+}
+
+TEST_F(GnomeDesktopResizerTest, SetVideoLayout_MinimumSizeClampedAndLaidOut) {
+  // Left: width = 600 (should be clamped to 640).
+  // Right: offset_x = 600 (should be shifted to 640).
+  protocol::VideoLayout layout;
+  layout.set_pixel_type(
+      protocol::VideoLayout::PixelType::VideoLayout_PixelType_LOGICAL);
+
+  protocol::VideoTrackLayout* meta_0 = layout.add_video_track();
+  meta_0->set_screen_id(kMeta0ScreenId);
+  meta_0->set_position_x(0);
+  meta_0->set_position_y(0);
+  meta_0->set_width(600);
+  meta_0->set_height(600);
+  meta_0->set_x_dpi(GetDpiNumberForScale(1.0));
+  meta_0->set_y_dpi(GetDpiNumberForScale(1.0));
+
+  protocol::VideoTrackLayout* meta_1 = layout.add_video_track();
+  meta_1->set_screen_id(kMeta1ScreenId);
+  meta_1->set_position_x(600);
+  meta_1->set_position_y(0);
+  meta_1->set_width(800);
+  meta_1->set_height(800);
+  meta_1->set_x_dpi(GetDpiNumberForScale(1.0));
+  meta_1->set_y_dpi(GetDpiNumberForScale(1.0));
+
+  resizer_.SetVideoLayout(layout);
+
+  // Monitor 0 height is 600 (already >= 480). Width is clamped to 640.
+  EXPECT_EQ(GetTestResolutionForStream(kMeta0ScreenId),
+            TestDesktopSize(640, 600));
+
+  // Monitor 1 remains 800x800.
+  EXPECT_EQ(GetTestResolutionForStream(kMeta1ScreenId),
+            TestDesktopSize(800, 800));
+
+  // Apply monitor structure change notifications:
+  display_config_.monitors = {
+      {kMeta0, CreateMonitorInfo(0, 0, 640, 600, 1.0)},
+      {kMeta1, CreateMonitorInfo(600, 0, 800, 800, 1.0)}};
+  SimulateMonitorsChangedAndWaitForPossibleNewConfig();
+
+  // Offset of Monitor 1 should be shifted from 600 to 640 to prevent overlaps.
+  MonitorMap expected_monitors = {
+      {kMeta0, CreateMonitorInfo(0, 0, 640, 600, 1.0)},
+      {kMeta1, CreateMonitorInfo(640, 0, 800, 800, 1.0)}};
+  EXPECT_EQ(display_config_.monitors, expected_monitors);
 }
 
 }  // namespace remoting
