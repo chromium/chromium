@@ -133,7 +133,7 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   // CanvasResourceSharedImage::Client implementation.
   void OnResourceRefReturned(
       scoped_refptr<CanvasResourceSharedImage>&& resource) override;
-  void OnDestroyResource() override { --num_inflight_resources_; }
+  void OnDestroyResource() override {}
 
   // CanvasMemoryDumpClient implementation.
   base::ByteSize EstimatedSizeInBytes() const;
@@ -178,9 +178,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   bool is_cleared_ = false;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
-
-  int num_inflight_resources_ = 0;
-  int max_inflight_resources_ = 0;
 
   base::WeakPtrFactory<WebGpuRecyclableResourceProvider> weak_ptr_factory_{
       this};

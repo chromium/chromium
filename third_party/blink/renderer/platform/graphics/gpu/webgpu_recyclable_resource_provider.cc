@@ -152,10 +152,6 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
             std::move(client_shared_image));
         resource_->Initialize(CreateWeakPtr(), context_provider_wrapper_,
                               hdr_metadata_, /*is_accelerated=*/true);
-        ++num_inflight_resources_;
-        if (num_inflight_resources_ > max_inflight_resources_) {
-          max_inflight_resources_ = num_inflight_resources_;
-        }
       }
     }
   }
@@ -167,9 +163,6 @@ WebGpuRecyclableResourceProvider::~WebGpuRecyclableResourceProvider() {
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
   }
-
-  UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
-                             max_inflight_resources_, 20);
 }
 
 bool WebGpuRecyclableResourceProvider::IsValid() const {
@@ -422,7 +415,7 @@ WebGpuRecyclableResourceProvider::GetOrCreateImageProvider() {
 base::ByteSize WebGpuRecyclableResourceProvider::EstimatedSizeInBytes() const {
   base::ByteSize result;
   if (resource_) {
-    result += resource_->EstimatedSizeInBytes() * num_inflight_resources_;
+    result += resource_->EstimatedSizeInBytes();
   }
   return result;
 }
