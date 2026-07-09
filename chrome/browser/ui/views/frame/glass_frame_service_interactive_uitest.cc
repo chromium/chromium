@@ -6,11 +6,14 @@
 #include "base/functional/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/glass_frame_service.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
@@ -131,4 +134,24 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, CallbackNotified) {
 
   // The remaining window (browser2) should become eligible.
   ASSERT_TRUE(base::test::RunUntil([&] { return browser2_eligible; }));
+}
+
+IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, LocalStatePref) {
+  PrefService* const local_state = g_browser_process->local_state();
+  ASSERT_TRUE(local_state);
+  EXPECT_TRUE(local_state->GetBoolean(prefs::kGlassFrameEnabled));
+
+  GlassFrameService* const glass_frame_service =
+      GlassFrameService::GetInstance();
+  BrowserWindowInterface* const browser1 = browser();
+
+  EXPECT_TRUE(glass_frame_service->IsBrowserWindowEligible(browser1));
+
+  local_state->SetBoolean(prefs::kGlassFrameEnabled, false);
+  EXPECT_FALSE(local_state->GetBoolean(prefs::kGlassFrameEnabled));
+  EXPECT_FALSE(glass_frame_service->IsBrowserWindowEligible(browser1));
+
+  local_state->SetBoolean(prefs::kGlassFrameEnabled, true);
+  EXPECT_TRUE(local_state->GetBoolean(prefs::kGlassFrameEnabled));
+  EXPECT_TRUE(glass_frame_service->IsBrowserWindowEligible(browser1));
 }

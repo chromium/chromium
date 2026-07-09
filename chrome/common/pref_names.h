@@ -2319,6 +2319,9 @@ inline constexpr char kRelaunchHeadsUpPeriod[] =
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
+// Boolean determining whether the glass frame is enabled.
+inline constexpr char kGlassFrameEnabled[] = "glass_frame.enabled";
+
 // Counts how many times prominent call-to-actions have occurred as part of the
 // Mac restore permissions experiment. https://crbug.com/1211052
 inline constexpr char kMacRestoreLocationPermissionsExperimentCount[] =

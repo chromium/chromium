@@ -13,6 +13,9 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 
 namespace {
 // The maximum number of windows tracked by this service that can be eligible
@@ -25,11 +28,25 @@ GlassFrameService* GlassFrameService::GetInstance() {
   return g_browser_process->GetFeatures()->glass_frame_service();
 }
 
+// static
+void GlassFrameService::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kGlassFrameEnabled, true);
+}
+
 GlassFrameService::GlassFrameService() {
   GlobalBrowserCollection* const browser_collection =
       GlobalBrowserCollection::GetInstance();
   CHECK(browser_collection);
   browser_collection_observation_.Observe(browser_collection);
+
+  CHECK(g_browser_process);
+  PrefService* const pref_service = g_browser_process->local_state();
+  CHECK(pref_service);
+  pref_change_registrar_.Init(pref_service);
+  pref_change_registrar_.Add(
+      prefs::kGlassFrameEnabled,
+      base::BindRepeating(&GlassFrameService::OnGlassFrameEnabledPrefChanged,
+                          base::Unretained(this)));
 
   // Pre-populate the deque with the most recently activated browsers.
   browser_collection->ForEach(
@@ -66,7 +83,7 @@ GlassFrameService::RegisterGlassFrameEligibilityChangedCallback(
 
 bool GlassFrameService::IsBrowserWindowEligible(
     BrowserWindowInterface* browser) {
-  return MostRecentActivatedBrowsers().contains(browser);
+  return GetEligibleBrowserWindowInterfaces().contains(browser);
 }
 
 void GlassFrameService::OnBrowserActivated(BrowserWindowInterface* browser) {
@@ -86,13 +103,13 @@ void GlassFrameService::OnBrowserActivated(BrowserWindowInterface* browser) {
   activated_browsers_.push_front(browser);
 
   const base::flat_set<BrowserWindowInterface*> new_eligible =
-      MostRecentActivatedBrowsers();
+      GetEligibleBrowserWindowInterfaces();
   callbacks_.Notify(new_eligible);
 }
 
 void GlassFrameService::OnBrowserClosed(BrowserWindowInterface* browser) {
   const base::flat_set<BrowserWindowInterface*> old_eligible =
-      MostRecentActivatedBrowsers();
+      GetEligibleBrowserWindowInterfaces();
 
   auto it = std::find(activated_browsers_.begin(), activated_browsers_.end(),
                       browser);
@@ -101,7 +118,7 @@ void GlassFrameService::OnBrowserClosed(BrowserWindowInterface* browser) {
   }
 
   const base::flat_set<BrowserWindowInterface*> new_eligible =
-      MostRecentActivatedBrowsers();
+      GetEligibleBrowserWindowInterfaces();
   if (old_eligible != new_eligible) {
     callbacks_.Notify(new_eligible);
   }
@@ -116,4 +133,17 @@ GlassFrameService::MostRecentActivatedBrowsers() {
     eligible.insert(activated_browsers_[i]);
   }
   return eligible;
+}
+
+base::flat_set<BrowserWindowInterface*>
+GlassFrameService::GetEligibleBrowserWindowInterfaces() {
+  if (!g_browser_process->local_state()->GetBoolean(
+          prefs::kGlassFrameEnabled)) {
+    return {};
+  }
+  return MostRecentActivatedBrowsers();
+}
+
+void GlassFrameService::OnGlassFrameEnabledPrefChanged() {
+  callbacks_.Notify(GetEligibleBrowserWindowInterfaces());
 }

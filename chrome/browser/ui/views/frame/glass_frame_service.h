@@ -12,15 +12,19 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "components/prefs/pref_change_registrar.h"
 
-class GlobalBrowserCollection;
 class BrowserWindowInterface;
+class GlobalBrowserCollection;
+class PrefRegistrySimple;
 
 // A singleton service that is the single source of truth for whether
 // a browser window should display the glass frame or not.
 class GlassFrameService : public BrowserCollectionObserver {
  public:
   static GlassFrameService* GetInstance();
+
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Maximum number of windows that will display the glass frame at any given
   // time.
@@ -50,6 +54,12 @@ class GlassFrameService : public BrowserCollectionObserver {
   // elements.
   base::flat_set<BrowserWindowInterface*> MostRecentActivatedBrowsers();
 
+  // Returns the set of BrowserWindowInterfaces that are eligible to display
+  // the glass frame.
+  base::flat_set<BrowserWindowInterface*> GetEligibleBrowserWindowInterfaces();
+
+  void OnGlassFrameEnabledPrefChanged();
+
   base::RepeatingCallbackList<void(
       const base::flat_set<BrowserWindowInterface*>&)>
       callbacks_;
@@ -59,6 +69,7 @@ class GlassFrameService : public BrowserCollectionObserver {
 
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_FRAME_SERVICE_H_

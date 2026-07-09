@@ -512,6 +512,7 @@
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_stats_mac.h"
 #include "chrome/browser/ui/cocoa/apps/quit_with_apps_controller_mac.h"
 #include "chrome/browser/ui/cocoa/confirm_quit.h"
+#include "chrome/browser/ui/views/frame/glass_frame_service.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #endif
 
@@ -1571,6 +1572,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   QuitWithAppsController::RegisterPrefs(registry);
   system_media_permissions::RegisterSystemMediaPermissionStatesPrefs(registry);
   AppShimRegistry::Get()->RegisterLocalPrefs(registry);
+  GlassFrameService::RegisterLocalStatePrefs(registry);
 
   // The default value is not signicant as this preference is only consulted if
   // it is explicitly set by an enterprise policy.
