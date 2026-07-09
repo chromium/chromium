@@ -317,10 +317,6 @@ void AutofillManager::OnFormsSeen(std::vector<FormData> updated_forms,
         if (!parsed_forms.empty()) {
           self.OnFormsParsed(parsed_forms, forms_seen_timestamp);
         }
-        if (!base::FeatureList::IsEnabled(
-                features::kAutofillManagerFiresOnAfterFooIfCacheIsFull)) {
-          updated_form_ids = base::ToVector(parsed_forms, &FormData::global_id);
-        }
         self.NotifyObservers(&Observer::OnAfterFormsSeen, updated_form_ids,
                              removed_form_ids);
       },
@@ -695,10 +691,7 @@ void AutofillManager::ParseFormAsync(
       kAutofillManagerMaxFormCacheSize) {
     LOG_AF(log_manager()) << LoggingScope::kAbortParsing
                           << LogMessage::kAbortParsingTooManyForms << form;
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillManagerFiresOnAfterFooIfCacheIsFull)) {
       std::move(callback).Run(*this, form);
-    }
     return;
   }
 
