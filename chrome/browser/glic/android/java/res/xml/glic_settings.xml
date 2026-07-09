@@ -30,6 +30,22 @@ found in the LICENSE file.
             android:summary="@string/settings_glic_button_toggle_sublabel"
             android:defaultValue="false" />
 
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+            android:key="glic_launcher_enabled"
+            android:title="@string/settings_glic_launcher_enabled_title"
+            android:summary="@string/settings_glic_os_widget_toggle_sublabel"
+            android:defaultValue="false" />
+
+    <!-- TODO(b/531824318): Make the shortcut customizable. -->
+    <Preference
+            android:key="glic_launcher_hotkey"
+            android:selectable="false"
+            android:title="@string/settings_glic_keyboard_shortcut"
+            android:summary="@string/settings_glic_keyboard_shortcut_sublabel"
+            app:widgetLayout="@layout/preference_widget_hotkey" />
+
+    <!-- TODO(b/531825599): Implement navigation shortcut and settings UI. -->
+
     <PreferenceCategory
         android:key="glic_permissions_section"
         android:title="@string/settings_glic_permissions_section" />

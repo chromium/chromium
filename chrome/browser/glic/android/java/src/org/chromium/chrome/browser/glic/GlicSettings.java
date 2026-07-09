@@ -34,6 +34,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
@@ -86,12 +87,20 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     public static final String PREF_KEY_GLIC_PERMISSIONS_ACTIVITY = "glic_permissions_activity";
     public static final String PREF_KEY_GLIC_EXTENSIONS = "glic_extensions";
 
+    private static final String PREF_LAUNCHER_ENABLED = "glic_launcher_enabled";
+    // TODO(b/531824318): Make the shortcut customizable.
+    private static final String PREF_LAUNCHER_HOTKEY = "glic_launcher_hotkey";
+    // TODO(b/531825599): Implement navigation shortcut and settings UI.
+
     private final SharedPreferencesManager mSharedPreferencesManager =
             ChromeSharedPreferences.getInstance();
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
 
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
+    private @Nullable ChromeSwitchPreference mLauncherEnabledPref;
+    private @Nullable Preference mLauncherHotkeyPref;
+    private @Nullable PrefService mLocalPrefs;
     private GlicKeyedService.@Nullable UserEnabledActuationOnWebObserver
             mUserEnabledActuationOnWebObserver;
 
@@ -212,6 +221,30 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
             }
         }
 
+        mLauncherEnabledPref = findPreference(PREF_LAUNCHER_ENABLED);
+        mLauncherHotkeyPref = findPreference(PREF_LAUNCHER_HOTKEY);
+        mLocalPrefs = LocalStatePrefs.get();
+
+        if (mLocalPrefs != null) {
+            final PrefService localPrefs = mLocalPrefs;
+            boolean enabled = localPrefs.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED);
+            if (mLauncherEnabledPref != null) {
+                mLauncherEnabledPref.setChecked(enabled);
+                mLauncherEnabledPref.setOnPreferenceChangeListener(
+                        (preference, newValue) -> {
+                            boolean boolValue = (boolean) newValue;
+                            localPrefs.setBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED, boolValue);
+                            updateHotkeyVisibility(boolValue);
+                            return true;
+                        });
+            }
+
+            updateHotkeyVisibility(enabled);
+        } else {
+            if (mLauncherEnabledPref != null) mLauncherEnabledPref.setVisible(false);
+            if (mLauncherHotkeyPref != null) mLauncherHotkeyPref.setVisible(false);
+        }
+
         ChromeSwitchPreference locationPref =
                 setupSwitchPreference(
                         PERMISSION_LOCATION,
@@ -327,7 +360,9 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                 PREFERENCE_BUTTON_TOGGLE,
                 PERMISSION_LOCATION,
                 PREF_KEY_GLIC_PERMISSIONS_ACTIVITY,
-                PREF_KEY_GLIC_EXTENSIONS
+                PREF_KEY_GLIC_EXTENSIONS,
+                PREF_LAUNCHER_ENABLED,
+                PREF_LAUNCHER_HOTKEY
             };
             for (String key : prefsToDisable) {
                 Preference pref = findPreference(key);
@@ -568,6 +603,12 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     private SpanApplier.SpanInfo getLearnMoreSpanInfo(
             String url, ChromeExpandableSwitchPreference pref) {
         return createSpanInfo("<a href=\"#\">", url, pref);
+    }
+
+    private void updateHotkeyVisibility(boolean enabled) {
+        if (mLauncherHotkeyPref != null) {
+            mLauncherHotkeyPref.setVisible(enabled);
+        }
     }
 
     @Override

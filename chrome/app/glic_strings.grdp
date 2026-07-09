@@ -159,7 +159,10 @@
   <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE" desc="Name of the toggle that controls whether the Gemini icon is shown in the tabstrip.">
     Show Gemini at the top of the browser
   </message>
-  <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT" desc="Name of the keyboard shortcut setting.">
+  <message name="IDS_SETTINGS_GLIC_LAUNCHER_ENABLED_TITLE" desc="Label for toggle to turn on/off the keyboard shortcut to launch Glic." formatter_data="android_java">
+    Turn on keyboard shortcut
+  </message>
+  <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT" desc="Name of the keyboard shortcut setting." formatter_data="android_java">
     Keyboard shortcut
   </message>
   <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_EDIT_LABEL" desc="Label of the edit keyboard shortcut setting button.">
@@ -590,5 +593,11 @@
   </message>
   <message name="IDS_GLIC_BOTTOM_SHEET_FULL_HEIGHT_A11Y_LABEL" desc="Accessibility announcement when the Gemini Bottom Sheet is opened to full height." formatter_data="android_java" is_accessibility_with_no_ui="true">
     Gemini Bottom Sheet at full height
+  </message>
+  <message name="IDS_GLIC_HOTKEY_ALT" desc="Alt key text" translateable="false" formatter_data="android_java">
+    Alt
+  </message>
+  <message name="IDS_GLIC_HOTKEY_G" desc="G key text" translateable="false" formatter_data="android_java">
+    G
   </message>
 </grit-part>

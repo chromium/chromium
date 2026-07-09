@@ -44,6 +44,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
+import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -79,6 +81,8 @@ public class GlicSettingsUnitTest {
     @Mock private GlicKeyedServiceFactory.Natives mGlicKeyedServiceFactoryJniMock;
     @Mock private GlicKeyedService mGlicKeyedServiceMock;
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
+    @Mock private LocalStatePrefs.Natives mLocalStatePrefsJniMock;
+    @Mock private PrefService mLocalPrefServiceMock;
 
     @Before
     public void setUp() {
@@ -86,11 +90,14 @@ public class GlicSettingsUnitTest {
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJniMock);
         GlicKeyedServiceFactoryJni.setInstanceForTesting(mGlicKeyedServiceFactoryJniMock);
         GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
+        LocalStatePrefsJni.setInstanceForTesting(mLocalStatePrefsJniMock);
+        LocalStatePrefs.setNativePrefsLoadedForTesting(true);
 
         when(mUserPrefsJniMock.get(mProfileMock)).thenReturn(mPrefServiceMock);
         when(mGlicKeyedServiceFactoryJniMock.getForProfile(mProfileMock))
                 .thenReturn(mGlicKeyedServiceMock);
         when(mGlicEnablingJniMock.shouldShowWebActuationToggle(any())).thenReturn(true);
+        when(mLocalStatePrefsJniMock.getPrefService()).thenReturn(mLocalPrefServiceMock);
         doNothing().when(mCustomTabLauncher).openUrlInCct(any(Context.class), anyString());
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
@@ -392,5 +399,54 @@ public class GlicSettingsUnitTest {
         assertTrue("Preference glic_custom_box_preference should exist", aiInfoPref != null);
 
         assertEquals("Order should be 999 for enterprise", 999, aiInfoPref.getOrder());
+    }
+
+    @Test
+    public void testLauncherToggle_InitialState_Enabled() {
+        when(mLocalPrefServiceMock.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED))
+                .thenReturn(true);
+        GlicSettings fragment = launchFragment();
+        ChromeSwitchPreference togglePref = fragment.findPreference("glic_launcher_enabled");
+        assertTrue("Launcher toggle should be checked", togglePref.isChecked());
+
+        Preference hotkeyPref = fragment.findPreference("glic_launcher_hotkey");
+        assertTrue(
+                "Hotkey preference should be visible when launcher is enabled",
+                hotkeyPref.isVisible());
+    }
+
+    @Test
+    public void testLauncherToggle_InitialState_Disabled() {
+        when(mLocalPrefServiceMock.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED))
+                .thenReturn(false);
+        GlicSettings fragment = launchFragment();
+        ChromeSwitchPreference togglePref = fragment.findPreference("glic_launcher_enabled");
+        assertFalse("Launcher toggle should not be checked", togglePref.isChecked());
+
+        Preference hotkeyPref = fragment.findPreference("glic_launcher_hotkey");
+        assertFalse(
+                "Hotkey preference should not be visible when launcher is disabled",
+                hotkeyPref.isVisible());
+    }
+
+    @Test
+    public void testLauncherToggle_Click() {
+        when(mLocalPrefServiceMock.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED))
+                .thenReturn(false);
+        GlicSettings fragment = launchFragment();
+        ChromeSwitchPreference togglePref = fragment.findPreference("glic_launcher_enabled");
+        Preference hotkeyPref = fragment.findPreference("glic_launcher_hotkey");
+
+        assertFalse("Hotkey preference should not be visible initially", hotkeyPref.isVisible());
+
+        // Simulate toggling On
+        togglePref.getOnPreferenceChangeListener().onPreferenceChange(togglePref, true);
+        verify(mLocalPrefServiceMock).setBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED, true);
+        assertTrue("Hotkey preference should become visible", hotkeyPref.isVisible());
+
+        // Simulate toggling Off
+        togglePref.getOnPreferenceChangeListener().onPreferenceChange(togglePref, false);
+        verify(mLocalPrefServiceMock).setBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED, false);
+        assertFalse("Hotkey preference should become invisible", hotkeyPref.isVisible());
     }
 }

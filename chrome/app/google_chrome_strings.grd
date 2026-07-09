@@ -3163,10 +3163,10 @@ Google Chrome is unable to recover your settings.
           Show Gemini in Chrome in system tray and turn on keyboard shortcut
         </message>
       </if>
-      <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL" desc="Sublabel of the toggle that controls whether the Gemini icon is shown in the menu bar (on Mac) / system tray (on Windows and Linux).">
+      <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL" desc="Sublabel of the toggle that controls whether the Gemini icon is shown in the menu bar (on Mac) / system tray (on Windows and Linux)." formatter_data="android_java">
         Easy access to use Gemini in Chrome across your device, even if Chrome is minimized.
       </message>
-      <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL" desc="Sublabel describing the keyboard shortcut that's used to globally invoke Gemini.">
+      <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL" desc="Sublabel describing the keyboard shortcut that's used to globally invoke Gemini." formatter_data="android_java">
         Open Gemini in Chrome with a keyboard shortcut.
       </message>
       <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_SUBLABEL" desc="Sublabel describing the keyboard shortcut navigate between Chrome and Gemini.">
