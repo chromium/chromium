@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.RecyclerViewScroller.smoothScrollToPosition;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 
 import android.app.Activity;
@@ -62,7 +61,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridD
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListConfigDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
-import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
@@ -715,8 +713,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             // Other GTS items might intentionally have different dimensions. For example, the
             // pre-selected tab group divider and the large price tracking message span the width of
             // the recycler view.
-            if (tabPropertyModel.get(CARD_TYPE) == ModelType.TAB
-                    || tabPropertyModel.get(CARD_TYPE) == ModelType.TAB_GROUP) {
+            if (TabProperties.isTabOrTabGroup(tabPropertyModel)) {
                 tabPropertyModel.set(
                         TabProperties.GRID_CARD_SIZE, new Size(cardWidthPx, cardHeightPx));
             }

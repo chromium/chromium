@@ -74,4 +74,45 @@ public class TabListModelUnitTest {
         tabListModel.add(listItemWithType(ModelType.MESSAGE));
         assertEquals(newFirstTabItem.model, tabListModel.getFirstTabPropertyModel());
     }
+
+    @Test
+    public void testArchivedTabGroupHelpers() {
+        TabListModel tabListModel = new TabListModel();
+
+        // Add a regular TAB card
+        PropertyModel tabModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(CardProperties.CARD_TYPE, ModelType.TAB)
+                        .build();
+        tabListModel.add(new ListItem(UiType.TAB, tabModel));
+
+        // Add an active TAB_GROUP card
+        PropertyModel activeGroupModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GROUP_GRID)
+                        .with(CardProperties.CARD_TYPE, ModelType.TAB_GROUP)
+                        .build();
+        tabListModel.add(new ListItem(UiType.TAB_GROUP, activeGroupModel));
+
+        // Add an ARCHIVED_TAB_GROUP card
+        PropertyModel archivedGroupModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GROUP_GRID)
+                        .with(CardProperties.CARD_TYPE, ModelType.ARCHIVED_TAB_GROUP)
+                        .with(TabProperties.TAB_GROUP_SYNC_ID, "sync_id_1")
+                        .build();
+        tabListModel.add(new ListItem(UiType.TAB_GROUP, archivedGroupModel));
+
+        // Verify count helper: only the ARCHIVED_TAB_GROUP card should be counted
+        assertEquals(1, tabListModel.getArchivedTabGroupCardCount());
+
+        // Verify index lookup helper
+        assertEquals(2, tabListModel.indexFromArchivedTabGroupSyncId("sync_id_1"));
+        assertEquals(
+                TabModel.INVALID_TAB_INDEX,
+                tabListModel.indexFromArchivedTabGroupSyncId("non_existent"));
+
+        // Verify model lookup helper
+        assertEquals(
+                archivedGroupModel, tabListModel.getModelFromArchivedTabGroupSyncId("sync_id_1"));
+        assertNull(tabListModel.getModelFromArchivedTabGroupSyncId("non_existent"));
+    }
 }

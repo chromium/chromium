@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ANIMATION_STATUS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.ARCHIVED_TAB_GROUP;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB_GROUP;
 
@@ -349,10 +350,10 @@ public class TabProperties {
         return isTabOrTabGroup(model) && model.containsKey(IS_PINNED) && model.get(IS_PINNED);
     }
 
-    /** Returns whether the given model is a TAB or TAB_GROUP card. */
+    /** Returns whether the given model is a TAB, TAB_GROUP, or ARCHIVED_TAB_GROUP card. */
     public static boolean isTabOrTabGroup(PropertyModel model) {
         @CardProperties.ModelType int type = model.get(CARD_TYPE);
-        return type == TAB || type == TAB_GROUP;
+        return type == TAB || type == TAB_GROUP || type == ARCHIVED_TAB_GROUP;
     }
 
     /** Returns whether the given model is a tab group header card. */

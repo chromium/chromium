@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPr
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ANIMATION_STATUS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.ARCHIVED_TAB_GROUP;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB_GROUP;
@@ -61,14 +62,29 @@ public class TabListModel extends ModelList {
         static final long BASE_ANIMATION_DURATION_MS = 218;
 
         /** Supported Model type within this ModelList. */
-        @IntDef({TAB, MESSAGE, TAB_GROUP})
+        @IntDef({TAB, MESSAGE, TAB_GROUP, ARCHIVED_TAB_GROUP})
         @Retention(RetentionPolicy.SOURCE)
         @Target(ElementType.TYPE_USE)
         public @interface ModelType {
 
+            /** A single regular tab card. */
             int TAB = 0;
+
+            /** A message card (e.g. promos, iph, price drops). */
             int MESSAGE = 1;
+
+            /**
+             * A regular tab group header card. Used to represent headers in layouts containing tab
+             * groups.
+             */
             int TAB_GROUP = 2;
+
+            /**
+             * An archived tab group card. Used exclusively in the Archived Tabs dialog. Cards of
+             * this type should not be mixed with TAB_GROUP cards in the same list, as index lookup
+             * and count helpers assume they are kept separate.
+             */
+            int ARCHIVED_TAB_GROUP = 3;
         }
 
         /** This corresponds to {@link CardProperties.ModelType}*/
@@ -106,6 +122,33 @@ public class TabListModel extends ModelList {
     }
 
     /**
+     * Lookup a {@link PropertyModel} for the tab by its ID.
+     *
+     * @param tabId The tab ID to search for.
+     * @return The property model in the model list or null.
+     */
+    public @Nullable PropertyModel getModelFromTabId(int tabId) {
+        for (int i = 0; i < size(); i++) {
+            PropertyModel model = get(i).model;
+            // This intentionally skips TAB_GROUP cards because this method is meant
+            // to find the model of a specific tab, not a group header.
+            if (model.get(CARD_TYPE) == TAB && model.get(TAB_ID) == tabId) return model;
+        }
+        return null;
+    }
+
+    /** Returns the property model of the first tab card or null if one does not exist. */
+    public @Nullable PropertyModel getFirstTabPropertyModel() {
+        for (int i = 0; i < size(); i++) {
+            PropertyModel model = get(i).model;
+            if (TabProperties.isTabOrTabGroup(model)) {
+                return model;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Lookup the position of a tab group header by its group ID.
      *
      * @param tabGroupId The group ID to search for.
@@ -124,15 +167,16 @@ public class TabListModel extends ModelList {
     }
 
     /**
-     * Lookup the position of a tab group by its sync ID.
+     * Lookup the position of an archived tab group by its sync ID.
      *
      * @param syncId The sync ID to search for.
-     * @return The index within the model list or {@link TabModel.INVALID_TAB_INDEX}.
+     * @return The index within the model list or {@link TabModel#INVALID_TAB_INDEX}.
      */
-    public int indexFromSyncId(String syncId) {
+    public int indexFromArchivedTabGroupSyncId(String syncId) {
         for (int i = 0; i < size(); i++) {
             PropertyModel model = get(i).model;
-            if (model.get(CARD_TYPE) == TAB_GROUP && model.get(TAB_GROUP_SYNC_ID).equals(syncId)) {
+            if (model.get(CARD_TYPE) == ARCHIVED_TAB_GROUP
+                    && model.get(TAB_GROUP_SYNC_ID).equals(syncId)) {
                 return i;
             }
         }
@@ -140,46 +184,32 @@ public class TabListModel extends ModelList {
     }
 
     /**
-     * Lookup a {@link PropertyModel} for the tab by its ID.
-     *
-     * @param tabId The tab ID to search for.
-     * @return The property model in the model list or null.
-     */
-    public @Nullable PropertyModel getModelFromTabId(int tabId) {
-        for (int i = 0; i < size(); i++) {
-            PropertyModel model = get(i).model;
-            // This intentionally skips TAB_GROUP cards because this method is meant
-            // to find the model of a specific tab, not a group header.
-            if (model.get(CARD_TYPE) == TAB && model.get(TAB_ID) == tabId) return model;
-        }
-        return null;
-    }
-
-    /**
-     * Lookup a {@link PropertyModel} for the tab group by its sync ID.
+     * Lookup a {@link PropertyModel} for the archived tab group by its sync ID.
      *
      * @param syncId The sync ID to search for.
      * @return The property model in the model list or null.
      */
-    public @Nullable PropertyModel getModelFromSyncId(String syncId) {
+    public @Nullable PropertyModel getModelFromArchivedTabGroupSyncId(String syncId) {
         for (int i = 0; i < size(); i++) {
             PropertyModel model = get(i).model;
-            if (model.get(CARD_TYPE) == TAB_GROUP && model.get(TAB_GROUP_SYNC_ID).equals(syncId)) {
+            if (model.get(CARD_TYPE) == ARCHIVED_TAB_GROUP
+                    && model.get(TAB_GROUP_SYNC_ID).equals(syncId)) {
                 return model;
             }
         }
         return null;
     }
 
-    /** Returns the property model of the first tab card or null if one does not exist. */
-    public @Nullable PropertyModel getFirstTabPropertyModel() {
+    /** Returns the number of ARCHIVED_TAB_GROUP cards in the TabListModel. */
+    public int getArchivedTabGroupCardCount() {
+        int tabGroupCardCount = 0;
         for (int i = 0; i < size(); i++) {
             PropertyModel model = get(i).model;
-            if (TabProperties.isTabOrTabGroup(model)) {
-                return model;
+            if (model.get(CARD_TYPE) == ARCHIVED_TAB_GROUP) {
+                tabGroupCardCount++;
             }
         }
-        return null;
+        return tabGroupCardCount;
     }
 
     /**
@@ -227,18 +257,6 @@ public class TabListModel extends ModelList {
         }
 
         return getTabCardCountsBefore(index);
-    }
-
-    /** Get the number of TAB_GROUP cards in the TabListModel. */
-    public int getTabGroupCardCount() {
-        int tabGroupCardCount = 0;
-        for (int i = 0; i < size(); i++) {
-            PropertyModel model = get(i).model;
-            if (model.get(CARD_TYPE) == TAB_GROUP) {
-                tabGroupCardCount++;
-            }
-        }
-        return tabGroupCardCount;
     }
 
     /**
