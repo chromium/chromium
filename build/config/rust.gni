@@ -115,12 +115,10 @@ declare_args() {
   # create a target for invoking Crubit tools to generate C++ bindings for the
   # Rust library.
   #
-  # TODO(crbug.com/470466915): Change `false` to `build_with_chromium` (after
-  # officially supporting building and distributing the `cpp_api_from_rust`
-  # (soon to be renamed to `cpp_api_from_rust`) tool - i.e. no more
-  # `fail_hard=False` when invoking `build_crubit.py` from
-  # `tools/rust/build_rust.py`).
-  enable_cpp_api_from_rust = false
+  # TODO(crbug.com/470466915): Remove this configuration knob once Windows also
+  # works + once it bakes for a while (say... maybe okay to remove this in
+  # August 2026).
+  enable_cpp_api_from_rust = !is_win
 }
 
 declare_args() {
