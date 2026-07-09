@@ -7,11 +7,15 @@
 
 namespace blink {
 
+// LINT.IfChange(EmailVerificationState)
 enum class EmailVerificationState {
   kNone,
   kLoading,
   kVerified,
+  kLoggedOutOrUnsupported,
+  kFailed,
 };
+// LINT.ThenChange(//components/autofill/core/common/mojom/autofill_types.mojom:EmailVerificationState)
 
 }  // namespace blink
 

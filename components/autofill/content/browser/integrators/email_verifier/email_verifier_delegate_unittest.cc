@@ -1197,4 +1197,60 @@ TEST_F(EmailVerifierDelegateTest, UpdateEmailVerificationStateLoading) {
   popup_shown_run_loop_.Run();
 }
 
+// Verifies that when the verification check determines the user is logged out
+// (not verifiable), the delegate updates the state to kLoggedOutOrUnsupported.
+TEST_F(EmailVerifierDelegateTest,
+       UpdateEmailVerificationStateLoggedOutOrUnsupported) {
+  base::HistogramTester histogram_tester;
+  FormStructure* form = SetUpValidForm();
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+
+  EXPECT_CALL(driver(), UpdateEmailVerificationState(
+                            form->field(0)->global_id(),
+                            mojom::EmailVerificationState::kLoading));
+
+  EXPECT_CALL(driver(),
+              UpdateEmailVerificationState(
+                  form->field(0)->global_id(),
+                  mojom::EmailVerificationState::kLoggedOutOrUnsupported));
+
+  TriggerDefaultFormFill(*form);
+
+  histogram_tester.ExpectUniqueSample("Blink.Evp.Autofill.FlowResult",
+                                      EvpAutofillFlowResult::kNotVerifiable, 1);
+}
+
+// Verifies that when the verification request fails, the delegate updates the
+// state to kFailed.
+TEST_F(EmailVerifierDelegateTest, UpdateEmailVerificationStateFailed) {
+  base::HistogramTester histogram_tester;
+  FormStructure* form = SetUpValidForm();
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _))
+      .WillOnce(RunOnceCallback<1>(CreateVerifiableResult()));
+
+  EXPECT_CALL(driver(), UpdateEmailVerificationState(
+                            form->field(0)->global_id(),
+                            mojom::EmailVerificationState::kLoading));
+
+  EXPECT_CALL(client(), ShowEmailVerificationPopup)
+      .WillOnce(RunOnceCallback<3>(
+          AutofillClient::EmailVerificationPermissionUiResult::kAccepted));
+
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>(std::nullopt));
+
+  EXPECT_CALL(driver(), UpdateEmailVerificationState(
+                            form->field(0)->global_id(),
+                            mojom::EmailVerificationState::kFailed));
+
+  TriggerDefaultFormFill(*form);
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kVerificationFailed, 1);
+}
+
 }  // namespace autofill

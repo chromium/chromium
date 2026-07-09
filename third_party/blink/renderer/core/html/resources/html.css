@@ -1181,6 +1181,16 @@ input::-internal-email-verification-indicator[data-state="loading"] {
     animation: -internal-email-verification-spin 1s linear infinite;
 }
 
+input::-internal-email-verification-indicator[data-state="logged-out-or-unsupported"] {
+    display: inline-block;
+    background-image: url("images/email_verification_logged_out.svg");
+}
+
+input::-internal-email-verification-indicator[data-state="failed"] {
+    display: inline-block;
+    background-image: url("images/email_verification_failed.svg");
+}
+
 @keyframes -internal-email-verification-spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }

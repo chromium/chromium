@@ -1865,6 +1865,12 @@ void AutofillAgent::UpdateEmailVerificationState(
     case mojom::EmailVerificationState::kVerified:
       blink_state = blink::EmailVerificationState::kVerified;
       break;
+    case mojom::EmailVerificationState::kLoggedOutOrUnsupported:
+      blink_state = blink::EmailVerificationState::kLoggedOutOrUnsupported;
+      break;
+    case mojom::EmailVerificationState::kFailed:
+      blink_state = blink::EmailVerificationState::kFailed;
+      break;
   }
   input_element.SetEmailVerificationState(blink_state);
 }

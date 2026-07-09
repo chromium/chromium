@@ -392,6 +392,12 @@ void EmailInputType::UpdateEmailVerificationIndicator() {
     case EmailVerificationState::kVerified:
       state_str = "verified";
       break;
+    case EmailVerificationState::kLoggedOutOrUnsupported:
+      state_str = "logged-out-or-unsupported";
+      break;
+    case EmailVerificationState::kFailed:
+      state_str = "failed";
+      break;
   }
   indicator->setAttribute(AtomicString("data-state"), AtomicString(state_str));
 }

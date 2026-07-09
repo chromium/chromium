@@ -149,8 +149,6 @@ void EmailVerifierDelegate::OnVerificationResponseReceived(
   issuers_[token_field_id] = issuer_site.GetURL();
   manager->driver().SendEmailVerificationToken(email_field_id, email,
                                                token_field_id, *token);
-  manager->driver().UpdateEmailVerificationState(
-      email_field_id, mojom::EmailVerificationState::kVerified);
   NotifyFlowCompleted(manager.get(), email_field_id,
                       EvpAutofillFlowResult::kTokenSentToRenderer);
 }
@@ -297,11 +295,43 @@ void EmailVerifierDelegate::NotifyFlowCompleted(
     AutofillManager* manager,
     const std::optional<FieldGlobalId>& field_id,
     EvpAutofillFlowResult result) {
-  if (manager && field_id &&
-      result != EvpAutofillFlowResult::kTokenSentToRenderer &&
-      result != EvpAutofillFlowResult::kSuccess) {
-    manager->driver().UpdateEmailVerificationState(
-        *field_id, mojom::EmailVerificationState::kNone);
+  if (manager && field_id) {
+    mojom::EmailVerificationState state = mojom::EmailVerificationState::kNone;
+    bool should_update = false;
+    switch (result) {
+      case EvpAutofillFlowResult::kTokenSentToRenderer:
+        state = mojom::EmailVerificationState::kVerified;
+        should_update = true;
+        break;
+      case EvpAutofillFlowResult::kNotVerifiable:
+        state = mojom::EmailVerificationState::kLoggedOutOrUnsupported;
+        should_update = true;
+        break;
+      case EvpAutofillFlowResult::kVerificationFailed:
+        state = mojom::EmailVerificationState::kFailed;
+        should_update = true;
+        break;
+      case EvpAutofillFlowResult::kSuccess:
+        should_update = false;
+        break;
+      case EvpAutofillFlowResult::kTokenFieldHasNoNonce:
+      case EvpAutofillFlowResult::kUserPrefDisabled:
+      case EvpAutofillFlowResult::kStrikeDatabaseBlock:
+      case EvpAutofillFlowResult::kVerifierUnavailable:
+      case EvpAutofillFlowResult::kUserDeclinedPermissionPrompt:
+      case EvpAutofillFlowResult::kUserIgnoredPermissionPrompt:
+      case EvpAutofillFlowResult::kManagerDestroyed:
+      case EvpAutofillFlowResult::kDriverInactive:
+      case EvpAutofillFlowResult::kPageNavigatedDuringVerification:
+        // Reset to none in case we had a previous request and this new request
+        // was declined by the user or otherwise did not end in success.
+        state = mojom::EmailVerificationState::kNone;
+        should_update = true;
+        break;
+    }
+    if (should_update) {
+      manager->driver().UpdateEmailVerificationState(*field_id, state);
+    }
   }
   for (Observer& observer : observers_) {
     observer.OnFlowCompleted(result);
