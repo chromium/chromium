@@ -32,24 +32,24 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
-/** Tests for {@link DisclosureInfobar}. */
+/** Tests for {@link DisclosurePersistentSnackbar}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class DisclosureInfobarTest {
+public class DisclosurePersistentSnackbarTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock public SnackbarManager mSnackbarManager;
     @Mock public TrustedWebActivityModel.DisclosureEventsCallback mCallback;
 
     private final TrustedWebActivityModel mModel = new TrustedWebActivityModel();
-    private DisclosureInfobar mInfobar;
+    private DisclosurePersistentSnackbar mSnackbar;
 
     @Before
     public void setUp() {
 
         mModel.set(DISCLOSURE_EVENTS_CALLBACK, mCallback);
-        mInfobar =
-                new DisclosureInfobar(
+        mSnackbar =
+                new DisclosurePersistentSnackbar(
                         RuntimeEnvironment.application.getResources(),
                         () -> mSnackbarManager,
                         mModel,
@@ -58,11 +58,11 @@ public class DisclosureInfobarTest {
 
     @Test
     public void registersForLifecycle() {
-        verify(mLifecycleDispatcher).register(eq(mInfobar));
+        verify(mLifecycleDispatcher).register(eq(mSnackbar));
     }
 
     @Test
-    public void displaysInfobar() {
+    public void displaysSnackbar() {
         mModel.set(DISCLOSURE_STATE, DISCLOSURE_STATE_SHOWN);
 
         ArgumentCaptor<Snackbar> captor = ArgumentCaptor.forClass(Snackbar.class);
@@ -76,7 +76,7 @@ public class DisclosureInfobarTest {
     }
 
     @Test
-    public void displaysInfobar_subsequentVisits() {
+    public void displaysSnackbar_subsequentVisits() {
         mModel.set(DISCLOSURE_STATE, DISCLOSURE_STATE_SHOWN);
         mModel.set(DISCLOSURE_STATE, DISCLOSURE_STATE_NOT_SHOWN);
         mModel.set(DISCLOSURE_STATE, DISCLOSURE_STATE_SHOWN);
@@ -85,7 +85,7 @@ public class DisclosureInfobarTest {
     }
 
     @Test
-    public void dismissesInfobar() {
+    public void dismissesSnackbar() {
         mModel.set(DISCLOSURE_STATE, DISCLOSURE_STATE_SHOWN);
         ArgumentCaptor<Snackbar> snackbar = ArgumentCaptor.forClass(Snackbar.class);
         verify(mSnackbarManager).showSnackbar(snackbar.capture());

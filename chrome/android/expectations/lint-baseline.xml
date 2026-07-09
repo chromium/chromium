@@ -2054,17 +2054,6 @@
 
     <issue
         id="ClickableViewAccessibility"
-        message="Custom view `InfoBarMessageView` overrides `onTouchEvent` but not `performClick`"
-        errorLine1="    public boolean onTouchEvent(MotionEvent event) {"
-        errorLine2="                   ~~~~~~~~~~~~">
-        <location
-            file="../../components/infobars/android/java/src/org/chromium/components/infobars/InfoBarMessageView.java"
-            line="34"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
         message="Custom view ``ImageView`` has `setOnTouchListener` called on it but does not override `performClick`"
         errorLine1="        holder.mStartIcon.setOnTouchListener("
         errorLine2="        ^">

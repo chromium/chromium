@@ -2394,10 +2394,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     /**
-     * TODO: this method no longer needs to be public after InfoBar is deprecated.
-     *
-     * <p>Returns a supplier for the {@link EdgeToEdgeController} that supports drawing to the edge
-     * of the screen.
+     * Returns a supplier for the {@link EdgeToEdgeController} that supports drawing to the edge of
+     * the screen.
      */
     @Override
     public MonotonicObservableSupplier<EdgeToEdgeController> getEdgeToEdgeSupplier() {

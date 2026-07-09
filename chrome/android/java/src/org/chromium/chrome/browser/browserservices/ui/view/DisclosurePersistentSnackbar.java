@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  * <p>Thread safety: All methods on this class should be called on the UI thread.
  */
 @NullMarked
-public class DisclosureInfobar
+public class DisclosurePersistentSnackbar
         implements PropertyObservable.PropertyObserver<PropertyKey>, StartStopWithNativeObserver {
     private final Resources mResources;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
@@ -52,7 +52,7 @@ public class DisclosureInfobar
                 }
             };
 
-    public DisclosureInfobar(
+    public DisclosurePersistentSnackbar(
             Resources resources,
             Supplier<SnackbarManager> snackbarManagerSupplier,
             TrustedWebActivityModel model,
@@ -89,10 +89,10 @@ public class DisclosureInfobar
     public void onStopWithNative() {}
 
     /**
-     * Creates the Infobar/Snackbar to show. The override of this method in
-     * {@link DisclosureSnackbar} may return {@code null}, if the infobar is already shown.
+     * Creates the Infobar/Snackbar to show. The override of this method in {@link
+     * DisclosureSnackbar} may return {@code null}, if the infobar is already shown.
      */
-    protected @Nullable Snackbar makeRunningInChromeInfobar(
+    protected @Nullable Snackbar makeRunningInChromeSnackbar(
             SnackbarManager.SnackbarController controller) {
         String title = mResources.getString(R.string.twa_running_in_chrome);
         int type = Snackbar.TYPE_PERSISTENT;
@@ -109,7 +109,7 @@ public class DisclosureInfobar
     public void showIfNeeded() {
         if (mModel.get(DISCLOSURE_STATE) != DISCLOSURE_STATE_SHOWN) return;
 
-        Snackbar snackbar = makeRunningInChromeInfobar(mSnackbarController);
+        Snackbar snackbar = makeRunningInChromeSnackbar(mSnackbarController);
         if (snackbar == null) {
             return;
         }

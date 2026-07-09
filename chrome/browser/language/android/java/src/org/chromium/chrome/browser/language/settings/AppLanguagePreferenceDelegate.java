@@ -172,11 +172,11 @@ public class AppLanguagePreferenceDelegate {
         Resources resources = mActivity.getResources();
         Snackbar snackbar =
                 Snackbar.make(
-                                resources.getString(R.string.languages_infobar_ready, displayName),
+                                resources.getString(R.string.languages_snackbar_ready, displayName),
                                 mSnackbarController,
                                 Snackbar.TYPE_PERSISTENT,
                                 Snackbar.UMA_LANGUAGE_SPLIT_RESTART)
-                        .setAction(resources.getString(R.string.languages_infobar_restart), null);
+                        .setAction(resources.getString(R.string.languages_snackbar_restart), null);
         snackbar.setDefaultLines(false);
         if (mSnackbarManager.canShowSnackbar()) {
             mSnackbarManager.showSnackbar(snackbar);

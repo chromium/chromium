@@ -51,9 +51,6 @@ found in the LICENSE file.
     <!-- Editor dialog -->
     <item type="id" name="editor_dialog_done_button" />
 
-    <!-- Password update prompt -->
-    <item type="id" name="password_infobar_accounts_spinner" />
-
     <!-- Context Menu Ids -->
     <!-- Page Group -->
     <item type="id" name="contextmenu_save_page" />

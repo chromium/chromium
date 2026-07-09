@@ -27,7 +27,7 @@ import java.util.function.Supplier;
  * <p>Thread safety: All methods should be called on the UI thread.
  */
 @NullMarked
-public class DisclosureSnackbar extends DisclosureInfobar {
+public class DisclosureSnackbar extends DisclosurePersistentSnackbar {
     // TODO(crbug.com/40125323): Once this feature is enabled by default, remove
     // TrustedWebActivityDisclosureView and simplify this class.
 
@@ -47,7 +47,7 @@ public class DisclosureSnackbar extends DisclosureInfobar {
     }
 
     @Override
-    protected @Nullable Snackbar makeRunningInChromeInfobar(
+    protected @Nullable Snackbar makeRunningInChromeSnackbar(
             SnackbarManager.SnackbarController controller) {
         if (mShown) return null;
         mShown = true;

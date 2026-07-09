@@ -16,8 +16,8 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TwaDisclosureUi;
-import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotification;
+import org.chromium.chrome.browser.browserservices.ui.view.DisclosurePersistentSnackbar;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -37,7 +37,7 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class DisclosureUiPicker implements NativeInitObserver {
-    private final Supplier<DisclosureInfobar> mDisclosureInfobar;
+    private final Supplier<DisclosurePersistentSnackbar> mDisclosurePersistentSnackbar;
     private final Supplier<DisclosureSnackbar> mDisclosureSnackbar;
     private final Supplier<DisclosureNotification> mDisclosureNotification;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -46,12 +46,12 @@ public class DisclosureUiPicker implements NativeInitObserver {
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
 
     public DisclosureUiPicker(
-            Supplier<DisclosureInfobar> disclosureInfobar,
+            Supplier<DisclosurePersistentSnackbar> disclosurePersistentSnackbar,
             Supplier<DisclosureSnackbar> disclosureSnackbar,
             Supplier<DisclosureNotification> disclosureNotification,
             BrowserServicesIntentDataProvider intentDataProvider,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
-        mDisclosureInfobar = disclosureInfobar;
+        mDisclosurePersistentSnackbar = disclosurePersistentSnackbar;
         mDisclosureSnackbar = disclosureSnackbar;
         mDisclosureNotification = disclosureNotification;
         mIntentDataProvider = intentDataProvider;
@@ -69,7 +69,7 @@ public class DisclosureUiPicker implements NativeInitObserver {
         // their onFinishNativeInitialization.
 
         if (mIntentDataProvider.getTwaDisclosureUi() == TwaDisclosureUi.V1_INFOBAR) {
-            mDisclosureInfobar.get().showIfNeeded();
+            mDisclosurePersistentSnackbar.get().showIfNeeded();
         } else {
             areHeadsUpNotificationsEnabled(
                     (enabled) -> {

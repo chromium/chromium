@@ -73,8 +73,8 @@ import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashControl
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.webapps.WebappSplashController;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.DisclosureUiPicker;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
-import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotification;
+import org.chromium.chrome.browser.browserservices.ui.view.DisclosurePersistentSnackbar;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.HiddenTabHolder.HiddenTab;
@@ -523,7 +523,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                 this::createWebApkUpdateManager,
                 getWebappDeferredStartupWithStorageHandler(),
                 getLifecycleDispatcher());
-        createDisclosureInfobar();
+        createDisclosureSnackbar();
         new WebApkActivityLifecycleUmaTracker(
                 this,
                 getIntentDataProvider(),
@@ -551,7 +551,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getSplashControllerSupplier(),
                         getIntentDataProvider());
         new DisclosureUiPicker(
-                this::createDisclosureInfobar,
+                this::createDisclosurePersistentSnackbar,
                 this::createDisclosureSnackbar,
                 this::createDisclosureNotification,
                 getIntentDataProvider(),
@@ -1602,8 +1602,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         return mMinimizationManagerHolder;
     }
 
-    private DisclosureInfobar createDisclosureInfobar() {
-        return new DisclosureInfobar(
+    private DisclosurePersistentSnackbar createDisclosurePersistentSnackbar() {
+        return new DisclosurePersistentSnackbar(
                 getResources(),
                 this::getSnackbarManager,
                 getTrustedWebActivityModel(),
