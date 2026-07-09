@@ -102,6 +102,7 @@ class ExecutableTestRunner(TestRunner):
                             help='Legacy flag to pass in arguments for '
                             'the test process. These arguments can now be '
                             'passed in without a preceding "--" flag.')
+
         args, child_args = parser.parse_known_args(self._test_args)
         if args.isolated_script_test_output:
             self._isolated_script_test_output = args.isolated_script_test_output
@@ -132,15 +133,18 @@ class ExecutableTestRunner(TestRunner):
                 args.test_launcher_filter_file.split(';'))
             child_args.append('--test-launcher-filter-file=' +
                               ';'.join(test_launcher_filter_files))
-        if get_host_arch() == 'x64':
-            # TODO(crbug.com/40202294) Remove once Vulkan is enabled by
-            # default.
-            child_args.append('--use-vulkan=native')
-        else:
-            # TODO(crbug.com/42050042, crbug.com/42050537) Remove swiftshader
-            # once the vulkan is enabled by default.
-            child_args.extend(
-                ['--use-vulkan=swiftshader', '--ozone-platform=headless'])
+        # flatbuffers_unittests fails if it receives unrecognized arguments
+        # (like --use-vulkan), so we must not pass them.
+        if self._test_name != 'flatbuffers_unittests':
+            if get_host_arch() == 'x64':
+                # TODO(crbug.com/40202294) Remove once Vulkan is enabled by
+                # default.
+                child_args.append('--use-vulkan=native')
+            else:
+                # TODO(crbug.com/42050042, crbug.com/42050537) Remove
+                # swiftshader once the vulkan is enabled by default.
+                child_args.extend(
+                    ['--use-vulkan=swiftshader', '--ozone-platform=headless'])
         if args.test_args:
             child_args.extend(args.test_args)
         return child_args

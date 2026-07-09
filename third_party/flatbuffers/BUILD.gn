@@ -261,14 +261,16 @@ test("flatbuffers_unittests") {
 
   data_deps = [ "//testing:test_scripts_shared" ]
 
-  defines = [
-    "FLATBUFFERS_TRACK_VERIFIER_BUFFER_SIZE",
-
+  defines = [ "FLATBUFFERS_TRACK_VERIFIER_BUFFER_SIZE" ]
+  if (is_fuchsia) {
+    defines +=
+        [ "FLATBUFFERS_TEST_PATH_PREFIX=/pkg/third_party/flatbuffers/src/" ]
+  } else {
     # Careful, this test suite needs to be run in the actual out/<build_dir>
     # directory.
-    "FLATBUFFERS_TEST_PATH_PREFIX=" +
-        rebase_path("//third_party/flatbuffers/src/", root_build_dir),
-  ]
+    defines += [ "FLATBUFFERS_TEST_PATH_PREFIX=" +
+                 rebase_path("//third_party/flatbuffers/src/", root_build_dir) ]
+  }
   if (is_win) {
     defines += [ "DEBUG_NEW=new" ]
   }
