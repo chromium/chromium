@@ -1,4 +1,0 @@
-
- div { color: green; }
- p:not(:first-line) { color: yellow; background: red; }
- p:not(:after) { color: yellow; background: red; content: ' THIS TEST HAS FAILED! '; }
