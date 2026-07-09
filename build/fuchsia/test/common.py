@@ -331,6 +331,9 @@ def register_log_args(parser: ArgumentParser) -> None:
     log_args.add_argument('--logs-dir',
                           type=os.path.realpath,
                           help=('Directory to write logs to.'))
+    log_args.add_argument('--wait-for-log-pattern',
+                          help=('Pattern to wait for in system log '
+                                'before exiting.'))
 
 
 def get_component_uri(package: str) -> str:

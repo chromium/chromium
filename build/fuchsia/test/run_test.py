@@ -142,7 +142,8 @@ def main():
                             'daemon is started with the logs.dir config '
                             'updated. We won\'t restart the daemon randomly'
                             ' anymore.')
-        log_manager = LogManager(runner_args.logs_dir)
+        log_manager = LogManager(runner_args.logs_dir,
+                                 runner_args.wait_for_log_pattern)
         stack.enter_context(log_manager)
 
         if runner_args.device:
