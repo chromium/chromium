@@ -975,6 +975,7 @@ void ContextualCueingController::ShowCue(
   }
 
   ObserveSidePanel();
+  page_action_observer_->RegisterAsPageActionObserver(*page_action_controller);
 
   page_action_controller->Show(kActionAnchoredContextualCue);
   page_action_controller->SetAnchoredMessageIcon(
@@ -1004,8 +1005,6 @@ void ContextualCueingController::ShowCue(
   CUEING_LOG(base::StringPrintf(
       "Showing cue for CUJ %s: %s [%s]", cue.suggested_cuj(),
       strings.anchored_message_text(), strings.action_text()));
-
-  page_action_observer_->RegisterAsPageActionObserver(*page_action_controller);
 
   contextual_cueing_service_->OnCueShown(
       active_tab->GetContents()->GetLastCommittedURL(), cue_type);

@@ -997,7 +997,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
       entry, ukm::builders::ContextualCueing_CueInteraction::
                  kProactiveCueShownDurationMsName);
   ASSERT_TRUE(duration_value);
-  EXPECT_GE(*duration_value, 0);
+  EXPECT_GT(*duration_value, 0);
 
   ukm_recorder.ExpectEntryMetric(
       entry,
