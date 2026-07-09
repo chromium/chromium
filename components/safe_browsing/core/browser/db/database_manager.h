@@ -87,10 +87,7 @@ class SafeBrowsingDatabaseManager
     virtual ~Client();
 
     // Called when the result of checking the notification abuse URL is known.
-    // TODO(kcarattini): Consider if we need |url| passed here, remove if not.
-    virtual void OnCheckNotificationAbuseUrlResult(
-        const GURL& url,
-        const ThreatMetadata& metadata) {}
+    virtual void OnCheckNotificationAbuseUrlResult(bool is_abusive) {}
 
     // Called when the result of checking a browse URL is known.
     virtual void OnCheckBrowseUrlResult(const GURL& url,

@@ -82,28 +82,19 @@ TEST_F(CrowdDenySafeBrowsingRequestTest, Acceptable_UnavailableMetaData) {
       url::Origin::Create(GURL(kTestOriginFoo)), Verdict::kAcceptable);
 }
 
-TEST_F(CrowdDenySafeBrowsingRequestTest, Acceptable_UnknownAPIName) {
+TEST_F(CrowdDenySafeBrowsingRequestTest, Acceptable_ExplicitSafeVerdict) {
   const GURL kTestURL(kTestOriginFoo);
-
-  safe_browsing::ThreatMetadata test_metadata;
-  test_metadata.api_permissions.emplace("");
-  test_metadata.api_permissions.emplace("Stuff");
-  test_metadata.api_permissions.emplace("NOTIFICATION");   // Singular.
-  test_metadata.api_permissions.emplace("notifications");  // Lowercase.
-  fake_database_manager()->SetSimulatedMetadataForUrl(kTestURL, test_metadata);
+  fake_database_manager()->SetSimulatedVerdictForUrl(kTestURL,
+                                                     /*is_abusive=*/false);
 
   StartRequestForOriginAndExpectVerdict(url::Origin::Create(kTestURL),
                                         Verdict::kAcceptable);
 }
 
-TEST_F(CrowdDenySafeBrowsingRequestTest, Spammy) {
+TEST_F(CrowdDenySafeBrowsingRequestTest, Unacceptable_NotificationAbuse) {
   const GURL kTestURL(kTestOriginFoo);
-
-  safe_browsing::ThreatMetadata test_metadata;
-  test_metadata.api_permissions.emplace("BANANAS");
-  test_metadata.api_permissions.emplace("NOTIFICATIONS");
-  test_metadata.api_permissions.emplace("ORANGES");
-  fake_database_manager()->SetSimulatedMetadataForUrl(kTestURL, test_metadata);
+  fake_database_manager()->SetSimulatedVerdictForUrl(kTestURL,
+                                                     /*is_abusive=*/true);
 
   StartRequestForOriginAndExpectVerdict(url::Origin::Create(kTestURL),
                                         Verdict::kUnacceptable);

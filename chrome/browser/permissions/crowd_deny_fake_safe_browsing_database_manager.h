@@ -26,9 +26,7 @@ class CrowdDenyFakeSafeBrowsingDatabaseManager
   CrowdDenyFakeSafeBrowsingDatabaseManager& operator=(
       const CrowdDenyFakeSafeBrowsingDatabaseManager&) = delete;
 
-  void SetSimulatedMetadataForUrl(
-      const GURL& url,
-      const safe_browsing::ThreatMetadata& metadata);
+  void SetSimulatedVerdictForUrl(const GURL& url, bool is_abusive);
 
   void RemoveAllBlocklistedUrls();
 
@@ -48,11 +46,10 @@ class CrowdDenyFakeSafeBrowsingDatabaseManager
   bool CancelNotificationAbuseCheck(Client* client) override;
 
  private:
-  safe_browsing::ThreatMetadata GetSimulatedMetadataOrSafe(const GURL& url);
+  bool GetSimulatedVerdictOrSafe(const GURL& url);
 
   std::set<raw_ptr<Client, SetExperimental>> pending_clients_;
-  std::map<GURL, safe_browsing::ThreatMetadata>
-      url_to_simulated_threat_metadata_;
+  std::map<GURL, bool> url_to_simulated_verdict_;
   bool simulate_timeout_ = false;
   bool simulate_synchronous_result_ = false;
 

@@ -188,9 +188,7 @@ class ContextualNotificationPermissionUiSelectorTest : public testing::Test {
   }
 
   void AddUrlToFakeApiAbuseBlocklist(const GURL& url) {
-    safe_browsing::ThreatMetadata test_metadata;
-    test_metadata.api_permissions.emplace("NOTIFICATIONS");
-    fake_database_manager_->SetSimulatedMetadataForUrl(url, test_metadata);
+    fake_database_manager_->SetSimulatedVerdictForUrl(url, /*is_abusive=*/true);
   }
 
   void LoadTestSafeBrowsingBlocklist() {

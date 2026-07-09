@@ -123,7 +123,8 @@ void SafeBrowsingDatabaseManager::OnThreatMetadataResponse(
     return;
   }
 
-  check->client()->OnCheckNotificationAbuseUrlResult(check->url(), md);
+  bool is_abusive = md.api_permissions.count("NOTIFICATIONS") > 0;
+  check->client()->OnCheckNotificationAbuseUrlResult(is_abusive);
   notification_abuse_checks_.erase(it);
 }
 
@@ -147,8 +148,7 @@ void SafeBrowsingDatabaseManager::StopOnUIThread(bool shutdown) {
   // Delete pending checks, calling back any clients with empty metadata.
   for (const NotificationAbuseCheck* check : notification_abuse_checks_) {
     if (check->client()) {
-      check->client()->OnCheckNotificationAbuseUrlResult(check->url(),
-                                                         ThreatMetadata());
+      check->client()->OnCheckNotificationAbuseUrlResult(/*is_abusive=*/false);
     }
   }
 

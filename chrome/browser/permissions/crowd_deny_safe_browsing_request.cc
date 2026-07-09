@@ -21,9 +21,6 @@
 
 namespace {
 
-// The permission identifier string used by Safe Browsing for notifications.
-constexpr char kSafeBrowsingNotificationPermissionName[] = "NOTIFICATIONS";
-
 // The maximum amount of time to wait for the Safe Browsing response.
 constexpr base::TimeDelta kSafeBrowsingCheckTimeout = base::Seconds(2);
 
@@ -69,13 +66,6 @@ class CrowdDenySafeBrowsingRequest::SafeBrowsingClient
   SafeBrowsingClient(const SafeBrowsingClient&) = delete;
   SafeBrowsingClient& operator=(const SafeBrowsingClient&) = delete;
 
-  static Verdict ExtractVerdictFromMetadata(
-      const safe_browsing::ThreatMetadata& metadata) {
-    return metadata.api_permissions.count(
-               kSafeBrowsingNotificationPermissionName)
-               ? Verdict::kUnacceptable
-               : Verdict::kAcceptable;
-  }
 
   void OnTimeout() {
     database_manager_->CancelNotificationAbuseCheck(this);
@@ -90,11 +80,10 @@ class CrowdDenySafeBrowsingRequest::SafeBrowsingClient
   }
 
   // SafeBrowsingDatabaseManager::Client:
-  void OnCheckNotificationAbuseUrlResult(
-      const GURL& url,
-      const safe_browsing::ThreatMetadata& metadata) override {
+  void OnCheckNotificationAbuseUrlResult(bool is_abusive) override {
     timeout_.Stop();
-    SendResultToHandler(ExtractVerdictFromMetadata(metadata));
+    SendResultToHandler(is_abusive ? Verdict::kUnacceptable
+                                   : Verdict::kAcceptable);
   }
 
   base::OneShotTimer timeout_;

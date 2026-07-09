@@ -35,32 +35,29 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
  public:
   TestClient()
       : SafeBrowsingDatabaseManager::Client(GetPassKeyForTesting()),
-        callback_invoked_(false) {}
+        callback_invoked_(false),
+        is_notification_abusive_(false) {}
 
   TestClient(const TestClient&) = delete;
   TestClient& operator=(const TestClient&) = delete;
 
   ~TestClient() override = default;
 
-  void OnCheckNotificationAbuseUrlResult(
-      const GURL& url,
-      const ThreatMetadata& metadata) override {
-    blocked_permissions_ = metadata.api_permissions;
+  void OnCheckNotificationAbuseUrlResult(bool is_abusive) override {
+    is_notification_abusive_ = is_abusive;
     callback_invoked_ = true;
     run_loop_.Quit();
   }
 
-  const std::set<std::string>& GetBlockedPermissions() {
-    return blocked_permissions_;
-  }
+  bool is_notification_abusive() const { return is_notification_abusive_; }
 
   void WaitForCallback() { run_loop_.Run(); }
 
   bool callback_invoked() { return callback_invoked_; }
 
  private:
-  std::set<std::string> blocked_permissions_;
   bool callback_invoked_;
+  bool is_notification_abusive_;
   base::RunLoop run_loop_;
 };
 
@@ -85,7 +82,8 @@ class SafeBrowsingDatabaseManagerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  std::string GetStockV4GetHashResponse() {
+  std::string GetV4GetHashResponseWithPermissions(
+      const std::vector<std::string>& permissions) {
     ListIdentifier list_id = GetChromeUrlApiId();
     FullHashStr full_hash = crypto::SHA256HashString("example.com/");
 
@@ -98,14 +96,20 @@ class SafeBrowsingDatabaseManagerTest : public testing::Test {
     m->mutable_threat()->set_hash(full_hash);
     m->mutable_cache_duration()->set_seconds(300);
 
-    ThreatEntryMetadata::MetadataEntry* e =
-        m->mutable_threat_entry_metadata()->add_entries();
-    e->set_key("permission");
-    e->set_value("GEOLOCATION");
+    for (const std::string& permission : permissions) {
+      ThreatEntryMetadata::MetadataEntry* e =
+          m->mutable_threat_entry_metadata()->add_entries();
+      e->set_key("permission");
+      e->set_value(permission);
+    }
 
     std::string res_data;
     response.SerializeToString(&res_data);
     return res_data;
+  }
+
+  std::string GetStockV4GetHashResponse() {
+    return GetV4GetHashResponseWithPermissions({"NOTIFICATIONS"});
   }
 
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -131,10 +135,11 @@ TEST_F(SafeBrowsingDatabaseManagerTest, CancelNotificationAbuseCheck) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(client.callback_invoked());
-  EXPECT_EQ(0ul, client.GetBlockedPermissions().size());
+  EXPECT_FALSE(client.is_notification_abusive());
 }
 
-TEST_F(SafeBrowsingDatabaseManagerTest, GetNotificationAbuseCheckResponse) {
+TEST_F(SafeBrowsingDatabaseManagerTest,
+       GetNotificationAbuseCheckResponse_Abusive) {
   TestClient client;
   const GURL url("https://www.example.com/more");
 
@@ -150,8 +155,29 @@ TEST_F(SafeBrowsingDatabaseManagerTest, GetNotificationAbuseCheckResponse) {
   base::RunLoop().RunUntilIdle();
 
   client.WaitForCallback();
-  ASSERT_EQ(1ul, client.GetBlockedPermissions().size());
-  EXPECT_EQ("GEOLOCATION", *(client.GetBlockedPermissions().begin()));
+  EXPECT_TRUE(client.is_notification_abusive());
+}
+
+TEST_F(SafeBrowsingDatabaseManagerTest,
+       GetNotificationAbuseCheckResponse_NotAbusive) {
+  TestClient client;
+  const GURL url("https://www.example.com/more");
+
+  GURL request_url;
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        request_url = request.url;
+      }));
+
+  EXPECT_FALSE(db_manager_->CheckNotificationAbuseUrl(url, &client));
+
+  std::vector<std::string> permissions = {"", "Stuff", "NOTIFICATION",
+                                          "notifications", "GEOLOCATION"};
+  test_url_loader_factory_.AddResponse(
+      request_url.spec(), GetV4GetHashResponseWithPermissions(permissions));
+
+  client.WaitForCallback();
+  EXPECT_FALSE(client.is_notification_abusive());
 }
 
 }  // namespace safe_browsing
