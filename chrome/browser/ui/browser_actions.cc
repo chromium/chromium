@@ -209,6 +209,7 @@
 #include "extensions/common/extension_urls.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/browser_commands_chromeos.h"
 #endif
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -2362,6 +2363,54 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kToggleMultitaskMenu)
+          .Build());
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                ExecuteVisitDesktopCommand(
+                    IDC_VISIT_DESKTOP_OF_LRU_USER_2,
+                    BrowserWindow::FromBrowser(bwi)->GetNativeWindow());
+              },
+              bwi))
+          .SetActionId(kActionVisitDesktopOfLruUser2)
+          .Build());
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                ExecuteVisitDesktopCommand(
+                    IDC_VISIT_DESKTOP_OF_LRU_USER_3,
+                    BrowserWindow::FromBrowser(bwi)->GetNativeWindow());
+              },
+              bwi))
+          .SetActionId(kActionVisitDesktopOfLruUser3)
+          .Build());
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                ExecuteVisitDesktopCommand(
+                    IDC_VISIT_DESKTOP_OF_LRU_USER_4,
+                    BrowserWindow::FromBrowser(bwi)->GetNativeWindow());
+              },
+              bwi))
+          .SetActionId(kActionVisitDesktopOfLruUser4)
+          .Build());
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                ExecuteVisitDesktopCommand(
+                    IDC_VISIT_DESKTOP_OF_LRU_USER_5,
+                    BrowserWindow::FromBrowser(bwi)->GetNativeWindow());
+              },
+              bwi))
+          .SetActionId(kActionVisitDesktopOfLruUser5)
           .Build());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

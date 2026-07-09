@@ -158,6 +158,9 @@ if (!is_android) {
     if (is_mac) {
       deps += [ "//chrome/browser:global_keyboard_shortcuts_mac" ]
     }
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/ui/ash/multi_user" ]
+    }
   }
 }
 
