@@ -87,7 +87,7 @@
       default_value: "not-inside-link",
       keywords: ["not-inside-link", "inside-unvisited-link", "inside-visited-link"],
       inherited: true,
-      invalidate: ["border-visual", "paint"],
+      invalidate: ["ax-style", "border-visual", "paint"],
       // highlight_style_comes_from_originating_element should nominally
       // be true here, but this propagation happens in a different place
       // from all the other such properties, so we treat it as a separate case.
@@ -323,7 +323,7 @@
       type_name: "unsigned",
       default_value: "static_cast<unsigned>(EVerticalAlign::kBaseline)",
       computed_style_custom_functions: ["initial", "getter", "setter"],
-      invalidate: ["layout"],
+      invalidate: ["ax-style", "layout"],
     },
     {
       name: "VerticalAlignLength",
@@ -334,7 +334,7 @@
       field_group: "box",
       getter: "GetVerticalAlignLength",
       computed_style_custom_functions: ["setter"],
-      invalidate: ["layout"],
+      invalidate: ["ax-style", "layout"],
     },
     {
       name: "border-image",
@@ -395,7 +395,7 @@
       inherited: true,
       default_value: "MakeGarbageCollected<Font>()",
       wrapper_pointer_name: "Member",
-      invalidate: ["reshape"],
+      invalidate: ["ax-style", "reshape"],
       highlight_style_comes_from_originating_element: true,
     },
     {

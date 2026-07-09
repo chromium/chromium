@@ -358,6 +358,7 @@
       valid_type: "list",
       valid_values: [
         "accent-color",
+        "ax-style",
         "background",
         "background-color",
         "blend-mode",
@@ -1404,7 +1405,7 @@
       priority: 1,
       valid_for_marker: true,
       valid_for_page_context: true,
-      invalidate: ["reshape"],
+      invalidate: ["ax-style", "reshape"],
       is_animation_affecting: true,
     },
     {
@@ -1957,7 +1958,7 @@
       // Incremental code does not call DidChangeWritingMode(), which influences
       // the font.
       supports_incremental_style: false,
-      invalidate: ["layout", "paint"],
+      invalidate: ["ax-style", "layout", "paint"],
       highlight_style_comes_from_originating_element: true,
       is_animation_affecting: true,
     },
@@ -2225,7 +2226,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["background-color"],
+      invalidate: ["ax-style", "background-color"],
     },
     {
       name: "background-image",
@@ -6140,7 +6141,7 @@
       getter: "GetTextAlign",
       style_builder_custom_functions: ["value"],
       valid_for_page_context: true,
-      invalidate: ["layout", "paint"],
+      invalidate: ["ax-style", "layout", "paint"],
     },
     {
       name: "text-align-last",
@@ -6351,7 +6352,7 @@
       style_builder_custom_functions: ["value"],
       typedom_types: ["Length", "Percentage"],
       valid_for_page_context: true,
-      invalidate: ["layout", "paint"],
+      invalidate: ["ax-style", "layout", "paint"],
       affected_by_zoom: true,
       percentages_depend_on_used_value: true,
     },

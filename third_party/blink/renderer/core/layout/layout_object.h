@@ -2517,19 +2517,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return StyleRef().VisitedDependentColor(color_property);
   }
 
-  // See ComputedStyle::VisitedDependentColorFast().
-  template <class Property>
-  static inline Color ResolveColorFast(const ComputedStyle& style_to_use,
-                                       const Property& color_property) {
-    return style_to_use.VisitedDependentColorFast(color_property);
-  }
-
-  template <class Property>
-  inline Color ResolveColorFast(const Property& color_property) const {
-    NOT_DESTROYED();
-    return StyleRef().VisitedDependentColorFast(color_property);
-  }
-
   virtual CursorDirective GetCursor(const PhysicalOffset&, ui::Cursor&) const;
 
   // Given a rect in the object's physical coordinate space, mutates the rect

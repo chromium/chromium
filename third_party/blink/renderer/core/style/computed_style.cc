@@ -795,6 +795,9 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.compositing_reasons_changed = true;
   }
 
+  if (field_diff & kAXStyle) {
+    diff.ax_style_changed = true;
+  }
   if (field_diff & kBackgroundColor) {
     // If the background color change is not due to a composited animation,
     // then paint invalidation is required; but we can defer the decision until
@@ -824,6 +827,7 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.needs_box_paint_property_update = true;
   }
   if (field_diff & kColor) {
+    diff.ax_style_changed = true;
     diff.text_decoration_or_color_changed = true;
   }
   if (field_diff & kFilterData) {
@@ -854,6 +858,7 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     }
   }
   if (field_diff & kTextDecoration) {
+    diff.ax_style_changed = true;
     diff.text_decoration_or_color_changed = true;
   }
   if (field_diff & kTransformData) {
