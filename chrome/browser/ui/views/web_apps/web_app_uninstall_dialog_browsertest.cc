@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 
+#include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -56,6 +59,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/dialog_test.h"
@@ -200,6 +204,15 @@ class WebAppUninstallDialogViewIwaBrowserTest
 
     EXPECT_EQ(sub_app_id, test_future.Take());
     return sub_app_id;
+  }
+
+  std::vector<views::View*> GetViews(
+      views::View* view,
+      WebAppUninstallDialogDelegateView::DialogViewID view_type) {
+    std::vector<raw_ptr<views::View, VectorExperimental>> views_group;
+
+    view->GetViewsInGroup(std::to_underlying(view_type), &views_group);
+    return base::ToVector(views_group, [](auto item) { return item.get(); });
   }
 
  private:
@@ -347,6 +360,107 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewIwaBrowserTest,
   EXPECT_THAT(
       base::UTF16ToUTF8(views::AsViewClass<views::Label>(info_view)->GetText()),
       testing::HasSubstr("Parent IWA"));
+
+  uninstall_widget->CloseNow();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewIwaBrowserTest,
+                       SubAppsShownCorrectly) {
+  auto bundle = web_app::IsolatedWebAppBuilder(
+                    web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+                        network::mojom::PermissionsPolicyFeature::kSubApps))
+                    .BuildBundle();
+
+  web_app::IsolatedWebAppUrlInfo parent_app = bundle->InstallChecked(profile());
+
+  const webapps::AppId parent_app_id = parent_app.app_id();
+  const GURL parent_app_url = parent_app.origin().GetURL();
+
+  std::vector<std::u16string> sub_apps_expected;
+
+  for (const std::string& app_name : {"one", "fünf", "🌈"}) {
+    std::u16string sub_app_name = u"Sub App " + base::UTF8ToUTF16(app_name);
+    sub_apps_expected.push_back(sub_app_name);
+
+    GURL start_url = parent_app_url.Resolve("/sub-app-" + app_name);
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+    web_app_info->parent_app_id = parent_app_id;
+    web_app_info->title = sub_app_name;
+
+    web_app::test::InstallWebApp(browser()->profile(), std::move(web_app_info),
+                                 /*overwrite_existing_manifest_fields=*/true,
+                                 webapps::WebappInstallSource::SUB_APP);
+  }
+  std::sort(sub_apps_expected.begin(), sub_apps_expected.end());
+
+  base::test::TestFuture<webapps::UninstallResultCode> test_future;
+  provider()->ui_manager().PresentUserUninstallDialog(
+      parent_app_id, webapps::WebappUninstallSource::kAppMenu,
+      browser()->GetWindow()->GetNativeWindow(), test_future.GetCallback());
+
+  views::NamedWidgetShownWaiter uninstall_dialog_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppUninstallDialogDelegateView");
+  auto* uninstall_widget = uninstall_dialog_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(uninstall_widget, nullptr);
+
+  views::View* view = uninstall_widget->GetContentsView();
+  std::vector<views::View*> views_group = GetViews(
+      view, WebAppUninstallDialogDelegateView::DialogViewID::SUB_APP_LABEL);
+  ASSERT_EQ(views_group.size(), 3u);
+
+  std::vector<std::u16string> sub_apps_actual;
+  for (views::View* label : views_group) {
+    sub_apps_actual.emplace_back(
+        views::AsViewClass<views::Label>(label)->GetText());
+  }
+  EXPECT_EQ(sub_apps_actual, sub_apps_expected);
+
+  std::vector<views::View*> sub_app_icons = GetViews(
+      view, WebAppUninstallDialogDelegateView::DialogViewID::SUB_APP_ICON);
+  EXPECT_EQ(sub_app_icons.size(), 3u);
+  views::ImageView* icon_view =
+      views::AsViewClass<views::ImageView>(sub_app_icons[0]);
+  EXPECT_FALSE(icon_view->GetImageModel().IsEmpty());
+
+  uninstall_widget->CloseNow();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewIwaBrowserTest,
+                       SubAppsAreNotShownWhenNoneArePassed) {
+  auto bundle = web_app::IsolatedWebAppBuilder(
+                    web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+                        network::mojom::PermissionsPolicyFeature::kSubApps))
+                    .BuildBundle();
+
+  web_app::IsolatedWebAppUrlInfo parent_app = bundle->InstallChecked(profile());
+
+  const webapps::AppId parent_app_id = parent_app.app_id();
+
+  base::test::TestFuture<webapps::UninstallResultCode> test_future;
+  provider()->ui_manager().PresentUserUninstallDialog(
+      parent_app_id, webapps::WebappUninstallSource::kAppMenu,
+      browser()->GetWindow()->GetNativeWindow(), test_future.GetCallback());
+
+  views::NamedWidgetShownWaiter uninstall_dialog_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppUninstallDialogDelegateView");
+  auto* uninstall_widget = uninstall_dialog_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(uninstall_widget, nullptr);
+
+  views::View* view = uninstall_widget->GetContentsView();
+
+  std::vector<views::View*> views_group = GetViews(
+      view, WebAppUninstallDialogDelegateView::DialogViewID::SUB_APP_LABEL);
+  EXPECT_THAT(views_group, testing::IsEmpty());
+
+  EXPECT_EQ(view->GetViewByID(
+                std::to_underlying(WebAppUninstallDialogDelegateView::
+                                       DialogViewID::SUB_APP_DESCRIPTION)),
+            nullptr);
+  EXPECT_EQ(view->GetViewByID(
+                std::to_underlying(WebAppUninstallDialogDelegateView::
+                                       DialogViewID::SUB_APP_SCROLL_VIEW)),
+            nullptr);
 
   uninstall_widget->CloseNow();
 }

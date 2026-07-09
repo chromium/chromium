@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -11,6 +12,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
+#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
@@ -138,6 +141,11 @@ namespace web_app {
 class AppLock;
 
 namespace {
+
+struct UninstallDialogState {
+  IconMetadataFromDisk main_icon_metadata;
+  std::vector<SubAppUninstallMetadata> sub_apps;
+};
 
 #if BUILDFLAG(IS_WIN)
 void UninstallWebAppWithDialogFromStartupSwitch(
@@ -574,16 +582,70 @@ void WebAppUiManagerImpl::PresentUserUninstallDialog(
   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile_);
   CHECK(provider);
 
+  auto state =
+      base::MakeRefCounted<base::RefCountedData<UninstallDialogState>>();
+
+  std::vector<webapps::AppId> sub_app_ids =
+      provider->registrar_unsafe().GetAllSubAppIds(app_id);
+
+  auto barrier = base::BarrierClosure(
+      1 + sub_app_ids.size(),
+      base::BindOnce(
+          [](base::WeakPtr<WebAppUiManagerImpl> ui_manager,
+             const webapps::AppId& app_id,
+             webapps::WebappUninstallSource uninstall_source,
+             gfx::NativeWindow parent_window,
+             std::unique_ptr<ui::NativeWindowTracker> parent_window_tracker,
+             UninstallCompleteCallback complete_callback,
+             UninstallScheduledCallback uninstall_scheduled_callback,
+             scoped_refptr<base::RefCountedData<UninstallDialogState>> state) {
+            if (ui_manager) {
+              ui_manager->OnAllIconsReadForUninstall(
+                  app_id, uninstall_source, parent_window,
+                  std::move(parent_window_tracker),
+                  std::move(complete_callback),
+                  std::move(uninstall_scheduled_callback),
+                  std::move(state->data.main_icon_metadata),
+                  std::move(state->data.sub_apps));
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), app_id, uninstall_source,
+          parent_window, std::move(parent_window_tracker),
+          std::move(uninstall_complete_callback),
+          std::move(uninstall_scheduled_callback), state));
+
   provider->icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
       app_id,
       provider->registrar_unsafe().GetAppTrustedIconSizesFallbackToUntrusted(
           app_id),
       IconPurpose::ANY,
-      base::BindOnce(&WebAppUiManagerImpl::OnIconsReadForUninstall,
-                     weak_ptr_factory_.GetWeakPtr(), app_id, uninstall_source,
-                     parent_window, std::move(parent_window_tracker),
-                     std::move(uninstall_complete_callback),
-                     std::move(uninstall_scheduled_callback)));
+      base::BindOnce(
+          [](scoped_refptr<base::RefCountedData<UninstallDialogState>> state,
+             base::OnceClosure done, IconMetadataFromDisk icon_metadata) {
+            state->data.main_icon_metadata = std::move(icon_metadata);
+            std::move(done).Run();
+          },
+          state, barrier));
+
+  for (const webapps::AppId& sub_app_id : sub_app_ids) {
+    std::u16string sub_app_name = base::UTF8ToUTF16(
+        provider->registrar_unsafe().GetAppShortName(sub_app_id));
+
+    provider->icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
+        sub_app_id,
+        provider->registrar_unsafe().GetAppTrustedIconSizesFallbackToUntrusted(
+            sub_app_id),
+        web_app::IconPurpose::ANY,
+        base::BindOnce(
+            [](scoped_refptr<base::RefCountedData<UninstallDialogState>> state,
+               base::OnceClosure done, std::u16string sub_app_name,
+               IconMetadataFromDisk sub_app_icon_metadata) {
+              state->data.sub_apps.emplace_back(
+                  std::move(sub_app_name), std::move(sub_app_icon_metadata));
+              std::move(done).Run();
+            },
+            state, barrier, sub_app_name));
+  }
 }
 
 void WebAppUiManagerImpl::UninstallAppSilentlyForMigration(
@@ -809,14 +871,15 @@ webapps::AppId WebAppUiManagerImpl::GetAppIdForBrowser(
   return web_app::AppBrowserController::From(browser)->app_id();
 }
 
-void WebAppUiManagerImpl::OnIconsReadForUninstall(
+void WebAppUiManagerImpl::OnAllIconsReadForUninstall(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,
     gfx::NativeWindow parent_window,
     std::unique_ptr<ui::NativeWindowTracker> parent_window_tracker,
     UninstallCompleteCallback complete_callback,
     UninstallScheduledCallback uninstall_scheduled_callback,
-    IconMetadataFromDisk icon_metadata) {
+    IconMetadataFromDisk icon_metadata,
+    std::vector<SubAppUninstallMetadata> sub_apps) {
   if (parent_window && parent_window_tracker->WasNativeWindowDestroyed()) {
     OnUninstallCancelled(std::move(complete_callback),
                          std::move(uninstall_scheduled_callback));
@@ -849,10 +912,26 @@ void WebAppUiManagerImpl::OnIconsReadForUninstall(
       icon_metadata.icons_map[size] = bitmap;
     }
   }
+  // If sub app icon reading returned an empty map ,
+  // fallback to generating monogram icons.
+  for (auto& sub_app : sub_apps) {
+    if (sub_app.icon_metadata.icons_map.empty()) {
+      for (const auto& [size, bitmap] : GenerateIcons(sub_app.app_name)) {
+        sub_app.icon_metadata.icons_map[size] = bitmap;
+      }
+    }
+  }
+
+  // Sort sub apps by app name because
+  // current order is random due to entries being added
+  // to vector after icon reading is done.
+  std::sort(sub_apps.begin(), sub_apps.end(), [](const auto& a, const auto& b) {
+    return a.app_name < b.app_name;
+  });
 
   ShowWebAppUninstallDialog(
       profile_, app_id, uninstall_source, parent_window,
-      std::move(icon_metadata),
+      std::move(icon_metadata), std::move(sub_apps),
       base::BindOnce(&WebAppUiManagerImpl::ScheduleUninstallIfUserRequested,
                      weak_ptr_factory_.GetWeakPtr(), app_id, uninstall_source,
                      std::move(complete_callback),

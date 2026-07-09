@@ -33,6 +33,12 @@ enum class WebappUninstallSource;
 
 namespace views {
 class Checkbox;
+class Label;
+class ScrollView;
+}  // namespace views
+
+namespace web_app {
+struct SubAppUninstallMetadata;
 }
 
 // The dialog's view, owned by the views framework.
@@ -44,12 +50,23 @@ class WebAppUninstallDialogDelegateView
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kUninstallCheckboxId);
 
+  // IDs that identify a view within the app uninstall dialog view.
+  // Used to validate views in browsertests.
+  enum class DialogViewID : int {
+    VIEW_ID_NONE = 0,
+    SUB_APP_LABEL,
+    SUB_APP_ICON,
+    SUB_APP_DESCRIPTION,
+    SUB_APP_SCROLL_VIEW,
+  };
+
   // Constructor for view component of dialog.
   WebAppUninstallDialogDelegateView(
       Profile* profile,
       webapps::AppId app_id,
       webapps::WebappUninstallSource uninstall_source,
       web_app::IconMetadataFromDisk icon_metadata,
+      std::vector<web_app::SubAppUninstallMetadata> sub_apps,
       web_app::UninstallDialogCallback uninstall_choice_callback);
   WebAppUninstallDialogDelegateView(const WebAppUninstallDialogDelegateView&) =
       delete;
@@ -74,6 +91,8 @@ class WebAppUninstallDialogDelegateView
   void OnWebAppInstallManagerDestroyed() override;
 
   raw_ptr<views::Checkbox> checkbox_ = nullptr;
+  raw_ptr<views::Label> sub_apps_description_ = nullptr;
+  raw_ptr<views::ScrollView> sub_apps_scroll_view_ = nullptr;
   gfx::ImageSkia image_;
 
   // The web app we are showing the dialog for.
@@ -88,6 +107,8 @@ class WebAppUninstallDialogDelegateView
       install_manager_observation_{this};
 
   webapps::WebappUninstallSource uninstall_source_;
+  base::WeakPtrFactory<WebAppUninstallDialogDelegateView> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_UNINSTALL_DIALOG_VIEW_H_

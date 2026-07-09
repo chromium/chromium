@@ -91,6 +91,20 @@ void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
                                   base::TimeTicks start_time,
                                   UpdateReviewDialogCallback callback);
 
+struct SubAppUninstallMetadata {
+  explicit SubAppUninstallMetadata(std::u16string app_name,
+                                   IconMetadataFromDisk icon_metadata)
+      : app_name(std::move(app_name)),
+        icon_metadata(std::move(icon_metadata)) {}
+  SubAppUninstallMetadata(SubAppUninstallMetadata&&) = default;
+  SubAppUninstallMetadata& operator=(SubAppUninstallMetadata&&) = default;
+  SubAppUninstallMetadata(const SubAppUninstallMetadata&) = delete;
+  SubAppUninstallMetadata& operator=(const SubAppUninstallMetadata&) = delete;
+
+  std::u16string app_name;
+  IconMetadataFromDisk icon_metadata;
+};
+
 // Shows the web app uninstallation dialog on a page whenever user has decided
 // to uninstall an installed dPWA from a variety of OS surfaces and chrome.
 void ShowWebAppUninstallDialog(
@@ -99,6 +113,7 @@ void ShowWebAppUninstallDialog(
     webapps::WebappUninstallSource uninstall_source,
     gfx::NativeWindow parent,
     IconMetadataFromDisk icon_metadata,
+    std::vector<SubAppUninstallMetadata> sub_app_info,
     UninstallDialogCallback uninstall_dialog_result_callback);
 
 // Callback used to indicate whether a user has accepted the launch of a

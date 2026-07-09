@@ -7,7 +7,9 @@
 #include <string>
 #include <utility>
 
+#include "base/barrier_callback.h"
 #include "base/functional/bind.h"
+#include "base/i18n/message_formatter.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -45,7 +47,11 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/button/checkbox.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -99,6 +105,7 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
     webapps::AppId app_id,
     webapps::WebappUninstallSource uninstall_source,
     web_app::IconMetadataFromDisk icon_metadata,
+    std::vector<web_app::SubAppUninstallMetadata> sub_apps,
     web_app::UninstallDialogCallback uninstall_choice_callback)
     : app_id_(std::move(app_id)),
       profile_(profile),
@@ -146,6 +153,87 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
   gfx::Insets insets = layout_provider->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText);
   set_margins(insets + gfx::Insets::TLBR(insets.top(), 0, 0, 0));
+
+  if (!sub_apps.empty()) {
+    sub_apps_description_ = AddChildView(std::make_unique<views::Label>());
+    sub_apps_description_->SetID(
+        std::to_underlying(DialogViewID::SUB_APP_DESCRIPTION));
+
+    sub_apps_scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
+    sub_apps_scroll_view_->SetID(
+        std::to_underlying(DialogViewID::SUB_APP_SCROLL_VIEW));
+
+    sub_apps_description_->SetVisible(false);
+    sub_apps_scroll_view_->SetVisible(false);
+
+    std::u16string description =
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_APP_UNINSTALL_PROMPT_ADDITIONAL_UNINSTALLS_MESSAGE),
+            /*name0=*/"NUM_SUB_APPS", static_cast<int>(sub_apps.size()),
+            /*name1=*/"APP_NAME",
+            base::UTF8ToUTF16(registrar.GetAppShortName(app_id_)));
+
+    sub_apps_description_->SetText(description);
+    sub_apps_description_->SetMultiLine(/*multi_line=*/true);
+    sub_apps_description_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+    auto sub_apps_container = std::make_unique<views::BoxLayoutView>();
+    sub_apps_container->SetOrientation(
+        views::BoxLayout::Orientation::kVertical);
+    sub_apps_container->SetBetweenChildSpacing(
+        layout_provider->GetDistanceMetric(
+            views::DISTANCE_CONTROL_LIST_VERTICAL));
+    sub_apps_container->SetInsideBorderInsets(
+        gfx::Insets::TLBR(0,
+                          layout_provider->GetDistanceMetric(
+                              views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL),
+                          0, 0));
+
+    for (const web_app::SubAppUninstallMetadata& sub_app : sub_apps) {
+      auto box = std::make_unique<views::BoxLayoutView>();
+      box->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+      auto* sub_app_label =
+          box->AddChildView(std::make_unique<views::Label>(sub_app.app_name));
+
+      sub_app_label->SetGroup(std::to_underlying(DialogViewID::SUB_APP_LABEL));
+
+      sub_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      sub_app_label->SetMultiLine(true);
+
+      auto* sub_app_icon =
+          box->AddChildView(std::make_unique<views::ImageView>());
+
+      web_app::UnorderedSizeToBitmap sub_app_icon_bitmaps(
+          sub_app.icon_metadata.icons_map.begin(),
+          sub_app.icon_metadata.icons_map.end());
+      gfx::Size sub_app_image_size{kIconSizeInDip, kIconSizeInDip};
+      auto sub_app_image =
+          gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
+                             kIconSizeInDip, std::move(sub_app_icon_bitmaps)),
+                         sub_app_image_size);
+
+      sub_app_icon->SetImage(ui::ImageModel::FromImageSkia(sub_app_image));
+      sub_app_icon->SetImageSize(gfx::Size(kIconSizeInDip, kIconSizeInDip));
+      sub_app_icon->SetGroup(std::to_underlying(DialogViewID::SUB_APP_ICON));
+
+      box->SetBetweenChildSpacing(layout_provider->GetDistanceMetric(
+          views::DISTANCE_RELATED_LABEL_HORIZONTAL));
+
+      sub_apps_container->AddChildView(std::move(box));
+    }
+
+    sub_apps_scroll_view_->SetContents(std::move(sub_apps_container));
+    sub_apps_scroll_view_->SetHorizontalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
+
+    sub_apps_scroll_view_->ClipHeightTo(
+        0, layout_provider->GetDistanceMetric(
+               views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
+
+    sub_apps_scroll_view_->SetVisible(true);
+    sub_apps_description_->SetVisible(true);
+  }
 
   // Align the checkboxes to the start of the app name, not the start of the app
   // icon.
@@ -267,10 +355,11 @@ void ShowWebAppUninstallDialog(
     webapps::WebappUninstallSource uninstall_source,
     gfx::NativeWindow parent,
     IconMetadataFromDisk icon_metadata,
+    std::vector<SubAppUninstallMetadata> sub_apps,
     web_app::UninstallDialogCallback uninstall_dialog_result_callback) {
   auto* view = new WebAppUninstallDialogDelegateView(
       profile, app_id, uninstall_source, std::move(icon_metadata),
-      std::move(uninstall_dialog_result_callback));
+      std::move(sub_apps), std::move(uninstall_dialog_result_callback));
   constrained_window::CreateBrowserModalDialogViews(view, parent)->Show();
   view->ProcessAutoConfirmValue();
 }
