@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
 
-#include "base/feature_list.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_delegate_desktop.h"

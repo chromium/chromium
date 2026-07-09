@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/extensions/expandable_container_view.h"
 
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 
 using ExpandableContainerViewTest = ChromeViewsTestBase;

@@ -8,7 +8,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
 #include "chrome/browser/ui/views/frame/dbus_appmenu.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/dbus/utils/call_method.h"

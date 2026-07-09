@@ -8,10 +8,8 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/memory/ptr_util.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/extensions/extension_view_host_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/accelerator_priority.h"
@@ -19,13 +17,8 @@
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "components/sessions/content/session_tab_helper.h"
-#include "extensions/browser/extension_action.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/command.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/manifest_constants.h"
 #include "ui/views/view.h"
 
 using extensions::ActionInfo;

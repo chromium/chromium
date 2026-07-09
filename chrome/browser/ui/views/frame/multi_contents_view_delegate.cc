@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
 
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"

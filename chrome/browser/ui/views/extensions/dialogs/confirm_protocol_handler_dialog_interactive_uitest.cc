@@ -7,7 +7,6 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
-#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -13,7 +12,6 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
-#include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/test/split_view_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
@@ -26,14 +24,9 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/test/ui_controls.h"
 #include "ui/display/screen.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
-
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/ozone_platform.h"
-#endif  // BUILDFLAG(IS_OZONE)
 
 namespace {
 

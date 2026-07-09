@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/models/dialog_model.h"

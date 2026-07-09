@@ -22,7 +22,6 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_registrar.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"

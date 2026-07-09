@@ -29,7 +29,6 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/vector_icons.h"
-#include "ui/views/view_utils.h"
 
 namespace {
 

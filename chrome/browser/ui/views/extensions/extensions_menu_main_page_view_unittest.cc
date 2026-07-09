@@ -4,10 +4,8 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 
-#include <algorithm>
 
 #include "base/containers/to_vector.h"
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -41,8 +39,6 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/toggle_button.h"
-#include "ui/views/controls/styled_label.h"
-#include "ui/views/vector_icons.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/views_switches.h"
 

@@ -4,18 +4,13 @@
 
 #include "chrome/browser/ui/views/frame/browser_native_widget_aura.h"
 
-#include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_observer.h"
-#include "ui/base/hit_test.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
-#include "ui/gfx/font.h"
-#include "ui/menus/simple_menu_model.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/visibility_controller.h"

@@ -8,14 +8,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tab_icon_view.h"
-#include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
@@ -23,7 +18,6 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/test/views_test_utils.h"

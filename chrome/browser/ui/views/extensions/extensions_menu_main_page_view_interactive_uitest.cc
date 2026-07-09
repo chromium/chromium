@@ -50,7 +50,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/toggle_button.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
 
 namespace {

@@ -9,7 +9,6 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"

@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "components/eye_dropper/eye_dropper_view.h"
 #include "content/public/browser/eye_dropper.h"
 #include "content/public/browser/render_frame_host.h"

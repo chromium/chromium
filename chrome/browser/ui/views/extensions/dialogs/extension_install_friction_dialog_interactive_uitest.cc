@@ -7,11 +7,8 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_utils.h"
 #include "ui/views/controls/styled_label.h"
 
 class ExtensionInstallFrictionDialogUITest : public InteractiveBrowserTest {

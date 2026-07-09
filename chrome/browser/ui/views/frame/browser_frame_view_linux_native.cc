@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/linux/linux_ui.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/window/frame_background.h"
 #include "ui/views/window/frame_view_utils_linux.h"
 

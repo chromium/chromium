@@ -9,7 +9,6 @@
 
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
-#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

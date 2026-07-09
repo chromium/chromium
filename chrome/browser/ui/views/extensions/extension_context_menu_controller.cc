@@ -9,10 +9,7 @@
 
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"

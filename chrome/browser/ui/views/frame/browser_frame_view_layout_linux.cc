@@ -5,10 +5,8 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux.h"
 
 #include "base/i18n/rtl.h"
-#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/window/frame_view_utils_linux.h"
 

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/frame/contents_container_outline.h"
 
 #include "base/i18n/rtl.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -13,7 +12,6 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"

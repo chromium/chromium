@@ -12,7 +12,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
@@ -22,20 +21,10 @@
 #include "chrome/browser/ui/views/test/split_view_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/base/dragdrop/os_exchange_data.h"
-#include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/element_tracker.h"
-#include "ui/events/test/event_generator.h"
-#include "ui/gfx/geometry/point_f.h"
-#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/view_class_properties.h"
-#include "ui/views/widget/widget_utils.h"
 
 class MockTabDragController : public TabDragTarget::DragController {
  public:

@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/logging.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

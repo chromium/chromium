@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/extensions/chooser_dialog_view.h"
 
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/chrome_device_permissions_prompt.h"
 #include "chrome/browser/extensions/device_permissions_dialog_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -16,12 +15,8 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/link.h"
-#include "ui/views/controls/styled_label.h"
 
 ChooserDialogView::ChooserDialogView(
     std::unique_ptr<permissions::ChooserController> chooser_controller) {

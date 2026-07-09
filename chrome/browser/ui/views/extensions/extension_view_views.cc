@@ -4,9 +4,6 @@
 
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
 
-#include <memory>
-#include <utility>
-
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_view_host.h"

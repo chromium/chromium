@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 
 #include <memory>
-#include <string>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -13,10 +12,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/strings/string_util.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"

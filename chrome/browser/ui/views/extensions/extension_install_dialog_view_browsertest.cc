@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
@@ -46,7 +45,6 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -55,7 +53,6 @@
 #include "extensions/browser/extension_icon_manager.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/webstore_data_fetcher.h"
 #include "extensions/browser/webstore_install_result.h"
@@ -72,7 +69,6 @@
 #include "ui/events/event_utils.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/metrics.h"
 #include "ui/views/test/button_test_api.h"

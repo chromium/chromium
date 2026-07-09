@@ -13,8 +13,6 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/manifest.h"
-#include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"

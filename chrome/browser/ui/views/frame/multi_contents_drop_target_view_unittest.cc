@@ -7,23 +7,18 @@
 #include <memory>
 #include <optional>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
-#include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 

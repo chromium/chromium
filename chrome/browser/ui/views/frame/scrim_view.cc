@@ -5,10 +5,8 @@
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"

@@ -15,7 +15,6 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/permissions_manager_waiter.h"
-#include "ui/views/controls/button/toggle_button.h"
 
 namespace {
 

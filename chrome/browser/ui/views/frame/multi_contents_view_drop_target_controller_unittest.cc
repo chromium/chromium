@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -29,7 +28,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
-#include "ui/base/interaction/element_identifier.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"

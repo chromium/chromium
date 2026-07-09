@@ -8,10 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/ui/views/extensions/rich_radio_button.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/cascading_property.h"

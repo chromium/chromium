@@ -7,12 +7,9 @@
 #include <stdint.h>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
-#include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "ui/base/clipboard/clipboard.h"
 
 namespace {
 

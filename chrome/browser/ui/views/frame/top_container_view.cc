@@ -14,11 +14,7 @@
 #include "chrome/browser/ui/views/frame/themed_background.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_id.h"
-#include "ui/color/color_variant.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/scoped_canvas.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/view_class_properties.h"
 

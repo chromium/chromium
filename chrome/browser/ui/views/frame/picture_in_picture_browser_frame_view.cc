@@ -4,12 +4,9 @@
 
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 
-#include <algorithm>
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
@@ -18,9 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"

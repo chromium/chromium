@@ -8,10 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/fixed_flat_map.h"
-#include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
-#include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -32,20 +29,14 @@
 #include "chrome/browser/ui/views/frame/system_menu_model_builder.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "content/public/browser/desktop_capture_pip_utils.h"
-#include "media/capture/capture_switches.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider_key.h"
-#include "ui/events/event_handler.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/native_widget.h"
-#include "ui/wm/core/window_properties.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ui/base/window_properties.h"
@@ -60,10 +51,12 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/feature_list.h"
 #include "chrome/browser/win/mica_titlebar.h"
+#include "content/public/browser/desktop_capture_pip_utils.h"
 #include "media/base/media_switches.h"
-#elif BUILDFLAG(IS_MAC)
-#include "media/base/media_switches.h"
+#include "media/capture/capture_switches.h"
+#include "ui/wm/core/window_properties.h"
 #endif
 
 namespace {

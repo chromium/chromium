@@ -8,7 +8,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/base/models/image_model.h"
 #include "ui/linux/nav_button_provider.h"

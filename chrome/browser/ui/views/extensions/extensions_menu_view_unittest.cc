@@ -5,20 +5,16 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 
 #include <algorithm>
-#include <memory>
 #include <string>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/containers/to_vector.h"
-#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
@@ -29,14 +25,10 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "content/public/test/test_utils.h"
-#include "extensions/browser/load_error_reporter.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/events/event.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/view_utils.h"

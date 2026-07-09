@@ -6,18 +6,14 @@
 
 #include <algorithm>
 #include <optional>
-#include <variant>
 
 #include "base/callback_list.h"
-#include "base/check_is_test.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
@@ -56,12 +52,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
-#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -70,7 +64,6 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/resize_area.h"
-#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"

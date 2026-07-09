@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper.h"
 
 #include "build/build_config.h"
-#include "content/public/browser/eye_dropper.h"
 
 #if !defined(USE_AURA) && !BUILDFLAG(IS_MAC)
 // Used for the platforms that don't support an eye dropper.

@@ -15,7 +15,6 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/linux/linux_ui.h"
-#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/window/frame_view_utils_linux.h"
 #include "ui/views/window/window_button_order_provider.h"

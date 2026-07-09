@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
 
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_linux.h"
@@ -12,7 +11,6 @@
 #include "chrome/browser/ui/views/frame/browser_native_widget_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/widget/widget.h"
