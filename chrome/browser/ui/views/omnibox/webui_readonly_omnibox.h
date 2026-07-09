@@ -15,27 +15,43 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_context_menu_mixin.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/gfx/break_list.h"
 #include "ui/gfx/range/range.h"
+#include "ui/menus/simple_menu_model.h"
+#include "ui/views/controls/menu/menu_runner.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
 
+namespace gfx {
+class Point;
+}  // namespace gfx
+
+namespace views {
+class Widget;
+}  // namespace views
+
+class LocationBar;
+
 // WebUI-implementation of OmniboxView, which happens to be readonly,
 // as it counts on the popup to handle the editing.
 // TODO(crbug.com/500653057): Rename it in a manner more consistent with other
 // classes here. It's also no longer read-only!
-class WebUIReadOnlyOmnibox : public OmniboxView {
+class WebUIReadOnlyOmnibox
+    : public OmniboxView,
+      public OmniboxContextMenuMixin<ui::SimpleMenuModel::Delegate> {
  public:
   class UpdatePropagator {
    public:
@@ -46,8 +62,10 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
         toolbar_ui_api::mojom::FocusRequestTarget target) = 0;
   };
 
-  // Both parameters must outlive `this`.
-  WebUIReadOnlyOmnibox(OmniboxController* controller,
+  // Parameters must outlive `this`.
+  // `location_bar` may be null in tests.
+  WebUIReadOnlyOmnibox(LocationBar* location_bar,
+                       OmniboxController* controller,
                        UpdatePropagator& update_propagator);
   WebUIReadOnlyOmnibox(const WebUIReadOnlyOmnibox&) = delete;
   WebUIReadOnlyOmnibox& operator=(const WebUIReadOnlyOmnibox&) = delete;
@@ -59,6 +77,11 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
   void ResetTabState(content::WebContents* web_contents);
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnOmniboxAction(
       toolbar_ui_api::mojom::OmniboxActionPtr action);
+
+  void HandleContextMenu(views::Widget* widget,
+                         const gfx::Point& point,
+                         ui::mojom::MenuSourceType source_type,
+                         int edit_flags);
 
   // Updates the state of the display stored in `this` OmniboxView. Doesn't
   // notify the OmniboxEditModel or the WebUI end.
@@ -101,6 +124,14 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
   void SetEmphasis(bool emphasize, const gfx::Range& range) override;
   void UpdateSchemeStyle(const gfx::Range& range) override;
 
+  // ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override;
+
+  // OmniboxContextMenuMixinBase:
+  bool IsContextMenuForReadOnlyOmnibox() const override;
+  const gfx::FontList& FontListForContextMenu() const override;
+  bool IsContextMenuTextEditingCommandEnabled(int command_id) const override;
+
   toolbar_ui_api::mojom::OmniboxViewStatePtr ComputeMojoState() const;
 
   // Requests focus with particular omnibox-related target
@@ -119,6 +150,10 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
       const toolbar_ui_api::mojom::OmniboxActionKey& key);
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnMouse(
       const toolbar_ui_api::mojom::OmniboxActionMouse& mouse);
+
+  void OnContextMenuReady(views::Widget* widget,
+                          const gfx::Point& point,
+                          ui::mojom::MenuSourceType source_type);
 
   ui::DomKey LookupAndCacheDomKey(std::string_view key_str);
 
@@ -158,6 +193,13 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
   // State of the world at the time of last call to `OnBeforePossibleChange()`;
   // used in `OnAfterPossibleChange()` to figure out what changed.
   State state_before_change_;
+
+  // Used to show the context menu.
+  int edit_flags_for_context_menu_ = 0;  // See blink::ContextMenuDataEditFlags
+  std::unique_ptr<ui::SimpleMenuModel> menu_model_;
+  std::unique_ptr<views::MenuRunner> menu_runner_;
+
+  base::WeakPtrFactory<WebUIReadOnlyOmnibox> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_WEBUI_READONLY_OMNIBOX_H_

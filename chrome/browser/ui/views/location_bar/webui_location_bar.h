@@ -33,6 +33,10 @@ class WebUIPermissionDashboard;
 class Profile;
 class WebUIToolbarControlDelegate;
 
+namespace gfx {
+class Point;
+}  // namespace gfx
+
 // A LocationBar implementation using WebUI.
 class WebUILocationBar : public LocationBar,
                          public ContentSettingImageViewDelegate,
@@ -54,6 +58,12 @@ class WebUILocationBar : public LocationBar,
   void OnThemeChanged();
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnOmniboxAction(
       toolbar_ui_api::mojom::OmniboxActionPtr action);
+
+  // `edit_flags` use blink::ContextMenuDataEditFlags.
+  void HandleContextMenu(views::Widget* widget,
+                         const gfx::Point& point,
+                         ui::mojom::MenuSourceType source_type,
+                         int edit_flags);
 
   // LocationBar:
   void FocusLocation(bool is_user_initiated,

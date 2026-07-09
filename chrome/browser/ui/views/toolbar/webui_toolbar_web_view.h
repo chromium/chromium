@@ -289,6 +289,11 @@ class WebUIToolbarWebView
   // toolbar operation.
   void AdjustForToolbarFocus();
 
+  // Special path for omnibox context menu, since it needs the `edit_flags`.
+  void HandleOmniboxContextMenu(const gfx::Point& point,
+                                ui::mojom::MenuSourceType source_type,
+                                int edit_flags);
+
   void SetDidFirstNonEmptyPaintCallbackForTesting(base::OnceClosure callback);
   void SetTickClockForTesting(const base::TickClock* clock);
   views::WebView* GetWebViewForTesting();

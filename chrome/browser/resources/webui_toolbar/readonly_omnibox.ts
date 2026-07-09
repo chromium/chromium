@@ -184,6 +184,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     textInput.addEventListener('input', this.onInputInput.bind(this));
     textInput.addEventListener('keydown', this.onInputKeyDown.bind(this));
     textInput.addEventListener('keyup', this.onInputKeyUp.bind(this));
+
+    this.addEventListener('contextmenu', this.onContextMenu_.bind(this));
   }
 
   override updated(changedProperties: PropertyValues<this>): void {
@@ -608,6 +610,12 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       });
     }
     this.checkForSelectionChange_();
+  }
+
+  private onContextMenu_(event: PointerEvent): void {
+    // We want the menu handled on the C++ side, so we let default handling
+    // happen, and prevent the toolbar's own handling.
+    event.stopPropagation();
   }
 
   private checkForSelectionChange_(): void {

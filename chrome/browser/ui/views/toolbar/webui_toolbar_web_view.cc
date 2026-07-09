@@ -138,8 +138,10 @@ class WebUIToolbarInternalWebView : public views::WebView {
   METADATA_HEADER(WebUIToolbarInternalWebView, views::WebView)
 
  public:
-  explicit WebUIToolbarInternalWebView(content::BrowserContext* browser_context)
-      : views::WebView(browser_context) {}
+  WebUIToolbarInternalWebView(content::BrowserContext* browser_context,
+                              WebUIToolbarWebView* webui_toolbar_web_view)
+      : views::WebView(browser_context),
+        webui_toolbar_web_view_(webui_toolbar_web_view) {}
   ~WebUIToolbarInternalWebView() override = default;
 
   // views::WebView:
@@ -219,6 +221,16 @@ class WebUIToolbarInternalWebView : public views::WebView {
         event, GetFocusManager());
   }
 
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                         const content::ContextMenuParams& params) override {
+    gfx::Point point(params.x, params.y);
+    views::View::ConvertPointToScreen(this, &point);
+    webui_toolbar_web_view_->HandleOmniboxContextMenu(point, params.source_type,
+                                                      params.edit_flags);
+    // We handled this.
+    return true;
+  }
+
   std::optional<GURL> ConsumeDroppedUrl(const gfx::PointF& point) {
     std::optional<GURL> url;
     if (cached_dragged_file_position_.has_value() &&
@@ -232,6 +244,8 @@ class WebUIToolbarInternalWebView : public views::WebView {
   }
 
  private:
+  // owns `this` as a child view.
+  raw_ptr<WebUIToolbarWebView> webui_toolbar_web_view_;
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
@@ -306,8 +320,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  auto web_view =
-      std::make_unique<WebUIToolbarInternalWebView>(browser->GetProfile());
+  auto web_view = std::make_unique<WebUIToolbarInternalWebView>(
+      browser->GetProfile(), this);
   std::unique_ptr<content::WebContents> pre_created_contents;
 
   if (auto* manager = InitialWebUIManager::From(browser)) {
@@ -1315,6 +1329,16 @@ void WebUIToolbarWebView::OnFocusRequested(
   web_view_->RequestFocus();
   if (WebUIToolbarUI* web_ui = GetWebUIToolbarUI()) {
     web_ui->OnFocusRequested(target);
+  }
+}
+
+void WebUIToolbarWebView::HandleOmniboxContextMenu(
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type,
+    int edit_flags) {
+  if (location_bar_) {
+    location_bar_->HandleContextMenu(GetWidget(), point, source_type,
+                                     edit_flags);
   }
 }
 
