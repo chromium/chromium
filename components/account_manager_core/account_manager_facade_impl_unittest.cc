@@ -8,7 +8,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -33,7 +32,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -134,22 +132,6 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
   FakeAccountManager& operator=(const FakeAccountManager&) = delete;
   ~FakeAccountManager() override = default;
 
-  void AddObserver(AddObserverCallback cb) override {
-    mojo::Remote<crosapi::mojom::AccountManagerObserver> observer;
-    std::move(cb).Run(observer.BindNewPipeAndPassReceiver());
-    observers_.Add(std::move(observer));
-  }
-
-  void ShowAddAccountDialog(crosapi::mojom::AccountAdditionOptionsPtr,
-                            ShowAddAccountDialogCallback) override {
-    NOTREACHED();
-  }
-
-  void ShowReauthAccountDialog(const std::string&,
-                               ShowReauthAccountDialogCallback) override {
-    NOTREACHED();
-  }
-
   void SetMockAccessTokenFetcher(
       std::unique_ptr<MockAccessTokenFetcher> mock_access_token_fetcher) {
     access_token_fetcher_ = std::move(mock_access_token_fetcher);
@@ -179,13 +161,10 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
 
   void ClearReceivers() { receivers_.Clear(); }
 
-  void ClearObservers() { observers_.Clear(); }
-
  private:
   std::vector<Account> accounts_;
   std::unique_ptr<MockAccessTokenFetcher> access_token_fetcher_;
   mojo::ReceiverSet<crosapi::mojom::AccountManager> receivers_;
-  mojo::RemoteSet<crosapi::mojom::AccountManagerObserver> observers_;
 };
 
 MATCHER_P(AccountEq, expected_account, "") {

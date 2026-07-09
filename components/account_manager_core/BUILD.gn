@@ -28,8 +28,6 @@ component("account_manager_core") {
     "chromeos/account_manager.h",
     "chromeos/account_manager_mojo_service.cc",
     "chromeos/account_manager_mojo_service.h",
-    "chromeos/account_manager_ui.cc",
-    "chromeos/account_manager_ui.h",
     "pref_names.cc",
     "pref_names.h",
   ]
@@ -57,8 +55,6 @@ source_set("test_support") {
   sources = [
     "account_manager_test_util.cc",
     "account_manager_test_util.h",
-    "chromeos/fake_account_manager_ui.cc",
-    "chromeos/fake_account_manager_ui.h",
     "mock_account_manager_facade.cc",
     "mock_account_manager_facade.h",
   ]
@@ -77,7 +73,6 @@ source_set("unit_tests") {
 
   sources = [
     "account_manager_facade_impl_unittest.cc",
-    "account_manager_util_unittest.cc",
     "chromeos/account_manager_mojo_service_unittest.cc",
     "chromeos/account_manager_unittest.cc",
   ]

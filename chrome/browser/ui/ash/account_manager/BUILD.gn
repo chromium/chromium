@@ -46,3 +46,18 @@ source_set("test_support") {
     "//chrome/browser/profiles:profile",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "account_manager_dialog_coordinator_unittest.cc" ]
+
+  deps = [
+    ":account_manager",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/account_manager_core",
+    "//google_apis",
+    "//testing/gtest",
+  ]
+}

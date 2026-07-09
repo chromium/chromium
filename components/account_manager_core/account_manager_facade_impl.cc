@@ -38,19 +38,14 @@ using RemoteMinVersions = crosapi::mojom::AccountManager::MethodMinVersions;
 // UMA histogram names.
 const char kMojoDisconnectionsAccountManagerRemote[] =
     "AccountManager.MojoDisconnections.AccountManagerRemote";
-const char kMojoDisconnectionsAccountManagerObserverReceiver[] =
-    "AccountManager.MojoDisconnections.AccountManagerObserverReceiver";
 const char kMojoDisconnectionsAccountManagerAccessTokenFetcherRemote[] =
     "AccountManager.MojoDisconnections.AccessTokenFetcherRemote";
 
 // Error logs the Mojo connection stats when `event` occurs.
 void LogMojoConnectionStats(const std::string& event,
-                            int num_remote_disconnections,
-                            int num_receiver_disconnections) {
-  LOG(ERROR) << base::StringPrintf(
-      "%s. Number of remote disconnections: %d, "
-      "number of receiver disconnections: %d",
-      event.c_str(), num_remote_disconnections, num_receiver_disconnections);
+                            int num_remote_disconnections) {
+  LOG(ERROR) << base::StringPrintf("%s. Number of remote disconnections: %d",
+                                   event.c_str(), num_remote_disconnections);
 }
 
 }  // namespace
@@ -76,14 +71,6 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
         num_remote_disconnections_);
   }
 
-  // Returns a closure, which marks `this` instance as ready for use. This
-  // happens when `AccountManagerFacadeImpl`'s initialization sequence is
-  // complete.
-  base::OnceClosure UnblockTokenRequest() {
-    return base::BindOnce(&AccessTokenFetcher::UnblockTokenRequestInternal,
-                          weak_factory_.GetWeakPtr());
-  }
-
   // Returns a closure which handles Mojo connection errors tied to Account
   // Manager remote.
   base::OnceClosure AccountManagerRemoteDisconnectionClosure() {
@@ -102,9 +89,6 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
     DCHECK(!is_request_pending_);
     is_request_pending_ = true;
     scopes_ = scopes;
-    if (!are_token_requests_allowed_) {
-      return;
-    }
     StartInternal();
   }
 
@@ -115,15 +99,7 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
   }
 
  private:
-  void UnblockTokenRequestInternal() {
-    are_token_requests_allowed_ = true;
-    if (is_request_pending_) {
-      StartInternal();
-    }
-  }
-
   void StartInternal() {
-    DCHECK(are_token_requests_allowed_);
     bool is_remote_connected =
         account_manager_facade_impl_->CreateAccessTokenFetcher(
             account_manager::ToMojoAccountKey(account_key_),
@@ -198,7 +174,6 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
   const account_manager::AccountKey account_key_;
   const std::string oauth_consumer_name_;
 
-  bool are_token_requests_allowed_ = false;
   bool is_request_pending_ = false;
   // Number of Mojo pipe disconnections seen by `access_token_fetcher_`.
   int num_remote_disconnections_ = 0;
@@ -217,7 +192,6 @@ AccountManagerFacadeImpl::AccountManagerFacadeImpl(
       account_manager_remote_(std::move(account_manager_remote)),
       account_manager_(CHECK_DEREF(account_manager)) {
   DCHECK(init_finished);
-  initialization_callbacks_.emplace_back(std::move(init_finished));
 
   account_manager_observation_.Observe(account_manager);
 
@@ -227,14 +201,12 @@ AccountManagerFacadeImpl::AccountManagerFacadeImpl(
         weak_factory_.GetWeakPtr()));
   }
 
-  FinishInitSequenceIfNotAlreadyFinished();
+  std::move(init_finished).Run();
 }
 
 AccountManagerFacadeImpl::~AccountManagerFacadeImpl() {
   base::UmaHistogramCounts100(kMojoDisconnectionsAccountManagerRemote,
                               num_remote_disconnections_);
-  base::UmaHistogramCounts100(kMojoDisconnectionsAccountManagerObserverReceiver,
-                              num_receiver_disconnections_);
 }
 
 void AccountManagerFacadeImpl::AddObserver(
@@ -295,7 +267,6 @@ AccountManagerFacadeImpl::CreateAccessTokenFetcher(
 
   auto access_token_fetcher = std::make_unique<AccessTokenFetcher>(
       /*account_manager_facade_impl=*/this, account, consumer);
-  RunAfterInitializationSequence(access_token_fetcher->UnblockTokenRequest());
   RunOnAccountManagerRemoteDisconnection(
       access_token_fetcher->AccountManagerRemoteDisconnectionClosure());
   return std::move(access_token_fetcher);
@@ -320,44 +291,13 @@ void AccountManagerFacadeImpl::UpsertAccountForTesting(
     const Account& account,
     const std::string& token_value) {
   CHECK_IS_TEST();
-  // Defer execution until Mojo observers are ready.
-  RunAfterInitializationSequence(base::BindOnce(
-      [](base::WeakPtr<AccountManagerFacadeImpl> self, const Account& account,
-         const std::string& token_value) {
-        if (self) {
-          self->account_manager_->UpsertAccount(account.key, account.raw_email,
-                                                token_value);
-        }
-      },
-      weak_factory_.GetWeakPtr(), account, token_value));
+  account_manager_->UpsertAccount(account.key, account.raw_email, token_value);
 }
 
 void AccountManagerFacadeImpl::RemoveAccountForTesting(
     const AccountKey& account) {
   CHECK_IS_TEST();
-  // Defer execution until Mojo observers are ready.
-  RunAfterInitializationSequence(base::BindOnce(
-      [](base::WeakPtr<AccountManagerFacadeImpl> self,
-         const AccountKey& account) {
-        if (self) {
-          self->account_manager_->RemoveAccount(account);
-        }
-      },
-      weak_factory_.GetWeakPtr(), account));
-}
-
-void AccountManagerFacadeImpl::OnReceiverReceived(
-    mojo::PendingReceiver<AccountManagerObserver> receiver) {
-  receiver_ =
-      std::make_unique<mojo::Receiver<crosapi::mojom::AccountManagerObserver>>(
-          this, std::move(receiver));
-  // At this point (`receiver_` exists), we are subscribed to Account Manager.
-
-  receiver_->set_disconnect_handler(base::BindOnce(
-      &AccountManagerFacadeImpl::OnAccountManagerObserverReceiverDisconnected,
-      weak_factory_.GetWeakPtr()));
-
-  FinishInitSequenceIfNotAlreadyFinished();
+  account_manager_->RemoveAccount(account);
 }
 
 void AccountManagerFacadeImpl::OnTokenUpserted(const Account& account) {
@@ -368,10 +308,6 @@ void AccountManagerFacadeImpl::OnTokenUpserted(const Account& account) {
 void AccountManagerFacadeImpl::OnAccountRemoved(const Account& account) {
   observer_list_.Notify(&AccountManagerFacade::Observer::OnAccountRemoved,
                         account);
-}
-
-void AccountManagerFacadeImpl::OnSigninDialogClosed() {
-  observer_list_.Notify(&AccountManagerFacade::Observer::OnSigninDialogClosed);
 }
 
 bool AccountManagerFacadeImpl::CreateAccessTokenFetcher(
@@ -387,27 +323,6 @@ bool AccountManagerFacadeImpl::CreateAccessTokenFetcher(
   return true;
 }
 
-void AccountManagerFacadeImpl::FinishInitSequenceIfNotAlreadyFinished() {
-  if (is_initialized_) {
-    return;
-  }
-
-  is_initialized_ = true;
-  for (auto& cb : initialization_callbacks_) {
-    std::move(cb).Run();
-  }
-  initialization_callbacks_.clear();
-}
-
-void AccountManagerFacadeImpl::RunAfterInitializationSequence(
-    base::OnceClosure closure) {
-  if (!is_initialized_) {
-    initialization_callbacks_.emplace_back(std::move(closure));
-  } else {
-    std::move(closure).Run();
-  }
-}
-
 void AccountManagerFacadeImpl::RunOnAccountManagerRemoteDisconnection(
     base::OnceClosure closure) {
   if (!account_manager_remote_) {
@@ -421,24 +336,12 @@ void AccountManagerFacadeImpl::RunOnAccountManagerRemoteDisconnection(
 void AccountManagerFacadeImpl::OnAccountManagerRemoteDisconnected() {
   num_remote_disconnections_++;
   LogMojoConnectionStats("Account Manager disconnected",
-                         num_remote_disconnections_,
-                         num_receiver_disconnections_);
+                         num_remote_disconnections_);
   for (auto& cb : account_manager_remote_disconnection_handlers_) {
     std::move(cb).Run();
   }
   account_manager_remote_disconnection_handlers_.clear();
   account_manager_remote_.reset();
-}
-
-void AccountManagerFacadeImpl::OnAccountManagerObserverReceiverDisconnected() {
-  num_receiver_disconnections_++;
-  LogMojoConnectionStats("Account Manager Observer disconnected",
-                         num_remote_disconnections_,
-                         num_receiver_disconnections_);
-}
-
-bool AccountManagerFacadeImpl::IsInitialized() {
-  return is_initialized_;
 }
 
 void AccountManagerFacadeImpl::FlushMojoForTesting() {

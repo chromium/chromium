@@ -12,6 +12,4 @@ AccountManagerFacade::Observer::~Observer() = default;
 AccountManagerFacade::AccountManagerFacade() = default;
 AccountManagerFacade::~AccountManagerFacade() = default;
 
-void AccountManagerFacade::Observer::OnSigninDialogClosed() {}
-
 }  // namespace account_manager

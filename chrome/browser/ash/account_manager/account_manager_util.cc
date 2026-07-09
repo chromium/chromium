@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/ash/account_manager/account_manager_ui_impl.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
@@ -20,7 +19,6 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -72,13 +70,6 @@ void InitializeAccountManager(
                               std::move(shared_url_loader_factory),
                               base::BindRepeating(&DelayNetworkCall),
                               std::move(initialization_callback));
-
-  crosapi::AccountManagerMojoService* account_manager_mojo_service =
-      AccountManagerFactory::Get()->GetAccountManagerMojoService(
-          /*profile_path=*/cryptohome_root_dir.value());
-
-  account_manager_mojo_service->SetAccountManagerUI(
-      std::make_unique<AccountManagerUIImpl>());
 }
 
 }  // namespace ash

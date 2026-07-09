@@ -8,21 +8,13 @@
 #include <memory>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_upsertion_result.h"
 #include "components/account_manager_core/chromeos/access_token_fetcher.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/account_manager_core/chromeos/account_manager_ui.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
-
-namespace account_manager {
-enum class AccountAdditionSource : int;
-}
 
 namespace crosapi {
 
@@ -30,12 +22,9 @@ namespace crosapi {
 // It enables lacros-chrome to interact with accounts stored in the Chrome OS
 // Account Manager.
 //
-// TODO(b/365741912, b/365902693): This service is a temporary stepping stone
-// for direct Ash callers that still need the current Account Manager dialog
-// path. After all callers are off AccountManagerFacade, create an Ash-owned
-// dialog coordinator and switch those direct callers from this service to that
-// coordinator. Furthermore, once the remaining crosapi/facade users are gone,
-// delete this service and the crosapi::mojom::AccountManager interface.
+// TODO(b/365741912, b/365902693): Delete this service and the
+// crosapi::mojom::AccountManager interface after the remaining facade users are
+// migrated to direct in-process Account Manager APIs.
 class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
     : public mojom::AccountManager {
  public:
@@ -48,31 +37,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
 
   void BindReceiver(mojo::PendingReceiver<mojom::AccountManager> receiver);
 
-  void SetAccountManagerUI(
-      std::unique_ptr<account_manager::AccountManagerUI> account_manager_ui);
-
-  // TODO(b/365741912, b/365902693): Remove this temporary completion callback
-  // once inline login is routed through the Ash-owned dialog coordinator.
-  base::OnceCallback<void(const account_manager::AccountUpsertionResult&)>
-  CreateInlineLoginAccountUpsertionFinishedCallback();
-
-  // Helpers for direct Ash callers. These record launch-source UMA before
-  // opening the dialog and result-status UMA before forwarding the completion
-  // callback.
-  void ShowAddAccountDialog(account_manager::AccountAdditionSource source,
-                            mojom::AccountAdditionOptionsPtr options,
-                            ShowAddAccountDialogCallback callback);
-  void ShowReauthAccountDialog(account_manager::AccountAdditionSource source,
-                               const std::string& email,
-                               ShowReauthAccountDialogCallback callback);
-
   // crosapi::mojom::AccountManager:
-  void AddObserver(AddObserverCallback callback) override;
-  void ShowAddAccountDialog(mojom::AccountAdditionOptionsPtr options,
-                            ShowAddAccountDialogCallback callback) override;
-  void ShowReauthAccountDialog(
-      const std::string& email,
-      ShowReauthAccountDialogCallback callback) override;
   void CreateAccessTokenFetcher(
       mojom::AccountKeyPtr mojo_account_key,
       const std::string& oauth_consumer_name,
@@ -81,37 +46,19 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
  private:
   friend class AccountManagerMojoServiceTest;
 
-  // Handles the result reported after the inline login flow finishes.
-  void OnAccountUpsertionFinished(
-      const account_manager::AccountUpsertionResult& result);
-  // A callback for `AccountManagerUI::ShowAccountAdditionDialog`.
-  void OnSigninDialogClosed();
-  void FinishUpsertAccount(
-      const account_manager::AccountUpsertionResult& result);
   // Deletes `request` from `pending_access_token_requests_`, if present.
   void DeletePendingAccessTokenFetchRequest(AccessTokenFetcher* request);
 
-  // Notifies observers that the account addition / re-authentication dialog was
-  // closed (either successfully, or the user cancelled the flow).
-  void NotifySigninDialogClosed();
-
-  void FlushMojoForTesting();
   int GetNumPendingAccessTokenRequests() const;
 
-  ShowAddAccountDialogCallback account_addition_callback_;
-  ShowReauthAccountDialogCallback account_reauth_callback_;
-  bool account_signin_in_progress_ = false;
-  bool is_reauth_ = false;
   const raw_ptr<account_manager::AccountManager> account_manager_;
-  std::unique_ptr<account_manager::AccountManagerUI> account_manager_ui_;
   std::vector<std::unique_ptr<AccessTokenFetcher>>
       pending_access_token_requests_;
 
-  // Don't add new members below this. `receivers_` and `observers_` should be
-  // destroyed as soon as `this` is getting destroyed so that we don't deal
-  // with message handling on a partially destroyed object.
+  // Don't add new members below this. `receivers_` should be destroyed as soon
+  // as `this` is getting destroyed so that we don't deal with message handling
+  // on a partially destroyed object.
   mojo::ReceiverSet<mojom::AccountManager> receivers_;
-  mojo::RemoteSet<mojom::AccountManagerObserver> observers_;
 
   base::WeakPtrFactory<AccountManagerMojoService> weak_ptr_factory_{this};
 };

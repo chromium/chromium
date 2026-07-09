@@ -20,7 +20,6 @@
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class OAuth2AccessTokenFetcher;
@@ -34,7 +33,6 @@ class AccountManager;
 // |account_manager::AccountManager|.
 class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
     : public AccountManagerFacade,
-      public crosapi::mojom::AccountManagerObserver,
       public AccountManager::Observer {
  public:
   // `account_manager` is the local AccountManager instance. It must be non-null
@@ -79,31 +77,14 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   void OnTokenUpserted(const Account& account) override;
   void OnAccountRemoved(const Account& account) override;
 
-  // crosapi::mojom::AccountManagerObserver overrides:
-  void OnSigninDialogClosed() override;
-
  private:
-  FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
-                           InitializationStatusIsCorrectlySet);
-  FRIEND_TEST_ALL_PREFIXES(
-      AccountManagerFacadeImplTest,
-      AccessTokenFetcherCanBeCreatedBeforeAccountManagerFacadeInitialization);
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
                            HistogramsForZeroAccountManagerRemoteDisconnections);
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
                            HistogramsForAccountManagerRemoteDisconnection);
-  FRIEND_TEST_ALL_PREFIXES(
-      AccountManagerFacadeImplTest,
-      HistogramsForZeroAccountManagerObserverReceiverDisconnections);
-  FRIEND_TEST_ALL_PREFIXES(
-      AccountManagerFacadeImplTest,
-      HistogramsForAccountManagerObserverReceiverDisconnections);
 
   // A utility class to fetch access tokens over Mojo.
   class AccessTokenFetcher;
-
-  void OnReceiverReceived(
-      mojo::PendingReceiver<AccountManagerObserver> receiver);
 
   // Proxy method to call `CreateAccessTokenFetcher` on
   // `account_manager_remote_`. Returns `true` if `account_manager_remote_` is
@@ -114,30 +95,11 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
       crosapi::mojom::AccountManager::CreateAccessTokenFetcherCallback
           callback);
 
-  // The initialization sequence for `AccountManagerFacadeImpl` consists of
-  // adding an observer to the remote.
-  //
-  // Remote-querying methods won't actually produce a remote call until the
-  // initialization sequence is finished (instead, they will be queued in
-  // `initialization_callbacks_`).
-  //
-  // `FinishInitSequenceIfNotAlreadyFinished` invokes callbacks from
-  // `initialization_callbacks_` and marks the initialization as finished.
-  void FinishInitSequenceIfNotAlreadyFinished();
-  // `closure` will be invoked after the initialization sequence is finished.
-  // See `FinishInitSequenceIfNotAlreadyFinished` for details.
-  void RunAfterInitializationSequence(base::OnceClosure closure);
-
   // Runs `closure` if/when `account_manager_remote_` gets disconnected.
   void RunOnAccountManagerRemoteDisconnection(base::OnceClosure closure);
 
   // Mojo disconnect handler for `account_manager_remote_`.
   void OnAccountManagerRemoteDisconnected();
-
-  // Mojo disconnect handler for `receiver_`.
-  void OnAccountManagerObserverReceiverDisconnected();
-
-  bool IsInitialized();
 
   void FlushMojoForTesting();
 
@@ -147,16 +109,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   // Number of Mojo pipe disconnections seen by `account_manager_remote_`.
   int num_remote_disconnections_ = 0;
 
-  // Number of Mojo pipe disconnections seen by `receiver_`.
-  int num_receiver_disconnections_ = 0;
-
-  bool is_initialized_ = false;
-  std::vector<base::OnceClosure> initialization_callbacks_;
   std::vector<base::OnceClosure> account_manager_remote_disconnection_handlers_;
 
   mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote_;
-  std::unique_ptr<mojo::Receiver<crosapi::mojom::AccountManagerObserver>>
-      receiver_;
 
   base::ObserverList<AccountManagerFacade::Observer> observer_list_;
 

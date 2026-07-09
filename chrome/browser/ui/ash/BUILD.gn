@@ -43,6 +43,7 @@ group("unit_tests") {
 
   deps = [
     "//chrome/browser/ui/ash/accessibility:unit_tests",
+    "//chrome/browser/ui/ash/account_manager:unit_tests",
     "//chrome/browser/ui/ash/app_access:unit_tests",
     "//chrome/browser/ui/ash/app_icon_color_cache:unit_tests",
     "//chrome/browser/ui/ash/arc:unit_tests",
