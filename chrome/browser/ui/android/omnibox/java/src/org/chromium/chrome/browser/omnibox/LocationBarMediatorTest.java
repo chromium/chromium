@@ -3534,6 +3534,44 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testHandleKeyNavigationEvent_navigateToFirstItemInTypedState() {
+        doReturn(KeyEvent.KEYCODE_TAB).when(mKeyEvent).getKeyCode();
+        doReturn(true).when(mKeyEvent).hasNoModifiers();
+        doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
+
+        doReturn(View.VISIBLE).when(mUrlBar).getVisibility();
+        doReturn(View.VISIBLE).when(mPlusButton).getVisibility();
+        doReturn(View.GONE).when(mDeleteButton).getVisibility();
+        doReturn(View.VISIBLE).when(mActivationChip).getVisibility();
+        doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
+
+        var input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.SEARCH).setUserText("user text");
+        mMediator.beginInput(input);
+
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
+        LocationBarSelectionController selectionController =
+                mMediator.getSelectionControllerForTesting();
+        verify(mAutocompleteCoordinator).selectFirstItem();
+        verify(mAutocompleteCoordinator).handleKeyEvent(KeyEvent.KEYCODE_TAB, mKeyEvent);
+        assertTrue(selectionController.isAutocompleteSelected());
+
+        doReturn(true)
+                .when(mAutocompleteCoordinator)
+                .handleKeyEvent(KeyEvent.KEYCODE_TAB, mKeyEvent);
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
+        assertEquals(2, selectionController.getPosition().intValue());
+        assertTrue(selectionController.isAutocompleteSelected());
+
+        doReturn(false).when(mKeyEvent).hasNoModifiers();
+        doReturn(true).when(mKeyEvent).hasModifiers(KeyEvent.META_SHIFT_ON);
+        when(mAutocompleteCoordinator.getSelectedIndex()).thenReturn(1, 0);
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
+        assertFalse(selectionController.isAutocompleteSelected());
+    }
+
+    @Test
     public void testShowUrlBarCursorWithoutFocusAnimations_disabledState_earlyReturns() {
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);

@@ -2509,6 +2509,10 @@ class LocationBarMediator
         boolean isBackwardsTab = KeyNavigationUtil.isTabBackward(event);
         boolean isForwardTab = KeyNavigationUtil.isTabForward(event);
         boolean isActivation = KeyNavigationUtil.isButtonActivate(event);
+        boolean isTypedStateConventionalRequest =
+                mCurrentInput != null
+                        && !mCurrentInput.isInZeroPrefixContext()
+                        && mCurrentInput.isConventionalRequestType();
         if (mSelectionController.isAutocompleteSelected()) {
             if (isActivation) {
                 return mAutocompleteCoordinator.handleKeyEvent(keyCode, event);
@@ -2523,6 +2527,9 @@ class LocationBarMediator
             boolean selectionShouldLeaveAutocomplete =
                     selectionCouldLeaveAutocomplete
                             && !Objects.equals(positionBeforeHandle, positionAfterHandle);
+            boolean autocompleteSelectionMovedFromSecondToFirst =
+                    Objects.requireNonNullElse(positionAfterHandle, -1) == 0
+                            && Objects.requireNonNullElse(positionBeforeHandle, -1) == 1;
             if (selectionShouldLeaveAutocomplete) {
                 mAutocompleteCoordinator.resetSelection();
                 autocompleteHandled = false;
@@ -2533,6 +2540,10 @@ class LocationBarMediator
                             UrlBar.ScrollType.NO_SCROLL,
                             TextSelection.SELECT_ALL);
                 }
+            } else if (isTypedStateConventionalRequest
+                    && isBackwardsTab
+                    && autocompleteSelectionMovedFromSecondToFirst) {
+                mSelectionController.selectPreviousItem();
             }
 
             if (autocompleteHandled) return true;
@@ -2551,10 +2562,6 @@ class LocationBarMediator
                 mAutocompleteCoordinator.selectLastItem();
             }
         } else {
-            boolean isTypedStateConventionalRequest =
-                    mCurrentInput != null
-                            && !mCurrentInput.isInZeroPrefixContext()
-                            && mCurrentInput.isConventionalRequestType();
             mSelectionController.selectNextItem();
             if (mSelectionController.isAutocompleteSelected()) {
                 // We just moved forwards to the autocomplete list. The first item of that list
