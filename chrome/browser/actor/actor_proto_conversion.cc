@@ -148,6 +148,23 @@ std::optional<PageTarget> ToPageTarget(
                     target.document_identifier().serialized_token()});
   }
 }
+
+AttemptOtpFillingToolRequest::OtpType ToActorOtpType(
+    optimization_guide::proto::AttemptOtpFillingAction::OtpType proto_enum) {
+  using OtpType = AttemptOtpFillingToolRequest::OtpType;
+  switch (proto_enum) {
+    case optimization_guide::proto::AttemptOtpFillingAction::OTP_TYPE_SMS:
+      return OtpType::kSms;
+    case optimization_guide::proto::AttemptOtpFillingAction::OTP_TYPE_EMAIL:
+      return OtpType::kEmail;
+    case optimization_guide::proto::AttemptOtpFillingAction::
+        OTP_TYPE_AUTHENTICATOR_APP:
+      return OtpType::kAuthenticatorApp;
+    default:
+      return OtpType::kUnknown;
+  }
+}
+
 base::expected<std::unique_ptr<ToolRequest>, mojom::ActionResultCode>
 CreateClickRequest(const ClickAction& action) {
   TabHandle tab_handle = GetTabHandle(action);
@@ -652,7 +669,8 @@ std::unique_ptr<ToolRequest> CreateAttemptOtpFillingRequest(
   }
 
   return std::make_unique<AttemptOtpFillingToolRequest>(
-      tab_handle, std::move(trigger_fields), action.for_signin());
+      tab_handle, std::move(trigger_fields), action.for_signin(),
+      ToActorOtpType(action.predicted_otp_type()));
 }
 
 std::unique_ptr<ToolRequest> CreateScriptToolRequest(

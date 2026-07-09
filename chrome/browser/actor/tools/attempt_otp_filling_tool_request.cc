@@ -20,10 +20,12 @@ namespace actor {
 AttemptOtpFillingToolRequest::AttemptOtpFillingToolRequest(
     tabs::TabHandle tab_handle,
     std::vector<PageTarget> trigger_fields,
-    bool for_signin)
+    bool for_signin,
+    OtpType predicted_otp_type)
     : TabToolRequest(tab_handle),
       trigger_fields_(std::move(trigger_fields)),
-      for_signin_(for_signin) {}
+      for_signin_(for_signin),
+      predicted_otp_type_(predicted_otp_type) {}
 
 AttemptOtpFillingToolRequest::AttemptOtpFillingToolRequest(
     const AttemptOtpFillingToolRequest&) = default;
@@ -36,10 +38,10 @@ AttemptOtpFillingToolRequest::~AttemptOtpFillingToolRequest() = default;
 ToolRequest::CreateToolResult AttemptOtpFillingToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  return {
-      std::make_unique<AttemptOtpFillingTool>(
-          task_id, tool_delegate, GetTabHandle(), trigger_fields_, for_signin_),
-      MakeOkResult()};
+  return {std::make_unique<AttemptOtpFillingTool>(
+              task_id, tool_delegate, GetTabHandle(), trigger_fields_,
+              for_signin_, predicted_otp_type_),
+          MakeOkResult()};
 }
 
 std::string_view AttemptOtpFillingToolRequest::Name() const {

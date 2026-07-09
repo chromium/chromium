@@ -12,6 +12,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -33,11 +34,14 @@ namespace actor {
 // If this is part of a sign-in flow, set `for_signin` to true.
 class AttemptOtpFillingTool : public Tool {
  public:
-  AttemptOtpFillingTool(TaskId task_id,
-                        ToolDelegate& tool_delegate,
-                        tabs::TabHandle tab_handle,
-                        std::vector<PageTarget> trigger_fields,
-                        bool for_signin);
+  AttemptOtpFillingTool(
+      TaskId task_id,
+      ToolDelegate& tool_delegate,
+      tabs::TabHandle tab_handle,
+      std::vector<PageTarget> trigger_fields,
+      bool for_signin,
+      AttemptOtpFillingToolRequest::OtpType predicted_otp_type =
+          AttemptOtpFillingToolRequest::OtpType::kUnknown);
   ~AttemptOtpFillingTool() override;
 
   // Tool:
@@ -74,6 +78,7 @@ class AttemptOtpFillingTool : public Tool {
   std::vector<PageTarget> trigger_fields_;
   std::vector<autofill::FieldGlobalId> trigger_field_ids_;
   bool for_signin_;
+  AttemptOtpFillingToolRequest::OtpType predicted_otp_type_;
 
   // `DomainRelationChecker` finds relationship between origins (exactly the
   // same, affiliated, ePSL match, weak match, no match). used to determine if

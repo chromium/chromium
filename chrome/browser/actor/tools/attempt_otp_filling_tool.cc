@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -39,6 +40,20 @@ namespace actor {
 namespace {
 
 constexpr base::TimeDelta kGmailOtpOptInCoolOffPeriod = base::Days(90);
+
+const char* PredictedOtpTypeToString(AttemptOtpFillingToolRequest::OtpType type) {
+  switch (type) {
+    case AttemptOtpFillingToolRequest::OtpType::kUnknown:
+      return "Unknown";
+    case AttemptOtpFillingToolRequest::OtpType::kSms:
+      return "Sms";
+    case AttemptOtpFillingToolRequest::OtpType::kEmail:
+      return "Email";
+    case AttemptOtpFillingToolRequest::OtpType::kAuthenticatorApp:
+      return "AuthenticatorApp";
+  }
+  NOTREACHED();
+}
 
 void OnOtpFrameOriginMatchEvaluated(
     bool should_use_strong_matching,
@@ -181,11 +196,13 @@ AttemptOtpFillingTool::AttemptOtpFillingTool(
     ToolDelegate& tool_delegate,
     tabs::TabHandle tab_handle,
     std::vector<PageTarget> trigger_fields,
-    bool for_signin)
+    bool for_signin,
+    AttemptOtpFillingToolRequest::OtpType predicted_otp_type)
     : Tool(task_id, tool_delegate),
       tab_handle_(tab_handle),
       trigger_fields_(std::move(trigger_fields)),
-      for_signin_(for_signin) {
+      for_signin_(for_signin),
+      predicted_otp_type_(predicted_otp_type) {
   // Guaranteed by validation in `CreateAttemptOtpFillingRequest` in
   // `actor_proto_conversion.cc`.
   CHECK(!trigger_fields_.empty());
@@ -327,11 +344,14 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
 }
 
 void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
-  LogJournalEvent("AttemptOtpFillingTool::Invoke",
-                  JournalDetailsBuilder()
-                      .Add("trigger_fields_count", trigger_field_ids_.size())
-                      .Add("for_signin", for_signin_)
-                      .Build());
+  journal().Log(
+      JournalURL(), task_id(), "AttemptOtpFillingTool::Invoke",
+      JournalDetailsBuilder()
+          .Add("trigger_fields_count", trigger_field_ids_.size())
+          .Add("for_signin", for_signin_)
+          .Add("predicted_otp_type",
+               PredictedOtpTypeToString(predicted_otp_type_))
+          .Build());
 
   content::RenderFrameHost* otp_frame =
       GetOtpFrame(GetTargetTab(), trigger_fields_);

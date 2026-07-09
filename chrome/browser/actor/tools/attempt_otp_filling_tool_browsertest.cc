@@ -400,9 +400,9 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   std::vector<PageTarget> trigger_fields = {otp_field_1, otp_field_2,
                                             otp_field_3, otp_field_4};
   std::unique_ptr<ToolRequest> request =
-      std::make_unique<AttemptOtpFillingToolRequest>(active_tab()->GetHandle(),
-                                                     trigger_fields,
-                                                     /*for_signin=*/true);
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(), trigger_fields,
+          /*for_signin=*/true);
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()

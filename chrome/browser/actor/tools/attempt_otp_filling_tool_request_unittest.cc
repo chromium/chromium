@@ -63,6 +63,8 @@ TEST_F(AttemptOtpFillingToolRequestTest,
       action->mutable_attempt_otp_filling();
   otp_action->set_tab_id(100);
   otp_action->set_for_signin(true);
+  otp_action->set_predicted_otp_type(
+      optimization_guide::proto::AttemptOtpFillingAction::OTP_TYPE_EMAIL);
   optimization_guide::proto::ActionTarget* target1 =
       otp_action->add_target_fields();
   target1->set_content_node_id(123);
@@ -86,6 +88,8 @@ TEST_F(AttemptOtpFillingToolRequestTest,
   EXPECT_EQ(100, otp_request.GetTabHandle().raw_value());
 
   EXPECT_TRUE(otp_request.GetForSigninForTesting());
+  EXPECT_EQ(AttemptOtpFillingToolRequest::OtpType::kEmail,
+            otp_request.GetPredictedOtpTypeForTesting());
 
   const std::vector<PageTarget>& trigger_fields =
       otp_request.GetTriggerFieldsForTesting();
