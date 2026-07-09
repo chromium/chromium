@@ -72,9 +72,7 @@ SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate(
       std::move(password_manager_error_message_helper_bridge);
 }
 
-SaveUpdatePasswordMessageDelegate::~SaveUpdatePasswordMessageDelegate() {
-  CHECK(web_contents_ == nullptr, base::NotFatalUntil::M152);
-}
+SaveUpdatePasswordMessageDelegate::~SaveUpdatePasswordMessageDelegate() = default;
 
 void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPrompt(
     content::WebContents* web_contents,
