@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -20,6 +23,9 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/test/mock_permission_request.h"
+#include "components/permissions/test/permission_request_observer.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/test/browser_test.h"
@@ -27,6 +33,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -194,3 +201,105 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
   EXPECT_EQ(monitor.event().GetType(), blink::WebInputEvent::Type::kMouseLeave);
 }
 
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
+                       PermissionPromptRemovalPreventsPopupClose) {
+  // Setup: Ensure are in AIM state and show the popup.
+  location_bar()->GetOmniboxController()->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+
+  auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
+  ASSERT_TRUE(presenter);
+  presenter->Show();
+
+  EXPECT_EQ(location_bar()
+                ->GetOmniboxController()
+                ->popup_state_manager()
+                ->popup_state(),
+            OmniboxPopupState::kAim);
+
+  // Wait for the popup state transition delayed task in
+  // `location_bar_view` (100ms) to finish.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !location_bar()->in_popup_state_transition(); }));
+
+  // Simulate `OnPromptRemoved` notification (as if permission prompt was
+  // dismissed).
+  static_cast<permissions::PermissionRequestManager::Observer*>(presenter)
+      ->OnPromptRemoved();
+
+  // Simulate loss of widget activation while in permission prompt transition.
+  static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+      nullptr, /*active=*/false);
+
+  // Verify popup state is still kAim (omnibox did not close due to activation
+  // change) due to the protective flag preventing omnibox from closing until it
+  // receives focus as the permission prompt asked.
+  EXPECT_EQ(location_bar()
+                ->GetOmniboxController()
+                ->popup_state_manager()
+                ->popup_state(),
+            OmniboxPopupState::kAim);
+
+  // Simulate widget activation returning to the omnibox popup (`active` is
+  // true). The protective flag preventing omnibox from closing is now removed.
+  static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+      nullptr, /*active=*/true);
+
+  // Now simulate subsequent widget activation loss after focus transition
+  // complete (omnibox is back in focus, but user clicks outside of omnibox).
+  static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+      nullptr, /*active=*/false);
+
+  // Verify popup state is now kNone (omnibox closed) due to no more protective
+  // flag.
+  EXPECT_EQ(location_bar()
+                ->GetOmniboxController()
+                ->popup_state_manager()
+                ->popup_state(),
+            OmniboxPopupState::kNone);
+}
+
+// Verify that active permission prompt taking focus prevents omnibox
+// popup close.
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
+                       ActivePermissionPromptPreventsPopupClose) {
+  // Setup: Ensure are in AIM state and show the popup.
+  location_bar()->GetOmniboxController()->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+
+  auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
+  ASSERT_TRUE(presenter);
+  presenter->Show();
+
+  auto* content = presenter->GetWebUIContent();
+  ASSERT_TRUE(content);
+
+  auto* permission_manager =
+      permissions::PermissionRequestManager::FromWebContents(
+          content->GetWebContents());
+  ASSERT_TRUE(permission_manager);
+
+  // Add a mock permission request for a standard origin to set
+  // IsRequestInProgress() to true without auto-approving. This avoids needing
+  // a page navigation while allowing for a website to request a permission.
+  // Cannot be about:blank due to DCheck.
+  permissions::PermissionRequestObserver observer(content->GetWebContents());
+  auto request = std::make_unique<permissions::MockPermissionRequest>(
+      GURL("https://example.com"), permissions::RequestType::kMicStream);
+  permission_manager->AddRequest(
+      content->GetWebContents()->GetPrimaryMainFrame(), std::move(request));
+  observer.Wait();
+
+  EXPECT_TRUE(permission_manager->IsRequestInProgress());
+
+  // Simulate widget activation loss while permission request is in progress.
+  static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+      nullptr, /*active=*/false);
+
+  // Verify popup state is STILL kAim (omnibox did not close).
+  EXPECT_EQ(location_bar()
+                ->GetOmniboxController()
+                ->popup_state_manager()
+                ->popup_state(),
+            OmniboxPopupState::kAim);
+}
