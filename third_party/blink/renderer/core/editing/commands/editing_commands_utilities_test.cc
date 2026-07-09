@@ -57,7 +57,7 @@ TEST_F(EditingCommandsUtilitiesTest, AreaIdenticalElements) {
   EXPECT_TRUE(AreIdenticalElements(*items->item(1), *items->item(3)));
 }
 
-TEST_F(EditingCommandsUtilitiesTest, TidyUpHTMLStructureFromBody) {
+TEST_F(EditingCommandsUtilitiesTest, TidyUpHtmlStructureFromBody) {
   auto* body = MakeGarbageCollected<HTMLBodyElement>(GetDocument());
   MakeDocumentEmpty();
   GetDocument().setDesignMode("on");
@@ -69,7 +69,7 @@ TEST_F(EditingCommandsUtilitiesTest, TidyUpHTMLStructureFromBody) {
   EXPECT_EQ(GetDocument().documentElement(), body->parentNode());
 }
 
-TEST_F(EditingCommandsUtilitiesTest, TidyUpHTMLStructureFromDiv) {
+TEST_F(EditingCommandsUtilitiesTest, TidyUpHtmlStructureFromDiv) {
   auto* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   MakeDocumentEmpty();
   GetDocument().setDesignMode("on");
@@ -81,7 +81,7 @@ TEST_F(EditingCommandsUtilitiesTest, TidyUpHTMLStructureFromDiv) {
   EXPECT_EQ(GetDocument().body(), div->parentNode());
 }
 
-TEST_F(EditingCommandsUtilitiesTest, TidyUpHTMLStructureFromHead) {
+TEST_F(EditingCommandsUtilitiesTest, TidyUpHtmlStructureFromHead) {
   auto* head = MakeGarbageCollected<HTMLHeadElement>(GetDocument());
   MakeDocumentEmpty();
   GetDocument().setDesignMode("on");

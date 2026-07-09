@@ -151,9 +151,7 @@ class EmptyLocalFrameClientWithFailingLoaderFactory final
   }
 };
 
-}  // namespace
-
-static void CompleteURLs(DocumentFragment& fragment, const String& base_url) {
+void CompleteUrls(DocumentFragment& fragment, const String& base_url) {
   HeapVector<AttributeChange> changes;
 
   KURL parsed_base_url(base_url);
@@ -184,14 +182,14 @@ static void CompleteURLs(DocumentFragment& fragment, const String& base_url) {
     change.Apply();
 }
 
-static bool IsHtmlBlockElement(const Node* node) {
+bool IsHtmlBlockElement(const Node* node) {
   DCHECK(node);
   return IsA<HTMLTableCellElement>(*node) ||
          IsNonTableCellHtmlBlockElement(node);
 }
 
 // Helper function to check if a node is a MathML math element
-static bool IsMathMLMathElement(const Node* node) {
+bool IsMathmlMathElement(const Node* node) {
   const auto* element = DynamicTo<MathMLElement>(node);
   if (!element) {
     return false;
@@ -199,7 +197,7 @@ static bool IsMathMLMathElement(const Node* node) {
   return element->HasTagName(mathml_names::kMathTag);
 }
 
-static HTMLElement* AncestorToRetainStructureAndAppearanceForBlock(
+HTMLElement* AncestorToRetainStructureAndAppearanceForBlock(
     Element* common_ancestor_block) {
   if (!common_ancestor_block)
     return nullptr;
@@ -215,35 +213,21 @@ static HTMLElement* AncestorToRetainStructureAndAppearanceForBlock(
   return nullptr;
 }
 
-static inline HTMLElement* AncestorToRetainStructureAndAppearance(
+inline HTMLElement* AncestorToRetainStructureAndAppearance(
     Node* common_ancestor) {
   return AncestorToRetainStructureAndAppearanceForBlock(
       EnclosingBlock(common_ancestor));
 }
 
-static inline HTMLElement*
-AncestorToRetainStructureAndAppearanceWithNoLayoutObject(
+inline HTMLElement* AncestorToRetainStructureAndAppearanceWithNoLayoutObject(
     const Node& common_ancestor) {
   auto* common_ancestor_block = To<HTMLElement>(EnclosingNodeOfType(
       FirstPositionInOrBeforeNode(common_ancestor), IsHtmlBlockElement));
   return AncestorToRetainStructureAndAppearanceForBlock(common_ancestor_block);
 }
 
-bool PropertyMissingOrEqualToNone(CSSPropertyValueSet* style,
-                                  CSSPropertyID property_id) {
-  if (!style)
-    return false;
-  const CSSValue* value = style->GetPropertyCSSValue(property_id);
-  if (!value)
-    return true;
-  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (!identifier_value)
-    return false;
-  return identifier_value->GetValueID() == CSSValueID::kNone;
-}
-
 template <typename Strategy>
-static Element* HighestAncestorToWrapMarkup(
+Element* HighestAncestorToWrapMarkup(
     const PositionTemplate<Strategy>& start_position,
     const PositionTemplate<Strategy>& end_position,
     const CreateMarkupOptions& options) {
@@ -289,7 +273,7 @@ static Element* HighestAncestorToWrapMarkup(
       if (RuntimeEnabledFeatures::MathMLSerializationOnCopyEnabled()) {
         if (auto* highest_math_element =
                 To<MathMLElement>(HighestEnclosingNodeOfType(
-                    first_node_position, IsMathMLMathElement,
+                    first_node_position, IsMathmlMathElement,
                     kCanCrossEditingBoundary))) {
           special_common_ancestor = highest_math_element;
         }
@@ -339,6 +323,24 @@ static Element* HighestAncestorToWrapMarkup(
   }
 
   return special_common_ancestor;
+}
+
+}  // namespace
+
+bool PropertyMissingOrEqualToNone(CSSPropertyValueSet* style,
+                                  CSSPropertyID property_id) {
+  if (!style) {
+    return false;
+  }
+  const CSSValue* value = style->GetPropertyCSSValue(property_id);
+  if (!value) {
+    return true;
+  }
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (!identifier_value) {
+    return false;
+  }
+  return identifier_value->GetValueID() == CSSValueID::kNone;
 }
 
 template <typename Strategy>
@@ -415,7 +417,7 @@ DocumentFragment* CreateFragmentFromMarkup(
 
   if (!base_url.empty() && base_url != BlankUrl() &&
       base_url != document.BaseURL()) {
-    CompleteURLs(*fragment, base_url);
+    CompleteUrls(*fragment, base_url);
   }
 
   return fragment;
@@ -833,7 +835,7 @@ static bool ContainsStyleElements(const DocumentFragment& fragment) {
 }
 
 // Returns true if any svg <use> element is removed.
-static bool StripSVGUseNonLocalHrefs(Node& node) {
+static bool StripSvgUseNonLocalHrefs(Node& node) {
   if (auto* use = DynamicTo<SVGUseElement>(node)) {
     SVGURLReferenceResolver resolver(use->HrefString(), use->GetDocument());
     if (!resolver.IsLocal() || resolver.AbsoluteUrl().ProtocolIsData()) {
@@ -844,7 +846,7 @@ static bool StripSVGUseNonLocalHrefs(Node& node) {
   bool stripped = false;
   for (Node* child = node.firstChild(); child;) {
     Node* next = child->nextSibling();
-    if (StripSVGUseNonLocalHrefs(*child)) {
+    if (StripSvgUseNonLocalHrefs(*child)) {
       stripped = true;
     }
     child = next;
@@ -893,7 +895,7 @@ String CreateStrictlyProcessedMarkupWithContext(
     bool needs_sanitization = false;
     if (ContainsStyleElements(*fragment))
       needs_sanitization = true;
-    if (StripSVGUseNonLocalHrefs(*fragment)) {
+    if (StripSvgUseNonLocalHrefs(*fragment)) {
       needs_sanitization = true;
     }
 

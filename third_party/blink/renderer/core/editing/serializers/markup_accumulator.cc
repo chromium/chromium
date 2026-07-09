@@ -476,9 +476,9 @@ bool MarkupAccumulator::ShouldAddNamespaceAttribute(
     const Attribute& attribute,
     const AtomicString& candidate_prefix) {
   // xmlns and xmlns:prefix attributes should be handled by another branch in
-  // AppendAttributeAsXMLWithNamespace().
+  // AppendAttributeAsXmlWithNamespace().
   DCHECK_NE(attribute.NamespaceURI(), xmlns_names::kNamespaceURI);
-  // Null namespace is checked earlier in AppendAttributeAsXMLWithNamespace().
+  // Null namespace is checked earlier in AppendAttributeAsXmlWithNamespace().
   DCHECK(attribute.NamespaceURI());
 
   // Attributes without a prefix will need one generated for them, and an xmlns
