@@ -434,6 +434,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking
       SharedImageBackingFactory* backing_factory,
       std::string debug_label,
       SharedImageUsageSet usage,
+      viz::SharedImageFormat backing_format,
       std::unique_ptr<SharedImageBacking>& backing);
 
   // Method used for lazy backing creation. It will use

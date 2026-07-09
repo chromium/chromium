@@ -124,6 +124,19 @@ SharedImageUsageSet GetUsageFromAccessStream(SharedImageAccessStream stream) {
   }
 }
 
+viz::SharedImageFormat GetSinglePlaneRGBAFormatForChannelFormat(
+    viz::SharedImageFormat::ChannelFormat channel_format) {
+  switch (channel_format) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      return viz::SinglePlaneFormat::kRGBA_8888;
+    case viz::SharedImageFormat::ChannelFormat::k10:
+      return viz::SinglePlaneFormat::kRGBA_1010102;
+    case viz::SharedImageFormat::ChannelFormat::k16:
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      return viz::SinglePlaneFormat::kRGBA_F16;
+  }
+}
+
 }  // namespace
 
 // Wrapped representation types are not in the anonymous namespace because they
@@ -1975,20 +1988,37 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
   // to support all the existing gpu-gpu copy usages.
   if (base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
       shared_image_factory_) {
+    // When the original format has PrefersExternalSampler() set(which can be
+    // only set for multiplanar formats), then per plane texture access is not
+    // allowed. It can be only sampled as single RGBA texture on the GPU.
+    // When a secondary or transient backings is allocated dynamically, it
+    // requires data to be copied from existing backing into this new backing.
+    // Since data from existing backing can only be sampled as RGBA, the new
+    // backing must also be of RGBA format in order to receive readback data as
+    // RGBA. Therefore, map such formats to single-plane RGBA based on channel
+    // format for dynamic backing allocation.
+    viz::SharedImageFormat backing_format =
+        format().PrefersExternalSampler()
+            ? GetSinglePlaneRGBAFormatForChannelFormat(
+                  format().channel_format())
+            : format();
     SharedImageUsageSet usage = GetUsageFromAccessStream(stream);
     std::unique_ptr<SharedImageBacking> new_backing;
     shared_image_factory_->Execute([&](SharedImageFactory* factory) {
       SharedImageBackingFactory* gpu_backing_factory =
-          factory->GetFactoryByUsage(usage, format(), size(),
+          factory->GetFactoryByUsage(usage, backing_format, size(),
                                      /*pixel_data=*/{}, gfx::EMPTY_BUFFER,
                                      stream, &params);
       if (gpu_backing_factory) {
         CreateBackingFromBackingFactory(gpu_backing_factory, debug_label(),
-                                        usage, new_backing);
+                                        usage, backing_format, new_backing);
       }
     });
 
     if (new_backing) {
+      if (format().PrefersExternalSampler()) {
+        CHECK_EQ(new_backing->format(), backing_format);
+      }
       UMA_HISTOGRAM_ENUMERATION(
           "GPU.CompoundImageBacking.DynamicAllocation.BackingType",
           new_backing->GetType());
@@ -2042,13 +2072,15 @@ void CompoundImageBacking::CreateBackingFromBackingFactory(
     SharedImageBackingFactory* backing_factory,
     std::string debug_label,
     SharedImageUsageSet usage,
+    viz::SharedImageFormat backing_format,
     std::unique_ptr<SharedImageBacking>& backing) {
   // This method assumes the caller has already ensured the factory is alive
   // and synchronized (e.g. by holding the SharedImageFactoryRef lock).
   CHECK(backing_factory);
 
-  SharedImageInfo si_info(format(), size(), color_space(), surface_origin(),
-                          alpha_type(), usage, std::move(debug_label));
+  SharedImageInfo si_info(backing_format, size(), color_space(),
+                          surface_origin(), alpha_type(), usage,
+                          std::move(debug_label));
   backing =
       backing_factory->CreateSharedImage(mailbox(), si_info, kNullSurfaceHandle,
                                          /*is_thread_safe=*/false);
@@ -2100,7 +2132,7 @@ void CompoundImageBacking::LazyCreateBacking(
       auto* bf = factory->GetFactoryByType(factory_type);
       if (bf) {
         CreateBackingFromBackingFactory(bf, std::move(debug_label), usage,
-                                        backing);
+                                        format(), backing);
       }
     });
   } else if (test_factory) {
@@ -2108,7 +2140,7 @@ void CompoundImageBacking::LazyCreateBacking(
     // These tests are currently single-threaded.
     CHECK_IS_TEST();
     CreateBackingFromBackingFactory(test_factory.get(), std::move(debug_label),
-                                    usage, backing);
+                                    usage, format(), backing);
   }
 }
 
