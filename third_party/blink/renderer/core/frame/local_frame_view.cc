@@ -1621,9 +1621,10 @@ void LocalFrameView::ScheduleRelayout() {
   }
 }
 
-void LocalFrameView::ScheduleRelayoutOfSubtree(LayoutObject* relayout_root) {
+void LocalFrameView::ScheduleRelayoutOfSubtree(LayoutObject& relayout_root) {
   DCHECK(frame_->View() == this);
-  DCHECK(relayout_root->IsBox());
+  DCHECK(relayout_root.IsBox());
+  DCHECK(!relayout_root.IsLayoutView());
 
   // TODO(crbug.com/590856): It's still broken when we choose not to crash when
   // the check fails.
@@ -1636,15 +1637,11 @@ void LocalFrameView::ScheduleRelayoutOfSubtree(LayoutObject* relayout_root) {
 
   LayoutView* layout_view = GetLayoutView();
   if (layout_view && layout_view->NeedsLayout()) {
-    if (relayout_root)
-      relayout_root->MarkContainerChainForLayout(false);
+    relayout_root.MarkContainerChainForLayout(false);
     return;
   }
 
-  if (relayout_root == layout_view)
-    layout_subtree_root_list_.ClearAndMarkContainingBlocksForLayout();
-  else
-    layout_subtree_root_list_.Add(*relayout_root);
+  layout_subtree_root_list_.Add(relayout_root);
 
   if (layout_scheduling_enabled_) {
     has_pending_layout_ = true;
@@ -1660,7 +1657,7 @@ void LocalFrameView::ScheduleRelayoutOfSubtree(LayoutObject* relayout_root) {
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "InvalidateLayout",
       inspector_invalidate_layout_event::Data, frame_.Get(),
-      relayout_root->OwnerNodeId());
+      relayout_root.OwnerNodeId());
 }
 
 bool LocalFrameView::LayoutPending() const {

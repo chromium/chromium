@@ -199,7 +199,7 @@ class CORE_EXPORT LocalFrameView final
   bool LifecycleUpdatesActive() const;
   void SetLifecycleUpdatesThrottledForTesting(bool throttled = true);
   void ScheduleRelayout();
-  void ScheduleRelayoutOfSubtree(LayoutObject*);
+  void ScheduleRelayoutOfSubtree(LayoutObject&);
   bool LayoutPending() const;
   bool IsInPerformLayout() const;
 

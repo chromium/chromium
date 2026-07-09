@@ -4319,7 +4319,7 @@ void LayoutObject::ScheduleRelayout() {
       layout_view = View();
       if (layout_view) {
         if (LocalFrameView* frame_view = layout_view->GetFrameView())
-          frame_view->ScheduleRelayoutOfSubtree(this);
+          frame_view->ScheduleRelayoutOfSubtree(*this);
       }
     }
   }
