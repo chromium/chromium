@@ -2193,6 +2193,10 @@ mojom("mojom") {
           mojom = "network.mojom.NetLogEventPhase"
           cpp = "::net::NetLogEventPhase"
         },
+        {
+          mojom = "network.mojom.NetLogFileFormat"
+          cpp = "::net::NetLogFileFormat"
+        },
       ]
       traits_headers =
           [ "//services/network/public/cpp/net_log_mojom_traits.h" ]

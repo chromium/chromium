@@ -208,6 +208,7 @@ interface NetworkService {
   StartNetLog(mojo_base.mojom.File file,
               uint64 max_total_size,
               NetLogCaptureMode capture_mode,
+              NetLogFileFormat file_format,
               mojo_base.mojom.DictionaryValue constants,
               mojo_base.mojom.TimeDelta? duration);
 

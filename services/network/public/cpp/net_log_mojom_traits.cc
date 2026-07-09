@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/net_log_mojom_traits.h"
 
+#include "net/log/file_net_log_observer.h"
 #include "net/log/net_log_capture_mode.h"
 
 namespace mojo {
@@ -69,6 +70,33 @@ EnumTraits<network::mojom::NetLogEventPhase, net::NetLogEventPhase>::ToMojom(
       return network::mojom::NetLogEventPhase::END;
     case net::NetLogEventPhase::NONE:
       return network::mojom::NetLogEventPhase::NONE;
+  }
+
+  NOTREACHED();
+}
+
+// static
+net::NetLogFileFormat
+EnumTraits<network::mojom::NetLogFileFormat, net::NetLogFileFormat>::FromMojom(
+    network::mojom::NetLogFileFormat file_format) {
+  switch (file_format) {
+    case network::mojom::NetLogFileFormat::JSON:
+      return net::NetLogFileFormat::kJson;
+    case network::mojom::NetLogFileFormat::NDJSON:
+      return net::NetLogFileFormat::kNdjson;
+  }
+  NOTREACHED();
+}
+
+// static
+network::mojom::NetLogFileFormat
+EnumTraits<network::mojom::NetLogFileFormat, net::NetLogFileFormat>::ToMojom(
+    net::NetLogFileFormat file_format) {
+  switch (file_format) {
+    case net::NetLogFileFormat::kJson:
+      return network::mojom::NetLogFileFormat::JSON;
+    case net::NetLogFileFormat::kNdjson:
+      return network::mojom::NetLogFileFormat::NDJSON;
   }
 
   NOTREACHED();

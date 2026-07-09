@@ -76,6 +76,7 @@
 
 namespace net {
 class FileNetLogObserver;
+enum class NetLogFileFormat;
 class HostResolverManager;
 class HttpAuthHandlerFactory;
 class IPEndPoint;
@@ -163,6 +164,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void StartNetLog(base::File file,
                    uint64_t max_total_size,
                    net::NetLogCaptureMode capture_mode,
+                   net::NetLogFileFormat file_format,
                    base::DictValue constants,
                    std::optional<base::TimeDelta> duration) override;
   void AttachNetLogProxy(
@@ -290,6 +292,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void StartNetLogBounded(base::File file,
                           uint64_t max_total_size,
                           net::NetLogCaptureMode capture_mode,
+                          net::NetLogFileFormat file_format,
                           base::DictValue client_constants);
 
   // Called after StartNetLogBounded() finishes creating a scratch dir.
@@ -297,11 +300,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       base::File file,
       uint64_t max_total_size,
       net::NetLogCaptureMode capture_mode,
+      net::NetLogFileFormat file_format,
       base::DictValue constants,
       const base::FilePath& in_progress_dir_path);
 
   void StartNetLogUnbounded(base::File file,
                             net::NetLogCaptureMode capture_mode,
+                            net::NetLogFileFormat file_format,
                             base::DictValue client_constants);
 
   // Returns an HttpAuthHandlerFactory for the given NetworkContext.

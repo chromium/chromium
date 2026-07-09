@@ -28,6 +28,12 @@ enum NetLogCaptureMode {
   EVERYTHING,  // NetLogCaptureMode::kEverything
 };
 
+// See also: //net/log/file_net_log_observer.h
+enum NetLogFileFormat {
+  JSON,    // NetLogFileFormat::kJson
+  NDJSON,  // NetLogFileFormat::kNdjson
+};
+
 // Manages export of ongoing NetLog events to a file.
 // Both Start and Stop must succeed, in that order, for the export to
 // be complete and have a well-formed file. You may call Start again after

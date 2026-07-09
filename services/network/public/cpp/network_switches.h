@@ -25,6 +25,8 @@ extern const char kIgnoreCertificateErrorsSPKIList[];
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kNetLogCaptureMode[];
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+extern const char kNetLogFileFormat[];
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kLogNetLogDuration[];
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kNetLogMaxSizeMb[];

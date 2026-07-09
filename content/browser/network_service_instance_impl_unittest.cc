@@ -20,6 +20,7 @@
 #include "content/public/test/test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_cache.h"
+#include "net/log/file_net_log_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/features.h"
@@ -27,6 +28,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/transferable_directory.h"
+#include "services/network/public/mojom/net_log.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -165,6 +167,37 @@ TEST(NetworkServiceInstanceImplParseCommandLineTest,
     EXPECT_EQ(GetNetLogMaximumFileSizeFromCommandLineForTesting(command_line),
               std::numeric_limits<uint64_t>::max());
   }
+}
+
+TEST(NetworkServiceInstanceImplParseCommandLineTest,
+     ParseNetLogFileFormatNoSwitch) {
+  base::CommandLine command_line{base::CommandLine::NO_PROGRAM};
+  EXPECT_EQ(GetNetLogFileFormatFromCommandLineForTesting(command_line),
+            net::NetLogFileFormat::kJson);
+}
+
+TEST(NetworkServiceInstanceImplParseCommandLineTest,
+     ParseNetLogFileFormatJson) {
+  base::CommandLine command_line{base::CommandLine::NO_PROGRAM};
+  command_line.AppendSwitchASCII("net-log-file-format", "json");
+  EXPECT_EQ(GetNetLogFileFormatFromCommandLineForTesting(command_line),
+            net::NetLogFileFormat::kJson);
+}
+
+TEST(NetworkServiceInstanceImplParseCommandLineTest,
+     ParseNetLogFileFormatNdjson) {
+  base::CommandLine command_line{base::CommandLine::NO_PROGRAM};
+  command_line.AppendSwitchASCII("net-log-file-format", "ndjson");
+  EXPECT_EQ(GetNetLogFileFormatFromCommandLineForTesting(command_line),
+            net::NetLogFileFormat::kNdjson);
+}
+
+TEST(NetworkServiceInstanceImplParseCommandLineTest,
+     ParseNetLogFileFormatInvalid) {
+  base::CommandLine command_line{base::CommandLine::NO_PROGRAM};
+  command_line.AppendSwitchASCII("net-log-file-format", "invalid");
+  EXPECT_EQ(GetNetLogFileFormatFromCommandLineForTesting(command_line),
+            net::NetLogFileFormat::kJson);
 }
 
 class NetworkServiceHttpCacheEarlyInitTest : public testing::Test {

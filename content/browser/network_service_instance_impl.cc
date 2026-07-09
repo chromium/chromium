@@ -514,6 +514,25 @@ net::NetLogCaptureMode GetNetCaptureModeFromCommandLine(
   return net::NetLogCaptureMode::kDefault;
 }
 
+net::NetLogFileFormat GetNetLogFileFormatFromCommandLine(
+    const base::CommandLine& command_line) {
+  std::string_view switch_name = network::switches::kNetLogFileFormat;
+
+  if (!command_line.HasSwitch(switch_name)) {
+    return net::NetLogFileFormat::kJson;
+  }
+
+  std::string value = command_line.GetSwitchValueASCII(switch_name);
+  if (value == "ndjson") {
+    return net::NetLogFileFormat::kNdjson;
+  }
+  if (value != "json") {
+    LOG(ERROR) << "Unrecognized value for --" << switch_name;
+  }
+
+  return net::NetLogFileFormat::kJson;
+}
+
 std::optional<base::TimeDelta> GetNetLogDurationFromCommandLine(
     const base::CommandLine& command_line) {
   std::string_view switch_name = network::switches::kLogNetLogDuration;
@@ -570,6 +589,11 @@ BASE_FEATURE(kNetworkServiceDedicatedThread, base::FEATURE_ENABLED_BY_DEFAULT);
 uint64_t GetNetLogMaximumFileSizeFromCommandLineForTesting(  // IN-TEST
     const base::CommandLine& command_line) {
   return GetNetLogMaximumFileSizeFromCommandLine(command_line);
+}
+
+net::NetLogFileFormat GetNetLogFileFormatFromCommandLineForTesting(  // IN-TEST
+    const base::CommandLine& command_line) {
+  return GetNetLogFileFormatFromCommandLine(command_line);
 }
 
 class NetworkServiceInstancePrivate {
@@ -668,10 +692,16 @@ network::mojom::NetworkService* GetNetworkService() {
       if (command_line->HasSwitch(net::switches::kLogNetLog)) {
         base::FilePath log_path =
             command_line->GetSwitchValuePath(net::switches::kLogNetLog);
+        net::NetLogFileFormat file_format =
+            GetNetLogFileFormatFromCommandLine(*command_line);
         if (log_path.empty()) {
           log_path = GetContentClient()->browser()->GetNetLogDefaultDirectory();
-          if (!log_path.empty())
-            log_path = log_path.Append(FILE_PATH_LITERAL("netlog.json"));
+          if (!log_path.empty()) {
+            log_path =
+                log_path.Append(file_format == net::NetLogFileFormat::kNdjson
+                                    ? FILE_PATH_LITERAL("netlog.jsonl")
+                                    : FILE_PATH_LITERAL("netlog.json"));
+          }
         }
 
         base::File file = NetworkServiceInstancePrivate::BlockingOpenFile(
@@ -682,7 +712,7 @@ network::mojom::NetworkService* GetNetworkService() {
           g_observed_network_service->remote()->StartNetLog(
               std::move(file),
               GetNetLogMaximumFileSizeFromCommandLine(*command_line),
-              GetNetCaptureModeFromCommandLine(*command_line),
+              GetNetCaptureModeFromCommandLine(*command_line), file_format,
               GetContentClient()->browser()->GetNetLogConstants(),
               GetNetLogDurationFromCommandLine(*command_line));
         }

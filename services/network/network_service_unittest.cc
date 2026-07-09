@@ -1638,7 +1638,7 @@ TEST_F(NetworkServiceTestWithService, StartsNetLog) {
                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   network_service_->StartNetLog(
       std::move(log_file), net::FileNetLogObserver::kNoLimit,
-      net::NetLogCaptureMode::kDefault,
+      net::NetLogCaptureMode::kDefault, net::NetLogFileFormat::kJson,
       base::DictValue().Set("amiatest", "iamatest"), std::nullopt);
   CreateNetworkContext();
   LoadURL(test_server()->GetURL("/echo"));
@@ -1671,9 +1671,9 @@ TEST_F(NetworkServiceTestWithService, StartsNetLogBounded) {
   const uint64_t kMaxSizeBytes = 1 << 20;
   base::File log_file(log_path,
                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  network_service_->StartNetLog(std::move(log_file), kMaxSizeBytes,
-                                net::NetLogCaptureMode::kEverything,
-                                base::DictValue(), std::nullopt);
+  network_service_->StartNetLog(
+      std::move(log_file), kMaxSizeBytes, net::NetLogCaptureMode::kEverything,
+      net::NetLogFileFormat::kJson, base::DictValue(), std::nullopt);
   CreateNetworkContext();
 
   // Through trial and error it was found that this looping navigation results
@@ -1742,7 +1742,7 @@ TEST_F(NetworkServiceTestWithServiceMockTime, StartsNetLogWithDuration) {
                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   network_service_->StartNetLog(
       std::move(log_file), net::FileNetLogObserver::kNoLimit,
-      net::NetLogCaptureMode::kDefault,
+      net::NetLogCaptureMode::kDefault, net::NetLogFileFormat::kJson,
       base::DictValue().Set("amiatest", "iamatest"), log_duration);
   CreateNetworkContext();
   LoadURL(test_server()->GetURL("/echo"));

@@ -17,6 +17,10 @@
 #include "services/network/public/mojom/cert_verifier_service_updater.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
+namespace net {
+enum class NetLogFileFormat;
+}  // namespace net
+
 namespace content {
 
 // A directory name that is created below the http cache path and passed to the
@@ -87,6 +91,10 @@ GetCertVerifierParamsWithUpdater(
         cert_verifier_updater_remote);
 
 CONTENT_EXPORT uint64_t GetNetLogMaximumFileSizeFromCommandLineForTesting(
+    const base::CommandLine& command_line);
+
+CONTENT_EXPORT net::NetLogFileFormat
+GetNetLogFileFormatFromCommandLineForTesting(
     const base::CommandLine& command_line);
 }  // namespace content
 

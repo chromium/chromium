@@ -50,6 +50,11 @@ const char kLogNetLogDuration[] = "net-log-duration";
 // description of their meanings.
 const char kNetLogCaptureMode[] = "net-log-capture-mode";
 
+// Sets the format used for the network log file. Supported values are:
+//   "json"
+//   "ndjson"
+const char kNetLogFileFormat[] = "net-log-file-format";
+
 // Sets the maximum size, in megabytes. The log file can grow to before older
 // data is overwritten. Do not use this flag if you want an unlimited file size.
 const char kNetLogMaxSizeMb[] = "net-log-max-size-mb";
