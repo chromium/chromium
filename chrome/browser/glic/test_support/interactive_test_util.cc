@@ -72,7 +72,4 @@ void WebUiStateObserver::WebUiStateChanged(mojom::WebUiState state) {
 
 }  // namespace internal
 
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicContentsElementId);
-
 }  // namespace glic::test

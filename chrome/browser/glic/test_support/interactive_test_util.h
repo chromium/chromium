@@ -109,12 +109,6 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(WebUiStateObserver, kWebUiState);
 
 }  // namespace internal
 
-// The glic WebUI web contents.
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);
-// The glic webview contents.
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicContentsElementId);
-
-
 }  // namespace glic::test
 
 #endif  // CHROME_BROWSER_GLIC_TEST_SUPPORT_INTERACTIVE_TEST_UTIL_H_

@@ -29,6 +29,7 @@
 #include "components/sync/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/base_window.h"
+#include "ui/base/interaction/element_identifier.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/side_panel/android/android_side_panel_enabled_fn.h"
@@ -382,5 +383,10 @@ bool IsSidePanelEnabled() {
   return false;
 #endif
 }
+
+namespace test {
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicContentsElementId);
+}  // namespace test
 
 }  // namespace glic

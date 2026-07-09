@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/test_support/test_result.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/interaction/element_identifier.h"
 
 class AccountCapabilitiesTestMutator;
 class BrowserWindowInterface;
@@ -235,6 +236,13 @@ void InvalidateAccount(Profile* profile);
 void ReauthAccount(Profile* profile);
 
 bool IsSidePanelEnabled();
+
+namespace test {
+// The glic WebUI web contents.
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);
+// The glic webview contents.
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicContentsElementId);
+}  // namespace test
 
 }  // namespace glic
 
