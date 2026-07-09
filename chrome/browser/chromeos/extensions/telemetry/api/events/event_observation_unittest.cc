@@ -55,7 +55,8 @@ class TelemetryExtensionEventObservationTest : public extensions::ApiUnitTest {
     extensions::ApiUnitTest::SetUp();
     event_router_ = std::make_unique<EventRouter>(browser_context());
     event_observation_ = std::make_unique<EventObservation>(
-        extension()->id(), event_router_.get(), browser_context());
+        extension()->id(), api::os_events::EventCategory::kAudioJack,
+        event_router_.get(), browser_context());
 
     event_delegate_ = new EventDelegate();
     event_observation_->SetDelegateForTesting(event_delegate_);

@@ -32,9 +32,12 @@ class EventObservation : public crosapi::mojom::TelemetryEventObserver {
                          crosapi::mojom::TelemetryEventInfoPtr info) = 0;
   };
 
-  explicit EventObservation(const extensions::ExtensionId& extension_id,
-                            EventRouter* event_router,
-                            content::BrowserContext* context);
+  // `category` describes the category of events that this instance will be
+  // notified of.
+  EventObservation(const extensions::ExtensionId& extension_id,
+                   api::os_events::EventCategory category,
+                   EventRouter* event_router,
+                   content::BrowserContext* context);
 
   EventObservation(const EventObservation&) = delete;
   EventObservation& operator=(const EventObservation&) = delete;

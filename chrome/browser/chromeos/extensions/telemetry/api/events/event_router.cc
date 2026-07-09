@@ -43,7 +43,7 @@ EventRouter::GetPendingRemoteForCategoryAndExtension(
         iter_category, std::piecewise_construct,
         std::forward_as_tuple(category),
         std::forward_as_tuple(std::make_unique<EventObservation>(
-            extension_id, this, browser_context_)));
+            extension_id, category, this, browser_context_)));
   }
 
   return iter_category->second->GetRemote();
