@@ -1,0 +1,24 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<histogram-configuration>
+
+<enums>
+
+<!-- LINT.IfChange(AttemptOtpFillingPredictedOtpType) -->
+
+<enum name="AttemptOtpFillingPredictedOtpType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="SMS"/>
+  <int value="2" label="Email"/>
+  <int value="3" label="Authenticator App"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_tool_request.h:AttemptOtpFillingPredictedOtpType) -->
+
+</enums>
+
+</histogram-configuration>

@@ -22,6 +22,10 @@ class AttemptOtpFillingToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "AttemptOtpFilling";
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(AttemptOtpFillingPredictedOtpType)
   enum class OtpType {
     kUnknown = 0,
     kSms = 1,
@@ -29,6 +33,7 @@ class AttemptOtpFillingToolRequest : public TabToolRequest {
     kAuthenticatorApp = 3,
     kMaxValue = kAuthenticatorApp,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:AttemptOtpFillingPredictedOtpType)
 
   AttemptOtpFillingToolRequest(
       tabs::TabHandle tab_handle,

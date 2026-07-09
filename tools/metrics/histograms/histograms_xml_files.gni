@@ -183,6 +183,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/omnibox/histograms.xml",
   "//tools/metrics/histograms/metadata/on_device_model/enums.xml",
   "//tools/metrics/histograms/metadata/on_device_model/histograms.xml",
+  "//tools/metrics/histograms/metadata/one_time_tokens/enums.xml",
+  "//tools/metrics/histograms/metadata/one_time_tokens/histograms.xml",
   "//tools/metrics/histograms/metadata/oobe/enums.xml",
   "//tools/metrics/histograms/metadata/oobe/histograms.xml",
   "//tools/metrics/histograms/metadata/optimization/enums.xml",

@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
@@ -352,6 +353,10 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
           .Add("predicted_otp_type",
                PredictedOtpTypeToString(predicted_otp_type_))
           .Build());
+
+  base::UmaHistogramEnumeration(
+      "OneTimeTokens.Actor.AttemptOtpFilling.PredictedOtpType",
+      predicted_otp_type_);
 
   content::RenderFrameHost* otp_frame =
       GetOtpFrame(GetTargetTab(), trigger_fields_);

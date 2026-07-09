@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
@@ -237,6 +238,8 @@ std::optional<DomNode> GetDomNodeOnPage(content::RenderFrameHost& rfh,
 // The tool can be created with one field and the task returns OK.
 IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
                        ToolGetsCreatedWithOneFieldAndTaskReturnsOk) {
+  base::HistogramTester histogram_tester;
+
   const GURL url = embedded_https_test_server().GetURL("example.com",
                                                        "/actor/otp_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -269,6 +272,10 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       JournalEntries(),
       testing::Contains(testing::ContainsRegex(
           "AttemptOtpFillingTool::OnOtpRetrieved;.*otp_received=true")));
+
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.Actor.AttemptOtpFilling.PredictedOtpType",
+      AttemptOtpFillingToolRequest::OtpType::kUnknown, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
@@ -400,9 +407,9 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   std::vector<PageTarget> trigger_fields = {otp_field_1, otp_field_2,
                                             otp_field_3, otp_field_4};
   std::unique_ptr<ToolRequest> request =
-      std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), trigger_fields,
-          /*for_signin=*/true);
+      std::make_unique<AttemptOtpFillingToolRequest>(active_tab()->GetHandle(),
+                                                     trigger_fields,
+                                                     /*for_signin=*/true);
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()

@@ -1,0 +1,25 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="OneTimeTokens.Actor.AttemptOtpFilling.PredictedOtpType"
+    enum="AttemptOtpFillingPredictedOtpType" expires_after="2027-06-30">
+  <owner>ioanap@chromium.org</owner>
+  <owner>salmaabdelaziz@google.com</owner>
+  <summary>
+    Records the OTP type predicted by the model when the AttemptOtpFilling
+    action is invoked by the actor. This indicates whether the OTP is expected
+    to be an SMS, Email, or from an Authenticator App. Recorded once per tool
+    invocation.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
