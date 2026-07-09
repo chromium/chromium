@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
@@ -1304,4 +1305,36 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeDefaultToLastActiveExpiredBrowserTest,
       "Glic.Instance.TimeSinceLastInstanceActiveOnOpen", 1);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeTargetLastActiveOrNew_FallbackToNewTab) {
+  auto* tab_list = GetTabListInterface();
+  int initial_tab_count = tab_list->GetTabCount();
+  BrowserWindowInterface* browser =
+      tab_list->GetActiveTab()->GetBrowserWindowInterface();
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+
+  // Default to NewConversation which causes getting the last active surface to
+  // fail since the instance is new.
+  options.target.conversation = glic::NewConversation{};
+  options.target.surface =
+      glic::LastActiveOrNew{browser, /*open_in_foreground=*/true};
+  options.on_success = success_future.GetCallback();
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+
+  // A new tab should have been created.
+  EXPECT_EQ(tab_list->GetTabCount(), initial_tab_count + 1);
+
+  // The active tab should be a new tab page.
+  tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+  EXPECT_EQ(active_tab->GetContents()->GetVisibleURL(),
+            chrome::ChromeUINewTabURLAsGURL());
+
+  // Glic should be bound to this new tab.
+  EXPECT_TRUE(GetInstanceForTab(active_tab));
+}
 }  // namespace glic
