@@ -1561,8 +1561,8 @@ TEST_F(TemplateURLTest, ComposeboxSuggestClient) {
   ASSERT_FALSE(url.url_ref().SupportsReplacement(search_terms_data_));
   TemplateURLRef::SearchTermsArgs search_terms_args;
 
-  search_terms_args.request_source = RequestSource::NTP_COMPOSEBOX;
-  // Check that the URL is correct for `RequestSource::NTP_COMPOSEBOX`.
+  search_terms_args.request_source = RequestSource::COMPOSEBOX;
+  // Check that the URL is correct for `RequestSource::COMPOSEBOX`.
   features.InitAndEnableFeature(omnibox::kComposeboxUsesChromeComposeClient);
   GURL result(
       url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
@@ -1587,10 +1587,10 @@ TEST_F(TemplateURLTest, CoBrowseComposeboxSuggestClient) {
   ASSERT_FALSE(url.url_ref().SupportsReplacement(search_terms_data_));
   TemplateURLRef::SearchTermsArgs search_terms_args;
 
-  search_terms_args.request_source = RequestSource::NTP_COMPOSEBOX;
+  search_terms_args.request_source = RequestSource::COMPOSEBOX;
   search_terms_args.page_classification =
       metrics::OmniboxEventProto::CO_BROWSING_COMPOSEBOX;
-  // Check that the URL is correct for `RequestSource::NTP_COMPOSEBOX`.
+  // Check that the URL is correct for `RequestSource::COMPOSEBOX`.
   GURL result(
       url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
   EXPECT_EQ("http://google.com/?client=chrome-cobrowse-compose", result.spec());
@@ -1623,8 +1623,8 @@ TEST_F(TemplateURLTest, SuggestRequestIdentifier) {
   EXPECT_EQ("http://google.com/?gs_ri=chrome-ext-ansg", result.spec());
 #endif
 
-  search_terms_args.request_source = RequestSource::NTP_COMPOSEBOX;
-  // Check that the URL is correct for `RequestSource::NTP_COMPOSEBOX`.
+  search_terms_args.request_source = RequestSource::COMPOSEBOX;
+  // Check that the URL is correct for `RequestSource::COMPOSEBOX`.
   result = GURL(
       url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
   ASSERT_TRUE(result.is_valid());

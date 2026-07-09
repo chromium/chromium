@@ -21,11 +21,11 @@ class SearchTermsData {
   // Enumeration of the known search or suggest request sources. These values
   // are not persisted or used in histograms; thus can be freely changed.
   enum class RequestSource {
-    SEARCHBOX,         // Omnibox or the NTP realbox. The default.
-    CROS_APP_LIST,     // Chrome OS app list searchbox.
-    NTP_MODULE,        // NTP modules.
-    LENS_OVERLAY,      // Lens Overlay searchboxes.
-    NTP_COMPOSEBOX,    // NTP or Lens Side Panel composebox.
+    SEARCHBOX,      // Omnibox or the NTP realbox. The default.
+    CROS_APP_LIST,  // Chrome OS app list searchbox.
+    NTP_MODULE,     // NTP modules.
+    LENS_OVERLAY,   // Lens Overlay searchboxes.
+    COMPOSEBOX,     // AIM Composebox's (e.g. NTP, omnibox, & lens side panel).
     NTP_ACTION_CHIPS,  // Suggestions retrieval for action chips in NTP.
   };
 

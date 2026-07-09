@@ -635,8 +635,7 @@ void ZeroSuggestProvider::RunComposeboxPrefetch(
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.page_classification =
       metrics::OmniboxEventProto::NTP_COMPOSEBOX_PREFETCH;
-  search_terms_args.request_source =
-      TemplateURLRef::RequestSource::NTP_COMPOSEBOX;
+  search_terms_args.request_source = TemplateURLRef::RequestSource::COMPOSEBOX;
   search_terms_args.focus_type = input.focus_type();
   search_terms_args.current_page_url = std::string();
   search_terms_args.lens_overlay_suggest_inputs =
