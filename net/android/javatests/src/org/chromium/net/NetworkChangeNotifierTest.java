@@ -132,23 +132,25 @@ public class NetworkChangeNotifierTest {
         }
 
         static NetworkCapabilitiesWrapper getCapabilitiesWithBandwidth(
-                int transport, int downstreamKbps) {
+                int downstreamKbps, int... transports) {
             NetworkCapabilitiesWrapper capabilities =
                     Mockito.mock(NetworkCapabilitiesWrapper.class);
-            when(capabilities.hasTransport(transport)).thenReturn(true);
+            for (int transport : transports) {
+                when(capabilities.hasTransport(transport)).thenReturn(true);
+            }
             when(capabilities.getLinkDownstreamBandwidthKbps()).thenReturn(downstreamKbps);
             return capabilities;
         }
 
         /**
-         * Returns a real {@link android.net.NetworkCapabilities} for use with
-         * {@code NetworkCallback.onCapabilitiesChanged}. NetworkCapabilities is a {@code final}
-         * framework class, so it can't be mocked with Chromium's subclass-based Android MockMaker,
-         * and its {@code Builder}/{@code addTransportType} APIs are hidden (absent from the public
-         * SDK), so transports can't be set without reflection that is blocked on S+. The empty
-         * instance is sufficient here: a non-VPN network is not ignored, so both branches of
-         * {@code onCapabilitiesChanged} run and a CONNECT notification is forwarded regardless of
-         * the (UNKNOWN) derived ConnectionType.
+         * Returns a real {@link android.net.NetworkCapabilities} for use with {@code
+         * NetworkCallback.onCapabilitiesChanged}. NetworkCapabilities is a {@code final} framework
+         * class, so it can't be mocked with Chromium's subclass-based Android MockMaker, and its
+         * {@code Builder}/{@code addTransportType} APIs are hidden (absent from the public SDK), so
+         * transports can't be set without reflection that is blocked on S+. The empty instance is
+         * sufficient here: a non-VPN network is not ignored, so both branches of {@code
+         * onCapabilitiesChanged} run and a CONNECT notification is forwarded regardless of the
+         * (UNKNOWN) derived ConnectionType.
          */
         static NetworkCapabilities getRawCapabilities() {
             return new NetworkCapabilities();
@@ -1269,7 +1271,7 @@ public class NetworkChangeNotifierTest {
         Assert.assertEquals(
                 ConnectionType.CONNECTION_4G,
                 ConnectivityManagerWrapper.getConnectionTypeFromCapabilities(
-                        Helper.getCapabilitiesWithBandwidth(TRANSPORT_CELLULAR, 30000)));
+                        Helper.getCapabilitiesWithBandwidth(30000, TRANSPORT_CELLULAR)));
         Assert.assertEquals(
                 ConnectionType.CONNECTION_ETHERNET,
                 ConnectivityManagerWrapper.getConnectionTypeFromCapabilities(
@@ -1282,6 +1284,17 @@ public class NetworkChangeNotifierTest {
                 ConnectionType.CONNECTION_UNKNOWN,
                 ConnectivityManagerWrapper.getConnectionTypeFromCapabilities(
                         Helper.getCapabilities(TRANSPORT_VPN)));
+        // VPN-over-cellular resolves to the cellular type, not UNKNOWN. crbug.com/40923303
+        Assert.assertEquals(
+                ConnectionType.CONNECTION_4G,
+                ConnectivityManagerWrapper.getConnectionTypeFromCapabilities(
+                        Helper.getCapabilitiesWithBandwidth(
+                                30000, TRANSPORT_VPN, TRANSPORT_CELLULAR)));
+        Assert.assertEquals(
+                ConnectionType.CONNECTION_5G,
+                ConnectivityManagerWrapper.getConnectionTypeFromCapabilities(
+                        Helper.getCapabilitiesWithBandwidth(
+                                50000, TRANSPORT_VPN, TRANSPORT_CELLULAR)));
     }
 
     /** Tests the bandwidth-to-RAT approximation used for cellular networks. */
