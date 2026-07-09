@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/manifest_broker/override_manifest_asset_manager_delegate.h"
 
+#include "base/byte_size.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
@@ -43,9 +44,9 @@ TEST_F(OverrideManifestAssetManagerDelegateTest, ParsesConfigAndNotifies) {
             base::FilePath(FILE_PATH_LITERAL("/test/manifest/dir")));
 
   // Verify GetFreeDiskSpace
-  base::test::TestFuture<std::optional<base::ByteCount>> disk_space_future;
+  base::test::TestFuture<std::optional<base::ByteSize>> disk_space_future;
   delegate.GetFreeDiskSpace(disk_space_future.GetCallback());
-  EXPECT_EQ(disk_space_future.Get(), base::GiB(100));
+  EXPECT_EQ(disk_space_future.Get(), base::GiBU(100));
 }
 
 }  // namespace

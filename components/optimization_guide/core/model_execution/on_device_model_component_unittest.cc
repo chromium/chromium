@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
@@ -326,8 +326,8 @@ TEST_F(OnDeviceModelComponentTest, DynamicOnDeviceAIEnabledChange) {
 
 TEST_F(OnDeviceModelComponentTest, NotEnoughDiskSpaceToInstall) {
   // 20gb is the default in `IsFreeDiskSpaceSufficientForOnDeviceModelInstall`.
-  broker_.component_state().SetFreeDiskSpace(base::GiB(20) -
-                                             base::ByteCount(1));
+  broker_.component_state().SetFreeDiskSpace(base::GiBU(20) -
+                                             base::ByteSizeDelta(1));
   DoStartup();
   EnsurePerformanceClassAvailable();
   ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
@@ -437,7 +437,8 @@ TEST_F(OnDeviceModelComponentTest, UninstallNeededDueToDiskSpace) {
                                 base::Time::Now());
 
   // 10gb is the default in `IsFreeDiskSpaceTooLowForOnDeviceModelInstall`.
-  broker_.component_state().SetFreeDiskSpace(base::GiB(5) - base::ByteCount(1));
+  broker_.component_state().SetFreeDiskSpace(base::GiBU(5) -
+                                             base::ByteSizeDelta(1));
 
   // Should uninstall right away. Unlike most install requirements, the disk
   // space requirement is not subject to `GetOnDeviceModelRetentionTime()`.
@@ -813,7 +814,7 @@ TEST_F(OnDeviceModelComponentTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kOnDeviceModelBackgroundDownload);
   broker_.local_state().ClearPref(kLastUsageByFeature);
-  broker_.component_state().SetFreeDiskSpace(base::GiB(49));
+  broker_.component_state().SetFreeDiskSpace(base::GiBU(49));
   DoStartup();
 
   EnsurePerformanceClassAvailable();
@@ -826,7 +827,7 @@ TEST_F(OnDeviceModelComponentTest, BackgroundDownloadBlockedOnBattery) {
   broker_.local_state().ClearPref(kLastUsageByFeature);
   power_monitor_source_.SetBatteryPowerStatus(
       base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
-  broker_.component_state().SetFreeDiskSpace(base::GiB(51));
+  broker_.component_state().SetFreeDiskSpace(base::GiBU(51));
   DoStartup();
 
   EnsurePerformanceClassAvailable();

@@ -35,7 +35,7 @@ class OverrideManifestAssetManagerDelegate final
   base::CallbackListSubscription ListenForManifestReady(
       base::RepeatingCallback<void(base::FilePath)> on_ready) override;
 
-  void GetFreeDiskSpace(base::OnceCallback<void(std::optional<base::ByteCount>)>
+  void GetFreeDiskSpace(base::OnceCallback<void(std::optional<base::ByteSize>)>
                             callback) const override;
 
   void RegisterOnDemandComponent(

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
@@ -89,7 +89,7 @@ void ManifestMonitor::SetCallback(base::RepeatingClosure on_manifest_changed) {
 }
 
 void ManifestMonitor::OnDiskSpaceEvaluated(
-    std::optional<base::ByteCount> free_space) {
+    std::optional<base::ByteSize> free_space) {
   TRACE_EVENT("optimization_guide", "ManifestMonitor::OnDiskSpaceEvaluated",
               perfetto::Flow::FromPointer(this));
   free_space_ = free_space;
@@ -184,9 +184,9 @@ std::vector<mojom::BrokerPropertyInfoPtr> ManifestMonitor::GetBrokerProperties()
 
   std::string disk_space_string = "N/A";
   if (free_space_.has_value()) {
-    base::ByteCount disk_space_required =
+    base::ByteSize disk_space_required =
         features::GetDiskSpaceRequiredForOnDeviceModelInstall();
-    base::ByteCount disk_space_available = *free_space_;
+    base::ByteSize disk_space_available = *free_space_;
     bool is_available =
         !features::IsFreeDiskSpaceTooLowForOnDeviceModelInstall(*free_space_);
     disk_space_string = base::StrCat(

@@ -57,7 +57,7 @@ void LaunchService(
           .Pass());
 }
 
-void LogFreeDiskSpace(std::optional<base::ByteCount> bytes) {
+void LogFreeDiskSpace(std::optional<base::ByteSize> bytes) {
   if (bytes.has_value()) {
     base::UmaHistogramCounts10M("OptimizationGuide.OnDeviceModel.FreeDiskSpace",
                                 bytes->InMiB());

@@ -61,8 +61,8 @@ OverrideManifestAssetManagerDelegate::ListenForManifestReady(
 }
 
 void OverrideManifestAssetManagerDelegate::GetFreeDiskSpace(
-    base::OnceCallback<void(std::optional<base::ByteCount>)> callback) const {
-  std::move(callback).Run(base::GiB(100));
+    base::OnceCallback<void(std::optional<base::ByteSize>)> callback) const {
+  std::move(callback).Run(base::GiBU(100));
 }
 
 void OverrideManifestAssetManagerDelegate::RegisterOnDemandComponent(

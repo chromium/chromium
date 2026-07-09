@@ -352,7 +352,7 @@ OnDeviceModelComponentStateManager::GetDebugState() {
   debug.criteria_ = registration_criteria_.get();
   debug.disk_space_available_ = registration_criteria_
                                     ? registration_criteria_->disk_space_free
-                                    : base::ByteCount(-1);
+                                    : std::nullopt;
   debug.status_ = GetOnDeviceModelStatus();
   debug.has_override_ = !!switches::GetOnDeviceModelExecutionOverride();
   debug.state_ = state_.get();
@@ -380,10 +380,12 @@ OnDeviceModelComponentStateManager::GetBrokerProperties() const {
     props.push_back(mojom::BrokerPropertyInfo::New(
         "On external power",
         base::ToString(registration_criteria_->is_on_external_power)));
+    int64_t disk_space_free =
+        registration_criteria_->disk_space_free
+            ? registration_criteria_->disk_space_free->InMiB()
+            : -1;
     props.push_back(mojom::BrokerPropertyInfo::New(
-        "Disk space free",
-        base::ToString(registration_criteria_->disk_space_free.InMiB()) +
-            " MiB"));
+        "Disk space free", base::ToString(disk_space_free) + " MiB"));
   }
   return props;
 }
@@ -522,7 +524,7 @@ void OnDeviceModelComponentStateManager::MaybeBeginBackgroundModelDownload() {
 }
 
 void OnDeviceModelComponentStateManager::GetFreeDiskSpaceForLogging(
-    base::OnceCallback<void(std::optional<base::ByteCount>)> callback) {
+    base::OnceCallback<void(std::optional<base::ByteSize>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_->GetFreeDiskSpace(delegate_->GetInstallDirectory(),
                               std::move(callback));
@@ -558,11 +560,11 @@ void OnDeviceModelComponentStateManager::BeginUpdateRegistration() {
 
 OnDeviceModelComponentStateManager::RegistrationCriteria
 OnDeviceModelComponentStateManager::ComputeRegistrationCriteria(
-    base::ByteCount disk_space_free_bytes) {
+    std::optional<base::ByteSize> disk_space_free) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RegistrationCriteria result;
   result.background_download_requested = background_download_requested_;
-  result.disk_space_free = disk_space_free_bytes;
+  result.disk_space_free = disk_space_free;
   result.device_capable = performance_classifier_->IsDeviceCapable();
   result.on_device_feature_recently_used =
       WasOnDeviceModelRecentlyUsed(&usage_tracker_.get(), model_type_);
@@ -595,11 +597,10 @@ OnDeviceModelComponentStateManager::ComputeRegistrationCriteria(
 }
 
 void OnDeviceModelComponentStateManager::UpdateRegistrationCriteria(
-    std::optional<base::ByteCount> disk_space_free) {
+    std::optional<base::ByteSize> disk_space_free) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(https://crbug.com/438265416): Handle failure to get free disk space.
-  RegistrationCriteria criteria = ComputeRegistrationCriteria(
-      disk_space_free.value_or(base::ByteCount(-1)));
+
+  RegistrationCriteria criteria = ComputeRegistrationCriteria(disk_space_free);
   bool first_registration_attempt = !registration_criteria_;
 
   OnDeviceModelStatus status = GetOnDeviceModelStatus();
@@ -617,7 +618,7 @@ void OnDeviceModelComponentStateManager::UpdateRegistrationCriteria(
   // Log metrics only for first registration attempt.
   if (first_registration_attempt) {
     LogInstallCriteria(criteria, "AtRegistration",
-                       disk_space_free.value_or(base::ByteCount(-1)).InGiB());
+                       disk_space_free ? disk_space_free->InGiB() : -1);
   }
 
   UpdateRegistration();

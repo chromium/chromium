@@ -4,7 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
@@ -59,10 +59,10 @@ class TestComponentState::DelegateImpl
     return base::FilePath(FILE_PATH_LITERAL("/tmp/model_install_dir"));
   }
   void GetFreeDiskSpace(const base::FilePath& path,
-                        base::OnceCallback<void(std::optional<base::ByteCount>)>
+                        base::OnceCallback<void(std::optional<base::ByteSize>)>
                             callback) override {
-    base::ByteCount space =
-        state_ ? state_->free_disk_space_ : base::ByteCount(0);
+    base::ByteSize space =
+        state_ ? state_->free_disk_space_ : base::ByteSize(0);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), space));
   }

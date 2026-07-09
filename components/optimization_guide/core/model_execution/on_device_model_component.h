@@ -9,7 +9,7 @@
 #include <optional>
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
@@ -184,7 +184,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     // and calls `callback`.
     virtual void GetFreeDiskSpace(
         const base::FilePath& path,
-        base::OnceCallback<void(std::optional<base::ByteCount>)> callback) = 0;
+        base::OnceCallback<void(std::optional<base::ByteSize>)> callback) = 0;
 
     // Registers the component installer. Calls
     // `OnDeviceModelComponentStateManager::SetReady` when the component is
@@ -259,16 +259,26 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     bool background_download_requested = false;
 
     // Most recently queried disk space available for model install.
-    base::ByteCount disk_space_free;
+    std::optional<base::ByteSize> disk_space_free;
 
     bool is_disk_space_available() const {
+      if (!disk_space_free) {
+        // TODO(https://crbug.com/438265416): Handle failure to get free disk
+        // space.
+        return false;
+      }
       return features::IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
-          disk_space_free);
+          *disk_space_free);
     }
 
     bool is_running_out_of_disk_space() const {
+      if (!disk_space_free) {
+        // TODO(https://crbug.com/438265416): Handle failure to get free disk
+        // space.
+        return true;
+      }
       return features::IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
-          disk_space_free);
+          *disk_space_free);
     }
 
     bool is_model_allowed() const {
@@ -287,10 +297,10 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
       if (background_download_requested &&
           base::FeatureList::IsEnabled(
               features::kOnDeviceModelBackgroundDownload)) {
-        if (is_on_external_power &&
+        if (is_on_external_power && disk_space_free &&
             features::
                 IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
-                    disk_space_free)) {
+                    *disk_space_free)) {
           return ModelInstallMode::kRegisterOnly;
         }
       }
@@ -355,7 +365,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
 
   // Exposed internal state for chrome://on-device-internals
   struct DebugState {
-    base::ByteCount disk_space_available_;
+    std::optional<base::ByteSize> disk_space_available_;
     raw_ptr<const RegistrationCriteria> criteria_;
     OnDeviceModelStatus status_;
     bool has_override_;
@@ -370,7 +380,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   // Get free disk space available for on device model for logging in global
   // state.
   void GetFreeDiskSpaceForLogging(
-      base::OnceCallback<void(std::optional<base::ByteCount>)> callback);
+      base::OnceCallback<void(std::optional<base::ByteSize>)> callback);
 
   // Functions called by the component installer:
 
@@ -417,13 +427,13 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   // Installs the component installer if it needs installed.
   void BeginUpdateRegistration();
   RegistrationCriteria ComputeRegistrationCriteria(
-      base::ByteCount disk_space_free_bytes);
+      std::optional<base::ByteSize> disk_space_free);
   // Continuation of `UpdateRegistration()` after async work.
   void CompleteUpdateRegistration(
-      std::optional<base::ByteCount> disk_space_free);
+      std::optional<base::ByteSize> disk_space_free);
 
   void UpdateRegistrationCriteria(
-      std::optional<base::ByteCount> disk_space_free);
+      std::optional<base::ByteSize> disk_space_free);
   void UpdateRegistration();
 
   // Uninstalls the component.

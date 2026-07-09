@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -95,7 +95,7 @@ TEST_F(ManifestBrokerStateTest, CreateSessionFailedOnNotEnoughDiskSpace) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       on_device_model::features::kOnDeviceModelCpuBackend);
-  fake_.component_state().SetFreeDiskSpace(base::ByteCount(1));
+  fake_.component_state().SetFreeDiskSpace(base::ByteSize(1));
   fake_.Startup();
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;

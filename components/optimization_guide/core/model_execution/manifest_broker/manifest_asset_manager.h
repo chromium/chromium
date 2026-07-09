@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -237,7 +237,7 @@ class ManifestAssetManager : public UsageTracker::Observer {
   void UpdateActiveAssets();
 
   // Get disk space, and call `UpdateRegistration` when done.
-  void OnDiskSpaceEvaluated(std::optional<base::ByteCount> free_space);
+  void OnDiskSpaceEvaluated(std::optional<base::ByteSize> free_space);
 
   // Returns whether the asset should be installed.
   bool ShouldInstall(const ComponentContext& context,
@@ -275,15 +275,15 @@ class ManifestAssetManager : public UsageTracker::Observer {
     DiskSpaceStatus();
     ~DiskSpaceStatus();
 
-    void Update(std::optional<base::ByteCount> free_space);
+    void Update(std::optional<base::ByteSize> free_space);
 
     bool IsFresh() const;
     bool CanSupportOnDemandInstall() const;
     bool CanSupportProactiveDownload() const;
-    std::optional<base::ByteCount> GetFreeSpace() const { return free_space_; }
+    std::optional<base::ByteSize> GetFreeSpace() const { return free_space_; }
 
    private:
-    std::optional<base::ByteCount> free_space_;
+    std::optional<base::ByteSize> free_space_;
     base::Time last_evaluated_;
   };
   DiskSpaceStatus disk_space_status_ GUARDED_BY_CONTEXT(sequence_checker_);

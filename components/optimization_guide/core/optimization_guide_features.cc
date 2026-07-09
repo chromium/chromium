@@ -8,12 +8,13 @@
 #include <cstring>
 #include <optional>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -518,35 +519,38 @@ base::TimeDelta GetOnDeviceModelRetentionTime() {
       base::Days(30));
 }
 
-base::ByteCount GetDiskSpaceRequiredForOnDeviceModelInstall() {
-  return base::MiB(base::GetFieldTrialParamByFeatureAsInt(
-      kOptimizationGuideOnDeviceModel,
-      "on_device_model_free_space_mb_required_to_install",
-      base::GiB(20).InMiB()));
+base::ByteSize GetDiskSpaceRequiredForOnDeviceModelInstall() {
+  return base::MiBU(
+      base::saturated_cast<uint64_t>(base::GetFieldTrialParamByFeatureAsInt(
+          kOptimizationGuideOnDeviceModel,
+          "on_device_model_free_space_mb_required_to_install",
+          base::GiBU(20).InMiB())));
 }
 
 bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
-    base::ByteCount free_disk_space_bytes) {
+    base::ByteSize free_disk_space_bytes) {
   return GetDiskSpaceRequiredForOnDeviceModelInstall() <= free_disk_space_bytes;
 }
 
 bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
-    base::ByteCount free_disk_space_bytes) {
-  return base::MiB(base::GetFieldTrialParamByFeatureAsInt(
-             kOptimizationGuideOnDeviceModel,
-             "on_device_model_free_space_mb_required_to_retain",
-             base::GiB(5).InMiB())) >= free_disk_space_bytes;
+    base::ByteSize free_disk_space_bytes) {
+  return base::MiBU(base::saturated_cast<uint64_t>(
+             base::GetFieldTrialParamByFeatureAsInt(
+                 kOptimizationGuideOnDeviceModel,
+                 "on_device_model_free_space_mb_required_to_retain",
+                 base::GiBU(5).InMiB()))) >= free_disk_space_bytes;
 }
 
-base::ByteCount GetDiskSpaceRequiredForBackgroundOnDeviceModelInstall() {
-  return base::MiB(base::GetFieldTrialParamByFeatureAsInt(
-      features::kOnDeviceModelBackgroundDownload,
-      "on_device_model_free_space_mb_required_to_background_install",
-      base::GiB(50).InMiB()));
+base::ByteSize GetDiskSpaceRequiredForBackgroundOnDeviceModelInstall() {
+  return base::MiBU(
+      base::saturated_cast<uint64_t>(base::GetFieldTrialParamByFeatureAsInt(
+          features::kOnDeviceModelBackgroundDownload,
+          "on_device_model_free_space_mb_required_to_background_install",
+          base::GiBU(50).InMiB())));
 }
 
 bool IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
-    base::ByteCount free_disk_space_bytes) {
+    base::ByteSize free_disk_space_bytes) {
   return GetDiskSpaceRequiredForBackgroundOnDeviceModelInstall() <=
          free_disk_space_bytes;
 }

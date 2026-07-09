@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -105,7 +105,7 @@ class TestManifestAssetManagerComponentState final {
   // Behavior configuration  //
   /////////////////////////////
 
-  void SetFreeDiskSpace(base::ByteCount free_space_bytes) {
+  void SetFreeDiskSpace(base::ByteSize free_space_bytes) {
     free_disk_space_ = free_space_bytes;
   }
 
@@ -186,7 +186,7 @@ class TestManifestAssetManagerComponentState final {
       installable_components_;
 
   // The amount of free disk space we are pretending is available.
-  base::ByteCount free_disk_space_ = base::GiB(30);
+  base::ByteSize free_disk_space_ = base::GiBU(30);
   // The directories that we are pretending that the component updater has
   // installed, keyed by public key.
   absl::flat_hash_map<std::string, InstallableComponent> installed_components_;

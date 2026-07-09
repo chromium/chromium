@@ -9,7 +9,7 @@
 #include <optional>
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -42,7 +42,7 @@ class ManifestMonitor {
     // Gets the available free disk space in the install directory on a
     // background thread.
     virtual void GetFreeDiskSpace(
-        base::OnceCallback<void(std::optional<base::ByteCount>)> callback)
+        base::OnceCallback<void(std::optional<base::ByteSize>)> callback)
         const = 0;
   };
 
@@ -58,7 +58,7 @@ class ManifestMonitor {
   // Returns the current manifest, once selected.
   const std::optional<Manifest>& manifest() const { return manifest_; }
   // Returns the amount of free disk space found at initialization.
-  std::optional<base::ByteCount> free_space() const { return free_space_; }
+  std::optional<base::ByteSize> free_space() const { return free_space_; }
   // Returns the base install directory for on-demand models.
   std::optional<base::FilePath> manifest_dir() const { return manifest_dir_; }
 
@@ -67,7 +67,7 @@ class ManifestMonitor {
 
  private:
   // This should be called once during initialization.
-  void OnDiskSpaceEvaluated(std::optional<base::ByteCount> free_space);
+  void OnDiskSpaceEvaluated(std::optional<base::ByteSize> free_space);
 
   // Called when the manifest component is ready / updated.
   void OnManifestReady(base::FilePath manifest_dir);
@@ -86,7 +86,7 @@ class ManifestMonitor {
   // Inputs:
   const raw_ref<PerformanceClassifier> performance_classifier_;
   const raw_ref<PrefService> local_state_;
-  std::optional<base::ByteCount> free_space_;
+  std::optional<base::ByteSize> free_space_;
   std::optional<base::FilePath> manifest_dir_;
 
   // Outputs:

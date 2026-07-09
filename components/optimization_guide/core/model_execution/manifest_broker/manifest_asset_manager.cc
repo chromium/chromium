@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -276,7 +276,7 @@ ManifestAssetManager::DiskSpaceStatus::DiskSpaceStatus() = default;
 ManifestAssetManager::DiskSpaceStatus::~DiskSpaceStatus() = default;
 
 void ManifestAssetManager::DiskSpaceStatus::Update(
-    std::optional<base::ByteCount> free_space) {
+    std::optional<base::ByteSize> free_space) {
   free_space_ = free_space;
   last_evaluated_ = base::Time::Now();
 }
@@ -481,7 +481,7 @@ void ManifestAssetManager::UpdateActiveAssets() {
 }
 
 void ManifestAssetManager::OnDiskSpaceEvaluated(
-    std::optional<base::ByteCount> free_space) {
+    std::optional<base::ByteSize> free_space) {
   TRACE_EVENT("optimization_guide",
               "ManifestAssetManager::OnDiskSpaceEvaluated",
               perfetto::Flow::FromPointer(this));
@@ -503,7 +503,7 @@ bool ManifestAssetManager::ShouldInstall(
     return true;
   }
   if (!disk_space_status_.CanSupportOnDemandInstall()) {
-    std::optional<base::ByteCount> free_space =
+    std::optional<base::ByteSize> free_space =
         disk_space_status_.GetFreeSpace();
     if (free_space) {
       base::UmaHistogramCounts100(

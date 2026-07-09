@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/current_thread.h"
@@ -27,7 +27,7 @@ class TestComponentState final {
   std::unique_ptr<OnDeviceModelComponentStateManager::Delegate>
   CreateDelegate();
 
-  void SetFreeDiskSpace(base::ByteCount free_space_bytes) {
+  void SetFreeDiskSpace(base::ByteSize free_space_bytes) {
     free_disk_space_ = free_space_bytes;
   }
   bool installer_registered() const { return !!registered_manager_; }
@@ -61,7 +61,7 @@ class TestComponentState final {
  private:
   class DelegateImpl;
 
-  base::ByteCount free_disk_space_ = base::GiB(100);
+  base::ByteSize free_disk_space_ = base::GiBU(100);
   base::WeakPtr<OnDeviceModelComponentStateManager> registered_manager_;
   bool uninstall_called_ = false;
   bool requested_background_update_ = false;

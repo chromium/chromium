@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -119,12 +119,12 @@ class TestManifestAssetManagerComponentState::DelegateImpl final
     state_->MaybeCompleteDownload(public_key_hex);
   }
 
-  void GetFreeDiskSpace(base::OnceCallback<void(std::optional<base::ByteCount>)>
+  void GetFreeDiskSpace(base::OnceCallback<void(std::optional<base::ByteSize>)>
                             callback) const override {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
-                       state_ ? state_->free_disk_space_ : base::ByteCount(0)));
+                       state_ ? state_->free_disk_space_ : base::ByteSize(0)));
   }
 
  private:
