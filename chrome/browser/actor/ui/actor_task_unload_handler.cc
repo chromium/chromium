@@ -7,43 +7,22 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_tab_close_skip_beforeunload_user_data.h"
-#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/tabs/public/tab_interface.h"
-#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_switches.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/dialog_model.h"
-#include "ui/base/models/image_model.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
-#include "ui/color/color_id.h"
-#include "ui/events/event.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/background.h"
-#include "ui/views/border.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
-#include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/box_layout_view.h"
-#include "ui/views/layout/layout_provider.h"
-#include "ui/views/style/typography.h"
-#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace actor {
@@ -51,15 +30,6 @@ namespace actor {
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ActorTaskTabCloseConfirmDialog, kViewId);
 
 namespace {
-
-// Layout constants tailored to match macOS native alert sheet proportions.
-constexpr int kLeaveSiteDialogWidth = 250;
-constexpr int kProductIconSize = 48;
-constexpr int kIconBadgeCornerRadius = 12;
-constexpr float kDialogButtonCornerRadius = 8.0f;
-constexpr int kIconBadgeBorderThickness = 1;
-constexpr int kIconBadgeInsidePadding = 1;
-constexpr SkColor kIconBadgeBorderColor = SkColorSetARGB(35, 0, 0, 0);
 
 class ActorTaskTabCloseConfirmDialogDelegate
     : public ::ui::DialogModelDelegate {
@@ -101,17 +71,10 @@ class ActorTaskTabCloseConfirmDialogDelegate
   base::WeakPtrFactory<ActorTaskTabCloseConfirmDialogDelegate>
       weak_ptr_factory_{this};
 };
+
 bool g_always_show_for_testing = false;
 bool g_suppress_for_testing = false;
 
-void SkipSubpixelRenderingOpacityCheck(views::View* view) {
-  if (auto* label = views::AsViewClass<views::Label>(view)) {
-    label->SetSkipSubpixelRenderingOpacityCheck(true);
-  }
-  for (views::View* child : view->children()) {
-    SkipSubpixelRenderingOpacityCheck(child);
-  }
-}
 }  // namespace
 
 // static
@@ -178,7 +141,7 @@ ActorTaskTabCloseConfirmDialog::ShowModalIfActuating(
   if (!delegate) {
     return nullptr;
   }
-  views::BubbleDialogModelHost* raw_delegate = delegate.release();
+  auto* raw_delegate = delegate.get();
   raw_delegate->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
@@ -187,14 +150,7 @@ ActorTaskTabCloseConfirmDialog::ShowModalIfActuating(
           raw_delegate, web_contents,
           views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   if (widget) {
-    SkipSubpixelRenderingOpacityCheck(widget->GetRootView());
-    if (auto* ok_btn = raw_delegate->GetOkButton()) {
-      ok_btn->SetCornerRadius(kDialogButtonCornerRadius);
-    }
-    if (auto* cancel_btn =
-            static_cast<views::MdTextButton*>(raw_delegate->GetExtraView())) {
-      cancel_btn->SetCornerRadius(kDialogButtonCornerRadius);
-    }
+    delegate.release();
   }
   return widget;
 }
@@ -276,73 +232,13 @@ ActorTaskTabCloseConfirmDialog::CreateDelegate(
       tab->ShowModalUI(), std::move(callback));
   auto delegate_weak_ptr = delegate->AsWeakPtr();
 
-  const int vertical_spacing = views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_CONTROL_VERTICAL);
-  const int dialog_width = kLeaveSiteDialogWidth;
-
-  auto container = std::make_unique<views::BoxLayoutView>();
-  container->SetOrientation(views::LayoutOrientation::kVertical);
-  container->SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
-  container->SetCrossAxisAlignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-  container->SetBetweenChildSpacing(vertical_spacing);
-
-  auto icon_container = std::make_unique<views::BoxLayoutView>();
-  icon_container->SetOrientation(views::LayoutOrientation::kHorizontal);
-  icon_container->SetMainAxisAlignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
-  icon_container->SetCrossAxisAlignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-  icon_container->SetInsideBorderInsets(gfx::Insets(kIconBadgeInsidePadding));
-  icon_container->SetBackground(views::CreateRoundedRectBackground(
-      ::ui::kColorDialogBackground, kIconBadgeCornerRadius));
-  icon_container->SetBorder(views::CreateRoundedRectBorder(
-      kIconBadgeBorderThickness, kIconBadgeCornerRadius,
-      kIconBadgeBorderColor));
-
-  auto icon = std::make_unique<views::ImageView>();
-  icon->SetImage(::ui::ImageModel::FromResourceId(IDR_PRODUCT_LOGO_64));
-  icon->SetImageSize(gfx::Size(kProductIconSize, kProductIconSize));
-  icon_container->AddChildView(std::move(icon));
-  container->AddChildView(std::move(icon_container));
-
-  auto title_label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_ACTOR_LEAVE_SITE_DIALOG_TITLE),
-      views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_BODY_1_BOLD);
-  title_label->SetMultiLine(true);
-  title_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  title_label->SetMaximumWidth(dialog_width);
-  container->AddChildView(std::move(title_label));
-
-  auto desc_label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_ACTOR_LEAVE_SITE_DIALOG_DESCRIPTION),
-      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4);
-  desc_label->SetMultiLine(true);
-  desc_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  desc_label->SetMaximumWidth(dialog_width);
-  desc_label->SetSkipSubpixelRenderingOpacityCheck(true);
-  container->AddChildView(std::move(desc_label));
-
   auto dialog_model =
       ::ui::DialogModel::Builder(std::move(delegate))
-          .SetAccessibleTitle(
+          .SetElementIdentifier(kViewId)
+          .SetTitle(
               l10n_util::GetStringUTF16(IDS_ACTOR_LEAVE_SITE_DIALOG_TITLE))
-          .AddCustomField(
-              std::make_unique<views::BubbleDialogModelHost::CustomView>(
-                  std::move(container),
-                  views::BubbleDialogModelHost::FieldType::kControl),
-              kViewId)
-          .AddExtraButton(
-              base::BindRepeating(
-                  [](base::WeakPtr<ActorTaskTabCloseConfirmDialogDelegate> del,
-                     const ::ui::Event& event) {
-                    if (del) {
-                      del->OnCancel();
-                    }
-                  },
-                  delegate_weak_ptr),
-              ::ui::DialogModel::Button::Params().SetLabel(
-                  l10n_util::GetStringUTF16(IDS_APP_CANCEL)))
+          .AddParagraph(::ui::DialogModelLabel(l10n_util::GetStringUTF16(
+              IDS_ACTOR_LEAVE_SITE_DIALOG_DESCRIPTION)))
           .AddOkButton(
               base::BindOnce(&ActorTaskTabCloseConfirmDialogDelegate::OnAccept,
                              delegate_weak_ptr),
@@ -350,15 +246,18 @@ ActorTaskTabCloseConfirmDialog::CreateDelegate(
                   .SetLabel(l10n_util::GetStringUTF16(
                       IDS_ACTOR_LEAVE_SITE_DIALOG_LEAVE_SITE))
                   .SetStyle(::ui::ButtonStyle::kProminent))
+          .AddCancelButton(
+              base::BindOnce(&ActorTaskTabCloseConfirmDialogDelegate::OnCancel,
+                             delegate_weak_ptr),
+              ::ui::DialogModel::Button::Params().SetLabel(
+                  l10n_util::GetStringUTF16(IDS_APP_CANCEL)))
           .SetDialogDestroyingCallback(
               base::BindOnce(&ActorTaskTabCloseConfirmDialogDelegate::OnClose,
                              delegate_weak_ptr))
           .Build();
 
-  auto host = views::BubbleDialogModelHost::CreateModal(
+  return views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ::ui::mojom::ModalType::kChild);
-  host->set_fixed_width(0);
-  return host;
 }
 
 ActorTaskUnloadHandler::ActorTaskUnloadHandler() = default;
