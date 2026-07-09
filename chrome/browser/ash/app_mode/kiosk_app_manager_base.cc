@@ -67,9 +67,8 @@ base::FilePath KioskAppManagerBase::GetKioskAppIconCacheDir() {
 }
 
 void KioskAppManagerBase::OnKioskAppDataChanged(const std::string& app_id) {
-  for (auto& observer : observers_) {
-    observer.OnKioskAppDataChanged(app_id);
-  }
+  observers_.NotifyAllowReentrancy(
+      &KioskAppManagerObserver::OnKioskAppDataChanged, app_id);
 }
 
 void KioskAppManagerBase::OnKioskAppDataLoadFailure(const std::string& app_id) {
