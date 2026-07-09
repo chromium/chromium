@@ -21,3 +21,4 @@ crbug.com/523267238 SmokeTestCase/testFlakyCrashPassingMethod [ Pass Crash ]
 
 # Gardening surpression 2026-07-09
 crbug.com/533057223 [ iPad Simulator ] SigninCoordinatorTestCase/testSyncOnWhenPassphraseIntroducedAfterSignIn [ Pass Failure ]
+crbug.com/533075931 [ iPad Simulator ] GeminiCopresenceTestCase/testConversationPersistenceOnSignOut [ Pass Failure ]
