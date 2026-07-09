@@ -176,8 +176,7 @@ class PhysicalDeviceRecoveryFactorTest : public testing::Test {
 
     std::string device_private_key_material =
         GetDeviceRegistrationInfo(account_info)->private_key_material();
-    return std::vector<uint8_t>(device_private_key_material.begin(),
-                                device_private_key_material.end());
+    return ProtoStringToBytes(device_private_key_material);
   }
 
   trusted_vault_pb::LocalDeviceRegistrationInfo* GetDeviceRegistrationInfo(

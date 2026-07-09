@@ -5,6 +5,7 @@
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 
 namespace trusted_vault {
 
@@ -14,7 +15,7 @@ void AssignBytesToProtoString(base::span<const uint8_t> bytes,
 }
 
 std::vector<uint8_t> ProtoStringToBytes(const std::string_view bytes_string) {
-  return std::vector<uint8_t>(bytes_string.begin(), bytes_string.end());
+  return base::ToVector(base::as_byte_span(bytes_string));
 }
 
 }  // namespace trusted_vault

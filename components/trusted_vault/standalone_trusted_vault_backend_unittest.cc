@@ -82,8 +82,8 @@ MATCHER_P(DegradedRecoverabilityStateEq, expected_state, "") {
 
 MATCHER_P(KeyMaterialEq, expected, "") {
   const std::string& key_material = arg.key_material();
-  const std::vector<uint8_t> key_material_as_bytes(key_material.begin(),
-                                                   key_material.end());
+  const std::vector<uint8_t> key_material_as_bytes =
+      ProtoStringToBytes(key_material);
   return key_material_as_bytes == expected;
 }
 

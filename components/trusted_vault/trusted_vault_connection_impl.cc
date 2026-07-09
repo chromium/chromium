@@ -485,10 +485,8 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
             membership->keys(), std::back_inserter(member_keys),
             [](const auto& key) {
               return MemberKeys(key.epoch(),
-                                std::vector<uint8_t>(key.wrapped_key().begin(),
-                                                     key.wrapped_key().end()),
-                                std::vector<uint8_t>(key.member_proof().begin(),
-                                                     key.member_proof().end()));
+                                ProtoStringToBytes(key.wrapped_key()),
+                                ProtoStringToBytes(key.member_proof()));
             });
         result_.icloud_keys.emplace_back(std::move(public_key),
                                          std::move(member_keys));
@@ -623,7 +621,7 @@ void ProcessDownloadGaiaPasswordPublicKeyResponse(
   }
 
   std::move(callback).Run(TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess,
-                          std::vector<uint8_t>(key_str.begin(), key_str.end()));
+                          ProtoStringToBytes(key_str));
 }
 
 void ProcessRotateSharedKeyResponse(
