@@ -1851,6 +1851,70 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </token>
 </histogram>
 
+<histogram name="Search.SearchPromotion.Install.ForegroundFallbackLaunchFailed"
+    enum="Boolean" expires_after="2027-07-09">
+  <owner>qlucyk@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <summary>
+    Records whether launching the fallback browser in the foreground failed.
+    Recorded when a foreground escalation is attempted (due to the background
+    installation not completing within the threshold time, or because the
+    background process terminated) and the launch fails. Only recorded on
+    Windows.
+  </summary>
+</histogram>
+
+<histogram name="Search.SearchPromotion.Install.ForegroundFallbackTriggered"
+    enum="Boolean" expires_after="2027-07-09">
+  <owner>qlucyk@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <summary>
+    Records when the fallback foreground browser launch is triggered because the
+    background installation did not complete within the threshold time (or the
+    background process terminated/crashed). Recorded at the moment the
+    foreground escalation is initiated. Only recorded on Windows.
+  </summary>
+</histogram>
+
+<histogram name="Search.SearchPromotion.InstallDuration.SuccessBackground"
+    units="ms" expires_after="2027-07-09">
+  <owner>qlucyk@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <summary>
+    Records the duration (in milliseconds) taken for a successful background
+    installation of the extension. Recorded at the moment the extension
+    installation is successfully detected, provided that the installation
+    completed purely in the background (without needing to launch the browser in
+    the foreground). Only recorded on Windows.
+  </summary>
+</histogram>
+
+<histogram name="Search.SearchPromotion.InstallDuration.SuccessWithFallback"
+    units="ms" expires_after="2027-07-09">
+  <owner>qlucyk@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <summary>
+    Records the total duration (in milliseconds) taken for a successful
+    installation of the extension. Recorded at the moment the extension
+    installation is successfully detected, provided that a foreground browser
+    launch was triggered because the background installation did not complete
+    within the threshold time. Only recorded on Windows.
+  </summary>
+</histogram>
+
+<histogram name="Search.SearchPromotion.InstallResult"
+    enum="SearchPromotionInstallResult" expires_after="2027-07-09">
+  <owner>qlucyk@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <summary>
+    Records the outcome of the extension installation process for the Search
+    Promotion. Recorded when the installation attempt completes, which is either
+    when the extension installation is successfully detected, when the fallback
+    browser launch fails, or when the overall installation process times out.
+    Only recorded on Windows.
+  </summary>
+</histogram>
+
 <histogram name="Search.SearchProviderOverrideStatus"
     enum="SearchProviderOverrideStatus" expires_after="2026-11-15">
   <owner>dgn@chromium.org</owner>

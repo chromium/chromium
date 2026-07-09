@@ -25459,6 +25459,14 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//chrome/browser/preloading/search_preload/search_preload_service.h:SearchPreloadServiceNoVarySearchDataCacheUpdate) -->
 
+<enum name="SearchPromotionInstallResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="SuccessBackground"/>
+  <int value="2" label="SuccessWithForegroundFallback"/>
+  <int value="3" label="Timeout"/>
+  <int value="4" label="ForegroundFallbackLaunchFailed"/>
+</enum>
+
 <!-- LINT.IfChange(SecureChannelConnectionAttemptFailureReason) -->
 
 <enum name="SecureChannelConnectionAttemptFailureReason">
