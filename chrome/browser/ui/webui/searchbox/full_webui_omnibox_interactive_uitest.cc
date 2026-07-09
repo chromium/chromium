@@ -163,8 +163,7 @@ class FullWebUIOmniboxInteractiveTest
                                 ui::ElementIdentifier tab_id = kTab1) {
     return Steps(SelectTab(tab_strip, tab_index),
                  WaitForPopupTransitionLockout(), Do([this]() {
-                   if (auto* popup_view = browser()
-                                              ->window()
+                   if (auto* popup_view = BrowserWindow::FromBrowser(browser())
                                               ->GetLocationBar()
                                               ->GetOmniboxPopupView()) {
                      if (popup_view->presenter()) {
@@ -180,8 +179,7 @@ class FullWebUIOmniboxInteractiveTest
     return Steps(AddInstrumentedTab(tab_id, url),
                  WaitForWebContentsReady(tab_id),
                  WaitForPopupTransitionLockout(), Do([this]() {
-                   if (auto* popup_view = browser()
-                                              ->window()
+                   if (auto* popup_view = BrowserWindow::FromBrowser(browser())
                                               ->GetLocationBar()
                                               ->GetOmniboxPopupView()) {
                      popup_view->OnFocus();

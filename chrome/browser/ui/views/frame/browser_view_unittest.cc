@@ -430,14 +430,11 @@ TEST_F(BrowserViewTest, FindBrowserWindowWithWebContentsTabSwitch) {
                                 new_active_contents));
 }
 
-// Tests that BrowserWindow::FromBrowser() resolves to the same BrowserWindow as
-// Browser::window(), and handles edge cases.
+// Tests that BrowserWindow::FromBrowser() resolves to the BrowserView-backed
+// BrowserWindow, and handles edge cases.
 TEST_F(BrowserViewTest, FromBrowser) {
-  // For a fully-constructed BrowserView-backed Browser the result must be
-  // identical to the legacy Browser::window() getter.
-  EXPECT_EQ(browser()->window(),  // nocheck
-            BrowserWindow::FromBrowser(browser()));
-  // The result must also match the BrowserView-specific lookup.
+  // For a fully-constructed BrowserView-backed Browser the result must match
+  // the BrowserView-specific lookup.
   EXPECT_EQ(browser_view(), BrowserWindow::FromBrowser(browser()));
 
   // Null input is tolerated and yields null output, mirroring the behavior

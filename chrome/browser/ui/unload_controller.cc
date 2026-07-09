@@ -881,12 +881,10 @@ bool UnloadController::CanCloseWithInProgressDownloads() {
   // that's ok.
   cancel_download_confirmation_state_ =
       CancelDownloadConfirmationState::kWaitingForResponse;
-  browser_->GetBrowserForMigrationOnly()
-      ->window()
-      ->ConfirmBrowserCloseWithPendingDownloads(
-          num_downloads_blocking, dialog_type,
-          base::BindOnce(&UnloadController::InProgressDownloadResponse,
-                         weak_factory_.GetWeakPtr()));
+  BrowserWindow::FromBrowser(browser_)->ConfirmBrowserCloseWithPendingDownloads(
+      num_downloads_blocking, dialog_type,
+      base::BindOnce(&UnloadController::InProgressDownloadResponse,
+                     weak_factory_.GetWeakPtr()));
 
   // Return false so the browser does not close.  We'll close if the user
   // confirms in the dialog.

@@ -369,10 +369,6 @@ class Browser : public TabStripModelObserver,
   }
   CreationSource creation_source() const { return creation_source_; }
 
-  // |window()| will return NULL if called before |CreateBrowserWindow()|
-  // is done.
-  BrowserWindow* window() const { return window_.get(); }
-
   // In production code, each instance of Browser will always instantiate an
   // instance of BrowserView in the constructor. Some tests instantiate a
   // Browser without a BrowserView: this is an anti-pattern and should be

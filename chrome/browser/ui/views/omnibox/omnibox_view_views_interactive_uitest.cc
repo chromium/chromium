@@ -2090,8 +2090,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsSendTabToSelfSubmenuEnabledTest,
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
       devices);
 
-  OmniboxViewViews* omnibox = static_cast<OmniboxViewViews*>(
-      browser()->window()->GetLocationBar()->GetOmniboxView());
+  OmniboxViewViews* omnibox =
+      static_cast<OmniboxViewViews*>(BrowserWindow::FromBrowser(browser())
+                                         ->GetLocationBar()
+                                         ->GetOmniboxView());
   ui::SimpleMenuModel menu_model(nullptr);
   menu_model.AddItem(views::Textfield::kUndo, u"Undo");
   menu_model.AddItem(
@@ -2122,8 +2124,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsSendTabToSelfSubmenuDisabledTest,
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
       devices);
 
-  OmniboxViewViews* omnibox = static_cast<OmniboxViewViews*>(
-      browser()->window()->GetLocationBar()->GetOmniboxView());
+  OmniboxViewViews* omnibox =
+      static_cast<OmniboxViewViews*>(BrowserWindow::FromBrowser(browser())
+                                         ->GetLocationBar()
+                                         ->GetOmniboxView());
   ui::SimpleMenuModel menu_model(nullptr);
   menu_model.AddItem(views::Textfield::kUndo, u"Undo");
   menu_model.AddItem(
@@ -2149,8 +2153,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsSendTabToSelfSubmenuEnabledTest,
           SendTabToSelfSyncServiceFactory::GetForProfile(browser()->profile()));
   sync_service->SetEntryPointDisplayReason(std::nullopt);
 
-  OmniboxViewViews* omnibox = static_cast<OmniboxViewViews*>(
-      browser()->window()->GetLocationBar()->GetOmniboxView());
+  OmniboxViewViews* omnibox =
+      static_cast<OmniboxViewViews*>(BrowserWindow::FromBrowser(browser())
+                                         ->GetLocationBar()
+                                         ->GetOmniboxView());
   ui::SimpleMenuModel menu_model(nullptr);
   menu_model.AddItem(views::Textfield::kUndo, u"Undo");
   menu_model.AddItem(
