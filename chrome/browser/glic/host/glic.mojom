@@ -439,6 +439,8 @@ enum ActorTaskInterruptReason {
   kWaitingUserTakeOver = 5,
   // Actor task was waiting for irrelevant user input.
   kWaitingIrrelevantUserInput = 6,
+  // Actor task was waiting for user to respond to unsafe counter-abuse verdict.
+  [MinVersion=1] kWaitingUnsafeCounterAbuseVerdict = 7,
 };
 
 // @generate glic_api

@@ -93,6 +93,8 @@ export enum ActorTaskInterruptReason {
   WAITING_USER_TAKE_OVER = 5,
   // Actor task was waiting for irrelevant user input.
   WAITING_IRRELEVANT_USER_INPUT = 6,
+  // Actor task was waiting for user to respond to unsafe counter-abuse verdict.
+  WAITING_UNSAFE_COUNTER_ABUSE_VERDICT = 7,
 }
 
 // Reason why capturing desktop screenshot failed. NOTE: This may be extended in
