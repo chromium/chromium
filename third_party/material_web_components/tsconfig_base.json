@@ -1,10 +1,9 @@
 {
  "compilerOptions": {
     "ignoreDeprecations": "6.0",
-    "baseUrl": "../../../third_party/material_web_components/components-chromium/node_modules/",
-    "module": "ESNext",
+    "module": "nodenext",
     "target": "ES2021",
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "lib": ["ES2021", "dom", "dom.iterable"],
     "declaration": true,
     "noUnusedLocals": true,
