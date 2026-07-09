@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/dictation/session_state.h"
 #include "chrome/browser/dictation/session_ui.h"
 #include "components/tabs/public/tab_interface.h"
@@ -34,16 +35,20 @@ class SessionUiImpl : public SessionUi {
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
   void OnTabInserted(tabs::TabInterface* tab);
+  void OnTabWillDeactivate(tabs::TabInterface* tab);
 
   const base::raw_ref<SessionUiDelegate> controller_;
 
   base::CallbackListSubscription session_state_changed_subscription_;
   base::CallbackListSubscription tab_detach_subscription_;
   base::CallbackListSubscription tab_insert_subscription_;
+  base::CallbackListSubscription tab_will_deactivate_subscription_;
 
   // This is the main bubble/toast that shows up at the top-center of the
   // screen.
   std::unique_ptr<DictationBubbleUi> bubble_ui_;
+
+  base::WeakPtrFactory<SessionUiImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace dictation

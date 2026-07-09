@@ -24,6 +24,10 @@ class SessionUiDelegate {
   // is an attached initializing or transcribing.
   virtual void UiRequestEndActiveStream() = 0;
 
+  // Requests that the session be finalized and shut down. This will stop the
+  // active stream and end the session once finalization is complete.
+  virtual void FinalizeAndShutdown() = 0;
+
   // Called to start a new stream from the UI. Must only be called if the
   // session is inactive. Starts a new stream on the last used Target.
   virtual void UiRequestStartStream() = 0;

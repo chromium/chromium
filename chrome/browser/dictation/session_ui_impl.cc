@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/dictation/session_ui_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -84,6 +85,10 @@ SessionUiImpl::SessionUiImpl(tabs::TabInterface& tab,
 
   tab_insert_subscription_ = tab.RegisterDidInsert(base::BindRepeating(
       &SessionUiImpl::OnTabInserted, base::Unretained(this)));
+
+  tab_will_deactivate_subscription_ =
+      tab.RegisterWillDeactivate(base::BindRepeating(
+          &SessionUiImpl::OnTabWillDeactivate, base::Unretained(this)));
 }
 
 SessionUiImpl::~SessionUiImpl() = default;
@@ -117,6 +122,27 @@ void SessionUiImpl::OnTabWillDetach(tabs::TabInterface* tab,
     controller_->HostTabDidClose();
     // WARNING: Do not add code below, `this` is deleted.
   }
+}
+
+void SessionUiImpl::OnTabWillDeactivate(tabs::TabInterface* tab) {
+  // Tabs become deactivated briefly while being detached from a window. We
+  // don't want to stop the session in that case, only when a new tab in the
+  // window is foregrounded. We use PostTask since the detach case always
+  // synchronously re-inserts the tab into a new window so we can differentiate
+  // these two cases by checking IsActivated asynchronously.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<SessionUiImpl> self,
+             base::WeakPtr<tabs::TabInterface> tab_weak) {
+            if (self && tab_weak && !tab_weak->IsActivated()) {
+              tab_weak->GetTabFeatures()->tab_dialog_manager()->CloseDialog();
+              self->controller_->FinalizeAndShutdown();
+              // TODO(b/529137727): Show a toast that the dictation
+              // was ended.
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), tab->GetWeakPtr()));
 }
 
 void SessionUiImpl::OnTabInserted(tabs::TabInterface* tab) {

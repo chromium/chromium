@@ -236,4 +236,59 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+                       BackgroundTabActivationEndsSession) {
+  // Add a second tab with the first tab in the foreground.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+
+    // Switch to the second tab. The the session should be ended but only after
+    // finalization.
+    SelectTab(kTabStripElementId, 1),
+    WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
+    CheckHasSession(true),
+    CheckResult(GetSessionState(), SessionState::kFinalizing),
+
+    // Once the finalization completes the sesison should be ended.
+    ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
+    CheckHasSession(false),
+
+    // Switch back to the first tab and ensure the UI does not reappear.
+    SelectTab(kTabStripElementId, 0),
+    EnsureNotPresent(DictationBubbleUi::kViewElementIdForTesting)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+                       SwitchBackToDictatingTabDuringFinalization) {
+  // Add a second tab with the first tab in the foreground.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+
+    // Switch to the second tab. The session should be finalizing.
+    SelectTab(kTabStripElementId, 1),
+    WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
+    CheckHasSession(true),
+    CheckResult(GetSessionState(), SessionState::kFinalizing),
+
+    // Switch back to the first tab (dictating tab) while still finalizing.
+    SelectTab(kTabStripElementId, 0),
+    EnsureNotPresent(DictationBubbleUi::kViewElementIdForTesting),
+    CheckHasSession(true),
+    CheckResult(GetSessionState(), SessionState::kFinalizing)
+  );
+  // clang-format on
+}
+
 }  // namespace dictation

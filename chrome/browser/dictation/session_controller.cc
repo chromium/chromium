@@ -68,20 +68,22 @@ void SessionController::EndDictationStream() {
 void SessionController::UiRequestEndSession() {
   // EndSession will destroy `this` which owns other objects that call into here
   // so PostTask to avoid destroying objects in the callstack.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](base::WeakPtr<SessionController> this_ptr) {
-                       if (!this_ptr) {
-                         return;
-                       }
-                       this_ptr->delegate_->EndSession();
-                       CHECK(!this_ptr);
-                     },
-                     weak_ptr_factory_.GetWeakPtr()));
+  EndSessionAsynchronously();
 }
 
 void SessionController::UiRequestEndActiveStream() {
   EndDictationStream();
+}
+
+void SessionController::FinalizeAndShutdown() {
+  is_shutting_down_ = true;
+  if (attached_stream_provider_) {
+    EndDictationStream();
+  } else if (state_ == SessionState::kInactive) {
+    // EndSession will destroy `this` which owns other objects that call into
+    // here so PostTask to avoid destroying objects in the callstack.
+    EndSessionAsynchronously();
+  }
 }
 
 void SessionController::UiRequestStartStream() {
@@ -181,6 +183,25 @@ void SessionController::MoveToState(SessionState new_state) {
 #endif  // DCHECK_IS_ON()
   state_ = new_state;
   session_state_changed_callback_list_.Notify(new_state);
+
+  if (state_ == SessionState::kInactive && is_shutting_down_) {
+    // EndSession destroys `this` so do this async so callers to MoveToState
+    // don't have to avoid the UAF landmine.
+    EndSessionAsynchronously();
+  }
+}
+
+void SessionController::EndSessionAsynchronously() {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<SessionController> this_ptr) {
+                       if (!this_ptr) {
+                         return;
+                       }
+                       this_ptr->delegate_->EndSession();
+                       CHECK(!this_ptr);
+                     },
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SessionController::PurgeToDeleteStreamProviders() {

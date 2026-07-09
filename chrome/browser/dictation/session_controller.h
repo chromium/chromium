@@ -42,6 +42,7 @@ class SessionController : public SessionUiDelegate,
   // SessionUiDelegate:
   void UiRequestEndSession() override;
   void UiRequestEndActiveStream() override;
+  void FinalizeAndShutdown() override;
   void UiRequestStartStream() override;
   SessionState GetState() const override;
   base::CallbackListSubscription AddSessionStateChangedCallback(
@@ -69,11 +70,13 @@ class SessionController : public SessionUiDelegate,
 
  private:
   void MoveToState(SessionState new_state);
+  void EndSessionAsynchronously();
   void PurgeToDeleteStreamProviders();
 
   const base::raw_ref<SessionControllerDelegate> delegate_;
 
   SessionState state_ = SessionState::kInactive;
+  bool is_shutting_down_ = false;
 
   // The currently attached stream provider. The state of this provider is used
   // to drive the current state of dictation in the UI.
