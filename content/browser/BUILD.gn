@@ -2149,6 +2149,8 @@ source_set("browser") {
     "scheduler/responsiveness/watcher.h",
     "scoped_active_url.cc",
     "scoped_active_url.h",
+    "scoped_browser_file_access.cc",
+    "scoped_browser_file_access.h",
     "screen_details/screen_change_monitor.cc",
     "screen_details/screen_change_monitor.h",
     "screen_orientation/screen_orientation_provider.cc",

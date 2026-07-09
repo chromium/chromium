@@ -442,6 +442,11 @@ BASE_DECLARE_FEATURE(kRestrictForbiddenSecurityHeaders);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kDeclarativePerformanceObserver);
 
+// Enables validating browser-initiated file upload requests from the network
+// service.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kBrowserInitiatedFileUploadValidation);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

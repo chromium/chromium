@@ -16,7 +16,8 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
+#include "base/unguessable_token.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -77,6 +78,22 @@ class SimpleURLLoaderStreamConsumer;
 // 503 + Retry-After.
 class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
  public:
+  // Callbacks used to notify the embedder when a local file is being
+  // uploaded. These callbacks delegate file access registration and
+  // revocation to the embedder.
+  struct FileUploadEventCallbacks {
+    // Called when a file is attached to a request, giving the embedder a chance
+    // to register it for security validation. `owner_token` is an identifier
+    // that will be used to revoke access when the loader is destroyed.
+    base::RepeatingCallback<void(const base::UnguessableToken& /*owner_token*/,
+                                 const base::FilePath&)>
+        register_callback;
+
+    // Called when the loader is destroyed, notifying the embedder to revoke
+    // the file access previously registered with `owner_token`.
+    base::RepeatingCallback<void(const base::UnguessableToken& /*owner_token*/)>
+        revoke_callback;
+  };
   // When a failed request should automatically be retried. These are intended
   // to be ORed together.
   enum RetryMode {
@@ -190,6 +207,12 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // is completed. When null, the timer falls back to base::TimeTicks::Now().
   static void SetTimeoutTickClockForTest(
       const base::TickClock* timeout_tick_clock);
+
+  // Configures the global callbacks used by all SimpleURLLoader instances to
+  // report embedder-initiated file uploads. This should be called once during
+  // startup.
+  static void SetFileUploadEventCallbacks(
+      const FileUploadEventCallbacks& callbacks);
 
   SimpleURLLoader(const SimpleURLLoader&) = delete;
   SimpleURLLoader& operator=(const SimpleURLLoader&) = delete;

@@ -653,4 +653,7 @@ BASE_FEATURE(kRestrictForbiddenSecurityHeaders,
 BASE_FEATURE(kDeclarativePerformanceObserver,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBrowserInitiatedFileUploadValidation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace network::features
