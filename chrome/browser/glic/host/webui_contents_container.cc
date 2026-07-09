@@ -222,7 +222,12 @@ void WebUIContentsContainerImpl::OnTaskTabsVisibilityChanged(
 
 void WebUIContentsContainerImpl::UpdateActuationTracker() {
   auto* guest = GetGlicGuestWebContents(web_contents_.get());
-  CHECK(guest);
+  if (!guest) {
+    // Visibility might change before the guest is created or after it is
+    // teared down. In both cases, there is no point in tracking the actuation
+    // state.
+    return;
+  }
   GlicActuationState state = GlicActuationState::kNone;
   if (is_actuating_) {
     state = is_actuating_on_visible_tab_
