@@ -1112,20 +1112,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.BackPress.Intercept.CustomTab.{Task}"
-    enum="BackPressConsumer" expires_after="M143">
-  <owner>lazzzis@chromium.org</owner>
-  <owner>src/chrome/browser/back_press/android/OWNERS</owner>
-  <summary>
-    Recorded when a custom tabs feature intercepted the system's back press
-    gesture {Task}.
-  </summary>
-  <token key="Task">
-    <variant name="SameTask" summary="custom tab is from the same task."/>
-    <variant name="SeparateTask" summary="custom tab is from a separate task."/>
-  </token>
-</histogram>
-
 <histogram name="Android.BackPress.Intercept{Direction}"
     enum="BackPressConsumer" expires_after="2027-01-03">
   <owner>lazzzis@chromium.org</owner>

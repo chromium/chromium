@@ -141,9 +141,6 @@ public class CustomTabActivityNavigationControllerTest {
                         .expectIntRecord(
                                 CustomTabActivityNavigationController.HISTOGRAM_FINISH_REASON,
                                 FinishReason.USER_NAVIGATION)
-                        .expectNoRecords(
-                                BackPressManager.getCustomTabSeparateTaskHistogramForTesting())
-                        .expectNoRecords(BackPressManager.getCustomTabSameTaskHistogramForTesting())
                         .build();
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
@@ -187,9 +184,6 @@ public class CustomTabActivityNavigationControllerTest {
                         .expectIntRecord(
                                 CustomTabActivityNavigationController.HISTOGRAM_FINISH_REASON,
                                 FinishReason.USER_NAVIGATION)
-                        .expectNoRecords(
-                                BackPressManager.getCustomTabSeparateTaskHistogramForTesting())
-                        .expectNoRecords(BackPressManager.getCustomTabSameTaskHistogramForTesting())
                         .build();
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(true);
