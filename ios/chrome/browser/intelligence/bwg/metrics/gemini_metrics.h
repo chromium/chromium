@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
 namespace base {
 class TimeDelta;
@@ -175,6 +176,23 @@ enum class IOSGeminiSessionCancellationReason {
   kMaxValue = kLoadingStateCloseButtonTapped,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiSessionCancellationReason)
+
+// Enum for tracking reasons why Gemini Live transitions to dormant mode.
+// LINT.IfChange(IOSGeminiDormantReason)
+enum class IOSGeminiDormantReason {
+  kUnknown = 0,
+  kInterruptedByExternalAudio = 1,
+  kLowVolumeInBackground = 2,
+  kLowVolumeInForeground = 3,
+  kInactivityTimeout = 4,
+  kLongInteractionTimeout = 5,
+  kMovedToBackgroundWhenMicOff = 6,
+  kUserStop = 7,
+  kUserPause = 8,
+  kServerPause = 9,
+  kMaxValue = kServerPause,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiDormantReason)
 
 // Records the reason for a gemini session cancellation.
 void RecordGeminiSessionCancellation(IOSGeminiSessionCancellationReason reason);
@@ -607,5 +625,24 @@ void RecordGeminiEditMenuSelectedTextLength(int length);
 // Records the glic contextual cue decision for Gemini.
 void RecordGeminiGlicContextualCueDecision(
     optimization_guide::OptimizationGuideDecision decision);
+
+// Records the dormant reason when Gemini Live transitions to dormant mode.
+void RecordGeminiLiveDormantReason(ios::provider::GeminiDormantReason reason);
+
+// Records the response latency (time Gemini takes to respond between thinking
+// and responding).
+void RecordGeminiLiveResponseLatency(base::TimeDelta latency);
+
+// Records the response duration (how long the spoken response lasted,
+// recorded only if the response finished naturally).
+void RecordGeminiLiveResponseDuration(base::TimeDelta duration);
+
+// Records the turn count at the end of the session. A turn is defined as the
+// cycle of the user speaking and Gemini responding.
+void RecordGeminiLiveTurnCount(int turn_count);
+
+// Records the accumulated duration of Gemini Live mode segments within
+// a single Gemini interaction.
+void RecordGeminiLiveAccumulatedDuration(base::TimeDelta duration);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_GEMINI_METRICS_H_

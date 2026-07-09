@@ -169,6 +169,16 @@ const char kSessionPromptCountHistogram[] = "IOS.Gemini.Session.PromptCount";
 
 const char kSessionFirstPromptHistogram[] = "IOS.Gemini.Session.FirstPrompt";
 
+const char kGeminiLiveDormantReasonHistogram[] =
+    "IOS.Gemini.Live.DormantReason";
+const char kGeminiLiveResponseLatencyHistogram[] =
+    "IOS.Gemini.Live.ResponseLatency";
+const char kGeminiLiveResponseDurationHistogram[] =
+    "IOS.Gemini.Live.ResponseDuration";
+const char kGeminiLiveTurnCountHistogram[] = "IOS.Gemini.Live.TurnCount";
+const char kGeminiLiveAccumulatedDurationHistogram[] =
+    "IOS.Gemini.Live.AccumulatedDuration";
+
 const char kFloatyTimeMinimizedHistogram[] = "IOS.Gemini.Floaty.TimeMinimized";
 
 const char kFloatyViewStateTransitionHistogram[] =
@@ -671,4 +681,58 @@ void RecordGeminiEditMenuSelectedTextLength(int length) {
 void RecordGeminiGlicContextualCueDecision(
     optimization_guide::OptimizationGuideDecision decision) {
   base::UmaHistogramEnumeration(kGlicContextualCueDecisionHistogram, decision);
+}
+
+void RecordGeminiLiveDormantReason(ios::provider::GeminiDormantReason reason) {
+  IOSGeminiDormantReason uma_reason = IOSGeminiDormantReason::kUnknown;
+  switch (reason) {
+    case ios::provider::GeminiDormantReason::kUnknown:
+      uma_reason = IOSGeminiDormantReason::kUnknown;
+      break;
+    case ios::provider::GeminiDormantReason::kInterruptedByExternalAudio:
+      uma_reason = IOSGeminiDormantReason::kInterruptedByExternalAudio;
+      break;
+    case ios::provider::GeminiDormantReason::kLowVolumeInBackground:
+      uma_reason = IOSGeminiDormantReason::kLowVolumeInBackground;
+      break;
+    case ios::provider::GeminiDormantReason::kLowVolumeInForeground:
+      uma_reason = IOSGeminiDormantReason::kLowVolumeInForeground;
+      break;
+    case ios::provider::GeminiDormantReason::kInactivityTimeout:
+      uma_reason = IOSGeminiDormantReason::kInactivityTimeout;
+      break;
+    case ios::provider::GeminiDormantReason::kLongInteractionTimeout:
+      uma_reason = IOSGeminiDormantReason::kLongInteractionTimeout;
+      break;
+    case ios::provider::GeminiDormantReason::kMovedToBackgroundWhenMicOff:
+      uma_reason = IOSGeminiDormantReason::kMovedToBackgroundWhenMicOff;
+      break;
+    case ios::provider::GeminiDormantReason::kUserStop:
+      uma_reason = IOSGeminiDormantReason::kUserStop;
+      break;
+    case ios::provider::GeminiDormantReason::kUserPause:
+      uma_reason = IOSGeminiDormantReason::kUserPause;
+      break;
+    case ios::provider::GeminiDormantReason::kServerPause:
+      uma_reason = IOSGeminiDormantReason::kServerPause;
+      break;
+  }
+  base::UmaHistogramEnumeration(kGeminiLiveDormantReasonHistogram, uma_reason);
+}
+
+void RecordGeminiLiveResponseLatency(base::TimeDelta latency) {
+  base::UmaHistogramTimes(kGeminiLiveResponseLatencyHistogram, latency);
+}
+
+void RecordGeminiLiveResponseDuration(base::TimeDelta duration) {
+  base::UmaHistogramMediumTimes(kGeminiLiveResponseDurationHistogram, duration);
+}
+
+void RecordGeminiLiveTurnCount(int turn_count) {
+  base::UmaHistogramCounts100(kGeminiLiveTurnCountHistogram, turn_count);
+}
+
+void RecordGeminiLiveAccumulatedDuration(base::TimeDelta duration) {
+  base::UmaHistogramLongTimes(kGeminiLiveAccumulatedDurationHistogram,
+                              duration);
 }

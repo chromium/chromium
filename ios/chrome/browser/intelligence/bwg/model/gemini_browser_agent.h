@@ -462,6 +462,26 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Whether the floaty is hidden by the keyboard.
   bool is_hidden_by_keyboard_ = false;
 
+  // Start time of the current Gemini Live response. Used for barge-in latency
+  // and response duration.
+  base::TimeTicks live_response_start_time_;
+
+  // Start time of the Gemini Live thinking state. Used for response latency.
+  base::TimeTicks live_thinking_start_time_;
+
+  // The number of turns in the current Gemini Live session.
+  int live_turn_count_ = 0;
+
+  // The start time of the current Gemini Live session segment.
+  base::TimeTicks live_session_start_time_;
+
+  // The accumulated duration of all Gemini Live segments within a single
+  // overall interaction.
+  base::TimeDelta live_session_accumulated_duration_;
+
+  // Logs Gemini live related metrics and resets values if needed.
+  void LogLiveSessionMetrics(bool floaty_dismissed = false);
+
   // The current processing status of the Gemini client.
   ios::provider::GeminiClientMode processing_status_ =
       ios::provider::GeminiClientMode::kUnknown;
@@ -474,6 +494,10 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Handles the client transitioning to a dormant status.
   void HandleDormantStatus(ios::provider::GeminiDormantReason dormant_reason);
+
+  // Logs state transition events for Gemini Live metrics.
+  void LogLiveStatusTransition(ios::provider::GeminiClientMode old_status,
+                               ios::provider::GeminiClientMode new_status);
 
   // Whether we are currently displaying the Live session dormant snackbar.
   bool is_showing_live_session_dormant_snackbar_ = false;
