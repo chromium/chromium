@@ -12,8 +12,10 @@ FetchContextResult::FetchContextResult() = default;
 
 FetchContextResult::FetchContextResult(
     base::expected<const proto::Any /*response_metadata*/, ContextMemoryError>
-        response)
-    : response(std::move(response)) {}
+        response,
+    std::string server_request_id)
+    : response(std::move(response)),
+      server_request_id(std::move(server_request_id)) {}
 
 FetchContextResult::FetchContextResult(FetchContextResult&& other) = default;
 

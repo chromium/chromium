@@ -67,6 +67,8 @@ class RemoteResponseHolder {
     return result_->response.error().error();
   }
 
+  std::string server_request_id() const { return result_->server_request_id; }
+
  private:
   void OnResponse(FetchContextResult result) {
     result_.emplace(std::move(result));
@@ -151,6 +153,7 @@ class PersonalContextManagerTest : public testing::Test {
     std::string serialized_response;
     proto::FetchContextResponse fetch_response =
         BuildFetchContextResponse(serialized_message);
+    fetch_response.set_server_request_id("test_id");
     fetch_response.SerializeToString(&serialized_response);
     return SimulateResponse(serialized_response, net::HTTP_OK);
   }
@@ -224,6 +227,7 @@ TEST_F(PersonalContextManagerTest, FetchContextWithUserSignIn) {
   EXPECT_TRUE(SimulateSuccessfulResponse());
   EXPECT_TRUE(response_holder.GetFinalStatus());
   EXPECT_EQ("foo response", response_holder.GetOutput<TestMessage>().test());
+  EXPECT_EQ("test_id", response_holder.server_request_id());
 
   // Check that the result histogram records success.
   histogram_tester.ExpectUniqueSample(

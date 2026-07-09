@@ -179,8 +179,8 @@ void PersonalContextManager::OnFetchContextResponse(
 
   if (!fetch_response.has_value()) {
     RecordFetchContextResultHistogram(feature, /*success=*/false);
-    std::move(callback).Run(
-        FetchContextResult(base::unexpected(fetch_response.error())));
+    std::move(callback).Run(FetchContextResult(
+        base::unexpected(fetch_response.error()), /*server_request_id=*/""));
     return;
   }
 
@@ -188,13 +188,15 @@ void PersonalContextManager::OnFetchContextResponse(
     RecordFetchContextResultHistogram(feature, /*success=*/false);
     std::move(callback).Run(FetchContextResult(
         base::unexpected(ContextMemoryError::FromExecutionError(
-            ContextMemoryError::ExecutionError::kGenericFailure))));
+            ContextMemoryError::ExecutionError::kGenericFailure)),
+        fetch_response->server_request_id()));
     return;
   }
 
   RecordFetchContextResultHistogram(feature, /*success=*/true);
   std::move(callback).Run(
-      FetchContextResult(base::ok(fetch_response->response_metadata())));
+      FetchContextResult(base::ok(fetch_response->response_metadata()),
+                         fetch_response->server_request_id()));
 }
 
 void PersonalContextManager::FetchPiiEntities(

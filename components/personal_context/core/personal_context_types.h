@@ -48,7 +48,8 @@ struct FetchContextResult {
   FetchContextResult();
   explicit FetchContextResult(
       base::expected<const proto::Any /*response_metadata*/, ContextMemoryError>
-          response);
+          response,
+      std::string server_request_id = "");
   FetchContextResult(FetchContextResult&& other);
   ~FetchContextResult();
 
@@ -56,6 +57,9 @@ struct FetchContextResult {
   // (originally packed in an Any proto) or a ContextMemoryError.
   base::expected<const proto::Any /*response_metadata*/, ContextMemoryError>
       response;
+
+  // The server request ID, used to identify the request in the logs.
+  std::string server_request_id;
 };
 
 // Callback for receiving the result of a FetchContext call.
