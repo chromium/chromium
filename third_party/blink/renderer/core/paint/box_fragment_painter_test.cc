@@ -358,6 +358,7 @@ TEST_P(BoxFragmentPainterTest, TrackElementWithSubRect) {
   auto element = TrackedElementSubRect(
       TrackedElementId(element_id),
       /*should_add_to_compositor_frame_metadata=*/false,
+      /*should_exclude_fixed_and_sticky_occlusions=*/false,
       TrackedElementSubRect::SubRect{
           gfx::Rect(10, 10, 20, 20),
           TrackedElementSubRect::SubRect::Type::kIntersectWithElementRect});
@@ -394,6 +395,7 @@ TEST_P(BoxFragmentPainterTest, TrackElementWithSubRectNoIntersection) {
   auto element = TrackedElementSubRect(
       TrackedElementId(element_id),
       /*should_add_to_compositor_frame_metadata=*/true,
+      /*should_exclude_fixed_and_sticky_occlusions=*/false,
       TrackedElementSubRect::SubRect{
           gfx::Rect(-10, -10, 100, 100),
           TrackedElementSubRect::SubRect::Type::kNoIntersection});

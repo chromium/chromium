@@ -197,7 +197,8 @@ void ImageReplacement::StartReplacement(
           tracking_feature,
           TrackedElementSubRect(
               TrackedElementId(*tracking_token),
-              /*should_add_to_compositor_frame_metadata=*/false));
+              /*should_add_to_compositor_frame_metadata=*/false,
+              /*should_exclude_fixed_and_sticky_occlusions=*/true));
     }
 
     mojom::blink::ObjectFit object_fit = mojom::blink::ObjectFit::kFill;

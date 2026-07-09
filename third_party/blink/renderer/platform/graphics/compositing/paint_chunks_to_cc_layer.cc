@@ -1587,6 +1587,7 @@ void LayerPropertiesUpdater::UpdateTrackedElementRects(
       viz::TrackedElementRect rect_data(
           element_rect.id.value(), rect,
           element_rect.should_add_to_compositor_frame_metadata,
+          element_rect.should_exclude_fixed_and_sticky_occlusions,
           element_rect.frame_token, element_rect.parent_frame_token);
       tracked_element_rects_[feature].push_back(std::move(rect_data));
     }

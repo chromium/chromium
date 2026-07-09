@@ -707,7 +707,7 @@ RenderFrameMetadata
 LayerTreeHostImplTestBase::StartDrawAndProduceRenderFrameMetadata() {
   TestFrameData frame;
   EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
-  return host_impl_->MakeRenderFrameMetadata(&frame);
+  return host_impl_->MakeRenderFrameMetadata(frame);
 }
 
 void LayerTreeHostImplTestBase::AllowedTouchActionTestHelper(

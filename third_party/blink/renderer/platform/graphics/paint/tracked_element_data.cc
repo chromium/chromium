@@ -15,6 +15,8 @@ String TrackedElementRect::ToString() const {
   sb.Append(id.value().ToString().c_str());
   sb.Append(", bounds: ");
   sb.Append(bounds.ToString().c_str());
+  sb.Append(", should_exclude_fixed_and_sticky_occlusions: ");
+  sb.Append(should_exclude_fixed_and_sticky_occlusions ? "true" : "false");
   if (frame_token.has_value()) {
     sb.Append(", frame_token: ");
     sb.Append(frame_token->ToString().c_str());

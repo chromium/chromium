@@ -24,6 +24,18 @@ struct TrackedElementRect {
   // Whether the element should be added to the compositor frame metadata.
   bool should_add_to_compositor_frame_metadata;
 
+  // Whether the element should exclude parts occluded by fixed or sticky
+  // elements (e.g., fixed headers, sticky banners). This subtraction is
+  // heuristic (based on compositor-level property trees) and not completely
+  // reliable; there could be missed occlusions (for example, if the element is
+  // only partially occluded through the middle, the subtraction will have no
+  // effect and the entire element rect will be reported), or extra occlusions
+  // computed (for example, if an occluder has a non-rectangular clip-path set,
+  // the subtraction will use the occluder's bounding box for subtraction). For
+  // more accurate results, hit testing should be used instead (which comes with
+  // a performance cost and blocks the main thread).
+  bool should_exclude_fixed_and_sticky_occlusions;
+
   // The frame token of the frame containing the element being tracked.
   blink.mojom.FrameToken? frame_token;
 

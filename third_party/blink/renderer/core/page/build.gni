@@ -117,6 +117,7 @@ blink_core_tests_page = [
   "scrolling/scroll_metrics_test.cc",
   "scrolling/scrolling_test.cc",
   "scrolling/snap_coordinator_test.cc",
+  "scrolling/tracked_element_rect_test.cc",
   "spatial_navigation_test.cc",
   "touch_adjustment_test.cc",
   "validation_message_overlay_delegate_test.cc",

@@ -694,6 +694,7 @@ void HTMLIFrameElement::DidChangeAttributes() {
           TrackedElementSubRect(
               TrackedElementId(base::Token::CreateRandom()),
               /*should_add_to_compositor_frame_metadata=*/true,
+              /*should_exclude_fixed_and_sticky_occlusions=*/false,
               /*sub_rect=*/std::nullopt,
               /*frame_token=*/ContentFrame()->GetFrameToken(),
               /*parent_frame_token=*/

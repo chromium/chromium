@@ -1565,9 +1565,11 @@ TEST_F(StructTraitsTest, TrackedElementRects) {
   input[TrackedElementFeature::kTrackedElementFeatureMax] = {
       TrackedElementRect(token1, rect1,
                          /*should_add_to_compositor_frame_metadata=*/true,
+                         /*should_exclude_fixed_and_sticky_occlusions=*/true,
                          frame_token, parent_frame_token),
       TrackedElementRect(token2, rect2,
                          /*should_add_to_compositor_frame_metadata=*/false,
+                         /*should_exclude_fixed_and_sticky_occlusions=*/false,
                          std::nullopt, std::nullopt)};
 
   TrackedElementRects output;
@@ -1579,8 +1581,12 @@ TEST_F(StructTraitsTest, TrackedElementRects) {
             2u);
   EXPECT_TRUE(output[TrackedElementFeature::kTrackedElementFeatureMax][0]
                   .should_add_to_compositor_frame_metadata);
+  EXPECT_TRUE(output[TrackedElementFeature::kTrackedElementFeatureMax][0]
+                  .should_exclude_fixed_and_sticky_occlusions);
   EXPECT_FALSE(output[TrackedElementFeature::kTrackedElementFeatureMax][1]
                    .should_add_to_compositor_frame_metadata);
+  EXPECT_FALSE(output[TrackedElementFeature::kTrackedElementFeatureMax][1]
+                   .should_exclude_fixed_and_sticky_occlusions);
 }
 
 TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
@@ -2427,17 +2433,18 @@ auto AnyFrameToken() {
 auto AnyTrackedElementRect() {
   return fuzztest::Map(
       [](const TrackedElementId& id, const gfx::Rect& bounds,
-         bool add_to_metadata, const std::optional<blink::FrameToken>& token,
+         bool add_to_metadata, bool exclude_occlusion,
+         const std::optional<blink::FrameToken>& token,
          const std::optional<base::UnguessableToken>& parent_token) {
         std::optional<blink::LocalFrameToken> parent_local_token;
         if (parent_token) {
           parent_local_token = blink::LocalFrameToken(*parent_token);
         }
-        return TrackedElementRect(id, bounds, add_to_metadata, token,
-                                  parent_local_token);
+        return TrackedElementRect(id, bounds, add_to_metadata,
+                                  exclude_occlusion, token, parent_local_token);
       },
       AnyTrackedElementId(), AnyRect(), fuzztest::Arbitrary<bool>(),
-      fuzztest::OptionalOf(AnyFrameToken()),
+      fuzztest::Arbitrary<bool>(), fuzztest::OptionalOf(AnyFrameToken()),
       fuzztest::OptionalOf(AnyUnguessableToken()));
 }
 

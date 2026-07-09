@@ -19,10 +19,18 @@
 
 namespace cc {
 
-// This structure is used to build all the state required for producing a
-// single CompositorFrame. The |render_passes| list becomes the set of
-// RenderPasses in the quad, and the other fields are used for computation
-// or become part of the CompositorFrameMetadata.
+// Status of tracked elements in a frame.
+enum class TrackedElementStatus {
+  // There are no tracked elements in any layer in this frame.
+  kNone,
+  // There are tracked elements in this frame, but they don't require
+  // occlusion computation and subtraction.
+  kHasTrackedElements,
+  // There are tracked elements in this frame, and at least one of them
+  // requires occlusion computation and subtraction.
+  kHasTrackedElementsNeedingOcclusion,
+};
+
 struct CC_EXPORT FrameData {
   FrameData();
   FrameData(const FrameData&) = delete;
@@ -67,9 +75,9 @@ struct CC_EXPORT FrameData {
   bool has_copy_requests = false;
   // Only set when LTHI is in TreesInViz mode
   std::optional<viz::TreesInVizTiming> trees_in_viz_timing_details;
-  // Indicates if this frame has any layers with tracked elements, is used
-  // to avoid unnecessary layer tree walk if there are none.
-  bool has_layers_with_tracked_element = false;
+  // Indicates if this frame has any layers with tracked elements, and if they
+  // require occlusion subtraction.
+  TrackedElementStatus tracked_element_status = TrackedElementStatus::kNone;
 };
 
 }  // namespace cc

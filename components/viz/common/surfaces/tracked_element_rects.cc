@@ -19,6 +19,8 @@ namespace viz {
 std::string TrackedElementRect::ToString() const {
   return base::StrCat(
       {"{id: ", id.ToString(), ", visible_bounds: ", visible_bounds.ToString(),
+       ", should_exclude_fixed_and_sticky_occlusions: ",
+       should_exclude_fixed_and_sticky_occlusions ? "true" : "false",
        ", frame_token: ",
        frame_token.has_value() ? frame_token->ToString() : "null",
        ", parent_frame_token: ",

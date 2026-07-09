@@ -231,6 +231,7 @@ bool PaintChunker::AddTrackedElementDataToCurrentChunk(
     gfx::Rect bounds = sub_rect.GetEffectiveBounds(element_paint_rect);
     TrackedElementRect tracked_element_rect(
         sub_rect.id, bounds, sub_rect.should_add_to_compositor_frame_metadata,
+        sub_rect.should_exclude_fixed_and_sticky_occlusions,
         sub_rect.frame_token, sub_rect.parent_frame_token);
 
     auto& chunk = chunks_.back();

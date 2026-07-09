@@ -36,6 +36,11 @@ struct StructTraits<viz::mojom::TrackedElementRectDataView,
     return data.should_add_to_compositor_frame_metadata;
   }
 
+  static bool should_exclude_fixed_and_sticky_occlusions(
+      const viz::TrackedElementRect& data) {
+    return data.should_exclude_fixed_and_sticky_occlusions;
+  }
+
   static std::optional<blink::FrameToken> frame_token(
       const viz::TrackedElementRect& data) {
     return data.frame_token;
@@ -50,6 +55,8 @@ struct StructTraits<viz::mojom::TrackedElementRectDataView,
                    viz::TrackedElementRect* out) {
     out->should_add_to_compositor_frame_metadata =
         data.should_add_to_compositor_frame_metadata();
+    out->should_exclude_fixed_and_sticky_occlusions =
+        data.should_exclude_fixed_and_sticky_occlusions();
     if (!data.ReadTrackedElementId(&out->id) ||
         !data.ReadVisibleBounds(&out->visible_bounds) ||
         !data.ReadFrameToken(&out->frame_token) ||

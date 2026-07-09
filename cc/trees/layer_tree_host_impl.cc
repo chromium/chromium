@@ -106,12 +106,14 @@
 #include "cc/trees/mobile_optimized_viewport_util.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/presentation_time_callback_buffer.h"
+#include "cc/trees/property_tree.h"
 #include "cc/trees/raster_capabilities.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/trace_utils.h"
+#include "cc/trees/transform_node.h"
 #include "cc/trees/tree_synchronizer.h"
 #include "cc/trees/unbounded_frame_sink_handler.h"
 #include "cc/view_transition/view_transition_request.h"
@@ -291,6 +293,118 @@ void DoDumpCompositorFrame(const std::string& data,
   filename += base::NumberToString(frame_token) + ".txt";
   bool rt = base::WriteFile(path.AppendASCII(filename), data);
   CHECK(rt);
+}
+
+struct HeuristicFixedOrStickyOccluder {
+  gfx::Rect rect;
+  int transform_tree_index;
+};
+
+// Returns the transform node id of the first (self-inclusive) ancestor that has
+// a sticky-constraint, or is either the inner viewport scroll node or the outer
+// viewport scroll node.
+int GetFirstStickyAncestorOrViewportScrollNode(
+    int id,
+    const TransformTree& transform_tree,
+    int inner_scroll_id,
+    int outer_scroll_id,
+    base::flat_map<int, int>& cache) {
+  if (id == kInvalidPropertyNodeId) {
+    return kInvalidPropertyNodeId;
+  }
+  auto it = cache.find(id);
+  if (it != cache.end()) {
+    return it->second;
+  }
+
+  const TransformNode& node = transform_tree.Node(id);
+  if (node.sticky_position_constraint_id != kInvalidPropertyNodeId ||
+      id == inner_scroll_id || id == outer_scroll_id ||
+      node.parent_id == kInvalidPropertyNodeId) {
+    cache[id] = id;
+    return id;
+  }
+
+  int root_id = GetFirstStickyAncestorOrViewportScrollNode(
+      node.parent_id, transform_tree, inner_scroll_id, outer_scroll_id, cache);
+  cache[id] = root_id;
+  return root_id;
+}
+
+// Returns true if the transform node corresponds to an element that is fixed
+// or sticky relative to the page layout viewport.
+//
+// We determine this by walking up the transform tree:
+//  - If we hit the outer viewport scroll node, the element scrolls with the
+//    page content (not fixed).
+//  - If we hit the inner viewport scroll node (visual viewport), the element
+//    is fixed relative to layout scrolling.
+//  - If we hit a sticky constraint on any node, the subtree is sticky.
+//  - If we reach the root without hitting viewport scroll, the element is
+//  fixed.
+//
+// This is used to identify layers (like fixed headers and sticky banners)
+// that stay in place while page content scrolls underneath them.
+bool IsFixedOrStickyOccluderTransform(int transform_id,
+                                      const TransformTree& transform_tree,
+                                      int inner_scroll_id,
+                                      int outer_scroll_id,
+                                      base::flat_map<int, int>& cache) {
+  int sticky_or_viewport_scroll_node =
+      GetFirstStickyAncestorOrViewportScrollNode(transform_id, transform_tree,
+                                                 inner_scroll_id,
+                                                 outer_scroll_id, cache);
+  return sticky_or_viewport_scroll_node != kInvalidPropertyNodeId &&
+         sticky_or_viewport_scroll_node != outer_scroll_id;
+}
+
+// Returns the visible bounds of the tracked element on the given layer,
+// optionally subtracting any front occluders in screen space.
+gfx::Rect CalculateVisibleBounds(
+    const LayerImpl* layer,
+    const viz::TrackedElementRect& rect_data_in_layer_space,
+    const std::vector<HeuristicFixedOrStickyOccluder>& front_occluders,
+    const TransformTree& transform_tree,
+    int inner_scroll_id,
+    int outer_scroll_id,
+    base::flat_map<int, int>& sticky_or_viewport_scroll_cache) {
+  gfx::Rect visible_layer_rect = layer->draw_properties().visible_layer_rect;
+  visible_layer_rect.Intersect(rect_data_in_layer_space.visible_bounds);
+
+  // Map tracked element visible bounds to screen space first.
+  gfx::Rect element_screen_rect = MathUtil::ProjectEnclosingClippedRect(
+      layer->ScreenSpaceTransform(), visible_layer_rect);
+
+  if (rect_data_in_layer_space.should_exclude_fixed_and_sticky_occlusions) {
+    int layer_transform_id = layer->transform_tree_index();
+    int layer_sticky_or_viewport_scroll_node =
+        GetFirstStickyAncestorOrViewportScrollNode(
+            layer_transform_id, transform_tree, inner_scroll_id,
+            outer_scroll_id, sticky_or_viewport_scroll_cache);
+
+    // Subtract all front occluders in screen space.
+    for (const auto& occluder : front_occluders) {
+      int occluder_sticky_or_viewport_scroll_node =
+          GetFirstStickyAncestorOrViewportScrollNode(
+              occluder.transform_tree_index, transform_tree, inner_scroll_id,
+              outer_scroll_id, sticky_or_viewport_scroll_cache);
+
+      // If both `occluder` and `layer` share the same nearest sticky ancestor,
+      // they will be part of the same sticky subtree and scroll together, so we
+      // won't consider `occluder` to be occluding `layer`.
+      if (occluder_sticky_or_viewport_scroll_node != kInvalidPropertyNodeId &&
+          occluder_sticky_or_viewport_scroll_node ==
+              layer_sticky_or_viewport_scroll_node) {
+        continue;
+      }
+
+      element_screen_rect.Subtract(occluder.rect);
+      if (element_screen_rect.IsEmpty()) {
+        break;
+      }
+    }
+  }
+  return element_screen_rect;
 }
 
 #define VERBOSE_LOG() \
@@ -1175,7 +1289,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
       !settings_.TreesInVizInClientProcess() || dump_compositor_frame_;
 
   // Avoid additional layer tree walk if there are not tracked elements
-  bool has_layers_with_tracked_element_rects = false;
+  TrackedElementStatus tracked_element_status = TrackedElementStatus::kNone;
 
   for (EffectTreeLayerListIterator it(active_tree());
        it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
@@ -1234,9 +1348,28 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
     } else if (it.state() == EffectTreeLayerListIterator::State::kLayer) {
       LayerImpl* layer = it.current_layer();
 
-      has_layers_with_tracked_element_rects |=
-          layer->tracked_element_rects() &&
-          !layer->tracked_element_rects()->empty();
+      if (layer->tracked_element_rects() &&
+          !layer->tracked_element_rects()->empty()) {
+        if (tracked_element_status == TrackedElementStatus::kNone) {
+          tracked_element_status = TrackedElementStatus::kHasTrackedElements;
+        }
+        if (tracked_element_status !=
+            TrackedElementStatus::kHasTrackedElementsNeedingOcclusion) {
+          for (const auto& [feature, list] : *layer->tracked_element_rects()) {
+            for (const auto& rect : list) {
+              if (rect.should_exclude_fixed_and_sticky_occlusions) {
+                tracked_element_status =
+                    TrackedElementStatus::kHasTrackedElementsNeedingOcclusion;
+                break;
+              }
+            }
+            if (tracked_element_status ==
+                TrackedElementStatus::kHasTrackedElementsNeedingOcclusion) {
+              break;
+            }
+          }
+        }
+      }
 
       if (layer->WillDraw(context.draw_mode, resource_provider_.get())) {
         DCHECK_EQ(active_tree_.get(), layer->layer_tree_impl());
@@ -1323,8 +1456,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
     }
   }
 
-  frame->has_layers_with_tracked_element =
-      has_layers_with_tracked_element_rects;
+  frame->tracked_element_status = tracked_element_status;
 
   // If CommitsToActiveTree() is true, then we wait to draw until
   // NotifyReadyToDraw. That means we're in as good shape as is possible now,
@@ -2237,44 +2369,72 @@ void LayerTreeHostImpl::OnCanDrawStateChangedForTree() {
 }
 
 viz::TrackedElementRects LayerTreeHostImpl::CollectTrackedElementRects(
-    bool is_for_compositor_frame_metadata) {
+    bool is_for_compositor_frame_metadata,
+    bool need_occlusion) {
   viz::TrackedElementRects rects;
+
   // Get the drawable content rect of the root surface. This will be used to
   // determine if a clip_rect is effectively the full viewport and can be
   // omitted.
+  const ScrollNode* inner_scroll = active_tree()->InnerViewportScrollNode();
+  int inner_scroll_id =
+      inner_scroll ? inner_scroll->transform_id : kInvalidPropertyNodeId;
+  const ScrollNode* outer_scroll = active_tree()->OuterViewportScrollNode();
+  int outer_scroll_id =
+      outer_scroll ? outer_scroll->transform_id : kInvalidPropertyNodeId;
+  const TransformTree& transform_tree =
+      active_tree()->property_trees()->transform_tree();
+  base::flat_map<int, int> sticky_or_viewport_scroll_cache;
+  std::vector<HeuristicFixedOrStickyOccluder> front_occluders;
+
   for (const auto* layer : base::Reversed(*active_tree())) {
-    if (!layer->tracked_element_rects() ||
-        layer->tracked_element_rects()->empty()) {
-      continue;
+    if (layer->tracked_element_rects() &&
+        !layer->tracked_element_rects()->empty()) {
+      for (const auto& [feature, tracked_element_list] :
+           *layer->tracked_element_rects()) {
+        for (const auto& rect_data : tracked_element_list) {
+          if (rect_data.should_add_to_compositor_frame_metadata !=
+              is_for_compositor_frame_metadata) {
+            continue;
+          }
+          CHECK(!rect_data.should_exclude_fixed_and_sticky_occlusions ||
+                need_occlusion);
+
+          viz::TrackedElementRect transformed_rect = rect_data;
+
+          // TODO(http://crbug.com/441532128): Elements that are being added to
+          // the compositor frame metadata should be transformed to the
+          // coordinate space of the compositor frame.
+          transformed_rect.visible_bounds = CalculateVisibleBounds(
+              layer, rect_data, front_occluders, transform_tree,
+              inner_scroll_id, outer_scroll_id,
+              sticky_or_viewport_scroll_cache);
+
+          // Set the element data with screen space visible bounds.
+          rects[feature].emplace_back(transformed_rect);
+        }
+      }
     }
 
-    for (const auto& [feature, tracked_element_list] :
-         *layer->tracked_element_rects()) {
-      for (const auto& rect_data : tracked_element_list) {
-        // Elements that are flagged to be added to the compositor frame
-        // metadata will only be added to the compositor frame metadata.
-        // Otherwise, they will only be added to the render frame metadata.
-        if (rect_data.should_add_to_compositor_frame_metadata !=
-            is_for_compositor_frame_metadata) {
-          continue;
-        }
-
-        // TODO(http://crbug.com/441532128): Elements that are being added to
-        // the compositor frame metadata should be transformed to the coordinate
-        // space of the compositor frame.
-
-        viz::TrackedElementRect transformed_rect = rect_data;
-        gfx::Rect visible_layer_rect =
+    // Collect potential heuristic occluders drawn in front of subsequent
+    // layers. Done at the end to prevent a layer from occluding itself.
+    if (need_occlusion && layer->draws_content() &&
+        layer->draw_properties().opacity > 0.05f) {
+      int transform_id = layer->transform_tree_index();
+      if (IsFixedOrStickyOccluderTransform(transform_id, transform_tree,
+                                           inner_scroll_id, outer_scroll_id,
+                                           sticky_or_viewport_scroll_cache)) {
+        gfx::Rect layer_visible_rect =
             layer->draw_properties().visible_layer_rect;
-        visible_layer_rect.Intersect(rect_data.visible_bounds);
-        gfx::Rect visible_element_bounds_in_screen_space =
-            MathUtil::ProjectEnclosingClippedRect(layer->ScreenSpaceTransform(),
-                                                  visible_layer_rect);
-        transformed_rect.visible_bounds =
-            visible_element_bounds_in_screen_space;
-
-        // Set the element data with screen space visible bounds.
-        rects[feature].emplace_back(transformed_rect);
+        if (!layer_visible_rect.IsEmpty()) {
+          gfx::Rect occluder_screen_rect =
+              MathUtil::ProjectEnclosingClippedRect(
+                  layer->ScreenSpaceTransform(), layer_visible_rect);
+          if (!occluder_screen_rect.IsEmpty()) {
+            front_occluders.push_back(HeuristicFixedOrStickyOccluder{
+                occluder_screen_rect, layer->transform_tree_index()});
+          }
+        }
       }
     }
   }
@@ -2308,7 +2468,8 @@ viz::RegionCaptureBounds LayerTreeHostImpl::CollectRegionCaptureBounds() {
   return bounds;
 }
 
-viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
+viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata(
+    const FrameData& frame) {
   viz::CompositorFrameMetadata metadata;
   if (settings().trees_in_viz_in_viz_process) {
     // In TreesInViz mode, this function is called in client process already,
@@ -2457,7 +2618,9 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
     metadata.tracked_element_rects = tracked_element_rects_from_client_;
   } else {
     metadata.tracked_element_rects = CollectTrackedElementRects(
-        /*is_for_compositor_frame_metadata=*/true);
+        /*is_for_compositor_frame_metadata=*/true,
+        frame.tracked_element_status ==
+            TrackedElementStatus::kHasTrackedElementsNeedingOcclusion);
   }
 
   if (!screenshot_destination_.is_empty()) {
@@ -2475,7 +2638,7 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
 }
 
 RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
-    FrameData* frame) {
+    const FrameData& frame) {
   RenderFrameMetadata metadata;
   metadata.root_scroll_offset = active_tree_->TotalScrollOffset();
 
@@ -2515,15 +2678,17 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
         !InnerViewportScrollNode()->user_scrollable_vertical;
   }
   metadata.has_transparent_background =
-      frame->render_passes.back()->has_transparent_background;
+      frame.render_passes.back()->has_transparent_background;
   metadata.has_offset_tag = browser_controls_offset_manager_->HasOffsetTag();
 #endif
 
   bool allocate_new_local_surface_id = false;
 
-  if (frame->has_layers_with_tracked_element) {
+  if (frame.tracked_element_status != TrackedElementStatus::kNone) {
     metadata.tracked_element_rects = CollectTrackedElementRects(
-        /*is_for_compositor_frame_metadata=*/false);
+        /*is_for_compositor_frame_metadata=*/false,
+        frame.tracked_element_status ==
+            TrackedElementStatus::kHasTrackedElementsNeedingOcclusion);
   }
 
   if (last_draw_render_frame_metadata_) {
@@ -2884,6 +3049,7 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
 
 viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     FrameData* frame) {
+  CHECK(frame);
   if (!settings_.trees_in_viz_in_viz_process) {
     memory_history_->SaveEntry(tile_manager_.memory_stats_from_last_assign());
   }
@@ -2932,7 +3098,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
         raster_caps(), frame->render_passes);
   }
 
-  viz::CompositorFrameMetadata metadata = MakeCompositorFrameMetadata();
+  viz::CompositorFrameMetadata metadata = MakeCompositorFrameMetadata(*frame);
   bool has_view_transition_with_animate = false;
   bool delay_layer_tree_view_deletion = false;
 
@@ -3110,7 +3276,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   // computation.
   if (render_frame_metadata_observer_ ||
       settings_.trees_in_viz_in_viz_process) {
-    last_draw_render_frame_metadata_ = MakeRenderFrameMetadata(frame);
+    last_draw_render_frame_metadata_ = MakeRenderFrameMetadata(*frame);
     if (gfx::DelegatedInkMetadata* ink_metadata =
             metadata.delegated_ink_metadata.get()) {
       last_draw_render_frame_metadata_->delegated_ink_metadata =
@@ -3178,7 +3344,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     viz::CompositorFrame unbounded_frame;
     // TODO(508672616): What other uses of `metadata` are relevant to unbounded
     // element render passes?
-    unbounded_frame.metadata = MakeCompositorFrameMetadata();
+    unbounded_frame.metadata = MakeCompositorFrameMetadata(*frame);
     unbounded_frame.metadata.begin_frame_ack = frame->begin_frame_ack;
     unbounded_frame.render_pass_list =
         std::move(frame->unbounded_render_passes);

@@ -103,6 +103,7 @@ TEST_F(PageContextFetcherIframeInfoTest, AddIframeInfoSuccess) {
   viz::TrackedElementRect iframe_rect(
       base::Token(1, 2), gfx::Rect(10, 20, 150, 250),
       /*should_add_to_compositor_frame_metadata=*/true,
+      /*should_exclude_fixed_and_sticky_occlusions=*/false,
       subframe->GetFrameToken(), main_rfh()->GetFrameToken());
   viz::TrackedElementRects tracked_element_rects = {
       {viz::TrackedElementFeature::kIframeTracking, {iframe_rect}}};
@@ -173,7 +174,8 @@ TEST_F(PageContextFetcherIframeInfoTest, AddIframeInfoNoUrlOrigin) {
   blink::LocalFrameToken fake_parent_token;
   viz::TrackedElementRect iframe_rect(
       base::Token(3, 4), gfx::Rect(30, 40, 350, 450),
-      /*should_add_to_compositor_frame_metadata=*/true, fake_iframe_token,
+      /*should_add_to_compositor_frame_metadata=*/true,
+      /*should_exclude_fixed_and_sticky_occlusions=*/false, fake_iframe_token,
       fake_parent_token);
   viz::TrackedElementRects tracked_element_rects = {
       {viz::TrackedElementFeature::kIframeTracking, {iframe_rect}}};
@@ -249,6 +251,7 @@ TEST_F(PageContextFetcherIframeInfoTest, NoIframeInfoWhenFeatureDisabled) {
   viz::TrackedElementRect iframe_rect(
       base::Token(1, 2), gfx::Rect(10, 20, 150, 250),
       /*should_add_to_compositor_frame_metadata=*/true,
+      /*should_exclude_fixed_and_sticky_occlusions=*/false,
       subframe->GetFrameToken(), main_rfh()->GetFrameToken());
   viz::TrackedElementRects tracked_element_rects = {
       {viz::TrackedElementFeature::kIframeTracking, {iframe_rect}}};

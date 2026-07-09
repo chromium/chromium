@@ -745,10 +745,12 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   viz::RegionCaptureBounds CollectRegionCaptureBounds();
   viz::TrackedElementRects CollectTrackedElementRects(
-      bool is_for_compositor_frame_metadata);
+      bool is_for_compositor_frame_metadata,
+      bool need_occlusion);
 
-  viz::CompositorFrameMetadata MakeCompositorFrameMetadata();
-  RenderFrameMetadata MakeRenderFrameMetadata(FrameData* frame);
+  viz::CompositorFrameMetadata MakeCompositorFrameMetadata(
+      const FrameData& frame);
+  RenderFrameMetadata MakeRenderFrameMetadata(const FrameData& frame);
 
   const gfx::Rect& external_viewport() const { return external_viewport_; }
 

@@ -49,12 +49,15 @@ struct PLATFORM_EXPORT TrackedElementSubRect {
   explicit TrackedElementSubRect(
       TrackedElementId id,
       bool should_add_to_compositor_frame_metadata = false,
+      bool should_exclude_fixed_and_sticky_occlusions = false,
       std::optional<SubRect> sub_rect = std::nullopt,
       std::optional<FrameToken> frame_token = std::nullopt,
       std::optional<LocalFrameToken> parent_frame_token = std::nullopt)
       : id(id),
         should_add_to_compositor_frame_metadata(
             should_add_to_compositor_frame_metadata),
+        should_exclude_fixed_and_sticky_occlusions(
+            should_exclude_fixed_and_sticky_occlusions),
         sub_rect(sub_rect),
         frame_token(frame_token),
         parent_frame_token(parent_frame_token) {}
@@ -63,6 +66,11 @@ struct PLATFORM_EXPORT TrackedElementSubRect {
   // Whether the element should be added to the compositor frame metadata. If
   // false, the element will be added to the render frame metadata.
   bool should_add_to_compositor_frame_metadata;
+  // Whether the element should exclude parts occluded by fixed or sticky
+  // elements (e.g., fixed headers, sticky banners). This subtraction is
+  // heuristic (based on compositor-level property trees) and not completely
+  // reliable.
+  bool should_exclude_fixed_and_sticky_occlusions = false;
   // The sub-rectangle of the element to track, or nullopt if the entire
   // element is being tracked.
   std::optional<SubRect> sub_rect;
@@ -76,6 +84,8 @@ struct PLATFORM_EXPORT TrackedElementSubRect {
     return id == other.id &&
            should_add_to_compositor_frame_metadata ==
                other.should_add_to_compositor_frame_metadata &&
+           should_exclude_fixed_and_sticky_occlusions ==
+               other.should_exclude_fixed_and_sticky_occlusions &&
            sub_rect == other.sub_rect && frame_token == other.frame_token &&
            parent_frame_token == other.parent_frame_token;
   }
@@ -101,12 +111,15 @@ struct PLATFORM_EXPORT TrackedElementRect {
       TrackedElementId id,
       gfx::Rect bounds,
       bool should_add_to_compositor_frame_metadata = false,
+      bool should_exclude_fixed_and_sticky_occlusions = false,
       std::optional<FrameToken> frame_token = std::nullopt,
       std::optional<LocalFrameToken> parent_frame_token = std::nullopt)
       : id(id),
         bounds(bounds),
         should_add_to_compositor_frame_metadata(
             should_add_to_compositor_frame_metadata),
+        should_exclude_fixed_and_sticky_occlusions(
+            should_exclude_fixed_and_sticky_occlusions),
         frame_token(frame_token),
         parent_frame_token(parent_frame_token) {}
 
@@ -117,6 +130,11 @@ struct PLATFORM_EXPORT TrackedElementRect {
   // Whether the element should be added to the compositor frame metadata. If
   // false, the element will be added to the render frame metadata.
   bool should_add_to_compositor_frame_metadata;
+  // Whether the element should exclude parts occluded by fixed or sticky
+  // elements (e.g., fixed headers, sticky banners). This subtraction is
+  // heuristic (based on compositor-level property trees) and not completely
+  // reliable.
+  bool should_exclude_fixed_and_sticky_occlusions;
   // The frame token of the frame containing the element being tracked.
   std::optional<FrameToken> frame_token;
   // The local frame token of the parent frame.
