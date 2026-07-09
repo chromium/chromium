@@ -247,10 +247,6 @@ void LensOverlayEntryPointController::UpdateEntryPointsState(
       LensOverlayHomeworkPageActionController::From(*tab_interface)
           ->UpdatePageActionIcon();
     }
-  } else {
-    // Update the homework action chip.
-    BrowserWindow::FromBrowser(browser_window_interface_)
-        ->UpdatePageActionIcon(PageActionIconType::kLensOverlayHomework);
   }
 }
 

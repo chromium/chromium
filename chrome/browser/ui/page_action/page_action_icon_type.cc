@@ -31,8 +31,6 @@ const base::FeatureParam<bool>* GetPageActionsMigrationParam(
     case PageActionIconType::kSaveIban:
     case PageActionIconType::kSaveCard:
       return &features::kPageActionsMigrationSavePayments;
-    case PageActionIconType::kLensOverlayHomework:
-      return &features::kPageActionsMigrationLensOverlayHomework;
     case PageActionIconType::kBookmarkStar:
       return &features::kPageActionsMigrationBookmarkStar;
     default:
@@ -73,6 +71,7 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
     case PageActionIconType::kFileSystemAccess:
     case PageActionIconType::kAutofillPayment:
     case PageActionIconType::kPaymentsChurnedUsers:
+    case PageActionIconType::kLensOverlayHomework:
     case PageActionIconType::kFakePageActionForDebug:
       return true;
     default:

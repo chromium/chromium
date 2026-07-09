@@ -536,20 +536,12 @@ void LocationBarView::Init() {
   params.types_enabled.push_back(PageActionIconType::kVirtualCardEnroll);
   params.types_enabled.push_back(PageActionIconType::kMandatoryReauth);
 
-  if (browser_ && lens::features::IsLensOverlayEduActionChipEnabled()) {
-    // Position in the leading position, like the expanding entrypoint for
-    // kLensOverlay above. While both chips may be enabled, they will not appear
-    // at the same time due to different focus behavior.
-    params.types_enabled.insert(params.types_enabled.begin(),
-                                PageActionIconType::kLensOverlayHomework);
-  }
-
   // Because AIM eligibility can change during the lifecycle of the
   // `LocationBarView`, the AI Mode page action is added regardless of
   // eligibility, but its visibility is toggled to match eligibility.
   if (browser_) {
     // Position in the leading position, like the entrypoint for
-    // kLensOverlayHomework above. While both chips may be enabled, they will
+    // kLensOverlay above. While both chips may be enabled, they will
     // not appear at the same time due to different focus behavior. The
     // visibility of this entrypoint is dependent on whether or not the user
     // meets AIM eligibility criteria.

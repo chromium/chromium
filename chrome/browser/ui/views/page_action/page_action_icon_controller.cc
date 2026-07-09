@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/views/location_bar/ai_mode_page_action_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
-#include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/optimization_guide/optimization_guide_icon_view.h"
@@ -152,12 +151,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
       case PageActionIconType::kAiMode:
         add_page_action_icon(
             type, std::make_unique<AiModePageActionIconView>(
-                      params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate, params.browser));
-        break;
-      case PageActionIconType::kLensOverlayHomework:
-        add_page_action_icon(
-            type, std::make_unique<LensOverlayHomeworkPageActionIconView>(
                       params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate, params.browser));
         break;

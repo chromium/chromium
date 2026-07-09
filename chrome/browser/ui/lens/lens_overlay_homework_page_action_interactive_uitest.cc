@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/376283383): This file should be moved closer to the
-// `LensOverlayEntryPointController` once the page actions migration is
-// complete.
-
 #include <memory>
 #include <optional>
 #include <vector>
@@ -24,7 +20,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_controller.h"
-#include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/webui_url_constants.h"
@@ -34,8 +29,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/test/test_event.h"
-#include "ui/views/test/widget_test.h"
 #include "url/url_constants.h"
 
 using ::testing::MatchesRegex;
@@ -81,15 +74,14 @@ class ViewVisibilityWaiter : public views::ViewObserver {
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 };
 
-class LensOverlayHomeworkPageActionIconViewTestBase
-    : public InProcessBrowserTest {
+class LensOverlayHomeworkPageActionTestBase : public InProcessBrowserTest {
  public:
-  LensOverlayHomeworkPageActionIconViewTestBase() = default;
-  LensOverlayHomeworkPageActionIconViewTestBase(
-      const LensOverlayHomeworkPageActionIconViewTestBase&) = delete;
-  LensOverlayHomeworkPageActionIconViewTestBase& operator=(
-      const LensOverlayHomeworkPageActionIconViewTestBase&) = delete;
-  ~LensOverlayHomeworkPageActionIconViewTestBase() override = default;
+  LensOverlayHomeworkPageActionTestBase() = default;
+  LensOverlayHomeworkPageActionTestBase(
+      const LensOverlayHomeworkPageActionTestBase&) = delete;
+  LensOverlayHomeworkPageActionTestBase& operator=(
+      const LensOverlayHomeworkPageActionTestBase&) = delete;
+  ~LensOverlayHomeworkPageActionTestBase() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -112,17 +104,10 @@ class LensOverlayHomeworkPageActionIconViewTestBase
             kLensOverlayHomeworkPageActionIconElementId);
   }
 
-  void PressOnView(bool is_migrated) {
-    if (IsPageActionMigrated(PageActionIconType::kLensOverlayHomework)) {
-      LensOverlayHomeworkPageActionController::From(
-          *browser()->tab_strip_model()->GetActiveTab())
-          ->HandlePageActionEvent(/*is_from_keyboard=*/true);
-    } else {
-      BrowserElementsViews::From(browser())
-          ->GetViewAs<LensOverlayHomeworkPageActionIconView>(
-              kLensOverlayHomeworkPageActionIconElementId)
-          ->ExecuteWithKeyboardSourceForTesting();
-    }
+  void PressOnView() {
+    LensOverlayHomeworkPageActionController::From(
+        *browser()->tab_strip_model()->GetActiveTab())
+        ->HandlePageActionEvent(/*is_from_keyboard=*/true);
   }
 
   LocationBarView* location_bar_view() {
@@ -148,12 +133,10 @@ class LensOverlayHomeworkPageActionIconViewTestBase
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class LensOverlayHomeworkPageActionIconViewTest
-    : public LensOverlayHomeworkPageActionIconViewTestBase,
-      public ::testing::WithParamInterface<bool> {
+class LensOverlayHomeworkPageActionTest
+    : public LensOverlayHomeworkPageActionTestBase {
  public:
-  LensOverlayHomeworkPageActionIconViewTest() {
-    bool is_migrated = GetParam();
+  LensOverlayHomeworkPageActionTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         base::test::FeatureRefAndParams(lens::features::kLensOverlay, {}),
         base::test::FeatureRefAndParams(
@@ -163,10 +146,6 @@ class LensOverlayHomeworkPageActionIconViewTest
             {{"url-allow-filters", "[\"*\"]"},
              {"url-path-match-allow-filters", "[\"select\"]"},
              {"max-shown-count", "3"}})};
-    enabled_features.push_back(base::test::FeatureRefAndParams(
-        features::kPageActionsMigration,
-        {{features::kPageActionsMigrationLensOverlayHomework.name,
-          is_migrated ? "true" : "false"}}));
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features, {lens::features::kLensOverlayKeyboardSelection,
@@ -174,8 +153,7 @@ class LensOverlayHomeworkPageActionIconViewTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(LensOverlayHomeworkPageActionIconViewTest,
-                       ShowsOnMatchingPage) {
+IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest, ShowsOnMatchingPage) {
   SetLensOverlayEduActionChipShownCount(browser()->profile(), 0);
   // Navigate to a matching page.
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
@@ -197,7 +175,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayHomeworkPageActionIconViewTest,
   EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->profile()), 1);
 }
 
-IN_PROC_BROWSER_TEST_P(LensOverlayHomeworkPageActionIconViewTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
                        HidesOnNonMatchingPage) {
   SetLensOverlayEduActionChipShownCount(browser()->profile(), 0);
   // Navigate to a non-matching page.
@@ -220,7 +198,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayHomeworkPageActionIconViewTest,
   EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->profile()), 0);
 }
 
-IN_PROC_BROWSER_TEST_P(LensOverlayHomeworkPageActionIconViewTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
                        HidesAfterMaxShownCountReached) {
   SetLensOverlayEduActionChipShownCount(browser()->profile(), 4);
   // Navigate to a matching page.
@@ -251,7 +229,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayHomeworkPageActionIconViewTest,
   OpensNewTabWhenEnteredThroughKeyboard
 #endif
 // Flaky failures on Windows; see https://crbug.com/419308044.
-IN_PROC_BROWSER_TEST_P(LensOverlayHomeworkPageActionIconViewTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
                        MAYBE_OpensNewTabWhenEnteredThroughKeyboard) {
   SetLensOverlayEduActionChipShownCount(browser()->profile(), 0);
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
@@ -275,7 +253,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayHomeworkPageActionIconViewTest,
   // Executing the lens overlay icon view with keyboard source should open a new
   // tab.
   ui_test_utils::TabAddedWaiter tab_add(browser());
-  PressOnView(lens_overlay_homework_icon_view());
+  PressOnView();
   auto* new_tab_contents = tab_add.Wait();
 
   EXPECT_TRUE(new_tab_contents);
@@ -284,19 +262,10 @@ IN_PROC_BROWSER_TEST_P(LensOverlayHomeworkPageActionIconViewTest,
               MatchesRegex("ep=crmntob&re=df&s=4&st=\\d+&lm=.+"));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         LensOverlayHomeworkPageActionIconViewTest,
-                         ::testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "Migrated" : "Original";
-                         });
-
-class LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter
-    : public LensOverlayHomeworkPageActionIconViewTestBase,
-      public ::testing::WithParamInterface<bool> {
+class LensOverlayHomeworkPageActionTest_OptimizationFilter
+    : public LensOverlayHomeworkPageActionTestBase {
  public:
-  LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter() {
-    bool is_migrated = GetParam();
+  LensOverlayHomeworkPageActionTest_OptimizationFilter() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         base::test::FeatureRefAndParams(lens::features::kLensOverlay, {}),
         base::test::FeatureRefAndParams(
@@ -306,10 +275,6 @@ class LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter
         base::test::FeatureRefAndParams(
             lens::features::kLensOverlayEduActionChip,
             {{"max-shown-count", "3"}})};
-    enabled_features.push_back(base::test::FeatureRefAndParams(
-        features::kPageActionsMigration,
-        {{features::kPageActionsMigrationLensOverlayHomework.name,
-          is_migrated ? "true" : "false"}}));
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features, {lens::features::kLensOverlayKeyboardSelection});
@@ -327,9 +292,8 @@ class LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter
   }
 };
 
-IN_PROC_BROWSER_TEST_P(
-    LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter,
-    ShowsOnMatchingPage) {
+IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
+                       ShowsOnMatchingPage) {
   SetupOptimizationFilter();
   SetLensOverlayEduActionChipShownCount(browser()->profile(), 0);
   // Navigate to a matching page.
@@ -352,9 +316,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->profile()), 1);
 }
 
-IN_PROC_BROWSER_TEST_P(
-    LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter,
-    HidesOnNonMatchingPage) {
+IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
+                       HidesOnNonMatchingPage) {
   SetupOptimizationFilter();
   SetLensOverlayEduActionChipShownCount(browser()->profile(), 0);
   // Navigate to a non-matching page.
@@ -377,9 +340,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->profile()), 0);
 }
 
-IN_PROC_BROWSER_TEST_P(
-    LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter,
-    HidesAfterMaxShownCountReached) {
+IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
+                       HidesAfterMaxShownCountReached) {
   SetupOptimizationFilter();
   SetLensOverlayEduActionChipShownCount(browser()->profile(), 4);
   // Navigate to a matching page.
@@ -411,9 +373,8 @@ IN_PROC_BROWSER_TEST_P(
   OpensNewTabWhenEnteredThroughKeyboard
 #endif
 // Flaky failures on Windows; see https://crbug.com/419308044.
-IN_PROC_BROWSER_TEST_P(
-    LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter,
-    MAYBE_OpensNewTabWhenEnteredThroughKeyboard) {
+IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest_OptimizationFilter,
+                       MAYBE_OpensNewTabWhenEnteredThroughKeyboard) {
   SetupOptimizationFilter();
   SetLensOverlayEduActionChipShownCount(browser()->profile(), 0);
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
@@ -437,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(
   // Executing the lens overlay icon view with keyboard source should open a new
   // tab.
   ui_test_utils::TabAddedWaiter tab_add(browser());
-  PressOnView(lens_overlay_homework_icon_view());
+  PressOnView();
   auto* new_tab_contents = tab_add.Wait();
 
   EXPECT_TRUE(new_tab_contents);
@@ -445,13 +406,5 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_THAT(new_tab_contents->GetLastCommittedURL().GetQuery(),
               MatchesRegex("ep=crmntob&re=df&s=4&st=\\d+&lm=.+"));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter,
-    ::testing::Bool(),
-    [](const testing::TestParamInfo<bool>& info) {
-      return info.param ? "Migrated" : "Original";
-    });
 
 }  // namespace

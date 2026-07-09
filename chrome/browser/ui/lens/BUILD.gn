@@ -366,6 +366,7 @@ source_set("interactive_ui_tests") {
   sources = [
     "contextual_tasks_lens_overlay_interactive_uitest.cc",
     "lens_overlay_controller_interactive_uitest.cc",
+    "lens_overlay_homework_page_action_interactive_uitest.cc",
     "lens_overlay_interactive_test_base.cc",
     "lens_overlay_interactive_test_base.h",
     "lens_permission_bubble_controller_interactive_uitest.cc",
