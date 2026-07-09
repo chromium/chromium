@@ -12,10 +12,10 @@ namespace media {
 
 namespace {
 
-base::ByteSize SelectLimit(base::ByteSize default_limit,
-                           base::ByteSize medium_limit,
-                           base::ByteSize low_limit,
-                           base::ByteSize very_low_limit) {
+base::ByteCount SelectLimit(base::ByteCount default_limit,
+                            base::ByteCount medium_limit,
+                            base::ByteCount low_limit,
+                            base::ByteCount very_low_limit) {
   // This is truly for only for low end devices since it will have impacts on
   // the ability to buffer and play HD+ content.
   if (!base::SysInfo::IsLowEndDevice()) {
@@ -32,9 +32,9 @@ base::ByteSize SelectLimit(base::ByteSize default_limit,
 
 }  // namespace
 
-base::ByteSize GetDemuxerStreamAudioMemoryLimit(
+base::ByteCount GetDemuxerStreamAudioMemoryLimit(
     const AudioDecoderConfig* /*audio_config*/) {
-  static const base::ByteSize limit =
+  static const base::ByteCount limit =
       SelectLimit(internal::kDemuxerStreamAudioMemoryLimitDefault,
                   internal::kDemuxerStreamAudioMemoryLimitMedium,
                   internal::kDemuxerStreamAudioMemoryLimitLow,
@@ -42,10 +42,10 @@ base::ByteSize GetDemuxerStreamAudioMemoryLimit(
   return limit;
 }
 
-base::ByteSize GetDemuxerStreamVideoMemoryLimit(
+base::ByteCount GetDemuxerStreamVideoMemoryLimit(
     DemuxerType /*demuxer_type*/,
     const VideoDecoderConfig* /*video_config*/) {
-  static const base::ByteSize limit =
+  static const base::ByteCount limit =
       SelectLimit(internal::kDemuxerStreamVideoMemoryLimitDefault,
                   internal::kDemuxerStreamVideoMemoryLimitMedium,
                   internal::kDemuxerStreamVideoMemoryLimitLow,
@@ -53,7 +53,7 @@ base::ByteSize GetDemuxerStreamVideoMemoryLimit(
   return limit;
 }
 
-base::ByteSize GetDemuxerMemoryLimit(DemuxerType demuxer_type) {
+base::ByteCount GetDemuxerMemoryLimit(DemuxerType demuxer_type) {
   return GetDemuxerStreamAudioMemoryLimit(nullptr) +
          GetDemuxerStreamVideoMemoryLimit(demuxer_type, nullptr);
 }
