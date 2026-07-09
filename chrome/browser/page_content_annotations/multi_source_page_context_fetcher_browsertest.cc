@@ -642,6 +642,52 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(
     PasswordRedactionMultiSourcePageContextFetcherBrowserTest,
+    DownscaledScreenshotRedaction) {
+  base::HistogramTester histograms;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GetURL(kHostA, "/password.html")));
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+
+  ScreenshotOptions::ScreenshotCollectionOptions collection_options;
+  collection_options.max_width = 150;
+  collection_options.max_height = 150;
+
+  FetchPageContextOptions options;
+  options.annotated_page_content_options =
+      optimization_guide::DefaultAIPageContentOptions(true);
+  options.screenshot_options = ScreenshotOptions::ViewportOnly(
+      /*paint_preview_options=*/std::nullopt,
+      /*screenshot_collection_options=*/collection_options);
+  options.screenshot_options->set_redaction_color_for_testing(SkColors::kRed);
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->screenshot_result.has_value());
+
+  ScreenshotResult& screenshot = result->screenshot_result.value();
+  EXPECT_FALSE(screenshot.dimensions.IsZero());
+  ASSERT_GT(screenshot.screenshot_data.size(), 0);
+  ASSERT_EQ(screenshot.mime_type, "image/jpeg");
+
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.screenshot_data);
+
+  EXPECT_FALSE(bitmap.isNull());
+  EXPECT_FALSE(bitmap.empty());
+  EXPECT_LE(bitmap.width(), 150);
+  EXPECT_LE(bitmap.height(), 150);
+  EXPECT_THAT(bitmap.getColor(5, 5), IsColorWithinTolerance(SK_ColorRED, 0x20));
+  EXPECT_THAT(bitmap.getColor(50, 50),
+              testing::Not(IsColorWithinTolerance(SK_ColorRED, 0x20)));
+  histograms.ExpectUniqueSample("Glic.PageContextFetcher.ScreenshotRedacted",
+                                true, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    PasswordRedactionMultiSourcePageContextFetcherBrowserTest,
     DISABLED_BasicRedactionInIframe) {
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -851,6 +897,53 @@ IN_PROC_BROWSER_TEST_P(
   // cc-exp at (0, 110) size 100x100.
   EXPECT_THAT(bitmap.getColor(10, 120),
               IsColorWithinTolerance(SK_ColorRED, 0x20));
+  histograms.ExpectUniqueSample("Glic.PageContextFetcher.ScreenshotRedacted",
+                                true, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest,
+    DownscaledScreenshotRedaction) {
+  base::HistogramTester histograms;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURL(kHostA, "/optimization_guide/credit_card.html")));
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+
+  ScreenshotOptions::ScreenshotCollectionOptions collection_options;
+  collection_options.max_width = 150;
+  collection_options.max_height = 150;
+
+  FetchPageContextOptions options;
+  options.annotated_page_content_options =
+      optimization_guide::DefaultAIPageContentOptions(true);
+  options.screenshot_options = ScreenshotOptions::ViewportOnly(
+      /*paint_preview_options=*/std::nullopt,
+      /*screenshot_collection_options=*/collection_options);
+  options.screenshot_options->set_redaction_color_for_testing(SkColors::kRed);
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->screenshot_result.has_value());
+
+  ScreenshotResult& screenshot = result->screenshot_result.value();
+  EXPECT_FALSE(screenshot.dimensions.IsZero());
+  ASSERT_GT(screenshot.screenshot_data.size(), 0);
+  ASSERT_EQ(screenshot.mime_type, "image/jpeg");
+
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.screenshot_data);
+
+  EXPECT_FALSE(bitmap.isNull());
+  EXPECT_FALSE(bitmap.empty());
+  EXPECT_LE(bitmap.width(), 150);
+  EXPECT_LE(bitmap.height(), 150);
+  // cc-number at (0, 0) size 100x100 scaled down.
+  EXPECT_THAT(bitmap.getColor(5, 5), IsColorWithinTolerance(SK_ColorRED, 0x20));
+  EXPECT_THAT(bitmap.getColor(50, 50),
+              testing::Not(IsColorWithinTolerance(SK_ColorRED, 0x20)));
   histograms.ExpectUniqueSample("Glic.PageContextFetcher.ScreenshotRedacted",
                                 true, 1);
 }
@@ -1111,6 +1204,50 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(bitmap.empty());
   EXPECT_THAT(bitmap.getColor(10, 10),
               IsColorWithinTolerance(SK_ColorRED, 0x20));
+  histograms.ExpectUniqueSample("Glic.PageContextFetcher.ScreenshotRedacted",
+                                true, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ElementCSSRedactionMultiSourcePageContextFetcherBrowserTest,
+    DownscaledScreenshotRedaction) {
+  base::HistogramTester histograms;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      GetURL(kHostA,
+             "/optimization_guide/div_with_webkit_text_security.html")));
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+
+  ScreenshotOptions::ScreenshotCollectionOptions collection_options;
+  collection_options.max_width = 150;
+  collection_options.max_height = 150;
+
+  FetchPageContextOptions options;
+  options.annotated_page_content_options =
+      optimization_guide::DefaultAIPageContentOptions(true);
+  options.screenshot_options = ScreenshotOptions::ViewportOnly(
+      /*paint_preview_options=*/std::nullopt,
+      /*screenshot_collection_options=*/collection_options);
+  options.screenshot_options->set_redaction_color_for_testing(SkColors::kRed);
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->screenshot_result.has_value());
+
+  ScreenshotResult& screenshot = result->screenshot_result.value();
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.screenshot_data);
+
+  EXPECT_FALSE(bitmap.isNull());
+  EXPECT_FALSE(bitmap.empty());
+  EXPECT_LE(bitmap.width(), 150);
+  EXPECT_LE(bitmap.height(), 150);
+  EXPECT_THAT(bitmap.getColor(5, 5), IsColorWithinTolerance(SK_ColorRED, 0x20));
+  EXPECT_THAT(bitmap.getColor(50, 50),
+              testing::Not(IsColorWithinTolerance(SK_ColorRED, 0x20)));
   histograms.ExpectUniqueSample("Glic.PageContextFetcher.ScreenshotRedacted",
                                 true, 1);
 }

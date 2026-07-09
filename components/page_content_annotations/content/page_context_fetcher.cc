@@ -639,7 +639,7 @@ void PageContextFetcher::GetTabScreenshot(
 
   gfx::Size view_size = view->GetViewBounds().size();
   float dsf = view->GetDeviceScaleFactor();
-  gfx::Size view_size_pixels = gfx::ScaleToRoundedSize(view_size, dsf);
+  original_view_size_pixels_ = gfx::ScaleToRoundedSize(view_size, dsf);
 
   if (screenshot_options.use_paint_preview()) {
     PageContentScreenshotService* service =
@@ -672,13 +672,13 @@ void PageContextFetcher::GetTabScreenshot(
       clip_coord_override = paint_preview::mojom::ClipCoordOverride::kNone;
       view_size = web_contents.GetPrimaryMainFrame()->GetFrameSize().value_or(
           gfx::Size());
-      view_size_pixels = gfx::ScaleToRoundedSize(view_size, dsf);
+      original_view_size_pixels_ = gfx::ScaleToRoundedSize(view_size, dsf);
     }
     PageContentScreenshotService::RequestParams request_params = {
         .clip_rect = clip_rect,
         .scale_factor = GetScreenshotScaleFactor(
-            view_size_pixels,
-            GetScreenshotSize(view_size_pixels,
+            original_view_size_pixels_,
+            GetScreenshotSize(original_view_size_pixels_,
                               screenshot_collection_options_)),
         .clip_x_coord_override = clip_coord_override,
         .clip_y_coord_override = clip_coord_override,
@@ -711,13 +711,14 @@ void PageContextFetcher::GetTabScreenshot(
       //
       // Therefore, we can safely crop the screenshot to match the viewport size
       // starting at (0, 0) without any vertical offsets.
-      src_rect = gfx::Rect(view_size_pixels);
+      src_rect = gfx::Rect(original_view_size_pixels_);
     }
 #endif
 
     view->CopyFromSurface(
         src_rect,
-        GetScreenshotSize(view_size_pixels, screenshot_collection_options_),
+        GetScreenshotSize(original_view_size_pixels_,
+                          screenshot_collection_options_),
         kScreenshotTimeout.Get(),
         base::BindOnce(&PageContextFetcher::ReceivedViewportBitmap,
                        GetWeakPtr()));
@@ -844,13 +845,22 @@ void PageContextFetcher::RedactAndEncodeScreenshotIfNeeded() {
   CHECK(pending_result_);
   CHECK(pending_result_->annotated_page_content_result.has_value());
 
+  double scale_x = 1.0;
+  double scale_y = 1.0;
+  if (!original_view_size_pixels_.IsEmpty() && !screenshot_bitmap_->empty()) {
+    scale_x = static_cast<double>(screenshot_bitmap_->width()) /
+              original_view_size_pixels_.width();
+    scale_y = static_cast<double>(screenshot_bitmap_->height()) /
+              original_view_size_pixels_.height();
+  }
+
   const std::vector<gfx::Rect>& visible_bounding_boxes_for_redaction_from_apc =
       pending_result_->annotated_page_content_result
           ->visible_bounding_boxes_for_redaction;
-  visible_bounding_boxes_for_redaction.insert(
-      visible_bounding_boxes_for_redaction.end(),
-      visible_bounding_boxes_for_redaction_from_apc.begin(),
-      visible_bounding_boxes_for_redaction_from_apc.end());
+  for (const gfx::Rect& rect : visible_bounding_boxes_for_redaction_from_apc) {
+    visible_bounding_boxes_for_redaction.push_back(
+        gfx::ScaleToEnclosingRect(rect, scale_x, scale_y));
+  }
 
   RedactAndEncodeScreenshot(std::move(visible_bounding_boxes_for_redaction));
 }

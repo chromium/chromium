@@ -282,6 +282,7 @@ class PageContextFetcher : public content::WebContentsObserver {
   std::optional<SkBitmap> screenshot_bitmap_;
   bool screenshot_needs_redaction_using_apc_ = false;
   std::vector<gfx::Rect> tracked_element_bounds_for_screenshot_redaction_;
+  gfx::Size original_view_size_pixels_;
 
   std::vector<optimization_guide::proto::IframeInfo> iframe_info_;
 
