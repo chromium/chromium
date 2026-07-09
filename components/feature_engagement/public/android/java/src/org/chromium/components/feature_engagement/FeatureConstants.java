@@ -50,7 +50,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE,
     FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP,
     FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT,
-    FeatureConstants.COOKIE_CONTROLS_FEATURE,
     FeatureConstants.DATA_SAVER_DETAIL_FEATURE,
     FeatureConstants.DATA_SAVER_MILESTONE_PROMO_FEATURE,
     FeatureConstants.DATA_SAVER_PREVIEW_FEATURE,
@@ -233,8 +232,6 @@ public @interface FeatureConstants {
     String CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP = "IPH_ContextualPageActions_ActionChip";
 
     String CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT = "IPH_ContextualPageActions_QuietVariant";
-
-    String COOKIE_CONTROLS_FEATURE = "IPH_CookieControls";
 
     String DATA_SAVER_DETAIL_FEATURE = "IPH_DataSaverDetail";
 

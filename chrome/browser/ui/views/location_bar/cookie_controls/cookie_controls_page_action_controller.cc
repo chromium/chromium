@@ -264,15 +264,6 @@ void CookieControlsPageActionController::OnBubbleClosed() {
 void CookieControlsPageActionController::ExecutePageAction(
     ToolbarButtonProvider* toolbar_button_provider) {
   CHECK(ShouldShowIcon());
-  if (auto* user_education = BrowserUserEducationInterface::From(
-          tab_->GetBrowserWindowInterface())) {
-    // Need to close IPH before opening bubble view, as on some platforms
-    // closing the IPH bubble can cause activation to move between windows, and
-    // cookie control bubble is close-on-deactivate.
-    user_education->NotifyFeaturePromoFeatureUsed(
-        feature_engagement::kIPHCookieControlsFeature,
-        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-  }
   bubble_delegate_->ShowBubble(toolbar_button_provider, tab_->GetContents());
 
   RecordOpenedAction(icon_status_.icon_visible, icon_status_.controls_state);

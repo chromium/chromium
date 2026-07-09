@@ -208,7 +208,6 @@ TEST(BrowserUserEducationServiceTest, PreventNewHardCodedConfigurations) {
       &feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature,
       &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature,
       &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature,
-      &feature_engagement::kIPHCookieControlsFeature,
       // Explicitly allowed:
       //
       // (These have been cleared by Frizzle Team as requiring their own
@@ -260,8 +259,7 @@ TEST(BrowserUserEducationServiceTest, CheckFeaturePromoMetadata) {
       &feature_engagement::kIPHReadingListEntryPointFeature,
       &feature_engagement::kIPHReadingListInSidePanelFeature,
       &feature_engagement::kIPHProfileSwitchFeature,
-      &feature_engagement::kIPHBackNavigationMenuFeature,
-      &feature_engagement::kIPHCookieControlsFeature};
+      &feature_engagement::kIPHBackNavigationMenuFeature};
 
   user_education::FeaturePromoRegistry registry;
   MaybeRegisterChromeFeaturePromos(registry);

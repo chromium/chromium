@@ -46,8 +46,6 @@ const char kFocusHelpBubbleAcceleratorPromoRead[] =
 const char kExtensionsRequestAccessButtonClicked[] =
     "extensions_request_access_button_clicked";
 
-const char kCookieControlsBubbleShown[] = "cookie_controls_bubble_shown";
-
 const char kGlicOnboardingCompleted[] = "glic_onboarding_completed";
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||

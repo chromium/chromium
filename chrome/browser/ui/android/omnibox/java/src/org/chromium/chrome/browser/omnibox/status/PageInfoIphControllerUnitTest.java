@@ -92,20 +92,4 @@ public class PageInfoIphControllerUnitTest {
         assertNull(cmd.anchorRect);
         assertEquals(mView, cmd.anchorView);
     }
-
-    @Test
-    public void showCookieControlsIph() {
-        mController.showCookieControlsIph(TIMEOUT, IPH_RES_ID);
-        verify(mHelper).requestShowIph(mIphCmdCaptor.capture());
-        var cmd = mIphCmdCaptor.getValue();
-        cmd.fetchFromResources();
-
-        assertEquals(TIMEOUT, cmd.autoDismissTimeout);
-        assertEquals(IPH_RES_ID, cmd.stringId);
-        assertEquals(FeatureConstants.COOKIE_CONTROLS_FEATURE, cmd.featureName);
-        assertEquals(STATUS_INSETS, cmd.insetRect);
-        assertTrue(cmd.dismissOnTouch);
-        assertNull(cmd.anchorRect);
-        assertEquals(mView, cmd.anchorView);
-    }
 }

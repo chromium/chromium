@@ -187,12 +187,6 @@ bool CookieControlsIconView::GetAssociatedBubble() const {
 }
 
 void CookieControlsIconView::ShowCookieControlsBubble() {
-  // Need to close IPH before opening bubble view, as on some platforms closing
-  // the IPH bubble can cause activation to move between windows, and cookie
-  // control bubble is close-on-deactivate.
-  BrowserUserEducationInterface::From(browser_)->NotifyFeaturePromoFeatureUsed(
-      feature_engagement::kIPHCookieControlsFeature,
-      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   bubble_coordinator_->ShowBubble(
       browser_->GetBrowserView().toolbar_button_provider(),
       delegate()->GetWebContentsForPageActionIconView(), controller_.get());

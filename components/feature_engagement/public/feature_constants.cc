@@ -1003,9 +1003,6 @@ BASE_FEATURE(kIPHAutofillVirtualCardCVCSuggestionFeature,
 BASE_FEATURE(kIPHAutofillVirtualCardSuggestionFeature,
              "IPH_AutofillVirtualCardSuggestion",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHCookieControlsFeature,
-             "IPH_CookieControls",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAutofillEnableLoyaltyCardsFeature,
              "IPH_AutofillEnableLoyaltyCards",
              base::FEATURE_ENABLED_BY_DEFAULT);

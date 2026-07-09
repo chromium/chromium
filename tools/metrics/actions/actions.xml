@@ -363,7 +363,8 @@ should be able to be added at any place in this file.
       summary="For ContextualSearchWebSearch feature."/>
   <variant name="_ContextualSuggestions"
       summary="For ContextualSuggestions feature."/>
-  <variant name="_CookieControls" summary="For CookieControls feature."/>
+  <variant name="_CookieControls"
+      summary="For CookieControls feature. (obsolete)"/>
   <variant name="_Crow" summary="For Crow feature."/>
   <variant name="_DataSaverDetail" summary="For DataSaverDetail feature."/>
   <variant name="_DataSaverMilestonePromo"

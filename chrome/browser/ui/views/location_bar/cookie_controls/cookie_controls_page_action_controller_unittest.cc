@@ -306,10 +306,6 @@ TEST_P(CookieControlsPageActionControllerActionTest, ExecuteAction) {
                                                  GetParam().controls_state);
 
   EXPECT_CALL(*fake_bubble_delegate(), ShowBubble);
-  EXPECT_CALL(user_education(),
-              NotifyFeaturePromoFeatureUsed(
-                  testing::Ref(feature_engagement::kIPHCookieControlsFeature),
-                  FeaturePromoFeatureUsedAction::kClosePromoIfPresent));
   controller().ExecutePageAction(nullptr);
 
   EXPECT_EQ(1, user_action_tester().GetActionCount(GetParam().action_name));

@@ -1115,39 +1115,6 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered once per-app when is in quiet notification "
                        "mode and a notification is triggered in a PWA.")));
 
-  // kIPHCookieControlsFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHCookieControlsFeature,
-          kCookieControlsIconElementId, IDS_COOKIE_CONTROLS_PROMO_TEXT,
-          IDS_COOKIE_CONTROLS_PROMO_SEE_HOW_BUTTON_TEXT,
-          base::BindRepeating(
-              [](ContextPtr ctx,
-                 user_education::FeaturePromoHandle promo_handle) {
-                if (IsPageActionMigrated(PageActionIconType::kCookieControls)) {
-                  actions::ActionManager::Get()
-                      .FindAction(
-                          kActionShowCookieControls,
-                          GetBrowser(ctx)->GetActions()->root_action_item())
-                      ->InvokeAction();
-                } else {
-                  auto* cookie_controls_icon_view =
-                      views::ElementTrackerViews::GetInstance()
-                          ->GetFirstMatchingViewAs<CookieControlsIconView>(
-                              kCookieControlsIconElementId,
-                              ctx->GetElementContext());
-                  if (cookie_controls_icon_view != nullptr) {
-                    cookie_controls_icon_view->ShowCookieControlsBubble();
-                  }
-                }
-              }))
-          .SetBubbleTitleText(IDS_COOKIE_CONTROLS_PROMO_TITLE)
-          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetBubbleIcon(kLightbulbOutlineIcon)
-          .SetCustomActionIsDefault(true)
-          .SetCustomActionDismissText(
-              IDS_COOKIE_CONTROLS_PROMO_CLOSE_BUTTON_TEXT)));
-
   // kIPHSmartTabSharingFeature:
   auto smart_tab_sharing_iph_first_time_prompt_option =
       contextual_tasks::kSmartTabSharingIphFirstTimePromptOption.Get();

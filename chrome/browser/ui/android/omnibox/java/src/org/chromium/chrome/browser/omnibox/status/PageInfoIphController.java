@@ -78,25 +78,4 @@ public class PageInfoIphController {
                         .setDismissOnTouch(true)
                         .build());
     }
-
-    /**
-     * Show the IPH for cookie controls icon in the omnibox.
-     *
-     * @param iphTimeout The timeout after which the IPH bubble should disappear if it was shown.
-     * @param stringId Resource id of the string displayed. The string will also be used for
-     *     accessibility.
-     */
-    public void showCookieControlsIph(int iphTimeout, @StringRes int stringId) {
-        mUserEducationHelper.requestShowIph(
-                new IphCommandBuilder(
-                                mStatusView.getContext().getResources(),
-                                FeatureConstants.COOKIE_CONTROLS_FEATURE,
-                                stringId,
-                                stringId)
-                        .setAutoDismissTimeout(iphTimeout)
-                        .setAnchorView(mStatusView)
-                        .setInsetRect(new Rect())
-                        .setDismissOnTouch(true)
-                        .build());
-    }
 }
