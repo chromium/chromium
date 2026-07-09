@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"

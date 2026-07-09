@@ -16,7 +16,7 @@
 #include <vector>
 
 #include "base/base_switches.h"
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"

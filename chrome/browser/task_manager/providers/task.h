@@ -10,7 +10,6 @@
 #include <optional>
 #include <string>
 
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"

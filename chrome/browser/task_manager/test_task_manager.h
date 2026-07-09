@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/time/time.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 

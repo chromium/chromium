@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/task_manager/providers/task.h"

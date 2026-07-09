@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "chrome/browser/task_manager/providers/task.h"
 
 namespace task_manager {

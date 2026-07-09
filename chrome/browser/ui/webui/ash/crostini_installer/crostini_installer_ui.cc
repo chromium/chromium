@@ -10,7 +10,7 @@
 #include "ash/constants/url_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"

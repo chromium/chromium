@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/numerics/safe_conversions.h"

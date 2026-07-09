@@ -7,7 +7,7 @@
 #include <memory>
 #include <string_view>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"

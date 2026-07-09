@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"

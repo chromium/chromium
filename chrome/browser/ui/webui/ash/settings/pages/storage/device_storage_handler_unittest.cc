@@ -13,7 +13,7 @@
 #include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/containers/adapters.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"

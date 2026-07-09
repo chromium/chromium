@@ -17,7 +17,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
