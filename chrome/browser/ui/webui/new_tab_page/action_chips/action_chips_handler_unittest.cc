@@ -544,6 +544,67 @@ TEST_F(ActionChipsHandlerTest,
 }
 
 TEST_F(ActionChipsHandlerTest,
+       StartActionChipsRetrievalRecordsAnyShownMetricOnlyOnce) {
+  auto create_chips = []() {
+    return MakeActionChipsVector(
+        ActionChip::New(
+            "suggestion1",
+            SuggestTemplateInfo::New(
+                IconType::kIconTypeUnspecified, CreateFormattedString("title1"),
+                CreateFormattedString("subtitle1"), std::nullopt, std::nullopt),
+            nullptr),
+        ActionChip::New(
+            "suggestion2",
+            SuggestTemplateInfo::New(
+                IconType::kIconTypeUnspecified, CreateFormattedString("title2"),
+                CreateFormattedString("subtitle2"), std::nullopt, std::nullopt),
+            nullptr));
+  };
+
+  // 1. First retrieval.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(page_, OnActionChipsChanged(_))
+        .WillOnce([&run_loop](std::vector<ActionChipPtr> action_chips) {
+          run_loop.Quit();
+        });
+    EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
+        .WillOnce(base::test::RunOnceCallback<1>(create_chips()));
+
+    handler().StartActionChipsRetrieval();
+    run_loop.Run();
+  }
+
+  // Verify it is recorded.
+  histogram_tester_.ExpectUniqueSample("NewTabPage.ActionChips.AnyShown", true,
+                                       1);
+  testing::Mock::VerifyAndClearExpectations(&page_);
+  testing::Mock::VerifyAndClearExpectations(mock_action_chips_generator_);
+
+  // 2. Simulate tab update.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(page_, OnActionChipsChanged(_))
+        .WillOnce([&run_loop](std::vector<ActionChipPtr> action_chips) {
+          run_loop.Quit();
+        });
+
+    // Trigger a change to bypass the URL throttling.
+    AddTab(GURL("https://www.example.com"), u"Example Tab");
+
+    EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
+        .WillOnce(base::test::RunOnceCallback<1>(create_chips()));
+
+    handler().StartActionChipsRetrieval();
+    run_loop.Run();
+  }
+
+  // Verify that the total count is still 1.
+  histogram_tester_.ExpectUniqueSample("NewTabPage.ActionChips.AnyShown", true,
+                                       1);
+}
+
+TEST_F(ActionChipsHandlerTest,
        StartActionChipsRetrievalSendsAnEmptyListWhenThereAreLessThanTwoChips) {
   std::vector<ActionChipPtr> actual_chips;
   base::RunLoop run_loop;

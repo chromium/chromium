@@ -207,7 +207,10 @@ void ActionChipsHandler::SendActionChipsToUi(base::TimeTicks start_time,
 
   RecordActionChipsRetrievalLatencyMetrics(base::TimeTicks::Now() - start_time);
   RecordImpressionMetrics(chips);
-  action_chips::RecordActionChipsAnyShown(!chips.empty());
+  if (!has_recorded_any_shown_) {
+    action_chips::RecordActionChipsAnyShown(!chips.empty());
+    has_recorded_any_shown_ = true;
+  }
 
   page_->OnActionChipsChanged(std::move(chips));
 }
