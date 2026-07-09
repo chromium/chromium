@@ -141,3 +141,24 @@ void DrivePickerUntrustedHostUI::OnPageDisconnected() {
     pending_request_.reset();
   }
 }
+
+void DrivePickerUntrustedHostUI::OnConsentKitIframeMessage(
+    mojo_base::ProtoWrapper message_wrapper) {
+  if (delegate_) {
+    delegate_->OnConsentKitIframeMessage(std::move(message_wrapper));
+  }
+}
+
+void DrivePickerUntrustedHostUI::OnConsentKitPrivacyFlowResult(
+    mojo_base::ProtoWrapper result_wrapper) {
+  if (delegate_) {
+    delegate_->OnConsentKitPrivacyFlowResult(std::move(result_wrapper));
+  }
+}
+
+void DrivePickerUntrustedHostUI::OnConsentKitError(
+    const std::string& error_message) {
+  if (delegate_) {
+    delegate_->OnConsentKitError(error_message);
+  }
+}

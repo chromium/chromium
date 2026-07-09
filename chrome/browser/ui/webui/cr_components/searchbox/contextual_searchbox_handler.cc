@@ -59,6 +59,7 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/input_state_model.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
@@ -1091,8 +1092,15 @@ void ContextualSearchboxHandler::OnDriveUploadClicked(
 
   drive_picker_result_handler_receiver_.reset();
 
+  bool accepted =
+      profile_->GetPrefs()->GetInteger(contextual_search::kDriveConsentState) ==
+      static_cast<int>(contextual_search::DriveConsentState::kConsent);
+
   auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
-      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      accepted
+          ? drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi
+          : drive_picker_host::DrivePickerHostRequest::RequestType::
+                kConsentDialog,
       drive_picker_result_handler_receiver_.BindNewPipeAndPassRemote());
 
   drive_picker_controller_->ShowDrivePickerHost(std::move(request));

@@ -4,15 +4,22 @@
 
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_ui.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/drive_picker_host/untrusted/drive_picker_host_untrusted_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/drive_picker_host_resources.h"
 #include "chrome/grit/drive_picker_host_resources_map.h"
+#include "components/contextual_search/consent_kit/consent_kit_url_builder.h"
+#include "components/contextual_search/consent_kit/proto/iframe_interface.pb.h"
+#include "components/contextual_search/input_state_model.h"
+#include "components/contextual_search/pref_names.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "content/public/browser/navigation_handle.h"
@@ -20,8 +27,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "google_apis/google_api_keys.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/webui/webui_util.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -42,6 +51,25 @@ std::string ExtractProjectNumber(const std::string& client_id) {
     return client_id.substr(0, dot_pos);
   }
   return client_id;
+}
+
+int GetSessionIndexForPrimaryAccount(
+    signin::IdentityManager* identity_manager) {
+  CoreAccountId primary_account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (primary_account_id.empty()) {
+    return 0;
+  }
+  signin::AccountsInCookieJarInfo accounts_in_jar =
+      identity_manager->GetAccountsInCookieJar();
+  const auto& signed_in_accounts =
+      accounts_in_jar.GetPotentiallyInvalidSignedInAccounts();
+  for (size_t i = 0; i < signed_in_accounts.size(); ++i) {
+    if (signed_in_accounts[i].id == primary_account_id) {
+      return static_cast<int>(i);
+    }
+  }
+  return 0;
 }
 
 }  // namespace
@@ -78,6 +106,11 @@ DrivePickerHostUI::DrivePickerHostUI(content::WebUI* web_ui)
 
 DrivePickerHostUI::~DrivePickerHostUI() = default;
 
+base::WeakPtr<DrivePickerUntrustedHostUI::Delegate>
+DrivePickerHostUI::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void DrivePickerHostUI::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
   MaybeBindUntrustedBridge(render_frame_host);
@@ -106,6 +139,7 @@ void DrivePickerHostUI::MaybeBindUntrustedBridge(
           bridge;
       untrusted_ui->BindInterface(bridge.InitWithNewPipeAndPassReceiver());
       SetBridge(std::move(bridge));
+      untrusted_ui->SetDelegate(GetWeakPtr());
     }
   }
 }
@@ -117,8 +151,10 @@ void DrivePickerHostUI::TriggerDrivePickerHost(
     if (request->type() ==
         drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi) {
       FetchTokenAndShowPicker(request->TakeResultHandler());
+    } else if (request->type() == drive_picker_host::DrivePickerHostRequest::
+                                      RequestType::kConsentDialog) {
+      ShowConsentKitDialog(request->TakeResultHandler());
     }
-    // TODO(b/393116812): Implement kConsentDialog.
   } else {
     if (pending_request_ && pending_request_->has_result_handler()) {
       mojo::Remote<drive_picker_host::mojom::DrivePickerResultHandler>(
@@ -150,14 +186,18 @@ void DrivePickerHostUI::SetBridge(
     if (pending_request_->type() ==
         drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi) {
       FetchTokenAndShowPicker(pending_request_->TakeResultHandler());
+    } else if (pending_request_->type() ==
+               drive_picker_host::DrivePickerHostRequest::RequestType::
+                   kConsentDialog) {
+      ShowConsentKitDialog(pending_request_->TakeResultHandler());
     }
-    // TODO(b/511233595): Implement kConsentDialog case.
   }
 }
 
 void DrivePickerHostUI::FetchTokenAndShowPicker(
     mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
         result_handler) {
+  VLOG(1) << "[DrivePickerHostUI] FetchTokenAndShowPicker called";
   Profile* profile = Profile::FromWebUI(web_ui());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -190,6 +230,8 @@ void DrivePickerHostUI::OnAccessTokenFetched(
         result_handler,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
+  VLOG(1) << "[DrivePickerHostUI] OnAccessTokenFetched completed. ErrorState: "
+          << error.state();
   access_token_fetcher_.reset();
 
   if (error.state() != GoogleServiceAuthError::NONE) {
@@ -231,6 +273,117 @@ void DrivePickerHostUI::LoadConsentKitUrl(const GURL& consent_kit_url) {
       untrusted_bridge_remote_.is_connected()) {
     untrusted_bridge_remote_->LoadConsentKitUrl(consent_kit_url);
   }
+}
+
+void DrivePickerHostUI::OnConsentKitIframeMessage(
+    mojo_base::ProtoWrapper message_wrapper) {
+  VLOG(1) << "[DrivePickerHostUI] OnConsentKitIframeMessage received";
+  std::optional<identity_consent::IframeMessage> message =
+      message_wrapper.As<identity_consent::IframeMessage>();
+  if (!message.has_value()) {
+    DLOG(ERROR) << "Failed to parse IframeMessage proto";
+    mojo::ReportBadMessage("Failed to parse IframeMessage proto");
+    return;
+  }
+
+  if (message->event() == identity_consent::Event::DECISION_RESPONSE_EVENT) {
+    if (message->has_privacy_flow_result()) {
+      HandlePrivacyFlowResult(message->privacy_flow_result());
+    }
+  } else if (message->event() == identity_consent::Event::TERMINATE_EVENT) {
+    if (consent_result_handler_) {
+      consent_result_handler_->OnCancel();
+      consent_result_handler_.reset();
+    }
+  }
+}
+
+void DrivePickerHostUI::OnConsentKitPrivacyFlowResult(
+    mojo_base::ProtoWrapper result_wrapper) {
+  VLOG(1) << "[DrivePickerHostUI] OnConsentKitPrivacyFlowResult received";
+  std::optional<identity_consent::PrivacyFlowResult> result =
+      result_wrapper.As<identity_consent::PrivacyFlowResult>();
+  if (!result.has_value()) {
+    DLOG(ERROR) << "Failed to parse PrivacyFlowResult proto";
+    mojo::ReportBadMessage("Failed to parse PrivacyFlowResult proto");
+    return;
+  }
+
+  HandlePrivacyFlowResult(*result);
+}
+
+void DrivePickerHostUI::OnConsentKitError(const std::string& error_message) {
+  DLOG(ERROR) << "ConsentKit error: " << error_message;
+  if (consent_result_handler_) {
+    consent_result_handler_->OnError(
+        drive_picker_host::mojom::DrivePickerError::kUnknown);
+    consent_result_handler_.reset();
+  }
+}
+
+void DrivePickerHostUI::HandlePrivacyFlowResult(
+    const identity_consent::PrivacyFlowResult& result) {
+  VLOG(1)
+      << "[DrivePickerHostUI] HandlePrivacyFlowResult entry. flow_completed: "
+      << result.has_flow_completed()
+      << ", flow_not_completed: " << result.has_flow_not_completed();
+  if (result.has_flow_id() &&
+      result.flow_id().value() !=
+          omnibox::kComposeboxDriveConsentFlowId.Get()) {
+    DLOG(WARNING) << "Unexpected or missing flow_id";
+    OnConsentKitError("Unexpected or missing flow_id");
+    return;
+  }
+
+  if (result.has_flow_completed()) {
+    VLOG(1) << "[DrivePickerHostUI] Handling flow_completed. "
+               "Transitioning to Picker.";
+    Profile* profile = Profile::FromWebUI(web_ui());
+    profile->GetPrefs()->SetInteger(
+        contextual_search::kDriveConsentState,
+        static_cast<int>(contextual_search::DriveConsentState::kConsent));
+
+    if (delegate_) {
+      delegate_->OnTransitionToPicker();
+    }
+
+    // Transition straight to the Drive Picker UI.
+    if (consent_result_handler_) {
+      FetchTokenAndShowPicker(consent_result_handler_.Unbind());
+    }
+  } else if (result.has_flow_not_completed()) {
+    if (consent_result_handler_) {
+      consent_result_handler_->OnCancel();
+      consent_result_handler_.reset();
+    }
+  }
+}
+
+void DrivePickerHostUI::ShowConsentKitDialog(
+    mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
+        result_handler) {
+  Profile* profile = Profile::FromWebUI(web_ui());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+
+  drive::ConsentKitUrlBuilder builder;
+  if (identity_manager) {
+    builder.SetSessionIndex(GetSessionIndexForPrimaryAccount(identity_manager));
+  }
+  builder.SetLocale(g_browser_process->GetApplicationLocale());
+  builder.SetHostOrigins(
+      {url::Origin::Create(GURL(chrome::kChromeUIDrivePickerHostUntrustedURL))
+           .Serialize(),
+       url::Origin::Create(GURL(chrome::kChromeUIDrivePickerHostURL))
+           .Serialize()});
+  builder.SetFlowId(omnibox::kComposeboxDriveConsentFlowId.Get());
+  builder.SetProductId(omnibox::kComposeboxDriveConsentProductId.Get());
+  builder.SetEntrypointId(omnibox::kComposeboxDriveConsentEntrypointId.Get());
+
+  GURL consent_kit_url = builder.Build();
+  consent_result_handler_.reset();
+  consent_result_handler_.Bind(std::move(result_handler));
+  LoadConsentKitUrl(consent_kit_url);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DrivePickerHostUI)
