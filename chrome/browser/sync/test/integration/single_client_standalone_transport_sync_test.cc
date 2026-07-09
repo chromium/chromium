@@ -55,6 +55,9 @@ syncer::DataTypeSet GetTypesGatedBehindHistoryOptIn() {
                                syncer::SHARED_TAB_GROUP_ACCOUNT_DATA,
                                syncer::SESSIONS,
                                syncer::USER_EVENTS};
+  if (base::FeatureList::IsEnabled(syncer::kSyncEncryptedTabContextContainer)) {
+    types.Put(syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER);
+  }
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
     types.Put(syncer::WORKSPACE_DESK);

@@ -57,6 +57,7 @@ static_library("browser_sync") {
     "//components/sync_bookmarks",
     "//components/sync_preferences",
     "//components/sync_sessions",
+    "//components/sync_tab_context",
     "//components/sync_user_events",
     "//components/url_formatter",
     "//components/variations/service",

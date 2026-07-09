@@ -110,6 +110,10 @@ namespace sync_sessions {
 class SessionSyncService;
 }  // namespace sync_sessions
 
+namespace sync_tab_context {
+class TabContextSyncService;
+}  // namespace sync_tab_context
+
 namespace syncer {
 class DeviceInfoSyncService;
 class DataTypeController;
@@ -209,6 +213,8 @@ class CommonControllerBuilder {
                                        send_tab_to_self_sync_service);
   void SetSessionSyncService(
       sync_sessions::SessionSyncService* session_sync_service);
+  void SetTabContextSyncService(
+      sync_tab_context::TabContextSyncService* tab_context_sync_service);
   void SetSharingMessageBridge(SharingMessageBridge* sharing_message_bridge);
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -285,6 +291,8 @@ class CommonControllerBuilder {
   CreateSavedTabGroupDataTypeController();
   std::unique_ptr<syncer::DataTypeController>
   CreateSharedTabGroupDataTypeController(syncer::SyncService* sync_service);
+  std::unique_ptr<syncer::DataTypeController>
+  CreateEncryptedTabContextContainerDataTypeController();
   std::unique_ptr<syncer::DataTypeController>
   CreateSharingMessageDataTypeController();
   std::unique_ptr<syncer::DataTypeController>
@@ -430,6 +438,8 @@ class CommonControllerBuilder {
   SafeOptional<raw_ptr<SharingMessageBridge>> sharing_message_bridge_;
   SafeOptional<raw_ptr<tab_groups::TabGroupSyncService>>
       tab_group_sync_service_;
+  SafeOptional<raw_ptr<sync_tab_context::TabContextSyncService>>
+      tab_context_sync_service_;
   SafeOptional<raw_ptr<TemplateURLService>> template_url_service_;
   SafeOptional<raw_ptr<skills::SkillsService>> skills_service_;
 };

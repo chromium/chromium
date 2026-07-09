@@ -252,6 +252,11 @@ class SyncServiceFactoryTest : public testing::Test {
       datatypes.Put(syncer::GEMINI_THREAD);
     }
 
+    if (base::FeatureList::IsEnabled(
+            syncer::kSyncEncryptedTabContextContainer)) {
+      datatypes.Put(syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER);
+    }
+
     if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
       datatypes.Put(syncer::THEMES_IOS);
     }

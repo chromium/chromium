@@ -39,6 +39,9 @@ BASE_FEATURE(kSyncContextualTask, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncGeminiThread, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncEncryptedTabContextContainer,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSyncThemesIos, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabPageCustomizationThemeSync,
