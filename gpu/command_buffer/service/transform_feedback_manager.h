@@ -59,6 +59,8 @@ class GPU_GLES2_EXPORT TransformFeedback : public IndexedBufferBindingHost {
     return paused_;
   }
 
+  bool AttachedBuffersAreLocked() const override;
+
   void SetActiveProgram(Program* program);
   void ClearActiveProgram();
 

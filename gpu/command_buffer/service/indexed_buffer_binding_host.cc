@@ -99,11 +99,14 @@ void IndexedBufferBindingHost::DoBindBufferBase(GLuint index, Buffer* buffer) {
   GLuint service_id = buffer ? buffer->service_id() : 0;
   glBindBufferBase(target_, index, service_id);
 
-  if (buffer_bindings_[index].buffer && is_bound_) {
+  // AttachedBuffersAreLocked() is checked here (and in DoBindBufferRange)
+  // rather than DCHECK-ing because these methods are also called during
+  // RestoreBindings() when the host is not yet marked as bound.
+  if (buffer_bindings_[index].buffer && AttachedBuffersAreLocked()) {
     buffer_bindings_[index].buffer->OnUnbind(target_, true);
   }
   buffer_bindings_[index].SetBindBufferBase(buffer);
-  if (buffer && is_bound_) {
+  if (buffer && AttachedBuffersAreLocked()) {
     buffer->OnBind(target_, true);
   }
   UpdateMaxNonNullBindingIndex(index);
@@ -123,11 +126,14 @@ void IndexedBufferBindingHost::DoBindBufferRange(GLuint index,
     glBindBufferRange(target_, index, service_id, offset, size);
   }
 
-  if (buffer_bindings_[index].buffer && is_bound_) {
+  // AttachedBuffersAreLocked() is checked here rather than DCHECK-ing because
+  // these methods are also called during RestoreBindings() when the host is not
+  // yet marked as bound.
+  if (buffer_bindings_[index].buffer && AttachedBuffersAreLocked()) {
     buffer_bindings_[index].buffer->OnUnbind(target_, true);
   }
   buffer_bindings_[index].SetBindBufferRange(buffer, offset, size);
-  if (buffer && is_bound_) {
+  if (buffer && AttachedBuffersAreLocked()) {
     buffer->OnBind(target_, true);
   }
   UpdateMaxNonNullBindingIndex(index);
@@ -244,16 +250,31 @@ void IndexedBufferBindingHost::SetIsBound(bool is_bound) {
     }
   }
 
-  if (is_bound != is_bound_) {
-    is_bound_ = is_bound;
+  bool was_bound = AttachedBuffersAreLocked();
+  is_bound_ = is_bound;
+  bool is_now_bound = AttachedBuffersAreLocked();
+
+  if (was_bound != is_now_bound) {
     for (auto& bb : buffer_bindings_) {
       if (bb.buffer) {
-        if (is_bound_) {
+        if (is_now_bound) {
           bb.buffer->OnBind(target_, true);
         } else {
           bb.buffer->OnUnbind(target_, true);
         }
       }
+    }
+  }
+}
+
+bool IndexedBufferBindingHost::AttachedBuffersAreLocked() const {
+  return is_bound_;
+}
+
+void IndexedBufferBindingHost::ForceUnbindBuffers() {
+  for (auto& bb : buffer_bindings_) {
+    if (bb.buffer) {
+      bb.buffer->OnUnbind(target_, true);
     }
   }
 }
