@@ -31,7 +31,7 @@ interface SVGSVGElement : SVGGraphicsElement {
 
     attribute float currentScale;
     // TODO(foolip): currentTranslate should be a DOMPointReadOnly.
-    [ImplementedAs=currentTranslateFromJavascript] readonly attribute SVGPoint currentTranslate;
+    [ImplementedAs=currentTranslateFromJavascript, SameObject] readonly attribute SVGPoint currentTranslate;
 
     // TODO(foolip): The rect arguments should be DOMRectReadOnly.
     NodeList getIntersectionList(SVGRect rect, SVGElement? referenceElement);

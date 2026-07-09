@@ -79,7 +79,6 @@ namespace blink {
 SVGSVGElement::SVGSVGElement(Document& doc)
     : SVGViewportContainerElement(svg_names::kSVGTag, doc),
       time_container_(MakeGarbageCollected<SMILTimeContainer>(*this)),
-      translation_(MakeGarbageCollected<SVGPoint>()),
       current_scale_(1) {
   UseCounter::Count(doc, WebFeature::kSVGSVGElement);
 }
@@ -105,7 +104,7 @@ void SVGSVGElement::setCurrentScale(float scale) {
 class SVGCurrentTranslateTearOff : public SVGPointTearOff {
  public:
   SVGCurrentTranslateTearOff(SVGSVGElement* context_element)
-      : SVGPointTearOff(context_element->translation_, context_element) {}
+      : SVGPointTearOff(MakeGarbageCollected<SVGPoint>(), context_element) {}
 
   void CommitChange(SVGPropertyCommitReason) override {
     DCHECK(ContextElement());
@@ -113,12 +112,21 @@ class SVGCurrentTranslateTearOff : public SVGPointTearOff {
   }
 };
 
-SVGPointTearOff* SVGSVGElement::currentTranslateFromJavascript() {
-  return MakeGarbageCollected<SVGCurrentTranslateTearOff>(this);
+SVGPointTearOff* SVGSVGElement::EnsureCurrentTranslate() {
+  if (!translation_) {
+    translation_ = MakeGarbageCollected<SVGCurrentTranslateTearOff>(this);
+  }
+  return translation_;
+}
+
+gfx::Vector2dF SVGSVGElement::CurrentTranslate() const {
+  return translation_ ? translation_->Target()->Value().OffsetFromOrigin()
+                      : gfx::Vector2dF();
 }
 
 void SVGSVGElement::SetCurrentTranslate(const gfx::Vector2dF& point) {
-  translation_->SetValue(gfx::PointAtOffsetFromOrigin(point));
+  EnsureCurrentTranslate()->Target()->SetValue(
+      gfx::PointAtOffsetFromOrigin(point));
   UpdateUserTransform();
 }
 

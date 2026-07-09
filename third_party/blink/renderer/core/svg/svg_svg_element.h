@@ -65,11 +65,11 @@ class SVGSVGElement final : public SVGViewportContainerElement,
   float currentScale() const;
   void setCurrentScale(float scale);
 
-  gfx::Vector2dF CurrentTranslate() {
-    return translation_->Value().OffsetFromOrigin();
-  }
+  gfx::Vector2dF CurrentTranslate() const;
   void SetCurrentTranslate(const gfx::Vector2dF&);
-  SVGPointTearOff* currentTranslateFromJavascript();
+  SVGPointTearOff* currentTranslateFromJavascript() {
+    return EnsureCurrentTranslate();
+  }
 
   SMILTimeContainer* TimeContainer() const { return time_container_.Get(); }
 
@@ -140,6 +140,7 @@ class SVGSVGElement final : public SVGViewportContainerElement,
   void DidMoveToNewDocument(Document& old_document) override;
 
   bool ShouldSynthesizeViewBox() const;
+  SVGPointTearOff* EnsureCurrentTranslate();
   void UpdateUserTransform();
 
   void FinishParsingChildren() override;
@@ -149,7 +150,7 @@ class SVGSVGElement final : public SVGViewportContainerElement,
   AffineTransform LocalCoordinateSpaceTransform(CTMScope) const override;
 
   Member<SMILTimeContainer> time_container_;
-  Member<SVGPoint> translation_;
+  Member<SVGPointTearOff> translation_;
   Member<const SVGViewSpec> view_spec_;
   float current_scale_;
 
