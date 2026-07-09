@@ -1045,6 +1045,19 @@ void BrowserActions::InitializeChromeMenuActions() {
             base::BindRepeating(
                 [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
+                  chrome::ToggleVerticalTabsExpandOnHover(bwi);
+                },
+                bwi))
+            .SetActionId(kActionToggleVerticalTabsExpandOnHover)
+            .SetText(l10n_util::GetStringUTF16(
+                IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER))
+            .Build());
+
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
                   auto* controller =
                       tabs::VerticalTabStripStateController::From(bwi);
                   bool collapse =

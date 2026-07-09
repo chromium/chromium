@@ -398,6 +398,8 @@
   /*Vertical Tabs*/ \
   E(kActionToggleVerticalTabs, IDC_TOGGLE_VERTICAL_TABS) \
   E(kActionToggleCollapseVertical, IDC_TOGGLE_VERTICAL_TABS_COLLAPSE) \
+  E(kActionToggleVerticalTabsExpandOnHover, \
+    IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER) \
   /*Projects Panel*/ \
   E(kActionToggleProjectsPanel) \
   /*Omnibox Context Menu*/       \
