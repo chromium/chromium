@@ -22969,6 +22969,65 @@
             ]
         }
     ],
+    "SimpleCachePrefetchExperiment2": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_64KiB",
+                    "params": {
+                        "FullPrefetchBytes": "65536",
+                        "PrefetchDiskCacheOnly": "true",
+                        "TrailerPrefetchSpeculativeBytes": "10240"
+                    },
+                    "enable_features": [
+                        "SimpleCachePrefetchExperiment2"
+                    ]
+                },
+                {
+                    "name": "Enabled_32KiB",
+                    "params": {
+                        "FullPrefetchBytes": "32768",
+                        "PrefetchDiskCacheOnly": "true",
+                        "TrailerPrefetchSpeculativeBytes": "10240"
+                    },
+                    "enable_features": [
+                        "SimpleCachePrefetchExperiment2"
+                    ]
+                },
+                {
+                    "name": "Enabled_128KiB",
+                    "params": {
+                        "FullPrefetchBytes": "131072",
+                        "PrefetchDiskCacheOnly": "true",
+                        "TrailerPrefetchSpeculativeBytes": "10240"
+                    },
+                    "enable_features": [
+                        "SimpleCachePrefetchExperiment2"
+                    ]
+                },
+                {
+                    "name": "Enabled_10KiB",
+                    "params": {
+                        "FullPrefetchBytes": "10240",
+                        "PrefetchDiskCacheOnly": "true",
+                        "TrailerPrefetchSpeculativeBytes": "10240"
+                    },
+                    "enable_features": [
+                        "SimpleCachePrefetchExperiment2"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "SimpleCachePrefetchExperiment2"
+                    ]
+                }
+            ]
+        }
+    ],
     "SimplifiedHindiModel": [
         {
             "platforms": [
