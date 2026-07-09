@@ -79,6 +79,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
   void FireWinAccessibilityEvent(LONG win_event, BrowserAccessibility* node);
   void FireUiaAccessibilityEvent(LONG uia_event, BrowserAccessibility* node);
   void FireUiaActiveTextPositionChangedEvent(BrowserAccessibility* node);
+
+  // Menu buttons expose ExpandCollapse, not Toggle (see IsToggleSupported),
+  // so they raise ExpandCollapseState instead of ToggleState.
+  static LONG GetCheckedStateChangedUiaProperty(
+      const BrowserAccessibility& node);
+
   void FireUiaPropertyChangedEvent(LONG uia_property,
                                    BrowserAccessibility* node);
   void FireUiaStructureChangedEvent(StructureChangeType change_type,
