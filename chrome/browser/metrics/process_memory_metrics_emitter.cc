@@ -32,6 +32,8 @@
 #include "chrome/browser/metrics/tab_footprint_aggregator.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/metrics/metrics_data_validation.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -44,6 +46,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
 #include "partition_alloc/buildflags.h"
@@ -84,6 +87,28 @@ using performance_manager::ProcessNode;
 using ukm::builders::Memory_Experimental;
 
 namespace {
+
+enum class FirstPartyNtpState {
+  kNone,
+  kVisible,
+  kNonVisible,
+};
+
+bool Is1pNtpUrl(const GURL& url) {
+  if (!url.is_valid()) {
+    return false;
+  }
+  if (url.SchemeIs(content::kChromeUIScheme) &&
+      (url.host() == chrome::kChromeUINewTabPageHost ||
+       url.host() == chrome::kChromeUINewTabHost)) {
+    return true;
+  }
+  if (url.SchemeIs(chrome::kChromeNativeScheme) &&
+      url.host() == chrome::kChromeUINewTabHost) {
+    return true;
+  }
+  return false;
+}
 
 const char kEffectiveSize[] = "effective_size";
 const char kSize[] = "size";
@@ -1188,6 +1213,7 @@ void EmitBrowserMemoryMetrics(const GlobalMemoryDump::ProcessDump& pmd,
                               ukm::SourceId ukm_source_id,
                               ukm::UkmRecorder* ukm_recorder,
                               const std::optional<base::TimeDelta>& uptime,
+                              const FirstPartyNtpState& ntp_state,
                               bool record_uma) {
   Memory_Experimental builder(ukm_source_id);
   builder.SetProcessType(static_cast<int64_t>(
@@ -1195,6 +1221,26 @@ void EmitBrowserMemoryMetrics(const GlobalMemoryDump::ProcessDump& pmd,
   EmitProcessUmaAndUkm(pmd, HistogramProcessType::kBrowser, uptime, record_uma,
                        &builder);
   EmitSummedGpuMemory(pmd, &builder, record_uma);
+
+  if (record_uma) {
+    switch (ntp_state) {
+      case FirstPartyNtpState::kVisible:
+        MEMORY_METRICS_HISTOGRAM_MB(
+            "Memory.Browser.PrivateMemoryFootprint.1pNtpVisible",
+            pmd.os_dump().private_footprint_kb / kKiB);
+        break;
+      case FirstPartyNtpState::kNonVisible:
+        MEMORY_METRICS_HISTOGRAM_MB(
+            "Memory.Browser.PrivateMemoryFootprint.1pNtpNonVisible",
+            pmd.os_dump().private_footprint_kb / kKiB);
+        break;
+      case FirstPartyNtpState::kNone:
+        MEMORY_METRICS_HISTOGRAM_MB(
+            "Memory.Browser.PrivateMemoryFootprint.1pNtpNotPresent",
+            pmd.os_dump().private_footprint_kb / kKiB);
+        break;
+    }
+  }
 
   builder.Record(ukm_recorder);
 }
@@ -1205,6 +1251,7 @@ void EmitRendererMemoryMetrics(
     ukm::UkmRecorder* ukm_recorder,
     int number_of_extensions,
     const std::optional<base::TimeDelta>& uptime,
+    FirstPartyNtpState ntp_state,
     bool record_uma) {
   // If the renderer doesn't host a single page, no page_info will be passed in,
   // and there's no single URL to associate its memory with.
@@ -1220,6 +1267,26 @@ void EmitRendererMemoryMetrics(
       (number_of_extensions == 0) ? HistogramProcessType::kRenderer
                                   : HistogramProcessType::kExtension;
   EmitProcessUmaAndUkm(pmd, process_type, uptime, record_uma, &builder);
+
+  if (record_uma && number_of_extensions == 0) {
+    switch (ntp_state) {
+      case FirstPartyNtpState::kVisible:
+        MEMORY_METRICS_HISTOGRAM_MB(
+            "Memory.Visible1pNtpRenderer.PrivateMemoryFootprint",
+            pmd.os_dump().private_footprint_kb / kKiB);
+        break;
+      case FirstPartyNtpState::kNonVisible:
+        MEMORY_METRICS_HISTOGRAM_MB(
+            "Memory.NonVisible1pNtpRenderer.PrivateMemoryFootprint",
+            pmd.os_dump().private_footprint_kb / kKiB);
+        break;
+      case FirstPartyNtpState::kNone:
+        MEMORY_METRICS_HISTOGRAM_MB(
+            "Memory.Non1pNtpRenderer.PrivateMemoryFootprint",
+            pmd.os_dump().private_footprint_kb / kKiB);
+        break;
+    }
+  }
 
   if (page_info) {
     builder.SetIsVisible(page_info->is_visible);
@@ -1443,6 +1510,22 @@ void ProcessMemoryMetricsEmitter::ReceivedMemoryDump(
 
   TabFootprintAggregator per_tab_metrics;
 
+  FirstPartyNtpState ntp_state = FirstPartyNtpState::kNone;
+  for (const auto& [pid, process_info] : process_infos) {
+    for (const PageInfo& page_info : process_info.page_infos) {
+      if (page_info.is_1p_ntp) {
+        if (page_info.is_visible) {
+          ntp_state = FirstPartyNtpState::kVisible;
+          break;
+        }
+        ntp_state = FirstPartyNtpState::kNonVisible;
+      }
+    }
+    if (ntp_state == FirstPartyNtpState::kVisible) {
+      break;
+    }
+  }
+
   base::TimeTicks now = base::TimeTicks::Now();
   for (const auto& pmd : dump->process_dumps()) {
     uint32_t process_pmf_kb = pmd.os_dump().private_footprint_kb;
@@ -1479,7 +1562,7 @@ void ProcessMemoryMetricsEmitter::ReceivedMemoryDump(
       case memory_instrumentation::mojom::ProcessType::BROWSER: {
         EmitBrowserMemoryMetrics(pmd, ukm::UkmRecorder::GetNewSourceID(),
                                  GetUkmRecorder(),
-                                 GetProcessUptime(now, process_info),
+                                 GetProcessUptime(now, process_info), ntp_state,
                                  emit_metrics_for_all_processes);
         break;
       }
@@ -1497,11 +1580,19 @@ void ProcessMemoryMetricsEmitter::ReceivedMemoryDump(
         hibernated_canvas_total_original_memory +=
             pmd.GetMetric("canvas/hibernated", "original_size").value_or(0);
         const PageInfo* single_page_info = nullptr;
+        FirstPartyNtpState renderer_ntp_state = FirstPartyNtpState::kNone;
         if (process_info) {
           if (emit_metrics_for_all_processes) {
             // Renderer metrics-by-tab only make sense if we're visiting all
             // render processes.
             for (const PageInfo& page_info : process_info->page_infos) {
+              if (page_info.is_1p_ntp) {
+                if (page_info.is_visible) {
+                  renderer_ntp_state = FirstPartyNtpState::kVisible;
+                } else if (renderer_ntp_state != FirstPartyNtpState::kVisible) {
+                  renderer_ntp_state = FirstPartyNtpState::kNonVisible;
+                }
+              }
               if (page_info.hosts_main_frame) {
                 per_tab_metrics.AssociateMainFrame(page_info.ukm_source_id,
                                                    pmd.pid(), page_info.tab_id,
@@ -1536,10 +1627,10 @@ void ProcessMemoryMetricsEmitter::ReceivedMemoryDump(
             (blink_gc_bytes - blink_gc_allocated_objects_bytes) / kKiB;
 
         int number_of_extensions = GetNumberOfExtensions(pmd.pid());
-        EmitRendererMemoryMetrics(pmd, single_page_info, GetUkmRecorder(),
-                                  number_of_extensions,
-                                  GetProcessUptime(now, process_info),
-                                  emit_metrics_for_all_processes);
+        EmitRendererMemoryMetrics(
+            pmd, single_page_info, GetUkmRecorder(), number_of_extensions,
+            GetProcessUptime(now, process_info), renderer_ntp_state,
+            emit_metrics_for_all_processes);
         break;
       }
       case memory_instrumentation::mojom::ProcessType::GPU: {
@@ -1633,6 +1724,23 @@ void ProcessMemoryMetricsEmitter::ReceivedMemoryDump(
 
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.PrivateMemoryFootprint",
                                   private_footprint_total_kb / kKiB);
+    switch (ntp_state) {
+      case FirstPartyNtpState::kVisible:
+        UMA_HISTOGRAM_MEMORY_LARGE_MB(
+            "Memory.Total.PrivateMemoryFootprint.1pNtpVisible",
+            private_footprint_total_kb / kKiB);
+        break;
+      case FirstPartyNtpState::kNonVisible:
+        UMA_HISTOGRAM_MEMORY_LARGE_MB(
+            "Memory.Total.PrivateMemoryFootprint.1pNtpNonVisible",
+            private_footprint_total_kb / kKiB);
+        break;
+      case FirstPartyNtpState::kNone:
+        UMA_HISTOGRAM_MEMORY_LARGE_MB(
+            "Memory.Total.PrivateMemoryFootprint.1pNtpNotPresent",
+            private_footprint_total_kb / kKiB);
+        break;
+    }
     // The pseudo metric of Memory.Total.PrivateMemoryFootprint. Only used to
     // assess field trial data quality.
     UMA_HISTOGRAM_MEMORY_LARGE_MB(
@@ -1794,6 +1902,7 @@ ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
       page_info.tab_id = tab_id;
       page_info.hosts_main_frame = HostsMainFrame(process_node, page_node);
       page_info.is_visible = page_node->IsVisible();
+      page_info.is_1p_ntp = Is1pNtpUrl(page_node->GetMainFrameUrl());
       page_info.time_since_last_visibility_change =
           now - page_node->GetLastVisibilityChangeTime();
       page_info.time_since_last_navigation =

@@ -60,6 +60,12 @@ int GetResidentValue(const MetricMap& metric_map) {
   return it->second;
 }
 
+int GetPrivateMemoryFootprintValue(const MetricMap& metric_map) {
+  auto it = metric_map.find("PrivateMemoryFootprint");
+  EXPECT_NE(it, metric_map.end());
+  return it->second;
+}
+
 // Provide fake to surface ReceivedMemoryDump and GetProcessToPageInfoMap to
 // public visibility.
 class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
@@ -1332,4 +1338,171 @@ TEST_F(ProcessMemoryMetricsEmitterTest,
   entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::Memory_TabFootprint::kEntryName);
   ASSERT_EQ(entries.size(), 0u);
+}
+
+TEST_F(ProcessMemoryMetricsEmitterTest, FirstPartyNtpMemoryMetrics) {
+  // Test 1: With a visible 1P NTP.
+  {
+    base::HistogramTester histograms;
+    GlobalMemoryDumpPtr global_dump(
+        memory_instrumentation::mojom::GlobalMemoryDump::New());
+    global_dump->aggregated_metrics =
+        memory_instrumentation::mojom::AggregatedMetrics::New();
+
+    MetricMap expected_browser_metrics = GetExpectedBrowserMetrics();
+    PopulateBrowserMetrics(global_dump, expected_browser_metrics);
+
+    MetricMap expected_renderer_metrics = GetExpectedRendererMetrics();
+    PopulateRendererMetrics(global_dump, expected_renderer_metrics,
+                            kTestRendererPid201);
+
+    auto process_node = CreateNode<TestProcessNodeImpl>();
+    process_node->SetProcessWithPid(kTestRendererPid201);
+    auto page_node = CreateNode<PageNodeImpl>();
+    page_node->SetUkmSourceId(ukm::UkmRecorder::GetNewSourceID());
+    page_node->SetIsVisible(true);
+    page_node->OnMainFrameNavigationCommitted(false, base::TimeTicks::Now(), 1,
+                                              GURL("chrome://new-tab-page/"),
+                                              "text/html", std::nullopt);
+    auto frame_node =
+        CreateFrameNodeAutoId(process_node.get(), page_node.get());
+
+    auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+        test_ukm_recorder_);
+    emitter->ReceivedMemoryDump(
+        emitter->GetProcessToPageInfoMap(graph()),
+        memory_instrumentation::mojom::RequestOutcome::kSuccess,
+        GlobalMemoryDump::MoveFrom(std::move(global_dump)));
+
+    histograms.ExpectUniqueSample(
+        "Memory.Visible1pNtpRenderer.PrivateMemoryFootprint",
+        kTestRendererPrivateMemoryFootprint, 1);
+    histograms.ExpectTotalCount(
+        "Memory.NonVisible1pNtpRenderer.PrivateMemoryFootprint", 0);
+    histograms.ExpectTotalCount(
+        "Memory.Non1pNtpRenderer.PrivateMemoryFootprint", 0);
+    histograms.ExpectUniqueSample(
+        "Memory.Browser.PrivateMemoryFootprint.1pNtpVisible",
+        GetPrivateMemoryFootprintValue(expected_browser_metrics), 1);
+    histograms.ExpectUniqueSample(
+        "Memory.Total.PrivateMemoryFootprint.1pNtpVisible",
+        GetPrivateMemoryFootprintValue(expected_browser_metrics) +
+            kTestRendererPrivateMemoryFootprint,
+        1);
+
+    histograms.ExpectTotalCount(
+        "Memory.Browser.PrivateMemoryFootprint.1pNtpNotPresent", 0);
+    histograms.ExpectTotalCount(
+        "Memory.Total.PrivateMemoryFootprint.1pNtpNotPresent", 0);
+  }
+
+  // Test 2: When no 1P NTP is present.
+  {
+    base::HistogramTester histograms_no_ntp;
+    GlobalMemoryDumpPtr global_dump(
+        memory_instrumentation::mojom::GlobalMemoryDump::New());
+    global_dump->aggregated_metrics =
+        memory_instrumentation::mojom::AggregatedMetrics::New();
+
+    MetricMap expected_browser_metrics = GetExpectedBrowserMetrics();
+    PopulateBrowserMetrics(global_dump, expected_browser_metrics);
+
+    MetricMap expected_renderer_metrics = GetExpectedRendererMetrics();
+    PopulateRendererMetrics(global_dump, expected_renderer_metrics,
+                            kTestRendererPid201);
+
+    auto process_node = CreateNode<TestProcessNodeImpl>();
+    process_node->SetProcessWithPid(kTestRendererPid201);
+    auto page_node = CreateNode<PageNodeImpl>();
+    page_node->SetUkmSourceId(ukm::UkmRecorder::GetNewSourceID());
+    page_node->SetIsVisible(true);
+    page_node->OnMainFrameNavigationCommitted(false, base::TimeTicks::Now(), 2,
+                                              GURL("https://www.google.com/"),
+                                              "text/html", std::nullopt);
+    auto frame_node =
+        CreateFrameNodeAutoId(process_node.get(), page_node.get());
+
+    auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+        test_ukm_recorder_);
+    emitter->ReceivedMemoryDump(
+        emitter->GetProcessToPageInfoMap(graph()),
+        memory_instrumentation::mojom::RequestOutcome::kSuccess,
+        GlobalMemoryDump::MoveFrom(std::move(global_dump)));
+
+    histograms_no_ntp.ExpectUniqueSample(
+        "Memory.Non1pNtpRenderer.PrivateMemoryFootprint",
+        kTestRendererPrivateMemoryFootprint, 1);
+    histograms_no_ntp.ExpectTotalCount(
+        "Memory.Visible1pNtpRenderer.PrivateMemoryFootprint", 0);
+    histograms_no_ntp.ExpectTotalCount(
+        "Memory.NonVisible1pNtpRenderer.PrivateMemoryFootprint", 0);
+    histograms_no_ntp.ExpectTotalCount(
+        "Memory.Browser.PrivateMemoryFootprint.1pNtpVisible", 0);
+    histograms_no_ntp.ExpectTotalCount(
+        "Memory.Total.PrivateMemoryFootprint.1pNtpVisible", 0);
+
+    histograms_no_ntp.ExpectUniqueSample(
+        "Memory.Browser.PrivateMemoryFootprint.1pNtpNotPresent",
+        GetPrivateMemoryFootprintValue(expected_browser_metrics), 1);
+    histograms_no_ntp.ExpectUniqueSample(
+        "Memory.Total.PrivateMemoryFootprint.1pNtpNotPresent",
+        GetPrivateMemoryFootprintValue(expected_browser_metrics) +
+            kTestRendererPrivateMemoryFootprint,
+        1);
+  }
+
+  // Test 3: With a non-visible 1P NTP (background/hidden).
+  {
+    base::HistogramTester histograms_non_visible;
+    GlobalMemoryDumpPtr global_dump(
+        memory_instrumentation::mojom::GlobalMemoryDump::New());
+    global_dump->aggregated_metrics =
+        memory_instrumentation::mojom::AggregatedMetrics::New();
+
+    MetricMap expected_browser_metrics = GetExpectedBrowserMetrics();
+    PopulateBrowserMetrics(global_dump, expected_browser_metrics);
+
+    MetricMap expected_renderer_metrics = GetExpectedRendererMetrics();
+    PopulateRendererMetrics(global_dump, expected_renderer_metrics,
+                            kTestRendererPid201);
+
+    auto process_node = CreateNode<TestProcessNodeImpl>();
+    process_node->SetProcessWithPid(kTestRendererPid201);
+    auto page_node = CreateNode<PageNodeImpl>();
+    page_node->SetUkmSourceId(ukm::UkmRecorder::GetNewSourceID());
+    page_node->SetIsVisible(false);
+    page_node->OnMainFrameNavigationCommitted(false, base::TimeTicks::Now(), 3,
+                                              GURL("chrome://new-tab-page/"),
+                                              "text/html", std::nullopt);
+    auto frame_node =
+        CreateFrameNodeAutoId(process_node.get(), page_node.get());
+
+    auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+        test_ukm_recorder_);
+    emitter->ReceivedMemoryDump(
+        emitter->GetProcessToPageInfoMap(graph()),
+        memory_instrumentation::mojom::RequestOutcome::kSuccess,
+        GlobalMemoryDump::MoveFrom(std::move(global_dump)));
+
+    histograms_non_visible.ExpectUniqueSample(
+        "Memory.NonVisible1pNtpRenderer.PrivateMemoryFootprint",
+        kTestRendererPrivateMemoryFootprint, 1);
+    histograms_non_visible.ExpectTotalCount(
+        "Memory.Visible1pNtpRenderer.PrivateMemoryFootprint", 0);
+    histograms_non_visible.ExpectTotalCount(
+        "Memory.Non1pNtpRenderer.PrivateMemoryFootprint", 0);
+    histograms_non_visible.ExpectTotalCount(
+        "Memory.Browser.PrivateMemoryFootprint.1pNtpVisible", 0);
+    histograms_non_visible.ExpectTotalCount(
+        "Memory.Browser.PrivateMemoryFootprint.1pNtpNotPresent", 0);
+
+    histograms_non_visible.ExpectUniqueSample(
+        "Memory.Browser.PrivateMemoryFootprint.1pNtpNonVisible",
+        GetPrivateMemoryFootprintValue(expected_browser_metrics), 1);
+    histograms_non_visible.ExpectUniqueSample(
+        "Memory.Total.PrivateMemoryFootprint.1pNtpNonVisible",
+        GetPrivateMemoryFootprintValue(expected_browser_metrics) +
+            kTestRendererPrivateMemoryFootprint,
+        1);
+  }
 }

@@ -3774,6 +3774,43 @@ chromium-metrics-reviews@google.com.
   <token key="VmName" variants="VmmSwapVmName"/>
 </histogram>
 
+<histogram name="Memory.{1pNtpState}1pNtpRenderer.PrivateMemoryFootprint"
+    units="MB" expires_after="2027-07-01">
+  <owner>acondor@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The private memory footprint of a renderer process hosting {1pNtpState}.
+    Recorded during periodic process memory dumps.
+  </summary>
+  <token key="1pNtpState">
+    <variant name="Non" summary="a non-1P NTP"/>
+    <variant name="NonVisible" summary="a non-visible 1P NTP"/>
+    <variant name="Visible" summary="a visible 1P NTP"/>
+  </token>
+</histogram>
+
+<histogram name="Memory.{Process}.PrivateMemoryFootprint.1pNtp{1pNtpState}"
+    units="MB" expires_after="2027-07-01">
+  <owner>acondor@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The private memory footprint of the {Process} when {1pNtpState}. Recorded
+    during periodic process memory dumps.
+  </summary>
+  <token key="Process">
+    <variant name="Browser" summary="browser process"/>
+    <variant name="Total" summary="total across all processes"/>
+  </token>
+  <token key="1pNtpState">
+    <variant name="NonVisible"
+        summary="1P NTPs are open, but they are all non-visible"/>
+    <variant name="NotPresent" summary="no 1P NTPs are open"/>
+    <variant name="Visible" summary="at least one 1P NTP is visible"/>
+  </token>
+</histogram>
+
 <histogram name="Memory.{Type}.Renderer.AreAllPagesFrozen"
     enum="BooleanAreAllPagesFrozen" expires_after="2027-06-21">
   <owner>thiabaud@google.com</owner>
