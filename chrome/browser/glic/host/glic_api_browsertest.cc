@@ -965,10 +965,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestNoFloatyOrLiveMode,
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testCanAttachPanelSidePanel) {
-  ExecuteJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testCanAttachPanelDetached) {
   ExecuteJsTest();
 }
