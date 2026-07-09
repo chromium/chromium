@@ -257,7 +257,8 @@ class CC_EXPORT CompositorFrameReporter {
     };
 
     ProcessedVizBreakdown(base::TimeTicks viz_start_time,
-                          const viz::FrameTimingDetails& viz_breakdown);
+                          const viz::FrameTimingDetails& viz_breakdown,
+                          bool should_report_histograms);
     ~ProcessedVizBreakdown();
 
     ProcessedVizBreakdown(const ProcessedVizBreakdown&) = delete;

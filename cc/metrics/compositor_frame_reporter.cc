@@ -412,8 +412,15 @@ void CompositorFrameReporter::ProcessedVizBreakdown::Iterator::
 
 CompositorFrameReporter::ProcessedVizBreakdown::ProcessedVizBreakdown(
     base::TimeTicks viz_start_time,
-    const viz::FrameTimingDetails& viz_breakdown) {
-  bool trees_in_viz_mode = base::FeatureList::IsEnabled(features::kTreesInViz);
+    const viz::FrameTimingDetails& viz_breakdown,
+    bool should_report_histograms) {
+  // Even if TreesInViz mode feature is enabled, take the old breakdown path if
+  // this reporter represents UI content (implied by should_report_histograms
+  // not being set)
+  bool trees_in_viz_mode =
+      (base::FeatureList::IsEnabled(features::kTreesInViz) &&
+       should_report_histograms);
+
   if (!trees_in_viz_mode && viz_start_time.is_null()) {
     return;
   }
@@ -1121,7 +1128,7 @@ void CompositorFrameReporter::TerminateReporter() {
         blink_start_time_, begin_main_frame_start_, blink_breakdown_);
   if (!processed_viz_breakdown_)
     processed_viz_breakdown_ = std::make_unique<ProcessedVizBreakdown>(
-        viz_start_time_, viz_breakdown_);
+        viz_start_time_, viz_breakdown_, should_report_histograms_);
 
   if (!processed_trees_in_viz_breakdown_) {
     // TODO(crbug.com/445500514): Should be possible to report breakdowns for
