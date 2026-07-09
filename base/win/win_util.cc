@@ -92,6 +92,18 @@ namespace {
 using QueryKeyFunction =
     ScopedDeviceConvertibilityStateForTesting::QueryFunction;
 
+DSREG_JOIN_TYPE ToDSREGJoinType(
+    ScopedAzureADJoinStateForTesting::AzureADJoinType join_type) {
+  switch (join_type) {
+    case ScopedAzureADJoinStateForTesting::AzureADJoinType::kUnknown:
+      return DSREG_UNKNOWN_JOIN;
+    case ScopedAzureADJoinStateForTesting::AzureADJoinType::kDevice:
+      return DSREG_DEVICE_JOIN;
+    case ScopedAzureADJoinStateForTesting::AzureADJoinType::kWorkplace:
+      return DSREG_WORKPLACE_JOIN;
+  }
+}
+
 // Sets the value of |property_key| to |property_value| in |property_store|.
 bool SetPropVariantValueForPropertyStore(
     IPropertyStore* property_store,
@@ -190,9 +202,8 @@ bool* GetRegisteredWithManagementStateStorage() {
   return &state;
 }
 
-// TODO (crbug/1300219): return a DSREG_JOIN_TYPE* instead of bool*.
-bool* GetAzureADJoinStateStorage() {
-  static bool state = [] {
+std::optional<DSREG_JOIN_TYPE>& GetAzureADJoinStateStorage() {
+  static std::optional<DSREG_JOIN_TYPE> state = [] {
     base::ElapsedTimer timer;
 
     // Mitigate the issues caused by loading DLLs on a background thread
@@ -202,14 +213,14 @@ bool* GetAzureADJoinStateStorage() {
     ScopedNativeLibrary netapi32(
         base::LoadSystemLibrary(FILE_PATH_LITERAL("netapi32.dll")));
     if (!netapi32.is_valid()) {
-      return false;
+      return std::optional<DSREG_JOIN_TYPE>(std::nullopt);
     }
 
     const auto net_get_aad_join_information_function =
         reinterpret_cast<decltype(&::NetGetAadJoinInformation)>(
             netapi32.GetFunctionPointer("NetGetAadJoinInformation"));
     if (!net_get_aad_join_information_function) {
-      return false;
+      return std::optional<DSREG_JOIN_TYPE>(std::nullopt);
     }
 
     const auto net_free_aad_join_information_function =
@@ -220,16 +231,19 @@ bool* GetAzureADJoinStateStorage() {
     DSREG_JOIN_INFO* join_info = nullptr;
     HRESULT hr = net_get_aad_join_information_function(/*pcszTenantId=*/nullptr,
                                                        &join_info);
-    const bool is_aad_joined = SUCCEEDED(hr) && join_info;
+    std::optional<DSREG_JOIN_TYPE> join_type = std::nullopt;
+    if (SUCCEEDED(hr) && join_info) {
+      join_type = join_info->joinType;
+    }
     if (join_info) {
       net_free_aad_join_information_function(join_info);
     }
 
     base::UmaHistogramTimes("EnterpriseCheck.AzureADJoinStatusCheckTime",
                             timer.Elapsed());
-    return is_aad_joined;
+    return join_type;
   }();
-  return &state;
+  return state;
 }
 
 NativeLibrary PinUser32Internal(NativeLibraryLoadError* error) {
@@ -933,7 +947,13 @@ bool IsDeviceRegisteredWithManagement() {
 }
 
 bool IsJoinedToAzureAD() {
-  return *GetAzureADJoinStateStorage();
+  auto join_type = GetAzureADJoinStateStorage();
+  return join_type.has_value();
+}
+
+bool IsDeviceJoinedToAzureAD() {
+  const auto& join_type = GetAzureADJoinStateStorage();
+  return join_type && *join_type == DSREG_DEVICE_JOIN;
 }
 
 bool IsUser32AndGdi32Available() {
@@ -1108,7 +1128,8 @@ bool IsRunningUnderDesktopName(std::wstring_view desktop_name) {
   }
 
   std::wstring current_desktop_name = GetWindowObjectName(thread_desktop);
-  return EqualsCaseInsensitiveASCII(current_desktop_name, desktop_name);
+  return EqualsCaseInsensitiveASCII(AsStringPiece16(current_desktop_name),
+                                    AsStringPiece16(desktop_name));
 }
 
 // This method is used to detect whether current session is a remote session.
@@ -1285,11 +1306,35 @@ ScopedDeviceRegisteredWithManagementForTesting::
   *GetRegisteredWithManagementStateStorage() = initial_state_;
 }
 
-ScopedAzureADJoinStateForTesting::ScopedAzureADJoinStateForTesting(bool state)
-    : initial_state_(std::exchange(*GetAzureADJoinStateStorage(), state)) {}
+ScopedAzureADJoinStateForTesting::ScopedAzureADJoinStateForTesting(
+    std::optional<AzureADJoinType> state)
+    : initial_state_([&] {
+        const auto& storage = GetAzureADJoinStateStorage();
+        if (!storage.has_value()) {
+          return std::optional<AzureADJoinType>(std::nullopt);
+        }
+        switch (*storage) {
+          case DSREG_UNKNOWN_JOIN:
+            return std::optional<AzureADJoinType>(AzureADJoinType::kUnknown);
+          case DSREG_DEVICE_JOIN:
+            return std::optional<AzureADJoinType>(AzureADJoinType::kDevice);
+          case DSREG_WORKPLACE_JOIN:
+            return std::optional<AzureADJoinType>(AzureADJoinType::kWorkplace);
+        }
+      }()) {
+  if (state.has_value()) {
+    GetAzureADJoinStateStorage() = ToDSREGJoinType(*state);
+  } else {
+    GetAzureADJoinStateStorage() = std::nullopt;
+  }
+}
 
 ScopedAzureADJoinStateForTesting::~ScopedAzureADJoinStateForTesting() {
-  *GetAzureADJoinStateStorage() = initial_state_;
+  if (initial_state_.has_value()) {
+    GetAzureADJoinStateStorage() = ToDSREGJoinType(*initial_state_);
+  } else {
+    GetAzureADJoinStateStorage() = std::nullopt;
+  }
 }
 
 ScopedDeviceConvertibilityStateForTesting::
