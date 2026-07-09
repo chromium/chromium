@@ -83,7 +83,8 @@ void FakeSafeBrowsingDatabaseManager::OnCheckUrlForSubresourceFilterComplete(
     threat_type = it->second.first;
     metadata = it->second.second;
   }
-  client->OnCheckBrowseUrlResult(url, threat_type, metadata);
+  client->OnCheckSubresourceFilterUrlResult(url, threat_type,
+                                            metadata.subresource_filter_match);
 
   // Erase the client when a check is complete. Otherwise, it's possible
   // subsequent clients that share an address with this one will CHECK in

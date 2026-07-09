@@ -115,8 +115,7 @@ void FakeSafeBrowsingDatabaseManager::CheckBrowseURLAsync(
     GURL url,
     SBThreatType result_threat_type,
     Client* client) {
-  ThreatMetadata metadata;
-  client->OnCheckBrowseUrlResult(url, result_threat_type, metadata);
+  client->OnCheckBrowseUrlResult(url, result_threat_type);
 }
 
 // static

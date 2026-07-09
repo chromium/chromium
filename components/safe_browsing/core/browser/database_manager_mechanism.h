@@ -51,8 +51,7 @@ class DatabaseManagerMechanism : public SafeBrowsingLookupMechanism,
 
   // SafeBrowsingDatabaseManager::Client implementation:
   void OnCheckBrowseUrlResult(const GURL& url,
-                              SBThreatType threat_type,
-                              const ThreatMetadata& metadata) override;
+                              SBThreatType threat_type) override;
 
   ThreatSource GetThreatSource() const;
 

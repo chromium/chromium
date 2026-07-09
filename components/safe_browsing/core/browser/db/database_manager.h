@@ -91,11 +91,16 @@ class SafeBrowsingDatabaseManager
     virtual void OnCheckApiBlocklistUrlResult(const GURL& url,
                                               const ThreatMetadata& metadata) {}
 
-    // Called when the result of checking a browse URL is known or the result of
-    // checking the URL for subresource filter is known.
+    // Called when the result of checking a browse URL is known.
     virtual void OnCheckBrowseUrlResult(const GURL& url,
-                                        SBThreatType threat_type,
-                                        const ThreatMetadata& metadata) {}
+                                        SBThreatType threat_type) {}
+
+    // Called when the result of checking the URL for subresource filter is
+    // known.
+    virtual void OnCheckSubresourceFilterUrlResult(
+        const GURL& url,
+        SBThreatType threat_type,
+        const SubresourceFilterMatch& subresource_filter_match) {}
 
     // Called when the result of checking a download URL is known.
     virtual void OnCheckDownloadUrlResult(const std::vector<GURL>& url_chain,

@@ -580,8 +580,7 @@ void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
 
 void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
     OnCheckBrowseUrlResult(const GURL& url,
-                           safe_browsing::SBThreatType threat_type,
-                           const safe_browsing::ThreatMetadata& metadata) {
+                           safe_browsing::SBThreatType threat_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Stop the timer to avoid `OnCheckBlocklistTimeout` from being called, since
   // we got a blocklist check result in time.

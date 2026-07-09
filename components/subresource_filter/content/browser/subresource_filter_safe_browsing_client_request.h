@@ -46,10 +46,11 @@ class SubresourceFilterSafeBrowsingClientRequest
   void Start(const GURL& url);
 
   // safe_browsing::SafeBrowsingDatabaseManager::Client:
-  void OnCheckBrowseUrlResult(
+  void OnCheckSubresourceFilterUrlResult(
       const GURL& url,
       safe_browsing::SBThreatType threat_type,
-      const safe_browsing::ThreatMetadata& metadata) override;
+      const safe_browsing::SubresourceFilterMatch& subresource_filter_match)
+      override;
 
   size_t request_id() const { return request_id_; }
 

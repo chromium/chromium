@@ -72,8 +72,7 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
   ~TestClient() override { db_->CancelCheck(this); }
 
   void OnCheckBrowseUrlResult(const GURL& url,
-                              SBThreatType threat_type,
-                              const ThreatMetadata& metadata) override {
+                              SBThreatType threat_type) override {
     EXPECT_EQ(expected_url_, url);
     EXPECT_EQ(expected_threat_type_, threat_type);
     is_callback_called_ = true;

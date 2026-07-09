@@ -368,8 +368,7 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
 
   // Called when the result of checking a browse URL is known.
   void OnCheckBrowseUrlResult(const GURL& /* url */,
-                              SBThreatType threat_type,
-                              const ThreatMetadata& /* metadata */) override {
+                              SBThreatType threat_type) override {
     threat_type_ = threat_type;
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&TestSBClient::CheckDone, this));

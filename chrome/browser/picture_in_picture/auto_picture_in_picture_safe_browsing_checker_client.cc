@@ -80,8 +80,7 @@ void AutoPictureInPictureSafeBrowsingCheckerClient::CheckUrlSafety(GURL url) {
 
 void AutoPictureInPictureSafeBrowsingCheckerClient::OnCheckBrowseUrlResult(
     const GURL& url,
-    safe_browsing::SBThreatType threat_type,
-    const safe_browsing::ThreatMetadata& metadata) {
+    safe_browsing::SBThreatType threat_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Stop the timer to avoid calling `OnCheckBlocklistTimeout`, since we got a

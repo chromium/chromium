@@ -271,11 +271,22 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
         expected_urls_(url_chain) {}
 
   void OnCheckBrowseUrlResult(const GURL& url,
-                              SBThreatType threat_type,
-                              const ThreatMetadata& metadata) override {
+                              SBThreatType threat_type) override {
     ASSERT_EQ(expected_urls_[0], url);
     ASSERT_EQ(expected_sb_threat_type_, threat_type);
     on_check_browse_url_result_called_ = true;
+    if (manager_to_cancel_) {
+      manager_to_cancel_->CancelCheck(this);
+    }
+  }
+
+  void OnCheckSubresourceFilterUrlResult(
+      const GURL& url,
+      SBThreatType threat_type,
+      const SubresourceFilterMatch& subresource_filter_match) override {
+    ASSERT_EQ(expected_urls_[0], url);
+    ASSERT_EQ(expected_sb_threat_type_, threat_type);
+    on_check_subresource_filter_url_result_called_ = true;
     if (manager_to_cancel_) {
       manager_to_cancel_->CancelCheck(this);
     }
@@ -293,6 +304,9 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
   bool on_check_browse_url_result_called() {
     return on_check_browse_url_result_called_;
   }
+  bool on_check_subresource_filter_url_result_called() {
+    return on_check_subresource_filter_url_result_called_;
+  }
   bool on_check_download_urls_result_called() {
     return on_check_download_urls_result_called_;
   }
@@ -301,6 +315,7 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
   const SBThreatType expected_sb_threat_type_;
   std::vector<GURL> expected_urls_;
   bool on_check_browse_url_result_called_ = false;
+  bool on_check_subresource_filter_url_result_called_ = false;
   bool on_check_download_urls_result_called_ = false;
   raw_ptr<SBLocalDatabaseManager> manager_to_cancel_;
 };
@@ -1402,9 +1417,9 @@ TEST_F(SBLocalDatabaseManagerTest, TestSubresourceFilterCallback) {
     TestClient client(SB_THREAT_TYPE_SAFE, url_bad);
     EXPECT_FALSE(sb_local_database_manager_->CheckUrlForSubresourceFilter(
         url_bad, &client));
-    EXPECT_FALSE(client.on_check_browse_url_result_called());
+    EXPECT_FALSE(client.on_check_subresource_filter_url_result_called());
     WaitForTasksOnTaskRunner();
-    EXPECT_TRUE(client.on_check_browse_url_result_called());
+    EXPECT_TRUE(client.on_check_subresource_filter_url_result_called());
   }
 }
 

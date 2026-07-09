@@ -64,12 +64,15 @@ void SubresourceFilterSafeBrowsingClientRequest::Start(const GURL& url) {
           base::Unretained(this)));
 }
 
-void SubresourceFilterSafeBrowsingClientRequest::OnCheckBrowseUrlResult(
-    const GURL& url,
-    safe_browsing::SBThreatType threat_type,
-    const safe_browsing::ThreatMetadata& metadata) {
+void SubresourceFilterSafeBrowsingClientRequest::
+    OnCheckSubresourceFilterUrlResult(
+        const GURL& url,
+        safe_browsing::SBThreatType threat_type,
+        const safe_browsing::SubresourceFilterMatch& subresource_filter_match) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
   request_completed_ = true;
+  safe_browsing::ThreatMetadata metadata;
+  metadata.subresource_filter_match = subresource_filter_match;
   SendCheckResultToClient(true /* served_from_network */, threat_type,
                           metadata);
 }

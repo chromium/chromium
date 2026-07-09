@@ -103,12 +103,11 @@ void DatabaseManagerMechanism::StartBlocklistCheckAfterAllowlistCheck() {
 
 void DatabaseManagerMechanism::OnCheckBrowseUrlResult(
     const GURL& url,
-    SBThreatType threat_type,
-    const ThreatMetadata& metadata) {
+    SBThreatType threat_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_async_blocklist_check_in_progress_ = false;
   CompleteCheck(std::make_unique<CompleteCheckResult>(
-      url, threat_type, metadata, GetThreatSource(),
+      url, threat_type, ThreatMetadata(), GetThreatSource(),
       /*url_real_time_lookup_response=*/nullptr));
   // NOTE: Calling CompleteCheck results in the synchronous destruction of this
   // object, so there is nothing safe to do here but return.

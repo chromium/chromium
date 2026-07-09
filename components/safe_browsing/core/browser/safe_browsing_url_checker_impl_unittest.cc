@@ -184,8 +184,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     CHECK(client);
     std::string url = gurl.spec();
     DCHECK(urls_threat_type_.contains(url));
-    ThreatMetadata metadata;
-    client->OnCheckBrowseUrlResult(gurl, urls_threat_type_[url], metadata);
+    client->OnCheckBrowseUrlResult(gurl, urls_threat_type_[url]);
   }
   base::flat_map<std::string, SBThreatType> urls_threat_type_;
   base::flat_map<std::string, bool> urls_delayed_callback_;

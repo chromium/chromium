@@ -39,8 +39,7 @@ void MockSafeBrowsingDatabaseManager::OnCheckBrowseURLDone(
     return;
   }
   CHECK(client);
-  client->OnCheckBrowseUrlResult(gurl, urls_threat_type_[gurl.spec()],
-                                 safe_browsing::ThreatMetadata());
+  client->OnCheckBrowseUrlResult(gurl, urls_threat_type_[gurl.spec()]);
 }
 
 MockSafeBrowsingDatabaseManager::ScopedSimulateSafeSynchronousResponse

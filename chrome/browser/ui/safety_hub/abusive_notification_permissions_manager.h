@@ -32,10 +32,6 @@ inline constexpr char kSuspiciousContentAutoRevocationStr[] =
     "suspicious_content";
 }  // namespace
 
-namespace safe_browsing {
-struct ThreatMetadata;
-}  // namespace safe_browsing
-
 // This class keeps track of abusive notification permissions by checking URLs
 // against the Safe Browsing social engineering blocklist. This also handles
 // automatic revocation and responding to user decisions in Safety Hub.
@@ -237,8 +233,7 @@ class AbusiveNotificationPermissionsManager {
     // safe_browsing::SafeBrowsingDatabaseManager::Client:
     void OnCheckBrowseUrlResult(
         const GURL& url,
-        safe_browsing::SBThreatType threat_type,
-        const safe_browsing::ThreatMetadata& metadata) override;
+        safe_browsing::SBThreatType threat_type) override;
 
     // Callback to be run if a Safe Browsing blocklist request does not return
     // a response within `kCheckUrlTimeoutMs` time.

@@ -1194,10 +1194,16 @@ void SBLocalDatabaseManager::RespondToClientWithoutPendingCheckCleanup(
 
   switch (check->client_callback_type) {
     case ClientCallbackType::CHECK_BROWSE_URL:
+      DCHECK_EQ(1u, check->urls.size());
+      client->OnCheckBrowseUrlResult(check->urls[0],
+                                     check->most_severe_threat_type);
+      break;
+
     case ClientCallbackType::CHECK_URL_FOR_SUBRESOURCE_FILTER:
       DCHECK_EQ(1u, check->urls.size());
-      client->OnCheckBrowseUrlResult(
-          check->urls[0], check->most_severe_threat_type, check->url_metadata);
+      client->OnCheckSubresourceFilterUrlResult(
+          check->urls[0], check->most_severe_threat_type,
+          check->url_metadata.subresource_filter_match);
       break;
 
     case ClientCallbackType::CHECK_DOWNLOAD_URLS:

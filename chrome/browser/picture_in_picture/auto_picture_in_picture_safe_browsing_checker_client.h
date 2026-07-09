@@ -16,10 +16,6 @@
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "url/gurl.h"
 
-namespace safe_browsing {
-struct ThreatMetadata;
-}  // namespace safe_browsing
-
 // Class used to check URL safety. A URL will be considered unsafe if it is
 // present in the Safe Browsing blocklist for any of the threat types defined by
 // `threat_types_`.
@@ -57,10 +53,8 @@ class AutoPictureInPictureSafeBrowsingCheckerClient
                            CheckCanceledOnCheckBlocklistTimeout);
 
   // safe_browsing::SafeBrowsingDatabaseManager::Client:
-  void OnCheckBrowseUrlResult(
-      const GURL& url,
-      safe_browsing::SBThreatType threat_type,
-      const safe_browsing::ThreatMetadata& metadata) override;
+  void OnCheckBrowseUrlResult(const GURL& url,
+                              safe_browsing::SBThreatType threat_type) override;
 
   // Callback to be run if a Safe Browsing request does not return a response
   // within `safe_browsing_check_delay` time.
