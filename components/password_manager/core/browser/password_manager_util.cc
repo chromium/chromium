@@ -45,10 +45,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/url_util.h"
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 #include "components/password_manager/core/browser/password_sync_util.h"
-#endif
 
 using autofill::password_generation::PasswordGenerationType;
 using password_manager::PasswordForm;
@@ -159,11 +156,11 @@ bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client) {
 bool IsSavingBlockedByTrustedVaultError(
     const password_manager::PasswordManagerClient* client,
     const password_manager::PasswordFormManagerForUI* form_manager) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (!password_manager::sync_util::HasChosenToSyncPasswords(
           client->GetSyncService())) {
     return false;
   }
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   const password_manager::PasswordStoreInterface* account_store =
       client->GetAccountPasswordStore();
   return account_store &&

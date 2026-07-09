@@ -860,11 +860,21 @@ class PasswordManagerUtilTrustedVaultErrorPreventsFromSavingTest
   PasswordManagerUtilTrustedVaultErrorPreventsFromSavingTest() {
     feature_list_.InitAndEnableFeature(
         password_manager::features::kPasswordSaveInContextErrorResolution);
+    ON_CALL(client_, GetSyncService())
+        .WillByDefault(testing::Return(&sync_service_));
+    EnableSyncForTestAccount();
   }
   ~PasswordManagerUtilTrustedVaultErrorPreventsFromSavingTest() override =
       default;
 
+  void EnableSyncForTestAccount() {
+    sync_service_.GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false,
+        /*types=*/{syncer::UserSelectableType::kPasswords});
+  }
+
   base::test::ScopedFeatureList feature_list_;
+  syncer::TestSyncService sync_service_;
   MockPasswordManagerClient client_;
 };
 
@@ -931,6 +941,33 @@ INSTANTIATE_TEST_SUITE_P(
         TrustedVaultErrorPreventsFromSavingTestCase>& info) {
       return info.param.name;
     });
+
+TEST_F(PasswordManagerUtilTrustedVaultErrorPreventsFromSavingTest,
+       IsSavingBlockedByTrustedVaultError_PasswordSyncDisabled) {
+  // Disable password sync.
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, /*types=*/{});
+
+  auto mock_profile_store =
+      base::MakeRefCounted<password_manager::MockPasswordStoreInterface>();
+  EXPECT_CALL(client_, GetProfilePasswordStore())
+      .WillRepeatedly(Return(mock_profile_store.get()));
+
+  testing::NiceMock<password_manager::MockPasswordFormManagerForUI>
+      form_manager;
+  EXPECT_CALL(form_manager, GetPasswordStoreForSaving)
+      .WillRepeatedly(Return(PasswordForm::Store::kProfileStore));
+
+  PasswordForm dummy_form;
+  EXPECT_CALL(form_manager, GetPendingCredentials())
+      .WillRepeatedly(testing::ReturnRef(dummy_form));
+
+  EXPECT_CALL(*mock_profile_store, GetError())
+      .WillRepeatedly(
+          Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
+
+  EXPECT_FALSE(IsSavingBlockedByTrustedVaultError(&client_, &form_manager));
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

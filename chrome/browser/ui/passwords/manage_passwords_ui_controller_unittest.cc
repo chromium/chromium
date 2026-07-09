@@ -61,6 +61,7 @@
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
@@ -139,7 +140,11 @@ class TestPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
   TestPasswordManagerClient()
-      : mock_profile_store_(new MockPasswordStoreInterface()) {}
+      : mock_profile_store_(new MockPasswordStoreInterface()) {
+    sync_service_.GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false,
+        /*types=*/{syncer::UserSelectableType::kPasswords});
+  }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
@@ -152,7 +157,12 @@ class TestPasswordManagerClient
     return mock_profile_store_.get();
   }
 
+  const syncer::SyncService* GetSyncService() const override {
+    return &sync_service_;
+  }
+
  private:
+  syncer::TestSyncService sync_service_;
   scoped_refptr<MockPasswordStoreInterface> mock_profile_store_;
 };
 
