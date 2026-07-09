@@ -121,11 +121,14 @@ source_set("unit_tests") {
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [
-    "default_browser_bubble_dialog_interactive_uitest.cc",
-    "default_browser_modal_dialog_manager_interactive_uitest.cc",
-    "default_browser_prompt_interactive_uitest.cc",
-  ]
+  sources = [ "default_browser_prompt_interactive_uitest.cc" ]
+
+  if (is_win) {
+    sources += [
+      "default_browser_bubble_dialog_interactive_uitest.cc",
+      "default_browser_modal_dialog_manager_interactive_uitest.cc",
+    ]
+  }
   deps = [
     ":default_browser_prompt",
     "//base/test:test_support",

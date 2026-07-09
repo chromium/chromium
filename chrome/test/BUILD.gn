@@ -9368,7 +9368,7 @@ if (!is_android && !is_chromeos_device) {
       "//ui/web_dialogs:test_support",
     ]
 
-    if (!is_android && !is_chromeos) {
+    if (is_win) {
       deps += [ "//chrome/browser/ui/webui/default_browser:pixel_tests" ]
     }
 

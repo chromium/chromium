@@ -94,9 +94,12 @@ source_set("unit_tests") {
     "default_browser_controller_unittest.cc",
     "default_browser_features_unittest.cc",
     "default_browser_manager_unittest.cc",
-    "default_browser_notification_observer_unittest.cc",
     "setters/shell_integration_default_browser_setter_unittest.cc",
   ]
+
+  if (is_win) {
+    sources += [ "default_browser_notification_observer_unittest.cc" ]
+  }
 
   deps = [
     ":default_browser",

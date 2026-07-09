@@ -114,29 +114,29 @@ if (is_win) {
       "//ui/views:test_support",
     ]
   }
-}
 
-source_set("pixel_tests") {
-  testonly = true
+  source_set("pixel_tests") {
+    testonly = true
 
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "default_browser_modal_pixeltest.cc" ]
+    sources = [ "default_browser_modal_pixeltest.cc" ]
 
-  deps = [
-    ":default_browser_modal",
-    "//base",
-    "//chrome/browser/default_browser",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui/navigator",
-    "//chrome/browser/ui/tabs:tab_strip_model_observer",
-    "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
-    "//content/public/browser",
-    "//content/test:test_support",
-    "//ui/base/interaction",
-    "//ui/gfx",
-  ]
+    deps = [
+      ":default_browser_modal",
+      "//base",
+      "//chrome/browser/default_browser",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/navigator",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//ui/base/interaction",
+      "//ui/gfx",
+    ]
+  }
 }
 
 source_set("browser_tests") {

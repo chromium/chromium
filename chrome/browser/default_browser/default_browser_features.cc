@@ -20,11 +20,19 @@ bool IsDefaultBrowserFrameworkEnabled() {
 }
 
 bool IsDefaultBrowserChangedOsNotificationEnabled() {
+#if BUILDFLAG(IS_WIN)
   return base::FeatureList::IsEnabled(kDefaultBrowserChangedOsNotification);
+#else
+  return false;
+#endif
 }
 
 bool IsDefaultBrowserPromptSurfacesEnabled() {
+#if BUILDFLAG(IS_WIN)
   return base::FeatureList::IsEnabled(kDefaultBrowserPromptSurfaces);
+#else
+  return false;
+#endif
 }
 
 DefaultBrowserPromptSurface GetDefaultBrowserPromptSurface() {

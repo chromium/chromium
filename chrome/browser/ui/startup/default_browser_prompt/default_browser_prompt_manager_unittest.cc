@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
@@ -203,6 +204,7 @@ TEST_F(DefaultBrowserPromptManagerTest, InfoBarRepromptDuration) {
       /*expect_infobar_exists=*/true);
 }
 
+#if BUILDFLAG(IS_WIN)
 constexpr int kFrameworkMaxPromptCount = 5;
 constexpr int kFrameworkRepromptDurationDays = 14;
 
@@ -295,3 +297,21 @@ TEST_F(DefaultBrowserPromptManagerTest, FrameworkPromptSurfaceBecomesInfoBar) {
       /*expect_infobar_exists=*/true,
       /*use_framework_prefs=*/true);
 }
+#else
+TEST_F(DefaultBrowserPromptManagerTest, PromptSurfacesIgnoredOnNonWin) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      default_browser::kDefaultBrowserPromptSurfaces,
+      {{default_browser::kDefaultBrowserPromptSurfaceParam.name,
+        "bubble_dialog"}});
+
+  // Since PromptSurfaces is ignored on non-Windows platforms, it should still
+  // behave like the standard infobar prompt (using infobar prefs and 21-day
+  // reprompt duration).
+  TestShouldShowInfoBarPrompt(
+      /*last_declined_time_delta=*/base::Days(kRepromptDurationDays) +
+          base::Microseconds(1),
+      /*declined_count=*/kMaxPromptCount - 1,
+      /*expect_infobar_exists=*/true,
+      /*use_framework_prefs=*/false);
+}
+#endif

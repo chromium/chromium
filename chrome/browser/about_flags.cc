@@ -11177,8 +11177,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
     {"default-browser-changed-os-notification",
      flag_descriptions::kDefaultBrowserChangedOsNotificationName,
-     flag_descriptions::kDefaultBrowserChangedOsNotificationDescription,
-     kOsDesktop,
+     flag_descriptions::kDefaultBrowserChangedOsNotificationDescription, kOsWin,
      FEATURE_VALUE_TYPE(default_browser::kDefaultBrowserChangedOsNotification)},
 
     {"default-browser-framework",
@@ -11188,7 +11187,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"default-browser-prompt-surfaces",
      flag_descriptions::kDefaultBrowserPromptSurfacesName,
-     flag_descriptions::kDefaultBrowserPromptSurfacesDescription, kOsDesktop,
+     flag_descriptions::kDefaultBrowserPromptSurfacesDescription, kOsWin,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          default_browser::kDefaultBrowserPromptSurfaces,
          kDefaultBrowserPromptSurfacesVariations,
