@@ -473,20 +473,43 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeInternal(
     }
   }
 
-  GlicInvokeHandler::ResolvedTarget resolved_target =
-      GlicInvokeHandler::ResolveTargetSurface(profile_, options.target);
+  GlicInvokeHandler::ResolvedTarget resolved_target;
   tabs::TabInterface* tab = nullptr;
-  if (const auto* tab_surface =
-          std::get_if<GlicInvokeHandler::TabSurface>(&resolved_target)) {
-    tab = tab_surface->tab;
-    if (!tab || !GlicInstanceHelper::From(tab)) {
-      if (options.on_error) {
-        std::move(options.on_error).Run(GlicInvokeError::kTabClosed);
+
+  auto resolve_surface = [&]() -> bool {
+    resolved_target =
+        GlicInvokeHandler::ResolveTargetSurface(profile_, options.target);
+    if (const auto* tab_surface =
+            std::get_if<GlicInvokeHandler::TabSurface>(&resolved_target)) {
+      tab = tab_surface->tab;
+      if (!tab || !GlicInstanceHelper::From(tab)) {
+        if (options.on_error) {
+          std::move(options.on_error).Run(GlicInvokeError::kTabClosed);
+        }
+        // TODO(crbug.com/483387751): Show default toast here once implemented.
+        return false;
       }
-      // TODO(crbug.com/483387751): Show default toast here once implemented.
+      options.target.surface = tab->GetHandle();
+    }
+    return true;
+  };
+
+  // We generally want to resolve the target surface before the conversation.
+  // The primary reason is that resolving the `DefaultConversation` might depend
+  // on which surface the conversation is being invoked from (e.g. which tab it
+  // is attached to, or whether it's floating).
+  //
+  // However, the `LastActiveOrNew` surface is a special case. It cannot be
+  // resolved until we know the target `GlicInstance` and its last active
+  // surface. Because of this Catch-22, we skip initial surface resolution for
+  // `LastActiveOrNew` and defer it until after the instance is found. (Note
+  // that a `LastActiveOrNew` surface will never result in finding a surface-
+  // dependent `DefaultConversation` because the conversation must already have
+  // an explicit instance to query its last active surface).
+  if (!std::holds_alternative<LastActiveOrNew>(options.target.surface)) {
+    if (!resolve_surface()) {
       return nullptr;
     }
-    options.target.surface = tab->GetHandle();
   }
 
   GlicInstanceImpl* instance = nullptr;
@@ -525,6 +548,25 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeInternal(
 
   if (!instance) {
     return nullptr;
+  }
+
+  // Now that the instance is fully resolved, we can safely resolve the
+  // `LastActiveOrNew` surface and mutate `options.target.surface` to point to
+  // the appropriate final target, before running the surface resolver.
+  if (auto* last_active_or_new =
+          std::get_if<LastActiveOrNew>(&options.target.surface)) {
+    std::optional<Target::Surface> last_active =
+        instance->GetLastActiveSurface();
+    if (last_active) {
+      options.target.surface = *last_active;
+    } else {
+      options.target.surface = NewTab{last_active_or_new->window,
+                                      last_active_or_new->open_in_foreground};
+    }
+
+    if (!resolve_surface()) {
+      return nullptr;
+    }
   }
 
   if (invoke_handlers_.contains(instance)) {

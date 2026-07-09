@@ -393,6 +393,16 @@ void LogGlicInvokeOptions(const GlicInvokeOptions& options,
                  },
                  [&target_pieces](const Floating& floating) {
                    target_pieces.push_back("    surface: Floating {}");
+                 },
+                 [&target_pieces](const LastActiveOrNew& last_active_or_new) {
+                   target_pieces.push_back(base::StrCat(
+                       {"    surface: LastActiveOrNew { window: ",
+                        base::StringPrintf("%p",
+                                           last_active_or_new.window.get()),
+                        ", open_in_foreground: ",
+                        last_active_or_new.open_in_foreground ? "true"
+                                                              : "false",
+                        " }"}));
                  }},
              options.target.surface);
 

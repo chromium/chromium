@@ -203,6 +203,7 @@ class GlicInstanceImpl : public GlicInstance,
   std::string conversation_title() const override;
   std::optional<int> task_id() const override;
   std::vector<tabs::TabInterface*> GetBoundTabs() const;
+  std::optional<Target::Surface> GetLastActiveSurface() const;
   base::CallbackListSubscription AddConversationInfoChangedCallback(
       base::RepeatingCallback<void(const mojom::ConversationInfo&)> callback);
   void CancelTask() override;
@@ -309,6 +310,7 @@ class GlicInstanceImpl : public GlicInstance,
     base::CallbackListSubscription destruction_subscription;
     base::CallbackListSubscription tab_activation_subscription;
     bool user_input_submitted_while_bound = false;
+    base::Time last_active_time;
   };
 
   void NotifyVisibilityChange();
@@ -349,6 +351,7 @@ class GlicInstanceImpl : public GlicInstance,
   void MaybeWarmZeroStateSuggestions(mojom::InvocationSource invocation_source);
 
   bool IsActiveEmbedder(EmbedderKey key) const;
+  void UpdateLastActiveTime(EmbedderKey key);
   bool ShouldShowInactiveSidePanel(const SidePanelShowOptions& options) const;
 
   bool ShouldPinOnBind() const;

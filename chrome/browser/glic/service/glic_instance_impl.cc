@@ -225,7 +225,8 @@ void GlicInstanceImpl::NotifyInstanceChanged() {
 #endif
 }
 
-GlicInstanceImpl::EmbedderEntry::EmbedderEntry() = default;
+GlicInstanceImpl::EmbedderEntry::EmbedderEntry()
+    : last_active_time(base::Time::Now()) {}
 GlicInstanceImpl::EmbedderEntry::~EmbedderEntry() = default;
 GlicInstanceImpl::EmbedderEntry::EmbedderEntry(EmbedderEntry&&) = default;
 GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::EmbedderEntry::operator=(
@@ -954,6 +955,25 @@ std::vector<tabs::TabInterface*> GlicInstanceImpl::GetBoundTabs() const {
   return tabs;
 }
 
+std::optional<Target::Surface> GlicInstanceImpl::GetLastActiveSurface() const {
+  if (embedders_.empty()) {
+    return std::nullopt;
+  }
+
+  auto most_recent = std::max_element(
+      embedders_.begin(), embedders_.end(), [](const auto& a, const auto& b) {
+        return a.second.last_active_time < b.second.last_active_time;
+      });
+
+  return std::visit(absl::Overload{[](tabs::TabInterface* tab) {
+                                     return Target::Surface(tab->GetHandle());
+                                   },
+                                   [](FloatingEmbedderKey key) {
+                                     return Target::Surface(Floating());
+                                   }},
+                    most_recent->first);
+}
+
 glic::mojom::ConversationInfoPtr GlicInstanceImpl::GetConversationInfo() const {
   return conversation_info_->Clone();
 }
@@ -1090,10 +1110,20 @@ void GlicInstanceImpl::SetActiveEmbedderAndNotifyVisibilityChange(
     std::optional<EmbedderKey> new_key) {
   maybe_activate_foreground_embedder_timer_.Stop();
   active_embedder_key_ = new_key;
+  if (active_embedder_key_.has_value()) {
+    UpdateLastActiveTime(active_embedder_key_.value());
+  }
   sharing_manager_coordinator_.UpdateState(GetPanelState().kind,
                                            interaction_mode_);
   NotifyVisibilityChange();
   NotifyPanelStateChanged();
+}
+
+void GlicInstanceImpl::UpdateLastActiveTime(EmbedderKey key) {
+  auto it = embedders_.find(key);
+  if (it != embedders_.end()) {
+    it->second.last_active_time = base::Time::Now();
+  }
 }
 
 void GlicInstanceImpl::ClearActiveEmbedderAndNotifyVisibilityChange() {

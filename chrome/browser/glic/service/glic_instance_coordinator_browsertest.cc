@@ -1589,6 +1589,71 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       LastActiveOrNewSurface_ResolvesToBoundTab) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  auto instance_id = instance->id();
+
+  PreventDeletionOnClose(instance);
+
+  // Close the embedder.
+  ASSERT_OK(CloseGlicForTabAndWait(tab));
+
+  EXPECT_FALSE(instance->HasActiveEmbedder());
+  EXPECT_TRUE(std::find(instance->GetBoundTabs().begin(),
+                        instance->GetBoundTabs().end(),
+                        tab) != instance->GetBoundTabs().end());
+
+  // Add and activate a new tab so that the original tab is no longer active.
+  tabs::TabInterface* new_tab = CreateAndActivateTab(GURL("about:blank"));
+  EXPECT_NE(tab, new_tab);
+  EXPECT_EQ(GetTabListInterface()->GetActiveTab(), new_tab);
+
+  GlicInvokeOptions options(Target(LastActiveOrNew{}),
+                            glic::mojom::InvocationSource::kOsButton);
+  options.target.conversation = instance_id;
+
+  coordinator().Invoke(std::move(options));
+
+  ASSERT_OK(WaitForSidePanelState(
+      tab, GlicSidePanelCoordinator::State::kBackgrounded));
+  EXPECT_FALSE(instance->HasActiveEmbedder());
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       LastActiveOrNewSurface_ResolvesToFloating) {
+  // Use Toggle without a browser to create a new Glic instance as a floating
+  // panel.
+  coordinator().Toggle(/*browser=*/nullptr, /*prevent_close=*/true,
+                       glic::mojom::InvocationSource::kOsButton);
+  ASSERT_OK_AND_ASSIGN(auto* instance, WaitForGlicOpen());
+  auto instance_id = instance->id();
+
+  PreventDeletionOnClose(instance);
+
+  EXPECT_TRUE(instance->HasActiveEmbedder());
+  EXPECT_TRUE(instance->GetBoundTabs().empty());
+
+  // Close the floating window.
+  coordinator().Close(CloseOptions());
+  ASSERT_OK(WaitForGlicClose(instance));
+  EXPECT_FALSE(instance->HasActiveEmbedder());
+
+  // Now invoke with LastActiveOrNew, and it should resurrect as floating.
+  GlicInvokeOptions options(Target(LastActiveOrNew{}),
+                            glic::mojom::InvocationSource::kOsButton);
+  options.target.conversation = instance_id;
+
+  coordinator().Invoke(std::move(options));
+
+  ASSERT_OK(WaitForGlicOpen(instance));
+  EXPECT_TRUE(instance->HasActiveEmbedder());
+  EXPECT_TRUE(instance->GetBoundTabs().empty());
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        TabRestoration_ReusesDyingInstanceBeforeDeletion) {
   // Add a new tab so we don't close the browser when we close the tab.
   auto* tab = CreateAndActivateTab(GURL("about:blank"));

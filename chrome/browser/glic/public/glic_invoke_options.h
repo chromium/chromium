@@ -56,24 +56,41 @@ struct NewTab {
   bool open_in_foreground = true;
 };
 
+// Use the last active surface for the instance. If there is no last active
+// surface, falls back to creating a new tab in the specified window (or a new
+// window if null).
+struct LastActiveOrNew {
+  // The window to open the new tab in, used only for the fallback case where a
+  // new tab ends up being created.
+  raw_ptr<BrowserWindowInterface> window = nullptr;
+  // Whether to open the new tab in the foreground, used only for the fallback
+  // case where a new tab ends up being created.
+  bool open_in_foreground = true;
+};
+
 // Intended for internal use only. If you believe you need access to this
 // option, please reach out to c/b/glic/API_OWNERS.
 struct Floating {
  private:
   friend class GlicInstanceImpl;
+  friend class GlicInstanceCoordinatorImpl;
   friend class GlicInvokeHandler;
   Floating() = default;
 };
 
 // The target for the invocation.
 struct Target {
-  using Surface =
-      std::variant<DefaultSurface, NewTab, tabs::TabHandle, Floating>;
+  using Surface = std::variant<DefaultSurface,
+                               NewTab,
+                               tabs::TabHandle,
+                               Floating,
+                               LastActiveOrNew>;
 
   Target();
   explicit Target(tabs::TabInterface& tab);
   explicit Target(BrowserWindowInterface* window);
   explicit Target(NewTab new_tab);
+  explicit Target(LastActiveOrNew last_active_or_new);
   Target(tabs::TabInterface& tab,
          std::variant<DefaultConversation,
                       NewConversation,
@@ -91,9 +108,11 @@ struct Target {
   // - DefaultSurface: Resolves to the active tab of the specified browser
   //   window, or creates a new window if no browser is specified.
   // - NewTab: Creates a new tab in the specified window, or a new window if
-  // null.
+  //   null.
   // - TabHandle: Targets a specific tab.
   // - Floating: Targets the floating panel.
+  // - LastActiveOrNew: Uses the last active embedder for the instance, or falls
+  //   back to creating a new tab.
   Surface surface = DefaultSurface();
 
   // Specifies which conversation to use or create.

@@ -60,6 +60,9 @@ Target::Target(BrowserWindowInterface* window) : surface(NewTab{window}) {}
 
 Target::Target(NewTab new_tab) : surface(std::move(new_tab)) {}
 
+Target::Target(LastActiveOrNew last_active_or_new)
+    : surface(std::move(last_active_or_new)) {}
+
 Target::Target(tabs::TabInterface& tab,
                std::variant<DefaultConversation,
                             NewConversation,
