@@ -31,4 +31,7 @@ const base::FeatureParam<std::string> kSkillsServiceApiOAuth2Scope{
     &kSkillsServiceApi, "oauth2_scope",
     "https://www.googleapis.com/auth/chromeskills"};
 
+BASE_FEATURE(kEnterprisePublishedSkillsPolicyEnabled,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

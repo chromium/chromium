@@ -10919,6 +10919,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kGlicContextualCueingV2AutoSubmit)},
 
 #if !BUILDFLAG(IS_ANDROID)
+    {"enterprise-published-skills-policy-enabled",
+     flag_descriptions::kEnterprisePublishedSkillsPolicyEnabledName,
+     flag_descriptions::kEnterprisePublishedSkillsPolicyEnabledDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kEnterprisePublishedSkillsPolicyEnabled)},
     {"skills", flag_descriptions::kSkillsEnabledName,
      flag_descriptions::kSkillsEnabledDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSkillsEnabled)},

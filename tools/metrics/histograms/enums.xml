@@ -8062,6 +8062,7 @@ from previous Chrome versions.
   <int value="-2080227937" label="ImeTrayHideVoiceButton:enabled"/>
   <int value="-2079404182"
       label="ShowProfilePickerToAllUsersExperiment:disabled"/>
+  <int value="-2079396313" label="SkillsSettingsPolicyEnabled:enabled"/>
   <int value="-2079347889" label="CCTBeforeUnload:disabled"/>
   <int value="-2077268643" label="disable-device-enumeration"/>
   <int value="-2076848010" label="NtpComposebox:disabled"/>
@@ -8560,6 +8561,7 @@ from previous Chrome versions.
       label="AndroidTabDeclutterAutoDeleteKillSwitch:disabled"/>
   <int value="-1930487223"
       label="EnableFrameSinkDesktopCapturerInCrd:disabled"/>
+  <int value="-1930229631" label="SkillsSettingsPolicyEnabled:disabled"/>
   <int value="-1928515691" label="CachedLocationProvider:disabled"/>
   <int value="-1928198763" label="enable-async-dns"/>
   <int value="-1927968708" label="OmniboxPedalsAndroidBatch1:disabled"/>
@@ -14733,6 +14735,7 @@ from previous Chrome versions.
   <int value="48850808" label="AutocorrectUseReplaceSurroundingText:enabled"/>
   <int value="49971529" label="TabGroupEntryPointsAndroid:disabled"/>
   <int value="50643563" label="MBIMode:enabled"/>
+  <int value="50719475" label="EnterprisePublishedSkillsPolicyEnabled:enabled"/>
   <int value="50976151" label="DefaultBrowserPromoAndroid2:enabled"/>
   <int value="51256990" label="IPH_AutofillAiValuables:enabled"/>
   <int value="51793504" label="protect-sync-credential-on-reauth:disabled"/>
@@ -15929,6 +15932,8 @@ from previous Chrome versions.
   <int value="425938961" label="DesksCloseAll:disabled"/>
   <int value="426199960" label="Commander:enabled"/>
   <int value="426540253" label="PowerScheduler:disabled"/>
+  <int value="426826016"
+      label="EnterprisePublishedSkillsPolicyEnabled:disabled"/>
   <int value="427184788" label="WebFeed:enabled"/>
   <int value="427351143" label="StartSurfaceSpareTab:enabled"/>
   <int value="427807224" label="IPH_Snooze:disabled"/>

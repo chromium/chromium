@@ -22,6 +22,8 @@ BASE_DECLARE_FEATURE(kSkillsServiceApi);
 extern const base::FeatureParam<std::string> kSkillsServiceApiUrl;
 extern const base::FeatureParam<std::string> kSkillsServiceApiOAuth2Scope;
 
+BASE_DECLARE_FEATURE(kEnterprisePublishedSkillsPolicyEnabled);
+
 }  // namespace features
 
 #endif  // COMPONENTS_SKILLS_FEATURES_H_
