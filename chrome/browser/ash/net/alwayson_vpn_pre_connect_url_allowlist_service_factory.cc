@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
