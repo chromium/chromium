@@ -408,6 +408,8 @@
 //media/test/data/hls/multi-bitrate-multivariant-bear/out_10.ts
 //media/test/data/hls/multi-bitrate-multivariant-bear/playlist.m3u8
 //media/test/data/hls/video.html
+//media/test/data/iamf_alternating_sine_waves_714.mp4
+//media/test/data/iamf_alternating_sine_waves_stereo.mp4
 //media/test/data/icy_sfx.mp3
 //media/test/data/id3_png_test.mp3
 //media/test/data/id3_test.mp3
