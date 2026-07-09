@@ -220,15 +220,43 @@ public class ChromeMessageQueueMediatorTest {
         Assert.assertFalse(mMediator.isReadyForShowing());
     }
 
+    @Test
+    public void testIsReadyForShowing_ZeroTopControlsHeight() {
+        final ArgumentCaptor<ChromeMessageQueueMediator.BrowserControlsObserver>
+                observerArgumentCaptor =
+                        ArgumentCaptor.forClass(
+                                ChromeMessageQueueMediator.BrowserControlsObserver.class);
+        doNothing().when(mBrowserControlsManager).addObserver(observerArgumentCaptor.capture());
+        SettableNonNullObservableSupplier<Boolean> visibilitySupplier =
+                ObservableSuppliers.createNonNull(false);
+        var visibilityDelegate =
+                new BrowserStateBrowserControlsVisibilityDelegate(visibilitySupplier);
+        when(mBrowserControlsManager.getBrowserVisibilityDelegate()).thenReturn(visibilityDelegate);
+        initMediator();
+        Assert.assertFalse(mMediator.isReadyForShowing());
+        visibilitySupplier.set(true);
+        when(mBrowserControlsManager.getBrowserControlHiddenRatio()).thenReturn(0f);
+        when(mBrowserControlsManager.getTopControlsHeight()).thenReturn(0);
+        when(mBrowserControlsManager.getTopControlHiddenRatio()).thenReturn(1.0f);
+
+        mActivityTabProvider.setForTesting(mTab);
+        when(mTab.isDestroyed()).thenReturn(false);
+        when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
+
+        mMediator.onRequestShowing(CallbackUtils.emptyRunnable());
+        Assert.assertTrue(mMediator.isReadyForShowing());
+
+        mMediator.onFinishHiding();
+        Assert.assertFalse(mMediator.isReadyForShowing());
+    }
+
     /**
      * Test multiple show requests can be made when tab browser controls state changes while browser
-     * controls is not fully visible.
-     * 1. Initially, tab constraints state is hidden but browser controls is not fully visible yet.
-     * 2. A message is allowed to be displayed.
-     * 3. Tab constraints is assumed to change from the hidden state while the first message is on
-     * the screen.
-     * 4. If a second message is enqueued but browser controls is still not ready, it will trigger
-     * #onRequestShowing again.
+     * controls is not fully visible. 1. Initially, tab constraints state is hidden but browser
+     * controls is not fully visible yet. 2. A message is allowed to be displayed. 3. Tab
+     * constraints is assumed to change from the hidden state while the first message is on the
+     * screen. 4. If a second message is enqueued but browser controls is still not ready, it will
+     * trigger #onRequestShowing again.
      */
     @Test
     public void testRequestMultipleTimesWhenTabConstraintsChanges() throws TimeoutException {
