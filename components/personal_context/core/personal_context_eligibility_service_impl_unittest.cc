@@ -347,7 +347,7 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
       features::kPersonalContextFirstRunOptIn};
 
   PersonalContextEligibilityServiceImplTestApi(&service())
-      .ComputeEnablementState();
+      .ComputeEligibilityState();
 
   EXPECT_CALL(mock_account_settings_service_,
               GetBoolean(AccountSettingWithName(
@@ -366,7 +366,7 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
       features::kPersonalContextFirstRunOptIn};
 
   PersonalContextEligibilityServiceImplTestApi(&service())
-      .ComputeEnablementState();
+      .ComputeEligibilityState();
 
   EXPECT_CALL(mock_account_settings_service_,
               GetBoolean(AccountSettingWithName(

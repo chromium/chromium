@@ -57,8 +57,8 @@ class PersonalContextEligibilityServiceImpl
 
   std::pair<PersonalContextEligibilityState,
             std::optional<PersonalContextNonEligibilityReason>>
-  ComputeEnablementState();
-  void UpdateEnablementState();
+  ComputeEligibilityState();
+  void UpdateEligibilityState();
 
   const raw_ptr<account_settings::AccountSettingService>
       account_settings_service_;
@@ -74,8 +74,8 @@ class PersonalContextEligibilityServiceImpl
                           account_settings::AccountSettingService::Observer>
       account_settings_observation_{this};
   PrefChangeRegistrar pref_registrar_;
-  // Cached last enablement state.
-  PersonalContextEligibilityState enablement_state_ =
+  // Cached last eligibility state.
+  PersonalContextEligibilityState eligibility_state_ =
       PersonalContextEligibilityState::kDisabledNotEligible;
   // Cached last non-eligibility reason for logging.
   std::optional<PersonalContextNonEligibilityReason>
