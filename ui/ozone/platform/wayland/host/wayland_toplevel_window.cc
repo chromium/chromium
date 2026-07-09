@@ -350,7 +350,14 @@ void WaylandToplevelWindow::ActivateWithToken(std::string token) {
 
 void WaylandToplevelWindow::Activate() {
   if (connection()->xdg_activation()) {
-    if (auto token = base::nix::TakeXdgActivationToken()) {
+    if (pending_configure_activation_token_.has_value()) {
+      if (IsSurfaceConfigured()) {
+        connection()->xdg_activation()->Activate(
+            root_surface()->surface(),
+            pending_configure_activation_token_.value());
+        pending_configure_activation_token_.reset();
+      }
+    } else if (auto token = base::nix::TakeXdgActivationToken()) {
       ActivateWithToken(token.value());
     } else {
       connection()->xdg_activation()->RequestNewToken(
@@ -659,6 +666,9 @@ bool WaylandToplevelWindow::OnInitialize(
   state->window_state = PlatformWindowState::kNormal;
 
   app_id_ = properties.wayland_app_id;
+  if (!properties.startup_id.empty()) {
+    pending_configure_activation_token_ = properties.startup_id;
+  }
   SetWaylandToplevelExtension(this, this);
   SetWmMoveLoopHandler(this, static_cast<WmMoveLoopHandler*>(this));
   SetWorkspaceExtension(this, static_cast<WorkspaceExtension*>(this));
@@ -756,9 +766,10 @@ void WaylandToplevelWindow::AckConfigure(uint32_t serial) {
   }
 
   if (pending_configure_activation_token_.has_value()) {
-    DCHECK(connection()->xdg_activation());
-    connection()->xdg_activation()->Activate(
-        root_surface()->surface(), pending_configure_activation_token_.value());
+    if (connection()->xdg_activation()) {
+      connection()->xdg_activation()->Activate(
+          root_surface()->surface(), pending_configure_activation_token_.value());
+    }
     pending_configure_activation_token_.reset();
   }
 }

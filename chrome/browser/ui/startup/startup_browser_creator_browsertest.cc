@@ -1968,6 +1968,25 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(&profile2)->GetSize());
 }
 
+#if BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, RemoteActivationTokenPropagation) {
+  base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+  cmd_line.AppendSwitchASCII("xdg-activation-token", "test-token-123");
+
+  StartupProfilePathInfo path_info = {browser()->profile()->GetPath(),
+                                      StartupProfileMode::kBrowserWindow};
+
+  ui_test_utils::BrowserCreatedObserver observer;
+
+  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
+      cmd_line, {}, path_info);
+
+  Browser* new_browser = observer.Wait();
+  ASSERT_TRUE(new_browser);
+  EXPECT_EQ(new_browser->create_params().startup_id, "test-token-123");
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 webapps::AppId InstallPWAWithName(Profile* profile,
                                   const GURL& start_url,

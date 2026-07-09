@@ -4,6 +4,9 @@
 
 #include "ui/ozone/platform/x11/x11_window.h"
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
+#include "base/nix/xdg_util.h"
+#include "ui/base/x/x11_util.h"
+#include "ui/gfx/x/atom_cache.h"
 
 #include <memory>
 #include <utility>
@@ -714,6 +717,69 @@ TEST_F(X11WindowOzoneTest, DispatchEventSelfFreedDuringMouseOnWindow) {
   EXPECT_TRUE(freed) << "delegate was never invoked synchronously";
 
   connection->DestroyWindow({new_parent});
+}
+
+TEST_F(X11WindowOzoneTest, StartupIdProperty) {
+  // Set a startup ID.
+  const std::string kStartupId = "test-startup-id-123";
+  base::nix::SetActivationToken(kStartupId);
+
+  MockPlatformWindowDelegate delegate;
+  gfx::AcceleratedWidget widget;
+  // CreatePlatformWindow calls Initialize, which should consume the token
+  // and set the _NET_STARTUP_ID property.
+  auto window = CreatePlatformWindow(&delegate, gfx::Rect(0, 0, 100, 100),
+                                     &widget, nullptr);
+
+  // Verify that the token was consumed from global state.
+  EXPECT_FALSE(base::nix::TakeXdgActivationToken().has_value());
+
+  x11::Window xid = static_cast<x11::Window>(widget);
+
+  // Read the _NET_STARTUP_ID property from the window.
+  scoped_refptr<base::RefCountedMemory> data;
+  x11::Atom type;
+  ASSERT_TRUE(GetRawBytesOfProperty(xid, x11::GetAtom("_NET_STARTUP_ID"),
+                                    &data, &type));
+
+  EXPECT_EQ(type, x11::Atom::STRING);
+  std::string value(reinterpret_cast<const char*>(data->data()), data->size());
+  EXPECT_EQ(value, kStartupId);
+}
+
+TEST_F(X11WindowOzoneTest, StartupIdPropertyFromInitProperties) {
+  const std::string kStartupId = "test-startup-id-properties";
+  const std::string kGlobalToken = "global-token-should-not-be-used";
+  base::nix::SetActivationToken(kGlobalToken);
+
+  MockPlatformWindowDelegate delegate;
+  gfx::AcceleratedWidget widget;
+  EXPECT_CALL(delegate, OnAcceleratedWidgetAvailable(_))
+      .WillOnce(StoreWidget(&widget));
+
+  PlatformWindowInitProperties properties;
+  properties.bounds = gfx::Rect(0, 0, 100, 100);
+  properties.startup_id = kStartupId;
+
+  auto window = std::make_unique<X11Window>(&delegate);
+  window->Initialize(std::move(properties));
+
+  // Verify that the global token was NOT consumed.
+  auto global_token = base::nix::TakeXdgActivationToken();
+  ASSERT_TRUE(global_token.has_value());
+  EXPECT_EQ(global_token.value(), kGlobalToken);
+
+  x11::Window xid = static_cast<x11::Window>(widget);
+
+  // Read the _NET_STARTUP_ID property from the window.
+  scoped_refptr<base::RefCountedMemory> data;
+  x11::Atom type;
+  ASSERT_TRUE(GetRawBytesOfProperty(xid, x11::GetAtom("_NET_STARTUP_ID"),
+                                    &data, &type));
+
+  EXPECT_EQ(type, x11::Atom::STRING);
+  std::string value(reinterpret_cast<const char*>(data->data()), data->size());
+  EXPECT_EQ(value, kStartupId);
 }
 
 }  // namespace ui

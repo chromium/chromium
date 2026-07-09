@@ -137,6 +137,9 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   // Wayland specific.  Holds the application ID that is used by the window
   // manager to match the desktop entry and group windows.
   std::string wayland_app_id;
+  // The startup ID (or XDG activation token) used to associate the window
+  // with the launch event that created it. Used for both X11 and Wayland.
+  std::string startup_id;
 
   // Specifies the id of the target display the window will be created on.
   std::optional<int64_t> display_id;
