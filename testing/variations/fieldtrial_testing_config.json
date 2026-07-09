@@ -9623,7 +9623,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_DSEv1CompatPriority",
+                    "params": {
+                        "dse_preload2_initial_no_vary_search_hint": "",
+                        "dse_preload2_prefetch_priority_policy": "SearchPrefetchCompat"
+                    },
                     "enable_features": [
                         "DsePreload2"
                     ]
