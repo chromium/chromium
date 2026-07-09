@@ -778,13 +778,8 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   if (GetIsContextualTasksWindowTrackingEnabled() && tracker_manager_) {
     message_proxy_web_contents =
         CreateMessageProxyWebContents(initiator_origin);
-    create_params.opener_render_process_id =
-        message_proxy_web_contents->GetPrimaryMainFrame()
-            ->GetProcess()
-            ->GetID()
-            .value();
-    create_params.opener_render_frame_id =
-        message_proxy_web_contents->GetPrimaryMainFrame()->GetRoutingID();
+    create_params.opener_id =
+        message_proxy_web_contents->GetPrimaryMainFrame()->GetGlobalId();
   }
 
   std::unique_ptr<content::WebContents> new_contents =

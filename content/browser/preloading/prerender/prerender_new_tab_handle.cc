@@ -30,10 +30,8 @@ PrerenderNewTabHandle::PrerenderNewTabHandle(
   // Create a new WebContents for prerendering in a new tab.
   // TODO(crbug.com/40234240): Pass the same creation parameters as
   // WebContentsImpl::CreateNewWindow().
-  web_contents_create_params_.opener_render_process_id =
-      initiator_render_frame_host->GetProcess()->GetDeprecatedID();
-  web_contents_create_params_.opener_render_frame_id =
-      initiator_render_frame_host->GetRoutingID();
+  web_contents_create_params_.opener_id =
+      initiator_render_frame_host->GetGlobalId();
   web_contents_create_params_.opener_suppressed = true;
 
   // Set the visibility of the prerendering WebContents to HIDDEN until
@@ -149,12 +147,8 @@ PrerenderNewTabHandle::TakeWebContentsIfAvailable(
 
   // Verify the opener frame is the same with the frame that triggered
   // prerendering.
-  if (web_contents_create_params_.opener_render_process_id !=
-      web_contents_create_params.opener_render_process_id) {
-    return nullptr;
-  }
-  if (web_contents_create_params_.opener_render_frame_id !=
-      web_contents_create_params.opener_render_frame_id) {
+  if (web_contents_create_params_.opener_id !=
+      web_contents_create_params.opener_id) {
     return nullptr;
   }
 

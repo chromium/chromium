@@ -31,6 +31,7 @@
 #include "cc/input/browser_controls_state.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/prefetch_priority.h"
@@ -144,7 +145,6 @@ class UnownedInnerWebContentsClient;
 class WebContentsDelegate;
 class WebUI;
 struct DropData;
-struct GlobalRenderFrameHostId;
 struct MHTMLGenerationParams;
 class PreloadingAttempt;
 #if BUILDFLAG(IS_ANDROID)
@@ -201,11 +201,8 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
     // privileged process.
     scoped_refptr<SiteInstance> site_instance;
 
-    // The process id of the frame initiating the open.
-    int opener_render_process_id = content::ChildProcessHost::kInvalidUniqueID;
-
-    // The routing id of the frame initiating the open.
-    int opener_render_frame_id = IPC::mojom::kRoutingIdNone;
+    // The process and routing id of the frame initiating the open.
+    GlobalRenderFrameHostId opener_id;
 
     // If the opener is suppressed, then the new WebContents doesn't hold a
     // reference to its opener.

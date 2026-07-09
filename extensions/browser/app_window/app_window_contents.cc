@@ -34,9 +34,7 @@ void AppWindowContentsImpl::Initialize(content::BrowserContext* context,
 
   content::WebContents::CreateParams create_params(
       context, creator_frame->GetSiteInstance());
-  create_params.opener_render_process_id =
-      creator_frame->GetProcess()->GetDeprecatedID();
-  create_params.opener_render_frame_id = creator_frame->GetRoutingID();
+  create_params.opener_id = creator_frame->GetGlobalId();
   web_contents_ = content::WebContents::Create(create_params);
 
   Observe(web_contents_.get());

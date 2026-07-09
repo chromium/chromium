@@ -344,9 +344,8 @@ bool HasMatchingWidgetHost(FrameTree* tree, RenderWidgetHostImpl* host) {
 
 RenderFrameHostImpl* FindOpenerRFH(const WebContents::CreateParams& params) {
   RenderFrameHostImpl* opener_rfh = nullptr;
-  if (params.opener_render_frame_id != IPC::mojom::kRoutingIdNone) {
-    opener_rfh = RenderFrameHostImpl::FromID(params.opener_render_process_id,
-                                             params.opener_render_frame_id);
+  if (params.opener_id) {
+    opener_rfh = RenderFrameHostImpl::FromID(params.opener_id);
   }
   return opener_rfh;
 }
@@ -5586,9 +5585,8 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   // WebContentsView. In the future, we may want to create the view separately.
   CreateParams create_params(GetBrowserContext(), site_instance.get());
   create_params.main_frame_name = params.frame_name;
-  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
-  create_params.opener_render_process_id = render_process_id.GetUnsafeValue();
-  create_params.opener_render_frame_id = opener->GetRoutingID();
+  create_params.opener_id =
+      GlobalRenderFrameHostId(render_process_id, opener->GetRoutingID());
   create_params.opener_suppressed = params.opener_suppressed;
   create_params.initially_hidden = renderer_started_hidden;
   create_params.initial_popup_url = params.target_url;

@@ -107,10 +107,7 @@ TEST_F(ContextualTasksWindowTrackerManagerTest, OnTabAdded_OpenerMatch) {
 
   // Create source_contents with initiator as opener.
   content::WebContents::CreateParams params(browser_context());
-  content::GlobalRenderFrameHostId opener_id =
-      initiator_contents->GetPrimaryMainFrame()->GetGlobalId();
-  params.opener_render_process_id = opener_id.child_id.GetUnsafeValue();
-  params.opener_render_frame_id = opener_id.frame_routing_id;
+  params.opener_id = initiator_contents->GetPrimaryMainFrame()->GetGlobalId();
   std::unique_ptr<content::WebContents> source_contents =
       content::WebContents::Create(params);
 

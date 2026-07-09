@@ -139,10 +139,7 @@ TEST_F(FederatedEmbedderLoginRequestTest, OpenerCheck) {
   // Create a popup with an opener.
   content::WebContents::CreateParams params(
       web_contents()->GetBrowserContext());
-  content::GlobalRenderFrameHostId opener_id =
-      web_contents()->GetPrimaryMainFrame()->GetGlobalId();
-  params.opener_render_process_id = opener_id.child_id.GetUnsafeValue();
-  params.opener_render_frame_id = opener_id.frame_routing_id;
+  params.opener_id = web_contents()->GetPrimaryMainFrame()->GetGlobalId();
   std::unique_ptr<content::WebContents> popup =
       content::WebContents::Create(params);
 

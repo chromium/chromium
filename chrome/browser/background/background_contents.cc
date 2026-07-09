@@ -45,11 +45,9 @@ BackgroundContents::BackgroundContents(
 
   WebContents::CreateParams create_params(profile_, std::move(site_instance));
   create_params.is_never_composited = true;
-  create_params.opener_render_process_id =
-      opener ? opener->GetProcess()->GetDeprecatedID()
-             : IPC::mojom::kRoutingIdNone;
-  create_params.opener_render_frame_id =
-      opener ? opener->GetRoutingID() : IPC::mojom::kRoutingIdNone;
+  if (opener) {
+    create_params.opener_id = opener->GetGlobalId();
+  }
 
   if (session_storage_namespace) {
     content::SessionStorageNamespaceMap session_storage_namespace_map;
