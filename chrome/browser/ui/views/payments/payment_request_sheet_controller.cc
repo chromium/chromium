@@ -386,18 +386,6 @@ void PaymentRequestSheetController::UpdateContentView() {
   RelayoutPane();
 }
 
-void PaymentRequestSheetController::UpdateHeaderView() {
-  // Do not update the view if the payment request is being aborted.
-  if (!is_active_) {
-    return;
-  }
-
-  header_view_->RemoveAllChildViews();
-  PopulateSheetHeaderView(header_view_);
-  header_view_->InvalidateLayout();
-  header_view_->SchedulePaint();
-}
-
 void PaymentRequestSheetController::UpdateFocus(views::View* focused_view) {
   DialogViewID sheet_id;
   if (GetSheetId(&sheet_id)) {

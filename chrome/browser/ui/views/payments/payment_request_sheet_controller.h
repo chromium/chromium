@@ -89,9 +89,6 @@ class PaymentRequestSheetController {
   // calls FillContentView again to re-populate it with updated views.
   void UpdateContentView();
 
-  // Clears and recreates the header view for this sheet.
-  void UpdateHeaderView();
-
   // Update the focus to |focused_view|.
   void UpdateFocus(views::View* focused_view);
 
