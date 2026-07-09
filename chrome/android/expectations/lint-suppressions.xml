@@ -143,10 +143,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
   <issue id="UnusedQuantity" severity="ignore"/>
   <issue id="UnusedResources">
     <!-- Do not add new suppressions without rationale. -->
-    <!-- Temporarily suppress new Gemini stop task notification strings until they are used in code. -->
-    <ignore regexp="The resource `R.string.actor_notification_title_will_stop_task` appears to be unused"/>
-    <ignore regexp="The resource `R.string.actor_notification_body_will_stop_task_long_running` appears to be unused"/>
-    <ignore regexp="The resource `R.string.actor_notification_body_will_stop_task_no_response` appears to be unused"/>
     <!-- TODO(crbug.com/517591009): Remove temporarily suppress bottom bar strings. -->
     <ignore regexp="The resource `R.string.settings_show_gemini_in_bottom_bar_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.settings_show_gemini_in_bottom_bar_summary` appears to be unused"/>
