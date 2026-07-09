@@ -58,11 +58,10 @@
 #include "ui/gfx/text_elider.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "base/check_deref.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/signin/signin_ui_chromeos_util.h"
-#include "chromeos/ash/components/account_manager/account_manager_factory.h"
-#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
+#include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator.h"
+#include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator_factory.h"
 #include "components/user_manager/user.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -205,16 +204,10 @@ void ShowReauthForAccount(Profile* profile,
                           const std::string& email,
                           signin_metrics::AccessPoint access_point) {
 #if BUILDFLAG(IS_CHROMEOS)
-  crosapi::AccountManagerMojoService& account_manager_mojo_service =
-      CHECK_DEREF(
-          ash::AccountManagerFactory::Get()->GetAccountManagerMojoService(
-              profile->GetPath().value()));
-
-  // TODO(b/365741912, b/365902693): Route signin reauth through the
-  // future Ash-owned Account Manager dialog coordinator once it exists.
-  account_manager_mojo_service.ShowReauthAccountDialog(
-      GetAccountReauthSourceFromAccessPoint(access_point), email,
-      base::DoNothing());
+  ash::AccountManagerDialogCoordinatorFactory::GetForProfile(profile)
+      ->ShowReauthAccountDialog(
+          GetAccountReauthSourceFromAccessPoint(access_point), email,
+          base::DoNothing());
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Pass `false` for `enable_sync`, as this function is not expected to start a
   // sync setup flow after the reauth.

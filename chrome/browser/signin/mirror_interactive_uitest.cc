@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
 #include <string>
 #include <utility>
 
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
-#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string_util.h"
@@ -17,6 +15,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/account_manager/scoped_fake_account_manager_dialog.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -27,37 +26,16 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/account_manager_metrics.h"
 #include "components/account_manager_core/account_upsertion_result.h"
-#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
-#include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
-
-namespace {
-
-FakeAccountManagerUI& SetFakeAccountManagerUI(Profile& profile) {
-  crosapi::AccountManagerMojoService& account_manager_mojo_service =
-      CHECK_DEREF(
-          ash::AccountManagerFactory::Get()->GetAccountManagerMojoService(
-              profile.GetPath().value()));
-
-  auto fake_account_manager_ui = std::make_unique<FakeAccountManagerUI>();
-  FakeAccountManagerUI& fake_account_manager_ui_ref = *fake_account_manager_ui;
-  account_manager_mojo_service.SetAccountManagerUI(
-      std::move(fake_account_manager_ui));
-  return fake_account_manager_ui_ref;
-}
-
-}  // namespace
 
 // Tests the behavior of Chrome when it receives a Mirror response from Gaia:
 // - listens to all network responses coming from Gaia with
@@ -146,21 +124,23 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
   base::HistogramTester histogram_tester;
-  FakeAccountManagerUI& fake_account_manager_ui =
-      SetFakeAccountManagerUI(*browser()->profile());
+  ash::test::ScopedFakeAccountManagerDialog fake_account_manager_dialog(
+      browser()->profile());
 
   ReceiveManageAccountsHeader({{"action", "ADDSESSION"}});
 
-  ASSERT_TRUE(base::test::RunUntil([&fake_account_manager_ui] {
-    return fake_account_manager_ui.show_account_addition_dialog_calls() == 1;
+  ASSERT_TRUE(base::test::RunUntil([&fake_account_manager_dialog] {
+    return fake_account_manager_dialog->show_account_addition_dialog_calls() ==
+           1;
   }));
-  ASSERT_TRUE(fake_account_manager_ui.last_add_account_options().has_value());
-  EXPECT_FALSE(
-      fake_account_manager_ui.last_add_account_options()->is_available_in_arc);
-  EXPECT_FALSE(fake_account_manager_ui.last_add_account_options()
+  ASSERT_TRUE(
+      fake_account_manager_dialog->last_add_account_options().has_value());
+  EXPECT_FALSE(fake_account_manager_dialog->last_add_account_options()
+                   ->is_available_in_arc);
+  EXPECT_FALSE(fake_account_manager_dialog->last_add_account_options()
                    ->show_arc_availability_picker);
-  EXPECT_EQ(
-      0, fake_account_manager_ui.show_account_reauthentication_dialog_calls());
+  EXPECT_EQ(0, fake_account_manager_dialog
+                   ->show_account_reauthentication_dialog_calls());
   histogram_tester.ExpectUniqueSample(
       account_manager::kAccountAdditionSourceHistogramName,
       account_manager::AccountAdditionSource::kOgbAddAccount,
@@ -168,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
   histogram_tester.ExpectTotalCount(
       account_manager::kAccountUpsertionResultStatusHistogramName, 0);
 
-  fake_account_manager_ui.CloseDialog();
+  fake_account_manager_dialog->CloseDialog();
 
   histogram_tester.ExpectUniqueSample(
       account_manager::kAccountUpsertionResultStatusHistogramName,
@@ -183,8 +163,8 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
   base::HistogramTester histogram_tester;
-  FakeAccountManagerUI& fake_account_manager_ui =
-      SetFakeAccountManagerUI(*browser()->profile());
+  ash::test::ScopedFakeAccountManagerDialog fake_account_manager_dialog(
+      browser()->profile());
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
 
@@ -205,9 +185,10 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
       settings_browser->GetActiveWebContents();
   ASSERT_TRUE(settings_contents);
   EXPECT_EQ(os_settings_people, settings_contents->GetLastCommittedURL());
-  EXPECT_EQ(0, fake_account_manager_ui.show_account_addition_dialog_calls());
-  EXPECT_EQ(
-      0, fake_account_manager_ui.show_account_reauthentication_dialog_calls());
+  EXPECT_EQ(0,
+            fake_account_manager_dialog->show_account_addition_dialog_calls());
+  EXPECT_EQ(0, fake_account_manager_dialog
+                   ->show_account_reauthentication_dialog_calls());
   histogram_tester.ExpectTotalCount(
       account_manager::kAccountAdditionSourceHistogramName, 0);
   histogram_tester.ExpectTotalCount(

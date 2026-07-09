@@ -9,18 +9,11 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/webui/settings/public/constants/routes.mojom-forward.h"
-#include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/containers/flat_set.h"
-#include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -30,13 +23,8 @@
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_data_removal_dialog.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/arc/auth/arc_auth_context.h"
 #include "chrome/browser/ash/arc/auth/arc_background_auth_code_fetcher.h"
-#include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -50,13 +38,10 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/common/chrome_switches.h"
+#include "chrome/browser/ui/ash/account_manager/scoped_fake_account_manager_dialog.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
@@ -65,7 +50,6 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_data_remover.h"
@@ -77,17 +61,13 @@
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account_manager_metrics.h"
 #include "components/account_manager_core/account_upsertion_result.h"
-#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
-#include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
-#include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_manager/user_manager.h"
@@ -575,18 +555,6 @@ class ArcAuthServiceTest : public MixinBasedInProcessBrowserTest {
   FakeArcAuthServiceDelegate& delegate() { return *delegate_; }
   FakeAuthInstance& auth_instance() { return auth_instance_; }
   ArcBridgeService& arc_bridge_service() { return *arc_bridge_service_; }
-  FakeAccountManagerUI& SetFakeAccountManagerUI() {
-    auto fake_account_manager_ui = std::make_unique<FakeAccountManagerUI>();
-    FakeAccountManagerUI* fake_account_manager_ui_ptr =
-        fake_account_manager_ui.get();
-    crosapi::AccountManagerMojoService& account_manager_mojo_service =
-        CHECK_DEREF(
-            ash::AccountManagerFactory::Get()->GetAccountManagerMojoService(
-                profile()->GetPath().value()));
-    account_manager_mojo_service.SetAccountManagerUI(
-        std::move(fake_account_manager_ui));
-    return *fake_account_manager_ui_ptr;
-  }
 
   const std::vector<mojom::ArcAccountInfoPtr>& arc_google_accounts() const {
     return arc_google_accounts_;
@@ -1450,18 +1418,21 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, HandleRemoveAccountRequest) {
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, HandleAddAccountRequest) {
   SetAccountAndProfile(user_manager::UserType::kRegular);
-  FakeAccountManagerUI& fake_account_manager_ui = SetFakeAccountManagerUI();
+  ash::test::ScopedFakeAccountManagerDialog fake_account_manager_dialog(
+      profile());
 
   base::HistogramTester histogram_tester;
   auth_instance().HandleAddAccountRequest();
 
-  EXPECT_EQ(1, fake_account_manager_ui.show_account_addition_dialog_calls());
-  EXPECT_EQ(
-      0, fake_account_manager_ui.show_account_reauthentication_dialog_calls());
-  ASSERT_TRUE(fake_account_manager_ui.last_add_account_options().has_value());
-  EXPECT_TRUE(
-      fake_account_manager_ui.last_add_account_options()->is_available_in_arc);
-  EXPECT_TRUE(fake_account_manager_ui.last_add_account_options()
+  EXPECT_EQ(1,
+            fake_account_manager_dialog->show_account_addition_dialog_calls());
+  EXPECT_EQ(0, fake_account_manager_dialog
+                   ->show_account_reauthentication_dialog_calls());
+  ASSERT_TRUE(
+      fake_account_manager_dialog->last_add_account_options().has_value());
+  EXPECT_TRUE(fake_account_manager_dialog->last_add_account_options()
+                  ->is_available_in_arc);
+  EXPECT_TRUE(fake_account_manager_dialog->last_add_account_options()
                   ->show_arc_availability_picker);
   histogram_tester.ExpectUniqueSample(
       account_manager::kAccountAdditionSourceHistogramName,
@@ -1469,7 +1440,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, HandleAddAccountRequest) {
   histogram_tester.ExpectTotalCount(
       account_manager::kAccountUpsertionResultStatusHistogramName, 0);
 
-  fake_account_manager_ui.CloseDialog();
+  fake_account_manager_dialog->CloseDialog();
 
   histogram_tester.ExpectUniqueSample(
       account_manager::kAccountUpsertionResultStatusHistogramName,
@@ -1478,24 +1449,26 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, HandleAddAccountRequest) {
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, HandleUpdateCredentialsRequest) {
   SetAccountAndProfile(user_manager::UserType::kRegular);
-  FakeAccountManagerUI& fake_account_manager_ui = SetFakeAccountManagerUI();
+  ash::test::ScopedFakeAccountManagerDialog fake_account_manager_dialog(
+      profile());
 
   base::HistogramTester histogram_tester;
   auth_instance().HandleUpdateCredentialsRequest(kSecondaryAccountEmail);
 
-  EXPECT_EQ(
-      1, fake_account_manager_ui.show_account_reauthentication_dialog_calls());
-  EXPECT_EQ(0, fake_account_manager_ui.show_account_addition_dialog_calls());
-  ASSERT_TRUE(fake_account_manager_ui.last_reauth_email().has_value());
+  EXPECT_EQ(1, fake_account_manager_dialog
+                   ->show_account_reauthentication_dialog_calls());
+  EXPECT_EQ(0,
+            fake_account_manager_dialog->show_account_addition_dialog_calls());
+  ASSERT_TRUE(fake_account_manager_dialog->last_reauth_email().has_value());
   EXPECT_EQ(kSecondaryAccountEmail,
-            fake_account_manager_ui.last_reauth_email().value());
+            fake_account_manager_dialog->last_reauth_email().value());
   histogram_tester.ExpectUniqueSample(
       account_manager::kAccountAdditionSourceHistogramName,
       account_manager::AccountAdditionSource::kArc, 1);
   histogram_tester.ExpectTotalCount(
       account_manager::kAccountUpsertionResultStatusHistogramName, 0);
 
-  fake_account_manager_ui.CloseDialog();
+  fake_account_manager_dialog->CloseDialog();
 
   histogram_tester.ExpectUniqueSample(
       account_manager::kAccountUpsertionResultStatusHistogramName,

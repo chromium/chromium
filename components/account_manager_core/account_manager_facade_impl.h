@@ -43,6 +43,11 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   // for methods that have not yet been migrated to use `account_manager`.
   // `remote_version` is the Mojo API version of the remote.
   // `init_finished` is called after `this` has been fully initialized.
+  //
+  // TODO(b/365741912, b/365902693): Remove `init_finished`. Now that the
+  // observer is registered in-process rather than over crosapi, the facade
+  // finishes initializing before the constructor returns, so callers can just
+  // run their setup right after constructing it.
   AccountManagerFacadeImpl(
       mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote,
       uint32_t remote_version,

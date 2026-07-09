@@ -4,25 +4,55 @@
 
 assert(is_chromeos)
 
+static_library("inline_login_dialog") {
+  sources = [
+    "inline_login_dialog.cc",
+    "inline_login_dialog.h",
+    "inline_login_handler_modal_delegate.cc",
+    "inline_login_handler_modal_delegate.h",
+  ]
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chrome/common",
+    "//components/account_manager_core",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//net",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/display",
+    "//ui/views",
+    "//url",
+  ]
+}
+
 static_library("ash") {
   sources = [
     "edu_account_login_handler.cc",
     "edu_account_login_handler.h",
-    "inline_login_dialog.cc",
-    "inline_login_dialog.h",
     "inline_login_dialog_onboarding.cc",
     "inline_login_dialog_onboarding.h",
     "inline_login_handler_impl.cc",
     "inline_login_handler_impl.h",
-    "inline_login_handler_modal_delegate.cc",
-    "inline_login_handler_modal_delegate.h",
     "signin_helper.cc",
     "signin_helper.h",
     "user_cloud_signin_restriction_policy_fetcher.cc",
     "user_cloud_signin_restriction_policy_fetcher.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    ":inline_login_dialog",
+    "//chrome/browser:browser_public_dependencies",
+  ]
 
   deps = [
     "//ash",
@@ -31,7 +61,6 @@ static_library("ash") {
     "//chrome/browser:browser_process",
     "//chrome/browser:primitives",
     "//chrome/browser/ash/account_manager",
-    "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/login/screens",
     "//chrome/browser/ash/login/signin",
     "//chrome/browser/image_fetcher",
@@ -40,6 +69,7 @@ static_library("ash") {
     "//chrome/browser/signin",
     "//chrome/browser/signin:signin_promo",
     "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
+    "//chrome/browser/ui/ash/account_manager",
     "//chrome/browser/ui/webui/ash/edu_coexistence",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
@@ -66,7 +96,6 @@ static_library("ash") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/account_manager",
-    "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/login/screens",
     "//chrome/browser/ash/login/signin",
     "//chrome/browser/ui/webui/ash/edu_coexistence",

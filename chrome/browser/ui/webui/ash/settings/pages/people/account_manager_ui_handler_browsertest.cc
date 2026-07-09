@@ -8,17 +8,16 @@
 #include <optional>
 #include <ostream>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ash/account_manager/scoped_fake_account_manager_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
@@ -27,8 +26,6 @@
 #include "components/account_manager_core/account_manager_metrics.h"
 #include "components/account_manager_core/account_upsertion_result.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
-#include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -412,27 +409,20 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
                        ReauthenticateAccountOpensReauthDialog) {
   base::HistogramTester histogram_tester;
-  crosapi::AccountManagerMojoService* account_manager_mojo_service =
-      AccountManagerFactory::Get()->GetAccountManagerMojoService(
-          profile()->GetPath().value());
-  ASSERT_TRUE(account_manager_mojo_service);
 
-  auto fake_account_manager_ui = std::make_unique<FakeAccountManagerUI>();
-  FakeAccountManagerUI* fake_account_manager_ui_ptr =
-      fake_account_manager_ui.get();
-  account_manager_mojo_service->SetAccountManagerUI(
-      std::move(fake_account_manager_ui));
+  ash::test::ScopedFakeAccountManagerDialog fake_account_manager_dialog(
+      profile());
 
   base::ListValue args;
   args.Append(kReauthAccountEmail);
   web_ui()->HandleReceivedMessage(kReauthenticateAccountMessage, args);
 
-  EXPECT_EQ(1, fake_account_manager_ui_ptr
+  EXPECT_EQ(1, fake_account_manager_dialog
                    ->show_account_reauthentication_dialog_calls());
-  EXPECT_THAT(fake_account_manager_ui_ptr->last_reauth_email(),
+  EXPECT_THAT(fake_account_manager_dialog->last_reauth_email(),
               Optional(StrEq(kReauthAccountEmail)));
   EXPECT_EQ(0,
-            fake_account_manager_ui_ptr->show_account_addition_dialog_calls());
+            fake_account_manager_dialog->show_account_addition_dialog_calls());
   histogram_tester.ExpectUniqueSample(
       account_manager::kAccountAdditionSourceHistogramName,
       account_manager::AccountAdditionSource::kSettingsReauthAccountButton,
@@ -440,7 +430,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   histogram_tester.ExpectTotalCount(
       account_manager::kAccountUpsertionResultStatusHistogramName, 0);
 
-  fake_account_manager_ui_ptr->CloseDialog();
+  fake_account_manager_dialog->CloseDialog();
   histogram_tester.ExpectUniqueSample(
       account_manager::kAccountUpsertionResultStatusHistogramName,
       account_manager::AccountUpsertionResult::Status::kCancelledByUser,
@@ -450,29 +440,22 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
                        AddAccountOpensAddAccountDialog) {
   base::HistogramTester histogram_tester;
-  crosapi::AccountManagerMojoService* account_manager_mojo_service =
-      AccountManagerFactory::Get()->GetAccountManagerMojoService(
-          profile()->GetPath().value());
-  ASSERT_TRUE(account_manager_mojo_service);
 
-  auto fake_account_manager_ui = std::make_unique<FakeAccountManagerUI>();
-  FakeAccountManagerUI* fake_account_manager_ui_ptr =
-      fake_account_manager_ui.get();
-  account_manager_mojo_service->SetAccountManagerUI(
-      std::move(fake_account_manager_ui));
+  ash::test::ScopedFakeAccountManagerDialog fake_account_manager_dialog(
+      profile());
 
   base::ListValue args;
   web_ui()->HandleReceivedMessage(kAddAccountMessage, args);
 
   EXPECT_EQ(1,
-            fake_account_manager_ui_ptr->show_account_addition_dialog_calls());
-  EXPECT_EQ(0, fake_account_manager_ui_ptr
+            fake_account_manager_dialog->show_account_addition_dialog_calls());
+  EXPECT_EQ(0, fake_account_manager_dialog
                    ->show_account_reauthentication_dialog_calls());
   ASSERT_TRUE(
-      fake_account_manager_ui_ptr->last_add_account_options().has_value());
-  EXPECT_TRUE(fake_account_manager_ui_ptr->last_add_account_options()
+      fake_account_manager_dialog->last_add_account_options().has_value());
+  EXPECT_TRUE(fake_account_manager_dialog->last_add_account_options()
                   ->is_available_in_arc);
-  EXPECT_FALSE(fake_account_manager_ui_ptr->last_add_account_options()
+  EXPECT_FALSE(fake_account_manager_dialog->last_add_account_options()
                    ->show_arc_availability_picker);
   histogram_tester.ExpectUniqueSample(
       account_manager::kAccountAdditionSourceHistogramName,
@@ -481,7 +464,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   histogram_tester.ExpectTotalCount(
       account_manager::kAccountUpsertionResultStatusHistogramName, 0);
 
-  fake_account_manager_ui_ptr->CloseDialog();
+  fake_account_manager_dialog->CloseDialog();
   histogram_tester.ExpectUniqueSample(
       account_manager::kAccountUpsertionResultStatusHistogramName,
       account_manager::AccountUpsertionResult::Status::kCancelledByUser,

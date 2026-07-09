@@ -46,6 +46,7 @@ static_library("account_manager") {
     "//chrome/browser/ash/net",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",
+    "//chrome/browser/ui/webui/signin/ash:inline_login_dialog",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/settings_ui",
     "//chromeos/components/kiosk",

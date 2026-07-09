@@ -12,7 +12,6 @@
 #include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
-#include "ash/system/session/guest_session_confirmation_dialog.h"
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -28,6 +27,8 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator.h"
+#include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_state_tracker.h"
 #include "chrome/browser/ui/webui/signin/ash/signin_helper.h"
@@ -36,7 +37,6 @@
 #include "chromeos/version/version_loader.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session.h"
@@ -373,12 +373,9 @@ void InlineLoginHandlerImpl::CreateSigninHelper(
   auto* account_manager = AccountManagerFactory::Get()->GetAccountManager(
       profile->GetPath().value());
 
-  crosapi::AccountManagerMojoService* account_manager_mojo_service =
-      AccountManagerFactory::Get()->GetAccountManagerMojoService(
-          profile->GetPath().value());
   SigninHelper::AccountUpsertionFinishedCallback
       account_upsertion_finished_callback =
-          account_manager_mojo_service
+          AccountManagerDialogCoordinatorFactory::GetForProfile(profile)
               ->CreateInlineLoginAccountUpsertionFinishedCallback();
 
   signin::IdentityManager* identity_manager =

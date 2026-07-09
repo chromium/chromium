@@ -52,6 +52,7 @@ include_rules = [
   "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/sharesheet",
   "+chrome/browser/speech",
+  "+chrome/browser/ui/ash/account_manager",
   "+chrome/browser/ui/ash/birch",
   "+chrome/browser/ui/ash/desks",
   "+chrome/browser/ui/ash/glanceables",

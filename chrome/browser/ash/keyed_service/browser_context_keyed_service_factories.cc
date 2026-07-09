@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/keyed_service/browser_context_keyed_service_factories.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager_factory.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
@@ -115,6 +114,7 @@
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos_factory.h"
+#include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator_factory.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/desks/admin_template_service_factory.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service_factory.h"
@@ -123,12 +123,12 @@
 #include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
 #include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
-#include "printing/buildflags/buildflags.h"
 
 namespace ash {
 
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   AccountAppsAvailabilityFactory::GetInstance();
+  AccountManagerDialogCoordinatorFactory::GetInstance();
   AccountManagerPolicyControllerFactory::GetInstance();
   AdminTemplateServiceFactory::GetInstance();
   ash::AlwaysOnVpnPreConnectUrlAllowlistServiceFactory::GetInstance();

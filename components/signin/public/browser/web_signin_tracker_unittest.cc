@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -18,14 +17,9 @@
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "components/account_manager_core/mock_account_manager_facade.h"
-#endif
 
 using ::testing::_;
 
@@ -38,9 +32,6 @@ class WebSigninTrackerTest : public ::testing::Test {
         identity_test_env_(nullptr, &prefs_, &signin_client_) {
     account_reconcilor_ = std::make_unique<AccountReconcilor>(
         identity_test_env_.identity_manager(), &signin_client_,
-#if BUILDFLAG(IS_CHROMEOS)
-        &mock_facade_,
-#endif
         std::make_unique<MirrorAccountReconcilorDelegate>(
             identity_test_env_.identity_manager()));
     account_reconcilor_->Initialize(
@@ -75,9 +66,6 @@ class WebSigninTrackerTest : public ::testing::Test {
   sync_preferences::TestingPrefServiceSyncable prefs_;
   TestSigninClient signin_client_;
   IdentityTestEnvironment identity_test_env_;
-#if BUILDFLAG(IS_CHROMEOS)
-  account_manager::MockAccountManagerFacade mock_facade_;
-#endif
   std::unique_ptr<AccountReconcilor> account_reconcilor_;
 };
 

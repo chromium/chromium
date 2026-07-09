@@ -1,0 +1,48 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("account_manager") {
+  sources = [
+    "account_manager_dialog_coordinator.cc",
+    "account_manager_dialog_coordinator.h",
+    "account_manager_dialog_coordinator_factory.cc",
+    "account_manager_dialog_coordinator_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/account_manager_core",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+  ]
+
+  deps = [
+    "//chrome/browser/ui/webui/signin/ash:inline_login_dialog",
+    "//content/public/browser",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_account_manager_dialog.cc",
+    "fake_account_manager_dialog.h",
+    "scoped_fake_account_manager_dialog.cc",
+    "scoped_fake_account_manager_dialog.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/account_manager_core",
+  ]
+
+  deps = [
+    ":account_manager",
+    "//chrome/browser/profiles:profile",
+  ]
+}

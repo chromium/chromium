@@ -27,6 +27,7 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
+  "+chrome/browser/ui/ash/account_manager",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/common/chrome_switches.h",

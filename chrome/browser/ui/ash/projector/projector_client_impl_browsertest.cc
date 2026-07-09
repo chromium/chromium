@@ -18,7 +18,6 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
@@ -30,6 +29,7 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/account_manager/scoped_fake_account_manager_dialog.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -39,16 +39,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account_manager_metrics.h"
-#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
-#include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -332,38 +328,29 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, DriveUnmountedAndRemounted) {
   }
 }
 
-// Verifies Projector opens the reauth dialog through the existing account
-// manager UI path. The fake UI keeps the test focused on the dialog handoff and
+// Verifies Projector opens the reauth dialog through the Account Manager dialog
+// coordinator. The fake dialog keeps the test focused on the dialog handoff and
 // UMA behavior.
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest,
                        HandleAccountReauthOpensReauthDialog) {
   base::HistogramTester histogram_tester;
   auto* profile = browser()->profile();
-  crosapi::AccountManagerMojoService* account_manager_mojo_service =
-      AccountManagerFactory::Get()->GetAccountManagerMojoService(
-          profile->GetPath().value());
-  ASSERT_TRUE(account_manager_mojo_service);
-
-  auto fake_account_manager_ui = std::make_unique<FakeAccountManagerUI>();
-  FakeAccountManagerUI* fake_account_manager_ui_ptr =
-      fake_account_manager_ui.get();
-  account_manager_mojo_service->SetAccountManagerUI(
-      std::move(fake_account_manager_ui));
+  test::ScopedFakeAccountManagerDialog fake_account_manager_dialog(profile);
 
   ProjectorAppClient::Get()->HandleAccountReauth(kReauthEmail);
 
-  EXPECT_EQ(1, fake_account_manager_ui_ptr
+  EXPECT_EQ(1, fake_account_manager_dialog
                    ->show_account_reauthentication_dialog_calls());
-  EXPECT_THAT(fake_account_manager_ui_ptr->last_reauth_email(),
+  EXPECT_THAT(fake_account_manager_dialog->last_reauth_email(),
               Optional(StrEq(kReauthEmail)));
   EXPECT_EQ(0,
-            fake_account_manager_ui_ptr->show_account_addition_dialog_calls());
+            fake_account_manager_dialog->show_account_addition_dialog_calls());
   histogram_tester.ExpectUniqueSample(
       account_manager::kAccountAdditionSourceHistogramName,
       account_manager::AccountAdditionSource::kChromeOSProjectorAppReauth,
       /*expected_count=*/1);
 
-  fake_account_manager_ui_ptr->CloseDialog();
+  fake_account_manager_dialog->CloseDialog();
 }
 
 // Tests Projector client for child and managed users.

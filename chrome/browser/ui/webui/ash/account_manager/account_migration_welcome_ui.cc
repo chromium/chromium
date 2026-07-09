@@ -15,12 +15,12 @@
 #include "base/functional/callback_helpers.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator.h"
+#include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator_factory.h"
 #include "chrome/grit/account_manager_resources.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account_manager_metrics.h"
-#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -38,15 +38,11 @@ void ShowMigrationWelcomeAccountReauthDialog(
     const std::string& email) {
   CHECK(browser_context);
 
-  crosapi::AccountManagerMojoService* account_manager_mojo_service =
-      AccountManagerFactory::Get()->GetAccountManagerMojoService(
-          browser_context->GetPath().value());
-  CHECK(account_manager_mojo_service);
-
-  account_manager_mojo_service->ShowReauthAccountDialog(
-      account_manager::AccountAdditionSource::
-          kAccountManagerMigrationWelcomeScreen,
-      email, base::DoNothing());
+  AccountManagerDialogCoordinatorFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context))
+      ->ShowReauthAccountDialog(account_manager::AccountAdditionSource::
+                                    kAccountManagerMigrationWelcomeScreen,
+                                email, base::DoNothing());
 }
 
 class MigrationMessageHandler : public content::WebUIMessageHandler {

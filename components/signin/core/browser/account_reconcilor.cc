@@ -135,21 +135,6 @@ AccountReconcilor::Lock::~Lock() {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-AccountReconcilor::AccountReconcilor(
-    signin::IdentityManager* identity_manager,
-    SigninClient* client,
-    account_manager::AccountManagerFacade* account_manager_facade,
-    std::unique_ptr<signin::AccountReconcilorDelegate> delegate)
-    : delegate_(std::move(delegate)),
-      identity_manager_(identity_manager),
-      client_(client),
-      account_manager_facade_(account_manager_facade) {
-  VLOG(1) << "AccountReconcilor::AccountReconcilor";
-  // Reconcilor is constructed but not initialized. Call `Initialize()` before
-  // using this object.
-}
-#else
 AccountReconcilor::AccountReconcilor(
     signin::IdentityManager* identity_manager,
     SigninClient* client,
@@ -161,7 +146,6 @@ AccountReconcilor::AccountReconcilor(
   // Reconcilor is constructed but not initialized. Call `Initialize()` before
   // using this object.
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 AccountReconcilor::~AccountReconcilor() {
   VLOG(1) << "AccountReconcilor::~AccountReconcilor";
@@ -173,17 +157,11 @@ AccountReconcilor::~AccountReconcilor() {
 void AccountReconcilor::RegisterWithAllDependencies() {
   RegisterWithContentSettings();
   RegisterWithIdentityManager();
-#if BUILDFLAG(IS_CHROMEOS)
-  RegisterWithAccountManagerFacade();
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void AccountReconcilor::UnregisterWithAllDependencies() {
   UnregisterWithIdentityManager();
   UnregisterWithContentSettings();
-#if BUILDFLAG(IS_CHROMEOS)
-  UnregisterWithAccountManagerFacade();
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void AccountReconcilor::Initialize(bool start_reconcile_if_tokens_available) {
@@ -284,26 +262,6 @@ void AccountReconcilor::UnregisterWithIdentityManager() {
   identity_manager_observer_.Reset();
   registered_with_identity_manager_ = false;
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void AccountReconcilor::RegisterWithAccountManagerFacade() {
-  if (registered_with_account_manager_facade_) {
-    return;
-  }
-
-  account_manager_facade_->AddObserver(this);
-  registered_with_account_manager_facade_ = true;
-}
-
-void AccountReconcilor::UnregisterWithAccountManagerFacade() {
-  if (!registered_with_account_manager_facade_) {
-    return;
-  }
-
-  account_manager_facade_->RemoveObserver(this);
-  registered_with_account_manager_facade_ = false;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 AccountReconcilorState AccountReconcilor::GetState() const {
   return state_;
@@ -736,6 +694,11 @@ void AccountReconcilor::ScheduleStartReconcileIfChromeAccountsChanged() {
 }
 
 #if BUILDFLAG(ENABLE_MIRROR)
+base::RepeatingClosure AccountReconcilor::CreateForceReconcileCallback() {
+  return base::BindRepeating(&AccountReconcilor::ForceReconcile,
+                             weak_factory_.GetWeakPtr());
+}
+
 void AccountReconcilor::ForceReconcile() {
   if (state_ == signin_metrics::AccountReconcilorState::kInactive) {
     VLOG(1) << "Ignoring ForceReconcile request because AccountReconcilor is "
@@ -861,22 +824,6 @@ void AccountReconcilor::OnLogOutFromCookieCompleted(
     ScheduleStartReconcileIfChromeAccountsChanged();
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void AccountReconcilor::OnAccountUpserted(
-    const account_manager::Account& account) {}
-
-void AccountReconcilor::OnAccountRemoved(
-    const account_manager::Account& account) {}
-
-void AccountReconcilor::OnAuthErrorChanged(
-    const account_manager::AccountKey& account,
-    const GoogleServiceAuthError& error) {}
-
-void AccountReconcilor::OnSigninDialogClosed() {
-  ForceReconcile();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void AccountReconcilor::IncrementLockCount() {
   DCHECK_GE(account_reconcilor_lock_count_, 0);

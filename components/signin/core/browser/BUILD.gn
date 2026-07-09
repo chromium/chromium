@@ -91,13 +91,6 @@ static_library("browser") {
     "//third_party/icu",
   ]
 
-  if (is_chromeos) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//components/account_manager_core",
-    ]
-  }
-
   if (!enable_dice_support) {
     sources -= [
       "dice_account_reconcilor_delegate.cc",
@@ -158,11 +151,6 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos) {
-    deps += [
-      "//chromeos/ash/components/install_attributes:test_support",
-      "//chromeos/crosapi/mojom",
-      "//components/account_manager_core:test_support",
-    ]
     sources -= [
       "account_investigator_unittest.cc",
       "signin_status_metrics_provider_helpers_unittest.cc",

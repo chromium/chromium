@@ -34,7 +34,8 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator.h"
+#include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
@@ -45,8 +46,8 @@
 #include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
+#include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/account_manager_metrics.h"
-#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/user_manager/user_manager.h"
@@ -84,6 +85,7 @@ class ArcAuthServiceFactory
   ArcAuthServiceFactory() {
     DependsOn(IdentityManagerFactory::GetInstance());
     DependsOn(ash::AccountAppsAvailabilityFactory::GetInstance());
+    DependsOn(ash::AccountManagerDialogCoordinatorFactory::GetInstance());
   }
   ~ArcAuthServiceFactory() override = default;
 };
@@ -533,21 +535,13 @@ void ArcAuthService::IsAccountManagerAvailable(
 void ArcAuthService::HandleAddAccountRequest() {
   DCHECK(ash::IsAccountManagerAvailable(profile_));
 
-  crosapi::AccountManagerMojoService& account_manager_mojo_service =
-      CHECK_DEREF(
-          ash::AccountManagerFactory::Get()->GetAccountManagerMojoService(
-              profile_->GetPath().value()));
+  account_manager::AccountAdditionOptions options;
+  options.is_available_in_arc = true;
+  options.show_arc_availability_picker = true;
 
-  crosapi::mojom::AccountAdditionOptionsPtr options =
-      crosapi::mojom::AccountAdditionOptions::New();
-  options->is_available_in_arc = true;
-  options->show_arc_availability_picker = true;
-
-  // TODO(b/365741912, b/365902693): Route ARC add-account through the
-  // replacement Account Manager dialog path once it exists.
-  account_manager_mojo_service.ShowAddAccountDialog(
-      account_manager::AccountAdditionSource::kArc, std::move(options),
-      base::DoNothing());
+  ash::AccountManagerDialogCoordinatorFactory::GetForProfile(profile_)
+      ->ShowAddAccountDialog(account_manager::AccountAdditionSource::kArc,
+                             std::move(options), base::DoNothing());
 }
 
 void ArcAuthService::HandleRemoveAccountRequest(const std::string& email) {
@@ -558,15 +552,9 @@ void ArcAuthService::HandleRemoveAccountRequest(const std::string& email) {
 void ArcAuthService::HandleUpdateCredentialsRequest(const std::string& email) {
   DCHECK(ash::IsAccountManagerAvailable(profile_));
 
-  crosapi::AccountManagerMojoService& account_manager_mojo_service =
-      CHECK_DEREF(
-          ash::AccountManagerFactory::Get()->GetAccountManagerMojoService(
-              profile_->GetPath().value()));
-
-  // TODO(b/365741912, b/365902693): Route ARC reauth through the replacement
-  // Account Manager dialog path once it exists.
-  account_manager_mojo_service.ShowReauthAccountDialog(
-      account_manager::AccountAdditionSource::kArc, email, base::DoNothing());
+  ash::AccountManagerDialogCoordinatorFactory::GetForProfile(profile_)
+      ->ShowReauthAccountDialog(account_manager::AccountAdditionSource::kArc,
+                                email, base::DoNothing());
 }
 
 void ArcAuthService::SetDelegateForTesting(std::unique_ptr<Delegate> delegate) {

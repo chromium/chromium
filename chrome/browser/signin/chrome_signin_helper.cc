@@ -56,14 +56,14 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "base/check_deref.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator.h"
+#include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator_factory.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/account_manager_metrics.h"
-#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -337,20 +337,13 @@ void ProcessMirrorHeader(
 
   // 3. Displaying an account addition window.
   if (service_type == GAIA_SERVICE_TYPE_ADDSESSION) {
-    // TODO(b/365741912, b/365902693): Route Mirror add-account through the
-    // future Ash-owned Account Manager dialog coordinator.
-    crosapi::AccountManagerMojoService& account_manager_mojo_service =
-        CHECK_DEREF(
-            ash::AccountManagerFactory::Get()->GetAccountManagerMojoService(
-                profile->GetPath().value()));
-
-    crosapi::mojom::AccountAdditionOptionsPtr options =
-        crosapi::mojom::AccountAdditionOptions::New();
-    options->is_available_in_arc = false;
-    options->show_arc_availability_picker = false;
-    account_manager_mojo_service.ShowAddAccountDialog(
-        account_manager::AccountAdditionSource::kOgbAddAccount,
-        std::move(options), base::DoNothing());
+    account_manager::AccountAdditionOptions options;
+    options.is_available_in_arc = false;
+    options.show_arc_availability_picker = false;
+    ash::AccountManagerDialogCoordinatorFactory::GetForProfile(profile)
+        ->ShowAddAccountDialog(
+            account_manager::AccountAdditionSource::kOgbAddAccount,
+            std::move(options), base::DoNothing());
     return;
   }
 

@@ -221,21 +221,13 @@ AccountManagerFacadeImpl::AccountManagerFacadeImpl(
 
   account_manager_observation_.Observe(account_manager);
 
-  if (!account_manager_remote_ ||
-      remote_version_ < RemoteMinVersions::kAddObserverMinVersion) {
-    LOG(WARNING) << "Found remote at: " << remote_version_
-                 << ", expected: " << RemoteMinVersions::kAddObserverMinVersion
-                 << ". Account consistency will be disabled";
-    FinishInitSequenceIfNotAlreadyFinished();
-    return;
+  if (account_manager_remote_) {
+    account_manager_remote_.set_disconnect_handler(base::BindOnce(
+        &AccountManagerFacadeImpl::OnAccountManagerRemoteDisconnected,
+        weak_factory_.GetWeakPtr()));
   }
 
-  account_manager_remote_.set_disconnect_handler(base::BindOnce(
-      &AccountManagerFacadeImpl::OnAccountManagerRemoteDisconnected,
-      weak_factory_.GetWeakPtr()));
-  account_manager_remote_->AddObserver(
-      base::BindOnce(&AccountManagerFacadeImpl::OnReceiverReceived,
-                     weak_factory_.GetWeakPtr()));
+  FinishInitSequenceIfNotAlreadyFinished();
 }
 
 AccountManagerFacadeImpl::~AccountManagerFacadeImpl() {

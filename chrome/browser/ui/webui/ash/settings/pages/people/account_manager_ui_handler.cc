@@ -11,9 +11,9 @@
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -22,17 +22,16 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator.h"
+#include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator_factory.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_dialog.h"
-#include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/account_manager_metrics.h"
-#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/user_manager/user.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -90,43 +89,29 @@ void ShowToast(const std::string& id,
   ToastManager::Get()->Show(ToastData(id, catalog_name, message));
 }
 
-crosapi::AccountManagerMojoService& GetAccountManagerMojoServiceForSettings(
-    content::BrowserContext* browser_context) {
-  CHECK(browser_context);
-
-  crosapi::AccountManagerMojoService* account_manager_mojo_service =
-      AccountManagerFactory::Get()->GetAccountManagerMojoService(
-          browser_context->GetPath().value());
-  CHECK(account_manager_mojo_service);
-  return *account_manager_mojo_service;
+AccountManagerDialogCoordinator& GetAccountManagerDialogCoordinatorForSettings(
+    Profile* profile) {
+  CHECK(profile);
+  return CHECK_DEREF(
+      AccountManagerDialogCoordinatorFactory::GetForProfile(profile));
 }
 
-void ShowSettingsAddAccountDialog(content::BrowserContext* browser_context) {
-  crosapi::AccountManagerMojoService& account_manager_mojo_service =
-      GetAccountManagerMojoServiceForSettings(browser_context);
+void ShowSettingsAddAccountDialog(Profile* profile) {
+  account_manager::AccountAdditionOptions options;
+  options.is_available_in_arc = true;
+  options.show_arc_availability_picker = false;
 
-  crosapi::mojom::AccountAdditionOptionsPtr options =
-      crosapi::mojom::AccountAdditionOptions::New();
-  options->is_available_in_arc = true;
-  options->show_arc_availability_picker = false;
-
-  // TODO(b/365741912, b/365902693): Route Settings add-account through the
-  // replacement Account Manager dialog path once it exists.
-  account_manager_mojo_service.ShowAddAccountDialog(
+  GetAccountManagerDialogCoordinatorForSettings(profile).ShowAddAccountDialog(
       account_manager::AccountAdditionSource::kSettingsAddAccountButton,
       std::move(options), base::DoNothing());
 }
 
-void ShowSettingsAccountReauthDialog(content::BrowserContext* browser_context,
+void ShowSettingsAccountReauthDialog(Profile* profile,
                                      const std::string& email) {
-  crosapi::AccountManagerMojoService& account_manager_mojo_service =
-      GetAccountManagerMojoServiceForSettings(browser_context);
-
-  // TODO(b/365741912, b/365902693): Route Settings reauth through the
-  // replacement Account Manager dialog path once it exists.
-  account_manager_mojo_service.ShowReauthAccountDialog(
-      account_manager::AccountAdditionSource::kSettingsReauthAccountButton,
-      email, base::DoNothing());
+  GetAccountManagerDialogCoordinatorForSettings(profile)
+      .ShowReauthAccountDialog(
+          account_manager::AccountAdditionSource::kSettingsReauthAccountButton,
+          email, base::DoNothing());
 }
 
 class AccountBuilder {
