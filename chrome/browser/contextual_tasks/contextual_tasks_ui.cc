@@ -1364,6 +1364,29 @@ bool ContextualTasksUI::CanUpdateSuggestedTabContext(
     return false;
   }
 
+  // If the WebUI is hosted in the side panel, ensure context updates are only
+  // suggested if the panel is actively open for the task associated with this
+  // WebUI instance.
+  //
+  // This prevents a race condition when switching to an unrelated tab: the
+  // tab switch triggers the panel to close asynchronously, but during that
+  // transition, events (like task updates) can still notify the WebUI of the
+  // new active tab. If notified, the WebUI would immediately trigger an
+  // automatic screenshot of the unrelated tab.
+  if (!IsShownInTab()) {
+    auto* controller = GetPanelController();
+    if (!controller || !controller->IsPanelOpenForContextualTask()) {
+      return false;
+    }
+    std::optional<contextual_tasks::ContextualTask> current_task =
+        controller->GetCurrentTask();
+    bool task_matches = current_task && task_id_ &&
+                        current_task->GetTaskId() == task_id_.value();
+    if (!task_matches) {
+      return false;
+    }
+  }
+
   if (!is_contextual_tasks_eligible_on_init_) {
     return false;
   }
