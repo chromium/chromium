@@ -407,7 +407,6 @@ source_set("extensions") {
     "policy_handlers.h",
     "pref_mapping.cc",
     "pref_mapping.h",
-    "pref_transformer_interface.h",
     "preference/preference_helpers.cc",
     "preference/preference_helpers.h",
     "profile_util.cc",

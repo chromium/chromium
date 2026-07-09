@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 
-#include "chrome/browser/extensions/pref_transformer_interface.h"
+#include "extensions/browser/pref_transformer_interface.h"
 #include "extensions/buildflags/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));

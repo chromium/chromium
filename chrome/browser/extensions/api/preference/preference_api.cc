@@ -21,7 +21,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/pref_mapping.h"
-#include "chrome/browser/extensions/pref_transformer_interface.h"
 #include "chrome/browser/extensions/preference/preference_helpers.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -38,6 +37,7 @@
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/browser/pref_transformer_interface.h"
 #include "extensions/common/api/types.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
@@ -85,10 +85,10 @@ PreferenceEventRouter::PreferenceEventRouter(Profile* profile)
   }
   DCHECK(!profile_->IsOffTheRecord());
   observed_profiles_.AddObservation(profile_.get());
-  if (profile->HasPrimaryOTRProfile())
+  if (profile->HasPrimaryOTRProfile()) {
     OnOffTheRecordProfileCreated(
         profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
-  else {
+  } else {
     ObserveOffTheRecordPrefs(profile->GetReadOnlyOffTheRecordPrefs());
   }
 }

@@ -496,6 +496,7 @@ source_set("browser_sources") {
     "policy_check.h",
     "pref_names.cc",
     "pref_names.h",
+    "pref_transformer_interface.h",
     "pref_types.cc",
     "pref_types.h",
     "preload_check.cc",
