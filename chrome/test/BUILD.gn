@@ -2683,6 +2683,7 @@ if (!is_android) {
       "//chrome/test/payments:test_support",
       "//chrome/test/supervised_user:test_support",
       "//chrome/test/user_education:impl",
+      "//chrome/test/v8:browser_tests",
       "//components/affiliations/core/browser:affiliation_proto",
       "//components/affiliations/core/browser:test_support",
       "//components/autofill/content/browser:autofill_shared_storage_proto",
@@ -3043,7 +3044,6 @@ if (!is_android) {
       "//ui/webui:buildflags",
       "//ui/webui:test_support",
       "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
-      "//v8",
     ]
 
     # TODO(crbug.com/428666921): Remove this dependency when
@@ -3395,7 +3395,6 @@ if (!is_android) {
       "data/webui/mojo/mojo_file_system_access_browsertest.cc",
       "data/webui/mojo/mojo_js_interface_broker_browsertest.cc",
       "data/webui/mojo/mojo_web_ui_controller_browsertest.cc",
-      "v8/wasm_trap_handler_browsertest.cc",
     ]
     fuzztests = [ "SafeXmlParserFixture.ParseXML" ]
     fuzztest_additional_args = [

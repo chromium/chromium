@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "wasm_trap_handler_browsertest.cc" ]
+  deps = [
+    # TODO(crbug.com/353332589): Replace with
+    # //chrome/test/base:in_process_browser_test and
+    # //chrome/test/base:ui_test_utils once chrome/test/base/ is componentized.
+    # in_process_browser_test.h and ui_test_utils.h are still compiled inside
+    # test_support_ui.
+    "//chrome/test:test_support_ui",
+    "//v8",
+  ]
+}
