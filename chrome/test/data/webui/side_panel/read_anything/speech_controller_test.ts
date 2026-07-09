@@ -193,7 +193,7 @@ suite('SpeechController', () => {
     assertEquals(0, speech.getCallCount('pause'));
     assertEquals(2, speech.getCallCount('cancel'));
     assertEquals(1, speech.getCallCount('speak'));
-    assertEquals(0, metrics.getCallCount('recordSpeechPlaybackLength'));
+    assertEquals(0, metrics.getCallCount('recordSpeechPlaybackLengthLegacy'));
   });
 
   test('onSpeechSettingsChange does not resume speech if not playing', () => {
@@ -210,7 +210,7 @@ suite('SpeechController', () => {
     assertEquals(0, speech.getCallCount('pause'));
     assertEquals(1, speech.getCallCount('cancel'));
     assertEquals(0, speech.getCallCount('speak'));
-    assertEquals(0, metrics.getCallCount('recordSpeechPlaybackLength'));
+    assertEquals(0, metrics.getCallCount('recordSpeechPlaybackLengthLegacy'));
   });
 
   test('onPlayPauseToggle updates state', () => {
@@ -276,7 +276,7 @@ suite('SpeechController', () => {
     onPlayPauseToggle('You\'ve heard before.');
     onPlayPauseToggle('You\'ve heard before.');
 
-    assertEquals(1, metrics.getCallCount('recordSpeechPlaybackLength'));
+    assertEquals(1, metrics.getCallCount('recordSpeechPlaybackLengthLegacy'));
   });
 
   test(
@@ -656,7 +656,7 @@ suite('SpeechController', () => {
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.isPausedFromButton());
     assertFalse(speechController.isTemporaryPause());
-    assertEquals(1, metrics.getCallCount('recordSpeechPlaybackLength'));
+    assertEquals(1, metrics.getCallCount('recordSpeechPlaybackLengthLegacy'));
     assertEquals(
         chrome.readingMode.contentFinishedStopSource,
         await metrics.whenCalled('recordSpeechStopSource'));

@@ -290,9 +290,62 @@ suite('Logger', () => {
     // The playback length should be at least the amount of time we waited above
     // and less than the starting time (i.e. we should be recording length of
     // time, not timestamp).
-    const recordedTime = await metrics.whenCalled('recordSpeechPlaybackLength');
+    const recordedTime =
+        await metrics.whenCalled('recordSpeechPlaybackLengthLegacy');
     assertLE(expectedTime, recordedTime);
     assertGT(startTime, recordedTime);
+  });
+
+  test(
+      'logSpeechPlaySession records time with page type and view mode',
+      async () => {
+        chrome.readingMode.isImmersiveEnabled = true;
+        const startTime = Date.now();
+
+        chrome.readingMode.isPdf = false;
+        chrome.readingMode.activePresentationState =
+            chrome.readingMode.inImmersiveOverlayPresentationState;
+        logger.logSpeechPlaySession(startTime, null);
+        let args = await metrics.whenCalled('recordSpeechPlaybackLength');
+        assertEquals(
+            'Accessibility.ReadAnything.SpeechPlaybackSession.WebPageInFullPage',
+            args[0]);
+
+        metrics.reset();
+        chrome.readingMode.activePresentationState =
+            chrome.readingMode.inSidePanelPresentationState;
+        logger.logSpeechPlaySession(startTime, null);
+        args = await metrics.whenCalled('recordSpeechPlaybackLength');
+        assertEquals(
+            'Accessibility.ReadAnything.SpeechPlaybackSession.WebPageInSidePanel',
+            args[0]);
+
+        metrics.reset();
+        chrome.readingMode.isPdf = true;
+        logger.logSpeechPlaySession(startTime, null);
+        args = await metrics.whenCalled('recordSpeechPlaybackLength');
+        assertEquals(
+            'Accessibility.ReadAnything.SpeechPlaybackSession.PDFInSidePanel',
+            args[0]);
+
+        metrics.reset();
+        chrome.readingMode.activePresentationState =
+            chrome.readingMode.inImmersiveOverlayPresentationState;
+        logger.logSpeechPlaySession(startTime, null);
+        args = await metrics.whenCalled('recordSpeechPlaybackLength');
+        assertEquals(
+            'Accessibility.ReadAnything.SpeechPlaybackSession.PDFInFullPage',
+            args[0]);
+      });
+
+  test('logSpeechPlaySession does not record with invalid page type', () => {
+    const startTime = Date.now();
+    chrome.readingMode.isPdf = false;
+    chrome.readingMode.activePresentationState = 10000;
+
+    logger.logSpeechPlaySession(startTime, null);
+
+    assertEquals(0, metrics.getCallCount('recordSpeechPlaybackLength'));
   });
 
   test('logTimeFrom uses correct uma name', () => {

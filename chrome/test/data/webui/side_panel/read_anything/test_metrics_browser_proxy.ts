@@ -25,6 +25,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordNewPageWithSpeech',
       'recordSpeechError',
       'recordSpeechPlaybackLength',
+      'recordSpeechPlaybackLengthLegacy',
       'recordSpeechSettingsChange',
       'recordSpeechStopSource',
       'recordTextSettingsChange',
@@ -109,8 +110,12 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('recordTime', umaName, time);
   }
 
-  recordSpeechPlaybackLength(time: number) {
-    this.methodCalled('recordSpeechPlaybackLength', time);
+  recordSpeechPlaybackLength(umaName: string, time: number) {
+    this.methodCalled('recordSpeechPlaybackLength', umaName, time);
+  }
+
+  recordSpeechPlaybackLengthLegacy(time: number) {
+    this.methodCalled('recordSpeechPlaybackLengthLegacy', time);
   }
 
   recordExtensionState() {

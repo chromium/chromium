@@ -81,6 +81,9 @@ export class FakeReadingMode {
   inSidePanelPresentationState: number = 2;
   inImmersiveOverlayPresentationState: number = 3;
 
+  // The active presentation state of Reading mode.
+  activePresentationState: number = 1;
+
   // Current Read Anything distilled values.
   htmlContent: string = '';
   title: string = '';

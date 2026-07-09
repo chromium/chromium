@@ -3606,8 +3606,30 @@ even if they fit the naming pattern. -->
   <summary>
     Records the length of time of a speech playback session from play to pause
     or from play to speech stopped, either due to reaching the end of content or
-    an error.
+    an error. To not disrupt any active experiments, this metric will remain,
+    but in a few milestones the team will evaluate if the metric below can
+    replace this entirely.
   </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.ReadAnything.SpeechPlaybackSession.{PageType}In{ViewMode}"
+    units="ms" expires_after="2026-12-06">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the length of time of a speech playback session from play to pause
+    or from play to speech stopped, either due to reaching the end of content or
+    an error. Recorded for a {PageType} in {ViewMode}.
+  </summary>
+  <token key="PageType">
+    <variant name="Pdf" summary="PDF document"/>
+    <variant name="WebPage" summary="Standard Web Page"/>
+  </token>
+  <token key="ViewMode">
+    <variant name="FullPage" summary="Full page immersive view"/>
+    <variant name="SidePanel" summary="Side panel view"/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.SpeechStopSource"

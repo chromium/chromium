@@ -28,6 +28,16 @@ export enum LinkStatus {
   TOO_MANY_MATCHES = 'TooManyMatches',
 }
 
+export enum PageType {
+  PDF = 'PDF',
+  WEB_PAGE = 'WebPage',
+}
+
+export enum ViewMode {
+  FULL_PAGE = 'FullPage',
+  SIDE_PANEL = 'SidePanel',
+}
+
 // Handles the business logic for logging.
 export class ReadAnythingLogger {
   private metrics: MetricsBrowserProxy = MetricsBrowserProxyImpl.getInstance();
@@ -185,7 +195,28 @@ export class ReadAnythingLogger {
   logSpeechPlaySession(startTime: number, voice: SpeechSynthesisVoice|null) {
     this.logVoiceTypeUsedForReading_(voice);
     this.logLanguageUsedForReading_(voice?.lang);
-    this.metrics.recordSpeechPlaybackLength(Date.now() - startTime);
+
+    const playbackTime = Date.now() - startTime;
+    this.metrics.recordSpeechPlaybackLengthLegacy(playbackTime);
+    if (!chrome.readingMode.isImmersiveEnabled) {
+      return;
+    }
+
+    const activePresentationState = chrome.readingMode.activePresentationState;
+    const isImmersiveState = activePresentationState ===
+        chrome.readingMode.inImmersiveOverlayPresentationState;
+    if (!isImmersiveState &&
+        activePresentationState !==
+            chrome.readingMode.inSidePanelPresentationState) {
+      return;
+    }
+
+    const pageType =
+        chrome.readingMode.isPdf ? PageType.PDF : PageType.WEB_PAGE;
+    const viewMode =
+        isImmersiveState ? ViewMode.FULL_PAGE : ViewMode.SIDE_PANEL;
+    const umaName = `${UmaName.SPEECH_PLAYBACK}.${pageType}In${viewMode}`;
+    this.metrics.recordSpeechPlaybackLength(umaName, playbackTime);
   }
 
   logSpeechControlClick(control: SpeechControls) {

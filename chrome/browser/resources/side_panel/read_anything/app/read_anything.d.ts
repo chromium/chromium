@@ -80,10 +80,6 @@ declare namespace chrome {
     let highContrastTheme: number;
     let lowContrastLightTheme: number;
     let lowContrastDarkTheme: number;
-    let undefinedPresentationState: number;
-    let inHiddenPresentationState: number;
-    let inSidePanelPresentationState: number;
-    let inImmersiveOverlayPresentationState: number;
     let autoHighlighting: number;
     let wordHighlighting: number;
     let phraseHighlighting: number;
@@ -181,6 +177,12 @@ declare namespace chrome {
     // The constant value representing the Readability (HTML string)
     // distillation method.
     let distillationTypeReadability: number;
+
+    // The active presentation state of Reading mode.
+    let activePresentationState: number;
+    let inHiddenPresentationState: number;
+    let inSidePanelPresentationState: number;
+    let inImmersiveOverlayPresentationState: number;
 
     // Returns the AXTree mapping segments for the distilled block at the given
     // index. A segment links a character range within the block to its AXnode.
