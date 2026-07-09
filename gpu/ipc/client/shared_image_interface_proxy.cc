@@ -54,30 +54,24 @@ base::span<uint8_t> GetTargetData(base::MappedReadOnlyRegion& region,
   return base::span(region.mapping).subspan(offset, size);
 }
 
-std::vector<SyncToken> GenerateDependenciesFromSyncTokens(
-    std::vector<SyncToken> sync_tokens,
+std::vector<SyncToken> GenerateDependenciesFromSyncToken(
+    SyncToken sync_token,
     GpuChannelHost* const host) {
   DCHECK(host);
-  for (auto& sync_token : sync_tokens) {
-    if (sync_token.HasData() && !sync_token.verified_flush()) {
+  std::vector<SyncToken> dependencies;
+  if (sync_token.HasData()) {
+    dependencies.push_back(sync_token);
+    SyncToken& new_token = dependencies.back();
+    if (!new_token.verified_flush()) {
       // Only allow unverified sync tokens for the same channel.
       DCHECK_EQ(sync_token.namespace_id(), gpu::CommandBufferNamespace::GPU_IO);
       int sync_token_channel_id =
           ChannelIdFromCommandBufferId(sync_token.command_buffer_id());
       DCHECK_EQ(sync_token_channel_id, host->channel_id());
-      sync_token.SetVerifyFlush();
+      new_token.SetVerifyFlush();
     }
   }
-  return sync_tokens;
-}
-
-std::vector<SyncToken> GenerateDependenciesFromSyncToken(
-    SyncToken sync_token,
-    GpuChannelHost* const host) {
-  if (sync_token.HasData()) {
-    return GenerateDependenciesFromSyncTokens({sync_token}, host);
-  }
-  return std::vector<SyncToken>();
+  return dependencies;
 }
 
 mojom::SharedImageInfoPtr CreateSharedImageInfo(
@@ -580,15 +574,6 @@ void SharedImageInterfaceProxy::DestroySharedImagePool(
                 std::move(params))),
         /*sync_token_fences=*/{}, ++next_release_id_);
   }
-}
-
-void SharedImageInterfaceProxy::GetGLGpuFence(
-    std::vector<SyncToken> sync_tokens,
-    base::OnceCallback<void(gfx::GpuFenceHandle)> callback) {
-  base::AutoLock lock(lock_);
-  host_->GetGLGpuFence(
-      GenerateDependenciesFromSyncTokens(std::move(sync_tokens), host_),
-      ++next_release_id_, std::move(callback));
 }
 
 SharedImageInterfaceProxy::SharedImageRefData::SharedImageRefData() = default;

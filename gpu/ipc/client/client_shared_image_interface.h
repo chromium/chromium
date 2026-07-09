@@ -90,9 +90,6 @@ class GPU_IPC_CLIENT_EXPORT ClientSharedImageInterface
                          scoped_refptr<gfx::D3DSharedFence> d3d_shared_fence,
                          const Mailbox& mailbox) override;
 #endif  // BUILDFLAG(IS_WIN)
-  void GetGLGpuFence(
-      std::vector<SyncToken> sync_tokens,
-      base::OnceCallback<void(gfx::GpuFenceHandle)> callback) override;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   void CopyNativeGmbToSharedMemoryAsync(

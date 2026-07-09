@@ -206,12 +206,6 @@ interface GpuChannel {
       Mailbox mailbox, array<SyncToken> sync_token_dependencies,
       uint64 release_count) => (bool success);
 
-  // Creates and returns GL fence created after all `sync_token_dependencies`
-  // passed. Used for XR code.
-  GetGLGpuFence(
-      array<SyncToken> sync_token_dependencies,
-      uint64 release_count) => (gfx.mojom.GpuFenceHandle? fence_handle);
-
   // Copies GMB pixel data from the native handle to the |shared_memory|.
   // Returns |true| asynchronously if the copy has succeeded.
   // Note that this method has some similar functionality but is different than

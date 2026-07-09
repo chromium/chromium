@@ -209,9 +209,7 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
       uint64_t release_count,
       base::OnceCallback<void(bool)> callback);
 #endif  // BUILDFLAG(IS_WIN)
-  void GetGLGpuFence(std::vector<SyncToken> sync_token_dependencies,
-                     uint64_t release_count,
-                     base::OnceCallback<void(gfx::GpuFenceHandle)> callback);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   void CopyNativeGmbToSharedMemoryAsync(
       gfx::GpuMemoryBufferHandle buffer_handle,

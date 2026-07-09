@@ -86,9 +86,6 @@ class SharedImageInterfaceProxy {
                          const Mailbox& mailbox);
 #endif  // BUILDFLAG(IS_WIN)
 
-  void GetGLGpuFence(std::vector<SyncToken> sync_tokens,
-                     base::OnceCallback<void(gfx::GpuFenceHandle)> callback);
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   void CopyNativeGmbToSharedMemoryAsync(
       gfx::GpuMemoryBufferHandle buffer_handle,
