@@ -30,6 +30,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.firstrun.FirstRunActivityBase;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -420,7 +421,10 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
                         () -> sheetContainer,
                         () -> 0,
                         /* desktopWindowStateManager= */ null,
-                        getInsetObserver());
+                        getInsetObserver(),
+                        /* enableLargeFormFactorUi= */ ChromeFeatureList
+                                .sBottomSheetOnDesktopWindowing
+                                .isEnabled());
         BackPressHandler bottomSheetBackPressHandler =
                 bottomSheetController.getBottomSheetBackPressHandler();
         BackPressHelper.create(this, getOnBackPressedDispatcher(), bottomSheetBackPressHandler);

@@ -78,7 +78,8 @@ public class AllPasswordsBottomSheetTestHelper {
                             () -> contentView,
                             () -> 0,
                             /* desktopWindowStateManager= */ null,
-                            insetObserver);
+                            insetObserver,
+                            /* enableLargeFormFactorUi= */ false);
                 });
     }
 

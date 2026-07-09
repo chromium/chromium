@@ -854,6 +854,9 @@ public abstract class ChromeFeatureList {
             newCachedFlag(BOOKMARK_PANE_ANDROID, false);
     public static final CachedFlag sBottomSheetAsBrowserControls =
             newCachedFlag(BOTTOM_SHEET_AS_BROWSER_CONTROLS, true);
+    public static final CachedFlag sBottomSheetOnDesktopWindowing =
+            newCachedFlag(
+                    BOTTOM_SHEET_ON_DESKTOP_WINDOWING, false, /* defaultValueInTests= */ false);
     public static final CachedFlag sBrowserControlsDebugging =
             newCachedFlag(BROWSER_CONTROLS_DEBUGGING, false);
     public static final CachedFlag sCacheIsGoogleSigned =
@@ -1301,6 +1304,7 @@ public abstract class ChromeFeatureList {
                     sBlockIntentsWhileLocked,
                     sBookmarkPaneAndroid,
                     sBottomSheetAsBrowserControls,
+                    sBottomSheetOnDesktopWindowing,
                     sBrowserControlsDebugging,
                     sCacheIsGoogleSigned,
                     sCacheIsMultiInstanceApi31Enabled,

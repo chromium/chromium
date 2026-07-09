@@ -170,7 +170,8 @@ public class BottomSheetObserverTest {
                                     false,
                                     () -> 0,
                                     /* desktopWindowStateManager= */ null,
-                                    insetObserver);
+                                    insetObserver,
+                                    /* enableLargeFormFactorUi= */ false);
                         });
 
         mTestSupport = new BottomSheetTestSupport(mBottomSheetController);

@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -91,7 +92,8 @@ public class BottomSheetControllerImplUnitTest {
                         false,
                         mEdgeToEdgeBottomInsetSupplier,
                         mDesktopWindowStateManager,
-                        mInsetObserver);
+                        mInsetObserver,
+                        /* enableLargeFormFactorUi= */ false);
     }
 
     @Test
@@ -113,6 +115,47 @@ public class BottomSheetControllerImplUnitTest {
                         APP_HEADER_HEIGHT,
                         0,
                         mInsetObserver);
+    }
+
+    @Test
+    public void testIsDesktopUi_FeatureDisabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        // mController is initialized with enableLargeFormFactorUi = false in setUp()
+        assertFalse(mController.isDesktopUi());
+    }
+
+    @Test
+    public void testIsDesktopUi_NotDesktop() {
+        BottomSheetControllerImpl controller =
+                new BottomSheetControllerImpl(
+                        mScrimManagerSupplier,
+                        mWindow,
+                        mKeyboardVisibilityDelegate,
+                        mRootSupplier,
+                        false,
+                        mEdgeToEdgeBottomInsetSupplier,
+                        mDesktopWindowStateManager,
+                        mInsetObserver,
+                        /* enableLargeFormFactorUi= */ true);
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertFalse(controller.isDesktopUi());
+    }
+
+    @Test
+    public void testIsDesktopUi_Enabled() {
+        BottomSheetControllerImpl controller =
+                new BottomSheetControllerImpl(
+                        mScrimManagerSupplier,
+                        mWindow,
+                        mKeyboardVisibilityDelegate,
+                        mRootSupplier,
+                        false,
+                        mEdgeToEdgeBottomInsetSupplier,
+                        mDesktopWindowStateManager,
+                        mInsetObserver,
+                        /* enableLargeFormFactorUi= */ true);
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertTrue(controller.isDesktopUi());
     }
 
     @Test
@@ -235,7 +278,8 @@ public class BottomSheetControllerImplUnitTest {
                         false,
                         mEdgeToEdgeBottomInsetSupplier,
                         mDesktopWindowStateManager,
-                        mInsetObserver);
+                        mInsetObserver,
+                        /* enableLargeFormFactorUi= */ false);
 
         // Requesting to show content should fail gracefully instead of crashing.
         boolean result =

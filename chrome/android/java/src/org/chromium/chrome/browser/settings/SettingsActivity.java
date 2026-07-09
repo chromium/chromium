@@ -609,7 +609,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         () -> sheetContainer,
                         () -> 0,
                         /* desktopWindowStateManager= */ null,
-                        getInsetObserver());
+                        getInsetObserver(),
+                        /* enableLargeFormFactorUi= */ ChromeFeatureList
+                                .sBottomSheetOnDesktopWindowing
+                                .isEnabled());
         mBottomSheetControllerSupplier.set(mManagedBottomSheetController);
     }
 

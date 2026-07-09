@@ -146,7 +146,8 @@ public class AtMemoryBottomSheetViewRenderTest {
                 () -> activityContentView,
                 () -> 0,
                 /* desktopWindowStateManager= */ null,
-                mInsetObserver);
+                mInsetObserver,
+                /* enableLargeFormFactorUi= */ false);
     }
 
     @Test

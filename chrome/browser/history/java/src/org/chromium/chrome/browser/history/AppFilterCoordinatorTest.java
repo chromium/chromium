@@ -113,7 +113,8 @@ public class AppFilterCoordinatorTest {
                 () -> activityContentView,
                 () -> 0,
                 /* desktopWindowStateManager= */ null,
-                insetObserver);
+                insetObserver,
+                /* enableLargeFormFactorUi= */ false);
     }
 
     private void onAppUpdated(AppInfo appInfo) {

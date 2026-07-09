@@ -23,13 +23,17 @@ import java.util.function.Supplier;
 @NullUnmarked
 public class BottomSheetControllerFactory {
     /**
-     * @param scrimManagerSupplier Suppliers the {@ScrimManager}, used show scrims behind the sheet.
+     * @param scrimManagerSupplier Suppliers the {@link ScrimManager}, used to show scrims behind
+     *     the sheet.
      * @param window The activity's window.
      * @param keyboardDelegate A means of hiding the keyboard.
      * @param root The view that should contain the sheet.
      * @param edgeToEdgeBottomInsetSupplier Supplier of bottom inset when e2e is on.
      * @param desktopWindowStateManager The {@link DesktopWindowStateManager} for the app header.
      * @param insetObserver The {@link InsetObserver} for inset changes.
+     * @param enableLargeFormFactorUi Whether to use a different UI explicitly designed for bottom
+     *     sheets when operating in a desktop or large form factor environment. Some implementations
+     *     may want to opt out of this behavior.
      */
     public static ManagedBottomSheetController createBottomSheetController(
             final Supplier</* @Nullable */ ScrimManager> scrimManagerSupplier,
@@ -38,7 +42,8 @@ public class BottomSheetControllerFactory {
             Supplier<ViewGroup> root,
             Supplier<Integer> edgeToEdgeBottomInsetSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            InsetObserver insetObserver) {
+            InsetObserver insetObserver,
+            boolean enableLargeFormFactorUi) {
         return new BottomSheetControllerImpl(
                 scrimManagerSupplier,
                 window,
@@ -47,7 +52,8 @@ public class BottomSheetControllerFactory {
                 /* alwaysFullWidth= */ false,
                 edgeToEdgeBottomInsetSupplier,
                 desktopWindowStateManager,
-                insetObserver);
+                insetObserver,
+                enableLargeFormFactorUi);
     }
 
     /**
@@ -73,7 +79,8 @@ public class BottomSheetControllerFactory {
                 /* alwaysFullWidth= */ true,
                 () -> 0,
                 /* desktopWindowStateManager= */ null,
-                insetObserver);
+                insetObserver,
+                /* enableLargeFormFactorUi= */ false);
     }
 
     // Redirect methods to provider to make them only accessible to classes that have access to the

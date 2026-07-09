@@ -100,7 +100,10 @@ public class HistoryActivity extends SnackbarActivity {
                         SupplierUtils.of(sheetContainer),
                         SupplierUtils.of(0),
                         /* desktopWindowStateManager= */ null,
-                        getWindowAndroid().getInsetObserver());
+                        getWindowAndroid().getInsetObserver(),
+                        /* enableLargeFormFactorUi= */ ChromeFeatureList
+                                .sBottomSheetOnDesktopWindowing
+                                .isEnabled());
 
         // HistoryActivity needs its own container for bottom sheet. Add it as a child of the
         // layout enclosing the history list layout so they'll be siblings. HistoryPage doesn't
