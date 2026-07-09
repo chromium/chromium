@@ -19,6 +19,8 @@ source_set("public") {
 
 source_set("android") {
   sources = [
+    "touch_to_fill_autofill_view_impl.cc",
+    "touch_to_fill_autofill_view_impl.h",
     "touch_to_fill_payment_method_view_impl.cc",
     "touch_to_fill_payment_method_view_impl.h",
   ]
