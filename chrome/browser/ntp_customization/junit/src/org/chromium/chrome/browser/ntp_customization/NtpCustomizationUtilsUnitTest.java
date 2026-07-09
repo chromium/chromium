@@ -288,6 +288,25 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
+        ChromeFeatureList.USE_WEB_UI_NTP_ANDROID
+    })
+    public void testIsNtpThemeCustomizationEnabledWithWindowAndroid_WebUiNtpEnabled() {
+        // Skips the early exit: !isNtpThemeCustomizationEnabled()
+        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
+        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
+        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
+
+        assertFalse(
+                NtpCustomizationUtils.isNtpThemeCustomizationEnabled(
+                        mWindowAndroid, /* isLff= */ false));
+        assertFalse(
+                NtpCustomizationUtils.isNtpThemeCustomizationEnabled(
+                        mWindowAndroid, /* isLff= */ true));
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetAndSetNtpBackgroundType() {
         NtpCustomizationUtils.resetSharedPreferenceForTesting();

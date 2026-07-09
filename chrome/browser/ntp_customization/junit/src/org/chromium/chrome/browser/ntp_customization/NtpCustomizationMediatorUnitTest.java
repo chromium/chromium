@@ -59,6 +59,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
@@ -530,6 +531,13 @@ public class NtpCustomizationMediatorUnitTest {
 
         List<Integer> listContent = mMediator.buildListContent(mContext);
         assertFalse(listContent.contains(NTP_CARDS));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
+    public void testBuildListContent_ExcludesThemeWhenWebUiNtpEnabled() {
+        List<Integer> listContent = mMediator.buildListContent(mContext);
+        assertFalse(listContent.contains(THEME));
     }
 
     @Test

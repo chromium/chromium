@@ -35,6 +35,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_C
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_IS_SNACKBAR_SHOWN;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS;
+import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isWebUiNtpOverrideEnabled;
 import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDefaultIconColor;
 
 import android.app.Activity;
@@ -323,6 +324,10 @@ public class NtpCustomizationUtils {
     public static boolean isNtpThemeCustomizationEnabled(
             WindowAndroid windowAndroid, boolean isLff) {
         if (!isNtpThemeCustomizationEnabled()) {
+            return false;
+        }
+
+        if (isWebUiNtpOverrideEnabled()) {
             return false;
         }
 
