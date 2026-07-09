@@ -175,6 +175,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/collaboration/public/messaging/activity_log.h"
 #include "components/commerce/core/metrics/discounts_metric_collector.h"
@@ -3989,6 +3990,46 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionShowBookmarkBar)
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::SetBookmarkBarVisibilityState(
+                    bwi, bookmarks::BookmarkBarVisibilityState::kAlwaysShow);
+              },
+              bwi))
+          .SetActionId(kActionBookmarkBarSubmenuAlwaysShow)
+          .SetText(
+              l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW))
+          .Build());
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::SetBookmarkBarVisibilityState(
+                    bwi, bookmarks::BookmarkBarVisibilityState::kAlwaysHide);
+              },
+              bwi))
+          .SetActionId(kActionBookmarkBarSubmenuAlwaysHide)
+          .SetText(
+              l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE))
+          .Build());
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::SetBookmarkBarVisibilityState(
+                    bwi, bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp);
+              },
+              bwi))
+          .SetActionId(kActionBookmarkBarSubmenuOnlyOnNtp)
+          .SetText(
+              l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP))
           .Build());
 
   root_action_item_->AddChild(

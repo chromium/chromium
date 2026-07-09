@@ -138,6 +138,12 @@
   E(kActionFeedback, IDC_FEEDBACK) \
   E(kActionReportUnsafeSite, IDC_REPORT_UNSAFE_SITE) \
   E(kActionShowBookmarkBar, IDC_SHOW_BOOKMARK_BAR) \
+  E(kActionBookmarkBarSubmenuAlwaysShow, \
+    IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW) \
+  E(kActionBookmarkBarSubmenuAlwaysHide, \
+    IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE) \
+  E(kActionBookmarkBarSubmenuOnlyOnNtp, \
+    IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP) \
   E(kActionShowHistory, IDC_SHOW_HISTORY) \
   E(kActionShowBookmarkManager, IDC_SHOW_BOOKMARK_MANAGER) \
   E(kActionImportSettings, IDC_IMPORT_SETTINGS) \
