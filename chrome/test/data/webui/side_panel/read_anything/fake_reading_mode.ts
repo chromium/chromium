@@ -616,4 +616,15 @@ export class FakeReadingMode {
       Array<{axNodeId: number, start: number, end: number}> {
     return [];
   }
+
+  onNodeWillBeDeleted(_nodeId: number) {}
+  updateLinks() {}
+  updateImages() {}
+  onLockScreen() {}
+  onTtsEngineInstalled() {}
+  readingModeWillClose() {}
+  onAnchorsReadyForReadability() {}
+  onPresentationStateReceived(_presentationState: number) {}
+  onPinStateReceived(_pinState: boolean) {}
+  onImageDownloaded(_nodeId: number) {}
 }
