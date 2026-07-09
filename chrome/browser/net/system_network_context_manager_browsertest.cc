@@ -474,9 +474,17 @@ class SystemNetworkContextManagerNetworkServiceSandboxBrowsertest
 // to current, and then the service then crashed again to cause a restart. This
 // time the service will start sandboxed again because the early crash was in a
 // previous milestone.
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/532718529): Re-enable this test on Windows.
+#define MAYBE_NetworkServiceRestartsFailingLaunches \
+  DISABLED_NetworkServiceRestartsFailingLaunches
+#else
+#define MAYBE_NetworkServiceRestartsFailingLaunches \
+  NetworkServiceRestartsFailingLaunches
+#endif
 IN_PROC_BROWSER_TEST_F(
     SystemNetworkContextManagerNetworkServiceSandboxBrowsertest,
-    NetworkServiceRestartsFailingLaunches) {
+    MAYBE_NetworkServiceRestartsFailingLaunches) {
   if (!sandbox::policy::features::IsNetworkSandboxSupported()) {
     GTEST_SKIP() << "This test requires platform sandbox support.";
   }
