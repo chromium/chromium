@@ -13,6 +13,7 @@
 namespace signin {
 class IdentityManager;
 }
+class AimEligibilityService;
 class AuthenticationService;
 @class BrowserActionFactory;
 class FullscreenBrowserAgent;
@@ -108,6 +109,8 @@ class WebStateList;
                     identityManager:(signin::IdentityManager*)identityManager
                       geminiService:(GeminiService*)geminiService
                  geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
+              aimEligibilityService:
+                  (AimEligibilityService*)aimEligibilityService
                           URLLoader:(UrlLoadingBrowserAgent*)URLLoader
                        tabGridState:(TabGridState*)tabGridState
                      incognitoState:(IncognitoState*)incognitoState;
