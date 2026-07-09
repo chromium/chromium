@@ -50,18 +50,74 @@ source_set("test_support") {
   sources = [
     "extensions_dialogs_browsertest.cc",
     "extensions_dialogs_browsertest.h",
+    "extensions_toolbar_interactive_uitest.cc",
+    "extensions_toolbar_interactive_uitest.h",
   ]
   deps = [
     "//base",
+    "//chrome/browser/extensions",
+    "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/test:dialog",
     "//chrome/browser/ui/views/toolbar",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/browser",
+    "//extensions/browser:test_support",
+    "//extensions/common",
+    "//net:test_support",
+    "//ui/views:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "chooser_dialog_view_unittest.cc",
+    "expandable_container_view_unittest.cc",
+    "extensions_menu_entry_unittest.cc",
+    "extensions_menu_item_unittest.cc",
+    "extensions_menu_main_page_view_unittest.cc",
+    "extensions_menu_site_permissions_page_view_unittest.cc",
+    "extensions_menu_view_unittest.cc",
+    "extensions_toolbar_button_unittest.cc",
+    "extensions_toolbar_desktop_unittest.cc",
+    "extensions_toolbar_unittest.cc",
+    "extensions_toolbar_unittest.h",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/toolbar:test_support",
+    "//chrome/browser/ui/views/controls",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/test:test_support",
+    "//chrome/test/views",
+    "//components/permissions:test_support",
+    "//content/test:test_support",
     "//extensions:test_support",
     "//extensions/browser",
     "//extensions/common",
+    "//extensions/common:extension_features",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/events:test_support",
+    "//ui/views",
     "//ui/views:test_support",
   ]
+
+  if (is_chromeos) {
+    sources += [ "media_galleries_dialog_views_unittest.cc" ]
+    deps += [ "//chrome/browser/media_galleries:test_support" ]
+  }
 }
 
 source_set("browser_tests") {
@@ -113,4 +169,55 @@ source_set("browser_tests") {
       "//components/signin/public/identity_manager:test_support",
     ]
   }
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "dialogs/confirm_protocol_handler_dialog_interactive_uitest.cc",
+    "dialogs/extension_install_friction_dialog_interactive_uitest.cc",
+    "extension_popup_interactive_uitest.cc",
+    "extensions_menu_main_page_view_interactive_uitest.cc",
+    "extensions_menu_site_permissions_page_view_interactive_uitest.cc",
+    "extensions_menu_view_interactive_uitest.cc",
+    "extensions_toolbar_desktop_interactive_uitest.cc",
+  ]
+  deps = [
+    ":security_dialog_tracker",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/extensions",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/browser/metrics/critical_user_journeys",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/extensions:test_support",
+    "//chrome/browser/ui/interaction",
+    "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/views/controls",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chrome/test/interaction",
+    "//components/custom_handlers",
+    "//components/javascript_dialogs",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/browser",
+    "//extensions/common",
+    "//extensions/common:extension_features",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/base/interaction:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
 }
