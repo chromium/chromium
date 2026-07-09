@@ -70,6 +70,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
       <dialog id="composeboxDialog">
         ${this.useNtpComposeboxFork_ ? html`
           <ntp-composebox id="composebox"
+              entrypoint-name="Realbox"
               searchbox-layout-mode="Compact"
               searchbox-next-enabled
               ?disable-caret-color-animation="${!this.caretAnimationsEnabled_}"

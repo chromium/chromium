@@ -245,8 +245,8 @@ search-animated-glow {
   box-shadow: var(--box-shadow-energy-effect);
 }
 
-:host([energy-effect-animation-enabled][animation-state='expanding']) #composebox,
-:host([energy-effect-animation-enabled][animation-state='submitting']) #composebox {
+:host([energy-effect-animation-enabled][animation-state='expanding']:not([entrypoint-name='Realbox'])) #composebox,
+:host([energy-effect-animation-enabled][animation-state='submitting']:not([entrypoint-name='Realbox'])) #composebox {
   animation: animateShadow var(--box-shadow-animation-duration) both;
 }
 
