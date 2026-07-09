@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_PICTURE_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 
 namespace blink {
 
@@ -31,7 +32,8 @@ class HTMLPictureElement final : public HTMLElement {
     return ElementType::kHTMLPictureElement;
   }
 
-  void SourceChanged(ImageSourceChangeType);
+  void SourceChanged(ImageSourceChangeType,
+                     HTMLImageElement::ShouldResetImageReplacement);
   void SourceDimensionChanged();
   void RemoveListenerFromSourceChildren();
   void AddListenerToSourceChildren();

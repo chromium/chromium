@@ -268,6 +268,12 @@ void ImageReplacement::CreateImageReplacementShadowTree(
   shadow_root->AppendChild(iframe);
 }
 
+void ImageReplacement::UpdateOriginalImageSource(
+    base::PassKey<HTMLImageElement>,
+    HTMLImageElement& image_element) {
+  original_image_source_url_ = image_element.ImageSourceURL();
+}
+
 void ImageReplacement::Reset(Document& document) {
   if (image_element_ && tracked_element_feature_id_.has_value()) {
     viz::TrackedElementFeature tracking_feature =

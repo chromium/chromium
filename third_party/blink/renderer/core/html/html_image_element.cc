@@ -143,7 +143,8 @@ void HTMLImageElement::NotifyViewportChanged() {
   // Re-selecting the source URL in order to pick a more fitting resource
   // And update the image's intrinsic dimensions when the viewport changes.
   // Picking of a better fitting resource is UA dependent, not spec required.
-  SelectSourceURL(ImageLoader::kUpdateSizeChanged);
+  SelectSourceURL(ImageLoader::kUpdateSizeChanged,
+                  ShouldResetImageReplacement(false));
 }
 
 HTMLImageElement* HTMLImageElement::CreateForJSConstructor(Document& document) {
@@ -333,7 +334,11 @@ void HTMLImageElement::ParseAttribute(
     }
   } else if (name == html_names::kSrcAttr || name == html_names::kSrcsetAttr ||
              name == html_names::kSizesAttr) {
-    SelectSourceURL(ImageLoader::kUpdateIgnorePreviousError);
+    // A change to just the sizes attribute indicates a resizing of the image,
+    // and we don't want to reset an active image replacement in that case.
+    SelectSourceURL(
+        ImageLoader::kUpdateIgnorePreviousError,
+        ShouldResetImageReplacement(name != html_names::kSizesAttr));
   } else if (name == html_names::kUsemapAttr) {
     SetIsLink(!params.new_value.IsNull());
   } else if (name == html_names::kReferrerpolicyAttr) {
@@ -568,7 +573,8 @@ Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
   }
 
   if (was_added_to_picture_parent) {
-    SelectSourceURL(ImageLoader::kUpdateIgnorePreviousError);
+    SelectSourceURL(ImageLoader::kUpdateIgnorePreviousError,
+                    ShouldResetImageReplacement(true));
   } else if (insertion_point.isConnected()) {
     // If the <img> was inserted into the tree, and the image is not
     // potentially available, fallback rendering needs to be triggered.
@@ -619,8 +625,10 @@ void HTMLImageElement::RemovedFrom(ContainerNode& insertion_point) {
       was_removed_from_parent ? &insertion_point : parentNode());
   if (picture_parent) {
     picture_parent->RemoveListenerFromSourceChildren();
-    if (was_removed_from_parent)
-      SelectSourceURL(ImageLoader::kUpdateIgnorePreviousError);
+    if (was_removed_from_parent) {
+      SelectSourceURL(ImageLoader::kUpdateIgnorePreviousError,
+                      ShouldResetImageReplacement(true));
+    }
   }
   if (insertion_point.isConnected() &&
       !GetDocument().StatePreservingAtomicMoveInProgress()) {
@@ -846,7 +854,8 @@ bool HTMLImageElement::complete() const {
 
 void HTMLImageElement::OnResize() {
   if (is_auto_sized_ && HasLazyLoadingAttribute()) {
-    SelectSourceURL(ImageLoader::kUpdateSizeChanged);
+    SelectSourceURL(ImageLoader::kUpdateSizeChanged,
+                    ShouldResetImageReplacement(false));
   }
 }
 
@@ -854,7 +863,8 @@ void HTMLImageElement::DidMoveToNewDocument(Document& old_document) {
   GetImageLoader().ElementDidMoveToNewDocument();
   ResetImageReplacement(&old_document);
   HTMLElement::DidMoveToNewDocument(old_document);
-  SelectSourceURL(ImageLoader::kUpdateIgnorePreviousError);
+  SelectSourceURL(ImageLoader::kUpdateIgnorePreviousError,
+                  ShouldResetImageReplacement(true));
 }
 
 HTMLMapElement* HTMLImageElement::GetImageMap() const {
@@ -1000,7 +1010,8 @@ void HTMLImageElement::ForceReload() const {
 }
 
 void HTMLImageElement::SelectSourceURL(
-    ImageLoader::UpdateFromElementBehavior behavior) {
+    ImageLoader::UpdateFromElementBehavior behavior,
+    ShouldResetImageReplacement should_reset_image_replacement) {
   if (!GetDocument().IsActive())
     return;
 
@@ -1026,6 +1037,18 @@ void HTMLImageElement::SelectSourceURL(
   if (behavior != HTMLImageLoader::kUpdateSizeChanged ||
       best_fit_image_url_ != old_url) {
     GetImageLoader().UpdateFromElement(behavior);
+  }
+
+  if (best_fit_image_url_ != old_url && !should_reset_image_replacement) {
+    if (DocumentImageReplacements* replacements =
+            DocumentImageReplacements::FromIfExists(GetDocument())) {
+      if (ImageReplacement* replacement =
+              replacements->GetImageReplacement(this)) {
+        replacement->UpdateOriginalImageSource(
+            base::PassKey<HTMLImageElement>(), *this);
+        return;
+      }
+    }
   }
 
   ResetLayoutDisposition();
@@ -1071,8 +1094,6 @@ void HTMLImageElement::ResetLayoutDisposition() {
   // If the element has an image replacement, and the source URL hasn't changed
   // since the image replacement was created, then we don't need to reset the
   // layout disposition.
-  // TODO(b/489469993): Reconsider if resetting the replacement is necessary
-  // after the source URL changes in value.
   if (HasImageReplacement()) {
     if (DocumentImageReplacements* replacements =
             DocumentImageReplacements::FromIfExists(GetDocument())) {
