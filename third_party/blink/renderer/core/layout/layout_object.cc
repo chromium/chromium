@@ -1343,6 +1343,43 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
     return false;
   }
 
+  // Make sure our fragment is safe to use.
+  {
+    const auto& fragment = layout_result->GetPhysicalFragment();
+    if (fragment.IsLayoutObjectDestroyedOrMoved()) {
+      return false;
+    }
+
+    // Fragmented nodes cannot be relayout roots.
+    if (fragment.GetBreakToken()) {
+      return false;
+    }
+
+    // Any propagated layout-objects will affect the our container chain.
+    if (fragment.HasPropagatedLayoutObjects()) {
+      return false;
+    }
+
+    // If a box has any OOF descendants, they are propagated up the tree to
+    // accumulate their static-position.
+    if (fragment.HasOutOfFlowPositionedDescendants()) {
+      return false;
+    }
+
+    // Anchors should be propagated across the layout boundaries, even when
+    // `contain: strict` is explicitly set.
+    if (fragment.HasChildAnchors()) {
+      return false;
+    }
+
+    // A box which doesn't establish a new formatting context can pass a whole
+    // bunch of state (floats, margins) to an arbitrary sibling, causing that
+    // sibling to position/size differently.
+    if (!fragment.IsFormattingContextRoot()) {
+      return false;
+    }
+  }
+
   // Positioned objects always have self-painting layers and are safe to use as
   // relayout boundaries.
   bool is_svg_root = box->IsSVGRoot();
@@ -1380,41 +1417,6 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
   // the grid, as we need the cached information of the grid to recompute the
   // out of flow item's containing block rect.
   if (box->ContainingBlock()->IsLayoutGridOrGridLanes()) {
-    return false;
-  }
-
-  // Make sure our fragment is safe to use.
-  const auto& fragment = layout_result->GetPhysicalFragment();
-  if (fragment.IsLayoutObjectDestroyedOrMoved()) {
-    return false;
-  }
-
-  // Fragmented nodes cannot be relayout roots.
-  if (fragment.GetBreakToken()) {
-    return false;
-  }
-
-  // Any propagated layout-objects will affect the our container chain.
-  if (fragment.HasPropagatedLayoutObjects()) {
-    return false;
-  }
-
-  // If a box has any OOF descendants, they are propagated up the tree to
-  // accumulate their static-position.
-  if (fragment.HasOutOfFlowPositionedDescendants()) {
-    return false;
-  }
-
-  // Anchors should be propagated across the layout boundaries, even when
-  // `contain: strict` is explicitly set.
-  if (fragment.HasChildAnchors()) {
-    return false;
-  }
-
-  // A box which doesn't establish a new formating context can pass a whole
-  // bunch of state (floats, margins) to an arbitrary sibling, causing that
-  // sibling to position/size differently.
-  if (!fragment.IsFormattingContextRoot()) {
     return false;
   }
 
