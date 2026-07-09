@@ -45,7 +45,7 @@ TwoClientWebAppsIntegrationTestBase::TwoClientWebAppsIntegrationTestBase()
   if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
     enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
   }
-  disabled_features.push_back(features::kWebAppInstallDialog);
+  enabled_features.push_back(features::kWebAppInstallDialog);
   feature_overrides_.InitWithFeatures(enabled_features, disabled_features);
 }
 
