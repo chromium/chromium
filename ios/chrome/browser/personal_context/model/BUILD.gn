@@ -6,8 +6,8 @@ source_set("model") {
   sources = [
     "ios_personal_context_access_manager_factory.h",
     "ios_personal_context_access_manager_factory.mm",
-    "ios_personal_context_enablement_service_factory.h",
-    "ios_personal_context_enablement_service_factory.mm",
+    "ios_personal_context_eligibility_service_factory.h",
+    "ios_personal_context_eligibility_service_factory.mm",
     "ios_personal_context_service_factory.h",
     "ios_personal_context_service_factory.mm",
   ]
@@ -34,7 +34,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ios_personal_context_access_manager_factory_unittest.mm",
-    "ios_personal_context_enablement_service_factory_unittest.mm",
+    "ios_personal_context_eligibility_service_factory_unittest.mm",
     "ios_personal_context_service_factory_unittest.mm",
   ]
   deps = [

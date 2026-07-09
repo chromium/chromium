@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/personal_context/core/personal_context_enablement_service_impl.h"
+#include "components/personal_context/core/personal_context_eligibility_service_impl.h"
 
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -12,7 +12,7 @@
 #include "components/account_settings/account_settings_features.h"
 #include "components/account_settings/mock_account_setting_service.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
-#include "components/personal_context/core/personal_context_enablement_service_impl_test_api.h"
+#include "components/personal_context/core/personal_context_eligibility_service_impl_test_api.h"
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/testing_pref_service.h"
@@ -31,8 +31,8 @@ MATCHER_P(AccountSettingWithName, name, "") {
   return std::string(arg.name) == name;
 }
 
-class MockPersonalContextEnablementServiceObserver
-    : public PersonalContextEnablementService::Observer {
+class MockPersonalContextEligibilityServiceObserver
+    : public PersonalContextEligibilityService::Observer {
  public:
   MOCK_METHOD(void,
               OnEligibilityStateChanged,
@@ -40,14 +40,14 @@ class MockPersonalContextEnablementServiceObserver
               (override));
 };
 
-class PersonalContextEnablementServiceImplTest : public testing::Test {
+class PersonalContextEligibilityServiceImplTest : public testing::Test {
  public:
-  PersonalContextEnablementServiceImplTest() {
+  PersonalContextEligibilityServiceImplTest() {
     SetPrefs();
     CreateService("us");
     SignIn("test@gmail.com");
   }
-  ~PersonalContextEnablementServiceImplTest() override = default;
+  ~PersonalContextEligibilityServiceImplTest() override = default;
 
  protected:
   void SignIn(const std::string& email,
@@ -70,7 +70,7 @@ class PersonalContextEnablementServiceImplTest : public testing::Test {
 
   void CreateService(const std::string& country_code,
                      const std::string& locale = "en-US") {
-    service_ = std::make_unique<PersonalContextEnablementServiceImpl>(
+    service_ = std::make_unique<PersonalContextEligibilityServiceImpl>(
         &mock_account_settings_service_, identity_test_env_.identity_manager(),
         &pref_service_, GeoIpCountryCode(base::ToUpperASCII(country_code)),
         locale);
@@ -90,7 +90,7 @@ class PersonalContextEnablementServiceImplTest : public testing::Test {
         .WillByDefault(Return(true));
   }
 
-  PersonalContextEnablementServiceImpl& service() { return *service_; }
+  PersonalContextEligibilityServiceImpl& service() { return *service_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   base::test::TaskEnvironment task_environment_;
@@ -101,12 +101,12 @@ class PersonalContextEnablementServiceImplTest : public testing::Test {
   testing::NiceMock<account_settings::MockAccountSettingService>
       mock_account_settings_service_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<PersonalContextEnablementServiceImpl> service_;
+  std::unique_ptr<PersonalContextEligibilityServiceImpl> service_;
 };
 
 // Verifies that the debug override feature correctly forces the enablement
 // state regardless of other requirements.
-TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
+TEST_F(PersonalContextEligibilityServiceImplTest, ForcedEnablementState) {
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
@@ -137,7 +137,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
 
 // Verifies that the service is enabled when all feature flags and other
 // requirements (set up in the test fixture) are met.
-TEST_F(PersonalContextEnablementServiceImplTest, EnabledWhenAllFeaturesAreOn) {
+TEST_F(PersonalContextEligibilityServiceImplTest, EnabledWhenAllFeaturesAreOn) {
   EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kEligible);
   histogram_tester().ExpectBucketCount(
@@ -147,7 +147,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, EnabledWhenAllFeaturesAreOn) {
 
 #if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.
 // Verifies that the service is disabled when the user is not signed in.
-TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenSignedOut) {
+TEST_F(PersonalContextEligibilityServiceImplTest, DisabledWhenSignedOut) {
   identity_test_env_.ClearPrimaryAccount();
   EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
@@ -160,7 +160,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenSignedOut) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Verifies that the service is disabled for underaged users.
-TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenUnderaged) {
+TEST_F(PersonalContextEligibilityServiceImplTest, DisabledWhenUnderaged) {
   SignIn("under@gmail.com", /*is_underaged=*/true);
 
   EXPECT_EQ(service().GetEligibilityState(),
@@ -172,7 +172,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenUnderaged) {
 }
 
 // Verifies that the service is disabled for managed (enterprise) accounts.
-TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenManaged) {
+TEST_F(PersonalContextEligibilityServiceImplTest, DisabledWhenManaged) {
   SignIn("managed@example.com", /*is_underaged=*/false, /*is_managed=*/true);
 
   EXPECT_EQ(service().GetEligibilityState(),
@@ -185,9 +185,9 @@ TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenManaged) {
 
 // Verifies that the service fails safe (disabled) if the required
 // `AccountSettingService` is missing.
-TEST_F(PersonalContextEnablementServiceImplTest,
+TEST_F(PersonalContextEligibilityServiceImplTest,
        DisabledWhenAccountSettingsServiceNotAvailable) {
-  service_ = std::make_unique<PersonalContextEnablementServiceImpl>(
+  service_ = std::make_unique<PersonalContextEligibilityServiceImpl>(
       nullptr, identity_test_env_.identity_manager(), &pref_service_,
       GeoIpCountryCode("US"), "en-US");
 
@@ -197,7 +197,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
 
 // Verifies that the service is disabled if the user has explicitly opted
 // out of personal context in their global account settings.
-TEST_F(PersonalContextEnablementServiceImplTest,
+TEST_F(PersonalContextEligibilityServiceImplTest,
        DisabledWhenAccountOptedOutOfContext) {
   EXPECT_CALL(mock_account_settings_service_,
               GetBoolean(AccountSettingWithName(
@@ -216,7 +216,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
 
 // Verifies that the service is disabled if no specific context sources
 // (e.g. Photos, Workspace) are enabled, even if the global opt-in is on.
-TEST_F(PersonalContextEnablementServiceImplTest,
+TEST_F(PersonalContextEligibilityServiceImplTest,
        DisabledWhenNoContextSourcesEnabled) {
   EXPECT_CALL(mock_account_settings_service_,
               GetBoolean(AccountSettingWithName(
@@ -243,7 +243,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
 
 // Verifies that the service is enabled if at least one context source
 // is enabled.
-TEST_F(PersonalContextEnablementServiceImplTest,
+TEST_F(PersonalContextEligibilityServiceImplTest,
        EnabledWhenAtLeastOneContextSourceEnabled) {
   EXPECT_CALL(mock_account_settings_service_,
               GetBoolean(AccountSettingWithName(
@@ -285,7 +285,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
 
 // Verifies that the internal state cache and observers are updated when
 // account settings change.
-TEST_F(PersonalContextEnablementServiceImplTest,
+TEST_F(PersonalContextEligibilityServiceImplTest,
        CacheUpdatedOnAccountSettingChanged) {
   // Initial state is kEligible.
   ASSERT_EQ(service().GetEligibilityState(),
@@ -328,12 +328,12 @@ TEST_F(PersonalContextEnablementServiceImplTest,
             PersonalContextEligibilityState::kEligible);
 }
 
-TEST_F(PersonalContextEnablementServiceImplTest,
+TEST_F(PersonalContextEligibilityServiceImplTest,
        DisabledWhenAccountSettingsServiceNotAvailableAndOptInEnabled) {
   base::test::ScopedFeatureList feature_list{
       features::kPersonalContextFirstRunOptIn};
 
-  service_ = std::make_unique<PersonalContextEnablementServiceImpl>(
+  service_ = std::make_unique<PersonalContextEligibilityServiceImpl>(
       nullptr, identity_test_env_.identity_manager(), &pref_service_,
       GeoIpCountryCode("US"), "en-US");
 
@@ -341,12 +341,12 @@ TEST_F(PersonalContextEnablementServiceImplTest,
             PersonalContextEligibilityState::kDisabledNotEligible);
 }
 
-TEST_F(PersonalContextEnablementServiceImplTest,
+TEST_F(PersonalContextEligibilityServiceImplTest,
        NeedsOptInWhenAccountOptedOutOfContextAndOptInEnabled) {
   base::test::ScopedFeatureList feature_list{
       features::kPersonalContextFirstRunOptIn};
 
-  PersonalContextEnablementServiceImplTestApi(&service())
+  PersonalContextEligibilityServiceImplTestApi(&service())
       .ComputeEnablementState();
 
   EXPECT_CALL(mock_account_settings_service_,
@@ -360,12 +360,12 @@ TEST_F(PersonalContextEnablementServiceImplTest,
             PersonalContextEligibilityState::kDisabledNeedsOptIn);
 }
 
-TEST_F(PersonalContextEnablementServiceImplTest,
+TEST_F(PersonalContextEligibilityServiceImplTest,
        NeedsOptInWhenNoContextSourcesEnabledAndOptInEnabled) {
   base::test::ScopedFeatureList feature_list{
       features::kPersonalContextFirstRunOptIn};
 
-  PersonalContextEnablementServiceImplTestApi(&service())
+  PersonalContextEligibilityServiceImplTestApi(&service())
       .ComputeEnablementState();
 
   EXPECT_CALL(mock_account_settings_service_,
@@ -387,14 +387,14 @@ TEST_F(PersonalContextEnablementServiceImplTest,
             PersonalContextEligibilityState::kDisabledNeedsOptIn);
 }
 
-class PersonalContextEnablementServiceImplGeolocationTest
-    : public PersonalContextEnablementServiceImplTest,
+class PersonalContextEligibilityServiceImplGeolocationTest
+    : public PersonalContextEligibilityServiceImplTest,
       public testing::WithParamInterface<
           std::tuple<std::string, PersonalContextEligibilityState>> {};
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    PersonalContextEnablementServiceImplGeolocationTest,
+    PersonalContextEligibilityServiceImplGeolocationTest,
     testing::Values(
         std::make_tuple(/*country_code=*/"au",
                         PersonalContextEligibilityState::kDisabledNotEligible),
@@ -405,7 +405,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Verifies that the service is only enabled in supported geographical regions
 // (e.g. "US" only).
-TEST_P(PersonalContextEnablementServiceImplGeolocationTest,
+TEST_P(PersonalContextEligibilityServiceImplGeolocationTest,
        CheckCountryEnablement) {
   CreateService(std::get<0>(GetParam()));
   EXPECT_EQ(service().GetEligibilityState(), std::get<1>(GetParam()));
@@ -421,14 +421,14 @@ TEST_P(PersonalContextEnablementServiceImplGeolocationTest,
   }
 }
 
-class PersonalContextEnablementServiceImplLocaleTest
-    : public PersonalContextEnablementServiceImplTest,
+class PersonalContextEligibilityServiceImplLocaleTest
+    : public PersonalContextEligibilityServiceImplTest,
       public testing::WithParamInterface<
           std::tuple<std::string, PersonalContextEligibilityState>> {};
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    PersonalContextEnablementServiceImplLocaleTest,
+    PersonalContextEligibilityServiceImplLocaleTest,
     testing::Values(
         std::make_tuple(/*locale=*/"fr-FR",
                         PersonalContextEligibilityState::kDisabledNotEligible),
@@ -441,7 +441,7 @@ INSTANTIATE_TEST_SUITE_P(
             PersonalContextEligibilityState::kDisabledNotEligible)));
 
 // Verifies that the service is only enabled for the en-US locale.
-TEST_P(PersonalContextEnablementServiceImplLocaleTest, CheckLocaleEnablement) {
+TEST_P(PersonalContextEligibilityServiceImplLocaleTest, CheckLocaleEnablement) {
   CreateService("us", std::get<0>(GetParam()));
   EXPECT_EQ(service().GetEligibilityState(), std::get<1>(GetParam()));
 

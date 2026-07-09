@@ -20,9 +20,9 @@
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/personal_context/core/mock_personal_context_enablement_service.h"
+#include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
-#include "components/personal_context/core/personal_context_enablement_service.h"
+#include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -38,7 +38,7 @@ namespace {
 using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
 using personal_context::ContextMemoryError;
-using ::personal_context::MockPersonalContextEnablementService;
+using ::personal_context::MockPersonalContextEligibilityService;
 using ::personal_context::MockPersonalContextService;
 using ::personal_context::proto::SensitivePiiPresence;
 using ::testing::_;
@@ -113,9 +113,9 @@ class PersonalContextAccessManagerImplTest : public testing::Test {
   PersonalContextAccessManagerImplTest() {
     personal_context::prefs::RegisterProfilePrefs(pref_service_.registry());
     access_manager_ = std::make_unique<PersonalContextAccessManagerImpl>(
-        &mock_personal_context_service_, &mock_enablement_service_,
+        &mock_personal_context_service_, &mock_eligibility_service_,
         &pref_service_);
-    ON_CALL(mock_enablement_service_, GetEligibilityState)
+    ON_CALL(mock_eligibility_service_, GetEligibilityState)
         .WillByDefault(testing::Return(
             personal_context::PersonalContextEligibilityState::kEligible));
     observation_.Observe(access_manager_.get());
@@ -130,8 +130,8 @@ class PersonalContextAccessManagerImplTest : public testing::Test {
     return mock_personal_context_service_;
   }
 
-  MockPersonalContextEnablementService& mock_enablement_service() {
-    return mock_enablement_service_;
+  MockPersonalContextEligibilityService& mock_eligibility_service() {
+    return mock_eligibility_service_;
   }
 
   MockPersonalContextAccessManagerObserver& mock_observer() {
@@ -225,7 +225,7 @@ class PersonalContextAccessManagerImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockPersonalContextService mock_personal_context_service_;
-  MockPersonalContextEnablementService mock_enablement_service_;
+  MockPersonalContextEligibilityService mock_eligibility_service_;
   std::unique_ptr<PersonalContextAccessManagerImpl> access_manager_;
   MockPersonalContextAccessManagerObserver mock_observer_;
   base::ScopedObservation<PersonalContextAccessManagerImpl,

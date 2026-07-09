@@ -146,7 +146,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/personal_context/core/mock_personal_context_enablement_service.h"
+#include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -1343,12 +1343,12 @@ class BrowserAutofillManagerAtMemoryTest : public BrowserAutofillManagerTest {
     ON_CALL(mock_personal_context_service_, GetEligibilityState())
         .WillByDefault(Return(
             personal_context::PersonalContextEligibilityState::kEligible));
-    autofill_client().set_personal_context_enablement_service(
+    autofill_client().set_personal_context_eligibility_service(
         &mock_personal_context_service_);
   }
 
  protected:
-  NiceMock<personal_context::MockPersonalContextEnablementService>
+  NiceMock<personal_context::MockPersonalContextEligibilityService>
       mock_personal_context_service_;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -1374,7 +1374,7 @@ TEST_F(BrowserAutofillManagerAtMemoryTest, TriggerDroppedWhenNotEligible) {
       .WillByDefault(Return(personal_context::PersonalContextEligibilityState::
                                 kDisabledNotEligible));
 
-  autofill_client().set_personal_context_enablement_state(
+  autofill_client().set_personal_context_eligibility_state(
       personal_context::PersonalContextEligibilityState::kDisabledNotEligible);
 
   OnAskForValuesToFill(form, form.fields()[0],

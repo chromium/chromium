@@ -11,7 +11,7 @@
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/personal_context/core/personal_context_enablement_service.h"
+#include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,13 +21,13 @@ namespace autofill {
 
 namespace {
 
+using personal_context::PersonalContextEligibilityService;
 using personal_context::PersonalContextEligibilityState;
-using personal_context::PersonalContextEnablementService;
 using ::testing::NiceMock;
 using ::testing::Return;
 
-class MockPersonalContextEnablementService
-    : public PersonalContextEnablementService {
+class MockPersonalContextEligibilityService
+    : public PersonalContextEligibilityService {
  public:
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
@@ -75,7 +75,7 @@ class PersonalContextAutofillUtilTest : public testing::Test {
 TEST_F(PersonalContextAutofillUtilTest,
        ShouldShowPersonalContextAutofillSetting) {
   using enum PersonalContextEligibilityState;
-  NiceMock<MockPersonalContextEnablementService> service;
+  NiceMock<MockPersonalContextEligibilityService> service;
 
   auto check_state = [&](PersonalContextEligibilityState state) {
     ON_CALL(service, GetEligibilityState()).WillByDefault(Return(state));
@@ -87,12 +87,12 @@ TEST_F(PersonalContextAutofillUtilTest,
   EXPECT_TRUE(check_state(kEligible));
 
   EXPECT_FALSE(ShouldShowPersonalContextAutofillSetting(
-      client_, /*enablement_service=*/nullptr));
+      client_, /*eligibility_service=*/nullptr));
 }
 
 TEST_F(PersonalContextAutofillUtilTest,
        ShouldShowPersonalContextAutofillSetting_BothDisabled) {
-  NiceMock<MockPersonalContextEnablementService> service;
+  NiceMock<MockPersonalContextEligibilityService> service;
   ON_CALL(service, GetEligibilityState())
       .WillByDefault(Return(PersonalContextEligibilityState::kEligible));
 
@@ -106,7 +106,7 @@ TEST_F(PersonalContextAutofillUtilTest,
 
 TEST_F(PersonalContextAutofillUtilTest,
        ShouldShowPersonalContextAutofillSetting_AmbientAutofillEnabled) {
-  NiceMock<MockPersonalContextEnablementService> service;
+  NiceMock<MockPersonalContextEligibilityService> service;
   ON_CALL(service, GetEligibilityState())
       .WillByDefault(Return(PersonalContextEligibilityState::kEligible));
 

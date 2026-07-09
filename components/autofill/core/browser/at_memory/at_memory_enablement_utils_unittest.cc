@@ -14,7 +14,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/personal_context/core/mock_personal_context_enablement_service.h"
+#include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/prefs/pref_notifier_impl.h"
@@ -95,7 +95,7 @@ class AtMemoryEnablementUtilsTest : public testing::Test {
         .WillByDefault(
             Return(personal_context::PersonalContextEligibilityState::
                        kDisabledNotEligible));
-    autofill_client().set_personal_context_enablement_service(
+    autofill_client().set_personal_context_eligibility_service(
         &personal_context_service_);
     autofill_client().set_last_committed_primary_main_frame_url(
         GURL("https://example.com"));
@@ -106,7 +106,7 @@ class AtMemoryEnablementUtilsTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  testing::NiceMock<personal_context::MockPersonalContextEnablementService>
+  testing::NiceMock<personal_context::MockPersonalContextEligibilityService>
       personal_context_service_;
 
  private:

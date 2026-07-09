@@ -15,7 +15,7 @@ class GURL;
 class PrefService;
 
 namespace personal_context {
-class PersonalContextEnablementService;
+class PersonalContextEligibilityService;
 }  // namespace personal_context
 
 namespace subscription_eligibility {
@@ -61,7 +61,7 @@ class AutofillOptimizationGuideDecider;
 
 [[nodiscard]] bool MayPerformAtMemoryAction(
     AtMemoryAction action,
-    personal_context::PersonalContextEnablementService*
+    personal_context::PersonalContextEligibilityService*
         personal_context_service,
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_eligibility_service,

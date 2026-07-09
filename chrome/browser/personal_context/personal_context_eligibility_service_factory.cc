@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/personal_context/personal_context_enablement_service_factory.h"
+#include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 
 #include "base/strings/string_util.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
@@ -12,7 +12,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/personal_context/core/country_type.h"
-#include "components/personal_context/core/personal_context_enablement_service_impl.h"
+#include "components/personal_context/core/personal_context_eligibility_service_impl.h"
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/variations_service.h"
@@ -32,23 +32,23 @@ personal_context::GeoIpCountryCode GetCountryCodeFromVariations() {
 }  // namespace
 
 // static
-personal_context::PersonalContextEnablementService*
-PersonalContextEnablementServiceFactory::GetForProfile(Profile* profile) {
-  return static_cast<personal_context::PersonalContextEnablementService*>(
+personal_context::PersonalContextEligibilityService*
+PersonalContextEligibilityServiceFactory::GetForProfile(Profile* profile) {
+  return static_cast<personal_context::PersonalContextEligibilityService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
 // static
-PersonalContextEnablementServiceFactory*
-PersonalContextEnablementServiceFactory::GetInstance() {
-  static base::NoDestructor<PersonalContextEnablementServiceFactory> instance;
+PersonalContextEligibilityServiceFactory*
+PersonalContextEligibilityServiceFactory::GetInstance() {
+  static base::NoDestructor<PersonalContextEligibilityServiceFactory> instance;
   return instance.get();
 }
 
-PersonalContextEnablementServiceFactory::
-    PersonalContextEnablementServiceFactory()
+PersonalContextEligibilityServiceFactory::
+    PersonalContextEligibilityServiceFactory()
     : ProfileKeyedServiceFactory(
-          "PersonalContextEnablementService",
+          "PersonalContextEligibilityService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
@@ -56,11 +56,11 @@ PersonalContextEnablementServiceFactory::
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
-PersonalContextEnablementServiceFactory::
-    ~PersonalContextEnablementServiceFactory() = default;
+PersonalContextEligibilityServiceFactory::
+    ~PersonalContextEligibilityServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
-PersonalContextEnablementServiceFactory::BuildServiceInstanceForBrowserContext(
+PersonalContextEligibilityServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(
           personal_context::features::kPersonalContext)) {
@@ -75,7 +75,7 @@ PersonalContextEnablementServiceFactory::BuildServiceInstanceForBrowserContext(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
   return std::make_unique<
-      personal_context::PersonalContextEnablementServiceImpl>(
+      personal_context::PersonalContextEligibilityServiceImpl>(
       account_settings_service, identity_manager, profile->GetPrefs(),
       GetCountryCodeFromVariations(),
       g_browser_process->GetFeatures()->application_locale_storage()->Get());

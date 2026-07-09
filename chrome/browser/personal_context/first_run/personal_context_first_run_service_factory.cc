@@ -9,7 +9,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/personal_context/first_run/chrome_personal_context_first_run_client.h"
-#include "chrome/browser/personal_context/personal_context_enablement_service_factory.h"
+#include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -35,7 +35,7 @@ PersonalContextFirstRunServiceFactory::PersonalContextFirstRunServiceFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(PersonalContextEnablementServiceFactory::GetInstance());
+  DependsOn(PersonalContextEligibilityServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -50,6 +50,6 @@ PersonalContextFirstRunServiceFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<ChromePersonalContextFirstRunClient>();
   return std::make_unique<personal_context::PersonalContextFirstRunServiceImpl>(
       std::move(client),
-      PersonalContextEnablementServiceFactory::GetForProfile(profile),
+      PersonalContextEligibilityServiceFactory::GetForProfile(profile),
       profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile));
 }

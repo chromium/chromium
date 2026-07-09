@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/personal_context/core/personal_context_enablement_service_impl.h"
+#include "components/personal_context/core/personal_context_eligibility_service_impl.h"
 
 #include <string>
 
@@ -155,7 +155,7 @@ SatisfiesMiscellaneousRequirements(GeoIpCountryCode country_code,
 }
 }  // namespace
 
-PersonalContextEnablementServiceImpl::PersonalContextEnablementServiceImpl(
+PersonalContextEligibilityServiceImpl::PersonalContextEligibilityServiceImpl(
     account_settings::AccountSettingService* account_settings_service,
     signin::IdentityManager* identity_manager,
     // TODO(b:494149753): PrefsService is no longer needed, remove it.
@@ -176,21 +176,21 @@ PersonalContextEnablementServiceImpl::PersonalContextEnablementServiceImpl(
   UpdateEnablementState();
 }
 
-PersonalContextEnablementServiceImpl::~PersonalContextEnablementServiceImpl() =
-    default;
+PersonalContextEligibilityServiceImpl::
+    ~PersonalContextEligibilityServiceImpl() = default;
 
-void PersonalContextEnablementServiceImpl::AddObserver(
-    PersonalContextEnablementService::Observer* observer) {
+void PersonalContextEligibilityServiceImpl::AddObserver(
+    PersonalContextEligibilityService::Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void PersonalContextEnablementServiceImpl::RemoveObserver(
-    PersonalContextEnablementService::Observer* observer) {
+void PersonalContextEligibilityServiceImpl::RemoveObserver(
+    PersonalContextEligibilityService::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
 PersonalContextEligibilityState
-PersonalContextEnablementServiceImpl::GetEligibilityState() {
+PersonalContextEligibilityServiceImpl::GetEligibilityState() {
   if (base::FeatureList::IsEnabled(
           features::debug::kPersonalContextForceEnablementState)) {
     return GetForcedEnablementState().value_or(enablement_state_);
@@ -201,7 +201,7 @@ PersonalContextEnablementServiceImpl::GetEligibilityState() {
 
 std::pair<PersonalContextEligibilityState,
           std::optional<PersonalContextNonEligibilityReason>>
-PersonalContextEnablementServiceImpl::ComputeEnablementState() {
+PersonalContextEligibilityServiceImpl::ComputeEnablementState() {
   using enum PersonalContextEligibilityState;
 
   if (auto [satisfied, reason] =
@@ -233,13 +233,13 @@ PersonalContextEnablementServiceImpl::ComputeEnablementState() {
   return std::pair{kEligible, PersonalContextNonEligibilityReason::kEligible};
 }
 
-void PersonalContextEnablementServiceImpl::UpdateEnablementState() {
+void PersonalContextEligibilityServiceImpl::UpdateEnablementState() {
   const auto [new_enablement_state, non_eligibility_reason] =
       ComputeEnablementState();
   if (new_enablement_state != enablement_state_) {
     enablement_state_ = new_enablement_state;
     observers_.Notify(
-        &PersonalContextEnablementService::Observer::OnEligibilityStateChanged,
+        &PersonalContextEligibilityService::Observer::OnEligibilityStateChanged,
         enablement_state_);
   }
   if (base::FeatureList::IsEnabled(
@@ -250,22 +250,22 @@ void PersonalContextEnablementServiceImpl::UpdateEnablementState() {
   }
 }
 
-void PersonalContextEnablementServiceImpl::OnPrimaryAccountChanged(
+void PersonalContextEligibilityServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   UpdateEnablementState();
 }
 
-void PersonalContextEnablementServiceImpl::OnIdentityManagerShutdown(
+void PersonalContextEligibilityServiceImpl::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
   identity_manager_observer_.Reset();
 }
 
-void PersonalContextEnablementServiceImpl::OnExtendedAccountInfoUpdated(
+void PersonalContextEligibilityServiceImpl::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   UpdateEnablementState();
 }
 
-void PersonalContextEnablementServiceImpl::OnAccountSettingDataUpdated(
+void PersonalContextEligibilityServiceImpl::OnAccountSettingDataUpdated(
     const std::string& setting_name) {
   UpdateEnablementState();
 }

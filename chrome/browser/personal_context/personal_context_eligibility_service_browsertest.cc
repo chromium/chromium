@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/personal_context/core/personal_context_enablement_service.h"
+#include "components/personal_context/core/personal_context_eligibility_service.h"
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
-#include "chrome/browser/personal_context/personal_context_enablement_service_factory.h"
+#include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -21,7 +21,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/personal_context/core/country_type.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
-#include "components/personal_context/core/personal_context_enablement_service_impl.h"
+#include "components/personal_context/core/personal_context_eligibility_service_impl.h"
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -41,8 +41,8 @@ constexpr char kAdultUserEmail[] = "adult_user@gmail.com";
 constexpr char kUnderagedUserEmail[] = "underaged_user@gmail.com";
 constexpr char kCorpUserEmail[] = "corp_user@example.com";
 
-class MockPersonalContextEnablementServiceObserver
-    : public PersonalContextEnablementService::Observer {
+class MockPersonalContextEligibilityServiceObserver
+    : public PersonalContextEligibilityService::Observer {
  public:
   MOCK_METHOD(void,
               OnEligibilityStateChanged,
@@ -62,20 +62,20 @@ std::unique_ptr<KeyedService> BuildMockAccountSettingService(
   return service;
 }
 
-std::unique_ptr<KeyedService> BuildEnablementService(
+std::unique_ptr<KeyedService> BuildEligibilityService(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<PersonalContextEnablementServiceImpl>(
+  return std::make_unique<PersonalContextEligibilityServiceImpl>(
       AccountSettingServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
       GeoIpCountryCode("US"), "en-US");
 }
 
-class PersonalContextEnablementServiceImplBrowserTest
+class PersonalContextEligibilityServiceImplBrowserTest
     : public InProcessBrowserTest {
  public:
-  PersonalContextEnablementServiceImplBrowserTest() = default;
-  ~PersonalContextEnablementServiceImplBrowserTest() override = default;
+  PersonalContextEligibilityServiceImplBrowserTest() = default;
+  ~PersonalContextEligibilityServiceImplBrowserTest() override = default;
 
   // Configure feature before the main browser process is started
   void SetUp() override {
@@ -91,7 +91,7 @@ class PersonalContextEnablementServiceImplBrowserTest
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &PersonalContextEnablementServiceImplBrowserTest::
+                &PersonalContextEligibilityServiceImplBrowserTest::
                     OnWillCreateBrowserContextServices,
                 base::Unretained(this)));
   }
@@ -112,14 +112,12 @@ class PersonalContextEnablementServiceImplBrowserTest
         prefs::kPersonalContextInAutofillSettingsToggleStatus, true);
 
     // Instantiate service locally via factory
-    enablement_service_ =
-        static_cast<PersonalContextEnablementServiceImpl*>(
-            PersonalContextEnablementServiceFactory::GetForProfile(
-                GetProfile()));
+    eligibility_service_ = static_cast<PersonalContextEligibilityServiceImpl*>(
+        PersonalContextEligibilityServiceFactory::GetForProfile(GetProfile()));
   }
 
   void TearDownOnMainThread() override {
-    enablement_service_ = nullptr;
+    eligibility_service_ = nullptr;
     mock_account_settings_service_ = nullptr;
     pref_service_ = nullptr;
     identity_test_env_adaptor_.reset();
@@ -132,8 +130,8 @@ class PersonalContextEnablementServiceImplBrowserTest
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
     AccountSettingServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&BuildMockAccountSettingService));
-    PersonalContextEnablementServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildEnablementService));
+    PersonalContextEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildEligibilityService));
   }
 
   void SignIn(std::string_view email,
@@ -142,8 +140,8 @@ class PersonalContextEnablementServiceImplBrowserTest
     AccountInfo info = identity_test_env()->MakePrimaryAccountAvailable(
         std::string(email), signin::ConsentLevel::kSignin);
     AccountInfo::Builder builder(info);
-    builder.SetHostedDomain(is_managed ? "example.com"
-                                       : signin::constants::kNoHostedDomainFound);
+    builder.SetHostedDomain(
+        is_managed ? "example.com" : signin::constants::kNoHostedDomainFound);
 
     AccountCapabilities capabilities = info.GetAccountCapabilities();
     AccountCapabilitiesTestMutator mutator(&capabilities);
@@ -164,7 +162,7 @@ class PersonalContextEnablementServiceImplBrowserTest
   raw_ptr<PrefService> pref_service_;
   raw_ptr<account_settings::MockAccountSettingService>
       mock_account_settings_service_;
-  raw_ptr<PersonalContextEnablementServiceImpl> enablement_service_;
+  raw_ptr<PersonalContextEligibilityServiceImpl> eligibility_service_;
 };
 
 // =============================================================================
@@ -172,28 +170,28 @@ class PersonalContextEnablementServiceImplBrowserTest
 // =============================================================================
 
 // Verify underaged age capability check gates feature access
-IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(PersonalContextEligibilityServiceImplBrowserTest,
                        ConsentAgeGateDisablesService) {
   SignIn(kUnderagedUserEmail, /*is_underaged=*/true);
 
-  EXPECT_EQ(enablement_service_->GetEligibilityState(),
+  EXPECT_EQ(eligibility_service_->GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 }
 
 // Ensure managed enterprise accounts disable personal context features
-IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(PersonalContextEligibilityServiceImplBrowserTest,
                        ConsentManagedAccountDisablesService) {
   SignIn(kCorpUserEmail, /*is_underaged=*/false, /*is_managed=*/true);
 
-  EXPECT_EQ(enablement_service_->GetEligibilityState(),
+  EXPECT_EQ(eligibility_service_->GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 }
 
 // Verify photos and workspace opt-outs disable service status
-IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(PersonalContextEligibilityServiceImplBrowserTest,
                        ConsentCloudPreferencesDeactivate) {
   SignIn(kAdultUserEmail);
-  EXPECT_EQ(enablement_service_->GetEligibilityState(),
+  EXPECT_EQ(eligibility_service_->GetEligibilityState(),
             PersonalContextEligibilityState::kEligible);
 
   // Simulate preferences opt-out
@@ -201,9 +199,9 @@ IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
       .WillRepeatedly(Return(false));
 
   // Enablement check should update after change events
-  enablement_service_->OnAccountSettingDataUpdated("any_setting");
+  eligibility_service_->OnAccountSettingDataUpdated("any_setting");
 
-  EXPECT_EQ(enablement_service_->GetEligibilityState(),
+  EXPECT_EQ(eligibility_service_->GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 }
 
@@ -212,12 +210,12 @@ IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
 // =============================================================================
 
 // Confirm state observers trigger notifications upon settings shifts
-IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(PersonalContextEligibilityServiceImplBrowserTest,
                        ObserverStateChangeObserverFires) {
   SignIn(kAdultUserEmail);
 
-  testing::StrictMock<MockPersonalContextEnablementServiceObserver> observer;
-  enablement_service_->AddObserver(&observer);
+  testing::StrictMock<MockPersonalContextEligibilityServiceObserver> observer;
+  eligibility_service_->AddObserver(&observer);
 
   // Toggling settings should fire state update notification to the observer
   EXPECT_CALL(observer,
@@ -229,9 +227,9 @@ IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
   EXPECT_CALL(*mock_account_settings_service_, GetBoolean(testing::_))
       .WillRepeatedly(Return(false));
 
-  enablement_service_->OnAccountSettingDataUpdated("any_setting");
+  eligibility_service_->OnAccountSettingDataUpdated("any_setting");
 
-  enablement_service_->RemoveObserver(&observer);
+  eligibility_service_->RemoveObserver(&observer);
 }
 }  // namespace
 }  // namespace personal_context

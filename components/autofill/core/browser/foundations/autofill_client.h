@@ -101,7 +101,7 @@ enum class Channel;
 
 namespace personal_context {
 enum class PersonalContextEligibilityState;
-class PersonalContextEnablementService;
+class PersonalContextEligibilityService;
 }
 
 namespace subscription_eligibility {
@@ -503,9 +503,9 @@ class AutofillClient {
   virtual personal_context::PersonalContextEligibilityState
   GetPersonalContextEligibilityState() const;
 
-  // Returns the Personal Context Enablement Service. May return nullptr.
-  virtual personal_context::PersonalContextEnablementService*
-  GetPersonalContextEnablementService() const;
+  // Returns the Personal Context Eligibility Service. May return nullptr.
+  virtual personal_context::PersonalContextEligibilityService*
+  GetPersonalContextEligibilityService() const;
 
   // Returns the `PasswordManagerDelegate` responsible to provide
   // password suggestions for the given `field_id`.

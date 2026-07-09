@@ -51,7 +51,7 @@
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/personal_context/core/mock_personal_context_enablement_service.h"
+#include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/core/browser/plus_address_service.h"
@@ -1092,12 +1092,12 @@ class AtMemoryContextMenuManagerTest
     ON_CALL(mock_personal_context_service_, GetEligibilityState())
         .WillByDefault(Return(
             personal_context::PersonalContextEligibilityState::kEligible));
-    autofill_client()->set_personal_context_enablement_service(
+    autofill_client()->set_personal_context_eligibility_service(
         &mock_personal_context_service_);
   }
 
  protected:
-  NiceMock<personal_context::MockPersonalContextEnablementService>
+  NiceMock<personal_context::MockPersonalContextEligibilityService>
       mock_personal_context_service_;
 
  private:

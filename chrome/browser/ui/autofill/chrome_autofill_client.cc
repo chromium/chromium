@@ -62,7 +62,7 @@
 #include "chrome/browser/password_manager/factories/password_manager_settings_service_factory.h"
 #include "chrome/browser/password_manager/password_field_classification_model_handler_factory.h"
 #include "chrome/browser/personal_context/first_run/personal_context_first_run_service_factory.h"
-#include "chrome/browser/personal_context/personal_context_enablement_service_factory.h"
+#include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -543,17 +543,17 @@ AtMemoryQueryService* ChromeAutofillClient::GetAtMemoryQueryService() {
 personal_context::PersonalContextEligibilityState
 ChromeAutofillClient::GetPersonalContextEligibilityState() const {
   Profile* profile = GetProfile();
-  personal_context::PersonalContextEnablementService* service =
-      PersonalContextEnablementServiceFactory::GetForProfile(profile);
+  personal_context::PersonalContextEligibilityService* service =
+      PersonalContextEligibilityServiceFactory::GetForProfile(profile);
   return service ? service->GetEligibilityState()
                  : personal_context::PersonalContextEligibilityState::
                        kDisabledNotEligible;
 }
 
-personal_context::PersonalContextEnablementService*
-ChromeAutofillClient::GetPersonalContextEnablementService() const {
+personal_context::PersonalContextEligibilityService*
+ChromeAutofillClient::GetPersonalContextEligibilityService() const {
   Profile* profile = GetProfile();
-  return PersonalContextEnablementServiceFactory::GetForProfile(profile);
+  return PersonalContextEligibilityServiceFactory::GetForProfile(profile);
 }
 
 PasswordManagerDelegate* ChromeAutofillClient::GetPasswordManagerDelegate(

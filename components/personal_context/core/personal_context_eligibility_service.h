@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_ENABLEMENT_SERVICE_H_
-#define COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_ENABLEMENT_SERVICE_H_
+#ifndef COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_ELIGIBILITY_SERVICE_H_
+#define COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_ELIGIBILITY_SERVICE_H_
 
 #include "base/observer_list_types.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -11,7 +11,6 @@
 
 namespace personal_context {
 
-// TODO(crbug.com/393282247): Rename to PersonalContextEligibilityService.
 // Service that manages the eligibility state of the Personal Context
 // feature. It checks eligibility, and broadcasts state changes to observers.
 //
@@ -19,7 +18,7 @@ namespace personal_context {
 // available for the original (non-incognito) profile. For Incognito or Guest
 // profiles, the service is not created, reflecting that Personal Context
 // features are generally disabled in private browsing modes.
-class PersonalContextEnablementService : public KeyedService {
+class PersonalContextEligibilityService : public KeyedService {
  public:
   // Observable interface for consuming features, notifies when the conditions
   // change.
@@ -32,7 +31,7 @@ class PersonalContextEnablementService : public KeyedService {
         PersonalContextEligibilityState new_state) = 0;
   };
 
-  ~PersonalContextEnablementService() override = default;
+  ~PersonalContextEligibilityService() override = default;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
@@ -44,4 +43,4 @@ class PersonalContextEnablementService : public KeyedService {
 
 }  // namespace personal_context
 
-#endif  // COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_ENABLEMENT_SERVICE_H_
+#endif  // COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_ELIGIBILITY_SERVICE_H_

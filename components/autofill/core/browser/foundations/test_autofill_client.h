@@ -235,12 +235,12 @@ class TestAutofillClientTemplate : public T {
 
   personal_context::PersonalContextEligibilityState
   GetPersonalContextEligibilityState() const override {
-    return personal_context_enablement_state_;
+    return personal_context_eligibility_state_;
   }
 
-  void set_personal_context_enablement_state(
+  void set_personal_context_eligibility_state(
       personal_context::PersonalContextEligibilityState state) {
-    personal_context_enablement_state_ = state;
+    personal_context_eligibility_state_ = state;
   }
 
   IdentityCredentialDelegate* GetIdentityCredentialDelegate() override {
@@ -568,13 +568,13 @@ class TestAutofillClientTemplate : public T {
     return is_personal_context_at_memory_notice_acknowledged_;
   }
 
-  personal_context::PersonalContextEnablementService*
-  GetPersonalContextEnablementService() const override {
-    return personal_context_enablement_service_;
+  personal_context::PersonalContextEligibilityService*
+  GetPersonalContextEligibilityService() const override {
+    return personal_context_eligibility_service_;
   }
-  void set_personal_context_enablement_service(
-      personal_context::PersonalContextEnablementService* service) {
-    personal_context_enablement_service_ = service;
+  void set_personal_context_eligibility_service(
+      personal_context::PersonalContextEligibilityService* service) {
+    personal_context_eligibility_service_ = service;
   }
 
   const GoogleGroupsManager* GetGoogleGroupsManager() const override {
@@ -818,15 +818,15 @@ class TestAutofillClientTemplate : public T {
   raw_ptr<syncer::SyncService> test_sync_service_ = nullptr;
   raw_ptr<PersonalContextAccessManager> personal_context_access_manager_ =
       nullptr;
-  raw_ptr<personal_context::PersonalContextEnablementService>
-      personal_context_enablement_service_ = nullptr;
+  raw_ptr<personal_context::PersonalContextEligibilityService>
+      personal_context_eligibility_service_ = nullptr;
 #if !BUILDFLAG(IS_FUCHSIA)
   std::unique_ptr<GoogleGroupsManager> google_groups_manager_;
 #endif
   std::unique_ptr<OtpPhishGuardDelegate> otp_phish_guard_delegate_;
   std::unique_ptr<AtMemoryQueryService> at_memory_query_service_;
   personal_context::PersonalContextEligibilityState
-      personal_context_enablement_state_ =
+      personal_context_eligibility_state_ =
           personal_context::PersonalContextEligibilityState::kEligible;
   std::unique_ptr<IdentityCredentialDelegate> identity_credential_delegate_;
   std::unique_ptr<PasswordManagerDelegate> password_manager_delegate_;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/personal_context/model/ios_personal_context_enablement_service_factory.h"
+#import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 
 #import <string>
 
@@ -10,7 +10,7 @@
 #import "base/strings/string_util.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/personal_context/core/country_type.h"
-#import "components/personal_context/core/personal_context_enablement_service_impl.h"
+#import "components/personal_context/core/personal_context_eligibility_service_impl.h"
 #import "components/personal_context/core/personal_context_features.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/account_settings/model/ios_account_setting_service_factory.h"
@@ -32,35 +32,36 @@ personal_context::GeoIpCountryCode GetCountryCodeFromVariations() {
 }  // namespace
 
 // static
-IOSPersonalContextEnablementServiceFactory*
-IOSPersonalContextEnablementServiceFactory::GetInstance() {
-  static base::NoDestructor<IOSPersonalContextEnablementServiceFactory>
+IOSPersonalContextEligibilityServiceFactory*
+IOSPersonalContextEligibilityServiceFactory::GetInstance() {
+  static base::NoDestructor<IOSPersonalContextEligibilityServiceFactory>
       instance;
   return instance.get();
 }
 
 // static
-personal_context::PersonalContextEnablementService*
-IOSPersonalContextEnablementServiceFactory::GetForProfile(ProfileIOS* profile) {
+personal_context::PersonalContextEligibilityService*
+IOSPersonalContextEligibilityServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return GetInstance()
       ->GetServiceForProfileAs<
-          personal_context::PersonalContextEnablementService>(profile,
-                                                              /*create=*/true);
+          personal_context::PersonalContextEligibilityService>(profile,
+                                                               /*create=*/true);
 }
 
-IOSPersonalContextEnablementServiceFactory::
-    IOSPersonalContextEnablementServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("PersonalContextEnablementService",
+IOSPersonalContextEligibilityServiceFactory::
+    IOSPersonalContextEligibilityServiceFactory()
+    : ProfileKeyedServiceFactoryIOS("PersonalContextEligibilityService",
                                     ProfileSelection::kNoInstanceInIncognito) {
   DependsOn(IOSAccountSettingServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
-IOSPersonalContextEnablementServiceFactory::
-    ~IOSPersonalContextEnablementServiceFactory() = default;
+IOSPersonalContextEligibilityServiceFactory::
+    ~IOSPersonalContextEligibilityServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
-IOSPersonalContextEnablementServiceFactory::BuildServiceInstanceFor(
+IOSPersonalContextEligibilityServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   if (!base::FeatureList::IsEnabled(
           personal_context::features::kPersonalContext)) {
@@ -80,7 +81,7 @@ IOSPersonalContextEnablementServiceFactory::BuildServiceInstanceFor(
           : std::string();
 
   return std::make_unique<
-      personal_context::PersonalContextEnablementServiceImpl>(
+      personal_context::PersonalContextEligibilityServiceImpl>(
       account_settings_service, identity_manager, profile->GetPrefs(),
       GetCountryCodeFromVariations(), locale);
 }

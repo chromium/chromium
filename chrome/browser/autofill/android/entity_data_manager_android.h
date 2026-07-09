@@ -26,7 +26,7 @@ class ConsentAuditor;
 }
 
 namespace personal_context {
-class PersonalContextEnablementService;
+class PersonalContextEligibilityService;
 enum class PersonalContextEligibilityState;
 }  // namespace personal_context
 
@@ -47,7 +47,7 @@ class AccountSettingService;
 }
 
 namespace personal_context {
-class PersonalContextEnablementService;
+class PersonalContextEligibilityService;
 }
 
 namespace autofill {
@@ -67,8 +67,8 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
       const syncer::SyncService* sync_service,
       const account_settings::AccountSettingService* account_setting_service,
       consent_auditor::ConsentAuditor* consent_auditor,
-      personal_context::PersonalContextEnablementService*
-          personal_context_enablement_service,
+      personal_context::PersonalContextEligibilityService*
+          personal_context_eligibility_service,
       subscription_eligibility::SubscriptionEligibilityService*
           subscription_eligibility_service,
       bool is_off_the_record,
@@ -242,8 +242,8 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
   const raw_ptr<const account_settings::AccountSettingService>
       account_setting_service_;
   const raw_ptr<consent_auditor::ConsentAuditor> consent_auditor_;
-  const raw_ptr<personal_context::PersonalContextEnablementService>
-      personal_context_enablement_service_;
+  const raw_ptr<personal_context::PersonalContextEligibilityService>
+      personal_context_eligibility_service_;
   const raw_ptr<subscription_eligibility::SubscriptionEligibilityService>
       subscription_eligibility_service_;
   const bool is_off_the_record_;

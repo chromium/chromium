@@ -34,7 +34,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/personal_context/core/mock_personal_context_enablement_service.h"
+#include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
@@ -1123,7 +1123,7 @@ class AutocompleteHistoryManagerAtMemoryTest
     ON_CALL(personal_context_service_, GetEligibilityState)
         .WillByDefault(Return(
             personal_context::PersonalContextEligibilityState::kEligible));
-    autofill_client_.set_personal_context_enablement_service(
+    autofill_client_.set_personal_context_eligibility_service(
         &personal_context_service_);
 
     // Mock database query response.
@@ -1142,7 +1142,7 @@ class AutocompleteHistoryManagerAtMemoryTest
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  personal_context::MockPersonalContextEnablementService
+  personal_context::MockPersonalContextEligibilityService
       personal_context_service_;
 };
 

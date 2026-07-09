@@ -131,7 +131,7 @@
 #import "ios/chrome/browser/passwords/model/ios_password_requirements_service_factory.h"
 #import "ios/chrome/browser/passwords/model/password_manager_log_router_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_access_manager_factory.h"
-#import "ios/chrome/browser/personal_context/model/ios_personal_context_enablement_service_factory.h"
+#import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_service_factory.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
@@ -368,7 +368,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   IOSPasswordManagerSettingsServiceFactory::GetInstance();
   IOSPasswordRequirementsServiceFactory::GetInstance();
   IOSPersonalContextAccessManagerFactory::GetInstance();
-  IOSPersonalContextEnablementServiceFactory::GetInstance();
+  IOSPersonalContextEligibilityServiceFactory::GetInstance();
   IOSPersonalContextServiceFactory::GetInstance();
   IOSProfileMetricsServiceFactory::GetInstance();
   IOSProfileSessionDurationsServiceFactory::GetInstance();

@@ -145,7 +145,7 @@ bool MayPerformAutofillAiAction(
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_service,
     personal_context::PersonalContextEligibilityState
-        personal_context_enablement_state,
+        personal_context_eligibility_state,
     AutofillAiAction action,
     std::optional<EntityType> entity_type = std::nullopt,
     std::string* debug_message = nullptr);
@@ -190,7 +190,7 @@ bool SetAutofillAiOptInStatus(
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_service,
     personal_context::PersonalContextEligibilityState
-        personal_context_enablement_state,
+        personal_context_eligibility_state,
     AutofillAiOptInStatus opt_in_status);
 
 // Returns true if `entity_type` is blocked by enterprise policy on `url`.

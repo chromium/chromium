@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_ENABLEMENT_SERVICE_IMPL_H_
-#define COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_ENABLEMENT_SERVICE_IMPL_H_
+#ifndef COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_ELIGIBILITY_SERVICE_IMPL_H_
+#define COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_ELIGIBILITY_SERVICE_IMPL_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -11,7 +11,7 @@
 #include "base/scoped_observation.h"
 #include "components/account_settings/account_setting_service.h"
 #include "components/personal_context/core/country_type.h"
-#include "components/personal_context/core/personal_context_enablement_service.h"
+#include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -19,28 +19,28 @@ class PrefService;
 
 namespace personal_context {
 
-class PersonalContextEnablementServiceImpl
-    : public PersonalContextEnablementService,
+class PersonalContextEligibilityServiceImpl
+    : public PersonalContextEligibilityService,
       public signin::IdentityManager::Observer,
       public account_settings::AccountSettingService::Observer {
  public:
-  explicit PersonalContextEnablementServiceImpl(
+  explicit PersonalContextEligibilityServiceImpl(
       account_settings::AccountSettingService* account_settings_service,
       signin::IdentityManager* identity_manager,
       PrefService* pref_service,
       GeoIpCountryCode country_code,
       std::string locale);
-  PersonalContextEnablementServiceImpl(
-      const PersonalContextEnablementServiceImpl&) = delete;
-  PersonalContextEnablementServiceImpl& operator=(
-      const PersonalContextEnablementServiceImpl&) = delete;
-  ~PersonalContextEnablementServiceImpl() override;
+  PersonalContextEligibilityServiceImpl(
+      const PersonalContextEligibilityServiceImpl&) = delete;
+  PersonalContextEligibilityServiceImpl& operator=(
+      const PersonalContextEligibilityServiceImpl&) = delete;
+  ~PersonalContextEligibilityServiceImpl() override;
 
-  // PersonalContextEnablementService:
+  // PersonalContextEligibilityService:
   void AddObserver(
-      PersonalContextEnablementService::Observer* observer) override;
+      PersonalContextEligibilityService::Observer* observer) override;
   void RemoveObserver(
-      PersonalContextEnablementService::Observer* observer) override;
+      PersonalContextEligibilityService::Observer* observer) override;
   PersonalContextEligibilityState GetEligibilityState() override;
 
   // signin::IdentityManager::Observer:
@@ -53,7 +53,7 @@ class PersonalContextEnablementServiceImpl
   void OnAccountSettingDataUpdated(const std::string& setting_name) override;
 
  private:
-  friend class PersonalContextEnablementServiceImplTestApi;
+  friend class PersonalContextEligibilityServiceImplTestApi;
 
   std::pair<PersonalContextEligibilityState,
             std::optional<PersonalContextNonEligibilityReason>>
@@ -66,7 +66,7 @@ class PersonalContextEnablementServiceImpl
   const raw_ptr<PrefService> pref_service_;
   const GeoIpCountryCode country_code_;
   const std::string locale_;
-  base::ObserverList<PersonalContextEnablementService::Observer> observers_;
+  base::ObserverList<PersonalContextEligibilityService::Observer> observers_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observer_{this};
@@ -84,4 +84,4 @@ class PersonalContextEnablementServiceImpl
 
 }  // namespace personal_context
 
-#endif  // COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_ENABLEMENT_SERVICE_IMPL_H_
+#endif  // COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_ELIGIBILITY_SERVICE_IMPL_H_

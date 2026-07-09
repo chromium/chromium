@@ -151,8 +151,8 @@ AutofillClient::GetPersonalContextEligibilityState() const {
       kDisabledNotEligible;
 }
 
-personal_context::PersonalContextEnablementService*
-AutofillClient::GetPersonalContextEnablementService() const {
+personal_context::PersonalContextEligibilityService*
+AutofillClient::GetPersonalContextEligibilityService() const {
   return nullptr;
 }
 

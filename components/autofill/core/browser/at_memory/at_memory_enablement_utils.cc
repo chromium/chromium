@@ -16,7 +16,8 @@
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/personal_context/core/personal_context_enablement_service.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/prefs/pref_service.h"
@@ -39,7 +40,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 }
 
 [[nodiscard]] bool IsPersonalContextEligible(
-    personal_context::PersonalContextEnablementService*
+    personal_context::PersonalContextEligibilityService*
         personal_context_service,
     std::string* debug_message) {
   if (!personal_context_service) {
@@ -134,7 +135,7 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
 // Contrary to `MayPerformAtMemoryAction`, does not check user-controlled
 // toggles.
 [[nodiscard]] bool IsAtMemorySupported(
-    personal_context::PersonalContextEnablementService*
+    personal_context::PersonalContextEligibilityService*
         personal_context_service,
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_eligibility_service,
@@ -215,7 +216,7 @@ bool MayPerformAtMemoryAction(AtMemoryAction action,
                               base::optional_ref<const GURL> url,
                               std::string* debug_message) {
   return MayPerformAtMemoryAction(
-      action, client.GetPersonalContextEnablementService(),
+      action, client.GetPersonalContextEligibilityService(),
       client.GetSubscriptionEligibilityService(), client.GetPrefs(),
       client.GetGoogleGroupsManager(),
       client.GetAutofillOptimizationGuideDecider(), url, debug_message);
@@ -223,7 +224,7 @@ bool MayPerformAtMemoryAction(AtMemoryAction action,
 
 bool MayPerformAtMemoryAction(
     AtMemoryAction action,
-    personal_context::PersonalContextEnablementService*
+    personal_context::PersonalContextEligibilityService*
         personal_context_service,
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_eligibility_service,

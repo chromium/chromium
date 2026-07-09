@@ -21,7 +21,7 @@
 #include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/personal_context/core/personal_context_enablement_service.h"
+#include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -80,14 +80,15 @@ bool IsPersonalContextSpiiType(EntityType type) {
 
 PersonalContextAccessManagerImpl::PersonalContextAccessManagerImpl(
     personal_context::PersonalContextService* personal_context_service,
-    personal_context::PersonalContextEnablementService*
-        personal_context_enablement_service,
+    personal_context::PersonalContextEligibilityService*
+        personal_context_eligibility_service,
     PrefService* pref_service)
     : personal_context_service_(CHECK_DEREF(personal_context_service)),
-      personal_context_enablement_service_(
-          CHECK_DEREF(personal_context_enablement_service)),
+      personal_context_eligibility_service_(
+          CHECK_DEREF(personal_context_eligibility_service)),
       pref_service_(pref_service) {
-  enablement_service_observation_.Observe(personal_context_enablement_service);
+  eligibility_service_observation_.Observe(
+      personal_context_eligibility_service);
   if (pref_service_) {
     pref_registrar_.Init(pref_service_);
     pref_registrar_.Add(

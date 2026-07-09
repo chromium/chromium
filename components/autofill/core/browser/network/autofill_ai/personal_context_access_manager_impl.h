@@ -22,7 +22,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager.h"
-#include "components/personal_context/core/personal_context_enablement_service.h"
+#include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -47,7 +47,7 @@ namespace autofill {
 //   - For unmasked entities, the class handles the cache changes internally.
 class PersonalContextAccessManagerImpl
     : public PersonalContextAccessManager,
-      public personal_context::PersonalContextEnablementService::Observer {
+      public personal_context::PersonalContextEligibilityService::Observer {
  public:
   // The TTL for prefetched (masked/non-SPII) entities and presence signals.
   static constexpr base::TimeDelta kPrefetchedEntitiesAndSignalsCacheTTL =
@@ -57,8 +57,8 @@ class PersonalContextAccessManagerImpl
 
   PersonalContextAccessManagerImpl(
       personal_context::PersonalContextService* personal_context_service,
-      personal_context::PersonalContextEnablementService*
-          personal_context_enablement_service,
+      personal_context::PersonalContextEligibilityService*
+          personal_context_eligibility_service,
       PrefService* pref_service);
 
   PersonalContextAccessManagerImpl(const PersonalContextAccessManagerImpl&) =
@@ -79,7 +79,7 @@ class PersonalContextAccessManagerImpl
   void RemoveObserver(
       PersonalContextAccessManager::Observer* observer) override;
 
-  // personal_context::PersonalContextEnablementService::Observer:
+  // personal_context::PersonalContextEligibilityService::Observer:
   void OnEligibilityStateChanged(
       personal_context::PersonalContextEligibilityState new_state) override;
 
@@ -174,8 +174,8 @@ class PersonalContextAccessManagerImpl
 
   const raw_ref<personal_context::PersonalContextService>
       personal_context_service_;
-  const raw_ref<personal_context::PersonalContextEnablementService>
-      personal_context_enablement_service_;
+  const raw_ref<personal_context::PersonalContextEligibilityService>
+      personal_context_eligibility_service_;
   const raw_ptr<PrefService> pref_service_;
 
   // Map from EntityId to the original proto Entity received during prefetch.
@@ -209,9 +209,9 @@ class PersonalContextAccessManagerImpl
   base::ObserverList<PersonalContextAccessManager::Observer> observers_;
 
   base::ScopedObservation<
-      personal_context::PersonalContextEnablementService,
-      personal_context::PersonalContextEnablementService::Observer>
-      enablement_service_observation_{this};
+      personal_context::PersonalContextEligibilityService,
+      personal_context::PersonalContextEligibilityService::Observer>
+      eligibility_service_observation_{this};
 
   PrefChangeRegistrar pref_registrar_;
 

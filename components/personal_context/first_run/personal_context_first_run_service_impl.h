@@ -22,7 +22,7 @@ class WebContents;
 }
 
 namespace personal_context {
-class PersonalContextEnablementService;
+class PersonalContextEligibilityService;
 
 class PersonalContextFirstRunServiceImpl
     : public PersonalContextFirstRunService,
@@ -30,7 +30,7 @@ class PersonalContextFirstRunServiceImpl
  public:
   PersonalContextFirstRunServiceImpl(
       std::unique_ptr<PersonalContextFirstRunClient> client,
-      PersonalContextEnablementService* enablement_service,
+      PersonalContextEligibilityService* eligibility_service,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager);
   PersonalContextFirstRunServiceImpl(
@@ -59,7 +59,7 @@ class PersonalContextFirstRunServiceImpl
       NoticeResult result);
 
   std::unique_ptr<PersonalContextFirstRunClient> client_;
-  raw_ptr<PersonalContextEnablementService> enablement_service_;
+  raw_ptr<PersonalContextEligibilityService> eligibility_service_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
 

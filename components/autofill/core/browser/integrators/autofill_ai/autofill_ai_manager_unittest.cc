@@ -356,7 +356,7 @@ TEST_F(AutofillAiManagerTest,
       {{"ambient_autofill_eligible_tiers", "1"}});
   autofill_client().GetPrefs()->SetInteger(
       subscription_eligibility::prefs::kAiSubscriptionTier, 1);
-  autofill_client().set_personal_context_enablement_state(
+  autofill_client().set_personal_context_eligibility_state(
       personal_context::PersonalContextEligibilityState::kDisabledNotEligible);
 
   auto form_structure = std::make_unique<FormStructure>(

@@ -178,7 +178,7 @@
 #include "chrome/browser/permissions/prediction_service/prediction_service_factory.h"
 #include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
 #include "chrome/browser/personal_context/first_run/personal_context_first_run_service_factory.h"
-#include "chrome/browser/personal_context/personal_context_enablement_service_factory.h"
+#include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
 #include "chrome/browser/plugins/plugin_prefs_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -1315,7 +1315,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   PersistentRendererPrefsManagerFactory::GetInstance();
 #endif
-  PersonalContextEnablementServiceFactory::GetInstance();
+  PersonalContextEligibilityServiceFactory::GetInstance();
   PersonalContextFirstRunServiceFactory::GetInstance();
   PersonalContextServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)

@@ -35,7 +35,7 @@
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
-#include "chrome/browser/personal_context/personal_context_enablement_service_factory.h"
+#include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
@@ -124,7 +124,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
-#include "components/personal_context/core/personal_context_enablement_service.h"
+#include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -689,11 +689,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "searchSettingsUpdate",
       base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate));
 
-  personal_context::PersonalContextEnablementService* enablement_service =
-      PersonalContextEnablementServiceFactory::GetForProfile(profile);
+  personal_context::PersonalContextEligibilityService* eligibility_service =
+      PersonalContextEligibilityServiceFactory::GetForProfile(profile);
   html_source->AddBoolean("showSuggestionsFromGeminiSettings",
                           autofill::ShouldShowPersonalContextAutofillSetting(
-                              autofill_client, enablement_service));
+                              autofill_client, eligibility_service));
   html_source->AddBoolean(
       "isAtMemoryEnabled",
       autofill::MayPerformAtMemoryAction(

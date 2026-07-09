@@ -7,9 +7,9 @@
 #import "base/feature_list.h"
 #import "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager_impl.h"
 #import "components/autofill/core/common/autofill_features.h"
-#import "components/personal_context/core/personal_context_enablement_service.h"
+#import "components/personal_context/core/personal_context_eligibility_service.h"
 #import "components/personal_context/core/personal_context_service.h"
-#import "ios/chrome/browser/personal_context/model/ios_personal_context_enablement_service_factory.h"
+#import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
@@ -31,7 +31,7 @@ IOSPersonalContextAccessManagerFactory::GetInstance() {
 IOSPersonalContextAccessManagerFactory::IOSPersonalContextAccessManagerFactory()
     : ProfileKeyedServiceFactoryIOS("PersonalContextAccessManager",
                                     ProfileSelection::kNoInstanceInIncognito) {
-  DependsOn(IOSPersonalContextEnablementServiceFactory::GetInstance());
+  DependsOn(IOSPersonalContextEligibilityServiceFactory::GetInstance());
   DependsOn(IOSPersonalContextServiceFactory::GetInstance());
 }
 
@@ -48,15 +48,15 @@ IOSPersonalContextAccessManagerFactory::BuildServiceInstanceFor(
 
   personal_context::PersonalContextService* personal_context_service =
       IOSPersonalContextServiceFactory::GetForProfile(profile);
-  personal_context::PersonalContextEnablementService*
-      personal_context_enablement_service =
-          IOSPersonalContextEnablementServiceFactory::GetForProfile(profile);
+  personal_context::PersonalContextEligibilityService*
+      personal_context_eligibility_service =
+          IOSPersonalContextEligibilityServiceFactory::GetForProfile(profile);
 
-  if (!personal_context_service || !personal_context_enablement_service) {
+  if (!personal_context_service || !personal_context_eligibility_service) {
     return nullptr;
   }
 
   return std::make_unique<autofill::PersonalContextAccessManagerImpl>(
-      personal_context_service, personal_context_enablement_service,
+      personal_context_service, personal_context_eligibility_service,
       profile->GetPrefs());
 }

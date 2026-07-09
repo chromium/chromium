@@ -4,8 +4,8 @@
 
 source_set("personal_context") {
   sources = [
-    "personal_context_enablement_service_factory.cc",
-    "personal_context_enablement_service_factory.h",
+    "personal_context_eligibility_service_factory.cc",
+    "personal_context_eligibility_service_factory.h",
     "personal_context_service_factory.cc",
     "personal_context_service_factory.h",
   ]
@@ -43,7 +43,7 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
-      "personal_context_enablement_service_browsertest.cc",
+      "personal_context_eligibility_service_browsertest.cc",
       "personal_context_service_browsertest.cc",
     ]
     deps = [

@@ -10,7 +10,7 @@
 #include "components/personal_context/core/personal_context_types.h"
 
 namespace personal_context {
-class PersonalContextEnablementService;
+class PersonalContextEligibilityService;
 }
 
 class GoogleGroupsManager;
@@ -37,7 +37,7 @@ class EntityDataManager;
 // Autofill settings page.
 bool ShouldShowPersonalContextAutofillSetting(
     const AutofillClient& client,
-    personal_context::PersonalContextEnablementService* enablement_service);
+    personal_context::PersonalContextEligibilityService* eligibility_service);
 
 bool ShouldShowPersonalContextAutofillSetting(
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -50,7 +50,7 @@ bool ShouldShowPersonalContextAutofillSetting(
     bool is_wallet_public_pass_storage_enabled,
     bool is_off_the_record,
     const GeoIpCountryCode& country_code,
-    personal_context::PersonalContextEnablementService* enablement_service,
+    personal_context::PersonalContextEligibilityService* eligibility_service,
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_service);
 

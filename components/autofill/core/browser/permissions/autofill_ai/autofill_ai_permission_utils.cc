@@ -586,7 +586,7 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
     bool has_entity_data_saved,
     const GeoIpCountryCode& country_code,
     personal_context::PersonalContextEligibilityState
-        personal_context_enablement_state,
+        personal_context_eligibility_state,
     AutofillAiAction action,
     std::optional<EntityType> entity_type,
     std::string* debug_message) {
@@ -669,7 +669,7 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
               features::debug::kAutofillAmbientAutofillSkipEligibilityChecks)) {
         return true;
       }
-      if (!IsPersonalContextEligible(personal_context_enablement_state)) {
+      if (!IsPersonalContextEligible(personal_context_eligibility_state)) {
         return false;
       }
       break;
@@ -766,7 +766,7 @@ bool MayPerformAutofillAiAction(
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_service,
     personal_context::PersonalContextEligibilityState
-        personal_context_enablement_state,
+        personal_context_eligibility_state,
     AutofillAiAction action,
     std::optional<EntityType> entity_type,
     std::string* debug_message) {
@@ -813,7 +813,7 @@ bool MayPerformAutofillAiAction(
   // If the re-auth availability is unknown, error on the side of caution.
   return SatisfiesMiscellaneousRequirements(
       is_off_the_record, edm->GetReauthAvailability().value_or(false),
-      has_entity_data_saved, country_code, personal_context_enablement_state,
+      has_entity_data_saved, country_code, personal_context_eligibility_state,
       action, entity_type, debug_message);
 }
 
@@ -878,7 +878,7 @@ bool SetAutofillAiOptInStatus(
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_service,
     personal_context::PersonalContextEligibilityState
-        personal_context_enablement_state,
+        personal_context_eligibility_state,
     AutofillAiOptInStatus opt_in_status) {
   if (!MayPerformAutofillAiAction(
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -886,8 +886,8 @@ bool SetAutofillAiOptInStatus(
 #endif
           prefs, edm, identity_manager, sync_service,
           is_wallet_public_pass_storage_enabled, is_off_the_record,
-          country_code, subscription_service, personal_context_enablement_state,
-          AutofillAiAction::kOptIn)) {
+          country_code, subscription_service,
+          personal_context_eligibility_state, AutofillAiAction::kOptIn)) {
     return false;
   }
 
