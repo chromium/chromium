@@ -1011,6 +1011,54 @@ TEST_F(PasswordStoreTest, UpdateLoginWithPrimaryKey_UsernameChanges) {
   store->ShutdownOnUIThread();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Tests that when foreground transitions trigger a refresh (which starts by
+// running the remote changes callback with std::nullopt and results in an async
+// call to GetAllLoginsAsync), the password store does not notify observers that
+// the error is resolved (with ActionableError::kNoError) before it
+// executes/completes the query. If the query subsequently fails with an error,
+// the store must correctly propagate the failure (e.g.
+// ActionableError::kInactionable) to observers.
+TEST_F(PasswordStoreTest,
+       OnErrorStateChangedFlowOnAndroidForegroundRefreshFailure) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPasswordStorePropagatesActionableErrors);
+
+  MockPasswordStoreObserver mock_observer;
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
+
+  PasswordStoreBackend::RemoteChangesReceived remote_form_changes_received;
+  EXPECT_CALL(*mock_backend, InitBackend)
+      .WillOnce(testing::WithArgs<0, 2>(
+          [&](PasswordStoreBackend::RemoteChangesReceived remote_changes,
+              base::OnceCallback<void(bool)> completion) {
+            remote_form_changes_received = std::move(remote_changes);
+            std::move(completion).Run(true);
+          }));
+
+  store->Init();
+  store->AddObserver(&mock_observer);
+
+  EXPECT_CALL(*mock_backend, GetAllLoginsAsync)
+      .WillOnce(testing::WithArg<0>([&](BackendLoginsOrErrorReply callback) {
+        std::move(callback).Run(kBackendError);
+      }));
+
+  EXPECT_CALL(mock_observer,
+              OnErrorStateChanged(store.get(), ActionableError::kNoError))
+      .Times(0);
+  EXPECT_CALL(mock_observer,
+              OnErrorStateChanged(store.get(), ActionableError::kInactionable));
+
+  remote_form_changes_received.Run(std::nullopt);
+
+  WaitForPasswordStore();
+
+  store->RemoveObserver(&mock_observer);
+  store->ShutdownOnUIThread();
+}
+#endif
+
 // Collection of origin-related testcases common to all platform-specific
 // stores.
 class PasswordStoreOriginTest : public PasswordStoreTest {
