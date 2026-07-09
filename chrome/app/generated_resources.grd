@@ -19064,6 +19064,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TAB_STRIP_SWITCH_DELAYED_EXIT_FULLSCREEN_ACTION" desc="Action button on a toast notification that exits immersive fullscreen mode.">
         Exit full screen
       </message>
+      <!-- Dictation strings -->
+      <message name="IDS_DICTATION_ONBOARDING_BULLET_DATA_SHARING" desc="The second paragraph in the onboarding dialog describing data sharing with Google servers." translateable="false">
+        Your spoken audio, the transcribed text, and the content and URL of the page you're interacting with will be sent to Google.
+      </message>
+      <message name="IDS_DICTATION_ONBOARDING_BUTTON_ACCEPT" desc="Button label on the onboarding dialog to confirm the provided information and use the feature." translateable="false">
+        Ok, got it
+      </message>
+      <message name="IDS_DICTATION_BUTTON_START" desc="Button label on the dictation UI that turns on the microphone to start dictating text." translateable="false">
+        Start
+      </message>
     </if>
 
     <if expr="is_android">
