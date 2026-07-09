@@ -15,6 +15,7 @@
 #include "base/test/test_future.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_tab_restore_data.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
@@ -1491,6 +1492,12 @@ class GlicInstanceCoordinatorLocalHotkeyScopeTest
  public:
   GlicInstanceCoordinatorLocalHotkeyScopeTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kGlicHotkeyLocalScope);
+  }
+
+  void SetUpOnMainThread() override {
+    GlicInstanceCoordinatorBrowserTest::SetUpOnMainThread();
+    g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                                 true);
   }
 
  private:

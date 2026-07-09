@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
 #include "chrome/browser/glic/public/features.h"
@@ -31,6 +32,12 @@ class InstanceIndependentHotkeyManagerBrowserTest : public GlicBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     GlicBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kGlicDev);
+  }
+
+  void SetUpOnMainThread() override {
+    GlicBrowserTest::SetUpOnMainThread();
+    g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                                 true);
   }
 
  protected:
@@ -85,6 +92,16 @@ IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
 
   // Verify that the panel actually opens.
   EXPECT_TRUE(WaitForGlicOpen().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
+                       AcceleratorPressedReturnsFalseWhenLauncherDisabled) {
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               false);
+  InstanceIndependentHotkeyManager manager(&service()->instance_coordinator(),
+                                           GetBrowser()->GetProfile());
+  EXPECT_FALSE(
+      manager.AcceleratorPressed(LocalHotkeyManager::Command::kPanelToggle));
 }
 
 class InstanceIndependentHotkeyManagerFeatureDisabledBrowserTest
