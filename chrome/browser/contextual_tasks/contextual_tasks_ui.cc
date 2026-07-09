@@ -591,10 +591,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
                      contextual_tasks::GetEnableContextualTasksSmartCompose());
   source->AddBoolean("enableNativeZeroStateSuggestions",
                      contextual_tasks::GetEnableNativeZeroStateSuggestions());
-  // Contextual tasks needs finer control over when to query zps based on its
-  // current state. Most other composebox's blindly query autocomplete as soon
-  // as it is rendered.
-  source->AddBoolean("queryZpsOnLoad", false);
 
   AddContextMenuItemEligibilityLoadTimeData(source, profile);
   source->AddBoolean("composeboxShowLensSearchChip", false);

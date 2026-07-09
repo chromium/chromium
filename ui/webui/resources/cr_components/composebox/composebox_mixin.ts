@@ -153,6 +153,7 @@ export const ComposeboxEmbedderMixin =
             clearAllInputsWhenSubmittingQuery: {type: Boolean},
             closeOnEscape: {type: Boolean},
             composeboxNoFlickerSuggestionsFix: {type: Boolean},
+            queryZpsOnLoad: {type: Boolean},
             showFileCarousel: {
               reflect: true,
               type: Boolean,
@@ -247,8 +248,6 @@ export const ComposeboxEmbedderMixin =
             loadTimeData.getString('composeboxAttachmentFileTypes').split(',');
         imageFileTypes: string[] =
             loadTimeData.getString('composeboxImageFileTypes').split(',');
-        queryZpsOnLoad: boolean =
-            getLoadTimeBoolean('queryZpsOnLoad', /*defaultValue=*/ true);
         contextMenuOpened: boolean = false;
         hasCachedSubmittedTabsThisTurn: boolean = false;
         keepMenuOpenOnTabSelectForRealbox: boolean =
@@ -287,6 +286,7 @@ export const ComposeboxEmbedderMixin =
         accessor shareTabsFlyoutOpen: boolean = false;
         accessor searchboxLayoutMode: string = '';
         accessor searchboxNextEnabled: boolean = false;
+        accessor queryZpsOnLoad: boolean = true;
         selectedMatch: AutocompleteMatch|null = null;
         accessor selectedMatchIndex: number = -1;
         accessor showDropdown: boolean =
