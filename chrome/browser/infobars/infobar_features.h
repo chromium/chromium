@@ -19,6 +19,7 @@ BASE_DECLARE_FEATURE(kCentralizedInfoBarFramework);
 BASE_DECLARE_FEATURE_PARAM(bool, kEnableAll);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedCollectedCookies);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedInstallerDownloader);
+BASE_DECLARE_FEATURE_PARAM(bool, kMigratedPageInfo);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedPdf);
 
 // Returns true if the centralization framework is enabled and the specified

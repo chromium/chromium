@@ -17,6 +17,7 @@
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -28,6 +29,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/ui_devtools/switches.h"
 #include "components/ui_devtools/views/server_holder.h"
@@ -214,6 +216,15 @@ void ChromeBrowserMainExtraPartsViews::
                 }))
             .Build();
     browser_infobar_manager->Register(std::move(spec));
+  }
+
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE)) {
+    auto* browser_infobar_manager =
+        infobars::BrowserInfoBarManager::From(g_browser_process);
+    if (browser_infobar_manager) {
+      ChromePageInfoDelegate::RegisterPageInfoInfoBar(browser_infobar_manager);
+    }
   }
 }
 

@@ -23,6 +23,8 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/important_sites_util.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
 #include "chrome/browser/permissions/origin_keyed_permission_action_service_factory.h"
@@ -216,13 +218,21 @@ bool ShouldShowInfobarOnPromptResolved(
 }
 
 void ShowInfobar(content::WebContents* web_contents) {
-  infobars::ContentInfoBarManager* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  if (!infobar_manager) {
-    return;
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE)) {
+    auto* browser_infobar_manager =
+        infobars::BrowserInfoBarManager::From(g_browser_process);
+    if (browser_infobar_manager) {
+      browser_infobar_manager->Show(
+          web_contents, infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE);
+    }
+  } else {
+    infobars::ContentInfoBarManager* infobar_manager =
+        infobars::ContentInfoBarManager::FromWebContents(web_contents);
+    if (infobar_manager) {
+      PageInfoInfoBarDelegate::Create(infobar_manager);
+    }
   }
-
-  PageInfoInfoBarDelegate::Create(infobar_manager);
 }
 #endif
 }  // namespace

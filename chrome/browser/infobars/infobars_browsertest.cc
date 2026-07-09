@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/devtools/devtools_infobar_delegate.h"
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/infobars/test_support/infobar_observer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,6 +54,7 @@
 #include "components/crx_file/crx_verifier.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/infobars/core/infobar_delegate.h"
 #include "content/public/common/buildflags.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/crx_installer.h"
@@ -162,7 +165,7 @@ class InfoBarUiTest : public TestInfoBar {
   InfoBarUiTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         infobars::kCentralizedInfoBarFramework,
-        {{"Migrated", "collected_cookies"}});
+        {{"Migrated", "collected_cookies,page_info"}});
   }
 
   InfoBarUiTest(const InfoBarUiTest&) = delete;
@@ -325,7 +328,18 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::PAGE_INFO_INFOBAR_DELEGATE:
-      PageInfoInfoBarDelegate::Create(GetInfoBarManager());
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE)) {
+        auto* browser_infobar_manager =
+            infobars::BrowserInfoBarManager::From(g_browser_process);
+        if (browser_infobar_manager) {
+          browser_infobar_manager->Show(
+              GetWebContents(),
+              infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE);
+        }
+      } else {
+        PageInfoInfoBarDelegate::Create(GetInfoBarManager());
+      }
       break;
 
     case IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA: {

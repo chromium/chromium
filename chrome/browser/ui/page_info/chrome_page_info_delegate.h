@@ -31,8 +31,21 @@ class PasswordProtectionService;
 class ChromePasswordProtectionService;
 }  // namespace safe_browsing
 
+#if !BUILDFLAG(IS_ANDROID)
+namespace infobars {
+class BrowserInfoBarManager;
+}
+#endif
+
 class ChromePageInfoDelegate : public PageInfoDelegate {
  public:
+#if !BUILDFLAG(IS_ANDROID)
+  // Registers the Page Info InfoBar specification in the centralized
+  // infobar framework.
+  static void RegisterPageInfoInfoBar(
+      infobars::BrowserInfoBarManager* infobar_manager);
+#endif
+
   explicit ChromePageInfoDelegate(content::WebContents* web_contents);
   ~ChromePageInfoDelegate() override = default;
 

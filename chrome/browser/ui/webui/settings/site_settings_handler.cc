@@ -35,6 +35,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
@@ -44,6 +45,8 @@
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/media/unified_autoplay_config.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
@@ -1800,9 +1803,20 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
     if ((tab_is_same_origin || tab_might_embed_origin) &&
         tab->GetBrowserWindowInterface()->GetProfile()->GetOriginalProfile() ==
             profile_->GetOriginalProfile()) {
-      infobars::ContentInfoBarManager* const infobar_manager =
-          infobars::ContentInfoBarManager::FromWebContents(web_contents);
-      PageInfoInfoBarDelegate::Create(infobar_manager);
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE)) {
+        auto* browser_infobar_manager =
+            infobars::BrowserInfoBarManager::From(g_browser_process);
+        if (browser_infobar_manager) {
+          browser_infobar_manager->Show(
+              web_contents,
+              infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE);
+        }
+      } else {
+        infobars::ContentInfoBarManager* const infobar_manager =
+            infobars::ContentInfoBarManager::FromWebContents(web_contents);
+        PageInfoInfoBarDelegate::Create(infobar_manager);
+      }
     }
     return true;
   });

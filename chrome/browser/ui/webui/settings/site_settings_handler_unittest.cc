@@ -41,6 +41,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -52,6 +53,9 @@
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/infobar_features.h"
+#include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/system/mock_platform_handle.h"
@@ -99,6 +103,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/infobars/core/infobar_delegate.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
@@ -118,6 +123,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_controller.h"
@@ -3219,7 +3225,9 @@ TEST_F(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevelsSortedByAppName) {
                2U);
 }
 
-class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
+class SiteSettingsHandlerInfobarTest
+    : public BrowserWithTestWindowTest,
+      public testing::WithParamInterface<bool> {
  public:
   SiteSettingsHandlerInfobarTest() = default;
   SiteSettingsHandlerInfobarTest(const SiteSettingsHandlerInfobarTest&) =
@@ -3227,9 +3235,33 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
   SiteSettingsHandlerInfobarTest& operator=(
       const SiteSettingsHandlerInfobarTest&) = delete;
   void SetUp() override {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          infobars::kCentralizedInfoBarFramework,
+          {{infobars::kMigratedPageInfo.name, "true"}});
+    } else {
+      feature_list_.InitAndDisableFeature(
+          infobars::kCentralizedInfoBarFramework);
+    }
+
     TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
         /*profile_manager=*/false);
     BrowserWithTestWindowTest::SetUp();
+
+    if (infobars::IsInfoBarMigrated(
+            infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE)) {
+      auto* browser_infobar_manager =
+          infobars::BrowserInfoBarManager::From(g_browser_process);
+      if (browser_infobar_manager) {
+        auto spec = infobars::InfoBarSpec::Builder(
+                        infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE)
+                        .SetMessageText(u"Test")
+                        .SetIcon(vector_icons::kSettingsIcon)
+                        .SetScope(infobars::InfoBarScope::kTab)
+                        .Build();
+        browser_infobar_manager->Register(std::move(spec));
+      }
+    }
 
     handler_ = std::make_unique<SiteSettingsHandler>(profile());
     handler()->set_web_ui(web_ui());
@@ -3312,13 +3344,14 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
           ContentSettingsType::NOTIFICATIONS);
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   content::TestWebUI web_ui_;
   std::unique_ptr<SiteSettingsHandler> handler_;
   std::unique_ptr<Browser> browser2_;
   std::unique_ptr<Browser> browser3_;
 };
 
-TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
+TEST_P(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
   // Note all GURLs starting with 'origin' below belong to the same origin.
   //               _____  _______________  ________  ________  ___________
   //   Window 1:  / foo \' origin_anchor \' chrome \' origin \' extension \
@@ -3463,7 +3496,7 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
   EXPECT_TRUE(url::IsSameOriginWith(origin, tab_url));
 }
 
-TEST_F(SiteSettingsHandlerInfobarTest,
+TEST_P(SiteSettingsHandlerInfobarTest,
        SettingPermissionsDoesNotTriggerInfobarOnDifferentProfile) {
   // Note all GURLs starting with 'origin' below belong to the same origin.
   //               _______________
@@ -3510,6 +3543,13 @@ TEST_F(SiteSettingsHandlerInfobarTest,
       0u, GetInfoBarManagerForTab(browser3(), 0, &tab_url)->infobars().size());
   EXPECT_TRUE(url::IsSameOriginWith(origin, tab_url));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SiteSettingsHandlerInfobarTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Migrated" : "Legacy";
+                         });
 
 TEST_F(SiteSettingsHandlerTest, BlockAutoplay_SendOnRequest) {
   base::ListValue args;
