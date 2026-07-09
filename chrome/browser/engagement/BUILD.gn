@@ -92,3 +92,27 @@ if (!is_android) {
     ]
   }
 }
+
+if (is_android) {
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "important_sites_util_browsertest.cc" ]
+    deps = [
+      ":engagement",
+      "//base",
+      "//chrome/browser/android",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search_engines",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui_android",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/common",
+      "//components/permissions",
+      "//components/search_engines",
+      "//content/public/browser",
+      "//content/test:test_support",
+    ]
+  }
+}
