@@ -24,7 +24,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.SendTabToSelfTabCardLabelData;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
@@ -266,19 +269,56 @@ public class SendTabToSelfAndroidBridge {
     }
 
     /**
-     * Handles the primary action click on the message banner by showing the tab switcher in the
-     * currently focused activity, then dismissing the banner.
+     * Handles the primary action click on the message banner. Selects and opens the newest received
+     * tab.
      *
      * @return The behavior to follow after the click (dismiss immediately).
      */
     private static @PrimaryActionClickBehavior int onMessageBannerPrimaryAction() {
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (activity instanceof ChromeTabbedActivity) {
-            ChromeTabbedActivity tabbedActivity = (ChromeTabbedActivity) activity;
+        if (!(activity instanceof ChromeTabbedActivity)) {
+            return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+        }
+
+        ChromeTabbedActivity tabbedActivity = (ChromeTabbedActivity) activity;
+        TabModelSelector selector = tabbedActivity.getTabModelSelector();
+        if (selector == null) {
+            // Fall back to opening the tab switcher directly if the tab model selector is
+            // unavailable (e.g. during activity startup, recreation, or mock test execution).
             if (tabbedActivity.getLayoutManager() != null) {
                 tabbedActivity.getLayoutManager().showLayout(LayoutType.HUB, true);
             }
+            return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
         }
+
+        TabModel normalTabModel = selector.getModel(/* incognito= */ false);
+        int newestNewTabIndex = TabModel.INVALID_TAB_INDEX;
+        long maxTimestamp = -1;
+
+        // Iterate through all tabs in the standard model to find all unread/new
+        // Send-Tab-to-Self tabs and identify the most recently added one by checking addition
+        // timestamps.
+        for (int i = 0; i < normalTabModel.getCount(); i++) {
+            Tab tab = normalTabModel.getTabAt(i);
+            if (tab == null) continue;
+
+            SendTabToSelfTabCardLabelData data = SendTabToSelfTabCardLabelData.get(tab);
+            if (data == null || data.isNegativeCache() || !data.shouldShowLabel()) {
+                continue;
+            }
+
+            long timestamp = data.getAdditionTimestampMs();
+            if (timestamp > maxTimestamp) {
+                maxTimestamp = timestamp;
+                newestNewTabIndex = i;
+            }
+        }
+
+        // Highlight and focus the newly received tab by setting it as the active tab.
+        if (newestNewTabIndex != TabModel.INVALID_TAB_INDEX) {
+            normalTabModel.setIndex(newestNewTabIndex, TabSelectionType.FROM_USER);
+        }
+
         return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
     }
 
