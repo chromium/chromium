@@ -465,6 +465,7 @@ TEST_F(OmniboxAutofillDelegateTest,
   payments_autofill_client().ShowOmniboxAutofillChip(
       /*suggestions=*/{},
       /*on_suggestions_shown=*/base::DoNothing(),
+      /*on_suggestions_hidden=*/base::DoNothing(),
       /*did_select_suggestion=*/base::DoNothing(),
       /*did_accept_suggestion=*/base::DoNothing());
 
@@ -520,6 +521,7 @@ TEST_F(OmniboxAutofillDelegateTest,
   payments_autofill_client().ShowOmniboxAutofillChip(
       /*suggestions=*/{},
       /*on_suggestions_shown=*/base::DoNothing(),
+      /*on_suggestions_hidden=*/base::DoNothing(),
       /*did_select_suggestion=*/base::DoNothing(),
       /*did_accept_suggestion=*/base::DoNothing());
 
@@ -546,6 +548,7 @@ TEST_F(OmniboxAutofillDelegateTest, OnAfterFormsSeen_FormRemoved_HidesChip) {
   payments_autofill_client().ShowOmniboxAutofillChip(
       /*suggestions=*/{},
       /*on_suggestions_shown=*/base::DoNothing(),
+      /*on_suggestions_hidden=*/base::DoNothing(),
       /*did_select_suggestion=*/base::DoNothing(),
       /*did_accept_suggestion=*/base::DoNothing());
 
@@ -594,6 +597,7 @@ TEST_F(OmniboxAutofillDelegateTest,
   payments_autofill_client().ShowOmniboxAutofillChip(
       /*suggestions=*/{},
       /*on_suggestions_shown=*/base::DoNothing(),
+      /*on_suggestions_hidden=*/base::DoNothing(),
       /*did_select_suggestion=*/base::DoNothing(),
       /*did_accept_suggestion=*/base::DoNothing());
 
@@ -860,6 +864,22 @@ TEST_F(OmniboxAutofillDelegateTest, OnSuggestionsShown_DoesNotLogKeyMetrics) {
       "Autofill.KeyMetrics.FillingCorrectness.CreditCard", 0);
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingAssistance.CreditCard", 0);
+}
+
+TEST_F(OmniboxAutofillDelegateTest, OnSuggestionsHidden_ForwardToObserver) {
+  MockAutofillManagerObserver observer;
+  autofill_manager().AddObserver(&observer);
+
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  EXPECT_CALL(observer,
+              OnSuggestionsHidden(::testing::Ref(autofill_manager()),
+                                  SuggestionHidingReason::kUserAborted));
+  delegate->OnSuggestionsHidden(SuggestionHidingReason::kUserAborted);
+
+  autofill_manager().RemoveObserver(&observer);
 }
 
 }  // namespace

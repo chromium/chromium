@@ -101,7 +101,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutofillBubbleViewBrowserTest, ShowBubble) {
       on_suggestions_shown_callback;
 
   controller->Initialize(suggestions, on_suggestions_shown_callback.Get(),
-                         base::DoNothing(), base::DoNothing());
+                         base::DoNothing(), base::DoNothing(),
+                         base::DoNothing());
 
   EXPECT_CALL(on_suggestions_shown_callback, Run(testing::SizeIs(1)));
 
@@ -126,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutofillBubbleViewBrowserTest,
   suggestions.emplace_back(suggestion);
 
   controller->Initialize(suggestions, base::DoNothing(), base::DoNothing(),
-                         base::DoNothing());
+                         base::DoNothing(), base::DoNothing());
 
   controller->QueueOrShowBubble();
 
@@ -163,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutofillBubbleViewBrowserTest,
   suggestions.emplace_back(suggestion);
 
   controller->Initialize(suggestions, base::DoNothing(), base::DoNothing(),
-                         base::DoNothing());
+                         base::DoNothing(), base::DoNothing());
 
   controller->QueueOrShowBubble();
 
@@ -189,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutofillBubbleViewBrowserTest,
   suggestions.emplace_back(u"Visa •••• 1112", SuggestionType::kCreditCardEntry);
 
   controller->Initialize(suggestions, base::DoNothing(), base::DoNothing(),
-                         base::DoNothing());
+                         base::DoNothing(), base::DoNothing());
 
   controller->QueueOrShowBubble();
 
@@ -203,6 +204,32 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutofillBubbleViewBrowserTest,
   // Verify the first button has focus.
   EXPECT_TRUE(buttons[0]->HasFocus());
   EXPECT_FALSE(buttons[1]->HasFocus());
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxAutofillBubbleViewBrowserTest,
+                       CloseBubbleTriggersOnSuggestionsHidden) {
+  OmniboxAutofillBubbleController* controller = GetBubbleController();
+  ASSERT_TRUE(controller);
+
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(u"Visa •••• 1111", SuggestionType::kCreditCardEntry);
+
+  base::MockRepeatingCallback<void(SuggestionHidingReason)>
+      on_suggestions_hidden_callback;
+
+  controller->Initialize(suggestions, base::DoNothing(),
+                         on_suggestions_hidden_callback.Get(),
+                         base::DoNothing(), base::DoNothing());
+
+  controller->QueueOrShowBubble();
+
+  auto* bubble_view = GetBubbleView();
+  ASSERT_TRUE(bubble_view);
+
+  EXPECT_CALL(on_suggestions_hidden_callback,
+              Run(SuggestionHidingReason::kUserAborted));
+
+  bubble_view->Hide();
 }
 
 }  // namespace

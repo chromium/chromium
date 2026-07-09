@@ -257,6 +257,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       std::vector<Suggestion> suggestions,
       base::RepeatingCallback<void(base::span<const Suggestion>)>
           on_suggestions_shown,
+      base::RepeatingCallback<void(SuggestionHidingReason)>
+          on_suggestions_hidden,
       base::RepeatingCallback<void(const Suggestion&)> did_select_suggestion,
       base::RepeatingCallback<
           void(const Suggestion&,

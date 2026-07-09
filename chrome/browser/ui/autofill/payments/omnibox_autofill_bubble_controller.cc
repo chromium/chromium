@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
@@ -21,6 +22,25 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace autofill {
+
+namespace {
+
+SuggestionHidingReason ToSuggestionHidingReason(PaymentsUiClosedReason reason) {
+  switch (reason) {
+    case PaymentsUiClosedReason::kAccepted:
+      return SuggestionHidingReason::kAcceptSuggestion;
+    case PaymentsUiClosedReason::kCancelled:
+    case PaymentsUiClosedReason::kClosed:
+      return SuggestionHidingReason::kUserAborted;
+    case PaymentsUiClosedReason::kLostFocus:
+      return SuggestionHidingReason::kFocusChanged;
+    case PaymentsUiClosedReason::kNotInteracted:
+    case PaymentsUiClosedReason::kUnknown:
+      return SuggestionHidingReason::kUserAborted;
+  }
+}
+
+}  // namespace
 
 DEFINE_USER_DATA(OmniboxAutofillBubbleController);
 
@@ -39,6 +59,7 @@ void OmniboxAutofillBubbleController::Initialize(
     std::vector<Suggestion> suggestions,
     base::RepeatingCallback<void(base::span<const Suggestion>)>
         on_suggestions_shown,
+    base::RepeatingCallback<void(SuggestionHidingReason)> on_suggestions_hidden,
     base::RepeatingCallback<void(const Suggestion&)> did_select_suggestion,
     base::RepeatingCallback<
         void(const Suggestion&,
@@ -46,6 +67,7 @@ void OmniboxAutofillBubbleController::Initialize(
         did_accept_suggestion) {
   suggestions_ = std::move(suggestions);
   on_suggestions_shown_callback_ = std::move(on_suggestions_shown);
+  on_suggestions_hidden_callback_ = std::move(on_suggestions_hidden);
   did_select_suggestion_callback_ = std::move(did_select_suggestion);
   did_accept_suggestion_callback_ = std::move(did_accept_suggestion);
 }
@@ -115,6 +137,9 @@ void OmniboxAutofillBubbleController::OnSuggestionsShown() {
 
 void OmniboxAutofillBubbleController::OnBubbleClosed(
     PaymentsUiClosedReason reason) {
+  if (on_suggestions_hidden_callback_) {
+    on_suggestions_hidden_callback_.Run(ToSuggestionHidingReason(reason));
+  }
   ResetBubbleViewAndInformBubbleManager();
 }
 

@@ -44,6 +44,7 @@
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/payments/desktop_bnpl_strategy.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/payments/omnibox_autofill_delegate.h"
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -490,6 +491,7 @@ void TestPaymentsAutofillClient::ShowOmniboxAutofillChip(
     std::vector<Suggestion> suggestions,
     base::RepeatingCallback<void(base::span<const Suggestion>)>
         on_suggestions_shown,
+    base::RepeatingCallback<void(SuggestionHidingReason)> on_suggestions_hidden,
     base::RepeatingCallback<void(const Suggestion&)> did_select_suggestion,
     base::RepeatingCallback<
         void(const Suggestion&,

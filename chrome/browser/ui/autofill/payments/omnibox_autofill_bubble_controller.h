@@ -26,6 +26,7 @@ namespace autofill {
 class AutofillBubbleBase;
 class PaymentsDataManager;
 enum class PaymentsUiClosedReason;
+enum class SuggestionHidingReason;
 
 // Controller class that exposes functionality to omnibox autofill bubbles.
 // Owned by TabFeatures.
@@ -54,6 +55,8 @@ class OmniboxAutofillBubbleController : public AutofillBubbleControllerBase {
       std::vector<Suggestion> suggestions,
       base::RepeatingCallback<void(base::span<const Suggestion>)>
           on_suggestions_shown,
+      base::RepeatingCallback<void(SuggestionHidingReason)>
+          on_suggestions_hidden,
       base::RepeatingCallback<void(const Suggestion&)> did_select_suggestion,
       base::RepeatingCallback<
           void(const Suggestion&,
@@ -82,6 +85,8 @@ class OmniboxAutofillBubbleController : public AutofillBubbleControllerBase {
   std::vector<Suggestion> suggestions_;
   base::RepeatingCallback<void(base::span<const Suggestion>)>
       on_suggestions_shown_callback_;
+  base::RepeatingCallback<void(SuggestionHidingReason)>
+      on_suggestions_hidden_callback_;
   base::RepeatingCallback<void(const Suggestion&)>
       did_select_suggestion_callback_;
   base::RepeatingCallback<void(

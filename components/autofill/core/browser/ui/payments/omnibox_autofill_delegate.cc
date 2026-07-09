@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/payments/credit_card_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "url/origin.h"
@@ -340,7 +341,10 @@ void OmniboxAutofillDelegate::OnSuggestionsShown(
 
 void OmniboxAutofillDelegate::OnSuggestionsHidden(
     SuggestionHidingReason reason) {
-  NOTIMPLEMENTED();
+  if (auto* manager = static_cast<BrowserAutofillManager*>(
+          client_->GetAutofillManagerForPrimaryMainFrame())) {
+    manager->OnSuggestionsHidden(reason);
+  }
 }
 
 void OmniboxAutofillDelegate::DidSelectSuggestion(
@@ -436,6 +440,14 @@ void OmniboxAutofillDelegate::OnGetIntersectionObserverInfo(bool is_visible) {
              base::span<const Suggestion> suggestions) {
             if (delegate) {
               delegate->OnSuggestionsShown(suggestions, std::nullopt);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          [](base::WeakPtr<OmniboxAutofillDelegate> delegate,
+             SuggestionHidingReason reason) {
+            if (delegate) {
+              delegate->OnSuggestionsHidden(reason);
             }
           },
           weak_ptr_factory_.GetWeakPtr()),
