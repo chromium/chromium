@@ -7,18 +7,9 @@ found in the LICENSE file.
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
   <item android:state_selected="true">
-    <!--
-    Bump the horizontal border out so that there is 3dp between it and the pill
-    inside. 3dp for that space, plus 2 more dp for the width of the border.
-    Negative inset so that it goes out rather than in. The vertical border is
-    inset 4dp, as the button is inset by 8dp vertically, and then we want 2dp
-    of gap and 2dp of stroke.
-    -->
     <inset
         android:insetTop="4dp"
-        android:insetBottom="4dp"
-        android:insetLeft="-5dp"
-        android:insetRight="-5dp">
+        android:insetBottom="4dp">
       <shape android:shape="rectangle">
         <solid android:color="@android:color/transparent" />
 

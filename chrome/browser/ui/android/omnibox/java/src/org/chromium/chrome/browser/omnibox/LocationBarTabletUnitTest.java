@@ -538,7 +538,7 @@ public class LocationBarTabletUnitTest {
         GradientDrawable unfocusedRect =
                 (GradientDrawable) background.findDrawableByLayerId(R.id.unfocused_bg);
 
-        mLocationBarTablet.setIsInStandby(true);
+        mLocationBarTablet.setShowStandbyRing(true);
 
         // Verify the InsetDrawable border was applied to the foreground.
         assertNotNull(mLocationBarTablet.getForeground());
@@ -550,9 +550,9 @@ public class LocationBarTabletUnitTest {
                         mActivity, BrandedColorScheme.APP_DEFAULT);
         assertEquals(expectedStandbyColor, unfocusedRect.getColor().getDefaultColor());
 
-        mLocationBarTablet.setIsInStandby(false);
+        mLocationBarTablet.setShowStandbyRing(false);
         mLocationBarTablet.updateVisualsForState(BrandedColorScheme.INCOGNITO);
-        mLocationBarTablet.setIsInStandby(true);
+        mLocationBarTablet.setShowStandbyRing(true);
         @ColorInt
         int expectedIncognitoStandbyColor =
                 OmniboxResourceProvider.getTabletToolbarTextBoxStandbyBackgroundColor(
@@ -571,7 +571,7 @@ public class LocationBarTabletUnitTest {
         assertEquals(0, urlBar.getTranslationY(), MathUtils.EPSILON);
         assertEquals(0, statusView.getTranslationY(), MathUtils.EPSILON);
 
-        mLocationBarTablet.setIsInStandby(false);
+        mLocationBarTablet.setShowStandbyRing(false);
         assertNull(mLocationBarTablet.getForeground());
         @ColorInt
         int expectedNormalColor =

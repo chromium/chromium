@@ -3381,15 +3381,15 @@ public class LocationBarMediatorTest {
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setAutocompleteState(AutocompleteState.STANDBY);
         mMediator.beginInput(input);
-        verify(mLocationBarLayout, atLeastOnce()).setIsInStandby(true);
-        verify(mLocationBarLayout, never()).setIsInStandby(false);
+        verify(mLocationBarLayout, atLeastOnce()).setShowStandbyRing(true);
+        verify(mLocationBarLayout, never()).setShowStandbyRing(false);
         clearInvocations(mLocationBarLayout);
 
         input.setAutocompleteState(AutocompleteState.ENABLED);
         input.setRequestType(AutocompleteRequestType.AI_MODE);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mLocationBarLayout).setIsInStandby(false);
+        verify(mLocationBarLayout).setShowStandbyRing(false);
     }
 
     @Test
@@ -3397,7 +3397,7 @@ public class LocationBarMediatorTest {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mMediator.onUrlFocusChange(new UrlBarFocusChangeInfo(true, View.FOCUS_FORWARD));
 
-        verify(mLocationBarLayout, atLeastOnce()).setIsInStandby(true);
+        verify(mLocationBarLayout, atLeastOnce()).setShowStandbyRing(true);
         verify(mUrlCoordinator, never()).startReparenting();
     }
 
@@ -3405,7 +3405,7 @@ public class LocationBarMediatorTest {
     public void onUrlFocusChange_programmaticFocus_keepsExistingPath() {
         mMediator.onUrlFocusChange(new UrlBarFocusChangeInfo(true, View.FOCUS_DOWN));
 
-        verify(mLocationBarLayout, never()).setIsInStandby(true);
+        verify(mLocationBarLayout, never()).setShowStandbyRing(true);
     }
 
     @Test

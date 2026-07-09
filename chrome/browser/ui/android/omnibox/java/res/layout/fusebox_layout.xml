@@ -89,8 +89,8 @@ found in the LICENSE file.
         android:contentDescription="@string/starter_pack_ai_mode_action_hint"
         android:tooltipText="@string/starter_pack_ai_mode_action_hint"
         android:drawableStart="@drawable/search_spark_black_24dp"
-        android:paddingStart="8dp"
-        android:paddingEnd="12dp"
+        android:paddingStart="13dp"
+        android:paddingEnd="17dp"
         android:drawablePadding="8dp"
         android:singleLine="true"
         android:text="@string/ai_mode_entrypoint_label"
@@ -98,6 +98,7 @@ found in the LICENSE file.
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:verticalInset="8dp"
+        app:horizontalInset="5dp"
         app:rippleCornerRadius="36dp"
         android:foreground="@drawable/activation_chip_focus_ring"/>
 

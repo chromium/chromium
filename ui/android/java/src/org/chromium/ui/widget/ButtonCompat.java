@@ -92,6 +92,7 @@ public class ButtonCompat extends AppCompatButton {
                 a.getDimensionPixelSize(
                         R.styleable.ButtonCompat_verticalInset,
                         getResources().getDimensionPixelSize(R.dimen.button_bg_vertical_inset));
+        int horizontalInset = a.getDimensionPixelSize(R.styleable.ButtonCompat_horizontalInset, 0);
 
         // Border style attribute
         @BorderType
@@ -159,7 +160,8 @@ public class ButtonCompat extends AppCompatButton {
                         radii,
                         borderColorId,
                         borderWidthId,
-                        verticalInset);
+                        verticalInset,
+                        horizontalInset);
 
         setBorderStyle(borderStyle);
     }
