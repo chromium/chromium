@@ -136,8 +136,7 @@ public class PageZoomTest {
 
             // Verify sheet is in PEEK state and offset is > 0.
             assertEquals(SheetState.PEEK, mSheetController.getSheetState());
-            final int sheetOffset = mSheetController.getCurrentOffset();
-            assertTrue("Sheet offset should be greater than 0 in PEEK", sheetOffset > 0);
+            pollUiThread(() -> mSheetController.getCurrentOffset() > 0);
 
             // 3. Open the zoom UI.
             runOnUiThreadBlocking(

@@ -150,7 +150,7 @@ public class TabGroupListBottomSheetView implements BottomSheetContent {
     private float getSheetContentHeight() {
         mContentView.measure(
                 MeasureSpec.makeMeasureSpec(
-                        mBottomsheetController.getContainerWidth(), MeasureSpec.EXACTLY),
+                        mBottomsheetController.getMaxSheetWidth(), MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(
                         mBottomsheetController.getContainerHeight(), MeasureSpec.AT_MOST));
         return mContentView.getMeasuredHeight();
