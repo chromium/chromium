@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string>
 
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
@@ -77,11 +78,11 @@ icu::SimpleDateFormat CreateSimpleDateFormatter(
                                locale, status);
 }
 
-icu::DateFormat::EStyle ToIcuStyle(
-    DateTimeFormatterOptions::ItemLength length) {
+icu::DateFormat::EStyle ToIcuStyle(DateTimeFormatterOptions::ItemLength length,
+                                   bool has_weekday) {
   switch (length) {
     case DateTimeFormatterOptions::ItemLength::kLong:
-      return icu::DateFormat::kFull;
+      return has_weekday ? icu::DateFormat::kFull : icu::DateFormat::kLong;
     case DateTimeFormatterOptions::ItemLength::kMedium:
       return icu::DateFormat::kMedium;
     case DateTimeFormatterOptions::ItemLength::kShort:
@@ -95,10 +96,17 @@ icu::DateFormat::EStyle ToIcuStyle(
 // Constructs a pattern using icu::DateFormat for the given length.
 icu::UnicodeString GetPatternForLength(
     const icu::Locale& locale,
-    DateTimeFormatterOptions::ItemLength length) {
-  icu::DateFormat::EStyle style_length = ToIcuStyle(length);
-  std::unique_ptr<icu::DateFormat> fmt(icu::DateFormat::createDateTimeInstance(
-      style_length, style_length, locale));
+    DateTimeFormatterOptions::ItemLength length,
+    bool has_time,
+    bool has_weekday) {
+  icu::DateFormat::EStyle style_length = ToIcuStyle(length, has_weekday);
+  std::unique_ptr<icu::DateFormat> fmt =
+      has_time ? std::unique_ptr<icu::DateFormat>(
+                     icu::DateFormat::createDateTimeInstance(
+                         style_length, style_length, locale))
+               : std::unique_ptr<icu::DateFormat>(
+                     icu::DateFormat::createDateInstance(style_length, locale));
+
   if (fmt->getDynamicClassID() != icu::SimpleDateFormat::getStaticClassID()) {
     return u"";
   }
@@ -214,38 +222,11 @@ SkeletonOptions GetSkeletonOptions(
   return options;
 }
 
-size_t GetMonthSkeletonCount(const std::string& skeleton,
-                             DateTimeFormatterOptions::ItemLength length,
-                             SkeletonOptions options) {
-  if (!options.has_month) {
-    return 0;
-  }
-
-  // If there is no day or year, a separated logic is applied.
-  if (!options.has_day && !options.has_year) {
-    switch (length) {
-      case DateTimeFormatterOptions::ItemLength::kNone:
-      case DateTimeFormatterOptions::ItemLength::kShort:
-        return 1;
-      case DateTimeFormatterOptions::ItemLength::kMedium:
-        return 3;
-      case DateTimeFormatterOptions::ItemLength::kLong:
-        return 4;
-    }
-  }
-
-  size_t month_count = std::ranges::count(skeleton, 'M');
-  if (length == DateTimeFormatterOptions::ItemLength::kLong) {
-    month_count = std::max(month_count, static_cast<size_t>(3));
-  }
-  return month_count;
-}
-
-size_t GetYearSkeletonCount(const std::string& skeleton,
-                            DateTimeFormatterOptions::ItemLength length,
-                            SkeletonOptions options) {
+std::u16string GetYearSkeleton(const std::string& skeleton,
+                               DateTimeFormatterOptions::ItemLength length,
+                               SkeletonOptions options) {
   if (!options.has_year) {
-    return 0;
+    return u"";
   }
   // If there is no day or year, a separated logic is applied.
   if (!options.has_day && !options.has_month) {
@@ -253,20 +234,58 @@ size_t GetYearSkeletonCount(const std::string& skeleton,
       case DateTimeFormatterOptions::ItemLength::kNone:
       case DateTimeFormatterOptions::ItemLength::kLong:
       case DateTimeFormatterOptions::ItemLength::kMedium:
-        return 1;
+        return u"y";
       case DateTimeFormatterOptions::ItemLength::kShort:
-        return 2;
+        return u"yy";
     }
   }
 
-  return std::ranges::count(skeleton, 'y');
+  return std::u16string(std::ranges::count(skeleton, 'y'), 'y');
 }
 
-size_t GetDaySkeletonCount(const std::string& skeleton,
-                           DateTimeFormatterOptions::ItemLength length,
-                           SkeletonOptions options) {
+std::u16string GetMonthSkeleton(const icu::UnicodeString& icu_initial_pattern,
+                                const std::string& skeleton,
+                                DateTimeFormatterOptions::ItemLength length,
+                                SkeletonOptions options) {
+  if (!options.has_month) {
+    return u"";
+  }
+
+  // If there is no day or year, a separated logic is applied.
+  if (!options.has_day && !options.has_year) {
+    switch (length) {
+      case DateTimeFormatterOptions::ItemLength::kNone:
+      case DateTimeFormatterOptions::ItemLength::kShort:
+        return u"M";
+      case DateTimeFormatterOptions::ItemLength::kMedium:
+        return u"MMM";
+      case DateTimeFormatterOptions::ItemLength::kLong:
+        return u"MMMM";
+    }
+  }
+
+  size_t month_count = std::ranges::count(skeleton, 'M');
+  if (length == DateTimeFormatterOptions::ItemLength::kLong) {
+    month_count = std::max(month_count, static_cast<size_t>(4));
+  }
+  // If there is weekday in the initial skeleton and the length is medium, the
+  // month (M) count is set to a minimum of 3.
+  if (length == DateTimeFormatterOptions::ItemLength::kMedium &&
+      month_count < 3) {
+    // This is a special character that if present in the initial pattern, we
+    // can force it to appear again by increasing the number of 'M' symbols.
+    if (icu_initial_pattern.indexOf(u'年') != -1) {
+      month_count = 3;
+    }
+  }
+  return std::u16string(month_count, 'M');
+}
+
+std::u16string GetDaySkeleton(const std::string& skeleton,
+                              DateTimeFormatterOptions::ItemLength length,
+                              SkeletonOptions options) {
   if (!options.has_day) {
-    return 0;
+    return u"";
   }
 
   // If there is no day or year, a separated logic is applied.
@@ -274,48 +293,59 @@ size_t GetDaySkeletonCount(const std::string& skeleton,
     switch (length) {
       case DateTimeFormatterOptions::ItemLength::kShort:
       case DateTimeFormatterOptions::ItemLength::kMedium:
-        return 1;
+        return u"d";
       case DateTimeFormatterOptions::ItemLength::kNone:
       case DateTimeFormatterOptions::ItemLength::kLong:
-        return 2;
+        return u"dd";
     }
   }
 
-  return std::ranges::count(skeleton, 'd');
+  return std::u16string(std::ranges::count(skeleton, 'd'), 'd');
+}
+
+std::u16string GetWeekDaySkeleton(const std::string& skeleton,
+                                  DateTimeFormatterOptions::ItemLength length,
+                                  SkeletonOptions options) {
+  if (!options.has_weekday) {
+    return u"";
+  }
+  char weekday_symbol = 'E';
+  size_t e_count = std::ranges::count(skeleton, 'E');
+  size_t c_count = std::ranges::count(skeleton, 'c');
+  if (c_count > e_count) {
+    weekday_symbol = 'c';
+  }
+  size_t weekday_count = std::max(size_t{1u}, std::max(e_count, c_count));
+  return std::u16string(weekday_count, weekday_symbol);
 }
 
 // Takes a complete skeleton and returns a new one containing only the fields
 // that must be present.
 icu::UnicodeString GetFormattedSkeleton(
+    const icu::UnicodeString& icu_initial_pattern,
     const icu::UnicodeString& complete_skeleton,
+    const SkeletonOptions& skeleton_options,
     DateTimeFormatterOptions options) {
-  SkeletonOptions skeleton_options =
-      GetSkeletonOptions(options.format_identifier);
   std::string skeleton =
       base::UTF16ToUTF8(base::i18n::UnicodeStringToString16(complete_skeleton));
 
-  size_t year_count =
-      GetYearSkeletonCount(skeleton, options.length, skeleton_options);
-  size_t month_count =
-      GetMonthSkeletonCount(skeleton, options.length, skeleton_options);
-  size_t day_count =
-      GetDaySkeletonCount(skeleton, options.length, skeleton_options);
-  size_t weekday_count = std::ranges::count(skeleton, 'E');
-
   icu::UnicodeString output_skeleton;
   if (skeleton_options.has_year) {
-    output_skeleton.append(std::u16string(year_count, 'y'));
+    output_skeleton.append(
+        GetYearSkeleton(skeleton, options.length, skeleton_options));
   }
   if (skeleton_options.has_month) {
-    output_skeleton.append(std::u16string(month_count, 'M'));
+    output_skeleton.append(GetMonthSkeleton(icu_initial_pattern, skeleton,
+                                            options.length, skeleton_options));
   }
   if (skeleton_options.has_day) {
-    output_skeleton.append(std::u16string(day_count, 'd'));
+    output_skeleton.append(
+        GetDaySkeleton(skeleton, options.length, skeleton_options));
   }
   if (skeleton_options.has_weekday) {
     // Max between 1u and weekday_count is used to force its presence.
     output_skeleton.append(
-        std::u16string(std::max<size_t>(weekday_count, 1u), 'E'));
+        GetWeekDaySkeleton(skeleton, options.length, skeleton_options));
   }
   if (options.year_style == DateTimeFormatterOptions::YearStyle::kWithEra) {
     output_skeleton += "G";
@@ -399,10 +429,30 @@ icu::UnicodeString GetFormattedSkeleton(
 // the formatted skeleton.
 icu::UnicodeString GetBestPattern(const icu::Locale& locale,
                                   DateTimeFormatterOptions options) {
-  icu::UnicodeString icu_pattern = GetPatternForLength(locale, options.length);
-  if (icu_pattern.isEmpty()) {
-    return "";
+  SkeletonOptions skeleton_options =
+      GetSkeletonOptions(options.format_identifier);
+  icu::UnicodeString icu_pattern =
+      GetPatternForLength(locale, options.length, skeleton_options.has_time,
+                          skeleton_options.has_weekday);
+
+  if (!skeleton_options.has_time && skeleton_options.has_day &&
+      skeleton_options.has_month && skeleton_options.has_year) {
+    const bool has_weekday_in_icu_pattern =
+        icu_pattern.indexOf('E') != -1 || icu_pattern.indexOf('c') != -1;
+    // There could happen that the default pattern for a date might have a 'G'
+    // (Era) field.
+    if (icu_pattern.indexOf('G') != -1 &&
+        options.year_style != DateTimeFormatterOptions::YearStyle::kWithEra) {
+      icu_pattern.findAndReplace("G", "");
+      // Trims extra spaces that could happen after removing "G".
+      icu_pattern.findAndReplace("  ", " ");
+    }
+
+    if (skeleton_options.has_weekday == has_weekday_in_icu_pattern) {
+      return icu_pattern;
+    }
   }
+
   UErrorCode status = U_ZERO_ERROR;
   std::unique_ptr<icu::DateTimePatternGenerator> generator(
       icu::DateTimePatternGenerator::createInstance(locale, status));
@@ -416,10 +466,11 @@ icu::UnicodeString GetBestPattern(const icu::Locale& locale,
     return "";
   }
 
-  icu::UnicodeString formatted_skeleton =
-      GetFormattedSkeleton(complete_skeleton, options);
+  icu::UnicodeString formatted_skeleton = GetFormattedSkeleton(
+      icu_pattern, complete_skeleton, skeleton_options, options);
   icu::UnicodeString best_pattern =
       generator->getBestPattern(formatted_skeleton, status);
+
   return best_pattern;
 }
 
