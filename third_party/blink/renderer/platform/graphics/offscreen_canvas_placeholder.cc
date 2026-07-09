@@ -47,10 +47,6 @@ void OffscreenCanvasPlaceholder::Client::UpdatePlaceholderImage(
     scoped_refptr<blink::ExportedCanvasResource>&& canvas_resource) {
   DCHECK(IsMainThread());
 
-  if (placeholder_canvas_id == kInvalidDOMNodeId) {
-    return;
-  }
-
   OffscreenCanvasPlaceholder* placeholder_canvas =
       OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
           placeholder_canvas_id);
@@ -107,10 +103,6 @@ void OffscreenCanvasPlaceholder::Client::OnMainThreadReceivedImage() {
 }
 
 void OffscreenCanvasPlaceholder::Client::RegisterWithPlaceholder() {
-  if (placeholder_canvas_id_ == kInvalidDOMNodeId) {
-    return;
-  }
-
   // If the offscreencanvas is in the same thread as the canvas, we will update
   // the canvas resource dispatcher directly. So Offscreen Canvas can behave in
   // a more synchronous way when it's on the main thread.
@@ -142,6 +134,7 @@ OffscreenCanvasPlaceholder::Client::Client(
       placeholder_task_runner_(std::move(placeholder_task_runner)) {
   CHECK(canvas_task_runner_);
   CHECK(placeholder_task_runner_);
+  CHECK_NE(placeholder_canvas_id_, kInvalidDOMNodeId);
 
   RegisterWithPlaceholder();
 }
