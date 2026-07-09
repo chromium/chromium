@@ -39,6 +39,9 @@ class SendTabToSelfTabCardLabelData
   // Called when the WebState is closed by the user, to log abandonment.
   void WebStateClosedByUser(web::WebState* web_state);
 
+  // Returns the creation timestamp of this label data.
+  base::Time creation_time() const { return creation_time_; }
+
  private:
   friend class web::WebStateUserData<SendTabToSelfTabCardLabelData>;
 

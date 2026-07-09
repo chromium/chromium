@@ -18,12 +18,15 @@
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/shared_highlighting/core/common/text_fragment.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_tab_card_label_data.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_util.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
+#import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/window_open_disposition.h"
 
@@ -31,6 +34,35 @@ namespace {
 
 NSString* const kSendTabToSendConclusionNotification =
     @"SendTabToSendConclusionNotification";
+
+// Returns the index of the WebState in `web_state_list` belonging to the most
+// recently received Send Tab to Self batch, ignoring previously received tabs.
+int GetMostRecentReceivedWebStateIndex(WebStateList* web_state_list) {
+  if (!web_state_list) {
+    return WebStateList::kInvalidIndex;
+  }
+
+  // Iterate through all tabs in the WebStateList to find the one with the
+  // newest Send Tab to Self card label timestamp. Using `>=` ensures that when
+  // multiple background tabs are opened simultaneously in a batch (and share
+  // identical timestamps), the last inserted tab at the highest index is
+  // selected.
+  int received_tab_index = WebStateList::kInvalidIndex;
+  base::Time max_creation_time = base::Time::Min();
+  for (int i = 0; i < web_state_list->count(); ++i) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(i);
+    SendTabToSelfTabCardLabelData* label_data =
+        SendTabToSelfTabCardLabelData::FromWebState(web_state);
+    if (!label_data) {
+      continue;
+    }
+    if (label_data->creation_time() >= max_creation_time) {
+      max_creation_time = label_data->creation_time();
+      received_tab_index = i;
+    }
+  }
+  return received_tab_index;
+}
 
 }  // namespace
 
@@ -40,9 +72,10 @@ namespace send_tab_to_self {
 std::unique_ptr<IOSSendTabToSelfInfoBarDelegate>
 IOSSendTabToSelfInfoBarDelegate::Create(const SendTabToSelfEntry* entry,
                                         SendTabToSelfModel* model,
-                                        id<SceneCommands> scene_handler) {
-  return std::make_unique<IOSSendTabToSelfInfoBarDelegate>(entry, model,
-                                                           scene_handler);
+                                        id<SceneCommands> scene_handler,
+                                        WebStateList* web_state_list) {
+  return std::make_unique<IOSSendTabToSelfInfoBarDelegate>(
+      entry, model, scene_handler, web_state_list);
 }
 
 IOSSendTabToSelfInfoBarDelegate::~IOSSendTabToSelfInfoBarDelegate() {
@@ -59,14 +92,17 @@ const std::string& IOSSendTabToSelfInfoBarDelegate::GetGUID() const {
 IOSSendTabToSelfInfoBarDelegate::IOSSendTabToSelfInfoBarDelegate(
     const SendTabToSelfEntry* entry,
     SendTabToSelfModel* model,
-    id<SceneCommands> scene_handler)
+    id<SceneCommands> scene_handler,
+    WebStateList* web_state_list)
     : model_(model),
       scene_handler_(scene_handler),
+      web_state_list_(web_state_list),
       guid_(entry->GetGUID()),
       weak_ptr_factory_(this) {
   DCHECK(entry);
   DCHECK(model);
   DCHECK(scene_handler);
+  DCHECK(web_state_list_);
 
   base::WeakPtr<IOSSendTabToSelfInfoBarDelegate> weakPtr =
       weak_ptr_factory_.GetWeakPtr();
@@ -140,19 +176,31 @@ std::u16string IOSSendTabToSelfInfoBarDelegate::GetMessageText() const {
 
 bool IOSSendTabToSelfInfoBarDelegate::Accept() {
   send_tab_to_self::RecordNotificationOpened();
+  SendConclusionNotification();
+
   const SendTabToSelfEntry* entry = model_->GetEntryByGUID(guid_);
-  if (entry) {
-    model_->MarkEntryOpened(guid_);
-    if (base::FeatureList::IsEnabled(
-            send_tab_to_self::kSendTabToSelfAutoOpen)) {
-      [scene_handler_ displayTabGridInMode:TabGridOpeningMode::kRegular];
-    } else {
-      [scene_handler_
-          openURLInNewTab:send_tab_to_self::CreateOpenNewTabCommand(entry)];
-    }
+
+  if (!entry) {
+    return true;
   }
 
-  SendConclusionNotification();
+  if (!base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfAutoOpen)) {
+    // Open the tab directly in foreground when auto-open feature is disabled.
+    [scene_handler_
+        openURLInNewTab:send_tab_to_self::CreateOpenNewTabCommand(entry)];
+    model_->MarkEntryOpened(guid_);
+    return true;
+  }
+
+  int received_tab_index = GetMostRecentReceivedWebStateIndex(web_state_list_);
+  if (received_tab_index != WebStateList::kInvalidIndex) {
+    // Directly activate the most recently received tab in the foreground.
+    web_state_list_->ActivateWebStateAt(received_tab_index);
+  } else {
+    // Fall back to opening the Tab Grid if the received tab can no longer be
+    // found (e.g., if it was closed by the time Accept() is called).
+    [scene_handler_ displayTabGridInMode:TabGridOpeningMode::kRegular];
+  }
   return true;
 }
 
