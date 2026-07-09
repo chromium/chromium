@@ -10,11 +10,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -99,6 +101,7 @@ class TestReadingListPageHandlerTest : public BrowserWithTestWindowTest {
 
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile()));
+    webui::SetBrowserWindowInterface(web_contents_.get(), browser());
     test_web_ui_ = std::make_unique<content::TestWebUI>();
     test_web_ui_->set_web_contents(web_contents_.get());
 
@@ -124,6 +127,7 @@ class TestReadingListPageHandlerTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
+    webui::SetBrowserWindowInterface(web_contents_.get(), nullptr);
     incognito_browser_.reset();
     handler_.reset();
     test_web_ui_.reset();
@@ -249,6 +253,53 @@ TEST_F(TestReadingListPageHandlerTest, OpenURLNotOnNTP) {
 
   // Expect ItemsChanged to be called 5 times.
   // Four times for the two AddEntry calls in SetUp().
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
+  // Expect CurrentPageActionButtonStateChanged to be called once.
+  EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);
+
+  // Get Read later entries.
+  GetAndVerifyReadLaterEntries(
+      /* unread_size= */ 2u, /* read_size= */ 0u,
+      /* expected_unread_data= */
+      {std::make_pair(GURL(kTabUrl3), kTabName3),
+       std::make_pair(GURL(kTabUrl1), kTabName1)},
+      /* expected_read_data= */ {});
+}
+
+TEST_F(TestReadingListPageHandlerTest, OpenURLNotInReadingList) {
+  const GURL not_in_reading_list_url("http://not-in-reading-list.com");
+  EXPECT_FALSE(model()->GetEntryByURL(not_in_reading_list_url));
+
+  base::UserActionTester user_action_tester;
+
+  const int tab_count_before = browser()->tab_strip_model()->count();
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  const GURL active_url_before = active_web_contents->GetVisibleURL();
+
+  // Try to open a URL that is not in the reading list.
+  handler()->OpenURL(not_in_reading_list_url, GetClickModifiers());
+
+  // Check that the URL was not opened (tab count and active tab URL remain
+  // unchanged).
+  EXPECT_EQ(browser()->tab_strip_model()->count(), tab_count_before);
+  EXPECT_EQ(active_web_contents->GetVisibleURL(), active_url_before);
+
+  // Try to open with middle click (which would open a new tab if URL were in
+  // reading list).
+  auto click_modifiers = GetClickModifiers();
+  click_modifiers->middle_button = true;
+  handler()->OpenURL(not_in_reading_list_url, std::move(click_modifiers));
+
+  // Check that no new tab was opened.
+  EXPECT_EQ(browser()->tab_strip_model()->count(), tab_count_before);
+
+  // Verify that no navigation metrics were recorded.
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("SidePanel.ReadingList.Navigation"), 0);
+
+  // Expect ItemsChanged to be called four times from the two AddEntry calls in
+  // SetUp().
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
   // Expect CurrentPageActionButtonStateChanged to be called once.
   EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);

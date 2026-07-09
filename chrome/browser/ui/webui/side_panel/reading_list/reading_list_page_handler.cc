@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -179,9 +180,10 @@ void ReadingListPageHandler::GetReadLaterEntries(
 void ReadingListPageHandler::OpenURL(
     const GURL& url,
     ui::mojom::ClickModifiersPtr click_modifiers) {
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
-  if (!browser) {
+  // Only support opening reading list entry URLS.
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model_->GetEntryByURL(url);
+  if (!entry) {
     return;
   }
 
@@ -193,18 +195,18 @@ void ReadingListPageHandler::OpenURL(
 
   content::OpenURLParams params(url, content::Referrer(), open_location,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-  browser->GetBrowserForMigrationOnly()->OpenURL(
-      params,
-      /*navigation_handle_callback=*/{});
 
-  scoped_refptr<const ReadingListEntry> entry =
-      reading_list_model_->GetEntryByURL(url);
-  if (entry) {
-    base::RecordAction(base::UserMetricsAction(
-        entry->IsRead() ? "DesktopReadingList.Navigation.FromReadList"
-                        : "DesktopReadingList.Navigation.FromUnreadList"));
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents());
+  if (!browser_window_interface) {
+    return;
   }
+  browser_window_interface->OpenURL(params,
+                                    /*navigation_handle_callback=*/{});
 
+  base::RecordAction(base::UserMetricsAction(
+      entry->IsRead() ? "DesktopReadingList.Navigation.FromReadList"
+                      : "DesktopReadingList.Navigation.FromUnreadList"));
   base::RecordAction(
       base::UserMetricsAction("SidePanel.ReadingList.Navigation"));
   RecordBookmarkLaunch(
