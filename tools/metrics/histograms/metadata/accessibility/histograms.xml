@@ -3286,6 +3286,26 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.ReadAnything.PageDuration.{PageType}In{ViewMode}"
+    units="ms" expires_after="2027-06-01">
+  <owner>kristislee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Measures the duration a user spent reading a {PageType} page in {ViewMode}
+    view mode. Logged when the page is changed, or the panel is closed or
+    destroyed.
+  </summary>
+  <token key="PageType">
+    <variant name="Pdf" summary="PDF"/>
+    <variant name="WebPage" summary="Webpage"/>
+  </token>
+  <token key="ViewMode">
+    <variant name="FullPage" summary="immersive overlay (Full Page)"/>
+    <variant name="SidePanel" summary="Side Panel"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.Pdf.Headings.{HeadingLevel}"
     units="count" expires_after="2027-05-01">
   <owner>kristislee@google.com</owner>

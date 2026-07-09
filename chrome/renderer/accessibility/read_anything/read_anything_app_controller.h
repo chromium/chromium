@@ -542,6 +542,10 @@ class ReadAnythingAppController
 
   void LogSpeechStop(int source);
 
+  // Logs the duration a user spent reading a page, broken down by page type
+  // (PDF vs WebPage) and view mode (FullPage overlay vs SidePanel).
+  void LogPageDuration();
+
   // Methods for logging line focus session info.
   void StartLineFocusSession();
   void LogLineFocusSession();

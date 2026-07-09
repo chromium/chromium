@@ -274,6 +274,13 @@ class ReadAnythingAppModel {
     words_distilled_ = words_distilled;
   }
 
+  std::optional<base::TimeTicks> page_start_time() const {
+    return page_start_time_;
+  }
+  void set_page_start_time(std::optional<base::TimeTicks> time) {
+    page_start_time_ = time;
+  }
+
   std::optional<base::TimeTicks> line_focus_session_start_time() const {
     return line_focus_session_start_time_;
   }
@@ -975,6 +982,10 @@ class ReadAnythingAppModel {
   int words_seen_ = 0;
   int words_heard_ = 0;
   int words_distilled_ = 0;
+
+  // The time when the page successfully distills. Used to measure the time
+  // spent on a page with Reading mode.
+  std::optional<base::TimeTicks> page_start_time_;
 
   // Line focus session information. Used for logging.
   std::optional<base::TimeTicks> line_focus_session_start_time_;

@@ -5506,3 +5506,47 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
   EXPECT_FALSE(model().requires_readability_distillation());
   EXPECT_TRUE(controller().GetDomDistillerContentHtml().empty());
 }
+
+TEST_F(ReadAnythingAppControllerTest, LogPageDuration_PdfInSidePanel) {
+  base::HistogramTester histograms;
+
+  model().set_is_pdf(true);
+  model().set_active_presentation_state(
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+  model().set_page_start_time(base::TimeTicks::Now() - base::Seconds(15));
+
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
+  controller().OnReadingModeHidden(true);
+
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.PageDuration.PdfInSidePanel", 1);
+  EXPECT_FALSE(model().page_start_time().has_value());
+}
+
+TEST_F(ReadAnythingAppControllerTest, LogPageDuration_WebPageInFullPage) {
+  base::HistogramTester histograms;
+
+  model().set_is_pdf(false);
+  model().set_active_presentation_state(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  model().set_page_start_time(base::TimeTicks::Now() - base::Seconds(30));
+
+  controller().OnTabWillDetach();
+
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.PageDuration.WebPageInFullPage", 1);
+  EXPECT_FALSE(model().page_start_time().has_value());
+}
+
+TEST_F(ReadAnythingAppControllerTest, LogPageDuration_NoStartTimeNoLog) {
+  base::HistogramTester histograms;
+
+  EXPECT_FALSE(model().page_start_time().has_value());
+
+  controller().OnTabWillDetach();
+
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.PageDuration.PdfInSidePanel", 0);
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.PageDuration.WebPageInFullPage", 0);
+}
