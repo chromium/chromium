@@ -46,6 +46,12 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
     lookup_service_ = lookup_service;
   }
 
+  // Controls the return value of `GetHashRealTimeService`.
+  void set_hash_real_time_service(
+      safe_browsing::HashRealTimeService* hash_real_time_service) {
+    hash_real_time_service_ = hash_real_time_service;
+  }
+
   // Controls the return value of `ShouldForceSyncRealTimeUrlChecks`.
   void set_should_force_sync_real_time_url_checks(
       bool should_force_sync_real_time_url_checks) {
@@ -100,6 +106,7 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   scoped_refptr<FakeSafeBrowsingService> safe_browsing_service_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<safe_browsing::RealTimeUrlLookupServiceBase> lookup_service_;
+  raw_ptr<safe_browsing::HashRealTimeService> hash_real_time_service_ = nullptr;
 
   bool should_block_unsafe_resource_ = false;
   bool main_frame_cancellation_decided_called_ = false;

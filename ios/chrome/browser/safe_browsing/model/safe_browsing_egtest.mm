@@ -189,7 +189,7 @@ void EnableEnterpriseUrlFilteringPrefs() {
   config.additional_args.push_back(std::string("--mark_as_malware=") +
                                    _malwareURL.spec());
   config.additional_args.push_back(
-      std::string("--mark_as_hash_prefix_real_time_phishing=") +
+      std::string("--mark_as_v5_search_hashes_phishing=") +
       _phishingURL.spec());
 
   // Disable HPRT for malware URL related tests since artificial verdict caching

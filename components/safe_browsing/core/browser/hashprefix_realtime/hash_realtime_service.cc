@@ -12,8 +12,8 @@
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
-#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
@@ -141,11 +141,11 @@ class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
 HashRealTimeService::HashRealTimeService(
     base::RepeatingCallback<network::mojom::NetworkContext*()>
         get_network_context,
-    VerdictCacheManager* cache_manager,
+    V5SearchHashesCache* cache,
     OhttpKeyService* ohttp_key_service,
     WebUIDelegate* webui_delegate)
     : get_network_context_(std::move(get_network_context)),
-      cache_manager_(cache_manager),
+      cache_(cache),
       ohttp_key_service_(ohttp_key_service),
       backoff_operator_(std::make_unique<BackoffOperator>(
           /*num_failures_to_enforce_backoff=*/kNumFailuresToEnforceBackoff,
@@ -159,7 +159,7 @@ HashRealTimeService::~HashRealTimeService() = default;
 
 // static
 bool HashRealTimeService::CanCheckUrl(const GURL& url) {
-  if (VerdictCacheManager::has_artificial_cached_url()) {
+  if (V5SearchHashesCache::has_artificial_cached_url()) {
     return true;
   }
   return hash_realtime_utils::CanCheckUrl(url);
@@ -245,10 +245,8 @@ void HashRealTimeService::SearchCache(
     std::vector<V5::FullHash>* out_cached_full_hashes) const {
   SCOPED_UMA_HISTOGRAM_TIMER("SafeBrowsing.HPRT.GetCache.Time");
   auto cached_results =
-      cache_manager_
-          ? cache_manager_->GetCachedHashPrefixRealTimeLookupResults(
-                hash_prefixes)
-          : std::unordered_map<std::string, std::vector<V5::FullHash>>();
+      cache_ ? cache_->SearchCache(hash_prefixes)
+             : std::unordered_map<std::string, std::vector<V5::FullHash>>();
   for (const auto& hash_prefix : hash_prefixes) {
     auto cached_result_it = cached_results.find(hash_prefix);
     if (cached_result_it != cached_results.end()) {
@@ -456,8 +454,8 @@ void HashRealTimeService::OnURLLoaderComplete(
   std::optional<SBThreatType> sb_threat_type;
   bool is_lookup_successful = response.has_value();
   if (is_lookup_successful) {
-    if (cache_manager_) {
-      cache_manager_->CacheHashPrefixRealTimeLookupResults(
+    if (cache_) {
+      cache_->CacheSearchHashesResponse(
           hash_prefixes_in_request,
           std::vector<V5::FullHash>(response.value()->full_hashes().begin(),
                                     response.value()->full_hashes().end()),
@@ -619,7 +617,7 @@ void HashRealTimeService::Shutdown() {
   weak_factory_.InvalidateWeakPtrs();
 
   // Clear references to other KeyedServices.
-  cache_manager_ = nullptr;
+  cache_ = nullptr;
   ohttp_key_service_ = nullptr;
 }
 

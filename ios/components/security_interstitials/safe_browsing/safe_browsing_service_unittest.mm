@@ -22,6 +22,9 @@
 #import "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
 #import "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #import "components/safe_browsing/core/browser/db/v4_test_util.h"
+#import "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
+#import "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
+#import "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #import "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
@@ -59,6 +62,26 @@ namespace {
 
 const char kSafePage[] = "https://example.test/safe.html";
 const char kMalwarePage[] = "https://unsafe.test/malware.html";
+
+class TestOhttpKeyService : public safe_browsing::OhttpKeyService {
+ public:
+  TestOhttpKeyService()
+      : safe_browsing::OhttpKeyService(
+            /*url_loader_factory=*/nullptr,
+            /*pref_service=*/nullptr,
+            /*local_state=*/nullptr,
+            /*country_getter=*/
+            base::BindRepeating(
+                []() -> std::optional<std::string> { return std::nullopt; }),
+            /*are_background_lookups_allowed=*/true) {}
+
+  void GetOhttpKey(safe_browsing::OhttpKeyService::Callback callback) override {
+    std::move(callback).Run(std::nullopt);
+  }
+
+  void NotifyLookupResponse(const std::string& key,
+                            int response_code) override {}
+};
 
 class TestUrlCheckerClient {
  public:
@@ -239,6 +262,17 @@ class SafeBrowsingServiceTest : public PlatformTest {
     safe_browsing_service_->OnBrowserStateCreated(&pref_service_, nullptr);
     base::RunLoop().RunUntilIdle();
 
+    ohttp_key_service_ = std::make_unique<TestOhttpKeyService>();
+    v5_cache_ = std::make_unique<safe_browsing::V5SearchHashesCache>();
+    hash_real_time_service_ =
+        std::make_unique<safe_browsing::HashRealTimeService>(
+            base::BindRepeating(
+                []() -> network::mojom::NetworkContext* { return nullptr; }),
+            v5_cache_.get(), ohttp_key_service_.get(),
+            /*webui_delegate=*/nullptr);
+    safe_browsing_client_->set_hash_real_time_service(
+        hash_real_time_service_.get());
+
     SetupUrlLookupService();
   }
 
@@ -285,8 +319,8 @@ class SafeBrowsingServiceTest : public PlatformTest {
 
  protected:
   void SetUpVerdict(GURL url, bool is_unsafe) {
-    verdict_cache_manager_->CacheArtificialHashRealTimeLookupVerdict(url.spec(),
-                                                                     is_unsafe);
+    v5_cache_->CacheArtificialV5SearchHashesLookupVerdict(url.spec(),
+                                                          is_unsafe);
   }
 
   web::WebTaskEnvironment task_environment_{
@@ -298,6 +332,9 @@ class SafeBrowsingServiceTest : public PlatformTest {
       apply_branding_;
   base::test::ScopedFeatureList scoped_feature_list_;
   web::FakeWebState web_state_;
+  std::unique_ptr<TestOhttpKeyService> ohttp_key_service_;
+  std::unique_ptr<safe_browsing::V5SearchHashesCache> v5_cache_;
+  std::unique_ptr<safe_browsing::HashRealTimeService> hash_real_time_service_;
   std::unique_ptr<TestRealtimeUrlLookupService> lookup_service_;
   std::unique_ptr<FakeSafeBrowsingClient> safe_browsing_client_;
 
@@ -862,6 +899,7 @@ TEST_F(SafeBrowsingServiceTest, HashPrefixEnabled) {
   EXPECT_TRUE(client.result_pending());
   client.WaitForResult();
   EXPECT_FALSE(client.result_pending());
+  EXPECT_TRUE(client.url_is_unsafe());
   EXPECT_EQ(safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
                 kHashRealTimeCheck,
             client.performed_check());
@@ -892,6 +930,7 @@ TEST_F(SafeBrowsingServiceTest, HashPrefixDisabled) {
   EXPECT_TRUE(client.result_pending());
   client.WaitForResult();
   EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
   EXPECT_EQ(safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
                 kHashDatabaseCheck,
             client.performed_check());

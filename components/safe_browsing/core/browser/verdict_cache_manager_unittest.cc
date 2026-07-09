@@ -15,10 +15,8 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_sync_observer.h"
-#include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
-#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -30,7 +28,6 @@ namespace {
 
 using testing::SizeIs;
 
-const char kArtificialHashRealTimeUnsafeUrl[] = "https://example.test";
 const char kArtificialEntepriseBlockedUrl[] = "https://blocked.test";
 const char kArtificialEntepriseWarnUrl[] = "https://warn.test";
 
@@ -96,24 +93,6 @@ class VerdictCacheManagerTest : public ::testing::Test {
                                            verdict_received_time);
   }
 
-  void CacheHashPrefixRealTimeLookupResult(int cache_duration_seconds,
-                                           std::string hash_prefix) {
-    V5::Duration duration;
-    duration.set_seconds(cache_duration_seconds);
-    cache_manager_->CacheHashPrefixRealTimeLookupResults(
-        {hash_prefix}, {V5::FullHash()}, duration);
-  }
-  void ConfirmHashPrefixRealTimeLookupCacheContent(std::string hash_prefix,
-                                                   bool should_expect_entry) {
-    // We cannot call the public SearchCache function because that automatically
-    // filters out expired results. We want to confirm that the cache contents
-    // themselves have been cleaned up as expected, so we access |cache_|
-    // directly.
-    EXPECT_EQ(
-        cache_manager_->hash_realtime_cache_->cache_.contains(hash_prefix),
-        should_expect_entry);
-  }
-
   void AddThreatInfoToResponse(
       RTLookupResponse& response,
       RTLookupResponse::ThreatInfo::VerdictType verdict_type,
@@ -168,21 +147,6 @@ class VerdictCacheManagerTest : public ::testing::Test {
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   raw_ptr<MockSafeBrowsingSyncObserver, DanglingUntriaged> raw_sync_observer_ =
       nullptr;
-};
-
-class ArtificialHashRealTimeVerdictCacheManagerTest
-    : public VerdictCacheManagerTest {
- public:
-  ArtificialHashRealTimeVerdictCacheManagerTest() {
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitchASCII(
-        safe_browsing::switches::kArtificialCachedHashPrefixRealTimeVerdictFlag,
-        kArtificialHashRealTimeUnsafeUrl);
-  }
-  void TearDown() override {
-    VerdictCacheManagerTest::TearDown();
-    VerdictCacheManager::ResetHasArtificialCachedUrlForTesting();
-  }
 };
 
 class ArtificialEnterpriseVerdictCacheManagerTest
@@ -540,14 +504,6 @@ TEST_F(VerdictCacheManagerTest, MAYBE_TestCleanUpExpiredVerdict) {
       GURL("https://www.example1.com"),
       CreatePageLoadToken(now.InMillisecondsSinceUnixEpoch(), "token2"));
 
-  CacheHashPrefixRealTimeLookupResult(/*cache_duration_seconds=*/0, "aaaa");
-  CacheHashPrefixRealTimeLookupResult(/*cache_duration_seconds=*/300, "bbbb");
-  // aaaa and bbbb should both be in the cache even though aaaa is expired.
-  ConfirmHashPrefixRealTimeLookupCacheContent(/*hash_prefix=*/"aaaa",
-                                              /*should_expect_entry=*/true);
-  ConfirmHashPrefixRealTimeLookupCacheContent(/*hash_prefix=*/"bbbb",
-                                              /*should_expect_entry=*/true);
-
   cache_manager_->CleanUpExpiredVerdicts();
 
   ASSERT_EQ(1u, cache_manager_->GetStoredPhishGuardVerdictCount(
@@ -634,13 +590,6 @@ TEST_F(VerdictCacheManagerTest, MAYBE_TestCleanUpExpiredVerdict) {
   EXPECT_EQ("token2",
             cache_manager_->GetPageLoadToken(GURL("https://www.example1.com/"))
                 .token_value());
-
-  // aaaa is not in the cache because it was expired and has been cleaned up.
-  ConfirmHashPrefixRealTimeLookupCacheContent(/*hash_prefix=*/"aaaa",
-                                              /*should_expect_entry=*/false);
-  // aaaa is still in the cache because it has not expired.
-  ConfirmHashPrefixRealTimeLookupCacheContent(/*hash_prefix=*/"bbbb",
-                                              /*should_expect_entry=*/true);
 }
 
 TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictWithInvalidEntry) {
@@ -1284,36 +1233,6 @@ TEST_F(VerdictCacheManagerTest, TestShutdown) {
       GURL("https://www.example.com/path"),
       LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, password_type,
       &out_pg_verdict);
-}
-
-TEST_F(VerdictCacheManagerTest, TestHashPrefixRealTimeLookupCaching) {
-  // Basic test ensuring that the cache manager calls are propagating as
-  // expected to the HashRealTimeCache.
-  EXPECT_TRUE(
-      cache_manager_->GetCachedHashPrefixRealTimeLookupResults({"aaaa", "bbbb"})
-          .empty());
-  CacheHashPrefixRealTimeLookupResult(/*cache_duration_seconds=*/300, "aaaa");
-  CacheHashPrefixRealTimeLookupResult(/*cache_duration_seconds=*/300, "bbbb");
-  auto cache_results = cache_manager_->GetCachedHashPrefixRealTimeLookupResults(
-      {"aaaa", "bbbb", "cccc"});
-  EXPECT_EQ(cache_results.size(), 2u);
-  EXPECT_TRUE(cache_results.contains("aaaa"));
-  EXPECT_TRUE(cache_results.contains("bbbb"));
-}
-
-TEST_F(ArtificialHashRealTimeVerdictCacheManagerTest, TestCachePopulated) {
-  ASSERT_TRUE(VerdictCacheManager::has_artificial_cached_url_);
-
-  std::vector<FullHashStr> full_hashes;
-  SBProtocolManagerUtil::UrlToFullHashes(GURL(kArtificialHashRealTimeUnsafeUrl),
-                                         &full_hashes);
-  ASSERT_EQ(full_hashes.size(), 1u);
-  FullHashStr full_hash = full_hashes[0];
-
-  std::string hash_prefix = hash_realtime_utils::GetHashPrefix(full_hash);
-  auto cache_results =
-      cache_manager_->GetCachedHashPrefixRealTimeLookupResults({hash_prefix});
-  EXPECT_EQ(cache_results[hash_prefix][0].full_hash(), full_hash);
 }
 
 TEST_F(ArtificialEnterpriseVerdictCacheManagerTest,

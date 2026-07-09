@@ -353,6 +353,24 @@ static_library("sb_update_protocol_manager") {
   ]
 }
 
+static_library("v5_search_hashes_cache") {
+  sources = [
+    "v5_search_hashes_cache.cc",
+    "v5_search_hashes_cache.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    ":v4_protocol_manager_util",
+    "//base",
+    "//components/keyed_service/core",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
+  ]
+}
+
 source_set("unit_tests_shared") {
   testonly = true
   sources = [
@@ -361,6 +379,7 @@ source_set("unit_tests_shared") {
     "sb_protocol_manager_util_unittest.cc",
     "util_unittest.cc",
     "v4_get_hash_protocol_manager_unittest.cc",
+    "v5_search_hashes_cache_unittest.cc",
   ]
   deps = [
     ":allowlist_checker_client",
@@ -371,7 +390,12 @@ source_set("unit_tests_shared") {
     ":v4_get_hash_protocol_manager",
     ":v4_protocol_manager_util",
     ":v4_test_util",
+    ":v5_search_hashes_cache",
     "//base",
+    "//base/test:test_support",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//net",
     "//net:test_support",
     "//services/network:test_support",

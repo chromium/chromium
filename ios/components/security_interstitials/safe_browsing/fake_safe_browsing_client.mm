@@ -32,7 +32,7 @@ FakeSafeBrowsingClient::GetRealTimeUrlLookupService() {
 
 safe_browsing::HashRealTimeService*
 FakeSafeBrowsingClient::GetHashRealTimeService() {
-  return nullptr;
+  return hash_real_time_service_;
 }
 
 variations::VariationsService* FakeSafeBrowsingClient::GetVariationsService() {

@@ -2,18 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_cache.h"
+#include "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 
+#include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
-#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 
 namespace safe_browsing {
 
 namespace {
 
+// TODO(crbug.com/362791941): Rename HPRT logs.
 void LogCacheHitOrMiss(bool is_hit) {
   base::UmaHistogramBoolean("SafeBrowsing.HPRT.CacheHit", is_hit);
 }
@@ -32,15 +36,34 @@ void LogRemainingCacheDurationOnHit(base::Time expiration_time) {
 
 }  // namespace
 
-HashRealTimeCache::HashRealTimeCache() = default;
+// static
+bool V5SearchHashesCache::has_artificial_cached_url_ = false;
 
-HashRealTimeCache::~HashRealTimeCache() = default;
+// static
+bool V5SearchHashesCache::has_artificial_cached_url() {
+  return has_artificial_cached_url_;
+}
 
-HashRealTimeCache::FullHashesAndDetails::FullHashesAndDetails() = default;
-HashRealTimeCache::FullHashesAndDetails::~FullHashesAndDetails() = default;
+// static
+void V5SearchHashesCache::ResetHasArtificialCachedUrlForTesting() {
+  has_artificial_cached_url_ = false;
+}
+
+V5SearchHashesCache::V5SearchHashesCache() {
+  // TODO(crbug.com/362791941): There's really no need for HPRT or HPD to start
+  // at 2 minutes. This was needed previously because VerdictCacheManager was
+  // clearing URT as well. Change this to clear after 30 mins instead.
+  ScheduleNextCleanUpAfterInterval(base::Seconds(120));
+  CacheArtificialUnsafeV5SearchHashesLookupVerdictFromSwitch();
+}
+
+V5SearchHashesCache::~V5SearchHashesCache() = default;
+
+V5SearchHashesCache::FullHashesAndDetails::FullHashesAndDetails() = default;
+V5SearchHashesCache::FullHashesAndDetails::~FullHashesAndDetails() = default;
 
 std::unordered_map<std::string, std::vector<V5::FullHash>>
-HashRealTimeCache::SearchCache(
+V5SearchHashesCache::SearchCache(
     const std::set<std::string>& hash_prefixes) const {
   std::unordered_map<std::string, std::vector<V5::FullHash>> results;
   for (const auto& hash_prefix : hash_prefixes) {
@@ -57,7 +80,7 @@ HashRealTimeCache::SearchCache(
   return results;
 }
 
-void HashRealTimeCache::CacheSearchHashesResponse(
+void V5SearchHashesCache::CacheSearchHashesResponse(
     const std::vector<std::string>& requested_hash_prefixes,
     const std::vector<V5::FullHash>& response_full_hashes,
     const V5::Duration& cache_duration) {
@@ -108,7 +131,12 @@ void HashRealTimeCache::CacheSearchHashesResponse(
   }
 }
 
-void HashRealTimeCache::ClearExpiredResults() {
+void V5SearchHashesCache::Shutdown() {
+  cleanup_timer_.Stop();
+  cache_.clear();
+}
+
+void V5SearchHashesCache::ClearExpiredResults() {
   int num_hash_prefixes = cache_.size();
   int num_full_hashes = 0;
   auto it = cache_.begin();
@@ -124,6 +152,61 @@ void HashRealTimeCache::ClearExpiredResults() {
                                 num_hash_prefixes);
   base::UmaHistogramCounts10000("SafeBrowsing.HPRT.Cache.FullHashCount",
                                 num_full_hashes);
+}
+
+void V5SearchHashesCache::ScheduleNextCleanUpAfterInterval(
+    base::TimeDelta interval) {
+  cleanup_timer_.Stop();
+  cleanup_timer_.Start(
+      FROM_HERE, interval,
+      base::BindOnce(
+          [](V5SearchHashesCache* cache) {
+            cache->ClearExpiredResults();
+            cache->ScheduleNextCleanUpAfterInterval(base::Seconds(1800));
+          },
+          base::Unretained(this)));
+}
+
+void V5SearchHashesCache::CacheArtificialV5SearchHashesLookupVerdict(
+    const std::string& url_spec,
+    bool is_unsafe) {
+  if (url_spec.empty()) {
+    return;
+  }
+
+  GURL artificial_unsafe_url(url_spec);
+  if (!artificial_unsafe_url.is_valid()) {
+    return;
+  }
+
+  has_artificial_cached_url_ = true;
+
+  std::vector<FullHashStr> full_hashes;
+  SBProtocolManagerUtil::UrlToFullHashes(artificial_unsafe_url, &full_hashes);
+  std::vector<std::string> hash_prefixes;
+  for (const auto& full_hash : full_hashes) {
+    auto hash_prefix = hash_realtime_utils::GetHashPrefix(full_hash);
+    hash_prefixes.emplace_back(hash_prefix);
+  }
+  FullHashStr sample_full_hash = full_hashes[0];
+  V5::FullHash full_hash_object;
+  full_hash_object.set_full_hash(sample_full_hash);
+  if (is_unsafe) {
+    auto* details = full_hash_object.add_full_hash_details();
+    details->set_threat_type(V5::ThreatType::SOCIAL_ENGINEERING);
+  }
+  V5::Duration cache_duration;
+  cache_duration.set_seconds(3000);
+  CacheSearchHashesResponse(hash_prefixes, {full_hash_object}, cache_duration);
+}
+
+void V5SearchHashesCache::
+    CacheArtificialUnsafeV5SearchHashesLookupVerdictFromSwitch() {
+  std::string phishing_url_string =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kArtificialCachedV5SearchHashesVerdictFlag);
+  CacheArtificialV5SearchHashesLookupVerdict(phishing_url_string,
+                                             /*is_unsafe=*/true);
 }
 
 }  // namespace safe_browsing

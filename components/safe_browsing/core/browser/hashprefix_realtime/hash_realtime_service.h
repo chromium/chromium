@@ -19,7 +19,7 @@
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/utils/backoff_operator.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -37,7 +37,7 @@ using HPRTLookupResponseCallback =
     base::OnceCallback<void(bool, std::optional<SBThreatType>)>;
 
 class OhttpKeyService;
-class VerdictCacheManager;
+class V5SearchHashesCache;
 
 // This class implements the backoff logic, cache logic, and lookup request for
 // hash-prefix real-time lookups. For testing purposes, the request is currently
@@ -73,12 +73,11 @@ class HashRealTimeService : public KeyedService {
         int token,
         V5::SearchHashesResponse* response) = 0;
   };
-  HashRealTimeService(
-      base::RepeatingCallback<network::mojom::NetworkContext*()>
-          get_network_context,
-      VerdictCacheManager* cache_manager,
-      OhttpKeyService* ohttp_key_service,
-      WebUIDelegate* webui_delegate);
+  HashRealTimeService(base::RepeatingCallback<network::mojom::NetworkContext*()>
+                          get_network_context,
+                      V5SearchHashesCache* cache,
+                      OhttpKeyService* ohttp_key_service,
+                      WebUIDelegate* webui_delegate);
 
   HashRealTimeService(const HashRealTimeService&) = delete;
   HashRealTimeService& operator=(const HashRealTimeService&) = delete;
@@ -351,7 +350,7 @@ class HashRealTimeService : public KeyedService {
       get_network_context_;
 
   // Unowned object used for getting and storing cache entries.
-  raw_ptr<VerdictCacheManager, DanglingUntriaged> cache_manager_;
+  raw_ptr<V5SearchHashesCache> cache_;
 
   // Unowned object used for getting OHTTP key.
   raw_ptr<OhttpKeyService> ohttp_key_service_;

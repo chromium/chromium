@@ -25,10 +25,10 @@ const char kMarkAsHighConfidenceAllowlisted[] =
 // real-time lookups.
 const char kArtificialCachedUrlRealTimeVerdictFlag[] =
     "mark_as_real_time_phishing";
-// Command-line flag for caching an artificial phishing verdict for hash-prefix
-// real-time lookups.
-const char kArtificialCachedHashPrefixRealTimeVerdictFlag[] =
-    "mark_as_hash_prefix_real_time_phishing";
+// Command-line flag for caching an artificial phishing verdict for V5
+// SearchHashes.
+const char kArtificialCachedV5SearchHashesVerdictFlag[] =
+    "mark_as_v5_search_hashes_phishing";
 // Command-line flag for caching an artificial blocked enterprise lookup
 // verdict.
 const char kArtificialCachedEnterpriseBlockedVerdictFlag[] =

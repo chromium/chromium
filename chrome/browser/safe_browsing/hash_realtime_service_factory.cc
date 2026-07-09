@@ -9,10 +9,10 @@
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
 #include "chrome/browser/safe_browsing/ohttp_key_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
+#include "chrome/browser/safe_browsing/v5_search_hashes_cache_factory.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
+#include "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
-#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace safe_browsing {
@@ -39,7 +39,7 @@ HashRealTimeServiceFactory::HashRealTimeServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(VerdictCacheManagerFactory::GetInstance());
+  DependsOn(V5SearchHashesCacheFactory::GetInstance());
   DependsOn(NetworkContextServiceFactory::GetInstance());
   DependsOn(OhttpKeyServiceFactory::GetInstance());
 }
@@ -54,7 +54,7 @@ HashRealTimeServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<HashRealTimeService>(
       base::BindRepeating(&HashRealTimeServiceFactory::GetNetworkContext,
                           profile),
-      VerdictCacheManagerFactory::GetForProfile(profile),
+      V5SearchHashesCacheFactory::GetForProfile(profile),
       OhttpKeyServiceFactory::GetForProfile(profile),
       WebUIContentInfoSingleton::GetInstance());
 }

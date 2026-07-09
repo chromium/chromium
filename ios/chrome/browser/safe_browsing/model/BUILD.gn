@@ -35,6 +35,8 @@ source_set("model") {
     "safe_browsing_metrics_collector_factory.mm",
     "user_population_helper.h",
     "user_population_helper.mm",
+    "v5_search_hashes_cache_factory.h",
+    "v5_search_hashes_cache_factory.mm",
     "verdict_cache_manager_factory.h",
     "verdict_cache_manager_factory.mm",
   ]
@@ -56,6 +58,7 @@ source_set("model") {
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/db:v5_search_hashes_cache",
     "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
     "//components/safe_browsing/core/browser/realtime:enterprise_url_lookup_service",
@@ -180,6 +183,7 @@ source_set("unit_tests") {
     "safe_browsing_blocking_page_unittest.mm",
     "safe_browsing_client_factory_unittest.mm",
     "safe_browsing_client_impl_unittest.mm",
+    "v5_search_hashes_cache_factory_unittest.mm",
     "verdict_cache_manager_factory_unittest.mm",
   ]
 
@@ -196,6 +200,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:token_fetcher",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
+    "//components/safe_browsing/core/browser/db:v5_search_hashes_cache",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
     "//components/safe_browsing/core/browser/realtime:enterprise_url_lookup_service",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service",

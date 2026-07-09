@@ -24,11 +24,9 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_cache.h"
 #include "components/safe_browsing/core/browser/safe_browsing_sync_observer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
-#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "url/gurl.h"
 
 class HostContentSettingsMap;
@@ -122,17 +120,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   // token if the token is not found.
   ChromeUserPopulation::PageLoadToken GetPageLoadToken(const GURL& url);
 
-  // Stores the results of a hash-prefix real-time lookup into a cache object.
-  void CacheHashPrefixRealTimeLookupResults(
-      const std::vector<std::string>& requested_hash_prefixes,
-      const std::vector<V5::FullHash>& response_full_hashes,
-      const V5::Duration& cache_duration);
 
-  // Searches the hash-prefix real-time cache object for the requested
-  // |hash_prefixes|.
-  std::unordered_map<std::string, std::vector<V5::FullHash>>
-  GetCachedHashPrefixRealTimeLookupResults(
-      const std::set<std::string>& hash_prefixes);
 
   // Overridden from history::HistoryServiceObserver.
   void OnHistoryDeletions(history::HistoryService* history_service,
@@ -203,7 +191,6 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   void CleanUpExpiredRealTimeUrlCheckVerdicts();
   void CleanUpExpiredPageLoadTokens();
   void CleanUpAllPageLoadTokens(ClearReason reason);
-  void CleanUpExpiredHashPrefixRealTimeLookupResults();
 
   // Returns the default max entries that can be removed in a cleanup task.
   // The maximum can be modified by tests.
@@ -261,17 +248,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   // applies to Phishguard pings.
   void CacheArtificialUnsafePhishGuardVerdictFromSwitch();
 
-  // This adds a cached verdict for a URL that has artificially been marked as
-  // unsafe using the command line flag
-  // "mark_as_hash_prefix_real_time_phishing". This applies to hash-prefix
-  // real-time lookups.
-  void CacheArtificialUnsafeHashRealTimeLookupVerdictFromSwitch();
 
-  // This adds a cached verdict for a URL that has artificially been marked as
-  // safe or unsafe (depending on |is_unsafe|). This applies to hash-prefix
-  // real-time lookups.
-  void CacheArtificialHashRealTimeLookupVerdict(const std::string& url_spec,
-                                                bool is_unsafe);
 
   // This adds a cached verdict for a URL that has artificially been marked as
   // blocked for Enterprise Url Filtering by using the command line flag
@@ -326,10 +303,6 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   PrefChangeRegistrar pref_change_registrar_;
 
   std::unique_ptr<SafeBrowsingSyncObserver> sync_observer_;
-
-  // The local cache object for hash-prefix real-time lookups.
-  std::unique_ptr<HashRealTimeCache> hash_realtime_cache_ =
-      std::make_unique<HashRealTimeCache>();
 
   bool is_shut_down_ = false;
 

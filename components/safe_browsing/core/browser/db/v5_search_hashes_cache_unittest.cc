@@ -2,18 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_cache.h"
+#include "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 
+#include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
+#include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
 namespace safe_browsing {
 
-class HashRealTimeCacheTest : public PlatformTest {
+const char kArtificialHashRealTimeUnsafeUrl[] = "https://example.test";
+
+class V5SearchHashesCacheTest : public PlatformTest {
  protected:
   V5::Duration CreateCacheDuration(int seconds, int nanos) {
     V5::Duration cache_duration;
@@ -87,11 +93,15 @@ class HashRealTimeCacheTest : public PlatformTest {
         /*expected_count=*/1);
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
-  int GetNumCacheEntries(std::unique_ptr<HashRealTimeCache>& cache) {
+  int GetNumCacheEntries(std::unique_ptr<V5SearchHashesCache>& cache) {
     // This includes expired entries that have not yet been cleaned up too.
     return cache->cache_.size();
   }
-  void CacheEntry(std::unique_ptr<HashRealTimeCache>& cache_internal,
+  void ClearExpiredResultsHelper(
+      std::unique_ptr<V5SearchHashesCache>& cache_to_clean) {
+    cache_to_clean->ClearExpiredResults();
+  }
+  void CacheEntry(std::unique_ptr<V5SearchHashesCache>& cache_internal,
                   std::string full_hash,
                   int cache_duration_seconds) {
     cache_internal->CacheSearchHashesResponse(
@@ -106,8 +116,8 @@ class HashRealTimeCacheTest : public PlatformTest {
       std::make_unique<base::HistogramTester>();
 };
 
-TEST_F(HashRealTimeCacheTest, TestCacheMatching_EmptyCache) {
-  auto cache = std::make_unique<HashRealTimeCache>();
+TEST_F(V5SearchHashesCacheTest, TestCacheMatching_EmptyCache) {
+  auto cache = std::make_unique<V5SearchHashesCache>();
   EXPECT_TRUE(cache->SearchCache({}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/0);
   EXPECT_TRUE(cache->SearchCache({"aaaa"}).empty());
@@ -116,9 +126,8 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_EmptyCache) {
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/2);
 }
 
-TEST_F(HashRealTimeCacheTest, TestCacheMatching_BasicFunctionality) {
-  base::HistogramTester histogram_tester;
-  auto cache = std::make_unique<HashRealTimeCache>();
+TEST_F(V5SearchHashesCacheTest, TestCacheMatching_BasicFunctionality) {
+  auto cache = std::make_unique<V5SearchHashesCache>();
   // The below is done within a block to ensure that the cache works even once
   // the inputs to CacheSearchHashesResponse have been destructed.
   {
@@ -202,8 +211,8 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_BasicFunctionality) {
   EXPECT_TRUE(aaaa2_details[0].attributes().empty());
 }
 
-TEST_F(HashRealTimeCacheTest, TestCacheMatching_Expiration) {
-  auto cache = std::make_unique<HashRealTimeCache>();
+TEST_F(V5SearchHashesCacheTest, TestCacheMatching_Expiration) {
+  auto cache = std::make_unique<V5SearchHashesCache>();
   // The below are done within blocks to ensure that the cache works even once
   // the inputs to CacheSearchHashesResponse have been destructed.
   {
@@ -265,8 +274,8 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_Expiration) {
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/2);
 }
 
-TEST_F(HashRealTimeCacheTest, TestCacheMatching_ExpirationNanos) {
-  auto cache = std::make_unique<HashRealTimeCache>();
+TEST_F(V5SearchHashesCacheTest, TestCacheMatching_ExpirationNanos) {
+  auto cache = std::make_unique<V5SearchHashesCache>();
   // The below are done within blocks to ensure that the cache works even once
   // the inputs to CacheSearchHashesResponse have been destructed.
   {
@@ -294,8 +303,8 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_ExpirationNanos) {
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
 }
 
-TEST_F(HashRealTimeCacheTest, TestCacheMatching_Attributes) {
-  auto cache = std::make_unique<HashRealTimeCache>();
+TEST_F(V5SearchHashesCacheTest, TestCacheMatching_Attributes) {
+  auto cache = std::make_unique<V5SearchHashesCache>();
   // The below is done within a block to ensure that the cache works even once
   // the inputs to CacheSearchHashesResponse have been destructed.
   {
@@ -355,8 +364,8 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_Attributes) {
   EXPECT_TRUE(aaaa2_details[0].attributes().empty());
 }
 
-TEST_F(HashRealTimeCacheTest, TestCacheMatching_OverwrittenEntry) {
-  auto cache = std::make_unique<HashRealTimeCache>();
+TEST_F(V5SearchHashesCacheTest, TestCacheMatching_OverwrittenEntry) {
+  auto cache = std::make_unique<V5SearchHashesCache>();
   // The below are done within blocks to ensure that the cache works even once
   // the inputs to CacheSearchHashesResponse have been destructed.
   {
@@ -436,8 +445,8 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_OverwrittenEntry) {
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
 }
 
-TEST_F(HashRealTimeCacheTest, TestCacheMatching_CacheDurationLogging) {
-  auto cache = std::make_unique<HashRealTimeCache>();
+TEST_F(V5SearchHashesCacheTest, TestCacheMatching_CacheDurationLogging) {
+  auto cache = std::make_unique<V5SearchHashesCache>();
   std::vector<std::string> requested_hash_prefixes = {"aaaa"};
   std::vector<V5::FullHash> response_full_hashes = {
       CreateBasicFullHash("aaaa1111111111111111111111111111",
@@ -464,29 +473,29 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_CacheDurationLogging) {
       /*remaining_cache_duration_sec=*/std::nullopt);
 }
 
-TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_EmptyCache) {
-  auto cache = std::make_unique<HashRealTimeCache>();
+TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_EmptyCache) {
+  auto cache = std::make_unique<V5SearchHashesCache>();
   EXPECT_EQ(GetNumCacheEntries(cache), 0);
-  cache->ClearExpiredResults();
+  ClearExpiredResultsHelper(cache);
   EXPECT_EQ(GetNumCacheEntries(cache), 0);
 }
 
-TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_NoExpiredResults) {
-  auto cache = std::make_unique<HashRealTimeCache>();
+TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_NoExpiredResults) {
+  auto cache = std::make_unique<V5SearchHashesCache>();
   CacheEntry(cache, "aaaa1111111111111111111111111111", 300);
   CacheEntry(cache, "cccc1111111111111111111111111111", 500);
 
   EXPECT_EQ(GetNumCacheEntries(cache), 2);
   EXPECT_TRUE(cache->SearchCache({"aaaa"}).contains("aaaa"));
   EXPECT_TRUE(cache->SearchCache({"cccc"}).contains("cccc"));
-  cache->ClearExpiredResults();
+  ClearExpiredResultsHelper(cache);
   EXPECT_EQ(GetNumCacheEntries(cache), 2);
   EXPECT_TRUE(cache->SearchCache({"aaaa"}).contains("aaaa"));
   EXPECT_TRUE(cache->SearchCache({"cccc"}).contains("cccc"));
 }
 
-TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_OneExpiredResult) {
-  auto cache = std::make_unique<HashRealTimeCache>();
+TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_OneExpiredResult) {
+  auto cache = std::make_unique<V5SearchHashesCache>();
   CacheEntry(cache, "aaaa1111111111111111111111111111", 300);
   CacheEntry(cache, "cccc1111111111111111111111111111", 500);
 
@@ -495,14 +504,14 @@ TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_OneExpiredResult) {
   EXPECT_EQ(GetNumCacheEntries(cache), 2);
   EXPECT_FALSE(cache->SearchCache({"aaaa"}).contains("aaaa"));
   EXPECT_TRUE(cache->SearchCache({"cccc"}).contains("cccc"));
-  cache->ClearExpiredResults();
+  ClearExpiredResultsHelper(cache);
   EXPECT_EQ(GetNumCacheEntries(cache), 1);
   EXPECT_FALSE(cache->SearchCache({"aaaa"}).contains("aaaa"));
   EXPECT_TRUE(cache->SearchCache({"cccc"}).contains("cccc"));
 }
 
-TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_SomeExpiredResults) {
-  auto cache = std::make_unique<HashRealTimeCache>();
+TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_SomeExpiredResults) {
+  auto cache = std::make_unique<V5SearchHashesCache>();
   auto soon = 300;
   auto later = 500;
   CacheEntry(cache, "aaaa1111111111111111111111111111", soon);
@@ -515,7 +524,7 @@ TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_SomeExpiredResults) {
   CacheEntry(cache, "hhhh1111111111111111111111111111", soon);
 
   auto validate_cache_contents =
-      [](std::unique_ptr<HashRealTimeCache>& cache_internal) {
+      [](std::unique_ptr<V5SearchHashesCache>& cache_internal) {
         EXPECT_FALSE(cache_internal->SearchCache({"aaaa"}).contains("aaaa"));
         EXPECT_TRUE(cache_internal->SearchCache({"bbbb"}).contains("bbbb"));
         EXPECT_FALSE(cache_internal->SearchCache({"cccc"}).contains("cccc"));
@@ -531,18 +540,18 @@ TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_SomeExpiredResults) {
   task_environment_.FastForwardBy(base::Seconds(400));
   EXPECT_EQ(GetNumCacheEntries(cache), 8);
   validate_cache_contents(cache);
-  cache->ClearExpiredResults();
+  ClearExpiredResultsHelper(cache);
   EXPECT_EQ(GetNumCacheEntries(cache), 3);
   validate_cache_contents(cache);
 }
 
-TEST_F(HashRealTimeCacheTest,
+TEST_F(V5SearchHashesCacheTest,
        TestClearExpiredResults_SomeExpiredResultsReversed) {
   // The main difference between TestClearExpiredResults_SomeExpiredResults
   // above and this one is that whether an entry is expired is reversed. This is
   // to confirm that the iterative deletion in ClearExpiredResults works as
   // expected regardless of ordering.
-  auto cache = std::make_unique<HashRealTimeCache>();
+  auto cache = std::make_unique<V5SearchHashesCache>();
   auto soon = 300;
   auto later = 500;
   CacheEntry(cache, "aaaa1111111111111111111111111111", later);
@@ -555,7 +564,7 @@ TEST_F(HashRealTimeCacheTest,
   CacheEntry(cache, "hhhh1111111111111111111111111111", later);
 
   auto validate_cache_contents =
-      [](std::unique_ptr<HashRealTimeCache>& cache_internal) {
+      [](std::unique_ptr<V5SearchHashesCache>& cache_internal) {
         EXPECT_TRUE(cache_internal->SearchCache({"aaaa"}).contains("aaaa"));
         EXPECT_FALSE(cache_internal->SearchCache({"bbbb"}).contains("bbbb"));
         EXPECT_TRUE(cache_internal->SearchCache({"cccc"}).contains("cccc"));
@@ -571,13 +580,13 @@ TEST_F(HashRealTimeCacheTest,
   task_environment_.FastForwardBy(base::Seconds(400));
   EXPECT_EQ(GetNumCacheEntries(cache), 8);
   validate_cache_contents(cache);
-  cache->ClearExpiredResults();
+  ClearExpiredResultsHelper(cache);
   EXPECT_EQ(GetNumCacheEntries(cache), 5);
   validate_cache_contents(cache);
 }
 
-TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_AllExpiredResults) {
-  auto cache = std::make_unique<HashRealTimeCache>();
+TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_AllExpiredResults) {
+  auto cache = std::make_unique<V5SearchHashesCache>();
   CacheEntry(cache, "aaaa1111111111111111111111111111", 300);
   CacheEntry(cache, "cccc1111111111111111111111111111", 500);
 
@@ -586,17 +595,17 @@ TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_AllExpiredResults) {
   EXPECT_EQ(GetNumCacheEntries(cache), 2);
   EXPECT_FALSE(cache->SearchCache({"aaaa"}).contains("aaaa"));
   EXPECT_FALSE(cache->SearchCache({"cccc"}).contains("cccc"));
-  cache->ClearExpiredResults();
+  ClearExpiredResultsHelper(cache);
   EXPECT_EQ(GetNumCacheEntries(cache), 0);
   EXPECT_FALSE(cache->SearchCache({"aaaa"}).contains("aaaa"));
   EXPECT_FALSE(cache->SearchCache({"cccc"}).contains("cccc"));
 }
 
-TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_Logging) {
-  auto cache = std::make_unique<HashRealTimeCache>();
+TEST_F(V5SearchHashesCacheTest, TestClearExpiredResults_Logging) {
+  auto cache = std::make_unique<V5SearchHashesCache>();
 
   // Cache is empty.
-  cache->ClearExpiredResults();
+  ClearExpiredResultsHelper(cache);
   CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/0, /*num_full_hashes=*/0);
 
   // Cache has 1 hash prefix with 1 full hash in it.
@@ -605,7 +614,7 @@ TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_Logging) {
       {CreateBasicFullHash("aaaa1111111111111111111111111111",
                            {V5::ThreatType::MALWARE})},
       CreateCacheDuration(300, 0));
-  cache->ClearExpiredResults();
+  ClearExpiredResultsHelper(cache);
   CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/1, /*num_full_hashes=*/1);
 
   // Cache has 2 hash prefixes and 3 full hashes (aaaa entry from above remains
@@ -617,30 +626,89 @@ TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_Logging) {
        CreateBasicFullHash("bbbb2222222222222222222222222222",
                            {V5::ThreatType::MALWARE})},
       CreateCacheDuration(500, 0));
-  cache->ClearExpiredResults();
+  ClearExpiredResultsHelper(cache);
   CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/2, /*num_full_hashes=*/3);
 
-  // 400 seconds later, the first addition to the cache has expired. The logs
-  // should still report 2 hash prefixes and 3 full hashes, because they report
-  // the size at the time the cache started being cleared, not afterwards.
-  task_environment_.FastForwardBy(base::Seconds(400));
-  cache->ClearExpiredResults();
+  // Fast forward beyond when the background cleanup timer has fired, and expect
+  // a log.
+  task_environment_.FastForwardBy(base::Seconds(150));
+  CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/2, /*num_full_hashes=*/3);
+
+  // Fast-forward beyond when the first addition to the cache has expired. The
+  // logs should still report 2 hash prefixes and 3 full hashes, because they
+  // report the size at the time the cache started being cleared, not
+  // afterwards.
+  task_environment_.FastForwardBy(base::Seconds(250));
+  ClearExpiredResultsHelper(cache);
   CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/2, /*num_full_hashes=*/3);
 
   // Clearing the expired results again now displays the size with just the
   // second addition to the cache.
-  cache->ClearExpiredResults();
+  ClearExpiredResultsHelper(cache);
   CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/1, /*num_full_hashes=*/2);
 
   // 100 seconds later, the second addition to the cache has expired. The log
   // still includes it in the size (same rationale as above).
   task_environment_.FastForwardBy(base::Seconds(100));
-  cache->ClearExpiredResults();
+  ClearExpiredResultsHelper(cache);
   CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/1, /*num_full_hashes=*/2);
 
   // Clearing the expired results again now logs that the cache is empty.
-  cache->ClearExpiredResults();
+  ClearExpiredResultsHelper(cache);
   CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/0, /*num_full_hashes=*/0);
+}
+
+TEST_F(V5SearchHashesCacheTest, TestBackgroundCleanup) {
+  auto cache = std::make_unique<V5SearchHashesCache>();
+  CacheEntry(cache, "aaaa1111111111111111111111111111", 10);
+
+  EXPECT_EQ(GetNumCacheEntries(cache), 1);
+
+  task_environment_.FastForwardBy(base::Seconds(119));
+  EXPECT_EQ(GetNumCacheEntries(cache), 1);
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(GetNumCacheEntries(cache), 0);
+
+  CacheEntry(cache, "bbbb1111111111111111111111111111", 10);
+  EXPECT_EQ(GetNumCacheEntries(cache), 1);
+
+  task_environment_.FastForwardBy(base::Seconds(1799));
+  EXPECT_EQ(GetNumCacheEntries(cache), 1);
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(GetNumCacheEntries(cache), 0);
+}
+
+class ArtificialV5SearchHashesCacheTest : public V5SearchHashesCacheTest {
+ public:
+  ArtificialV5SearchHashesCacheTest() {
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitchASCII(
+        safe_browsing::switches::kArtificialCachedV5SearchHashesVerdictFlag,
+        kArtificialHashRealTimeUnsafeUrl);
+  }
+  void TearDown() override {
+    V5SearchHashesCacheTest::TearDown();
+    V5SearchHashesCache::ResetHasArtificialCachedUrlForTesting();
+  }
+};
+
+TEST_F(ArtificialV5SearchHashesCacheTest, TestCachePopulated) {
+  auto cache = std::make_unique<V5SearchHashesCache>();
+  ASSERT_TRUE(V5SearchHashesCache::has_artificial_cached_url());
+
+  std::vector<FullHashStr> full_hashes;
+  SBProtocolManagerUtil::UrlToFullHashes(GURL(kArtificialHashRealTimeUnsafeUrl),
+                                         &full_hashes);
+  ASSERT_EQ(full_hashes.size(), 1u);
+  FullHashStr full_hash = full_hashes[0];
+
+  std::string hash_prefix = hash_realtime_utils::GetHashPrefix(full_hash);
+  auto cache_results = cache->SearchCache({hash_prefix});
+  EXPECT_FALSE(cache_results.empty());
+  EXPECT_TRUE(cache_results.contains(hash_prefix));
+  EXPECT_EQ(cache_results[hash_prefix][0].full_hash(), full_hash);
 }
 
 }  // namespace safe_browsing

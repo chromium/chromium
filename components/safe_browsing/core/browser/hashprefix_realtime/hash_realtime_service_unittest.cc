@@ -15,9 +15,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
-#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
@@ -211,17 +211,10 @@ class HashRealTimeServiceTest : public PlatformTest {
     auto network_context_callback = base::BindRepeating(
         [](HashRealTimeServiceTest* test) { return test->GetNetworkContext(); },
         base::Unretained(this));
-    content_setting_map_ = base::MakeRefCounted<HostContentSettingsMap>(
-        &test_pref_service_, /*is_off_the_record=*/false,
-        /*store_last_modified=*/false, /*restore_session=*/false,
-        /*should_record_metrics=*/false);
-    VerdictCacheManager* cache_manager_ptr = nullptr;
-    if (include_cache_manager_) {
-      cache_manager_ = std::make_unique<VerdictCacheManager>(
-          /*history_service=*/nullptr, content_setting_map_.get(),
-          &test_pref_service_,
-          /*sync_observer=*/nullptr);
-      cache_manager_ptr = cache_manager_.get();
+    V5SearchHashesCache* cache_ptr = nullptr;
+    if (include_cache_) {
+      cache_ = std::make_unique<V5SearchHashesCache>();
+      cache_ptr = cache_.get();
     }
     ohttp_key_service_ = std::make_unique<TestOhttpKeyService>();
     ohttp_key_service_->SetOhttpKey(kOhttpKey);
@@ -229,12 +222,11 @@ class HashRealTimeServiceTest : public PlatformTest {
       webui_delegate_ = std::make_unique<MockWebUIDelegate>();
     }
     service_ = std::make_unique<HashRealTimeService>(
-        network_context_callback, cache_manager_ptr, ohttp_key_service_.get(),
+        network_context_callback, cache_ptr, ohttp_key_service_.get(),
         webui_delegate_.get());
   }
   void SetUp() override {
     PlatformTest::SetUp();
-    HostContentSettingsMap::RegisterProfilePrefs(test_pref_service_.registry());
     CreateHashRealTimeService();
     std::string key = google_apis::GetAPIKey();
     key_param_ =
@@ -244,11 +236,11 @@ class HashRealTimeServiceTest : public PlatformTest {
             : "";
   }
   void TearDown() override {
-    cache_manager_.reset();
-    if (content_setting_map_) {
-      content_setting_map_->ShutdownOnUIThread();
+    if (service_) {
+      service_->Shutdown();
+      service_.reset();
     }
-    service_->Shutdown();
+    cache_.reset();
     PlatformTest::TearDown();
   }
 
@@ -747,21 +739,19 @@ class HashRealTimeServiceTest : public PlatformTest {
   std::unique_ptr<HashRealTimeService> service_;
   OhttpTestNetworkContext network_context_;
   std::string key_param_;
-  std::unique_ptr<VerdictCacheManager> cache_manager_;
+  std::unique_ptr<V5SearchHashesCache> cache_;
   std::unique_ptr<TestOhttpKeyService> ohttp_key_service_;
-  scoped_refptr<HostContentSettingsMap> content_setting_map_;
-  sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<base::HistogramTester> histogram_tester_ =
       std::make_unique<base::HistogramTester>();
-  bool include_cache_manager_ = true;
+  bool include_cache_ = true;
   bool include_web_ui_delegate_ = true;
 };
 
-class HashRealTimeServiceNoCacheManagerTest : public HashRealTimeServiceTest {
+class HashRealTimeServiceNoCacheTest : public HashRealTimeServiceTest {
  public:
-  HashRealTimeServiceNoCacheManagerTest() { include_cache_manager_ = false; }
+  HashRealTimeServiceNoCacheTest() { include_cache_ = false; }
 };
 
 TEST_F(HashRealTimeServiceTest, TestLookup_OneHash) {
@@ -1437,7 +1427,7 @@ TEST_F(HashRealTimeServiceTest, TestCacheDuration) {
       /*expected_relay_url=*/kTestRelayUrl);
 }
 
-TEST_F(HashRealTimeServiceNoCacheManagerTest, TestNoCaching) {
+TEST_F(HashRealTimeServiceNoCacheTest, TestNoCaching) {
   GURL url = GURL("https://example.test");
   RunSimpleRequest(
       /*url=*/url, /*response_full_hashes=*/

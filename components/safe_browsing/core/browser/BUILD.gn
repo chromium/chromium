@@ -196,12 +196,9 @@ source_set("verdict_cache_manager") {
     "//components/prefs",
     "//components/safe_browsing/core/browser:sync_observer",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
-    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_cache",
     "//components/safe_browsing/core/common",
-    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
-    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//url",
   ]
 }
@@ -219,10 +216,8 @@ source_set("verdict_cache_manager_unittest") {
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
-    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
   ]
