@@ -20,6 +20,12 @@ public interface ToolbarWidthConsumer {
     boolean isVisible();
 
     /**
+     * Whether the width consumer currently has space to show, regardless of whether it is currently
+     * showing.
+     */
+    boolean hasSpaceToShow();
+
+    /**
      * Takes in the remaining width available in the toolbar for displaying toolbar components. This
      * ToolbarChild will display itself using the available width, if appropriate, returning the
      * width it has consumed for itself. Returning 0 indicates that this ToolbarChild is not

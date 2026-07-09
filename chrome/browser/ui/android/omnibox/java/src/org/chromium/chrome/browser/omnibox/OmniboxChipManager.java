@@ -64,6 +64,11 @@ public class OmniboxChipManager {
         }
 
         @Override
+        public boolean hasSpaceToShow() {
+            return mChip != null && mChip.getAvailableWidth() >= mCollapsedWidth;
+        }
+
+        @Override
         public int updateVisibility(int availableWidth) {
             if (mChip == null) return 0;
             if (availableWidth < mCollapsedWidth) {
@@ -106,6 +111,11 @@ public class OmniboxChipManager {
         @Override
         public boolean isVisible() {
             return mChip != null && mChipVisibilityState == VisibilityState.EXPANDED;
+        }
+
+        @Override
+        public boolean hasSpaceToShow() {
+            return mChip != null && mChip.getAvailableWidth() >= mMinExpandedWidth;
         }
 
         @Override

@@ -1290,13 +1290,13 @@ public final class ToolbarTabletUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testAreAnyToolbarComponentsMissingForWidth() {
-        doReturn(true).when(mReloadButtonCoordinator).isVisible();
+        doReturn(true).when(mReloadButtonCoordinator).hasSpaceToShow();
         assertFalse(mToolbarTablet.areAnyToolbarComponentsMissingForWidth(new int[] {RELOAD}));
 
-        doReturn(false).when(mReloadButtonCoordinator).isVisible();
+        doReturn(false).when(mReloadButtonCoordinator).hasSpaceToShow();
         assertTrue(mToolbarTablet.areAnyToolbarComponentsMissingForWidth(new int[] {RELOAD}));
 
-        doReturn(true).when(mReloadButtonCoordinator).isVisible();
+        doReturn(true).when(mReloadButtonCoordinator).hasSpaceToShow();
         assertFalse(mToolbarTablet.areAnyToolbarComponentsMissingForWidth(new int[] {RELOAD}));
     }
 

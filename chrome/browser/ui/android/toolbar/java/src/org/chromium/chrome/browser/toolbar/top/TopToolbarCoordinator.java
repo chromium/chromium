@@ -1228,6 +1228,11 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                     }
 
                     @Override
+                    public boolean hasSpaceToShow() {
+                        return shouldShowGlicToolbarButton();
+                    }
+
+                    @Override
                     public int updateVisibility(int availableWidth) {
                         return shouldShowGlicToolbarButton() ? glicButtonWidth : 0;
                     }

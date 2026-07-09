@@ -294,6 +294,12 @@ public class MenuButtonCoordinator extends ToolbarChildButton {
         mMediator.setVisibility(visible);
     }
 
+    @Override
+    public boolean hasSpaceToShow() {
+        if (mMediator == null) return true;
+        return mMediator.hasSpaceToShow();
+    }
+
     /**
      * Sets whether the MenuButton has space to show.
      *

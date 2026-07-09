@@ -53,6 +53,7 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
     private final Supplier<@Nullable Tracker> mTrackerSupplier;
     private @Nullable Boolean mIsIncognitoBranded;
     private boolean mVisible;
+    private boolean mHasSpaceToShow;
     private @Nullable View mIncognitoIndicator;
     private final int mDefaultFallbackWidth;
     private int mCachedWidth;
@@ -110,6 +111,11 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
     @Override
     public boolean isVisible() {
         return mIncognitoIndicator != null && mIncognitoIndicator.getVisibility() == View.VISIBLE;
+    }
+
+    @Override
+    public boolean hasSpaceToShow() {
+        return mHasSpaceToShow;
     }
 
     /**
@@ -197,7 +203,8 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
         // is less than necessary, though, that extra width should still be consumed to avoid
         // showing any more buttons, as it might be confusing to users. This extra width will end up
         // absorbed into the location bar.
-        setVisibility(availableWidth >= mCachedWidth);
+        mHasSpaceToShow = availableWidth >= mCachedWidth;
+        setVisibility(mHasSpaceToShow);
         return Math.min(availableWidth, mCachedWidth);
     }
 

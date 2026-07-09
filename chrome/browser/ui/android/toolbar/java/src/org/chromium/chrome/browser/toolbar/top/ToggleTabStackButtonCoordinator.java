@@ -90,6 +90,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
     private final Callback<Integer> mArchivedTabCountObserver = this::maybeShowDeclutterIph;
     private @Nullable Callback<TabModelSelector> mTabModelSelectorCallback;
     private boolean mAlreadyRequestedDeclutterIph;
+    private boolean mHasSpaceToShow;
 
     /**
      * @param context The Android context used for various view operations.
@@ -221,7 +222,13 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
     }
 
     @Override
+    public boolean hasSpaceToShow() {
+        return mHasSpaceToShow;
+    }
+
+    @Override
     public void setHasSpaceToShow(boolean hasSpaceToShow) {
+        mHasSpaceToShow = hasSpaceToShow;
         // TODO(crbug.com/455658153): Ensure setVisibility() can handle multiple sources for setting
         //  visibility. Currently this only accounts for visibility being set due to the width of
         //  the ToolbarTablet.

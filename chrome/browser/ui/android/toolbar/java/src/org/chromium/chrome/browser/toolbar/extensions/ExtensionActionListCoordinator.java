@@ -179,6 +179,11 @@ public class ExtensionActionListCoordinator implements Destroyable {
         return mMediator.setCanShowPoppedOutAction(availableWidth);
     }
 
+    /** Whether the popped out action can be shown. */
+    public boolean canShowPoppedOutAction() {
+        return mMediator.canShowPoppedOutAction();
+    }
+
     /**
      * Updates the list of displayed actions to fit within the provided width constraint.
      *

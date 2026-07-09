@@ -695,6 +695,7 @@ public class ToolbarTablet extends ToolbarLayout {
     private class ToolbarPaddingWidthConsumer implements ToolbarWidthConsumer {
         private final View mToolbarView;
         private final int mHorizontalPadding;
+        private boolean mHasSpaceToShow;
 
         ToolbarPaddingWidthConsumer(View toolbarView, int horizontalPadding) {
             mToolbarView = toolbarView;
@@ -708,11 +709,17 @@ public class ToolbarTablet extends ToolbarLayout {
         }
 
         @Override
+        public boolean hasSpaceToShow() {
+            return mHasSpaceToShow;
+        }
+
+        @Override
         public int updateVisibility(int availableWidth) {
             assert availableWidth >= 0;
             int paddingWidth = Math.min(availableWidth, 2 * mHorizontalPadding);
             mToolbarView.setPaddingRelative(
                     paddingWidth / 2, getPaddingTop(), paddingWidth / 2, getPaddingBottom());
+            mHasSpaceToShow = paddingWidth > 0;
             return paddingWidth;
         }
 
@@ -724,19 +731,32 @@ public class ToolbarTablet extends ToolbarLayout {
     }
 
     private class LocationBarMinWidthConsumer implements ToolbarWidthConsumer {
+        private boolean mHasSpaceToShow;
+
         @Override
         public boolean isVisible() {
             return true;
         }
 
         @Override
+        public boolean hasSpaceToShow() {
+            return mHasSpaceToShow;
+        }
+
+        @Override
         public int updateVisibility(int availableWidth) {
             assert ToolbarUtils.isToolbarTabletResizeRefactorEnabled();
-            return Math.min(
-                    availableWidth,
-                    (int)
-                            (MINIMUM_LOCATION_BAR_WIDTH_DP
-                                    * getContext().getResources().getDisplayMetrics().density));
+            int width =
+                    Math.min(
+                            availableWidth,
+                            (int)
+                                    (MINIMUM_LOCATION_BAR_WIDTH_DP
+                                            * getContext()
+                                                    .getResources()
+                                                    .getDisplayMetrics()
+                                                    .density));
+            mHasSpaceToShow = width > 0;
+            return width;
         }
 
         @Override
@@ -747,9 +767,16 @@ public class ToolbarTablet extends ToolbarLayout {
     }
 
     private class OptionalButtonToolbarWidthConsumer implements ToolbarWidthConsumer {
+        private boolean mHasSpaceToShow;
+
         @Override
         public boolean isVisible() {
             return mOptionalButton != null && mOptionalButton.getVisibility() == View.VISIBLE;
+        }
+
+        @Override
+        public boolean hasSpaceToShow() {
+            return mHasSpaceToShow;
         }
 
         @Override
@@ -757,11 +784,13 @@ public class ToolbarTablet extends ToolbarLayout {
             assert ToolbarUtils.isToolbarTabletResizeRefactorEnabled();
             if (mOptionalButtonForciblyHidden) {
                 setOptionalButtonVisibility(false);
+                mHasSpaceToShow = false;
                 return 0;
             }
 
             int width = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-            setOptionalButtonVisibility(availableWidth >= width);
+            mHasSpaceToShow = availableWidth >= width;
+            setOptionalButtonVisibility(mHasSpaceToShow);
             return Math.min(availableWidth, width);
         }
 
@@ -965,7 +994,7 @@ public class ToolbarTablet extends ToolbarLayout {
         for (@ToolbarComponentId int toolbarComponentId : toolbarComponents) {
             @Nullable ToolbarWidthConsumer widthConsumer =
                     mToolbarWidthConsumers[toolbarComponentId];
-            if (widthConsumer == null || !widthConsumer.isVisible()) return true;
+            if (widthConsumer == null || !widthConsumer.hasSpaceToShow()) return true;
         }
         return false;
     }

@@ -146,6 +146,11 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements TintObs
     }
 
     @Override
+    public boolean hasSpaceToShow() {
+        return mHomeButton.hasSpaceToShow();
+    }
+
+    @Override
     public void setHasSpaceToShow(boolean hasSpaceToShow) {
         mHomeButton.setHasSpaceToShow(hasSpaceToShow);
     }

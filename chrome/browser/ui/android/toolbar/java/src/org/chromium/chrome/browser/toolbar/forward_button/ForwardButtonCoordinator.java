@@ -44,6 +44,7 @@ public class ForwardButtonCoordinator extends ToolbarChildButton {
     private final NavigationPopup.HistoryDelegate mHistoryDelegate;
 
     private @Nullable NavigationPopup mNavigationPopup;
+    private boolean mHasSpaceToShow;
 
     /**
      * Creates a ForwardButtonCoordinator for managing the forward button on the tablet toolbar.
@@ -129,7 +130,13 @@ public class ForwardButtonCoordinator extends ToolbarChildButton {
     }
 
     @Override
+    public boolean hasSpaceToShow() {
+        return mHasSpaceToShow;
+    }
+
+    @Override
     public void setHasSpaceToShow(boolean hasSpaceToShow) {
+        mHasSpaceToShow = hasSpaceToShow;
         setVisibility(hasSpaceToShow);
     }
 

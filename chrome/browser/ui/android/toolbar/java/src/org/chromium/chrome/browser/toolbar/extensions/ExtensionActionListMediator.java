@@ -240,6 +240,11 @@ class ExtensionActionListMediator implements Destroyable {
         }
     }
 
+    /** Whether the popped out action can be shown. */
+    boolean canShowPoppedOutAction() {
+        return mCanShowPoppedOutAction;
+    }
+
     /**
      * Reconciles the current list of models with the list of IDs from the bridge. This handles
      * additions, removals, and reordering without rebuilding the whole list.

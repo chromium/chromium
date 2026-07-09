@@ -237,6 +237,10 @@ final class SigninButtonMediator
         updateButtonState();
     }
 
+    boolean hasSpaceToShow() {
+        return mHasSpaceToShow;
+    }
+
     void setHasSpaceToShow(boolean hasSpaceToShow) {
         if (mHasSpaceToShow == hasSpaceToShow) return;
         mHasSpaceToShow = hasSpaceToShow;

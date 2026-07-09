@@ -448,9 +448,16 @@ public class ExtensionsToolbarCoordinatorImpl
     }
 
     private class PoppedOutActionWidthConsumer implements ToolbarWidthConsumer {
+        private boolean mHasSpaceToShow;
+
         @Override
         public boolean isVisible() {
             return mExtensionActionListCoordinator.hasPoppedOutAction();
+        }
+
+        @Override
+        public boolean hasSpaceToShow() {
+            return mHasSpaceToShow;
         }
 
         @Override
@@ -458,7 +465,9 @@ public class ExtensionsToolbarCoordinatorImpl
             // Do not update the UI here just yet. We will leave that to {@link
             // ActionListWidthConsumer}, which will be called but later because it has lower
             // priority.
-            return mExtensionActionListCoordinator.setCanShowPoppedOutAction(availableWidth);
+            int width = mExtensionActionListCoordinator.setCanShowPoppedOutAction(availableWidth);
+            mHasSpaceToShow = mExtensionActionListCoordinator.canShowPoppedOutAction();
+            return width;
         }
 
         @Override
@@ -469,12 +478,20 @@ public class ExtensionsToolbarCoordinatorImpl
     }
 
     private class RequestAccessButtonWidthConsumer implements ToolbarWidthConsumer {
+        private boolean mHasSpaceToShow;
+
         @Override
         public boolean isVisible() {
             return mToolbarModel.get(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE);
         }
 
+        @Override
+        public boolean hasSpaceToShow() {
+            return mHasSpaceToShow;
+        }
+
         private void setHasSpaceToShow(boolean hasSpaceToShow) {
+            mHasSpaceToShow = hasSpaceToShow;
             int visibility = hasSpaceToShow ? View.VISIBLE : View.GONE;
             mContainer
                     .findViewById(R.id.extensions_request_access_button)
@@ -535,6 +552,11 @@ public class ExtensionsToolbarCoordinatorImpl
         }
 
         @Override
+        public boolean hasSpaceToShow() {
+            return mCanShowMenuIcon;
+        }
+
+        @Override
         public int updateVisibility(int availableWidth) {
             int puzzleButtonWidth =
                     mContainer.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
@@ -553,6 +575,8 @@ public class ExtensionsToolbarCoordinatorImpl
     }
 
     private class ActionListWidthConsumer implements ToolbarWidthConsumer {
+        private boolean mHasSpaceToShow;
+
         @Override
         public boolean isVisible() {
             return mContainer.findViewById(R.id.extension_action_list).getVisibility()
@@ -560,8 +584,15 @@ public class ExtensionsToolbarCoordinatorImpl
         }
 
         @Override
+        public boolean hasSpaceToShow() {
+            return mHasSpaceToShow;
+        }
+
+        @Override
         public int updateVisibility(int availableWidth) {
-            return mExtensionActionListCoordinator.fitActionsWithinWidth(availableWidth);
+            int width = mExtensionActionListCoordinator.fitActionsWithinWidth(availableWidth);
+            mHasSpaceToShow = width > 0;
+            return width;
         }
 
         @Override

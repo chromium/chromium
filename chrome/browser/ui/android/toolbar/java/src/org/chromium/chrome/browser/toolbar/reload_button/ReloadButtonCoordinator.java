@@ -121,6 +121,11 @@ public class ReloadButtonCoordinator extends ToolbarChildButton {
     }
 
     @Override
+    public boolean hasSpaceToShow() {
+        return mMediator.hasSpaceToShow();
+    }
+
+    @Override
     public void setHasSpaceToShow(boolean hasSpaceToShow) {
         mMediator.setHasSpaceToShow(hasSpaceToShow);
     }

@@ -66,6 +66,11 @@ class OmniboxChipCoordinator {
     }
 
     @Px
+    int getAvailableWidth() {
+        return mMediator.getAvailableWidth();
+    }
+
+    @Px
     int measureWidth() {
         // TODO(crbug.com/450253146): Make sure text isn't measured multiple times unnecessarily.
         mView.measure(

@@ -203,6 +203,11 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
         mModel.set(BackButtonProperties.IS_VISIBLE, isVisible);
     }
 
+    /** Returns whether there is enough space for the button to be shown. */
+    boolean hasSpaceToShow() {
+        return mModel.get(BackButtonProperties.HAS_SPACE_TO_SHOW);
+    }
+
     /**
      * Informs the button on whether there is enough space for it to be shown.
      *

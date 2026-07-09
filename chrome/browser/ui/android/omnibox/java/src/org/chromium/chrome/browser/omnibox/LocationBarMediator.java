@@ -3153,7 +3153,8 @@ class LocationBarMediator
                             .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
         }
 
-        boolean hasSpaceToShow() {
+        @Override
+        public boolean hasSpaceToShow() {
             if (!mIsTablet || !ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled()) {
                 return true;
             }
@@ -3169,12 +3170,11 @@ class LocationBarMediator
         public int updateVisibility(int availableWidth) {
             assert ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled();
 
-            if (mShouldShowButton.get() && availableWidth >= mButtonWidth) {
-                mHasSpaceToShow = true;
+            mHasSpaceToShow = availableWidth >= mButtonWidth;
+            if (mShouldShowButton.get() && mHasSpaceToShow) {
                 mUpdateButtonVisibility.onResult(true);
                 return mButtonWidth;
             }
-            mHasSpaceToShow = false;
             mUpdateButtonVisibility.onResult(false);
             return 0;
         }

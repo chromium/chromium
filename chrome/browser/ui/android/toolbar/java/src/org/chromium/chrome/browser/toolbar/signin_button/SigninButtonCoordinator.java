@@ -143,6 +143,11 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
         return mView != null && mView.getVisibility() == View.VISIBLE;
     }
 
+    @Override
+    public boolean hasSpaceToShow() {
+        return mMediator.hasSpaceToShow();
+    }
+
     /**
      * Updates whether the button has space to show based on available width.
      *

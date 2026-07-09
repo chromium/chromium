@@ -213,6 +213,11 @@ class MenuButtonMediator implements AppMenuObserver {
         }
     }
 
+    /** Returns whether there is enough space for the button to be shown. */
+    boolean hasSpaceToShow() {
+        return mPropertyModel.get(MenuButtonProperties.HAS_SPACE_TO_SHOW);
+    }
+
     /**
      * Informs the button on whether there is enough space for it to be shown.
      *

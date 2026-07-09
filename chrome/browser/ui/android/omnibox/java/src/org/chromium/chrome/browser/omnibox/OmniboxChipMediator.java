@@ -41,4 +41,9 @@ class OmniboxChipMediator {
     void setAvailableWidth(@Px int availableWidth) {
         mModel.set(AVAILABLE_WIDTH, availableWidth);
     }
+
+    @Px
+    int getAvailableWidth() {
+        return mModel.get(AVAILABLE_WIDTH);
+    }
 }
