@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -107,6 +108,22 @@ TEST_F(OmniboxAutofillBubbleControllerTest,
                           base::DoNothing());
 
   EXPECT_TRUE(controller_->ShouldShowGooglePayLogo());
+}
+
+TEST_F(OmniboxAutofillBubbleControllerTest, OnSuggestionsShown) {
+  std::vector<Suggestion> suggestions = {
+      Suggestion(u"Card", SuggestionType::kCreditCardEntry)};
+
+  base::MockRepeatingCallback<void(base::span<const Suggestion>)>
+      on_suggestions_shown_callback;
+
+  controller_->Initialize(suggestions, on_suggestions_shown_callback.Get(),
+                          base::DoNothing(), base::DoNothing());
+
+  EXPECT_CALL(on_suggestions_shown_callback,
+              Run(testing::ElementsAre(testing::Field(
+                  &Suggestion::type, SuggestionType::kCreditCardEntry))));
+  controller_->OnSuggestionsShown();
 }
 
 }  // namespace

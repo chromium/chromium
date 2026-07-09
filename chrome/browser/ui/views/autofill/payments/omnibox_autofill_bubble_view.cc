@@ -90,6 +90,9 @@ OmniboxAutofillBubbleView::~OmniboxAutofillBubbleView() = default;
 
 void OmniboxAutofillBubbleView::Show(DisplayReason reason) {
   ShowForReason(reason);
+  if (controller_) {
+    controller_->OnSuggestionsShown();
+  }
 }
 
 void OmniboxAutofillBubbleView::Hide() {

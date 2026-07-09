@@ -107,6 +107,12 @@ bool OmniboxAutofillBubbleController::ShouldShowGooglePayLogo() const {
   return false;
 }
 
+void OmniboxAutofillBubbleController::OnSuggestionsShown() {
+  if (on_suggestions_shown_callback_) {
+    on_suggestions_shown_callback_.Run(suggestions_);
+  }
+}
+
 void OmniboxAutofillBubbleController::OnBubbleClosed(
     PaymentsUiClosedReason reason) {
   ResetBubbleViewAndInformBubbleManager();

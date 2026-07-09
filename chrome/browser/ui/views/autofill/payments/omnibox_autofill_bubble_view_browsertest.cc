@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
@@ -92,6 +93,17 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutofillBubbleViewBrowserTest, ShowBubble) {
   ASSERT_TRUE(controller);
 
   EXPECT_EQ(controller->GetBubbleView(), nullptr);
+
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(u"Visa •••• 1111", SuggestionType::kCreditCardEntry);
+
+  base::MockRepeatingCallback<void(base::span<const Suggestion>)>
+      on_suggestions_shown_callback;
+
+  controller->Initialize(suggestions, on_suggestions_shown_callback.Get(),
+                         base::DoNothing(), base::DoNothing());
+
+  EXPECT_CALL(on_suggestions_shown_callback, Run(testing::SizeIs(1)));
 
   controller->QueueOrShowBubble();
 

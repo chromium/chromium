@@ -65,6 +65,7 @@ class OmniboxAutofillBubbleController : public AutofillBubbleControllerBase {
   const std::vector<Suggestion>& GetSuggestions() const;
   base::WeakPtr<OmniboxAutofillBubbleController> GetWeakPtr();
 
+  void OnSuggestionsShown();
   void OnBubbleClosed(PaymentsUiClosedReason reason);
 
   bool ShouldShowGooglePayLogo() const;

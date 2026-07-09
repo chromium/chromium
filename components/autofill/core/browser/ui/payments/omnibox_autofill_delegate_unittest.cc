@@ -12,9 +12,12 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/foundations/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -717,6 +720,146 @@ TEST_F(OmniboxAutofillDelegateTest,
                                       1);
   histogram_tester.ExpectUniqueSample("Autofill.QueriedCreditCardFormIsSecure",
                                       true, 1);
+}
+
+TEST_F(OmniboxAutofillDelegateTest, OnSuggestionsShown_ForwardToObserver) {
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  MockAutofillManagerObserver observer;
+  autofill_manager().AddObserver(&observer);
+
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry)};
+
+  EXPECT_CALL(observer, OnSuggestionsShown(::testing::Ref(autofill_manager()),
+                                           testing::_));
+  delegate->OnSuggestionsShown(suggestions, std::nullopt);
+
+  autofill_manager().RemoveObserver(&observer);
+}
+
+TEST_F(OmniboxAutofillDelegateTest, OnSuggestionsShown_LogFormEvents) {
+  base::HistogramTester histogram_tester;
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry)};
+
+  delegate->OnSuggestionsShown(suggestions, std::nullopt);
+
+  // Verify interaction and shown form events.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard",
+      autofill_metrics::FORM_EVENT_INTERACTED_ONCE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+
+  // Verify form events log with the correct data suffix. `SetUp()` adds a
+  // masked server card, so it should log under ".WithOnlyServerData".
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.WithOnlyServerData",
+      autofill_metrics::FORM_EVENT_INTERACTED_ONCE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.WithOnlyServerData",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.WithOnlyServerData",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+}
+
+TEST_F(OmniboxAutofillDelegateTest, OnSuggestionsShown_LogTimingMetrics) {
+  base::HistogramTester histogram_tester;
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry)};
+
+  delegate->OnSuggestionsShown(suggestions, std::nullopt);
+
+  // Verify timing metrics logging.
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Timing.ParseFormUntilInteraction2", 1);
+}
+
+TEST_F(OmniboxAutofillDelegateTest, OnSuggestionsShown_LogFunnelMetrics) {
+  base::HistogramTester histogram_tester;
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry)};
+
+  delegate->OnSuggestionsShown(suggestions, std::nullopt);
+
+  // Reset the manager to trigger logger destruction and metrics logging.
+  autofill_manager().Reset();
+
+  histogram_tester.ExpectUniqueSample("Autofill.Funnel.ParsedAsType.CreditCard",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Funnel.ParsedAsType.StandaloneCvc", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Funnel.InteractionAfterParsedAsType.CreditCard", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Funnel.SuggestionAfterInteraction.CreditCard", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Funnel.FillAfterSuggestion.CreditCard", false, 1);
+}
+
+TEST_F(OmniboxAutofillDelegateTest, OnSuggestionsShown_DoesNotLogKeyMetrics) {
+  base::HistogramTester histogram_tester;
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry)};
+
+  delegate->OnSuggestionsShown(suggestions, std::nullopt);
+
+  // Reset the manager to trigger logger destruction and metrics logging.
+  autofill_manager().Reset();
+
+  // Key metrics are only logged upon submission. Since there was no submission,
+  // they should not be logged.
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingReadiness.CreditCard", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingAcceptance.CreditCard", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingCorrectness.CreditCard", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingAssistance.CreditCard", 0);
 }
 
 }  // namespace

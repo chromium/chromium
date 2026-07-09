@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/form_qualifiers.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -21,8 +22,10 @@
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
+#include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/payments/credit_card_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -287,9 +290,52 @@ OmniboxAutofillDelegate::GetDriver_DoNotUse() {
 void OmniboxAutofillDelegate::OnSuggestionsShown(
     base::span<const Suggestion> suggestions,
     base::optional_ref<const SuggestionMetadata> parent_suggestion_metadata) {
-  // TODO(crbug.com/490214497): Implement when payment method suggestion list is
-  // shown.
-  NOTIMPLEMENTED();
+  auto* manager = static_cast<BrowserAutofillManager*>(
+      client_->GetAutofillManagerForPrimaryMainFrame());
+  if (!manager) {
+    return;
+  }
+
+  const FormStructure* form =
+      manager->FindCachedFormById(trigger_form_global_id_);
+  if (!form) {
+    return;
+  }
+
+  const AutofillField* trigger_field =
+      form->GetFieldById(trigger_field_global_id_);
+  if (!trigger_field) {
+    return;
+  }
+
+  // Record local and server card counts to ensure form events log under the
+  // correct data suffix (e.g., ".WithOnlyServerData" vs. ".WithNoData").
+  manager->GetCreditCardAccessManager()->UpdateCreditCardFormEventLogger();
+
+  // Log duration between form parsing and interaction, maintaining consistency
+  // with standard Autofill interaction logging.
+  AutofillMetrics::LogParsedFormUntilInteractionTiming(
+      base::TimeTicks::Now() - form->form_parsed_timestamp());
+
+  // Treat clicking the "Autofill payment" omnibox chip (which forcefully shows
+  // the suggestions bubble) the same as a form interaction.
+  if (autofill_metrics::FormEventLoggerBase* logger =
+          manager->GetEventFormLogger(*trigger_field);
+      logger && ShouldBeParsed(*form, /*log_manager=*/nullptr)) {
+    if (logger == &manager->GetCreditCardFormEventLogger()) {
+      manager->GetCreditCardFormEventLogger().set_signin_state_for_metrics(
+          client_->GetPersonalDataManager()
+              .payments_data_manager()
+              .GetPaymentsSigninStateForMetrics());
+    }
+    logger->OnDidInteractWithAutofillableForm(*form);
+  }
+
+  // TODO(crbug.com/7988776): Use an omnibox-specific trigger source.
+  manager->DidShowSuggestions(
+      suggestions, parent_suggestion_metadata, trigger_form_global_id_,
+      trigger_field_global_id_,
+      AutofillExternalDelegate::UpdateSuggestionsCallback());
 }
 
 void OmniboxAutofillDelegate::OnSuggestionsHidden(
