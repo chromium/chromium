@@ -62,9 +62,9 @@ if (!is_android) {
       "webcontents_interaction_test_util_unittest.cc",
     ]
     deps = [
+      ":interaction",
       "//chrome/browser/ui/views:layout_provider",
       "//chrome/browser/ui/views/controls",
-      "//chrome/test:test_support",
       "//ui/views:test_support",
     ]
   }
@@ -77,7 +77,11 @@ if (!is_android) {
       "interactive_browser_test_browsertest.cc",
       "webcontents_interaction_test_util_browsertest.cc",
     ]
-    deps = [ "//chrome/test:test_support" ]
+    deps = [
+      "//chrome/test:test_support_ui",
+      "//chrome/test:test_switches",
+      "//ui/base:test_support",
+    ]
   }
 }
 
@@ -98,7 +102,10 @@ if (toolkit_views) {
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/tabs:tab_menu",
       "//chrome/browser/ui/views/bubble",
-      "//chrome/test:test_support",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/test:test_support_ui",
+      "//ui/base:test_support",
+      "//ui/views:test_support",
     ]
   }
 }
