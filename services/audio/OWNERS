@@ -1,4 +1,5 @@
 olka@chromium.org
 dalecurtis@chromium.org
+fhernqvist@google.com
 
 per-file audio_sandbox_hook_linux.*=file://sandbox/linux/OWNERS
