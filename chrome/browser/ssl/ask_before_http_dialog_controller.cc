@@ -287,8 +287,14 @@ void AskBeforeHttpDialogController::CloseDialog() {
 #if !BUILDFLAG(IS_ANDROID)
 void AskBeforeHttpDialogController::CloseDialogWidget(
     views::Widget::ClosedReason reason) {
-  // This is used as a callback for MakeCloseSynchronous() to catch other forms
-  // of dialog closing that aren't handled elsewhere.
+  // If the user explicitly closed the dialog via ESC key or the close button,
+  // trigger the "back to safety" action.
+  if (reason == views::Widget::ClosedReason::kEscKeyPressed ||
+      reason == views::Widget::ClosedReason::kCloseButtonClicked) {
+    OnGoBackButtonClicked();
+    return;
+  }
+
   if (reason == views::Widget::ClosedReason::kCancelButtonClicked) {
     // User pressed the "Continue to site" button.
     RecordHttpsFirstModeUKM(navigation_source_id_, fallback_reason_,
