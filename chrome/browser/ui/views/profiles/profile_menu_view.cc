@@ -1334,7 +1334,7 @@ void ProfileMenuView::BuildOtherProfilesSection(
                     ->GetColorProvider()
                     ->GetColor(ui::kColorMenuBackground))));
     if (base::FeatureList::IsEnabled(
-            features::kEnableAiSubscriptionAvatarRing) &&
+            switches::kEnableAiSubscriptionAvatarRing) &&
         profile_entry->GetAiSubscriptionTier() > 0) {
       avatar_image = ui::ImageModel::FromImageSkia(AddAiRingToAvatar(
           avatar_image,

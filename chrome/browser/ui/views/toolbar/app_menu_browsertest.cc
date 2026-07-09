@@ -57,6 +57,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
@@ -492,7 +493,7 @@ class AppMenuProfileAiRingBrowserTest : public AppMenuBrowserTest {
  public:
   AppMenuProfileAiRingBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kEnableAiSubscriptionAvatarRing);
+        switches::kEnableAiSubscriptionAvatarRing);
   }
 
   void SetAiSubscriptionTierForProfile(int32_t subscription_tier) {

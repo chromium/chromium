@@ -326,6 +326,10 @@ BASE_FEATURE(kEnableActivitylessSigninAllEntryPoint,
 BASE_FEATURE(kEnableAddSessionRedirect, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Enables the AI subscription level decorative ring around the user's avatar.
+BASE_FEATURE(kEnableAiSubscriptionAvatarRing,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kEnableASWebAuthenticationSession,
              base::FEATURE_ENABLED_BY_DEFAULT);

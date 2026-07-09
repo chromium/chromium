@@ -27,6 +27,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
@@ -174,7 +175,7 @@ bool IsOpenLinkOTREnabled(Profile* source_profie, const GURL& url) {
 
 bool IsAiSubscriptionRingEnabled(Profile* profile) {
   if (!base::FeatureList::IsEnabled(
-          features::kEnableAiSubscriptionAvatarRing)) {
+          switches::kEnableAiSubscriptionAvatarRing)) {
     return false;
   }
   if (!profile) {

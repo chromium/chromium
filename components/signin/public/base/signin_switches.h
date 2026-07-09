@@ -298,6 +298,10 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAddSessionRedirect);
 #endif
 
+// Enables the AI subscription level decorative ring around the user's avatar.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableAiSubscriptionAvatarRing);
+
 #if BUILDFLAG(IS_IOS)
 // Features to enable using the ASWebAuthenticationSession to add accounts to
 // device.

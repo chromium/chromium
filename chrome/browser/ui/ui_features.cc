@@ -157,9 +157,6 @@ BASE_FEATURE_PARAM(int,
                    0);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-// Enables the AI subscription level decorative ring around the user's avatar.
-BASE_FEATURE(kEnableAiSubscriptionAvatarRing,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Preloads a WebContents with a Top Chrome WebUI on BrowserView initialization,
 // so that it can be shown instantly at a later time when necessary.

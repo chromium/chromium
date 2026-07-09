@@ -165,7 +165,7 @@ std::pair<std::string, bool> GetAvatarIconUrlAndAiRingStatus(
   int avatar_icon_size = avatar_icon_size_dip * scale;
   std::string icon_url;
   bool has_ai_ring = false;
-  if (base::FeatureList::IsEnabled(features::kEnableAiSubscriptionAvatarRing) &&
+  if (base::FeatureList::IsEnabled(switches::kEnableAiSubscriptionAvatarRing) &&
       entry->GetAiSubscriptionTier() > 0 && color_provider) {
     // Note: For the AI subscription ring to appear, the corresponding profile
     // needs to have been loaded at least once (with

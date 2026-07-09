@@ -394,7 +394,7 @@ class ProfileMenuViewPixelTest
 
     if (GetParam().with_ai_avatar_ring) {
       enabled_features_and_params.push_back(
-          {features::kEnableAiSubscriptionAvatarRing, {}});
+          {switches::kEnableAiSubscriptionAvatarRing, {}});
     }
     if (GetParam().with_cross_device_signin_promo) {
       enabled_features_and_params.push_back(

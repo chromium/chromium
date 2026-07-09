@@ -4135,7 +4135,7 @@ class AvatarToolbarButtonAiRingBrowserTest
  public:
   AvatarToolbarButtonAiRingBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kEnableAiSubscriptionAvatarRing);
+        switches::kEnableAiSubscriptionAvatarRing);
   }
 
   void SetAiSubscriptionTierForProfile(int32_t subscription_tier) {

@@ -339,9 +339,9 @@ class ProfilePickerUIPixelTest
     }
     if (GetParam().use_ai_avatar_ring) {
       enabled_features.push_back(
-          {features::kEnableAiSubscriptionAvatarRing, {}});
+          {switches::kEnableAiSubscriptionAvatarRing, {}});
     } else {
-      disabled_features.push_back(features::kEnableAiSubscriptionAvatarRing);
+      disabled_features.push_back(switches::kEnableAiSubscriptionAvatarRing);
     }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,

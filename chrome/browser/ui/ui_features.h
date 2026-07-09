@@ -92,7 +92,6 @@ BASE_DECLARE_FEATURE(kSessionRestoreInfobar);
 BASE_DECLARE_FEATURE_PARAM(bool, kSetDefaultToContinueSession);
 #endif
 
-BASE_DECLARE_FEATURE(kEnableAiSubscriptionAvatarRing);
 
 BASE_DECLARE_FEATURE(kPreloadTopChromeWebUI);
 // This enum entry values must be in sync with
