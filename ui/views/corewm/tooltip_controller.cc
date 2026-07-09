@@ -123,7 +123,7 @@ aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
         return nullptr;
       }
 
-      aura::Window::ConvertPointToTarget(screen_target, target, &target_loc);
+      aura::Window::ConvertPointToTarget(target, screen_target, &target_loc);
       *location = target_loc;
       return screen_target;
     }
@@ -262,12 +262,6 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
     case ui::EventType::kMouseCaptureChanged:
     case ui::EventType::kMouseMoved:
     case ui::EventType::kMouseDragged: {
-      // Synthesized mouse moves shouldn't cause us to show a tooltip. See
-      // https://crbug.com/1146981.
-      if (event->IsSynthesized()) {
-        break;
-      }
-
 #if BUILDFLAG(IS_WIN)
       // Showing a tooltip causes Windows to generate a MOUSE_MOVED
       // event to the same location it was already at; when that happens,
@@ -294,6 +288,12 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
 
       is_duplicate_pen_hover_event_ =
           IsDuplicatePenHoverEvent(event->pointer_details().pointer_type);
+
+      // Synthesized mouse moves shouldn't cause us to show a tooltip. See
+      // https://crbug.com/1146981.
+      if (event->IsSynthesized()) {
+        break;
+      }
 
       if (state_manager_->IsVisible() ||
           (observed_window_ && IsTooltipTextUpdateNeeded())) {

@@ -852,6 +852,39 @@ TEST_F(TooltipControllerTest, ShowTooltipOnTooltipTextUpdate) {
   EXPECT_EQ(nullptr, helper_->GetTooltipParentWindow());
 }
 
+TEST_F(TooltipControllerTest, SynthesizedMouseMoveUpdatesObservedWindow) {
+  std::u16string expected_tooltip;
+  wm::SetTooltipText(GetWindow(), &expected_tooltip);
+
+  // Send a synthesized mouse move event. It shouldn't show a tooltip,
+  // but it should update |observed_window_| and position.
+  gfx::Point point(10, 15);
+  View::ConvertPointToWidget(view_, &point);
+  ui::MouseEvent synthesized_move(ui::EventType::kMouseMoved, point, point,
+                                  base::TimeTicks::Now(), ui::EF_IS_SYNTHESIZED,
+                                  0);
+  ui::Event::DispatcherApi(&synthesized_move).set_target(GetWindow());
+  helper_->controller()->OnMouseEvent(&synthesized_move);
+
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
+  EXPECT_EQ(nullptr, helper_->GetTooltipParentWindow());
+  EXPECT_EQ(GetWindow(), helper_->GetObservedWindow());
+  EXPECT_FALSE(helper_->IsTooltipVisible());
+
+  // Updating the tooltip text and calling UpdateTooltip should now show
+  // the tooltip at the location of the synthesized mouse move.
+  expected_tooltip = u"Tooltip text";
+  helper_->controller()->UpdateTooltip(GetWindow());
+
+  EXPECT_EQ(expected_tooltip, wm::GetTooltipText(GetWindow()));
+  EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
+  EXPECT_EQ(GetWindow(), helper_->GetTooltipParentWindow());
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+  EXPECT_EQ(point, helper_->GetTooltipPosition());
+
+  helper_->HideAndReset();
+}
+
 // This test validates that the TooltipController correctly triggers a position
 // update for a tooltip that is about to be shown.
 TEST_F(TooltipControllerTest, TooltipPositionUpdatedWhenTimerRunning) {
