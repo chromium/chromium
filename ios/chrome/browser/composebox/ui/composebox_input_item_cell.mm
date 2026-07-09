@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -81,6 +82,8 @@ const CGFloat kCloseButtonAlpha = 0.9;
       [_closeButton.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
     ]];
+
+    [self addInteraction:[[ViewPointerInteraction alloc] init]];
   }
   return self;
 }
@@ -170,21 +173,24 @@ const CGFloat kCloseButtonAlpha = 0.9;
     }
   }
 
+  __weak __typeof(self) weakSelf = self;
   self.accessibilityCustomActions = @[ [[UIAccessibilityCustomAction alloc]
-      initWithName:
-          l10n_util::GetNSString(
-              IDS_IOS_COMPOSEBOX_DELETE_ATTACHMENT_ACCESSIBILITY_CUSTOM_ACTION)
-             image:image
-            target:self
-          selector:@selector(closeButtonTapped)] ];
+       initWithName:
+           l10n_util::GetNSString(
+               IDS_IOS_COMPOSEBOX_DELETE_ATTACHMENT_ACCESSIBILITY_CUSTOM_ACTION)
+              image:image
+      actionHandler:^BOOL(UIAccessibilityCustomAction* action) {
+        return [weakSelf closeButtonTapped];
+      }] ];
 }
 
 #pragma mark Private helpers
 
 /// Called when the close button is tapped, notifying the delegate to remove the
 /// item.
-- (void)closeButtonTapped {
+- (BOOL)closeButtonTapped {
   [self.delegate composeboxInputItemCellDidTapCloseButton:self];
+  return YES;
 }
 
 #pragma mark - Private methods
