@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -92,11 +93,21 @@ public class MissingDeviceLockCoordinator {
                         mMediator.getModel(), mView, MissingDeviceLockViewBinder::bind);
         mModalDialogManager = modalDialogManager;
 
+        // Consume any back press events to ensure that this dialog cannot be bypassed by system
+        // backs.
+        OnBackPressedCallback onBackPressedCallback =
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {}
+                };
         mModalDialogPropertyModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, mModalDialogController)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mView)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
+                        .with(
+                                ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+                                onBackPressedCallback)
                         .with(
                                 ModalDialogProperties.DIALOG_STYLES,
                                 ModalDialogProperties.DialogStyles.NORMAL)

@@ -4,6 +4,7 @@ include_rules = [
   "+content/public/test/android",
   "+chrome/test/android",
   "+components/browser_ui/device_lock/android",
+  "+components/browser_ui/modaldialog/android",
   "+components/browser_ui/widget/android",
   "+ui/android",
 ]
