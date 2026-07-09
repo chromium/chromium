@@ -126,6 +126,7 @@ const CGFloat kGenericButtonWidth = 24.0f;
 const CGFloat kGenericButtonHeight = 32.0f;
 /// The dimension of the send button.
 const CGFloat kSendButtonDimension = 36.0f;
+const CGFloat kCobrowseSendButtonDimension = 52.0f;
 /// The dimension of the button stack view.
 const CGFloat kButtonStackViewDimension = 36.0f;
 /// Duration of a change in compact mode.
@@ -159,7 +160,9 @@ const double kTabAttachmentFadeOutRelativeDuration = 0.333;
 const double kTabAttachmentSlideRelativeDuration = 1.0;
 
 /// The image for the send button.
-UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
+UIImage* SendButtonImage(BOOL highlighted,
+                         ComposeboxTheme* theme,
+                         ComposeboxEntrypoint entrypoint) {
   NSArray<UIColor*>* palette = @[
     [theme sendButtonForegroundColorHighlighted:highlighted],
     [theme sendButtonBackgroundColorHighlighted:highlighted]
@@ -170,9 +173,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                           weight:UIImageSymbolWeightLight
                            scale:UIImageSymbolScaleMedium];
 
-  return SymbolWithPalette(
-      DefaultSymbolWithConfiguration(kRightArrowCircleFillSymbol, config),
-      palette);
+  if (entrypoint == ComposeboxEntrypoint::kCobrowse) {
+    return SymbolWithPalette(
+        DefaultSymbolWithConfiguration(kArrowUpCircleFillSymbol, config),
+        palette);
+  } else {
+    return SymbolWithPalette(
+        DefaultSymbolWithConfiguration(kRightArrowCircleFillSymbol, config),
+        palette);
+  }
 }
 
 }  // namespace
@@ -1327,12 +1336,13 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 - (UIButton*)createSendButton {
   UIButtonConfiguration* buttonConfig =
       [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfig.image = SendButtonImage(/*highlighted=*/NO, _theme);
+  buttonConfig.image = SendButtonImage(/*highlighted=*/NO, _theme, _entrypoint);
   buttonConfig.contentInsets = NSDirectionalEdgeInsetsZero;
 
   UIButton* sendButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   sendButton.configuration = buttonConfig;
+  sendButton.backgroundColor = [_theme sendButtonBackgroundColorHighlighted:NO];
 
   __weak __typeof(self) weakSelf = self;
   sendButton.configurationUpdateHandler = ^(UIButton* button) {
@@ -1346,8 +1356,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [sendButton addTarget:self
                  action:@selector(sendButtonTapped)
        forControlEvents:UIControlEventTouchUpInside];
-  AddSizeConstraints(sendButton,
-                     CGSizeMake(kSendButtonDimension, kSendButtonDimension));
+
+  if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
+    AddSizeConstraints(sendButton, CGSizeMake(kCobrowseSendButtonDimension,
+                                              kSendButtonDimension));
+  } else {
+    AddSizeConstraints(sendButton,
+                       CGSizeMake(kSendButtonDimension, kSendButtonDimension));
+  }
+
   return sendButton;
 }
 
@@ -1355,7 +1372,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 - (void)sendButtonDidUpdateConfiguration {
   UIButtonConfiguration* updatedConfig = _sendButton.configuration;
   BOOL isHighlighted = _sendButton.state == UIControlStateHighlighted;
-  updatedConfig.image = SendButtonImage(isHighlighted, _theme);
+  updatedConfig.image = SendButtonImage(isHighlighted, _theme, _entrypoint);
   _sendButton.configuration = updatedConfig;
   CGFloat scale = isHighlighted ? 0.95 : 1.0;
   __weak UIButton* weakSendButton = _sendButton;

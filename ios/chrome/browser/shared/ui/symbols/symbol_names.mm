@@ -327,6 +327,7 @@ NSString* const kWaveformSymbol = @"waveform.mid";
 NSString* const kPhotoOnRectangleSymbol = @"photo.on.rectangle";
 NSString* const kSystemCameraSymbol = @"camera";
 NSString* const kRightArrowCircleFillSymbol = @"arrow.right.circle.fill";
+NSString* const kArrowUpCircleFillSymbol = @"arrow.up.circle.fill";
 NSString* const kArrowDownToLineSymbol = @"arrow.down.to.line";
 NSString* const kPhotoOnRectangleAngled = @"photo.on.rectangle.angled";
 NSString* const kSparklesSymbol = @"sparkles";
