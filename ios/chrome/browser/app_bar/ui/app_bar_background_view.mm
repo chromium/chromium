@@ -53,7 +53,10 @@ void AddCutoutToPath(UIBezierPath* path,
   UIBezierPath* _maskPath;
   CGRect _lastBounds;
   CAShapeLayer* _shadowLayer;
+
+  // The blur view and its blur (when one is used).
   UIVisualEffectView* _blurView;
+  UIVisualEffect* _blur;
   // Shape layer used to render the background color. This allows the view's own
   // background color to remain transparent/clear, preventing EarlGrey from
   // incorrectly identifying the entire bounding box of the view as opaque and
@@ -82,9 +85,9 @@ void AddCutoutToPath(UIBezierPath* path,
     self.layer.mask = _maskLayer;
 
     if (IsFullscreenRefactoringEnabled()) {
-      UIBlurEffect* blurEffect =
+      _blur =
           [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterialDark];
-      _blurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+      _blurView = [[UIVisualEffectView alloc] initWithEffect:_blur];
       [self addSubview:_blurView];
     }
 
@@ -132,9 +135,10 @@ void AddCutoutToPath(UIBezierPath* path,
   }
   CAShapeLayer* shadowLayer = _shadowLayer;
   UIVisualEffectView* blurView = _blurView;
+  UIVisualEffect* blur = _blur;
   _hideColorBackground = hideColorBackground;
 
-  if (!hideColorBackground && blurView) {
+  if (!hideColorBackground) {
     blurView.hidden = NO;
   }
 
@@ -142,12 +146,10 @@ void AddCutoutToPath(UIBezierPath* path,
       animations:^{
         [self updateBackgroundColor];
         shadowLayer.opacity = hideColorBackground ? 0 : 1;
-        if (blurView) {
-          blurView.alpha = hideColorBackground ? 0 : 1;
-        }
+        blurView.effect = hideColorBackground ? nil : blur;
       }
       completion:^(BOOL finished) {
-        if (hideColorBackground && blurView) {
+        if (hideColorBackground) {
           blurView.hidden = YES;
         }
       }];

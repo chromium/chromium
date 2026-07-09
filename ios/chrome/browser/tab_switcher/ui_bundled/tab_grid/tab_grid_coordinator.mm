@@ -748,11 +748,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     animationEnabled = NO;
   }
 
-  UIView* appContentView =
-      IsChromeNextIaEnabled()
-          ? [LayoutGuideCenterForScene(browser->GetSceneState())
-                referencedViewUnderName:kAppContentGuide]
-          : nil;
+  SceneState* sceneState = browser->GetSceneState();
+
+  UIView* appContentView = IsChromeNextIaEnabled()
+                               ? [LayoutGuideCenterForScene(sceneState)
+                                     referencedViewUnderName:kAppContentGuide]
+                               : nil;
 
   UIViewController* parentViewController = _viewController;
   if (IsChromeNextIaEnabled() && IsFullscreenRefactoringEnabled()) {
@@ -776,7 +777,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
           tabGridTransitionLayoutProvider:self
                  browserLayoutGuideCenter:LayoutGuideCenterForBrowser(browser)
                       isRegularBrowserNTP:isRegularBrowserNTP
-                                incognito:isIncognito];
+                                incognito:isIncognito
+                              layoutState:sceneState.layoutState];
     }
   } else {
     self.transitionHandler = [[TabGridTransitionHandler alloc]

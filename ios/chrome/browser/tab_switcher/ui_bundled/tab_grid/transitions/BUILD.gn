@@ -18,6 +18,7 @@ source_set("transitions") {
     ":transitions_context",
     "//base",
     "//ios/chrome/browser/main/ui",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
