@@ -3170,6 +3170,7 @@ target(_test_target_type, "net_unittests") {
     "ssl/ssl_config_unittest.cc",
     "ssl/ssl_connection_status_flags_unittest.cc",
     "ssl/ssl_platform_key_util_unittest.cc",
+    "test/cert_builder_unittest.cc",
     "test/embedded_test_server/embedded_test_server_unittest.cc",
     "test/embedded_test_server/http_request_unittest.cc",
     "test/embedded_test_server/http_response_unittest.cc",

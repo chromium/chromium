@@ -1589,12 +1589,12 @@ std::vector<bssl::Subtree> SubtreesForLandmarkRange(
   // Find where start and last's tree paths diverge. The two
   // subtrees will be on either side of the split.
   const uint64_t split = bit_length(start ^ last) - 1;
-  const uint64_t mask = (1 << split) - 1;
+  const uint64_t mask = (uint64_t{1} << split) - 1;
   const uint64_t mid = last & ~mask;
   // Maximize the left endpoint. This is just before start's
   // path leaves the right edge of its new subtree.
   const uint64_t left_split = bit_length(~start & mask);
-  const uint64_t left_start = start & ~((1 << left_split) - 1);
+  const uint64_t left_start = start & ~((uint64_t{1} << left_split) - 1);
 
   return {{left_start, mid}, {mid, end}};
 }
@@ -1609,6 +1609,13 @@ constexpr uint8_t kMtcSignatureAlgorithmIdentifier[] = {
     0x04, 0x01, 0x82, 0xda, 0x4b, 0x2f, 0x00};
 
 }  // namespace
+
+// static
+std::vector<bssl::Subtree> MtcLogBuilder::SubtreesForLandmarkRangeForTesting(
+    LogIndex start,
+    LogIndex end) {
+  return SubtreesForLandmarkRange(start, end);
+}
 
 class MtcLogBuilder::Data {
  public:

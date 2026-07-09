@@ -570,6 +570,10 @@ class MtcLogBuilder {
       chrome_root_store::MtcAnchorData* mtc_anchor_data) const;
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
+  static std::vector<bssl::Subtree> SubtreesForLandmarkRangeForTesting(
+      LogIndex start,
+      LogIndex end);
+
  private:
   class Data;
 
