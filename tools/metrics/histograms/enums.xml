@@ -9601,6 +9601,7 @@ from previous Chrome versions.
   <int value="-1594067749" label="TabStripIncognitoMigration:disabled"/>
   <int value="-1593946814"
       label="AccountReauthenticationRecentTimeWindow:enabled"/>
+  <int value="-1593456166" label="TextHighlightFullLink:enabled"/>
   <int value="-1593218491" label="WebCryptoPQC:enabled"/>
   <int value="-1591974904"
       label="SafeBrowsingSeparateNetworkContexts:disabled"/>
@@ -13139,6 +13140,7 @@ from previous Chrome versions.
   <int value="-465114665"
       label="PasswordSaveInContextErrorResolution:disabled"/>
   <int value="-464380210" label="ContextualTasksExpandButton:enabled"/>
+  <int value="-463764673" label="TextHighlightFullLink:disabled"/>
   <int value="-463661468" label="FullscreenAlwaysShowTrafficLights:disabled"/>
   <int value="-463161052" label="TearOffWebAppTabOpensWebAppWindow:enabled"/>
   <int value="-462877654" label="FilesMaterializedViews:enabled"/>

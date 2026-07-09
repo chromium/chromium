@@ -286,6 +286,7 @@ BASE_DECLARE_FEATURE(kTabSwitcherGroupSuggestionsTestModeAndroid);
 BASE_DECLARE_FEATURE(kTabWindowManagerReportIndicesMismatch);
 BASE_DECLARE_FEATURE(kTestDefaultDisabled);
 BASE_DECLARE_FEATURE(kTestDefaultEnabled);
+BASE_DECLARE_FEATURE(kTextHighlightFullLink);
 BASE_DECLARE_FEATURE(kThreeDotMenuBackButton);
 BASE_DECLARE_FEATURE(kTipsSelfService);
 BASE_DECLARE_FEATURE(kToolbarCaptureFixForSPAs);

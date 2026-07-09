@@ -701,6 +701,7 @@ public abstract class ChromeFeatureList {
     public static final String TASK_MANAGER_CLANK = "TaskManagerClank";
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
+    public static final String TEXT_HIGHLIGHT_FULL_LINK = "TextHighlightFullLink";
     public static final String THREE_DOT_MENU_BACK_BUTTON = "ThreeDotMenuBackButton";
     public static final String TIPS_SELF_SERVICE = "TipsSelfService";
     public static final String TOOLBAR_CAPTURE_FIX_FOR_SPAS = "ToolbarCaptureFixForSPAs";

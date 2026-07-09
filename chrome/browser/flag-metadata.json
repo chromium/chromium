@@ -9309,6 +9309,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "text-highlight-full-link",
+    "owners": ["jhimawan@google.com", "clank-app-team@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "text-safety-classifier",
     "owners": [ "sophiechang@chromium.org", "robertogden@chromium.org", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 150

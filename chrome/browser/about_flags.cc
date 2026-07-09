@@ -13388,6 +13388,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kToolbarProgressBarRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kToolbarProgressBarRefactor)},
 #endif
+#if BUILDFLAG(IS_ANDROID)
+    {"text-highlight-full-link", flag_descriptions::kTextHighlightFullLinkName,
+     flag_descriptions::kTextHighlightFullLinkDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTextHighlightFullLink)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

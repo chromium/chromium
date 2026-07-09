@@ -5515,6 +5515,11 @@ inline constexpr char kNtpVisionName[] = "New tab page vision";
 inline constexpr char kNtpVisionDescription[] =
     "Enable the new vision of the new tab page";
 
+inline constexpr char kTextHighlightFullLinkName[] = "Text Highlight Full Link";
+inline constexpr char kTextHighlightFullLinkDescription[] =
+    "In the share sheet, use the full URL instead of canonical URL for "
+    "generating link-to-text.";
+
 inline constexpr char kToolbarProgressBarRefactorName[] =
     "Toolbar Progress Bar Refactor";
 inline constexpr char kToolbarProgressBarRefactorDescription[] =
