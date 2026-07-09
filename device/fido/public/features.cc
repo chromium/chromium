@@ -147,9 +147,8 @@ BASE_FEATURE(kWebAuthnCrossDeviceFallbackUrl,
 BASE_FEATURE(kWebAuthnIWARemoteDesktopAllowedOriginsPolicy,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Disabled by default.
-BASE_FEATURE(kWebAuthnOpportunisticRetrieval,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Enabled by default in M152. Remove in or after M155.
+BASE_FEATURE(kWebAuthnOpportunisticRetrieval, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,
                    kWebAuthnOpportunisticRetrievalTimeToKeepCachedKeySeconds,
