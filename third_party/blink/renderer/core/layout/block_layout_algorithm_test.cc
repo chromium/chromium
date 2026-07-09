@@ -12,9 +12,11 @@
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
@@ -2471,7 +2473,7 @@ TEST_F(BlockLayoutAlgorithmTest, ComputeInitialBlockStartAnnotationSpace) {
         contain: paint;
       }
     </style>
-    <div id="target1"></div>
+    <div id="target1"><ruby>base<rt>annotation</rt></ruby></div>
     <div id="target2"></div>
     <div id="target3"></div>
     <div id="target4"></div>
@@ -2498,7 +2500,17 @@ TEST_F(BlockLayoutAlgorithmTest, ComputeInitialBlockStartAnnotationSpace) {
   // margin-top(20) + padding-top(10) = 30
   {
     ScopedAnnotationSpaceOnStartForTest enable_flag(true);
-    BlockLayoutAlgorithm algorithm({node1, fragment_geometry1, space1});
+    ConstraintSpaceBuilder builder(
+        WritingMode::kHorizontalTb,
+        {WritingMode::kHorizontalTb, TextDirection::kLtr},
+        node1.CreatesNewFormattingContext());
+    builder.SetAvailableSize(LogicalSize(LayoutUnit(1000), kIndefiniteSize));
+    builder.SetPercentageResolutionSize(
+        LogicalSize(LayoutUnit(1000), kIndefiniteSize));
+    builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
+    builder.SetContainsAnnotations(true);
+    ConstraintSpace space = builder.ToConstraintSpace();
+    BlockLayoutAlgorithm algorithm({node1, fragment_geometry1, space});
     EXPECT_EQ(LayoutUnit(30),
               algorithm.ComputeInitialBlockStartAnnotationSpace());
   }
@@ -2553,6 +2565,163 @@ TEST_F(BlockLayoutAlgorithmTest, ComputeInitialBlockStartAnnotationSpace) {
     EXPECT_EQ(LayoutUnit(10),
               algorithm.ComputeInitialBlockStartAnnotationSpace());
   }
+}
+
+TEST_F(BlockLayoutAlgorithmTest, PreviousSiblingBlockEndAnnotationSpace) {
+  ScopedAnnotationSpaceOnStartForTest enable_flag(true);
+  LoadAhem();
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div { font: 10px/1 Ahem; }
+      .container { writing-mode: horizontal-tb; width: 200px; }
+      .prev-basic { border-bottom: 0 solid black; overflow: visible; }
+      .prev-border { border-bottom: 5px solid black; overflow: visible; }
+      .prev-hidden { border-bottom: 0 solid black; overflow: hidden; }
+      .prev-vertical {
+        writing-mode: vertical-rl;
+        border-left: 0 solid black;
+        overflow: visible;
+      }
+      .prev-small-height { height: 10px; overflow: visible; }
+
+      #target1, #target2, #target3, #target4, #target5 {
+        margin-top: 0px;
+        padding-top: 0px;
+        border-top: 0 solid black;
+        overflow: visible;
+      }
+      .prev-ruby { font-size: 10px; line-height: 60px; }
+      .prev-rt { font-size: 5px; line-height: 5px; ruby-position: under; }
+      .prev-no-ruby {
+        font-size: 10px;
+        line-height: 60px;
+        border-bottom: 0 solid black;
+        overflow: visible;
+      }
+      .target-ruby {
+        font-size: 10px;
+        line-height: 10px;
+        ruby-position: over;
+      }
+      .target-rt { font-size: 20px; line-height: 20px; }
+    </style>
+
+    <!-- Case 1: Matching conditions (Border=0, overflow=visible,
+         matching writing mode) -->
+    <div id="c1" class="container">
+      <div id="prev1" class="prev-basic">
+        <ruby class="prev-ruby">base<rt class="prev-rt">annotation</rt></ruby>
+      </div>
+      <div id="target1">
+        <ruby class="target-ruby">base<rt class="target-rt">annotation</rt></ruby>
+      </div>
+    </div>
+
+    <!-- Case 2: Block Prev has insufficient height and content overflows -->
+    <div id="c2" class="container">
+      <div id="prev2" class="prev-small-height">
+        line1<br>
+        <ruby class="prev-ruby">base<rt class="prev-rt">annotation</rt></ruby>
+      </div>
+      <div id="target2">
+        <ruby class="target-ruby">base<rt class="target-rt">annotation</rt></ruby>
+      </div>
+    </div>
+
+    <!-- Case 3: Sibling has border-bottom (propagation should be blocked) -->
+    <div id="c3" class="container">
+      <div id="prev3" class="prev-border">
+        <ruby class="prev-ruby">base<rt class="prev-rt">annotation</rt></ruby>
+      </div>
+      <div id="target3">
+        <ruby class="target-ruby">base<rt class="target-rt">annotation</rt></ruby>
+      </div>
+    </div>
+
+    <!-- Case 4: Sibling has overflow: hidden (propagation should be blocked) -->
+    <div id="c4" class="container">
+      <div id="prev4" class="prev-hidden">
+        <ruby class="prev-ruby">base<rt class="prev-rt">annotation</rt></ruby>
+      </div>
+      <div id="target4">
+        <ruby class="target-ruby">base<rt class="target-rt">annotation</rt></ruby>
+      </div>
+    </div>
+
+    <!-- Case 5: Writing mode mismatch (propagation should be blocked) -->
+    <div id="c5" class="container">
+      <div id="prev5" class="prev-vertical">
+        <ruby class="prev-ruby">base<rt class="prev-rt">annotation</rt></ruby>
+      </div>
+      <div id="target5">
+        <ruby class="target-ruby">base<rt class="target-rt">annotation</rt></ruby>
+      </div>
+    </div>
+
+    <!-- Case 6: Sibling has no ruby, but has large line-height (half-leading) -->
+    <div id="c6" class="container">
+      <div id="prev6" class="prev-no-ruby">
+        normal text
+      </div>
+      <div id="target6">
+        <ruby class="target-ruby">base<rt class="target-rt">annotation</rt></ruby>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  const auto* prev1 = GetLayoutBoxByElementId("prev1")->GetLayoutResult(0);
+  EXPECT_GT(prev1->BlockEndAnnotationSpace(), LayoutUnit(0));
+
+  const auto* prev2 = GetLayoutBoxByElementId("prev2")->GetLayoutResult(0);
+  EXPECT_EQ(prev2->BlockEndAnnotationSpace(), LayoutUnit(0));
+
+  const auto* prev3 = GetLayoutBoxByElementId("prev3")->GetLayoutResult(0);
+  EXPECT_EQ(prev3->BlockEndAnnotationSpace(), LayoutUnit(0));
+
+  const auto* prev4 = GetLayoutBoxByElementId("prev4")->GetLayoutResult(0);
+  EXPECT_EQ(prev4->BlockEndAnnotationSpace(), LayoutUnit(0));
+
+  const auto* prev5 = GetLayoutBoxByElementId("prev5")->GetLayoutResult(0);
+  // prev5 itself is a writing-mode root and has no block-end annotation space
+  EXPECT_EQ(prev5->BlockEndAnnotationSpace(), LayoutUnit(0));
+
+  const auto* prev6 = GetLayoutBoxByElementId("prev6")->GetLayoutResult(0);
+  EXPECT_GT(prev6->BlockEndAnnotationSpace(), LayoutUnit(0));
+
+  // Helper to get first line offset inside target
+  auto get_first_line_offset = [this](const char* target_id) -> LayoutUnit {
+    LayoutBlockFlow* block_flow = GetLayoutBlockFlowByElementId(target_id);
+    InlineCursor cursor(*block_flow);
+    cursor.MoveToFirstLine();
+    DCHECK(cursor.IsNotNull());
+    return cursor.Current().OffsetInContainerFragment().top;
+  };
+
+  // target1 has PreviousSiblingBlockEndAnnotationSpace from prev1.
+  // prev1 has line-height 60px, so its BlockEndAnnotationSpace is around 25px.
+  // target1's annotation overflow is 20px (because rt font-size is 20px).
+  // Since 20px <= 25px, the overflow is fully accommodated, so offset should
+  // be 0.
+  // target3, target4, target5 have no PreviousSiblingBlockEndAnnotationSpace,
+  // so their lines should be pushed down by the 20px annotation.
+  LayoutUnit offset1 = get_first_line_offset("target1");
+  LayoutUnit offset3 = get_first_line_offset("target3");
+  LayoutUnit offset4 = get_first_line_offset("target4");
+  LayoutUnit offset5 = get_first_line_offset("target5");
+  LayoutUnit offset6 = get_first_line_offset("target6");
+
+  EXPECT_EQ(offset1, LayoutUnit(0));
+  EXPECT_EQ(offset3, LayoutUnit(20));
+  EXPECT_EQ(offset4, LayoutUnit(20));
+  EXPECT_EQ(offset5, LayoutUnit(20));
+  EXPECT_EQ(offset6, LayoutUnit(0));
+
+  // target2 also should be pushed down because prev2 has height constraint and
+  // no annotation space.
+  LayoutUnit offset2 = get_first_line_offset("target2");
+  EXPECT_EQ(offset2, LayoutUnit(20));
 }
 
 }  // namespace

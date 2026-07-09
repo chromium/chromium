@@ -636,7 +636,7 @@
     {
       // crbug.com/445727139
       name: "AnnotationSpaceOnStart",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "AnonymousIframe",

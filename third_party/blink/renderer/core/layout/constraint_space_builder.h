@@ -408,6 +408,12 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
       EnsureRareData()->SetBlockStartAnnotationSpace(space);
   }
 
+  void SetPreviousSiblingBlockEndAnnotationSpace(LayoutUnit space) {
+    if (space) {
+      EnsureRareData()->SetPreviousSiblingBlockEndAnnotationSpace(space);
+    }
+  }
+
   void SetIgnoreMarginsForStretch(WritingMode parent_mode,
                                   LineLogicalBoxSides sides) {
 #if DCHECK_IS_ON()
