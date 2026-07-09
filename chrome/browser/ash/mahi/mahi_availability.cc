@@ -9,7 +9,6 @@
 #include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/manta/manta_service_factory.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/constants/chromeos_features.h"
