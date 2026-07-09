@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/selection_adjuster.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"

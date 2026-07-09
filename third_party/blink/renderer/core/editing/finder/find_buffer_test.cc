@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/find_results.h"

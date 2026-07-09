@@ -34,6 +34,7 @@
 namespace blink {
 
 class LayoutBlock;
+class LocalFrame;
 class PhysicalBoxFragment;
 struct PaintInvalidatorContext;
 

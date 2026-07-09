@@ -29,7 +29,6 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -176,19 +175,8 @@ class CORE_EXPORT FlatTreeTraversal {
     kTraversalDirectionBackward
   };
 
-  static void AssertPrecondition(const Node& node) {
-    DCHECK(!node.GetDocument().IsFlatTreeTraversalForbidden());
-    DCHECK(!node.IsShadowRoot())
-        << "Shadow roots don't have layout objects. Their host has one, and "
-           "their children have them, and those two are connected.";
-  }
-
-  static void AssertPostcondition(const Node* node) {
-#if DCHECK_IS_ON()
-    if (node)
-      AssertPrecondition(*node);
-#endif
-  }
+  static void AssertPrecondition(const Node& node);
+  static void AssertPostcondition(const Node* node);
 
   static Node* ResolveDistributionStartingAt(const Node*, TraversalDirection);
 

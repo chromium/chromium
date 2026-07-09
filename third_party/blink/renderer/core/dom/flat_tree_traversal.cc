@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_node_data.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
@@ -345,6 +346,23 @@ const Element* FlatTreeTraversal::InclusiveParentElement(const Node& node) {
   }
   AssertPostcondition(inclusive_parent);
   return inclusive_parent;
+}
+
+// static
+void FlatTreeTraversal::AssertPrecondition(const Node& node) {
+  DCHECK(!node.GetDocument().IsFlatTreeTraversalForbidden());
+  DCHECK(!node.IsShadowRoot())
+      << "Shadow roots don't have layout objects. Their host has one, and "
+         "their children have them, and those two are connected.";
+}
+
+// static
+void FlatTreeTraversal::AssertPostcondition(const Node* node) {
+#if DCHECK_IS_ON()
+  if (node) {
+    AssertPrecondition(*node);
+  }
+#endif
 }
 
 }  // namespace blink

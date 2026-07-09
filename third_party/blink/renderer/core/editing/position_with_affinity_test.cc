@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 
 namespace blink {

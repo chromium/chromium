@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/editing/position_units.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
