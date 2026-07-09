@@ -80,13 +80,14 @@ gfx::Transform GetWindowTransformRelativeToRoot(
   gfx::Transform translation;
   gfx::Transform transform_relative_to_root;
   if (use_target_values) {
-    translation.Translate(
-        static_cast<float>(window->layer()->GetTargetBounds().x()),
-        static_cast<float>(window->layer()->GetTargetBounds().y()));
+    // Use aura::Window API to get bounds which works even with
+    // `layer_managed_by_parent` is set to false.
+    translation.Translate(static_cast<float>(window->GetTargetBounds().x()),
+                          static_cast<float>(window->GetTargetBounds().y()));
     transform_relative_to_root = window->layer()->GetTargetTransform();
   } else {
-    translation.Translate(static_cast<float>(window->layer()->bounds().x()),
-                          static_cast<float>(window->layer()->bounds().y()));
+    translation.Translate(static_cast<float>(window->bounds().x()),
+                          static_cast<float>(window->bounds().y()));
     transform_relative_to_root = window->layer()->transform();
   }
   transform_relative_to_root.PostConcat(translation);
@@ -133,7 +134,7 @@ SkIRect GetWindowBoundsInRootWindow(
     bool use_target_values) {
   // Compute the unclipped bounds of |window|.
   const gfx::Rect src_bounds =
-      use_target_values ? window->layer()->GetTargetBounds() : window->bounds();
+      use_target_values ? window->GetTargetBounds() : window->bounds();
   const SkIRect transformed_bounds = ComputeTransformedBoundsEnclosed(
       gfx::Rect(src_bounds.size()), transform_relative_to_root);
   return ComputeClippedBounds(transformed_bounds, clipped_bounds);
