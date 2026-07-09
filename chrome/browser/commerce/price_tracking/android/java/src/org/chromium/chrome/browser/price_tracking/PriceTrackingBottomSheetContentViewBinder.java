@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
@@ -54,15 +53,6 @@ public class PriceTrackingBottomSheetContentViewBinder {
                     priceTrackingButton,
                     ColorStateList.valueOf(model.get(PRICE_TRACKING_BUTTON_BACKGROUND_COLOR)));
         } else if (PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER == propertyKey) {
-            ViewCompat.replaceAccessibilityAction(
-                    priceTrackingButton,
-                    AccessibilityActionCompat.ACTION_CLICK,
-                    priceTrackingButton
-                            .getContext()
-                            .getString(
-                                    R.string
-                                            .price_insights_content_price_tracking_button_action_description),
-                    null);
             priceTrackingButton.setOnClickListener(
                     model.get(PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER));
         }
