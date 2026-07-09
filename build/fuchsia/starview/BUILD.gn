@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/python.gni")
+
+python_library("run_cuttlefish") {
+  pydeps_file = "run_cuttlefish.pydeps"
+  data = [
+    "//.vpython3",
+    "avbtool.py",
+    "cvd_avb_testkey_rsa4096.pem",
+    "cvd_rsa4096.avbpubkey",
+    "README.run_cuttlefish.md",
+    "//third_party/android_sdk/public/platform-tools/adb",
+    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/",
+  ]
+}
+
+python_library("run_cuttlefish_test") {
+  testonly = true
+  pydeps_file = "run_cuttlefish_test.pydeps"
+  deps = [ ":run_cuttlefish" ]
+  data = [
+    "//.vpython3",
+    "run_cuttlefish_test.py",
+  ]
+}
