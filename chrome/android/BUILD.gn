@@ -3109,6 +3109,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/policy/PolicyAuditor.java",
       "java/src/org/chromium/chrome/browser/policy/PolicyAuditorBridge.java",
       "java/src/org/chromium/chrome/browser/printing/TabPrinter.java",
+      "java/src/org/chromium/chrome/browser/printing/WebContentsPrinter.java",
       "java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImpl.java",
       "java/src/org/chromium/chrome/browser/push_messaging/PushMessagingServiceObserver.java",
       "java/src/org/chromium/chrome/browser/renderer_host/ChromeNavigationUiData.java",

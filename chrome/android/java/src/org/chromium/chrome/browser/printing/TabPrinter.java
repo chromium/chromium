@@ -11,7 +11,6 @@ import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
-import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -63,7 +62,9 @@ public class TabPrinter implements Printable {
         if (!canPrint()) return false;
         Tab tab = mTab.get();
         assert tab != null && tab.isInitialized();
-        return TabPrinterJni.get().print(tab.getWebContents(), renderProcessId, renderFrameId);
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null) return false;
+        return new WebContentsPrinter(webContents).print(renderProcessId, renderFrameId);
     }
 
     @Override
@@ -145,10 +146,5 @@ public class TabPrinter implements Printable {
         } else {
             return null;
         }
-    }
-
-    @NativeMethods
-    interface Natives {
-        boolean print(@Nullable WebContents webContents, int renderProcessId, int renderFrameId);
     }
 }

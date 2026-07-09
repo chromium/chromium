@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.printing;
 
 import android.text.TextUtils;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -16,6 +19,7 @@ import org.chromium.printing.Printable;
 import java.io.InputStream;
 
 /** Wraps printing related functionality of a {@link WebContents} object. */
+@JNINamespace("printing")
 @NullMarked
 public class WebContentsPrinter implements Printable {
     private final WebContents mWebContents;
@@ -32,7 +36,7 @@ public class WebContentsPrinter implements Printable {
     @Override
     public boolean print(int renderProcessId, int renderFrameId) {
         if (!canPrint()) return false;
-        return TabPrinterJni.get().print(mWebContents, renderProcessId, renderFrameId);
+        return WebContentsPrinterJni.get().print(mWebContents, renderProcessId, renderFrameId);
     }
 
     @Override
@@ -61,5 +65,10 @@ public class WebContentsPrinter implements Printable {
     @Override
     public @Nullable InputStream getPdfInputStream() {
         return null;
+    }
+
+    @NativeMethods
+    interface Natives {
+        boolean print(@Nullable WebContents webContents, int renderProcessId, int renderFrameId);
     }
 }

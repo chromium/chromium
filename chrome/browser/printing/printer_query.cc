@@ -29,7 +29,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/tab_printer.h"  // nogncheck crbug.com/40147906
 #include "printing/printing_context_android.h"
 #endif
 
@@ -40,6 +39,11 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/TabPrinter_jni.h"  // nogncheck
 #endif
 
 namespace printing {
@@ -409,12 +413,13 @@ void PrinterQuery::GetSettingsWithUI(uint32_t document_page_count,
     // call will return since startPendingPrint will make it return immediately
     // in case of error.
     if (tab) {
+      JNIEnv* env = base::android::AttachCurrentThread();
       auto* printing_context_delegate = static_cast<PrintingContextDelegate*>(
           printing_context_delegate_.get());
       // TODO(crbug.com/379869738) Remove GetUnsafeValue.
       PrintingContextAndroid::SetPendingPrint(
           web_contents->GetTopLevelNativeWindow(),
-          GetPrintableForTab(tab->GetJavaObject()),
+          Java_TabPrinter_getPrintable(env, tab->GetJavaObject()),
           printing_context_delegate->rfh_id().child_id.GetUnsafeValue(),
           printing_context_delegate->rfh_id().frame_routing_id);
     }
