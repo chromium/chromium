@@ -13,6 +13,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/services/sharing/nearby/platform/wifi_lan_server_socket.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
@@ -32,9 +33,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/base/ip_address.h"
@@ -130,8 +130,9 @@ class WifiLanMediumTest : public ::testing::Test {
     // TODO(b/278643115) Remove LoginState dependency.
     ash::LoginState::Initialize();
 
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<user_manager::FakeUserManager>());
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
 
     switch (state) {
       case WifiInitState::kComplete:
@@ -188,7 +189,7 @@ class WifiLanMediumTest : public ::testing::Test {
     ui_proxy_config_service_.reset();
     network_configuration_handler_.reset();
     network_profile_handler_.reset();
-    scoped_user_manager_.reset();
+    test_user_session_manager_.reset();
     found_service_info_.clear();
     lost_service_info_.clear();
     ash::LoginState::Shutdown();
@@ -266,12 +267,10 @@ class WifiLanMediumTest : public ::testing::Test {
               cros_network_config_helper_->network_device_handler());
 
       PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
-      PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
       ::onc::RegisterProfilePrefs(user_prefs_.registry());
-      ::onc::RegisterPrefs(local_state_.registry());
 
       ui_proxy_config_service_ = std::make_unique<ash::UIProxyConfigService>(
-          &user_prefs_, &local_state_,
+          &user_prefs_, TestingBrowserProcess::GetGlobal()->local_state(),
           cros_network_config_helper_->network_state_helper()
               .network_state_handler(),
           network_profile_handler_.get());
@@ -396,8 +395,7 @@ class WifiLanMediumTest : public ::testing::Test {
 
   // Local IP fetching:
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
-  TestingPrefServiceSimple local_state_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   std::unique_ptr<ash::NetworkProfileHandler> network_profile_handler_;
   std::unique_ptr<ash::NetworkConfigurationHandler>
       network_configuration_handler_;

@@ -36,12 +36,13 @@ include_rules = [
   '+components/proxy_config/pref_proxy_config_tracker_impl.h',
   '+components/proxy_config/proxy_config_pref_names.h',
   '+components/sync_preferences/testing_pref_service_syncable.h',
-  '+components/user_manager',
   '+third_party/cros_system_api/dbus/shill/dbus-constants.h',
 ]
 
 specific_include_rules = {
   "wifi_lan_medium_unittest\\.cc": [
+    "+chrome/test/base/testing_browser_process.h",
     "+chromeos/ash/services/network_config/in_process_instance.h",
+    "+components/session_manager/test/test_user_session_manager.h",
   ],
 }
