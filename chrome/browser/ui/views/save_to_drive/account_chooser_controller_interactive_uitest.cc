@@ -76,7 +76,7 @@ class AccountChooserControllerInteractiveUiTest
     InteractiveBrowserTest::SetUpOnMainThread();
     identity_test_environment_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
+            browser()->GetProfile());
   }
 
   // InteractiveBrowserTest:

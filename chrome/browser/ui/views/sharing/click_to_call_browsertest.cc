@@ -451,11 +451,11 @@ IN_PROC_BROWSER_TEST_P(ClickToCallPolicyTest, RunTest) {
   EXPECT_EQ(expected_configured,
             prefs->IsManagedPreference(prefs::kClickToCallEnabled));
 
-  EXPECT_EQ(expected_enabled, ShouldOfferClickToCallForURL(browser()->profile(),
-                                                           GURL(kPhoneLink)));
+  EXPECT_EQ(expected_enabled, ShouldOfferClickToCallForURL(
+                                  browser()->GetProfile(), GURL(kPhoneLink)));
 
   std::optional<std::string> extracted =
-      ExtractPhoneNumberForClickToCall(browser()->profile(), kPhoneNumber);
+      ExtractPhoneNumberForClickToCall(browser()->GetProfile(), kPhoneNumber);
   if (expected_enabled) {
     EXPECT_EQ(kPhoneNumber, extracted.value());
   } else {

@@ -67,7 +67,7 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::SetUpOnMainThread();
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
+            browser()->GetProfile());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfInteractiveUiTest,
         StubSendTabToSelfSyncService* sync_service =
             static_cast<StubSendTabToSelfSyncService*>(
                 SendTabToSelfSyncServiceFactory::GetForProfile(
-                    browser()->profile()));
+                    browser()->GetProfile()));
         sync_service->GetFakeSendTabToSelfModel()
             ->SetTargetDeviceInfoSortedList({TargetDeviceInfo(
                 "device_1", "device_1",
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
         StubSendTabToSelfSyncService* sync_service =
             static_cast<StubSendTabToSelfSyncService*>(
                 SendTabToSelfSyncServiceFactory::GetForProfile(
-                    browser()->profile()));
+                    browser()->GetProfile()));
         sync_service->GetFakeSendTabToSelfModel()
             ->SetTargetDeviceInfoSortedList({TargetDeviceInfo(
                 "device_1", "device_1",
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
         StubSendTabToSelfSyncService* sync_service =
             static_cast<StubSendTabToSelfSyncService*>(
                 SendTabToSelfSyncServiceFactory::GetForProfile(
-                    browser()->profile()));
+                    browser()->GetProfile()));
         sync_service->GetFakeSendTabToSelfModel()
             ->SetTargetDeviceInfoSortedList(
                 {TargetDeviceInfo("device_1", "device_1",
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
         StubSendTabToSelfSyncService* sync_service =
             static_cast<StubSendTabToSelfSyncService*>(
                 SendTabToSelfSyncServiceFactory::GetForProfile(
-                    browser()->profile()));
+                    browser()->GetProfile()));
         sync_service->GetFakeSendTabToSelfModel()
             ->SetTargetDeviceInfoSortedList({TargetDeviceInfo(
                 "device_1", "device_1",

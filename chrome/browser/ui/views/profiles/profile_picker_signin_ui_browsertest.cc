@@ -222,7 +222,7 @@ class ProfilePickerSigninToolbarUIPixelTest
     ProfilePicker::Params params =
         is_first_run
             ? ProfilePicker::Params::ForFirstRun(
-                  browser()->profile()->GetPath(), base::DoNothing())
+                  browser()->GetProfile()->GetPath(), base::DoNothing())
             : ProfilePicker::Params::FromEntryPoint(GetParam().entry_point);
     ProfilePicker::Show(std::move(params));
     profiles::testing::WaitForPickerUrl(GetInitialUrl(is_first_run));

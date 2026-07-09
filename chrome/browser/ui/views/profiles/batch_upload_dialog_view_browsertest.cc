@@ -136,7 +136,7 @@ class BatchUploadDialogViewBrowserTest : public InProcessBrowserTest {
 
  private:
   signin::IdentityManager* GetIdentityManager() {
-    return IdentityManagerFactory::GetForProfile(browser()->profile());
+    return IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   }
 
   base::HistogramTester histogram_tester_;
@@ -153,9 +153,9 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   descriptions.push_back(GetFakeLocalData(type, 1));
   BatchUploadService::EntryPoint entry_point =
       BatchUploadService::EntryPoint::kPasswordManagerSettings;
-  BatchUploadDialogView* dialog_view =
-      CreateBatchUploadDialogView(browser()->profile(), std::move(descriptions),
-                                  entry_point, mock_callback.Get());
+  BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
+      browser()->GetProfile(), std::move(descriptions), entry_point,
+      mock_callback.Get());
 
   EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
 
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
     std::vector<syncer::LocalDataDescription> descriptions;
     descriptions.push_back(GetFakeLocalData(input_type, 1));
     BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
-        browser()->profile(), std::move(descriptions), entry_point,
+        browser()->GetProfile(), std::move(descriptions), entry_point,
         mock_callback.Get());
 
     // Simulate the widget closing without user action.
@@ -227,9 +227,9 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   descriptions.push_back(GetFakeLocalData(type, 1));
   BatchUploadService::EntryPoint entry_point =
       BatchUploadService::EntryPoint::kPasswordPromoCard;
-  BatchUploadDialogView* dialog_view =
-      CreateBatchUploadDialogView(browser()->profile(), std::move(descriptions),
-                                  entry_point, mock_callback.Get());
+  BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
+      browser()->GetProfile(), std::move(descriptions), entry_point,
+      mock_callback.Get());
 
   // Pressing the escape key should dismiss the dialog and return empty result.
   EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
@@ -275,9 +275,9 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   descriptions.push_back(GetFakeLocalData(type, 1));
   BatchUploadService::EntryPoint entry_point =
       BatchUploadService::EntryPoint::kPasswordPromoCard;
-  BatchUploadDialogView* dialog_view =
-      CreateBatchUploadDialogView(browser()->profile(), std::move(descriptions),
-                                  entry_point, mock_callback.Get());
+  BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
+      browser()->GetProfile(), std::move(descriptions), entry_point,
+      mock_callback.Get());
   ASSERT_TRUE(dialog_view->GetWidget()->IsVisible());
 
   // Signing out should close the dialog.
@@ -322,9 +322,9 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   descriptions.push_back(GetFakeLocalData(type, 1));
   BatchUploadService::EntryPoint entry_point =
       BatchUploadService::EntryPoint::kPasswordPromoCard;
-  BatchUploadDialogView* dialog_view =
-      CreateBatchUploadDialogView(browser()->profile(), std::move(descriptions),
-                                  entry_point, mock_callback.Get());
+  BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
+      browser()->GetProfile(), std::move(descriptions), entry_point,
+      mock_callback.Get());
   views::Widget* widget = dialog_view->GetWidget();
   ASSERT_TRUE(widget);
   ASSERT_TRUE(widget->IsVisible());
@@ -365,9 +365,9 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   descriptions.push_back(GetFakeLocalData(type2, count2));
   BatchUploadService::EntryPoint entry_point =
       BatchUploadService::EntryPoint::kPasswordPromoCard;
-  BatchUploadDialogView* dialog_view =
-      CreateBatchUploadDialogView(browser()->profile(), std::move(descriptions),
-                                  entry_point, mock_callback.Get());
+  BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
+      browser()->GetProfile(), std::move(descriptions), entry_point,
+      mock_callback.Get());
 
   std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>
       result;
@@ -417,9 +417,9 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   descriptions.push_back(GetFakeLocalData(type2, count2));
   BatchUploadService::EntryPoint entry_point =
       BatchUploadService::EntryPoint::kPasswordPromoCard;
-  BatchUploadDialogView* dialog_view =
-      CreateBatchUploadDialogView(browser()->profile(), std::move(descriptions),
-                                  entry_point, mock_callback.Get());
+  BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
+      browser()->GetProfile(), std::move(descriptions), entry_point,
+      mock_callback.Get());
 
   std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>
       result;

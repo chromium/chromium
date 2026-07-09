@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerSignInProviderBrowserTest,
                       base::OnceClosure callback) {
           provider_profile_path = GetContentsProfile(contents)->GetPath();
           EXPECT_FALSE(provider_profile_path.empty());
-          EXPECT_NE(browser()->profile()->GetPath(), provider_profile_path);
+          EXPECT_NE(browser()->GetProfile()->GetPath(), provider_profile_path);
 
           EXPECT_TRUE(url.spec().starts_with(kExpectedSigninBaseUrl));
           EXPECT_THAT(url.GetQuery(), HasSubstr("flow=promo"));
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerSignInProviderBrowserTest,
                       base::OnceClosure callback) {
           provider_profile_path = GetContentsProfile(contents)->GetPath();
           EXPECT_FALSE(provider_profile_path.empty());
-          EXPECT_EQ(browser()->profile()->GetPath(), provider_profile_path);
+          EXPECT_EQ(browser()->GetProfile()->GetPath(), provider_profile_path);
 
           EXPECT_TRUE(url.spec().starts_with(kExpectedSigninBaseUrl));
           EXPECT_THAT(url.GetQuery(), HasSubstr("flow=promo"));

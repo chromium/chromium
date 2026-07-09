@@ -149,7 +149,7 @@ void MaybeShowSearchEngineResetNotification(
     return;
   }
 
-  Profile* profile = browser->profile();
+  Profile* profile = browser->GetProfile();
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
   DefaultSearchManager* default_search_engine =

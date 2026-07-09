@@ -612,11 +612,12 @@ class OnSigninStateProvider : public StateProvider {
  public:
   explicit OnSigninStateProvider(Browser* browser,
                                  StateObserver* state_observer)
-      : StateProvider(browser->profile(),
+      : StateProvider(browser->GetProfile(),
                       state_observer,
                       /*should_consider_ai_subscription=*/true),
         browser_(*browser),
-        coordinator_(OnSigninCoordinator::GetForProfile(*browser->profile())) {}
+        coordinator_(
+            OnSigninCoordinator::GetForProfile(*browser->GetProfile())) {}
   ~OnSigninStateProvider() override = default;
 
   // StateProvider:
@@ -1294,11 +1295,11 @@ class PromoStateProviderCoordinator
 class PromoStateProvider : public StateProvider {
  public:
   explicit PromoStateProvider(Browser* browser, StateObserver* state_observer)
-      : StateProvider(browser->profile(),
+      : StateProvider(browser->GetProfile(),
                       state_observer,
                       /*should_consider_ai_subscription=*/true),
         coordinator_(PromoStateProviderCoordinator::GetOrCreateForProfile(
-            *browser->profile())),
+            *browser->GetProfile())),
         browser_(*browser) {}
   ~PromoStateProvider() override = default;
 
@@ -1680,7 +1681,7 @@ class BookmarksLimitExceededStateProvider : public SyncErrorBaseStateProvider {
   explicit BookmarksLimitExceededStateProvider(Browser* browser,
                                                StateObserver* state_observer)
       : SyncErrorBaseStateProvider(
-            browser->profile(),
+            browser->GetProfile(),
             state_observer,
             syncer::SyncService::UserActionableError::kBookmarksLimitExceeded) {
   }
@@ -2164,7 +2165,7 @@ AvatarToolbarButtonStateManager::AvatarToolbarButtonStateManager(
     Browser* browser)
     : avatar_control_(avatar_control),
       browser_(browser),
-      profile_(*browser->profile()),
+      profile_(*browser->GetProfile()),
       creation_time_(base::TimeTicks::Now()) {}
 
 AvatarToolbarButtonStateManager::~AvatarToolbarButtonStateManager() {
@@ -2280,7 +2281,7 @@ void AvatarToolbarButtonStateManager::HandleButtonPressed(
       webauthn::PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled()) {
     webauthn::PasskeyUnlockManager* passkey_unlock_manager =
         webauthn::PasskeyUnlockManagerFactory::GetForProfile(
-            browser_->profile());
+            browser_->GetProfile());
     if (passkey_unlock_manager &&
         passkey_unlock_manager->ShouldDisplayErrorUi()) {
       webauthn::PasskeyUnlockManager::RecordErrorUIEventType(
@@ -2390,7 +2391,7 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
   // since this structure is tied to Browser, in which a Profile cannot
   // change, it is correct to initialize the possible fixed states once.
 
-  Profile* profile = browser->profile();
+  Profile* profile = browser->GetProfile();
 
   // Web app has limited toolbar space, thus always show kNormal state.
   if (web_app::AppBrowserController::IsWebApp(browser)) {
@@ -2619,7 +2620,7 @@ void AvatarToolbarButtonStateManager::MaybeShowSupervisedUserSignInIPH() {
     return;
   }
   signin::IdentityManager* const identity_manager =
-      IdentityManagerFactory::GetForProfile(browser_->profile());
+      IdentityManagerFactory::GetForProfile(browser_->GetProfile());
   CHECK(identity_manager);
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return;
@@ -2687,7 +2688,7 @@ void AvatarToolbarButtonStateManager::MaybeShowSignInBenefitsIPH() {
     return;
   }
 
-  Profile* profile = browser_->profile();
+  Profile* profile = browser_->GetProfile();
   CHECK(profile);
 
   // The IPH only concerns signed-in, non-syncing profiles.
@@ -2819,7 +2820,7 @@ void AvatarToolbarButtonStateManager::OnPrimaryAccountChanged(
       event_details.GetSetPrimaryAccountAccessPoint() ==
           signin_metrics::AccessPoint::kSigninChoiceRemembered) {
     GaiaId gaia_id = event_details.GetCurrentState().primary_account.gaia;
-    Profile* profile = browser_->profile();
+    Profile* profile = browser_->GetProfile();
     CHECK(profile);
     PrefService* prefs = profile->GetPrefs();
     CHECK(prefs);

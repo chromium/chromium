@@ -475,7 +475,7 @@ class ProfileMenuViewPixelTest
 
   void ClearAllSignedInDevices() {
     auto* device_info_service = static_cast<syncer::FakeDeviceInfoSyncService*>(
-        DeviceInfoSyncServiceFactory::GetForProfile(browser()->profile()));
+        DeviceInfoSyncServiceFactory::GetForProfile(browser()->GetProfile()));
     auto* device_info_tracker = device_info_service->GetDeviceInfoTracker();
 
     for (const auto& device : device_info_tracker->GetAllDeviceInfo()) {
@@ -564,13 +564,13 @@ class ProfileMenuViewPixelTest
         CreateIncognitoBrowser();
         new_browser = browser_created_observer->Wait();
         ASSERT_TRUE(new_browser);
-        ASSERT_TRUE(new_browser->profile()->IsIncognitoProfile());
+        ASSERT_TRUE(new_browser->GetProfile()->IsIncognitoProfile());
         break;
       case ProfileTypePixelTestParam::kGuest:
         CreateGuestBrowser();
         new_browser = browser_created_observer->Wait();
         ASSERT_TRUE(new_browser);
-        ASSERT_TRUE(new_browser->profile()->IsGuestSession());
+        ASSERT_TRUE(new_browser->GetProfile()->IsGuestSession());
         break;
     }
     browser_created_observer.reset();

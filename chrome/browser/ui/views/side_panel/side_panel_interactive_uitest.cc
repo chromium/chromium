@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
                   true));
 
   // Install an app using second_tab_url.
-  auto app_id = web_app::test::InstallDummyWebApp(browser()->profile(),
+  auto app_id = web_app::test::InstallDummyWebApp(browser()->GetProfile(),
                                                   "App Name", second_tab_url);
 
   // Move second_tab contents to app, simulating open pwa from omnibox intent
@@ -288,7 +288,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
   void SetUpOnMainThread() override {
     InteractiveFeaturePromoTest::SetUpOnMainThread();
     PinnedToolbarActionsModel* const actions_model =
-        PinnedToolbarActionsModel::Get(browser()->profile());
+        PinnedToolbarActionsModel::Get(browser()->GetProfile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
     actions_model->UpdatePinnedState(kActionTabSearch, false);
     views::test::WaitForAnimatingLayoutManager(
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(
       /*default_content_width_callback=*/base::NullCallback()));
 
   PinnedToolbarActionsModel* const actions_model =
-      PinnedToolbarActionsModel::Get(browser()->profile());
+      PinnedToolbarActionsModel::Get(browser()->GetProfile());
 
   actions_model->UpdatePinnedState(kActionSidePanelShowBookmarks, true);
 
@@ -819,12 +819,13 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       ShowSidePanelForKey(SidePanelEntryKey(SidePanelEntry::Id::kReadingList)),
       WaitForShow(kSidePanelElementId),
 
-      // Since ephemeral is disabled, no button for reading list should be added yet.
+      // Since ephemeral is disabled, no button for reading list should be added
+      // yet.
       CheckActionPinnedToToolbar(kActionSidePanelShowReadingList, false),
 
       // Pin reading list action.
       Do(([&]() {
-        PinnedToolbarActionsModel::Get(browser()->profile())
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
             ->UpdatePinnedState(kActionSidePanelShowReadingList, true);
       })),
 
@@ -834,11 +835,10 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
 
       // Unpin reading list action while open.
       Do(([&]() {
-        PinnedToolbarActionsModel::Get(browser()->profile())
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
             ->UpdatePinnedState(kActionSidePanelShowReadingList, false);
       })),
 
       // Verify it is no longer pinned and is removed from the toolbar.
-      CheckActionPinnedToToolbar(kActionSidePanelShowReadingList, false)
-  );
+      CheckActionPinnedToToolbar(kActionSidePanelShowReadingList, false));
 }

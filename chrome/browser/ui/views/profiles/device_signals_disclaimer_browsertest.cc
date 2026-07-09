@@ -277,16 +277,16 @@ class DeviceSignalsDisclaimerStartupInteractiveTest
     // Keep the profile alive so it does not get destroyed when all windows get
     // closed.
     profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
-        browser()->profile(), ProfileKeepAliveOrigin::kBrowserWindow);
+        browser()->GetProfile(), ProfileKeepAliveOrigin::kBrowserWindow);
 
     // Set up primary account as managed.
     auto* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
     signin::MakePrimaryAccountAvailable(identity_manager, "email@example.com",
                                         signin::ConsentLevel::kSignin);
 
     // Accept account management.
-    enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(),
+    enterprise_util::SetUserAcceptedAccountManagement(browser()->GetProfile(),
                                                       true);
 
     // Reset permanent consent preference to false.
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupInteractiveTest,
 
   // Verify the dialog closed and the preference is true.
   destroyed_waiter.Wait();
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
 }
 
@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupInteractiveTest,
 
   EXPECT_TRUE(ShowsModalDialog(browser()));
   // Verify consent was not granted since the disclaimer was interrupted.
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
 
   views::NamedWidgetShownWaiter next_dialog_waiter(
@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupInteractiveTest,
   // Open a second browser and wait for the dialog there too.
   views::NamedWidgetShownWaiter new_widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "SigninViewControllerDelegateViews");
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  Browser* new_browser = CreateBrowser(browser()->GetProfile());
   views::Widget* new_widget = new_widget_waiter.WaitIfNeededAndGet();
   ASSERT_TRUE(new_widget);
   content::WebContents* dialog_contents2 =
@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupInteractiveTest,
   // Verify both dialogs closed and the preference is true.
   destroyed_waiter1.Wait();
   destroyed_waiter2.Wait();
-  EXPECT_TRUE(new_browser->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(new_browser->GetProfile()->GetPrefs()->GetBoolean(
       device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
 }
 
@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupInteractiveTest,
   // Open a second browser and wait for the dialog there too.
   views::NamedWidgetShownWaiter new_widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "SigninViewControllerDelegateViews");
-  std::ignore = CreateBrowser(browser()->profile());
+  std::ignore = CreateBrowser(browser()->GetProfile());
   views::Widget* new_widget = new_widget_waiter.WaitIfNeededAndGet();
   ASSERT_TRUE(new_widget);
 
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupInteractiveTest,
   // Open a second browser and wait for the dialog there too.
   views::NamedWidgetShownWaiter new_widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "SigninViewControllerDelegateViews");
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  Browser* new_browser = CreateBrowser(browser()->GetProfile());
   views::Widget* new_widget = new_widget_waiter.WaitIfNeededAndGet();
   ASSERT_TRUE(new_widget);
 
@@ -500,6 +500,6 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupInteractiveTest,
 
   // Verify the second dialog closed and the preference is true.
   destroyed_waiter2.Wait();
-  EXPECT_TRUE(new_browser->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(new_browser->GetProfile()->GetPrefs()->GetBoolean(
       device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
 }

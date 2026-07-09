@@ -163,7 +163,8 @@ class SendTabToSelfBubbleControllerBrowserTest : public SigninBrowserTestBase {
 
   StubSendTabToSelfSyncService* GetStubSyncService() {
     return static_cast<StubSendTabToSelfSyncService*>(
-        SendTabToSelfSyncServiceFactory::GetForProfile(browser()->profile()));
+        SendTabToSelfSyncServiceFactory::GetForProfile(
+            browser()->GetProfile()));
   }
 
  protected:
@@ -293,7 +294,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
   StubSendTabToSelfSyncService* sync_service =
       static_cast<StubSendTabToSelfSyncService*>(
-          SendTabToSelfSyncServiceFactory::GetForProfile(browser()->profile()));
+          SendTabToSelfSyncServiceFactory::GetForProfile(
+              browser()->GetProfile()));
   ASSERT_TRUE(sync_service);
 
   SendTabToSelfBubbleController* controller =
@@ -407,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastDisabledBrowserTest,
   sync_service->GetFakeSendTabToSelfModel()->SetIsReady(false);
 
   // Use NotificationDisplayServiceTester to monitor notifications.
-  NotificationDisplayServiceTester notification_tester(browser()->profile());
+  NotificationDisplayServiceTester notification_tester(browser()->GetProfile());
 
   SendTabToSelfBubbleController* controller =
       SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);

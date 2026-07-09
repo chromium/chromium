@@ -72,9 +72,9 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     ui::TestClipboard::CreateForCurrentThread();
     notification_tester_ = std::make_unique<NotificationDisplayServiceTester>(
-        browser()->profile());
+        browser()->GetProfile());
     sharing_service_ =
-        SharingServiceFactory::GetForBrowserContext(browser()->profile());
+        SharingServiceFactory::GetForBrowserContext(browser()->GetProfile());
     auto* remote_copy_handler = static_cast<RemoteCopyMessageHandler*>(
         sharing_service_->GetSharingHandlerForTesting(
             components_sharing_message::SharingMessage::kRemoteCopyMessage));

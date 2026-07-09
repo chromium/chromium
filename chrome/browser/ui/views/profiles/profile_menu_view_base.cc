@@ -429,7 +429,7 @@ class ProfileMenuViewBase::AXMenuWidgetObserver : public views::WidgetObserver {
 ProfileMenuViewBase::ProfileMenuViewBase(views::BubbleAnchor anchor_element,
                                          Browser* browser)
     : BubbleDialogDelegateView(anchor_element, views::BubbleBorder::TOP_RIGHT),
-      profile_(raw_ref<Profile>::from_ptr(browser->profile())),
+      profile_(raw_ref<Profile>::from_ptr(browser->GetProfile())),
       close_bubble_helper_(this, browser->tab_strip_model()) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_margins(gfx::Insets(0));

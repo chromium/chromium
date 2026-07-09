@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelWebUIViewTest,
             webui::GetBrowserWindowInterface(side_panel_webui_contents));
 
   // Create another browser as a test interference.
-  Browser* another_browser = CreateBrowser(browser()->profile());
+  Browser* another_browser = CreateBrowser(browser()->GetProfile());
   EXPECT_TRUE(another_browser);
   EXPECT_NE(browser(), another_browser);
 
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelWebUIViewTest,
 
   // A new browser instance is created as a confounding variable, and it should
   // not interfere with API calls in the `side_panel_webui_contents`.
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  Browser* new_browser = CreateBrowser(browser()->GetProfile());
   EXPECT_TRUE(new_browser);
   new_browser->OpenGURL(GURL(kTestUrl1ForNewBrowser),
                         WindowOpenDisposition::CURRENT_TAB);

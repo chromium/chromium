@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
                                         new_profile);
   EXPECT_TRUE(browser_future.Wait());
   Browser* new_browser = browser_future.Get();
-  EXPECT_EQ(new_browser->profile(), new_profile);
+  EXPECT_EQ(new_browser->GetProfile(), new_profile);
 
   base::UserActionTester action_tester;
   views::NamedWidgetShownWaiter widget_waiter(

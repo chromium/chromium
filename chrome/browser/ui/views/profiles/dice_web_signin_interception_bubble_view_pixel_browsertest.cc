@@ -364,7 +364,8 @@ class DiceWebSigninInterceptionBubblePixelTest
 
   void ShowUi(const std::string& name) override {
     policy::ScopedManagementServiceOverrideForTesting browser_management(
-        policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+        policy::ManagementServiceFactory::GetForProfile(
+            browser()->GetProfile()),
         GetParam().management_authority);
     policy::ScopedManagementServiceOverrideForTesting
         platform_browser_management(
@@ -384,7 +385,7 @@ class DiceWebSigninInterceptionBubblePixelTest
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()
-            .GetProfileAttributesWithPath(browser()->profile()->GetPath());
+            .GetProfileAttributesWithPath(browser()->GetProfile()->GetPath());
     DCHECK(entry);
     entry->SetProfileThemeColors(colors);
 

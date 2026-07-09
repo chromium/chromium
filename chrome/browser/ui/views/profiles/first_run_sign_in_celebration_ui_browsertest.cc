@@ -100,7 +100,7 @@ class FirstRunSignInCelebrationPixelTest
     SignInWithAccount();
 
     auto* view = new ProfileManagementStepTestView(
-        ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
+        ProfilePicker::Params::ForFirstRun(browser()->GetProfile()->GetPath(),
                                            base::DoNothing()),
         ProfileManagementFlowController::Step::kIntro,
         /*step_controller_factory=*/

@@ -429,13 +429,15 @@ class ProfilePickerUIPixelTest
                      ? ProfileStatus::kSignedInManagedAiSubscription
                      : ProfileStatus::kSignedInAiSubscription;
       }
-      SetSigninProfileProperties(browser()->profile(), status, is_glic_version);
+      SetSigninProfileProperties(browser()->GetProfile(), status,
+                                 is_glic_version);
     }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     if (GetParam().is_enterprise_badging_enabled) {
       policy::ScopedManagementServiceOverrideForTesting platform_management(
-          policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+          policy::ManagementServiceFactory::GetForProfile(
+              browser()->GetProfile()),
           policy::EnterpriseManagementAuthority::CLOUD);
       browser()->profile()->GetPrefs()->SetString(
           prefs::kEnterpriseCustomLabelForProfile, "Work");
@@ -476,7 +478,7 @@ class ProfilePickerUIPixelTest
             ? ProfilePicker::Params::ForGlicManager(base::DoNothing())
             : ProfilePicker::Params::ForTesting(
                   ProfilePicker::EntryPoint::kOnStartup,
-                  browser()->profile()->GetPath());
+                  browser()->GetProfile()->GetPath());
 
     if (!GetParam().is_profile_picker_first_run) {
       ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(

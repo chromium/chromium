@@ -303,7 +303,7 @@ class ProfileMenuViewTestBase {
     CHECK(override_testing_factories_);
     auto* device_info_service = static_cast<syncer::FakeDeviceInfoSyncService*>(
         DeviceInfoSyncServiceFactory::GetForProfile(
-            target_browser_->profile()));
+            target_browser_->GetProfile()));
     auto* device_info_tracker = device_info_service->GetDeviceInfoTracker();
 
     for (const auto& device : device_info_tracker->GetAllDeviceInfo()) {
@@ -738,7 +738,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, OpenLogoutTab) {
   EXPECT_EQ(1, tab_strip->active_index());
   content::WebContents* logout_page = tab_strip->GetActiveWebContents();
   EXPECT_EQ(logout_page->GetURL(), GetExpectedLogoutURL());
-  EXPECT_FALSE(IdentityManagerFactory::GetForProfile(browser()->profile())
+  EXPECT_FALSE(IdentityManagerFactory::GetForProfile(browser()->GetProfile())
                    ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
 
@@ -759,7 +759,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, SignoutFromNTP) {
   EXPECT_EQ(1, tab_strip->count());
   content::WebContents* logout_page = tab_strip->GetActiveWebContents();
   EXPECT_EQ(logout_page->GetURL(), GetExpectedLogoutURL());
-  EXPECT_FALSE(IdentityManagerFactory::GetForProfile(browser()->profile())
+  EXPECT_FALSE(IdentityManagerFactory::GetForProfile(browser()->GetProfile())
                    ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
 
@@ -853,7 +853,7 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuViewSignoutTestWithNetwork, Signout) {
   // If there is a load error, the token is deleted locally, otherwise nothing
   // happens because we rely on Gaia to perform the signout.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   EXPECT_EQ(identity_manager->HasAccountWithRefreshToken(account_id()),
             !has_network_error());
   EXPECT_FALSE(
@@ -900,7 +900,7 @@ class ProfileMenuViewSyncErrorButtonTest : public ProfileMenuViewTestBase,
 
     // Add an account.
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
     account_info_ = signin::MakePrimaryAccountAvailable(
         identity_manager, kTestEmail, signin::ConsentLevel::kSync);
     signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
@@ -969,7 +969,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncServiceUnavailableTest,
                        DoesNotCrashWhenSyncPaused) {
   // Add an account with sync consent.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   CoreAccountInfo account_info = signin::MakePrimaryAccountAvailable(
       identity_manager, kTestEmail, signin::ConsentLevel::kSync);
 
@@ -999,7 +999,7 @@ class ProfileMenuViewWebOnlyTest : public ProfileMenuViewTestBase,
 
     // Add an account, not signed in.
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
     account_info_ = identity_test_env()->MakeAccountAvailable(
         kTestEmail,
         {.primary_account_consent_level = std::nullopt, .set_cookie = true});
@@ -1043,14 +1043,14 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, ContinueAs) {
       signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
 
   if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    EXPECT_CALL(
-        mock_signin_ui_delegate,
-        ShowHistorySyncOptinUI(browser()->profile(), account_info_.account_id,
-                               expected_access_point));
+    EXPECT_CALL(mock_signin_ui_delegate,
+                ShowHistorySyncOptinUI(browser()->GetProfile(),
+                                       account_info_.account_id,
+                                       expected_access_point));
   } else {
     EXPECT_CALL(
         mock_signin_ui_delegate,
-        ShowTurnSyncOnUI(browser()->profile(), expected_access_point,
+        ShowTurnSyncOnUI(browser()->GetProfile(), expected_access_point,
                          signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
                          account_info_.account_id,
                          TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
@@ -1059,7 +1059,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, ContinueAs) {
   }
 
   ClickSigninButton();
-  EXPECT_EQ(IdentityManagerFactory::GetForProfile(browser()->profile())
+  EXPECT_EQ(IdentityManagerFactory::GetForProfile(browser()->GetProfile())
                 ->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
             account_info_.account_id);
 
@@ -1094,7 +1094,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest,
 
   // Add an account, not signed in, and allowed to sign in.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   AccountInfo allowed_account = signin::MakeAccountAvailable(
       identity_manager,
       signin::AccountAvailabilityOptionsBuilder()
@@ -1513,7 +1513,7 @@ constexpr std::array kActionableItems_SingleProfileWithCustomName = {
 
 PROFILE_MENU_CLICK_TEST(kActionableItems_SingleProfileWithCustomName,
                         ProfileMenuClickTest_SingleProfileWithCustomName) {
-  profiles::UpdateProfileName(browser()->profile(), u"Custom name");
+  profiles::UpdateProfileName(browser()->GetProfile(), u"Custom name");
   RunTest();
 }
 
@@ -1539,7 +1539,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
         switches::kCrossDeviceSigninFromDesktop,
         syncer::kReplaceSyncPromosWithSignInPromos}),
     /*disabled_features=*/{}) {
-  profiles::UpdateProfileName(browser()->profile(), u"Custom name");
+  profiles::UpdateProfileName(browser()->GetProfile(), u"Custom name");
   Signin();
   // Clears all the other signed in device to make sure the cross sign-in promo
   // can be shown.
@@ -1567,12 +1567,13 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     ProfileMenuClickTest_ManagedProfile,
     /*enabled_features=*/{features::kEnterpriseProfileBadgingForMenu},
     /*disabled_features=*/{}) {
-  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->GetProfile(),
+                                                    true);
   std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
       scoped_browser_management_ =
           std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
               policy::ManagementServiceFactory::GetForProfile(
-                  browser()->profile()),
+                  browser()->GetProfile()),
               policy::EnterpriseManagementAuthority::CLOUD);
   RunTest();
 }
@@ -1601,7 +1602,7 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_MultipleProfiles,
   // Open a browser for another profile, and a second browser for the current
   // profile, so the kExitProfileButton is shown.
   Browser::Create(Browser::CreateParams(other_profile, /*user_gesture=*/true));
-  SetTargetBrowser(CreateBrowser(browser()->profile()));
+  SetTargetBrowser(CreateBrowser(browser()->GetProfile()));
   RunTest();
 }
 
@@ -1625,7 +1626,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     /*disabled_features=*/{}) {
   // Add an account, not signed in.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::AccountAvailabilityOptionsBuilder builder;
   AccountInfo account_info = signin::MakeAccountAvailable(
       identity_manager,
@@ -1663,7 +1664,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
         syncer::kReplaceSyncPromosWithSigninPromosNewSignin})) {
   // Add an account, not signed in.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::AccountAvailabilityOptionsBuilder builder;
   AccountInfo account_info = signin::MakeAccountAvailable(
       identity_manager,
@@ -1774,7 +1775,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     /*disabled_features=*/{}) {
   // Check that the setup was successful.
   ASSERT_FALSE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
+      browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
 
   RunTest();
 }
@@ -1810,7 +1811,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
         syncer::kReplaceSyncPromosWithSigninPromosNewSignin})) {
   // Check that the setup was successful.
   ASSERT_FALSE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
+      browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
 
   RunTest();
 }
@@ -1859,7 +1860,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 
   // Add an account, not signed in.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::AccountAvailabilityOptionsBuilder builder;
   AccountInfo account_info = signin::MakeAccountAvailable(
       identity_manager,
@@ -1921,7 +1922,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 
   // Add an account, not signed in.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::AccountAvailabilityOptionsBuilder builder;
   AccountInfo account_info = signin::MakeAccountAvailable(
       identity_manager,
@@ -1980,7 +1981,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 
   // Add an account, not signed in.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   AccountInfo disallowed_account = signin::MakeAccountAvailable(
       identity_manager,
       signin::AccountAvailabilityOptionsBuilder()
@@ -2055,7 +2056,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 
   // Add an account, not signed in.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   AccountInfo disallowed_account = signin::MakeAccountAvailable(
       identity_manager,
       signin::AccountAvailabilityOptionsBuilder()
@@ -2433,7 +2434,7 @@ constexpr std::array kActionableItems_IncognitoProfile = {
 
 PROFILE_MENU_CLICK_TEST(kActionableItems_IncognitoProfile,
                         ProfileMenuClickTest_IncognitoProfile) {
-  SetTargetBrowser(CreateIncognitoBrowser(browser()->profile()));
+  SetTargetBrowser(CreateIncognitoBrowser(browser()->GetProfile()));
 
   RunTest();
 }
@@ -2770,7 +2771,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest, SurveyProductDataBucketed) {
 
   // Add 6 accounts to the current profile.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
                                       signin::ConsentLevel::kSignin);
   signin::MakeAccountAvailable(identity_manager, "test1@example.com");
@@ -2994,7 +2995,7 @@ class ProfileMenuSigninAccessPointTest : public SigninBrowserTestBase {
     SigninBrowserTestBase::SetUpOnMainThread();
     // Add a signed in account.
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
     account_info_ = identity_test_env()->MakeAccountAvailable(
         kTestEmail,
         {.primary_account_consent_level = signin::ConsentLevel::kSignin,
@@ -3064,8 +3065,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
 
     EXPECT_CALL(
         mock_signin_ui_delegate_,
-        ShowHistorySyncOptinUI(browser()->profile(), account_info_.account_id,
-                               default_access_point));
+        ShowHistorySyncOptinUI(browser()->GetProfile(),
+                               account_info_.account_id, default_access_point));
     ASSERT_NO_FATAL_FAILURE(ClickSyncButton());
     histogram_tester.ExpectUniqueSample(
         "Profile.Menu.ClickedActionableItem",
@@ -3083,7 +3084,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
 
     EXPECT_CALL(
         mock_signin_ui_delegate_,
-        ShowTurnSyncOnUI(browser()->profile(), default_access_point,
+        ShowTurnSyncOnUI(browser()->GetProfile(), default_access_point,
                          signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
                          account_info_.account_id,
                          TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
@@ -3119,10 +3120,10 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
     histogram_tester.ExpectUniqueSample("Signin.HistorySyncOptIn.Offered",
                                         history_sync_avatar_promo_access_point,
                                         /*expected_bucket_count=*/1);
-    EXPECT_CALL(
-        mock_signin_ui_delegate_,
-        ShowHistorySyncOptinUI(browser()->profile(), account_info_.account_id,
-                               history_sync_avatar_promo_access_point));
+    EXPECT_CALL(mock_signin_ui_delegate_,
+                ShowHistorySyncOptinUI(browser()->GetProfile(),
+                                       account_info_.account_id,
+                                       history_sync_avatar_promo_access_point));
     ASSERT_NO_FATAL_FAILURE(ClickSyncButton());
     histogram_tester.ExpectUniqueSample(
         "Profile.Menu.ClickedActionableItem",
@@ -3140,7 +3141,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
 
     EXPECT_CALL(
         mock_signin_ui_delegate_,
-        ShowTurnSyncOnUI(browser()->profile(),
+        ShowTurnSyncOnUI(browser()->GetProfile(),
                          history_sync_avatar_promo_access_point,
                          signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
                          account_info_.account_id,

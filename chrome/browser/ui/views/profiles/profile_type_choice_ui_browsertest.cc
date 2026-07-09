@@ -101,7 +101,7 @@ class ProfileTypeChoiceUIPixelTest
     profile_picker_view_ = new ProfileManagementStepTestView(
         ProfilePicker::Params::ForTesting(
             ProfilePicker::EntryPoint::kProfileMenuAddNewProfile,
-            browser()->profile()->GetPath()),
+            browser()->GetProfile()->GetPath()),
         ProfileManagementFlowController::Step::kProfilePicker,
         /*step_controller_factory=*/
         base::BindLambdaForTesting(

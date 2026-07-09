@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, MultipleBrowsers) {
 
   // Open a new browser window. The extension's SidePanelEntry should also be
   // registered for the new window's global SidePanelRegistry.
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
   BrowserActions* browser_actions_second_browser =
       second_browser->browser_actions();
 
@@ -1090,7 +1090,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   }
 
   // Open a new browser window.
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
   TabStripModel* target_tab_strip = second_browser->tab_strip_model();
 
   // Detach the second tab from `browser()` and add it to the new browser.
@@ -1452,7 +1452,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
 
   // Open a tab in an incognito browser window to use.
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   ASSERT_TRUE(incognito_browser);
   int incognito_tab_id = ExtensionTabUtil::GetTabId(
       incognito_browser->tab_strip_model()->GetActiveWebContents());
@@ -1467,7 +1467,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
   // Run `sidePanel.open()` for the incognito profile. The panel should only
   // open in the incognito browser and not the non-incognito browser.
   RunOpenPanelForTabAndProfile(*extension, incognito_tab_id,
-                               incognito_browser->profile());
+                               incognito_browser->GetProfile());
   EXPECT_TRUE(
       incognito_panel_ui->IsSidePanelEntryShowing(GetKey(extension->id())));
   EXPECT_FALSE(
@@ -1776,7 +1776,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
 
   // Open an incognito browser window to use and get the window id.
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   ASSERT_TRUE(incognito_browser);
   int incognito_window_id = ExtensionTabUtil::GetWindowId(incognito_browser);
 
@@ -1790,7 +1790,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
   // Run `sidePanel.open()`. The panel should open in the active tab of the
   // incognito browser.
   RunOpenPanelForWindowAndProfile(*extension, incognito_window_id,
-                                  incognito_browser->profile());
+                                  incognito_browser->GetProfile());
   EXPECT_TRUE(
       incognito_panel_ui->IsSidePanelEntryShowing(GetKey(extension->id())));
   EXPECT_FALSE(
@@ -1910,7 +1910,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
                 /*enabled=*/true);
 
   // Open a second browser window.
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(second_browser);
   ui_test_utils::BrowserDidBecomeActiveWaiter(second_browser).Wait();
 
@@ -2710,7 +2710,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
   // The initial `browser()` will remain open to keep the process alive.
   // We create a new browser window to perform the test actions and then close.
   // Creating a new browser makes it the active one by default.
-  Browser* browser_to_close = CreateBrowser(browser()->profile());
+  Browser* browser_to_close = CreateBrowser(browser()->GetProfile());
 
   extensions::ResultCatcher result_catcher;
 

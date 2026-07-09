@@ -773,7 +773,7 @@ void ProfilePickerFlowController::OnSwitchToProfileComplete(
   if (pick_profile_complete_callback) {
     std::move(pick_profile_complete_callback).Run(true);
   }
-  Profile* profile = browser->profile();
+  Profile* profile = browser->GetProfile();
   TRACE_EVENT1("browser",
                "ProfilePickerFlowController::OnSwitchToProfileComplete",
                "profile_path", profile->GetPath().AsUTF8Unsafe());

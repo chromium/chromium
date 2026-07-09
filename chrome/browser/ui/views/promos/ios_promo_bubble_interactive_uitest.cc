@@ -127,10 +127,11 @@ class IOSPromoBubbleBrowserTest
           NOTREACHED();
       }
 
-      promos_utils::IOSDesktopPromoShown(browser()->profile(), promo_type);
-      IOSPromoBubble::ShowPromoBubble(
-          IOSPromoBubble::Anchor{anchor}, highlighted_button,
-          highlighted_element, browser()->profile(), promo_type, bubble_type);
+      promos_utils::IOSDesktopPromoShown(browser()->GetProfile(), promo_type);
+      IOSPromoBubble::ShowPromoBubble(IOSPromoBubble::Anchor{anchor},
+                                      highlighted_button, highlighted_element,
+                                      browser()->GetProfile(), promo_type,
+                                      bubble_type);
     });
   }
 

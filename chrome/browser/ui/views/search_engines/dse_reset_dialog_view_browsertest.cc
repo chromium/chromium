@@ -96,7 +96,7 @@ class DseResetDialogBrowserTest : public DialogBrowserTest {
   }
 
   DefaultSearchManager* default_search_manager() {
-    return TemplateURLServiceFactory::GetForProfile(browser()->profile())
+    return TemplateURLServiceFactory::GetForProfile(browser()->GetProfile())
         ->GetDefaultSearchManager();
   }
 

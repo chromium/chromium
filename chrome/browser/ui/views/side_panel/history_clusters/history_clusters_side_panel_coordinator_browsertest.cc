@@ -49,8 +49,8 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersSidePanelCoordinatorBrowserTest,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
   policy_provider()->UpdateChromePolicy(policies);
-  EXPECT_TRUE(
-      HistoryClustersSidePanelCoordinator::IsSupported(browser()->profile()));
+  EXPECT_TRUE(HistoryClustersSidePanelCoordinator::IsSupported(
+      browser()->GetProfile()));
   EXPECT_TRUE(history_clusters_coordinator->Show(std::string()));
 
   // Verify that history clusters does not show when disabled.
@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersSidePanelCoordinatorBrowserTest,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
   policy_provider()->UpdateChromePolicy(policies);
-  EXPECT_FALSE(
-      HistoryClustersSidePanelCoordinator::IsSupported(browser()->profile()));
+  EXPECT_FALSE(HistoryClustersSidePanelCoordinator::IsSupported(
+      browser()->GetProfile()));
   EXPECT_FALSE(history_clusters_coordinator->Show(std::string()));
 }

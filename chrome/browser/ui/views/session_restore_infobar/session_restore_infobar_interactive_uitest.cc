@@ -66,7 +66,7 @@ class SessionRestoreInfobarInteractiveTest
   void CreateInfobar(Browser* browser, bool is_post_crash_launch) {
     auto* controller =
         session_restore_infobar::SessionRestoreInfobarController::From(browser);
-    controller->MaybeShowInfoBar(*browser->profile(), is_post_crash_launch);
+    controller->MaybeShowInfoBar(*browser->GetProfile(), is_post_crash_launch);
   }
 
  private:
@@ -91,7 +91,7 @@ class SessionRestoreInfobarDefaultTest : public InteractiveBrowserTest {
   void CreateInfobar(Browser* browser, bool is_post_crash_launch) {
     auto* controller =
         session_restore_infobar::SessionRestoreInfobarController::From(browser);
-    controller->MaybeShowInfoBar(*browser->profile(), is_post_crash_launch);
+    controller->MaybeShowInfoBar(*browser->GetProfile(), is_post_crash_launch);
   }
 
  private:
@@ -116,7 +116,7 @@ class SessionRestoreInfobarDefaultOffTest : public InteractiveBrowserTest {
   void CreateInfobar(Browser* browser, bool is_post_crash_launch) {
     auto* controller =
         session_restore_infobar::SessionRestoreInfobarController::From(browser);
-    controller->MaybeShowInfoBar(*browser->profile(), is_post_crash_launch);
+    controller->MaybeShowInfoBar(*browser->GetProfile(), is_post_crash_launch);
   }
 
  private:
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
 IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
                        InfoBarNotShownWhenClearOnExit) {
   HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   host_content_settings_map->SetDefaultContentSetting(
       ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
 
