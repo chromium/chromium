@@ -4,6 +4,8 @@
 
 #include "ui/android/accelerator_manager_android.h"
 
+#include <android/input.h>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "ui/android/window_android.h"
@@ -67,6 +69,11 @@ bool AcceleratorManagerAndroid::ProcessKeyEvent(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_key_event) {
   KeyEventAndroid key_event_android(j_key_event);
+  // ui::KeyEvent will CHECK fail if the type is not one of these.
+  if (key_event_android.Action() != AKEY_EVENT_ACTION_DOWN &&
+      key_event_android.Action() != AKEY_EVENT_ACTION_UP) {
+    return false;
+  }
   ui::PlatformEvent native_event(key_event_android);
   ui::KeyEvent key_event(native_event);
   ui::Accelerator accelerator(key_event);
