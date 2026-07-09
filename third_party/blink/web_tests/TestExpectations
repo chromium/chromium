@@ -2835,7 +2835,7 @@ crbug.com/532638159 external/wpt/css/css-ui/outline-offset-inset-006.html [ Fail
 crbug.com/532607239 [ Linux ] external/wpt/navigation-api/navigate-event/reentry-from-focus-reset-navigate-api-tracker.html [ Crash ]
 crbug.com/532607239 [ Win ] external/wpt/navigation-api/navigate-event/reentry-from-focus-reset-navigate-api-tracker.html [ Crash ]
 crbug.com/532607239 [ Mac ] external/wpt/navigation-api/navigate-event/reentry-from-focus-reset-navigate-api-tracker.html [ Crash Pass ]
-crbug.com/532607239 [ Linux ] external/wpt/navigation-api/navigate-event/signal-abort-reentry-navigate-api-tracker.html [ Timeout ]
+crbug.com/532607239 [ Linux ] external/wpt/navigation-api/navigate-event/signal-abort-reentry-navigate-api-tracker.html [ Crash Timeout ]
 crbug.com/532607239 [ Mac ] external/wpt/navigation-api/navigate-event/signal-abort-reentry-navigate-api-tracker.html [ Crash Timeout ]
 crbug.com/532607239 [ Win ] external/wpt/navigation-api/navigate-event/signal-abort-reentry-navigate-api-tracker.html [ Crash Timeout ]
 crbug.com/532615208 external/wpt/webdriver/tests/bidi/browsing_context/start_screencast/context.py [ Failure ]
