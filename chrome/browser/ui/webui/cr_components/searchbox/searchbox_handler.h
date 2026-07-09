@@ -113,10 +113,12 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
   // searchbox::mojom::PageHandler:
   void OnFocusChanged(bool focused) override;
-  void QueryAutocomplete(const std::u16string& input,
+  void QueryAutocomplete(int32_t query_id,
+                         const std::u16string& input,
                          bool prevent_inline_autocomplete,
                          uint32_t cursor_position) override;
   void QueryAutocompleteWithSuggestInventory(
+      int32_t query_id,
       const std::u16string& input,
       bool prevent_inline_autocomplete,
       uint32_t cursor_position,
@@ -233,6 +235,12 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
+  // Tracks the ID of the latest query received from the page and sent to
+  // autocompletion. The ID is sent from the page along with the query details,
+  // and returned to the page along with the autocomplete result. The page uses
+  // it to filter out stale async results when it has began sending a new query
+  // that hasn't yet traversed the mojom layer yet.
+  int32_t current_query_id_ = -1;
   raw_ptr<OmniboxController> controller_;
   raw_ptr<Delegate> omnibox_delegate_;
 
@@ -253,6 +261,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                  base::TimeTicks match_selection_timestamp);
 
   searchbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
+      int32_t query_id,
       const std::u16string& input,
       const AutocompleteResult& result,
       const OmniboxEditModel* edit_model,

@@ -1507,15 +1507,17 @@ void ContextualSearchboxHandler::OnDriveDisclaimerAccepted() {
 }
 
 void ContextualSearchboxHandler::QueryAutocomplete(
+    int32_t query_id,
     const std::u16string& input,
     bool prevent_inline_autocomplete,
     uint32_t cursor_position) {
   QueryAutocompleteWithSuggestInventory(
-      input, prevent_inline_autocomplete, cursor_position,
+      query_id, input, prevent_inline_autocomplete, cursor_position,
       omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT);
 }
 
 void ContextualSearchboxHandler::QueryAutocompleteWithSuggestInventory(
+    int32_t query_id,
     const std::u16string& input,
     bool prevent_inline_autocomplete,
     uint32_t cursor_position,
@@ -1525,7 +1527,8 @@ void ContextualSearchboxHandler::QueryAutocompleteWithSuggestInventory(
   }
 
   SearchboxHandler::QueryAutocompleteWithSuggestInventory(
-      input, prevent_inline_autocomplete, cursor_position, suggest_inventory);
+      query_id, input, prevent_inline_autocomplete, cursor_position,
+      suggest_inventory);
 }
 
 void ContextualSearchboxHandler::OnContextUploadStatusChanged(

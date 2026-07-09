@@ -295,7 +295,8 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
         .Times(1)
         .WillOnce(SaveArg<0>(&input));
 
-    handler_->QueryAutocomplete(u"", /*prevent_inline_autocomplete=*/false, 0);
+    handler_->QueryAutocomplete(0, u"", /*prevent_inline_autocomplete=*/false,
+                                0);
 
     EXPECT_EQ(input_text, u"");
     EXPECT_EQ(input.text(), u"");
@@ -321,7 +322,8 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
         .Times(1)
         .WillOnce(SaveArg<0>(&input));
 
-    handler_->QueryAutocomplete(u"a", /*prevent_inline_autocomplete=*/false, 0);
+    handler_->QueryAutocomplete(0, u"a", /*prevent_inline_autocomplete=*/false,
+                                0);
 
     EXPECT_EQ(input_text, u"a");
     EXPECT_EQ(input.text(), u"a");
@@ -367,7 +369,7 @@ TEST_F(RealboxHandlerTest, AutocompleteController_StartWithSuggestInventory) {
         .WillOnce(SaveArg<0>(&input));
 
     handler_->QueryAutocompleteWithSuggestInventory(
-        u"a", /*prevent_inline_autocomplete=*/false, 0,
+        0, u"a", /*prevent_inline_autocomplete=*/false, 0,
         omnibox::SuggestInventory::SUGGEST_INVENTORY_TRAVEL);
 
     EXPECT_EQ(input_text, u"a");
@@ -600,7 +602,8 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     EXPECT_CALL(*lens_searchbox_client_, GetLensSuggestInputs())
         .WillRepeatedly(Return(suggest_inputs));
 
-    handler_->QueryAutocomplete(u"", /*prevent_inline_autocomplete=*/false, 0);
+    handler_->QueryAutocomplete(0, u"", /*prevent_inline_autocomplete=*/false,
+                                0);
 
     EXPECT_EQ(input_text, u"");
     EXPECT_EQ(input.text(), u"");
@@ -652,7 +655,8 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     EXPECT_CALL(*lens_searchbox_client_, GetLensSuggestInputs())
         .WillRepeatedly(Return(suggest_inputs));
 
-    handler_->QueryAutocomplete(u"a", /*prevent_inline_autocomplete=*/false, 0);
+    handler_->QueryAutocomplete(0, u"a", /*prevent_inline_autocomplete=*/false,
+                                0);
 
     EXPECT_EQ(input_text, u"a");
     EXPECT_EQ(input.text(), u"a");

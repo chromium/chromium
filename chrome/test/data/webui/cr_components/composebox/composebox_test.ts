@@ -91,6 +91,7 @@ suite('ComposeboxTest', () => {
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
           matches: matches,
+          queryId: composebox.activeQueryId,
         }));
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
@@ -136,6 +137,7 @@ suite('ComposeboxTest', () => {
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
           matches: matches,
+          queryId: composebox.activeQueryId,
         }));
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();

@@ -287,7 +287,8 @@ suite('SearchboxMixinTest', () => {
 
     const matches = [createSearchMatchForTesting(), createUrlMatch()];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
-      input: 'h',  // Simulate stale response.
+      queryId: element.activeQueryId - 1,  // Simulate stale response.
+      input: 'h',
       matches: matches,
     }));
     await microtasksFinished();
@@ -296,12 +297,45 @@ suite('SearchboxMixinTest', () => {
     assertEquals(null, element.result);
   });
 
+  test(
+      'stale response with matching input but different queryId is ignored',
+      async () => {
+        const mockInput = element.getInputElement();
+
+        // Query 0: type 'a'
+        await simulateUserTextInput(mockInput, 'a');
+        assertEquals(0, element.activeQueryId);
+
+        // Query 1: type 'b'
+        await simulateUserTextInput(mockInput, 'ab');
+        assertEquals(1, element.activeQueryId);
+
+        // Query 2: backspace to 'a'
+        await simulateUserTextInput(mockInput, 'a');
+        assertEquals(2, element.activeQueryId);
+
+        // Receive results for query 0. Even though `lastQueriedInput` matches,
+        // it should be discarded as stale.
+        const matches = [createSearchMatchForTesting(), createUrlMatch()];
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: 0,
+          input: 'a',
+          matches: matches,
+        }));
+        await microtasksFinished();
+
+        // Check it's ignored.
+        assertFalse(element.dropdownIsVisible);
+        assertEquals(null, element.result);
+      });
+
   test('arrow events are sent to handler', async () => {
     const inputElement = element.getInputElement();
     await simulateUserTextInput(inputElement, 'he');
 
     const matches = [createSearchMatchForTesting()];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: 'he',
       matches: matches,
     }));
@@ -346,6 +380,7 @@ suite('SearchboxMixinTest', () => {
     mockInput.inputElement.value = '';
     element.queryAutocomplete('', false);
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: '',
       matches: [createSearchMatchForTesting()],
     }));
@@ -434,6 +469,7 @@ suite('SearchboxMixinTest', () => {
       createUrlMatch(),
     ];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: 'hello ',
       matches: matches,
     }));
@@ -460,6 +496,7 @@ suite('SearchboxMixinTest', () => {
     const mockInput = element.getInputElement();
     await simulateUserTextInput(mockInput, 'hello ');
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: 'hello ',
       matches: [createSearchMatchForTesting()],
     }));
@@ -482,6 +519,7 @@ suite('SearchboxMixinTest', () => {
       createUrlMatch({supportsDeletion: true}),
     ];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: 'hello',
       matches: matches,
     }));
@@ -510,6 +548,7 @@ suite('SearchboxMixinTest', () => {
 
     const matches = [createUrlMatch({supportsDeletion: true})];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: 'hello',
       matches: matches,
     }));
@@ -531,6 +570,7 @@ suite('SearchboxMixinTest', () => {
 
     const matches = [createSearchMatchForTesting(), createUrlMatch()];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: 'hello',
       matches: matches,
     }));
@@ -577,6 +617,7 @@ suite('SearchboxMixinTest', () => {
           createUrlMatch(),
         ];
         element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
           input: 'hello',
           matches: matches,
         }));
@@ -602,6 +643,7 @@ suite('SearchboxMixinTest', () => {
 
     const matches = [createSearchMatchForTesting(), createUrlMatch()];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: 'hello',
       matches: matches,
     }));
@@ -624,6 +666,7 @@ suite('SearchboxMixinTest', () => {
 
     const matches = [createSearchMatchForTesting(), createUrlMatch()];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: 'hello',
       matches: matches,
     }));
@@ -669,6 +712,7 @@ suite('SearchboxMixinTest', () => {
     const mockInput = element.getInputElement();
     await simulateUserTextInput(mockInput, 'clear');
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: 'clear',
       matches: matches,
     }));
@@ -710,6 +754,7 @@ suite('SearchboxMixinTest', () => {
       supportsDeletion: true,
     })];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: 'hello',
       matches: matches,
     }));
@@ -739,6 +784,7 @@ suite('SearchboxMixinTest', () => {
           {supportsDeletion: true, destinationUrl: 'https://url2.com'}),
     ];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: 'hello',
       matches: matches,
     }));
@@ -756,6 +802,7 @@ suite('SearchboxMixinTest', () => {
     await testProxy.handler.whenCalled('deleteAutocompleteMatch');
 
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: 'hello',
       matches: [matches[1]!],
     }));
@@ -778,6 +825,7 @@ suite('SearchboxMixinTest', () => {
     const mockInput = element.getInputElement();
     await simulateUserTextInput(mockInput, 'When is Christmas Day');
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: 'When is Christmas Day',
       matches: matches,
     }));
@@ -803,6 +851,7 @@ suite('SearchboxMixinTest', () => {
       createUrlMatch(),
     ];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: mockInput.inputElement.value.trimStart(),
       matches: matches,
     }));
@@ -839,6 +888,7 @@ suite('SearchboxMixinTest', () => {
       inlineAutocompletion: 'world',
     })];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: mockInput.inputElement.value.trimStart(),
       matches: matches,
     }));
@@ -896,6 +946,7 @@ suite('SearchboxMixinTest', () => {
       contents: 'hello',
     })];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: mockInput.inputElement.value.trimStart(),
       matches: matches,
     }));
@@ -914,6 +965,7 @@ suite('SearchboxMixinTest', () => {
 
     const matches = [createSearchMatchForTesting(), createUrlMatch()];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: mockInput.inputElement.value.trimStart(),
       matches: matches,
     }));
@@ -926,6 +978,7 @@ suite('SearchboxMixinTest', () => {
 
     await simulateUserTextInput(mockInput, 'hell');
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: mockInput.inputElement.value.trimStart(),
     }));
     await microtasksFinished();
@@ -937,6 +990,7 @@ suite('SearchboxMixinTest', () => {
 
     await simulateUserTextInput(mockInput, 'hello');
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: mockInput.inputElement.value.trimStart(),
       matches: matches,
     }));
@@ -964,6 +1018,7 @@ suite('SearchboxMixinTest', () => {
 
     const matches = [createSearchMatchForTesting(), createUrlMatch()];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: '',
       matches: matches,
     }));
@@ -1013,6 +1068,7 @@ suite('SearchboxMixinTest', () => {
 
     const matches = [createSearchMatchForTesting(), createUrlMatch()];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       matches: matches,
     }));
     await microtasksFinished();
@@ -1141,6 +1197,7 @@ suite('SearchboxMixinTest', () => {
     await simulateUserTextInput(mockInput, '2 + 3');
 
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: mockInput.inputElement.value.trimStart(),
       matches: matches,
     }));
@@ -1192,6 +1249,7 @@ suite('SearchboxMixinTest', () => {
       }),
     ];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: mockInput.inputElement.value.trimStart(),
       matches: matches,
     }));
@@ -1232,6 +1290,7 @@ suite('SearchboxMixinTest', () => {
           createUrlMatch(),
         ];
         element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
           input: mockInput.inputElement.value.trimStart(),
           matches: matches,
         }));
@@ -1289,6 +1348,7 @@ suite('SearchboxMixinTest', () => {
 
     const matches = [createSearchMatchForTesting(), createUrlMatch()];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: mockInput.inputElement.value.trimStart(),
       matches: matches,
     }));
@@ -1320,6 +1380,7 @@ suite('SearchboxMixinTest', () => {
           createUrlMatch(),
         ];
         element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
           input: '',
           matches: matches,
         }));
@@ -1373,6 +1434,7 @@ suite('SearchboxMixinTest', () => {
       createUrlMatch(),
     ];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: mockInput.inputElement.value.trimStart(),
       matches: matches,
     }));
@@ -1392,6 +1454,7 @@ suite('SearchboxMixinTest', () => {
     assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
 
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: mockInput.inputElement.value.trimStart(),
       matches: matches,
     }));
@@ -1416,6 +1479,7 @@ suite('SearchboxMixinTest', () => {
 
         const matches = [createSearchMatchForTesting(), createUrlMatch()];
         element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
           input: mockInput.inputElement.value.trimStart(),
           matches: matches,
         }));
@@ -1462,6 +1526,7 @@ suite('SearchboxMixinTest', () => {
         mockInput.inputElement.dispatchEvent(new MouseEvent(
             'mousedown', {button: 0, bubbles: true, composed: true}));
         element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
           matches: matches,
         }));
         await microtasksFinished();
@@ -1499,6 +1564,7 @@ suite('SearchboxMixinTest', () => {
       supportsDeletion: true,
     })];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
       input: mockInput.inputElement.value.trimStart(),
       matches: matches,
     }));

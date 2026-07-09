@@ -70,6 +70,9 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         'Unknown';
     accessor searchboxAriaDescription: string = '';
     accessor dropdownIsVisible: boolean = false;
+    // Tracks the latest query sent for autocompletion. Used to filter out stale
+    // results.
+    activeQueryId: number = -1;
     accessor lastQueriedInput: string|null = null;
     accessor multiLineEnabled: boolean = false;
     accessor result: AutocompleteResult|null = null;
@@ -136,12 +139,14 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       this.getDropdownElement().unselect();
       this.pageHandler().stopAutocomplete(/*clearResult=*/ true);
       // Autocomplete sends updates once it is stopped. Invalidate those results
-      // by setting the |this.lastQueriedInput| to its default value.
+      // by setting `activeQueryId` to -1.
+      this.activeQueryId = -1;
       this.lastQueriedInput = null;
     }
 
     queryAutocomplete(
         input: string, preventInlineAutocomplete: boolean = false) {
+      this.activeQueryId++;
       this.lastQueriedInput = input;
 
       preventInlineAutocomplete = preventInlineAutocomplete ||
@@ -156,7 +161,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           this.getInputElement().inputElement.selectionStart || 0 :
           input.length;
       this.pageHandler().queryAutocomplete(
-          input, preventInlineAutocomplete, cursorPosition);
+          this.activeQueryId, input, preventInlineAutocomplete, cursorPosition);
 
       this.dispatchEvent(new CustomEvent('query-autocomplete', {
         bubbles: true,
@@ -183,8 +188,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     }
 
     isAutocompleteResultStale(result: AutocompleteResult): boolean {
-      return this.lastQueriedInput === null ||
-          this.lastQueriedInput.trimStart() !== result.input;
+      return result.queryId !== this.activeQueryId;
     }
 
     updateDropdownVisibility(): void {
@@ -373,10 +377,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         if (!array.includes(e.target as HTMLElement)) {
           return;
         }
-        const currentInput = this.result?.input;
-        const lastQueriedInput = this.lastQueriedInput?.trimStart();
-        if (currentInput !== undefined && lastQueriedInput !== undefined &&
-            lastQueriedInput === currentInput) {
+        if (this.result?.queryId === this.activeQueryId) {
           if (this.selectedMatch) {
             this.navigateToMatch(this.selectedMatchIndex, e);
           }
@@ -484,6 +485,7 @@ export interface SearchboxMixinInterface {
   dropdownIsVisible: boolean;
   initialInputScrollHeight: number;
   inputAriaLive: string;
+  activeQueryId: number;
   lastQueriedInput: string|null;
   multiLineEnabled: boolean;
   result: AutocompleteResult|null;

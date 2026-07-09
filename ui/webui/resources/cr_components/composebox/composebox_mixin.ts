@@ -321,6 +321,9 @@ export const ComposeboxEmbedderMixin =
         accessor uploadButtonDisabled: boolean = false;
         showTypedSuggest: boolean =
             loadTimeData.getBoolean('composeboxShowTypedSuggest');
+        // Tracks the latest query sent for autocompletion. Used to filter out
+        // stale results.
+        activeQueryId: number = -1;
         lastQueriedInput: string = '';
         haveReceivedSynchronousAutocompleteResponse: boolean = false;
         lensSendRawFileMediaTypesEnabled: boolean =
@@ -705,7 +708,7 @@ export const ComposeboxEmbedderMixin =
           if (this.submitting) {
             return;
           }
-          if (this.lastQueriedInput.trimStart() !== result.input) {
+          if (result.queryId !== this.activeQueryId) {
             return;
           }
 
@@ -1292,6 +1295,7 @@ export const ComposeboxEmbedderMixin =
           const mode = state.mode ?? ToolMode.kUnspecified;
           let model = state.model ?? ModelMode.kUnspecified;
 
+          this.activeQueryId = -1;
           if (text) {
             this.input = text;
             this.lastQueriedInput = text;
@@ -1572,6 +1576,7 @@ export const ComposeboxEmbedderMixin =
 
         clearInput() {
           this.input = '';
+          this.activeQueryId = -1;
           this.lastQueriedInput = '';
           this.getDropdownElement().unselect();
         }
@@ -1894,6 +1899,7 @@ export const ComposeboxEmbedderMixin =
           if (clearMatches) {
             this.clearAutocompleteMatches();
           }
+          this.activeQueryId++;
           this.lastQueriedInput = this.input;
           this.haveReceivedSynchronousAutocompleteResponse = false;
           // Get the cursor position from the DOM. Since DOM updates are async
@@ -1906,7 +1912,7 @@ export const ComposeboxEmbedderMixin =
               this.getInputElement().inputElement.selectionStart || 0 :
               this.input.length;
           this.getSearchboxHandler().queryAutocompleteWithSuggestInventory(
-              this.input, false, cursorPosition,
+              this.activeQueryId, this.input, false, cursorPosition,
               this.suggestInventory ?? SuggestInventory.kDefault);
         }
 
@@ -1918,6 +1924,7 @@ export const ComposeboxEmbedderMixin =
           // Autocomplete sends updates once it is stopped. Invalidate those
           // results by setting the |this.lastQueriedInput| to its default
           // value.
+          this.activeQueryId = -1;
           this.lastQueriedInput = '';
         }
 
@@ -2630,6 +2637,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   searchboxListenerIds: number[];
   showTypedSuggest: boolean;
   tabFaviconChipsToCoinsEnabled: boolean;
+  activeQueryId: number;
   lastQueriedInput: string;
   haveReceivedSynchronousAutocompleteResponse: boolean;
   lensSendRawFileMediaTypesEnabled: boolean;

@@ -138,6 +138,7 @@ suite('ComposeboxSmartComposeSubmitTest', () => {
     testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
+          queryId: testProxy.element.activeQueryId,
           input: 'test',
           matches,
           smartComposeInlineHint: hint,
@@ -177,6 +178,7 @@ suite('ComposeboxSmartComposeSubmitTest', () => {
     testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
+          queryId: testProxy.element.activeQueryId,
           input: 'test hint',
           matches,
           smartComposeInlineHint: hint2,
@@ -213,6 +215,7 @@ suite('ComposeboxSmartComposeSubmitTest', () => {
     testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
+          queryId: testProxy.element.activeQueryId,
           input: 'test hint and more',
           matches,
         }));

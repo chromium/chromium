@@ -57,6 +57,7 @@ export function createAutocompleteMatch(
 export function createAutocompleteResultForTesting(
     modifiers: Partial<AutocompleteResult> = {}): AutocompleteResult {
   const base: AutocompleteResult = {
+    queryId: 0,
     input: '',
     matches: [],
     suggestionGroupsMap: {},
