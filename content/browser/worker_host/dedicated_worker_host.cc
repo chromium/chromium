@@ -857,16 +857,23 @@ void DedicatedWorkerHost::BindCacheStorage(
 void DedicatedWorkerHost::CreateNestedDedicatedWorker(
     mojo::PendingReceiver<blink::mojom::DedicatedWorkerHostFactory> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RenderFrameHost* ancestor_render_frame_host =
+      ancestor_document_.AsRenderFrameHostIfValid();
+  if (!ancestor_render_frame_host) {
+    // The ancestor frame may have already been closed. In that case, the worker
+    // will soon be terminated too, so abort the connection.
+    return;
+  }
+
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter =
       GetWorkerCoepReporter();
 
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<DedicatedWorkerHostFactoryImpl>(
-          worker_process_host_->GetID(), /*creator=*/token_, ancestor_document_,
-          GetWorkerStorageKey(), isolation_info_,
-          worker_client_security_state_->Clone(), creator_policies_,
-          creator_coep_reporter, network_restrictions_id_),
-      std::move(receiver));
+  DedicatedWorkerHostFactoryImpl::Create(
+      *ancestor_render_frame_host, std::move(receiver),
+      worker_process_host_->GetID(), /*creator=*/token_, ancestor_document_,
+      GetWorkerStorageKey(), isolation_info_,
+      worker_client_security_state_->Clone(), creator_policies_,
+      creator_coep_reporter, network_restrictions_id_);
 }
 
 void DedicatedWorkerHost::CreateIdleManager(

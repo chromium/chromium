@@ -18,6 +18,7 @@
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/dedicated_worker_host_factory_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
@@ -27,7 +28,6 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/isolation_info.h"
 #include "net/storage_access_api/status.h"
@@ -62,17 +62,15 @@ class MockDedicatedWorker
         GURL(), std::nullopt, std::nullopt, base::UnguessableToken::Create(),
         net::NetworkAnonymizationKey());
 
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<DedicatedWorkerHostFactoryImpl>(
-            worker_process_id, /*creator=*/render_frame_host_id,
-            RenderFrameHostImpl::FromID(render_frame_host_id)
-                ->GetWeakDocumentPtr(),
-            blink::StorageKey::CreateFirstParty(origin),
-            net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-            network::mojom::ClientSecurityState::New(),
-            PolicyContainerPolicies(), coep_reporter->GetWeakPtr(),
-            network::GetTestNetworkRestrictionsId()),
-        factory_.BindNewPipeAndPassReceiver());
+    DedicatedWorkerHostFactoryImpl::Create(
+        *RenderFrameHostImpl::FromID(render_frame_host_id),
+        factory_.BindNewPipeAndPassReceiver(), worker_process_id,
+        /*creator=*/render_frame_host_id,
+        RenderFrameHostImpl::FromID(render_frame_host_id)->GetWeakDocumentPtr(),
+        blink::StorageKey::CreateFirstParty(origin),
+        net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+        network::mojom::ClientSecurityState::New(), PolicyContainerPolicies(),
+        coep_reporter->GetWeakPtr(), network::GetTestNetworkRestrictionsId());
 
     auto fetch_client_settings_object =
         blink::mojom::FetchClientSettingsObject::New();
@@ -368,6 +366,29 @@ class DedicatedWorkerHostFactoryImplTest
   void SetUp() override { RenderViewHostImplTestHarness::SetUp(); }
 };
 
+TEST_F(DedicatedWorkerHostFactoryImplTest,
+       FactoryResetOnCrossDocumentNavigation) {
+  // Disable back/forward cache so the previous document is destroyed on
+  // navigation rather than being preserved.
+  web_contents()->GetController().GetBackForwardCache().DisableForTesting(
+      BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  const GURL kUrlA("http://a.example.com/");
+  const GURL kUrlB("http://b.example.com/");
+
+  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), kUrlA);
+
+  mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+  static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame())
+      ->CreateDedicatedWorkerHostFactory(factory.BindNewPipeAndPassReceiver());
+  factory.FlushForTesting();
+  ASSERT_TRUE(factory.is_connected());
+
+  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), kUrlB);
+  factory.FlushForTesting();
+  EXPECT_FALSE(factory.is_connected());
+}
+
 TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme("isolated-app", url::SCHEME_WITH_HOST);
@@ -401,7 +422,8 @@ TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
                 base::UnguessableToken::Create(),
                 net::NetworkAnonymizationKey());
 
-        return std::make_unique<DedicatedWorkerHostFactoryImpl>(
+        DedicatedWorkerHostFactoryImpl::Create(
+            *creator_rfh, factory.BindNewPipeAndPassReceiver(),
             creator_rfh->GetProcess()->GetID(),
             static_cast<RenderFrameHostImpl*>(creator_rfh)->GetGlobalId(),
             static_cast<RenderFrameHostImpl*>(creator_rfh)
@@ -440,9 +462,7 @@ TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
         features::kEnforceDedicatedWorkerSameOriginCheck);
 
     mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
-    auto factory_impl = create_factory(factory, kIwaOriginA);
-    mojo::Receiver<blink::mojom::DedicatedWorkerHostFactory> receiver(
-        factory_impl.get(), factory.BindNewPipeAndPassReceiver());
+    create_factory(factory, kIwaOriginA);
 
     mojo::test::BadMessageObserver bad_message_observer;
     start_script_load(factory, kIwaAppB);
@@ -458,9 +478,7 @@ TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
         features::kEnforceDedicatedWorkerSameOriginCheck);
 
     mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
-    auto factory_impl = create_factory(factory, kIwaOriginA);
-    mojo::Receiver<blink::mojom::DedicatedWorkerHostFactory> receiver(
-        factory_impl.get(), factory.BindNewPipeAndPassReceiver());
+    create_factory(factory, kIwaOriginA);
 
     mojo::test::BadMessageObserver bad_message_observer;
     start_script_load(factory, kIwaAppB);
@@ -477,9 +495,7 @@ TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
         features::kEnforceDedicatedWorkerSameOriginCheck);
 
     mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
-    auto factory_impl = create_factory(factory, kExtOriginA);
-    mojo::Receiver<blink::mojom::DedicatedWorkerHostFactory> receiver(
-        factory_impl.get(), factory.BindNewPipeAndPassReceiver());
+    create_factory(factory, kExtOriginA);
 
     mojo::test::BadMessageObserver bad_message_observer;
     // Cross-origin load (even to https) should be blocked for extensions now.
@@ -497,9 +513,7 @@ TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
         features::kEnforceDedicatedWorkerSameOriginCheck);
 
     mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
-    auto factory_impl = create_factory(factory, kIwaOriginA);
-    mojo::Receiver<blink::mojom::DedicatedWorkerHostFactory> receiver(
-        factory_impl.get(), factory.BindNewPipeAndPassReceiver());
+    create_factory(factory, kIwaOriginA);
 
     mojo::test::BadMessageObserver bad_message_observer;
     start_script_load(factory, kIwaAppA);
@@ -516,9 +530,7 @@ TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
         features::kEnforceDedicatedWorkerSameOriginCheck);
 
     mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
-    auto factory_impl = create_factory(factory, kIwaOriginA);
-    mojo::Receiver<blink::mojom::DedicatedWorkerHostFactory> receiver(
-        factory_impl.get(), factory.BindNewPipeAndPassReceiver());
+    create_factory(factory, kIwaOriginA);
 
     mojo::test::BadMessageObserver bad_message_observer;
     start_script_load(factory, GURL("data:text/javascript,console.log('hi')"));
@@ -553,7 +565,8 @@ TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
                   base::UnguessableToken::Create(),
                   net::NetworkAnonymizationKey());
 
-          return std::make_unique<DedicatedWorkerHostFactoryImpl>(
+          DedicatedWorkerHostFactoryImpl::Create(
+              *opaque_rfh, factory.BindNewPipeAndPassReceiver(),
               opaque_rfh->GetProcess()->GetID(),
               static_cast<RenderFrameHostImpl*>(opaque_rfh)->GetGlobalId(),
               static_cast<RenderFrameHostImpl*>(opaque_rfh)
@@ -567,9 +580,7 @@ TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
         };
 
     mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
-    auto factory_impl = create_opaque_factory(factory);
-    mojo::Receiver<blink::mojom::DedicatedWorkerHostFactory> receiver(
-        factory_impl.get(), factory.BindNewPipeAndPassReceiver());
+    create_opaque_factory(factory);
 
     mojo::test::BadMessageObserver bad_message_observer;
     // Attempt to load a script that would normally be same-origin to the

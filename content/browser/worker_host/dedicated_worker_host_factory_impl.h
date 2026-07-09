@@ -9,9 +9,11 @@
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/dedicated_worker_creator.h"
+#include "content/public/browser/document_service.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/child_process_id.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/isolation_info.h"
 #include "net/storage_access_api/status.h"
@@ -23,23 +25,31 @@
 
 namespace content {
 
-// A factory for creating DedicatedWorkerHosts. Its lifetime is managed by the
-// renderer over mojo via SelfOwnedReceiver. It lives on the UI thread.
+class RenderFrameHost;
+
+// A factory for creating DedicatedWorkerHosts. Its lifetime is scoped to the
+// current document of the ancestor RenderFrameHost via DocumentService. It
+// lives on the UI thread.
 //
 // A factory instance creates at most one `DedicatedWorkerHost` instance.
-class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
-    : public blink::mojom::DedicatedWorkerHostFactory {
+class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl final
+    : public DocumentService<blink::mojom::DedicatedWorkerHostFactory> {
  public:
   using CreateWorkerHostCallback = base::OnceCallback<void(
       const network::CrossOriginEmbedderPolicy&,
       mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>)>;
 
+  // Creates and binds an instance scoped to `ancestor_render_frame_host`'s
+  // current document.
+  //
   // `creator_client_security_state` specifies the client security state of
   // the creator frame or worker. Must not be nullptr.
   // `creator_policies` specifies the security policies of the creator.
   // `creator_network_restrictions_id` specifies the network restrictions of
   // the creator as per its connection allowlists.
-  DedicatedWorkerHostFactoryImpl(
+  static void Create(
+      RenderFrameHost& ancestor_render_frame_host,
+      mojo::PendingReceiver<blink::mojom::DedicatedWorkerHostFactory> receiver,
       ChildProcessId worker_process_id,
       DedicatedWorkerCreator creator,
       WeakDocumentPtr ancestor_document,
@@ -55,6 +65,21 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
   DedicatedWorkerHostFactoryImpl& operator=(
       const DedicatedWorkerHostFactoryImpl&) = delete;
 
+ private:
+  DedicatedWorkerHostFactoryImpl(
+      RenderFrameHost& ancestor_render_frame_host,
+      mojo::PendingReceiver<blink::mojom::DedicatedWorkerHostFactory> receiver,
+      ChildProcessId worker_process_id,
+      DedicatedWorkerCreator creator,
+      WeakDocumentPtr ancestor_document,
+      const blink::StorageKey& creator_storage_key,
+      const net::IsolationInfo& isolation_info,
+      network::mojom::ClientSecurityStatePtr creator_client_security_state,
+      const PolicyContainerPolicies& creator_policies,
+      base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
+      const base::UnguessableToken& creator_network_restrictions_id);
+
+  // `this` can only be destroyed by DocumentService.
   ~DedicatedWorkerHostFactoryImpl() override;
 
   // blink::mojom::DedicatedWorkerHostFactory:
@@ -69,7 +94,6 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
           client,
       net::StorageAccessApiStatus storage_access_api_status) override;
 
- private:
   // The ID of the RenderProcessHost where the worker will live.
   const ChildProcessId worker_process_id_;
 

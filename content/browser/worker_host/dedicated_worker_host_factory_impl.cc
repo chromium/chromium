@@ -47,7 +47,32 @@ DedicatedWorkerServiceImpl* GetDedicatedWorkerServiceImplForRenderProcessHost(
 
 }  // namespace
 
+// static
+void DedicatedWorkerHostFactoryImpl::Create(
+    RenderFrameHost& ancestor_render_frame_host,
+    mojo::PendingReceiver<blink::mojom::DedicatedWorkerHostFactory> receiver,
+    ChildProcessId worker_process_id,
+    DedicatedWorkerCreator creator,
+    WeakDocumentPtr ancestor_document,
+    const blink::StorageKey& creator_storage_key,
+    const net::IsolationInfo& isolation_info,
+    network::mojom::ClientSecurityStatePtr creator_client_security_state,
+    const PolicyContainerPolicies& creator_policies,
+    base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
+    const base::UnguessableToken& creator_network_restrictions_id) {
+  // The factory deletes itself when the receiver is disconnected or when the
+  // ancestor RenderFrameHost commits a cross-document navigation.
+  new DedicatedWorkerHostFactoryImpl(
+      ancestor_render_frame_host, std::move(receiver), worker_process_id,
+      creator, std::move(ancestor_document), creator_storage_key,
+      isolation_info, std::move(creator_client_security_state),
+      creator_policies, std::move(creator_coep_reporter),
+      creator_network_restrictions_id);
+}
+
 DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
+    RenderFrameHost& ancestor_render_frame_host,
+    mojo::PendingReceiver<blink::mojom::DedicatedWorkerHostFactory> receiver,
     ChildProcessId worker_process_id,
     DedicatedWorkerCreator creator,
     WeakDocumentPtr ancestor_document,
@@ -57,7 +82,8 @@ DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
     const PolicyContainerPolicies& creator_policies,
     base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
     const base::UnguessableToken& creator_network_restrictions_id)
-    : worker_process_id_(worker_process_id),
+    : DocumentService(ancestor_render_frame_host, std::move(receiver)),
+      worker_process_id_(worker_process_id),
       creator_(creator),
       ancestor_document_(std::move(ancestor_document)),
       creator_storage_key_(creator_storage_key),
