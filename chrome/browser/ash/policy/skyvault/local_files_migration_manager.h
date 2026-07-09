@@ -22,6 +22,8 @@
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class PrefService;
+
 namespace base {
 template <typename T>
 class NoDestructor;
@@ -48,15 +50,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
     virtual void OnMigrationReset() = 0;
   };
 
-  // Creates an instance of LocalFilesMigrationManager with overridden
-  // dependencies.
-  static LocalFilesMigrationManager* CreateForTesting(
-      content::BrowserContext* context,
-      MigrationNotificationManager* notification_manager,
-      std::unique_ptr<MigrationCoordinator> coordinator);
-
   // Creates an instance of LocalFilesMigrationManager.
-  explicit LocalFilesMigrationManager(content::BrowserContext* context);
+  LocalFilesMigrationManager(PrefService* local_state,
+                             content::BrowserContext* context);
   LocalFilesMigrationManager(const LocalFilesMigrationManager&) = delete;
   LocalFilesMigrationManager& operator=(const LocalFilesMigrationManager&) =
       delete;
