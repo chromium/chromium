@@ -4,8 +4,6 @@ tommasin@chromium.org
 lyf@chromium.org
 
 per-file *AutoDarkMetrics.java=file://chrome/browser/ui/android/night_mode/OWNERS
-per-file ...*cookie_settings*=file://components/privacy_sandbox/OWNERS
-per-file ...*Cookie*=file://components/privacy_sandbox/OWNERS
 
 # Allow to review / approve mechanical changes (e.g. search indexing)
 file://components/browser_ui/settings/OWNERS
