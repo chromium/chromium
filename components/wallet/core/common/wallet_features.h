@@ -7,10 +7,16 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace wallet::features {
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+BASE_DECLARE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kWalletApiPrivatePassesEnabled);
+#else
 BASE_DECLARE_FEATURE(kWalletApiPrivatePassesEnabled);
+#endif
 
 BASE_DECLARE_FEATURE_PARAM(std::string, kWalletSaveUrl);
 

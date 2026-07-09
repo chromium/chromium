@@ -9,9 +9,22 @@
 namespace autofill::features {
 
 namespace {
+
 constexpr bool IS_AUTOFILL_AI_PLATFORM = BUILDFLAG(IS_CHROMEOS) ||
                                          BUILDFLAG(IS_LINUX) ||
                                          BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN);
+
+// Like DECLARE_WALLET_FEATURE(), but for the definition.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+#define DEFINE_WALLET_FEATURE(feature_name) \
+  BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(   \
+      feature_name, base::FEATURE_ENABLED_FOR_COUNTRIES, "us")
+#else
+#define DEFINE_WALLET_FEATURE(feature_name) \
+  BASE_FEATURE(feature_name, base::FEATURE_DISABLED_BY_DEFAULT)
+#endif
+
 }  // namespace
 
 // If enabled, we start forwarding submissions with source
@@ -208,7 +221,7 @@ BASE_FEATURE_PARAM(std::string,
 
 // If enabled, Autofill AI will use a new update prompt on Desktop that shows
 // both the previous and the new value of an updated entity attribute.
-BASE_FEATURE(kAutofillAiNewUpdatePrompt, base::FEATURE_DISABLED_BY_DEFAULT);
+DEFINE_WALLET_FEATURE(kAutofillAiNewUpdatePrompt);
 
 // If enabled, Autofill AI filling suggestion do not have an icon.
 BASE_FEATURE(kAutofillAiNoFillingIconsExperiment,
@@ -338,7 +351,7 @@ BASE_FEATURE(kAutofillAiWalletPassBranding2026,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, AutofillAi supports private passes entities from Google Wallet.
-BASE_FEATURE(kAutofillAiWalletPrivatePasses, base::FEATURE_DISABLED_BY_DEFAULT);
+DEFINE_WALLET_FEATURE(kAutofillAiWalletPrivatePasses);
 
 // When enabled, account-related eligibility criteria (minor status, location)
 // are determined based on a capability, rather than approximated through
@@ -349,8 +362,7 @@ BASE_FEATURE(kAutofillAiWalletPrivatePassesCapability,
 
 // If enabled, Wallet private pass entries in settings link to their pass
 // details page rather than the generic pass overview page.
-BASE_FEATURE(kAutofillAiWalletPrivatePassesDeepLink,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+DEFINE_WALLET_FEATURE(kAutofillAiWalletPrivatePassesDeepLink);
 
 // If enabled, Autofill AI Shopping entities are surfaced from Google Wallet.
 BASE_FEATURE(kAutofillAiWalletShopping, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1047,8 +1059,7 @@ BASE_FEATURE(kShowSugesstionsOnAlreadyAutofilledUnrecognized,
 // When enabled, "Manage information" menu item for enhanced autofill will
 // redirect user either to "/travel" or "/identityDocs" pages instead of
 // "/yourSavedInfo" always.
-BASE_FEATURE(kSuggestionManageButtonSplitForEnhancedAutofill,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+DEFINE_WALLET_FEATURE(kSuggestionManageButtonSplitForEnhancedAutofill);
 
 // When enabled, the address add/edit editor in the payments request would be
 // removed and instead, the address editor from the settings will be used.
@@ -1069,5 +1080,7 @@ BASE_FEATURE(kYourSavedInfoSettingsPage, base::FEATURE_ENABLED_BY_DEFAULT);
 // settings page.
 BASE_FEATURE(kYourSavedInfoSettingsPageShoppingIntegration,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#undef DEFINE_WALLET_FEATURE
 
 }  // namespace autofill::features

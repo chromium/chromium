@@ -13,6 +13,17 @@
 
 namespace autofill::features {
 
+// Wallet features are only supported in certain platforms on certain countries.
+// This block defines a macro DECLARE_WALLET_FEATURE(feature_name) that declares
+// a `feature_name` of the appropriate type.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+#define DECLARE_WALLET_FEATURE(feature_name) \
+  BASE_DECLARE_FEATURE_WITH_COUNTRY_RESTRICTIONS(feature_name)
+#else
+#define DECLARE_WALLET_FEATURE(feature_name) BASE_DECLARE_FEATURE(feature_name)
+#endif
+
 // All features in alphabetical order.
 
 COMPONENT_EXPORT(AUTOFILL)
@@ -69,7 +80,7 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(std::string, kAutofillAiIgnoreGeoIpAllowlist);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(std::string, kAutofillAiIgnoreGeoIpBlocklist);
-COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillAiNewUpdatePrompt);
+COMPONENT_EXPORT(AUTOFILL) DECLARE_WALLET_FEATURE(kAutofillAiNewUpdatePrompt);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAiNoFillingIconsExperiment);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillAiOrder);
@@ -116,11 +127,11 @@ BASE_DECLARE_FEATURE(kAutofillAiWalletFlightReservation);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAiWalletPassBranding2026);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillAiWalletPrivatePasses);
+DECLARE_WALLET_FEATURE(kAutofillAiWalletPrivatePasses);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAiWalletPrivatePassesCapability);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillAiWalletPrivatePassesDeepLink);
+DECLARE_WALLET_FEATURE(kAutofillAiWalletPrivatePassesDeepLink);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAiWalletShopping);
 COMPONENT_EXPORT(AUTOFILL)
@@ -365,7 +376,7 @@ BASE_DECLARE_FEATURE(kShowAutocompleteAtMemoryButton);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kShowSugesstionsOnAlreadyAutofilledUnrecognized);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kSuggestionManageButtonSplitForEnhancedAutofill);
+DECLARE_WALLET_FEATURE(kSuggestionManageButtonSplitForEnhancedAutofill);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kUseSettingsAddressEditorInPaymentsRequest);
 COMPONENT_EXPORT(AUTOFILL)
@@ -374,6 +385,8 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPage);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPageShoppingIntegration);
+
+#undef DECLARE_WALLET_FEATURE
 
 }  // namespace autofill::features
 
