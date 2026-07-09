@@ -28,11 +28,11 @@ const Extension* GetTopLevelMimeHandlerExtension(
   }
   auto* registry = ExtensionRegistry::Get(web_contents.GetBrowserContext());
   CHECK(registry);
-  // A claimed `StreamInfo` exists only while the MIME-handler extension is
-  // actively rendering the stream, and extension disable tears the extension
-  // frame down (`MaybeDeleteStreamOnExtensionHostChanged()`), which clears
-  // the `StreamInfo`. So an ID returned by `GetTopLevelHandlerExtensionId()`
-  // must resolve to an enabled extension.
+  // A claimed `StreamInfo` never outlives its handler extension's enabled
+  // state: `MimeHandlerStreamManager` erases an extension's streams
+  // synchronously in `OnExtensionUnloaded()` (frame teardown alone can be
+  // deferred, e.g. by a beforeunload dialog). So an ID returned by
+  // `GetTopLevelHandlerExtensionId()` must resolve to an enabled extension.
   const Extension* extension = registry->enabled_extensions().GetByID(*id);
   CHECK(extension);
   // Allowlisted plugin extensions never relabel the chip. The allowlist

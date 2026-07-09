@@ -11,12 +11,17 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/javascript_dialogs/app_modal_dialog_controller.h"
+#include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -293,6 +298,105 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
 
   content::WebContentsDestroyedWatcher destroyed_watcher(pdf_web_contents);
   DisableExtension(extension->id());
+  destroyed_watcher.Wait();
+  EXPECT_TRUE(destroyed_watcher.IsDestroyed());
+}
+
+// Disabling the handler while the viewer tab has a beforeunload handler
+// shows the confirmation dialog instead of crashing, and accepting the
+// dialog closes the tab. Regression test for crbug.com/532002220.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
+                       DisablingTopLevelHandlerWithBeforeUnloadShowsDialog) {
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir));
+  ASSERT_TRUE(extension);
+
+  ResultCatcher catcher;
+  content::WebContents* pdf_web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(pdf_web_contents,
+                            embedded_test_server()->GetURL(kTestPdfPath)));
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  // Register a beforeunload handler on the embedder main frame: its web
+  // process is unaffected by the extension unload, so the tab close is
+  // guaranteed to reach the handler and prompt.
+  ASSERT_TRUE(content::ExecJs(
+      pdf_web_contents->GetPrimaryMainFrame(),
+      "window.addEventListener('beforeunload', e => e.preventDefault());"));
+  content::PrepContentsForBeforeUnloadTest(pdf_web_contents);
+
+  // Open a second tab so the viewer tab is not the last tab, which would
+  // be NTP-replaced (reusing its WebContents) rather than closed.
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+
+  content::WebContentsDestroyedWatcher destroyed_watcher(pdf_web_contents);
+  DisableExtension(extension->id());
+
+  // The stream must not outlive the extension, even while the tab close is
+  // blocked on the beforeunload prompt.
+  EXPECT_FALSE(mime_handler::MimeHandlerStreamManager::FromWebContents(
+      pdf_web_contents));
+
+  javascript_dialogs::AppModalDialogController* dialog =
+      ui_test_utils::WaitForAppModalDialog();
+  dialog->view()->AcceptAppModalDialog();
+  destroyed_watcher.Wait();
+  EXPECT_TRUE(destroyed_watcher.IsDestroyed());
+}
+
+// Rejecting the beforeunload dialog keeps the viewer tab open: the stream is
+// already gone by then, so the tab survives without the handler and can still
+// be closed normally afterwards.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
+                       DisablingTopLevelHandlerWithBeforeUnloadCancelKeepsTab) {
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir));
+  ASSERT_TRUE(extension);
+
+  ResultCatcher catcher;
+  content::WebContents* pdf_web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(pdf_web_contents,
+                            embedded_test_server()->GetURL(kTestPdfPath)));
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  // Register a beforeunload handler on the embedder main frame: its web
+  // process is unaffected by the extension unload, so the tab close is
+  // guaranteed to reach the handler and prompt.
+  ASSERT_TRUE(content::ExecJs(
+      pdf_web_contents->GetPrimaryMainFrame(),
+      "window.addEventListener('beforeunload', e => e.preventDefault());"));
+  content::PrepContentsForBeforeUnloadTest(pdf_web_contents);
+
+  // Open a second tab so the viewer tab is not the last tab, which would
+  // be NTP-replaced (reusing its WebContents) rather than closed.
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+
+  content::WebContentsDestroyedWatcher destroyed_watcher(pdf_web_contents);
+  DisableExtension(extension->id());
+
+  // The stream must not outlive the extension, even though the tab ends
+  // up staying open.
+  EXPECT_FALSE(mime_handler::MimeHandlerStreamManager::FromWebContents(
+      pdf_web_contents));
+
+  javascript_dialogs::AppModalDialogController* dialog =
+      ui_test_utils::WaitForAppModalDialog();
+  dialog->view()->CancelAppModalDialog();
+
+  // Round-trip through the embedder renderer; this pumps the UI loop, so
+  // an erroneous pending tab close would complete before the checks below.
+  ASSERT_TRUE(content::ExecJs(pdf_web_contents->GetPrimaryMainFrame(), "true"));
+  EXPECT_FALSE(destroyed_watcher.IsDestroyed());
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+
+  // The surviving tab still closes normally: the beforeunload prompt runs
+  // again and accepting it completes the close.
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+  dialog = ui_test_utils::WaitForAppModalDialog();
+  dialog->view()->AcceptAppModalDialog();
   destroyed_watcher.Wait();
   EXPECT_TRUE(destroyed_watcher.IsDestroyed());
 }

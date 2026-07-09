@@ -8,6 +8,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/run_until.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -16,12 +17,17 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/mime_handler/mime_handler_body_cache.h"
 #include "extensions/browser/mime_handler/mime_handler_test_helpers.h"
 #include "extensions/browser/mime_handler/mock_mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/browser/mime_handler/stream_info.h"
+#include "extensions/browser/test_extensions_browser_client.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,9 +51,29 @@ constexpr char kOriginalUrl2[] = "https://original_url2";
 
 class MimeHandlerStreamManagerTest : public content::RenderViewHostTestHarness {
  protected:
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
+    // A previous test's BrowserContext may have been allocated at the same
+    // address; without this, `DependencyManager::AssertContextWasntDestroyed()`
+    // can fail when keyed services are created below.
+    BrowserContextDependencyManager::GetInstance()->MarkBrowserContextLive(
+        browser_context());
+    // `MimeHandlerStreamManager` resolves the `ExtensionRegistry` for its
+    // BrowserContext, which requires an `ExtensionsBrowserClient`.
+    extensions_browser_client_ =
+        std::make_unique<TestExtensionsBrowserClient>(browser_context());
+    ExtensionsBrowserClient::Set(extensions_browser_client_.get());
+  }
+
   void TearDown() override {
+    // Remove the manager (a registry observer) before the registry is
+    // destroyed with the rest of the keyed services.
     content::RenderViewHostTestHarness::web_contents()->RemoveUserData(
         MimeHandlerStreamManager::UserDataKey());
+    BrowserContextDependencyManager::GetInstance()
+        ->DestroyBrowserContextServices(browser_context());
+    ExtensionsBrowserClient::Set(nullptr);
+    extensions_browser_client_.reset();
     content::RenderViewHostTestHarness::TearDown();
   }
 
@@ -79,6 +105,19 @@ class MimeHandlerStreamManagerTest : public content::RenderViewHostTestHarness {
     parent_host_tester->InitializeRenderFrameIfNeeded();
     return parent_host_tester->AppendChild(frame_name);
   }
+
+  // Notifies registry observers that an extension with `extension_id` was
+  // unloaded with `reason`.
+  void TriggerOnExtensionUnloaded(const ExtensionId& extension_id,
+                                  UnloadedExtensionReason reason) {
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("handler").SetID(extension_id).Build();
+    ExtensionRegistry::Get(browser_context())
+        ->TriggerOnUnloaded(extension.get(), reason);
+  }
+
+ private:
+  std::unique_ptr<TestExtensionsBrowserClient> extensions_browser_client_;
 };
 
 // Verify adding and getting an `extensions::StreamContainer`.
@@ -1374,6 +1413,83 @@ TEST_F(MimeHandlerStreamManagerTest,
   manager->ClaimStreamInfoForTesting(embedder_host);
 
   EXPECT_FALSE(manager->GetTopLevelHandlerExtensionId().has_value());
+}
+
+// Unloading the handler extension erases its claimed stream; the manager
+// self-deletes once no streams remain.
+TEST_F(MimeHandlerStreamManagerTest, UnloadErasesClaimedStream) {
+  auto stream_container = GenerateSampleStreamContainer(/*container_number=*/1,
+                                                        /*embedded=*/false);
+  const ExtensionId extension_id = stream_container->extension_id();
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), stream_container->original_url());
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      std::move(stream_container),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(manager->GetTopLevelHandlerExtensionId().has_value());
+
+  TriggerOnExtensionUnloaded(extension_id, UnloadedExtensionReason::DISABLE);
+
+  EXPECT_FALSE(mime_handler_stream_manager());
+}
+
+// Unloading the handler extension erases its unclaimed stream too. TERMINATE
+// (extension crash) is handled like any other unload reason.
+TEST_F(MimeHandlerStreamManagerTest, UnloadErasesUnclaimedStream) {
+  auto stream_container = GenerateSampleStreamContainer(/*container_number=*/1);
+  const ExtensionId extension_id = stream_container->extension_id();
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), stream_container->original_url());
+  content::FrameTreeNodeId frame_tree_node_id =
+      embedder_host->GetFrameTreeNodeId();
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  manager->AddStreamContainer(
+      frame_tree_node_id, "internal_id", std::move(stream_container),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+  ASSERT_TRUE(manager->ContainsUnclaimedStreamInfo(frame_tree_node_id));
+
+  TriggerOnExtensionUnloaded(extension_id, UnloadedExtensionReason::TERMINATE);
+
+  EXPECT_FALSE(mime_handler_stream_manager());
+}
+
+// With streams from two extensions, unloading one erases only its stream and
+// the manager stays alive for the other.
+TEST_F(MimeHandlerStreamManagerTest, UnloadErasesOnlyUnloadedExtensionStream) {
+  auto stream_container_1 = GenerateSampleStreamContainer(
+      /*container_number=*/1, /*embedded=*/false);
+  const ExtensionId extension_id_1 = stream_container_1->extension_id();
+  auto stream_container_2 = GenerateSampleStreamContainer(
+      /*container_number=*/2);
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), stream_container_1->original_url());
+  content::RenderFrameHost* child_host = NavigateAndCommit(
+      CreateChildRenderFrameHost(embedder_host, "child embedder"),
+      stream_container_2->original_url());
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id1",
+      std::move(stream_container_1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+  manager->AddStreamContainer(
+      child_host->GetFrameTreeNodeId(), "internal_id2",
+      std::move(stream_container_2),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  manager->ClaimStreamInfoForTesting(child_host);
+
+  TriggerOnExtensionUnloaded(extension_id_1, UnloadedExtensionReason::DISABLE);
+
+  ASSERT_TRUE(mime_handler_stream_manager());
+  EXPECT_FALSE(
+      mime_handler_stream_manager()->GetStreamContainer(embedder_host));
+  EXPECT_TRUE(mime_handler_stream_manager()->GetStreamContainer(child_host));
 }
 
 // MimeHandlerStreamManager host privilege status should be correctly revoked
