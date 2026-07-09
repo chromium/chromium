@@ -7,7 +7,7 @@ import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ActuationEligibility, ActuationTarget, FormFactor, FreOverride, InvocationSource, Platform} from '../glic.mojom-webui.js';
+import {ActuationEligibility, ActuationTarget, FormFactor, FreOverride, GlicExperimentalTriggeringState, InvocationSource, Platform} from '../glic.mojom-webui.js';
 import {FeatureMode} from '../glic_enums.mojom-webui.js';
 import {FreCompletionWaitMode, InternalsPageHandlerFactory, InternalsPageHandlerRemote} from '../glic_internals.mojom-webui.js';
 import type {InternalsDataPayload, TriggerInvokeFromInternalsOptions} from '../glic_internals.mojom-webui.js';
@@ -198,6 +198,11 @@ export class GlicInternalsAppElement extends CrLitElement {
       default:
         return 'unknown';
     }
+  }
+
+  protected getExperimentalTriggeringStateString_(
+      state: GlicExperimentalTriggeringState): string {
+    return GlicExperimentalTriggeringState[state] || 'Unknown';
   }
 
   protected getTableData_(): Array<{label: string, value: boolean}> {

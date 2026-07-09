@@ -86,6 +86,13 @@ export function getHtml(this: GlicInternalsAppElement) {
                 this.data_.enablement.glicApiActuationEligibility)}
           </td>
         </tr>
+        <tr>
+          <td>Experimental triggering state</td>
+          <td>
+            ${this.getExperimentalTriggeringStateString_(
+                this.data_.enablement.glicExperimentalTriggeringState)}
+          </td>
+        </tr>
       </table>` :
       html`<h3 id="loadingMsg">Loading...</h3>`}
     <h2>Tiered Rollout / User Tier</h2>

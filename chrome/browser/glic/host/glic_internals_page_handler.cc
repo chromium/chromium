@@ -45,6 +45,7 @@
 #include "components/skills/features.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_utils.h"
@@ -60,6 +61,18 @@
 namespace glic {
 
 namespace {
+
+mojom::GlicExperimentalTriggeringState ConvertGlicExperimentalTriggeringState(
+    syncer::DeviceInfo::GlicExperimentalTriggeringState state) {
+  switch (state) {
+    case syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable:
+      return mojom::GlicExperimentalTriggeringState::kUnavailable;
+    case syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn:
+      return mojom::GlicExperimentalTriggeringState::kNeedsOptIn;
+    case syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady:
+      return mojom::GlicExperimentalTriggeringState::kReady;
+  }
+}
 
 mojom::ProfileEnablementPtr BuildProfileEnablement(
     content::BrowserContext* browser_context,
@@ -93,6 +106,15 @@ mojom::ProfileEnablementPtr BuildProfileEnablement(
   auto* service = GlicKeyedService::Get(profile);
   result->actuation_is_consented =
       (service && service->enabling().GetUserEnabledActuationOnWeb());
+
+  if (service) {
+    result->glic_experimental_triggering_state =
+        ConvertGlicExperimentalTriggeringState(
+            service->enabling().GetExperimentalTriggeringState());
+  } else {
+    result->glic_experimental_triggering_state =
+        mojom::GlicExperimentalTriggeringState::kUnavailable;
+  }
 
   using CannotActReason = ::glic::CannotActReason;
   if (actor_policy_checker) {

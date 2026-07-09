@@ -35,6 +35,12 @@ struct GeminiEnterpriseSettings {
   string location;
 };
 
+enum GlicExperimentalTriggeringState {
+  kUnavailable = 0,
+  kNeedsOptIn = 1,
+  kReady = 2,
+};
+
 // Struct containing data about eligibility for GLIC.
 struct ProfileEnablement {
   // Whether the GLIC feature is enabled.
@@ -90,6 +96,8 @@ struct ProfileEnablement {
 
   // Summary of whether Glic API actuation is enabled, and if not, why not.
   ActuationEligibility glic_api_actuation_eligibility;
+
+  GlicExperimentalTriggeringState glic_experimental_triggering_state;
 };
 
 // Basic configuration information about Glic.
