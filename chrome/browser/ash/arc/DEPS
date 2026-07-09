@@ -36,7 +36,6 @@ include_rules = [
   "+chrome/browser/pdf",
   "+chrome/browser/picture_in_picture",
   "+chrome/browser/policy",
-  "+chrome/browser/prefs",
   "+chrome/browser/printing",
   "+chrome/browser/profiles",
   "+chrome/browser/sessions",
@@ -86,6 +85,12 @@ specific_include_rules = {
   ],
   "arc_support_host_unittest\\.cc": [
     "+chrome/browser/global_features.h",
+  ],
+
+  # ArcSessionManager's unittest still installs prefs through the //chrome-side
+  # syncable pref helpers; production code no longer depends on //chrome/prefs.
+  "arc_session_manager_unittest\\.cc": [
+    "+chrome/browser/prefs",
   ],
 
   "arc_support_host\\.cc": [
