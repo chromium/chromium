@@ -5,8 +5,6 @@
 #ifndef MEDIA_BASE_SINC_RESAMPLER_H_
 #define MEDIA_BASE_SINC_RESAMPLER_H_
 
-#include <memory>
-
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -46,7 +44,7 @@ class MEDIA_EXPORT SincResampler {
   // Callback type for providing more data into the resampler.  Expects |frames|
   // of data to be rendered into |destination|; zero padded if not enough frames
   // are available to satisfy the request.
-  using ReadCB = base::RepeatingCallback<void(int frames, float* destination)>;
+  using ReadCB = base::RepeatingCallback<void(base::span<float> destination)>;
 
   // Returns the kernel size which will be used for a given `request_frames`.
   static size_t KernelSizeFromRequestFrames(int request_frames);

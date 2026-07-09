@@ -72,7 +72,7 @@ class MEDIA_EXPORT MultiChannelResampler {
  private:
   // SincResampler::ReadCB implementation.  ProvideInput() will be called for
   // each channel (in channel order) as SincResampler needs more data.
-  void ProvideInput(int channel, int frames, float* destination);
+  void ProvideInput(int channel, base::span<float> destination);
 
   // Source of data for resampling.
   ReadCB read_cb_;

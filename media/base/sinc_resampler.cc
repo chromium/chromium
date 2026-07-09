@@ -287,7 +287,7 @@ void SincResampler::Resample(base::span<float> destination) {
 
   // Step (1) -- Prime the input buffer at the start of the input stream.
   if (!buffer_primed_ && remaining_frames) {
-    read_cb_.Run(request_frames_, r0_.data());
+    read_cb_.Run(r0_.first(request_frames_));
     buffer_primed_ = true;
   }
 
@@ -352,7 +352,7 @@ void SincResampler::Resample(base::span<float> destination) {
     }
 
     // Step (5) -- Refresh the buffer with more input.
-    read_cb_.Run(request_frames_, r0_.data());
+    read_cb_.Run(r0_.first(request_frames_));
   }
 }
 

@@ -57,7 +57,6 @@ void MultiChannelResampler::Resample(int frames, AudioBus* audio_bus) {
     return;
   }
 
-
   // We need to ensure that SincResampler only calls ProvideInput once for each
   // channel.  To ensure this, we chunk the number of requested frames into
   // SincResampler::ChunkSize() sized chunks.  SincResampler guarantees it will
@@ -88,26 +87,23 @@ void MultiChannelResampler::Resample(int frames, AudioBus* audio_bus) {
 }
 
 void MultiChannelResampler::ProvideInput(int channel,
-                                         int frames,
-                                         float* destination) {
-  const size_t frames_to_provide = base::checked_cast<size_t>(frames);
-  auto dest_span = UNSAFE_TODO(base::span(destination, frames_to_provide));
-
+                                         base::span<float> destination) {
   // Get the data from the multi-channel provider when the first channel asks
   // for it.  For subsequent channels, we can just dish out the channel data
   // from that (stored in |resampler_audio_bus_|).
   if (channel == 0) {
-    wrapped_resampler_audio_bus_->SetChannelData(0, dest_span);
+    wrapped_resampler_audio_bus_->SetChannelData(0, destination);
     read_cb_.Run(output_frames_ready_, wrapped_resampler_audio_bus_.get());
   } else {
     // All channels must ask for the same amount.  This should always be the
     // case, but let's just make sure.
-    DCHECK_EQ(frames, wrapped_resampler_audio_bus_->frames());
+    DCHECK_EQ(destination.size(),
+              static_cast<size_t>(wrapped_resampler_audio_bus_->frames()));
 
     // Copy the channel data from what we received from |read_cb_|.
-    dest_span.copy_from_nonoverlapping(
+    destination.copy_from_nonoverlapping(
         wrapped_resampler_audio_bus_->channel(channel).first(
-            frames_to_provide));
+            destination.size()));
   }
 }
 
