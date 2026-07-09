@@ -957,6 +957,21 @@ class ApiTests extends ApiTestFixtureBase {
         PanelStateKind.ATTACHED,
         this.host.getPanelState().getCurrentValue()?.kind);
   }
+
+  async testGetPanelStateAttachedHidden() {
+    assertDefined(this.host.getPanelState);
+    // getPanelState and notifyPanelWillOpen should signal the ATTACHED state.
+    const panelStates = observeSequence(this.host.getPanelState());
+    await panelStates.waitFor(state => state.kind === PanelStateKind.ATTACHED);
+
+    // Open and select a second tab.
+    await this.advanceToNextStep();
+    await panelStates.waitFor(state => state.kind === PanelStateKind.HIDDEN);
+
+    // Select the first tab again.
+    await this.advanceToNextStep();
+    await panelStates.waitFor(state => state.kind === PanelStateKind.ATTACHED);
+  }
 }
 
 class FaviconTest extends ApiTests {

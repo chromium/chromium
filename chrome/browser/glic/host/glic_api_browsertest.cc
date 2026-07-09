@@ -954,19 +954,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPanelStateAttachedHidden) {
-  ExecuteJsTest();
-
-  // Open and select a second tab. This should result in panel state hidden.
-  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->ActivateTabAt(1);
-  ContinueJsTest();
-
-  // Open the first tab again, it should send the attached state.
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  ContinueJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testDetachPanel) {
   NavigateTabAndOpenGlic();
   ExecuteJsTest();

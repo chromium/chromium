@@ -129,6 +129,13 @@
 // execution on Android. Migration will take some time, as some tests need
 // rewritten to avoid RunTestSequence which is not supported on Android.
 
+#if BUILDFLAG(IS_ANDROID)
+// Used to disable tests for android which have not yet been vetted for android.
+// These should be temporary, either the test should be enabled on android or
+// explicitly disabled for android later.
+#define NOT_VETTED_ON_ANDROID
+#endif
+
 namespace glic {
 
 class TestExperimentalTriggeringUpdatesHandler
@@ -680,6 +687,35 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testPanelActive) {
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetPanelStateAttached) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
+}
+
+#if defined(NOT_VETTED_ON_ANDROID)
+#define MAYBE_testGetPanelStateAttachedHidden \
+  DISABLED_testGetPanelStateAttachedHidden
+#else
+#define MAYBE_testGetPanelStateAttachedHidden testGetPanelStateAttachedHidden
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testGetPanelStateAttachedHidden) {
+  ASSERT_OK(OpenGlicForActiveTab());
+
+  // Save first tab.
+  tabs::TabInterface* first_tab = GetTabListInterface()->GetActiveTab();
+
+  ExecuteJsTest();
+
+  // Open and select a second tab. This should result in panel state hidden.
+  CreateAndActivateTab(
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html"));
+  ContinueJsTest();
+
+  // Open the first tab again, it should send the attached state.
+  ActivateTab(first_tab);
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, activating a tab puts Glic in peeked state. We need to
+  // explicitly show/expand it to make it attached.
+  ASSERT_OK(OpenGlicForActiveTab());
+#endif
+  ContinueJsTest();
 }
 
 class NewGlicApiTestWithWebActuationSettingEnabled : public NewGlicApiTest {
