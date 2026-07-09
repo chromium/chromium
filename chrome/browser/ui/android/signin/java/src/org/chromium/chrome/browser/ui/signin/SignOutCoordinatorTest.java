@@ -167,6 +167,7 @@ public class SignOutCoordinatorTest {
         mUnsyncedDataTypes.add(DataType.BOOKMARKS);
         @SignoutReason int signOutReason = SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS;
         mockSignOutSuccess(signOutReason);
+        doReturn(false).when(mSigninManagerMock).hasSignedInAccountExtensions();
         startSignOutFlow(signOutReason, mOnSignOut, false);
         onView(withText(R.string.sign_out_unsaved_data_title))
                 .inRoot(isDialog())
@@ -176,6 +177,52 @@ public class SignOutCoordinatorTest {
                 .inRoot(isDialog())
                 .perform(click());
 
+        verify(mSigninManagerMock).setUninstallAccountExtensionsOnSignout(false);
+        verify(mOnSignOut).run();
+    }
+
+    @Test
+    @MediumTest
+    public void testUnsavedDataDialogPrimaryButtonClick_withExtensions_checkboxChecked() {
+        setUpMocks();
+        mUnsyncedDataTypes.add(DataType.BOOKMARKS);
+        @SignoutReason int signOutReason = SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS;
+        mockSignOutSuccess(signOutReason);
+        doReturn(true).when(mSigninManagerMock).hasSignedInAccountExtensions();
+        startSignOutFlow(signOutReason, mOnSignOut, false);
+
+        onView(withText(R.string.sign_out_unsaved_data_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.sign_out_unsaved_data_remove_extensions_message))
+                .inRoot(isDialog())
+                .perform(click());
+        onView(withText(R.string.sign_out_unsaved_data_primary_button))
+                .inRoot(isDialog())
+                .perform(click());
+
+        verify(mSigninManagerMock).setUninstallAccountExtensionsOnSignout(true);
+        verify(mOnSignOut).run();
+    }
+
+    @Test
+    @MediumTest
+    public void testUnsavedDataDialogPrimaryButtonClick_withExtensions_checkboxUnchecked() {
+        setUpMocks();
+        mUnsyncedDataTypes.add(DataType.BOOKMARKS);
+        @SignoutReason int signOutReason = SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS;
+        mockSignOutSuccess(signOutReason);
+        doReturn(true).when(mSigninManagerMock).hasSignedInAccountExtensions();
+        startSignOutFlow(signOutReason, mOnSignOut, false);
+
+        onView(withText(R.string.sign_out_unsaved_data_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.sign_out_unsaved_data_primary_button))
+                .inRoot(isDialog())
+                .perform(click());
+
+        verify(mSigninManagerMock).setUninstallAccountExtensionsOnSignout(false);
         verify(mOnSignOut).run();
     }
 
@@ -211,6 +258,19 @@ public class SignOutCoordinatorTest {
                 .check(doesNotExist());
         onView(withText(R.string.sign_out)).inRoot(isDialog()).check(matches(isDisplayed()));
         onView(withText(R.string.cancel)).inRoot(isDialog()).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testSignOutConfirmDialog_withExtensions_showConfirmDialogFalse() {
+        setUpMocks();
+        doReturn(true).when(mSigninManagerMock).hasSignedInAccountExtensions();
+
+        startSignOutFlow(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, mOnSignOut, false);
+        onView(withText(R.string.sign_out_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText(R.string.sign_out_remove_extensions_message))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
     }
 
     @Test

@@ -136,7 +136,8 @@ public class SignOutCoordinator {
                             getUiState(
                                     !unsyncedTypes.isEmpty(),
                                     showConfirmDialog,
-                                    userActionableError);
+                                    userActionableError,
+                                    signinManager.hasSignedInAccountExtensions());
                     switch (uiState) {
                         case UiState.SNACK_BAR ->
                                 signOutAndShowSnackbar(
@@ -297,14 +298,15 @@ public class SignOutCoordinator {
     private static @UiState int getUiState(
             boolean hasUnsavedData,
             boolean showConfirmDialog,
-            @UserActionableError int userActionableError) {
+            @UserActionableError int userActionableError,
+            boolean hasSignedInAccountExtensions) {
         if (userActionableError == UserActionableError.BOOKMARKS_LIMIT_EXCEEDED) {
             return UiState.UNSAVED_DATA;
         }
         if (hasUnsavedData) {
             return UiState.UNSAVED_DATA;
         }
-        if (showConfirmDialog) {
+        if (showConfirmDialog || hasSignedInAccountExtensions) {
             return UiState.SHOW_CONFIRM_DIALOG;
         }
         return UiState.SNACK_BAR;
@@ -331,6 +333,15 @@ public class SignOutCoordinator {
                                 ModalDialogProperties.TITLE,
                                 context.getString(R.string.sign_out_unsaved_data_title))
                         .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, message)
+                        // Setting CHECKBOX_TEXT to an empty string hides the checkbox.
+                        .with(
+                                ModalDialogProperties.CHECKBOX_TEXT,
+                                signinManager.hasSignedInAccountExtensions()
+                                        ? context.getString(
+                                                R.string
+                                                        .sign_out_unsaved_data_remove_extensions_message)
+                                        : "")
+                        .with(ModalDialogProperties.CHECKBOX_CHECKED, false)
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 context.getString(R.string.sign_out_unsaved_data_primary_button))
