@@ -84,4 +84,15 @@ public class ColorPickerDialogRenderTest {
     public void testRender_ColorPickerDialog() throws IOException {
         mRenderTestRule.render(mView, "color_picker_dialog");
     }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_ColorPickerDialog_Advanced() throws IOException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mView.findViewById(R.id.color_picker_view_switcher_button).performClick();
+                });
+        mRenderTestRule.render(mView, "color_picker_dialog_advanced");
+    }
 }

@@ -144,7 +144,6 @@ public class ColorPickerAdvanced extends LinearLayout implements OnSeekBarChange
 
             mCurrentColor = Color.HSVToColor(mCurrentHsvValues);
 
-            updateHueGradient();
             updateSaturationGradient();
             updateValueGradient();
 
@@ -153,13 +152,13 @@ public class ColorPickerAdvanced extends LinearLayout implements OnSeekBarChange
     }
 
     /**
-     * Updates only the hue gradient display with the hue value for the
-     * currently selected color.
+     * Updates only the hue gradient display. The gradient is always the same
+     * regardless of what the currently selected color is.
      */
     private void updateHueGradient() {
         float[] tempHsvValues = new float[3];
-        tempHsvValues[1] = mCurrentHsvValues[1];
-        tempHsvValues[2] = mCurrentHsvValues[2];
+        tempHsvValues[1] = 1.0f;
+        tempHsvValues[2] = 1.0f;
 
         int[] newColors = new int[HUE_COLOR_COUNT];
 
@@ -178,7 +177,7 @@ public class ColorPickerAdvanced extends LinearLayout implements OnSeekBarChange
         float[] tempHsvValues = new float[3];
         tempHsvValues[0] = mCurrentHsvValues[0];
         tempHsvValues[1] = 0.0f;
-        tempHsvValues[2] = mCurrentHsvValues[2];
+        tempHsvValues[2] = 1.0f;
 
         int[] newColors = new int[SATURATION_COLOR_COUNT];
 
