@@ -68,6 +68,7 @@ public class TabGroupListBottomSheetTest {
     @MediumTest
     @EnableFeatures(
             ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2 + ":show_tip_bottom_sheet/false")
+    @DisabledTest(message = "crbug.com/533033997")
     public void testNewGroup_RegularNewTabPageStation() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
@@ -154,6 +155,7 @@ public class TabGroupListBottomSheetTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
     })
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    @DisabledTest(message = "crbug.com/533033997")
     public void testNewGroup_IncognitoNewTabPageStation_Tablet() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         Pair<WebPageStation, WebPageStation> pageStations =
