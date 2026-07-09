@@ -5710,17 +5710,21 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   bool was_blocked = false;
   base::WeakPtr<WebContentsImpl> weak_new_contents =
       new_contents_impl->weak_factory_.GetWeakPtr();
-  base::WeakPtr<WebContentsImpl> weak_this = weak_factory_.GetWeakPtr();
   WebContentsImpl* contents_to_load = new_contents_impl;
   if (delegate_) {
+    // Capture WeakPtrs before AddNewContents(), whose nested message loop on
+    // Windows can destroy `this` and/or `opener` re-entrantly.
+    base::WeakPtr<WebContentsImpl> weak_this = weak_factory_.GetWeakPtr();
+    base::WeakPtr<RenderFrameHostImpl> weak_opener = opener->GetWeakPtr();
     WebContents* web_contents_navigated = delegate_->AddNewContents(
         this, std::move(new_contents), params.target_url, params.disposition,
         *params.features, has_user_gesture, &was_blocked);
 
-    if (!weak_this) {
-      // `this` may be deleted after AddNewContents() due to a nested message
-      // loop (e.g. the window hosting the opener is closed). See
-      // crbug.com/527676561.
+    if (!weak_this || !weak_opener) {
+      // `this` or `opener` may be deleted after AddNewContents() due to a
+      // nested message loop (e.g. the window hosting the opener is closed, or
+      // a subframe opener is detached during the nested loop). See
+      // crbug.com/527676561 and crbug.com/531415953.
       return nullptr;
     }
 

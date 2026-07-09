@@ -3710,6 +3710,89 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_FALSE(opener);
 }
 
+// Force strict site isolation so a cross-site subframe runs in a separate
+// renderer process from its parent. This lets the parent's renderer process
+// remain responsive while the subframe's renderer is blocked in the sync
+// FrameHost::CreateNewWindow IPC.
+class WebContentsImplSitePerProcessBrowserTest
+    : public WebContentsImplBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebContentsImplBrowserTest::SetUpCommandLine(command_line);
+    IsolateAllSitesForTesting(command_line);
+  }
+};
+
+// Regression test for a use-after-free where the opener RenderFrameHostImpl
+// (a subframe) is destroyed re-entrantly during
+// WebContentsImpl::CreateNewWindow()'s call to
+// WebContentsDelegate::AddNewContents(). The top-level WebContents survives
+// so the existing `weak_this` guard passes, and without the `weak_opener`
+// guard the function would proceed to dereference the freed `opener` bare
+// pointer parameter. See crbug.com/527676561 and crbug.com/531415953.
+IN_PROC_BROWSER_TEST_F(WebContentsImplSitePerProcessBrowserTest,
+                       CreateNewWindowSubframeOpenerDetachedInAddNewContents) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // a.com main frame with a b.com OOPIF subframe.
+  const GURL main_url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)");
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  RenderFrameHostImpl* subframe =
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(main_frame, 0));
+  ASSERT_TRUE(subframe);
+  // The subframe must be out-of-process so a.com's renderer stays live while
+  // b.com's renderer is blocked in the sync CreateNewWindow IPC.
+  ASSERT_NE(main_frame->GetProcess(), subframe->GetProcess());
+
+  base::WeakPtr<RenderFrameHostImpl> weak_subframe = subframe->GetWeakPtr();
+  RenderFrameDeletedObserver subframe_deleted(subframe);
+  base::RunLoop run_loop;
+
+  // Delegate that simulates the Windows AddNewContents() nested message loop:
+  // it asks a.com's (unblocked) renderer to detach the b.com iframe, then
+  // pumps the UI thread until RemoteFrameHost::Detach() has been dispatched
+  // and the browser has freed the subframe RFHI (== `opener` inside
+  // WebContentsImpl::CreateNewWindow()). The WebContents (a.com's tab)
+  // survives, so CreateNewWindow()'s `weak_this` remains valid and without
+  // this fix execution continues past AddNewContents() to the freed-`opener`
+  // dereferences.
+  DestroyOpenerOnAddNewContentsDelegate delegate(
+      base::BindLambdaForTesting([&]() {
+        ExecuteScriptAsync(main_frame,
+                           "document.getElementById('child-0').remove();");
+        // Spin a nested RunLoop that processes tasks (mirroring the Windows
+        // AddNewContents() nested pump) until a.com's RemoteFrameHost::Detach
+        // IPC has been dispatched and the subframe RFHI has been freed.
+        while (weak_subframe) {
+          base::RunLoop nested(base::RunLoop::Type::kNestableTasksAllowed);
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, nested.QuitClosure());
+          nested.Run();
+        }
+        run_loop.Quit();
+      }));
+  shell()->web_contents()->SetDelegate(&delegate);
+
+  // The b.com subframe opens a noopener window: this drives
+  // WebContentsImpl::CreateNewWindow(opener = subframe RFHI, ...) down the
+  // opener-suppressed path that calls delegate_->AddNewContents().
+  const GURL popup_url =
+      embedded_test_server()->GetURL("b.com", "/title2.html");
+  ExecuteScriptAsync(
+      subframe, JsReplace("window.open($1, '_blank', 'noopener');", popup_url));
+
+  // Without a fix, ASAN reports heap-use-after-free in
+  // WebContentsImpl::CreateNewWindow at `opener->GetLastCommittedOrigin()`.
+  run_loop.Run();
+  EXPECT_TRUE(subframe_deleted.deleted());
+
+  shell()->web_contents()->SetDelegate(nullptr);
+}
+
 namespace {
 
 class OutgoingSetRendererPrefsMojoWatcher {
