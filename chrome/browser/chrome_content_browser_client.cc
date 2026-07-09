@@ -1450,6 +1450,31 @@ bool IsActorActingOnWebContents(WebContents* web_contents) {
 }
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+bool ShouldGrantWindowManagementPrivilegesToIwaChildWindow(
+    WebContents* web_contents,
+    const content::SiteInstance& main_frame_site) {
+  if (!main_frame_site.GetSecurityPrincipal().SchemeIs(
+          webapps::kIsolatedAppScheme)) {
+    return false;
+  }
+
+  // This is a child window, so check the opener.
+  content::RenderFrameHost* opener_frame = web_contents->GetOpener();
+  if (!opener_frame) {
+    return false;
+  }
+
+  return Profile::FromBrowserContext(web_contents->GetBrowserContext())
+             ->GetPermissionController()
+             ->GetPermissionStatusForCurrentDocument(
+                 content::PermissionDescriptorUtil::
+                     CreatePermissionDescriptorForPermissionType(
+                         blink::PermissionType::WINDOW_MANAGEMENT),
+                 opener_frame) == blink::mojom::PermissionStatus::GRANTED;
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 }  // namespace
 
 // static
@@ -5088,6 +5113,15 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
   web_prefs->require_transient_activation_for_show_file_or_directory_picker =
       require_transient_activation_for_show_file_or_directory_picker;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (!web_prefs->allow_unrestricted_window_focus &&
+      ShouldGrantWindowManagementPrivilegesToIwaChildWindow(web_contents,
+                                                            main_frame_site)) {
+    web_prefs->allow_unrestricted_window_focus = true;
+    prefs_changed = true;
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   for (auto& parts : extra_parts_) {
     prefs_changed |= parts->OverrideWebPreferencesAfterNavigation(
