@@ -137,6 +137,20 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAdjustIPv6FallbackTime);
 // The duration to use for the slow timer if the feature is enabled.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kIPv6FallbackTime);
 
+// Feature to base the Happy Eyeballs slow timer on the network RTT.
+NET_EXPORT BASE_DECLARE_FEATURE(kIPv6FallbackBasedOnRTT);
+
+// The multiplier for the RTT if the RTT based fallback feature is enabled.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(double, kIPv6FallbackRTTMultiplier);
+
+// The minimum value to use for the fallback time if the RTT based fallback
+// feature is enabled.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kIPv6FallbackMin);
+
+// The maximum value to use for the fallback time if the RTT based fallback
+// feature is enabled.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kIPv6FallbackMax);
+
 // Allows Cache-Control: immutable to override Pragma: no-cache.
 NET_EXPORT BASE_DECLARE_FEATURE(kCacheControlImmutable);
 

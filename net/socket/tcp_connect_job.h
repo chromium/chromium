@@ -82,10 +82,6 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // In cases where both IPv6 and IPv4 addresses were returned from DNS,
   // TcpConnectJobs will start a second connection attempt to just
   // the IPv4 addresses after this much time. (This is "Happy Eyeballs".)
-  //
-  // TODO(willchan): Base this off RTT instead of statically setting it. Note we
-  // choose a timeout that is different from the backup Connector timer so
-  // they don't synchronize.
   static constexpr base::TimeDelta kIPv6FallbackTime = base::Milliseconds(300);
 
   struct NET_EXPORT_PRIVATE ServiceEndpointOverride {
@@ -138,6 +134,12 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   ServiceEndpoint PassServiceEndpoint();
 
   static base::TimeDelta ConnectionTimeout();
+
+  // Calculates the IPv6 fallback time. If the `kIPv6FallbackBasedOnRTT` feature
+  // is enabled, it attempts to base this time dynamically on the estimated RTT.
+  static base::TimeDelta GetIPv6FallbackTime(
+      const CommonConnectJobParams* common_connect_job_params,
+      const TransportSocketParams* params);
 
   // Returns true if there are two live connectors. CHECKs if complete, since
   // both connectors are deleted at that point, which is probably not what

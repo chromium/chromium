@@ -26,7 +26,9 @@
 #include "net/base/trace_constants.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/http/http_server_properties.h"
 #include "net/log/net_log_event_type.h"
+#include "net/nqe/network_quality_estimator.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/tcp_connect_job.h"
 #include "net/socket/transport_connect_sub_job.h"
@@ -409,10 +411,8 @@ int TransportConnectJob::DoTransportConnect() {
     if (result != ERR_IO_PENDING)
       return HandleSubJobComplete(result, ipv6_job_.get());
     if (ipv4_job_) {
-      base::TimeDelta fallback_time = kIPv6FallbackTime;
-      if (base::FeatureList::IsEnabled(features::kAdjustIPv6FallbackTime)) {
-        fallback_time = features::kIPv6FallbackTime.Get();
-      }
+      base::TimeDelta fallback_time = TcpConnectJob::GetIPv6FallbackTime(
+          common_connect_job_params(), params_.get());
       // This use of base::Unretained is safe because |fallback_timer_| is
       // owned by this object.
       fallback_timer_.Start(

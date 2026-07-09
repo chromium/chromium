@@ -130,10 +130,6 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   // In cases where both IPv6 and IPv4 addresses were returned from DNS,
   // TransportConnectJobs will start a second connection attempt to just the
   // IPv4 addresses after this much time. (This is "Happy Eyeballs".)
-  //
-  // TODO(willchan): Base this off RTT instead of statically setting it. Note we
-  // choose a timeout that is different from the backup connect job timer so
-  // they don't synchronize.
   static constexpr base::TimeDelta kIPv6FallbackTime = base::Milliseconds(300);
 
   struct NET_EXPORT_PRIVATE EndpointResultOverride {

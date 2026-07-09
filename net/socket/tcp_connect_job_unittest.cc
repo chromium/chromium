@@ -90,7 +90,7 @@ class TcpConnectJobTest : public TcpConnectJobTestBase,
             /*network_quality_estimator=*/nullptr,
             NetLog::Get(),
             /*websocket_endpoint_lock_manager=*/nullptr,
-            /*http_server_properties=*/nullptr,
+            &http_server_properties_,
             /*alpn_protos=*/nullptr,
             /*application_settings=*/nullptr,
             /*ignore_certificate_errors=*/nullptr,
@@ -389,6 +389,7 @@ class TcpConnectJobTest : public TcpConnectJobTestBase,
 
   // Use pointers so can easily re-initialize these.
   std::unique_ptr<TestConnectJobDelegate> test_delegate_;
+  HttpServerProperties http_server_properties_;
   std::unique_ptr<TcpConnectJob> connect_job_;
 
   // Time `connect_job_` was started. Set by InitConnectJob(), rather than on
@@ -3130,6 +3131,56 @@ TEST_F(TcpConnectJobTest, TwoConnectorsGetLoadState) {
   // socket.
   request->CallOnServiceEndpointRequestFinished(OK);
   WaitForSuccess(kIpV6Endpoint1, service_endpoint);
+}
+
+class TcpConnectJobRTTFallbackTest : public TcpConnectJobTest {
+ public:
+  TcpConnectJobRTTFallbackTest()
+      : TcpConnectJobTest(
+            /*enabled_features=*/
+            {{features::kHappyEyeballsV2, {}},
+             {features::kIPv6FallbackBasedOnRTT,
+              {{"IPv6FallbackRTTMultiplier", "2.0"},
+               {"IPv6FallbackMin", "10ms"},
+               {"IPv6FallbackMax", "1s"}}}},
+            /*disabled_features=*/{}) {}
+};
+
+TEST_F(TcpConnectJobRTTFallbackTest, UsesRTTForFallback) {
+  // Set up HttpServerProperties with a specific RTT.
+  url::SchemeHostPort server(url::kHttpsScheme, kHostName, 443);
+  ServerNetworkStats stats;
+  stats.srtt = base::Milliseconds(50);
+  http_server_properties_.SetServerNetworkStats(
+      server, NetworkAnonymizationKey(), stats);
+
+  const auto service_endpoint =
+      CreateServiceEndpoint({kIpV4Endpoint1, kIpV6Endpoint1});
+  host_resolver_.ConfigureDefaultResolution()
+      .add_endpoint(service_endpoint)
+      .CompleteStartSynchronously(OK);
+
+  AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV6Endpoint1);
+  MockConnectCompleter connect_completer;
+  AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
+
+  base::Time start_time = base::Time::Now();
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  connect_completer.WaitForConnect();
+  // Check time to make sure that the IPv4 Connector wasn't created.
+  EXPECT_EQ(base::Time::Now() - start_time, base::TimeDelta());
+  EXPECT_EQ(1u, connect_job_->GetFreshConnectorCountForTesting());
+
+  // RTT is 50ms, multiplier is 2.0, so fallback should be 100ms.
+  FastForwardBy(base::Milliseconds(100));
+  EXPECT_EQ(2u, connect_job_->GetFreshConnectorCountForTesting());
+
+  connect_completer.Complete(OK);
+  WaitForSuccess(
+      kIpV4Endpoint1, service_endpoint,
+      /*expected_connection_attempts=*/{{kIpV6Endpoint1, ERR_FAILED}});
+  EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+  CheckConnectTiming(/*dns_start=*/start_time_, /*dns_end=*/start_time_);
 }
 
 class TcpConnectJobOptimisticDnsTest

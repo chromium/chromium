@@ -114,6 +114,27 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "fallback_time",
                    TcpConnectJob::kIPv6FallbackTime);
 
+BASE_FEATURE(kIPv6FallbackBasedOnRTT, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(double,
+                   kIPv6FallbackRTTMultiplier,
+                   &kIPv6FallbackBasedOnRTT,
+                   1.5);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kIPv6FallbackMin,
+                   &kIPv6FallbackBasedOnRTT,
+                   // Value is based on p25 of
+                   // Net.QuicSession.HostResolution.HandshakeConfirmedTime
+                   base::Milliseconds(50));
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kIPv6FallbackMax,
+                   &kIPv6FallbackBasedOnRTT,
+                   // Value is based on p99 of
+                   // Net.QuicSession.HostResolution.HandshakeConfirmedTime
+                   base::Milliseconds(1500));
+
 BASE_FEATURE(kCacheControlImmutable, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHttpCacheZstdDecompression, base::FEATURE_DISABLED_BY_DEFAULT);

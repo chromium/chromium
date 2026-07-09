@@ -33,7 +33,9 @@
 #include "net/base/trace_constants.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/http/http_server_properties.h"
 #include "net/log/net_log_event_type.h"
+#include "net/nqe/network_quality_estimator.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/tcp_connect_job_connector.h"
 #include "net/socket/transport_connect_job.h"
@@ -455,6 +457,70 @@ void TcpConnectJob::OnSlow(bool is_stale) {
       /*decrement_waiting_on_possible_async_deletion_count=*/false);
 }
 
+// static
+base::TimeDelta TcpConnectJob::GetIPv6FallbackTime(
+    const CommonConnectJobParams* common_connect_job_params,
+    const TransportSocketParams* params) {
+  base::TimeDelta fallback_time = kIPv6FallbackTime;
+
+  if (base::FeatureList::IsEnabled(features::kAdjustIPv6FallbackTime)) {
+    fallback_time = features::kIPv6FallbackTime.Get();
+  }
+
+  if (base::FeatureList::IsEnabled(features::kIPv6FallbackBasedOnRTT)) {
+    std::optional<base::TimeDelta> rtt =
+        [&]() -> std::optional<base::TimeDelta> {
+      // 1. Try to get destination-specific RTT from HttpServerProperties.
+      if (common_connect_job_params->http_server_properties) {
+        url::SchemeHostPort scheme_host_port;
+        if (std::holds_alternative<url::SchemeHostPort>(
+                params->destination())) {
+          scheme_host_port =
+              std::get<url::SchemeHostPort>(params->destination());
+        } else {
+          const auto& host_port_pair =
+              std::get<HostPortPair>(params->destination());
+          scheme_host_port = url::SchemeHostPort("https", host_port_pair.host(),
+                                                 host_port_pair.port());
+        }
+
+        const ServerNetworkStats* stats =
+            common_connect_job_params->http_server_properties
+                ->GetServerNetworkStats(scheme_host_port,
+                                        params->network_anonymization_key());
+        if (stats && !stats->srtt.is_zero()) {
+          return stats->srtt;
+        }
+      }
+
+      // 2. Fallback to global network RTT from NetworkQualityEstimator.
+      if (common_connect_job_params->network_quality_estimator) {
+        std::optional<base::TimeDelta> nqe_rtt =
+            common_connect_job_params->network_quality_estimator
+                ->GetTransportRTT();
+        if (nqe_rtt.has_value()) {
+          return nqe_rtt;
+        }
+      }
+
+      return std::nullopt;
+    }();
+
+    // 3. Calculate and clamp fallback time.
+    if (rtt.has_value()) {
+      base::TimeDelta rtt_based_fallback =
+          rtt.value() * features::kIPv6FallbackRTTMultiplier.Get();
+
+      rtt_based_fallback =
+          std::clamp(rtt_based_fallback, features::kIPv6FallbackMin.Get(),
+                     features::kIPv6FallbackMax.Get());
+      return rtt_based_fallback;
+    }
+  }
+
+  return fallback_time;
+}
+
 int TcpConnectJob::AdvanceConnectionState(ConnectionState& state,
                                           bool is_stale) {
   CHECK(!IsStateDone(state));
@@ -518,10 +584,8 @@ int TcpConnectJob::AdvanceConnectionState(ConnectionState& state,
       !state.ipv4_connector && !state.slow_timer.IsRunning() &&
       state.primary_connector &&
       state.primary_connector->current_address().has_value()) {
-    base::TimeDelta fallback_time = kIPv6FallbackTime;
-    if (base::FeatureList::IsEnabled(features::kAdjustIPv6FallbackTime)) {
-      fallback_time = features::kIPv6FallbackTime.Get();
-    }
+    base::TimeDelta fallback_time =
+        GetIPv6FallbackTime(common_connect_job_params(), params_.get());
 
     // If the connector was promoted from stale_state_, it may have already
     // been running for some time. We reduce the fallback timer by the time
