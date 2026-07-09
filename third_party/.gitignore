@@ -44,11 +44,13 @@
 /devserver
 /directxsdk
 /dragonbox/src
+/disarm/src
 /edk2
 /elfutils/src
 /espresso/lib/
 /eyesfree/src
 /fast_float/src
+/fadec/src
 /fuchsia-sdk/images
 /fuchsia-sdk/images-internal
 /fuchsia-sdk/sdk

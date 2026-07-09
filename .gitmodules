@@ -102,6 +102,12 @@
 [submodule "third_party/dawn"]
 	path = third_party/dawn
 	url = https://dawn.googlesource.com/dawn
+[submodule "third_party/disarm/src"]
+	path = third_party/disarm/src
+	url = https://chromium.googlesource.com/external/github.com/aengelke/disarm
+[submodule "third_party/fadec/src"]
+	path = third_party/fadec/src
+	url = https://chromium.googlesource.com/external/github.com/aengelke/fadec
 [submodule "third_party/highway/src"]
 	path = third_party/highway/src
 	url = https://chromium.googlesource.com/external/github.com/google/highway
