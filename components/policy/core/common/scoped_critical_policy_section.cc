@@ -105,9 +105,16 @@ void ScopedCriticalPolicySection::Init(base::OnceClosure callback) {
         task_runner_,
         base::BindOnce(&ScopedCriticalPolicySection::OnSectionEntered,
                        weak_factory_.GetWeakPtr()));
+    // This path only guards asynchronous policy reloads; the startup-blocking
+    // initial load reads the registry directly without entering the section
+    // (see AsyncPolicyLoader::InitialLoad). Post the (potentially minutes-long)
+    // call at USER_VISIBLE rather than the default USER_BLOCKING so it does not
+    // occupy a user-blocking slot, while still running promptly enough to
+    // usually acquire the section before the 15s fallback below.
     base::ThreadPool::PostTask(
         FROM_HERE,
-        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(std::move(enter_section_callback_),
                        std::move(on_section_entered)));
   }
