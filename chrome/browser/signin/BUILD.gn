@@ -500,6 +500,10 @@ if (enable_bound_session_credentials) {
 source_set("unit_tests") {
   testonly = true
 
+  # signin_util_unittest.cc has a file-scope static with a non-trivial
+  # destructor, which -Wexit-time-destructors rejects.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
   sources = [
     "account_consistency_mode_manager_unittest.cc",
     "account_id_from_account_info_unittest.cc",
@@ -542,6 +546,36 @@ source_set("unit_tests") {
       "//chrome/browser/ui/android/tab_model:test_support",
       "//components/contextual_tasks/public:feature_list",
     ]
+  }
+
+  if (!is_android) {
+    sources += [ "signin_promo_unittest.cc" ]
+    deps += [
+      "//chrome/browser/autofill",
+      "//chrome/browser/profiles/batch_upload:test_support",
+      "//components/sync/base",
+      "//components/sync_bookmarks",
+      "//device/bluetooth:mocks",
+    ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    sources += [
+      "chrome_signin_and_sync_status_metrics_provider_unittest.cc",
+      "force_signin_verifier_unittest.cc",
+      "signin_ui_util_unittest.cc",
+      "signin_util_unittest.cc",
+    ]
+    deps += [
+      "//chrome/browser/sync",
+      "//components/sync:test_support",
+      "//components/sync/base",
+      "//components/sync/service",
+    ]
+  }
+
+  if (is_linux || is_mac || is_win) {
+    sources += [ "accounts_policy_manager_unittest.cc" ]
   }
 
   if (enable_dice_support) {

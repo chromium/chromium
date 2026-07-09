@@ -6756,7 +6756,6 @@ test("unit_tests") {
       "../browser/profiles/profile_destroyer_unittest.cc",
       "../browser/safe_browsing/generated_safe_browsing_pref_unittest.cc",
       "../browser/safe_browsing/generated_security_settings_bundle_pref_unittest.cc",
-      "../browser/signin/signin_promo_unittest.cc",
       "../browser/ui/accelerator_table_unittest.cc",
       "../browser/ui/browser_command_controller_unittest.cc",
       "../browser/ui/browser_manager_service_factory_unittest.cc",
@@ -7812,10 +7811,6 @@ test("unit_tests") {
     }
   }
 
-  if (!is_android && !is_chromeos) {
-    sources += [ "../browser/signin/chrome_signin_and_sync_status_metrics_provider_unittest.cc" ]
-  }
-
   if (!is_android) {
     deps += [
       "//chrome/browser/ui:chrome_pages",
@@ -8083,8 +8078,6 @@ test("unit_tests") {
   }
 
   if (is_linux || is_mac || is_win) {
-    sources += [ "../browser/signin/accounts_policy_manager_unittest.cc" ]
-
     deps += [
       "../browser/enterprise/connectors/device_trust/key_management/browser",
       "../browser/enterprise/connectors/device_trust/key_management/browser:test_support",
@@ -8203,9 +8196,6 @@ test("unit_tests") {
   if (!is_android && !is_chromeos) {
     sources += [
       "../browser/media/webrtc/native_desktop_media_list_unittest.cc",
-      "../browser/signin/force_signin_verifier_unittest.cc",
-      "../browser/signin/signin_ui_util_unittest.cc",
-      "../browser/signin/signin_util_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_contents_view_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_row_view_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_security_view_unittest.cc",
