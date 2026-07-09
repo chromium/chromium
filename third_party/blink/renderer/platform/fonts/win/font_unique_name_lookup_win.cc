@@ -32,7 +32,7 @@ FontUniqueNameLookupWin::~FontUniqueNameLookupWin() = default;
 
 sk_sp<SkTypeface> FontUniqueNameLookupWin::MatchUniqueName(
     const String& font_unique_name) {
-  if (RuntimeEnabledFeatures::FontDataServiceEnabled()) {
+  if (RuntimeEnabledFeatures::FontDataServiceForCSSLocalFontsEnabled()) {
     return MatchUniqueNameViaFontDataService(font_unique_name);
   }
   return MatchUniqueNameSingleLookup(font_unique_name);
@@ -70,7 +70,7 @@ sk_sp<SkTypeface> FontUniqueNameLookupWin::InstantiateFromFileAndTtcIndex(
 }
 
 bool FontUniqueNameLookupWin::IsFontUniqueNameLookupReadyForSyncLookup() {
-  if (RuntimeEnabledFeatures::FontDataServiceEnabled()) {
+  if (RuntimeEnabledFeatures::FontDataServiceForCSSLocalFontsEnabled()) {
     EnsureFontDataServiceConnected();
   } else {
     EnsureServiceConnected();
@@ -165,7 +165,7 @@ sk_sp<SkTypeface> FontUniqueNameLookupWin::InstantiateFromMatchResult(
 }
 
 void FontUniqueNameLookupWin::Init() {
-  if (RuntimeEnabledFeatures::FontDataServiceEnabled()) {
+  if (RuntimeEnabledFeatures::FontDataServiceForCSSLocalFontsEnabled()) {
     EnsureFontDataServiceConnected();
     return;
   }

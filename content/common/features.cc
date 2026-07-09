@@ -355,6 +355,10 @@ BASE_FEATURE_ENUM_PARAM(FontDataServiceTypefaceType,
 #endif  // BUILDFLAG(IS_LINUX)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+// When enabled, route CSS local() font lookups through FontDataService.
+BASE_FEATURE(kFontDataServiceForCSSLocalFonts,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 bool IsFontDataServiceEnabled() {
 #if BUILDFLAG(IS_WIN)

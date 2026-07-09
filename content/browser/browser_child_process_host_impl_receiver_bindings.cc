@@ -102,15 +102,21 @@ void BrowserChildProcessHostImpl::BindHostReceiver(
     sandbox_support->BindReceiver(std::move(r));
     return;
   }
-  if (!features::IsFontDataServiceEnabled()) {
+  if (!base::FeatureList::IsEnabled(
+          features::kFontDataServiceForCSSLocalFonts)) {
     if (auto r = receiver.As<blink::mojom::DWriteFontProxy>()) {
-      // Skip DWriteFontProxy when FontDataService handles font lookups.
+      // Skip DWriteFontProxy when FontDataService handles all font lookups. CSS
+      // Local fonts are the last remaining use-case requiring DWriteFontProxy.
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING, base::MayBlock()})
           ->PostTask(FROM_HERE, base::BindOnce(&DWriteFontProxyImpl::Create,
                                                std::move(r)));
       return;
     }
+  } else {
+    // If we don't initialize DWriteFontProxy, we should have FontDataService
+    // enabled.
+    CHECK(features::IsFontDataServiceEnabled());
   }
 #endif
 
