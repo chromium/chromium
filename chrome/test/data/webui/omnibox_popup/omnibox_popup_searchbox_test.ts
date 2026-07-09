@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, SearchboxBrowserProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import {omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxPopupPageRemote, OmniboxPopupSearchboxElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -492,5 +492,141 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(testText, input.value);
     assertEquals(0, input.selectionStart);
     assertEquals(testText.length, input.selectionEnd);
+  });
+
+  test('HandlesPastePlainText', async () => {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/plain', 'javascript:alert(1)\nhello world');
+    const pasteEvent = new ClipboardEvent('paste', {
+      clipboardData: dataTransfer,
+      cancelable: true,
+    });
+
+    searchbox.$.input.dispatchEvent(pasteEvent);
+    await microtasksFinished();
+
+    assertTrue(pasteEvent.defaultPrevented);
+    assertEquals('alert(1) hello world', searchbox.$.input.inputElement.value);
+  });
+
+  test('HandlesPasteBookmarkFormat', async () => {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData(
+        'text/x-moz-url', 'https://example.com\nExample Title');
+    const pasteEvent = new ClipboardEvent('paste', {
+      clipboardData: dataTransfer,
+      cancelable: true,
+    });
+
+    searchbox.$.input.dispatchEvent(pasteEvent);
+    await microtasksFinished();
+
+    assertTrue(pasteEvent.defaultPrevented);
+    assertEquals('https://example.com', searchbox.$.input.inputElement.value);
+  });
+
+  test('StripSchemasUnsafeForPaste', () => {
+    const testCases: Array<{input: string, expected: string}> = [
+      // Safe query.
+      {input: ' \x01 ', expected: ' \x01 '},
+      // Safe URL.
+      {
+        input: 'http://www.google.com?q=javascript:alert(0)',
+        expected: 'http://www.google.com?q=javascript:alert(0)',
+      },
+      // Safe query.
+      {input: 'JavaScript', expected: 'JavaScript'},
+      // Unsafe JS URL.
+      {input: 'javaScript:', expected: ''},
+      // Unsafe JS URL.
+      {input: ' javaScript: ', expected: ''},
+      // Unsafe JS URL.
+      {
+        input: 'javAscript:Javascript:javascript',
+        expected: 'javascript',
+      },
+      // Unsafe JS URL.
+      {input: 'javAscript:alert(1)', expected: 'alert(1)'},
+      // Single strip unsafe.
+      {
+        input: 'javAscript:javascript:alert(2)',
+        expected: 'alert(2)',
+      },
+      // Single strip unsafe.
+      {
+        input: 'jaVascript:\njavaScript:\x01 alert(3) \x01',
+        expected: 'alert(3) \x01',
+      },
+      // Leading control chars unsafe.
+      {
+        input:
+            '\x01\x02\x03\x04\x05\x06\x07\x08\x09\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\u2009JavaScript:alert(4)',
+        expected: 'alert(4)',
+      },
+      // Embedded control characters unsafe.
+      {
+        input: '\x01\x02javascript:\x03\x04JavaScript:alert(5)',
+        expected: 'alert(5)',
+      },
+    ];
+
+    for (const testCase of testCases) {
+      assertEquals(testCase.expected, stripJavascriptSchemas(testCase.input));
+    }
+  });
+
+  test('SanitizeTextForPaste', () => {
+    const testCases: Array<{input: string, expected: string}> = [
+      // No whitespace: leave unchanged.
+      {input: '', expected: ''},
+      {input: 'a', expected: 'a'},
+      {input: 'abc', expected: 'abc'},
+
+      // Leading/trailing whitespace: remove.
+      {input: ' abc', expected: 'abc'},
+      {input: '  \n  abc', expected: 'abc'},
+      {input: 'abc ', expected: 'abc'},
+      {input: 'abc\t \t', expected: 'abc'},
+      {input: '\nabc\n', expected: 'abc'},
+
+      // All whitespace: Convert to single space.
+      {input: ' ', expected: ' '},
+      {input: '\n', expected: ' '},
+      {input: '   ', expected: ' '},
+      {input: '\n\n\n', expected: ' '},
+      {input: ' \n\t', expected: ' '},
+
+      // Broken URL has newlines stripped.
+      {
+        input: 'http://www.chromium.org/developers/testing/chromium-\n' +
+            'build-infrastructure/tour-of-the-chromium-buildbot',
+        expected: 'http://www.chromium.org/developers/testing/' +
+            'chromium-build-infrastructure/tour-of-the-chromium-buildbot',
+      },
+
+      // Multi-line address is converted to a single-line address.
+      {
+        input: '1600 Amphitheatre Parkway\nMountain View, CA',
+        expected: '1600 Amphitheatre Parkway Mountain View, CA',
+      },
+
+      // Line-breaking the JavaScript scheme with no other whitespace results in
+      // a dangerous URL that is sanitized by dropping the scheme.
+      {input: 'java\r\nscript:alert(0)', expected: 'alert(0)'},
+
+      // Line-breaking the JavaScript scheme with whitespace elsewhere in the
+      // string results in a safe string with a space replacing the line break.
+      {input: 'java\r\nscript: alert(0)', expected: 'java script: alert(0)'},
+
+      // Unusual URL with multiple internal spaces is preserved as-is.
+      {input: 'http://foo.com/a.  b', expected: 'http://foo.com/a.  b'},
+
+      // URL with unicode whitespace is also preserved as-is.
+      {input: 'http://foo.com/a\u3000b', expected: 'http://foo.com/a\u3000b'},
+    ];
+
+    for (const testCase of testCases) {
+      assertEquals(testCase.expected, sanitizeTextForPaste(testCase.input));
+    }
   });
 });

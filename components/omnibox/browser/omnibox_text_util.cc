@@ -22,6 +22,7 @@
 
 namespace omnibox {
 
+// LINT.IfChange(StripJavascriptSchemas)
 std::u16string StripJavascriptSchemas(const std::u16string& text) {
   const std::u16string kJsPrefix(
       base::StrCat({url::kJavaScriptScheme16, u":"}));
@@ -55,7 +56,9 @@ std::u16string StripJavascriptSchemas(const std::u16string& text) {
 
   return text;
 }
+// LINT.ThenChange(//chrome/browser/resources/omnibox_popup/utils.ts:StripJavascriptSchemas)
 
+// LINT.IfChange(SanitizeTextForPaste)
 std::u16string SanitizeTextForPaste(const std::u16string& text) {
   if (text.empty()) {
     return std::u16string();  // Nothing to do.
@@ -130,6 +133,7 @@ std::u16string SanitizeTextForPaste(const std::u16string& text) {
 
   return StripJavascriptSchemas(output);
 }
+// LINT.ThenChange(//chrome/browser/resources/omnibox_popup/utils.ts:SanitizeTextForPaste)
 
 void AdjustTextForCopy(
     int sel_min,
