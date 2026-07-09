@@ -2855,6 +2855,27 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       ActiveTabNavigationObserverNotifiesOnTitleSet) {
+  tabs::TabInterface* tab = AddTab(GURL("https://example.com"));
+
+  mock_searchbox_page_.receiver_.reset();
+  handler_ = std::make_unique<FakeContextualSearchboxHandler>(
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      mock_searchbox_page_.BindAndGetRemote(), profile(), web_contents(),
+      std::make_unique<TestOmniboxClient>(), base::BindLambdaForTesting([&]() {
+        return contextual_session_handle_.get();
+      }));
+
+  EXPECT_CALL(mock_searchbox_page_, OnTabStripChanged).Times(1);
+
+  content::WebContents* active_contents = tab->GetContents();
+  active_contents->UpdateTitleForEntry(
+      active_contents->GetController().GetActiveEntry(), u"New Title");
+
+  mock_searchbox_page_.FlushForTesting();
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
        ActiveTabNavigationObserverUpdatesOnActiveTabChanged) {
   tabs::TabInterface* tab1 = AddTab(GURL("https://example.com/tab1"));
   tabs::TabInterface* tab2 = AddTab(GURL("https://example.com/tab2"));

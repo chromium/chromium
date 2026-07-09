@@ -407,6 +407,10 @@ class ContextualSearchboxHandler::ActiveTabNavigationObserver
     }
   }
 
+  void TitleWasSet(content::NavigationEntry* entry) override {
+    on_navigation_cb_.Run();
+  }
+
  private:
   base::RepeatingClosure on_navigation_cb_;
 };
