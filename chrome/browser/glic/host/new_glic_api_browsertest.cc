@@ -728,6 +728,16 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testCanAttachPanelSidePanel) {
   ExecuteJsTest();
 }
 
+#if defined(NOT_VETTED_ON_ANDROID)
+#define MAYBE_testCanAttachPanelDetached DISABLED_testCanAttachPanelDetached
+#else
+#define MAYBE_testCanAttachPanelDetached testCanAttachPanelDetached
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testCanAttachPanelDetached) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
 class NewGlicApiTestWithWebActuationSettingEnabled : public NewGlicApiTest {
  public:
   NewGlicApiTestWithWebActuationSettingEnabled() {
