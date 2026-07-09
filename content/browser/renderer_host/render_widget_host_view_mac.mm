@@ -117,6 +117,14 @@ BASE_FEATURE(kThrottleResizeIpc, base::FEATURE_DISABLED_BY_DEFAULT);
 // HasSavedFrames(), which was the pre-M149 behaviour.
 BASE_FEATURE(kUseHadSavedFrameAtStart, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If true, sends all tab switch VisibleTimeEvents to the DelegatedFrameHost if
+// HasSavedFrames() is currently true. Otherwise, only sends those with
+// `had_saved_frame_at_start`.
+BASE_FEATURE_PARAM(bool,
+                   kSendAllSavedFramesToDelegatedFrameHost,
+                   &kUseHadSavedFrameAtStart,
+                   false);
+
 // Extract any events in `visible_time_request` that should go to the
 // DelegatedFrameHost and sends them to `delegated_frame_host`. Modifies
 // `visible_time_request` in place.
@@ -127,10 +135,25 @@ void SendVisibleTimeRequestToDelegatedFrameHost(
   CHECK(delegated_frame_host);
   std::optional<blink::RecordContentToVisibleTimeRequest> delegated_request;
   if (base::FeatureList::IsEnabled(kUseHadSavedFrameAtStart)) {
-    // Send only the events that had a saved frame when the tab switch started
-    // to the DelegatedFrameHost.
-    delegated_request =
-        visible_time_request.ExtractTabSwitchEventsWithSavedFrame();
+    if (kSendAllSavedFramesToDelegatedFrameHost.Get()) {
+      // If there's already a Surface available, send all tab switch events to
+      // the DelegatedFrameHost. ContentToVisibleTimeRecorder will use the
+      // ".WithSavedFrame" suffix for the ones with `had_saved_frame_at_start`,
+      // and a ".NoSavedFrames_*" suffix for the rest.
+      if (has_saved_frame) {
+        delegated_request = visible_time_request.ExtractAllTabSwitchEvents();
+      } else {
+        delegated_request =
+            visible_time_request.ExtractTabSwitchEventsWithSavedFrame();
+      }
+    } else {
+      // Send only the events that had a saved frame when the tab switch started
+      // to the DelegatedFrameHost. (This is the default behaviour starting in
+      // M149, but may over-estimate tab switch times because if a Surface
+      // exists the DelegatedFrameHost will present it before the renderer.)
+      delegated_request =
+          visible_time_request.ExtractTabSwitchEventsWithSavedFrame();
+    }
   } else {
     // If there's already a Surface available, send all tab switch events to the
     // DelegatedFrameHost. Otherwise leave them all in `visible_time_request` to
