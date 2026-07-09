@@ -44,12 +44,14 @@ import org.chromium.base.Callback;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.MimeTypeUtils;
 
 import java.io.ByteArrayInputStream;
@@ -57,6 +59,7 @@ import java.io.IOException;
 
 /** Unit tests for {@link FuseboxAttachmentDetailsFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(OmniboxFeatureList.OMNIBOX_AIM_IMAGE_DOWNSCALING)
 public class FuseboxAttachmentDetailsFetcherUnitTest {
     private static final int MAX_SQUARE_IMAGE_EDGE_SIZE =
             (int) Math.sqrt(FuseboxAttachmentDetailsFetcher.MAX_IMAGE_AREA);
