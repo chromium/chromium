@@ -16,11 +16,13 @@ source_set("video") {
     "fuchsia_decoder_factory.h",
     "fuchsia_video_decoder.h",
     "fuchsia_video_encode_accelerator.h",
+    "video_frame_writer_queue.h",
   ]
   sources = [
     "fuchsia_decoder_factory.cc",
     "fuchsia_video_decoder.cc",
     "fuchsia_video_encode_accelerator.cc",
+    "video_frame_writer_queue.cc",
   ]
   public_deps = [
     "//base",
@@ -48,7 +50,10 @@ source_set("video") {
 
 source_set("unittests") {
   testonly = true
-  sources = [ "fuchsia_video_decoder_unittest.cc" ]
+  sources = [
+    "fuchsia_video_decoder_unittest.cc",
+    "video_frame_writer_queue_unittest.cc",
+  ]
   deps = [
     ":video",
     "//base/test:test_support",

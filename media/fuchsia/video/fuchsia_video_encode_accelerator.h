@@ -9,8 +9,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
+#include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -26,6 +28,7 @@
 namespace media {
 
 class VideoFrame;
+class VideoFrameWriterQueue;
 
 class MEDIA_EXPORT FuchsiaVideoEncodeAccelerator final
     : public VideoEncodeAccelerator,
@@ -59,7 +62,6 @@ class MEDIA_EXPORT FuchsiaVideoEncodeAccelerator final
   ~FuchsiaVideoEncodeAccelerator() override;
 
  private:
-  class VideoFrameWriterQueue;
   class OutputPacketsQueue;
 
   // StreamProcessorHelper::Client implementation.
