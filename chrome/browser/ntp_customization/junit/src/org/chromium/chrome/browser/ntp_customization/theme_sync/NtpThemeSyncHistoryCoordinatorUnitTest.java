@@ -301,6 +301,43 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
     }
 
     @Test
+    public void testOnItemClicked_SelectOriginalItem() {
+        // Setup data: Default and one local history.
+        NtpBackgroundDataColor localColor =
+                new NtpBackgroundDataColor(
+                        mContext,
+                        PlatformType.ANDROID_LOCAL,
+                        NtpThemeColorId.NTP_COLORS_BLUE,
+                        /* isChromeColorDailyRefreshEnabled= */ false);
+        mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor);
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localColor);
+
+        mCoordinator.prepareToShow();
+
+        NtpThemeSyncHistoryRecyclerViewAdaptor adapter =
+                mCoordinator.getRecyclerViewAdaptorForTesting();
+        assertNotNull(adapter);
+
+        // Click the Default item (index 0), which is different from the original selected item
+        // (index 1).
+        int position = 0;
+        adapter.setSelectedPosition(position, /* isFromClick= */ true);
+
+        verify(mNtpCustomizationConfigManager).onBackgroundDataChanged(eq(mContext), any());
+        verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
+
+        clearInvocations(mNtpCustomizationConfigManager, mBottomSheetDelegate);
+
+        // Click back to the original selected item (index 1).
+        position = 1;
+        adapter.setSelectedPosition(position, /* isFromClick= */ true);
+
+        verify(mNtpCustomizationConfigManager)
+                .onBackgroundDataChanged(eq(mContext), eq(localColor));
+        verify(mBottomSheetDelegate).onNewColorSelected(eq(false));
+    }
+
+    @Test
     public void testPrepareToShow_SubsequentCallUpdatesOnlyLocalHistory() {
         // 1. Initial Setup: one local (BLUE), one remote (AQUA).
         NtpBackgroundDataColor localColor1 =
