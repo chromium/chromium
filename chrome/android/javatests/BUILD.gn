@@ -1277,6 +1277,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.settings") {
     "src/org/chromium/chrome/browser/settings/MainSettingsFragmentTest.java",
     "src/org/chromium/chrome/browser/settings/MultiColumnSettingsUnitTest.java",
     "src/org/chromium/chrome/browser/settings/SettingsActivityTest.java",
+    "src/org/chromium/chrome/browser/settings/SettingsPageTest.java",
     "src/org/chromium/chrome/browser/settings/search/SearchIndexProviderRegistryTest.java",
     "src/org/chromium/chrome/browser/settings/search/SettingsSearchCoordinatorTest.java",
   ]
