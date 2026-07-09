@@ -107,18 +107,10 @@ public class ConnectivityManagerWrapper {
     NetworkState getNetworkState(
             NetworkChangeNotifierAutoDetect.@Nullable WifiManagerDelegate wifiManagerDelegate) {
         Network network = null;
-        NetworkInfo networkInfo = null;
+        NetworkInfo networkInfo;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             network = getDefaultNetwork();
-            // Skip the getNetworkInfo() IPC when we can derive everything from capabilities.
-            if (getDeriveConnectionTypeFromCapabilities()) {
-                NetworkState state = getNetworkStateFromCapabilities(network);
-                if (state != null) {
-                    return state;
-                }
-            } else {
-                networkInfo = getNetworkInfo(network);
-            }
+            networkInfo = getNetworkInfo(network);
         } else {
             networkInfo = mConnectivityManager.getActiveNetworkInfo();
         }
@@ -182,38 +174,6 @@ public class ConnectivityManagerWrapper {
                 true, networkInfo.getType(), networkInfo.getSubtype(), false, null, false, "");
     }
 
-    // Builds NetworkState from NetworkCapabilities alone, avoiding the getNetworkInfo() IPC.
-    // Returns null when the network or its capabilities are unavailable, so the caller falls back
-    // to
-    // the NetworkInfo path for the connected/disconnected decision. Does not special-case
-    // BLOCKED-but-foreground networks (crbug.com/677365).
-    @RequiresApi(Build.VERSION_CODES.M)
-    private @Nullable NetworkState getNetworkStateFromCapabilities(@Nullable Network network) {
-        if (network == null) {
-            return null;
-        }
-        NetworkCapabilitiesWrapper capabilities = getNetworkCapabilities(network);
-        if (capabilities == null) {
-            return null;
-        }
-        int type = connectivityTypeFromCapabilities(capabilities);
-        int subtype =
-                type == ConnectivityManager.TYPE_MOBILE
-                        ? cellularSubtypeFromKbps(capabilities.getLinkDownstreamBandwidthKbps())
-                        : TelephonyManager.NETWORK_TYPE_UNKNOWN;
-        boolean isMetered =
-                !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
-        DnsStatus dnsStatus = AndroidNetworkLibrary.getDnsStatus(network);
-        return new NetworkState(
-                capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET),
-                type,
-                subtype,
-                isMetered,
-                String.valueOf(networkToNetId(network)),
-                dnsStatus != null && dnsStatus.getPrivateDnsActive(),
-                dnsStatus == null ? "" : dnsStatus.getPrivateDnsServerName());
-    }
-
     /**
      * Fetches NetworkInfo for |network|. Does not account for underlying VPNs; see
      * getNetworkInfo(Network) for a method that does.
@@ -254,45 +214,32 @@ public class ConnectivityManagerWrapper {
     }
 
     /**
-     * Derives the connection type from NetworkCapabilities, mimicking what the deprecated {@link
-     * android.net.NetworkInfo#getType} would have returned, while avoiding the synchronous
+     * Derives the connection type from NetworkCapabilities, mimicking what the deprecated
+     * {@link android.net.NetworkInfo#getType} would have returned, while avoiding the synchronous
      * ConnectivityManager calls that {@link #getConnectionType} makes. Unlike NetworkInfo,
-     * NetworkCapabilities has no cellular subtype, so it is approximated from {@link
-     * android.net.NetworkCapabilities#getLinkDownstreamBandwidthKbps}. A VPN with no underlying
-     * transport returns {@link ConnectionType#CONNECTION_UNKNOWN} to match the IPC path's default
-     * for {@code TYPE_VPN}.
+     * NetworkCapabilities has no cellular subtype, so it is approximated from
+     * {@link android.net.NetworkCapabilities#getLinkDownstreamBandwidthKbps}. A VPN with no
+     * underlying transport returns {@link ConnectionType#CONNECTION_UNKNOWN} to match the IPC
+     * path's default for {@code TYPE_VPN}.
      */
     @ConnectionType
     static int getConnectionTypeFromCapabilities(NetworkCapabilitiesWrapper capabilities) {
-        int type = connectivityTypeFromCapabilities(capabilities);
-        int subtype =
-                type == ConnectivityManager.TYPE_MOBILE
-                        ? cellularSubtypeFromKbps(capabilities.getLinkDownstreamBandwidthKbps())
-                        : TelephonyManager.NETWORK_TYPE_UNKNOWN;
-        return convertToConnectionType(type, subtype);
-    }
-
-    // Maps a network's transports to the ConnectivityManager.TYPE_* that NetworkInfo#getType would
-    // have returned, or -1 if no known transport is set. Both -1 and TYPE_VPN are mapped to
-    // CONNECTION_UNKNOWN by convertToConnectionType, matching the IPC path.
-    static int connectivityTypeFromCapabilities(NetworkCapabilitiesWrapper capabilities) {
         if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
                 || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI_AWARE)) {
-            return ConnectivityManager.TYPE_WIFI;
-        }
-        if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-            return ConnectivityManager.TYPE_MOBILE;
+            return convertToConnectionType(ConnectivityManager.TYPE_WIFI, -1);
         }
         if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
-            return ConnectivityManager.TYPE_ETHERNET;
+            return convertToConnectionType(ConnectivityManager.TYPE_ETHERNET, -1);
         }
         if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) {
-            return ConnectivityManager.TYPE_BLUETOOTH;
+            return convertToConnectionType(ConnectivityManager.TYPE_BLUETOOTH, -1);
         }
-        if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
-            return ConnectivityManager.TYPE_VPN;
+        if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+            int kbps = capabilities.getLinkDownstreamBandwidthKbps();
+            return convertToConnectionType(
+                    ConnectivityManager.TYPE_MOBILE, cellularSubtypeFromKbps(kbps));
         }
-        return -1;
+        return ConnectionType.CONNECTION_UNKNOWN;
     }
 
     /**

@@ -240,40 +240,25 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                 type = ConnectivityManager.TYPE_WIFI;
             } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
                 type = ConnectivityManager.TYPE_MOBILE;
-                if (ConnectivityManagerWrapper.getDeriveConnectionTypeFromCapabilities()) {
-                    subtype =
-                            ConnectivityManagerWrapper.cellularSubtypeFromKbps(
-                                    mNetworkCapabilities.getLinkDownstreamBandwidthKbps());
-                } else {
-                    // To get the subtype we need to make a synchronous ConnectivityManager call
-                    // unfortunately.  It's recommended to use TelephonyManager.getDataNetworkType()
-                    // but that requires an additional permission.  Worst case this might be
-                    // inaccurate but getting the correct subtype is much much less important than
-                    // getting the correct type.  Incorrect type could make Chrome behave like it's
-                    // offline, incorrect subtype will just make cellular bandwidth estimates
-                    // incorrect.
-                    NetworkInfo networkInfo =
-                            mConnectivityManagerWrapper.getRawNetworkInfo(network);
-                    if (networkInfo != null) {
-                        subtype = networkInfo.getSubtype();
-                    }
+                // To get the subtype we need to make a synchronous ConnectivityManager call
+                // unfortunately.  It's recommended to use TelephonyManager.getDataNetworkType()
+                // but that requires an additional permission.  Worst case this might be inaccurate
+                // but getting the correct subtype is much much less important than getting the
+                // correct type.  Incorrect type could make Chrome behave like it's offline,
+                // incorrect subtype will just make cellular bandwidth estimates incorrect.
+                NetworkInfo networkInfo = mConnectivityManagerWrapper.getRawNetworkInfo(network);
+                if (networkInfo != null) {
+                    subtype = networkInfo.getSubtype();
                 }
             } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
                 type = ConnectivityManager.TYPE_ETHERNET;
             } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) {
                 type = ConnectivityManager.TYPE_BLUETOOTH;
             } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
-                if (ConnectivityManagerWrapper.getDeriveConnectionTypeFromCapabilities()) {
-                    type = ConnectivityManager.TYPE_VPN;
-                } else {
-                    // Use ConnectivityManagerWrapper.getNetworkInfo(network) to find underlying
-                    // network which has a more useful transport type. crbug.com/1208022
-                    NetworkInfo networkInfo = mConnectivityManagerWrapper.getNetworkInfo(network);
-                    type =
-                            networkInfo != null
-                                    ? networkInfo.getType()
-                                    : ConnectivityManager.TYPE_VPN;
-                }
+                // Use ConnectivityManagerWrapper.getNetworkInfo(network) to find underlying
+                // network which has a more useful transport type. crbug.com/1208022
+                NetworkInfo networkInfo = mConnectivityManagerWrapper.getNetworkInfo(network);
+                type = networkInfo != null ? networkInfo.getType() : ConnectivityManager.TYPE_VPN;
             }
             boolean isMetered =
                     !mNetworkCapabilities.hasCapability(
@@ -374,17 +359,8 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                     mVpnInPlace = network;
                 }
                 final long netId = ConnectivityManagerWrapper.networkToNetId(network);
-                // Match getNetworkState()'s capabilities-based type so the two callbacks don't
-                // report conflicting types and flap, which would cancel requests on
-                // VPN-over-cellular.
-                @ConnectionType final int connectionType;
-                if (ConnectivityManagerWrapper.getDeriveConnectionTypeFromCapabilities()) {
-                    connectionType =
-                            ConnectivityManagerWrapper.getConnectionTypeFromCapabilities(
-                                    capabilities);
-                } else {
-                    connectionType = mConnectivityManagerWrapper.getConnectionType(network);
-                }
+                @ConnectionType
+                final int connectionType = mConnectivityManagerWrapper.getConnectionType(network);
                 runOnThread(
                         new Runnable() {
                             @Override
