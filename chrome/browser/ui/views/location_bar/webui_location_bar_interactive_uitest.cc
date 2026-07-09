@@ -776,7 +776,14 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, UnelideHome) {
 
 // Tests that if initial interaction just selected-all and didn't unelide
 // that moving the caret will unelide.
-IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, UnelideCaretMove) {
+// TODO(cebug.com/468203351): Flaky on Linux debug builders.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_UnelideCaretMove DISABLED_UnelideCaretMove
+#else
+#define MAYBE_UnelideCaretMove UnelideCaretMove
+#endif
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest,
+                       MAYBE_UnelideCaretMove) {
   RunTestSequence(
       InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
       InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
