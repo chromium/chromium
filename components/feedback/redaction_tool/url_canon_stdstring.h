@@ -17,7 +17,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "components/feedback/redaction_tool/url_canon.h"
 
 namespace redaction_internal {
@@ -52,9 +52,9 @@ class StdStringCanonOutput : public CanonOutput {
   void Resize(size_t sz) override;
 
  protected:
-  // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
-  // profiler data and tab_search:top100:2020.
-  RAW_PTR_EXCLUSION std::string* str_;
+  // Uses kUnprotectedInRelease: Performance reasons: based on analysis of
+  // sampling profiler data and tab_search:top100:2020.
+  raw_ptr<std::string, kUnprotectedInRelease> str_;
 };
 
 }  // namespace redaction_internal
