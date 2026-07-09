@@ -23,10 +23,10 @@ class RustMojoTestBrowserTest : public ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
-    base::FilePath out_dir;
-    base::PathService::Get(base::DIR_OUT_TEST_DATA_ROOT, &out_dir);
-    // Serve the build directory so that /gen/ paths resolve correctly.
-    embedded_test_server()->ServeFilesFromDirectory(out_dir);
+    base::FilePath gen_dir;
+    base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &gen_dir);
+    // Serve the gen directory so that Mojo bindings resolve correctly.
+    embedded_test_server()->ServeFilesFromDirectory(gen_dir);
     embedded_test_server()->ServeFilesFromDirectory(
         GetTestFilePath(nullptr, ""));
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -59,21 +59,7 @@ class RustMojoTestBrowserTestWithCommandLineSwitch
   }
 };
 
-// TODO(crbug.com/444509367): Failing on Fushia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_LoadRustMojoService DISABLED_LoadRustMojoService
-#define MAYBE_LoadRustMojoServiceWithFeatureEnabled \
-  DISABLED_LoadRustMojoServiceWithFeatureEnabled
-#define MAYBE_LoadRustMojoServiceWithCommandLineSwitch \
-  DISABLED_LoadRustMojoServiceWithCommandLineSwitch
-#else
-#define MAYBE_LoadRustMojoService LoadRustMojoService
-#define MAYBE_LoadRustMojoServiceWithFeatureEnabled \
-  LoadRustMojoServiceWithFeatureEnabled
-#define MAYBE_LoadRustMojoServiceWithCommandLineSwitch \
-  LoadRustMojoServiceWithCommandLineSwitch
-#endif
-IN_PROC_BROWSER_TEST_F(RustMojoTestBrowserTest, MAYBE_LoadRustMojoService) {
+IN_PROC_BROWSER_TEST_F(RustMojoTestBrowserTest, LoadRustMojoService) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/rust_mojo_test.html")));
   EXPECT_EQ("Rust says hi.", EvalJs(shell(), "getRustMessage(1)"));
@@ -103,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(RustMojoTestBrowserTest, MAYBE_LoadRustMojoService) {
 }
 
 IN_PROC_BROWSER_TEST_F(RustMojoTestBrowserTestWithFeatureEnabled,
-                       MAYBE_LoadRustMojoServiceWithFeatureEnabled) {
+                       LoadRustMojoServiceWithFeatureEnabled) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/rust_mojo_test.html")));
 
@@ -115,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(RustMojoTestBrowserTestWithFeatureEnabled,
 }
 
 IN_PROC_BROWSER_TEST_F(RustMojoTestBrowserTestWithCommandLineSwitch,
-                       MAYBE_LoadRustMojoServiceWithCommandLineSwitch) {
+                       LoadRustMojoServiceWithCommandLineSwitch) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/rust_mojo_test.html")));
 

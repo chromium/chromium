@@ -35,7 +35,7 @@ receiver that lives in the browser process. To execute it, build the
 
   <script>
     const out = new URLSearchParams(window.location.search).get('out') || '../../../out/default';
-    const prefix = (window.location.protocol === 'file:') ? `${out}/gen/` : '/gen/';
+    const prefix = (window.location.protocol === 'file:') ? `${out}/gen/` : '/';
     [
       'mojo/public/js/mojo_bindings_lite.js',
       'content/shell/common/rust_test.test-mojom-lite.js'
