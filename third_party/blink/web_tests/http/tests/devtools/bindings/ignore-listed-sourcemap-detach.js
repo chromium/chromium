@@ -28,7 +28,7 @@ import * as Main from 'devtools/entrypoints/main/main.js';
     await ConsoleTestRunner.waitForConsoleMessagesPromise(1);
 
     await TestRunner.reloadPagePromise();
-    TestRunner.addResult(`After reload, Console message count: ${SDK.ConsoleModel.ConsoleModel.allMessagesUnordered().length}`);
+    TestRunner.addResult(`After reload, Console message count: ${SDK.ConsoleModel.ConsoleModel.allMessagesUnordered(Main.MainImpl.MainImpl.universeForTest.targetManager).length}`);
     TestRunner.completeTest();
   }
 })();

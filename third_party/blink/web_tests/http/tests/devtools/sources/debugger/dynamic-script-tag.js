@@ -7,6 +7,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(
@@ -18,7 +19,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     function testOpenDevToolsAfterLoad(next) {
       var consoleMessagesCount = 2;
 
-      var messages = SDK.ConsoleModel.ConsoleModel.allMessagesUnordered();
+      var messages = SDK.ConsoleModel.ConsoleModel.allMessagesUnordered(Main.MainImpl.MainImpl.universeForTest.targetManager);
       for (var i = 0; i < messages.length; ++i)
         processMessage(messages[i]);
       checkWhenScriptsLoaded();
