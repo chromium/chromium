@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/ai/ai_semantic_embedder_service_launcher.h"
@@ -29,6 +30,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace component_updater {
 namespace {
@@ -36,6 +38,7 @@ namespace {
 class AIEmbeddingsComponentInstallerTest : public testing::Test {
  public:
   AIEmbeddingsComponentInstallerTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kAIEmbeddingsAPI);
     policy_ = GetAIEmbeddingsComponentInstallerPolicyForTesting();
     optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
         pref_service_.registry());
@@ -65,6 +68,7 @@ class AIEmbeddingsComponentInstallerTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ComponentInstallerPolicy> policy_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(AIEmbeddingsComponentInstallerTest, VerifyInstallation) {
@@ -158,6 +162,48 @@ TEST_F(AIEmbeddingsComponentInstallerTest, DoesNotRegisterWhenDisallowed) {
 
   EXPECT_CALL(mock_cus_, RegisterComponent(testing::_)).Times(0);
   RegisterAIEmbeddingsComponent(&mock_cus_, &pref_service_);
+}
+
+TEST_F(AIEmbeddingsComponentInstallerTest,
+       DoesNotRegisterWhenFeaturesDisabled) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({},
+                                 {blink::features::kAIEmbeddingsAPI,
+                                  blink::features::kAIEmbeddingsAPIForWorkers});
+
+  EXPECT_CALL(mock_cus_, RegisterComponent(testing::_)).Times(0);
+  RegisterAIEmbeddingsComponent(&mock_cus_, &pref_service_);
+}
+
+TEST_F(AIEmbeddingsComponentInstallerTest, RegistersWhenWorkerFeatureEnabled) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({blink::features::kAIEmbeddingsAPIForWorkers},
+                                 {blink::features::kAIEmbeddingsAPI});
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_cus_, RegisterComponent(testing::_))
+      .WillOnce([&](const component_updater::ComponentRegistration&) {
+        run_loop.Quit();
+        return true;
+      });
+  RegisterAIEmbeddingsComponent(&mock_cus_, &pref_service_);
+  run_loop.Run();
+}
+
+TEST_F(AIEmbeddingsComponentInstallerTest, RegistersWhenBothFeaturesEnabled) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({blink::features::kAIEmbeddingsAPI,
+                                  blink::features::kAIEmbeddingsAPIForWorkers},
+                                 {});
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_cus_, RegisterComponent(testing::_))
+      .WillOnce([&](const component_updater::ComponentRegistration&) {
+        run_loop.Quit();
+        return true;
+      });
+  RegisterAIEmbeddingsComponent(&mock_cus_, &pref_service_);
+  run_loop.Run();
 }
 
 TEST_F(AIEmbeddingsComponentInstallerTest, DeleteComponent) {

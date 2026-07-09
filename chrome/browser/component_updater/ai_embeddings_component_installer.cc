@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -33,6 +34,7 @@
 #include "components/optimization_guide/proto/passage_embeddings_model_metadata.pb.h"
 #include "components/passage_embeddings/core/passage_embeddings_service_controller.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace {
 // CRX ID: ddkjpondgmdhgaiodldnoebnfcjbckih
@@ -142,6 +144,12 @@ GetAIEmbeddingsComponentInstallerPolicyForTesting() {
 void RegisterAIEmbeddingsComponent(ComponentUpdateService* cus,
                                    PrefService* local_state) {
   CHECK(local_state);
+  if (!base::FeatureList::IsEnabled(blink::features::kAIEmbeddingsAPI) &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kAIEmbeddingsAPIForWorkers)) {
+    return;
+  }
+
   if (optimization_guide::
           GetGenAILocalFoundationalModelEnterprisePolicySettings(local_state) ==
       optimization_guide::model_execution::prefs::
