@@ -9,6 +9,7 @@
 
 #include <atomic>
 #include <memory>
+#include <unordered_map>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
@@ -232,7 +233,17 @@ class TRACING_EXPORT EtwConsumer
   bool DecodeFileIoOpEndEvent(const EVENT_HEADER& header,
                               const ETW_BUFFER_CONTEXT& buffer_context,
                               size_t pointer_size,
-                              base::span<const uint8_t> packet_data)
+                              base::span<const uint8_t> packet_data,
+                              bool should_record)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Registers a File I/O start event, tracking active IRPs for Chrome threads.
+  // Populates `active_irps_from_chrome_threads_`, which is used when an OpEnd
+  // event for a Chrome event is run on a non-Chrome thread.
+  // Returns the irp_ptr passed in.
+  uint64_t RegisterFileIoStart(const EVENT_HEADER& header,
+                               uint64_t irp_ptr,
+                               size_t pointer_size)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Decodes a `DiskIo_TypeGroup1` event and emits a Perfetto trace event if
@@ -314,6 +325,10 @@ class TRACING_EXPORT EtwConsumer
 
   // If true, interned data will be reset before the next event is processed.
   std::atomic<bool> reset_emitted_state_{true};
+
+  // Outstanding IRP pointers initiated by Chrome (kClient) threads.
+  std::unordered_map<uint64_t, uint32_t> active_irps_from_chrome_threads_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

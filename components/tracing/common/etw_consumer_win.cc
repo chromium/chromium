@@ -70,6 +70,11 @@ uint64_t CopyPointer(base::BufferIterator<const uint8_t>& iterator,
 uint64_t CopyPointerHash(base::BufferIterator<const uint8_t>& iterator,
                          size_t pointer_size) {
   const uint64_t pointer = CopyPointer(iterator, pointer_size);
+  if (pointer == 0 ||
+      pointer == (pointer_size == sizeof(uint32_t) ? 0xffffffffULL
+                                                   : 0xffffffffffffffffULL)) {
+    return pointer;
+  }
 
   // Hash `pointer` using a random key so that the actual pointer value is
   // obscured and not reversible.
@@ -307,7 +312,9 @@ void EtwConsumer::HandleFileIoEvent(const EVENT_HEADER& header,
                                     const ETW_BUFFER_CONTEXT& buffer_context,
                                     size_t pointer_size,
                                     base::span<const uint8_t> packet_data) {
-  if (!inclusion_policy_.ShouldRecordFileIoEvents(header.ThreadId)) {
+  const bool should_record =
+      inclusion_policy_.ShouldRecordFileIoEvents(header.ThreadId);
+  if (!should_record && header.EventDescriptor.Opcode != 76) {
     return;
   }
 
@@ -352,7 +359,7 @@ void EtwConsumer::HandleFileIoEvent(const EVENT_HEADER& header,
       break;
     case 76:
       if (!DecodeFileIoOpEndEvent(header, buffer_context, pointer_size,
-                                  packet_data)) {
+                                  packet_data, should_record)) {
         DLOG(ERROR) << "Error decoding FileIo_OpEnd event";
       }
       break;
@@ -809,7 +816,6 @@ bool EtwConsumer::DecodeCSwitchEvent(const EVENT_HEADER& header,
   c_switch->set_old_thread_wait_ideal_processor(
       old_thread_wait_ideal_processor);
   c_switch->set_new_thread_wait_time(new_thread_wait_time);
-
   return true;
 }
 
@@ -847,6 +853,28 @@ bool EtwConsumer::DecodeReadyThreadEvent(
   return true;
 }
 
+uint64_t EtwConsumer::RegisterFileIoStart(const EVENT_HEADER& header,
+                                          uint64_t irp_ptr,
+                                          size_t pointer_size) {
+  if (irp_ptr != 0 &&
+      irp_ptr != (pointer_size == sizeof(uint32_t) ? 0xffffffffULL
+                                                   : 0xffffffffffffffffULL)) {
+    constexpr size_t kMaxActiveChromeIrps = 16384;
+    if (active_irps_from_chrome_threads_.size() < kMaxActiveChromeIrps ||
+        active_irps_from_chrome_threads_.find(irp_ptr) !=
+            active_irps_from_chrome_threads_.end()) {
+      active_irps_from_chrome_threads_[irp_ptr] = header.ThreadId;
+    } else {
+      static bool logged_chrome_full = false;
+      if (!logged_chrome_full) {
+        logged_chrome_full = true;
+        DLOG(WARNING) << "active_irps_from_chrome_threads_ is full!";
+      }
+    }
+  }
+  return irp_ptr;
+}
+
 bool EtwConsumer::DecodeFileIoCreateEvent(
     const EVENT_HEADER& header,
     const ETW_BUFFER_CONTEXT& buffer_context,
@@ -867,7 +895,8 @@ bool EtwConsumer::DecodeFileIoCreateEvent(
   auto* event = MakeNextEvent(header, buffer_context);
   event->set_thread_id(header.ThreadId);
   auto* file_io_create = event->set_file_io_create();
-  file_io_create->set_irp_ptr(CopyPointerHash(iterator, pointer_size));
+  file_io_create->set_irp_ptr(RegisterFileIoStart(
+      header, CopyPointerHash(iterator, pointer_size), pointer_size));
   file_io_create->set_file_object(CopyPointerHash(iterator, pointer_size));
   file_io_create->set_ttid(*iterator.CopyObject<uint32_t>());
   file_io_create->set_create_options(*iterator.CopyObject<uint32_t>());
@@ -876,7 +905,6 @@ bool EtwConsumer::DecodeFileIoCreateEvent(
   if (!privacy_filtering_enabled_) {
     file_io_create->set_open_path(base::WideToUTF8(*CopyWString(iterator)));
   }
-
   return true;
 }
 
@@ -895,12 +923,14 @@ bool EtwConsumer::DecodeFileIoDirEnumEvent(
     return false;
   }
 
-  // Read the contents of `packet_data` and generate a `FileIoDirEnum` event.
   base::BufferIterator<const uint8_t> iterator{packet_data};
+
+  // Read the contents of `packet_data` and generate a `FileIoDirEnum` event.
   auto* event = MakeNextEvent(header, buffer_context);
   event->set_thread_id(header.ThreadId);
   auto* file_io_dir_enum = event->set_file_io_dir_enum();
-  file_io_dir_enum->set_irp_ptr(CopyPointerHash(iterator, pointer_size));
+  file_io_dir_enum->set_irp_ptr(RegisterFileIoStart(
+      header, CopyPointerHash(iterator, pointer_size), pointer_size));
   file_io_dir_enum->set_file_object(CopyPointerHash(iterator, pointer_size));
   file_io_dir_enum->set_file_key(CopyPointerHash(iterator, pointer_size));
   file_io_dir_enum->set_ttid(*iterator.CopyObject<uint32_t>());
@@ -930,7 +960,8 @@ bool EtwConsumer::DecodeFileIoInfoEvent(
   auto* event = MakeNextEvent(header, buffer_context);
   event->set_thread_id(header.ThreadId);
   auto* file_io_info = event->set_file_io_info();
-  file_io_info->set_irp_ptr(CopyPointerHash(iterator, pointer_size));
+  file_io_info->set_irp_ptr(RegisterFileIoStart(
+      header, CopyPointerHash(iterator, pointer_size), pointer_size));
   file_io_info->set_file_object(CopyPointerHash(iterator, pointer_size));
   file_io_info->set_file_key(CopyPointerHash(iterator, pointer_size));
   file_io_info->set_extra_info(CopyPointer(iterator, pointer_size));
@@ -959,7 +990,8 @@ bool EtwConsumer::DecodeFileIoPathOperationEvent(
   auto* event = MakeNextEvent(header, buffer_context);
   event->set_thread_id(header.ThreadId);
   auto* file_io_path = event->set_file_io_path_operation();
-  file_io_path->set_irp_ptr(CopyPointerHash(iterator, pointer_size));
+  file_io_path->set_irp_ptr(RegisterFileIoStart(
+      header, CopyPointerHash(iterator, pointer_size), pointer_size));
   file_io_path->set_file_object(CopyPointerHash(iterator, pointer_size));
   file_io_path->set_file_key(CopyPointerHash(iterator, pointer_size));
   file_io_path->set_extra_info(CopyPointer(iterator, pointer_size));
@@ -969,7 +1001,6 @@ bool EtwConsumer::DecodeFileIoPathOperationEvent(
     file_io_path->set_file_name(base::WideToUTF8(*CopyWString(iterator)));
   }
   file_io_path->set_opcode(header.EventDescriptor.Opcode);
-
   return true;
 }
 
@@ -989,7 +1020,8 @@ bool EtwConsumer::DecodeFileIoFltOpEvent(
   auto* event = MakeNextEvent(header, buffer_context);
   event->set_thread_id(header.ThreadId);
   auto* file_io_info = event->set_file_io_info();
-  file_io_info->set_irp_ptr(CopyPointerHash(iterator, pointer_size));
+  file_io_info->set_irp_ptr(RegisterFileIoStart(
+      header, CopyPointerHash(iterator, pointer_size), pointer_size));
   file_io_info->set_file_object(CopyPointerHash(iterator, pointer_size));
   file_io_info->set_file_key(CopyPointerHash(iterator, pointer_size));
   file_io_info->set_ttid(*iterator.CopyObject<uint32_t>());
@@ -997,7 +1029,6 @@ bool EtwConsumer::DecodeFileIoFltOpEvent(
   (void)iterator.CopyObject<uint32_t>();  // FilterInstance
   (void)iterator.CopyObject<uint32_t>();  // Reserved
   file_io_info->set_opcode(header.EventDescriptor.Opcode);
-
   return true;
 }
 
@@ -1019,7 +1050,8 @@ bool EtwConsumer::DecodeFileIoReadWriteEvent(
   event->set_thread_id(header.ThreadId);
   auto* file_io_read_write = event->set_file_io_read_write();
   file_io_read_write->set_offset(*iterator.CopyObject<uint64_t>());
-  file_io_read_write->set_irp_ptr(CopyPointerHash(iterator, pointer_size));
+  file_io_read_write->set_irp_ptr(RegisterFileIoStart(
+      header, CopyPointerHash(iterator, pointer_size), pointer_size));
   file_io_read_write->set_file_object(CopyPointerHash(iterator, pointer_size));
   file_io_read_write->set_file_key(CopyPointerHash(iterator, pointer_size));
   file_io_read_write->set_ttid(*iterator.CopyObject<uint32_t>());
@@ -1045,7 +1077,8 @@ bool EtwConsumer::DecodeFileIoSimpleOpEvent(
   auto* event = MakeNextEvent(header, buffer_context);
   event->set_thread_id(header.ThreadId);
   auto* file_io_simple_op = event->set_file_io_simple_op();
-  file_io_simple_op->set_irp_ptr(CopyPointerHash(iterator, pointer_size));
+  file_io_simple_op->set_irp_ptr(RegisterFileIoStart(
+      header, CopyPointerHash(iterator, pointer_size), pointer_size));
   file_io_simple_op->set_file_object(CopyPointerHash(iterator, pointer_size));
   file_io_simple_op->set_file_key(CopyPointerHash(iterator, pointer_size));
   file_io_simple_op->set_ttid(*iterator.CopyObject<uint32_t>());
@@ -1057,7 +1090,8 @@ bool EtwConsumer::DecodeFileIoOpEndEvent(
     const EVENT_HEADER& header,
     const ETW_BUFFER_CONTEXT& buffer_context,
     size_t pointer_size,
-    base::span<const uint8_t> packet_data) {
+    base::span<const uint8_t> packet_data,
+    bool should_record) {
   // Size of `FileIo_OpEnd` event: 2 pointers + 1 uint32.
   const size_t kMinimumSize = 2 * pointer_size + sizeof(uint32_t);
   if (packet_data.size() < kMinimumSize) {
@@ -1066,10 +1100,39 @@ bool EtwConsumer::DecodeFileIoOpEndEvent(
 
   // Read the contents of `packet_data` and generate a `FileIoOpEnd` event.
   base::BufferIterator<const uint8_t> iterator{packet_data};
+  const auto irp_ptr = CopyPointerHash(iterator, pointer_size);
+
+  const bool is_irp_valid =
+      (irp_ptr != 0 &&
+       irp_ptr != (pointer_size == sizeof(uint32_t) ? 0xffffffffULL
+                                                    : 0xffffffffffffffffULL));
+
+  uint32_t event_thread_id = header.ThreadId;
+  if (is_irp_valid) {
+    auto it_chrome = active_irps_from_chrome_threads_.find(irp_ptr);
+    if (it_chrome != active_irps_from_chrome_threads_.end()) {
+      // The start event was run on a Chrome thread!
+      if (!should_record) {
+        // Create the end Op with the thread ID of the start event.
+        event_thread_id = it_chrome->second;
+      }
+      active_irps_from_chrome_threads_.erase(it_chrome);
+    } else if (!should_record) {
+      // Not an active Chrome operation and completing on a non-Chrome thread.
+      return true;
+    }
+  } else {
+    // For synchronous / invalid IRP pointers, we must rely on the thread ID
+    // of the completion event.
+    if (!should_record) {
+      return true;
+    }
+  }
+
   auto* event = MakeNextEvent(header, buffer_context);
-  event->set_thread_id(header.ThreadId);
+  event->set_thread_id(event_thread_id);
   auto* file_io_op_end = event->set_file_io_op_end();
-  file_io_op_end->set_irp_ptr(CopyPointerHash(iterator, pointer_size));
+  file_io_op_end->set_irp_ptr(irp_ptr);
   file_io_op_end->set_extra_info(CopyPointer(iterator, pointer_size));
   file_io_op_end->set_nt_status(*iterator.CopyObject<uint32_t>());
   return true;
