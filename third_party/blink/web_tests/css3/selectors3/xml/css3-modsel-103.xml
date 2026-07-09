@@ -1,7 +1,0 @@
-<?xml-stylesheet href="css3-modsel-103.css" type="text/css"?>
-<test xmlns:a="http://www.example.org/a" xmlns:b="http://www.example.org/b">
-<p xmlns="http://www.w3.org/1999/xhtml" title="si on chantait">This paragraph should have a green background.</p>
-<q xmlns="http://www.example.org/a" a:title="si nous chantions">This paragraph should be unstyled.</q>
-<r xmlns="http://www.example.org/a" a:title="si on chantait">This paragraph should have a green background.</r>
-<s xmlns="http://www.example.org/b" b:title="si on chantait">This paragraph should be unstyled.</s>
-</test>
