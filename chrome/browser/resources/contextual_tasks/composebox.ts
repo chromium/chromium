@@ -19,7 +19,7 @@ import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import type {InputState, ModelMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {InputType, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -601,10 +601,38 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         (this.inputState?.isCanvasQuerySubmitted ?? false);
   }
 
+  onInputStateUpdate(
+      toolMode?: ToolMode|number, modelMode?: ModelMode|number,
+      _data?: Record<string, unknown>) {
+    // If tool or model are defined, update them and update related states.
+    if (toolMode !== undefined && toolMode !== null) {
+      if (this.inputState_) {
+        this.inputState_ = {
+          ...this.inputState_,
+          activeTool: toolMode as ToolMode,
+        };
+      }
+
+      this.inToolMode_ =
+          (this.inputState_?.activeTool ?? toolMode) !== ToolMode.kUnspecified;
+
+      this.searchboxHandler_.setActiveToolMode(toolMode as ToolMode);
+    }
+
+    if (modelMode !== undefined && modelMode !== null) {
+      if (this.inputState_) {
+        this.inputState_ = {
+          ...this.inputState_,
+          activeModel: modelMode as ModelMode,
+        };
+      }
+      this.searchboxHandler_.setActiveModelMode(modelMode as ModelMode);
+    }
+  }
+
   getComposebox() {
     return this.$.composebox;
   }
-
 
   get isComposeboxFocusedForTesting() {
     return this.isComposeboxFocused_;
@@ -624,6 +652,10 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
 
   get resizeObserverForTesting() {
     return this.resizeObserver_;
+  }
+
+  get inToolModeForTesting() {
+    return this.inToolMode_;
   }
 
   tryFocus() {

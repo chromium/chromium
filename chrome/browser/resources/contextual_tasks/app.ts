@@ -750,6 +750,12 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     this.postMessageHandler_.setInputPlateBoundsUpdateCallback(
         this.onInputPlateBoundsUpdate_.bind(this));
 
+    this.postMessageHandler_.setInputStateUpdateCallback(
+        (toolMode?: number, modelMode?: number,
+         data?: Record<string, unknown>) => {
+          this.composebox_?.onInputStateUpdate(toolMode, modelMode, data);
+        });
+
     this.eventTracker_.add(
         composebox, 'context-menu-opened',
         () => this.onComposeboxContextMenuOpened_());

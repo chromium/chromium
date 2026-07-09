@@ -728,6 +728,30 @@ suite('ContextualTasksComposeboxTest', () => {
         'Matches should be cleared after submit');
   });
 
+  test('OnInputStateUpdateSetsStateAndCallsMojo', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+
+    mockSearchboxPageHandler.reset();
+
+    // Call onInputStateUpdate with ToolMode = 1 and ModelMode = 2.
+    contextualComposebox.onInputStateUpdate(1, 2);
+
+    const toolMode =
+        await mockSearchboxPageHandler.whenCalled('setActiveToolMode');
+    assertEquals(1, toolMode);
+
+    const modelMode =
+        await mockSearchboxPageHandler.whenCalled('setActiveModelMode');
+    assertEquals(2, modelMode);
+    // Verify that it is in tool mode.
+    assertTrue(contextualComposebox.inToolModeForTesting);
+
+    // Reset tool mode with `ToolMode.kUnspecified` (0),
+    // and verify that it is reset.
+    contextualComposebox.onInputStateUpdate(0, 0);
+    assertFalse(contextualComposebox.inToolModeForTesting);
+  });
+
   test('OfflineStatusReconsideredOnReload', async () => {
     // 1. Initial state: Online.
     Object.defineProperty(window.navigator, 'onLine', {

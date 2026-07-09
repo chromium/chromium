@@ -44,6 +44,9 @@ export class PostMessageHandler {
   private handshakeMessage_: Uint8Array|null = null;
   private onInputPlateBoundsUpdate_:
       ((rect?: Rect, occluders?: Rect[]) => void)|null = null;
+  private onInputStateUpdate_:
+      ((toolMode?: number, modelMode?: number,
+        data?: Record<string, unknown>) => void)|null = null;
   // The URL of the active navigation. Null if there is no active navigation.
   private activeNavigationUrl_: string|null = null;
 
@@ -231,6 +234,28 @@ export class PostMessageHandler {
       return;
     }
 
+    // Input state update event (with correct capability for security):
+    if (event.data &&
+        (event.data.type === 'input-state-update' &&
+         event.data.requiresCapability === 'input state update')) {
+      if (this.onInputStateUpdate_) {
+        // Several fallbacks (kebab, snake case) for extraction.
+        // Use undefined check (if attribute does not exist) to
+        // preserve explicitly set null values.
+        const toolMode = event.data.toolMode !== undefined ?
+            event.data.toolMode :
+            (event.data['tool-mode'] !== undefined ? event.data['tool-mode'] :
+                                                     event.data.tool_mode);
+        const modelMode = event.data.modelMode !== undefined ?
+            event.data.modelMode :
+            (event.data['model-mode'] !== undefined ? event.data['model-mode'] :
+                                                      event.data.model_mode);
+
+        this.onInputStateUpdate_(toolMode, modelMode, event.data);
+      }
+      return;
+    }
+
     try {
       // No json messages are expected from the webview.
       JSON.parse(event.data);
@@ -249,6 +274,13 @@ export class PostMessageHandler {
   setInputPlateBoundsUpdateCallback(
       callback: (rect?: Rect, occluders?: Rect[]) => void) {
     this.onInputPlateBoundsUpdate_ = callback;
+  }
+
+  setInputStateUpdateCallback(
+      callback:
+          (toolMode?: number, modelMode?: number,
+           data?: Record<string, unknown>) => void) {
+    this.onInputStateUpdate_ = callback;
   }
 
   completeHandshake() {
