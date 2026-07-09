@@ -68,11 +68,13 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 WebSocketConnectorImpl::WebSocketConnectorImpl(
     const content::GlobalRenderFrameHostId& frame_id,
+    WeakDocumentPtr weak_document,
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
     network::mojom::ClientSecurityStatePtr client_security_state,
     const base::UnguessableToken& network_restrictions_id)
     : frame_id_(frame_id),
+      weak_document_(std::move(weak_document)),
       origin_(MaybeTreatLocalOriginAsOpaque(origin)),
       isolation_info_(isolation_info),
       client_security_state_(std::move(client_security_state)),
@@ -91,6 +93,18 @@ void WebSocketConnectorImpl::Connect(
         handshake_client,
     const std::optional<base::UnguessableToken>& throttling_profile_id) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+
+  // If the connector was created for a RenderFrame or a DedicatedWorker
+  // (where `frame_routing_id` is not kRoutingIdNone), it is scoped to a
+  // specific creator document. If that document is no longer valid (e.g., due
+  // to a navigation committing a new document in the same frame, or frame
+  // destruction), abort the connection. For Shared and Service Workers
+  // (`frame_routing_id` is kRoutingIdNone), they operate independently of any
+  // document lifecycle, so we skip this check.
+  if (frame_id_.frame_routing_id != IPC::mojom::kRoutingIdNone &&
+      !weak_document_.AsRenderFrameHostIfValid()) {
+    return;
+  }
 
   if (auto error = network::VerifyWebSocketConnectParameters(
           url, requested_protocols, isolation_info_)) {

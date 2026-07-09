@@ -12,6 +12,7 @@
 #include "base/unguessable_token.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "net/base/isolation_info.h"
 #include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
@@ -36,6 +37,7 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
   //   IPC::mojom::kRoutingIdNone because they do not have a frame.
   WebSocketConnectorImpl(
       const content::GlobalRenderFrameHostId& frame_id,
+      WeakDocumentPtr weak_document,
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       network::mojom::ClientSecurityStatePtr client_security_state,
@@ -73,6 +75,7 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
           trusted_header_client);
 
   const content::GlobalRenderFrameHostId frame_id_;
+  const WeakDocumentPtr weak_document_;
   const url::Origin origin_;
   const net::IsolationInfo isolation_info_;
   const network::mojom::ClientSecurityStatePtr client_security_state_;

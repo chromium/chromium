@@ -28,6 +28,7 @@
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -91,7 +92,8 @@ void ServiceWorkerHost::CreateWebTransportConnector(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
           worker_process_id_.GetUnsafeValue(), /*frame=*/nullptr,
-          version_->key().origin(), GetNetworkAnonymizationKey(),
+          WeakDocumentPtr(), version_->key().origin(),
+          GetNetworkAnonymizationKey(),
           version_->BuildClientSecurityState()->Clone(),
           version_->network_restrictions_id()),
       std::move(receiver));
@@ -106,7 +108,8 @@ void ServiceWorkerHost::CreateWebSocketConnector(
       std::make_unique<WebSocketConnectorImpl>(
           content::GlobalRenderFrameHostId(worker_process_id_,
                                            IPC::mojom::kRoutingIdNone),
-          storage_key.origin(), storage_key.ToPartialNetIsolationInfo(),
+          WeakDocumentPtr(), storage_key.origin(),
+          storage_key.ToPartialNetIsolationInfo(),
           version_->BuildClientSecurityState()->Clone(),
           version_->network_restrictions_id()),
       std::move(receiver));

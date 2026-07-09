@@ -14796,8 +14796,8 @@ void RenderFrameHostImpl::CreateWebSocketConnector(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebSocketConnectorImpl>(
           GlobalRenderFrameHostId(GetProcess()->GetID(), routing_id_),
-          last_committed_origin_, isolation_info_, BuildClientSecurityState(),
-          GetNetworkRestrictionsID()),
+          GetWeakDocumentPtr(), last_committed_origin_, isolation_info_,
+          BuildClientSecurityState(), GetNetworkRestrictionsID()),
       std::move(receiver));
 }
 
@@ -14810,7 +14810,8 @@ void RenderFrameHostImpl::CreateWebTransportConnector(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
           GetProcess()->GetDeprecatedID(), weak_ptr_factory_.GetWeakPtr(),
-          last_committed_origin_, isolation_info_.network_anonymization_key(),
+          GetWeakDocumentPtr(), last_committed_origin_,
+          isolation_info_.network_anonymization_key(),
           BuildClientSecurityState(), GetNetworkRestrictionsID()),
       std::move(receiver));
 }

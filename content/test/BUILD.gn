@@ -1866,6 +1866,7 @@ test("content_browsertests") {
     "../browser/webui/web_ui_mojo_conformance_browsertest.cc",
     "../browser/webui/web_ui_navigation_browsertest.cc",
     "../browser/webui/web_ui_security_browsertest.cc",
+    "../browser/worker_host/dedicated_worker_host_navigation_browsertest.cc",
     "../browser/worker_host/worker_browsertest.cc",
     "../browser/worker_network_isolation_key_browsertest.cc",
     "../child/webthemeengine_impl_default_browsertest.cc",

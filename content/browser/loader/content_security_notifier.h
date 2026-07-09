@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_LOADER_CONTENT_SECURITY_NOTIFIER_H_
 #define CONTENT_BROWSER_LOADER_CONTENT_SECURITY_NOTIFIER_H_
 
-#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom.h"
 
 namespace content {
@@ -16,8 +16,7 @@ namespace content {
 class ContentSecurityNotifier final
     : public blink::mojom::ContentSecurityNotifier {
  public:
-  explicit ContentSecurityNotifier(
-      GlobalRenderFrameHostId render_frame_host_id);
+  explicit ContentSecurityNotifier(WeakDocumentPtr weak_document);
   ~ContentSecurityNotifier() override = default;
 
   ContentSecurityNotifier(const ContentSecurityNotifier&) = delete;
@@ -32,7 +31,7 @@ class ContentSecurityNotifier final
       override;
 
  private:
-  const GlobalRenderFrameHostId render_frame_host_id_;
+  const WeakDocumentPtr weak_document_;
 };
 
 }  // namespace content

@@ -211,9 +211,9 @@ void DedicatedWorkerHost::CreateContentSecurityNotifier(
     // will soon be terminated too, so abort the connection.
     return;
   }
-  mojo::MakeSelfOwnedReceiver(std::make_unique<ContentSecurityNotifier>(
-                                  ancestor_render_frame_host->GetGlobalId()),
-                              std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<ContentSecurityNotifier>(ancestor_document_),
+      std::move(receiver));
 }
 
 void DedicatedWorkerHost::CreateLockManager(
@@ -807,7 +807,7 @@ void DedicatedWorkerHost::CreateWebSocketConnector(
   // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebSocketConnectorImpl>(
-          ancestor_render_frame_host->GetGlobalId(),
+          ancestor_render_frame_host->GetGlobalId(), ancestor_document_,
           GetWorkerStorageKey().origin(),
           ancestor_render_frame_host->GetIsolationInfoForSubresources(),
           worker_client_security_state_->Clone(), network_restrictions_id_),
@@ -828,11 +828,10 @@ void DedicatedWorkerHost::CreateWebTransportConnector(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
           worker_process_host_->GetDeprecatedID(),
-          ancestor_render_frame_host->GetWeakPtr(),
+          ancestor_render_frame_host->GetWeakPtr(), ancestor_document_,
           GetWorkerStorageKey().origin(),
           isolation_info_.network_anonymization_key(),
-          worker_client_security_state_->Clone(),
-          network_restrictions_id_),
+          worker_client_security_state_->Clone(), network_restrictions_id_),
       std::move(receiver));
 }
 

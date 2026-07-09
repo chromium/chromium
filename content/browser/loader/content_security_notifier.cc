@@ -8,19 +8,20 @@
 
 namespace content {
 
-ContentSecurityNotifier::ContentSecurityNotifier(
-    GlobalRenderFrameHostId render_frame_host_id)
-    : render_frame_host_id_(render_frame_host_id) {}
+ContentSecurityNotifier::ContentSecurityNotifier(WeakDocumentPtr weak_document)
+    : weak_document_(std::move(weak_document)) {}
 
 void ContentSecurityNotifier::NotifyContentWithCertificateErrorsRan() {
-  auto* render_frame_host = RenderFrameHostImpl::FromID(render_frame_host_id_);
+  auto* render_frame_host = static_cast<RenderFrameHostImpl*>(
+      weak_document_.AsRenderFrameHostIfValid());
   if (render_frame_host) {
     render_frame_host->OnDidRunContentWithCertificateErrors();
   }
 }
 
 void ContentSecurityNotifier::NotifyContentWithCertificateErrorsDisplayed() {
-  auto* render_frame_host = RenderFrameHostImpl::FromID(render_frame_host_id_);
+  auto* render_frame_host = static_cast<RenderFrameHostImpl*>(
+      weak_document_.AsRenderFrameHostIfValid());
   if (render_frame_host) {
     render_frame_host->OnDidDisplayContentWithCertificateErrors();
   }
@@ -29,7 +30,8 @@ void ContentSecurityNotifier::NotifyContentWithCertificateErrorsDisplayed() {
 void ContentSecurityNotifier::NotifyInsecureContentRan(
     const GURL& insecure_url,
     blink::mojom::ContentSecurityNotifier::InsecureContentOrigin origin_type) {
-  auto* render_frame_host = RenderFrameHostImpl::FromID(render_frame_host_id_);
+  auto* render_frame_host = static_cast<RenderFrameHostImpl*>(
+      weak_document_.AsRenderFrameHostIfValid());
   if (render_frame_host) {
     render_frame_host->OnDidRunInsecureContent(insecure_url, origin_type);
   }

@@ -934,9 +934,9 @@ void PopulateBinderMapWithContext(
       [](RenderFrameHost* host,
          mojo::PendingReceiver<blink::mojom::ContentSecurityNotifier>
              receiver) {
-        mojo::MakeSelfOwnedReceiver(
-            std::make_unique<ContentSecurityNotifier>(host->GetGlobalId()),
-            std::move(receiver));
+        mojo::MakeSelfOwnedReceiver(std::make_unique<ContentSecurityNotifier>(
+                                        host->GetWeakDocumentPtr()),
+                                    std::move(receiver));
       }));
 
   map->Add<blink::mojom::DedicatedWorkerHostFactory>(
