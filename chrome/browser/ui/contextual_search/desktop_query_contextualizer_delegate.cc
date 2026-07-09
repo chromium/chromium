@@ -20,13 +20,12 @@ DesktopQueryContextualizerDelegate::DesktopQueryContextualizerDelegate(
     GetSessionHandleCallback get_session_callback,
     GetViewportEncodingOptionsCallback get_viewport_options_callback,
     ContextualTasksContextService* service,
-    BrowserWindowInterface* browser_window_interface)
+    GetBrowserWindowInterfaceCallback get_browser_window_interface_callback)
     : get_session_callback_(std::move(get_session_callback)),
       get_viewport_options_callback_(std::move(get_viewport_options_callback)),
       service_(service),
-      browser_window_interface_(browser_window_interface
-                                    ? browser_window_interface->GetWeakPtr()
-                                    : nullptr) {}
+      get_browser_window_interface_callback_(
+          std::move(get_browser_window_interface_callback)) {}
 
 DesktopQueryContextualizerDelegate::~DesktopQueryContextualizerDelegate() =
     default;
@@ -90,7 +89,9 @@ void DesktopQueryContextualizerDelegate::GetRelevantTabsForQuery(
     const std::vector<GURL>& attached_context_urls,
     base::OnceCallback<void(std::vector<QueryContextualizer::TabId>)>
         callback) {
-  if (!service_ || !browser_window_interface_) {
+  BrowserWindowInterface* browser_window_interface =
+      get_browser_window_interface_callback_.Run();
+  if (!service_ || !browser_window_interface) {
     std::move(callback).Run({});
     return;
   }
@@ -98,7 +99,8 @@ void DesktopQueryContextualizerDelegate::GetRelevantTabsForQuery(
   contextual_tasks::TabSelectionOptions tab_selection_options;
   tab_selection_options.tab_selection_timeout =
       contextual_tasks::GetSmartTabSharingTabSelectionTimeout();
-  tab_selection_options.browser_window_interface = browser_window_interface_;
+  tab_selection_options.browser_window_interface =
+      browser_window_interface->GetWeakPtr();
 
   contextual_tasks::ConversationThread conversation_thread;
   conversation_thread.query = query_text;

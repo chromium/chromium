@@ -468,7 +468,8 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
           base::BindRepeating(
               &ContextualSearchboxHandler::CreateImageEncodingOptions),
           contextual_tasks_context_service_,
-          webui::GetBrowserWindowInterface(web_contents_));
+          base::BindRepeating(&webui::GetBrowserWindowInterface,
+                              web_contents_.get()));
   query_contextualizer_ =
       std::make_unique<contextual_tasks::QueryContextualizer>(
           contextual_tasks_service_, desktop_delegate_.get());

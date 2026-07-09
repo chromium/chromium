@@ -226,8 +226,9 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
               &ContextualSearchboxHandler::CreateImageEncodingOptions),
           contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
               profile),
-          webui::GetBrowserWindowInterface(
-              web_ui_interface->GetWebUIWebContents()))),
+          base::BindRepeating(
+              &contextual_tasks::ContextualTasksUIInterface::GetBrowser,
+              base::Unretained(web_ui_interface)))),
       recontextualizer_(std::make_unique<contextual_tasks::QueryContextualizer>(
           contextual_tasks_service_,
           desktop_delegate_.get())) {

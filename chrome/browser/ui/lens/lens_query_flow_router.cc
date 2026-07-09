@@ -87,8 +87,8 @@ LensQueryFlowRouter::LensQueryFlowRouter(
                               base::Unretained(this)),
           contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
               profile()),
-          tab_interface() ? tab_interface()->GetBrowserWindowInterface()
-                          : nullptr);
+          base::BindRepeating(&LensQueryFlowRouter::browser_window_interface,
+                              base::Unretained(this)));
   auto* contextual_tasks_service =
       contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile());
   if (contextual_tasks_service) {

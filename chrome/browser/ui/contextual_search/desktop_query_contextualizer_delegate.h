@@ -36,11 +36,14 @@ class DesktopQueryContextualizerDelegate
   using GetViewportEncodingOptionsCallback =
       base::RepeatingCallback<std::optional<lens::ImageEncodingOptions>()>;
 
+  using GetBrowserWindowInterfaceCallback =
+      base::RepeatingCallback<BrowserWindowInterface*()>;
+
   DesktopQueryContextualizerDelegate(
       GetSessionHandleCallback get_session_callback,
       GetViewportEncodingOptionsCallback get_viewport_options_callback,
       ContextualTasksContextService* service,
-      BrowserWindowInterface* browser_window_interface);
+      GetBrowserWindowInterfaceCallback get_browser_window_interface_callback);
   ~DesktopQueryContextualizerDelegate() override;
 
   // QueryContextualizer::Delegate:
@@ -67,7 +70,7 @@ class DesktopQueryContextualizerDelegate
   GetSessionHandleCallback get_session_callback_;
   GetViewportEncodingOptionsCallback get_viewport_options_callback_;
   raw_ptr<ContextualTasksContextService> service_;
-  base::WeakPtr<BrowserWindowInterface> browser_window_interface_;
+  GetBrowserWindowInterfaceCallback get_browser_window_interface_callback_;
 };
 
 }  // namespace contextual_tasks
