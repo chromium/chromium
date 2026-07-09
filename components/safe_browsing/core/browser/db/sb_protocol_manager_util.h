@@ -311,6 +311,8 @@ using ListInfos = std::vector<ListInfo>;
 
 PlatformType GetCurrentPlatformType();
 ListIdentifier GetChromeExtMalwareId();
+// TODO(crbug.com/372395685): Rename method and SB_THREAT_TYPE_API_ABUSE to be
+// notifications-specific once v4 is deprecated.
 ListIdentifier GetChromeUrlApiId();
 ListIdentifier GetUrlBillingId();
 ListIdentifier GetUrlCsdDownloadAllowlistId();

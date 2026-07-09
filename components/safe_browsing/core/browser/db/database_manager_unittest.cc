@@ -42,8 +42,9 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
 
   ~TestClient() override = default;
 
-  void OnCheckApiBlocklistUrlResult(const GURL& url,
-                                    const ThreatMetadata& metadata) override {
+  void OnCheckNotificationAbuseUrlResult(
+      const GURL& url,
+      const ThreatMetadata& metadata) override {
     blocked_permissions_ = metadata.api_permissions;
     callback_invoked_ = true;
     run_loop_.Quit();
@@ -115,17 +116,17 @@ class SafeBrowsingDatabaseManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(SafeBrowsingDatabaseManagerTest, CheckApiBlocklistUrlWrongScheme) {
-  EXPECT_TRUE(
-      db_manager_->CheckApiBlocklistUrl(GURL("file://example.txt"), nullptr));
+TEST_F(SafeBrowsingDatabaseManagerTest, CheckNotificationAbuseUrlWrongScheme) {
+  EXPECT_TRUE(db_manager_->CheckNotificationAbuseUrl(GURL("file://example.txt"),
+                                                     nullptr));
 }
 
-TEST_F(SafeBrowsingDatabaseManagerTest, CancelApiCheck) {
+TEST_F(SafeBrowsingDatabaseManagerTest, CancelNotificationAbuseCheck) {
   TestClient client;
   const GURL url("https://www.example.com/more");
 
-  EXPECT_FALSE(db_manager_->CheckApiBlocklistUrl(url, &client));
-  EXPECT_TRUE(db_manager_->CancelApiCheck(&client));
+  EXPECT_FALSE(db_manager_->CheckNotificationAbuseUrl(url, &client));
+  EXPECT_TRUE(db_manager_->CancelNotificationAbuseCheck(&client));
 
   base::RunLoop().RunUntilIdle();
 
@@ -133,7 +134,7 @@ TEST_F(SafeBrowsingDatabaseManagerTest, CancelApiCheck) {
   EXPECT_EQ(0ul, client.GetBlockedPermissions().size());
 }
 
-TEST_F(SafeBrowsingDatabaseManagerTest, GetApiCheckResponse) {
+TEST_F(SafeBrowsingDatabaseManagerTest, GetNotificationAbuseCheckResponse) {
   TestClient client;
   const GURL url("https://www.example.com/more");
 
@@ -143,7 +144,7 @@ TEST_F(SafeBrowsingDatabaseManagerTest, GetApiCheckResponse) {
         request_url = request.url;
       }));
 
-  EXPECT_FALSE(db_manager_->CheckApiBlocklistUrl(url, &client));
+  EXPECT_FALSE(db_manager_->CheckNotificationAbuseUrl(url, &client));
   test_url_loader_factory_.AddResponse(request_url.spec(),
                                        GetStockV4GetHashResponse());
   base::RunLoop().RunUntilIdle();

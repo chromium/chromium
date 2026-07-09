@@ -48,18 +48,18 @@ class CrowdDenySafeBrowsingRequest::SafeBrowsingClient
 
   ~SafeBrowsingClient() override {
     if (timeout_.IsRunning())
-      database_manager_->CancelApiCheck(this);
+      database_manager_->CancelNotificationAbuseCheck(this);
   }
 
   void CheckOrigin(const url::Origin& origin) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-    // Start the timer before the call to CheckApiBlocklistUrl(), as it may
-    // call back into OnCheckApiBlocklistUrlResult() synchronously.
+    // Start the timer before the call to CheckNotificationAbuseUrl(), as it may
+    // call back into OnCheckNotificationAbuseUrlResult() synchronously.
     timeout_.Start(FROM_HERE, kSafeBrowsingCheckTimeout, this,
                    &SafeBrowsingClient::OnTimeout);
 
-    if (database_manager_->CheckApiBlocklistUrl(origin.GetURL(), this)) {
+    if (database_manager_->CheckNotificationAbuseUrl(origin.GetURL(), this)) {
       timeout_.Stop();
       SendResultToHandler(Verdict::kAcceptable);
     }
@@ -78,7 +78,7 @@ class CrowdDenySafeBrowsingRequest::SafeBrowsingClient
   }
 
   void OnTimeout() {
-    database_manager_->CancelApiCheck(this);
+    database_manager_->CancelNotificationAbuseCheck(this);
     SendResultToHandler(Verdict::kAcceptable);
   }
 
@@ -90,7 +90,7 @@ class CrowdDenySafeBrowsingRequest::SafeBrowsingClient
   }
 
   // SafeBrowsingDatabaseManager::Client:
-  void OnCheckApiBlocklistUrlResult(
+  void OnCheckNotificationAbuseUrlResult(
       const GURL& url,
       const safe_browsing::ThreatMetadata& metadata) override {
     timeout_.Stop();

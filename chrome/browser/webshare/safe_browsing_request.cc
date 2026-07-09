@@ -43,7 +43,7 @@ class SafeBrowsingRequest::SafeBrowsingClient
 
   ~SafeBrowsingClient() override {
     if (timeout_.IsRunning())
-      database_manager_->CancelApiCheck(this);
+      database_manager_->CancelCheck(this);
   }
 
   void CheckUrl(const GURL& url) {
@@ -65,7 +65,7 @@ class SafeBrowsingRequest::SafeBrowsingClient
   SafeBrowsingClient& operator=(const SafeBrowsingClient&) = delete;
 
   void OnTimeout() {
-    database_manager_->CancelApiCheck(this);
+    database_manager_->CancelCheck(this);
     SendResultToHandler(/*is_url_safe=*/true);
   }
 

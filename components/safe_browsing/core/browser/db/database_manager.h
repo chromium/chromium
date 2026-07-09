@@ -86,10 +86,11 @@ class SafeBrowsingDatabaseManager
     Client() = delete;
     virtual ~Client();
 
-    // Called when the result of checking the API blocklist is known.
+    // Called when the result of checking the notification abuse URL is known.
     // TODO(kcarattini): Consider if we need |url| passed here, remove if not.
-    virtual void OnCheckApiBlocklistUrlResult(const GURL& url,
-                                              const ThreatMetadata& metadata) {}
+    virtual void OnCheckNotificationAbuseUrlResult(
+        const GURL& url,
+        const ThreatMetadata& metadata) {}
 
     // Called when the result of checking a browse URL is known.
     virtual void OnCheckBrowseUrlResult(const GURL& url,
@@ -142,14 +143,15 @@ class SafeBrowsingDatabaseManager
   // Methods called by the client to cancel pending checks.
   //
 
-  // Cancels a pending API check if the result is no longer needed. Returns true
-  // if the client was found and the check successfully cancelled. This should
-  // be called on the UI thread.
-  virtual bool CancelApiCheck(Client* client);
+  // Cancels a pending notification abuse check if the result is no longer
+  // needed. Returns true if the client was found and the check successfully
+  // cancelled. This should be called on the UI thread.
+  virtual bool CancelNotificationAbuseCheck(Client* client);
 
   // Cancels a pending check if the result is no longer needed.  Also called
-  // after the result has been handled. Api checks are handled separately. To
-  // cancel an API check use CancelApiCheck. If |client| doesn't exist anymore,
+  // after the result has been handled. Notification abuse checks are handled
+  // separately. To cancel a notification abuse check, use
+  // CancelNotificationAbuseCheck. If |client| doesn't exist anymore,
   // ignore this call. This should be called on the UI thread.
   virtual void CancelCheck(Client* client) = 0;
 
@@ -167,7 +169,7 @@ class SafeBrowsingDatabaseManager
   // the resource is known.
   //
 
-  // Checks if the given url has blocklisted APIs. |client| is called
+  // Checks if the given url has notification abuse. |client| is called
   // asynchronously with the result when it is ready. Callers should wait for
   // results before calling this method a second time with the same client. This
   // method has the same implementation for both the local and remote database
@@ -176,7 +178,7 @@ class SafeBrowsingDatabaseManager
   // the url is safe. Otherwise it returns false, and |client| is called
   // asynchronously with the result when it is ready. This should be called on
   // the UI thread.
-  virtual bool CheckApiBlocklistUrl(const GURL& url, Client* client);
+  virtual bool CheckNotificationAbuseUrl(const GURL& url, Client* client);
 
   // Check if the |url| matches any of the full-length hashes from the client-
   // side phishing detection allowlist. The 3-state return value indicates
@@ -306,15 +308,15 @@ class SafeBrowsingDatabaseManager
   virtual bool IsDatabaseReady() const = 0;
 
  protected:
-  // Bundled client info for an API abuse hash prefix check.
-  class SafeBrowsingApiCheck {
+  // Bundled client info for a notification abuse hash prefix check.
+  class NotificationAbuseCheck {
    public:
-    SafeBrowsingApiCheck(const GURL& url, Client* client);
+    NotificationAbuseCheck(const GURL& url, Client* client);
 
-    SafeBrowsingApiCheck(const SafeBrowsingApiCheck&) = delete;
-    SafeBrowsingApiCheck& operator=(const SafeBrowsingApiCheck&) = delete;
+    NotificationAbuseCheck(const NotificationAbuseCheck&) = delete;
+    NotificationAbuseCheck& operator=(const NotificationAbuseCheck&) = delete;
 
-    ~SafeBrowsingApiCheck() = default;
+    ~NotificationAbuseCheck() = default;
 
     const GURL& url() const { return url_; }
     Client* client() const { return client_; }
@@ -336,14 +338,9 @@ class SafeBrowsingDatabaseManager
   friend class SBLocalDatabaseManager;
 
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingDatabaseManagerTest,
-                           CheckApiBlocklistUrlPrefixes);
+                           CheckNotificationAbuseUrlPrefixes);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingDatabaseManagerTest,
-                           HandleGetHashesWithApisResults);
-  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingDatabaseManagerTest,
-                           HandleGetHashesWithApisResultsNoMatch);
-  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingDatabaseManagerTest,
-                           HandleGetHashesWithApisResultsMatches);
-  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingDatabaseManagerTest, CancelApiCheck);
+                           CancelNotificationAbuseCheck);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingDatabaseManagerTest, ResultsAreCached);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingDatabaseManagerTest,
                            ResultsAreNotCachedOnNull);
@@ -354,9 +351,9 @@ class SafeBrowsingDatabaseManager
                            CachedResultsAreEvicted);
 
   // Called when the SafeBrowsingProtocolManager has received the full hash and
-  // api results for prefixes of the |url| argument in CheckApiBlocklistUrl.
-  // This should be called on the UI thread.
-  void OnThreatMetadataResponse(std::unique_ptr<SafeBrowsingApiCheck> check,
+  // notification abuse results for prefixes of the |url| argument in
+  // CheckNotificationAbuseUrl. This should be called on the UI thread.
+  void OnThreatMetadataResponse(std::unique_ptr<NotificationAbuseCheck> check,
                                 const ThreatMetadata& md);
 
   // SafeBrowsingDatabaseManager passes its |ui_task_runner| construction
@@ -367,11 +364,12 @@ class SafeBrowsingDatabaseManager
     return owning_task_runner();
   }
 
-  typedef std::set<raw_ptr<SafeBrowsingApiCheck, SetExperimental>> ApiCheckSet;
+  typedef std::set<raw_ptr<NotificationAbuseCheck, SetExperimental>>
+      NotificationAbuseCheckSet;
 
-  // In-progress checks. This set owns the SafeBrowsingApiCheck pointers and is
-  // responsible for deleting them when removing from the set.
-  ApiCheckSet api_checks_;
+  // In-progress checks. This set owns the NotificationAbuseCheck pointers and
+  // is responsible for deleting them when removing from the set.
+  NotificationAbuseCheckSet notification_abuse_checks_;
 
   // Make callbacks about the completion of database update process. This is
   // currently used by the extension blocklist checker to disable any installed
@@ -385,8 +383,10 @@ class SafeBrowsingDatabaseManager
   base::RepeatingClosureList update_complete_callback_list_;
 
  private:
-  // Returns an iterator to the pending API check with the given |client|.
-  ApiCheckSet::iterator FindClientApiCheck(Client* client);
+  // Returns an iterator to the pending notification abuse check with the given
+  // |client|.
+  NotificationAbuseCheckSet::iterator FindClientNotificationAbuseCheck(
+      Client* client);
 
 };  // class SafeBrowsingDatabaseManager
 

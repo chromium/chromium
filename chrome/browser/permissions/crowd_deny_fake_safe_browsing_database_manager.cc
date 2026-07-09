@@ -28,7 +28,7 @@ CrowdDenyFakeSafeBrowsingDatabaseManager::
   EXPECT_THAT(pending_clients_, testing::IsEmpty());
 }
 
-bool CrowdDenyFakeSafeBrowsingDatabaseManager::CheckApiBlocklistUrl(
+bool CrowdDenyFakeSafeBrowsingDatabaseManager::CheckNotificationAbuseUrl(
     const GURL& url,
     Client* client) {
   if (simulate_synchronous_result_)
@@ -39,12 +39,13 @@ bool CrowdDenyFakeSafeBrowsingDatabaseManager::CheckApiBlocklistUrl(
     pending_clients_.insert(client);
   } else {
     auto result = GetSimulatedMetadataOrSafe(url);
-    client->OnCheckApiBlocklistUrlResult(url, std::move(result));
+    client->OnCheckNotificationAbuseUrlResult(url, std::move(result));
   }
   return false;
 }
 
-bool CrowdDenyFakeSafeBrowsingDatabaseManager::CancelApiCheck(Client* client) {
+bool CrowdDenyFakeSafeBrowsingDatabaseManager::CancelNotificationAbuseCheck(
+    Client* client) {
   EXPECT_THAT(pending_clients_, testing::Contains(client));
   pending_clients_.erase(client);
   return true;
