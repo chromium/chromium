@@ -254,6 +254,9 @@ class DiceResponseHandler : public KeyedService {
   // Deletes the session.
   void DeleteSession(DiceSigninSession* session);
 
+  // Cancel all in-flight token fetches for `account_id` across all sessions.
+  void CancelAllFetchersForAccount(const CoreAccountId& account_id);
+
   // Process the Dice signin action.
   void ProcessDiceSigninHeader(
       signin::DiceResponseParams::SigninInfo signin_info,

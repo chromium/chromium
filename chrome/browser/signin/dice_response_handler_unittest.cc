@@ -27,6 +27,7 @@
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/dice_account_reconcilor_delegate.h"
+#include "components/signin/core/browser/dice_header_helper.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/binding_key_registration_token_result.h"
@@ -48,6 +49,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1600,7 +1602,7 @@ TEST_F(DiceResponseHandlerTest, MultipleAccounts_NoAuthCode_Mixed) {
 }
 
 // Checks that a second token for the same account is requested when a
-// request is already in flight. Both requests should succeed.
+// request is already in flight. The first request should be cancelled.
 TEST_F(DiceResponseHandlerTest, SigninRepeatedWithSameAccount) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
@@ -1624,18 +1626,11 @@ TEST_F(DiceResponseHandlerTest, SigninRepeatedWithSameAccount) {
   GaiaAuthConsumer* consumer_2 = signin_client_.GetAndClearConsumer();
   ASSERT_THAT(consumer_2, testing::NotNull());
 
-  // Simulate GaiaAuthFetcher success for the first request.
-  consumer_1->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token_1", "access_token_1", /*expires_in_secs=*/10,
-      /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
-  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
-  EXPECT_FALSE(identity_manager()
-                   ->FindExtendedAccountInfoByAccountId(account_id)
-                   .is_under_advanced_protection);
+  // The first fetcher is cancelled and only the second one is pending.
+  EXPECT_EQ(
+      1u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
 
-  // Simulate GaiaAuthFetcher success for the second request (overwriting).
-  // We set is_under_advanced_protection to true to verify that the second
-  // request overwrites the first one.
+  // Simulate GaiaAuthFetcher success for the second request.
   consumer_2->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
       "refresh_token_2", "access_token_2", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/true, /*is_bound_to_key=*/false));
@@ -1643,6 +1638,137 @@ TEST_F(DiceResponseHandlerTest, SigninRepeatedWithSameAccount) {
   EXPECT_TRUE(identity_manager()
                   ->FindExtendedAccountInfoByAccountId(account_id)
                   .is_under_advanced_protection);
+
+  EXPECT_EQ(
+      0u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
+}
+
+// Checks that when a DICE SIGNIN header contains duplicate entries for the
+// same account, `DiceHeaderHelper` deduplicates them so `DiceSigninSession`
+// never receives duplicate accounts. When a second concurrent request is made
+// for the same account, the first in-flight request is cleanly cancelled
+// without any use-after-free.
+TEST_F(DiceResponseHandlerTest, SigninRepeatedWithDuplicateAccountInHeader) {
+  std::string gaia_id_str = signin::GetTestGaiaIdForEmail(kEmail).ToString();
+  std::string header_value = base::StringPrintf(
+      "action=SIGNIN;id=%s;email=%s;authuser=1;authorization_code=code1,"
+      "action=SIGNIN;id=%s;email=%s;authuser=2;authorization_code=code2",
+      gaia_id_str.c_str(), kEmail, gaia_id_str.c_str(), kEmail);
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\r\n");
+  headers->AddHeader(signin::kDiceResponseHeader, header_value);
+  headers->AddHeader(
+      signin::kDiceLinkedAccountsMetaHeader,
+      base::StringPrintf("initiator_id=%s;primary_is_connected=1",
+                         gaia_id_str.c_str()));
+  DiceResponseParams dice_params =
+      signin::DiceHeaderHelper::CreateDiceResponseParams(headers.get());
+  ASSERT_EQ(1U, dice_params.signin_info()->accounts().size());
+
+  CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
+      dice_params.signin_info()->GetInitiator()->account_info.gaia_id,
+      dice_params.signin_info()->GetInitiator()->account_info.email);
+  ASSERT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
+
+  // Start first request from the deduplicated header params.
+  dice_response_handler_->ProcessDiceHeader(
+      std::move(dice_params),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+  GaiaAuthConsumer* consumer_1 = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer_1, testing::NotNull());
+
+  // Start a second request for the same account while the first is in flight.
+  DiceResponseParams dice_params_2 = MakeDiceParams(DiceAction::SIGNIN);
+  dice_response_handler_->ProcessDiceHeader(
+      std::move(dice_params_2),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+  GaiaAuthConsumer* consumer_2 = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer_2, testing::NotNull());
+
+  // The first fetcher is cancelled and only the second one is pending.
+  EXPECT_EQ(
+      1u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
+
+  // Simulate GaiaAuthFetcher success for the second request.
+  consumer_2->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token_2", "access_token_2", /*expires_in_secs=*/10,
+      /*is_under_advanced_protection=*/true, /*is_bound_to_key=*/false));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
+  EXPECT_TRUE(identity_manager()
+                  ->FindExtendedAccountInfoByAccountId(account_id)
+                  .is_under_advanced_protection);
+
+  EXPECT_EQ(
+      0u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
+}
+
+// Checks that when an initiator account fetch in initiator-first mode is
+// cancelled by a concurrent sign-in request for the initiator account, the
+// entire session (including any waiting secondary accounts) is cancelled and
+// deleted. We intentionally do not attempt to start secondary account fetches
+// upon initiator cancellation because doing so would bypass the profile
+// interception flow (which relies on delegate_->HandleTokenExchangeSuccess
+// from the initiator account before moving accounts to a new profile).
+TEST_F(DiceResponseHandlerTest,
+       SigninRepeated_InitiatorCancelled_SecondariesCancelled) {
+  const int account_count = 2;
+  const int initiator_index = 0;
+  // Create multi-account params in initiator-first mode (primary not
+  // connected).
+  DiceResponseParams dice_params_1 = MakeDiceParams(
+      DiceAction::SIGNIN, account_count, /*eligible_for_token_binding=*/true,
+      /*mtls_token_binding=*/false, initiator_index,
+      /*primary_is_connected=*/signin::Tribool::kFalse);
+
+  auto* signin_info_1 = dice_params_1.signin_info();
+  const auto& accounts_1 = signin_info_1->accounts();
+  CoreAccountId initiator_account_id =
+      identity_manager()->PickAccountIdForAccount(
+          accounts_1[0].account_info.gaia_id, accounts_1[0].account_info.email);
+  CoreAccountId secondary_account_id =
+      identity_manager()->PickAccountIdForAccount(
+          accounts_1[1].account_info.gaia_id, accounts_1[1].account_info.email);
+
+  ASSERT_FALSE(
+      identity_manager()->HasAccountWithRefreshToken(initiator_account_id));
+  ASSERT_FALSE(
+      identity_manager()->HasAccountWithRefreshToken(secondary_account_id));
+
+  // Start first request. Because it is in initiator-first mode, only the
+  // initiator fetcher should start.
+  dice_response_handler_->ProcessDiceHeader(
+      std::move(dice_params_1),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+  EXPECT_EQ(
+      1u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
+  GaiaAuthConsumer* consumer_init_1 = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer_init_1, testing::NotNull());
+
+  // Start a second concurrent sign-in request for ONLY the initiator account.
+  DiceResponseParams dice_params_2 = MakeDiceParams(DiceAction::SIGNIN, 1);
+  dice_response_handler_->ProcessDiceHeader(
+      std::move(dice_params_2),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  // Cancelling the initiator in Session 1 deletes Session 1. The waiting
+  // secondary account fetch is cancelled along with the session. Only Session
+  // 2's new fetcher for the initiator account should be pending.
+  EXPECT_EQ(
+      1u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
+
+  GaiaAuthConsumer* consumer_init_2 = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer_init_2, testing::NotNull());
+
+  consumer_init_2->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token_init", "access_token_init", /*expires_in_secs=*/10,
+      /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
+
+  EXPECT_TRUE(
+      identity_manager()->HasAccountWithRefreshToken(initiator_account_id));
+  EXPECT_FALSE(
+      identity_manager()->HasAccountWithRefreshToken(secondary_account_id));
+  EXPECT_EQ(
+      0u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
 }
 
 // Checks that two SIGNIN requests can happen concurrently.
