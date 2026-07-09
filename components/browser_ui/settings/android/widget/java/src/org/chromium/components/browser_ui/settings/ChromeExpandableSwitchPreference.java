@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.view.View;
@@ -172,6 +173,16 @@ public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
                         }
                         setChecked(isCheckedArg);
                     });
+            // Accessibility Fix: Associate label with switch
+            CharSequence label = null;
+            if (title != null && !TextUtils.isEmpty(title.getText())) {
+                label = title.getText();
+            } else if (summary != null && !TextUtils.isEmpty(summary.getText())) {
+                label = summary.getText();
+            }
+            if (label != null) {
+                switchView.setContentDescription(label);
+            }
         }
         updatePreferenceAccessibility(holder.itemView, title);
     }

@@ -236,4 +236,21 @@ public class ChromeExpandableSwitchPreferenceTest {
         // Switch should still be checked.
         onView(withId(android.R.id.switch_widget)).check(matches(isChecked()));
     }
+
+    @Test
+    @LargeTest
+    public void testSwitchAccessibilityLabel() {
+        // Verify that the switch widget has the correct contentDescription.
+        onView(withId(android.R.id.switch_widget))
+                .check(
+                        (view, noViewFoundException) -> {
+                            if (noViewFoundException != null) {
+                                throw noViewFoundException;
+                            }
+                            CharSequence contentDescription = view.getContentDescription();
+                            Assert.assertNotNull(
+                                    "Content description should not be null", contentDescription);
+                            Assert.assertEquals(TITLE, contentDescription.toString());
+                        });
+    }
 }
