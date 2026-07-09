@@ -70,6 +70,9 @@ bool SetTypefaceInArray(v8::Isolate* isolate,
     return false;
   }
 
+  SkString family_name;
+  font->getFamilyName(&family_name);
+
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Object> typeface = v8::Object::New(isolate);
   typeface
@@ -79,6 +82,10 @@ bool SetTypefaceInArray(v8::Isolate* isolate,
   typeface
       ->Set(context, gin::StringToSymbol(isolate, "serializedTypeface"),
             serialized_font)
+      .Check();
+  typeface
+      ->Set(context, gin::StringToSymbol(isolate, "name"),
+            gin::ConvertToV8(isolate, std::string(family_name.c_str())))
       .Check();
   typefaces_result->Set(context, index, typeface).Check();
   return true;
