@@ -30,6 +30,13 @@
   }
 }
 
+:host([app-mode='first-run']) {
+  --color-button-background-prominent: var(--color-sys-primary);
+  --color-button-foreground-prominent: var(--color-sys-on-primary);
+  --color-button-foreground: var(--color-sys-primary);
+  --color-button-border: var(--color-sys-tonal-outline);
+}
+
 :host(:not([revamp-enabled])),
 :host([revamp-enabled][app-mode='profile-picker']) {
   background-image: url('images/profile_picker_light_background.svg');
