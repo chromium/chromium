@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller_android.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -48,23 +49,26 @@ class GlicNudgeControllerAndroidBrowserTest : public GlicBrowserTest {
 
   void SetUpOnMainThread() override {
     GlicBrowserTest::SetUpOnMainThread();
-    nudge_controller_ =
-        std::make_unique<GlicNudgeControllerAndroid>(GetBrowser());
+    nudge_controller_ = static_cast<GlicNudgeControllerAndroid*>(
+        GlicNudgeController::From(GetBrowser()));
+    ASSERT_TRUE(nudge_controller_);
     nudge_controller_->SetTabStripDelegate(&mock_delegate_);
   }
 
   void TearDownOnMainThread() override {
-    nudge_controller_.reset();
+    if (nudge_controller_) {
+      nudge_controller_->SetTabStripDelegate(nullptr);
+    }
+    nudge_controller_ = nullptr;
     GlicBrowserTest::TearDownOnMainThread();
   }
 
  protected:
   MockGlicNudgeDelegate mock_delegate_;
-  std::unique_ptr<GlicNudgeControllerAndroid> nudge_controller_;
+  raw_ptr<GlicNudgeControllerAndroid> nudge_controller_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicNudgeControllerAndroidBrowserTest,
-                       DISABLED_ShowsNudge) {
+IN_PROC_BROWSER_TEST_F(GlicNudgeControllerAndroidBrowserTest, ShowsNudge) {
   content::WebContents* web_contents =
       GetTabListInterface()->GetActiveTab()->GetContents();
 
@@ -81,8 +85,7 @@ IN_PROC_BROWSER_TEST_F(GlicNudgeControllerAndroidBrowserTest,
   EXPECT_EQ(mock_delegate_.last_nudge_params()->label, "Nudge Label");
 }
 
-IN_PROC_BROWSER_TEST_F(GlicNudgeControllerAndroidBrowserTest,
-                       DISABLED_HidesNudge) {
+IN_PROC_BROWSER_TEST_F(GlicNudgeControllerAndroidBrowserTest, HidesNudge) {
   content::WebContents* web_contents =
       GetTabListInterface()->GetActiveTab()->GetContents();
 
@@ -106,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(GlicNudgeControllerAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicNudgeControllerAndroidBrowserTest,
-                       DISABLED_HidesNudgeOnActiveTabChanged) {
+                       HidesNudgeOnActiveTabChanged) {
   content::WebContents* web_contents =
       GetTabListInterface()->GetActiveTab()->GetContents();
 
@@ -128,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(GlicNudgeControllerAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicNudgeControllerAndroidBrowserTest,
-                       DISABLED_DoesNotShowNudgeForInactiveTab) {
+                       DoesNotShowNudgeForInactiveTab) {
   tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
   tabs::TabInterface* inactive_tab = CreateAndActivateTab(GetSimpleTestUrl());
   GetTabListInterface()->ActivateTab(active_tab->GetHandle());
@@ -145,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(GlicNudgeControllerAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicNudgeControllerAndroidBrowserTest,
-                       DISABLED_GetAndClearPromptSuggestion) {
+                       GetAndClearPromptSuggestion) {
   content::WebContents* web_contents =
       GetTabListInterface()->GetActiveTab()->GetContents();
 
