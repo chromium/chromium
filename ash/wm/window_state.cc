@@ -1033,8 +1033,14 @@ void WindowState::UpdateWindowPropertiesFromStateType() {
 
 void WindowState::NotifyPreStateTypeChange(
     WindowStateType old_window_state_type) {
-  for (auto& observer : observer_list_)
-    observer.OnPreWindowStateTypeChange(this, old_window_state_type);
+  // Allow reentrancy here. If there are any ongoing drag events when tablet
+  // mode is exited (which triggers the first state change), the drag events are
+  // forced to complete. This could potentially trigger a second state change,
+  // such as window snapping or maximizing.
+  observer_list_.NotifyAllowReentrancy(
+      &WindowStateObserver::OnPreWindowStateTypeChange, this,
+      old_window_state_type);
+
   OnPrePipStateChange(old_window_state_type);
 }
 
