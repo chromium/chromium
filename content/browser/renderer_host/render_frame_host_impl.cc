@@ -14634,10 +14634,12 @@ FrameTreeNode* RenderFrameHostImpl::GetPrerenderOuterMostMainFrame() {
     return nullptr;
   }
 
-  // If this runs during the WebContents destruction, PrerenderHostRegistry was
-  // already destroyed and bound prerenderings are already cancelled.
-  // We can check the FrameTree status as the tree's shutdown runs first.
-  if (outermost_frame->frame_tree().IsBeingDestroyed()) {
+  // If this runs during WebContents destruction, PrerenderHostRegistry is
+  // already being destroyed and bound prerenderings are being cancelled.
+  // We check `delegate_->IsBeingDestroyed()` or the FrameTree status as
+  // the tree's shutdown runs first.
+  if (outermost_frame->frame_tree().IsBeingDestroyed() ||
+      delegate_->IsBeingDestroyed()) {
     return nullptr;
   }
 

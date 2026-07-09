@@ -191,6 +191,10 @@ RenderFrameHostDelegate::GetActiveTopLevelDocumentsInBrowsingContextGroup(
   return std::vector<RenderFrameHostImpl*>();
 }
 
+bool RenderFrameHostDelegate::IsBeingDestroyed() {
+  return false;
+}
+
 PrerenderHostRegistry* RenderFrameHostDelegate::GetPrerenderHostRegistry() {
   return nullptr;
 }

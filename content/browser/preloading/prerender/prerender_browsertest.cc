@@ -13167,6 +13167,29 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
   EXPECT_TRUE(prerender_handle);
 }
 
+// Regression test for bug 40893667:
+// Tests that destroying a WebContents with multiple active prerenders sharing a
+// process does not crash during teardown when one RFH destruction triggers
+// RenderProcessGone notification for another RFH while PrerenderHostRegistry is
+// being destroyed.
+IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
+                       TeardownWithMultiplePrerendersSharingProcess) {
+  const GURL initial_url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Trigger multiple prerenders so they exist concurrently in the registry.
+  GURL prerender_url1 = GetUrl("/empty.html?prerender1");
+  GURL prerender_url2 = GetUrl("/empty.html?prerender2");
+  AddPrerender(prerender_url1);
+  AddPrerender(prerender_url2);
+  EXPECT_TRUE(HasHostForUrl(prerender_url1));
+  EXPECT_TRUE(HasHostForUrl(prerender_url2));
+
+  // Destroying the shell (and thus WebContents) should complete cleanly without
+  // crashing due to accessing a null PrerenderHostRegistry during RFH teardown.
+  shell()->Close();
+}
+
 // Tests that PrerenderHostRegistry can start prerendering when the DevTools is
 // open even if the acceptable percent of the system memory is set to 0.
 IN_PROC_BROWSER_TEST_F(MultiplePrerendersWithLimitedMemoryBrowserTest,

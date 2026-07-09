@@ -729,6 +729,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   GetActiveTopLevelDocumentsInBrowsingContextGroup(
       RenderFrameHostImpl* render_frame_host);
 
+  // Whether the delegate (e.g. WebContents) is currently being destroyed.
+  virtual bool IsBeingDestroyed();
+
   // Returns the PrerenderHostRegistry to start/cancel prerendering. This
   // doesn't return nullptr except for some tests.
   virtual PrerenderHostRegistry* GetPrerenderHostRegistry();
