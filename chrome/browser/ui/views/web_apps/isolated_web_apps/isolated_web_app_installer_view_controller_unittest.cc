@@ -771,7 +771,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest, DisabledViewAccessibility) {
   // Set bounds to non-zero to make sure that layout creates children.
   subtitle_label->SetBounds(0, 0, 1000, 1000);
 
-  // Verify that the fix for crbug.com/505281659 is applied on the parent label.
+  // The subtitle hosts an inline link, so StyledLabel exposes it as a paragraph
+  // (rather than static text) to keep the link reachable in the platform tree.
   EXPECT_EQ(subtitle_label->GetViewAccessibility().GetCachedRole(),
             ax::mojom::Role::kParagraph);
 
