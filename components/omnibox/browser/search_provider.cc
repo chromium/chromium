@@ -757,9 +757,9 @@ void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
   // Since there is currently no contextual search suggest or typed AI mode
   // suggest, lens contextual searchboxes and the composebox, shouldn't query
   // suggest and only the verbatim matches should be shown.
-  if ((omnibox::IsLensContextualSearchbox(
-           input_.current_page_classification()) &&
-       !lens::features::ShowContextualSearchboxSearchSuggest())) {
+  if (input_.current_page_classification() ==
+          OmniboxEventProto::CONTEXTUAL_SEARCHBOX &&
+      !lens::features::ShowContextualSearchboxSearchSuggest()) {
     return;
   }
   // Make sure the current query can be sent to at least one suggest service.
