@@ -322,4 +322,32 @@ TEST_F(RTCVideoDecoderFactoryTest,
              kUnsupported));
 }
 #endif  // BUILDFLAG(RTC_USE_H265)
+
+TEST_F(RTCVideoDecoderFactoryTest,
+       QueryCodecSupportAV1WithWebRtcHwAv1DecodingDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine("", "WebRtcHwAv1Decoding");
+  EXPECT_CALL(mock_gpu_factories_, IsDecoderSupportKnown())
+      .WillRepeatedly(Return(true));
+
+  // AV1 is missing from this list.
+  EXPECT_THAT(
+      decoder_factory_.GetSupportedFormats(),
+      UnorderedElementsAre(
+          kH264CbPacketizatonMode0Sdp, kH264CbPacketizatonMode1Sdp,
+          kH264BaselinePacketizatonMode0Sdp, kH264BaselinePacketizatonMode1Sdp,
+          kH264MainPacketizatonMode0Sdp, kH264MainPacketizatonMode1Sdp,
+          kVp9Profile0Sdp, kVp9Profile1Sdp, kVp9Profile2Sdp
+#if BUILDFLAG(RTC_USE_H265)
+          ,
+          kH265MainProfileLevel6Sdp, kH265Main10ProfileLevel6Sdp
+#endif  // BUILDFLAG(RTC_USE_H265)
+          ));
+
+  EXPECT_TRUE(
+      Equals(decoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("AV1"),
+                                                false /*reference_scaling*/),
+             kUnsupported));
+}
+
 }  // namespace blink
