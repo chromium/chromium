@@ -343,6 +343,7 @@ if (current_toolchain == default_toolchain) {
       "photo_filled.icon",
       "photo_off_chrome_refresh_old.icon",
       "photo_old.icon",
+      "photo_spark.icon",
       "piano.icon",
       "piano_off.icon",
       "picture_in_picture.icon",
