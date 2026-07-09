@@ -24,6 +24,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -55,6 +56,9 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
+#include "net/test/cert_builder.h"
+#include "net/test/cert_test_util.h"
+#include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -472,6 +476,13 @@ SSLSocketDataProvider::SSLSocketDataProvider(IoMode mode, int result)
                                 &ssl_info.connection_status);
   // Set to TLS_CHACHA20_POLY1305_SHA256
   SSLConnectionStatusSetCipherSuite(0x1301, &ssl_info.connection_status);
+  // Tests that go through the certificate error path need a certificate set,
+  // otherwise they trigger a CHECK.
+  if (IsCertificateError(result)) {
+    static base::NoDestructor<scoped_refptr<X509Certificate>> cert(
+        CertBuilder::CreateSimpleChain(1)[0]->GetX509Certificate());
+    ssl_info.cert = *cert;
+  }
 }
 
 SSLSocketDataProvider::SSLSocketDataProvider(MockConnectCompleter* completer)
