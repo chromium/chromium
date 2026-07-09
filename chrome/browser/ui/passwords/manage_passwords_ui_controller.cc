@@ -1595,9 +1595,7 @@ void ManagePasswordsUIController::StartTrustedVaultErrorResolutionFlow() {
           web_contents());
   OpenTabForSyncKeyRetrieval(
       browser,
-      // TODO(crbug.com/484367376): Introduce a dedicated enum entry for
-      // indicating that the user action corresponds to the in-flow recovery.
-      trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kPasswordSavePrompt);
 }
 
 void ManagePasswordsUIController::

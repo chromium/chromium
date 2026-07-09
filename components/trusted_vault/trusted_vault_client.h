@@ -49,7 +49,7 @@ enum class TrustedVaultUserActionTriggerForUMA {
   kPasskeyUnlockProfileMenu = 8,
   // From the passkey authenticator window (only used on Desktop).
   kPasskeyBootstrappingFlow = 9,
-  // From the password save prompt (currently used only on iOS).
+  // From the password save prompt (used on iOS and Desktop).
   kPasswordSavePrompt = 10,
   kMaxValue = kPasswordSavePrompt
 };
