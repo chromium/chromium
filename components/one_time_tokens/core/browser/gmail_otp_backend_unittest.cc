@@ -73,6 +73,7 @@ TEST_F(GmailOtpBackendImplTest, SubscribeAndGetToken) {
   ::google::internal::chrome::passwords::onetimetoken::v1::
       FetchEmailOneTimeTokenResponse response;
   response.mutable_one_time_password()->set_one_time_password("123456");
+  response.set_sender_address("noreply@example.com");
 
   task_environment_.FastForwardBy(base::Milliseconds(500));
 

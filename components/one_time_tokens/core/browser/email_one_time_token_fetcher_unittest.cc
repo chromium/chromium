@@ -31,6 +31,7 @@ namespace {
 constexpr char kTestEmail[] = "test@example.com";
 constexpr char kTestAccessToken[] = "access_token";
 constexpr char kOneTimeToken[] = "123456";
+constexpr char kSenderAddress[] = "sender@example.com";
 constexpr char kEncryptedMessageReference[] = "encrypted_reference";
 constexpr char kServiceUrl[] =
     "https://onetimetoken.pa.googleapis.com/v1/onetimetokens:fetchEmail";
@@ -71,12 +72,21 @@ class EmailOneTimeTokenFetcherTest : public testing::Test {
     ::google::internal::chrome::passwords::onetimetoken::v1::
         FetchEmailOneTimeTokenResponse response;
     response.mutable_one_time_password()->set_one_time_password(kOneTimeToken);
+    response.set_sender_address(kSenderAddress);
     return response.SerializeAsString();
   }
 
   std::string CreateResponseWithoutToken() {
     ::google::internal::chrome::passwords::onetimetoken::v1::
         FetchEmailOneTimeTokenResponse response;
+    response.set_sender_address(kSenderAddress);
+    return response.SerializeAsString();
+  }
+
+  std::string CreateResponseWithoutSenderAddress() {
+    ::google::internal::chrome::passwords::onetimetoken::v1::
+        FetchEmailOneTimeTokenResponse response;
+    response.mutable_one_time_password()->set_one_time_password(kOneTimeToken);
     return response.SerializeAsString();
   }
 
@@ -138,6 +148,7 @@ TEST_F(EmailOneTimeTokenFetcherTest, Success) {
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->value(), kOneTimeToken);
   EXPECT_EQ(result->type(), OneTimeTokenType::kGmail);
+  EXPECT_EQ(result->sender_address(), kSenderAddress);
   histogram_tester_.ExpectUniqueTimeSample(
       "Autofill.OneTimeTokens.Backend.Gmail.AuthLatency",
       base::Milliseconds(123), 1);
@@ -230,6 +241,28 @@ TEST_F(EmailOneTimeTokenFetcherTest, ResponseWithoutToken) {
   EXPECT_EQ(result.error(),
             OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
   auto unused = future.Get();
+}
+
+// Tests that an error is returned when the response proto is structurally
+// valid and contains a token, but has an empty `sender_address`.
+TEST_F(EmailOneTimeTokenFetcherTest, ResponseWithoutSenderAddress) {
+  std::unique_ptr<EmailOneTimeTokenFetcher> fetcher = CreateFetcher();
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+
+  fetcher->Start(future.GetCallback());
+  WaitForAccessTokenRequestAndRespondWithSuccess();
+
+  ASSERT_TRUE(test_url_loader_factory_->IsPending(GetExpectedUrl()));
+  test_url_loader_factory_->AddResponse(GetExpectedUrl(),
+                                        CreateResponseWithoutSenderAddress());
+
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
+      future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
 }
 
 // Tests that the fetcher retries on transient errors (like HTTP 500) and

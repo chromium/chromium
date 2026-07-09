@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_EMAIL_ONE_TIME_TOKEN_FETCHER_H_
 #define COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_EMAIL_ONE_TIME_TOKEN_FETCHER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"

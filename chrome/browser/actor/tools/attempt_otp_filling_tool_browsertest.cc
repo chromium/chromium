@@ -191,10 +191,11 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
                   base::Time expiration,
                   one_time_tokens::OneTimeTokenService::Callback callback) {
               if (otp) {
-                callback.Run(one_time_tokens::OneTimeTokenSource::kGmail,
-                             one_time_tokens::OneTimeToken(
-                                 one_time_tokens::OneTimeTokenType::kGmail,
-                                 *otp, base::TimeTicks::Now()));
+                callback.Run(
+                    one_time_tokens::OneTimeTokenSource::kGmail,
+                    one_time_tokens::OneTimeToken(
+                        one_time_tokens::OneTimeTokenType::kGmail, *otp,
+                        base::TimeTicks::Now(), "sender@example.com"));
               } else {
                 callback.Run(
                     one_time_tokens::OneTimeTokenSource::kGmail,
@@ -369,11 +370,11 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
                    one_time_tokens::OneTimeTokenService::Callback callback) {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
-            base::BindOnce(callback,
-                           one_time_tokens::OneTimeTokenSource::kGmail,
-                           one_time_tokens::OneTimeToken(
-                               one_time_tokens::OneTimeTokenType::kGmail,
-                               "1234", base::TimeTicks::Now())),
+            base::BindOnce(
+                callback, one_time_tokens::OneTimeTokenSource::kGmail,
+                one_time_tokens::OneTimeToken(
+                    one_time_tokens::OneTimeTokenType::kGmail, "1234",
+                    base::TimeTicks::Now(), "sender@example.com")),
             base::Milliseconds(100));
         return one_time_tokens::ExpiringSubscription();
       });

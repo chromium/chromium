@@ -182,9 +182,14 @@ EmailOneTimeTokenFetcher::ExtractOneTimeTokenValueFromResponse(
     return base::unexpected(
         OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
   }
+  if (response.sender_address().empty()) {
+    return base::unexpected(
+        OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
+  }
   return base::ok(OneTimeToken(OneTimeTokenType::kGmail,
                                response.one_time_password().one_time_password(),
-                               base::TimeTicks::Now()));
+                               base::TimeTicks::Now(),
+                               response.sender_address()));
 }
 
 }  // namespace one_time_tokens

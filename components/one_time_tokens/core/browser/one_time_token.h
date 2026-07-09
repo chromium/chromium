@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_ONE_TIME_TOKEN_H_
 #define COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_ONE_TIME_TOKEN_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -25,7 +26,8 @@ class OneTimeToken {
 
   OneTimeToken(OneTimeTokenType type,
                const std::string& value,
-               base::TimeTicks on_device_arrival_time);
+               base::TimeTicks on_device_arrival_time,
+               std::optional<std::string> sender_address = std::nullopt);
   OneTimeToken(const OneTimeToken&);
   OneTimeToken& operator=(const OneTimeToken&);
   OneTimeToken(OneTimeToken&&);
@@ -37,9 +39,14 @@ class OneTimeToken {
   [[nodiscard]] base::TimeTicks on_device_arrival_time() const {
     return on_device_arrival_time_;
   }
+  [[nodiscard]] const std::optional<std::string>& sender_address() const {
+    return sender_address_;
+  }
 
-  // Performs a comparison of OneTimeTokens, ignoring the
+  // Performs a comparison of `OneTimeToken`s, ignoring the
   // `on_device_arrival_time_`.
+  // TODO(crbug.com/532094982): Remove == and != operators since different
+  // use cases might require different comparison logic.
   bool operator==(const OneTimeToken& other) const;
   bool operator!=(const OneTimeToken& other) const;
 
@@ -47,6 +54,10 @@ class OneTimeToken {
   OneTimeTokenType type_;
   std::string value_;
   base::TimeTicks on_device_arrival_time_;
+
+  // The sender of the OTP email. This is only relevant for Gmail OTPs
+  // and is `std::nullopt` otherwise.
+  std::optional<std::string> sender_address_;
 };
 
 }  // namespace one_time_tokens

@@ -136,7 +136,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Success) {
   EXPECT_CALL(otp_service(), GetCachedOneTimeTokens())
       .WillOnce(Return(std::vector<one_time_tokens::OneTimeToken>{
           {one_time_tokens::OneTimeTokenType::kGmail, kOtp,
-           base::TimeTicks::Now()}}));
+           base::TimeTicks::Now(), "sender@example.com"}}));
 
   base::test::TestFuture<
       base::expected<std::string, OneTimeTokenRetrievalError>>
@@ -158,9 +158,11 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_MultipleTokens) {
       {one_time_tokens::OneTimeTokenType::kSmsOtp, kSmsOtp,
        now + base::Minutes(5)},  // Most recent, but wrong type
       {one_time_tokens::OneTimeTokenType::kGmail, kOldGmailOtp,
-       now - base::Minutes(2)},  // Correct type, but older
+       now - base::Minutes(2),
+       "sender@example.com"},  // Correct type, but older
       {one_time_tokens::OneTimeTokenType::kGmail, kRecentGmailOtp,
-       now - base::Minutes(1)}  // Correct type, most recent valid
+       now - base::Minutes(1), "sender@example.com"}
+      // Correct type, most recent valid
   };
 
   EXPECT_CALL(otp_service(), GetCachedOneTimeTokens())
