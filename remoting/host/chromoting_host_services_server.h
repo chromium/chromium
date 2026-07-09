@@ -44,6 +44,9 @@ class ChromotingHostServicesServer {
  private:
   friend class ChromotingHostServicesServerTest;
 
+  static named_mojo_ipc_server::EndpointOptions CreateEndpointOptions(
+      const mojo::NamedPlatformChannel::ServerName& server_name);
+
   void OnMessagePipeReady(
       mojo::ScopedMessagePipeHandle message_pipe,
       std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> connection_info,

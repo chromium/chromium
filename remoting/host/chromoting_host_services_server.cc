@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "build/buildflag.h"
+#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "remoting/host/ipc_constants.h"
@@ -23,17 +24,21 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/strcat_win.h"
 #include "base/win/win_util.h"
-#include "mojo/public/c/system/invitation.h"
 #endif
 
 namespace remoting {
-namespace {
 
-named_mojo_ipc_server::EndpointOptions CreateEndpointOptions(
+// static
+named_mojo_ipc_server::EndpointOptions
+ChromotingHostServicesServer::CreateEndpointOptions(
     const mojo::NamedPlatformChannel::ServerName& server_name) {
   named_mojo_ipc_server::EndpointOptions options;
   options.server_name = server_name;
   options.message_pipe_id = kChromotingHostServicesMessagePipeId;
+  // Clients of this server are external processes and join the same Mojo
+  // process graph as the host's broker, so restrict their access to it.
+  options.extra_send_invitation_flags =
+      MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS;
 #if BUILDFLAG(IS_WIN)
   // Create a named pipe owned by the current user which is available to all
   // authenticated users.
@@ -45,8 +50,6 @@ named_mojo_ipc_server::EndpointOptions CreateEndpointOptions(
   options.security_descriptor =
       base::StrCat({L"O:", user_sid, L"G:", user_sid, L"D:(A;;GA;;;AU)"});
   options.include_peer_process_info = true;
-  options.extra_send_invitation_flags =
-      MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS;
 #elif BUILDFLAG(IS_LINUX)
   // Allow the endpoint to be connected by any users iff the server is run as
   // root.
@@ -54,8 +57,6 @@ named_mojo_ipc_server::EndpointOptions CreateEndpointOptions(
 #endif
   return options;
 }
-
-}  // namespace
 
 ChromotingHostServicesServer::ChromotingHostServicesServer(
     BindChromotingHostServicesCallback bind_chromoting_host_services)

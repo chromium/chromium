@@ -21,8 +21,10 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
+#include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_test_util.h"
+#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
@@ -83,6 +85,9 @@ class ChromotingHostServicesServerTest : public testing::Test {
  protected:
   base::Process LaunchClientProcess();
   int WaitForProcessExit(base::Process& process);
+  named_mojo_ipc_server::EndpointOptions CreateEndpointOptions() {
+    return ChromotingHostServicesServer::CreateEndpointOptions(server_name_);
+  }
 
   mojo::NamedPlatformChannel::ServerName server_name_ =
       named_mojo_ipc_server::test::GenerateRandomServerName();
@@ -133,6 +138,16 @@ int ChromotingHostServicesServerTest::WaitForProcessExit(
   process.Close();
   EXPECT_TRUE(process_exited);
   return exit_code;
+}
+
+TEST_F(ChromotingHostServicesServerTest,
+       EndpointOptions_ClientInvitationIsUntrusted) {
+  // Clients connecting to this server are external processes that share a
+  // process graph with the host's broker, so they must be invited as
+  // untrusted Mojo nodes.
+  named_mojo_ipc_server::EndpointOptions options = CreateEndpointOptions();
+  EXPECT_TRUE(options.extra_send_invitation_flags &
+              MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS);
 }
 
 TEST_F(ChromotingHostServicesServerTest,
