@@ -26,7 +26,6 @@
 #error "This file should only be included if DICE support / mirror is enabled"
 #endif
 
-class Browser;
 class BrowserWindowInterface;
 class SigninUIError;
 class TurnSyncOnHelperPolicyFetchTracker;
@@ -155,7 +154,7 @@ class TurnSyncOnHelper {
   // proposition value should be shown, and what state should the user be in if
   // they cancel.
   TurnSyncOnHelper(Profile* profile,
-                   Browser* browser,
+                   BrowserWindowInterface* browser,
                    signin_metrics::AccessPoint signin_access_point,
                    signin_metrics::PromoAction signin_promo_action,
                    const CoreAccountId& account_id,

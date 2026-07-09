@@ -16,7 +16,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -87,8 +86,7 @@ DiceTabHelper::GetEnableSyncCallbackForBrowser() {
 
     // TurnSyncOnHelper is suicidal (it will kill itself once it
     // finishes enabling sync).
-    new TurnSyncOnHelper(profile, browser->GetBrowserForMigrationOnly(),
-                         access_point, promo_action,
+    new TurnSyncOnHelper(profile, browser, access_point, promo_action,
                          account_info.account_id, abort_mode, is_sync_promo);
   });
 }

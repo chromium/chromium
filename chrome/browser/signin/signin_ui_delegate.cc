@@ -52,10 +52,10 @@ void SigninUiDelegate::ShowHistorySyncOptinUI(
 }
 
 // static
-Browser* SigninUiDelegate::EnsureBrowser(Profile* profile) {
+BrowserWindowInterface* SigninUiDelegate::EnsureBrowser(Profile* profile) {
   DCHECK(profile);
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  return displayer.browser();
+  return displayer.browser_window_interface();
 }
 
 }  // namespace signin_ui_util

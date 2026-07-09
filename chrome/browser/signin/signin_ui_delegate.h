@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #endif
 
-class Browser;
 class BrowserWindowInterface;
 class Profile;
 struct CoreAccountId;
@@ -80,7 +79,7 @@ class SigninUiDelegate {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
  protected:
-  static Browser* EnsureBrowser(Profile* profile);
+  static BrowserWindowInterface* EnsureBrowser(Profile* profile);
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 

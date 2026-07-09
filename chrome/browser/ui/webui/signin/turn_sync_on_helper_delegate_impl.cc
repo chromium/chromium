@@ -91,7 +91,7 @@ void OnEmailConfirmation(signin::SigninChoiceCallback callback,
 }  // namespace
 
 TurnSyncOnHelperDelegateImpl::TurnSyncOnHelperDelegateImpl(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     bool is_sync_promo,
     bool user_already_signed_in)
     : browser_(browser),
