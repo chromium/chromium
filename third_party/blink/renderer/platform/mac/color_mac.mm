@@ -24,14 +24,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "third_party/blink/renderer/platform/mac/color_mac.h"
 
 #import <AppKit/AppKit.h>
+
+#include <array>
+
+#include "base/no_destructor.h"
 
 namespace blink {
 
@@ -60,13 +59,14 @@ NSColor* NsColor(const Color& color) {
                                                         alpha:1];
     return white_color;
   } else {
-    const int kCacheSize = 32;
-    static unsigned cached_rgba_values[kCacheSize];
-    static NSColor* cached_colors[kCacheSize];
+    constexpr int kCacheSize = 32;
+    static std::array<unsigned, kCacheSize> cached_rgba_values;
+    static base::NoDestructor<std::array<NSColor*, kCacheSize>> cached_colors;
 
     for (int i = 0; i != kCacheSize; ++i) {
-      if (cached_rgba_values[i] == c)
-        return cached_colors[i];
+      if (cached_rgba_values[i] == c) {
+        return (*cached_colors)[i];
+      }
     }
 
     NSColor* result = [NSColor
@@ -77,7 +77,7 @@ NSColor* NsColor(const Color& color) {
 
     static int cursor;
     cached_rgba_values[cursor] = c;
-    cached_colors[cursor] = result;
+    (*cached_colors)[cursor] = result;
     if (++cursor == kCacheSize) {
       cursor = 0;
     }
