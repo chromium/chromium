@@ -3335,7 +3335,7 @@ void WebGLRenderingContextWebGPUBase::vertexAttribIPointer(GLuint index,
 
 void WebGLRenderingContextWebGPUBase::vertexAttribDivisor(GLuint index,
                                                           GLuint divisor) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glVertexAttribDivisorANGLEFn(index, divisor);
 }
 
 void WebGLRenderingContextWebGPUBase::drawArraysInstanced(
