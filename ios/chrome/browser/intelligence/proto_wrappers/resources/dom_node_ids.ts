@@ -8,6 +8,22 @@
 
 const DOM_NODE_ID_MANAGER_SYMBOL = Symbol.for('__gCrWebDomNodeIdManager');
 
+const ownerDocumentGetter =
+    Object.getOwnPropertyDescriptor(Node.prototype, 'ownerDocument')?.get;
+
+// Returns the owner document of the node, or the node itself if it is already a
+// Document. Directly calls the prototype to protect against DOM stomping.
+export function safeOwnerDocument(node: Node): Document|null {
+  if (node instanceof Document) {
+    return node;
+  }
+  if (node.ownerDocument instanceof Document) {
+    return node.ownerDocument;
+  }
+  return ownerDocumentGetter ? ownerDocumentGetter.call(node) :
+                               node.ownerDocument;
+}
+
 class DomNodeIdManager {
   private readonly domNodeIdMap = new WeakMap<Node, number>();
   private readonly domNodeReverseMap = new Map<number, WeakRef<Node>>();
@@ -86,8 +102,7 @@ function getManager(nodeWindow: Window): DomNodeIdManager {
  */
 export function getOrCreateNodeId(node: Node): number|null {
   // Get the window tied to the node.
-  const nodeWindow =
-      (node instanceof Document ? node : node.ownerDocument)?.defaultView;
+  const nodeWindow = safeOwnerDocument(node)?.defaultView;
   if (!nodeWindow) {
     return null;
   }
@@ -103,8 +118,7 @@ export function getOrCreateNodeId(node: Node): number|null {
  * @return The ID for the node (>= 1), or null if it doesn't exist.
  */
 export function getNodeId(node: Node): number|null {
-  const nodeWindow =
-      (node instanceof Document ? node : node.ownerDocument)?.defaultView;
+  const nodeWindow = safeOwnerDocument(node)?.defaultView;
   if (!nodeWindow) {
     return null;
   }

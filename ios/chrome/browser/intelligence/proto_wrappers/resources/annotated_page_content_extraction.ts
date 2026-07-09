@@ -4,7 +4,7 @@
 
 import {HAS_BEEN_PASSWORD_SYMBOL, ID_SYMBOL} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {APC_NODE_DEPTH_COST, getRemoteFrameRemoteToken, NONCE_ATTR} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/common.js';
-import {getNodeId, getOrCreateNodeId} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
+import {getNodeId, getOrCreateNodeId, safeOwnerDocument} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
 import {AxRole, FormControlType, PageContentAnchorRel, PageContentAnnotatedRole, PageContentAttributeType, PageContentClickabilityReason, PageContentInteractionDisabledReason, PageContentMediaType, PageContentRedactionDecision, PageContentTableRowType, PageContentTextSize} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
 import type {PageContent, PageContentAttributes, PageContentFormControlData, PageContentFormData, PageContentFrameData, PageContentFrameInteractionInfo, PageContentGeometry, PageContentMediaData, PageContentNode, PageContentNodeInteractionInfo, PageContentPageInteractionInfo, PageContentScrollerInfo, PageContentTableData, Point, Rect as BasicRect} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
 
@@ -31,6 +31,239 @@ interface PasswordTrackedElement extends HTMLInputElement {
 // symbol property.
 interface HtmlElementWithAutofillId extends HTMLElement {
   [ID_SYMBOL]?: number;
+}
+
+// Safe getters for prototype properties to prevent DOM stomping/clobbering.
+// DOM stomping is specifically a problem for node types that are
+// `LegacyOverrideBuiltIns`, which only implicates `HTMLFormElement`.
+// Errors would occur when a form element has, e.g., `<input name="nodeType">`.
+// We hold onto the actual node prototype functions to prevent this edge case,
+// i.e., we call these getters in `safeX` methods instead of `element.nodeType`.
+const nodeTypeGetter =
+    Object.getOwnPropertyDescriptor(Node.prototype, 'nodeType')?.get;
+const parentElementGetter =
+    Object.getOwnPropertyDescriptor(Node.prototype, 'parentElement')?.get;
+const tagNameGetter =
+    Object.getOwnPropertyDescriptor(Element.prototype, 'tagName')?.get;
+const isContentEditableGetter =
+    Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'isContentEditable')
+        ?.get;
+const tabIndexGetter =
+    Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')?.get;
+
+const textContentGetter =
+    Object.getOwnPropertyDescriptor(Node.prototype, 'textContent')?.get;
+const getRootNodeMethod = Node.prototype.getRootNode;
+
+const getBoundingClientRectMethod = Element.prototype.getBoundingClientRect;
+const getClientRectsMethod = Element.prototype.getClientRects;
+
+const clientHeightGetter =
+    Object.getOwnPropertyDescriptor(Element.prototype, 'clientHeight')?.get;
+const clientWidthGetter =
+    Object.getOwnPropertyDescriptor(Element.prototype, 'clientWidth')?.get;
+const scrollHeightGetter =
+    Object.getOwnPropertyDescriptor(Element.prototype, 'scrollHeight')?.get;
+const scrollWidthGetter =
+    Object.getOwnPropertyDescriptor(Element.prototype, 'scrollWidth')?.get;
+const scrollTopGetter =
+    Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop')?.get;
+const scrollLeftGetter =
+    Object.getOwnPropertyDescriptor(Element.prototype, 'scrollLeft')?.get;
+
+// Safe methods on Node/Element prototype.
+const containsMethod = Node.prototype.contains;
+const getAttributeMethod = Element.prototype.getAttribute;
+const hasAttributeMethod = Element.prototype.hasAttribute;
+const setAttributeMethod = Element.prototype.setAttribute;
+const matchesMethod = Element.prototype.matches;
+
+// These safe getters prevent DOM stomping/clobbering by calling the getter
+// on the prototype instead of directly on the element.
+// Returns the equivalent of `node.nodeType` but directly calls the `Node`
+// prototype to prevent clobbering.
+function safeNodeType(node: Node): number {
+  if (typeof node.nodeType === 'number') {
+    return node.nodeType;
+  }
+  return nodeTypeGetter ? nodeTypeGetter.call(node) : node.nodeType;
+}
+
+
+// Returns the equivalent of `node.parentElement` but directly calls the `Node`
+// prototype to prevent clobbering.
+function safeParentElement(node: Node): HTMLElement|null {
+  return parentElementGetter ? parentElementGetter.call(node) :
+                               node.parentElement;
+}
+
+// Returns the equivalent of `element.tagName` but directly calls the `Element`
+// prototype to prevent clobbering.
+function safeTagName(element: Element): string {
+  if (typeof element.tagName === 'string') {
+    return element.tagName;
+  }
+  return tagNameGetter ? tagNameGetter.call(element) : element.tagName;
+}
+
+// Returns the equivalent of `node.contains(child)` but directly calls the
+// `Node` prototype to prevent clobbering.
+function safeContains(parent: Node, child: Node|null): boolean {
+  if (typeof parent.contains === 'function') {
+    return parent.contains(child);
+  }
+  return containsMethod.call(parent, child);
+}
+
+// Returns the equivalent of `element.getAttribute(name)` but directly calls the
+// `Element` prototype to prevent clobbering.
+function safeGetAttribute(element: Element, name: string): string|null {
+  if (typeof element.getAttribute === 'function') {
+    return element.getAttribute(name);
+  }
+  return getAttributeMethod.call(element, name);
+}
+
+// Returns the equivalent of `element.hasAttribute(name)` but directly calls the
+// `Element` prototype to prevent clobbering.
+function safeHasAttribute(element: Element, name: string): boolean {
+  if (typeof element.hasAttribute === 'function') {
+    return element.hasAttribute(name);
+  }
+  return hasAttributeMethod.call(element, name);
+}
+
+// Returns the equivalent of `element.setAttribute(name, value)` but directly
+// calls the `Element` prototype to prevent clobbering.
+function safeSetAttribute(element: Element, name: string, value: string): void {
+  if (typeof element.setAttribute === 'function') {
+    element.setAttribute(name, value);
+    return;
+  }
+  setAttributeMethod.call(element, name, value);
+}
+
+// Returns the equivalent of `element.matches(selector)` but directly calls the
+// `Element` prototype to prevent clobbering.
+function safeMatches(element: Element, selector: string): boolean {
+  if (typeof element.matches === 'function') {
+    return element.matches(selector);
+  }
+  return matchesMethod.call(element, selector);
+}
+
+// Returns the equivalent of `element.isContentEditable` but directly calls the
+// `HTMLElement` prototype to prevent clobbering.
+function safeIsContentEditable(element: HTMLElement): boolean {
+  if (typeof element.isContentEditable === 'boolean') {
+    return element.isContentEditable;
+  }
+  return isContentEditableGetter ? isContentEditableGetter.call(element) :
+                                   element.isContentEditable;
+}
+
+// Returns the equivalent of `element.tabIndex` but directly calls the
+// `HTMLElement` prototype to prevent clobbering.
+function safeTabIndex(element: HTMLElement): number {
+  if (typeof element.tabIndex === 'number') {
+    return element.tabIndex;
+  }
+  return tabIndexGetter ? tabIndexGetter.call(element) : element.tabIndex;
+}
+
+// Returns the equivalent of `node.textContent` but directly calls the `Node`
+// prototype to prevent clobbering.
+function safeTextContent(node: Node): string {
+  if (typeof node.textContent === 'string') {
+    return node.textContent;
+  }
+  return textContentGetter ? textContentGetter.call(node) ?? '' :
+                             node.textContent ?? '';
+}
+
+// Returns the equivalent of `node.getRootNode()` but directly calls the `Node`
+// prototype to prevent clobbering.
+function safeGetRootNode(node: Node): Node {
+  if (typeof node.getRootNode === 'function') {
+    return node.getRootNode();
+  }
+  return getRootNodeMethod.call(node);
+}
+
+// Returns the equivalent of `element.getBoundingClientRect()` but directly
+// calls the `Element` prototype to prevent clobbering.
+function safeGetBoundingClientRect(element: Element): DOMRect {
+  if (typeof element.getBoundingClientRect === 'function') {
+    return element.getBoundingClientRect();
+  }
+  return getBoundingClientRectMethod.call(element);
+}
+
+// Returns the equivalent of `element.getClientRects()` but directly calls the
+// `Element` prototype to prevent clobbering.
+function safeGetClientRects(element: Element): DOMRectList {
+  if (typeof element.getClientRects === 'function') {
+    return element.getClientRects();
+  }
+  return getClientRectsMethod.call(element);
+}
+
+// Returns the equivalent of `element.clientHeight` but directly calls the
+// `Element` prototype to prevent clobbering.
+function safeClientHeight(element: Element): number {
+  if (typeof element.clientHeight === 'number') {
+    return element.clientHeight;
+  }
+  return clientHeightGetter ? clientHeightGetter.call(element) :
+                              element.clientHeight;
+}
+
+// Returns the equivalent of `element.clientWidth` but directly calls the
+// `Element` prototype to prevent clobbering.
+function safeClientWidth(element: Element): number {
+  if (typeof element.clientWidth === 'number') {
+    return element.clientWidth;
+  }
+  return clientWidthGetter ? clientWidthGetter.call(element) :
+                             element.clientWidth;
+}
+
+// Returns the equivalent of `element.scrollHeight` but directly calls the
+// `Element` prototype to prevent clobbering.
+function safeScrollHeight(element: Element): number {
+  if (typeof element.scrollHeight === 'number') {
+    return element.scrollHeight;
+  }
+  return scrollHeightGetter ? scrollHeightGetter.call(element) :
+                              element.scrollHeight;
+}
+
+// Returns the equivalent of `element.scrollWidth` but directly calls the
+// `Element` prototype to prevent clobbering.
+function safeScrollWidth(element: Element): number {
+  if (typeof element.scrollWidth === 'number') {
+    return element.scrollWidth;
+  }
+  return scrollWidthGetter ? scrollWidthGetter.call(element) :
+                             element.scrollWidth;
+}
+
+// Returns the equivalent of `element.scrollTop` but directly calls the
+// `Element` prototype to prevent clobbering.
+function safeScrollTop(element: Element): number {
+  if (typeof element.scrollTop === 'number') {
+    return element.scrollTop;
+  }
+  return scrollTopGetter ? scrollTopGetter.call(element) : element.scrollTop;
+}
+
+// Returns the equivalent of `element.scrollLeft` but directly calls the
+// `Element` prototype to prevent clobbering.
+function safeScrollLeft(element: Element): number {
+  if (typeof element.scrollLeft === 'number') {
+    return element.scrollLeft;
+  }
+  return scrollLeftGetter ? scrollLeftGetter.call(element) : element.scrollLeft;
 }
 
 // Cache that stores computed style for the latest walked element to avoid
@@ -731,7 +964,7 @@ function getActiveAriaRole(roleAttr: string): string|undefined {
  */
 function getAriaFormControlData(element: HTMLElement):
     PageContentFormControlData|undefined {
-  const roleAttr = element.getAttribute(ATTR_KEY_ROLE);
+  const roleAttr = safeGetAttribute(element, ATTR_KEY_ROLE);
   if (!roleAttr) {
     return undefined;
   }
@@ -755,16 +988,16 @@ function getAriaFormControlData(element: HTMLElement):
   };
 
   if (ariaRoleSupportsRequired(activeRole) &&
-      isAriaAttributeTrue(element.getAttribute('aria-required'))) {
+      isAriaAttributeTrue(safeGetAttribute(element, 'aria-required'))) {
     formControlData.isRequired = true;
   }
 
   formControlData.isReadonly =
-      isAriaAttributeTrue(element.getAttribute('aria-readonly'));
+      isAriaAttributeTrue(safeGetAttribute(element, 'aria-readonly'));
 
   if (formControlType === FormControlType.INPUT_TEXT ||
       formControlType === FormControlType.INPUT_SEARCH) {
-    const placeholder = element.getAttribute('aria-placeholder');
+    const placeholder = safeGetAttribute(element, 'aria-placeholder');
     if (placeholder) {
       formControlData.placeholder = placeholder;
     }
@@ -773,7 +1006,7 @@ function getAriaFormControlData(element: HTMLElement):
   if (formControlType === FormControlType.INPUT_CHECKBOX ||
       formControlType === FormControlType.INPUT_RADIO) {
     formControlData.isChecked =
-        isAriaAttributeTrue(element.getAttribute('aria-checked'));
+        isAriaAttributeTrue(safeGetAttribute(element, 'aria-checked'));
   }
 
   return formControlData;
@@ -874,13 +1107,13 @@ function isRenderedInTopLayer(element: HTMLElement): boolean {
   // 1. Open popovers. Use CSS.supports for browsers not supporting
   // :popover-open.
   if (CSS.supports('selector(:popover-open)') &&
-      element.matches(':popover-open')) {
+      safeMatches(element, ':popover-open')) {
     return true;
   }
 
   // 2. Dialogs opened as modals.
   if (CSS.supports('selector(:modal)')) {
-    if (element.matches(':modal')) {
+    if (safeMatches(element, ':modal')) {
       return true;
     }
   } else {
@@ -888,16 +1121,17 @@ function isRenderedInTopLayer(element: HTMLElement): boolean {
     // we cannot distinguish between `dialog.show()` (normal document flow) and
     // `dialog.showModal()` (top layer). This is a best-effort approximation.
     if (getStandardTagName(element) === TAG_DIALOG &&
-        element.hasAttribute(ATTRIBUTE_OPEN_DIALOG)) {
+        safeHasAttribute(element, ATTRIBUTE_OPEN_DIALOG)) {
       return true;
     }
   }
 
   // 3. Fullscreen element.
-  const doc = element.ownerDocument;
-  return doc &&
+  const doc = safeOwnerDocument(element);
+  return !!(
+      doc &&
       (doc.fullscreenElement === element ||
-       (doc as WebkitDocument).webkitFullscreenElement === element);
+       (doc as WebkitDocument).webkitFullscreenElement === element));
 }
 
 /**
@@ -972,13 +1206,14 @@ function getComputedStyleForElement(
   }
 
   // Find the element window to compute the style for the element.
-  let elementWindow = styleCache?.window ?? element.ownerDocument?.defaultView;
+  let elementWindow =
+      styleCache?.window ?? safeOwnerDocument(element)?.defaultView;
 
   // Fallback to the global window only if the element belongs to the same
   // document that the script is currently executing in. This prevents
   // erroneously computing styles using the parent frame's window for elements
   // inside a same-origin iframe that might have lost their defaultView.
-  if (!elementWindow && element.ownerDocument === document) {
+  if (!elementWindow && safeOwnerDocument(element) === document) {
     elementWindow = window;
   }
 
@@ -1053,7 +1288,7 @@ function isGenericContainer(
 
   // Elements with fixed or sticky positioning are removed from the normal flow
   // and often act as containers for UI elements like headers or sidebars.
-  const windowObj = element.ownerDocument?.defaultView;
+  const windowObj = safeOwnerDocument(element)?.defaultView;
   if (!windowObj) {
     return false;
   }
@@ -1115,6 +1350,13 @@ function getScrollerInfo(
     return undefined;
   }
 
+  const scrollLeft = safeScrollLeft(element);
+  const scrollTop = safeScrollTop(element);
+  const clientWidth = safeClientWidth(element);
+  const clientHeight = safeClientHeight(element);
+  const scrollWidth = safeScrollWidth(element);
+  const scrollHeight = safeScrollHeight(element);
+
   // TODO(crbug.com/480945289): Remove this when page context IPC optimization
   // is enabled.
   if (isPageContextIPCOptimizationEnabled()) {
@@ -1122,57 +1364,53 @@ function getScrollerInfo(
     // This will guide the layout engine to perform the shallow layout first
     // and then the deep layout calculation.
     const visibleArea = {
-      x: element.scrollLeft,
-      y: element.scrollTop,
-      width: element.clientWidth,
-      height: element.clientHeight,
-      top: element.scrollTop,
-      right: element.scrollLeft + element.clientWidth,
-      bottom: element.scrollTop + element.clientHeight,
-      left: element.scrollLeft,
+      x: scrollLeft,
+      y: scrollTop,
+      width: clientWidth,
+      height: clientHeight,
+      top: scrollTop,
+      right: scrollLeft + clientWidth,
+      bottom: scrollTop + clientHeight,
+      left: scrollLeft,
     };
 
     // Populate bounds.
     // Scrolling bounds = whole content size.
     const scrollingBounds = {
-      width: element.scrollWidth,
-      height: element.scrollHeight,
+      width: scrollWidth,
+      height: scrollHeight,
     };
 
     return {
       scrollingBounds,
       visibleArea,
-      userScrollableHorizontal:
-          isScrollableX && (element.scrollWidth > element.clientWidth),
-      userScrollableVertical:
-          isScrollableY && (element.scrollHeight > element.clientHeight),
+      userScrollableHorizontal: isScrollableX && (scrollWidth > clientWidth),
+      userScrollableVertical: isScrollableY && (scrollHeight > clientHeight),
     };
   } else {
     // Populate bounds.
     // Scrolling bounds = whole content size.
     const scrollingBounds = {
-      width: element.scrollWidth,
-      height: element.scrollHeight,
+      width: scrollWidth,
+      height: scrollHeight,
     };
 
     const visibleArea = {
-      x: element.scrollLeft,
-      y: element.scrollTop,
-      width: element.clientWidth,
-      height: element.clientHeight,
-      top: element.scrollTop,
-      right: element.scrollLeft + element.clientWidth,
-      bottom: element.scrollTop + element.clientHeight,
-      left: element.scrollLeft,
+      x: scrollLeft,
+      y: scrollTop,
+      width: clientWidth,
+      height: clientHeight,
+      top: scrollTop,
+      right: scrollLeft + clientWidth,
+      bottom: scrollTop + clientHeight,
+      left: scrollLeft,
     };
 
     return {
       scrollingBounds,
       visibleArea,
-      userScrollableHorizontal:
-          isScrollableX && (element.scrollWidth > element.clientWidth),
-      userScrollableVertical:
-          isScrollableY && (element.scrollHeight > element.clientHeight),
+      userScrollableHorizontal: isScrollableX && (scrollWidth > clientWidth),
+      userScrollableVertical: isScrollableY && (scrollHeight > clientHeight),
     };
   }
 }
@@ -1233,7 +1471,7 @@ function getNodeInteractionInfo(
     isDisabled = true;
   }
   // Check aria-disabled.
-  if (element.getAttribute(ATTR_KEY_ARIA_DISABLED) === ATTR_VALUE_TRUE) {
+  if (safeGetAttribute(element, ATTR_KEY_ARIA_DISABLED) === ATTR_VALUE_TRUE) {
     interactionDisabledReasons.push(
         PageContentInteractionDisabledReason.ARIA_DISABLED);
     isDisabled = true;
@@ -1256,20 +1494,20 @@ function getNodeInteractionInfo(
   // Event handlers.
   // Unfortunately we can't easily detect event listeners added via
   // addEventListener. However we can detect inline handler attributes.
-  if (element.hasAttribute(ATTR_KEY_ONCLICK)) {
+  if (safeHasAttribute(element, ATTR_KEY_ONCLICK)) {
     clickabilityReasons.push(PageContentClickabilityReason.CLICK_EVENTS);
   }
-  if (element.hasAttribute(ATTR_KEY_ONMOUSEDOWN) ||
-      element.hasAttribute(ATTR_KEY_ONMOUSEUP)) {
+  if (safeHasAttribute(element, ATTR_KEY_ONMOUSEDOWN) ||
+      safeHasAttribute(element, ATTR_KEY_ONMOUSEUP)) {
     clickabilityReasons.push(PageContentClickabilityReason.MOUSE_CLICK);
   }
-  if (element.hasAttribute(ATTR_KEY_ONMOUSEOVER) ||
-      element.hasAttribute(ATTR_KEY_ONMOUSEENTER)) {
+  if (safeHasAttribute(element, ATTR_KEY_ONMOUSEOVER) ||
+      safeHasAttribute(element, ATTR_KEY_ONMOUSEENTER)) {
     clickabilityReasons.push(PageContentClickabilityReason.MOUSE_HOVER);
   }
-  if (element.hasAttribute(ATTR_KEY_ONKEYDOWN) ||
-      element.hasAttribute(ATTR_KEY_ONKEYUP) ||
-      element.hasAttribute(ATTR_KEY_ONKEYPRESS)) {
+  if (safeHasAttribute(element, ATTR_KEY_ONKEYDOWN) ||
+      safeHasAttribute(element, ATTR_KEY_ONKEYUP) ||
+      safeHasAttribute(element, ATTR_KEY_ONKEYPRESS)) {
     clickabilityReasons.push(PageContentClickabilityReason.KEY_EVENTS);
   }
 
@@ -1279,8 +1517,7 @@ function getNodeInteractionInfo(
   }
 
   // Editable.
-  if (element.isContentEditable ||
-      tagName === TAG_TEXTAREA ||
+  if (safeIsContentEditable(element) || tagName === TAG_TEXTAREA ||
       (tagName === TAG_INPUT &&
        ![CHECKBOX_TYPE, RADIO_TYPE, RANGE_TYPE, COLOR_TYPE, FILE_TYPE,
          IMAGE_TYPE, SUBMIT_TYPE, RESET_TYPE, BUTTON_TYPE]
@@ -1289,7 +1526,7 @@ function getNodeInteractionInfo(
   }
 
   // Aria Role that imply interactivity.
-  const role = element.getAttribute(ATTR_KEY_ROLE);
+  const role = safeGetAttribute(element, ATTR_KEY_ROLE);
   if (role) {
     const axRole = getAXRoleForAriaRole(role);
     if (INTERACTIVE_AX_ROLES.has(axRole)) {
@@ -1298,11 +1535,11 @@ function getNodeInteractionInfo(
   }
 
   // Aria Properties.
-  if (element.hasAttribute(ATTR_KEY_ARIA_HASPOPUP)) {
+  if (safeHasAttribute(element, ATTR_KEY_ARIA_HASPOPUP)) {
     clickabilityReasons.push(PageContentClickabilityReason.ARIA_HAS_POPUP);
   }
 
-  const ariaExpanded = element.getAttribute(ATTR_KEY_ARIA_EXPANDED);
+  const ariaExpanded = safeGetAttribute(element, ATTR_KEY_ARIA_EXPANDED);
   if (ariaExpanded === ATTR_VALUE_TRUE) {
     clickabilityReasons.push(PageContentClickabilityReason.ARIA_EXPANDED_TRUE);
   } else if (ariaExpanded === ATTR_VALUE_FALSE) {
@@ -1310,12 +1547,12 @@ function getNodeInteractionInfo(
   }
 
   // Tab Index.
-  if (element.hasAttribute(ATTR_KEY_TABINDEX)) {
+  if (safeHasAttribute(element, ATTR_KEY_TABINDEX)) {
     clickabilityReasons.push(PageContentClickabilityReason.TAB_INDEX);
   }
 
   // Autocomplete.
-  if (element.hasAttribute(ATTR_KEY_AUTOCOMPLETE)) {
+  if (safeHasAttribute(element, ATTR_KEY_AUTOCOMPLETE)) {
     clickabilityReasons.push(PageContentClickabilityReason.AUTOCOMPLETE);
   }
 
@@ -1330,12 +1567,12 @@ function getNodeInteractionInfo(
   // focusable.
   const isAnchorOrArea = tagName === TAG_A || tagName === TAG_AREA;
   const isImplicitlyFocusable = isAnchorOrArea ?
-      element.hasAttribute(ATTR_KEY_HREF) :
-      element.tabIndex >= 0;
+      safeHasAttribute(element, ATTR_KEY_HREF) :
+      safeTabIndex(element) >= 0;
 
   if (!isDisabled && style?.visibility === ATTR_VISIBILITY_VISIBLE &&
-      (isImplicitlyFocusable || element.hasAttribute(ATTR_KEY_TABINDEX) ||
-       element.isContentEditable)) {
+      (isImplicitlyFocusable || safeHasAttribute(element, ATTR_KEY_TABINDEX) ||
+       safeIsContentEditable(element))) {
     interactionInfo.isFocusable = true;
   }
 
@@ -1644,8 +1881,9 @@ function extractContainsPaidContent(
     if (paidMetaTags.length > 0) {
       extractionContext.containsPaidContent = true;
       for (const meta of Array.from(paidMetaTags)) {
-        if (meta.parentElement) {
-          extractionContext.paidNodes.add(meta.parentElement);
+        const parent = safeParentElement(meta);
+        if (parent) {
+          extractionContext.paidNodes.add(parent);
         }
       }
     }
@@ -1776,7 +2014,7 @@ function getAttributesForTextNode(
     return null;
   }
 
-  const parentElement = domNode.parentElement;
+  const parentElement = safeParentElement(domNode);
   if (!parentElement) {
     // Can't compute the attributes for a text node that doesn't have a parent
     // which is unexpected.
@@ -1808,9 +2046,9 @@ function getAttributesForTextNode(
   const weight = style.fontWeight;
   const hasEmphasis = weight === 'bold' || weight === '700' ||
       parseInt(weight) >= 700 || style.fontStyle === 'italic';
-  const textSize = domNode.ownerDocument ?
-      getTextSizeCategory(style.fontSize, domNode.ownerDocument, styleCache) :
-      PageContentTextSize.M;
+  const doc = safeOwnerDocument(domNode);
+  const textSize = doc ? getTextSizeCategory(style.fontSize, doc, styleCache) :
+                         PageContentTextSize.M;
   const color = parseCssColor(style.color)?.toString();
 
   return {
@@ -1945,13 +2183,13 @@ function getAriaLabel(element: HTMLElement, styleCache?: StyleCache): string|
   const accumulatedTexts: string[] = [];
 
   // Process aria-labelledby.
-  const labelledBy = element.getAttribute(ARIA_LABELLEDBY)?.trim();
+  const labelledBy = safeGetAttribute(element, ARIA_LABELLEDBY)?.trim();
   if (labelledBy) {
     const ids = labelledBy.split(SPACE_SEPARATOR);
     // This will only work if the labelElement and the element share the same
     // root. It won't work if the two elements are in different shadow DOMs.
     // This follows the web standard.
-    const rootNode = element.getRootNode() as Document | ShadowRoot;
+    const rootNode = safeGetRootNode(element) as Document | ShadowRoot;
 
     for (const id of ids) {
       if (!id) {
@@ -1961,8 +2199,8 @@ function getAriaLabel(element: HTMLElement, styleCache?: StyleCache): string|
       const labelElement = rootNode.getElementById?.(id);
       // We use textContent instead of innerText
       // because elements referenced by aria-labelledby may not be visible.
-      let textContent = labelElement?.textContent;
-      if (labelElement && textContent && textContent.trim().length > 0) {
+      let textContent = labelElement ? safeTextContent(labelElement) : '';
+      if (labelElement && textContent.trim().length > 0) {
         const style = getComputedStyleForElement(labelElement, styleCache);
         // TODO(crbug.com/513835087): Consider covering nested blocks with
         // similar text protections. Though note that this would appear to go
@@ -1977,7 +2215,7 @@ function getAriaLabel(element: HTMLElement, styleCache?: StyleCache): string|
 
   // Process aria-label if aria-labelledby is not present.
   if (accumulatedTexts.length === 0) {
-    let ariaLabel = element.getAttribute(ARIA_LABEL);
+    let ariaLabel = safeGetAttribute(element, ARIA_LABEL);
     if (ariaLabel && ariaLabel.trim().length > 0) {
       const style = getComputedStyleForElement(element, styleCache);
       if (style) {
@@ -2112,7 +2350,8 @@ function isLikelyJSCustomPasswordField(fieldValue: string): boolean {
  * text-security or JS masking).
  */
 function isCustomPassword(element: Element, styleCache?: StyleCache): boolean {
-  if (element.tagName === TAG_INPUT || element.tagName === TAG_TEXTAREA) {
+  const tagName = getStandardTagName(element);
+  if (tagName === TAG_INPUT || tagName === TAG_TEXTAREA) {
     const value = (element as HTMLInputElement | HTMLTextAreaElement).value;
     if (value && isLikelyJSCustomPasswordField(value)) {
       return true;
@@ -2208,7 +2447,8 @@ function getFormControlData(
 
   // Handle aria-required override.
   if (!formControlData.isRequired &&
-      isAriaAttributeTrue(domNode.getAttribute('aria-required'))) {
+      isAriaAttributeTrue(
+          safeGetAttribute(domNode as Element, 'aria-required'))) {
     formControlData.isRequired = true;
   }
 
@@ -2217,7 +2457,8 @@ function getFormControlData(
 
   // Handle aria-readonly override.
   if (!isReadonly &&
-      isAriaAttributeTrue(domNode.getAttribute('aria-readonly'))) {
+      isAriaAttributeTrue(
+          safeGetAttribute(domNode as Element, 'aria-readonly'))) {
     formControlData.isReadonly = true;
   }
 
@@ -2234,7 +2475,8 @@ function getFormControlData(
   if (placeholder) {
     formControlData.placeholder = placeholder;
   } else {
-    const ariaPlaceholder = domNode.getAttribute('aria-placeholder');
+    const ariaPlaceholder =
+        safeGetAttribute(domNode as Element, 'aria-placeholder');
     if (ariaPlaceholder) {
       formControlData.placeholder = ariaPlaceholder;
     }
@@ -2346,7 +2588,7 @@ function getBasicContentForNonGenericElement(
         },
       };
     case TAG_CANVAS: {
-      const rect = domNode.getBoundingClientRect();
+      const rect = safeGetBoundingClientRect(domNode as Element);
       return {
         childrenNodes: [],
         contentAttributes: {
@@ -2549,7 +2791,7 @@ function populateCommonAttributes(
     attributes.annotatedRoles.push(...rolesToAdd);
   }
   if (actionableMode) {
-    const roleStr = element.getAttribute(ATTR_KEY_ROLE);
+    const roleStr = safeGetAttribute(element, ATTR_KEY_ROLE);
     attributes.ariaRole =
         roleStr ? getAXRoleForAriaRole(roleStr) : AxRole.AX_ROLE_UNKNOWN;
   }
@@ -2667,7 +2909,7 @@ function addAnnotatedRoles(
     annotatedRoles.push(roleFromTag);
   }
 
-  const ariaRoleAttr = domNode.getAttribute(ATTR_KEY_ROLE);
+  const ariaRoleAttr = safeGetAttribute(domNode, ATTR_KEY_ROLE);
   if (ariaRoleAttr) {
     const roleFromAria = getAnnotatedRoleForAriaRole(ariaRoleAttr);
     if (roleFromAria !== undefined && !annotatedRoles.includes(roleFromAria)) {
@@ -2806,7 +3048,7 @@ function populateFragmentsIfNeeded(
     }
   }
 
-  const clientRects = element.getClientRects();
+  const clientRects = safeGetClientRects(element);
   // Fragmentation only happens if there is more than 1 rectangles.
   if (clientRects.length <= 1) {
     return;
@@ -2857,7 +3099,7 @@ function addNodeGeometry(
   const position = style?.position;
 
   // Select the appropriate clip rect based on position.
-  const elementDoc = element.ownerDocument;
+  const elementDoc = safeOwnerDocument(element);
   let clipToUse: Rect|null = null;
 
   if (position === ATTR_POSITION_FIXED) {
@@ -2877,7 +3119,7 @@ function addNodeGeometry(
 
   // getBoundingClientRect() provides the element's position relative to the
   // viewport. It accounts for all CSS transforms and scroll offsets.
-  const domRect = element.getBoundingClientRect();
+  const domRect = safeGetBoundingClientRect(element);
   const elementRect =
       createRect(domRect.x, domRect.y, domRect.width, domRect.height);
   const visibleRect =
@@ -2958,7 +3200,7 @@ function maybeGenerateContentNode(
   nextClippingContext: ClippingContext,
 } {
   let contentAttributes: PageContentAttributes|null = null;
-  if (domNode.nodeType === Node.TEXT_NODE) {
+  if (safeNodeType(domNode) === Node.TEXT_NODE) {
     contentAttributes = getAttributesForTextNode(domNode, styleCache);
     if (contentAttributes) {
       const domNodeId = getOrCreateNodeId(domNode);
@@ -2975,7 +3217,7 @@ function maybeGenerateContentNode(
         nextClippingContext: parentContext,
       };
     }
-  } else if (domNode.nodeType === Node.ELEMENT_NODE) {
+  } else if (safeNodeType(domNode) === Node.ELEMENT_NODE) {
     const element = domNode as HTMLElement;
     const interactionInfo =
         getNodeInteractionInfo(element, actionableMode, hasCanvas, styleCache);
@@ -3008,12 +3250,12 @@ function maybeGenerateContentNode(
  * @return Indicates whether the node should be accepted for extraction.
  */
 function shouldAcceptNode(node: Node, styleCache?: StyleCache): number {
-  const parent = node.parentElement;
+  const parent = safeParentElement(node);
   if (parent && TAGS_TO_SKIP_SUBTREE.includes(getStandardTagName(parent))) {
     return NodeFilter.FILTER_REJECT;
   }
 
-  if (node.nodeType === Node.ELEMENT_NODE) {
+  if (safeNodeType(node) === Node.ELEMENT_NODE) {
     const element = node as Element;
     const tagName = getStandardTagName(element);
     if (TAGS_TO_REJECT.includes(tagName)) {
@@ -3038,7 +3280,7 @@ function shouldAcceptNode(node: Node, styleCache?: StyleCache): number {
       // They will be pruned later if they contain no visible content.
       return NodeFilter.FILTER_ACCEPT;
     }
-  } else if (node.nodeType === Node.TEXT_NODE) {
+  } else if (safeNodeType(node) === Node.TEXT_NODE) {
     // Determine the text node visibility based on their parent since
     // this is the best proxy we have for that due to the lack of
     // `getComputedStyle()` for text element nodes as opposed to the
@@ -3130,7 +3372,7 @@ function generateAndPushContentNode(
 
   parentStackItem.apcNode.childrenNodes.push(newApcNode);
 
-  if (node.nodeType !== Node.ELEMENT_NODE) {
+  if (safeNodeType(node) !== Node.ELEMENT_NODE) {
     return;
   }
 
@@ -3219,7 +3461,7 @@ function getInteractiveNodeIds(document: Document): InteractiveNodeIds {
  * @return The uppercase tag name.
  */
 function getStandardTagName(element: Element): string {
-  return element.tagName.toUpperCase();
+  return safeTagName(element).toUpperCase();
 }
 
 /**
@@ -3650,10 +3892,10 @@ export function extractAnnotatedPageContent(
   }
 
   // Do not extract the same content twice for the same nonce.
-  if (root.getAttribute(NONCE_ATTR) === nonce) {
+  if (safeGetAttribute(root, NONCE_ATTR) === nonce) {
     return null;
   }
-  root.setAttribute(NONCE_ATTR, nonce);
+  safeSetAttribute(root, NONCE_ATTR, nonce);
 
   // TODO(crbug.com/480945289): Assume there is a canvas when feature is
   // disabled. We only need to extract the scroller info for nodes when there is
@@ -3767,7 +4009,7 @@ export function extractAnnotatedPageContent(
     // different disconnected trees, but this should not happen).
     while (ancestorStack.length > 1) {
       const top = ancestorStack[ancestorStack.length - 1]!;
-      if (top.domNode.contains(currentNode)) {
+      if (safeContains(top.domNode, currentNode)) {
         break;
       }
 

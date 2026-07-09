@@ -337,6 +337,111 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_EQ(*action_url, "http://examplesite.com/submit");
 }
 
+// Validate that <form> elements with nested <input name="contains"> don't crash
+// the script or prevent extraction.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContextHandlesFormNamedContainsPollution) {
+  // Create HTML containing a form with a child input named "contains".
+  // Direct property form.contains will be overridden by DOM Element.
+  const std::string main_html =
+      "<html><head><title>Main</title></head><body>"
+      "<form name=\"pollutedForm\">"
+      "  <input name=\"contains\" value=\"polluted-input-element-contains\">"
+      "</form>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+  const base::DictValue& dict = result_value->GetDict();
+
+  // Root node should have successfully been extracted.
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* body_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(body_children && !body_children->empty());
+  const base::DictValue& form_node = (*body_children)[0].GetDict();
+
+  const std::string* form_name =
+      form_node.FindStringByDottedPath("contentAttributes.formData.formName");
+  ASSERT_TRUE(form_name);
+  EXPECT_EQ(*form_name, "pollutedForm");
+}
+
+// Validate that <form> elements with nested standard prototype properties like
+// tagName, nodeType, ownerDocument don't crash the script or prevent
+// extraction.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContextHandlesFormNamedPrototypePropertiesPollution) {
+  // Create HTML containing a form with children named after prototype getters.
+  // Direct properties form.tagName, form.nodeType, etc. will be overridden by
+  // DOM Elements.
+  const std::string main_html =
+      "<html><head><title>Main</title></head><body>"
+      "<form name=\"pollutedForm\">"
+      "  <input name=\"nodeType\" value=\"polluted-input-element-nodeType\">"
+      "  <input name=\"ownerDocument\" "
+      "value=\"polluted-input-element-ownerDocument\">"
+      "  <input name=\"tagName\" value=\"polluted-input-element-tagName\">"
+      "  <input name=\"isContentEditable\" "
+      "value=\"polluted-input-element-isContentEditable\">"
+      "  <input name=\"tabIndex\" value=\"polluted-input-element-tabIndex\">"
+      "  <input name=\"getBoundingClientRect\" "
+      "value=\"polluted-input-element-getBoundingClientRect\">"
+      "  <input name=\"getClientRects\" "
+      "value=\"polluted-input-element-getClientRects\">"
+      "  <input name=\"getRootNode\" "
+      "value=\"polluted-input-element-getRootNode\">"
+      "  <input name=\"scrollLeft\" "
+      "value=\"polluted-input-element-scrollLeft\">"
+      "  <input name=\"scrollTop\" value=\"polluted-input-element-scrollTop\">"
+      "  <input name=\"scrollWidth\" "
+      "value=\"polluted-input-element-scrollWidth\">"
+      "  <input name=\"scrollHeight\" "
+      "value=\"polluted-input-element-scrollHeight\">"
+      "  <input name=\"clientWidth\" "
+      "value=\"polluted-input-element-clientWidth\">"
+      "  <input name=\"clientHeight\" "
+      "value=\"polluted-input-element-clientHeight\">"
+      "  <input name=\"textContent\" "
+      "value=\"polluted-input-element-textContent\">"
+      "</form>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+  const base::DictValue& dict = result_value->GetDict();
+
+  // Root node should have successfully been extracted.
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* body_children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(body_children && !body_children->empty());
+  const base::DictValue& form_node = (*body_children)[0].GetDict();
+
+  const std::string* form_name =
+      form_node.FindStringByDottedPath("contentAttributes.formData.formName");
+  ASSERT_TRUE(form_name);
+  EXPECT_EQ(*form_name, "pollutedForm");
+}
+
 // Test the extraction of the page context with RichExtraction.
 TEST_P(PageContextExtractorJavaScriptFeatureTest,
        ExtractPageContext_RichExtraction) {
