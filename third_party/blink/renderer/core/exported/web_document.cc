@@ -449,7 +449,6 @@ bool WebDocument::ExecuteScriptTool(
   // TODO(481899636): PLUMB SIGNAL TO THE BROWSER SIDE!
   return model_context->ExecuteTool(
       invocation_id, name, input_arguments,
-      /* signal= */ nullptr,
       blink::BindOnce(
           [](WebScriptToolResultCallback tool_result_cb,
              std::unique_ptr<WebScriptToolDeclaration> web_tool_declaration,

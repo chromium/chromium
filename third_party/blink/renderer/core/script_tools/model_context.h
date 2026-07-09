@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/dom/scoped_abort_state.h"
 #include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -27,6 +28,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
+class AbortController;
 class AbortSignal;
 class Element;
 class ExecuteToolOptions;
@@ -150,7 +152,6 @@ class CORE_EXPORT ModelContext : public EventTarget,
   bool ExecuteTool(const base::UnguessableToken& invocation_id,
                    const String& name,
                    const String& input_arguments,
-                   AbortSignal* signal,
                    ScriptToolExecutedCallback tool_executed_cb);
   using CrossDocumentScriptToolResultCallback =
       base::OnceCallback<void(String)>;
@@ -198,11 +199,12 @@ class CORE_EXPORT ModelContext : public EventTarget,
                      const base::UnguessableToken& invocation_id,
                      const String& name,
                      const String& input_arguments,
-                     AbortSignal* signal,
+                     AbortController* abort_controller,
                      ScriptToolExecutedCallback tool_executed_cb);
   void ExecuteDeclarativeTool(DeclarativeWebMCPTool* tool,
                               const base::UnguessableToken& invocation_id,
                               const String& input_arguments,
+                              AbortController* abort_controller,
                               ScriptToolExecutedCallback tool_executed_cb);
 
   void OnToolFailed(ScriptToolExecutedCallback callback,
@@ -218,11 +220,21 @@ class CORE_EXPORT ModelContext : public EventTarget,
   HeapHashMap<String, Member<ToolData>> tool_map_;
 
   struct PendingExecution {
+    DISALLOW_NEW();
+
+   public:
+    void Trace(Visitor* visitor) const;
     String tool_name;
     ScriptToolExecutedCallback callback;
     base::UnguessableToken invocation_id;
+    Member<AbortController> abort_controller;
+    // Manages the lifetime of the abort algorithm associated with this
+    // execution's AbortSignal. Storing this here ensures the algorithm is
+    // automatically unregistered when the execution completes (i.e. is removed
+    // from `pending_executions_`).
+    std::unique_ptr<ScopedAbortState> scoped_abort_state;
   };
-  HashMap<String, PendingExecution> pending_executions_;
+  HeapHashMap<String, PendingExecution> pending_executions_;
 
   Vector<CrossDocumentScriptToolResultCallback>
       cross_document_result_callbacks_;

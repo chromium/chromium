@@ -987,8 +987,7 @@ void LocalFrameMojoHandler::InvokeScriptToolForInspector(
               FROM_HERE,
               blink::BindOnce(base::IgnoreResult(&ModelContext::ExecuteTool),
                               WrapPersistent(model_context), invocation_id,
-                              tool_name, input_arguments,
-                              /*signal=*/nullptr, base::DoNothing()));
+                              tool_name, input_arguments, base::DoNothing()));
       std::move(callback).Run(true);
       return;
     }
