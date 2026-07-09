@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(DictationPrivateApiTest, Basic) {
   multiplexer.RegisterStreamProvider(test_stream_id, &test_stream_provider);
 
   auto target = std::make_unique<dictation::Target>(
-      dictation::TargetId{content::WeakDocumentPtr()});
+      content::GlobalDOMNodeId{content::WeakDocumentPtr()});
   test_stream_provider.BindToTargetAndConnect(std::move(target));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();

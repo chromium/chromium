@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/dictation/metrics.h"
-#include "chrome/browser/dictation/target.h"
+#include "content/public/browser/global_dom_node_id.h"
 
 class PrefService;
 
@@ -42,7 +42,7 @@ class OnboardingManager {
   // behavior in terms of preventing a session start but should return an error
   // state.
   bool ShowOnboardingIfNeeded(tabs::TabInterface& tab,
-                              const TargetId& target_id,
+                              const content::GlobalDOMNodeId& target_id,
                               DictationSessionEntryPoint entry_point);
 
  private:
@@ -55,8 +55,10 @@ class OnboardingManager {
 
   std::unique_ptr<OnboardingDialogController> dialog_controller_;
 
+  // TODO(bokan): Wrap these up into a struct so they're all cleared or set
+  // together.
   base::WeakPtr<tabs::TabInterface> pending_tab_;
-  std::optional<TargetId> pending_target_id_;
+  std::optional<content::GlobalDOMNodeId> pending_target_id_;
   std::optional<DictationSessionEntryPoint> pending_entry_point_;
 
   base::WeakPtrFactory<OnboardingManager> weak_ptr_factory_{this};

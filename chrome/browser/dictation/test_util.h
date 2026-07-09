@@ -38,11 +38,14 @@ inline constexpr std::string_view kDictationTestExtensionId =
 
 // A target ID that doesn't point to anything. Used only in unit tests where the
 // target isn't actually used.
-TargetId EmptyTargetId();
+// TODO(b/531049588): Do not use in new tests.
+content::GlobalDOMNodeId EmptyTargetId();
 
 // Returns a target that points to the default element in the page. Currently
 // this will be the focused element in the primary main frame.
-TargetId DefaultInPageTargetId(content::WebContents* web_contents);
+// TODO(b/531049588): Do not use in new tests.
+content::GlobalDOMNodeId DefaultInPageTargetId(
+    content::WebContents* web_contents);
 
 // Returns a ScopedFeatureList that enables Dictation with common params for
 // testing.

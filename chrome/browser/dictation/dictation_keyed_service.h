@@ -16,15 +16,14 @@
 #include "chrome/browser/dictation/onboarding_manager.h"
 #include "chrome/browser/dictation/session_controller.h"
 #include "chrome/browser/dictation/session_controller_delegate.h"
-#include "chrome/browser/dictation/target.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/global_dom_node_id.h"
 
 class Profile;
 
 namespace content {
 class BrowserContext;
-class RenderFrameHost;
 }
 
 namespace tabs {
@@ -64,15 +63,21 @@ class DictationKeyedService : public KeyedService,
   //
   // The new session will immediately start up a stream using the given
   // target_id.
+  //
+  // If `target_id` has a null DOMNodeId, the focused element in the specified
+  // Document is used.
+  // TODO(b/531049588): Update tests to always provide a valid target_id, remove
+  // the "focused element" semantic, and CHECK that the provided target is
+  // always non-null.
   void StartSession(tabs::TabInterface& tab,
-                    const TargetId& target_id,
+                    const content::GlobalDOMNodeId& target_id,
                     DictationSessionEntryPoint entry_point);
 
   // Returns true if there is no active session.
   bool ShouldShowContextMenuItem() const;
 
   // Handles the context menu item click.
-  void ContextMenuHandler(content::RenderFrameHost& rfh);
+  void ContextMenuHandler(const content::GlobalDOMNodeId& target_id);
 
   // Returns null when no session is in progress.
   SessionController* session_controller() {
@@ -103,11 +108,11 @@ class DictationKeyedService : public KeyedService,
 
   struct SessionState {
     SessionState(SessionControllerDelegate& delegate,
-                 const TargetId& target_id);
+                 const content::GlobalDOMNodeId& target_id);
     ~SessionState();
 
     SessionController controller_;
-    TargetId target_id_;
+    content::GlobalDOMNodeId target_id_;
   };
   std::optional<SessionState> session_;
 };

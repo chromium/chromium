@@ -141,6 +141,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        ExecuteContextMenuCommand) {
   content::ContextMenuParams params;
   params.is_editable = true;
+  params.field_renderer_id = 123;
   TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
                                  params);
   menu.Init();
@@ -154,6 +155,8 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   StreamProvider* provider = session_controller()->attached_stream_provider();
   ASSERT_NE(provider, nullptr);
   ASSERT_NE(provider->GetTarget(), nullptr);
+  EXPECT_EQ(provider->GetTarget()->global_dom_node_id().target_element_dom_id,
+            content::DOMNodeId(123));
 }
 
 // TODO(crbug.com/502587072): Add tests which have the test extension simulate
@@ -366,7 +369,13 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                     "until crbug.com/525856380 is fixed.";
   }
 
-  StartSession();
+  std::optional<int> dom_node_id =
+      content::GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#text_id");
+  ASSERT_TRUE(dom_node_id.has_value());
+
+  StartSession(content::GlobalDOMNodeId{
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
+      content::DOMNodeId(dom_node_id.value())});
 
   SessionController* controller = session_controller();
   ListenerStreamProvider* provider = static_cast<ListenerStreamProvider*>(
@@ -418,9 +427,15 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                     "until crbug.com/525856380 is fixed.";
   }
 
+  std::optional<int> dom_node_id =
+      content::GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#text_id");
+  ASSERT_TRUE(dom_node_id.has_value());
+
   // Start a new session and stream, commit some text, and stop.
   {
-    StartSession();
+    StartSession(content::GlobalDOMNodeId{
+        web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
+        content::DOMNodeId(dom_node_id.value())});
 
     ASSERT_TRUE(attached_stream());
     auto stream_id = attached_stream()->stream_id_for_testing();

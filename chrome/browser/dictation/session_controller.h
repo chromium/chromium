@@ -17,7 +17,7 @@
 #include "chrome/browser/dictation/session_state.h"
 #include "chrome/browser/dictation/session_ui_delegate.h"
 #include "chrome/browser/dictation/stream_provider_delegate.h"
-#include "chrome/browser/dictation/target.h"
+#include "content/public/browser/global_dom_node_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace dictation {
@@ -58,7 +58,7 @@ class SessionController : public SessionUiDelegate,
   // Starts a new dictation stream by creating and attaching a new stream
   // provider. An existing stream must have been detached before calling this
   // method.
-  void StartDictationStream(const TargetId& target_id,
+  void StartDictationStream(const content::GlobalDOMNodeId& target_id,
                             DictationStreamStartTrigger trigger);
 
   // Ends the current dictation stream and detaches the stream provider.
@@ -97,7 +97,7 @@ class SessionController : public SessionUiDelegate,
   base::RepeatingCallbackList<void(SessionState)>
       session_state_changed_callback_list_;
 
-  std::optional<TargetId> last_used_target_id_;
+  std::optional<content::GlobalDOMNodeId> last_used_target_id_;
 
   base::WeakPtrFactory<SessionController> weak_ptr_factory_{this};
 };

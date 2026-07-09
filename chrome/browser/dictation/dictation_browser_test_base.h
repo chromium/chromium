@@ -13,6 +13,7 @@ class Profile;
 
 namespace content {
 class WebContents;
+struct GlobalDOMNodeId;
 }  // namespace content
 
 namespace dictation {
@@ -20,7 +21,6 @@ namespace dictation {
 class DictationKeyedService;
 class ListenerStreamProvider;
 class SessionController;
-struct TargetId;
 
 // Base class for browser tests with common settings and setup.
 class DictationBrowserTestBase : public PlatformBrowserTest {
@@ -39,7 +39,7 @@ class DictationBrowserTestBase : public PlatformBrowserTest {
   ListenerStreamProvider* attached_stream();
 
   // Starts a session for the given target.
-  void StartSession(const TargetId& target_id);
+  void StartSession(const content::GlobalDOMNodeId& target_id);
   // Starts a session for the focused editable.
   void StartSession();
 
