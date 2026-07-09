@@ -24,8 +24,7 @@
 
 namespace {
 
-// Button size for the header close button.
-const CGFloat kCloseButtonSize = 40.0;
+// Close button symbol size for the header close button.
 const CGFloat kCloseButtonSymbolPointSize = 15.0;
 
 // Navigation bar padding.
@@ -122,10 +121,10 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
       [ExtendedTouchTargetButton buttonWithConfiguration:buttonConfiguration
                                            primaryAction:nil];
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _closeButton.tintColor = [UIColor clearColor];
   [_closeButton addTarget:self
                    action:@selector(didTapCloseButton)
          forControlEvents:UIControlEventTouchUpInside];
-  AddSquareConstraints(_closeButton, kCloseButtonSize);
 
   UIBarButtonItem* closeBarButtonItem =
       [[UIBarButtonItem alloc] initWithCustomView:_closeButton];
