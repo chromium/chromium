@@ -814,15 +814,13 @@ HttpsFirstModeServiceFactory::GetDefaultFactoryForTesting() {
 HttpsFirstModeServiceFactory::HttpsFirstModeServiceFactory()
     : ProfileKeyedServiceFactory(
           kHttpsFirstModeServiceName,
-          // Don't create a service for non-regular profiles. This includes
-          // Incognito (which uses the settings of the main profile) and Guest
-          // Mode.
+          // Note: Incognito profiles use the settings of the main profile.
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
-              .WithGuest(ProfileSelection::kOffTheRecordOnly)
+              .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(
       safe_browsing::AdvancedProtectionStatusManagerFactory::GetInstance());
