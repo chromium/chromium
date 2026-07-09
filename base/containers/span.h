@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <concepts>
+#include <functional>
 #include <initializer_list>
 #include <iterator>
 #include <limits>
@@ -25,6 +26,7 @@
 #include <span>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -472,6 +474,25 @@ constexpr auto as_byte_span(
       unchecked, reinterpret_cast<ByteType*>(s.data()), s.size_bytes()));
 }
 
+template <typename T>
+constexpr void copy_span_elements(span<T> dst, span<const T> src) {
+  CHECK(dst.size() == src.size());
+  if consteval {
+    // Comparing pointers to different objects at compile time yields
+    // unspecified behavior, which would halt compilation. Instead,
+    // unconditionally use a separate buffer in the constexpr context. This
+    // would be inefficient at runtime, but that's irrelevant.
+    std::ranges::move(std::vector(std::from_range, src), dst.begin());
+  } else {
+    // Using `<=` to compare pointers to different allocations is UB;
+    // delegating to the STL is the legal workaround:
+    // https://eel.is/c++draft/defns.order.ptr
+    std::less_equal{}(dst.data(), src.data())
+        ? std::ranges::copy(src, dst.begin())
+        : std::ranges::copy_backward(src, dst.end());
+  }
+}
+
 }  // namespace internal
 
 // [span]: class `span` (non-dynamic `Extent`s)
@@ -643,44 +664,8 @@ class GSL_POINTER span {
   constexpr void copy_from(span<const element_type, extent> other)
     requires(!std::is_const_v<element_type>)
   {
-    if consteval {
-      // Comparing pointers to different objects at compile time yields
-      // unspecified behavior, which would halt compilation. Instead,
-      // unconditionally use a separate buffer in the constexpr context. This
-      // would be inefficient at runtime, but that's irrelevant.
-
-      // operator[] does not exist if extent == 0.
-      if constexpr (extent > 0) {
-        // Hold each value to be copied in a union so `element_type` does not
-        // need to be default constructible.
-        union Holder {
-          constexpr Holder() {}
-          constexpr ~Holder() {}
-          element_type value;
-        };
-        auto buffer = std::make_unique<Holder[]>(extent);
-        for (size_t i = 0; i < extent; ++i) {
-          // SAFETY: `buffers` is allocated with `extent` elements, and the loop
-          // body only executes if `i < extent`.
-          std::construct_at(&UNSAFE_BUFFERS(buffer[i]).value, other[i]);
-        }
-        for (size_t i = 0; i < extent; ++i) {
-          // SAFETY: `buffers` is allocated with `extent` elements, and the loop
-          // body only executes if `i < extent`.
-          (*this)[i] = UNSAFE_BUFFERS(buffer[i]).value;
-          UNSAFE_BUFFERS(buffer[i]).value.~element_type();
-        }
-      }
-    } else {
-      // Using `<=` to compare pointers to different allocations is UB;
-      // reinterpret_cast is the workaround.
-      if (reinterpret_cast<uintptr_t>(to_address(begin())) <=
-          reinterpret_cast<uintptr_t>(to_address(other.begin()))) {
-        std::ranges::copy(other, begin());
-      } else {
-        std::ranges::copy_backward(other, end());
-      }
-    }
+    internal::copy_span_elements(span<element_type>(*this),
+                                 span<const element_type>(other));
   }
   template <typename R, size_t N = internal::kComputedExtent<R>>
     requires(!std::is_const_v<element_type> &&
@@ -1222,42 +1207,8 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   constexpr void copy_from(span<const element_type> other)
     requires(!std::is_const_v<element_type>)
   {
-    CHECK(size() == other.size());
-    if consteval {
-      // Comparing pointers to different objects at compile time yields
-      // unspecified behavior, which would halt compilation. Instead,
-      // unconditionally use a separate buffer in the constexpr context. This
-      // would be inefficient at runtime, but that's irrelevant.
-
-      // Hold each value to be copied in a union so `element_type` does not
-      // need to be default constructible.
-      union Holder {
-        constexpr Holder() {}
-        constexpr ~Holder() {}
-        element_type value;
-      };
-      auto buffer = std::make_unique<Holder[]>(other.size());
-      for (size_t i = 0; i < other.size(); ++i) {
-        // SAFETY: `buffers` is allocated with `other.size()` elements, and the
-        // loop body only executes if `i < other.size()`.
-        std::construct_at(&UNSAFE_BUFFERS(buffer[i]).value, other[i]);
-      }
-      for (size_t i = 0; i < other.size(); ++i) {
-        // SAFETY: `buffers` is allocated with `other.size()` elements, and the
-        // loop body only executes if `i < other.size()`.
-        (*this)[i] = UNSAFE_BUFFERS(buffer[i]).value;
-        UNSAFE_BUFFERS(buffer[i]).value.~element_type();
-      }
-    } else {
-      // Using `<=` to compare pointers to different allocations is UB;
-      // reinterpret_cast is the workaround.
-      if (reinterpret_cast<uintptr_t>(to_address(begin())) <=
-          reinterpret_cast<uintptr_t>(to_address(other.begin()))) {
-        std::ranges::copy(other, begin());
-      } else {
-        std::ranges::copy_backward(other, end());
-      }
-    }
+    internal::copy_span_elements(span<element_type>(*this),
+                                 span<const element_type>(other));
   }
 
   // Performs a deep copy from a volatile source span. The spans must be the
