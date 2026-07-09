@@ -8,9 +8,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -19,6 +21,7 @@
 #include "extensions/common/extension_features.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/equals_traits.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 WebUIToolbarExtensionsContainerWrapper::WebUIToolbarExtensionsContainerWrapper(
@@ -27,6 +30,15 @@ WebUIToolbarExtensionsContainerWrapper::WebUIToolbarExtensionsContainerWrapper(
 
 WebUIToolbarExtensionsContainerWrapper::
     ~WebUIToolbarExtensionsContainerWrapper() = default;
+
+struct WebUIToolbarExtensionsContainerWrapper::PendingAnchorRequest {
+  PendingAnchorRequest(base::OnceClosure cb,
+                       ui::ElementTracker::Subscription sub)
+      : callback(std::move(cb)), subscription(std::move(sub)) {}
+  ~PendingAnchorRequest() = default;
+  base::OnceClosure callback;
+  const ui::ElementTracker::Subscription subscription;
+};
 
 void WebUIToolbarExtensionsContainerWrapper::Init(
     content::WebContents* web_contents) {
@@ -147,9 +159,47 @@ void WebUIToolbarExtensionsContainerWrapper::OnActionRemoved(
 
 void WebUIToolbarExtensionsContainerWrapper::OnActionPoppedOut(
     base::OnceClosure callback) {
-  // TODO: Need to delay here until the WebUI animates out the icon and a
-  // TrackedElement is available to anchor to.
+  if (!extensions_container_) {
+    std::move(callback).Run();
+    return;
+  }
+
+  // Be as conservative as possible and wait for any animations that might be in
+  // progress to complete before running `callback`, that way none of the
+  // button locations might shift after `callback` is run (and potentially
+  // upset any pop-up anchoring that ExtensionActionDelegateDesktop::ShowPopup()
+  // or any other caller might want to display).
+  for (const auto& action : delegate_->GetState().extensions_state) {
+    if (!extensions_container_->GetExtensionAnchor(action->id)) {
+      auto subscription =
+          ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+              WebUIToolbarExtensionsContainer::GetElementId(action->id),
+              BrowserElements::From(delegate_->GetBrowser())->GetContext(),
+              base::BindRepeating(
+                  &WebUIToolbarExtensionsContainerWrapper::OnElementShown,
+                  base::Unretained(this)));
+      pending_anchor_requests_.emplace_back(std::move(callback),
+                                            std::move(subscription));
+      return;
+    }
+  }
+
   std::move(callback).Run();
+}
+
+void WebUIToolbarExtensionsContainerWrapper::OnElementShown(
+    ui::TrackedElement* element) {
+  std::vector<base::OnceClosure> callbacks_to_run;
+  for (auto& request : pending_anchor_requests_) {
+    callbacks_to_run.push_back(std::move(request.callback));
+  }
+  pending_anchor_requests_.clear();
+
+  for (auto& callback : callbacks_to_run) {
+    if (callback) {
+      OnActionPoppedOut(std::move(callback));
+    }
+  }
 }
 
 void WebUIToolbarExtensionsContainerWrapper::SendExtensionsState() {

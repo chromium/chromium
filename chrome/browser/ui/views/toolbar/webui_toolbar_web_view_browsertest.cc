@@ -2309,6 +2309,7 @@ class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
   }
 
   scoped_refptr<const extensions::Extension> LoadAndPinExtension(
+      WebUIToolbarWebView* webui_toolbar_view,
       content::WebContents* web_contents,
       base::ScopedTempDir& temp_dir,
       bool has_background_script = false,
@@ -2363,25 +2364,10 @@ class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
     ToolbarActionsModel::Get(browser()->profile())
         ->SetActionVisibility(extension->id(), true);
 
-    std::string extension_id = extension->id();
-    // Verify extension is present.
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      return content::EvalJs(web_contents,
-                             base::StringPrintf(R"(
-        (() => {
-          const app = document.querySelector('toolbar-app');
-          if (!app) return false;
-          const extensionsContainer = app.shadowRoot
-              .querySelector('#extensions');
-          if (!extensionsContainer) return false;
-          const extensionElements = extensionsContainer.shadowRoot
-              .querySelectorAll('webui-toolbar-extension');
-          return Array.from(extensionElements).some(el => el.state.id === '%s');
-        })();
-      )",
-                                                extension_id.c_str()))
-          .ExtractBool();
-    }));
+    base::RunLoop run_loop;
+    webui_toolbar_view->extensions_container_.OnActionPoppedOut(
+        run_loop.QuitClosure());
+    run_loop.Run();
 
     return extension;
   }
@@ -3938,7 +3924,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   scoped_refptr<const extensions::Extension> extension =
-      LoadAndPinExtension(web_contents, temp_dir,
+      LoadAndPinExtension(webui_toolbar_view, web_contents, temp_dir,
                           /*has_background_script=*/false);
   ASSERT_TRUE(extension);
 
@@ -4036,7 +4022,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   scoped_refptr<const extensions::Extension> extension =
-      LoadAndPinExtension(web_contents, temp_dir,
+      LoadAndPinExtension(webui_toolbar_view, web_contents, temp_dir,
                           /*has_background_script=*/true);
   ASSERT_TRUE(extension);
 
@@ -4109,7 +4095,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   scoped_refptr<const extensions::Extension> extension =
-      LoadAndPinExtension(web_contents, temp_dir,
+      LoadAndPinExtension(webui_toolbar_view, web_contents, temp_dir,
                           /*has_background_script=*/false, /*has_popup=*/true);
   ASSERT_TRUE(extension);
 
@@ -4120,10 +4106,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring) {
   ASSERT_TRUE(container);
 
   // Verify that appropriate anchors become available.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return container->GetExtensionAnchor(extension_id) != nullptr &&
-           container->GetExtensionAnchor("") != nullptr;
-  }));
+  EXPECT_TRUE(container->GetExtensionAnchor(extension_id));
+  EXPECT_TRUE(container->GetExtensionAnchor(""));
 
   // Verify anchors can be found programmatically.
   ui::TrackedElement* ext_anchor = container->GetExtensionAnchor(extension_id);

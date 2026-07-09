@@ -421,15 +421,18 @@ WebUIToolbarExtensionsContainer::GetExtensionsMenuButtonAnchor() const {
   return GetExtensionAnchor("");
 }
 
+ui::ElementIdentifier WebUIToolbarExtensionsContainer::GetElementId(
+    std::string_view extension_id) {
+  return extension_id.empty() ? kExtensionsMenuButtonElementId
+                              : kToolbarActionViewElementId;
+}
+
 ui::TrackedElement* WebUIToolbarExtensionsContainer::GetExtensionAnchor(
     std::string_view extension_id) const {
-  const ui::ElementIdentifier primary_id = extension_id.empty()
-                                               ? kExtensionsMenuButtonElementId
-                                               : kToolbarActionViewElementId;
   const std::string secondary_id = base::StrCat({"ext:", extension_id});
   for (ui::TrackedElement* element :
        ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
-           primary_id,
+           GetElementId(extension_id),
            views::ElementTrackerViews::GetContextForWidget(GetWidget()))) {
     auto* webui_element = element->AsA<ui::TrackedElementWebUI>();
     if (webui_element &&

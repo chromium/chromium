@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TOOLBAR_EXTENSIONS_CONTAINER_WRAPPER_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TOOLBAR_EXTENSIONS_CONTAINER_WRAPPER_H_
 
+#include <list>
 #include <map>
 #include <memory>
 #include <string>
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container_observer.h"
 #include "components/browser_apis/ui_controllers/toolbar/extensions_bar.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/extensions_bar_data_model.mojom.h"
+#include "ui/base/interaction/element_tracker.h"
 
 class BrowserWindowInterface;
 class ExtensionsContainer;
@@ -26,6 +28,7 @@ class WebContents;
 }
 
 namespace ui {
+class TrackedElement;
 template <typename T>
 class ScopedUnownedUserData;
 }
@@ -61,6 +64,8 @@ class WebUIToolbarExtensionsContainerWrapper
   void OnActionPoppedOut(base::OnceClosure callback) override;
 
  private:
+  struct PendingAnchorRequest;
+
   // This string is used as the extensions_bar::mojom::ExtensionActionInfo::id
   // value to indicate the extensions button (not actually an extension).
   // Empty string should not overlap with actual extension IDs.
@@ -73,6 +78,9 @@ class WebUIToolbarExtensionsContainerWrapper
   // Compute WebUI state for extensions button.
   extensions_bar::mojom::ExtensionActionInfoPtr GetExtensionsButton();
 
+  // Handles notifications when an extension button element is shown in the UI.
+  void OnElementShown(ui::TrackedElement* element);
+
   const raw_ptr<WebUIToolbarControlDelegate> delegate_;
 
   std::unique_ptr<WebUIToolbarExtensionsContainer> extensions_container_;
@@ -83,6 +91,8 @@ class WebUIToolbarExtensionsContainerWrapper
   // Current state of extensions UI. Map from extension ID to extension state.
   std::map<std::string, extensions_bar::mojom::ExtensionActionInfoPtr>
       cached_actions_;
+
+  std::list<PendingAnchorRequest> pending_anchor_requests_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TOOLBAR_EXTENSIONS_CONTAINER_WRAPPER_H_
