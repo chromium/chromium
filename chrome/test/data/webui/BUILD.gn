@@ -250,11 +250,13 @@ source_set("browser_tests") {
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [
-      "ai_overlay_dialog/ai_overlay_dialog_browsertest.cc",
       "discards/discards_browsertest.cc",
       "skills/skills_browsertest.cc",
     ]
     deps += [ "//components/skills:features" ]
+    if (is_chrome_branded) {
+      sources += [ "ai_overlay_dialog/ai_overlay_dialog_browsertest.cc" ]
+    }
   }
 
   if (is_win || is_mac || is_linux) {
@@ -804,14 +806,12 @@ generate_grd("build_grd") {
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
-    deps += [
-      "ai_overlay_dialog:build_grdp",
-      "skills:build_grdp",
-    ]
-    grdp_files += [
-      "$target_gen_dir/skills/resources.grdp",
-      "$target_gen_dir/ai_overlay_dialog/resources.grdp",
-    ]
+    deps += [ "skills:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/skills/resources.grdp" ]
+    if (is_chrome_branded) {
+      deps += [ "ai_overlay_dialog:build_grdp" ]
+      grdp_files += [ "$target_gen_dir/ai_overlay_dialog/resources.grdp" ]
+    }
   }
 
   if (is_win || is_chromeos) {

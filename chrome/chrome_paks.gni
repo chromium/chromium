@@ -519,8 +519,8 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/skills_resources.pak",
       ]
       deps += [
-        "//chrome/browser/resources/ai_overlay_dialog:resources",
         "//chrome/browser/resources/skills:resources",
+        "//chrome/browser/ttc/resources",
       ]
     }
 

@@ -14,6 +14,9 @@ _default_allowed_violations = [
   "../../chrome/browser/actor/resources/internal/browser_resources.grd",
   "../../chrome/browser/glic/resources/internal/browser_resources.grd",
 
+  # Internal-only webui resources (but no .grd).
+  "../../chrome/browser/ttc/resources/internal/*",
+
   # TODO(b/452971335): Audit entries below.
   "../../chrome/browser/internal/resources/additional_modules_list.input",
   "../../chrome/browser/internal/transform_additional_modules_list.py",
