@@ -685,6 +685,11 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
     return kTrendingUpIconResourceName;
   } else if (icon.name ==
              (features::IsRoundedIconsEnabled()
+                  ? vector_icons::kDevicesIcon.name
+                  : vector_icons::kDevicesOldIcon.name)) {
+    return kTabIconResourceName;
+  } else if (icon.name ==
+             (features::IsRoundedIconsEnabled()
                   ? vector_icons::kHistoryIcon.name
                   : vector_icons::kHistoryChromeRefreshOldIcon.name)) {
     return kHistoryIconResourceName;
@@ -756,9 +761,11 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
   // TODO(446953331): It's error-prone to keep the above if's up to date. When
   //   omnibox input and popup views are replaced with webUI, matches and
   //   actions can store an icon enum instead of `VectorIcon`.
-  NOTREACHED() << "Every autocomplete icon must have an equivalent SVG "
-                  "resource for the NTP Realbox. icon.name: '"
-               << icon.name << "'";
+  DUMP_WILL_BE_NOTREACHED()
+      << "Every autocomplete icon must have an equivalent SVG "
+         "resource for the NTP Realbox. icon.name: '"
+      << icon.name << "'";
+  return "";
 }
 
 searchbox::mojom::AutocompleteResultPtr
