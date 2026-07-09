@@ -3835,6 +3835,7 @@ if (!is_android) {
         sources += [
           # Tooltip accessibility event tests rely on Aura APIs
           # (EventGenerator, TooltipControllerTestHelper).
+          "../browser/ui/views/toolbar/browser_app_menu_button_dump_accessibility_events_browsertest.cc",
           "../browser/ui/views/tooltip/tooltip_dump_accessibility_events_browsertest.cc",
         ]
         deps += [ "//ui/wm" ]
