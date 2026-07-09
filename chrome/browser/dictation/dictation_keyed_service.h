@@ -19,12 +19,15 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
-class BrowserWindowInterface;
 class Profile;
 
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
+}
+
+namespace tabs {
+class TabInterface;
 }
 
 namespace dictation {
@@ -60,7 +63,7 @@ class DictationKeyedService : public KeyedService,
   //
   // The new session will immediately start up a stream using the given
   // target_id.
-  void StartSession(BrowserWindowInterface& window, const TargetId& target_id);
+  void StartSession(tabs::TabInterface& tab, const TargetId& target_id);
 
   // Returns true if there is no active session.
   bool ShouldShowContextMenuItem() const;
@@ -97,11 +100,11 @@ class DictationKeyedService : public KeyedService,
 
   struct SessionState {
     SessionState(SessionControllerDelegate& delegate,
-                 base::WeakPtr<BrowserWindowInterface> window);
+                 const TargetId& target_id);
     ~SessionState();
 
     SessionController controller_;
-    base::WeakPtr<BrowserWindowInterface> window_;
+    TargetId target_id_;
   };
   std::optional<SessionState> session_;
 };

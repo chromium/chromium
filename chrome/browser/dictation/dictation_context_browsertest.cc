@@ -36,8 +36,7 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, APCCaptured) {
   const GURL url = embedded_test_server()->GetURL("/simple.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()));
+  StartSession();
 
   ASSERT_NE(session_controller(), nullptr);
 
@@ -80,8 +79,7 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, SelectedTextCaptured) {
   )JS";
   ASSERT_EQ(content::EvalJs(web_contents(), script), "quick brown");
 
-  dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()));
+  StartSession();
 
   ASSERT_NE(session_controller(), nullptr);
 
@@ -103,8 +101,7 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, InnerTextCaptured) {
   const GURL url = embedded_test_server()->GetURL("/simple.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()));
+  StartSession();
 
   SessionController* controller = dictation_service().session_controller();
   ASSERT_NE(controller, nullptr);
@@ -151,8 +148,7 @@ IN_PROC_BROWSER_TEST_F(DictationContextAsyncBrowserTest, AsyncContextCaptured) {
   )JS";
   ASSERT_EQ(content::EvalJs(web_contents(), script), "quick brown");
 
-  dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()));
+  StartSession();
 
   SessionController* controller = dictation_service().session_controller();
   ASSERT_NE(controller, nullptr);
@@ -208,8 +204,7 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest,
   )JS";
   ASSERT_EQ(content::EvalJs(iframe, setup_script), "quick brown");
 
-  dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   TargetId{iframe->GetWeakDocumentPtr()});
+  StartSession(TargetId{iframe->GetWeakDocumentPtr()});
 
   ASSERT_NE(session_controller(), nullptr);
 

@@ -20,6 +20,7 @@ namespace dictation {
 class DictationKeyedService;
 class ListenerStreamProvider;
 class SessionController;
+struct TargetId;
 
 // Base class for browser tests with common settings and setup.
 class DictationBrowserTestBase : public PlatformBrowserTest {
@@ -36,6 +37,11 @@ class DictationBrowserTestBase : public PlatformBrowserTest {
   DictationKeyedService& dictation_service();
   SessionController* session_controller();
   ListenerStreamProvider* attached_stream();
+
+  // Starts a session for the given target.
+  void StartSession(const TargetId& target_id);
+  // Starts a session for the focused editable.
+  void StartSession();
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

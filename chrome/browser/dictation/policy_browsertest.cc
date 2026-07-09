@@ -18,6 +18,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -152,9 +153,11 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServicePolicyTest,
   DictationKeyedService* service = DictationKeyedService::Get(profile());
   ASSERT_NE(service, nullptr);
 
-  service->StartSession(
-      *GetBrowserWindowInterface(),
-      DefaultInPageTargetId(chrome_test_utils::GetActiveWebContents(this)));
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  tabs::TabInterface* tab = chrome_test_utils::GetActiveTab(this);
+  ASSERT_TRUE(tab);
+  service->StartSession(*tab, DefaultInPageTargetId(web_contents));
   ASSERT_NE(service->session_controller(), nullptr);
 
   // Set policy to disabled (value = 2) in real-time.

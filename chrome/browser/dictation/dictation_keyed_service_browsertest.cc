@@ -23,7 +23,6 @@
 #include "chrome/common/extensions/api/dictation_private.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -129,8 +128,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        ShouldShowContextMenuItem) {
   EXPECT_TRUE(dictation_service().ShouldShowContextMenuItem());
 
-  dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()));
+  StartSession();
 
   EXPECT_FALSE(dictation_service().ShouldShowContextMenuItem());
 
@@ -163,8 +161,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        StartSessionAndReceiveTranscription) {
-  dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()));
+  StartSession();
 
   SessionController* controller = session_controller();
   ASSERT_NE(controller, nullptr);
@@ -202,8 +199,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        EndActiveStreamEntersFinalizingState) {
-  dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()));
+  StartSession();
 
   SessionController* controller = session_controller();
   ASSERT_NE(controller, nullptr);
@@ -245,8 +241,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        StartNewStreamWhileFinalizing) {
-  dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()));
+  StartSession();
 
   SessionController* controller = session_controller();
   ASSERT_NE(controller, nullptr);
@@ -294,8 +289,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        ProviderDestroyedAfterComplete) {
-  dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()));
+  StartSession();
 
   SessionController* controller = session_controller();
   ASSERT_NE(controller, nullptr);
@@ -324,8 +318,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        ProviderDestroyedAfterFailed) {
-  dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()));
+  StartSession();
 
   SessionController* controller = session_controller();
   ASSERT_NE(controller, nullptr);
@@ -372,8 +365,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                     "until crbug.com/525856380 is fixed.";
   }
 
-  dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()));
+  StartSession();
 
   SessionController* controller = session_controller();
   ListenerStreamProvider* provider = static_cast<ListenerStreamProvider*>(
@@ -427,8 +419,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
   // Start a new session and stream, commit some text, and stop.
   {
-    dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                     DefaultInPageTargetId(web_contents()));
+    StartSession();
 
     ASSERT_TRUE(attached_stream());
     auto stream_id = attached_stream()->stream_id_for_testing();

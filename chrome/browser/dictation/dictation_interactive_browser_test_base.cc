@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
 namespace dictation {
@@ -50,7 +51,9 @@ DictationInteractiveBrowserTestBase::CheckHasSession(
 DictationInteractiveBrowserTestBase::MultiStep
 DictationInteractiveBrowserTestBase::StartSession() {
   return Steps(Do([this] {
-    dictation_service().StartSession(*browser(),
+    tabs::TabInterface* tab = chrome_test_utils::GetActiveTab(this);
+    CHECK(tab);
+    dictation_service().StartSession(*tab,
                                      DefaultInPageTargetId(web_contents()));
     if (dictation_service().session_controller()) {
       last_started_provider_ =

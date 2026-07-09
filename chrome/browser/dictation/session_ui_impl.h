@@ -12,7 +12,9 @@
 #include "chrome/browser/dictation/session_state.h"
 #include "chrome/browser/dictation/session_ui.h"
 
-class BrowserWindowInterface;
+namespace tabs {
+class TabInterface;
+}
 
 namespace dictation {
 
@@ -21,8 +23,7 @@ class DictationBubbleUi;
 
 class SessionUiImpl : public SessionUi {
  public:
-  explicit SessionUiImpl(BrowserWindowInterface& window,
-                         SessionUiDelegate& delegate);
+  explicit SessionUiImpl(tabs::TabInterface& tab, SessionUiDelegate& delegate);
   ~SessionUiImpl() override;
 
   SessionUiImpl(const SessionUiImpl&) = delete;

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/views/dictation/dictation_bubble_ui.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace dictation {
 
@@ -36,11 +37,14 @@ DictationBubbleUi::State ToBubbleUiState(SessionState state) {
 
 }  // namespace
 
-SessionUiImpl::SessionUiImpl(BrowserWindowInterface& window,
+SessionUiImpl::SessionUiImpl(tabs::TabInterface& tab,
                              SessionUiDelegate& delegate)
     : controller_(delegate) {
+  BrowserWindowInterface* window = tab.GetBrowserWindowInterface();
+  CHECK(window);
+
   views::View* anchor_view =
-      BrowserElementsViews::From(&window)->GetView(kTopContainerElementId);
+      BrowserElementsViews::From(window)->GetView(kTopContainerElementId);
   if (!anchor_view) {
     return;
   }

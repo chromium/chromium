@@ -9,11 +9,13 @@
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
 #include "chrome/browser/dictation/session_controller.h"
+#include "chrome/browser/dictation/target.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "extensions/common/switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -58,6 +60,16 @@ SessionController* DictationBrowserTestBase::session_controller() {
 ListenerStreamProvider* DictationBrowserTestBase::attached_stream() {
   return static_cast<ListenerStreamProvider*>(
       session_controller()->attached_stream_provider());
+}
+
+void DictationBrowserTestBase::StartSession(const TargetId& target_id) {
+  tabs::TabInterface* tab = chrome_test_utils::GetActiveTab(this);
+  CHECK(tab);
+  dictation_service().StartSession(*tab, target_id);
+}
+
+void DictationBrowserTestBase::StartSession() {
+  StartSession(DefaultInPageTargetId(web_contents()));
 }
 
 }  // namespace dictation

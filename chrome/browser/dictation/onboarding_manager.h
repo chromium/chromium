@@ -13,8 +13,11 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/dictation/target.h"
 
-class BrowserWindowInterface;
 class PrefService;
+
+namespace tabs {
+class TabInterface;
+}
 
 namespace dictation {
 
@@ -37,7 +40,7 @@ class OnboardingManager {
   // TODO(b/527240600): This returns true in cases of failure which has correct
   // behavior in terms of preventing a session start but should return an error
   // state.
-  bool ShowOnboardingIfNeeded(BrowserWindowInterface& window,
+  bool ShowOnboardingIfNeeded(tabs::TabInterface& tab,
                               const TargetId& target_id);
 
  private:
@@ -50,7 +53,7 @@ class OnboardingManager {
 
   std::unique_ptr<OnboardingDialogController> dialog_controller_;
 
-  base::WeakPtr<BrowserWindowInterface> pending_window_;
+  base::WeakPtr<tabs::TabInterface> pending_tab_;
   std::optional<TargetId> pending_target_id_;
 
   base::WeakPtrFactory<OnboardingManager> weak_ptr_factory_{this};
