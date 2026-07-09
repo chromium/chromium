@@ -222,8 +222,11 @@ TextOffsetMapping::InlineContents CreateInlineContentsFromBlockFlow(
     }
   }
   if (!first) {
-    DCHECK(block_flow.NonPseudoNode()) << block_flow;
-    return TextOffsetMapping::InlineContents(block_flow);
+    if (block_flow.NonPseudoNode() ||
+        !RuntimeEnabledFeatures::CreateInlineContentsAnonymousBlockEnabled()) {
+      return TextOffsetMapping::InlineContents(block_flow);
+    }
+    return TextOffsetMapping::InlineContents();
   }
   const LayoutObject* block_in_inline_after = nullptr;
   for (; layout_object;
@@ -500,10 +503,14 @@ const LayoutObject& TextOffsetMapping::InlineContents::LastLayoutObject()
 EphemeralRangeInFlatTree TextOffsetMapping::InlineContents::GetRange() const {
   DCHECK(block_flow_);
   if (!first_) {
-    const Node& node = *block_flow_->NonPseudoNode();
-    return EphemeralRangeInFlatTree(
-        PositionInFlatTree::FirstPositionInNode(node),
-        PositionInFlatTree::LastPositionInNode(node));
+    const Node* node = block_flow_->NonPseudoNode();
+    if (node ||
+        !RuntimeEnabledFeatures::CreateInlineContentsAnonymousBlockEnabled()) {
+      return EphemeralRangeInFlatTree(
+          PositionInFlatTree::FirstPositionInNode(*node),
+          PositionInFlatTree::LastPositionInNode(*node));
+    }
+    return EphemeralRangeInFlatTree();
   }
   const Node& first_node = *first_->NonPseudoNode();
   const Node& last_node = *last_->NonPseudoNode();
@@ -536,10 +543,12 @@ TextOffsetMapping::InlineContents::LastPositionBeforeBlockFlow() const {
     }
     return PositionInFlatTree::BeforeNode(*node);
   }
-  DCHECK(first_);
-  DCHECK(first_->NonPseudoNode());
-  DCHECK(FlatTreeTraversal::Parent(*first_->NonPseudoNode()));
-  return PositionInFlatTree::BeforeNode(*first_->NonPseudoNode());
+  if ((first_ && first_->NonPseudoNode()) ||
+      !RuntimeEnabledFeatures::CreateInlineContentsAnonymousBlockEnabled()) {
+    DCHECK(FlatTreeTraversal::Parent(*first_->NonPseudoNode()));
+    return PositionInFlatTree::BeforeNode(*first_->NonPseudoNode());
+  }
+  return PositionInFlatTree();
 }
 
 PositionInFlatTree
@@ -562,10 +571,12 @@ TextOffsetMapping::InlineContents::FirstPositionAfterBlockFlow() const {
     }
     return PositionInFlatTree::AfterNode(*node);
   }
-  DCHECK(last_);
-  DCHECK(last_->NonPseudoNode());
-  DCHECK(FlatTreeTraversal::Parent(*last_->NonPseudoNode()));
-  return PositionInFlatTree::AfterNode(*last_->NonPseudoNode());
+  if ((last_ && last_->NonPseudoNode()) ||
+      !RuntimeEnabledFeatures::CreateInlineContentsAnonymousBlockEnabled()) {
+    DCHECK(FlatTreeTraversal::Parent(*last_->NonPseudoNode()));
+    return PositionInFlatTree::AfterNode(*last_->NonPseudoNode());
+  }
+  return PositionInFlatTree();
 }
 
 // static
