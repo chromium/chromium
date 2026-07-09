@@ -101,7 +101,12 @@ BASE_FEATURE(kSearchNavigationPrefetch,
 );
 
 BASE_FEATURE(kSearchPrefetchIgnoreSaverModesOnPress,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_ANDROID)
+);
 
 const base::FeatureParam<std::string> kSuggestPrefetchParam{
     &kSearchNavigationPrefetch, "suggest_prefetch_param", "cs"};

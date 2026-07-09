@@ -22140,21 +22140,6 @@
             ]
         }
     ],
-    "SearchPrefetchIgnoreSaverModesOnPressAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SearchPrefetchIgnoreSaverModesOnPress"
-                    ]
-                }
-            ]
-        }
-    ],
     "SearchSettingsUpdate": [
         {
             "platforms": [
