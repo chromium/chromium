@@ -255,6 +255,11 @@ struct ElementWiseBinaryParams {
   std::array<uint32_t, 8> rhs_dims;
   bool is_lhs_constant;
   bool is_rhs_constant;
+  // When true and kind is kPow, the input shapes are rewritten into an
+  // alternating high-rank broadcast pattern that survives
+  // CollapseBroadcastShapes without folding, to exercise the rank-5 pow
+  // emulation path in the TFLite backend.
+  bool force_high_rank_broadcast;
 };
 
 struct EluParams {
@@ -1089,7 +1094,8 @@ auto AnyElementWiseBinaryParams(
           fuzztest::ArrayOf<8>(any_input_dim),  // lhs_dims
           fuzztest::ArrayOf<8>(any_input_dim),  // rhs_dims
           fuzztest::Arbitrary<bool>(),          // is_lhs_constant
-          fuzztest::Arbitrary<bool>()           // is_rhs_constant
+          fuzztest::Arbitrary<bool>(),          // is_rhs_constant
+          fuzztest::Arbitrary<bool>()           // force_high_rank_broadcast
           ));
 }
 
@@ -1987,21 +1993,44 @@ struct ElementWiseBinaryDescriptors {
 std::optional<ElementWiseBinaryDescriptors> SetUpElementWiseBinaryDescriptors(
     const ContextProperties& context_properties,
     const ElementWiseBinaryParams& params) {
-  std::vector<uint32_t> lhs_dims(params.lhs_dims.begin(),
-                                 params.lhs_dims.begin() + params.lhs_rank);
-  std::vector<uint32_t> rhs_dims(params.rhs_dims.begin(),
-                                 params.rhs_dims.begin() + params.rhs_rank);
+  std::vector<uint32_t> lhs_dims;
+  std::vector<uint32_t> rhs_dims;
 
-  // Fix up dims to ensure broadcast compatibility. For each aligned dimension
-  // pair (from the right), if they're not equal and neither is 1, make rhs
-  // match lhs.
-  size_t min_rank = std::min(lhs_dims.size(), rhs_dims.size());
-  for (size_t i = 0; i < min_rank; ++i) {
-    size_t lhs_idx = lhs_dims.size() - 1 - i;
-    size_t rhs_idx = rhs_dims.size() - 1 - i;
-    if (lhs_dims[lhs_idx] != rhs_dims[rhs_idx] && lhs_dims[lhs_idx] != 1 &&
-        rhs_dims[rhs_idx] != 1) {
-      rhs_dims[rhs_idx] = lhs_dims[lhs_idx];
+  // Exercise the rank-5 pow emulation path. inputs above rank 4 go through
+  // SerializeBinaryOperationWithRankReduction, which collapses the shapes via
+  // CollapseBroadcastShapes. Build an alternating broadcast pattern so no
+  // adjacent axes can fold and the collapsed rank stays 5.
+  if (params.kind == mojom::ElementWiseBinary::Kind::kPow &&
+      params.force_high_rank_broadcast) {
+    constexpr uint32_t kRank = 5;
+    lhs_dims.assign(kRank, 1u);
+    rhs_dims.assign(kRank, 1u);
+    for (uint32_t i = 0; i < kRank; ++i) {
+      // Keep one dim per axis, flipping sides each axis. The kept size is
+      // the fuzzer dim + 1 (always > 1, so the axis isn't dropped).
+      if (i % 2 == 0) {
+        lhs_dims[i] = params.lhs_dims[i] + 1u;  // rhs stays 1
+      } else {
+        rhs_dims[i] = params.rhs_dims[i] + 1u;  // lhs stays 1
+      }
+    }
+  } else {
+    lhs_dims.assign(params.lhs_dims.begin(),
+                    params.lhs_dims.begin() + params.lhs_rank);
+    rhs_dims.assign(params.rhs_dims.begin(),
+                    params.rhs_dims.begin() + params.rhs_rank);
+
+    // Fix up dims to ensure broadcast compatibility. For each aligned dimension
+    // pair (from the right), if they're not equal and neither is 1, make rhs
+    // match lhs.
+    size_t min_rank = std::min(lhs_dims.size(), rhs_dims.size());
+    for (size_t i = 0; i < min_rank; ++i) {
+      size_t lhs_idx = lhs_dims.size() - 1 - i;
+      size_t rhs_idx = rhs_dims.size() - 1 - i;
+      if (lhs_dims[lhs_idx] != rhs_dims[rhs_idx] && lhs_dims[lhs_idx] != 1 &&
+          rhs_dims[rhs_idx] != 1) {
+        rhs_dims[rhs_idx] = lhs_dims[lhs_idx];
+      }
     }
   }
 
@@ -6301,13 +6330,14 @@ WEBNN_FUZZ_TEST_F(
                  fuzztest::Arbitrary<uint8_t>())
         .WithSeeds({{ElementWiseBinaryParams{
                          /*data_type=*/OperandDataType::kFloat32,
-                         /*kind=*/mojom::ElementWiseBinary::Kind::kAdd,
+                         /*kind=*/mojom::ElementWiseBinary::Kind::kPow,
                          /*lhs_rank=*/5,
                          /*rhs_rank=*/2,
                          /*lhs_dims=*/{2, 3, 4, 5, 6, 1, 1, 1},
                          /*rhs_dims=*/{2, 3, 1, 1, 1, 1, 1, 1},
                          /*is_lhs_constant=*/true,
                          /*is_rhs_constant=*/false,
+                         /*force_high_rank_broadcast=*/true,
                      },
                      /*seed_for_data=*/1}}));
 
@@ -6848,6 +6878,7 @@ WEBNN_FUZZ_TEST_F(
                          /*rhs_dims=*/{2, 3, 1, 1, 1, 1, 1, 1},
                          /*is_lhs_constant=*/true,
                          /*is_rhs_constant=*/false,
+                         /*force_high_rank_broadcast=*/false,
                      },
                      /*quantized_type=*/OperandDataType::kUint8,
                      /*seed_for_input=*/2,

@@ -3622,12 +3622,6 @@ GraphBuilderTflite::SerializeBinaryOperationWithRankReduction(
   operators_.emplace_back(SerializeReshapeOperation(
       binary_rhs_tensor_index, reshaped_rhs_tensor_index, binary_rhs_dims));
 
-  if (binary_output_dims == output_dims) {
-    return SerializeBinaryOperation(code, reshaped_lhs_tensor_index,
-                                    reshaped_rhs_tensor_index,
-                                    output_tensor_index);
-  }
-
   ASSIGN_OR_RETURN(const TensorIndex binary_output_tensor_index,
                    SerializeTemporaryTensorWithByteSizeCheck(
                        binary_output_dims, output_tensor_type));
