@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] An element with autofocus, present before navigation but disabled before finished, does not get focused
-  assert_equals: Focus moves to the autofocused button after the transition expected Element node <button autofocus="" disabled=""></button> but got Element node <body>\n\n<script type="module">\n\nconst delayed = location....
-[FAIL] Two elements with autofocus, present before navigation, but the first gets disabled; the second gets focused
-  assert_equals: Focus stays on the initially-focused button during the transition expected Element node <button autofocus="" disabled=""></button> but got Element node <body>\n\n<script type="module">\n\nconst delayed = location....
-Harness: the test ran to completion.
-

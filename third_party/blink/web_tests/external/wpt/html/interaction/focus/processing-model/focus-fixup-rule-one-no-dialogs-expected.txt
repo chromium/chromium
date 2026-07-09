@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] #button1
-  assert_equals: active element isn't fixed-up sync expected Element node <button id="button1" disabled="">Button 1</button> but got Element node <body><div>\n  <button id="button1" disabled="">Button 1</...
 [FAIL] #button2
   assert_equals: active element isn't fixed-up sync expected Element node <button id="button2" hidden="">Button 2</button> but got Element node <body><div>\n  <button id="button1" disabled="">Button 1</...
 [FAIL] #button4

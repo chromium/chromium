@@ -150,9 +150,14 @@ void HTMLFormControlElement::AttributeChanged(
   if (params.name == html_names::kDisabledAttr &&
       params.old_value.IsNull() != params.new_value.IsNull()) {
     DisabledAttributeChanged(DisabledChangedReason::kAttributeChanged);
-    if (params.reason == AttributeModificationReason::kDirectly &&
-        IsDisabledFormControl() && AdjustedFocusedElementInTreeScope() == this)
-      blur();
+    if (!RuntimeEnabledFeatures::
+            AvoidSynchronousBlurOnDisabledAttributeChangeEnabled()) {
+      if (params.reason == AttributeModificationReason::kDirectly &&
+          IsDisabledFormControl() &&
+          AdjustedFocusedElementInTreeScope() == this) {
+        blur();
+      }
+    }
   }
 }
 

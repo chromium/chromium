@@ -55,10 +55,10 @@ function testNumberKeyoperations(writingMode, initialValue) {
     input.removeAttribute('disabled');
 
     debug('Read-only input element:');
-    input.readonly = true;
+    input.readOnly = true;
     eventSender.keyDown(stepUpKey);
     shouldBeEqualToString('input.value', `${initialValue}`);
-    input.removeAttribute('readonly');
+    input.readOnly = false;
 
     debug('Moving caret by pressing arrow keys:');
     input.focus();

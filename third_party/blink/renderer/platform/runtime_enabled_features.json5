@@ -821,6 +821,12 @@
       name: "AvoidNormalizingVisiblePositionsWhenStartEqualsEnd",
       status: "stable",
     },
+    {
+      // Disables the synchronous focus blur behavior when a focused form control
+      // is disabled.
+      name: "AvoidSynchronousBlurOnDisabledAttributeChange",
+      status: "stable",
+    },
     // When enabled, enforces new interoperable semantics for 3D transforms.
     // See crbug.com/1008483.
     {
