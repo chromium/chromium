@@ -4531,7 +4531,7 @@ chromium-metrics-reviews@google.com.
   <owner>mfoltz@chromium.org</owner>
   <owner>agentic-web-platform-team@google.com</owner>
   <summary>
-    Records the total number of tools registered with navigator.modelContext
+    Records the total number of tools registered with document.modelContext
     after some delay after the first registration. This is recorded once per top
     level document. It provides an approximate number of tool registrations,
     assuming that declarative tool registrations happen on the main document

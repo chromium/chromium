@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://webmachinelearning.github.io/webmcp/#navigator-extension
+// https://webmachinelearning.github.io/webmcp/#document-extension
 
 [
   RuntimeEnabled=WebMCP,

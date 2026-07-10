@@ -12,14 +12,17 @@
 #include "third_party/blink/public/web/web_script_tool_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_execute_tool_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context_get_tool_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context_register_tool_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context_tool.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_registered_tool.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_annotations.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_tool_execute_callback.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/scoped_abort_state.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -171,6 +174,36 @@ String ComputeScriptToolResult(const Document& document) {
 
   builder.Append("]");
   return builder.ToString();
+}
+
+String GetToolErrorMessage(const ScriptToolError& error) {
+  if (!error.message.empty()) {
+    return error.message;
+  }
+  String conversion;
+  switch (error.code) {
+    case ScriptToolErrorCode::kInvalidToolName:
+      conversion = "Tool was not executed due to invalid name";
+      break;
+    case ScriptToolErrorCode::kInvalidInputArguments:
+      conversion = "Tool was not executed due to invalid input arguments";
+      break;
+    case ScriptToolErrorCode::kMissingRequiredSubmitButton:
+      conversion =
+          "Tool was not executed due to missing required submit button";
+      break;
+    case ScriptToolErrorCode::kToolInvocationFailed:
+      conversion =
+          "Tool was executed but the invocation failed. For example, the "
+          "script function threw an error";
+      break;
+    case ScriptToolErrorCode::kToolCancelled:
+      conversion = "Tool was cancelled";
+      break;
+    default:
+      conversion = "Unknown failure";
+  }
+  return conversion;
 }
 
 }  // namespace

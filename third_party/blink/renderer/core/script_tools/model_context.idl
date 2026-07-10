@@ -61,7 +61,7 @@ dictionary ModelContextGetToolOptions {
   [CallWith=ScriptState, MeasureAs=ModelContextGetTools] Promise<sequence<RegisteredTool>> getTools(optional ModelContextGetToolOptions options = {});
   [CallWith=ScriptState, MeasureAs=ModelContextExecuteTool] Promise<DOMString?> executeTool(
       RegisteredTool tool,
-      DOMString input_arguments,
+      DOMString inputArguments,
       optional ExecuteToolOptions options = {}
   );
   attribute EventHandler ontoolchange;

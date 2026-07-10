@@ -13,12 +13,9 @@
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_execute_tool_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_tool_execute_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/scoped_abort_state.h"
 #include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
@@ -29,7 +26,7 @@
 
 namespace blink {
 class AbortController;
-class AbortSignal;
+class Document;
 class Element;
 class ExecuteToolOptions;
 class SourceLocation;
@@ -37,6 +34,7 @@ class ModelContextGetToolOptions;
 class ModelContextRegisterToolOptions;
 class ModelContextTool;
 class RegisteredTool;
+class V8ToolExecuteCallback;
 
 class DeclarativeWebMCPTool : public GarbageCollectedMixin {
  public:
