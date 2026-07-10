@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_RUNTIME_MUTABLE_FEATURES_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_RUNTIME_MUTABLE_FEATURES_HANDLER_H_
+#ifndef IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_METRICS_INTERNALS_RUNTIME_MUTABLE_FEATURES_HANDLER_H_
+#define IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_METRICS_INTERNALS_RUNTIME_MUTABLE_FEATURES_HANDLER_H_
 
 #include <memory>
 
 #include "base/values.h"
 #include "components/metrics/debug/runtime_mutable_features_handler_base.h"
-#include "content/public/browser/web_ui_message_handler.h"
+#include "ios/web/public/webui/web_ui_ios_message_handler.h"
 
 // UI Handler for the Runtime-Mutable-Features tab in
 // chrome://metrics-internals.
 // LINT.IfChange(runtime_mutable_features_handler)
 class RuntimeMutableFeaturesHandler
-    : public content::WebUIMessageHandler,
+    : public web::WebUIIOSMessageHandler,
       public metrics::RuntimeMutableFeaturesHandlerBase::Delegate {
  public:
   RuntimeMutableFeaturesHandler();
@@ -26,7 +26,7 @@ class RuntimeMutableFeaturesHandler
 
   ~RuntimeMutableFeaturesHandler() override;
 
-  // content::WebUIMessageHandler:
+  // web::WebUIIOSMessageHandler:
   void RegisterMessages() override;
 
   // metrics::RuntimeMutableFeaturesHandlerBase::Delegate:
@@ -41,6 +41,6 @@ class RuntimeMutableFeaturesHandler
 
   std::unique_ptr<metrics::RuntimeMutableFeaturesHandlerBase> base_handler_;
 };
-// LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/metrics_internals/runtime_mutable_features_handler.h)
+// LINT.ThenChange(//chrome/browser/ui/webui/metrics_internals/runtime_mutable_features_handler.h)
 
-#endif  // CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_RUNTIME_MUTABLE_FEATURES_HANDLER_H_
+#endif  // IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_METRICS_INTERNALS_RUNTIME_MUTABLE_FEATURES_HANDLER_H_

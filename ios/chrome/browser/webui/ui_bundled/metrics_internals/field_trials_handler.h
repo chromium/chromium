@@ -1,28 +1,28 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_FIELD_TRIALS_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_FIELD_TRIALS_HANDLER_H_
+#ifndef IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_METRICS_INTERNALS_FIELD_TRIALS_HANDLER_H_
+#define IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_METRICS_INTERNALS_FIELD_TRIALS_HANDLER_H_
 
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "components/metrics/debug/field_trials_handler_base.h"
-#include "content/public/browser/web_ui_message_handler.h"
+#include "ios/web/public/webui/web_ui_ios_message_handler.h"
 
-class Profile;
+class ProfileIOS;
 
 // LINT.IfChange(field_trials_handler)
 
 // UI Handler for the Field Trials tab of chrome://metrics-internals.
-class FieldTrialsHandler : public content::WebUIMessageHandler,
+class FieldTrialsHandler : public web::WebUIIOSMessageHandler,
                            public metrics::FieldTrialsHandlerBase::Delegate {
  public:
-  explicit FieldTrialsHandler(Profile* profile);
+  explicit FieldTrialsHandler(ProfileIOS* profile);
   ~FieldTrialsHandler() override;
 
-  // content::WebUIMessageHandler:
+  // web::WebUIIOSMessageHandler:
   void RegisterMessages() override;
 
   // metrics::FieldTrialsHandlerBase::Delegate:
@@ -37,10 +37,10 @@ class FieldTrialsHandler : public content::WebUIMessageHandler,
 
   bool GetShowNames();
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<metrics::FieldTrialsHandlerBase> base_handler_;
 };
 
-// LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/metrics_internals/field_trials_handler.h)
+// LINT.ThenChange(//chrome/browser/ui/webui/metrics_internals/field_trials_handler.h)
 
-#endif  // CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_FIELD_TRIALS_HANDLER_H_
+#endif  // IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_METRICS_INTERNALS_FIELD_TRIALS_HANDLER_H_

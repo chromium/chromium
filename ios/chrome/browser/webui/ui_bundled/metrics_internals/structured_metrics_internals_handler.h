@@ -1,22 +1,25 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_STRUCTURED_METRICS_INTERNALS_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_STRUCTURED_METRICS_INTERNALS_HANDLER_H_
+#ifndef IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_METRICS_INTERNALS_STRUCTURED_METRICS_INTERNALS_HANDLER_H_
+#define IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_METRICS_INTERNALS_STRUCTURED_METRICS_INTERNALS_HANDLER_H_
+
+#include "components/metrics/structured/buildflags/buildflags.h"
+
+#if BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)
 
 #include <memory>
 
 #include "base/values.h"
 #include "components/metrics/debug/structured/structured_metrics_internals_handler_base.h"
-#include "components/metrics/structured/buildflags/buildflags.h"
-#include "content/public/browser/web_ui_message_handler.h"
+#include "ios/web/public/webui/web_ui_ios_message_handler.h"
 
 // LINT.IfChange(structured_metrics_internals_handler)
 
 // UI Handler for chrome://metrics-internals/structured
 class StructuredMetricsInternalsHandler
-    : public content::WebUIMessageHandler,
+    : public web::WebUIIOSMessageHandler,
       public metrics::structured::StructuredMetricsInternalsHandlerBase::
           Delegate {
  public:
@@ -29,7 +32,7 @@ class StructuredMetricsInternalsHandler
 
   ~StructuredMetricsInternalsHandler() override;
 
-  // content::WebUIMessageHandler:
+  // web::WebUIIOSMessageHandler:
   void RegisterMessages() override;
 
   // metrics::structured::StructuredMetricsInternalsHandlerBase::Delegate:
@@ -44,6 +47,8 @@ class StructuredMetricsInternalsHandler
       base_handler_;
 };
 
-// LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/metrics_internals/structured_metrics_internals_handler.h)
+// LINT.ThenChange(//chrome/browser/ui/webui/metrics_internals/structured_metrics_internals_handler.h)
 
-#endif  // CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_STRUCTURED_METRICS_INTERNALS_HANDLER_H_
+#endif  // BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)
+
+#endif  // IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_METRICS_INTERNALS_STRUCTURED_METRICS_INTERNALS_HANDLER_H_

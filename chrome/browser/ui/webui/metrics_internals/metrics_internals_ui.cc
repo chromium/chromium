@@ -23,6 +23,8 @@
 #include "chrome/browser/ui/webui/metrics_internals/structured_metrics_internals_handler.h"
 #endif
 
+// LINT.IfChange(metrics_internals_ui)
+
 MetricsInternalsUI::MetricsInternalsUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   // Set up the chrome://metrics-internals source.
@@ -57,3 +59,5 @@ MetricsInternalsUI::MetricsInternalsUI(content::WebUI* web_ui)
       "enablePrivateMetricsTab",
       base::FeatureList::IsEnabled(features::kPrivateMetricsWebUI));
 }
+
+// LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/metrics_internals/metrics_internals_ui.mm)

@@ -21,6 +21,8 @@ class MetricsInternalsUIConfig
                            chrome::kChromeUIMetricsInternalsHost) {}
 };
 
+// LINT.IfChange(metrics_internals_ui)
+
 // Controller for the chrome://metrics-internals page.
 class MetricsInternalsUI : public content::WebUIController {
  public:
@@ -31,5 +33,7 @@ class MetricsInternalsUI : public content::WebUIController {
 
   ~MetricsInternalsUI() override = default;
 };
+
+// LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/metrics_internals/metrics_internals_ui.h)
 
 #endif  // CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_METRICS_INTERNALS_UI_H_
