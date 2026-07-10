@@ -411,6 +411,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   // See method of the same name in PdfInkModuleClient. Virtual to support
   // testing.
   virtual void AddFont(FontId font_id,
+                       const std::string& font_name,
                        base::span<const uint8_t> serialized_typeface);
   // Returns a font that was previously loaded with AddFont().
   FPDF_FONT GetAddedFont(FontId font_id);

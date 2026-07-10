@@ -313,8 +313,9 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
 
   // PdfInkModuleClient:
   void AddFont(FontId font_id,
+               const std::string& font_name,
                base::span<const uint8_t> serialized_typeface) override {
-    plugin_->engine_->AddFont(font_id, serialized_typeface);
+    plugin_->engine_->AddFont(font_id, font_name, serialized_typeface);
   }
 
   void ClearSelection() override { plugin_->engine_->ClearTextSelection(); }

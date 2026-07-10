@@ -3586,10 +3586,11 @@ TEST_P(PdfViewWebPluginInkTest, AddFont) {
   static constexpr auto kSerializedTypeface =
       std::to_array<const uint8_t>({1, 2, 3});
 
-  EXPECT_CALL(*engine_ptr_, AddFont(kFontId, Matcher<base::span<const uint8_t>>(
-                                                 kSerializedTypeface)));
+  EXPECT_CALL(*engine_ptr_,
+              AddFont(kFontId, "test",
+                      Matcher<base::span<const uint8_t>>(kSerializedTypeface)));
 
-  plugin_->ink_module_client_for_testing()->AddFont(kFontId,
+  plugin_->ink_module_client_for_testing()->AddFont(kFontId, "test",
                                                     kSerializedTypeface);
 }
 

@@ -1671,9 +1671,10 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
   for (const base::Value& item : typefaces_value) {
     const base::DictValue& item_as_dict = item.GetDict();
     FontId unique_id(item_as_dict.FindInt("uniqueId").value());
+    const std::string font_name = *item_as_dict.FindString("name");
     const std::vector<uint8_t>& serialized_typeface =
         *item_as_dict.FindBlob("serializedTypeface");
-    client_->AddFont(unique_id, serialized_typeface);
+    client_->AddFont(unique_id, font_name, serialized_typeface);
   }
 
   const std::vector<uint8_t>& text_info_blob = *data.FindBlob("mojoTextInfo");
