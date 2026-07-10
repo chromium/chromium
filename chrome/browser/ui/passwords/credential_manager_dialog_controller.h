@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "chrome/browser/ui/passwords/password_base_dialog_controller.h"
+#include "chrome/browser/ui/passwords/password_combined_selector_controller.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 
 namespace password_manager {
@@ -23,16 +23,14 @@ class Origin;
 
 // An interface used by the password dialog (the account chooser) for setting
 // and retrieving the state.
-class CredentialManagerDialogController : public PasswordBaseDialogController {
+class CredentialManagerDialogController : public PasswordCombinedSelectorController {
  public:
-  using FormsVector =
-      std::vector<std::unique_ptr<password_manager::PasswordForm>>;
 
   // Returns forms from the password database for the current site.
-  virtual const FormsVector& GetLocalForms() const = 0;
+  const FormsVector& GetLocalForms() const override = 0;
 
   // Returns the origin of the current site.
-  virtual url::Origin GetOrigin() const = 0;
+  url::Origin GetOrigin() const override = 0;
 
   // Returns a title of the account chooser.
   virtual std::u16string GetAccountChooserTitle() const = 0;
@@ -50,9 +48,9 @@ class CredentialManagerDialogController : public PasswordBaseDialogController {
   virtual bool ShouldShowFooter() const = 0;
 
   // Called when the user chooses a credential.
-  virtual void OnChooseCredentials(
+  void OnChooseCredentials(
       const password_manager::PasswordForm& password_form,
-      password_manager::CredentialType credential_type) = 0;
+      password_manager::CredentialType credential_type) override = 0;
 
   // Called when the user clicks "Sign in" in the account chooser.
   virtual void OnSignInClicked() = 0;
@@ -64,7 +62,7 @@ class CredentialManagerDialogController : public PasswordBaseDialogController {
   virtual void OnAutoSigninTurnOff() = 0;
 
   // Called when the dialog was closed.
-  virtual void OnCloseDialog() = 0;
+  void OnCloseDialog() override = 0;
 
  protected:
   ~CredentialManagerDialogController() override = default;

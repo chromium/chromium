@@ -24,6 +24,8 @@ class PasswordCombinedSelectorRadioButtonDelegate {
   virtual void OnRadioButtonChecked(int index) = 0;
 };
 
+class PasswordCombinedSelectorController;
+
 // A view that shows a list of credentials (passwords) together with radio
 // buttons when needed.
 // TODO(crbug.com/477857535): This class is a slightly modified version of
@@ -33,7 +35,7 @@ class PasswordCombinedSelectorView
       public AccountChooserPrompt,
       public PasswordCombinedSelectorRadioButtonDelegate {
  public:
-  PasswordCombinedSelectorView(CredentialManagerDialogController* controller,
+  PasswordCombinedSelectorView(PasswordCombinedSelectorController* controller,
                                content::WebContents* web_contents);
   PasswordCombinedSelectorView(const PasswordCombinedSelectorView&) = delete;
   PasswordCombinedSelectorView& operator=(const PasswordCombinedSelectorView&) =
@@ -64,7 +66,7 @@ class PasswordCombinedSelectorView
 
   void InitWindow();
 
-  raw_ptr<CredentialManagerDialogController> controller_;
+  raw_ptr<PasswordCombinedSelectorController> controller_;
   raw_ptr<content::WebContents> web_contents_;
 
   // The currently selected password form.

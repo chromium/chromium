@@ -30,6 +30,7 @@ source_set("passwords") {
       "manage_passwords_auto_signin_toast_delegate.h",
       "manage_passwords_ui_controller.h",
       "password_base_dialog_controller.h",
+      "password_combined_selector_controller.h",
       "password_dialog_prompts.h",
       "passwords_client_ui_delegate.h",
       "passwords_leak_dialog_delegate.h",

@@ -14,7 +14,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/passwords/account_avatar_fetcher.h"
-#include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
+#include "chrome/browser/ui/passwords/password_combined_selector_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -319,7 +319,7 @@ class PasswordCombinedSelectorListView : public views::View {
   METADATA_HEADER(PasswordCombinedSelectorListView, views::View)
  public:
   PasswordCombinedSelectorListView(
-      CredentialManagerDialogController* controller,
+      PasswordCombinedSelectorController* controller,
       content::WebContents* web_contents,
       PasswordCombinedSelectorRadioButtonDelegate* delegate) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -448,7 +448,7 @@ END_METADATA
 }  // namespace
 
 PasswordCombinedSelectorView::PasswordCombinedSelectorView(
-    CredentialManagerDialogController* controller,
+    PasswordCombinedSelectorController* controller,
     content::WebContents* web_contents)
     : controller_(controller), web_contents_(web_contents) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
