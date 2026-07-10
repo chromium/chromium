@@ -67,6 +67,9 @@ class GlicInvokeHandler {
   // Kicks off the invocation process.
   void Invoke();
 
+  // Cancels the invocation, generating an error callback.
+  void Cancel(GlicInvokeError error);
+
  private:
   bool IsFloatingTarget() const;
   bool IsTabTarget() const;

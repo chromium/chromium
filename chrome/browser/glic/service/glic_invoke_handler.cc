@@ -311,6 +311,10 @@ void GlicInvokeHandler::Invoke() {
                                    weak_ptr_factory_.GetWeakPtr()));
 }
 
+void GlicInvokeHandler::Cancel(GlicInvokeError error) {
+  OnError(error);
+}
+
 void GlicInvokeHandler::OnTabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {

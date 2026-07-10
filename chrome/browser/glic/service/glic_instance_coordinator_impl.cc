@@ -426,6 +426,17 @@ bool GlicInstanceCoordinatorImpl::MaybeStartInitialWarming() {
 }
 
 void GlicInstanceCoordinatorImpl::Shutdown() {
+  // Extract handlers to avoid iterator invalidation when Cancel() removes them
+  // from invoke_handlers_.
+  base::flat_map<GlicInstance*, std::unique_ptr<GlicInvokeHandler>> handlers(
+      std::move(invoke_handlers_));
+
+  for (auto& [instance, handler] : handlers) {
+    if (handler) {
+      handler->Cancel(GlicInvokeError::kInstanceDestroyed);
+    }
+  }
+
   for (auto& [instance_id, instance] : instances_) {
     instance->Shutdown();
   }
