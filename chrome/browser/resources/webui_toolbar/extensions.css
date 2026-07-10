@@ -11,5 +11,43 @@
 
 :host {
   display: flex;
-  gap: var(--toolbar-icon-default-margin);
+}
+
+webui-toolbar-extension,
+toolbar-divider {
+  transition: width 300ms ease,
+              margin-inline-end 300ms ease,
+              margin-inline-start 300ms ease,
+              opacity 200ms linear;
+
+  margin-inline-end: var(--toolbar-icon-default-margin);
+}
+
+webui-toolbar-extension.animate-in,
+toolbar-divider.animate-in {
+  animation: slide-in 300ms ease-out;
+}
+
+toolbar-divider {
+  margin-inline-end: var(--toolbar-divider-spacing);
+}
+
+toolbar-divider:last-child {
+  margin-inline-end: calc(var(--toolbar-divider-spacing) -
+                          var(--toolbar-icon-default-margin));
+}
+
+.exiting {
+  pointer-events: none;
+  width: 0 !important;
+  margin-inline-start: 0 !important;
+  margin-inline-end: 0 !important;
+  opacity: 0 !important;
+}
+
+@keyframes slide-in {
+  from {
+    width: 0;
+    opacity: 0;
+  }
 }

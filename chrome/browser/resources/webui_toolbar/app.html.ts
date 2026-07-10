@@ -49,8 +49,7 @@ ${this.isBackForwardButtonEnabled_ ? html`
   ` : ''}
   ${this.isExtensionsContainerEnabled_ ? html`
     <webui-toolbar-extensions id="extensions"
-        .state="${this.navigationControlsState_.extensionsState}"
-        .hidden="${this.navigationControlsState_.extensionsState.length === 0}">
+        .state="${this.navigationControlsState_.extensionsState}">
     </webui-toolbar-extensions>
   ` : ''}
   ${this.isPinnedToolbarActionsEnabled_ ? html`
