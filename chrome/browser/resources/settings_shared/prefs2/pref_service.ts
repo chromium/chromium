@@ -192,8 +192,13 @@ export class PrefService {
     }
   }
 
+  private destroy_() {
+    this.browserProxy_.onPrefsChanged.removeListener(this.boundOnPrefsChanged_);
+  }
+
   static resetInstanceForTesting() {
     if (instance) {
+      instance.destroy_();
       instance = null;
     }
   }

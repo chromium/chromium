@@ -1,103 +1,60 @@
-    <style include="cr-shared-style settings-shared md-select">
-      /* Lines up with cr-input. */
-      #custom-input {
-        /* (cr-input line-height + cr-input top/bottom padding) / 2 -
-           cr-radio disc-wrapper height / 2 */
-        --cr-radio-button-disc-margin-block-start: calc(
-            (1.54em + 12px) / 2 - 8px);
-        align-items: start;
-      }
-
-      /* The theme mixes a link and a cr-button divided by a separator with
-       * grit expressions and dom-if templates. That leads to a tricky thing
-       * to style correctly, these are a workaround. */
-      #themeRow cr-button,
-      #toolbarRow cr-button {
-        margin-inline-end: 20px;
-      }
-
-      #themeRow .separator,
-      #toolbarRow .separator  {
-         margin-inline-start: 0;
-      }
-
-      #toolbarRow {
-        border-top: var(--cr-separator-line);
-      }
-
-      .indented-toggles,
-      .indented-rows {
-        padding-inline-end: 0;
-      }
-
-      .indented-toggles settings-toggle-button,
-      .indented-rows .cr-row {
-        padding-inline-start: 0;
-      }
-
-    </style>
     <settings-section page-title="$i18n{appearancePageTitle}">
       <div route-path="default">
         <div class="settings-row first" id="themeRow"
-            hidden="[[!pageVisibility.setTheme]]">
+            ?hidden="${!this.pageVisibility_.setTheme}">
           <cr-link-row id="openTheme" class="first"
-              hidden="[[!pageVisibility.setTheme]]"
-              label="$i18n{themes}" sub-label="[[themeSublabel_]]"
-              on-click="onThemeClick_" external></cr-link-row>
+              ?hidden="${!this.pageVisibility_.setTheme}"
+              label="$i18n{themes}" sub-label="${this.themeSublabel_}"
+              @click="${this.onThemeClick_}" external></cr-link-row>
 <if expr="not is_linux">
-          <template is="dom-if" if="[[themeIdPref_.value]]">
+          ${this.themeIdPref_?.value ? html`
             <div class="separator"></div>
-            <cr-button id="useDefault" on-click="onUseDefaultClick_"
+            <cr-button id="useDefault" @click="${this.onUseDefaultClick_}"
                 aria-label="$i18n{resetToDefaultTheme}">
               $i18n{resetToDefault}
             </cr-button>
-          </template>
+          ` : ''}
 </if>
 <if expr="is_linux">
           <div class="settings-row continuation"
-              hidden="[[!showThemesSecondary_(
-                  themeIdPref_.value, systemTheme_)]]"
+              ?hidden="${!this.showThemesSecondary_()}"
               id="themesSecondaryActions">
             <div class="separator"></div>
-            <template is="dom-if" if="[[showUseClassic_(
-                themeIdPref_.value, systemTheme_)]]" restamp>
-              <cr-button id="useDefault" on-click="onUseDefaultClick_">
+            ${this.showUseClassic_() ? html`
+              <cr-button id="useDefault" @click="${this.onUseDefaultClick_}">
                 $i18n{useClassicTheme}
               </cr-button>
-            </template>
-            <template is="dom-if" if="[[showUseGtk_(
-                themeIdPref_.value, systemTheme_)]]" restamp>
-              <cr-button id="useGtk" on-click="onUseGtkClick_">
+            ` : ''}
+            ${this.showUseGtk_() ? html`
+              <cr-button id="useGtk" @click="${this.onUseGtkClick_}">
                 $i18n{useGtkTheme}
               </cr-button>
-            </template>
-            <template is="dom-if" if="[[showUseQt_(
-                themeIdPref_.value, systemTheme_)]]" restamp>
-              <cr-button id="useQt" on-click="onUseQtClick_">
+            ` : ''}
+            ${this.showUseQt_() ? html`
+              <cr-button id="useQt" @click="${this.onUseQtClick_}">
                 $i18n{useQtTheme}
               </cr-button>
-            </template>
+            ` : ''}
           </div>
 </if>
         </div>
         <div id="toolbarRow" class="settings-row">
           <cr-link-row id="customizeToolbar"
               label="$i18n{customizeToolbar}"
-              on-click="onCustomizeToolbarClick_" external>
+              @click="${this.onCustomizeToolbarClick_}" external>
           </cr-link-row>
-          <template is="dom-if" if="[[showResetPinnedActionsButton_]]">
+          ${this.showResetPinnedActionsButton_ ? html`
             <div class="separator"></div>
             <cr-button id="resetPinnedToolbarActions"
-                on-click="onResetPinnedToolbarActionsClick_"
+                @click="${this.onResetPinnedToolbarActionsClick_}"
                 aria-label="$i18n{resetToolbarToDefault}">
               $i18n{resetToDefault}
             </cr-button>
-          </template>
+          ` : ''}
         </div>
         <div id="colorSchemeModeRow" class="cr-row"
 <if expr="is_linux">
-            hidden="[[!showColorSchemeMode_(themeIdPref_.value,
-              systemTheme_)]]"
+            ?hidden="${!this.showColorSchemeMode_()}"
 </if>
         >
           <div id="colorSchemeModeLabel" class="flex cr-padded-text"
@@ -105,34 +62,28 @@
             $i18n{colorSchemeMode}
           </div>
           <select id="colorSchemeModeSelect" class="md-select"
-              on-change="onColorSchemeModeChange_"
+              @change="${this.onColorSchemeModeChange_}"
               aria-labelledby="colorSchemeModeLabel">
-            <template is="dom-repeat" items="[[colorSchemeModeOptions_]]">
-              <option value="[[item.value]]"
-                  selected="[[isSelectedColorSchemeMode_(
-                      item.value, selectedColorSchemeMode_)]]">
-                [[item.name]]
+            ${this.colorSchemeModeOptions_.map(item => html`
+              <option value="${item.value}"
+                  ?selected="${this.isSelectedColorSchemeMode_(item.value)}">
+                ${item.name}
               </option>
-            </template>
+            `)}
           </select>
         </div>
-        <div
-            class="hr"
-            hidden="[[!showHr_(
-                pageVisibility.setTheme, pageVisibility.homeButton)]]">
+        <div class="hr" ?hidden="${!this.showHr_(
+            this.pageVisibility_.setTheme, this.pageVisibility_.homeButton)}">
         </div>
         <settings-toggle-button elide-label
-            hidden="[[!pageVisibility.homeButton]]"
+            ?hidden="${!this.pageVisibility_.homeButton}"
             pref-key="browser.show_home_button"
             label="$i18n{showHomeButton}"
-            sub-label="[[getShowHomeSubLabel_(
-                showHomeButtonPref_.value,
-                homepageIsNewTabPagePref_.value,
-                homepagePref_.value)]]">
+            sub-label="${this.getShowHomeSubLabel_()}">
         </settings-toggle-button>
-        <template is="dom-if" if="[[showHomeButtonPref_.value]]">
+        ${this.showHomeButtonPref_?.value ? html`
           <div id="home-button-options" class="list-frame"
-              hidden="[[!pageVisibility.homeButton]]">
+              ?hidden="${!this.pageVisibility_.homeButton}">
             <settings-radio-group pref-key="homepage_is_newtabpage">
               <controlled-radio-button class="list-item" name="true"
                   pref-key="homepage_is_newtabpage"
@@ -145,51 +96,47 @@
                      homepage and whether to use the NTP as the homepage are
                      managed. -->
                 <home-url-input id="customHomePage"
-                    can-tab="[[!homepageIsNewTabPagePref_.value]]">
+                    .canTab="${!this.homepageIsNewTabPagePref_?.value}">
                 </home-url-input>
               </controlled-radio-button>
-              <template is="dom-if" if="[[homepagePref_.extensionId]]">
+              ${this.homepagePref_?.extensionId ? html`
                 <extension-controlled-indicator
-                    extension-id="[[homepagePref_.extensionId]]"
-                    extension-can-be-disabled="[[
-                        homepagePref_.extensionCanBeDisabled]]"
-                    extension-name="[[homepagePref_.controlledByName]]"
-                    on-disable-extension-click="onDisableExtensionClick_">
+                    extension-id="${this.homepagePref_.extensionId}"
+                    ?extension-can-be-disabled="${!!this.homepagePref_?.extensionCanBeDisabled}"
+                    extension-name="${this.homepagePref_.controlledByName}"
+                    @disable-extension-click="${this.onDisableExtensionClick_}">
                 </extension-controlled-indicator>
-              </template>
+              ` : ''}
             </settings-radio-group>
           </div>
-        </template>
+        ` : ''}
         <div
             class="hr"
-            hidden="[[!showHr_(
-                pageVisibility.homeButton, pageVisibility.bookmarksBar)]]">
+            ?hidden="${!this.showHr_(
+                this.pageVisibility_.homeButton, this.pageVisibility_.bookmarksBar)}">
         </div>
-        <template is="dom-if"
-            if="[[!ntpSimplificationBookmarksBarEnabled_]]">
+        ${!this.ntpSimplificationBookmarksBarEnabled_ ? html`
           <settings-toggle-button id="showBookmarksBar"
-              hidden="[[!pageVisibility.bookmarksBar]]"
+              ?hidden="${!this.pageVisibility_.bookmarksBar}"
               pref-key="bookmark_bar.show_on_all_tabs"
               label="$i18n{showBookmarksBar}">
           </settings-toggle-button>
-        </template>
-        <template is="dom-if"
-            if="[[ntpSimplificationBookmarksBarEnabled_]]">
-          <div class="cr-row" hidden="[[!pageVisibility.bookmarksBar]]">
+        ` : ''}
+        ${this.ntpSimplificationBookmarksBarEnabled_ ? html`
+          <div class="cr-row" ?hidden="${!this.pageVisibility_.bookmarksBar}">
             <div class="flex cr-padded-text" aria-hidden="true">
               $i18n{bookmarksBar}
             </div>
             <settings-dropdown-menu id="bookmarksBarVisibilityDropdown"
                 label="$i18n{bookmarksBar}"
                 pref-key="bookmark_bar.visibility_state"
-                menu-options="[[bookmarksBarOptions_]]"
-                on-settings-control-change=
-                    "onBookmarksBarVisibilitySettingChange_">
+                .menuOptions="${this.bookmarksBarOptions_}"
+                @settings-control-change="${this.onBookmarksBarVisibilitySettingsControlChange_}">
             </settings-dropdown-menu>
           </div>
-        </template>
+        ` : ''}
 
-        <template is="dom-if" if="[[showVerticalTabsEnabled_]]">
+        ${this.showVerticalTabsEnabled_ ? html`
           <div class="cr-row">
             <div class="flex cr-padded-text" aria-hidden="true">
               $i18n{tabStripPosition}
@@ -197,135 +144,126 @@
             <settings-dropdown-menu id="tabStripPosition"
                 label="$i18n{tabStripPosition}"
                 pref-key="vertical_tabs.enabled"
-                menu-options="[[tabStripOptions_]]"
-                on-settings-control-change="onTabStripPositionChanged_">
+                .menuOptions="${this.tabStripOptions_}"
+                @settings-control-change="${this.onTabStripPositionSettingsControlChange_}">
             </settings-dropdown-menu>
           </div>
           <div class="list-frame indented-toggles"
-               hidden="[[!verticalTabsEnabledPref_.value]]">
-            <template is="dom-if"
-                if="[[showVerticalTabsExpandOnHoverSetting_(
-                    showVerticalTabsExpandOnHoverEnabled_,
-                    verticalTabsEnabledPref_.value)]]">
+              ?hidden="${!this.verticalTabsEnabledPref_?.value}">
+            ${this.showVerticalTabsExpandOnHoverSetting_() ? html`
               <settings-toggle-button
                   id="showVerticalTabsExpandOnHover"
                   pref-key="vertical_tabs.expand_on_hover"
                   label="$i18n{showVerticalTabsExpandOnHover}">
               </settings-toggle-button>
-            </template>
+            ` : ''}
 
-            <template is="dom-if" if="[[showProjectsPanelEnabled_]]">
+            ${this.showProjectsPanelEnabled_ ? html`
               <settings-toggle-button id="showProjectsPanelButton"
                 pref-key="projects_panel.pinned_to_tabstrip"
                 label="$i18n{showProjectsPanelButton}"
-                on-change="onShowProjectsPanelButtonChange_">
+                @change="${this.onShowProjectsPanelButtonChange_}">
               </settings-toggle-button>
-            </template>
+            ` : ''}
 
-            <template is="dom-if"
-              if="[[showEverythingMenuToggle_(
-                  showProjectsPanelEnabled_, showEverythingMenuEnabled_)]]">
+            ${this.showEverythingMenuToggle_() ? html`
               <settings-toggle-button id="showEverythingMenuButton"
                   pref-key="everything_menu.pinned_to_tabstrip"
                   label="$i18n{showEverythingMenuButton}"
-                  on-change="onShowEverythingMenuButtonChange_">
+                  @change="${this.onShowEverythingMenuButtonChange_}">
               </settings-toggle-button>
-            </template>
+            ` : ''}
           </div>
-        </template>
+        ` : ''}
 
         <settings-toggle-button id="showTabSearchButton" class="hr"
             pref-key="tab_search.pinned_to_tabstrip"
             label="$i18n{showTabSearchButton}"
-            on-change="onShowTabSearchButtonChange_">
+            @change="${this.onShowTabSearchButtonChange_}">
         </settings-toggle-button>
 
         <settings-toggle-button class="hr" id="showSavedTabGroups"
             pref-key="bookmark_bar.show_tab_groups"
             label="$i18n{showTabGroupsInBookmarksBar}"
-            hidden="[[showProjectsPanelEnabled_]]">
+            ?hidden="${this.showProjectsPanelEnabled_}">
         </settings-toggle-button>
 
         <settings-toggle-button class="hr" id="autoPinNewTabGroups"
             pref-key="auto_pin_new_tab_groups"
             label="$i18n{autoPinNewTabGroups}"
-            hidden="[[showProjectsPanelEnabled_]]">
+            ?hidden="${this.showProjectsPanelEnabled_}">
         </settings-toggle-button>
 
-        <template is="dom-if" if="[[showCtrlTabMru_]]">
+        ${this.showCtrlTabMru_ ? html`
           <settings-toggle-button class="hr" id="ctrlTabMru"
               pref-key="browser.ctrl_tab_mru"
               label="$i18n{ctrlTabMru}">
           </settings-toggle-button>
-        </template>
+        ` : ''}
 
         <div class="cr-row">$i18n{sidePanelPosition}</div>
         <div class="list-frame indented-rows">
-          <template is="dom-repeat" items="[[configurableSidePanels_]]">
+          ${this.configurableSidePanels_.map(item => html`
             <div class="cr-row continuation">
-              <div class="flex cr-padded-text" aria-hidden="true">
-                [[item.label]]
-              </div>
+              <div class="flex cr-padded-text" aria-hidden="true">${item.label}</div>
               <settings-dropdown-menu
-                  label="[[i18n('sidePanelAlignmentA11yLabel', item.label,
-                                '$i18n{sidePanelPosition}')]]"
-                  menu-options="[[sidePanelAlignmentOptions_]]"
-                  data-entry-id$="[[item.id]]"
+                  label="${this.i18n('sidePanelAlignmentA11yLabel', item.label,
+                      '$i18n{sidePanelPosition}')}"
+                  .menuOptions="${this.sidePanelAlignmentOptions_}"
+                  data-entry-id="${item.id}"
                   pref-key="side_panel.is_right_aligned"
                   no-set-pref
-                  value="[[getOverrideValue_(
-                    item.id, sidePanelAlignmentOverridesPref_.value,
-                    sidePanelIsRightAlignedPref_.value)]]"
-                  on-settings-control-change="onOverrideAlignmentChange_">
+                  value="${this.getOverrideValue_(item.id)}"
+                  @settings-control-change="${this.onOverrideAlignmentSettingsControlChange_}">
               </settings-dropdown-menu>
             </div>
-          </template>
+          `)}
 
           <div class="cr-row continuation">
             <div class="flex cr-padded-text" aria-hidden="true">
               $i18n{sidePanelAlignmentChromePanels}
             </div>
             <settings-dropdown-menu id="sidePanelPosition"
-                label="[[i18n('sidePanelAlignmentA11yLabel',
-                              '$i18n{sidePanelAlignmentChromePanels}',
-                              '$i18n{sidePanelPosition}')]]"
+                label="${this.i18n('sidePanelAlignmentA11yLabel',
+                    '$i18n{sidePanelAlignmentChromePanels}',
+                    '$i18n{sidePanelPosition}')}"
                 pref-key="side_panel.is_right_aligned"
-                menu-options="[[sidePanelAlignmentOptions_]]">
+                .menuOptions="${this.sidePanelAlignmentOptions_}">
             </settings-dropdown-menu>
           </div>
         </div>
-        <template is="dom-if" if="[[!showHoverCardImagesOption_]]">
-          <div class="hr" hidden="[[!pageVisibility.hoverCard]]"></div>
+        ${!this.showHoverCardImagesOption_ ? html`
+          <div class="hr" ?hidden="${!this.pageVisibility_.hoverCard}"></div>
           <settings-toggle-button id="hoverCardMemoryUsageToggle"
-              hidden="[[!pageVisibility.hoverCard]]"
+              ?hidden="${!this.pageVisibility_.hoverCard}"
               pref-key="browser.hovercard.memory_usage_enabled"
               label="$i18n{showHoverCardMemoryUsageStandalone}">
           </settings-toggle-button>
-        </template>
-        <template is="dom-if" if="[[showHoverCardImagesOption_]]">
-          <div class="cr-row" hidden="[[!pageVisibility.hoverCard]]">
+        ` : ''}
+        ${this.showHoverCardImagesOption_ ? html`
+          <div class="cr-row" ?hidden="${!this.pageVisibility_.hoverCard}">
             $i18n{hoverCardTitle}
           </div>
           <div class="list-frame indented-toggles">
             <settings-toggle-button id="hoverCardImagesToggle"
-                hidden="[[!pageVisibility.hoverCard]]"
-                on-settings-boolean-control-change="onHoverCardImagesToggleChange_"
+                ?hidden="${!this.pageVisibility_.hoverCard}"
+                @settings-boolean-control-change="${this.onHoverCardImagesSettingsBooleanControlChange_}"
                 pref-key="browser.hovercard.image_previews_enabled"
                 label="$i18n{showHoverCardImages}">
             </settings-toggle-button>
             <settings-toggle-button id="hoverCardMemoryUsageToggle" class="hr"
-                hidden="[[!pageVisibility.hoverCard]]"
-                on-settings-boolean-control-change="onHoverCardMemoryUsageToggleChange_"
+                ?hidden="${!this.pageVisibility_.hoverCard}"
+                @settings-boolean-control-change="${this.onHoverCardMemoryUsageSettingsBooleanControlChange_}"
                 pref-key="browser.hovercard.memory_usage_enabled"
                 label="$i18n{showHoverCardMemoryUsage}">
             </settings-toggle-button>
           </div>
-        </template>
+        ` : ''}
 
 <if expr="is_linux">
-        <div class="hr" hidden="[[!pageVisibility.bookmarksBar]]"></div>
+        <div class="hr" ?hidden="${!this.pageVisibility_.bookmarksBar}"></div>
         <settings-toggle-button
-            hidden="[[!showCustomChromeFrame_]]"
+            ?hidden="${!this.showCustomChromeFrame_}"
             pref-key="browser.custom_chrome_frame"
             label="$i18n{showWindowDecorations}"
             inverted>
@@ -337,25 +275,25 @@
           </div>
           <settings-dropdown-menu id="defaultFontSize" label="$i18n{fontSize}"
               pref-key="webkit.webprefs.default_font_size"
-              menu-options="[[fontSizeOptions_]]">
+              .menuOptions="${this.fontSizeOptions_}">
           </settings-dropdown-menu>
         </div>
         <cr-link-row class="hr" id="customize-fonts-subpage-trigger"
-            label="$i18n{customizeFonts}" on-click="onCustomizeFontsClick_"
+            label="$i18n{customizeFonts}" @click="${this.onCustomizeFontsClick_}"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
-        <div class="cr-row" hidden="[[!pageVisibility.pageZoom]]">
+        <div class="cr-row" ?hidden="${!this.pageVisibility_.pageZoom}">
           <div id="pageZoom" class="flex cr-padded-text" aria-hidden="true">
             $i18n{pageZoom}
           </div>
           <select id="zoomLevel" class="md-select" aria-labelledby="pageZoom"
-              on-change="onZoomLevelChange_">
-            <template is="dom-repeat" items="[[pageZoomLevels_]]">
-              <option value="[[item]]"
-                  selected="[[zoomValuesEqual_(item, defaultZoom_)]]">
-                [[formatZoom_(item)]]%
+              @change="${this.onZoomLevelChange_}">
+            ${this.pageZoomLevels_.map(item => html`
+              <option value="${item}"
+                  ?selected="${this.zoomValuesEqual_(item, this.defaultZoom_)}">
+                ${this.formatZoom_(item)}%
               </option>
-            </template>
+            `)}
           </select>
         </div>
 <if expr="is_macosx">
@@ -374,9 +312,9 @@
           label="$i18n{allowSplitViewDragAndDrop}">
       </settings-toggle-button>
     </settings-section>
-    <template is="dom-if" if="[[showManagedThemeDialog_]]" restamp>
-      <managed-dialog on-close="onManagedDialogClosed_"
+    ${this.showManagedThemeDialog_ ? html`
+      <managed-dialog @close="${this.onManagedDialogClose_}"
           title="$i18n{themeManagedDialogTitle}"
           body="$i18n{themeManagedDialogBody}">
       </managed-dialog>
-    </template>
+    ` : ''}

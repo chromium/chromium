@@ -444,6 +444,7 @@ build_webui("build") {
     # subfolder files
     "about_page/about_page.css",
     "appearance_page/appearance_fonts_page.css",
+    "appearance_page/appearance_page.css",
     "appearance_page/home_url_input.css",
     "autofill_page/passwords_shared.css",
     "autofill_page/screen_reader_only.css",

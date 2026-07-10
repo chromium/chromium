@@ -192,10 +192,10 @@ async function createAppearancePage() {
   appearancePage = document.createElement('settings-appearance-page');
 
   document.body.appendChild(appearancePage);
+  return microtasksFinished();
 }
 
 suite('AppearancePage', function() {
-
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
@@ -225,14 +225,14 @@ suite('AppearancePage', function() {
         prefService.getPref<number>(SYSTEM_THEME_PREF).value,
         SystemTheme.DEFAULT);
     // No custom nor system theme in use; "USE CLASSIC" should be hidden.
-    assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
+    assertFalse(!!appearancePage.shadowRoot.querySelector('#useDefault'));
     // The color scheme toggle should be visible when the classic theme is used.
     assertTrue(isVisible(appearancePage.$.colorSchemeModeRow));
 
     await prefService.setPrefValue(SYSTEM_THEME_PREF, SystemTheme.GTK);
     await microtasksFinished();
     // If the system theme is in use, "USE CLASSIC" should show.
-    assertTrue(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
+    assertTrue(!!appearancePage.shadowRoot.querySelector('#useDefault'));
     // The color scheme toggle should be hidden when the GTK theme is used.
     assertFalse(isVisible(appearancePage.$.colorSchemeModeRow));
 
@@ -242,7 +242,7 @@ suite('AppearancePage', function() {
 
     // With a custom theme installed, "USE CLASSIC" should show.
     const button =
-        appearancePage.shadowRoot!.querySelector<HTMLElement>('#useDefault');
+        appearancePage.shadowRoot.querySelector<HTMLElement>('#useDefault');
     assertTrue(!!button);
 
     button.click();
@@ -256,7 +256,7 @@ suite('AppearancePage', function() {
     await prefService.setPrefValue(SYSTEM_THEME_PREF, SystemTheme.GTK);
     await microtasksFinished();
     // The "USE GTK+" button shouldn't be showing if it's already in use.
-    assertFalse(!!appearancePage.shadowRoot!.querySelector('#useGtk'));
+    assertFalse(!!appearancePage.shadowRoot.querySelector('#useGtk'));
     // The color scheme toggle should be hidden when the GTK theme is used.
     assertFalse(isVisible(appearancePage.$.colorSchemeModeRow));
 
@@ -264,11 +264,11 @@ suite('AppearancePage', function() {
     await prefService.setPrefValue(SYSTEM_THEME_PREF, SystemTheme.DEFAULT);
     await microtasksFinished();
     // Child account users have their own theme and can't use GTK+ theme.
-    assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
-    assertFalse(!!appearancePage.shadowRoot!.querySelector('#useGtk'));
+    assertFalse(!!appearancePage.shadowRoot.querySelector('#useDefault'));
+    assertFalse(!!appearancePage.shadowRoot.querySelector('#useGtk'));
     // If there's no "USE" buttons, the container should be hidden.
     assertTrue(
-        appearancePage.shadowRoot!
+        appearancePage.shadowRoot
             .querySelector<HTMLElement>('#themesSecondaryActions')!.hidden);
     // The color scheme toggle should be visible when the classic theme is used,
     // for child accounts.
@@ -278,15 +278,15 @@ suite('AppearancePage', function() {
     await prefService.setPrefValue(THEME_ID_PREF, 'fake theme id');
     await microtasksFinished();
     // If there's "USE" buttons again, the container should be visible.
-    assertTrue(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
+    assertTrue(!!appearancePage.shadowRoot.querySelector('#useDefault'));
     assertFalse(
-        appearancePage.shadowRoot!
+        appearancePage.shadowRoot
             .querySelector<HTMLElement>('#themesSecondaryActions')!.hidden);
     // The color scheme toggle should be visible when a custom theme is used.
     assertTrue(isVisible(appearancePage.$.colorSchemeModeRow));
 
     const button =
-        appearancePage.shadowRoot!.querySelector<HTMLElement>('#useGtk');
+        appearancePage.shadowRoot.querySelector<HTMLElement>('#useGtk');
     assertTrue(!!button);
 
     button.click();
@@ -297,14 +297,14 @@ suite('AppearancePage', function() {
   // <if expr="not is_linux">
   test('useDefaultTheme', async function() {
     assertFalse(!!prefService.getPref<string>(THEME_ID_PREF).value);
-    assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
+    assertFalse(!!appearancePage.shadowRoot.querySelector('#useDefault'));
 
     await prefService.setPrefValue(THEME_ID_PREF, 'fake theme id');
     await microtasksFinished();
 
     // With a custom theme installed, "RESET TO DEFAULT" should show.
     const button =
-        appearancePage.shadowRoot!.querySelector<HTMLElement>('#useDefault');
+        appearancePage.shadowRoot.querySelector<HTMLElement>('#useDefault');
     assertTrue(!!button);
 
     button.click();
@@ -315,7 +315,7 @@ suite('AppearancePage', function() {
     const settingsPrivate =
         (PrefsBrowserProxy.getInstance() as TestPrefsBrowserProxy).fakeApi;
     const POLICY_THEME_COLOR_PREF = 'autogenerated.theme.policy.color';
-    assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
+    assertFalse(!!appearancePage.shadowRoot.querySelector('#useDefault'));
 
     // "Reset to default" button doesn't appear as result of a policy theme.
     settingsPrivate.sendPrefChanges([{
@@ -325,7 +325,7 @@ suite('AppearancePage', function() {
     }]);
     await microtasksFinished();
 
-    assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
+    assertFalse(!!appearancePage.shadowRoot.querySelector('#useDefault'));
 
     // Unset policy theme and set custom theme to get button to show.
     settingsPrivate.sendPrefChanges([{
@@ -337,7 +337,7 @@ suite('AppearancePage', function() {
     await microtasksFinished();
 
     let button =
-        appearancePage.shadowRoot!.querySelector<HTMLElement>('#useDefault');
+        appearancePage.shadowRoot.querySelector<HTMLElement>('#useDefault');
     assertTrue(!!button);
 
     // Clicking "Reset to default" button when a policy theme is applied
@@ -350,32 +350,30 @@ suite('AppearancePage', function() {
     await microtasksFinished();
 
     button =
-        appearancePage.shadowRoot!.querySelector<HTMLElement>('#useDefault');
+        appearancePage.shadowRoot.querySelector<HTMLElement>('#useDefault');
     assertTrue(!!button);
     assertEquals(
-        null, appearancePage.shadowRoot!.querySelector('managed-dialog'));
+        null, appearancePage.shadowRoot.querySelector('managed-dialog'));
 
     button.click();
     await microtasksFinished();
 
     assertFalse(
-        appearancePage.shadowRoot!.querySelector('managed-dialog')!.hidden);
+        appearancePage.shadowRoot.querySelector('managed-dialog')!.hidden);
   });
   // </if>
 
-  test('openCustomizeChrome', async function() {
-    await createAppearancePage();
+  test('openCustomizeChrome', function() {
     const button =
-        appearancePage.shadowRoot!.querySelector<HTMLElement>('#openTheme');
+        appearancePage.shadowRoot.querySelector<HTMLElement>('#openTheme');
     assertTrue(!!button);
 
     button.click();
     return appearanceBrowserProxy.whenCalled('openCustomizeChrome');
   });
 
-  test('openCustomizeChromeToolbarSection', async function() {
-    await createAppearancePage();
-    const button = appearancePage.shadowRoot!.querySelector<HTMLElement>(
+  test('openCustomizeChromeToolbarSection', function() {
+    const button = appearancePage.shadowRoot.querySelector<HTMLElement>(
         '#customizeToolbar');
     assertTrue(!!button);
 
@@ -387,9 +385,8 @@ suite('AppearancePage', function() {
   test('resetPinnedToolbarActions', async function() {
     appearanceBrowserProxy.setPinnedToolbarActionsAreDefaultResponse(false);
     await createAppearancePage();
-    await microtasksFinished();
 
-    const button = appearancePage.shadowRoot!.querySelector<HTMLElement>(
+    const button = appearancePage.shadowRoot.querySelector<HTMLElement>(
         '#resetPinnedToolbarActions');
     assertTrue(!!button);
 
@@ -400,9 +397,8 @@ suite('AppearancePage', function() {
   test('resetHiddenWhenNoPinnedActions', async function() {
     appearanceBrowserProxy.setPinnedToolbarActionsAreDefaultResponse(true);
     await createAppearancePage();
-    await microtasksFinished();
 
-    const button = appearancePage.shadowRoot!.querySelector<HTMLElement>(
+    const button = appearancePage.shadowRoot.querySelector<HTMLElement>(
         '#resetPinnedToolbarActions');
     assertFalse(!!button);
   });
@@ -410,10 +406,9 @@ suite('AppearancePage', function() {
   test('resetVisibleWhenSplitTabPrefChanges', async function() {
     appearanceBrowserProxy.setPinnedToolbarActionsAreDefaultResponse(true);
     await createAppearancePage();
-    await microtasksFinished();
 
     // Initially hidden.
-    assertFalse(!!appearancePage.shadowRoot!.querySelector(
+    assertFalse(!!appearancePage.shadowRoot.querySelector(
         '#resetPinnedToolbarActions'));
 
     // Mock that actions are no longer default.
@@ -427,17 +422,16 @@ suite('AppearancePage', function() {
     await microtasksFinished();
 
     // Now visible.
-    assertTrue(!!appearancePage.shadowRoot!.querySelector(
+    assertTrue(!!appearancePage.shadowRoot.querySelector(
         '#resetPinnedToolbarActions'));
   });
 
   test('resetVisibleWhenContextualTaskPrefChanges', async function() {
     appearanceBrowserProxy.setPinnedToolbarActionsAreDefaultResponse(true);
     await createAppearancePage();
-    await microtasksFinished();
 
     // Initially hidden.
-    assertFalse(!!appearancePage.shadowRoot!.querySelector(
+    assertFalse(!!appearancePage.shadowRoot.querySelector(
         '#resetPinnedToolbarActions'));
 
     // Mock that actions are no longer default.
@@ -451,7 +445,7 @@ suite('AppearancePage', function() {
     await microtasksFinished();
 
     // Now visible.
-    assertTrue(!!appearancePage.shadowRoot!.querySelector(
+    assertTrue(!!appearancePage.shadowRoot.querySelector(
         '#resetPinnedToolbarActions'));
   });
 
@@ -509,14 +503,14 @@ suite('AppearancePage', function() {
 
   test('show home button toggling', async function() {
     assertFalse(
-        !!appearancePage.shadowRoot!.querySelector('#home-button-options'));
-    assertFalse(!!appearancePage.shadowRoot!.querySelector('#customHomePage'));
+        !!appearancePage.shadowRoot.querySelector('#home-button-options'));
+    assertFalse(!!appearancePage.shadowRoot.querySelector('#customHomePage'));
     await prefService.setPrefValue('browser.show_home_button', true);
     await microtasksFinished();
 
     assertTrue(
-        !!appearancePage.shadowRoot!.querySelector('#home-button-options'));
-    assertTrue(!!appearancePage.shadowRoot!.querySelector('#customHomePage'));
+        !!appearancePage.shadowRoot.querySelector('#home-button-options'));
+    assertTrue(!!appearancePage.shadowRoot.querySelector('#customHomePage'));
   });
 
   test('homepage_is_newtabpage radio group toggling', async function() {
@@ -524,7 +518,7 @@ suite('AppearancePage', function() {
     await microtasksFinished();
 
     const radioGroup =
-        appearancePage.shadowRoot!.querySelector('settings-radio-group');
+        appearancePage.shadowRoot.querySelector('settings-radio-group');
     assertTrue(!!radioGroup);
     assertEquals('homepage_is_newtabpage', radioGroup.prefKey);
 
@@ -543,8 +537,7 @@ suite('AppearancePage', function() {
 
   test('show side panel options', async function() {
     await createAppearancePage();
-    assertTrue(
-        !!appearancePage.shadowRoot!.querySelector('#sidePanelPosition'));
+    assertTrue(!!appearancePage.shadowRoot.querySelector('#sidePanelPosition'));
   });
 
 
@@ -554,10 +547,9 @@ suite('AppearancePage', function() {
       showSplitViewDragAndDropSetting: true,
     });
     await createAppearancePage();
-    await microtasksFinished();
     assertTrue(
-        !!appearancePage.shadowRoot!.querySelector('#splitViewDragAndDrop'));
-    assertFalse(appearancePage.shadowRoot!
+        !!appearancePage.shadowRoot.querySelector('#splitViewDragAndDrop'));
+    assertFalse(appearancePage.shadowRoot
                     .querySelector<SettingsToggleButtonElement>(
                         '#splitViewDragAndDrop')!.hidden);
   });
@@ -572,7 +564,7 @@ suite('AppearancePage', function() {
     await microtasksFinished();
 
     const toggle =
-        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        appearancePage.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#splitViewDragAndDrop');
     assertTrue(!!toggle);
     assertTrue(toggle.checked);
@@ -589,16 +581,15 @@ suite('AppearancePage', function() {
       showProjectsPanelEnabled: true,
     });
     await createAppearancePage();
-    await microtasksFinished();
 
     const toggle =
-        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        appearancePage.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#showSavedTabGroups');
     assertTrue(!!toggle);
     assertTrue(toggle.hidden);
 
     const autoPinToggle =
-        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        appearancePage.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#autoPinNewTabGroups');
     assertTrue(!!autoPinToggle);
     assertTrue(autoPinToggle.hidden);
@@ -606,10 +597,9 @@ suite('AppearancePage', function() {
 
   test('bookmarks bar toggle visibility', async function() {
     await createAppearancePage();
-    await microtasksFinished();
 
-    assertTrue(!!appearancePage.shadowRoot!.querySelector('#showBookmarksBar'));
-    assertFalse(!!appearancePage.shadowRoot!.querySelector(
+    assertTrue(!!appearancePage.shadowRoot.querySelector('#showBookmarksBar'));
+    assertFalse(!!appearancePage.shadowRoot.querySelector(
         '#bookmarksBarVisibilityDropdown'));
   });
 
@@ -619,15 +609,14 @@ suite('AppearancePage', function() {
           ntpSimplificationBookmarksBarEnabled: true,
         });
         await createAppearancePage();
-        await microtasksFinished();
 
         assertFalse(
-            !!appearancePage.shadowRoot!.querySelector('#showBookmarksBar'));
+            !!appearancePage.shadowRoot.querySelector('#showBookmarksBar'));
 
         assertEquals(
             0, prefService.getPref('bookmark_bar.visibility_state').value);
 
-        const dropdown = appearancePage.shadowRoot!
+        const dropdown = appearancePage.shadowRoot
                              .querySelector<SettingsDropdownMenuElement>(
                                  '#bookmarksBarVisibilityDropdown');
         assertTrue(!!dropdown);
@@ -676,10 +665,11 @@ suite('AppearancePage', function() {
 });
 
 suite('TabStripPositionSettings', () => {
-
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
-  setup(async () => {
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     loadTimeData.overrideValues({
       showVerticalTabsEnabled: true,
     });
@@ -690,20 +680,14 @@ suite('TabStripPositionSettings', () => {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
-    await createAppearancePage();
-
-    await microtasksFinished();
-  });
-
-  teardown(function() {
-    appearancePage.remove();
+    return createAppearancePage();
   });
 
   test('Dropdown menu updates vertical_tabs.enabled.value', async function() {
     assertFalse(prefService.getPref<boolean>('vertical_tabs.enabled').value);
 
     const dropdown =
-        appearancePage.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+        appearancePage.shadowRoot.querySelector<SettingsDropdownMenuElement>(
             '#tabStripPosition');
     assertTrue(!!dropdown);
 
@@ -731,7 +715,7 @@ suite('TabStripPositionSettings', () => {
     assertFalse(prefService.getPref<boolean>('vertical_tabs.enabled').value);
 
     const dropdown =
-        appearancePage.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+        appearancePage.shadowRoot.querySelector<SettingsDropdownMenuElement>(
             '#tabStripPosition');
     assertTrue(!!dropdown);
 
@@ -756,8 +740,9 @@ suite('TabStripPositionSettings', () => {
 });
 
 suite('VerticalTabsExpandOnHoverSettings', () => {
-
   setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     loadTimeData.overrideValues({
       showVerticalTabsEnabled: true,
       showVerticalTabsExpandOnHoverEnabled: true,
@@ -771,17 +756,13 @@ suite('VerticalTabsExpandOnHoverSettings', () => {
     await microtasksFinished();
   });
 
-  teardown(function() {
-    appearancePage.remove();
-  });
-
   test('Toggle updates vertical_tabs.expand_on_hover pref', async function() {
     assertTrue(prefService.getPref<boolean>('vertical_tabs.enabled').value);
     assertFalse(
         prefService.getPref<boolean>('vertical_tabs.expand_on_hover').value);
 
     const toggle =
-        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        appearancePage.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#showVerticalTabsExpandOnHover');
     assertTrue(!!toggle);
     assertFalse(toggle.checked);
@@ -810,7 +791,7 @@ suite('VerticalTabsExpandOnHoverSettings', () => {
     await prefService.setPrefValue('vertical_tabs.enabled', true);
     await microtasksFinished();
 
-    const toggle = appearancePage.shadowRoot!.querySelector(
+    const toggle = appearancePage.shadowRoot.querySelector(
         '#showVerticalTabsExpandOnHover');
     assertTrue(!toggle);
   });
@@ -821,7 +802,7 @@ suite('VerticalTabsExpandOnHoverSettings', () => {
         await prefService.setPrefValue('vertical_tabs.enabled', false);
         await microtasksFinished();
 
-        const toggle = appearancePage.shadowRoot!.querySelector(
+        const toggle = appearancePage.shadowRoot.querySelector(
             '#showVerticalTabsExpandOnHover');
 
         assertTrue(!toggle);
@@ -829,10 +810,11 @@ suite('VerticalTabsExpandOnHoverSettings', () => {
 });
 
 suite('TabStripComboButtonSettings', () => {
-
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
-  setup(async () => {
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     loadTimeData.overrideValues({
       showProjectsPanelEnabled: true,
     });
@@ -843,13 +825,7 @@ suite('TabStripComboButtonSettings', () => {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
-    await createAppearancePage();
-
-    await microtasksFinished();
-  });
-
-  teardown(function() {
-    appearancePage.remove();
+    return createAppearancePage();
   });
 
   test('Toggles update correct prefs', async function() {
@@ -859,13 +835,13 @@ suite('TabStripComboButtonSettings', () => {
                    .value);
 
     const tabSearchToggle =
-        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        appearancePage.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#showTabSearchButton');
     assertTrue(!!tabSearchToggle);
     assertTrue(tabSearchToggle.checked);
 
     const projectsToggle =
-        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        appearancePage.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#showProjectsPanelButton');
     assertTrue(!!projectsToggle);
     assertTrue(projectsToggle.checked);
@@ -884,7 +860,7 @@ suite('TabStripComboButtonSettings', () => {
 
   test('Toggles record metrics', async function() {
     const tabSearchToggle =
-        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        appearancePage.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#showTabSearchButton');
     assertTrue(!!tabSearchToggle);
     tabSearchToggle.click();
@@ -897,7 +873,7 @@ suite('TabStripComboButtonSettings', () => {
     assertEquals('TabStripComboButton.TabSearch.Pinned', action);
 
     const projectsToggle =
-        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        appearancePage.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#showProjectsPanelButton');
     assertTrue(!!projectsToggle);
     metricsBrowserProxy.resetResolver('recordAction');
@@ -912,14 +888,13 @@ suite('TabStripComboButtonSettings', () => {
       showEverythingMenuEnabled: true,
     });
     await createAppearancePage();
-    await microtasksFinished();
 
     assertTrue(
         prefService.getPref<boolean>('everything_menu.pinned_to_tabstrip')
             .value);
 
     const everythingToggle =
-        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        appearancePage.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#showEverythingMenuButton');
     assertTrue(!!everythingToggle);
     assertTrue(everythingToggle.checked);
@@ -937,10 +912,9 @@ suite('TabStripComboButtonSettings', () => {
       showEverythingMenuEnabled: true,
     });
     await createAppearancePage();
-    await microtasksFinished();
 
     const everythingToggle =
-        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        appearancePage.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#showEverythingMenuButton');
     assertTrue(!!everythingToggle);
 
@@ -960,11 +934,10 @@ suite('TabStripComboButtonSettings', () => {
       showEverythingMenuEnabled: false,
     });
     await createAppearancePage();
-    await microtasksFinished();
 
     assertFalse(
-        !!appearancePage.shadowRoot!.querySelector('#showProjectsPanelButton'));
-    assertFalse(!!appearancePage.shadowRoot!.querySelector(
-        '#showEverythingMenuButton'));
+        !!appearancePage.shadowRoot.querySelector('#showProjectsPanelButton'));
+    assertFalse(
+        !!appearancePage.shadowRoot.querySelector('#showEverythingMenuButton'));
   });
 });
