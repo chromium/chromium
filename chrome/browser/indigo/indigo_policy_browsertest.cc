@@ -97,6 +97,7 @@ IN_PROC_BROWSER_TEST_F(IndigoPolicyTest, PolicyEnabledWithModelImprovement) {
   ASSERT_NE(service, nullptr);
   EXPECT_NE(service->GetLocalEligibility(),
             LocalEligibility::kDisabledByPolicy);
+  EXPECT_TRUE(service->IsModelImprovementAllowed());
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoPolicyTest, PolicyEnabledWithoutModelImprovement) {
@@ -105,10 +106,9 @@ IN_PROC_BROWSER_TEST_F(IndigoPolicyTest, PolicyEnabledWithoutModelImprovement) {
 
   IndigoService* service = IndigoServiceFactory::GetForProfile(profile());
   ASSERT_NE(service, nullptr);
-  // TODO(b:512247450): Change to EXPECT_NE once alternative disclaimer string
-  // is ready.
-  EXPECT_EQ(service->GetLocalEligibility(),
+  EXPECT_NE(service->GetLocalEligibility(),
             LocalEligibility::kDisabledByPolicy);
+  EXPECT_FALSE(service->IsModelImprovementAllowed());
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoPolicyTest, PolicyDisabled) {
@@ -136,6 +136,7 @@ IN_PROC_BROWSER_TEST_F(IndigoPolicyTest, PolicyDefaultSettingsAllowed) {
   ASSERT_NE(service, nullptr);
   EXPECT_NE(service->GetLocalEligibility(),
             LocalEligibility::kDisabledByPolicy);
+  EXPECT_TRUE(service->IsModelImprovementAllowed());
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoPolicyTest,
@@ -145,10 +146,9 @@ IN_PROC_BROWSER_TEST_F(IndigoPolicyTest,
 
   IndigoService* service = IndigoServiceFactory::GetForProfile(profile());
   ASSERT_NE(service, nullptr);
-  // TODO(b:512247450): Change to EXPECT_NE once alternative disclaimer string
-  // is ready.
-  EXPECT_EQ(service->GetLocalEligibility(),
+  EXPECT_NE(service->GetLocalEligibility(),
             LocalEligibility::kDisabledByPolicy);
+  EXPECT_FALSE(service->IsModelImprovementAllowed());
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoPolicyTest,

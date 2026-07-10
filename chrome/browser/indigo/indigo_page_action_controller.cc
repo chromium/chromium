@@ -393,7 +393,7 @@ void IndigoPageActionController::TriggerIndigoAgentWithDelay() {
 void IndigoPageActionController::ShowOnboardingDialog(
     OnboardingDisposition disposition,
     bool skip_glic_invoke) {
-  if (onboarding_dialog_) {
+  if (!indigo_service_ || onboarding_dialog_) {
     return;
   }
 
@@ -405,6 +405,12 @@ void IndigoPageActionController::ShowOnboardingDialog(
   }
 
   GURL url(onboarding_url);
+
+  const bool model_improvement_allowed =
+      indigo_service_->IsModelImprovementAllowed();
+  url = net::AppendQueryParameter(
+      url, "toyut", model_improvement_allowed ? "chrome-mi" : "chrome-nomi");
+
   if (disposition == OnboardingDisposition::kReplacePhoto) {
     url = net::AppendQueryParameter(url, "toyri", "1");
     base::RecordAction(base::UserMetricsAction("Indigo.ReplaceImage.Trigger"));

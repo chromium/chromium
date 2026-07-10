@@ -184,6 +184,20 @@ TEST_F(IndigoServiceTest, SignIn) {
   EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
 }
 
+TEST_F(IndigoServiceTest, IsModelImprovementAllowed) {
+  CreateService();
+  EXPECT_TRUE(service_->IsModelImprovementAllowed());
+
+  SetPolicySettings(prefs::Policy::kAllowedWithoutModelImprovement);
+  EXPECT_FALSE(service_->IsModelImprovementAllowed());
+
+  SetPolicySettings(prefs::Policy::kDisallowed);
+  EXPECT_FALSE(service_->IsModelImprovementAllowed());
+
+  SetPolicySettings(prefs::Policy::kAllowed);
+  EXPECT_TRUE(service_->IsModelImprovementAllowed());
+}
+
 TEST_F(IndigoServiceTest, CapabilitiesDisable) {
   CreateService();
 

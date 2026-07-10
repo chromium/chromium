@@ -101,6 +101,8 @@ class IndigoService : public KeyedService,
     return eligibility == LocalEligibility::kEligible ||
            eligibility == LocalEligibility::kRefreshTokenInPersistentErrorState;
   }
+  bool IsModelImprovementAllowed() const;
+
   base::CallbackListSubscription RegisterLocalEligibilityChangedCallback(
       LocalEligibilityChangedCallback callback);
 
