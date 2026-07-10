@@ -70,6 +70,7 @@ class D3D12VideoEncodeH265DelegateTest
           }
           picture_control->PictureSupport.pHEVCSupport->MaxLongTermReferences =
               1;
+          picture_control->PictureSupport.pHEVCSupport->MaxL0ReferencesForP = 3;
           picture_control->PictureSupport.pHEVCSupport->MaxDPBCapacity = 16;
           return S_OK;
         });

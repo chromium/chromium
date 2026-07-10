@@ -657,6 +657,12 @@ EncoderStatus D3D12VideoEncodeH264Delegate::InitializeVideoEncoder(
     max_num_ref_frames_ = std::min<uint32_t>(
         picture_control_support_h264.MaxDPBCapacity,
         picture_control_support_h264.MaxLongTermReferences + 1);
+    // We never see driver with MaxL0ReferenceForP < MaxLongTermReferences,
+    // but bound to it in case it happens. Manual reference buffer is with
+    // budget (max_num_ref_frames_ -1).
+    max_num_ref_frames_ = std::min<uint32_t>(
+        max_num_ref_frames_,
+        picture_control_support_h264.MaxL0ReferencesForP + 1);
   }
 
   if ((config.bitrate.mode() == Bitrate::Mode::kConstant ||

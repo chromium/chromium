@@ -513,7 +513,9 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
                   max_num_ref_frames_)};
     }
   } else {
-    max_num_ref_frames_ = picture_control_support_h265.MaxDPBCapacity;
+    max_num_ref_frames_ =
+        std::min<uint32_t>(picture_control_support_h265.MaxDPBCapacity,
+                           picture_control_support_h265.MaxL0ReferencesForP);
   }
 
   if ((config.bitrate.mode() == Bitrate::Mode::kConstant ||

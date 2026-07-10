@@ -73,6 +73,7 @@ class D3D12VideoEncodeH264DelegateTest
           }
           picture_control->PictureSupport.pH264Support->MaxLongTermReferences =
               15;
+          picture_control->PictureSupport.pH264Support->MaxL0ReferencesForP = 3;
           picture_control->PictureSupport.pH264Support->MaxDPBCapacity = 16;
           return S_OK;
         });
