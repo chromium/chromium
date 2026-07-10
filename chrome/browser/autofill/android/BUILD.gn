@@ -80,6 +80,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/editors/common/text_field/TextFieldView.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/text_field/TextFieldViewBinder.java",
     "java/src/org/chromium/chrome/browser/autofill/helpers/FaviconHelper.java",
+    "java/src/org/chromium/chrome/browser/autofill/settings/AutofillHelpMenuProvider.java",
     "java/src/org/chromium/chrome/browser/autofill/settings/options/AutofillAiPreference.java",
     "java/src/org/chromium/chrome/browser/autofill/settings/options/AutofillOptionsCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill/settings/options/AutofillOptionsFragment.java",

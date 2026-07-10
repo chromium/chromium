@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import androidx.core.view.MenuProvider;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 
