@@ -197,8 +197,8 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeML {
   DISABLE_CFI_DLSYM
   bool GetTokenizerParams(ChromeMLModel model,
                           ChromeMLSession session,
-                          const ChromeMLGetTokenizerParamsFn& fn) const {
-    return api_->GetTokenizerParamsV2(model, session, fn);
+                          const ChromeMLGetTokenizerParamsV3Fn& fn) const {
+    return api_->GetTokenizerParamsV3(model, session, fn);
   }
 
   bool HasCreateGpuDelegate() const {

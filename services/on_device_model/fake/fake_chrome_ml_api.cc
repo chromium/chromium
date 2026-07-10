@@ -436,6 +436,8 @@ void SetConstraintFns(const ChromeMLConstraintFns* fns) {
   g_constraint_fns = *fns;
 }
 
+// TODO(crbug.com/500473306): Remove this once we switch over to
+// GetTokenizerParamsV3.
 bool GetTokenizerParams(ChromeMLModel model,
                         ChromeMLSession session,
                         const ChromeMLGetTokenizerParamsFn& fn,
@@ -460,10 +462,35 @@ bool GetTokenizerParams(ChromeMLModel model,
   return true;
 }
 
+// TODO(crbug.com/500473306): Remove this once we switch over to
+// GetTokenizerParamsV3. This was a temporary transition function to test out an
+// optimization, but is now abandoned since the optimization is unlikely to have
+// much of an impact.
 bool GetTokenizerParamsV2(ChromeMLModel model,
                           ChromeMLSession session,
                           const ChromeMLGetTokenizerParamsFn& fn) {
   return GetTokenizerParams(session, model, fn, /*use_optimization=*/true);
+}
+
+// TODO(crbug.com/500473306): Rename this to `GetTokenizerParams` once the other
+// versions of this function have been removed.
+bool GetTokenizerParamsV3(ChromeMLModel model,
+                          ChromeMLSession session,
+                          const ChromeMLGetTokenizerParamsV3Fn& fn) {
+  return GetTokenizerParamsV2(
+      model, session, [fn](const ChromeMLTokenizerParams& params) {
+        ChromeMLTokenizerParamsV3 paramsV3{
+            // TODO(crbug.com/531814326): Support multiple tokens.
+            .vocab_size = params.vocab_size,
+            .eos_token_ids_size = 1u,
+            .eos_token_ids = &params.eos_token_id,
+            .token_lens = params.token_lens,
+            .token_bytes = params.token_bytes,
+            .tokenize_fn = params.tokenize_fn,
+            .tokenize_user_data = params.tokenize_user_data,
+        };
+        fn(paramsV3);
+      });
 }
 
 TfLiteDelegate* CreateGpuDelegate() {
@@ -513,6 +540,7 @@ const ChromeMLAPI g_api = {
     .SetConstraintFns = &SetConstraintFns,
     .GetTokenizerParams = &GetTokenizerParams,
     .GetTokenizerParamsV2 = &GetTokenizerParamsV2,
+    .GetTokenizerParamsV3 = &GetTokenizerParamsV3,
     .CreateGpuDelegate = &CreateGpuDelegate,
     .CreateGpuDelegateWithPrecision = &CreateGpuDelegateWithPrecision,
     .DestroyGpuDelegate = &DestroyGpuDelegate,
