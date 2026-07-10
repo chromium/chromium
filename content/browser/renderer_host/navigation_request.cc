@@ -66,6 +66,7 @@
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/loader/cached_navigation_url_loader.h"
 #include "content/browser/loader/navigation_early_hints_manager.h"
+#include "content/browser/loader/navigation_fast_fetch_manager.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/loader/object_navigation_fallback_body_loader.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
@@ -3048,6 +3049,10 @@ void NavigationRequest::BeginNavigationImpl() {
   }
 #endif
 
+  if (base::FeatureList::IsEnabled(features::kNavigationFastFetchDryRun)) {
+    fast_fetch_manager_ = NavigationFastFetchManager::Create(*this);
+  }
+
   // Check Content Security Policy before the NavigationThrottles run. This
   // gives CSP a chance to modify requests that NavigationThrottles would
   // otherwise block. Similarly, the NavigationHandle is created afterwards, so
@@ -3600,6 +3605,10 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
 
   // Reset the state of the NavigationRequest, and the navigation_handle_id.
   StopCommitTimeout();
+  if (fast_fetch_manager_) {
+    fast_fetch_manager_->SuppressEligibilityReasonRecording();
+    fast_fetch_manager_.reset();
+  }
   SetState(NOT_STARTED);
   is_navigation_started_ = false;
   processing_navigation_throttle_ = false;
@@ -5613,6 +5622,14 @@ void NavigationRequest::OnRequestFailedInternal(
           error_page_content.has_value()));
   ScopedCrashKeys crash_keys(*this);
 
+  if (fast_fetch_manager_) {
+    // TODO(crbug.com/529425553): Some failed navigations don't call
+    // OnRequestFailedInternal(), e.g. this request gets deleted directly
+    // (OnNavigationClientDisconnected, new NavigationRequest takes over etc).
+    // Consider whether those cases also need to be covered.
+    fast_fetch_manager_->OnRequestFailed(*this, status, skip_throttles);
+  }
+
   if (!response() && IsInPrimaryMainFrame() && status.error_code != net::OK) {
     DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
         this, GetStoragePartitionWithCurrentSiteInfo(), status.error_code);
@@ -6915,6 +6932,11 @@ bool NavigationRequest::ShouldDispatchPageSwapEvent() const {
 void NavigationRequest::CommitNavigation() {
   TRACE_EVENT("navigation", "NavigationRequest::CommitNavigation",
               perfetto::Flow::FromPointer(this));
+
+  if (fast_fetch_manager_) {
+    fast_fetch_manager_->OnCommitNavigation(*this);
+  }
+
   // A navigation request should only commit once the response has been
   // processed.
   CHECK_GE(state_, WILL_PROCESS_RESPONSE);
@@ -13046,6 +13068,15 @@ bool NavigationRequest::IsInitialWebUINavigation() {
 
 perfetto::NamedTrack NavigationRequest::GetNavigationTracingTrack() const {
   return navigation_trace_track_;
+}
+
+bool NavigationRequest::HasPrefetchedSignedExchange() const {
+  CHECK(base::FeatureList::IsEnabled(features::kNavigationFastFetchDryRun));
+  if (!prefetched_signed_exchange_cache_) {
+    return false;
+  }
+  const auto& exchanges = prefetched_signed_exchange_cache_->GetExchanges();
+  return exchanges.find(common_params().url) != exchanges.end();
 }
 
 }  // namespace content

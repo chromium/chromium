@@ -38,6 +38,8 @@
 
 namespace content {
 
+class PrefetchedSignedExchangeCache;
+
 class TestRenderFrameHostCreationObserver : public WebContentsObserver {
  public:
   explicit TestRenderFrameHostCreationObserver(WebContents* web_contents);
@@ -238,6 +240,14 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   navigation_requests() {
     return navigation_requests_;
   }
+
+  void SimulateOnSameDocumentCommitProcessed(
+      const base::UnguessableToken& navigation_token,
+      bool should_replace_current_entry,
+      blink::mojom::CommitResult result);
+
+  void SetPrefetchedSignedExchangeCacheForTesting(
+      scoped_refptr<PrefetchedSignedExchangeCache> cache);
 
   enum class LoadingScenario {
     NewDocumentNavigation,

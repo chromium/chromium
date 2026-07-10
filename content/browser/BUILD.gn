@@ -1363,6 +1363,8 @@ source_set("browser") {
     "loader/merkle_integrity_source_stream.h",
     "loader/navigation_early_hints_manager.cc",
     "loader/navigation_early_hints_manager.h",
+    "loader/navigation_fast_fetch_manager.cc",
+    "loader/navigation_fast_fetch_manager.h",
     "loader/navigation_loader_interceptor.cc",
     "loader/navigation_loader_interceptor.h",
     "loader/navigation_url_loader.cc",

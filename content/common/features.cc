@@ -562,6 +562,12 @@ BASE_FEATURE_PARAM(size_t,
                    "count",
                    1u);
 
+// When enabled, performs a dry run of the Navigation Fast Fetch feature.
+// It determines eligibility of navigations and records metrics to measure
+// the potential benefit of fetching document resources early, without
+// actually performing the fetching.
+BASE_FEATURE(kNavigationFastFetchDryRun, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, NavigationThrottleRunner2 is used instead of the original
 // NavigationThrottleRunner. See https://crbug.com/422003056.
 BASE_FEATURE(kNavigationThrottleRunner2, base::FEATURE_DISABLED_BY_DEFAULT);

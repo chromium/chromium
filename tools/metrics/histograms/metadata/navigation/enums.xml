@@ -265,6 +265,35 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/public/browser/error_navigation_trigger.h:ErrorNavigationTrigger) -->
 
+<!-- LINT.IfChange(FastFetchEligibilityReason) -->
+
+<enum name="FastFetchEligibilityReason">
+  <int value="0" label="Eligible"/>
+  <int value="1" label="Not in outermost main frame"/>
+  <int value="2" label="Not GET method"/>
+  <int value="3" label="Not HTTPS scheme"/>
+  <int value="4" label="Is reload"/>
+  <int value="5" label="Is history navigation"/>
+  <int value="6" label="DevTools attached"/>
+  <int value="7" label="Has signed exchange"/>
+  <int value="8" label="Has service worker"/>
+  <int value="9" label="Same document"/>
+  <int value="10" label="Is prerender"/>
+  <int value="11" label="Is prerender activation"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/loader/navigation_fast_fetch_manager.h:EligibilityReason) -->
+
+<!-- LINT.IfChange(FastFetchNavigationOutcome) -->
+
+<enum name="FastFetchNavigationOutcome">
+  <int value="0" label="Committed"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="Cancelled"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/loader/navigation_fast_fetch_manager.h:NavigationOutcome) -->
+
 <!-- LINT.IfChange(HistoryNavigationDirection) -->
 
 <enum name="HistoryNavigationDirection">

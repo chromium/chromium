@@ -1197,6 +1197,80 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.Experimental.FastFetch.EligibilityCheckDuration"
+    units="microseconds" expires_after="2026-10-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the synchronous CPU execution time of IsEligibleForFastFetch()
+    during BeginNavigationImpl. Recorded unconditionally on all main frame
+    navigations. Note that some clients may not have a high resolution timer
+    that can send metrics with microsecond precision.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Experimental.FastFetch.EligibilityReason"
+    enum="FastFetchEligibilityReason" expires_after="2026-10-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the specific eligibility check result (success or first failed
+    exclusion condition) at navigation start. Recorded unconditionally on all
+    main frame navigations.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Experimental.FastFetch.FailedNetError"
+    enum="NetErrorCodes" expires_after="2026-10-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the net error code when an eligible navigation fails. Recorded only
+    when the navigation fails before commit.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Experimental.FastFetch.NavigationOutcome"
+    enum="FastFetchNavigationOutcome" expires_after="2026-10-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the final lifecycle disposition of navigations marked eligible
+    during Fast Fetch. Committed indicates successful commit to initial URL.
+    Failed indicates abort or error before commit.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Experimental.FastFetch.OpportunityTime.FetchStart"
+    units="ms" expires_after="2026-10-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures elapsed time from eligibility check in BeginNavigationImpl to the
+    first fetch start time for eligible navigations.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Experimental.FastFetch.OpportunityTime.LoaderStart"
+    units="ms" expires_after="2026-10-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures elapsed time from eligibility check in BeginNavigationImpl to
+    URLLoader::Start() for eligible navigations.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Experimental.FastFetch.SkipThrottles"
+    enum="Boolean" expires_after="2026-10-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the skip_throttles value when an eligible navigation fails. Recorded
+    only when the navigation fails before commit.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.FCPFrameSubmissionToSurfaceEmbed" units="ms"
     expires_after="2026-08-09">
   <owner>rakina@chromium.org</owner>

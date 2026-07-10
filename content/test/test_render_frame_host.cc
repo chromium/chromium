@@ -20,6 +20,7 @@
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -626,6 +627,19 @@ void TestRenderFrameHost::SimulateCommitProcessed(
       mojom::DidCommitProvisionalLoadInterfaceParams::New(
           std::move(browser_interface_broker_receiver)),
       same_document);
+}
+
+void TestRenderFrameHost::SimulateOnSameDocumentCommitProcessed(
+    const base::UnguessableToken& navigation_token,
+    bool should_replace_current_entry,
+    blink::mojom::CommitResult result) {
+  OnSameDocumentCommitProcessed(navigation_token, should_replace_current_entry,
+                                result);
+}
+
+void TestRenderFrameHost::SetPrefetchedSignedExchangeCacheForTesting(
+    scoped_refptr<PrefetchedSignedExchangeCache> cache) {
+  prefetched_signed_exchange_cache_ = std::move(cache);
 }
 
 void TestRenderFrameHost::CreateHidServiceForTesting(
