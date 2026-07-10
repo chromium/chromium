@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/cocoa/defaults_utils.h"
 
 #include <AppKit/AppKit.h>
 
+#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #import "ui/base/test/cocoa_helper.h"
 
@@ -44,7 +40,7 @@ class DefaultsUtilsTest : public CocoaTest {
     // a personal machine).
     int i = 0;
     for (NSString* next_key in blink_period_keys) {
-      orig_blink_period_values_[i++] =
+      UNSAFE_TODO(orig_blink_period_values_[i++]) =
           [NSUserDefaults.standardUserDefaults integerForKey:next_key];
       [NSUserDefaults.standardUserDefaults removeObjectForKey:next_key];
     }
@@ -81,9 +77,9 @@ class DefaultsUtilsTest : public CocoaTest {
   void TearDown() override {
     int i = 0;
     for (NSString* next_key in blink_period_keys) {
-      if (orig_blink_period_values_[i]) {
+      if (UNSAFE_TODO(orig_blink_period_values_[i])) {
         [NSUserDefaults.standardUserDefaults
-            setInteger:orig_blink_period_values_[i]
+            setInteger:UNSAFE_TODO(orig_blink_period_values_[i])
                 forKey:next_key];
       } else {
         [NSUserDefaults.standardUserDefaults removeObjectForKey:next_key];

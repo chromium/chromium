@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ui/shell_dialogs/select_file_dialog_mac.h"
 
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 
 #import "base/apple/foundation_util.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
@@ -405,29 +401,25 @@ TEST_F(SelectFileDialogMacTest, SelectionType) {
        PICK_FILES | MULTIPLE_SELECTION, "Open"},
   };
 
-  for (size_t i = 0; i < std::size(test_cases); i++) {
-    SCOPED_TRACE(
-        base::StringPrintf("i=%lu file_dialog_type=%d", i, test_cases[i].type));
-    args.type = test_cases[i].type;
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("file_dialog_type=%d", test_case.type));
+    args.type = test_case.type;
     ResetDialog();
     NSSavePanel* panel = SelectFileWithParams(args);
 
-    EXPECT_EQ_BOOL(test_cases[i].options & HAS_ACCESSORY_VIEW,
-                   panel.accessoryView);
-    EXPECT_EQ_BOOL(test_cases[i].options & CREATE_DIRS,
-                   panel.canCreateDirectories);
-    EXPECT_EQ(test_cases[i].prompt, base::SysNSStringToUTF8([panel prompt]));
+    EXPECT_EQ_BOOL(test_case.options & HAS_ACCESSORY_VIEW, panel.accessoryView);
+    EXPECT_EQ_BOOL(test_case.options & CREATE_DIRS, panel.canCreateDirectories);
+    EXPECT_EQ(test_case.prompt, base::SysNSStringToUTF8([panel prompt]));
 
     if (args.type != SelectFileDialog::SELECT_SAVEAS_FILE) {
       NSOpenPanel* open_panel = base::apple::ObjCCast<NSOpenPanel>(panel);
       // Verify that for types other than save file dialogs, an NSOpenPanel is
       // created.
       ASSERT_TRUE(open_panel);
-      EXPECT_EQ_BOOL(test_cases[i].options & PICK_FILES,
-                     open_panel.canChooseFiles);
-      EXPECT_EQ_BOOL(test_cases[i].options & PICK_DIRS,
+      EXPECT_EQ_BOOL(test_case.options & PICK_FILES, open_panel.canChooseFiles);
+      EXPECT_EQ_BOOL(test_case.options & PICK_DIRS,
                      open_panel.canChooseDirectories);
-      EXPECT_EQ_BOOL(test_cases[i].options & MULTIPLE_SELECTION,
+      EXPECT_EQ_BOOL(test_case.options & MULTIPLE_SELECTION,
                      open_panel.allowsMultipleSelection);
     }
   }
