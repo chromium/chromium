@@ -294,8 +294,9 @@ class ContextualTasksEphemeralButtonInteractiveTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{contextual_tasks::kContextualTasks,
-          {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"},
-           {"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
+          {{"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
+         {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
+          {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}},
          {contextual_tasks::kContextualTasksHideCloseButtonInVerticalTabs, {}},
          {tabs::kVerticalTabs, {}}},
         {});
@@ -561,7 +562,8 @@ class ContextualTasksEphemeralBrandedButtonInteractiveTest
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{contextual_tasks::kContextualTasks,
+        {{contextual_tasks::kContextualTasks, {}},
+         {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
           {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}}},
         {});
     InteractiveBrowserTest::SetUp();

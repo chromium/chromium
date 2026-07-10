@@ -375,8 +375,11 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, CloseSidePanelWhenNotEligible) {
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
        CloseSidePanelDiscardsCacheIfNoEntryPoint) {
   base::test::ScopedFeatureList local_feature_list;
-  local_feature_list.InitAndEnableFeatureWithParameters(
-      kContextualTasks, {{"ContextualTasksEntryPoint", "no-entry-point"}});
+  local_feature_list.InitWithFeaturesAndParameters(
+      {{kContextualTasks, {}},
+       {kContextualTasksEphemeralBrandedEntryPoint,
+        {{"ContextualTasksEntryPoint", "no-entry-point"}}}},
+      {});
 
   ClearCacheForTesting();
 
@@ -412,9 +415,11 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
        CloseSidePanelKeepsCacheIfEntryPointSet) {
   base::test::ScopedFeatureList local_feature_list;
-  local_feature_list.InitAndEnableFeatureWithParameters(
-      kContextualTasks,
-      {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}});
+  local_feature_list.InitWithFeaturesAndParameters(
+      {{kContextualTasks, {}},
+       {kContextualTasksEphemeralBrandedEntryPoint,
+        {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}}},
+      {});
 
   ClearCacheForTesting();
 

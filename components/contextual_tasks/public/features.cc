@@ -34,6 +34,11 @@ namespace contextual_tasks {
 // Enables the contextual tasks side panel while browsing.
 BASE_FEATURE(kContextualTasks, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the branded entry point for contextual tasks.
+BASE_FEATURE(kContextualTasksEphemeralBrandedEntryPoint,
+             "ContextualTasksEphemeralBrandedEntryPoint",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables extra OAuth scopes for contextual tasks.
 BASE_FEATURE(kContextualTasksExtraOauthScopes,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -381,7 +386,7 @@ constexpr base::FeatureParam<EntryPointOption>::Option kEntryPointOptions[] = {
     {EntryPointOption::kToolbarEphemeralBranded, "toolbar-ephemeral-branded"}};
 
 const base::FeatureParam<EntryPointOption> kShowEntryPoint(
-    &kContextualTasks,
+    &kContextualTasksEphemeralBrandedEntryPoint,
     "ContextualTasksEntryPoint",
     EntryPointOption::kNoEntryPoint,
     &kEntryPointOptions);

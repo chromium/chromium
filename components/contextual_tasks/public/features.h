@@ -14,6 +14,7 @@
 namespace contextual_tasks {
 
 BASE_DECLARE_FEATURE(kContextualTasks);
+BASE_DECLARE_FEATURE(kContextualTasksEphemeralBrandedEntryPoint);
 BASE_DECLARE_FEATURE(kContextualTasksExtraOauthScopes);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonInToolbar);
 BASE_DECLARE_FEATURE(kContextualTasksContext);
