@@ -340,7 +340,7 @@ bool RenderWidgetHostViewIOS::IsShowing() {
   return is_visible_ && [ui_view_->view_ window];
 }
 
-gfx::Rect RenderWidgetHostViewIOS::GetBoundsInRootWindow() {
+gfx::Rect RenderWidgetHostViewIOS::GetBoundsInScreen() {
   return GetViewBounds();
 }
 

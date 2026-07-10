@@ -775,7 +775,7 @@ void RenderWidgetHostViewChildFrame::TransformPointToRootSurface(
   input_helper_->TransformPointToRootSurface(point);
 }
 
-gfx::Rect RenderWidgetHostViewChildFrame::GetBoundsInRootWindow() {
+gfx::Rect RenderWidgetHostViewChildFrame::GetBoundsInScreen() {
   gfx::Rect rect;
   if (frame_connector_) {
     RenderWidgetHostViewBase* root_view =
@@ -783,7 +783,7 @@ gfx::Rect RenderWidgetHostViewChildFrame::GetBoundsInRootWindow() {
 
     // The root_view can be null in tests when using a TestWebContents.
     if (root_view)
-      rect = root_view->GetBoundsInRootWindow();
+      rect = root_view->GetBoundsInScreen();
   }
   return rect;
 }

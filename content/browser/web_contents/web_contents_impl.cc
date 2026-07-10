@@ -10009,7 +10009,7 @@ void WebContentsImpl::MoveWindowTo(const gfx::Point& origin) {
   if (!view) {
     return;
   }
-  gfx::Rect bounds(origin, view->GetBoundsInRootWindow().size());
+  gfx::Rect bounds(origin, view->GetBoundsInScreen().size());
   int64_t display_id = AdjustWindowRect(&bounds, GetPrimaryMainFrame());
   if (!ForSecurityDropFullscreen(display_id)) {
     return;
@@ -10026,7 +10026,7 @@ void WebContentsImpl::ResizeWindowTo(const gfx::Size& size) {
   if (!view) {
     return;
   }
-  gfx::Rect bounds(view->GetBoundsInRootWindow().origin(), size);
+  gfx::Rect bounds(view->GetBoundsInScreen().origin(), size);
   int64_t display_id = AdjustWindowRect(&bounds, GetPrimaryMainFrame());
   if (!ForSecurityDropFullscreen(display_id)) {
     return;

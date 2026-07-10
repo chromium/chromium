@@ -194,7 +194,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   bool HasSavedCompositorFrame() const override;
 
   void TransformPointToRootSurface(gfx::PointF* point) override;
-  gfx::Rect GetBoundsInRootWindow() override;
+  gfx::Rect GetBoundsInScreen() override;
   void UpdateScreenInfo() override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;

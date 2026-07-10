@@ -151,7 +151,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void OnUnconfirmedTapConvertedToTap() override;
 
   void TransformPointToRootSurface(gfx::PointF* point) override;
-  gfx::Rect GetBoundsInRootWindow() override;
+  gfx::Rect GetBoundsInScreen() override;
   void DidStopFlinging() override;
   blink::mojom::PointerLockResult LockPointer(
       bool request_unadjusted_movement) override;

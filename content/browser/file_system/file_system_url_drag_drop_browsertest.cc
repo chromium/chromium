@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemURLDragDropBrowserTest, FileSystemFileDrop) {
   // Get the points corresponding to the center of the browser window in
   // both screen coordinates and window coordinates.
   const gfx::Rect window_in_screen_coords =
-      render_widget_host_impl->GetView()->GetBoundsInRootWindow();
+      render_widget_host_impl->GetView()->GetBoundsInScreen();
   const gfx::PointF screen_point =
       gfx::PointF(window_in_screen_coords.CenterPoint());
   const gfx::PointF client_point =
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemURLDragDropBrowserTest, FileSystemFileLeave) {
   // Get the points corresponding to the center of the browser window in
   // both screen coordinates and window coordinates.
   const gfx::Rect window_in_screen_coords =
-      render_widget_host_impl->GetView()->GetBoundsInRootWindow();
+      render_widget_host_impl->GetView()->GetBoundsInScreen();
   const gfx::PointF screen_point =
       gfx::PointF(window_in_screen_coords.CenterPoint());
   const gfx::PointF client_point =

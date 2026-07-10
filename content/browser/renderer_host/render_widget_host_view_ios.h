@@ -100,7 +100,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
   void ShowWithVisibility(PageVisibilityState page_visibility) override;
-  gfx::Rect GetBoundsInRootWindow() override;
+  gfx::Rect GetBoundsInScreen() override;
   gfx::Size GetRequestedRendererSize() override;
 #if !BUILDFLAG(IS_IOS_TVOS)
   gfx::Size GetVisibleViewportSize() override;

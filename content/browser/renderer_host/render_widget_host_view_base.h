@@ -459,7 +459,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   virtual void ClearKeyboardTriggeredTooltip() {}
 
   // Gets the bounds of the top-level window, in screen coordinates.
-  virtual gfx::Rect GetBoundsInRootWindow() = 0;
+  virtual gfx::Rect GetBoundsInScreen() = 0;
 
   // Increments the LocalSurfaceId associated with this view when a commit IPC
   // is being sent to change the Document for the root RenderFrameHost rendering

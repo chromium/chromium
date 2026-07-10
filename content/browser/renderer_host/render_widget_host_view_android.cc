@@ -2572,7 +2572,7 @@ void RenderWidgetHostViewAndroid::TransformPointToRootSurface(
     *point += gfx::Vector2d(0, rvh_delegate_view->GetTopControlsHeight());
 }
 
-gfx::Rect RenderWidgetHostViewAndroid::GetBoundsInRootWindow() {
+gfx::Rect RenderWidgetHostViewAndroid::GetBoundsInScreen() {
   if (base::FeatureList::IsEnabled(ui::kAndroidUseCorrectWindowBounds)) {
     ui::WindowAndroid* window_android = view_.GetWindowAndroid();
     if (window_android) {

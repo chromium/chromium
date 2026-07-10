@@ -200,7 +200,7 @@ bool TestRenderWidgetHostView::IsTouchSequencePotentiallyActiveOnViz() {
 }
 #endif
 
-gfx::Rect TestRenderWidgetHostView::GetBoundsInRootWindow() {
+gfx::Rect TestRenderWidgetHostView::GetBoundsInScreen() {
   return gfx::Rect();
 }
 

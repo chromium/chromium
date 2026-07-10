@@ -1236,7 +1236,7 @@ void RenderWidgetHostViewAura::TransformPointToRootSurface(gfx::PointF* point) {
   *point = root->GetRootWindow()->transform().MapPoint(*point);
 }
 
-gfx::Rect RenderWidgetHostViewAura::GetBoundsInRootWindow() {
+gfx::Rect RenderWidgetHostViewAura::GetBoundsInScreen() {
   aura::Window* top_level = window_->GetToplevelWindow();
   gfx::Rect bounds(top_level->GetBoundsInScreen());
 

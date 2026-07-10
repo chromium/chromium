@@ -1526,7 +1526,7 @@ void RenderWidgetHostViewMac::TransformPointToRootSurface(gfx::PointF* point) {
   browser_compositor_->TransformPointToRootSurface(point);
 }
 
-gfx::Rect RenderWidgetHostViewMac::GetBoundsInRootWindow() {
+gfx::Rect RenderWidgetHostViewMac::GetBoundsInScreen() {
   return window_frame_in_screen_dip_;
 }
 
