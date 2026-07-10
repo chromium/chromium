@@ -178,7 +178,7 @@ template("cpp_api_from_rust") {
       args += [
         "--kythe-annotations",
         "--kythe-default-corpus",
-        kythe_corpus_identifier,
+        kythe_corpus,
       ]
     }
   }
