@@ -1794,7 +1794,10 @@ config("tot_warnings") {
   # Entries should generally require both is_clang and llvm_force_head_revision,
   # but may have additional constraints as well (e.g. only some OSes)
   if (is_clang && llvm_force_head_revision) {
-    cflags += []
+    cflags += [
+      # TODO(crbug.com/533040708): Figure out what to do about this.
+      "-Wno-deprecated-attributes",
+    ]
   }
 }
 
@@ -2184,6 +2187,9 @@ config("chromium_code") {
       # Thread safety analysis. See base/thread_annotations.h and
       # https://clang.llvm.org/docs/ThreadSafetyAnalysis.html
       "-Wthread-safety",
+
+      # TODO(crbug.com/533026470): Should probably clean this up.
+      "-Wno-unused-template",
     ]
 
     if (is_chromeos) {
@@ -2225,6 +2231,9 @@ config("no_chromium_code") {
       # Lots of third-party libraries have unused variables. Instead of
       # suppressing them individually, we just blanket suppress them here.
       "-Wno-unused-variable",
+
+      # Third-party code has unused templates. Probably not worth cleaning up.
+      "-Wno-unused-template",
 
       # Similarly, we're not going to fix all the C++11 narrowing issues in
       # third-party libraries.
