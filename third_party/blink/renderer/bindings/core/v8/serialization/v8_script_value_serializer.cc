@@ -421,7 +421,7 @@ void V8ScriptValueSerializer::WriteUnguessableToken(
 
 void V8ScriptValueSerializer::WriteUTF8String(const StringView& string) {
   StringUtf8Adaptor utf8(string);
-  WriteUint32(utf8.size());
+  WriteUint32(base::checked_cast<uint32_t>(utf8.size()));
   WriteRawBytes(utf8.data(), utf8.size());
 }
 

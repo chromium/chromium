@@ -175,7 +175,7 @@ TEST_P(DefaultTracksTest, CollectsTrackValues) {
   Vector<String> tracks = parser.DefaultTracks();
 
   ASSERT_EQ(tracks.size(), test_case.expected_tracks.size());
-  size_t i = 0;
+  wtf_size_t i = 0;
   for (const char* expected : test_case.expected_tracks) {
     EXPECT_EQ(tracks[i++], expected);
   }

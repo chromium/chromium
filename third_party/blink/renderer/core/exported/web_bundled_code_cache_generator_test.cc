@@ -22,9 +22,9 @@ class WebBundledCodeCacheGeneratorTest : public testing::Test {
       const WebString& module_code,
       const WebBundledCodeCacheGenerator::SerializedCodeCacheData& cache_data) {
     v8::Local<v8::String> module_source =
-        v8::String::NewFromUtf8(isolate, module_code.Utf8().c_str(),
-                                v8::NewStringType::kNormal,
-                                module_code.Utf8().size())
+        v8::String::NewFromUtf8(
+            isolate, module_code.Utf8().c_str(), v8::NewStringType::kNormal,
+            base::checked_cast<int>(module_code.Utf8().size()))
             .ToLocalChecked();
 
     v8::ScriptOrigin origin(

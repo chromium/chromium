@@ -31,7 +31,7 @@ PerformanceScriptTiming::PerformanceScriptTiming(
     base::TimeTicks time_origin,
     bool cross_origin_isolated_capability,
     DOMWindow* source,
-    uint32_t navigation_id)
+    uint64_t navigation_id)
     : PerformanceEntry(0,
                        performance_entry_names::kScript,
                        Performance::MonotonicTimeToDOMHighResTimeStamp(

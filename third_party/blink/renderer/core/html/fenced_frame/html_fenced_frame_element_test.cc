@@ -205,7 +205,8 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestIncompatibleUrlHTTPDefault) {
 
   histogram_tester_.ExpectUniqueSample(
       kFencedFrameCreationOrNavigationOutcomeHistogram,
-      FencedFrameCreationOutcome::kIncompatibleURLDefault, test_cases.size());
+      FencedFrameCreationOutcome::kIncompatibleURLDefault,
+      static_cast<int>(test_cases.size()));
 }
 
 TEST_F(HTMLFencedFrameElementTest, HistogramTestResizeAfterFreeze) {

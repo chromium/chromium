@@ -2338,8 +2338,9 @@ AtomicString Internals::htmlNamespace() {
 
 Vector<AtomicString> Internals::htmlTags() {
   base::HeapArray<const QualifiedName*> qualified_names = html_names::GetTags();
-  Vector<AtomicString> tags(qualified_names.size());
-  for (size_t i = 0; i < qualified_names.size(); ++i) {
+  wtf_size_t names_size = static_cast<wtf_size_t>(qualified_names.size());
+  Vector<AtomicString> tags(names_size);
+  for (wtf_size_t i = 0; i < names_size; ++i) {
     tags[i] = qualified_names[i]->LocalName();
   }
   return tags;
@@ -2351,8 +2352,9 @@ AtomicString Internals::svgNamespace() {
 
 Vector<AtomicString> Internals::svgTags() {
   base::HeapArray<const QualifiedName*> qualified_names = svg_names::GetTags();
-  Vector<AtomicString> tags(qualified_names.size());
-  for (size_t i = 0; i < qualified_names.size(); ++i) {
+  wtf_size_t names_size = static_cast<wtf_size_t>(qualified_names.size());
+  Vector<AtomicString> tags(names_size);
+  for (wtf_size_t i = 0; i < names_size; ++i) {
     tags[i] = qualified_names[i]->LocalName();
   }
   return tags;

@@ -21,7 +21,7 @@ PerformanceMeasure::PerformanceMeasure(
     scoped_refptr<SerializedScriptValue> serialized_detail,
     ExceptionState& exception_state,
     DOMWindow* source,
-    uint32_t navigation_id)
+    uint64_t navigation_id)
     : PerformanceEntry(name, start_time, end_time, source, navigation_id),
       serialized_detail_(serialized_detail) {}
 
@@ -33,7 +33,7 @@ PerformanceMeasure* PerformanceMeasure::Create(ScriptState* script_state,
                                                const ScriptValue& detail,
                                                ExceptionState& exception_state,
                                                DOMWindow* source,
-                                               uint32_t navigation_id) {
+                                               uint64_t navigation_id) {
   scoped_refptr<SerializedScriptValue> serialized_detail;
   if (detail.IsEmpty()) {
     serialized_detail = nullptr;

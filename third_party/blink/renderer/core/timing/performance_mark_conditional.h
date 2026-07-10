@@ -20,7 +20,7 @@ class CORE_EXPORT PerformanceMarkConditional final : public PerformanceEntry {
   PerformanceMarkConditional(const AtomicString& name,
                              base::TimeTicks start_time,
                              DOMWindow* source,
-                             uint32_t navigation_id);
+                             uint64_t navigation_id);
 
   ~PerformanceMarkConditional() override = default;
 

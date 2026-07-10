@@ -61,7 +61,7 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
                             base::TimeTicks time_origin,
                             bool cross_origin_isolated_capability,
                             ExecutionContext* context,
-                            uint32_t navigation_id);
+                            uint64_t navigation_id);
   ~PerformanceResourceTiming() override;
 
   const AtomicString& entryType() const override;

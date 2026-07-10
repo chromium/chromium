@@ -212,7 +212,7 @@ TEST_F(WeaknessMarkingTest, StrongifyAlreadyMarkedOnBackingDuringIteration) {
 
   Persistent<WeakSet> weak_set = MakeGarbageCollected<WeakSet>();
   for (size_t i = 0; i < kNumberOfWeakEntries; i++) {
-    weak_set->insert(MakeGarbageCollected<IntegerObject>(i));
+    weak_set->insert(MakeGarbageCollected<IntegerObject>(static_cast<int>(i)));
   }
   CHECK_EQ(weak_set->size(), kNumberOfWeakEntries);
   IncrementalMarkingTestDriver driver(ThreadState::Current());

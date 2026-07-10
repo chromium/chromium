@@ -192,7 +192,7 @@ TEST_F(VideoFrameTest, ConstructorOddSize) {
   const auto kOddUVSize = gfx::Size(std::ceil(kOddSize.width() / 2.0),
                                     std::ceil(kOddSize.height() / 2.0));
   const size_t allocation_size =
-      kOddSize.Area64() * 2 + kOddUVSize.Area64() * 2;
+      static_cast<size_t>(kOddSize.Area64() * 2 + kOddUVSize.Area64() * 2);
 
   auto* array_buffer = DOMArrayBuffer::Create(allocation_size, 1);
 
@@ -201,8 +201,8 @@ TEST_F(VideoFrameTest, ConstructorOddSize) {
 
   std::string media_frame_hash;
   {
-    const size_t kYAPlaneByteSize = kOddSize.Area64();
-    const size_t kUVPlaneByteSize = kOddUVSize.Area64();
+    const size_t kYAPlaneByteSize = static_cast<size_t>(kOddSize.Area64());
+    const size_t kUVPlaneByteSize = static_cast<size_t>(kOddUVSize.Area64());
     auto src_media_frame = media::VideoFrame::WrapExternalYuvaData(
         media::PIXEL_FORMAT_I420A, kOddSize, gfx::Rect(kOddSize), kOddSize,
         kOddSize.width(), kOddUVSize.width(), kOddUVSize.width(),

@@ -181,7 +181,7 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
   // this by simply using the current chain and indexing the last proxy in
   // that chain.
   const ProxyChain& proxy_chain() { return proxy_chain_; }
-  int proxy_chain_index() { return proxy_chain_.length() - 1; }
+  size_t proxy_chain_index() { return proxy_chain_.length() - 1; }
 
   State next_state_ = STATE_DISCONNECTED;
 

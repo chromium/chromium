@@ -529,7 +529,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   const std::set<std::string>& GetDnsAliasesForSessionKey(
       const QuicSessionKey& key) const;
 
-  int CountActiveSessions() { return active_sessions_.size(); }
+  size_t CountActiveSessions() { return active_sessions_.size(); }
 
   // Inject a QUIC session for testing various edge cases.
   void ActivateSessionForTesting(

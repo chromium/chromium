@@ -2048,7 +2048,7 @@ class FrameFetchContextNetworkGuardrailsTest
 
     ASSERT_TRUE(image_size >= base_png.size());
     Vector<char> image_data(base_png);
-    image_data.resize(image_size);
+    image_data.resize(static_cast<wtf_size_t>(image_size));
 
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());

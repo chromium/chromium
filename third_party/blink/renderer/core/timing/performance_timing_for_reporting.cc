@@ -509,7 +509,8 @@ base::TimeDelta PerformanceTimingForReporting::SystemFallbackFontTime() const {
 }
 
 uint32_t PerformanceTimingForReporting::SystemFallbackFontCount() const {
-  return FontPerformance::SystemFallbackFontCount();
+  return base::saturated_cast<uint32_t>(
+      FontPerformance::SystemFallbackFontCount());
 }
 
 base::TimeDelta

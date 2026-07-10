@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/types/optional_util.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/cors.mojom-forward.h"
@@ -292,7 +293,8 @@ void ResourceLoadObserverForFrame::CheckGuardrailsPolicyForSizeLimit(
     metrics.accumulated_bytes += bytes;
 
     if (document_->GetExecutionContext()->CheckGuardrailsPolicyForAssetSize(
-            GuardrailPolicyAssetType::kImage, metrics.accumulated_bytes,
+            GuardrailPolicyAssetType::kImage,
+            base::saturated_cast<size_t>(metrics.accumulated_bytes),
             metrics.url)) {
       resource_metrics_by_identifier_.erase(identifier);
     }

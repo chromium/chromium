@@ -56,7 +56,7 @@ class UserTiming final : public GarbageCollected<UserTiming> {
                               const ScriptValue& detail,
                               ExceptionState&,
                               DOMWindow* source,
-                              uint32_t navigation_id);
+                              uint64_t navigation_id);
   void ClearMeasures(const AtomicString& measure_name);
 
   PerformanceEntryVector GetMarks() const;

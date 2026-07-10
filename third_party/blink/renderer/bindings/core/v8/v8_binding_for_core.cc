@@ -581,7 +581,7 @@ String ReplaceUnmatchedSurrogates(String string) {
   size_t i = 0;
 
   // 4. Initialize U to be an empty sequence of Unicode characters.
-  StringBuffer<UChar> result(n);
+  StringBuffer<UChar> result(static_cast<wtf_size_t>(n));
   auto u = result.Span();
 
   // 5. While i < n:

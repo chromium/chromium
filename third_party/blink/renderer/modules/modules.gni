@@ -53,7 +53,6 @@ set_defaults("blink_modules_sources") {
     "//third_party/blink/renderer/modules:modules_implementation",
     "//third_party/blink/renderer:non_test_config",
     "//third_party/blink/renderer:inside_blink",
-    "//third_party/blink/renderer:narrowing",
   ]
   configs -= [ "//build/config/compiler:default_symbols" ]
   configs += blink_symbols_config

@@ -906,7 +906,8 @@ Vector<uint8_t> GetMLTensorValues(V8TestingScope& scope,
   auto* array_buffer = V8ToObject<DOMArrayBuffer>(&scope, tester.Value());
   return GetArrayBufferViewValues<uint8_t>(
       MaybeShared<DOMArrayBufferView>(blink::DOMUint8Array::Create(
-          array_buffer, /*byte_offset=*/0, ml_tensor->PackedByteLength())));
+          array_buffer, /*byte_offset=*/0,
+          base::checked_cast<wtf_size_t>(ml_tensor->PackedByteLength()))));
 }
 
 TEST_F(MLGraphTest, BuildTest) {
@@ -1165,7 +1166,8 @@ TEST_F(MLGraphTest, WriteWebNNTensorThenDestroyTest) {
 
   auto* src_data =
       MakeGarbageCollected<AllowSharedBufferSource>(CreateDOMArrayBufferView(
-          ml_tensor->PackedByteLength(), V8MLOperandDataType::Enum::kUint8));
+          base::checked_cast<wtf_size_t>(ml_tensor->PackedByteLength()),
+          V8MLOperandDataType::Enum::kUint8));
   ml_context->writeTensor(script_state, ml_tensor, src_data,
                           scope.GetExceptionState());
 }

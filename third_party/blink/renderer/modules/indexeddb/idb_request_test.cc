@@ -216,7 +216,7 @@ void ExpectEqualsIDBKeyArray(
     const Vector<std::unique_ptr<IDBKey>>& expected_keys) {
   ASSERT_EQ(actual_keys.size(), expected_keys.size());
 
-  for (size_t i = 0; i < expected_keys.size(); ++i) {
+  for (wtf_size_t i = 0; i < expected_keys.size(); ++i) {
     ASSERT_NE(actual_keys[i], nullptr);
     EXPECT_TRUE(actual_keys[i]->IsEqual(expected_keys[i].get()));
   }
@@ -227,7 +227,7 @@ void ExpectEqualsIDBValueArray(
     const Vector<std::unique_ptr<IDBValue>>& expected_values) {
   ASSERT_EQ(actual_values.size(), expected_values.size());
 
-  for (size_t i = 0; i < expected_values.size(); ++i) {
+  for (wtf_size_t i = 0; i < expected_values.size(); ++i) {
     ASSERT_NE(actual_values[i], nullptr);
     EXPECT_EQ(actual_values[i]->Data(), expected_values[i]->Data());
 
@@ -1123,7 +1123,9 @@ class AsyncTraceStateForTesting : public IDBRequest::AsyncTraceState {
   const base::TimeTicks& start_time() const {
     return IDBRequest::AsyncTraceState::start_time();
   }
-  size_t id() const { return IDBRequest::AsyncTraceState::id(); }
+  size_t id() const {
+    return static_cast<size_t>(IDBRequest::AsyncTraceState::id());
+  }
 };
 
 TEST(IDBRequestAsyncTraceStateTest, EmptyConstructor) {

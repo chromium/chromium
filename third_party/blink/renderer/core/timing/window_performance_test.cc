@@ -2387,7 +2387,7 @@ class WindowPerformanceNavigationIdTest : public testing::Test {
 
 TEST_F(WindowPerformanceNavigationIdTest, NavigationIdHardNavigations) {
   // Initial navigation: randomly generated IDs, assumed to be hard nav.
-  std::vector<uint32_t> ids;
+  std::vector<uint64_t> ids;
   for (int i = 0; i < 100; ++i) {
     // Making a new scope is like a hard nav (the ID gets generated via the
     // constructor of LocalDOMWindow).
@@ -2404,7 +2404,7 @@ TEST_F(WindowPerformanceNavigationIdTest, NavigationIdHardNavigations) {
   EXPECT_LT(num_collisions, 10u);
   ids.erase(last, ids.end());
   // The IDs are not in sorted order.
-  std::vector<uint32_t> sorted_ids(ids.begin(), ids.end());
+  std::vector<uint64_t> sorted_ids(ids.begin(), ids.end());
   std::sort(sorted_ids.begin(), sorted_ids.end());
   EXPECT_NE(sorted_ids, ids);
 }
@@ -2414,11 +2414,11 @@ TEST_F(WindowPerformanceNavigationIdTest, NavigationIdSoftNavigations) {
   V8TestingScope scope;
   WindowPerformance* performance =
       DOMWindowPerformance::performance(*scope.GetFrame().DomWindow());
-  uint32_t navigation_id1 = performance->NavigationId();
+  uint64_t navigation_id1 = performance->NavigationId();
 
   // Soft navigation or back-forward cache restoration: incremented ID.
   performance->IncrementNavigationId();
-  uint32_t navigation_id3 = performance->NavigationId();
+  uint64_t navigation_id3 = performance->NavigationId();
   EXPECT_NE(navigation_id1, navigation_id3);
   EXPECT_LT(navigation_id1, navigation_id3);
 }

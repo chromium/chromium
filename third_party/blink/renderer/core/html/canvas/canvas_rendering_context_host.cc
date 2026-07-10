@@ -50,8 +50,9 @@ CanvasRenderingContextHost::CanvasRenderingContextHost(HostType host_type,
 
 CanvasRenderingContextHost::~CanvasRenderingContextHost() {
   if (externally_allocated_memory_.is_positive()) {
-    external_memory_accounter_.Decrease(v8::Isolate::GetCurrent(),
-                                        externally_allocated_memory_.InBytes());
+    external_memory_accounter_.Decrease(
+        v8::Isolate::GetCurrent(),
+        static_cast<size_t>(externally_allocated_memory_.InBytes()));
   }
 }
 

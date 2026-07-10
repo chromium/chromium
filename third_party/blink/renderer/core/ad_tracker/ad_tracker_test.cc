@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/subresource_filter/content/renderer/web_document_subresource_filter_impl.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
@@ -29,6 +28,13 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshorten-64-to-32"
+// third_party/flatbuffers/ included by web_document_subresource_filter_impl.h
+// is not ready for -Wshorten-64-to-32.
+#include "components/subresource_filter/content/renderer/web_document_subresource_filter_impl.h"
+#pragma clang diagnostic pop
 
 namespace blink {
 

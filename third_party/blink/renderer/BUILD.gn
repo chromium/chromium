@@ -43,6 +43,8 @@ config("inside_blink") {
       "-Wno-sign-conversion",
       "-Wno-implicit-float-conversion",
       "-Wno-implicit-int-conversion",
+      "-Wshorten-64-to-32",
+      "-Wtautological-unsigned-zero-compare",
     ]
   }
 }

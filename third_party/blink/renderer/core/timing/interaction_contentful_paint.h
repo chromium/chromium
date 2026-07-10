@@ -25,7 +25,7 @@ class CORE_EXPORT InteractionContentfulPaint final : public PerformanceEntry {
                              DOMHighResTimeStamp render_time,
                              LargestContentfulPaint* largest_contentful_paint,
                              DOMWindow* source,
-                             uint32_t navigation_id,
+                             uint64_t navigation_id,
                              uint64_t interaction_id);
   ~InteractionContentfulPaint() override;
 

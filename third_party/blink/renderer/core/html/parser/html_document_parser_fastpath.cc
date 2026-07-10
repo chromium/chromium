@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
@@ -1815,11 +1816,13 @@ bool TryParsingHTMLFragmentImpl(const base::span<const Char>& source,
     }
   }
   if (success) {
-    UMA_HISTOGRAM_COUNTS_10M("Blink.HTMLFastPathParser.SuccessfulParseSize",
-                             number_of_bytes_parsed);
+    UMA_HISTOGRAM_COUNTS_10M(
+        "Blink.HTMLFastPathParser.SuccessfulParseSize",
+        base::saturated_cast<uint32_t>(number_of_bytes_parsed));
   } else {
-    UMA_HISTOGRAM_COUNTS_10M("Blink.HTMLFastPathParser.AbortedParseSize",
-                             number_of_bytes_parsed);
+    UMA_HISTOGRAM_COUNTS_10M(
+        "Blink.HTMLFastPathParser.AbortedParseSize",
+        base::saturated_cast<uint32_t>(number_of_bytes_parsed));
   }
   return success;
 }

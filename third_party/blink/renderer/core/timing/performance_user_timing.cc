@@ -228,7 +228,7 @@ PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
                                         const ScriptValue& detail,
                                         ExceptionState& exception_state,
                                         DOMWindow* source,
-                                        uint32_t navigation_id) {
+                                        uint64_t navigation_id) {
   double start_time =
       start ? GetTimeOrFindMarkTime(measure_name, start, exception_state) : 0;
   if (exception_state.HadException())

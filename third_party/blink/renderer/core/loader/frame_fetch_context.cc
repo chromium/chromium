@@ -594,7 +594,8 @@ void FrameFetchContext::CheckGuardrailsPolicyForRequest(
         auto size = StringToInt64(content_length_header, {});
         if (size) {
           CheckGuardrailsPolicyForAssetSize(GuardrailPolicyAssetType::kImage,
-                                            *size, url);
+                                            base::saturated_cast<size_t>(*size),
+                                            url);
         }
       }
     }

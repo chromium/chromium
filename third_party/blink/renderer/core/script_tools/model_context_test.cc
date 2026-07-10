@@ -137,11 +137,11 @@ class ModelContextTestBase : public SimTest {
   }
 
   int EvalJsInteger(const char* script) {
-    return MainFrame()
-        .ExecuteScriptAndReturnValue(
-            WebScriptSource(WebString::FromUtf8(script)))
-        .As<v8::Integer>()
-        ->Value();
+    return static_cast<int>(MainFrame()
+                                .ExecuteScriptAndReturnValue(WebScriptSource(
+                                    WebString::FromUtf8(script)))
+                                .As<v8::Integer>()
+                                ->Value());
   }
 
  protected:

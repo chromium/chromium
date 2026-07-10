@@ -98,7 +98,7 @@ PerformanceResourceTiming::PerformanceResourceTiming(
     base::TimeTicks time_origin,
     bool cross_origin_isolated_capability,
     ExecutionContext* context,
-    uint32_t navigation_id)
+    uint64_t navigation_id)
     : PerformanceEntry(
           info->name.IsNull() ? g_empty_atom : AtomicString(info->name),
           Performance::MonotonicTimeToDOMHighResTimeStamp(

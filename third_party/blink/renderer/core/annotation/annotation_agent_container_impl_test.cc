@@ -43,7 +43,7 @@ class AnnotationAgentContainerImplTest : public SimTest {
   }
 
   AnnotationAgentImpl* GetAgentAt(AnnotationAgentContainerImpl& container,
-                                  size_t index) {
+                                  wtf_size_t index) {
     return container.agents_[index];
   }
 

@@ -105,7 +105,7 @@ Vector<char> CreateJpegImageData(int width, int height) {
   SkJpegEncoder::Options options;
   sk_sp<SkData> data = SkJpegEncoder::Encode(nullptr, image.get(), options);
   if (data) {
-    result.Append(reinterpret_cast<const char*>(data->data()), data->size());
+    result.append_range(data->byteSpan());
   }
   return result;
 }

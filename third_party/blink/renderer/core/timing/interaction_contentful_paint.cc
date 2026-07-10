@@ -17,7 +17,7 @@ InteractionContentfulPaint::InteractionContentfulPaint(
     DOMHighResTimeStamp render_time,
     LargestContentfulPaint* largest_contentful_paint,
     DOMWindow* source,
-    uint32_t navigation_id,
+    uint64_t navigation_id,
     uint64_t interaction_id)
     : PerformanceEntry(/*duration=*/render_time - start_time,
                        g_empty_atom,
