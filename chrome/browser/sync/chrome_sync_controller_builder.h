@@ -16,15 +16,12 @@
 #include "build/buildflag.h"
 #include "components/prefs/pref_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "components/themes/cross_device/cross_device_theme_tracker.h"
 #include "extensions/buildflags/buildflags.h"
 
 class Profile;
 class SecurityEventRecorder;
 
-namespace themes {
-template <typename T>
-class CrossDeviceThemeTracker;
-}
 
 namespace syncer {
 class DataTypeController;
@@ -106,13 +103,7 @@ class ChromeSyncControllerBuilder {
   ChromeSyncControllerBuilder();
   ~ChromeSyncControllerBuilder();
 
-#if BUILDFLAG(IS_ANDROID)
-  using LocalThemeSpecifics = sync_pb::ThemeAndroidSpecifics;
-#else
-  // On Desktop (Linux, Mac, Windows, ChromeOS), use ThemeSpecifics. Note that
-  // chrome/ never builds for iOS (iOS Chrome lives under ios/chrome/browser/).
-  using LocalThemeSpecifics = sync_pb::ThemeSpecifics;
-#endif  // BUILDFLAG(IS_ANDROID)
+  using LocalThemeSpecifics = themes::LocalThemeSpecifics;
 
   // Setters to inject dependencies. Each of these setters must be invoked
   // before invoking `Build()`. In some cases it is allowed to inject nullptr.

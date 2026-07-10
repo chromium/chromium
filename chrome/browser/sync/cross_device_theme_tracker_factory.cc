@@ -55,9 +55,10 @@ void RegisterBridgeHelper(
 }  // namespace
 
 // static
-themes::CrossDeviceThemeTracker<sync_pb::ThemeSpecifics>*
+themes::CrossDeviceThemeTracker<
+    CrossDeviceThemeTrackerFactory::LocalThemeSpecifics>*
 CrossDeviceThemeTrackerFactory::GetForProfile(Profile* profile) {
-  return static_cast<themes::CrossDeviceThemeTracker<sync_pb::ThemeSpecifics>*>(
+  return static_cast<themes::CrossDeviceThemeTracker<LocalThemeSpecifics>*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
@@ -96,18 +97,17 @@ CrossDeviceThemeTrackerFactory::BuildServiceInstanceForBrowserContext(
       DataTypeStoreServiceFactory::GetForProfile(profile);
   version_info::Channel channel = chrome::GetChannel();
 
-  using LocalSpecifics = sync_pb::ThemeSpecifics;
   auto tracker =
-      std::make_unique<themes::CrossDeviceThemeTracker<LocalSpecifics>>(
+      std::make_unique<themes::CrossDeviceThemeTracker<LocalThemeSpecifics>>(
           device_info_tracker);
 
   // Construct Android bridge.
-  RegisterBridgeHelper<sync_pb::ThemeAndroidSpecifics, LocalSpecifics>(
+  RegisterBridgeHelper<sync_pb::ThemeAndroidSpecifics, LocalThemeSpecifics>(
       syncer::THEMES_ANDROID, base::BindRepeating(&themes::TranslateAndroid),
       tracker.get(), store_service, channel);
 
   // Construct iOS bridge.
-  RegisterBridgeHelper<sync_pb::ThemeIosSpecifics, LocalSpecifics>(
+  RegisterBridgeHelper<sync_pb::ThemeIosSpecifics, LocalThemeSpecifics>(
       syncer::THEMES_IOS, base::BindRepeating(&themes::TranslateIos),
       tracker.get(), store_service, channel);
 

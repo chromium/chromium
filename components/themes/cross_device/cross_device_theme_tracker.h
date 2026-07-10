@@ -13,18 +13,31 @@
 
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_sync_bridge.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "components/sync/protocol/theme_android_specifics.pb.h"
+#else
+#include "components/sync/protocol/theme_specifics.pb.h"
+#endif
 #include "components/sync/protocol/theme_types.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/themes/cross_device/theme_comparer.h"
 
 namespace themes {
+
+#if BUILDFLAG(IS_ANDROID)
+using LocalThemeSpecifics = sync_pb::ThemeAndroidSpecifics;
+#else
+using LocalThemeSpecifics = sync_pb::ThemeSpecifics;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 enum class ServiceStatus {
   kInitializing,

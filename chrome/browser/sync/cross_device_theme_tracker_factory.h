@@ -7,15 +7,16 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "components/sync/protocol/theme_specifics.pb.h"
 #include "components/themes/cross_device/cross_device_theme_tracker.h"
 
 class Profile;
 
 class CrossDeviceThemeTrackerFactory : public ProfileKeyedServiceFactory {
  public:
-  static themes::CrossDeviceThemeTracker<sync_pb::ThemeSpecifics>*
-  GetForProfile(Profile* profile);
+  using LocalThemeSpecifics = themes::LocalThemeSpecifics;
+
+  static themes::CrossDeviceThemeTracker<LocalThemeSpecifics>* GetForProfile(
+      Profile* profile);
   static CrossDeviceThemeTrackerFactory* GetInstance();
 
  private:

@@ -30,11 +30,8 @@
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_store_service.h"
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
-#include "components/sync/protocol/theme_android_specifics.pb.h"
-#include "components/sync/protocol/theme_specifics.pb.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/syncable_service_based_data_type_controller.h"
-#include "components/themes/cross_device/cross_device_theme_tracker.h"
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
