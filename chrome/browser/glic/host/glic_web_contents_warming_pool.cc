@@ -149,6 +149,7 @@ GlicWebContentsWarmingPool::TakeContainer() {
   metrics_->RecordTakeContainerStatus(warmed_container_,
                                       IsWarmingAllowedByMemoryPressure());
   reload_count_ = 0;
+  is_active_ = true;
 
   EnsurePreload(ContainerCreationReason::kUserTriggeredColdStart);
   std::unique_ptr<WebUIContentsContainer> result = std::move(warmed_container_);
@@ -160,6 +161,7 @@ GlicWebContentsWarmingPool::TakeContainer() {
 }
 
 bool GlicWebContentsWarmingPool::MaybeStartInitialWarming() {
+  is_active_ = true;
   if (memory_pressure_level_ >= base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return false;
   }
@@ -225,6 +227,9 @@ void GlicWebContentsWarmingPool::OnContainerExpired() {
 }
 
 void GlicWebContentsWarmingPool::Clear(std::optional<ClearReason> reason) {
+  if (reason != ClearReason::kMemoryPressure) {
+    is_active_ = false;
+  }
   metrics_->RecordClearWarmedContainer(warmed_container_, reason);
   warmed_container_.reset();
   delay_timer_.Stop();
@@ -243,9 +248,10 @@ void GlicWebContentsWarmingPool::OnMemoryPressure(
     return;
   }
 
-  // Refill the pool when memory pressure drops below critical in stateful mode.
+  // Refill the pool when memory pressure drops below critical in stateful mode,
+  // provided the pool is active and doesn't already have a container or timer.
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    if (!warmed_container_) {
+    if (is_active_ && !warmed_container_ && !delay_timer_.IsRunning()) {
       EnsurePreloadDelayed(ContainerCreationReason::kRefill);
     }
   }
