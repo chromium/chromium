@@ -8473,22 +8473,12 @@ inline constexpr char kEnableCookieBindingCookieUpgradeDescription[] =
     "Enables upgrading unbound session cookies to be hardware-bound on "
     "supported device platforms.";
 
-inline constexpr char kEnableOAuthMultiloginCookiesBindingName[] =
-    "Enable OAuthMultilogin Cookies Binding";
-inline constexpr char kEnableOAuthMultiloginCookiesBindingDescription[] =
-    "Enables binding of cookies returned from OAuthMultilogin to cryptographic "
-    "keys.";
-
+inline constexpr char kEnableOAuthMultiloginStandardCookiesBindingName[] =
+    "Enable OAuthMultilogin Standard Cookies Binding";
 inline constexpr char
-    kEnableOAuthMultiloginCookiesBindingServerExperimentName[] =
-        "Enable OAuthMultilogin Cookies Binding Server Experiment";
-inline constexpr char
-    kEnableOAuthMultiloginCookiesBindingServerExperimentDescription[] =
-        "When enabled, Chrome will send will send a specific URL parameter to "
-        "Gaia "
-        "to trigger the server-side experiment for binding the OAuthMultilogin "
-        "cookies to cryptographic keys. This flag is meant to be used in "
-        "conjunction with the 'Enable OAuthMultilogin Cookies Binding' flag.";
+    kEnableOAuthMultiloginStandardCookiesBindingDescription[] =
+        "Enables binding of cookies returned from OAuthMultilogin to "
+        "cryptographic keys using standard DBSC.";
 
 inline constexpr char kEnableOAuthMultiloginYoutubeCookiesBindingName[] =
     "Enable Youtube OAuthMultilogin Cookies Binding";

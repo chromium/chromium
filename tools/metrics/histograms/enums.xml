@@ -9177,6 +9177,8 @@ from previous Chrome versions.
   <int value="-1725507605" label="enable-web-midi"/>
   <int value="-1725376391"
       label="IncrementLocalSurfaceIdForMainframeSameDocNavigation:disabled"/>
+  <int value="-1725300970"
+      label="EnableOAuthMultiloginStandardCookiesBinding:enabled"/>
   <int value="-1724666110" label="AndroidHistoryPaneFavicons:disabled"/>
   <int value="-1724238554"
       label="AutofillEnableLogFormEventsToAllParsedFormTypes:enabled"/>
@@ -11616,6 +11618,8 @@ from previous Chrome versions.
   <int value="-959244784" label="ContextualSearchSuppressShortView:enabled"/>
   <int value="-959173180" label="AccessibilityPageZoom:disabled"/>
   <int value="-958950214" label="AllowDisableMouseAcceleration:disabled"/>
+  <int value="-958616805"
+      label="EnableOAuthMultiloginStandardCookiesBinding:disabled"/>
   <int value="-958340040" label="GtsCloseTabAnimation:enabled"/>
   <int value="-958159088" label="RestoreTabsOnFRE:enabled"/>
   <int value="-958063963" label="DeduplicateNativePaymentApps:disabled"/>

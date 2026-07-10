@@ -4265,19 +4265,6 @@ const FeatureEntry::FeatureVariation
 };
 
 const FeatureEntry::FeatureParam
-    kOAuthMultiloginCookieBindingWithoutEnforcement[] = {{"enforced", "false"}};
-const FeatureEntry::FeatureParam
-    kOAuthMultiloginCookieBindingWithEnforcement[] = {{"enforced", "true"}};
-
-const FeatureEntry::FeatureVariation
-    kOAuthMultiloginCookieBindingEnforcementVariations[] = {
-        {"without enforcement", kOAuthMultiloginCookieBindingWithoutEnforcement,
-         nullptr},
-        {"with enforcement", kOAuthMultiloginCookieBindingWithEnforcement,
-         nullptr},
-};
-
-const FeatureEntry::FeatureParam
     kOAuthMultiloginYoutubeCookieBindingWithoutEnforcement[] = {
         {"OAuthMultiloginYoutubeCookieBindingEnforced", "false"}};
 const FeatureEntry::FeatureParam
@@ -10985,22 +10972,12 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    {"enable-oauth-multilogin-cookies-binding",
-     flag_descriptions::kEnableOAuthMultiloginCookiesBindingName,
-     flag_descriptions::kEnableOAuthMultiloginCookiesBindingDescription,
-     kOsMac | kOsLinux,
-     FEATURE_VALUE_TYPE(switches::kEnableOAuthMultiloginCookiesBinding)},
-
-    {"enable-oauth-multilogin-cookies-binding-server-experiment",
-     flag_descriptions::
-         kEnableOAuthMultiloginCookiesBindingServerExperimentName,
-     flag_descriptions::
-         kEnableOAuthMultiloginCookiesBindingServerExperimentDescription,
-     kOsMac | kOsLinux,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         switches::kEnableOAuthMultiloginCookiesBindingServerExperiment,
-         kOAuthMultiloginCookieBindingEnforcementVariations,
-         "EnableOAuthMultiloginCookiesBindingServerExperiment")},
+    {"enable-oauth-multilogin-standard-cookies-binding",
+     flag_descriptions::kEnableOAuthMultiloginStandardCookiesBindingName,
+     flag_descriptions::kEnableOAuthMultiloginStandardCookiesBindingDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(
+         switches::kEnableOAuthMultiloginStandardCookiesBinding)},
 
     {"enable-oauth-multilogin-youtube-cookies-binding",
      flag_descriptions::kEnableOAuthMultiloginYoutubeCookiesBindingName,
