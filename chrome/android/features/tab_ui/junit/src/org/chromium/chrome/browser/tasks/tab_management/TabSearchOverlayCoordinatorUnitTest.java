@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
+import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.searchwidget.SearchActivityLocationBarLayout;
@@ -78,6 +79,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private SearchUiCoordinator mSearchUiCoordinator;
     @Mock private LocationBarCoordinator mLocationBarCoordinator;
+    @Mock private UrlBarCoordinator mUrlBarCoordinator;
     @Mock private SearchActivityLocationBarLayout mSearchBox;
     @Mock private Profile mProfile;
     @Mock private SnackbarManager mSnackbarManager;
@@ -101,6 +103,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         mTabModelSelectorSupplier.set(mTabModelSelector);
 
         when(mSearchUiCoordinator.getLocationBarCoordinator()).thenReturn(mLocationBarCoordinator);
+        when(mLocationBarCoordinator.getUrlBarCoordinator()).thenReturn(mUrlBarCoordinator);
         when(mSearchUiCoordinator.getSearchBox()).thenReturn(mSearchBox);
 
         var profileSupplier = ObservableSuppliers.createMonotonic(mProfile);
@@ -145,10 +148,17 @@ public class TabSearchOverlayCoordinatorUnitTest {
         showOverlay();
         verifySearchUiCoordinatorInitialized();
         verify(mSearchUiCoordinator)
-                .setDefaultStatusIconOverrideResId(R.drawable.ic_suggestion_magnifier);
-        verify(mSearchUiCoordinator)
                 .beginQuery(
                         eq(IntentOrigin.HUB), eq(SearchType.TEXT), eq(null), eq(mWindowAndroid));
+    }
+
+    @Test
+    public void testSearchUiElementsInitialized() {
+        verify(mSearchUiCoordinator)
+                .setDefaultStatusIconOverrideResId(R.drawable.ic_suggestion_magnifier);
+        verify(mUrlBarCoordinator)
+                .setUrlBarHintText(
+                        mActivity.getResources().getString(R.string.hub_search_empty_hint));
     }
 
     @Test

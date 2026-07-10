@@ -172,6 +172,8 @@ public class TabSearchOverlayCoordinator {
                     mProfileSupplier.get() != null && mProfileSupplier.get().isOffTheRecord();
             mSearchBoxDataProvider.initialize(mActivity, isIncognito);
             mSearchUiCoordinator = new SearchUiCoordinator(mActivity, mSearchBoxDataProvider);
+            mSearchUiCoordinator.getLocationBarUiOverrides().setVoiceEntrypointAllowed(false);
+            mSearchUiCoordinator.getLocationBarUiOverrides().setEmbedderControlledHint(true);
         }
 
         LocationBarEmbedder embedder =
@@ -230,13 +232,31 @@ public class TabSearchOverlayCoordinator {
                 /* backPressManager= */ null,
                 embedder,
                 mEdgeToEdgeSystemBarColorHelper);
-        mSearchUiCoordinator.setDefaultStatusIconOverrideResId(R.drawable.ic_suggestion_magnifier);
+        setSearchUiElements();
 
         TabSearchOverlayViewBinder.ViewHolder viewHolder =
                 new TabSearchOverlayViewBinder.ViewHolder(panelContainer, scrim);
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mModel, viewHolder, TabSearchOverlayViewBinder::bind);
+    }
+
+    private void setSearchUiElements() {
+        var searchUiCoordinator = assumeNonNull(mSearchUiCoordinator);
+        searchUiCoordinator.setDefaultStatusIconOverrideResId(R.drawable.ic_suggestion_magnifier);
+
+        // If the profile supplier is null (rare), default to the non-incognito state as it is the
+        // safest choice in terms of incognito agnostic wording.
+        boolean isIncognito =
+                mProfileSupplier.get() != null && mProfileSupplier.get().isOffTheRecord();
+        int hintTextRes =
+                isIncognito
+                        ? R.string.hub_search_empty_hint_incognito
+                        : R.string.hub_search_empty_hint;
+        searchUiCoordinator
+                .getLocationBarCoordinator()
+                .getUrlBarCoordinator()
+                .setUrlBarHintText(mActivity.getResources().getString(hintTextRes));
     }
 
     private boolean loadUrl(OmniboxLoadUrlParams params, boolean isIncognito) {
