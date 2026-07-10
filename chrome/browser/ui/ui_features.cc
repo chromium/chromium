@@ -365,12 +365,6 @@ BASE_FEATURE_PARAM(bool,
                    true);
 
 BASE_FEATURE_PARAM(bool,
-                   kPageActionsMigrationAiMode,
-                   &kPageActionsMigration,
-                   "ai_mode",
-                   true);
-
-BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationVirtualCard,
                    &kPageActionsMigration,
                    "virtual_card",

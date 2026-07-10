@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
-#include "chrome/browser/ui/views/location_bar/ai_mode_page_action_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
@@ -140,12 +139,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
         zoom_icon_ = add_page_action_icon(
             type, std::make_unique<ZoomView>(params.icon_label_bubble_delegate,
                                              params.page_action_icon_delegate));
-        break;
-      case PageActionIconType::kAiMode:
-        add_page_action_icon(
-            type, std::make_unique<AiModePageActionIconView>(
-                      params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate, params.browser));
         break;
       case PageActionIconType::kOptimizationGuide:
         add_page_action_icon(

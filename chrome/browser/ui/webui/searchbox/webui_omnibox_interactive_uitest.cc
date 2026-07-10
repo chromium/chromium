@@ -126,10 +126,6 @@ class OmniboxWebUiInteractiveTestBase
       features.emplace_back(omnibox::internal::kWebUIOmniboxSimplification,
                             simplification_params);
       features.emplace_back(omnibox::kAimEnabled, base::FieldTrialParams());
-      features.emplace_back(
-          features::kPageActionsMigration,
-          base::FieldTrialParams(
-              {{features::kPageActionsMigrationAiMode.name, "true"}}));
     }
     return features;
   }

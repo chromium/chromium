@@ -1196,7 +1196,6 @@ const FeatureEntry::FeatureVariation kStartupLaunchVariations[] = {
 #endif  // BUILDFLAG(IS_WIN)
 
 const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
-    {"ai_mode", "true"},
     {"bookmark_star", "true"},
     {"file_system_access", "true"},
     {"filled_card_information", "true"},

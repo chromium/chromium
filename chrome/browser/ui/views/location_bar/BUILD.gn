@@ -13,7 +13,6 @@ source_set("location_bar") {
 
   if (toolkit_views) {
     public += [
-      "ai_mode_page_action_icon_view.h",
       "content_setting_image_view.h",
       "custom_tab_bar_view.h",
       "intent_chip_button.h",
@@ -80,7 +79,6 @@ source_set("impl") {
 
   if (toolkit_views) {
     sources += [
-      "ai_mode_page_action_icon_view.cc",
       "content_setting_image_view.cc",
       "custom_tab_bar_view.cc",
       "intent_chip_button.cc",

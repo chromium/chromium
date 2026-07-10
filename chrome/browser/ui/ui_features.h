@@ -305,7 +305,6 @@ BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationEnableAll);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationIntentPicker);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationZoom);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationAutofillMandatoryReauth);
-BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationAiMode);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationVirtualCard);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationFilledCardInformation);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationReadingMode);

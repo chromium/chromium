@@ -80,17 +80,7 @@ class AiModePageActionControllerInteractiveUiTest
 
   virtual void InitializeFeatures() {
     features_.InitWithFeaturesAndParameters(
-        /*enabled_features*/ {{
-                                  features::kPageActionsMigration,
-                                  {
-                                      {
-                                          features::kPageActionsMigrationAiMode
-                                              .name,
-                                          "true",
-                                      },
-                                  },
-                              },
-                              {omnibox::internal::kWebUIOmniboxPopup, {}},
+        /*enabled_features*/ {{omnibox::internal::kWebUIOmniboxPopup, {}},
                               {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
         /*disabled_features*/ {kHideAimEntrypointOnUserInput,
                                kHideAimEntrypointForUrlSuggestions});
@@ -205,16 +195,6 @@ class AiModePageActionControllerHideEntryPointOnEditInteractiveUiTest
   void InitializeFeatures() override {
     features_.InitWithFeaturesAndParameters(
         /*enabled_features*/ {{kHideAimEntrypointOnUserInput, {}},
-                              {
-                                  features::kPageActionsMigration,
-                                  {
-                                      {
-                                          features::kPageActionsMigrationAiMode
-                                              .name,
-                                          "true",
-                                      },
-                                  },
-                              },
                               {omnibox::internal::kWebUIOmniboxPopup, {}},
                               {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
         /*disabled_features*/ {});
@@ -244,16 +224,6 @@ class AiModePageActionControllerHideEntryPointForUrlInteractiveUiTest
   void InitializeFeatures() override {
     features_.InitWithFeaturesAndParameters(
         /*enabled_features*/ {{kHideAimEntrypointForUrlSuggestions, {}},
-                              {
-                                  features::kPageActionsMigration,
-                                  {
-                                      {
-                                          features::kPageActionsMigrationAiMode
-                                              .name,
-                                          "true",
-                                      },
-                                  },
-                              },
                               {omnibox::internal::kWebUIOmniboxPopup, {}},
                               {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
         /*disabled_features*/ {});
@@ -276,16 +246,6 @@ class AiModePageActionControllerDynamicAiModeButtonInteractiveUiTest
   void InitializeFeatures() override {
     features_.InitWithFeaturesAndParameters(
         /*enabled_features*/ {{kWebUIOmniboxDynamicAiModeButton, {}},
-                              {
-                                  features::kPageActionsMigration,
-                                  {
-                                      {
-                                          features::kPageActionsMigrationAiMode
-                                              .name,
-                                          "true",
-                                      },
-                                  },
-                              },
                               {omnibox::internal::kWebUIOmniboxPopup, {}},
                               {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
         /*disabled_features*/ {});

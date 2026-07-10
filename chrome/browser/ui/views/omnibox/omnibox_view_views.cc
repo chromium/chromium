@@ -608,12 +608,8 @@ IconLabelBubbleView* OmniboxViewViews::GetAiModePageActionIconView() const {
   if (!location_bar_view_ || !location_bar_view_->IsInitialized()) {
     return nullptr;
   }
-  if (IsPageActionMigrated(PageActionIconType::kAiMode)) {
-    return location_bar_view_->page_action_container()->GetPageActionView(
-        kActionAiMode);
-  }
-  return location_bar_view_->page_action_icon_controller()->GetIconView(
-      PageActionIconType::kAiMode);
+  return location_bar_view_->page_action_container()->GetPageActionView(
+      kActionAiMode);
 }
 
 void OmniboxViewViews::ApplyFocusRingToAimButton(bool force_focus) {

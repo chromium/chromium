@@ -1680,9 +1680,7 @@ class OmniboxViewViewsAIMButtonPreferenceTest
     : public OmniboxViewViewsAIMBrowserTest {
  public:
   OmniboxViewViewsAIMButtonPreferenceTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPageActionsMigration, {}}},
-        {lens::features::kLensOverlay});
+    scoped_feature_list_.InitAndDisableFeature(lens::features::kLensOverlay);
   }
 
  protected:
@@ -1721,8 +1719,7 @@ class OmniboxViewViewsAIMButtonDynamicTest
  public:
   OmniboxViewViewsAIMButtonDynamicTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPageActionsMigration, {{"ai_mode", "true"}}},
-         {omnibox::kWebUIOmniboxDynamicAiModeButton, {}}},
+        {{omnibox::kWebUIOmniboxDynamicAiModeButton, {}}},
         {lens::features::kLensOverlay});
   }
 

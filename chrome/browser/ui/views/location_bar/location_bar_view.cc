@@ -534,19 +534,6 @@ void LocationBarView::Init() {
   params.types_enabled.push_back(PageActionIconType::kVirtualCardEnroll);
   params.types_enabled.push_back(PageActionIconType::kMandatoryReauth);
 
-  // Because AIM eligibility can change during the lifecycle of the
-  // `LocationBarView`, the AI Mode page action is added regardless of
-  // eligibility, but its visibility is toggled to match eligibility.
-  if (browser_) {
-    // Position in the leading position, like the entrypoint for
-    // kLensOverlay above. While both chips may be enabled, they will
-    // not appear at the same time due to different focus behavior. The
-    // visibility of this entrypoint is dependent on whether or not the user
-    // meets AIM eligibility criteria.
-    params.types_enabled.insert(params.types_enabled.begin(),
-                                PageActionIconType::kAiMode);
-  }
-
   if (browser_ && !is_popup_mode_) {
     params.types_enabled.push_back(PageActionIconType::kBookmarkStar);
   }
@@ -561,16 +548,6 @@ void LocationBarView::Init() {
   page_action_icon_container_ =
       AddChildView(std::make_unique<PageActionIconContainerView>(params));
   page_action_icon_controller_ = page_action_icon_container_->controller();
-
-  if (browser_ && !page_action_icon_container_->children().empty() &&
-      !IsPageActionMigrated(PageActionIconType::kAiMode)) {
-    auto* first_page_action_icon_view = static_cast<PageActionIconView*>(
-        page_action_icon_container_->children().front());
-    DCHECK(first_page_action_icon_view->action_id() == kActionAiMode)
-        << "kActionAiMode must be the first child in "
-           "PageActionIconContainerView to ensure it's the left-most page "
-           "action.";
-  }
 
   auto clear_all_button = views::CreateVectorImageButton(base::BindRepeating(
       static_cast<void (OmniboxView::*)(const std::u16string&)>(
@@ -956,11 +933,7 @@ void LocationBarView::Layout(PassKey) {
   // be discounted.
   const bool all_page_actions_migrated =
       IsPageActionMigrated(PageActionIconType::kBookmarkStar);
-  const int kTrailingEdgePaddingForAim =
-      IsPageActionMigrated(PageActionIconType::kAiMode) &&
-              !all_page_actions_migrated
-          ? -3
-          : 5;
+  const int kTrailingEdgePaddingForAim = !all_page_actions_migrated ? -3 : 5;
   const PageActionInfo info = GetPageActionInfo();
   const int kTrailingEdgePaddingForNonAim =
       (info.num_legacy_page_actions_shown == 0) && !all_page_actions_migrated
@@ -1436,23 +1409,15 @@ LocationBarView::PageActionInfo LocationBarView::GetPageActionInfo() const {
   }
 
   // Check PageActionIconContainerView (legacy page actions).
-  bool aim_page_action_is_visible = false;
   for (views::View* view : page_action_icon_container_->children()) {
     if (view->GetVisible()) {
       info.num_legacy_page_actions_shown++;
-      PageActionIconView* icon_view = static_cast<PageActionIconView*>(view);
-      if (icon_view->action_id() == kActionAiMode) {
-        aim_page_action_is_visible = true;
-      }
     }
   }
 
   if (migrated_aim_page_action_is_visible &&
       (info.num_migrated_page_actions_shown +
        info.num_legacy_page_actions_shown) == 1) {
-    info.is_aim_last_visible_page_action = true;
-  } else if (aim_page_action_is_visible &&
-             info.num_legacy_page_actions_shown == 1) {
     info.is_aim_last_visible_page_action = true;
   }
 
@@ -1645,19 +1610,11 @@ void LocationBarView::RefreshPageActionIconViews() {
   page_action_icon_controller_->UpdateAll();
 }
 
-void LocationBarView::RefreshAiModePageActionIconView() {
-  if (IsPageActionMigrated(PageActionIconType::kAiMode)) {
-    auto* aim_page_action_controller =
-        omnibox::AiModePageActionController::From(browser_);
-    if (aim_page_action_controller) {
-      aim_page_action_controller->UpdatePageAction();
-    }
-  } else {
-    PageActionIconView* aim_icon_view =
-        page_action_icon_controller_->GetIconView(PageActionIconType::kAiMode);
-    if (aim_icon_view) {
-      aim_icon_view->Update();
-    }
+void LocationBarView::RefreshAiModePageAction() {
+  auto* aim_page_action_controller =
+      omnibox::AiModePageActionController::From(browser_);
+  if (aim_page_action_controller) {
+    aim_page_action_controller->UpdatePageAction();
   }
 
   if (omnibox::kShowRhsAimHint.Get()) {
@@ -2063,10 +2020,10 @@ void LocationBarView::OnChanged() {
   InvalidateLayout();
   SchedulePaint();
   UpdateChipVisibility();
-  // The AI mode page action icon view visibility depends on whether or not
+  // The AI mode page action visibility depends on whether or not
   // user text has been entered into the omnibox, so refresh the icon on
   // changes.
-  RefreshAiModePageActionIconView();
+  RefreshAiModePageAction();
 }
 
 const LocationBarModel* LocationBarView::GetLocationBarModel() const {
@@ -2083,9 +2040,9 @@ void LocationBarView::OnOmniboxFocused() {
   hover_animation_.Reset();
   RefreshBackground();
 
-  // The AI mode page action icon view should only be visible when the omnibox
+  // The AI mode page action should only be visible when the omnibox
   // is focused, so if there is a change in focus, refresh the icon.
-  RefreshAiModePageActionIconView();
+  RefreshAiModePageAction();
 }
 
 void LocationBarView::OpenOmniboxPopup() {
@@ -2103,9 +2060,9 @@ void LocationBarView::OnOmniboxBlurred() {
   }
   RefreshBackground();
 
-  // The AI mode page action icon view should only be visible when the omnibox
+  // The AI mode page action should only be visible when the omnibox
   // is focused, so if there is a change in focus, refresh the icon.
-  RefreshAiModePageActionIconView();
+  RefreshAiModePageAction();
 
   location_icon_view_->Update(false, false);
 }
