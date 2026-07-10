@@ -26,7 +26,6 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace accessibility_annotator {
 struct MemorySearchResults;
@@ -56,14 +55,13 @@ class AtMemoryManager {
   // session if the `trigger_source` is an @memory one.
   // TODO(crbug.com/507770024): Rename to OnSuggestionsShown.
   void OnPopupShown(
-      const FormGlobalId& form_id,
-      const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source,
       base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
           parent_suggestion_metadata,
       bool is_context_secure,
       UpdateSuggestionsCallback update_callback,
-      ukm::SourceId ukm_source_id);
+      FormSignature form_signature,
+      FieldSignature field_signature);
 
   // Called when the user types in the filter/search bar. Returns true if
   // handled by the manager (i.e., the current session is an @memory one).

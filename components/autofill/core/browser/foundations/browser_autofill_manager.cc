@@ -2267,10 +2267,14 @@ void BrowserAutofillManager::DidShowSuggestions(
   auto [form_structure, autofill_field] =
       FindMutableFormAndField(form_id, field_id);
 
+  FormSignature form_signature =
+      form_structure ? form_structure->form_signature() : FormSignature(0);
+  FieldSignature field_signature =
+      autofill_field ? autofill_field->GetFieldSignature() : FieldSignature(0);
+
   GetAtMemoryManager().OnPopupShown(
-      form_id, field_id, trigger_source, parent_suggestion_metadata,
-      client().IsContextSecure(), update_suggestions_callback,
-      driver().GetPageUkmSourceId());
+      trigger_source, parent_suggestion_metadata, client().IsContextSecure(),
+      update_suggestions_callback, form_signature, field_signature);
   if (parent_suggestion_metadata.has_value()) {
     // The shown suggestions were in a sub-popup and the code below is not
     // relevant for those.
