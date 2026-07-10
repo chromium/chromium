@@ -268,7 +268,7 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
       [_inputViewFade.trailingAnchor
           constraintEqualToAnchor:self.view.trailingAnchor],
       [_inputViewFade.bottomAnchor
-          constraintEqualToAnchor:self.view.bottomAnchor],
+          constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor],
     ]];
   }
 
