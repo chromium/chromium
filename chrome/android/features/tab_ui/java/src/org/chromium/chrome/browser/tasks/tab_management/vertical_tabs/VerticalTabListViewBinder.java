@@ -4,7 +4,14 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
+import android.content.res.Resources;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+
+import androidx.appcompat.widget.TooltipCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -41,6 +48,56 @@ public class VerticalTabListViewBinder {
                 newTabButton.setOnClickListener(
                         model.get(VerticalTabListProperties.ON_NEW_TAB_CLICK_LISTENER));
             }
+        } else if (VerticalTabListProperties.ON_COLLAPSE_CLICK_LISTENER == propertyKey) {
+            @Nullable View collapseButton = view.findViewById(R.id.collapse_button);
+            if (collapseButton != null) {
+                collapseButton.setOnClickListener(
+                        model.get(VerticalTabListProperties.ON_COLLAPSE_CLICK_LISTENER));
+            }
+        } else if (VerticalTabListProperties.IS_COLLAPSED == propertyKey) {
+            updateCollapsedState(model.get(VerticalTabListProperties.IS_COLLAPSED), view);
         }
+    }
+
+    private static void updateCollapsedState(boolean isCollapsed, View view) {
+        @Nullable View collapseButton = view.findViewById(R.id.collapse_button);
+        if (collapseButton instanceof ImageView imageView) {
+            imageView.setImageResource(
+                    isCollapsed
+                            ? R.drawable.vertical_tabs_menu_expand
+                            : R.drawable.vertical_tabs_menu_collapse);
+            int resId =
+                    isCollapsed
+                            ? R.string.accessibility_expand_vertical_tabs
+                            : R.string.accessibility_collapse_vertical_tabs;
+            String tooltipText = view.getContext().getString(resId);
+            imageView.setContentDescription(tooltipText);
+            TooltipCompat.setTooltipText(imageView, tooltipText);
+        }
+
+        LinearLayout headerContainer = view.findViewById(R.id.vertical_tab_header_container);
+        assert headerContainer != null;
+        headerContainer.setOrientation(
+                isCollapsed ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
+        headerContainer.setGravity(isCollapsed ? Gravity.CENTER_HORIZONTAL : Gravity.NO_GRAVITY);
+
+        Resources res = view.getResources();
+        int gap = res.getDimensionPixelSize(R.dimen.vertical_tabs_header_button_gap);
+        if (collapseButton != null) {
+            var collapseParams = (ViewGroup.MarginLayoutParams) collapseButton.getLayoutParams();
+            int collapseMarginEnd =
+                    res.getDimensionPixelSize(
+                            R.dimen.vertical_tabs_header_button_collapsed_margin_end);
+            collapseParams.setMarginEnd(isCollapsed ? 0 : collapseMarginEnd);
+            collapseParams.bottomMargin = isCollapsed ? gap : 0;
+            collapseButton.setLayoutParams(collapseParams);
+        }
+
+        View gridButton = view.findViewById(R.id.grid_button);
+        assert gridButton != null;
+        var gridParams = (ViewGroup.MarginLayoutParams) gridButton.getLayoutParams();
+        gridParams.setMarginEnd(isCollapsed ? 0 : gap);
+        gridParams.bottomMargin = isCollapsed ? gap : 0;
+        gridButton.setLayoutParams(gridParams);
     }
 }

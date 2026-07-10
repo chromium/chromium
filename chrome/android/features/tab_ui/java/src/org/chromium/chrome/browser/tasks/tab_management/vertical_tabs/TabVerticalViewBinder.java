@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
@@ -65,16 +66,11 @@ class TabVerticalViewBinder {
         bindCommonProperties(model, view, propertyKey);
 
         if (TabProperties.TITLE == propertyKey) {
-            TextView titleView = view.findViewById(R.id.tab_title);
-            titleView.setText(model.get(TabProperties.TITLE));
+            updateTitle(R.id.tab_title, model, view);
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             updateRegularColors(model, view);
         } else if (TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
-            @Nullable TabActionButtonData data = model.get(TabProperties.TAB_ACTION_BUTTON_DATA);
-            @Nullable View actionButton = view.findViewById(R.id.action_button);
-            if (actionButton != null) {
-                TabListViewBinderUtils.bindActionButton(model, actionButton, data);
-            }
+            updateActionButton(model, view);
         } else if (TabProperties.TAB_GROUP_ID == propertyKey) {
             updateChildRowPadding(model, view);
         } else if (TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
@@ -90,6 +86,17 @@ class TabVerticalViewBinder {
             updateMediaIndicator(model, view);
         } else if (TabProperties.ACTOR_UI_STATE == propertyKey) {
             updateActorIndicator(model, view);
+        } else if (TabProperties.IS_RAIL_COLLAPSED == propertyKey) {
+            updateTabItemSize(
+                    model,
+                    view,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            updateTitle(R.id.tab_title, model, view);
+            updateActionButton(model, view);
+            updateMediaIndicator(model, view);
+            updateActorIndicator(model, view);
+            updateChildRowPadding(model, view);
         }
     }
 
@@ -110,6 +117,14 @@ class TabVerticalViewBinder {
             view.setContentDescription(model.get(TabProperties.TITLE));
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             updatePinnedColors(model, view);
+        } else if (TabProperties.IS_RAIL_COLLAPSED == propertyKey) {
+            Resources resources = view.getContext().getResources();
+            updateTabItemSize(
+                    model,
+                    view,
+                    resources.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width),
+                    resources.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_height));
+            updateChildRowPadding(model, view);
         }
     }
 
@@ -125,8 +140,7 @@ class TabVerticalViewBinder {
         bindCommonProperties(model, view, propertyKey);
 
         if (TabProperties.TITLE == propertyKey) {
-            TextView titleView = view.findViewById(R.id.group_title);
-            titleView.setText(model.get(TabProperties.TITLE));
+            updateTitle(R.id.group_title, model, view);
         } else if (TabProperties.TAB_GROUP_CARD_COLOR == propertyKey) {
             updateGroupHeaderColors(model, view);
         } else if (TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
@@ -136,6 +150,15 @@ class TabVerticalViewBinder {
             updateChevronRotation(model, view);
             TabListViewBinderUtils.updateContentDescription(model, view);
             updateAccessibilityDelegate(model, view);
+        } else if (TabProperties.IS_RAIL_COLLAPSED == propertyKey) {
+            updateTabItemSize(
+                    model,
+                    view,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+
+            updateTitle(R.id.group_title, model, view);
+            updateChildRowPadding(model, view);
         }
     }
 
@@ -207,6 +230,12 @@ class TabVerticalViewBinder {
         ImageView mediaIndicator = view.findViewById(R.id.media_indicator_icon);
         if (mediaIndicator == null) return;
 
+        // TODO(b/527641177): Show media indicator instead of favicon when rail is collapsed.
+        if (model.get(TabProperties.IS_RAIL_COLLAPSED)) {
+            mediaIndicator.setVisibility(View.GONE);
+            return;
+        }
+
         @MediaState int mediaState = model.get(TabProperties.MEDIA_INDICATOR);
         if (mediaState != MediaState.NONE) {
             mediaIndicator.setImageResource(TabUtils.getMediaIndicatorDrawable(mediaState));
@@ -222,6 +251,19 @@ class TabVerticalViewBinder {
         @Nullable ImageView actuationSpinner = view.findViewById(R.id.actuation_spinner);
 
         if (aiIndicatorLine == null || actuationSpark == null || actuationSpinner == null) return;
+
+        // TODO(b/527641177): Confirm this use case when rail is collapsed.
+        if (model.get(TabProperties.IS_RAIL_COLLAPSED)) {
+            aiIndicatorLine.setVisibility(View.GONE);
+            actuationSpark.setVisibility(View.GONE);
+            actuationSpinner.setVisibility(View.GONE);
+            ObjectAnimator animator =
+                    (ObjectAnimator) actuationSpinner.getTag(R.id.actuation_spinner);
+            if (animator != null && animator.isRunning()) {
+                animator.cancel();
+            }
+            return;
+        }
 
         boolean shouldBeVisible = TabListViewBinderUtils.setupActorIndicator(model, view);
         aiIndicatorLine.setVisibility(shouldBeVisible ? View.VISIBLE : View.GONE);
@@ -287,8 +329,8 @@ class TabVerticalViewBinder {
         if (actionButton != null) {
             ImageViewCompat.setImageTintList(
                     actionButton, getActionButtonTintList(context, isSelected));
-            actionButton.setVisibility(isSelected ? View.VISIBLE : View.INVISIBLE);
         }
+        updateActionButton(model, view);
 
         updateFavicon(model, view);
         setupTabHoverListener(
@@ -357,6 +399,56 @@ class TabVerticalViewBinder {
         }
     }
 
+    private static void updateTabItemSize(
+            PropertyModel model, ViewGroup view, int expandedWidth, int expandedHeight) {
+        boolean isRailCollapsed = model.get(TabProperties.IS_RAIL_COLLAPSED);
+        Context context = view.getContext();
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        if (params == null) return;
+
+        int collapsedSize =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_collapsed_size);
+        int width = isRailCollapsed ? collapsedSize : expandedWidth;
+        int height = isRailCollapsed ? collapsedSize : expandedHeight;
+
+        if (params.width != width || params.height != height) {
+            params.width = width;
+            params.height = height;
+            view.setLayoutParams(params);
+        }
+    }
+
+    private static void updateTitle(int titleViewId, PropertyModel model, ViewGroup view) {
+        TextView titleView = view.findViewById(titleViewId);
+        if (titleView == null) return;
+
+        boolean isRailCollapsed = model.get(TabProperties.IS_RAIL_COLLAPSED);
+        if (isRailCollapsed) {
+            titleView.setVisibility(View.GONE);
+        } else {
+            titleView.setVisibility(View.VISIBLE);
+            titleView.setText(model.get(TabProperties.TITLE));
+        }
+        TabListViewBinderUtils.updateContentDescription(model, view);
+    }
+
+    private static void updateActionButton(PropertyModel model, ViewGroup view) {
+        View actionButton = view.findViewById(R.id.action_button);
+        if (actionButton == null) return;
+
+        boolean isRailCollapsed = model.get(TabProperties.IS_RAIL_COLLAPSED);
+        TabActionButtonData data = model.get(TabProperties.TAB_ACTION_BUTTON_DATA);
+        boolean isSelected = model.get(TabProperties.IS_SELECTED);
+
+        if (isRailCollapsed || data == null) {
+            actionButton.setVisibility(View.GONE);
+        } else {
+            actionButton.setVisibility(isSelected ? View.VISIBLE : View.INVISIBLE);
+            TabListViewBinderUtils.bindActionButton(model, actionButton, data);
+        }
+    }
+
     // Row-Specific Layout Geometry & Rotation Helpers
 
     private static void updateChevronRotation(PropertyModel model, ViewGroup view) {
@@ -403,11 +495,19 @@ class TabVerticalViewBinder {
 
     private static void updateChildRowPadding(PropertyModel model, View view) {
         boolean isInGroup = model.get(TabProperties.TAB_GROUP_ID) != null;
-        int marginStart =
-                isInGroup
-                        ? view.getResources()
-                                .getDimensionPixelSize(R.dimen.vertical_tab_child_nesting_margin)
-                        : 0;
+        boolean isRailCollapsed = model.get(TabProperties.IS_RAIL_COLLAPSED);
+
+        int marginStart = 0;
+        Resources resources = view.getResources();
+        if (isRailCollapsed) {
+            marginStart =
+                    resources.getDimensionPixelSize(
+                            R.dimen.vertical_tab_child_collapsed_margin_start);
+        } else if (isInGroup) {
+            marginStart =
+                    resources.getDimensionPixelSize(R.dimen.vertical_tab_child_nesting_margin);
+        }
+
         if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams params) {
             if (params.getMarginStart() != marginStart) {
                 params.setMarginStart(marginStart);
@@ -446,16 +546,19 @@ class TabVerticalViewBinder {
         view.setOnHoverListener(
                 (rowView, motionEvent) -> {
                     boolean isSelected = model.get(TabProperties.IS_SELECTED);
+                    // TODO(b/527641177): Show close button when hovering on the selected tab for
+                    // collapsed rail.
+                    boolean isRailCollapsed = model.get(TabProperties.IS_RAIL_COLLAPSED);
                     if (isSelected) {
                         if (actionButton != null) {
-                            actionButton.setVisibility(View.VISIBLE);
+                            actionButton.setVisibility(isRailCollapsed ? View.GONE : View.VISIBLE);
                         }
                         return false;
                     }
 
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_HOVER_ENTER:
-                            if (actionButton != null) {
+                            if (actionButton != null && !isRailCollapsed) {
                                 actionButton.setVisibility(View.VISIBLE);
                             }
                             ViewCompat.setBackgroundTintList(

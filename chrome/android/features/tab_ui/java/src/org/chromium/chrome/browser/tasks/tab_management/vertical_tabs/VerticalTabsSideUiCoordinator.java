@@ -29,13 +29,16 @@ import org.chromium.ui.base.ViewUtils;
 @NullMarked
 public class VerticalTabsSideUiCoordinator implements SideUiContainer {
     static final int VIEW_WIDTH_DP = VerticalTabUtils.SIDE_UI_CONTAINER_WIDTH_DP;
+    static final int COLLAPSED_WIDTH_DP = VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP;
 
     private final SideUiCoordinator mSideUiCoordinator;
     private final FrameLayout mRootView;
     private final @AnchorSide int mAnchorSide;
     private final VerticalTabListCoordinator mTabListCoordinator;
-    private final @Px int mViewWidth;
+    private final @Px int mExpandedViewWidth;
+    private final @Px int mCollapsedViewWidth;
     private final SettableNonNullObservableSupplier<Boolean> mIsVerticalTabsActiveSupplier;
+    private boolean mIsCollapsed;
 
     // Whether the vertical tab is automatically hidden due to run-time conditions.
     // TODO(crbug.com/513622986): Handle auto-hide logic when screen size goes below threshold.
@@ -45,6 +48,9 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer {
     // Whether the vertical tab is set to visible via UI. Remains true even if it is temporarily
     // hidden by other conditions such as narrow window i.e. |mIsAutoHidden| is true.
     private boolean mManualVisible;
+
+    private final VerticalTabListCoordinator.RailCollapseListener mCollapseListener =
+            this::onCollapseChanged;
 
     public VerticalTabsSideUiCoordinator(
             Activity activity,
@@ -63,7 +69,9 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer {
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT));
         mRootView.addView(mTabListCoordinator.getView());
-        mViewWidth = ViewUtils.dpToPx(activity, VIEW_WIDTH_DP);
+        mExpandedViewWidth = ViewUtils.dpToPx(activity, VIEW_WIDTH_DP);
+        mCollapsedViewWidth = ViewUtils.dpToPx(activity, COLLAPSED_WIDTH_DP);
+        mTabListCoordinator.setCollapseListener(mCollapseListener);
     }
 
     public void setVisible(boolean show) {
@@ -85,7 +93,8 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer {
     @Override
     public int determineShowableWidth(int availableWidth, int windowWidth) {
         // TODO(crbug.com/509226293): Implement layout threshold negotiation to auto-hide rail.
-        return availableWidth < mViewWidth ? 0 : mViewWidth;
+        int targetWidth = mIsCollapsed ? mCollapsedViewWidth : mExpandedViewWidth;
+        return availableWidth < targetWidth ? 0 : targetWidth;
     }
 
     @Override
@@ -113,7 +122,14 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer {
         mIsVerticalTabsActiveSupplier.set(newWidth > 0);
     }
 
+    private void onCollapseChanged(boolean isCollapsed) {
+        mIsCollapsed = isCollapsed;
+        mSideUiCoordinator.updateUi(
+                new UiUpdateRequest(getSideUiId(), /* suppressAnimations= */ true));
+    }
+
     public void destroy() {
+        mTabListCoordinator.setCollapseListener(null);
         mTabListCoordinator.destroy();
     }
 }

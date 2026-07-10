@@ -13,15 +13,23 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Properties for the Vertical Tab List. */
 @NullMarked
 public class VerticalTabListProperties {
+    public static final PropertyModel.WritableBooleanPropertyKey IS_COLLAPSED =
+            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             ON_GRID_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             ON_SEARCH_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             ON_NEW_TAB_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
+            ON_COLLAPSE_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                ON_GRID_CLICK_LISTENER, ON_SEARCH_CLICK_LISTENER, ON_NEW_TAB_CLICK_LISTENER
+                IS_COLLAPSED,
+                ON_GRID_CLICK_LISTENER,
+                ON_SEARCH_CLICK_LISTENER,
+                ON_NEW_TAB_CLICK_LISTENER,
+                ON_COLLAPSE_CLICK_LISTENER
             };
 }

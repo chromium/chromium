@@ -716,6 +716,12 @@
       <message name="IDS_ACCESSIBILITY_TAB_GROUPS" desc="Content description for the button to show tab groups UI.">
         Tab groups
       </message>
+      <message name="IDS_ACCESSIBILITY_COLLAPSE_VERTICAL_TABS" desc="Content description for the button to collapse the vertical tabs rail.">
+        Collapse Tabs
+      </message>
+      <message name="IDS_ACCESSIBILITY_EXPAND_VERTICAL_TABS" desc="Content description for the button to expand the vertical tabs rail.">
+        Expand Tabs
+      </message>
       <message name="IDS_TAB_GROUPS_CREATED_AGO_NOW" desc="A subtitle on a row for a tab group. Explains the group was created less than a minute ago.">
         Created just now
       </message>

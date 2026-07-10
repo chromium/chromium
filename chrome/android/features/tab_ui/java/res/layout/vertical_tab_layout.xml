@@ -32,6 +32,17 @@ found in the LICENSE file.
         android:layout_marginVertical="@dimen/vertical_tabs_header_margin_vertical"
         android:paddingVertical="@dimen/vertical_tabs_header_padding_vertical">
         <ImageButton
+            android:id="@+id/collapse_button"
+            android:layout_width="@dimen/vertical_tabs_header_button_size"
+            android:layout_height="@dimen/vertical_tabs_header_button_size"
+            android:src="@drawable/vertical_tabs_menu_collapse"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/accessibility_collapse_vertical_tabs"
+            android:scaleType="center"
+            android:padding="@dimen/vertical_tabs_header_button_padding"
+            android:layout_marginEnd="@dimen/vertical_tabs_header_button_collapsed_margin_end"
+            android:visibility="gone" />
+        <ImageButton
             android:id="@+id/grid_button"
             android:layout_width="@dimen/vertical_tabs_header_button_size"
             android:layout_height="@dimen/vertical_tabs_header_button_size"

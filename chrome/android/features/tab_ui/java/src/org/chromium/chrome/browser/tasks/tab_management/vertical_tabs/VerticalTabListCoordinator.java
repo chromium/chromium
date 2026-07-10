@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoord
 import org.chromium.chrome.browser.compositor.overlays.strip.TabGroupContextMenuCoordinator;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripContextMenuCoordinator;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -67,6 +68,8 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.ListObservable;
+import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -90,6 +93,7 @@ public class VerticalTabListCoordinator {
     private final TabListModel mPinnedTabsModelList;
     private final StaticPinnedTabsMediator mPinnedTabsMediator;
     private final TabListRecyclerView mPinnedTabsRecyclerView;
+    private final GridLayoutManager mPinnedLayoutManager;
     private final TabModelSelector mTabModelSelector;
     private final WindowAndroid mWindowAndroid;
     private final MultiInstanceManager mMultiInstanceManager;
@@ -102,15 +106,26 @@ public class VerticalTabListCoordinator {
     private final DataSharingTabManager mDataSharingTabManager;
     private final View mSpacerView;
     private final VerticalTabGroupSpineDecoration mSpineDecoration;
-    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
-    private final @Nullable AppHeaderObserver mAppHeaderObserver;
     private final TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private final NonNullObservableSupplier<Boolean> mVerticalTabsActiveSupplier;
     private final Callback<Boolean> mActiveObserver = this::setActive;
+    private final PropertyModel mContainerModel;
+
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+    private final @Nullable AppHeaderObserver mAppHeaderObserver;
+
+    private boolean mIsActive;
+
     private @Nullable TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
     private @Nullable TabContextMenuCoordinator mTabContextMenuCoordinator;
     private @Nullable TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
-    private boolean mIsActive;
+    private @Nullable RailCollapseListener mRailCollapseListener;
+    private @Nullable ListObserver<Void> mModelListObserver;
+
+    /** Listener for collapse state changes. */
+    public interface RailCollapseListener {
+        void onRailCollapseChanged(boolean isCollapsed);
+    }
 
     private class VerticalTabListClickHandler implements TabListItemOnClickListenerProvider {
         private final TabActionListener mTabGroupClickedListener =
@@ -230,6 +245,16 @@ public class VerticalTabListCoordinator {
         mContainerView.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        View collapseButton = mContainerView.findViewById(R.id.collapse_button);
+        if (collapseButton != null) {
+            boolean isCollapsibleEnabled =
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                            ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                            "enable_collapsible_rail",
+                            false);
+            collapseButton.setVisibility(isCollapsibleEnabled ? View.VISIBLE : View.GONE);
+        }
 
         mSpacerView = mContainerView.findViewById(R.id.desktop_window_spacer);
 
@@ -366,7 +391,7 @@ public class VerticalTabListCoordinator {
                     }
                 };
 
-        PropertyModel model =
+        mContainerModel =
                 new PropertyModel.Builder(VerticalTabListProperties.ALL_KEYS)
                         .with(
                                 VerticalTabListProperties.ON_GRID_CLICK_LISTENER,
@@ -377,8 +402,13 @@ public class VerticalTabListCoordinator {
                         .with(
                                 VerticalTabListProperties.ON_NEW_TAB_CLICK_LISTENER,
                                 v -> handleNewTabButtonClick())
+                        .with(
+                                VerticalTabListProperties.ON_COLLAPSE_CLICK_LISTENER,
+                                v -> toggleCollapseState())
+                        .with(VerticalTabListProperties.IS_COLLAPSED, false)
                         .build();
-        PropertyModelChangeProcessor.create(model, mContainerView, VerticalTabListViewBinder::bind);
+        PropertyModelChangeProcessor.create(
+                mContainerModel, mContainerView, VerticalTabListViewBinder::bind);
 
         mMediator =
                 new TabListMediator(
@@ -433,7 +463,8 @@ public class VerticalTabListCoordinator {
                 TabVerticalViewBinder::bindPinnedTab);
 
         pinnedTabsRecyclerView.setAdapter(pinnedTabsAdapter);
-        pinnedTabsRecyclerView.setLayoutManager(new GridLayoutManager(activity, getSpanCount()));
+        mPinnedLayoutManager = new GridLayoutManager(activity, getSpanCount());
+        pinnedTabsRecyclerView.setLayoutManager(mPinnedLayoutManager);
 
         pinnedTabsRecyclerView.addOnItemTouchListener(
                 new RecyclerView.SimpleOnItemTouchListener() {
@@ -450,6 +481,30 @@ public class VerticalTabListCoordinator {
                         return false;
                     }
                 });
+
+        // TODO(b/527641177): Find a better way to propagate IS_COLLAPSED to tab items. Maybe
+        // passing a supplier to TabListMediator constructor.
+        mModelListObserver =
+                new ListObservable.ListObserver<>() {
+                    @Override
+                    public void onItemRangeInserted(ListObservable source, int index, int count) {
+                        boolean isCollapsed =
+                                mContainerModel.get(VerticalTabListProperties.IS_COLLAPSED);
+                        updateRailCollapsedStateForRange(
+                                (TabListModel) source, index, count, isCollapsed);
+                    }
+
+                    @Override
+                    public void onItemRangeChanged(
+                            ListObservable source, int index, int count, @Nullable Void payload) {
+                        boolean isCollapsed =
+                                mContainerModel.get(VerticalTabListProperties.IS_COLLAPSED);
+                        updateRailCollapsedStateForRange(
+                                (TabListModel) source, index, count, isCollapsed);
+                    }
+                };
+        mPinnedTabsModelList.addObserver(mModelListObserver);
+        mModelList.addObserver(mModelListObserver);
 
         // TODO(crbug.com/509226293): Create a lightweight touch helper for pinned tabs if needed.
         // Setup drag-and-drop reordering. Reuses the vertical tab touch helper since pinned tabs
@@ -552,6 +607,22 @@ public class VerticalTabListCoordinator {
         mSpineDecoration.destroy();
         mTabModelSelectorTabModelObserver.destroy();
         mVerticalTabsActiveSupplier.removeObserver(mActiveObserver);
+
+        if (mModelListObserver != null) {
+            mModelList.removeObserver(mModelListObserver);
+            mPinnedTabsModelList.removeObserver(mModelListObserver);
+            mModelListObserver = null;
+        }
+        mRailCollapseListener = null;
+    }
+
+    /**
+     * Sets the listener to be notified when the rail's collapsed state changes.
+     *
+     * @param listener The listener to receive collapse state change events.
+     */
+    public void setCollapseListener(@Nullable RailCollapseListener listener) {
+        mRailCollapseListener = listener;
     }
 
     private void setActive(boolean isActive) {
@@ -651,6 +722,34 @@ public class VerticalTabListCoordinator {
     private void updatePinnedTabsVisibility() {
         mPinnedTabsRecyclerView.setVisibility(
                 mPinnedTabsModelList.isEmpty() ? View.GONE : View.VISIBLE);
+    }
+
+    private void toggleCollapseState() {
+        boolean isCollapsed = mContainerModel.get(VerticalTabListProperties.IS_COLLAPSED);
+        boolean newCollapsedState = !isCollapsed;
+        mContainerModel.set(VerticalTabListProperties.IS_COLLAPSED, newCollapsedState);
+
+        mPinnedLayoutManager.setSpanCount(newCollapsedState ? 1 : getSpanCount());
+
+        updateRailCollapsedStateForRange(mModelList, 0, mModelList.size(), newCollapsedState);
+        updateRailCollapsedStateForRange(
+                mPinnedTabsModelList, 0, mPinnedTabsModelList.size(), newCollapsedState);
+
+        if (mRailCollapseListener != null) {
+            mRailCollapseListener.onRailCollapseChanged(newCollapsedState);
+        }
+    }
+
+    private void updateRailCollapsedStateForRange(
+            TabListModel modelList, int startIndex, int count, boolean isCollapsed) {
+        assert startIndex >= 0;
+        assert startIndex + count <= modelList.size();
+        for (int i = startIndex; i < startIndex + count; i++) {
+            PropertyModel model = modelList.get(i).model;
+            if (TabProperties.isTabOrTabGroup(model)) {
+                model.set(TabProperties.IS_RAIL_COLLAPSED, isCollapsed);
+            }
+        }
     }
 
     private void setupItemTouchHelper(
@@ -861,8 +960,17 @@ public class VerticalTabListCoordinator {
         if (mTabGroupContextMenuCoordinator != null) mTabGroupContextMenuCoordinator.dismiss();
     }
 
+    private void updateSpacerVisibility(@Nullable AppHeaderState appHeaderState) {
+        boolean isInDesktopWindow = appHeaderState != null && appHeaderState.isInDesktopWindow();
+        mSpacerView.setVisibility(isInDesktopWindow ? View.VISIBLE : View.GONE);
+    }
+
     @Nullable TabStripContextMenuCoordinator getTabStripContextMenuCoordinatorForTesting() {
         return mTabStripContextMenuCoordinator;
+    }
+
+    PropertyModel getContainerModelForTesting() {
+        return mContainerModel;
     }
 
     @Nullable TabContextMenuCoordinator getTabContextMenuCoordinatorForTesting() {
@@ -895,8 +1003,7 @@ public class VerticalTabListCoordinator {
         return handleContextMenuInteraction(activity, recyclerView, localX, localY);
     }
 
-    private void updateSpacerVisibility(@Nullable AppHeaderState appHeaderState) {
-        boolean isInDesktopWindow = appHeaderState != null && appHeaderState.isInDesktopWindow();
-        mSpacerView.setVisibility(isInDesktopWindow ? View.VISIBLE : View.GONE);
+    GridLayoutManager getPinnedLayoutManagerForTesting() {
+        return mPinnedLayoutManager;
     }
 }

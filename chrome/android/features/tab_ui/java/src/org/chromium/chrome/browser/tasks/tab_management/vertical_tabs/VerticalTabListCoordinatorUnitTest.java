@@ -48,6 +48,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -86,6 +87,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardPropert
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListCoordinator.RailCollapseListener;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -963,5 +965,53 @@ public class VerticalTabListCoordinatorUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(spyLayoutManager).scrollToPositionWithOffset(eq(0), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testCollapseListenerAndModelToggle() {
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+                .param("enable_collapsible_rail", true)
+                .apply();
+
+        createCoordinator();
+
+        // Mock listener
+        RailCollapseListener mockListener = mock(RailCollapseListener.class);
+        mCoordinator.setCollapseListener(mockListener);
+
+        ViewGroup view = (ViewGroup) mCoordinator.getView();
+        View collapseButton = view.findViewById(R.id.collapse_button);
+        assertNotNull(collapseButton);
+        assertEquals(View.VISIBLE, collapseButton.getVisibility());
+
+        // Initially expanded
+        assertFalse(
+                mCoordinator
+                        .getContainerModelForTesting()
+                        .get(VerticalTabListProperties.IS_COLLAPSED));
+        assertEquals(4, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
+
+        // Click collapse
+        collapseButton.performClick();
+
+        // Verify model updated
+        assertTrue(
+                mCoordinator
+                        .getContainerModelForTesting()
+                        .get(VerticalTabListProperties.IS_COLLAPSED));
+        // Verify listener notified
+        verify(mockListener).onRailCollapseChanged(true);
+        assertEquals(1, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
+
+        // Click again to expand
+        collapseButton.performClick();
+        assertFalse(
+                mCoordinator
+                        .getContainerModelForTesting()
+                        .get(VerticalTabListProperties.IS_COLLAPSED));
+        verify(mockListener).onRailCollapseChanged(false);
+        assertEquals(4, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
     }
 }

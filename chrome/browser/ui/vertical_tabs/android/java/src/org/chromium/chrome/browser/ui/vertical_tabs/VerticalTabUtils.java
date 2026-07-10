@@ -18,6 +18,9 @@ public class VerticalTabUtils {
     /** The width of the vertical tabs SideUiContainer in dp. */
     public static final int SIDE_UI_CONTAINER_WIDTH_DP = 206;
 
+    /** The width of the collapsed vertical tabs SideUiContainer in dp. */
+    public static final int SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP = 74;
+
     /**
      * Returns whether the current device is eligible for Vertical Tabs. Vertical Tabs require the
      * AndroidVerticalTabs feature flag to be enabled and the device to be a tablet form factor.

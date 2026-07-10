@@ -36,6 +36,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -69,6 +70,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabVerticalViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private TabActionListener mCloseListener;
 
     private ViewGroup mItemView;
     private TextView mTitleView;
@@ -79,14 +81,15 @@ public class TabVerticalViewBinderUnitTest {
     private ImageView mActuationSparkView;
     private ImageView mActuationSpinnerView;
     private PropertyModel mModel;
+    private Activity mActivity;
 
     @Before
     public void setUp() {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mItemView =
                 (ViewGroup)
-                        LayoutInflater.from(activity)
+                        LayoutInflater.from(mActivity)
                                 .inflate(R.layout.vertical_tab_item, null, false);
         mTitleView = mItemView.findViewById(R.id.tab_title);
         mFaviconView = mItemView.findViewById(R.id.tab_favicon);
@@ -241,15 +244,14 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindCloseButtonClickListener() {
-        TabActionListener mockCloseListener = mock(TabActionListener.class);
         TabActionButtonData actionButtonData =
-                new TabActionButtonData(TabActionButtonType.CLOSE, mockCloseListener);
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
         mModel.set(TabProperties.TAB_ID, 123);
         mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ACTION_BUTTON_DATA);
 
         mCloseButton.performClick();
-        verify(mockCloseListener).run(any(View.class), eq(123), any());
+        verify(mCloseListener).run(any(View.class), eq(123), any());
     }
 
     @Test
@@ -277,6 +279,9 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testCloseButtonHover() {
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
         mModel.set(TabProperties.IS_SELECTED, false);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
 
@@ -298,6 +303,9 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testCloseButtonHover_Selected() {
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
         mModel.set(TabProperties.IS_SELECTED, true);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
 
@@ -377,11 +385,9 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindPinnedTab_FaviconAndClick() {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         ViewGroup pinnedView =
                 (ViewGroup)
-                        LayoutInflater.from(activity)
+                        LayoutInflater.from(mActivity)
                                 .inflate(R.layout.vertical_tab_pinned_item, null, false);
         ImageView faviconView = pinnedView.findViewById(R.id.tab_favicon);
 
@@ -416,11 +422,9 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindPinnedTab_LongAndContextClick() {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         ViewGroup pinnedView =
                 (ViewGroup)
-                        LayoutInflater.from(activity)
+                        LayoutInflater.from(mActivity)
                                 .inflate(R.layout.vertical_tab_pinned_item, null, false);
 
         // 1. Test Long Click Listener
@@ -444,11 +448,9 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindPinnedTab_SelectionColors() {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         ViewGroup pinnedView =
                 (ViewGroup)
-                        LayoutInflater.from(activity)
+                        LayoutInflater.from(mActivity)
                                 .inflate(R.layout.vertical_tab_pinned_item, null, false);
 
         // 1. When Pinned Tab is Selected
@@ -467,11 +469,9 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindPinnedTab_ContentDescription() {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         ViewGroup pinnedView =
                 (ViewGroup)
-                        LayoutInflater.from(activity)
+                        LayoutInflater.from(mActivity)
                                 .inflate(R.layout.vertical_tab_pinned_item, null, false);
 
         mModel.set(TabProperties.TITLE, "Google Website");
@@ -484,11 +484,9 @@ public class TabVerticalViewBinderUnitTest {
     @SmallTest
     @DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
     public void testBindTabGroupHeader_TitleAndColors() {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         ViewGroup headerView =
                 (ViewGroup)
-                        LayoutInflater.from(activity)
+                        LayoutInflater.from(mActivity)
                                 .inflate(R.layout.vertical_tab_group_header, null, false);
         TextView titleView = headerView.findViewById(R.id.group_title);
         ImageView expandChevron = headerView.findViewById(R.id.expand_chevron);
@@ -511,12 +509,12 @@ public class TabVerticalViewBinderUnitTest {
 
         int expectedBackgroundColor =
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
-                        activity, TabGroupColorId.RED, /* isIncognito= */ false);
+                        mActivity, TabGroupColorId.RED, /* isIncognito= */ false);
         assertEquals(expectedBackgroundColor, tintList.getDefaultColor());
 
         int expectedForegroundColor =
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemTextColor(
-                        activity, TabGroupColorId.RED, /* isIncognito= */ false);
+                        mActivity, TabGroupColorId.RED, /* isIncognito= */ false);
         assertEquals(expectedForegroundColor, titleView.getCurrentTextColor());
         assertEquals(expectedForegroundColor, expandChevron.getImageTintList().getDefaultColor());
     }
@@ -524,11 +522,9 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindTabGroupHeader_ContentDescription() {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         ViewGroup headerView =
                 (ViewGroup)
-                        LayoutInflater.from(activity)
+                        LayoutInflater.from(mActivity)
                                 .inflate(R.layout.vertical_tab_group_header, null, false);
 
         TextResolver resolver = context -> "Accessibility Group Description";
@@ -544,11 +540,9 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindTabGroupHeader_CollapsedState() {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         ViewGroup headerView =
                 (ViewGroup)
-                        LayoutInflater.from(activity)
+                        LayoutInflater.from(mActivity)
                                 .inflate(R.layout.vertical_tab_group_header, null, false);
         ImageView expandChevron = headerView.findViewById(R.id.expand_chevron);
 
@@ -564,7 +558,7 @@ public class TabVerticalViewBinderUnitTest {
         assertEquals(0f, expandChevron.getRotation(), 0.0f);
 
         // Test Attached / Clicked State (should animate)
-        activity.setContentView(headerView);
+        mActivity.setContentView(headerView);
         assertTrue(headerView.isAttachedToWindow());
 
         // Toggling back to Expanded while attached (should animate to 180 degrees)
@@ -580,10 +574,9 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testTabGroupHeaderAccessibilityDelegate() {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         ViewGroup headerView =
                 (ViewGroup)
-                        LayoutInflater.from(activity)
+                        LayoutInflater.from(mActivity)
                                 .inflate(R.layout.vertical_tab_group_header, null, false);
 
         // Initially collapsed = true.
@@ -599,7 +592,7 @@ public class TabVerticalViewBinderUnitTest {
 
         // Verify action click description is "Expand section".
         boolean hasExpandAction = false;
-        String expandLabel = activity.getString(string.accessibility_expand_section);
+        String expandLabel = mActivity.getString(string.accessibility_expand_section);
         for (AccessibilityNodeInfo.AccessibilityAction action : nodeInfo.getActionList()) {
             if (action.getId() == AccessibilityNodeInfo.ACTION_CLICK) {
                 assertEquals(expandLabel, action.getLabel());
@@ -620,7 +613,7 @@ public class TabVerticalViewBinderUnitTest {
 
         // Verify action click description updates to "Collapse section".
         boolean hasCollapseAction = false;
-        String collapseLabel = activity.getString(string.accessibility_collapse_section);
+        String collapseLabel = mActivity.getString(string.accessibility_collapse_section);
         for (AccessibilityNodeInfo.AccessibilityAction action : nodeInfo.getActionList()) {
             if (action.getId() == AccessibilityNodeInfo.ACTION_CLICK) {
                 assertEquals(collapseLabel, action.getLabel());
@@ -707,11 +700,9 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testPinnedTabHoverBackground() {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         ViewGroup pinnedView =
                 (ViewGroup)
-                        LayoutInflater.from(activity)
+                        LayoutInflater.from(mActivity)
                                 .inflate(R.layout.vertical_tab_pinned_item, null, false);
 
         // Pinned tabs should not have an action button
@@ -780,5 +771,204 @@ public class TabVerticalViewBinderUnitTest {
 
         bgTintAfter = pinnedView.getBackgroundTintList();
         assertEquals(bgTintBefore, bgTintAfter);
+    }
+
+    @Test
+    @SmallTest
+    public void testBindTab_RailCollapsed() {
+        mItemView.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mModel.set(TabProperties.TITLE, "Google");
+        TextResolver resolver = context -> "Google";
+        mModel.set(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER, resolver);
+        mModel.set(TabProperties.IS_RAIL_COLLAPSED, true);
+        mModel.set(TabProperties.TAB_GROUP_ID, new Token(1L, 2L)); // In group
+
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_RAIL_COLLAPSED);
+
+        int expectedSize =
+                mItemView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_collapsed_size);
+        assertEquals(expectedSize, mItemView.getLayoutParams().width);
+        assertEquals(expectedSize, mItemView.getLayoutParams().height);
+
+        assertEquals(View.GONE, mTitleView.getVisibility());
+        assertEquals("Google", mItemView.getContentDescription());
+        assertEquals(View.GONE, mCloseButton.getVisibility());
+        assertEquals(View.GONE, mMediaIndicatorView.getVisibility());
+        assertEquals(View.GONE, mIndicatorView.getVisibility());
+
+        // Verify padding is collapsed margin
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) mItemView.getLayoutParams();
+        int expectedMargin =
+                mItemView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_child_collapsed_margin_start);
+        assertEquals(expectedMargin, lp.getMarginStart());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindTab_RailExpanded_InGroup() {
+        mItemView.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mModel.set(TabProperties.TITLE, "Google");
+        mModel.set(TabProperties.IS_RAIL_COLLAPSED, false);
+        mModel.set(TabProperties.IS_SELECTED, true);
+        mModel.set(TabProperties.TAB_GROUP_ID, new Token(1L, 2L)); // In group
+        mModel.set(
+                TabProperties.TAB_ACTION_BUTTON_DATA,
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener));
+
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_RAIL_COLLAPSED);
+
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, mItemView.getLayoutParams().width);
+        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, mItemView.getLayoutParams().height);
+
+        assertEquals(View.VISIBLE, mTitleView.getVisibility());
+        assertEquals("Google", mTitleView.getText());
+        assertEquals(View.VISIBLE, mCloseButton.getVisibility());
+
+        // Verify padding is nesting margin
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) mItemView.getLayoutParams();
+        int expectedMargin =
+                mItemView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_child_nesting_margin);
+        assertEquals(expectedMargin, lp.getMarginStart());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_RailCollapsed() {
+        ViewGroup pinnedView =
+                (ViewGroup)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.vertical_tab_pinned_item, null, false);
+        pinnedView.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        mModel.set(TabProperties.IS_RAIL_COLLAPSED, true);
+
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_RAIL_COLLAPSED);
+
+        int expectedSize =
+                pinnedView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_collapsed_size);
+        assertEquals(expectedSize, pinnedView.getLayoutParams().width);
+        assertEquals(expectedSize, pinnedView.getLayoutParams().height);
+
+        // Verify padding is collapsed margin
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) pinnedView.getLayoutParams();
+        int expectedMargin =
+                pinnedView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_child_collapsed_margin_start);
+        assertEquals(expectedMargin, lp.getMarginStart());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_RailExpanded() {
+        ViewGroup pinnedView =
+                (ViewGroup)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.vertical_tab_pinned_item, null, false);
+        pinnedView.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        mModel.set(TabProperties.IS_RAIL_COLLAPSED, false);
+
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_RAIL_COLLAPSED);
+
+        int expectedWidth =
+                pinnedView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
+        int expectedHeight =
+                pinnedView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_height);
+        assertEquals(expectedWidth, pinnedView.getLayoutParams().width);
+        assertEquals(expectedHeight, pinnedView.getLayoutParams().height);
+
+        // Verify padding is 0
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) pinnedView.getLayoutParams();
+        assertEquals(0, lp.getMarginStart());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindTabGroupHeader_RailCollapsed() {
+        ViewGroup headerView =
+                (ViewGroup)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.vertical_tab_group_header, null, false);
+        headerView.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        TextView titleView = headerView.findViewById(R.id.group_title);
+
+        mModel.set(TabProperties.TITLE, "My Group");
+        mModel.set(TabProperties.IS_RAIL_COLLAPSED, true);
+
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.IS_RAIL_COLLAPSED);
+
+        int expectedSize =
+                headerView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_collapsed_size);
+        assertEquals(expectedSize, headerView.getLayoutParams().width);
+        assertEquals(expectedSize, headerView.getLayoutParams().height);
+        assertEquals(View.GONE, titleView.getVisibility());
+
+        // Verify padding is collapsed margin
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) headerView.getLayoutParams();
+        int expectedMargin =
+                headerView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_child_collapsed_margin_start);
+        assertEquals(expectedMargin, lp.getMarginStart());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindTabGroupHeader_RailExpanded() {
+        ViewGroup headerView =
+                (ViewGroup)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.vertical_tab_group_header, null, false);
+        headerView.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        TextView titleView = headerView.findViewById(R.id.group_title);
+
+        mModel.set(TabProperties.TITLE, "My Group");
+        mModel.set(TabProperties.IS_RAIL_COLLAPSED, false);
+
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.IS_RAIL_COLLAPSED);
+
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, headerView.getLayoutParams().width);
+        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, headerView.getLayoutParams().height);
+        assertEquals(View.VISIBLE, titleView.getVisibility());
+        assertEquals("My Group", titleView.getText());
+
+        // Verify padding is 0
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) headerView.getLayoutParams();
+        assertEquals(0, lp.getMarginStart());
     }
 }

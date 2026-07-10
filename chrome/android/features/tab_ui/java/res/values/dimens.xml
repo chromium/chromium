@@ -215,7 +215,9 @@ found in the LICENSE file.
     <dimen name="vertical_tab_item_actuation_icon_size">20dp</dimen>
     <dimen name="vertical_tab_item_corner_radius">8dp</dimen>
     <dimen name="vertical_tab_item_margin_bottom">4dp</dimen>
+    <dimen name="vertical_tab_item_collapsed_size">32dp</dimen>
     <dimen name="vertical_tab_child_nesting_margin">8dp</dimen>
+    <dimen name="vertical_tab_child_collapsed_margin_start">9dp</dimen>
     <dimen name="vertical_tab_spine_width">2dp</dimen>
     <dimen name="vertical_tab_spine_radius">4dp</dimen>
 
@@ -237,4 +239,5 @@ found in the LICENSE file.
     <dimen name="vertical_tabs_header_button_size">32dp</dimen>
     <dimen name="vertical_tabs_header_button_padding">4dp</dimen>
     <dimen name="vertical_tabs_header_button_gap">2dp</dimen>
+    <dimen name="vertical_tabs_header_button_collapsed_margin_end">8dp</dimen>
 </resources>
