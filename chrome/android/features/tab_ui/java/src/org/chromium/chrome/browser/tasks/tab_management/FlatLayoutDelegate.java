@@ -16,22 +16,37 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridD
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
- * {@link TabListMediator.TabListLayoutType#FLAT} implementation of {@link
- * TabGroupObserverDelegate}.
+ * {@link TabListMediator.TabListLayoutType#FLAT} implementation of {@link TabListLayoutDelegate}.
  */
 @NullMarked
-class FlatTabGroupObserverDelegate extends TabGroupObserverDelegate {
+class FlatLayoutDelegate extends TabListLayoutDelegate {
     private final @Nullable TabGridDialogHandler mTabGridDialogHandler;
 
-    FlatTabGroupObserverDelegate(
+    FlatLayoutDelegate(
             TabListMediator mediator,
             TabListModel modelList,
             @Nullable TabGridDialogHandler dialogHandler) {
         super(mediator, modelList);
         mTabGridDialogHandler = dialogHandler;
+    }
+
+    @Override
+    public int getInsertionIndexOfTab(Tab tab) {
+        if (tab == null) return TabList.INVALID_TAB_INDEX;
+        // Compute the index of the tab within the tab's group.
+        @Nullable PropertyModel model = mModelList.getFirstTabPropertyModel();
+        if (model == null) return TabList.INVALID_TAB_INDEX;
+
+        List<Tab> related = mMediator.getRelatedTabsForId(model.get(TabProperties.TAB_ID));
+        int tabIndex = related.indexOf(tab);
+
+        // Get the position of the nth tab card ignoring any other CARD_TYPE entries present in the
+        // model list outside of TAB, TAB_GROUP, and ARCHIVED_TAB_GROUP.
+        return mModelList.indexOfNthTabCard(tabIndex);
     }
 
     @Override

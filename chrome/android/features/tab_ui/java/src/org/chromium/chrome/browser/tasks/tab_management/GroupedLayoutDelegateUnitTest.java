@@ -13,6 +13,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.ARCHIVED_TAB_GROUP;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
+
 import android.util.Pair;
 
 import org.junit.Before;
@@ -34,9 +38,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
 
-/** Unit tests for {@link GroupedTabGroupObserverDelegate}. */
+/** Unit tests for {@link GroupedLayoutDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class GroupedTabGroupObserverDelegateUnitTest {
+public class GroupedLayoutDelegateUnitTest {
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -51,12 +55,12 @@ public class GroupedTabGroupObserverDelegateUnitTest {
     private static final int TAB2_ID = 789;
 
     private TabListModel mModelList;
-    private GroupedTabGroupObserverDelegate mDelegate;
+    private GroupedLayoutDelegate mDelegate;
 
     @Before
     public void setUp() {
         mModelList = new TabListModel();
-        mDelegate = new GroupedTabGroupObserverDelegate(mMediator, mModelList, mThumbnailProvider);
+        mDelegate = new GroupedLayoutDelegate(mMediator, mModelList, mThumbnailProvider);
         when(mMediator.getCurrentTabModelChecked()).thenReturn(mTabModel);
         when(mTab1.getId()).thenReturn(TAB1_ID);
         when(mTab2.getId()).thenReturn(TAB2_ID);
@@ -276,9 +280,52 @@ public class GroupedTabGroupObserverDelegateUnitTest {
         verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
     }
 
+    @Test
+    public void testGetInsertionIndexOfTab() {
+        createAndAddPropertyModel(TAB1_ID);
+
+        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(2);
+        setupRepresentativeTab(mTab1, mTab1, 0);
+        setupRepresentativeTab(mTab2, mTab2, 1);
+
+        int insertionIndex1 = mDelegate.getInsertionIndexOfTab(mTab1);
+        int insertionIndex2 = mDelegate.getInsertionIndexOfTab(mTab2);
+
+        assertEquals(0, insertionIndex1);
+        assertEquals(1, insertionIndex2);
+    }
+
+    @Test
+    public void testGetInsertionIndexOfTab_WithArchivedTabGroup() {
+        // Add an archived group card at index 0.
+        PropertyModel archivedModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(CARD_TYPE, ARCHIVED_TAB_GROUP)
+                        .build();
+        mModelList.add(new ListItem(TabProperties.UiType.TAB, archivedModel));
+
+        // Add a regular tab model card at index 1.
+        createAndAddPropertyModel(TAB1_ID);
+
+        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(1);
+        setupRepresentativeTab(mTab1, mTab1, 0);
+
+        int insertionIndex = mDelegate.getInsertionIndexOfTab(mTab1);
+
+        // Insertion index should be offset by 1 (due to archived card) and return 1.
+        assertEquals(1, insertionIndex);
+    }
+
+    @Test
+    public void testGetInsertionIndexOfTab_NullTab() {
+        int insertionIndex = mDelegate.getInsertionIndexOfTab(null);
+        assertEquals(TabModel.INVALID_TAB_INDEX, insertionIndex);
+    }
+
     private PropertyModel createAndAddPropertyModel(int tabId) {
         PropertyModel model =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(CARD_TYPE, TAB)
                         .with(TabProperties.TAB_ID, tabId)
                         .build();
         mModelList.add(new ListItem(TabProperties.UiType.TAB, model));

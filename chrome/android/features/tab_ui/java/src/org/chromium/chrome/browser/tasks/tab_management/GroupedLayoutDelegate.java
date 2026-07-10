@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -24,18 +25,45 @@ import java.util.List;
 
 /**
  * {@link TabListMediator.TabListLayoutType#GROUPED} implementation of {@link
- * TabGroupObserverDelegate}.
+ * TabListLayoutDelegate}.
  */
 @NullMarked
-class GroupedTabGroupObserverDelegate extends TabGroupObserverDelegate {
+class GroupedLayoutDelegate extends TabListLayoutDelegate {
     private final @Nullable ThumbnailProvider mThumbnailProvider;
 
-    GroupedTabGroupObserverDelegate(
+    GroupedLayoutDelegate(
             TabListMediator mediator,
             TabListModel modelList,
             @Nullable ThumbnailProvider thumbnailProvider) {
         super(mediator, modelList);
         mThumbnailProvider = thumbnailProvider;
+    }
+
+    @Override
+    public int getInsertionIndexOfTab(Tab tab) {
+        if (tab == null) return TabList.INVALID_TAB_INDEX;
+        int tabIndex = TabList.INVALID_TAB_INDEX;
+        TabModel tabModel = mMediator.getCurrentTabModelChecked();
+
+        // Compute the index of the tab out of all tabs in the filter (ignore tabs that are not
+        // the representative tab in a group).
+        int count = tabModel.getIndividualTabAndGroupCount();
+        for (int i = 0; i < count; i++) {
+            @Nullable Tab representativeTab = tabModel.getRepresentativeTabAt(i);
+            if (representativeTab != null && tab.getId() == representativeTab.getId()) {
+                tabIndex = i;
+                break;
+            }
+        }
+
+        // The current implementation of ARCHIVED_TAB_GROUP card types places all groups at the
+        // beginning of the model list. As a result, if any tab group cards exist, adjust the index
+        // for tab insertion to start after the allotted count of tab groups in the model list.
+        tabIndex += mModelList.getArchivedTabGroupCardCount();
+
+        // Get the position of the nth tab card ignoring any other CARD_TYPE entries present in the
+        // model list outside of TAB, TAB_GROUP, and ARCHIVED_TAB_GROUP.
+        return mModelList.indexOfNthTabCard(tabIndex);
     }
 
     @Override

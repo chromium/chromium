@@ -22,14 +22,17 @@ import org.chromium.ui.modelutil.PropertyModel;
  * override only the callbacks they handle.
  */
 @NullMarked
-abstract class TabGroupObserverDelegate implements TabGroupObserver {
+abstract class TabListLayoutDelegate implements TabGroupObserver {
     protected final TabListMediator mMediator;
     protected final TabListModel mModelList;
 
-    TabGroupObserverDelegate(TabListMediator mediator, TabListModel modelList) {
+    TabListLayoutDelegate(TabListMediator mediator, TabListModel modelList) {
         mMediator = mediator;
         mModelList = modelList;
     }
+
+    /** Returns the insertion index for a new tab card. */
+    public abstract int getInsertionIndexOfTab(Tab tab);
 
     @Override
     public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
@@ -69,5 +72,36 @@ abstract class TabGroupObserverDelegate implements TabGroupObserver {
         int newPosition = mModelList.indexFromTabId(destinationTab.getId());
 
         mModelList.moveItem(curPosition, newPosition);
+    }
+
+    /**
+     * Initializes layout-specific group properties on a child tab card model. Defaults to a no-op
+     * for layouts that do not style child tab cards.
+     */
+    public void setupGroupPropertiesForChildTab(Tab tab, PropertyModel model) {}
+
+    protected boolean hasHigherBackendIndex(int modelIndex, int targetModelIndex) {
+        return modelIndex != TabModel.INVALID_TAB_INDEX && modelIndex > targetModelIndex;
+    }
+
+    /**
+     * Adjusts the proposed insertion UI index if the tab is being moved from an earlier position.
+     *
+     * <p>If a tab is already present in the UI list (meaning it is being moved rather than newly
+     * inserted) and its current UI index is less than the proposed insertion index, removing the
+     * tab from its old position will shift all subsequent UI indices down by one. We must decrement
+     * the insertion index by one to account for this shift.
+     *
+     * @param currentIndex The proposed insertion UI index.
+     * @param targetTabCurrentIndex The current UI index of the tab being moved, or
+     *     TabModel.INVALID_TAB_INDEX if the tab is not currently in the UI list.
+     * @return The adjusted insertion UI index.
+     */
+    protected int adjustIndexForTabMovement(int currentIndex, int targetTabCurrentIndex) {
+        if (targetTabCurrentIndex != TabModel.INVALID_TAB_INDEX
+                && currentIndex > targetTabCurrentIndex) {
+            return currentIndex - 1;
+        }
+        return currentIndex;
     }
 }

@@ -27,9 +27,11 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridD
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Unit tests for {@link FlatTabGroupObserverDelegate}. */
+import java.util.Arrays;
+
+/** Unit tests for {@link FlatLayoutDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class FlatTabGroupObserverDelegateUnitTest {
+public class FlatLayoutDelegateUnitTest {
     private static final int TAB1_ID = 1;
     private static final int TAB2_ID = 2;
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
@@ -44,12 +46,12 @@ public class FlatTabGroupObserverDelegateUnitTest {
     @Mock private Tab mTab2;
 
     private TabListModel mModelList;
-    private FlatTabGroupObserverDelegate mDelegate;
+    private FlatLayoutDelegate mDelegate;
 
     @Before
     public void setUp() {
         mModelList = new TabListModel();
-        mDelegate = new FlatTabGroupObserverDelegate(mMediator, mModelList, mTabGridDialogHandler);
+        mDelegate = new FlatLayoutDelegate(mMediator, mModelList, mTabGridDialogHandler);
 
         when(mMediator.getCurrentTabModelChecked()).thenReturn(mTabModel);
         when(mTab1.getId()).thenReturn(TAB1_ID);
@@ -132,7 +134,7 @@ public class FlatTabGroupObserverDelegateUnitTest {
     @Test
     public void testDidMoveTabOutOfGroup_Strip() {
         // Recreate delegate without dialog handler to simulate Strip.
-        mDelegate = new FlatTabGroupObserverDelegate(mMediator, mModelList, null);
+        mDelegate = new FlatLayoutDelegate(mMediator, mModelList, null);
         addTabsToModelList(1, 2);
         when(mTabModel.getRepresentativeTabAt(0)).thenReturn(mTab2);
 
@@ -144,7 +146,7 @@ public class FlatTabGroupObserverDelegateUnitTest {
     @Test
     public void testDidMoveTabOutOfGroup_Strip_Undo() {
         // Recreate delegate without dialog handler to simulate Strip.
-        mDelegate = new FlatTabGroupObserverDelegate(mMediator, mModelList, null);
+        mDelegate = new FlatLayoutDelegate(mMediator, mModelList, null);
         addTabsToModelList(TAB2_ID);
         when(mTabModel.getRepresentativeTabAt(0)).thenReturn(mTab2);
         mDelegate.didMoveTabOutOfGroup(mTab1, 0);
@@ -222,6 +224,28 @@ public class FlatTabGroupObserverDelegateUnitTest {
         // Flat layout does not display tab group headers, so no updates should occur.
         verifyNoInteractions(mMediator);
         verifyNoInteractions(mTabGridDialogHandler);
+    }
+
+    @Test
+    public void testGetInsertionIndexOfTab() {
+        addTabsToModelList(TAB1_ID);
+        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(Arrays.asList(mTab1, mTab2));
+
+        int insertionIndex = mDelegate.getInsertionIndexOfTab(mTab2);
+
+        assertEquals(1, insertionIndex);
+    }
+
+    @Test
+    public void testGetInsertionIndexOfTab_NullTab() {
+        int insertionIndex = mDelegate.getInsertionIndexOfTab(null);
+        assertEquals(TabModel.INVALID_TAB_INDEX, insertionIndex);
+    }
+
+    @Test
+    public void testGetInsertionIndexOfTab_EmptyModelList() {
+        int insertionIndex = mDelegate.getInsertionIndexOfTab(mTab2);
+        assertEquals(TabModel.INVALID_TAB_INDEX, insertionIndex);
     }
 
     private void addTabsToModelList(int... tabIds) {

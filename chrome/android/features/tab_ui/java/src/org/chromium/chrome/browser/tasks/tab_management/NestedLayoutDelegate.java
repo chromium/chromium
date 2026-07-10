@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
@@ -18,16 +19,115 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * {@link TabListMediator.TabListLayoutType#NESTED} implementation of {@link
- * TabGroupObserverDelegate}.
+ * {@link TabListMediator.TabListLayoutType#NESTED} implementation of {@link TabListLayoutDelegate}.
  */
 @NullMarked
-class NestedTabGroupObserverDelegate extends TabGroupObserverDelegate {
-    NestedTabGroupObserverDelegate(TabListMediator mediator, TabListModel modelList) {
+class NestedLayoutDelegate extends TabListLayoutDelegate {
+    NestedLayoutDelegate(TabListMediator mediator, TabListModel modelList) {
         super(mediator, modelList);
+    }
+
+    /**
+     * Spatial indexing helper for nested layouts. Maps a backend Tab's absolute index to its
+     * corresponding UI list position.
+     */
+    @Override
+    public int getInsertionIndexOfTab(Tab tab) {
+        // TODO(crbug.com/509226293): Refactor to simplify.
+        if (tab == null) return TabList.INVALID_TAB_INDEX;
+
+        TabModel tabModel = mMediator.getCurrentTabModelChecked();
+
+        // Pre-compute the backend index lookup map for O(1) lookups.
+        Map<Integer, Integer> tabIdToBackendIndexMap = new HashMap<>();
+        for (int i = 0; i < tabModel.getCount(); i++) {
+            Tab t = tabModel.getTabAt(i);
+            if (t != null) {
+                tabIdToBackendIndexMap.put(t.getId(), i);
+            }
+        }
+
+        Integer targetTabModelIndex = tabIdToBackendIndexMap.get(tab.getId());
+        if (targetTabModelIndex == null) {
+            return TabList.INVALID_TAB_INDEX;
+        }
+
+        Token targetTabGroupId = tab.getTabGroupId();
+        if (targetTabGroupId != null
+                && tabModel.getTabGroupCollapsed(targetTabGroupId)
+                && mModelList.indexFromTabGroupId(targetTabGroupId) != TabModel.INVALID_TAB_INDEX) {
+            // Hidden if the group is collapsed and a valid header exists.
+            return TabList.INVALID_TAB_INDEX;
+        }
+
+        int targetTabCurrentIndex = mModelList.indexFromTabId(tab.getId());
+        int targetInsertionUiIndex = TabModel.INVALID_TAB_INDEX;
+        boolean isScanningTargetGroup = false;
+
+        for (int currentIndex = 0; currentIndex < mModelList.size(); currentIndex++) {
+            if (currentIndex == targetTabCurrentIndex) {
+                continue;
+            }
+
+            PropertyModel currentModel = mModelList.get(currentIndex).model;
+            if (!TabProperties.isTabOrTabGroup(currentModel)) {
+                continue;
+            }
+            int currentTabId = currentModel.get(TabProperties.TAB_ID);
+            Tab currentTab = tabModel.getTabById(currentTabId);
+            if (currentTab == null) {
+                continue;
+            }
+            Integer currentTabModelIndex = tabIdToBackendIndexMap.get(currentTabId);
+            if (currentTabModelIndex == null) {
+                continue;
+            }
+
+            // Target tab matches the current top-level card's group id, insert it within that
+            // group's bounds.
+            if (targetTabGroupId != null && targetTabGroupId.equals(currentTab.getTabGroupId())) {
+                isScanningTargetGroup = true;
+
+                // Default the insertion point to immediately after the header.
+                if (TabProperties.isTabGroupHeader(currentModel)) {
+                    targetInsertionUiIndex =
+                            adjustIndexForTabMovement(currentIndex + 1, targetTabCurrentIndex);
+                    continue;
+                }
+
+                // Find the first sibling that comes after the target in the backend, and insert
+                // immediately before it.
+                if (hasHigherBackendIndex(currentTabModelIndex, targetTabModelIndex)) {
+                    return adjustIndexForTabMovement(currentIndex, targetTabCurrentIndex);
+                }
+                targetInsertionUiIndex =
+                        adjustIndexForTabMovement(currentIndex + 1, targetTabCurrentIndex);
+
+            } else if (isScanningTargetGroup) {
+                // Insert at end of group.
+                return targetInsertionUiIndex;
+            } else {
+                // Only compare top-level items, skip nested child rows.
+                if (TabProperties.isTabInGroup(currentModel)) {
+                    continue;
+                }
+
+                // Insert immediately before the first top-level item (pinned, regular, or group
+                // header) whose backend index is greater than the target tab's backend index.
+                if (hasHigherBackendIndex(currentTabModelIndex, targetTabModelIndex)) {
+                    return adjustIndexForTabMovement(currentIndex, targetTabCurrentIndex);
+                }
+            }
+        }
+
+        return targetInsertionUiIndex != TabModel.INVALID_TAB_INDEX
+                ? targetInsertionUiIndex
+                : adjustIndexForTabMovement(mModelList.size(), targetTabCurrentIndex);
     }
 
     @Override
@@ -92,8 +192,7 @@ class NestedTabGroupObserverDelegate extends TabGroupObserverDelegate {
             itemsToMove += relatedTabs.size();
         }
 
-        int destinationUiIndex =
-                getInsertionIndexOfGroupForNestedLayout(movedTab, tabModelNewIndex, relatedTabs);
+        int destinationUiIndex = getInsertionIndexOfGroup(movedTab, tabModelNewIndex, relatedTabs);
         if (destinationUiIndex == TabModel.INVALID_TAB_INDEX) return;
 
         if (sourceUiIndex + itemsToMove == destinationUiIndex) return;
@@ -123,7 +222,7 @@ class NestedTabGroupObserverDelegate extends TabGroupObserverDelegate {
                 destinationTab, tabGroupId, destUiIndex)) {
             // After adding the group header, the destination tab's model shifts by one position.
             PropertyModel childModel = mModelList.get(destUiIndex + 1).model;
-            mMediator.setupGroupPropertiesForChildTab(destinationTab, childModel);
+            setupGroupPropertiesForChildTab(destinationTab, childModel);
         }
     }
 
@@ -143,6 +242,19 @@ class NestedTabGroupObserverDelegate extends TabGroupObserverDelegate {
         }
     }
 
+    @Override
+    public void setupGroupPropertiesForChildTab(Tab tab, PropertyModel model) {
+        Token tabGroupId = tab.getTabGroupId();
+        if (tabGroupId != null) {
+            model.set(TabProperties.TAB_GROUP_ID, tabGroupId);
+            TabModel tabModel = mMediator.getCurrentTabModelChecked();
+            @TabGroupColorId int colorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
+            mMediator.updateTabGroupProperties(tab, model, colorId);
+        } else {
+            mMediator.clearTabGroupProperties(model);
+        }
+    }
+
     /**
      * Updates the UI properties and positioning of a child tab in the NESTED layout when its group
      * membership changes.
@@ -158,7 +270,7 @@ class NestedTabGroupObserverDelegate extends TabGroupObserverDelegate {
             oldTabGroupId = mModelList.get(srcIndex).model.get(TabProperties.TAB_GROUP_ID);
         }
 
-        int desIndex = mMediator.getInsertionIndexOfTabForNestedLayout(tab);
+        int desIndex = getInsertionIndexOfTab(tab);
 
         if (srcIndex == TabModel.INVALID_TAB_INDEX && desIndex != TabModel.INVALID_TAB_INDEX) {
             // Tab is moving out of a collapsed group.
@@ -171,7 +283,7 @@ class NestedTabGroupObserverDelegate extends TabGroupObserverDelegate {
             mModelList.removeAt(srcIndex);
         } else if (srcIndex != TabModel.INVALID_TAB_INDEX) {
             PropertyModel model = mModelList.get(srcIndex).model;
-            mMediator.setupGroupPropertiesForChildTab(tab, model);
+            setupGroupPropertiesForChildTab(tab, model);
             mMediator.bindTabActionStateProperties(mMediator.getTabActionState(), tab, model);
 
             mModelList.moveItem(srcIndex, desIndex);
@@ -211,7 +323,7 @@ class NestedTabGroupObserverDelegate extends TabGroupObserverDelegate {
      * @param relatedTabs The list of tabs in the group being moved.
      * @return The UI index of the element immediately following the group's new position.
      */
-    private int getInsertionIndexOfGroupForNestedLayout(
+    private int getInsertionIndexOfGroup(
             Tab movedTab, int tabModelNewIndex, List<Tab> relatedTabs) {
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
 

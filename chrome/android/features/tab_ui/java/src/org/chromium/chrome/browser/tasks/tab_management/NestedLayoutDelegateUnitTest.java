@@ -40,9 +40,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/** Unit tests for {@link NestedTabGroupObserverDelegate}. */
+/** Unit tests for {@link NestedLayoutDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class NestedTabGroupObserverDelegateUnitTest {
+public class NestedLayoutDelegateUnitTest {
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
     private static final int TAB1_ID = 11;
     private static final int TAB2_ID = 22;
@@ -57,13 +57,15 @@ public class NestedTabGroupObserverDelegateUnitTest {
     @Mock private TabModel mTabModel;
 
     private TabListModel mModelList;
-    private NestedTabGroupObserverDelegate mDelegate;
+    private NestedLayoutDelegate mDelegate;
 
     @Before
     public void setUp() {
         mModelList = new TabListModel();
-        mDelegate = new NestedTabGroupObserverDelegate(mMediator, mModelList);
+        mDelegate = new NestedLayoutDelegate(mMediator, mModelList);
         when(mMediator.getCurrentTabModelChecked()).thenReturn(mTabModel);
+        when(mTabModel.getTabGroupColorWithFallback(any(Token.class)))
+                .thenReturn(TabGroupColorId.BLUE);
         when(mTab1.getId()).thenReturn(TAB1_ID);
         when(mTab2.getId()).thenReturn(TAB2_ID);
         when(mTab3.getId()).thenReturn(TAB3_ID);
@@ -176,19 +178,19 @@ public class NestedTabGroupObserverDelegateUnitTest {
 
     @Test
     public void testDidMoveTabOutOfGroup() {
+        setupTabsInModel(mTab1, mTab3);
         addGroupHeaderToModelList(TAB1_ID, TAB_GROUP_ID);
         PropertyModel tab1Model = addTabToModelList(TAB1_ID, TAB_GROUP_ID);
         PropertyModel tab3Model = addTabToModelList(TAB3_ID, TAB_GROUP_ID);
 
         when(mTabModel.getRepresentativeTabAt(1)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mMediator.getInsertionIndexOfTabForNestedLayout(mTab3)).thenReturn(2);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
 
         mDelegate.didMoveTabOutOfGroup(mTab3, 1);
 
         verify(mMediator).updateTabGroupHeaderId(TAB_GROUP_ID);
-        verify(mMediator).setupGroupPropertiesForChildTab(mTab3, tab3Model);
+        verify(mMediator).clearTabGroupProperties(tab3Model);
         verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);
 
         assertModelListTabIds(TAB1_ID, TAB1_ID, TAB3_ID);
@@ -196,11 +198,12 @@ public class NestedTabGroupObserverDelegateUnitTest {
 
     @Test
     public void testDidMoveTabOutOfGroup_CollapsedGroup() {
+        setupTabsInModel(mTab1, mTab3);
         addGroupHeaderToModelList(TAB1_ID, TAB_GROUP_ID);
 
         when(mTabModel.getRepresentativeTabAt(1)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mMediator.getInsertionIndexOfTabForNestedLayout(mTab3)).thenReturn(1);
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
 
         mDelegate.didMoveTabOutOfGroup(mTab3, 1);
@@ -210,55 +213,56 @@ public class NestedTabGroupObserverDelegateUnitTest {
 
     @Test
     public void testDidMoveTabOutOfGroup_RepresentativeTab() {
-        PropertyModel headerModel = addGroupHeaderToModelList(TAB1_ID, TAB_GROUP_ID);
+        setupTabsInModel(mTab1, mTab3);
+        PropertyModel headerModel = addGroupHeaderToModelList(TAB3_ID, TAB_GROUP_ID);
         PropertyModel tab1Model = addTabToModelList(TAB1_ID, TAB_GROUP_ID);
         PropertyModel tab3Model = addTabToModelList(TAB3_ID, TAB_GROUP_ID);
 
         when(mTabModel.getRepresentativeTabAt(1)).thenReturn(mTab3);
         when(mTab3.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mMediator.getInsertionIndexOfTabForNestedLayout(mTab1)).thenReturn(0);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab3));
 
         mDelegate.didMoveTabOutOfGroup(mTab1, 1);
 
         verify(mMediator).updateTabGroupHeaderId(TAB_GROUP_ID);
-        verify(mMediator).setupGroupPropertiesForChildTab(mTab1, tab1Model);
+        verify(mMediator).clearTabGroupProperties(tab1Model);
         verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);
 
-        assertModelListTabIds(TAB1_ID, TAB1_ID, TAB3_ID);
+        assertModelListTabIds(TAB1_ID, TAB3_ID, TAB3_ID);
     }
 
     @Test
     public void testDidMoveTabOutOfGroup_LastTab() {
+        setupTabsInModel(mTab1);
         addGroupHeaderToModelList(TAB1_ID, TAB_GROUP_ID);
         PropertyModel tab1Model = addTabToModelList(TAB1_ID, TAB_GROUP_ID);
 
         when(mTabModel.getRepresentativeTabAt(1)).thenReturn(mTab1);
-        when(mMediator.getInsertionIndexOfTabForNestedLayout(mTab1)).thenReturn(1);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of());
 
         mDelegate.didMoveTabOutOfGroup(mTab1, 1);
 
         verify(mMediator).updateTabGroupHeaderId(null);
-        verify(mMediator).setupGroupPropertiesForChildTab(mTab1, tab1Model);
+        verify(mMediator).clearTabGroupProperties(tab1Model);
     }
 
     @Test
     public void testDidMergeTabToGroup() {
+        setupTabsInModel(mTab1, mTab2);
         PropertyModel tab1Model = addTabToModelList(TAB1_ID, null);
         PropertyModel tab2Model = addTabToModelList(TAB2_ID, null);
 
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
-        when(mMediator.getInsertionIndexOfTabForNestedLayout(mTab1)).thenReturn(0);
-        when(mMediator.getInsertionIndexOfTabForNestedLayout(mTab2)).thenReturn(1);
 
         mDelegate.didMergeTabToGroup(mTab1, true);
         mDelegate.didMergeTabToGroup(mTab2, false);
 
-        verify(mMediator).setupGroupPropertiesForChildTab(mTab1, tab1Model);
-        verify(mMediator).setupGroupPropertiesForChildTab(mTab2, tab2Model);
+        assertEquals(TAB_GROUP_ID, tab1Model.get(TabProperties.TAB_GROUP_ID));
+        assertEquals(TAB_GROUP_ID, tab2Model.get(TabProperties.TAB_GROUP_ID));
+        verify(mMediator).updateTabGroupProperties(mTab1, tab1Model, TabGroupColorId.BLUE);
+        verify(mMediator).updateTabGroupProperties(mTab2, tab2Model, TabGroupColorId.BLUE);
         verify(mMediator).ensureGroupHeaderExistsInNestedLayout(mTab1, TAB_GROUP_ID, 0);
         verify(mMediator).ensureGroupHeaderExistsInNestedLayout(mTab2, TAB_GROUP_ID, 1);
         verify(mMediator, times(2)).updateTabGroupTitle(TAB_GROUP_ID);
@@ -266,31 +270,32 @@ public class NestedTabGroupObserverDelegateUnitTest {
 
     @Test
     public void testDidMergeTabToGroup_ToExistingGroup() {
+        setupTabsInModel(mTab1, mTab2, mTab3);
         addGroupHeaderToModelList(TAB1_ID, TAB_GROUP_ID);
         addTabToModelList(TAB1_ID, TAB_GROUP_ID);
         addTabToModelList(TAB2_ID, TAB_GROUP_ID);
         PropertyModel tab3Model = addTabToModelList(TAB3_ID, null);
 
         when(mTab3.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mMediator.getInsertionIndexOfTabForNestedLayout(mTab3)).thenReturn(3);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2, mTab3));
 
         mDelegate.didMergeTabToGroup(mTab3, false);
 
-        verify(mMediator).setupGroupPropertiesForChildTab(mTab3, tab3Model);
+        assertEquals(TAB_GROUP_ID, tab3Model.get(TabProperties.TAB_GROUP_ID));
+        verify(mMediator).updateTabGroupProperties(mTab3, tab3Model, TabGroupColorId.BLUE);
         verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);
     }
 
     @Test
     public void testDidMergeTabToGroup_CollapsedGroup() {
+        setupTabsInModel(mTab1, mTab2, mTab3);
         addGroupHeaderToModelList(TAB1_ID, TAB_GROUP_ID);
         PropertyModel tab3Model = addTabToModelList(TAB3_ID, null);
 
         assertEquals(2, mModelList.size());
 
         when(mTab3.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mMediator.getInsertionIndexOfTabForNestedLayout(mTab3))
-                .thenReturn(TabModel.INVALID_TAB_INDEX);
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2, mTab3));
 
         mDelegate.didMergeTabToGroup(mTab3, false);
@@ -360,7 +365,8 @@ public class NestedTabGroupObserverDelegateUnitTest {
 
         mDelegate.didCreateNewGroup(mTab1, mTabModel);
 
-        verify(mMediator).setupGroupPropertiesForChildTab(mTab1, tab1Model);
+        assertEquals(TAB_GROUP_ID, tab1Model.get(TabProperties.TAB_GROUP_ID));
+        verify(mMediator).updateTabGroupProperties(mTab1, tab1Model, TabGroupColorId.BLUE);
         assertEquals(2, mModelList.size());
     }
 
@@ -375,7 +381,8 @@ public class NestedTabGroupObserverDelegateUnitTest {
 
         mDelegate.didCreateNewGroup(mTab1, mTabModel);
 
-        verify(mMediator, never()).setupGroupPropertiesForChildTab(eq(mTab1), any());
+        verify(mMediator, never()).updateTabGroupProperties(any(), any(), anyInt());
+        verify(mMediator, never()).clearTabGroupProperties(any());
     }
 
     @Test
@@ -424,6 +431,14 @@ public class NestedTabGroupObserverDelegateUnitTest {
                         .build();
         mModelList.add(new ListItem(UiType.TAB, model));
         return model;
+    }
+
+    private void setupTabsInModel(Tab... tabs) {
+        when(mTabModel.getCount()).thenReturn(tabs.length);
+        for (int i = 0; i < tabs.length; i++) {
+            when(mTabModel.getTabAt(i)).thenReturn(tabs[i]);
+            when(mTabModel.getTabById(tabs[i].getId())).thenReturn(tabs[i]);
+        }
     }
 
     private void assertModelListTabIds(int... expectedTabIds) {
