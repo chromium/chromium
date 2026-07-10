@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/jobs/finalize_install_job.h"
+#include "chrome/browser/web_applications/jobs/finalizer_delegate.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -16,7 +17,6 @@
 namespace web_app {
 
 class Lock;
-class IwaVersion;
 class WebAppProvider;
 class WebAppScope;
 class WebAppRegistrar;
@@ -36,10 +36,12 @@ struct OriginAssociations;
 // triggered by web_app_install_finalizer until refactoring is complete.
 class FinalizeUpdateJob {
  public:
-  FinalizeUpdateJob(Lock* lock,
-                    WithAppResources* lock_with_app_resources,
-                    WebAppProvider& provider,
-                    const WebAppInstallInfo& web_app_info);
+  FinalizeUpdateJob(
+      Lock* lock,
+      WithAppResources* lock_with_app_resources,
+      WebAppProvider& provider,
+      const WebAppInstallInfo& web_app_info,
+      std::unique_ptr<FinalizerDelegate> finalizer_delegate = nullptr);
   ~FinalizeUpdateJob();
 
   void Start(InstallFinalizedCallback callback);
@@ -77,12 +79,6 @@ class FinalizeUpdateJob {
   // optimizations?
   FileHandlerUpdateAction GetFileHandlerUpdateAction();
 
-  void UpdateIsolationDataAndResetPendingUpdateInfo(
-      WebApp* web_app,
-      const IsolatedWebAppStorageLocation& location,
-      const IwaVersion& version,
-      const std::optional<GURL>& iwa_update_manifest_url,
-      std::optional<IntegrityBlockData> integrity_block_data);
 
   void SetWebAppManifestFieldsAndWriteData(
       std::unique_ptr<WebApp> web_app,
@@ -110,6 +106,7 @@ class FinalizeUpdateJob {
 
   WebAppInstallInfo web_app_info_;
   const webapps::AppId app_id_;
+  std::unique_ptr<FinalizerDelegate> finalizer_delegate_;
   InstallFinalizedCallback callback_;
 
   base::WeakPtrFactory<FinalizeUpdateJob> weak_ptr_factory_{this};

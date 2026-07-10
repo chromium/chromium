@@ -25,7 +25,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/model/integrity_block_data.h"
-#include "chrome/browser/web_applications/model/isolation_data.h"
 #include "chrome/browser/web_applications/model/migration_behavior.h"
 #include "chrome/browser/web_applications/model/migration_source.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -50,8 +49,6 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"
-#include "components/webapps/isolated_web_apps/types/iwa_version.h"
-#include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -96,7 +93,8 @@ class FinalizeInstallJobWrapperCommand
       const WebAppInstallInfo& install_info,
       const FinalizeJobOptions& options,
       base::OnceCallback<void(webapps::AppId, webapps::InstallResultCode)>
-          callback)
+          callback,
+      std::unique_ptr<FinalizerDelegate> finalizer_delegate = nullptr)
       : WebAppCommand<AppLock, webapps::AppId, webapps::InstallResultCode>(
             "FinalizeInstallJobWrapperCommand",
             AppLockDescription(
@@ -107,12 +105,14 @@ class FinalizeInstallJobWrapperCommand
                                 kCancelledOnWebAppProviderShuttingDown)),
         profile_(profile),
         install_info_(install_info.Clone()),
-        options_(options) {}
+        options_(options),
+        finalizer_delegate_(std::move(finalizer_delegate)) {}
 
   void StartWithLock(std::unique_ptr<AppLock> lock) override {
     lock_ = std::move(lock);
     job_ = std::make_unique<FinalizeInstallJob>(
-        *profile_, lock_.get(), lock_.get(), install_info_, options_);
+        *profile_, lock_.get(), lock_.get(), install_info_, options_,
+        std::move(finalizer_delegate_));
     job_->Start(
         base::BindOnce(&FinalizeInstallJobWrapperCommand::OnInstallFinalized,
                        weak_factory_.GetWeakPtr()));
@@ -129,6 +129,7 @@ class FinalizeInstallJobWrapperCommand
   raw_ptr<Profile> profile_;
   WebAppInstallInfo install_info_;
   FinalizeJobOptions options_;
+  std::unique_ptr<FinalizerDelegate> finalizer_delegate_;
   std::unique_ptr<AppLock> lock_;
   std::unique_ptr<FinalizeInstallJob> job_;
   base::WeakPtrFactory<FinalizeInstallJobWrapperCommand> weak_factory_{this};
@@ -195,12 +196,14 @@ class FinalizeInstallJobTest : public WebAppTest {
 
   FinalizeInstallResult AwaitFinalizeInstall(
       const WebAppInstallInfo& info,
-      const FinalizeJobOptions& options) {
+      const FinalizeJobOptions& options,
+      std::unique_ptr<FinalizerDelegate> delegate = nullptr) {
     FinalizeInstallResult result{};
     base::test::TestFuture<webapps::AppId, webapps::InstallResultCode> future;
     provider().command_manager().ScheduleCommand(
         std::make_unique<FinalizeInstallJobWrapperCommand>(
-            profile(), info, options, future.GetCallback()));
+            profile(), info, options, future.GetCallback(),
+            std::move(delegate)));
     result.code = future.Get<webapps::InstallResultCode>();
     result.installed_app_id = future.Get<webapps::AppId>();
     return result;
@@ -474,64 +477,6 @@ TEST_F(FinalizeInstallJobTest, InstallUrlSetInWebAppDB) {
             *it->second.install_urls.begin());
 }
 
-class FinalizeInstallJobTestIwaUpdateManifest
-    : public FinalizeInstallJobTest,
-      public testing::WithParamInterface<IsolatedWebAppStorageLocation> {};
-
-TEST_P(FinalizeInstallJobTestIwaUpdateManifest, IsolationDataSetInWebAppDB) {
-  const IsolatedWebAppStorageLocation& location = GetParam();
-  const GURL update_manifest_url =
-      GURL("https://example.com/update_manifest.json");
-  const IwaVersion version = *IwaVersion::Create("1.2.3");
-
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      IwaOrigin(test::GetDefaultEcdsaP256WebBundleId()).origin().GetURL());
-  info->title = kDefaultAppTitle;
-  info->set_isolated_web_app_version(version);
-  info->iwa_update_manifest_url = update_manifest_url;
-
-  webapps::WebappInstallSource install_source =
-      location.dev_mode() ? webapps::WebappInstallSource::IWA_DEV_UI
-                          : webapps::WebappInstallSource::IWA_EXTERNAL_POLICY;
-  FinalizeJobOptions options(install_source);
-
-  auto integrity_block_data = IntegrityBlockData(test::CreateSignatures());
-  options.iwa_options =
-      FinalizeJobOptions::IwaOptions(location, integrity_block_data);
-
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
-
-  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
-  EXPECT_EQ(
-      result.installed_app_id,
-      GenerateAppId(/*manifest_id_path=*/std::nullopt, info->start_url()));
-
-  const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
-  EXPECT_THAT(
-      installed_app,
-      test::IwaIs(_, test::IsolationDataIs(location, version,
-                                           /*controlled_frame_partitions=*/_,
-                                           /*pending_update_info=*/std::nullopt,
-                                           integrity_block_data)));
-
-  std::optional<GURL> expected_url =
-      location.dev_mode() ? std::nullopt
-                          : std::optional<GURL>(update_manifest_url);
-  EXPECT_EQ(installed_app->isolation_data()->update_manifest_url(),
-            expected_url);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    FinalizeInstallJobTestIwaUpdateManifest,
-    testing::Values(IsolatedWebAppStorageLocation(IwaStorageOwnedBundle{
-                        "dir", /*dev_mode=*/false}),
-                    IsolatedWebAppStorageLocation(IwaStorageOwnedBundle{
-                        "dir", /*dev_mode=*/true}),
-                    IsolatedWebAppStorageLocation(IwaStorageUnownedBundle{
-                        base::FilePath(FILE_PATH_LITERAL("p"))}),
-                    IsolatedWebAppStorageLocation(IwaStorageProxy{
-                        url::Origin::Create(GURL("http://localhost:1234"))})));
 
 TEST_F(FinalizeInstallJobTest, PopUpContentSettingsGrantedForIwa) {
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =

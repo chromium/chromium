@@ -37,6 +37,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/storage_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/trust_and_signature_verifier.h"
 #include "chrome/browser/web_applications/jobs/finalize_update_job.h"
+#include "chrome/browser/web_applications/jobs/finalizer_delegate.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/model/isolation_data.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -58,6 +59,43 @@
 #include "content/public/browser/storage_partition.h"
 
 namespace web_app {
+
+namespace {
+
+class UpdateIsolationDataDelegate : public FinalizerDelegate {
+ public:
+  UpdateIsolationDataDelegate() = default;
+  ~UpdateIsolationDataDelegate() override = default;
+
+  void ConfigureCustomFields(WebApp* web_app,
+                             const WebAppInstallInfo& web_app_info) override {
+    CHECK(web_app->isolation_data().has_value());
+    const std::optional<IsolationData::PendingUpdateInfo>& pending_update_info =
+        web_app->isolation_data()->pending_update_info();
+    CHECK(pending_update_info.has_value())
+        << "Isolated Web Apps can only be updated if "
+           "`IsolationData::PendingUpdateInfo` is set.";
+    CHECK_EQ(web_app_info.isolated_web_app_version(),
+             pending_update_info->version);
+
+    IsolationData::Builder builder(pending_update_info->location,
+                                   pending_update_info->version);
+    builder.PersistFieldsForUpdate(*web_app->isolation_data());
+
+    if (web_app_info.iwa_update_manifest_url &&
+        !pending_update_info->location.dev_mode()) {
+      builder.SetUpdateManifestUrl(*web_app_info.iwa_update_manifest_url);
+    }
+
+    if (pending_update_info->integrity_block_data) {
+      builder.SetIntegrityBlockData(*pending_update_info->integrity_block_data);
+    }
+
+    web_app->SetIsolationData(std::move(builder).Build());
+  }
+};
+
+}  // namespace
 
 IsolatedWebAppApplyUpdateCommand::IsolatedWebAppApplyUpdateCommand(
     IsolatedWebAppUrlInfo url_info,
@@ -238,7 +276,8 @@ void IsolatedWebAppApplyUpdateCommand::FinalizeUpdate(
   }
 
   install_update_job_ = std::make_unique<FinalizeUpdateJob>(
-      lock_.get(), lock_.get(), *provider, install_info);
+      lock_.get(), lock_.get(), *provider, install_info,
+      std::make_unique<UpdateIsolationDataDelegate>());
   install_update_job_->Start(
       base::BindOnce(&IsolatedWebAppApplyUpdateCommand::OnFinalized,
                      weak_factory_.GetWeakPtr()));

@@ -546,37 +546,6 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallUrlSetInWebAppDB) {
             *it->second.install_urls.begin());
 }
 
-TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
-  IwaVersion version = *IwaVersion::Create("1.2.3");
-
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      IwaOrigin(test::GetDefaultEcdsaP256WebBundleId()).origin().GetURL());
-  info->title = u"Foo Title";
-  info->set_isolated_web_app_version(version);
-
-  const IsolatedWebAppStorageLocation location(
-      IwaStorageUnownedBundle{base::FilePath(FILE_PATH_LITERAL("p"))});
-  FinalizeJobOptions options(webapps::WebappInstallSource::EXTERNAL_POLICY);
-
-  auto integrity_block_data = IntegrityBlockData(test::CreateSignatures());
-  options.iwa_options =
-      FinalizeJobOptions::IwaOptions(location, integrity_block_data);
-
-  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
-
-  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
-  EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url()));
-
-  const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
-  EXPECT_THAT(
-      installed_app,
-      test::IwaIs(_, test::IsolationDataIs(location, version,
-                                           /*controlled_frame_partiions=*/_,
-                                           /*pending_update_info=*/std::nullopt,
-                                           integrity_block_data)));
-}
-
 TEST_F(WebAppInstallFinalizerUnitTest, PopUpContentSettingsGrantedForIwa) {
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
       IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))

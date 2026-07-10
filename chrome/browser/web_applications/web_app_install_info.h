@@ -181,6 +181,9 @@ struct WebAppInstallInfo {
 
   // Returns the version of the Isolated Web App.
   // PRECONDITION: Must only be called if an IWA version is actually set.
+  bool has_isolated_web_app_version() const {
+    return isolated_web_app_version_.has_value();
+  }
   const IwaVersion& isolated_web_app_version() const {
     CHECK(isolated_web_app_version_.has_value())
         << "Attempted to access Isolated Web App version when not set.";

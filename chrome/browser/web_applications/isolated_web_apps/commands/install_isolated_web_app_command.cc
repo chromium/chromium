@@ -23,6 +23,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/commands/command_metrics.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/storage_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/trust_and_signature_verifier.h"
 #include "chrome/browser/web_applications/jobs/finalize_install_job.h"
+#include "chrome/browser/web_applications/jobs/finalizer_delegate.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/model/integrity_block_data.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -45,6 +47,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -59,6 +62,57 @@
 #include "content/public/browser/storage_partition.h"
 
 namespace web_app {
+
+namespace {
+
+class InstallIsolationDataDelegate : public FinalizerDelegate {
+ public:
+  InstallIsolationDataDelegate(
+      Profile& profile,
+      IsolatedWebAppStorageLocation location,
+      std::optional<IntegrityBlockData> integrity_block_data)
+      : profile_(profile),
+        location_(std::move(location)),
+        integrity_block_data_(std::move(integrity_block_data)) {}
+
+  void ConfigureCustomFields(WebApp* web_app,
+                             const WebAppInstallInfo& web_app_info) override {
+    CHECK(web_app_info.has_isolated_web_app_version());
+
+    IsolationData::Builder builder(location_,
+                                   web_app_info.isolated_web_app_version());
+
+    // The WebApp might already be installed from a different source (e.g. a
+    // user install, followed by a policy install atop). Therefore, we need to
+    // persist any existing isolation_data.
+    if (web_app->isolation_data()) {
+      builder.PersistFieldsForUpdate(*web_app->isolation_data());
+    }
+
+    if (web_app_info.iwa_update_manifest_url && !location_.dev_mode()) {
+      builder.SetUpdateManifestUrl(*web_app_info.iwa_update_manifest_url);
+    }
+
+    if (integrity_block_data_) {
+      builder.SetIntegrityBlockData(std::move(*integrity_block_data_));
+    }
+
+    web_app->SetIsolationData(std::move(builder).Build());
+
+    HostContentSettingsMap* const host_content_settings_map =
+        HostContentSettingsMapFactory::GetForProfile(&profile_.get());
+    host_content_settings_map->SetContentSettingDefaultScope(
+        web_app_info.scope, web_app_info.scope, ContentSettingsType::POPUPS,
+        CONTENT_SETTING_ALLOW);
+  }
+
+ private:
+  const raw_ref<Profile> profile_;
+  IsolatedWebAppStorageLocation location_;
+  std::optional<IntegrityBlockData> integrity_block_data_;
+};
+
+}  // namespace
 
 InstallIsolatedWebAppCommandSuccess::InstallIsolatedWebAppCommandSuccess(
     IsolatedWebAppUrlInfo url_info,
@@ -343,11 +397,13 @@ void InstallIsolatedWebAppCommand::FinalizeInstall(
 
   FinalizeJobOptions options(install_surface_);
 
-  options.iwa_options = FinalizeJobOptions::IwaOptions(
-      *destination_storage_location_, std::move(integrity_block_data_));
+  auto finalizer_delegate = std::make_unique<InstallIsolationDataDelegate>(
+      profile(), *destination_storage_location_,
+      std::move(integrity_block_data_));
 
   install_job_ = std::make_unique<FinalizeInstallJob>(
-      profile(), lock_.get(), lock_.get(), std::move(install_info), options);
+      profile(), lock_.get(), lock_.get(), std::move(install_info), options,
+      std::move(finalizer_delegate));
 
   install_job_->Start(
       base::BindOnce(&InstallIsolatedWebAppCommand::OnFinalizeInstall,

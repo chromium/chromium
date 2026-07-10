@@ -15,6 +15,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/jobs/finalizer_delegate.h"
 #include "chrome/browser/web_applications/model/integrity_block_data.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
@@ -24,7 +25,6 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
-#include "components/webapps/isolated_web_apps/types/storage_location.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_data.h"
@@ -41,7 +41,6 @@ namespace web_app {
 
 class Lock;
 class WithAppResources;
-class IwaVersion;
 class WebApp;
 class WebAppProvider;
 class WebAppScope;
@@ -59,16 +58,6 @@ using InstallFinalizedCallback =
                             webapps::InstallResultCode code)>;
 
 struct FinalizeJobOptions {
-  struct IwaOptions {
-    IwaOptions(IsolatedWebAppStorageLocation location,
-               std::optional<IntegrityBlockData> integrity_block_data);
-    ~IwaOptions();
-    IwaOptions(const IwaOptions&);
-
-    IsolatedWebAppStorageLocation location;
-    std::optional<IntegrityBlockData> integrity_block_data;
-  };
-
   explicit FinalizeJobOptions(webapps::WebappInstallSource install_surface);
   ~FinalizeJobOptions();
   FinalizeJobOptions(const FinalizeJobOptions&);
@@ -84,13 +73,6 @@ struct FinalizeJobOptions {
 #if BUILDFLAG(IS_CHROMEOS)
   std::optional<ash::SystemWebAppData> system_web_app_data;
 #endif
-
-  // If set, will propagate `IsolatedWebAppStorageLocation` and
-  // `IntegrityBlockData` to `WebApp::isolation_data()` with the given values,
-  // as well as the version from
-  // `WebAppInstallInfo::isolated_web_app_version`. Will `CHECK` if
-  // `web_app_info.isolated_web_app_version` is invalid.
-  std::optional<IwaOptions> iwa_options;
 
   // These are required to be false if `install_state` is not
   // proto::INSTALLED_WITH_OS_INTEGRATION.
@@ -117,11 +99,13 @@ struct FinalizeJobOptions {
 // This is a job based on web_app_install_finalizer.
 class FinalizeInstallJob {
  public:
-  FinalizeInstallJob(Profile& profile,
-                     Lock* lock,
-                     WithAppResources* lock_resources,
-                     const WebAppInstallInfo& web_app_info,
-                     const FinalizeJobOptions& options);
+  FinalizeInstallJob(
+      Profile& profile,
+      Lock* lock,
+      WithAppResources* lock_resources,
+      const WebAppInstallInfo& web_app_info,
+      const FinalizeJobOptions& options,
+      std::unique_ptr<FinalizerDelegate> finalizer_delegate = nullptr);
   ~FinalizeInstallJob();
 
   void Start(InstallFinalizedCallback callback);
@@ -160,13 +144,6 @@ class FinalizeInstallJob {
       CommitCallback commit_callback,
       bool skip_icon_writes_on_download_failure);
 
-  static void UpdateIsolationDataAndResetPendingUpdateInfo(
-      WebApp* web_app,
-      const IsolatedWebAppStorageLocation& location,
-      const IwaVersion& version,
-      const std::optional<GURL>& iwa_update_manifest_url,
-      std::optional<IntegrityBlockData> integrity_block_data);
-
   void CommitToSyncBridge(std::unique_ptr<WebApp> web_app,
                           CommitCallback commit_callback,
                           bool success);
@@ -202,6 +179,7 @@ class FinalizeInstallJob {
 
   WebAppInstallInfo web_app_info_;
   FinalizeJobOptions options_;
+  std::unique_ptr<FinalizerDelegate> finalizer_delegate_;
   InstallFinalizedCallback callback_;
 
   base::WeakPtrFactory<FinalizeInstallJob> weak_ptr_factory_{this};

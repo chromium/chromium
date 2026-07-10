@@ -16,6 +16,7 @@
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/jobs/finalize_install_job.h"
+#include "chrome/browser/web_applications/jobs/finalizer_delegate.h"
 #include "chrome/browser/web_applications/model/integrity_block_data.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -59,6 +60,10 @@ class WebAppInstallFinalizer {
   void FinalizeInstall(const WebAppInstallInfo& web_app_info,
                        const FinalizeJobOptions& options,
                        InstallFinalizedCallback callback);
+  void FinalizeInstall(const WebAppInstallInfo& web_app_info,
+                       const FinalizeJobOptions& options,
+                       std::unique_ptr<FinalizerDelegate> finalizer_delegate,
+                       InstallFinalizedCallback callback);
 
   // Write the new WebApp data to disk and update the app.
   // TODO(crbug.com/40759394): Chrome fails to update the manifest
@@ -68,9 +73,19 @@ class WebAppInstallFinalizer {
   // TODO(https://crbug.com/445700226): Move to a job, and remove copies.
   virtual void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
                               InstallFinalizedCallback callback);
+  virtual void FinalizeUpdate(
+      const WebAppInstallInfo& web_app_info,
+      std::unique_ptr<FinalizerDelegate> finalizer_delegate,
+      InstallFinalizedCallback callback);
+
   virtual void FinalizeUpdate(WithAppResources* lock,
                               const WebAppInstallInfo& web_app_info,
                               InstallFinalizedCallback callback);
+  virtual void FinalizeUpdate(
+      WithAppResources* lock,
+      const WebAppInstallInfo& web_app_info,
+      std::unique_ptr<FinalizerDelegate> finalizer_delegate,
+      InstallFinalizedCallback callback);
 
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   void Start();

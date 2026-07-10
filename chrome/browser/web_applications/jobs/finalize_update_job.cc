@@ -34,20 +34,22 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/web_app_url_config.h"
 #include "components/webapps/common/web_app_id.h"
-#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace web_app {
 
-FinalizeUpdateJob::FinalizeUpdateJob(Lock* lock,
-                                     WithAppResources* lock_with_app_resources,
-                                     WebAppProvider& provider,
-                                     const WebAppInstallInfo& web_app_info)
+FinalizeUpdateJob::FinalizeUpdateJob(
+    Lock* lock,
+    WithAppResources* lock_with_app_resources,
+    WebAppProvider& provider,
+    const WebAppInstallInfo& web_app_info,
+    std::unique_ptr<FinalizerDelegate> finalizer_delegate)
     : lock_(lock),
       lock_with_app_resources_(lock_with_app_resources),
       provider_(provider),
       web_app_info_(web_app_info.Clone()),
-      app_id_(GenerateAppIdFromManifestId(web_app_info_.manifest_id())) {}
+      app_id_(GenerateAppIdFromManifestId(web_app_info_.manifest_id())),
+      finalizer_delegate_(std::move(finalizer_delegate)) {}
 
 FinalizeUpdateJob::~FinalizeUpdateJob() = default;
 
@@ -123,18 +125,8 @@ void FinalizeUpdateJob::OnOriginAssociationValidatedForUpdate(
       GetFileHandlerUpdateAction(), std::move(old_scope));
 
   auto web_app = std::make_unique<WebApp>(*existing_web_app);
-  if (web_app->isolation_data().has_value()) {
-    const std::optional<IsolationData::PendingUpdateInfo>& pending_update_info =
-        web_app->isolation_data()->pending_update_info();
-    CHECK(pending_update_info.has_value())
-        << "Isolated Web Apps can only be updated if "
-           "`IsolationData::PendingUpdateInfo` is set.";
-    CHECK_EQ(web_app_info_.isolated_web_app_version(),
-             pending_update_info->version);
-    UpdateIsolationDataAndResetPendingUpdateInfo(
-        web_app.get(), pending_update_info->location,
-        pending_update_info->version, web_app_info_.iwa_update_manifest_url,
-        pending_update_info->integrity_block_data);
+  if (finalizer_delegate_) {
+    finalizer_delegate_->ConfigureCustomFields(web_app.get(), web_app_info_);
   }
 
   ScopeExtensions validated_scope_extensions =
@@ -252,31 +244,6 @@ FileHandlerUpdateAction FinalizeUpdateJob::GetFileHandlerUpdateAction() {
   return FileHandlerUpdateAction::kUpdate;
 }
 
-void FinalizeUpdateJob::UpdateIsolationDataAndResetPendingUpdateInfo(
-    WebApp* web_app,
-    const IsolatedWebAppStorageLocation& location,
-    const IwaVersion& version,
-    const std::optional<GURL>& iwa_update_manifest_url,
-    std::optional<IntegrityBlockData> integrity_block_data) {
-  IsolationData::Builder builder(location, version);
-
-  if (web_app->isolation_data()) {
-    builder.PersistFieldsForUpdate(*web_app->isolation_data());
-  }
-
-  // Dev-mode apps must not set the update manifest URL from the parsed
-  // manifest. For dev-mode from-manifest installations, the URL is already
-  // set during installation.
-  if (iwa_update_manifest_url && !location.dev_mode()) {
-    builder.SetUpdateManifestUrl(*iwa_update_manifest_url);
-  }
-
-  if (integrity_block_data) {
-    builder.SetIntegrityBlockData(std::move(*integrity_block_data));
-  }
-
-  web_app->SetIsolationData(std::move(builder).Build());
-}
 
 void FinalizeUpdateJob::SetWebAppManifestFieldsAndWriteData(
     std::unique_ptr<WebApp> web_app,

@@ -716,6 +716,52 @@ TEST_F(InstallIsolatedWebAppCommandTest,
                   /*IWAInstallError::kCantValidateManifest*/ 5, 1)));
 }
 
+TEST_F(InstallIsolatedWebAppCommandTest, UpdateManifestUrlIgnoredInDevMode) {
+  auto app =
+      IsolatedWebAppBuilder(ManifestBuilder().SetUpdateManifestUrl(GURL(
+                                "https://example.com/update_manifest.json")))
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+  auto install_source =
+      IsolatedWebAppInstallSource::FromDevUi(IwaSourceBundleDevModeWithFileOp(
+          app->path(), IwaSourceBundleDevFileOp::kCopy));
+  app->FakeInstallPageState(profile());
+  app->TrustSigningKey();
+  IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
+
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info,
+                                        .install_source = install_source}),
+              HasValue());
+
+  const WebApp* installed_app =
+      web_app_registrar().GetAppById(url_info.app_id());
+  EXPECT_NE(installed_app, nullptr);
+  EXPECT_EQ(installed_app->isolation_data()->update_manifest_url(),
+            std::nullopt);
+}
+
+TEST_F(InstallIsolatedWebAppCommandTest, UpdateManifestUrlSavedInProdMode) {
+  auto app =
+      IsolatedWebAppBuilder(ManifestBuilder().SetUpdateManifestUrl(GURL(
+                                "https://example.com/update_manifest.json")))
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+  auto install_source = IsolatedWebAppInstallSource::FromExternalPolicy(
+      IwaSourceBundleProdModeWithFileOp(app->path(),
+                                        IwaSourceBundleProdFileOp::kCopy));
+  app->FakeInstallPageState(profile());
+  app->TrustSigningKey();
+  IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
+
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info,
+                                        .install_source = install_source}),
+              HasValue());
+
+  const WebApp* installed_app =
+      web_app_registrar().GetAppById(url_info.app_id());
+  EXPECT_NE(installed_app, nullptr);
+  EXPECT_EQ(installed_app->isolation_data()->update_manifest_url(),
+            GURL("https://example.com/update_manifest.json"));
+}
+
 TEST_F(InstallIsolatedWebAppCommandTest, FailsWhenAppInstalledAlready) {
   auto app = IsolatedWebAppBuilder(ManifestBuilder())
                  .BuildBundle(test::GetDefaultEd25519KeyPair());

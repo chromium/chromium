@@ -24,7 +24,6 @@
 #include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/jobs/finalize_install_job.h"
@@ -60,7 +59,6 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/sync/base/time.h"
@@ -68,8 +66,6 @@
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/browser/web_app_url_config.h"
 #include "components/webapps/common/web_app_id.h"
-#include "components/webapps/isolated_web_apps/types/iwa_version.h"
-#include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -130,16 +126,6 @@ bool ShouldInstallOverwriteUserDisplayMode(
       return false;
   }
 }
-
-FinalizeJobOptions::IwaOptions::IwaOptions(
-    IsolatedWebAppStorageLocation location,
-    std::optional<IntegrityBlockData> integrity_block_data)
-    : location(std::move(location)),
-      integrity_block_data(std::move(integrity_block_data)) {}
-
-FinalizeJobOptions::IwaOptions::~IwaOptions() = default;
-
-FinalizeJobOptions::IwaOptions::IwaOptions(const IwaOptions&) = default;
 
 FinalizeJobOptions::FinalizeJobOptions(
     webapps::WebappInstallSource install_surface)
@@ -270,18 +256,21 @@ void ApplyUserDisplayModeSyncMitigations(const FinalizeJobOptions& options,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-FinalizeInstallJob::FinalizeInstallJob(Profile& profile,
-                                       Lock* lock,
-                                       WithAppResources* lock_resources,
-                                       const WebAppInstallInfo& web_app_info,
-                                       const FinalizeJobOptions& options)
+FinalizeInstallJob::FinalizeInstallJob(
+    Profile& profile,
+    Lock* lock,
+    WithAppResources* lock_resources,
+    const WebAppInstallInfo& web_app_info,
+    const FinalizeJobOptions& options,
+    std::unique_ptr<FinalizerDelegate> finalizer_delegate)
     : profile_(profile),
       provider_(WebAppProvider::GetForWebApps(&profile_.get())),
       clock_(&provider_->clock()),
       lock_(lock),
       resources_lock_(lock_resources),
       web_app_info_(web_app_info.Clone()),
-      options_(options) {}
+      options_(options),
+      finalizer_delegate_(std::move(finalizer_delegate)) {}
 
 FinalizeInstallJob::~FinalizeInstallJob() = default;
 
@@ -455,19 +444,8 @@ void FinalizeInstallJob::OnOriginAssociationValidated(
   }
 #endif
 
-  if (options_.iwa_options) {
-    UpdateIsolationDataAndResetPendingUpdateInfo(
-        web_app.get(), options_.iwa_options->location,
-        web_app_info_.isolated_web_app_version(),
-        web_app_info_.iwa_update_manifest_url,
-        options_.iwa_options->integrity_block_data);
-
-    HostContentSettingsMap* const host_content_settings_map =
-        HostContentSettingsMapFactory::GetForProfile(&profile_.get());
-
-    host_content_settings_map->SetContentSettingDefaultScope(
-        web_app_info_.scope, web_app_info_.scope, ContentSettingsType::POPUPS,
-        CONTENT_SETTING_ALLOW);
+  if (finalizer_delegate_) {
+    finalizer_delegate_->ConfigureCustomFields(web_app.get(), web_app_info_);
   }
 
   web_app->SetParentAppId(web_app_info_.parent_app_id);
@@ -559,32 +537,6 @@ void FinalizeInstallJob::OnOriginAssociationValidated(
   }
 }
 
-void FinalizeInstallJob::UpdateIsolationDataAndResetPendingUpdateInfo(
-    WebApp* web_app,
-    const IsolatedWebAppStorageLocation& location,
-    const IwaVersion& version,
-    const std::optional<GURL>& iwa_update_manifest_url,
-    std::optional<IntegrityBlockData> integrity_block_data) {
-  IsolationData::Builder builder(location, version);
-
-  if (web_app->isolation_data()) {
-    builder.PersistFieldsForUpdate(*web_app->isolation_data());
-  }
-
-  // Dev-mode installations must not set the update manifest URL from the
-  // manifest. For dev-mode from-manifest installations the URL is explicitly
-  // set after the install completes, rather than being propagated from the
-  // bundle.
-  if (iwa_update_manifest_url && !location.dev_mode()) {
-    builder.SetUpdateManifestUrl(*iwa_update_manifest_url);
-  }
-
-  if (integrity_block_data) {
-    builder.SetIntegrityBlockData(std::move(*integrity_block_data));
-  }
-
-  web_app->SetIsolationData(std::move(builder).Build());
-}
 
 void FinalizeInstallJob::SetWebAppManifestFieldsAndWriteData(
     std::unique_ptr<WebApp> web_app,
