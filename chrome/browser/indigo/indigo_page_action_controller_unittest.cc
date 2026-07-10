@@ -1674,5 +1674,159 @@ TEST_F(IndigoPageActionControllerTest,
   navigation->Commit();
 }
 
+TEST_F(IndigoPageActionControllerTest, TriggerSource_OptimizationGuide) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+  base::HistogramTester histogram_tester;
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+
+  EXPECT_CALL(*page_action_controller_, Show(kActionIndigo));
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  histogram_tester.ExpectUniqueSample("Indigo.PageAction.TriggerSource",
+                                      IndigoTriggerSource::kOptimizationGuide,
+                                      1);
+}
+
+TEST_F(IndigoPageActionControllerTest, TriggerSource_Heuristic) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+  SetupHeuristicConfig();
+  base::HistogramTester histogram_tester;
+
+  // URL in allowlist.
+  GURL url("https://allowed1.com/product1");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kUnknown);
+
+  FakeDocumentMetadata fake_metadata;
+  auto result = blink::mojom::ProductClassificationResult::New();
+  result->allowed_keyword_found = true;
+  result->blocked_keyword_found = false;
+  fake_metadata.SetResult(std::move(result));
+
+  auto* rfh = tab_interface_->GetContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+  content::RenderFrameHostTester::For(rfh)->InitializeRenderFrameIfNeeded();
+  auto* remote_interfaces = rfh->GetRemoteInterfaces();
+  ASSERT_TRUE(remote_interfaces);
+
+  mojo::Receiver<blink::mojom::DocumentMetadata> receiver(&fake_metadata);
+  service_manager::InterfaceProvider::TestApi test_api(remote_interfaces);
+  test_api.SetBinderForName(
+      blink::mojom::DocumentMetadata::Name_,
+      base::BindRepeating(
+          [](mojo::Receiver<blink::mojom::DocumentMetadata>* receiver,
+             mojo::ScopedMessagePipeHandle pipe) {
+            receiver->Bind(
+                mojo::PendingReceiver<blink::mojom::DocumentMetadata>(
+                    std::move(pipe)));
+          },
+          base::Unretained(&receiver)));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*page_action_controller_, Show(kActionIndigo))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Indigo.PageAction.TriggerSource",
+      IndigoTriggerSource::kLocalProductKeywordHeuristic, 1);
+}
+
+TEST_F(IndigoPageActionControllerTest, TriggerSource_Both_PriorityToOptGuide) {
+  if constexpr (!kSignOutSupportedOnPlatform) {
+    GTEST_SKIP() << "Sign out is not supported on this platform.";
+  }
+
+  CreateController();
+  SetupHeuristicConfig();
+  base::HistogramTester histogram_tester;
+
+  // Start signed out so we are not locally eligible.
+  identity_test_env_adaptor_->identity_test_env()->ClearPrimaryAccount();
+
+  // URL in allowlist.
+  GURL url("https://allowed1.com/product1");
+
+  optimization_guide::OptimizationGuideDecisionCallback opt_guide_callback;
+  EXPECT_CALL(
+      *mock_optimization_guide_,
+      CanApplyOptimization(
+          url, optimization_guide::proto::OptimizationType::INDIGO,
+          testing::An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(
+          [&opt_guide_callback](
+              const GURL& url,
+              optimization_guide::proto::OptimizationType optimization_type,
+              optimization_guide::OptimizationGuideDecisionCallback callback) {
+            opt_guide_callback = std::move(callback);
+          });
+
+  // Heuristic also succeeds.
+  FakeDocumentMetadata fake_metadata;
+  auto result = blink::mojom::ProductClassificationResult::New();
+  result->allowed_keyword_found = true;
+  result->blocked_keyword_found = false;
+  fake_metadata.SetResult(std::move(result));
+
+  auto* rfh = tab_interface_->GetContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+  content::RenderFrameHostTester::For(rfh)->InitializeRenderFrameIfNeeded();
+  auto* remote_interfaces = rfh->GetRemoteInterfaces();
+  ASSERT_TRUE(remote_interfaces);
+
+  mojo::Receiver<blink::mojom::DocumentMetadata> receiver(&fake_metadata);
+  service_manager::InterfaceProvider::TestApi test_api(remote_interfaces);
+  test_api.SetBinderForName(
+      blink::mojom::DocumentMetadata::Name_,
+      base::BindRepeating(
+          [](mojo::Receiver<blink::mojom::DocumentMetadata>* receiver,
+             mojo::ScopedMessagePipeHandle pipe) {
+            receiver->Bind(
+                mojo::PendingReceiver<blink::mojom::DocumentMetadata>(
+                    std::move(pipe)));
+          },
+          base::Unretained(&receiver)));
+
+  base::RunLoop run_loop;
+  fake_metadata.SetQuitClosure(run_loop.QuitClosure());
+
+  // Navigate. This will trigger both but not show because signed out.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  // Wait for heuristic to complete.
+  run_loop.Run();
+
+  // Now we make OptGuide return True.
+  std::move(opt_guide_callback)
+      .Run(OptimizationGuideDecision::kTrue,
+           optimization_guide::OptimizationMetadata());
+
+  // Now we sign in. This should trigger Show.
+  EXPECT_CALL(*page_action_controller_, Show(kActionIndigo));
+
+  // Make sure we are eligible.
+  SetupEligibleAndOnboarded();
+
+  identity_test_env_adaptor_->identity_test_env()->MakePrimaryAccountAvailable(
+      "user@example.com", signin::ConsentLevel::kSignin);
+
+  histogram_tester.ExpectUniqueSample("Indigo.PageAction.TriggerSource",
+                                      IndigoTriggerSource::kOptimizationGuide,
+                                      1);
+}
+
 }  // namespace
 }  // namespace indigo

@@ -50,6 +50,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/indigo/indigo_page_action_controller.h:IndigoTransformationResult) -->
 
+<!-- LINT.IfChange(IndigoTriggerSource) -->
+
+<enum name="IndigoTriggerSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Forced"/>
+  <int value="2" label="Optimization Guide"/>
+  <int value="3" label="Local Product Keyword Heuristic"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/indigo/indigo_page_action_controller.h:IndigoTriggerSource) -->
+
 </enums>
 
 </histogram-configuration>

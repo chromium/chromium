@@ -606,6 +606,24 @@ void IndigoPageActionController::OnDeleteOriginalPhotoComplete(
   }
 }
 
+std::optional<IndigoTriggerSource>
+IndigoPageActionController::DetermineTriggerSource() const {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kForceIndigoSwitch)) {
+    return IndigoTriggerSource::kForced;
+  }
+  if (!indigo_service_ || !indigo_service_->IsLocallyEligible()) {
+    return std::nullopt;
+  }
+  if (optimization_guide_decision_ ==
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    return IndigoTriggerSource::kOptimizationGuide;
+  }
+  if (page_has_allowed_category_by_heuristic_) {
+    return IndigoTriggerSource::kLocalProductKeywordHeuristic;
+  }
+  return std::nullopt;
+}
+
 void IndigoPageActionController::UpdateEntryPointsState() {
   CHECK(base::FeatureList::IsEnabled(features::kIndigo));
 
@@ -613,15 +631,8 @@ void IndigoPageActionController::UpdateEntryPointsState() {
     return;
   }
 
-  const bool forced =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(kForceIndigoSwitch);
-  const bool eligible =
-      (optimization_guide_decision_ ==
-           optimization_guide::OptimizationGuideDecision::kTrue ||
-       page_has_allowed_category_by_heuristic_) &&
-      indigo_service_->IsLocallyEligible();
-
-  const bool should_show = forced || eligible;
+  std::optional<IndigoTriggerSource> trigger_source = DetermineTriggerSource();
+  const bool should_show = trigger_source.has_value();
   if (should_show == is_shown_) {
     return;
   }
@@ -636,6 +647,8 @@ void IndigoPageActionController::UpdateEntryPointsState() {
       page_action_controller_->ShowSuggestionChip(kActionIndigo);
     }
     base::RecordAction(base::UserMetricsAction("Indigo.PageAction.Show"));
+    base::UmaHistogramEnumeration("Indigo.PageAction.TriggerSource",
+                                  *trigger_source);
 
     // Refresh discovery skills to make sure the latest skills are available for
     // the user.

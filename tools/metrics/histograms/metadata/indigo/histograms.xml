@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Indigo.PageAction.TriggerSource" enum="IndigoTriggerSource"
+    expires_after="2027-05-13">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <summary>
+    Records the trigger source for the Indigo page action when it is shown. This
+    helps determine if Indigo was forced, or which logic was used to decide to
+    show it (e.g., optimization guide hint).
+  </summary>
+</histogram>
+
 <histogram name="Indigo.Transformation.Result"
     enum="IndigoTransformationResult" expires_after="2027-05-13">
   <owner>jbroman@chromium.org</owner>
