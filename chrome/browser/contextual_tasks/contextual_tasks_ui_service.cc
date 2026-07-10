@@ -2491,7 +2491,8 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
     std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
         session_handle,
     bool associate_web_contents,
-    omnibox::ChromeAimEntryPoint entry_point) {
+    omnibox::ChromeAimEntryPoint entry_point,
+    bool use_mstk_for_task_association) {
   CHECK(!url.is_empty());
   CHECK(contextual_tasks_service_);
 
@@ -2508,26 +2509,45 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
 
   // Create a task for the URL if the side panel wasn't already showing a task.
   if (!panel_contents || !controller->IsPanelOpenForContextualTask()) {
-    ContextualTask task = contextual_tasks_service_->CreateTaskFromUrl(url);
-    task_id_to_creation_url_[task.GetTaskId()] = url;
+    base::Uuid task_id;
+    if (use_mstk_for_task_association) {
+      std::string mstk;
+      if (net::GetValueForKeyInQuery(url, "mstk", &mstk)) {
+        for (const auto& [id, initial_mstk] : task_id_to_initial_mstk_) {
+          if (initial_mstk == mstk) {
+            task_id = id;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!task_id.is_valid()) {
+      ContextualTask task = contextual_tasks_service_->CreateTaskFromUrl(url);
+      task_id = task.GetTaskId();
+      task_id_to_creation_url_[task_id] = url;
+      std::string mstk;
+      if (net::GetValueForKeyInQuery(url, "mstk", &mstk)) {
+        task_id_to_initial_mstk_[task_id] = mstk;
+      }
+    }
+
     if (associate_web_contents) {
-      AssociateWebContentsToTask(tab_interface->GetContents(),
-                                 task.GetTaskId());
+      AssociateWebContentsToTask(tab_interface->GetContents(), task_id);
     } else {
       // Associating the WebContents is used for two things, 1) to know which
       // task to open next to the given WebContents and 2) add the WebContents
       // as context implicitly. We don't want to do the latter, so set the
       // pending task so the former still happens.
-      controller->SetPendingTaskForTab(tab_interface, task.GetTaskId());
+      controller->SetPendingTaskForTab(tab_interface, task_id);
     }
     if (session_handle) {
-      pending_session_handles_.emplace(task.GetTaskId(),
-                                       std::move(session_handle));
+      pending_session_handles_.emplace(task_id, std::move(session_handle));
     }
     controller->Show(/*transition_from_tab=*/false, entry_point);
 
-    InitializeTaskInSidePanel(controller->GetActiveWebContents(),
-                              task.GetTaskId(), nullptr);
+    InitializeTaskInSidePanel(controller->GetActiveWebContents(), task_id,
+                              nullptr);
     return;
   }
 

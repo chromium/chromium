@@ -281,7 +281,8 @@ class ContextualTasksUiService : public KeyedService {
           session_handle,
       bool associate_web_contents,
       omnibox::ChromeAimEntryPoint entry_point =
-          omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+          omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      bool use_mstk_for_task_association = false);
 
   // Opens the contextual tasks side panel showing a ghost loader while waiting
   // for the initial thread URL to be provided for that task. This creates an
@@ -627,6 +628,11 @@ class ContextualTasksUiService : public KeyedService {
   // intercepting a query from some other surface like the omnibox. The entry
   // in this map is removed once the UI is loaded with the correct thread.
   std::map<base::Uuid, GURL> task_id_to_creation_url_;
+
+  // Map a task's ID to the initial Magi State Token (mstk) used to create it.
+  // This is used to identify and reuse tasks when launched again with the same
+  // initial token, even after the task's active thread turn ID has changed.
+  std::map<base::Uuid, std::string> task_id_to_initial_mstk_;
 
   // Map a task's ID to the entry point that was used to open it. This is used
   // to populate the aep param for GetInitialUrlForTask.

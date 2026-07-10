@@ -225,9 +225,12 @@ ContextualTasksPrivateLaunchPanelInNewTabFunction::Run() {
   load_params.has_user_gesture = user_gesture();
   target_tab->GetContents()->GetController().LoadURLWithParams(load_params);
 
-  ui_service->StartTaskUiInSidePanel(browser, target_tab, aim_url,
-                                     /*session_handle=*/nullptr,
-                                     /*associate_web_contents=*/false);
+  ui_service->StartTaskUiInSidePanel(
+      browser, target_tab, aim_url,
+      /*session_handle=*/nullptr,
+      /*associate_web_contents=*/false,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_mstk_for_task_association=*/true);
 
   return RespondNow(NoArguments());
 }
