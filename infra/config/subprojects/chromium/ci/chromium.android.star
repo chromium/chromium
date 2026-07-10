@@ -1219,6 +1219,7 @@ ci.builder(
         short_name = "size",
     ),
     contact_team_email = "clank-engprod@google.com",
+    siso_output_local_strategy = "full",
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
