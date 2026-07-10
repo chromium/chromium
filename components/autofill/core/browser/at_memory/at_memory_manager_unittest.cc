@@ -20,6 +20,8 @@
 #include "base/types/zip.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
+#include "components/autofill/core/browser/at_memory/at_memory_manager_test_api.h"
+#include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder_test_api.h"
 #include "components/autofill/core/browser/at_memory/at_memory_utils.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -155,15 +157,6 @@ class AtMemoryManagerTest : public Test,
     DestroyAutofillClient();
   }
 
- protected:
-  AtMemoryManager& manager() { return autofill_manager().GetAtMemoryManager(); }
-
-  MockAtMemoryQueryService& mock_query_service() {
-    return *mock_query_service_ptr_;
-  }
-
-  AutofillWebDataServiceTestHelper& webdata_helper() { return webdata_helper_; }
-
   void AddOrUpdateEntityInstance(const EntityInstance& entity) {
     autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(entity);
     webdata_helper().WaitUntilIdle();
@@ -189,6 +182,24 @@ class AtMemoryManagerTest : public Test,
         .WillOnce(SaveArg<0>(&final_suggestions));
   }
 
+  // Creates a test form, calls `AutofillManager::OnFormsSeen` with it and
+  // returns a pair of the form's id and its first field's id.
+  std::pair<FormGlobalId, FieldGlobalId> SeeForm() {
+    const FormData form = test::CreateTestPersonalInformationFormData();
+    autofill_manager().AddSeenForm(
+        form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
+    return {form.global_id(), form.fields()[0].global_id()};
+  }
+
+  AtMemoryManager& manager() { return autofill_manager().GetAtMemoryManager(); }
+
+  MockAtMemoryQueryService& mock_query_service() {
+    return *mock_query_service_ptr_;
+  }
+
+  AutofillWebDataServiceTestHelper& webdata_helper() { return webdata_helper_; }
+
+ protected:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   base::test::TaskEnvironment task_environment_;
   raw_ptr<MockAtMemoryQueryService> mock_query_service_ptr_ = nullptr;
@@ -214,7 +225,8 @@ Matcher<Suggestion> EqualsAtMemorySuggestion(
 // Tests that OnFilterChanged with a non-empty filter generates the search
 // affordance suggestion and does NOT trigger QueryService::Query.
 TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesSearchAffordance) {
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -245,7 +257,8 @@ TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesSearchAffordance) {
 
 // Tests that OnFilterChanged with an empty filter clears all suggestions.
 TEST_F(AtMemoryManagerTest, OnFilterChanged_EmptyFilterClearsSuggestions) {
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -262,7 +275,8 @@ TEST_F(AtMemoryManagerTest, OnFilterChanged_EmptyFilterClearsSuggestions) {
 // arrive.
 TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_TriggersQueryServiceAndClearsSuggestions) {
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -301,7 +315,8 @@ TEST_F(AtMemoryManagerTest,
 // Tests that when a search result has an empty type name and no metadata, the
 // generated suggestion has no labels.
 TEST_F(AtMemoryManagerTest, OnSearchSubmitted_SchemalessResultHasEmptyLabels) {
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -327,7 +342,8 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_SchemalessResultHasEmptyLabels) {
 // suggestion.
 TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_QueryServiceReturnsNoConnectionFailure) {
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -354,7 +370,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
   EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
   AddOrUpdateEntityInstance(passport);
 
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -382,11 +399,6 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
   test_api(autofill_manager())
       .set_autofill_ai_access_manager(std::move(mock_ai_access_manager));
 
-  FormData form = test::CreateTestAddressFormData();
-  std::vector<FieldType> field_types(form.fields().size(), UNKNOWN_TYPE);
-  autofill_manager().AddSeenForm(form, field_types);
-  FormFieldData field = form.fields()[0];
-
   base::optional_ref<const AttributeInstance> passport_attribute =
       passport.attribute(AttributeType(AttributeTypeName::kPassportNumber));
   ASSERT_TRUE(passport_attribute.has_value());
@@ -407,9 +419,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
                          passport_attribute->GetCompleteRawInfo(),
                          FillingProduct::kAtMemory, _));
 
-  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
-                                      form.global_id(), field.global_id(),
-                                      final_suggestions[0]);
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
+                                      field_id, final_suggestions[0]);
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
@@ -425,7 +436,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
   EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
   AddOrUpdateEntityInstance(passport);
 
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -451,11 +463,6 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
       mock_ai_access_manager.get();
   test_api(autofill_manager())
       .set_autofill_ai_access_manager(std::move(mock_ai_access_manager));
-
-  FormData form = test::CreateTestAddressFormData();
-  std::vector<FieldType> field_types(form.fields().size(), UNKNOWN_TYPE);
-  autofill_manager().AddSeenForm(form, field_types);
-  FormFieldData field = form.fields()[0];
 
   EXPECT_CALL(*mock_ai_access_manager_ptr,
               FetchEntityInstance(Eq(passport), true, _))
@@ -483,9 +490,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
                          mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
                          expected_primary_value, FillingProduct::kAtMemory, _));
 
-  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
-                                      form.global_id(), field.global_id(),
-                                      final_suggestions[0]);
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
+                                      field_id, final_suggestions[0]);
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
@@ -502,7 +508,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
   EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
   AddOrUpdateEntityInstance(passport);
 
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -529,11 +536,6 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
   test_api(autofill_manager())
       .set_autofill_ai_access_manager(std::move(mock_ai_access_manager));
 
-  FormData form = test::CreateTestAddressFormData();
-  std::vector<FieldType> field_types(form.fields().size(), UNKNOWN_TYPE);
-  autofill_manager().AddSeenForm(form, field_types);
-  FormFieldData field = form.fields()[0];
-
   EXPECT_CALL(*mock_ai_access_manager_ptr,
               FetchEntityInstance(Eq(passport), true, _))
       .WillOnce([&](EntityInstance entity, bool will_fill,
@@ -550,9 +552,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
               ShowAutofillAiFetchFromWalletFailureNotification());
   EXPECT_CALL(autofill_manager(), FillOrPreviewField).Times(0);
 
-  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
-                                      form.global_id(), field.global_id(),
-                                      final_suggestions[0]);
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
+                                      field_id, final_suggestions[0]);
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
@@ -565,7 +566,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
 // Tests that SPII entries and metadata are filtered out from the search
 // results when the context is insecure.
 TEST_F(AtMemoryManagerTest, FiltersSpiiInInsecureContext) {
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/false, update_callback_.Get(),
@@ -634,7 +636,8 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
   MemorySearchResults results(MemorySearchStatus::kFinalResponseSuccess,
                               std::move(entries));
 
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -672,7 +675,8 @@ TEST_F(AtMemoryManagerTest,
       MemorySearchStatus::kFinalResponseSuccess,
       {MemorySearchResult(MemoryDataType::kIban, u"IBAN", u"1234")});
 
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -696,7 +700,8 @@ TEST_F(AtMemoryManagerTest,
 // Tests that SPII entries and metadata are retained in the search results
 // when the context is secure.
 TEST_F(AtMemoryManagerTest, KeepsSpiiInSecureContext) {
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -748,7 +753,8 @@ TEST_F(AtMemoryManagerTest, KeepsSpiiInSecureContext) {
 // Tests that non-SPII data fills correctly and records the funnel metrics.
 TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
   base::HistogramTester histogram_tester;
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -764,11 +770,6 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
   manager().OnSearchSubmitted(u"query");
   ASSERT_EQ(final_suggestions.size(), 1u);
 
-  FormData form = test::CreateTestAddressFormData();
-  std::vector<FieldType> field_types(form.fields().size(), UNKNOWN_TYPE);
-  autofill_manager().AddSeenForm(form, field_types);
-  FormFieldData field = form.fields()[0];
-
   std::u16string expected_value = u"John Doe";
   EXPECT_CALL(
       autofill_manager(),
@@ -776,9 +777,8 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
                          mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
                          expected_value, FillingProduct::kAtMemory, _));
 
-  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
-                                      form.global_id(), field.global_id(),
-                                      final_suggestions[0]);
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
+                                      field_id, final_suggestions[0]);
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
@@ -791,7 +791,8 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   base::HistogramTester histogram_tester;
 
   // 1. Show Popup 1.
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -808,11 +809,6 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   manager().OnSearchSubmitted(u"query");
   ASSERT_EQ(final_suggestions.size(), 1u);
 
-  FormData form = test::CreateTestAddressFormData();
-  std::vector<FieldType> field_types(form.fields().size(), UNKNOWN_TYPE);
-  autofill_manager().AddSeenForm(form, field_types);
-  FormFieldData field = form.fields()[0];
-
   MockIbanAccessManager* mock_iban_access_manager =
       autofill_client().GetPaymentsAutofillClient()->GetIbanAccessManager();
 
@@ -825,9 +821,8 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
           });
 
   // 2. Accept async suggestion on Popup 1.
-  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
-                                      form.global_id(), field.global_id(),
-                                      final_suggestions[0]);
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
+                                      field_id, final_suggestions[0]);
 
   // 3. Hide Popup 1.
   manager().OnPopupHidden();
@@ -849,7 +844,7 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   // 4. Show Popup 2 (overlapping with the pending async fill of Popup 1).
   base::MockCallback<AtMemoryManager::UpdateSuggestionsCallback>
       update_callback_2;
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_2.Get(),
@@ -899,7 +894,8 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
 TEST_F(AtMemoryManagerTest, PersonalContext_AppendsNoticeSuggestion) {
   autofill_client().set_should_show_personal_context_at_memory_notice(true);
 
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -927,7 +923,8 @@ TEST_F(AtMemoryManagerTest, PersonalContext_AppendsNoticeSuggestion) {
 TEST_F(AtMemoryManagerTest, PersonalContext_DoesNotAppendNoticeSuggestion) {
   autofill_client().set_should_show_personal_context_at_memory_notice(false);
 
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -951,7 +948,8 @@ TEST_F(
   base::HistogramTester histogram_tester;
 
   autofill_client().set_is_glic_enabled(true);
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -977,7 +975,8 @@ TEST_F(
 TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_UnsupportedQuery_GlicDisabled_NoDataSuggestion) {
   autofill_client().set_is_glic_enabled(false);
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -1008,7 +1007,8 @@ TEST_F(AtMemoryManagerTest,
   MockQueryResultsAndExpectCallback(u"query",
                                     MemorySearchStatus::kPartialResponseSuccess,
                                     std::move(entries), final_suggestions);
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -1031,7 +1031,8 @@ TEST_F(AtMemoryManagerTest,
   MockQueryResultsAndExpectCallback(u"query",
                                     MemorySearchStatus::kFinalResponseSuccess,
                                     std::move(entries), final_suggestions);
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -1178,7 +1179,8 @@ TEST_F(AtMemoryManagerTest, OnPopupShown_SubPopup_DoesNotResetRecorder) {
   base::HistogramTester histogram_tester;
 
   // 1. Show root popup. This should initialize the metrics recorder.
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -1187,7 +1189,7 @@ TEST_F(AtMemoryManagerTest, OnPopupShown_SubPopup_DoesNotResetRecorder) {
   // 2. Show sub-popup. This should NOT reset the recorder.
   AutofillSuggestionDelegate::SuggestionMetadata metadata;
   metadata.multi_index = {0, 0};  // sub-popup
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory, metadata,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          ukm::kInvalidSourceId);
@@ -1200,6 +1202,28 @@ TEST_F(AtMemoryManagerTest, OnPopupShown_SubPopup_DoesNotResetRecorder) {
   manager().OnPopupHidden();
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.QuerySubmitted", false,
                                       1);
+}
+
+TEST_F(AtMemoryManagerTest, OnPopupShown_PassesSignaturesToMetricsRecorder) {
+  auto [form_id, field_id] = SeeForm();
+  auto [form_structure, autofill_field] =
+      autofill_manager().FindFormAndField(form_id, field_id);
+  ASSERT_TRUE(form_structure);
+  ASSERT_TRUE(autofill_field);
+
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  AtMemoryMetricsRecorder* recorder =
+      test_api(manager()).at_memory_metrics_recorder();
+  ASSERT_NE(recorder, nullptr);
+  EXPECT_EQ(test_api(*recorder).form_signature(),
+            form_structure->form_signature());
+  EXPECT_EQ(test_api(*recorder).field_signature(),
+            autofill_field->GetFieldSignature());
 }
 
 enum class SourceScenario { kNoSources, kAutofillOnly, kGmailOnly, kMixed };
@@ -1232,7 +1256,8 @@ class AtMemoryManagerIconTest : public AtMemoryManagerTest,
 
 TEST_P(AtMemoryManagerIconTest,
        TransformsResultsIntoSuggestionsWithCorrectIcons) {
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),

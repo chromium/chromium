@@ -102,6 +102,8 @@ class AtMemoryMetricsRecorder {
   void OnFetchPiiCompleted();
 
  private:
+  friend class AtMemoryMetricsRecorderTestApi;
+
   // Emits the `SuggestionAccepted` metric if `suggestion_accepted_` is not
   // `std::nullopt`.
   void MaybeLogSuggestionAccepted();

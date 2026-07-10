@@ -1216,6 +1216,8 @@ if (is_android) {
 static_library("test_support") {
   testonly = true
   sources = [
+    "at_memory/at_memory_manager_test_api.h",
+    "at_memory/at_memory_metrics_recorder_test_api.h",
     "autofill_field_test_api.h",
     "crowdsourcing/autofill_crowdsourcing_manager_test_api.h",
     "crowdsourcing/mock_autofill_crowdsourcing_manager.cc",

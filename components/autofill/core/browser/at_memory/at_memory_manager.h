@@ -101,6 +101,8 @@ class AtMemoryManager {
       std::vector<Suggestion>& suggestions) const;
 
  private:
+  friend class AtMemoryManagerTestApi;
+
   // Executes the search query.
   void ExecuteQuery(const std::u16string& filter);
 
