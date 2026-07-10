@@ -21,6 +21,8 @@ namespace multistep_filter {
 
 namespace {
 
+using ::testing::_;
+
 constexpr int64_t kTestNavigationId = 0;
 
 class MockFilterUiController : public FilterUiController {
@@ -31,7 +33,8 @@ class MockFilterUiController : public FilterUiController {
 
   MOCK_METHOD(void,
               OnSuggestionGenerated,
-              (std::optional<UrlFilterSuggestion> suggestion),
+              (std::optional<UrlFilterSuggestion> suggestion,
+               MultistepFilterUiDelegate::SuggestionUiCallbacks callbacks),
               (override));
   MOCK_METHOD(void, ClearSuggestion, (SuggestionUserDecision), (override));
 };
@@ -93,8 +96,8 @@ TEST_F(MultistepFilterUiDelegateImplTest,
       .task_type = "task1"});
 
   EXPECT_CALL(*mock_controller,
-              OnSuggestionGenerated(testing::Optional(suggestion)));
-  delegate_->OnSuggestionGenerated(suggestion);
+              OnSuggestionGenerated(testing::Optional(suggestion), _));
+  delegate_->OnSuggestionGenerated(suggestion, {});
 }
 
 TEST_F(MultistepFilterUiDelegateImplTest,
@@ -109,7 +112,7 @@ TEST_F(MultistepFilterUiDelegateImplTest,
       .triggering_host = "suggestion.com",
       .task_type = "task1"});
   // Should not crash when there is no controller.
-  delegate_->OnSuggestionGenerated(suggestion);
+  delegate_->OnSuggestionGenerated(suggestion, {});
 }
 
 }  // namespace

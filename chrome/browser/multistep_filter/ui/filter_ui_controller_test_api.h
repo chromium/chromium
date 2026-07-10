@@ -31,9 +31,6 @@ class FilterUiControllerTestApi {
     return controller_->suggestion_state_;
   }
 
-  void set_service(MultistepFilterService* service) {
-    controller_->service_ = service;
-  }
 
   void set_page_action_controller(
       page_actions::PageActionController* controller) {

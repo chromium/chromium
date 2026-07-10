@@ -16,6 +16,7 @@
 #include "base/uuid.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/data_models/filter_navigation_metadata.h"
+#include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 
 namespace multistep_filter {
@@ -92,6 +93,13 @@ class FilterTabController {
   // Virtual for testing.
   virtual void OnNavigationFinished(const FilterNavigationMetadata& metadata);
 
+  // Called when the user interacts with the suggestion UI.
+  void OnSuggestionShown(const UrlFilterSuggestion& suggestion);
+  void OnSuggestionReopened();
+  void OnUserDecision(SuggestionUserDecision decision);
+
+  base::WeakPtr<FilterTabController> GetWeakPtr();
+
  private:
   friend class FilterTabControllerTestApi;
 
@@ -125,9 +133,9 @@ class FilterTabController {
   std::unique_ptr<FilterSuggestionGenerator> filter_suggestion_generator_;
 
   // This should be kept at the end so that it is the first member to be
-  // destroyed.
-  base::WeakPtrFactory<FilterTabController> per_navigation_weak_ptr_factory{
-      this};
+  // destroyed. This factory is also invalidated on every new navigation to
+  // abort pending async tasks for the previous page.
+  base::WeakPtrFactory<FilterTabController> weak_ptr_factory_{this};
 };
 
 }  // namespace multistep_filter

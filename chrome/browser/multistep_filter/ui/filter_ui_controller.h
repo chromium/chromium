@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
+#include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/menus/simple_menu_model.h"
@@ -46,7 +48,6 @@ inline constexpr int kSendFeedbackCommand = 3;
 class FilterAcceptanceMetricsLogger;
 class FilterUiControllerTestApi;
 class MultistepFilterLogRouter;
-class MultistepFilterService;
 
 // Manages the UI lifecycle and user interactions for multistep filter
 // suggestions within a tab.
@@ -91,6 +92,10 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
 
     // Cached favicon image for the source host.
     std::optional<ui::ImageModel> favicon;
+
+    // Callbacks to notify the core about user interactions with this
+    // suggestion.
+    MultistepFilterUiDelegate::SuggestionUiCallbacks callbacks;
   };
 
   static FilterUiController* From(tabs::TabInterface* tab);
@@ -102,7 +107,8 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
 
   // Callback for when a suggestion is generated.
   virtual void OnSuggestionGenerated(
-      std::optional<UrlFilterSuggestion> suggestion);
+      std::optional<UrlFilterSuggestion> suggestion,
+      MultistepFilterUiDelegate::SuggestionUiCallbacks callbacks);
 
   // Clears the current suggestion, hides the UI, and logs the action.
   virtual void ClearSuggestion(SuggestionUserDecision decision);
@@ -167,9 +173,6 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
 
   // Router for logging filter events.
   raw_ptr<MultistepFilterLogRouter> log_router_ = nullptr;
-
-  // Service for managing filters.
-  raw_ptr<MultistepFilterService> service_ = nullptr;
 
   // Controller for the page action.
   raw_ptr<page_actions::PageActionController> page_action_controller_ = nullptr;

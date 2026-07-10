@@ -15,7 +15,6 @@
 #include "chrome/browser/contextual_cueing/prefs.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_log_router_factory.h"
-#include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -32,7 +31,6 @@
 #include "components/multistep_filter/core/logging/filter_acceptance_metrics_logger.h"
 #include "components/multistep_filter/core/logging/log_entry.h"
 #include "components/multistep_filter/core/logging/multistep_filter_logger.h"
-#include "components/multistep_filter/core/multistep_filter_service.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
@@ -170,7 +168,6 @@ FilterUiController::FilterUiController(tabs::TabInterface& tab)
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   if (Profile* profile = tab.GetProfile()) {
     log_router_ = MultistepFilterLogRouterFactory::GetForProfile(profile);
-    service_ = MultistepFilterServiceFactory::GetForProfile(profile);
     favicon_service_ = FaviconServiceFactory::GetForProfile(
         profile, ServiceAccessType::EXPLICIT_ACCESS);
     pref_service_ = profile->GetPrefs();
@@ -189,22 +186,23 @@ FilterUiController::~FilterUiController() {
     return;
   }
   constexpr SuggestionUserDecision kDecision = SuggestionUserDecision::kIgnored;
-  if (service_) {
-    service_->RecordUserInteractionWithSuggestion(kDecision);
-  }
   LogSuggestionUiDecision(log_router_, *suggestion_state_, kDecision);
   RecordMetricsDecision(suggestion_state_, kDecision);
+  if (suggestion_state_->callbacks.on_user_interaction) {
+    std::move(suggestion_state_->callbacks.on_user_interaction).Run(kDecision);
+  }
   ClosePromo(kDecision);
   favicon_task_tracker_.TryCancelAll();
 }
 
 void FilterUiController::OnSuggestionGenerated(
-    std::optional<UrlFilterSuggestion> suggestion) {
+    std::optional<UrlFilterSuggestion> suggestion,
+    MultistepFilterUiDelegate::SuggestionUiCallbacks callbacks) {
   if (!suggestion) {
     return;
   }
-  if (!tab().GetContents() || !service_ || !page_action_controller_ ||
-      !favicon_service_ || !pref_service_) {
+  if (!tab().GetContents() || !page_action_controller_ || !favicon_service_ ||
+      !pref_service_) {
     LogSuggestionUiShown(log_router_, *suggestion, false,
                          "missing_dependencies");
     return;
@@ -219,7 +217,8 @@ void FilterUiController::OnSuggestionGenerated(
   ClearSuggestion(SuggestionUserDecision::kIgnored);
   suggestion_state_ =
       SuggestionState{.suggestion = std::move(*suggestion),
-                      .view_state = SuggestionViewState::kInactive};
+                      .view_state = SuggestionViewState::kInactive,
+                      .callbacks = std::move(callbacks)};
   ShowCue(suggestion_state_->suggestion);
 }
 
@@ -228,11 +227,11 @@ void FilterUiController::ClearSuggestion(SuggestionUserDecision decision) {
     return;
   }
   if (suggestion_state_->view_state != SuggestionViewState::kInactive) {
-    if (service_) {
-      service_->RecordUserInteractionWithSuggestion(decision);
-    }
     LogSuggestionUiDecision(log_router_, *suggestion_state_, decision);
     RecordMetricsDecision(suggestion_state_, decision);
+    if (suggestion_state_->callbacks.on_user_interaction) {
+      std::move(suggestion_state_->callbacks.on_user_interaction).Run(decision);
+    }
     ClosePromo(decision);
   }
   dismissal_weak_factory_.InvalidateWeakPtrs();
@@ -482,14 +481,8 @@ void FilterUiController::OnPageActionAnchoredMessageShown(
       suggestion_state_->metrics_logger->RecordInitialCueShown();
       LogSuggestionUiShown(log_router_, suggestion_state_->suggestion,
                            /*ui_shown=*/true, /*reason=*/"");
-      if (service_) {
-        service_->RecordSuggestionImpression();
-        // Delete similar suggestions from the service as this one is being
-        // shown.
-        service_->DeleteAnnotationsForTask(
-            suggestion_state_->suggestion.task_type,
-            suggestion_state_->suggestion.triggering_navigation_id,
-            suggestion_state_->suggestion.triggering_host);
+      if (suggestion_state_->callbacks.on_suggestion_shown) {
+        std::move(suggestion_state_->callbacks.on_suggestion_shown).Run();
       }
       break;
     case SuggestionViewState::kCollapsedInOmnibox:
@@ -502,6 +495,9 @@ void FilterUiController::OnPageActionAnchoredMessageShown(
       suggestion_state_->view_state = SuggestionViewState::kReopenedFromOmnibox;
       if (suggestion_state_->metrics_logger) {
         suggestion_state_->metrics_logger->RecordReopenedCueShown();
+      }
+      if (suggestion_state_->callbacks.on_suggestion_reopened) {
+        std::move(suggestion_state_->callbacks.on_suggestion_reopened).Run();
       }
       break;
     case SuggestionViewState::kShowingInitialCue:
