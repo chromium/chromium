@@ -58,7 +58,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechPresentationRules) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, NodeStore) {
+// TODO(crbug.com/502069860): Re-enable after fixing flakiness.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_NodeStore DISABLED_NodeStore
+#else
+#define MAYBE_NodeStore NodeStore
+#endif
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_NodeStore) {
   RunSidePanelTest("side_panel/read_anything/node_store_test.js",
                    "mocha.run()");
 }
@@ -129,11 +135,23 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechController) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Common) {
+// TODO(crbug.com/502069860): Re-enable after fixing flakiness.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Common DISABLED_Common
+#else
+#define MAYBE_Common Common
+#endif
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_Common) {
   RunSidePanelTest("side_panel/read_anything/common_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, RectCalculations) {
+// TODO(crbug.com/502069860): Re-enable after fixing flakiness.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RectCalculations DISABLED_RectCalculations
+#else
+#define MAYBE_RectCalculations RectCalculations
+#endif
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_RectCalculations) {
   RunSidePanelTest("side_panel/read_anything/rect_calculations_test.js",
                    "mocha.run()");
 }
@@ -273,7 +291,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LineFocusStyleMode) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LineFocusMoveMode) {
+// TODO(crbug.com/502069860): Re-enable after fixing flakiness.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_LineFocusMoveMode DISABLED_LineFocusMoveMode
+#else
+#define MAYBE_LineFocusMoveMode LineFocusMoveMode
+#endif
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_LineFocusMoveMode) {
   RunSidePanelTest("side_panel/read_anything/line_focus_move_mode_test.js",
                    "mocha.run()");
 }
