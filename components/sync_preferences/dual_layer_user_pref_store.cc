@@ -555,9 +555,7 @@ bool DualLayerUserPrefStore::ShouldGetValueFromAccountStore(
   // Priority pref type is always active. This adds check to avoid syncing them
   // if the user toggle is off. This however skips all the allowlisted priority
   // prefs.
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncSupportAlwaysSyncingPriorityPreferences) &&
-      metadata->data_type() == syncer::PRIORITY_PREFERENCES &&
+  if (metadata->data_type() == syncer::PRIORITY_PREFERENCES &&
       !GetInterestingUserSelectedTypes().Has(
           syncer::UserSelectableType::kPreferences) &&
       !pref_model_associator_client_->GetSyncablePrefsDatabase()

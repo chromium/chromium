@@ -23,7 +23,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_data.h"
@@ -1417,10 +1416,8 @@ class PrefServiceSyncableFactoryTestWithAlwaysSyncingPrefs
     : public PrefServiceSyncableFactoryTest {
  public:
   PrefServiceSyncableFactoryTestWithAlwaysSyncingPrefs() {
-    feature_list_.InitWithFeatures(
-        {switches::kEnablePreferencesAccountStorage,
-         syncer::kSyncSupportAlwaysSyncingPriorityPreferences},
-        /*disabled_features=*/{});
+    feature_list_.InitWithFeatures({switches::kEnablePreferencesAccountStorage},
+                                   /*disabled_features=*/{});
     pref_service_syncable_factory_.SetPrefModelAssociatorClient(client_);
 
     // Register test prefs.

@@ -187,14 +187,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   // There are no immediate plans to launch additional types on ChromeOS, so the
   // list is hardcoded here.
   syncer::DataTypeSet expected_types{
-      syncer::DEVICE_INFO,     syncer::NIGORI,
-      syncer::USER_CONSENTS,   syncer::SEND_TAB_TO_SELF,
-      syncer::SECURITY_EVENTS, syncer::SHARING_MESSAGE};
-
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncSupportAlwaysSyncingPriorityPreferences)) {
-    expected_types.Put(syncer::PRIORITY_PREFERENCES);
-  }
+      syncer::DEVICE_INFO,         syncer::NIGORI,
+      syncer::USER_CONSENTS,       syncer::SEND_TAB_TO_SELF,
+      syncer::SECURITY_EVENTS,     syncer::SHARING_MESSAGE,
+      syncer::PRIORITY_PREFERENCES};
 
   if (base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
     expected_types.Put(syncer::ACCOUNT_SETTING);

@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "components/sync/base/features.h"
 #include "components/sync_preferences/features.h"
 
 namespace sync_preferences {
@@ -33,8 +32,6 @@ bool SyncablePrefsDatabase::IsPreferenceMergeable(
 
 bool SyncablePrefsDatabase::IsPreferenceAlwaysSyncing(
     std::string_view pref_name) const {
-  CHECK(base::FeatureList::IsEnabled(
-      syncer::kSyncSupportAlwaysSyncingPriorityPreferences));
   std::optional<SyncablePrefMetadata> metadata =
       GetSyncablePrefMetadata(pref_name);
   CHECK(metadata.has_value());

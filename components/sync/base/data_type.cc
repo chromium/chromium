@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -1474,32 +1473,6 @@ DataTypeSet UserTypes() {
   return types;
 }
 
-DataTypeSet AlwaysPreferredUserTypes() {
-  // TODO(crbug.com/477624427): add SKILL to a corresponding UserSelectableType
-  // or another toggle.
-  DataTypeSet types = {ACCOUNT_SETTING,
-                       DEVICE_INFO,
-                       USER_CONSENTS,
-                       PLUS_ADDRESS,
-                       PLUS_ADDRESS_SETTING,
-                       PRIORITY_PREFERENCES,
-                       SECURITY_EVENTS,
-                       SEND_TAB_TO_SELF,
-                       SUPERVISED_USER_SETTINGS,
-                       SHARING_MESSAGE,
-                       SKILL,
-                       AI_THREAD,
-                       GEMINI_THREAD};
-  // TODO(crbug.com/412602018): Mark AlwaysPreferredUserTypes() method as
-  // constexpr when removing the feature flag.
-  if (!base::FeatureList::IsEnabled(
-          kSyncSupportAlwaysSyncingPriorityPreferences)) {
-    types.Remove(PRIORITY_PREFERENCES);
-  }
-
-
-  return types;
-}
 
 DataTypeSet AlwaysEncryptedUserTypes() {
   static const DataTypeSet types = [] {

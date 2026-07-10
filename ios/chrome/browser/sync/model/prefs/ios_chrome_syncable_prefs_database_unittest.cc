@@ -7,8 +7,6 @@
 #include <string_view>
 
 #include "base/test/metrics/histogram_enum_reader.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/sync/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -33,8 +31,6 @@ TEST(IOSChromeSyncablePrefsDatabaseTest, CheckMetricsEnum) {
 }
 
 TEST(IOSChromeSyncablePrefsDatabaseTest, IsPreferenceAlwaysSyncing) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      syncer::kSyncSupportAlwaysSyncingPriorityPreferences);
   browser_sync::IOSChromeSyncablePrefsDatabase db;
   EXPECT_TRUE(db.IsPreferenceAlwaysSyncing(
       sync_preferences::kSyncableAlwaysSyncingPriorityPrefForTesting));

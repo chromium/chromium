@@ -198,8 +198,7 @@ bool IsSyncingAutosignSetting(Profile* profile) {
   return (
       sync_service &&
       sync_service->GetActiveDataTypes().Has(syncer::PRIORITY_PREFERENCES) &&
-      // With `kSyncSupportAlwaysSyncingPriorityPreferences` feature enabled,
-      // PRIORITY_PREFERENCES will always be active (decoupled from sync user
+      // PRIORITY_PREFERENCES is always active (decoupled from sync user
       // toggle). Thus, the preferences user toggle should be checked
       // separately.
       sync_service->GetUserSettings()->GetSelectedTypes().Has(

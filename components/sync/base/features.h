@@ -100,11 +100,6 @@ BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSigninPromosNewSignin);
 // prefer using this function over checking the feature flags directly.
 bool IsReplaceSyncPromosWithSignInPromosEnabled();
 
-// If enabled, allowlisted priority preferences will be synced even if the
-// preferences user toggle is off. Note that this flag is only meaningful if
-// kEnablePreferencesAccountStorage is enabled.
-BASE_DECLARE_FEATURE(kSyncSupportAlwaysSyncingPriorityPreferences);
-
 // Enables syncing of flight reservations coming from Google Wallet.
 BASE_DECLARE_FEATURE(kSyncWalletFlightReservations);
 

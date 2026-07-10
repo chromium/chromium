@@ -108,8 +108,6 @@ bool IsReplaceSyncPromosWithSignInPromosEnabled() {
              kReplaceSyncPromosWithSigninPromosNewSignin);
 }
 
-BASE_FEATURE(kSyncSupportAlwaysSyncingPriorityPreferences,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncWalletFlightReservations,
              IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT

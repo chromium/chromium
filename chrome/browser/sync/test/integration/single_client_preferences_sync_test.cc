@@ -1948,65 +1948,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSubscriptionEligibilityTest,
   EXPECT_EQ(1, service()->GetAiSubscriptionTier());
 }
 
-class SingleClientDecouplePriorityPreferencesSyncTestWithFlagDisabled
-    : public SingleClientPreferencesWithAccountStorageSyncTest {
- public:
-  SingleClientDecouplePriorityPreferencesSyncTestWithFlagDisabled() {
-    feature_list_.InitAndDisableFeature(
-        syncer::kSyncSupportAlwaysSyncingPriorityPreferences);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SingleClientDecouplePriorityPreferencesSyncTestWithFlagDisabled,
-    GetSyncTestModes(),
-    testing::PrintToStringParamName());
-
-IN_PROC_BROWSER_TEST_P(
-    SingleClientDecouplePriorityPreferencesSyncTestWithFlagDisabled,
-    InactiveWhenUserToggleIsOff) {
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().empty());
-
-  ASSERT_TRUE(SignIn());
-  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPreferences));
-  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
-  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::PRIORITY_PREFERENCES));
-
-  // Disable all user selectable types.
-  GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-
-  // User toggle is off.
-  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPreferences));
-  // Preferences and Priority preferences are inactive.
-  ASSERT_FALSE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
-  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::PRIORITY_PREFERENCES));
-}
-
-class SingleClientDecouplePriorityPreferencesSyncTest
-    : public SingleClientPreferencesWithAccountStorageSyncTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kSyncSupportAlwaysSyncingPriorityPreferences};
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         SingleClientDecouplePriorityPreferencesSyncTest,
-                         GetSyncTestModes(),
-                         testing::PrintToStringParamName());
-
-IN_PROC_BROWSER_TEST_P(SingleClientDecouplePriorityPreferencesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
                        ActiveWhenUserToggleIsOff) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().empty());
@@ -2034,7 +1976,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDecouplePriorityPreferencesSyncTest,
       syncer::PRIORITY_PREFERENCES));
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientDecouplePriorityPreferencesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
                        ShouldSyncAllowlistedPriorityPrefWithoutOptIn) {
   ASSERT_TRUE(SetupClients());
   // Regular priority pref.
@@ -2102,7 +2044,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDecouplePriorityPreferencesSyncTest,
       ConvertPrefValueToValueInSpecifics(base::Value("value1")));
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientDecouplePriorityPreferencesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
                        ShouldSyncRegularPriorityPrefWithOptIn) {
   ASSERT_TRUE(SetupClients());
   // Regular syncable pref.
@@ -2148,10 +2090,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientDecouplePriorityPreferencesSyncTest,
 #if !BUILDFLAG(IS_ANDROID)
 // Regression test for crbug.com/415305009.
 class SingleClientFeatureListEarlyAccessTest
-    : public SingleClientDecouplePriorityPreferencesSyncTest {
+    : public SingleClientPreferencesWithAccountStorageSyncTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
-    SingleClientDecouplePriorityPreferencesSyncTest::
+    SingleClientPreferencesWithAccountStorageSyncTest::
         SetUpInProcessBrowserTestFixture();
     policy_provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,

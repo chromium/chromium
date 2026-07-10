@@ -337,7 +337,23 @@ DataTypeSet ProtocolTypes();
 DataTypeSet UserTypes();
 
 // User types which are not user-controlled.
-DataTypeSet AlwaysPreferredUserTypes();
+inline constexpr DataTypeSet AlwaysPreferredUserTypes() {
+  // TODO(crbug.com/477624427): add SKILL to a corresponding UserSelectableType
+  // or another toggle.
+  return {ACCOUNT_SETTING,
+          DEVICE_INFO,
+          USER_CONSENTS,
+          PLUS_ADDRESS,
+          PLUS_ADDRESS_SETTING,
+          PRIORITY_PREFERENCES,
+          SECURITY_EVENTS,
+          SEND_TAB_TO_SELF,
+          SUPERVISED_USER_SETTINGS,
+          SHARING_MESSAGE,
+          SKILL,
+          AI_THREAD,
+          GEMINI_THREAD};
+}
 
 // User types which are always encrypted.
 DataTypeSet AlwaysEncryptedUserTypes();

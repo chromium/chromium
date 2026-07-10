@@ -70,17 +70,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
       return {kBookmarksTypeName, BOOKMARKS, {BOOKMARKS}};
     case UserSelectableType::kPreferences: {
       DataTypeSet types = {PREFERENCES, DICTIONARY, SEARCH_ENGINES};
-      // `skip_feature_checks_if_early` is used to avoid checking the feature
-      // state during early startup phase, which can happen when setting
-      // policies during pref service initialization. It is only set to true
-      // when called from `GetUserSelectableTypeName()` and thus, is not
-      // affected by the feature flag anyway.
-      // See crbug.com/415305009 for more context.
-      if ((!skip_feature_checks_if_early || base::FeatureList::GetInstance()) &&
-          !base::FeatureList::IsEnabled(
-              kSyncSupportAlwaysSyncingPriorityPreferences)) {
-        types.Put(PRIORITY_PREFERENCES);
-      }
+
       if ((!skip_feature_checks_if_early || base::FeatureList::GetInstance()) &&
           base::FeatureList::IsEnabled(
               kSpellcheckSeparateLocalAndAccountDictionaries)) {
