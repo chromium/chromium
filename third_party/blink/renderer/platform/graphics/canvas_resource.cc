@@ -64,6 +64,11 @@ namespace {
 // favor of the automatic SyncToken management in ClientSharedImage.
 BASE_FEATURE(kDeferWaitSyncTokenInExternalCanvasResource,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// We don't need to verify SyncTokens unless we send them cross process via ipc
+// channel that is different from the ones they were created on. Kill-switch for
+// safery.
+BASE_FEATURE(kDontVerifySyncTokenOnTransfer, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
 CanvasResource::CanvasResource(
@@ -312,10 +317,12 @@ void CanvasResourceSharedImage::Transfer() {
   if (is_cross_thread() || !ContextProviderWrapper())
     return;
 
-  // TODO(khushalsagar): This is for consistency with MailboxTextureHolder
-  // transfer path. It's unclear why the verification can not be deferred until
-  // the resource needs to be transferred cross-process.
-  VerifySyncToken();
+  if (!base::FeatureList::IsEnabled(kDontVerifySyncTokenOnTransfer)) {
+    // TODO(khushalsagar): This is for consistency with MailboxTextureHolder
+    // transfer path. It's unclear why the verification can not be deferred
+    // until the resource needs to be transferred cross-process.
+    VerifySyncToken();
+  }
 }
 
 scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
