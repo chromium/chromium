@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -26,6 +27,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -96,7 +98,7 @@ void LocaleSwitchScreenBrowserTest::SetPeopleAPIResponseLocale(
   people_api_interceptor_.reset();
   people_api_interceptor_ = std::make_unique<content::URLLoaderInterceptor>(
       base::BindLambdaForTesting(
-          [&account_locale](
+          [account_locale](
               content::URLLoaderInterceptor::RequestParams* params) {
             bool is_people_api_request =
                 params->url_request.url.spec().find(kPeopleApiBaseURL) !=
@@ -177,9 +179,12 @@ IN_PROC_BROWSER_TEST_F(LocaleSwitchScreenBrowserTest,
 
   EXPECT_EQ(g_browser_process->GetApplicationLocale(), new_locale);
 
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  EXPECT_EQ(*user->GetAccountLocale(), new_locale);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    const user_manager::User* user =
+        user_manager::UserManager::Get()->GetActiveUser();
+    return user && user->GetAccountLocale() &&
+           *user->GetAccountLocale() == new_locale;
+  })) << "Timeout waiting for user account locale to be updated";
 }
 
 }  // namespace ash
