@@ -2882,6 +2882,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSPasskeyModalLoginWithShimName,
      flag_descriptions::kIOSPasskeyModalLoginWithShimDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSPasskeyModalLoginWithShim)},
+    {"toolbar-glass-prototype", flag_descriptions::kToolbarGlassPrototypeName,
+     flag_descriptions::kToolbarGlassPrototypeDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kToolbarGlassPrototype)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

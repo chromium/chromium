@@ -249,6 +249,9 @@ class Tracker;
 // Sets the custom leading view visibility, optionally animated.
 - (void)setCustomLeadingViewVisible:(BOOL)visible animated:(BOOL)animated;
 
+// Returns the width of the text in the location bar.
+- (CGFloat)locationBarTextWidth;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_VIEW_CONTROLLER_H_

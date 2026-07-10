@@ -1470,4 +1470,11 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
                                                        animated:animated];
 }
 
+- (CGFloat)locationBarTextWidth {
+  if (!IsToolbarGlassPrototypeEnabled()) {
+    return 0.0;
+  }
+  return [self.locationBarSteadyView.locationLabel intrinsicContentSize].width;
+}
+
 @end

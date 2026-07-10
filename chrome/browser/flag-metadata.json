@@ -9390,6 +9390,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "toolbar-glass-prototype",
+    "owners": [ "gambard@chromium.org", "meridian@google.com" ],
+    "expiry_milestone": 157
+  },
+  {
     "name": "toolbar-glic-button-resizing",
     "owners": [
       "lugli@chromium.org",

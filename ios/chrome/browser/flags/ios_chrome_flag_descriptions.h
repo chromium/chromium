@@ -1974,6 +1974,10 @@ inline constexpr char kTaiyakiAllSurfacesName[] = "Taiyaki (all surfaces)";
 inline constexpr char kTaiyakiAllSurfacesDescription[] =
     "Enables Taiyaki for all surfaces (including post-FRE).";
 
+inline constexpr char kToolbarGlassPrototypeName[] = "ToolbarGlassPrototype";
+inline constexpr char kToolbarGlassPrototypeDescription[] =
+    "Enables the toolbar_glass_prototype feature.";
+
 inline constexpr char kUpdateTabGroupColorsName[] = "UpdateTabGroupColors";
 inline constexpr char kUpdateTabGroupColorsDescription[] =
     "Enables the UpdateTabGroupColors feature.";
