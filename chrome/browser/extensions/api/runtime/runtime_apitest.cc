@@ -6,6 +6,7 @@
 #include <string_view>
 
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -261,10 +262,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
 
 // Tests that an extension calling chrome.runtime.reload() repeatedly
 // will eventually be terminated.
-// TODO(https://crbug.com/493409291): Fix the failure.
-// TODO(https://crbug.com/494351936): Fix test failing on Android.
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
-                       DISABLED_ExtensionTerminatedForRapidReloads) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ExtensionTerminatedForRapidReloads) {
+  // This tests an extension repeatedly calling reload and assumes that it will
+  // trigger a "rapid reload" threshold. Use a test clock for deterministic
+  // timing. Otherwise, it's possible that a reload legitimately takes long
+  // enough that it resets the count and the threshold.
+  base::SimpleTestTickClock clock;
+  ChromeRuntimeAPIDelegate::set_tick_clock_for_tests(&clock);
+  // Clean up test clock pointer when the test exits.
+  base::ScopedClosureRunner cleanup_clock(base::BindOnce(
+      []() { ChromeRuntimeAPIDelegate::set_tick_clock_for_tests(nullptr); }));
+
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   static constexpr char kManifest[] = R"(
       {
@@ -293,6 +301,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
   // reload itself that often without being terminated, the test fails
   // anyway.
   for (int i = 0; i < RuntimeAPI::kFastReloadCount + 1; i++) {
+    clock.Advance(base::Milliseconds(10));
     ExtensionTestMessageListener ready_listener_reload("ready");
     TestExtensionRegistryObserver unload_observer(registry, extension_id);
     BackgroundScriptExecutor::ExecuteScriptAsync(profile(), extension_id,
