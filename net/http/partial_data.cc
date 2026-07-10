@@ -5,8 +5,10 @@
 #include "net/http/partial_data.h"
 
 #include <limits>
+#include <optional>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -198,7 +200,7 @@ bool PartialData::UpdateFromStoredHeaders(const HttpResponseHeaders* headers,
 
     // Now we avoid resume if there is no content length, but that was not
     // always the case so double check here.
-    std::optional<base::ByteCount> total_length = headers->GetContentLength();
+    std::optional<base::ByteSize> total_length = headers->GetContentLength();
     if (!total_length || total_length->is_zero()) {
       return false;
     }
@@ -241,7 +243,7 @@ bool PartialData::UpdateFromStoredHeaders(const HttpResponseHeaders* headers,
     // it's for a particular range only); while GetDataSize would be unusable
     // since the data is stored using WriteSparseData, and not in the usual data
     // stream.
-    std::optional<base::ByteCount> content_length = headers->GetContentLength();
+    std::optional<base::ByteSize> content_length = headers->GetContentLength();
     resource_size_ = content_length ? content_length->InBytes() : -1;
     if (resource_size_ <= 0) {
       return false;
@@ -315,9 +317,10 @@ bool PartialData::ResponseHeadersOK(const HttpResponseHeaders* headers) {
 
   // A server should return a valid content length with a 206 (per the standard)
   // but relax the requirement because some servers don't do that.
-  std::optional<base::ByteCount> content_length = headers->GetContentLength();
+  std::optional<base::ByteSize> content_length = headers->GetContentLength();
+  const uint64_t expected_length = end - start + 1;
   if (content_length && content_length->is_positive() &&
-      content_length->InBytes() != end - start + 1) {
+      content_length->InBytes() != expected_length) {
     return false;
   }
 

@@ -4,12 +4,14 @@
 
 #include <algorithm>
 #include <array>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -8464,7 +8466,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
       EXPECT_EQ("HTTP/1.1 407", response->headers->GetStatusLine());
       EXPECT_TRUE(response->headers->IsKeepAlive());
       EXPECT_EQ(407, response->headers->response_code());
-      EXPECT_EQ(10, response->headers->GetContentLength()->InBytes());
+      EXPECT_EQ(10u, response->headers->GetContentLength()->InBytes());
       EXPECT_EQ(HttpVersion(1, 1), response->headers->GetHttpVersion());
       std::optional<AuthChallengeInfo> auth_challenge =
           response->auth_challenge;
@@ -8487,7 +8489,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
       EXPECT_EQ("HTTP/1.1 407", response->headers->GetStatusLine());
       EXPECT_TRUE(response->headers->IsKeepAlive());
       EXPECT_EQ(407, response->headers->response_code());
-      EXPECT_EQ(10, response->headers->GetContentLength()->InBytes());
+      EXPECT_EQ(10u, response->headers->GetContentLength()->InBytes());
       EXPECT_EQ(HttpVersion(1, 1), response->headers->GetHttpVersion());
       auth_challenge = response->auth_challenge;
       ASSERT_TRUE(auth_challenge.has_value());

@@ -6,9 +6,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/base64url.h"
+#include "base/byte_size.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
@@ -48,8 +50,8 @@ const char kDnsOverHttpResponseContentType[] = "application/dns-message";
 
 // The maximum size of the DNS message for DoH, per
 // https://datatracker.ietf.org/doc/html/rfc8484#section-6
-constexpr base::ByteCount kDnsOverHttpResponseMaximumSize =
-    base::ByteCount(65535);
+constexpr base::ByteSize kDnsOverHttpResponseMaximumSize =
+    base::ByteSize(65535);
 
 }  // namespace
 
@@ -236,7 +238,7 @@ void DnsHTTPAttempt::OnResponseStarted(net::URLRequest* request,
 
   buffer_ = base::MakeRefCounted<GrowableIOBuffer>();
 
-  std::optional<base::ByteCount> content_length =
+  std::optional<base::ByteSize> content_length =
       request_->response_headers()->GetContentLength();
   if (content_length.has_value()) {
     if (content_length.value() > kDnsOverHttpResponseMaximumSize) {
@@ -283,7 +285,7 @@ void DnsHTTPAttempt::OnReadCompleted(net::URLRequest* request, int bytes_read) {
 
   if (bytes_read > 0) {
     if (buffer_->offset() + bytes_read >
-        kDnsOverHttpResponseMaximumSize.InBytes()) {
+        static_cast<int>(kDnsOverHttpResponseMaximumSize.InBytes())) {
       ResponseCompleted(ERR_DNS_MALFORMED_RESPONSE);
       return;
     }

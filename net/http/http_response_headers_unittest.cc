@@ -12,7 +12,7 @@
 #include <string_view>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/pickle.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
@@ -1551,7 +1551,7 @@ INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
 
 struct ContentLengthTestData {
   const char* headers;
-  std::optional<base::ByteCount> expected_len;
+  std::optional<base::ByteSize> expected_len;
 };
 
 class GetContentLengthTest
@@ -1573,10 +1573,10 @@ constexpr ContentLengthTestData kContentLengthTests[] = {
     {"HTTP/1.1 200 OK\n", std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 0\n",
-     base::ByteCount(0)},
+     base::ByteSize(0)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 10\n",
-     base::ByteCount(10)},
+     base::ByteSize(10)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: \n",
      std::nullopt},
@@ -1597,20 +1597,20 @@ constexpr ContentLengthTestData kContentLengthTests[] = {
      std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 010\n",
-     base::ByteCount(10)},
+     base::ByteSize(10)},
     // Content-Length too big, will overflow an int64_t.
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 40000000000000000000\n",
      std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length:       10\n",
-     base::ByteCount(10)},
+     base::ByteSize(10)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 10  \n",
-     base::ByteCount(10)},
+     base::ByteSize(10)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: \t10\n",
-     base::ByteCount(10)},
+     base::ByteSize(10)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: \v10\n",
      std::nullopt},
@@ -1619,7 +1619,7 @@ constexpr ContentLengthTestData kContentLengthTests[] = {
      std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "cOnTeNt-LENgth: 33\n",
-     base::ByteCount(33)},
+     base::ByteSize(33)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 34\r\n",
      std::nullopt},
@@ -2474,7 +2474,7 @@ TEST_P(UpdateWithNewRangeTest, UpdateWithNewRange) {
   std::string orig_headers(test.orig_headers);
   std::replace(orig_headers.begin(), orig_headers.end(), '\n', '\0');
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(orig_headers + '\0');
-  std::optional<base::ByteCount> content_length = parsed->GetContentLength();
+  std::optional<base::ByteSize> content_length = parsed->GetContentLength();
   ASSERT_TRUE(content_length);
 
   // Update headers without replacing status line.

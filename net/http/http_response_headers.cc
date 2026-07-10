@@ -16,10 +16,11 @@
 #include <string_view>
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -1556,10 +1557,11 @@ bool HttpResponseHeaders::HasValidators() const {
 
 // From RFC 2616:
 // Content-Length = "Content-Length" ":" 1*DIGIT
-std::optional<base::ByteCount> HttpResponseHeaders::GetContentLength() const {
+std::optional<base::ByteSize> HttpResponseHeaders::GetContentLength() const {
   std::optional<int64_t> result = GetInt64HeaderValue("content-length");
   if (result.has_value()) {
-    return base::ByteCount(result.value());
+    // Despite the name, GetInt64HeaderValue() never returns a negative.
+    return base::ByteSize(base::checked_cast<uint64_t>(result.value()));
   }
   return std::nullopt;
 }
@@ -1567,18 +1569,17 @@ std::optional<base::ByteCount> HttpResponseHeaders::GetContentLength() const {
 std::optional<int64_t> HttpResponseHeaders::GetInt64HeaderValue(
     std::string_view header) const {
   size_t iter = 0;
-  std::optional<std::string_view> content_length =
-      EnumerateHeader(&iter, header);
-  if (!content_length || content_length->empty()) {
+  std::optional<std::string_view> value = EnumerateHeader(&iter, header);
+  if (!value || value->empty()) {
     return std::nullopt;
   }
 
-  if ((*content_length)[0] == '+') {
+  if ((*value)[0] == '+') {
     return std::nullopt;
   }
 
   int64_t result;
-  bool ok = base::StringToInt64(*content_length, &result);
+  bool ok = base::StringToInt64(*value, &result);
   if (!ok || result < 0) {
     return std::nullopt;
   }

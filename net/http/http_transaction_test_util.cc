@@ -7,9 +7,11 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
 #include <unordered_map>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -647,7 +649,7 @@ int MockNetworkTransaction::DoSendRequest() {
   response_.ssl_info.connection_status = t->ssl_connection_status;
   response_.dns_aliases = t->dns_aliases;
   data_ = std::vector<uint8_t>(resp_data.begin(), resp_data.end());
-  std::optional<base::ByteCount> content_length =
+  std::optional<base::ByteSize> content_length =
       response_.headers->GetContentLength();
   content_length_ = content_length ? content_length->InBytes() : -1;
 

@@ -4,6 +4,9 @@
 
 #include "components/download/internal/background_service/in_memory_download_driver.h"
 
+#include <optional>
+
+#include "base/byte_size.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/download/internal/background_service/in_memory_download.h"
 #include "components/download/public/background_service/url_loader_factory_getter.h"
@@ -40,7 +43,7 @@ DriverEntry CreateDriverEntry(const InMemoryDownload& download) {
   entry.url_chain = download.url_chain();
   entry.response_headers = download.response_headers();
   if (entry.response_headers) {
-    std::optional<base::ByteCount> content_length =
+    std::optional<base::ByteSize> content_length =
         entry.response_headers->GetContentLength();
     // TODO(https://crbug.com/440360443): This was migrated as-is from an
     // earlier version of GetContentLength() where a return value of -1 was used

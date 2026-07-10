@@ -1694,7 +1694,7 @@ TEST_P(HttpNetworkTransactionTest, Head) {
 
   // Check that the headers got parsed.
   EXPECT_TRUE(response->headers);
-  EXPECT_EQ(1234, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(1234u, response->headers->GetContentLength()->InBytes());
   EXPECT_EQ("HTTP/1.1 404 Not Found", response->headers->GetStatusLine());
   EXPECT_TRUE(response->proxy_chain.is_direct());
   EXPECT_THAT(connected_handler.transports(),
@@ -3318,7 +3318,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuth) {
   ASSERT_TRUE(response);
   EXPECT_TRUE(response->did_use_server_http_auth);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
 }
 
 // Test the request-challenge-retry sequence for basic auth.
@@ -3430,7 +3430,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthWithAddressChange) {
   ASSERT_TRUE(response);
   EXPECT_TRUE(response->did_use_server_http_auth);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
 
   EXPECT_TRUE(trans.GetRemoteEndpoint(&endpoint));
   ASSERT_FALSE(endpoint.address().empty());
@@ -3634,7 +3634,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthKeepAlive) {
     ASSERT_TRUE(response);
     EXPECT_TRUE(response->did_use_server_http_auth);
     EXPECT_FALSE(response->auth_challenge.has_value());
-    EXPECT_EQ(5, response->headers->GetContentLength()->InBytes());
+    EXPECT_EQ(5u, response->headers->GetContentLength()->InBytes());
 
     std::string response_data;
     EXPECT_THAT(ReadTransaction(&trans, &response_data), IsOk());
@@ -3717,7 +3717,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthKeepAliveNoBody) {
   ASSERT_TRUE(response);
   EXPECT_TRUE(response->did_use_server_http_auth);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(5, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(5u, response->headers->GetContentLength()->InBytes());
 }
 
 // Test the request-challenge-retry sequence for basic auth, over a keep-alive
@@ -3799,7 +3799,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthKeepAliveLargeBody) {
   ASSERT_TRUE(response);
   EXPECT_TRUE(response->did_use_server_http_auth);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(5, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(5u, response->headers->GetContentLength()->InBytes());
 }
 
 // Test the request-challenge-retry sequence for basic auth, over a keep-alive
@@ -3883,7 +3883,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthKeepAliveImpatientServer) {
   ASSERT_TRUE(response);
   EXPECT_TRUE(response->did_use_server_http_auth);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(5, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(5u, response->headers->GetContentLength()->InBytes());
 }
 
 // Test the request-challenge-retry sequence for basic auth, over a connection
@@ -4010,7 +4010,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyNoKeepAliveHttp10) {
 
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(5, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(5u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
 
   TransportInfo expected_transport;
@@ -4163,7 +4163,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyNoKeepAliveHttp11) {
 
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(5, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(5u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_EQ(PacResultElementToProxyChain("PROXY myproxy:70"),
             response->proxy_chain);
@@ -4276,7 +4276,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyKeepAliveHttp10) {
     ASSERT_TRUE(response->headers);
     EXPECT_TRUE(response->headers->IsKeepAlive());
     EXPECT_EQ(407, response->headers->response_code());
-    EXPECT_EQ(10, response->headers->GetContentLength()->InBytes());
+    EXPECT_EQ(10u, response->headers->GetContentLength()->InBytes());
     EXPECT_TRUE(HttpVersion(1, 0) == response->headers->GetHttpVersion());
     EXPECT_TRUE(CheckBasicProxyAuth(response->auth_challenge));
 
@@ -4292,7 +4292,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyKeepAliveHttp10) {
     ASSERT_TRUE(response->headers);
     EXPECT_TRUE(response->headers->IsKeepAlive());
     EXPECT_EQ(407, response->headers->response_code());
-    EXPECT_EQ(10, response->headers->GetContentLength()->InBytes());
+    EXPECT_EQ(10u, response->headers->GetContentLength()->InBytes());
     EXPECT_TRUE(HttpVersion(1, 0) == response->headers->GetHttpVersion());
     EXPECT_TRUE(CheckBasicProxyAuth(response->auth_challenge));
 
@@ -4389,7 +4389,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyKeepAliveHttp11) {
     ASSERT_TRUE(response->headers);
     EXPECT_TRUE(response->headers->IsKeepAlive());
     EXPECT_EQ(407, response->headers->response_code());
-    EXPECT_EQ(10, response->headers->GetContentLength()->InBytes());
+    EXPECT_EQ(10u, response->headers->GetContentLength()->InBytes());
     EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
     EXPECT_TRUE(CheckBasicProxyAuth(response->auth_challenge));
     EXPECT_EQ(PacResultElementToProxyChain("PROXY myproxy:70"),
@@ -4407,7 +4407,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyKeepAliveHttp11) {
     ASSERT_TRUE(response->headers);
     EXPECT_TRUE(response->headers->IsKeepAlive());
     EXPECT_EQ(407, response->headers->response_code());
-    EXPECT_EQ(10, response->headers->GetContentLength()->InBytes());
+    EXPECT_EQ(10u, response->headers->GetContentLength()->InBytes());
     EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
     EXPECT_TRUE(CheckBasicProxyAuth(response->auth_challenge));
     EXPECT_FALSE(response->did_use_server_http_auth);
@@ -4536,7 +4536,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyKeepAliveExtraData) {
 
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(5, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(5u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
 
   // The password prompt info should not be set.
@@ -5686,7 +5686,7 @@ TEST_P(HttpNetworkTransactionTest,
   ASSERT_TRUE(response->headers);
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(5, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(5u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
 
   // The password prompt info should not be set.
@@ -5809,7 +5809,7 @@ TEST_P(HttpNetworkTransactionTest,
   ASSERT_TRUE(response->headers);
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(5, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(5u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
 
   // The password prompt info should not be set.
@@ -6625,7 +6625,7 @@ TEST_P(HttpNetworkTransactionTest, HttpProxyLoadTimingNoPacTwoRequests) {
   ASSERT_EQ(1u, response1->proxy_chain.length());
   EXPECT_TRUE(response1->proxy_chain.GetProxyServer(0).is_http());
   ASSERT_TRUE(response1->headers);
-  EXPECT_EQ(1, response1->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(1u, response1->headers->GetContentLength()->InBytes());
 
   LoadTimingInfo load_timing_info1;
   EXPECT_TRUE(trans1->GetLoadTimingInfo(&load_timing_info1));
@@ -6648,7 +6648,7 @@ TEST_P(HttpNetworkTransactionTest, HttpProxyLoadTimingNoPacTwoRequests) {
   ASSERT_EQ(1u, response2->proxy_chain.length());
   EXPECT_TRUE(response2->proxy_chain.GetProxyServer(0).is_http());
   ASSERT_TRUE(response2->headers);
-  EXPECT_EQ(2, response2->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(2u, response2->headers->GetContentLength()->InBytes());
 
   LoadTimingInfo load_timing_info2;
   EXPECT_TRUE(trans2->GetLoadTimingInfo(&load_timing_info2));
@@ -6731,7 +6731,7 @@ TEST_P(HttpNetworkTransactionTest, HttpProxyLoadTimingWithPacTwoRequests) {
   const HttpResponseInfo* response1 = trans1->GetResponseInfo();
   ASSERT_TRUE(response1);
   ASSERT_TRUE(response1->headers);
-  EXPECT_EQ(1, response1->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(1u, response1->headers->GetContentLength()->InBytes());
 
   LoadTimingInfo load_timing_info1;
   EXPECT_TRUE(trans1->GetLoadTimingInfo(&load_timing_info1));
@@ -6753,7 +6753,7 @@ TEST_P(HttpNetworkTransactionTest, HttpProxyLoadTimingWithPacTwoRequests) {
   const HttpResponseInfo* response2 = trans2->GetResponseInfo();
   ASSERT_TRUE(response2);
   ASSERT_TRUE(response2->headers);
-  EXPECT_EQ(2, response2->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(2u, response2->headers->GetContentLength()->InBytes());
 
   LoadTimingInfo load_timing_info2;
   EXPECT_TRUE(trans2->GetLoadTimingInfo(&load_timing_info2));
@@ -6908,7 +6908,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyGet) {
   EXPECT_TRUE(response->proxy_chain.GetProxyServer(0).is_https());
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
 
   // DNS aliases should be empty when using a proxy.
@@ -7007,7 +7007,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyGet) {
   EXPECT_TRUE(response->proxy_chain.GetProxyServer(1).is_https());
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
 
   // DNS aliases should be empty when using a proxy.
@@ -11099,7 +11099,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetry) {
 
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_FALSE(response->did_use_server_http_auth);
   EXPECT_EQ(PacResultElementToProxyChain("HTTPS myproxy:70"),
@@ -11214,7 +11214,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAlive) {
 
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_FALSE(response->did_use_server_http_auth);
   EXPECT_EQ(PacResultElementToProxyChain("HTTPS myproxy:70"),
@@ -11341,7 +11341,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAliveChangeProxy) {
 
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_FALSE(response->did_use_server_http_auth);
   EXPECT_EQ(proxy_chain2, response->proxy_chain);
@@ -11466,7 +11466,7 @@ TEST_P(HttpNetworkTransactionTest,
 
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_EQ(direct, response->proxy_chain);
 
@@ -11810,7 +11810,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyThenServer) {
 
   response = trans.GetResponseInfo();
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
 }
 
 // For the NTLM implementation using SSPI, we skip the NTLM tests since we
@@ -11962,7 +11962,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMAuthV2) {
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(14, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(14u, response->headers->GetContentLength()->InBytes());
 
   std::string response_data;
   rv = ReadTransaction(&trans, &response_data);
@@ -12185,7 +12185,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMAuthV2WrongThenRightPassword) {
 
   response = trans.GetResponseInfo();
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(14, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(14u, response->headers->GetContentLength()->InBytes());
 
   std::string response_data;
   rv = ReadTransaction(&trans, &response_data);
@@ -12360,7 +12360,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2) {
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(14, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(14u, response->headers->GetContentLength()->InBytes());
 
   std::string response_data;
   rv = ReadTransaction(&trans, &response_data);
@@ -12539,7 +12539,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHttpProxy) {
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(14, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(14u, response->headers->GetContentLength()->InBytes());
 
   std::string response_data;
   rv = ReadTransaction(&trans, &response_data);
@@ -13765,7 +13765,7 @@ TEST_P(HttpNetworkTransactionTest, AuthIdentityInURL) {
   // There is no challenge info, since the identity in URL worked.
   EXPECT_FALSE(response->auth_challenge.has_value());
 
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
 
   // Empty the current queue.
   base::RunLoop().RunUntilIdle();
@@ -13872,7 +13872,7 @@ TEST_P(HttpNetworkTransactionTest, WrongAuthIdentityInURL) {
   // There is no challenge info, since the identity worked.
   EXPECT_FALSE(response->auth_challenge.has_value());
 
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
 
   // Empty the current queue.
   base::RunLoop().RunUntilIdle();
@@ -13949,7 +13949,7 @@ TEST_P(HttpNetworkTransactionTest, AuthIdentityInURLSuppressed) {
 
   // There is no challenge info, since the identity worked.
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
 
   // Empty the current queue.
   base::RunLoop().RunUntilIdle();
@@ -14026,7 +14026,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthCacheAndPreauth) {
     response = trans.GetResponseInfo();
     ASSERT_TRUE(response);
     EXPECT_FALSE(response->auth_challenge.has_value());
-    EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+    EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   }
 
   // ------------------------------------------------------------------------
@@ -14109,7 +14109,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthCacheAndPreauth) {
     response = trans.GetResponseInfo();
     ASSERT_TRUE(response);
     EXPECT_FALSE(response->auth_challenge.has_value());
-    EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+    EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   }
 
   // ------------------------------------------------------------------------
@@ -14156,7 +14156,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthCacheAndPreauth) {
     ASSERT_TRUE(response);
 
     EXPECT_FALSE(response->auth_challenge.has_value());
-    EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+    EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   }
 
   // ------------------------------------------------------------------------
@@ -14224,7 +14224,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthCacheAndPreauth) {
     const HttpResponseInfo* response = trans.GetResponseInfo();
     ASSERT_TRUE(response);
     EXPECT_FALSE(response->auth_challenge.has_value());
-    EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+    EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   }
 
   // ------------------------------------------------------------------------
@@ -14324,7 +14324,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthCacheAndPreauth) {
     response = trans.GetResponseInfo();
     ASSERT_TRUE(response);
     EXPECT_FALSE(response->auth_challenge.has_value());
-    EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+    EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   }
 }
 
@@ -14546,7 +14546,7 @@ TEST_P(HttpNetworkTransactionTest, HTTPSBadCertificate) {
   const HttpResponseInfo* response = trans.GetResponseInfo();
 
   ASSERT_TRUE(response);
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
 }
 
 // Test HTTPS connections to a site with a bad certificate, going through a
@@ -14623,7 +14623,7 @@ TEST_P(HttpNetworkTransactionTest, HTTPSBadCertificateViaProxy) {
     const HttpResponseInfo* response = trans.GetResponseInfo();
 
     ASSERT_TRUE(response);
-    EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+    EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   }
 }
 
@@ -14684,7 +14684,7 @@ TEST_P(HttpNetworkTransactionTest, HTTPSViaHttpsProxy) {
   EXPECT_TRUE(response->proxy_chain.GetProxyServer(0).is_https());
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
 
   LoadTimingInfo load_timing_info;
@@ -15163,7 +15163,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthSpdyProxy) {
 
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(5, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(5u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
 
   // The password prompt info should not be set.
@@ -15256,7 +15256,7 @@ TEST_P(HttpNetworkTransactionTest, HTTPSBadCertificateViaHttpsProxy) {
   const HttpResponseInfo* response = trans.GetResponseInfo();
 
   ASSERT_TRUE(response);
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
 }
 
 TEST_P(HttpNetworkTransactionTest, BuildRequest_UserAgent) {
@@ -16521,7 +16521,7 @@ TEST_P(HttpNetworkTransactionTest, DrainResetOK) {
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
 }
 
 // Test HTTPS connections going through a proxy that sends extra data.
@@ -19892,7 +19892,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyGet) {
 
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(response->WasFetchedViaProxy());
   EXPECT_FALSE(response->proxy_chain.is_for_ip_protection());
   EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
@@ -19979,7 +19979,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyTunnelGet) {
 
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(response->WasFetchedViaProxy());
   EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
@@ -20064,7 +20064,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyTunnelGetIPv6) {
 
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(response->WasFetchedViaProxy());
   EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
@@ -25774,7 +25774,7 @@ TEST_P(HttpNetworkTransactionTest, ZeroRTTDoesntConfirm) {
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->headers);
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(1, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(1u, response->headers->GetContentLength()->InBytes());
 
   // Check that ConfirmHandshake wasn't called.
   ASSERT_FALSE(ssl.ConfirmDataConsumed());
@@ -25842,7 +25842,7 @@ TEST_P(HttpNetworkTransactionTest, ZeroRTTSyncConfirmSyncWrite) {
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->headers);
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(1, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(1u, response->headers->GetContentLength()->InBytes());
 
   // Check that the Write didn't get called before ConfirmHandshake completed.
   ASSERT_FALSE(ssl.WriteBeforeConfirm());
@@ -25907,7 +25907,7 @@ TEST_P(HttpNetworkTransactionTest, ZeroRTTSyncConfirmAsyncWrite) {
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->headers);
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(1, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(1u, response->headers->GetContentLength()->InBytes());
 
   // Check that the Write didn't get called before ConfirmHandshake completed.
   ASSERT_FALSE(ssl.WriteBeforeConfirm());
@@ -25965,7 +25965,7 @@ TEST_P(HttpNetworkTransactionTest, ZeroRTTAsyncConfirmSyncWrite) {
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->headers);
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(1, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(1u, response->headers->GetContentLength()->InBytes());
 
   // Check that the Write didn't get called before ConfirmHandshake completed.
   ASSERT_FALSE(ssl.WriteBeforeConfirm());
@@ -26029,7 +26029,7 @@ TEST_P(HttpNetworkTransactionTest, ZeroRTTAsyncConfirmAsyncWrite) {
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->headers);
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_EQ(1, response->headers->GetContentLength()->InBytes());
+  EXPECT_EQ(1u, response->headers->GetContentLength()->InBytes());
 
   // Check that the Write didn't get called before ConfirmHandshake completed.
   ASSERT_FALSE(ssl.WriteBeforeConfirm());
@@ -26135,7 +26135,7 @@ TEST_P(HttpNetworkTransactionTest, ZeroRTTReject) {
       ASSERT_TRUE(response);
       ASSERT_TRUE(response->headers);
       EXPECT_EQ(200, response->headers->response_code());
-      EXPECT_EQ(1, response->headers->GetContentLength()->InBytes());
+      EXPECT_EQ(1u, response->headers->GetContentLength()->InBytes());
     }
   }
 }

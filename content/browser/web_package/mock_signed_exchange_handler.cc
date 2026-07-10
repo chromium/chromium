@@ -7,9 +7,11 @@
 #include <string.h>
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -221,7 +223,7 @@ MockSignedExchangeHandler::MockSignedExchangeHandler(
     for (const auto& header : params.response_headers)
       head->headers->AddHeader(header.first, header.second);
     head->is_signed_exchange_inner_response = true;
-    std::optional<base::ByteCount> content_length =
+    std::optional<base::ByteSize> content_length =
         head->headers->GetContentLength();
     head->content_length = content_length ? content_length->InBytes() : -1;
   }

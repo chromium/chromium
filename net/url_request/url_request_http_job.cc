@@ -1800,15 +1800,16 @@ bool URLRequestHttpJob::ShouldFixMismatchedContentLength(int rv) const {
   if (rv == ERR_CONTENT_LENGTH_MISMATCH ||
       rv == ERR_INCOMPLETE_CHUNKED_ENCODING) {
     if (request_->response_headers()) {
-      std::optional<base::ByteCount> content_length =
+      std::optional<base::ByteSize> content_length =
           request_->response_headers()->GetContentLength();
-      base::ByteCount expected_length =
-          content_length.value_or(base::ByteCount(-1));
       VLOG(1) << __func__ << "() \"" << request_->url().spec() << "\""
-              << " content-length = " << expected_length
+              << " content-length = "
+              << content_length.transform(&base::ByteSizeDelta::FromByteSize)
+                     .value_or(base::ByteSizeDelta(-1))
               << " pre total = " << prefilter_bytes_read()
               << " post total = " << postfilter_bytes_read();
-      if (postfilter_bytes_read().AsDeprecatedByteCount() == expected_length) {
+      if (content_length.has_value() &&
+          postfilter_bytes_read() == content_length.value()) {
         // Clear the error.
         return true;
       }

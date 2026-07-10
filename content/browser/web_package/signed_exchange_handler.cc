@@ -5,9 +5,11 @@
 #include "content/browser/web_package/signed_exchange_handler.h"
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -770,7 +772,7 @@ void SignedExchangeHandler::CreateResponse(
   response_head->load_timing.send_start = now;
   response_head->load_timing.send_end = now;
   response_head->load_timing.receive_headers_end = now;
-  std::optional<base::ByteCount> content_length =
+  std::optional<base::ByteSize> content_length =
       response_head->headers->GetContentLength();
   response_head->content_length =
       content_length ? content_length->InBytes() : -1;

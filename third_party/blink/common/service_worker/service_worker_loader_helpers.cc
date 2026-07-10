@@ -6,11 +6,13 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -109,7 +111,7 @@ void SaveResponseHeaders(const mojom::FetchAPIResponse& response,
   // Populate |out_head|'s content length with the value from the HTTP response
   // headers.
   if (out_head->content_length == -1) {
-    std::optional<base::ByteCount> content_length =
+    std::optional<base::ByteSize> content_length =
         out_head->headers->GetContentLength();
     out_head->content_length = content_length ? content_length->InBytes() : -1;
   }
@@ -126,7 +128,7 @@ void SaveResponseHeaders(const mojom::FetchAPIResponse& response,
   if (out_head->encoded_data_length == -1) {
     if (response.response_source ==
         network::mojom::FetchResponseSource::kNetwork) {
-      std::optional<base::ByteCount> content_length =
+      std::optional<base::ByteSize> content_length =
           out_head->headers->GetContentLength();
       out_head->encoded_data_length =
           content_length ? content_length->InBytes() : -1;

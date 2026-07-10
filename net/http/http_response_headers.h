@@ -13,7 +13,7 @@
 #include <string_view>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -402,7 +402,7 @@ class NET_EXPORT HttpResponseHeaders
 
   // Returns the value of the Content-Length header or nullopt if there is no
   // such header in the response.
-  std::optional<base::ByteCount> GetContentLength() const;
+  std::optional<base::ByteSize> GetContentLength() const;
 
   // Returns the value of the specified header or nullopt if there is no such
   // header in the response.

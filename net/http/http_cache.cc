@@ -9,7 +9,7 @@
 #include <string_view>
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -1513,10 +1513,11 @@ HttpCache::ParallelWritingPattern HttpCache::CanTransactionJoinExistingWriters(
     return PARALLEL_WRITING_NOT_JOIN_READ_ONLY;
   }
   if (transaction->GetResponseInfo()->headers) {
-    std::optional<base::ByteCount> content_length =
+    std::optional<base::ByteSize> content_length =
         transaction->GetResponseInfo()->headers->GetContentLength();
-    if (content_length &&
-        content_length->InBytes() > disk_cache_->MaxFileSize()) {
+    if (content_length && disk_cache_->MaxFileSize() >= 0 &&
+        content_length->InBytes() >
+            base::as_unsigned(disk_cache_->MaxFileSize())) {
       return PARALLEL_WRITING_NOT_JOIN_TOO_BIG_FOR_CACHE;
     }
   }

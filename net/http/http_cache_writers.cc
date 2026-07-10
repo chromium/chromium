@@ -5,8 +5,10 @@
 #include "net/http/http_cache_writers.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -344,7 +346,7 @@ bool HttpCache::Writers::ShouldTruncate() {
   // Check the response headers for strong validators.
   // Note that if this is a 206, content-length was already fixed after calling
   // PartialData::ResponseHeadersOK().
-  std::optional<base::ByteCount> content_length =
+  std::optional<base::ByteSize> content_length =
       response_info_truncation_.headers->GetContentLength();
   if (!content_length.has_value() || content_length->is_zero() ||
       response_info_truncation_.headers->HasHeaderValue("Accept-Ranges",
@@ -366,7 +368,8 @@ bool HttpCache::Writers::ShouldTruncate() {
     return false;
   }
 
-  if (content_length->InBytes() <= current_size) {
+  if (current_size < 0 ||
+      content_length->InBytes() <= base::as_unsigned(current_size)) {
     return false;
   }
 
@@ -619,9 +622,10 @@ void HttpCache::Writers::OnDataReceived(int result) {
             : entry_->GetEntry()->GetDataSize(kResponseContentIndex);
     const HttpResponseInfo* response_info =
         network_transaction_->GetResponseInfo();
-    std::optional<base::ByteCount> content_length =
+    std::optional<base::ByteSize> content_length =
         response_info->headers->GetContentLength();
-    if (content_length && content_length->InBytes() > bytes_received) {
+    if (content_length &&
+        static_cast<int64_t>(content_length->InBytes()) > bytes_received) {
       OnNetworkReadFailure(result);
       return;
     }

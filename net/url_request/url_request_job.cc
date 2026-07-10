@@ -4,8 +4,10 @@
 
 #include "net/url_request/url_request_job.h"
 
+#include <optional>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -520,7 +522,7 @@ void URLRequestJob::NotifyFinalHeadersReceived() {
       if (expected_content_size_ == -1 && request_->response_headers()) {
         // This keeps |expected_content_size_| at its value of -1 if there's no
         // Content-Length header.
-        std::optional<base::ByteCount> content_length =
+        std::optional<base::ByteSize> content_length =
             request_->response_headers()->GetContentLength();
         expected_content_size_ =
             content_length ? content_length->InBytes() : -1;

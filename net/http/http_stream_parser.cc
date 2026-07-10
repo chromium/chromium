@@ -6,10 +6,11 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -1114,8 +1115,9 @@ int HttpStreamParser::ParseResponseHeaders(size_t end_offset) {
     response_->connection_info = HttpConnectionInfo::kHTTP1_1;
   }
   DVLOG(1) << __func__ << "() content_length = \""
-           << response_->headers->GetContentLength().value_or(
-                  base::ByteCount(-1))
+           << response_->headers->GetContentLength()
+                  .transform(&base::ByteSizeDelta::FromByteSize)
+                  .value_or(base::ByteSizeDelta(-1))
            << "\n\""
            << " headers = \"" << GetResponseHeaderLines(*response_->headers)
            << "\"";
@@ -1166,7 +1168,7 @@ void HttpStreamParser::CalculateResponseBodySize() {
     if (response_->headers->IsChunkEncoded()) {
       chunked_decoder_ = std::make_unique<HttpChunkedDecoder>();
     } else {
-      std::optional<base::ByteCount> content_length =
+      std::optional<base::ByteSize> content_length =
           response_->headers->GetContentLength();
       response_body_length_ = content_length ? content_length->InBytes() : -1;
       // If response_body_length_ is still -1, then we have to wait
