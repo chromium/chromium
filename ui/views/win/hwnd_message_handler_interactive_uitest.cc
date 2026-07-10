@@ -13,6 +13,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/views_features.h"
+#include "ui/base/win/window_event_target.h"
 #include "ui/views/win/hwnd_message_handler.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
 
@@ -349,6 +350,12 @@ TEST_F(HWNDMessageHandlerTest, DeferredDestruction) {
 
   EXPECT_TRUE(weak_handler);
   EXPECT_TRUE(weak_handler->delete_pending_);
+
+  ui::WindowEventTarget* target = weak_handler.get();
+  ASSERT_TRUE(target);
+  bool handled = false;
+  target->HandlePointerMessage(WM_POINTERDOWN, 0, 0, &handled);
+  EXPECT_FALSE(handled);
 
   EXPECT_TRUE(base::test::RunUntil([&]() { return !weak_handler; }));
 
