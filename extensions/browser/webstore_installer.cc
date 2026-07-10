@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
@@ -53,7 +52,6 @@
 #include "extensions/browser/shared_module_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
@@ -605,13 +603,10 @@ void WebstoreInstaller::StartDownload(const ExtensionId& extension_id,
                                       this, extension_id));
   params->set_download_source(download::DownloadSource::EXTENSION_INSTALLER);
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kWebstoreInstallerUserGestureKillSwitch)) {
-    // This is set to `true` so that the download stack can correctly apply
-    // download restriction policies and understand that a user gesture started
-    // the extension download.
-    params->set_has_user_gesture(true);
-  }
+  // This is set to `true` so that the download stack can correctly apply
+  // download restriction policies and understand that a user gesture started
+  // the extension download.
+  params->set_has_user_gesture(true);
 
   download_manager->DownloadUrl(std::move(params));
 }

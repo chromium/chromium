@@ -204,10 +204,6 @@ BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable);
 // Controls whether the component webstore hosted app is loaded.
 BASE_DECLARE_FEATURE(kWebstoreHostedApp);
 
-// Used to control whether downloads initiated by `WebstoreInstaller` are marked
-// as having a corresponding user gesture or not.
-BASE_DECLARE_FEATURE(kWebstoreInstallerUserGestureKillSwitch);
-
 ///////////////////////////////////////////////////////////////////////////////
 // STOP!
 // Please don't just add your new feature down here.

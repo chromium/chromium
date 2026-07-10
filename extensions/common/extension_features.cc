@@ -178,11 +178,6 @@ BASE_FEATURE(kWebstoreHostedApp,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 );
 
-// TODO(crbug.com/399447642): Clean up this feature after confirming the fix is
-// sufficient.
-BASE_FEATURE(kWebstoreInstallerUserGestureKillSwitch,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDeclarativeNetRequestSafeRuleLimits,
              "DeclarativeNetRequestSafeDynamicRules",
              base::FEATURE_ENABLED_BY_DEFAULT);
