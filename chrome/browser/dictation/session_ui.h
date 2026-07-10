@@ -10,7 +10,12 @@ namespace dictation {
 // Interface for the view controller of browser-level UI behavior.
 class SessionUi {
  public:
+  enum class StreamType { kAttached, kFinalizing };
+
   virtual ~SessionUi() = default;
+
+  // Called when a stream encounters an error.
+  virtual void OnError(StreamType stream_type) = 0;
 };
 
 }  // namespace dictation

@@ -111,10 +111,15 @@ void SessionController::HostTabDidClose() {
 void SessionController::DidUpdateStreamProviderState(
     StreamProvider& stream_provider,
     StreamProvider::StreamState old_state) {
-  if (stream_provider.GetState() == StreamProvider::StreamState::kComplete ||
-      stream_provider.GetState() == StreamProvider::StreamState::kFailed) {
+  using StreamState = StreamProvider::StreamState;
+
+  const bool is_attached = attached_stream_provider_.get() == &stream_provider;
+  const bool is_failure = stream_provider.GetState() == StreamState::kFailed;
+
+  if (stream_provider.GetState() == StreamState::kComplete ||
+      stream_provider.GetState() == StreamState::kFailed) {
     std::unique_ptr<StreamProvider> provider_to_delete;
-    if (attached_stream_provider_.get() == &stream_provider) {
+    if (is_attached) {
       provider_to_delete = std::move(attached_stream_provider_);
     } else {
       auto it = std::ranges::find_if(finalizing_stream_providers_,
@@ -137,16 +142,16 @@ void SessionController::DidUpdateStreamProviderState(
   // Update SessionState based on provider states.
   if (attached_stream_provider_) {
     switch (attached_stream_provider_->GetState()) {
-      case StreamProvider::StreamState::kInitializing:
+      case StreamState::kInitializing:
         // An initializing stream pust the controller into the initiailzing
         // state at creation time.
         CHECK_EQ(state_, SessionState::kStreamInitializing);
         break;
-      case StreamProvider::StreamState::kTranscribing:
+      case StreamState::kTranscribing:
         MoveToState(SessionState::kTranscribing);
         break;
-      case StreamProvider::StreamState::kFailed:
-      case StreamProvider::StreamState::kComplete:
+      case StreamState::kFailed:
+      case StreamState::kComplete:
         // Completed streams are detached above.
         NOTREACHED();
     }
@@ -155,6 +160,15 @@ void SessionController::DidUpdateStreamProviderState(
       MoveToState(SessionState::kFinalizing);
     } else {
       MoveToState(SessionState::kInactive);
+    }
+  }
+
+  if (is_failure && old_state != StreamState::kComplete) {
+    const SessionUi::StreamType stream_type =
+        is_attached ? SessionUi::StreamType::kAttached
+                    : SessionUi::StreamType::kFinalizing;
+    if (ui_) {
+      ui_->OnError(stream_type);
     }
   }
 }

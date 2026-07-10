@@ -57,6 +57,8 @@ source_set("impl") {
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/browser/ui/views/interaction",
     "//chrome/common/extensions/api",
     "//components/optimization_guide/content/browser",
@@ -133,6 +135,8 @@ source_set("browser_tests") {
     ":test_support",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/test:test_support",
     "//content/test:test_support",
   ]

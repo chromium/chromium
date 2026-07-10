@@ -93,9 +93,18 @@ async function startStream(streamId) {
   chrome.dictationPrivate.setStreamState(
       {streamId, state: chrome.dictationPrivate.StreamState.INITIALIZING});
 
-  await setupOffscreenDocument();
   const optionsItems = await chrome.storage.local.get(
-      {cannedResponse: '', wordDelay: 0, finalDelay: 0});
+      {cannedResponse: '', wordDelay: 0, finalDelay: 0, failOnStart: false});
+
+  if (optionsItems.failOnStart) {
+    chrome.dictationPrivate.setStreamState({
+      streamId,
+      state: chrome.dictationPrivate.StreamState.FAILED,
+    });
+    return;
+  }
+
+  await setupOffscreenDocument();
   const startResult = await chrome.runtime.sendMessage({
     command: 'startStream',
     streamId,

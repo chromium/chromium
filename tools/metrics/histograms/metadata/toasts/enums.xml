@@ -104,6 +104,7 @@ chromium-metrics-reviews@google.com.
   <int value="43" label="Tab strip switch to horizontal delayed toast"/>
   <int value="44" label="Tab strip switch to vertical delayed toast"/>
   <int value="45" label="Showed Autofill AI prefetch error message"/>
+  <int value="48" label="Dictation error"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

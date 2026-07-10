@@ -13,10 +13,13 @@
 #include "chrome/browser/dictation/session_ui_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/views/dictation/dictation_bubble_ui.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "components/tabs/public/tab_interface.h"
@@ -42,7 +45,7 @@ DictationBubbleUi::State ToBubbleUiState(SessionState state) {
 
 SessionUiImpl::SessionUiImpl(tabs::TabInterface& tab,
                              SessionUiDelegate& delegate)
-    : controller_(delegate) {
+    : tab_(tab), controller_(delegate) {
   BrowserWindowInterface* window = tab.GetBrowserWindowInterface();
   CHECK(window);
 
@@ -92,6 +95,21 @@ SessionUiImpl::SessionUiImpl(tabs::TabInterface& tab,
 }
 
 SessionUiImpl::~SessionUiImpl() = default;
+
+void SessionUiImpl::OnError(StreamType stream_type) {
+  BrowserWindowInterface* const window = tab_->GetBrowserWindowInterface();
+  if (window) {
+    ToastController* const toast_controller =
+        window->GetFeatures().toast_controller();
+    if (toast_controller) {
+      toast_controller->MaybeShowToast(ToastParams(ToastId::kDictationError));
+    }
+  }
+
+  if (stream_type == StreamType::kAttached) {
+    controller_->UiRequestEndSession();
+  }
+}
 
 void SessionUiImpl::OnSessionStateChanged(SessionState state) {
   bubble_ui_->SetState(ToBubbleUiState(state));

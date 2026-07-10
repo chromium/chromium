@@ -19112,6 +19112,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_LINK_COPIED_TO_HIGHLIGHT_TOAST_BODY" desc="Text on a toast notification that is shown when a link to highlight is successfully copied.">
         Link copied to highlight
       </message>
+      <message name="IDS_DICTATION_ERROR_TOAST" desc="Text shown in a toast notification when a voice typing/dictation session fails due to an error." translateable="false">
+        Something went wrong. Try again later
+      </message>
       <message name="IDS_READING_LIST_TOAST_BODY" desc="Text on a toast notification that is shown when one or more items are added to the reading list [ICU Syntax]">
         {PAGES, plural, =1 {Page added to reading list} other {Pages added to reading list}}
       </message>
