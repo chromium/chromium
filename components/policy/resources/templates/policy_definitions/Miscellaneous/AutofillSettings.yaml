@@ -13,6 +13,7 @@ desc: |-
   * "identity_docs": Blocks filling and saving of identity documents (e.g. passport, drivers license, national id).
   * "travel": Blocks filling and saving of travel information (e.g. flight reservation, vehicle registration).
   * "shopping": Blocks filling and saving of shopping information (e.g. online orders, shipments).
+  * "all": Blocks filling and saving of all Autofill data types.
 
   If a data type is blocked for a site, both the generation of suggestions and the prompt to save/import new data of that type are disabled on that site.
 
@@ -52,6 +53,7 @@ schema:
           - identity_docs
           - travel
           - shopping
+          - all
           type: string
         type: array
     required:

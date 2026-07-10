@@ -179,6 +179,7 @@ class AutofillClient {
  public:
   // Categories of Autofill data that can be blocked or allowed on specific GURL
   // patterns by enterprise policies.
+  // LINT.IfChange(AutofillPolicyDataCategory)
   enum class AutofillPolicyDataCategory {
     // Address, name, email, phone, and profile configuration details.
     kContactInfo,
@@ -192,6 +193,7 @@ class AutofillClient {
     // Autofill AI shopping details (e.g. orders, shipments).
     kShopping,
   };
+  // LINT.ThenChange(//components/autofill/core/browser/permissions/autofill_policy_service.cc:AutofillPolicyDataCategory,//components/autofill/core/browser/permissions/autofill_policy_service_unittest.cc:AutofillPolicyDataCategory)
 
   // Represents the user's possible decisions or outcomes in response to a
   // prompt related to address saving, updating, or migrating.

@@ -151,6 +151,7 @@ inline constexpr char kAutofillSyncTransportOptIn[] =
 inline constexpr char kAutofillTypesBlocked[] = "autofill.types_blocked";
 
 // Keys and values used in `kAutofillTypesBlocked` preference.
+inline constexpr char kAutofillBlockedTypesAllValue[] = "all";
 inline constexpr char kAutofillBlockedTypesUrlPatternKey[] = "url_pattern";
 inline constexpr char kAutofillBlockedTypesBlockedTypesKey[] = "blocked_types";
 

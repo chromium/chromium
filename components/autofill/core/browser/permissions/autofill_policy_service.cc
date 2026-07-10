@@ -111,6 +111,16 @@ std::optional<ParsedPolicyEntry> ParsePolicyEntry(const base::Value& entry) {
     } else if (type_str == prefs::kAutofillBlockedTypesShoppingValue) {
       categories.push_back(
           AutofillClient::AutofillPolicyDataCategory::kShopping);
+    } else if (type_str == prefs::kAutofillBlockedTypesAllValue) {
+      // LINT.IfChange(AutofillPolicyDataCategory)
+      categories.insert(
+          categories.end(),
+          {AutofillClient::AutofillPolicyDataCategory::kContactInfo,
+           AutofillClient::AutofillPolicyDataCategory::kPayments,
+           AutofillClient::AutofillPolicyDataCategory::kIdentityDocs,
+           AutofillClient::AutofillPolicyDataCategory::kTravel,
+           AutofillClient::AutofillPolicyDataCategory::kShopping});
+      // LINT.ThenChange(//components/autofill/core/browser/foundations/autofill_client.h:AutofillPolicyDataCategory,//components/autofill/core/browser/permissions/autofill_policy_service_unittest.cc:AutofillPolicyDataCategory)
     }
   }
   return ParsedPolicyEntry{std::move(pattern), std::move(categories)};

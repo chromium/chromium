@@ -294,6 +294,8 @@ TEST_F(AutofillPolicyServiceTest,
       AutofillClient::AutofillPolicyDataCategory::kTravel));
 }
 
+// Tests that shopping category is blocked when the policy rule configures it
+// for a matching domain. Unrelated domains are unaffected.
 TEST_F(AutofillPolicyServiceTest, ShoppingCategoryBlocksAutofill) {
   base::ListValue blocked_list;
   base::DictValue entry;
@@ -308,6 +310,82 @@ TEST_F(AutofillPolicyServiceTest, ShoppingCategoryBlocksAutofill) {
       GURL("https://www.example.com"),
       AutofillClient::AutofillPolicyDataCategory::kShopping));
   EXPECT_FALSE(IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.google.com"),
+      AutofillClient::AutofillPolicyDataCategory::kShopping));
+}
+
+// Tests that when the "all" category is configured in a policy rule for a
+// specific domain, all Autofill data categories are blocked on that domain.
+// Unrelated domains are unaffected.
+TEST_F(AutofillPolicyServiceTest, AllCategoryBlocksAllAutofillDataTypes) {
+  base::ListValue blocked_list;
+  base::DictValue entry;
+  entry.Set("url_pattern", "https://[*.]example.com");
+  base::ListValue blocked_types;
+  blocked_types.Append("all");
+  entry.Set("blocked_types", std::move(blocked_types));
+  blocked_list.Append(std::move(entry));
+  SetPolicy(std::move(blocked_list));
+
+  // LINT.IfChange(AutofillPolicyDataCategory)
+  EXPECT_TRUE(service()->IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.example.com"),
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo));
+  EXPECT_TRUE(service()->IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.example.com"),
+      AutofillClient::AutofillPolicyDataCategory::kPayments));
+  EXPECT_TRUE(service()->IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.example.com"),
+      AutofillClient::AutofillPolicyDataCategory::kIdentityDocs));
+  EXPECT_TRUE(service()->IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.example.com"),
+      AutofillClient::AutofillPolicyDataCategory::kTravel));
+  EXPECT_TRUE(service()->IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.example.com"),
+      AutofillClient::AutofillPolicyDataCategory::kShopping));
+  // LINT.ThenChange(//components/autofill/core/browser/foundations/autofill_client.h:AutofillPolicyDataCategory,//components/autofill/core/browser/permissions/autofill_policy_service.cc:AutofillPolicyDataCategory)
+
+  EXPECT_FALSE(service()->IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.google.com"),
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo));
+}
+
+// Tests that when the "all" category is configured with a global wildcard
+// pattern ('*'), all Autofill data categories are blocked across all navigation
+// URLs.
+TEST_F(AutofillPolicyServiceTest, AllCategoryWithWildcardBlocksAllAutofill) {
+  base::ListValue blocked_list;
+  base::DictValue entry;
+  // Wildcard matches all URLs.
+  entry.Set("url_pattern", "*");
+  base::ListValue blocked_types;
+  blocked_types.Append("all");
+  entry.Set("blocked_types", std::move(blocked_types));
+  blocked_list.Append(std::move(entry));
+  SetPolicy(std::move(blocked_list));
+
+  // Should be blocked on example.com.
+  EXPECT_TRUE(IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.example.com"),
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo));
+  EXPECT_TRUE(IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.example.com"),
+      AutofillClient::AutofillPolicyDataCategory::kPayments));
+  EXPECT_TRUE(IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.example.com"),
+      AutofillClient::AutofillPolicyDataCategory::kIdentityDocs));
+  EXPECT_TRUE(IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.example.com"),
+      AutofillClient::AutofillPolicyDataCategory::kTravel));
+  EXPECT_TRUE(IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.example.com"),
+      AutofillClient::AutofillPolicyDataCategory::kShopping));
+
+  // Should be blocked on google.com too because of the wildcard.
+  EXPECT_TRUE(IsAutofillTypeBlockedByPolicy(
+      GURL("https://www.google.com"),
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo));
+  EXPECT_TRUE(IsAutofillTypeBlockedByPolicy(
       GURL("https://www.google.com"),
       AutofillClient::AutofillPolicyDataCategory::kShopping));
 }
