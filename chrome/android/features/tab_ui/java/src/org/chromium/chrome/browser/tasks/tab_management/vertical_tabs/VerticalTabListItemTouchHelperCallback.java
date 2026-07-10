@@ -52,6 +52,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
     private final int mMouseDragThresholdSquared;
     private final Set<Integer> mDraggedChildTabIds = new HashSet<>();
     private final List<Integer> mSelectedGroupTabIds = new ArrayList<>();
+    private final List<RecyclerView.ViewHolder> mDraggedChildViewHolders = new ArrayList<>();
     private RecyclerView.@Nullable ViewHolder mSelectedViewHolder;
 
     /**
@@ -575,10 +576,14 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                         int childTabId = getTabId(childViewHolder);
                         currentChildIds.add(childTabId);
 
-                        // Copy the translation/elevation from the dragged group header
-                        // to the children.
                         if (recyclerView.getItemAnimator() != null) {
                             recyclerView.getItemAnimator().endAnimation(childViewHolder);
+                        }
+
+                        if (isCurrentlyActive
+                                && !mDraggedChildViewHolders.contains(childViewHolder)) {
+                            childViewHolder.setIsRecyclable(false);
+                            mDraggedChildViewHolders.add(childViewHolder);
                         }
                         childView.setTranslationY(dY);
                         childView.setTranslationX(dX);
@@ -590,6 +595,21 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                             // Reset translation of non-active children after release.
                             childView.setTranslationZ(0f);
                         }
+                    }
+                }
+            }
+
+            for (RecyclerView.ViewHolder childViewHolder : mDraggedChildViewHolders) {
+                View childView = childViewHolder.itemView;
+                if (childView.getParent() != recyclerView) {
+                    // Ensure it is in the overlay when explicitly detached
+                    recyclerView.getOverlay().add(childView);
+                    childView.setTranslationY(dY);
+                    childView.setTranslationX(dX);
+                    if (isCurrentlyActive) {
+                        childView.setTranslationZ(viewHolder.itemView.getElevation());
+                    } else {
+                        childView.setTranslationZ(0f);
                     }
                 }
             }
@@ -612,6 +632,26 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                             break;
                         }
                     }
+
+                    Iterator<RecyclerView.ViewHolder> holderIt =
+                            mDraggedChildViewHolders.iterator();
+                    while (holderIt.hasNext()) {
+                        RecyclerView.ViewHolder trackedHolder = holderIt.next();
+                        if (hasTabPropertiesModel(trackedHolder)
+                                && getTabId(trackedHolder) == savedTabId) {
+                            trackedHolder.setIsRecyclable(true);
+                            recyclerView.getOverlay().remove(trackedHolder.itemView);
+
+                            // Because it was in the overlay, it might have structural translations
+                            // persisting.
+                            trackedHolder.itemView.setTranslationZ(0f);
+                            trackedHolder.itemView.setTranslationY(0f);
+                            trackedHolder.itemView.setTranslationX(0f);
+                            holderIt.remove();
+                            break;
+                        }
+                    }
+
                     it.remove();
                 }
             }
@@ -621,6 +661,12 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
     @Override
     public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
+        for (RecyclerView.ViewHolder childViewHolder : mDraggedChildViewHolders) {
+            childViewHolder.setIsRecyclable(true);
+            recyclerView.getOverlay().remove(childViewHolder.itemView);
+        }
+        mDraggedChildViewHolders.clear();
+
         // Safeguard finger lift: explicitly wipe out any running timer threads.
         if (mTabGridItemLongPressOrchestrator != null) {
             mTabGridItemLongPressOrchestrator.cancel();
@@ -650,6 +696,11 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             }
         }
         mDraggedChildTabIds.clear();
+    }
+
+    @Override
+    public boolean shouldAllowDragPastLayout() {
+        return true;
     }
 
     /**

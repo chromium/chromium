@@ -489,6 +489,9 @@ public class ItemTouchHelper2 extends RecyclerView.ItemDecoration
             getSelectedDxDy(mTmpPosition);
             dx = mTmpPosition[0];
             dy = mTmpPosition[1];
+            if (mCallback.shouldAllowDragPastLayout() && mSelected.itemView.getParent() == null) {
+                parent.getOverlay().add(mSelected.itemView);
+            }
         }
         mCallback.onDrawOver(c, parent, mSelected, mRecoverAnimations, mActionState, dx, dy);
     }
@@ -629,6 +632,9 @@ public class ItemTouchHelper2 extends RecyclerView.ItemDecoration
                 removeChildDrawingOrderCallbackIfNecessary(prevSelected.itemView);
                 mCallback.clearView(mRecyclerView, prevSelected);
             }
+            if (mCallback.shouldAllowDragPastLayout()) {
+                mSelected.setIsRecyclable(true);
+            }
             mSelected = null;
         }
         if (selected != null) {
@@ -638,6 +644,9 @@ public class ItemTouchHelper2 extends RecyclerView.ItemDecoration
             mSelectedStartX = selected.itemView.getLeft();
             mSelectedStartY = selected.itemView.getTop();
             mSelected = selected;
+            if (mCallback.shouldAllowDragPastLayout()) {
+                mSelected.setIsRecyclable(false);
+            }
 
             if (actionState == ACTION_STATE_DRAG) {
                 mSelected.itemView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
@@ -896,7 +905,14 @@ public class ItemTouchHelper2 extends RecyclerView.ItemDecoration
             return;
         }
         if (mSelected != null && holder == mSelected) {
-            select(null, ACTION_STATE_IDLE);
+            if (mCallback.shouldAllowDragPastLayout()) {
+                // Do nothing here during layout detach phase to prevent crashing the Recycler
+                // (Scrapped or attached views may not be recycled).
+                // Rendering continuity is maintained by adding the view to the overlay inside
+                // onDrawOver instead.
+            } else {
+                select(null, ACTION_STATE_IDLE);
+            }
         } else {
             endRecoverAnimation(holder, false); // this may push it into pending cleanup list.
             if (mPendingCleanup.remove(holder.itemView)) {
@@ -1676,6 +1692,16 @@ public class ItemTouchHelper2 extends RecyclerView.ItemDecoration
         }
 
         /**
+         * @return whether this callback allows a drag to continue without cancellation when the
+         *     structural view is detached by the LayoutManager (for example, scrolling into an
+         *     offscreen state). Allowing this ensures layout continuity by rendering the detached
+         *     view via the RecyclerView Overlay. Default is false.
+         */
+        public boolean shouldAllowDragPastLayout() {
+            return false;
+        }
+
+        /**
          * Returns whether ItemTouchHelper should start a swipe operation if a pointer is swiped
          * over the View.
          *
@@ -2078,6 +2104,9 @@ public class ItemTouchHelper2 extends RecyclerView.ItemDecoration
          * @param viewHolder The View that was interacted by the user.
          */
         public void clearView(@NonNull RecyclerView recyclerView, @NonNull ViewHolder viewHolder) {
+            if (shouldAllowDragPastLayout()) {
+                recyclerView.getOverlay().remove(viewHolder.itemView);
+            }
             ItemTouchUIUtilImpl2.INSTANCE.clearView(viewHolder.itemView);
         }
 

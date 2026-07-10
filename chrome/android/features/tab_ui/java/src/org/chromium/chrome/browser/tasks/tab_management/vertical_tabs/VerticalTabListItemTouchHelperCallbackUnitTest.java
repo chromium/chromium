@@ -25,6 +25,7 @@ import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroupOverlay;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -75,6 +76,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private RecyclerView mRecyclerView;
+    @Mock private ViewGroupOverlay mViewGroupOverlay;
 
     private TabListModel mModel;
     private SimpleRecyclerViewAdapter.ViewHolder mViewHolder;
@@ -91,6 +93,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mCurrentTabModelSupplier.get()).thenReturn(mTabModel);
         when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mRecyclerView.getContext()).thenReturn(context);
+        when(mRecyclerView.getOverlay()).thenReturn(mViewGroupOverlay);
 
         // Set up the mocked property model for the dragged view holder.
         mPropertyModel =
@@ -866,7 +869,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         // Child view inside group
         View childView1 = mock(View.class);
         SimpleRecyclerViewAdapter.ViewHolder childVH1 =
-                mock(SimpleRecyclerViewAdapter.ViewHolder.class);
+                spy(new SimpleRecyclerViewAdapter.ViewHolder(childView1, null));
         PropertyModel childModel1 =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID).build();
         childModel1.set(TabProperties.TAB_ID, 2);
@@ -876,7 +879,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         // Child view outside group
         View childView2 = mock(View.class);
         SimpleRecyclerViewAdapter.ViewHolder childVH2 =
-                mock(SimpleRecyclerViewAdapter.ViewHolder.class);
+                spy(new SimpleRecyclerViewAdapter.ViewHolder(childView2, null));
         PropertyModel childModel2 =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID).build();
         childModel2.set(TabProperties.TAB_ID, 3);
@@ -886,8 +889,10 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mRecyclerView.getChildCount()).thenReturn(2);
         when(mRecyclerView.getChildAt(0)).thenReturn(childView1);
         when(mRecyclerView.getChildViewHolder(childView1)).thenReturn(childVH1);
+        when(childView1.getParent()).thenReturn(mRecyclerView);
         when(mRecyclerView.getChildAt(1)).thenReturn(childView2);
         when(mRecyclerView.getChildViewHolder(childView2)).thenReturn(childVH2);
+        when(childView2.getParent()).thenReturn(mRecyclerView);
 
         Canvas canvas = mock(Canvas.class);
         when(mViewHolder.itemView.getElevation()).thenReturn(5f);
@@ -917,7 +922,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         // Setup a child view to simulate a drag in progress
         View childView1 = mock(View.class);
         SimpleRecyclerViewAdapter.ViewHolder childVH1 =
-                mock(SimpleRecyclerViewAdapter.ViewHolder.class);
+                spy(new SimpleRecyclerViewAdapter.ViewHolder(childView1, null));
         PropertyModel childModel1 =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID).build();
         childModel1.set(TabProperties.TAB_ID, 2);
@@ -932,6 +937,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mRecyclerView.getChildCount()).thenReturn(1);
         when(mRecyclerView.getChildAt(0)).thenReturn(childView1);
         when(mRecyclerView.getChildViewHolder(childView1)).thenReturn(childVH1);
+        when(childView1.getParent()).thenReturn(mRecyclerView);
 
         // Call onChildDraw to simulate an ongoing drag that populates internal view state
         Canvas canvas = mock(Canvas.class);
@@ -995,7 +1001,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         // Add a child tab to the target group in the RecyclerView
         View childView = mock(View.class);
         SimpleRecyclerViewAdapter.ViewHolder childVH =
-                mock(SimpleRecyclerViewAdapter.ViewHolder.class);
+                spy(new SimpleRecyclerViewAdapter.ViewHolder(childView, null));
         PropertyModel childModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID).build();
         childModel.set(TabProperties.TAB_GROUP_ID, targetGroupId);
@@ -1041,7 +1047,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         // Add a child tab to the target group in the RecyclerView
         View childView = mock(View.class);
         SimpleRecyclerViewAdapter.ViewHolder childVH =
-                mock(SimpleRecyclerViewAdapter.ViewHolder.class);
+                spy(new SimpleRecyclerViewAdapter.ViewHolder(childView, null));
         PropertyModel childModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID).build();
         childModel.set(TabProperties.TAB_GROUP_ID, targetGroupId);
