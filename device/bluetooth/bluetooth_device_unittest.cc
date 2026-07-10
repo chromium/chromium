@@ -1712,6 +1712,25 @@ TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_SimulateDisconnect) {
     EXPECT_FALSE(connection->IsConnected());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(BluetoothTest, BluetoothGattConnection_DisconnectGattWithoutCallback) {
+  InitWithFakeAdapter();
+  StartLowEnergyDiscoverySession();
+  BluetoothDevice* device = SimulateLowEnergyDevice(3);
+
+  base::test::TestFuture<std::unique_ptr<BluetoothGattConnection>,
+                         std::optional<BluetoothDevice::ConnectErrorCode>>
+      future;
+  device->CreateGattConnection(future.GetCallback(),
+                               /*service_uuid=*/std::nullopt);
+
+  device->DisconnectGatt();
+
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_EQ(BluetoothDevice::ERROR_FAILED, future.Get<1>());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
 #define MAYBE_BluetoothGattConnection_DisconnectGatt_SimulateConnect \
   BluetoothGattConnection_DisconnectGatt_SimulateConnect
@@ -1732,7 +1751,7 @@ TEST_F(BluetoothTest,
   BluetoothDevice* device = SimulateLowEnergyDevice(3);
 
   ResetEventCounts();
-  EXPECT_TRUE(
+  bool connected =
       ConnectGatt(device,
                   /*service_uuid=*/std::nullopt,
                   base::BindLambdaForTesting([this](BluetoothDevice* device) {
@@ -1742,17 +1761,28 @@ TEST_F(BluetoothTest,
                     device->DisconnectGatt();
 #endif
                     SimulateGattConnection(device);
-                  })));
+                  }));
 
+  EXPECT_EQ(1, gatt_connection_attempts_);
+  // On Android, calling DisconnectGatt() while the GATT connection is still
+  // pending cancels the in-flight attempt, so the connection never completes.
+  // Other platforms let the pending connection finish before applying the
+  // disconnect, so the connection succeeds and is then torn down below.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(connected);
+  EXPECT_EQ(2, gatt_disconnection_attempts_);
+  EXPECT_TRUE(gatt_connections_.empty());
+#else
+  EXPECT_TRUE(connected);
 #if !BUILDFLAG(IS_WIN)
   EXPECT_EQ(1, gatt_disconnection_attempts_);
 #endif
-  EXPECT_EQ(1, gatt_connection_attempts_);
 
   EXPECT_TRUE(gatt_connections_.back()->IsConnected());
   ResetEventCounts();
   SimulateGattDisconnection(device);
   base::RunLoop().RunUntilIdle();
+#endif
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)

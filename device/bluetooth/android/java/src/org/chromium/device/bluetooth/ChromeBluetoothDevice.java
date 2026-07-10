@@ -4,9 +4,8 @@
 
 package org.chromium.device.bluetooth;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.os.ParcelUuid;
 
 import org.jni_zero.CalledByNative;
@@ -44,6 +43,7 @@ final class ChromeBluetoothDevice {
     private long mNativeBluetoothDeviceAndroid;
     final BluetoothDeviceWrapper mDevice;
     @Nullable BluetoothGattWrapper mBluetoothGatt;
+    private boolean mPendingGattConnection;
     private final BluetoothGattCallbackImpl mBluetoothGattCallbackImpl;
     final HashMap<BluetoothGattCharacteristicWrapper, ChromeBluetoothRemoteGattCharacteristic>
             mWrapperToChromeCharacteristicsMap;
@@ -160,6 +160,7 @@ final class ChromeBluetoothDevice {
 
         // autoConnect set to false as under experimentation using autoConnect failed to complete
         // connections.
+        mPendingGattConnection = true;
         mBluetoothGatt =
                 mDevice.connectGatt(
                         ContextUtils.getApplicationContext(),
@@ -173,7 +174,25 @@ final class ChromeBluetoothDevice {
     @CalledByNative
     private void disconnectGatt() {
         Log.i(TAG, "BluetoothGatt.disconnect");
-        if (mBluetoothGatt != null) mBluetoothGatt.disconnect();
+        if (mBluetoothGatt == null) return;
+
+        boolean pendingGattConnection = mPendingGattConnection;
+        mBluetoothGatt.disconnect();
+        if (pendingGattConnection) {
+            // Some Android Bluetooth stacks do not report a callback when disconnect() cancels a
+            // pending connectGatt(); see
+            // https://android-review.googlesource.com/c/platform/packages/modules/Bluetooth/+/4105933.
+            mPendingGattConnection = false;
+            mBluetoothGatt.close();
+            mBluetoothGatt = null;
+            if (mNativeBluetoothDeviceAndroid != 0) {
+                ChromeBluetoothDeviceJni.get()
+                        .onConnectionStateChange(
+                                mNativeBluetoothDeviceAndroid,
+                                BluetoothGatt.GATT_FAILURE,
+                                /* connected= */ false);
+            }
+        }
     }
 
     // Implements callbacks related to a GATT connection.
@@ -193,8 +212,12 @@ final class ChromeBluetoothDevice {
         }
 
         private void onConnectionStateChangeUiThread(int status, int newState) {
+            mPendingGattConnection = false;
             if (newState == android.bluetooth.BluetoothProfile.STATE_CONNECTED) {
-                BluetoothGattWrapper bluetoothGatt = assumeNonNull(mBluetoothGatt);
+                if (mBluetoothGatt == null) {
+                    return;
+                }
+                BluetoothGattWrapper bluetoothGatt = mBluetoothGatt;
                 // Try requesting for a larger ATT MTU so that more information can be exchanged per
                 // transmission.
                 if (!bluetoothGatt.requestMtu(517)) {

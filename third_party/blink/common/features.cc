@@ -2662,13 +2662,7 @@ BASE_FEATURE(kVisualRectMappingApplyLocalVisualViewportTransform,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebBluetoothCancelConnect,
-// TODO(40502943): Enable on Android when connect callback can be called when
-// cancelled.
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kWebRtcUseCaptureBeginTimestamp, base::FEATURE_ENABLED_BY_DEFAULT);
 
