@@ -417,6 +417,7 @@ BOOL ApplicationIsInBackground() {
   SceneState* sceneState = sceneDelegate.sceneState;
   DCHECK(sceneState);
 
+  [sceneState addObserver:self];
   [_observers appState:self sceneConnected:sceneState];
   crash_keys::SetConnectedScenesCount([self connectedScenes].count);
 }

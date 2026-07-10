@@ -83,11 +83,6 @@
     _layoutState = [[LayoutState alloc] init];
     _lensOverlayStateNotifier = [[LensOverlayStateNotifier alloc] init];
     _prefs = nil;
-
-    // AppState might be nil in tests.
-    if (appState) {
-      [self addObserver:appState];
-    }
   }
   return self;
 }
