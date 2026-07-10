@@ -1,5 +1,6 @@
 include_rules = [
   "+components/crx_file/id_util.h",
+  "+components/history/core/test",
   "+components/safe_browsing/core/common/proto",
   "+components/version_info",
   "+crypto",

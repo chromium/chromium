@@ -4,7 +4,9 @@
 
 #include "chrome/browser/safe_browsing/v5_search_hashes_cache_factory.h"
 
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #include "content/public/browser/browser_context.h"
 
@@ -30,12 +32,17 @@ V5SearchHashesCacheFactory::V5SearchHashesCacheFactory()
               .WithRegular(ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kOffTheRecordOnly)
               .WithAshInternals(ProfileSelection::kOwnInstance)
-              .Build()) {}
+              .Build()) {
+  DependsOn(HistoryServiceFactory::GetInstance());
+}
 
 std::unique_ptr<KeyedService>
 V5SearchHashesCacheFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<V5SearchHashesCache>();
+  Profile* profile = Profile::FromBrowserContext(context);
+  return std::make_unique<V5SearchHashesCache>(
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS));
 }
 
 }  // namespace safe_browsing

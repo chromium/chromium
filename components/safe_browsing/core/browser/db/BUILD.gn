@@ -364,6 +364,7 @@ static_library("v5_search_hashes_cache") {
   deps = [
     ":v4_protocol_manager_util",
     "//base",
+    "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
@@ -393,6 +394,8 @@ source_set("unit_tests_shared") {
     ":v5_search_hashes_cache",
     "//base",
     "//base/test:test_support",
+    "//components/history/core/browser",
+    "//components/history/core/test",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",

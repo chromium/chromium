@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
@@ -66,7 +67,11 @@ void V5SearchHashesCache::ResetHasArtificialCachedUrlForTesting() {
   has_artificial_cached_url_ = false;
 }
 
-V5SearchHashesCache::V5SearchHashesCache() {
+V5SearchHashesCache::V5SearchHashesCache(
+    history::HistoryService* history_service) {
+  if (history_service) {
+    history_service_observation_.Observe(history_service);
+  }
   ScheduleNextCleanUp();
   CacheArtificialUnsafeV5SearchHashesLookupVerdictFromSwitch();
 }
@@ -147,8 +152,41 @@ void V5SearchHashesCache::CacheSearchHashesResponse(
 }
 
 void V5SearchHashesCache::Shutdown() {
+  history_service_observation_.Reset();
   cleanup_timer_.Stop();
   cache_.clear();
+}
+
+void V5SearchHashesCache::OnHistoryDeletions(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  if (!base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    return;
+  }
+
+  if (deletion_info.IsAllHistory()) {
+    cache_.clear();
+    return;
+  }
+
+  // If any hash prefix of a cleared URL is found, wipe it from the cache.
+  for (const history::URLRow& row : deletion_info.deleted_rows()) {
+    if (!row.url().is_valid()) {
+      continue;
+    }
+    std::vector<FullHashStr> full_hashes;
+    SBProtocolManagerUtil::UrlToFullHashes(row.url(), &full_hashes);
+    for (const auto& full_hash : full_hashes) {
+      std::string hash_prefix = hash_realtime_utils::GetHashPrefix(full_hash);
+      cache_.erase(hash_prefix);
+    }
+  }
+}
+
+void V5SearchHashesCache::HistoryServiceBeingDeleted(
+    history::HistoryService* history_service) {
+  CHECK(history_service_observation_.IsObservingSource(history_service));
+  history_service_observation_.Reset();
 }
 
 void V5SearchHashesCache::ClearExpiredResults() {

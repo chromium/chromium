@@ -10,17 +10,21 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 
 namespace safe_browsing {
 
 // This class manages the cache for V5 SearchHashes requests.
-class V5SearchHashesCache : public KeyedService {
+class V5SearchHashesCache : public KeyedService,
+                            public history::HistoryServiceObserver {
  public:
-  V5SearchHashesCache();
+  explicit V5SearchHashesCache(history::HistoryService* history_service);
   V5SearchHashesCache(const V5SearchHashesCache&) = delete;
   V5SearchHashesCache& operator=(const V5SearchHashesCache&) = delete;
   ~V5SearchHashesCache() override;
@@ -53,6 +57,12 @@ class V5SearchHashesCache : public KeyedService {
   // KeyedService:
   // Called before the actual deletion of the object.
   void Shutdown() override;
+
+  // history::HistoryServiceObserver:
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
+  void HistoryServiceBeingDeleted(
+      history::HistoryService* history_service) override;
 
   // Returns true if an artificial cached URL has been set.
   static bool has_artificial_cached_url();
@@ -88,6 +98,11 @@ class V5SearchHashesCache : public KeyedService {
 
   // Timer used to schedule periodic cleanups of expired entries.
   base::OneShotTimer cleanup_timer_;
+
+  // Scoped observation of HistoryService to listen for history deletions.
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   // Set to true if an artificial cached URL has been set for testing.
   static bool has_artificial_cached_url_;

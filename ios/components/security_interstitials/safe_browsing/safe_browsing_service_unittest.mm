@@ -263,7 +263,8 @@ class SafeBrowsingServiceTest : public PlatformTest {
     base::RunLoop().RunUntilIdle();
 
     ohttp_key_service_ = std::make_unique<TestOhttpKeyService>();
-    v5_cache_ = std::make_unique<safe_browsing::V5SearchHashesCache>();
+    v5_cache_ = std::make_unique<safe_browsing::V5SearchHashesCache>(
+        /*history_service=*/nullptr);
     hash_real_time_service_ =
         std::make_unique<safe_browsing::HashRealTimeService>(
             base::BindRepeating(

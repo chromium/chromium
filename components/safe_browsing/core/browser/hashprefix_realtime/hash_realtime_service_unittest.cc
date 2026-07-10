@@ -213,7 +213,8 @@ class HashRealTimeServiceTest : public PlatformTest {
         base::Unretained(this));
     V5SearchHashesCache* cache_ptr = nullptr;
     if (include_cache_) {
-      cache_ = std::make_unique<V5SearchHashesCache>();
+      cache_ =
+          std::make_unique<V5SearchHashesCache>(/*history_service=*/nullptr);
       cache_ptr = cache_.get();
     }
     ohttp_key_service_ = std::make_unique<TestOhttpKeyService>();
