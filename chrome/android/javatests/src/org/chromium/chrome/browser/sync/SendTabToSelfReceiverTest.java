@@ -29,8 +29,11 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.SendTabToSelfPersistedTabData.SendTabToSelfPersistedTabDataProto;
@@ -157,6 +160,33 @@ public class SendTabToSelfReceiverTest {
         mRenderTestRule.render(
                 mSyncTestRule.getActivity().findViewById(R.id.message_container),
                 "stts_message_banner");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    public void testSendTabToSelfMessageBanner_BottomControls() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowserControlsManager browserControlsManager =
+                            BrowserControlsManagerSupplier.getValueOrNullFrom(
+                                    mSyncTestRule.getActivity().getWindowAndroid());
+                    Assert.assertNotNull(browserControlsManager);
+                    int controlsHeight = browserControlsManager.getTopControlsHeight();
+                    int controlsMinHeight = browserControlsManager.getTopControlsMinHeight();
+                    browserControlsManager.setControlsPosition(
+                            ControlsPosition.BOTTOM, 0, 0, 0, controlsHeight, controlsMinHeight, 0);
+                });
+
+        long now = getCurrentTimeSinceWindowsEpochMicros();
+        injectSendTabToSelfEntity(
+                "stts_test_guid", "https://www.example.com", "Example", "Example Phone", now);
+        SyncTestUtil.triggerSyncAndWaitForCompletion();
+
+        TabUiTestHelper.verifyTabModelTabCount(mSyncTestRule.getActivity(), 2, 0);
+
+        // Verify that the message banner is displayed with bottom controls.
+        onView(withId(R.id.message_primary_button)).check(matches(isDisplayed()));
     }
 
     @Test

@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageIdentifier;
-import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.sync_device_info.FormFactor;
@@ -434,12 +433,7 @@ public class SendTabToSelfAndroidBridgeTest {
 
         // Capture the enqueued PropertyModel to verify its content and action callbacks.
         ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
-        verify(messageDispatcher)
-                .enqueueMessage(
-                        messageCaptor.capture(),
-                        eq(webContents),
-                        eq(MessageScopeType.WEB_CONTENTS),
-                        eq(false));
+        verify(messageDispatcher).enqueueWindowScopedMessage(messageCaptor.capture(), eq(false));
 
         // Verify the static properties of the banner.
         PropertyModel model = messageCaptor.getValue();
@@ -493,12 +487,7 @@ public class SendTabToSelfAndroidBridgeTest {
         SendTabToSelfAndroidBridge.showMessageBanner(webContents, "Pixel 10");
 
         ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
-        verify(messageDispatcher)
-                .enqueueMessage(
-                        messageCaptor.capture(),
-                        eq(webContents),
-                        eq(MessageScopeType.WEB_CONTENTS),
-                        eq(false));
+        verify(messageDispatcher).enqueueWindowScopedMessage(messageCaptor.capture(), eq(false));
 
         Supplier<Integer> onPrimaryAction =
                 messageCaptor.getValue().get(MessageBannerProperties.ON_PRIMARY_ACTION);
@@ -556,12 +545,7 @@ public class SendTabToSelfAndroidBridgeTest {
         SendTabToSelfAndroidBridge.showMessageBanner(webContents, "Pixel 10");
 
         ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
-        verify(messageDispatcher)
-                .enqueueMessage(
-                        messageCaptor.capture(),
-                        eq(webContents),
-                        eq(MessageScopeType.WEB_CONTENTS),
-                        eq(false));
+        verify(messageDispatcher).enqueueWindowScopedMessage(messageCaptor.capture(), eq(false));
 
         Supplier<Integer> onPrimaryAction =
                 messageCaptor.getValue().get(MessageBannerProperties.ON_PRIMARY_ACTION);

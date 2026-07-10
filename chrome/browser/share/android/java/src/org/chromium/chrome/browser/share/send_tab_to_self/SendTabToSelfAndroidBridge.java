@@ -35,7 +35,6 @@ import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
-import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -253,8 +252,10 @@ public class SendTabToSelfAndroidBridge {
                                 SendTabToSelfAndroidBridge::onMessageBannerPrimaryAction)
                         .build();
 
-        messageDispatcher.enqueueMessage(
-                message, webContents, MessageScopeType.WEB_CONTENTS, false);
+        // Enqueue as a window-scoped message so the banner persists across tab switching and is
+        // not prematurely suppressed by tab-level visibility transitions during background tab
+        // creation.
+        messageDispatcher.enqueueWindowScopedMessage(message, false);
     }
 
     /**
