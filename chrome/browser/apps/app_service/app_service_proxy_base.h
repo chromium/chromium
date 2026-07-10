@@ -24,6 +24,7 @@
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/icon_cache.h"
@@ -80,6 +81,7 @@ struct IntentLaunchInfo {
 //
 // See components/services/app_service/README.md.
 class AppServiceProxyBase : public KeyedService,
+                            public AppService,
                             public PreferredAppsImpl::Host {
  public:
   // `publisher_host_factory` must be non-null and outlive this instance.
@@ -152,25 +154,11 @@ class AppServiceProxyBase : public KeyedService,
   // Return the most outer layer of the app icon loader that app service owns.
   IconLoader* app_icon_loader() { return &app_outer_icon_loader_; }
 
-  // Launches the app for the given `app_id`.
-  //
-  // - `event_flags` is a bitset of ui::EventFlags providing additional context
-  // about the action which launches the app (e.g. a middle click indicating
-  // opening a background tab).
-  // - `launch_source` is the UI surface which is launching the app (e.g. shelf,
-  // search box).
-  // - `window_info` specifies the desired location of the new app window
-  // (e.g. window bounds, display ID). If `window_info` is nullptr, the app
-  // publisher will position the new app window using its default behavior (e.g.
-  // on the currently active display).
-  //
-  // Note: prefer using LaunchSystemWebAppAsync() for launching System Web Apps,
-  // as that is robust to the choice of profile and avoids needing to specify an
-  // app_id.
+  using AppService::Launch;
   void Launch(const std::string& app_id,
               int32_t event_flags,
               apps::LaunchSource launch_source,
-              apps::WindowInfoPtr window_info = nullptr);
+              apps::WindowInfoPtr window_info) override;
 
   // Launches the app for the given |app_id| with files from |file_paths|.
   // DEPRECATED. Prefer passing the files in an Intent through

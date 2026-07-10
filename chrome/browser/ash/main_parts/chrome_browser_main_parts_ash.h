@@ -25,6 +25,10 @@ class ChromeKeyboardControllerClient;
 class ImageDownloaderImpl;
 class LobsterClientFactoryImpl;
 
+namespace apps {
+class AppServiceRegistry;
+}  // namespace apps
+
 namespace arc {
 class ArcServiceLauncher;
 class ContainerAppKiller;
@@ -214,6 +218,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<DozeModePowerStatusScheduler>
       doze_mode_power_status_scheduler_;
+
+  std::unique_ptr<apps::AppServiceRegistry> app_service_registry_;
 
   std::unique_ptr<arc::ArcServiceLauncher> arc_service_launcher_;
   std::unique_ptr<arc::ArcPlatformSupportImpl> arc_platform_support_;

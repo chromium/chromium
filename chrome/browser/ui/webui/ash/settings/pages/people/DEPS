@@ -44,4 +44,8 @@ specific_include_rules = {
   "people_section_unittest\\.cc": [
     "+chrome/browser/ash/login/users/profile_user_manager_controller.h",
   ],
+  "account_manager_ui_handler_browsertest\\.cc": [
+    "+chrome/browser/ash/login/test/logged_in_user_mixin.h",
+    "+chrome/browser/browser_process.h",
+  ]
 }

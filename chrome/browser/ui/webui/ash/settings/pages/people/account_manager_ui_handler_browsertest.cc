@@ -15,11 +15,14 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/account_manager/scoped_fake_account_manager_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/in_process_browser_test_mixin.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/account_manager_core/account_manager_facade.h"
@@ -30,8 +33,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "components/user_manager/test_helper.h"
-#include "components/user_manager/user_manager.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
@@ -44,8 +46,6 @@
 
 namespace {
 
-using testing::Contains;
-using testing::Not;
 using testing::Optional;
 using testing::StrEq;
 
@@ -145,7 +145,7 @@ class TestingAccountManagerUIHandler : public AccountManagerUIHandler {
 };
 
 class AccountManagerUIHandlerTest
-    : public InProcessBrowserTest,
+    : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<DeviceAccountInfo> {
  public:
   AccountManagerUIHandlerTest()
@@ -157,25 +157,22 @@ class AccountManagerUIHandlerTest
   AccountManagerUIHandlerTest& operator=(const AccountManagerUIHandlerTest&) =
       delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kLoginManager);
-  }
-
   void SetUpOnMainThread() override {
-    ash::ProfileHelper::SetProfileToUserForTestingEnabled(true);
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+
     // Split the setup so it can be called from the inherited classes.
     SetUpEnvironment();
 
     auto* account_manager_facade =
         AccountManagerFactory::Get()->GetAccountManagerFacade(
-            profile_->GetPath().value());
+            GetProfile()->GetPath().value());
     account_apps_availability_ =
-        AccountAppsAvailabilityFactory::GetForProfile(profile());
+        AccountAppsAvailabilityFactory::GetForProfile(GetProfile());
 
     handler_ = std::make_unique<TestingAccountManagerUIHandler>(
         account_manager_, account_manager_facade, identity_manager_,
         account_apps_availability_, &web_ui_);
-    handler_->SetProfileForTesting(profile_.get());
+    handler_->SetProfileForTesting(GetProfile());
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();
     base::RunLoop().RunUntilIdle();
@@ -184,52 +181,35 @@ class AccountManagerUIHandlerTest
   void TearDownOnMainThread() override {
     account_apps_availability_ = nullptr;
     handler_.reset();
-    profile_.reset();
     base::RunLoop().RunUntilIdle();
-    ash::ProfileHelper::SetProfileToUserForTestingEnabled(false);
+    account_manager_ = nullptr;
+    identity_manager_ = nullptr;
+    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 
-  // Sets up profile and user manager. Should be called only once on test setup.
+  // Should be called only once on test setup.
   void SetUpEnvironment() {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-
-    const AccountId account_id = AccountId::FromUserEmailGaiaId(
-        GetDeviceAccountInfo().email, GaiaId(GetDeviceAccountInfo().id));
-    const user_manager::User* user;
-    {
-      user_manager::TestHelper test_helper(user_manager::UserManager::Get());
-      if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
-        user = test_helper.AddChildUser(account_id);
-      } else {
-        user = test_helper.AddRegularUser(account_id);
-      }
-    }
-    ASSERT_TRUE(user);
-    session_manager::SessionManager::Get()->CreateSession(
-        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
-        /*new_user=*/false,
-        /*has_active_session*/ false);
-
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetPath(temp_dir_.GetPath().AppendASCII("TestProfile"));
-    profile_builder.SetProfileName(GetDeviceAccountInfo().email);
+    // Log-In the user.
     if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
-      profile_builder.SetIsSupervisedProfile();
+      login_mixin_.LogInUser();
+    } else {
+      user_manager::KnownUser known_user(g_browser_process->local_state());
+      known_user.SetProfileRequiresPolicy(
+          login_mixin_.GetAccountId(),
+          user_manager::ProfileRequiresPolicy::kNoPolicyRequired);
+      login_mixin_.LogInUser(
+          {LoggedInUserMixin::LoginDetails::kNoPolicyForUser});
     }
-    profile_ = profile_builder.Build();
-    ash::AnnotatedAccountId::Set(profile_.get(), account_id);
-    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                            profile_.get());
 
     account_manager_ = AccountManagerFactory::Get()->GetAccountManager(
-        profile_->GetPath().value());
+        GetProfile()->GetPath().value());
     account_manager_->SetUrlLoaderFactoryForTests(test_shared_loader_factory_);
     account_manager_->UpsertAccount(
         ::account_manager::AccountKey{GetDeviceAccountInfo().id,
                                       GetDeviceAccountInfo().account_type},
         GetDeviceAccountInfo().email, GetDeviceAccountInfo().token);
 
-    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
+    identity_manager_ = IdentityManagerFactory::GetForProfile(GetProfile());
     signin::WaitForRefreshTokensLoaded(identity_manager_);
   }
 
@@ -255,17 +235,25 @@ class AccountManagerUIHandlerTest
 
   DeviceAccountInfo GetDeviceAccountInfo() const { return GetParam(); }
 
-  TestingProfile* profile() { return profile_.get(); }
   content::TestWebUI* web_ui() { return &web_ui_; }
   signin::IdentityManager* identity_manager() { return identity_manager_; }
   AccountManager* account_manager() { return account_manager_; }
 
  private:
-  base::ScopedTempDir temp_dir_;
-  std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<AccountManager, DanglingUntriaged> account_manager_ = nullptr;
-  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =
-      nullptr;
+  ash::LoggedInUserMixin login_mixin_{
+      &mixin_host_,
+      /*test_base=*/this,
+      embedded_test_server(),
+      GetDeviceAccountInfo().user_type == user_manager::UserType::kChild
+          ? ash::LoggedInUserMixin::LogInType::kChild
+          : ash::LoggedInUserMixin::LogInType::kConsumer,
+      /*include_initial_user=*/true,
+      AccountId::FromUserEmailGaiaId(GetDeviceAccountInfo().email,
+                                     GaiaId(GetDeviceAccountInfo().id))};
+
+  raw_ptr<AccountManager> account_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+
   content::TestWebUI web_ui_;
   std::unique_ptr<TestingAccountManagerUIHandler> handler_;
   raw_ptr<AccountAppsAvailability> account_apps_availability_;
@@ -409,9 +397,8 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
                        ReauthenticateAccountOpensReauthDialog) {
   base::HistogramTester histogram_tester;
-
   ash::test::ScopedFakeAccountManagerDialog fake_account_manager_dialog(
-      profile());
+      GetProfile());
 
   base::ListValue args;
   args.Append(kReauthAccountEmail);
@@ -440,9 +427,8 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
                        AddAccountOpensAddAccountDialog) {
   base::HistogramTester histogram_tester;
-
   ash::test::ScopedFakeAccountManagerDialog fake_account_manager_dialog(
-      profile());
+      GetProfile());
 
   base::ListValue args;
   web_ui()->HandleReceivedMessage(kAddAccountMessage, args);
@@ -482,19 +468,21 @@ class AccountManagerUIHandlerTestWithManagedArcAccountRestriction
   AccountManagerUIHandlerTestWithManagedArcAccountRestriction() = default;
 
   void SetUpOnMainThread() override {
+    // Bypasses that AccountManagerUIHandlerTest::SetUpOnMainThread does.
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
     SetUpEnvironment();
 
     auto* account_manager_facade =
         AccountManagerFactory::Get()->GetAccountManagerFacade(
-            profile()->GetPath().value());
+            GetProfile()->GetPath().value());
 
     account_apps_availability_ =
-        AccountAppsAvailabilityFactory::GetForProfile(profile());
+        AccountAppsAvailabilityFactory::GetForProfile(GetProfile());
 
     handler_ = std::make_unique<TestingAccountManagerUIHandler>(
         account_manager(), account_manager_facade, identity_manager(),
         account_apps_availability_, web_ui());
-    handler_->SetProfileForTesting(profile());
+    handler_->SetProfileForTesting(GetProfile());
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();
     base::RunLoop().RunUntilIdle();

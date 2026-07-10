@@ -50,6 +50,7 @@ namespace apps {
 class AppInstallService;
 class AppPlatformMetrics;
 class AppPlatformMetricsService;
+class AppServiceRegistry;
 class PackageId;
 class PromiseAppRegistryCache;
 class PromiseAppService;
@@ -193,6 +194,28 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                                  std::string_view protocol_scheme);
 
  private:
+  // Minimum RAII style AppServiceRegistry registration handling.
+  class ScopedAppServiceRegistrar {
+   public:
+    // `registry` must not be nullptr and must outlive this instance.
+    explicit ScopedAppServiceRegistrar(AppServiceRegistry* registry);
+    ScopedAppServiceRegistrar(const ScopedAppServiceRegistrar&) = delete;
+    ScopedAppServiceRegistrar& operator=(const ScopedAppServiceRegistrar&) =
+        delete;
+    ~ScopedAppServiceRegistrar();
+
+    // Registers the given `app_service` as the service of the User
+    // identified by `account_id`.
+    // `account_id` must not be empty, and `app_service` must be outlive
+    // this instance.
+    // This cannot be called twice for the same registrar instance.
+    void Register(const AccountId& account_id, AppService* app_service);
+
+   private:
+    const raw_ref<AppServiceRegistry> registry_;
+    AccountId account_id_;
+  };
+
   // OnAppsRequest is used to save the parameters of the OnApps calling.
   struct OnAppsRequest {
     OnAppsRequest(std::vector<AppPtr> deltas,
@@ -347,6 +370,8 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       const apps::IntentPtr& intent,
       const apps::IntentFilterPtr& filter,
       const apps::AppUpdate& update) override;
+
+  std::optional<ScopedAppServiceRegistrar> app_service_registrar_;
 
   AppIconReader icon_reader_;
   AppIconWriter icon_writer_;

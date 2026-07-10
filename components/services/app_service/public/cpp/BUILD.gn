@@ -52,6 +52,26 @@ component("app_types") {
   ]
 }
 
+component("app_service") {
+  defines = [ "IS_APP_SERVICE_IMPL" ]
+  sources = [
+    "app_service.cc",
+    "app_service.h",
+  ]
+  deps = [
+    ":app_types",
+    "//base",
+  ]
+
+  if (is_chromeos) {
+    sources += [
+      "app_service_registry.cc",
+      "app_service_registry.h",
+    ]
+    deps += [ "//components/account_id" ]
+  }
+}
+
 # This target is separate from //components/services/app_service because not all
 # clients of App Service are allowed to have a dependency on //content.
 if (is_chromeos) {

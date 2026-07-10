@@ -265,6 +265,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/quirks/quirks_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/user_manager/known_user.h"
@@ -951,6 +952,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
       g_browser_process->GetFeatures()->application_locale_storage(),
       g_browser_process->shared_url_loader_factory(),
       g_browser_process->platform_part()->browser_policy_connector_ash());
+
+  app_service_registry_ = std::make_unique<apps::AppServiceRegistry>();
 
   quick_unlock::PinBackend::Initialize(g_browser_process->local_state());
 
@@ -1871,6 +1874,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   bluetooth_log_controller_.reset();
 
+  app_service_registry_.reset();
   user_session_manager_.reset();
 
   g_browser_process->platform_part()->ShutdownSessionManager();

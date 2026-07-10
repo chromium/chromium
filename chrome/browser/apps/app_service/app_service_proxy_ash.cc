@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -39,6 +41,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
@@ -48,6 +51,7 @@
 #include "components/grit/components_resources.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
@@ -70,6 +74,26 @@ constexpr int32_t kAppDialogIconSize = 48;
 
 namespace apps {
 
+AppServiceProxyAsh::ScopedAppServiceRegistrar::ScopedAppServiceRegistrar(
+    AppServiceRegistry* registry)
+    : registry_(CHECK_DEREF(registry)) {}
+
+AppServiceProxyAsh::ScopedAppServiceRegistrar::~ScopedAppServiceRegistrar() {
+  if (!account_id_.empty()) {
+    registry_->Unregister(account_id_);
+  }
+}
+
+void AppServiceProxyAsh::ScopedAppServiceRegistrar::Register(
+    const AccountId& account_id,
+    AppService* app_service) {
+  CHECK(account_id_.empty());
+  CHECK(!account_id.empty());
+  CHECK(app_service);
+  account_id_ = account_id;
+  registry_->Register(account_id_, app_service);
+}
+
 AppServiceProxyAsh::OnAppsRequest::OnAppsRequest(std::vector<AppPtr> deltas,
                                                  AppType app_type,
                                                  bool should_notify_initialized)
@@ -85,6 +109,22 @@ AppServiceProxyAsh::AppServiceProxyAsh(
     : AppServiceProxyBase(profile, publisher_host_factory),
       icon_reader_(profile),
       icon_writer_(profile) {
+  // For regular users, the instance is created against the main profile,
+  // but for guest users, the instance is created against their incognito
+  // profiles. To take the AccountId properly for both cases, we pass the
+  // original profile to AnnotatedAccountId::Get().
+  const AccountId* account_id =
+      ash::AnnotatedAccountId::Get(profile->GetOriginalProfile());
+  if (auto* registry = apps::AppServiceRegistry::Get();
+      account_id && registry) {
+    app_service_registrar_.emplace(registry).Register(*account_id, this);
+  } else {
+    // On unittests, AppServiceRegistry may not be yet instantiated.
+    // TODO(crbug.com/477191550): After migrating ChromeOS system into
+    // AppServiceRegistry use, revisit here to decide whether or not to keep
+    // this condition.
+    CHECK_IS_TEST();
+  }
 }
 
 AppServiceProxyAsh::~AppServiceProxyAsh() {

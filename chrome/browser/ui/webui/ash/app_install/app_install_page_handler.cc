@@ -15,9 +15,12 @@
 #include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_service.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
@@ -172,8 +175,12 @@ void AppInstallPageHandler::LaunchApp() {
   }
   base::RecordAction(
       base::UserMetricsAction("ChromeOS.AppInstallDialog.AppLaunched"));
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->Launch(
-      app_id.value(), ui::EF_NONE, apps::LaunchSource::kFromInstaller);
+
+  const auto* account_id = ash::AnnotatedAccountId::Get(profile_);
+  CHECK(account_id);
+  apps::AppServiceRegistry::Get()
+      ->Find(*account_id)
+      ->Launch(app_id.value(), ui::EF_NONE, apps::LaunchSource::kFromInstaller);
 }
 
 void AppInstallPageHandler::TryAgain() {

@@ -61,9 +61,11 @@ static_library("app_install") {
     # this target depending on the :ui monolith directly.
     "//chrome/browser/web_applications",
     "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/constants",
     "//components/metrics/structured:events",
     "//components/metrics/structured:structured_events",
+    "//components/services/app_service",
     "//components/strings:components_strings",
     "//components/webapps/common",
     "//content/public/common",
