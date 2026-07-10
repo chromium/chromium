@@ -59,6 +59,8 @@ class DISPLAY_EXPORT VSyncProviderMac {
   // histogram.
   bool IsConnectedToBrowserOnVizThread();
 
+  void OnSuspend();
+
  private:
   friend class base::NoDestructor<VSyncProviderMac>;
 

@@ -41,6 +41,8 @@ class ExternalDisplayLinkMac : public DisplayLinkMac {
   // Retrieves the current (“now”) time of a given display link.
   base::TimeTicks GetCurrentTime() const override;
 
+  void OnSuspend() override;
+
  private:
   explicit ExternalDisplayLinkMac(CGDirectDisplayID display_id);
   ~ExternalDisplayLinkMac() override;

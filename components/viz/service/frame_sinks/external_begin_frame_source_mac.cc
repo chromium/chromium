@@ -634,6 +634,10 @@ void ExternalBeginFrameSourceMac::OnSuspend() {
   if (first_callback_time_.is_null()) {
     first_callback_time_ = base::TimeTicks::Max();
   }
+
+  if (display_link_mac_) {
+    display_link_mac_->OnSuspend();
+  }
 }
 
 }  // namespace viz

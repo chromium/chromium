@@ -133,4 +133,8 @@ base::TimeTicks ExternalDisplayLinkMac::GetCurrentTime() const {
   return base::TimeTicks::Now();
 }
 
+void ExternalDisplayLinkMac::OnSuspend() {
+  vsync_provider_->OnSuspend();
+}
+
 }  // namespace ui

@@ -201,4 +201,12 @@ void VSyncProviderMac::RecordTimeFromNeedsBeginFramesToVSync(
       base::Milliseconds(1), base::Minutes(30), 50);
 }
 
+void VSyncProviderMac::OnSuspend() {
+  // Clear `begin_frame_request_time` so the time it takes after power suspend
+  // will not be recorded.
+  for (auto& display_state : display_states_) {
+    display_state.second.begin_frame_request_time = base::TimeTicks();
+  }
+}
+
 }  // namespace ui

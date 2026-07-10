@@ -133,6 +133,8 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
   // base::TimeTicks() if the current time is not available.
   virtual base::TimeTicks GetCurrentTime() const = 0;
 
+  virtual void OnSuspend() {}
+
  protected:
   friend class base::RefCounted<DisplayLinkMac>;
   friend class CVDisplayLinkMac;
