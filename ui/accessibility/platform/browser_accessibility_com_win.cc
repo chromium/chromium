@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/platform/browser_accessibility_com_win.h"
 
 #include <algorithm>
@@ -1184,11 +1179,13 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(USHORT max_attribs,
 
   AXPlatform::GetInstance().OnHTMLAttributesUsed();
 
-#define ADD_ATTRIBUTE(name, value)                                          \
-  if (index < max_attribs) {                                                \
-    attrib_names[index] = SysAllocString(base::UTF8ToWide(name).c_str());   \
-    attrib_values[index] = SysAllocString(base::UTF8ToWide(value).c_str()); \
-    ++index;                                                                \
+#define ADD_ATTRIBUTE(name, value)                       \
+  if (index < max_attribs) {                             \
+    UNSAFE_TODO(attrib_names[index]) =                   \
+        SysAllocString(base::UTF8ToWide(name).c_str());  \
+    UNSAFE_TODO(attrib_values[index]) =                  \
+        SysAllocString(base::UTF8ToWide(value).c_str()); \
+    ++index;                                             \
   }
 
   BrowserAccessibilityWin* const owner = GetOwner();

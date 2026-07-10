@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
@@ -60,54 +56,54 @@ namespace ui {
     EXPECT_STREQ(expectedVariant.ptr()->bstrVal, actual.ptr()->bstrVal); \
   }
 
-#define EXPECT_UIA_ELEMENT_ARRAY_BSTR_EQ(array, element_test_property_id,     \
-                                         expected_property_values)            \
-  {                                                                           \
-    ASSERT_EQ(1u, SafeArrayGetDim(array));                                    \
-    LONG array_lower_bound;                                                   \
-    ASSERT_HRESULT_SUCCEEDED(                                                 \
-        SafeArrayGetLBound(array, 1, &array_lower_bound));                    \
-    LONG array_upper_bound;                                                   \
-    ASSERT_HRESULT_SUCCEEDED(                                                 \
-        SafeArrayGetUBound(array, 1, &array_upper_bound));                    \
-    IUnknown** array_data;                                                    \
-    ASSERT_HRESULT_SUCCEEDED(                                                 \
-        ::SafeArrayAccessData(array, reinterpret_cast<void**>(&array_data))); \
-    size_t count = array_upper_bound - array_lower_bound + 1;                 \
-    ASSERT_EQ(expected_property_values.size(), count);                        \
-    for (size_t i = 0; i < count; ++i) {                                      \
-      ComPtr<IRawElementProviderSimple> element;                              \
-      ASSERT_HRESULT_SUCCEEDED(                                               \
-          array_data[i]->QueryInterface(IID_PPV_ARGS(&element)));             \
-      EXPECT_UIA_GETPROPERTYVALUE_EQ(element, element_test_property_id,       \
-                                     expected_property_values[i].c_str());    \
-    }                                                                         \
-    ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(array));                 \
+#define EXPECT_UIA_ELEMENT_ARRAY_BSTR_EQ(array, element_test_property_id,      \
+                                         expected_property_values)             \
+  {                                                                            \
+    ASSERT_EQ(1u, SafeArrayGetDim(array));                                     \
+    LONG array_lower_bound;                                                    \
+    ASSERT_HRESULT_SUCCEEDED(                                                  \
+        SafeArrayGetLBound(array, 1, &array_lower_bound));                     \
+    LONG array_upper_bound;                                                    \
+    ASSERT_HRESULT_SUCCEEDED(                                                  \
+        SafeArrayGetUBound(array, 1, &array_upper_bound));                     \
+    IUnknown** array_data;                                                     \
+    ASSERT_HRESULT_SUCCEEDED(                                                  \
+        ::SafeArrayAccessData(array, reinterpret_cast<void**>(&array_data)));  \
+    size_t count = array_upper_bound - array_lower_bound + 1;                  \
+    ASSERT_EQ(expected_property_values.size(), count);                         \
+    for (size_t i = 0; i < count; ++i) {                                       \
+      ComPtr<IRawElementProviderSimple> element;                               \
+      ASSERT_HRESULT_SUCCEEDED(                                                \
+          UNSAFE_TODO(array_data[i])->QueryInterface(IID_PPV_ARGS(&element))); \
+      EXPECT_UIA_GETPROPERTYVALUE_EQ(element, element_test_property_id,        \
+                                     expected_property_values[i].c_str());     \
+    }                                                                          \
+    ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(array));                  \
   }
 
-#define EXPECT_UIA_SAFEARRAY_EQ(safearray, expected_property_values)   \
-  {                                                                    \
-    using T = typename decltype(expected_property_values)::value_type; \
-    EXPECT_EQ(sizeof(T), ::SafeArrayGetElemsize(safearray));           \
-    EXPECT_EQ(1u, SafeArrayGetDim(safearray));                         \
-    LONG array_lower_bound;                                            \
-    EXPECT_HRESULT_SUCCEEDED(                                          \
-        SafeArrayGetLBound(safearray, 1, &array_lower_bound));         \
-    LONG array_upper_bound;                                            \
-    EXPECT_HRESULT_SUCCEEDED(                                          \
-        SafeArrayGetUBound(safearray, 1, &array_upper_bound));         \
-    const size_t count = array_upper_bound - array_lower_bound + 1;    \
-    EXPECT_EQ(expected_property_values.size(), count);                 \
-    if (sizeof(T) == ::SafeArrayGetElemsize(safearray) &&              \
-        count == expected_property_values.size()) {                    \
-      T* array_data;                                                   \
-      EXPECT_HRESULT_SUCCEEDED(::SafeArrayAccessData(                  \
-          safearray, reinterpret_cast<void**>(&array_data)));          \
-      for (size_t i = 0; i < count; ++i) {                             \
-        EXPECT_EQ(array_data[i], expected_property_values[i]);         \
-      }                                                                \
-      EXPECT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(safearray));    \
-    }                                                                  \
+#define EXPECT_UIA_SAFEARRAY_EQ(safearray, expected_property_values)        \
+  {                                                                         \
+    using T = typename decltype(expected_property_values)::value_type;      \
+    EXPECT_EQ(sizeof(T), ::SafeArrayGetElemsize(safearray));                \
+    EXPECT_EQ(1u, SafeArrayGetDim(safearray));                              \
+    LONG array_lower_bound;                                                 \
+    EXPECT_HRESULT_SUCCEEDED(                                               \
+        SafeArrayGetLBound(safearray, 1, &array_lower_bound));              \
+    LONG array_upper_bound;                                                 \
+    EXPECT_HRESULT_SUCCEEDED(                                               \
+        SafeArrayGetUBound(safearray, 1, &array_upper_bound));              \
+    const size_t count = array_upper_bound - array_lower_bound + 1;         \
+    EXPECT_EQ(expected_property_values.size(), count);                      \
+    if (sizeof(T) == ::SafeArrayGetElemsize(safearray) &&                   \
+        count == expected_property_values.size()) {                         \
+      T* array_data;                                                        \
+      EXPECT_HRESULT_SUCCEEDED(::SafeArrayAccessData(                       \
+          safearray, reinterpret_cast<void**>(&array_data)));               \
+      for (size_t i = 0; i < count; ++i) {                                  \
+        EXPECT_EQ(UNSAFE_TODO(array_data[i]), expected_property_values[i]); \
+      }                                                                     \
+      EXPECT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(safearray));         \
+    }                                                                       \
   }
 
 #define EXPECT_UIA_TEXTATTRIBUTE_EQ(provider, attribute, variant)          \
@@ -150,21 +146,22 @@ namespace ui {
     EXPECT_STREQ(expected_content, provider_content.Get()); \
   }
 
-#define EXPECT_UIA_FIND_TEXT(text_range_provider, search_term, ignore_case,  \
-                             owner)                                          \
-  {                                                                          \
-    base::win::ScopedBstr find_string(search_term);                          \
-    ComPtr<ITextRangeProvider> text_range_provider_found;                    \
-    EXPECT_HRESULT_SUCCEEDED(text_range_provider->FindText(                  \
-        find_string.Get(), false, ignore_case, &text_range_provider_found)); \
-    SetOwner(owner, text_range_provider_found.Get());                        \
-    base::win::ScopedBstr found_content;                                     \
-    EXPECT_HRESULT_SUCCEEDED(                                                \
-        text_range_provider_found->GetText(-1, found_content.Receive()));    \
-    if (ignore_case)                                                         \
-      EXPECT_EQ(0, _wcsicmp(found_content.Get(), find_string.Get()));        \
-    else                                                                     \
-      EXPECT_EQ(0, wcscmp(found_content.Get(), find_string.Get()));          \
+#define EXPECT_UIA_FIND_TEXT(text_range_provider, search_term, ignore_case,   \
+                             owner)                                           \
+  {                                                                           \
+    base::win::ScopedBstr find_string(search_term);                           \
+    ComPtr<ITextRangeProvider> text_range_provider_found;                     \
+    EXPECT_HRESULT_SUCCEEDED(text_range_provider->FindText(                   \
+        find_string.Get(), false, ignore_case, &text_range_provider_found));  \
+    SetOwner(owner, text_range_provider_found.Get());                         \
+    base::win::ScopedBstr found_content;                                      \
+    EXPECT_HRESULT_SUCCEEDED(                                                 \
+        text_range_provider_found->GetText(-1, found_content.Receive()));     \
+    if (ignore_case)                                                          \
+      EXPECT_EQ(0, _wcsicmp(found_content.Get(), find_string.Get()));         \
+    else                                                                      \
+      EXPECT_EQ(0,                                                            \
+                UNSAFE_TODO(wcscmp(found_content.Get(), find_string.Get()))); \
   }
 
 #define EXPECT_UIA_FIND_TEXT_NO_MATCH(text_range_provider, search_term,      \

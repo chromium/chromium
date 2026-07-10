@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/platform/ax_platform_node_win_unittest.h"
 
 #include <oleacc.h>
@@ -17,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_deref.h"
+#include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util_win.h"
@@ -59,8 +55,9 @@ ScopedVariant SELF(CHILDID_SELF);
 // Calls `Release()` on each of the `count` interface pointers in `pointers`.
 void ReleasePointers(IUnknown** pointers, LONG count) {
   if (count > 0) {
-    std::ranges::for_each(base::span(pointers, static_cast<size_t>(count)),
-                          [](IUnknown* ptr) { ptr->Release(); });
+    std::ranges::for_each(
+        UNSAFE_TODO(base::span(pointers, static_cast<size_t>(count))),
+        [](IUnknown* ptr) { ptr->Release(); });
   }
 }
 
@@ -150,7 +147,7 @@ void ReleasePointers(IUnknown** pointers, LONG count) {
     size_t count = array_upper_bound - array_lower_bound + 1;               \
     ASSERT_EQ(expected_property_values.size(), count);                      \
     for (size_t i = 0; i < count; ++i) {                                    \
-      EXPECT_EQ(array_data[i], expected_property_values[i]);                \
+      EXPECT_EQ(UNSAFE_TODO(array_data[i]), expected_property_values[i]);   \
     }                                                                       \
     ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(array.ptr()->parray)); \
   }
@@ -165,29 +162,29 @@ void ReleasePointers(IUnknown** pointers, LONG count) {
     EXPECT_EQ(expectedVariant.ptr()->intVal, actual.ptr()->intVal); \
   }
 
-#define EXPECT_UIA_ELEMENT_ARRAY_BSTR_EQ(array, element_test_property_id,     \
-                                         expected_property_values)            \
-  {                                                                           \
-    ASSERT_EQ(1u, SafeArrayGetDim(array));                                    \
-    LONG array_lower_bound;                                                   \
-    ASSERT_HRESULT_SUCCEEDED(                                                 \
-        SafeArrayGetLBound(array, 1, &array_lower_bound));                    \
-    LONG array_upper_bound;                                                   \
-    ASSERT_HRESULT_SUCCEEDED(                                                 \
-        SafeArrayGetUBound(array, 1, &array_upper_bound));                    \
-    IUnknown** array_data;                                                    \
-    ASSERT_HRESULT_SUCCEEDED(                                                 \
-        ::SafeArrayAccessData(array, reinterpret_cast<void**>(&array_data))); \
-    size_t count = array_upper_bound - array_lower_bound + 1;                 \
-    ASSERT_EQ(expected_property_values.size(), count);                        \
-    for (size_t i = 0; i < count; ++i) {                                      \
-      ComPtr<IRawElementProviderSimple> element;                              \
-      ASSERT_HRESULT_SUCCEEDED(                                               \
-          array_data[i]->QueryInterface(IID_PPV_ARGS(&element)));             \
-      EXPECT_UIA_BSTR_EQ(element, element_test_property_id,                   \
-                         expected_property_values[i].c_str());                \
-    }                                                                         \
-    ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(array));                 \
+#define EXPECT_UIA_ELEMENT_ARRAY_BSTR_EQ(array, element_test_property_id,      \
+                                         expected_property_values)             \
+  {                                                                            \
+    ASSERT_EQ(1u, SafeArrayGetDim(array));                                     \
+    LONG array_lower_bound;                                                    \
+    ASSERT_HRESULT_SUCCEEDED(                                                  \
+        SafeArrayGetLBound(array, 1, &array_lower_bound));                     \
+    LONG array_upper_bound;                                                    \
+    ASSERT_HRESULT_SUCCEEDED(                                                  \
+        SafeArrayGetUBound(array, 1, &array_upper_bound));                     \
+    IUnknown** array_data;                                                     \
+    ASSERT_HRESULT_SUCCEEDED(                                                  \
+        ::SafeArrayAccessData(array, reinterpret_cast<void**>(&array_data)));  \
+    size_t count = array_upper_bound - array_lower_bound + 1;                  \
+    ASSERT_EQ(expected_property_values.size(), count);                         \
+    for (size_t i = 0; i < count; ++i) {                                       \
+      ComPtr<IRawElementProviderSimple> element;                               \
+      ASSERT_HRESULT_SUCCEEDED(                                                \
+          UNSAFE_TODO(array_data[i])->QueryInterface(IID_PPV_ARGS(&element))); \
+      EXPECT_UIA_BSTR_EQ(element, element_test_property_id,                    \
+                         expected_property_values[i].c_str());                 \
+    }                                                                          \
+    ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(array));                  \
   }
 
 #define EXPECT_UIA_PROPERTY_ELEMENT_ARRAY_BSTR_EQ(node, array_property_id,  \
@@ -203,42 +200,42 @@ void ReleasePointers(IUnknown** pointers, LONG count) {
                                      expected_property_values);             \
   }
 
-#define EXPECT_UIA_PROPERTY_UNORDERED_ELEMENT_ARRAY_BSTR_EQ(                \
-    node, array_property_id, element_test_property_id,                      \
-    expected_property_values)                                               \
-  {                                                                         \
-    ScopedVariant array;                                                    \
-    ASSERT_HRESULT_SUCCEEDED(                                               \
-        node->GetPropertyValue(array_property_id, array.Receive()));        \
-    ASSERT_EQ(VT_ARRAY | VT_UNKNOWN, array.type());                         \
-    ASSERT_EQ(1u, SafeArrayGetDim(array.ptr()->parray));                    \
-    LONG array_lower_bound;                                                 \
-    ASSERT_HRESULT_SUCCEEDED(                                               \
-        SafeArrayGetLBound(array.ptr()->parray, 1, &array_lower_bound));    \
-    LONG array_upper_bound;                                                 \
-    ASSERT_HRESULT_SUCCEEDED(                                               \
-        SafeArrayGetUBound(array.ptr()->parray, 1, &array_upper_bound));    \
-    IUnknown** array_data;                                                  \
-    ASSERT_HRESULT_SUCCEEDED(::SafeArrayAccessData(                         \
-        array.ptr()->parray, reinterpret_cast<void**>(&array_data)));       \
-    size_t count = array_upper_bound - array_lower_bound + 1;               \
-    ASSERT_EQ(expected_property_values.size(), count);                      \
-    std::vector<std::wstring> property_values;                              \
-    for (size_t i = 0; i < count; ++i) {                                    \
-      ComPtr<IRawElementProviderSimple> element;                            \
-      ASSERT_HRESULT_SUCCEEDED(                                             \
-          array_data[i]->QueryInterface(IID_PPV_ARGS(&element)));           \
-      ScopedVariant actual;                                                 \
-      ASSERT_HRESULT_SUCCEEDED(element->GetPropertyValue(                   \
-          element_test_property_id, actual.Receive()));                     \
-      ASSERT_EQ(VT_BSTR, actual.type());                                    \
-      ASSERT_NE(nullptr, actual.ptr()->bstrVal);                            \
-      property_values.push_back(std::wstring(                               \
-          V_BSTR(actual.ptr()), SysStringLen(V_BSTR(actual.ptr()))));       \
-    }                                                                       \
-    ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(array.ptr()->parray)); \
-    EXPECT_THAT(property_values, ::testing::UnorderedElementsAreArray(      \
-                                     expected_property_values));            \
+#define EXPECT_UIA_PROPERTY_UNORDERED_ELEMENT_ARRAY_BSTR_EQ(                   \
+    node, array_property_id, element_test_property_id,                         \
+    expected_property_values)                                                  \
+  {                                                                            \
+    ScopedVariant array;                                                       \
+    ASSERT_HRESULT_SUCCEEDED(                                                  \
+        node->GetPropertyValue(array_property_id, array.Receive()));           \
+    ASSERT_EQ(VT_ARRAY | VT_UNKNOWN, array.type());                            \
+    ASSERT_EQ(1u, SafeArrayGetDim(array.ptr()->parray));                       \
+    LONG array_lower_bound;                                                    \
+    ASSERT_HRESULT_SUCCEEDED(                                                  \
+        SafeArrayGetLBound(array.ptr()->parray, 1, &array_lower_bound));       \
+    LONG array_upper_bound;                                                    \
+    ASSERT_HRESULT_SUCCEEDED(                                                  \
+        SafeArrayGetUBound(array.ptr()->parray, 1, &array_upper_bound));       \
+    IUnknown** array_data;                                                     \
+    ASSERT_HRESULT_SUCCEEDED(::SafeArrayAccessData(                            \
+        array.ptr()->parray, reinterpret_cast<void**>(&array_data)));          \
+    size_t count = array_upper_bound - array_lower_bound + 1;                  \
+    ASSERT_EQ(expected_property_values.size(), count);                         \
+    std::vector<std::wstring> property_values;                                 \
+    for (size_t i = 0; i < count; ++i) {                                       \
+      ComPtr<IRawElementProviderSimple> element;                               \
+      ASSERT_HRESULT_SUCCEEDED(                                                \
+          UNSAFE_TODO(array_data[i])->QueryInterface(IID_PPV_ARGS(&element))); \
+      ScopedVariant actual;                                                    \
+      ASSERT_HRESULT_SUCCEEDED(element->GetPropertyValue(                      \
+          element_test_property_id, actual.Receive()));                        \
+      ASSERT_EQ(VT_BSTR, actual.type());                                       \
+      ASSERT_NE(nullptr, actual.ptr()->bstrVal);                               \
+      property_values.push_back(std::wstring(                                  \
+          V_BSTR(actual.ptr()), SysStringLen(V_BSTR(actual.ptr()))));          \
+    }                                                                          \
+    ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(array.ptr()->parray));    \
+    EXPECT_THAT(property_values, ::testing::UnorderedElementsAreArray(         \
+                                     expected_property_values));               \
   }
 
 MockIRawElementProviderSimple::MockIRawElementProviderSimple() = default;
@@ -2243,7 +2240,7 @@ TEST_F(AXPlatformNodeWinTest, TestRelationTargetsOfType) {
                                                          &targets, &n_targets));
     ASSERT_EQ(2, n_targets);
     EXPECT_EQ(root_iaccessible2.Get(), targets[0]);
-    EXPECT_EQ(ax_child3.Get(), targets[1]);
+    EXPECT_EQ(ax_child3.Get(), UNSAFE_TODO(targets[1]));
     ReleasePointers(targets.get(), n_targets);
   }
 
@@ -2255,7 +2252,7 @@ TEST_F(AXPlatformNodeWinTest, TestRelationTargetsOfType) {
                                                          &targets, &n_targets));
     ASSERT_EQ(2, n_targets);
     EXPECT_EQ(root_iaccessible2.Get(), targets[0]);
-    EXPECT_EQ(ax_child3.Get(), targets[1]);
+    EXPECT_EQ(ax_child3.Get(), UNSAFE_TODO(targets[1]));
     ReleasePointers(targets.get(), n_targets);
   }
 }
@@ -2513,7 +2510,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTableGetSelectedChildren) {
   EXPECT_EQ(S_OK, result->get_selectedChildren(max, &indices, &count));
   EXPECT_EQ(2, count);
   EXPECT_EQ(4, indices[0]);
-  EXPECT_EQ(8, indices[1]);
+  EXPECT_EQ(8, UNSAFE_TODO(indices[1]));
 }
 
 TEST_F(AXPlatformNodeWinTest, IAccessibleTableGetSelectedChildrenZeroMax) {
@@ -2636,7 +2633,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTableGetSelectedColumnsMany) {
             result->get_selectedColumns(max_columns, &columns, &n_columns));
   EXPECT_EQ(2, n_columns);
   EXPECT_EQ(1, columns[0]);
-  EXPECT_EQ(2, columns[1]);
+  EXPECT_EQ(2, UNSAFE_TODO(columns[1]));
 }
 
 TEST_F(AXPlatformNodeWinTest, IAccessibleTableGetSelectedRowsZero) {
@@ -2724,7 +2721,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTableGetSelectedRowsMany) {
   EXPECT_EQ(S_OK, result->get_selectedRows(max_rows, &rows, &n_rows));
   EXPECT_EQ(2, n_rows);
   EXPECT_EQ(1, rows[0]);
-  EXPECT_EQ(2, rows[1]);
+  EXPECT_EQ(2, UNSAFE_TODO(rows[1]));
 }
 
 TEST_F(AXPlatformNodeWinTest, IAccessibleTableIsColumnSelected) {
@@ -2891,7 +2888,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTable2GetSelectedChildren) {
   EXPECT_EQ(2, count);
 
   CheckIUnknownHasName(cell_accessibles.get()[0], L"1");
-  CheckIUnknownHasName(cell_accessibles.get()[1], L"4");
+  CheckIUnknownHasName(UNSAFE_TODO(cell_accessibles.get()[1]), L"4");
   ReleasePointers(cell_accessibles.get(), count);
 }
 
@@ -5222,9 +5219,9 @@ TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeIdForGeneratedId) {
   EXPECT_HRESULT_SUCCEEDED(::SafeArrayAccessData(
       runtime_id.Get(), reinterpret_cast<void**>(&array_data)));
   EXPECT_EQ(UiaAppendRuntimeId, array_data[0]);
-  EXPECT_NE(-1, array_data[1]);
-  EXPECT_NE(-1, array_data[2]);
-  EXPECT_NE(-1, array_data[3]);
+  EXPECT_NE(-1, UNSAFE_TODO(array_data[1]));
+  EXPECT_NE(-1, UNSAFE_TODO(array_data[2]));
+  EXPECT_NE(-1, UNSAFE_TODO(array_data[3]));
 
   EXPECT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(runtime_id.Get()));
 }
@@ -5255,9 +5252,9 @@ TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeIdForSuppliedId) {
   EXPECT_HRESULT_SUCCEEDED(::SafeArrayAccessData(
       runtime_id.Get(), reinterpret_cast<void**>(&array_data)));
   EXPECT_EQ(UiaAppendRuntimeId, array_data[0]);
-  EXPECT_EQ(-1, array_data[1]);
-  EXPECT_EQ(-1, array_data[2]);
-  EXPECT_EQ(1, array_data[3]);
+  EXPECT_EQ(-1, UNSAFE_TODO(array_data[1]));
+  EXPECT_EQ(-1, UNSAFE_TODO(array_data[2]));
+  EXPECT_EQ(1, UNSAFE_TODO(array_data[3]));
 
   EXPECT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(runtime_id.Get()));
 }
@@ -5868,8 +5865,8 @@ TEST_F(AXPlatformNodeWinTest,
   EXPECT_HRESULT_SUCCEEDED(::SafeArrayAccessData(
       selected_items.Get(), reinterpret_cast<void**>(&array_data)));
   EXPECT_EQ(option1_provider.Get(), array_data[0]);
-  EXPECT_EQ(option2_provider.Get(), array_data[1]);
-  EXPECT_EQ(option3_provider.Get(), array_data[2]);
+  EXPECT_EQ(option2_provider.Get(), UNSAFE_TODO(array_data[1]));
+  EXPECT_EQ(option3_provider.Get(), UNSAFE_TODO(array_data[2]));
 
   EXPECT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(selected_items.Get()));
 }

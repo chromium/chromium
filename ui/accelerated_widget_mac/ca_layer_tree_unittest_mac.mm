@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import <AVFoundation/AVFoundation.h>
 
+#include <array>
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
@@ -575,17 +571,17 @@ TEST_F(CALayerTreeTest, SplitSortingContextZero) {
   properties.rect = gfx::Rect(0, 0, 256, 256);
 
   // We'll use the IOSurface contents to identify the content layers.
-  gfx::ScopedIOSurface io_surfaces[5];
-  for (size_t i = 0; i < 5; ++i) {
-    io_surfaces[i] = gfx::CreateIOSurface(gfx::Size(256, 256),
-                                          viz::SinglePlaneFormat::kBGRA_8888);
+  std::array<gfx::ScopedIOSurface, 5> io_surfaces;
+  for (auto& surface : io_surfaces) {
+    surface = gfx::CreateIOSurface(gfx::Size(256, 256),
+                                   viz::SinglePlaneFormat::kBGRA_8888);
   }
 
   // Have 5 transforms:
   // * 2 flat but different (1 sorting context layer, 2 transform layers)
   // * 1 non-flat (new sorting context layer)
   // * 2 flat and the same (new sorting context layer, 1 transform layer)
-  gfx::Transform transforms[5];
+  std::array<gfx::Transform, 5> transforms;
   transforms[0].Translate(10, 10);
   transforms[1].RotateAboutZAxis(45.0f);
   transforms[2].RotateAboutYAxis(45.0f);
@@ -658,13 +654,13 @@ TEST_F(CALayerTreeTest, SortingContexts) {
   properties.rect = gfx::Rect(0, 0, 256, 256);
 
   // We'll use the IOSurface contents to identify the content layers.
-  gfx::ScopedIOSurface io_surfaces[3];
-  for (size_t i = 0; i < 3; ++i) {
-    io_surfaces[i] = gfx::CreateIOSurface(gfx::Size(256, 256),
-                                          viz::SinglePlaneFormat::kBGRA_8888);
+  std::array<gfx::ScopedIOSurface, 3> io_surfaces;
+  for (auto& surface : io_surfaces) {
+    surface = gfx::CreateIOSurface(gfx::Size(256, 256),
+                                   viz::SinglePlaneFormat::kBGRA_8888);
   }
 
-  int sorting_context_ids[3] = {3, -1, 0};
+  std::array<int, 3> sorting_context_ids = {3, -1, 0};
 
   // Schedule and commit the layers.
   std::unique_ptr<ui::CARendererLayerTree> ca_layer_tree(
@@ -718,11 +714,11 @@ TEST_F(CALayerTreeTest, SortingContextMustHaveConsistentClip) {
   CALayerProperties properties;
 
   // Vary the clipping parameters within sorting contexts.
-  bool is_clippeds[3] = { true, true, false};
-  gfx::Rect clip_rects[3] = {
+  std::array<bool, 3> is_clippeds = {true, true, false};
+  std::array<gfx::Rect, 3> clip_rects = {
       gfx::Rect(0, 0, 16, 16),
       gfx::Rect(4, 8, 16, 32),
-      gfx::Rect(0, 0, 16, 16)
+      gfx::Rect(0, 0, 16, 16),
   };
 
   std::unique_ptr<ui::CARendererLayerTree> ca_layer_tree(
