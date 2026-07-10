@@ -2225,6 +2225,7 @@ suite('ContextualActionMenu', () => {
 
           actionMenu.tabSuggestions = [tab1, tab2, tab3];
 
+          actionMenu.contextManagementInComposeboxEnabled = true;
           actionMenu.aimThreadRestoredTabs = [tab1];
           const disabledTabIds = new Map();
           disabledTabIds.set(2, 'token2');

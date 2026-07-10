@@ -1371,8 +1371,10 @@ export const ComposeboxEmbedderMixin =
           this.contextMenuOpened = true;
           if (this.tabSuggestionsState === TabSuggestionsState.LOADED) {
             const selectedTabIds = new Set(this.addedTabsIds.keys());
-            const restoredTabIds = new Set(
-                (this.aimThreadRestoredTabs || []).map(tab => tab.tabId));
+            const restoredTabIds = this.contextManagementInComposeboxEnabled ?
+                new Set(
+                    (this.aimThreadRestoredTabs || []).map(tab => tab.tabId)) :
+                new Set<number>();
 
             const selected = this.tabSuggestions.filter(
                 tab => selectedTabIds.has(tab.tabId));
@@ -1853,6 +1855,9 @@ export const ComposeboxEmbedderMixin =
         }
 
         cacheSubmittedTabs() {
+          if (!this.contextManagementInComposeboxEnabled) {
+            return;
+          }
           if (this.hasCachedSubmittedTabsThisTurn) {
             return;
           }
@@ -2340,7 +2345,9 @@ export const ComposeboxEmbedderMixin =
               this.deleteFile(uuid, /*fromUserAction=*/ false);
             });
 
-            const restored = this.aimThreadRestoredTabs || [];
+            const restored = this.contextManagementInComposeboxEnabled ?
+                (this.aimThreadRestoredTabs || []) :
+                [];
 
             const processedRecentTabs = dedupeTabs(restored, tabs);
 

@@ -613,8 +613,9 @@ export class ContextualActionMenuElement extends
 
   protected isTabSelected_(tabOrId: TabInfo|number): boolean {
     const tabId = typeof tabOrId === 'number' ? tabOrId : tabOrId.tabId;
-    const isAimThreadRestored = (this.aimThreadRestoredTabs || []).some(
-        restoredTab => restoredTab.tabId === tabId);
+    const isAimThreadRestored = this.contextManagementInComposeboxEnabled &&
+        (this.aimThreadRestoredTabs ||
+         []).some(restoredTab => restoredTab.tabId === tabId);
     return this.disabledTabIds.has(tabId) || isAimThreadRestored;
   }
 
@@ -724,9 +725,9 @@ export class ContextualActionMenuElement extends
 
   // Checks if a tab item in the context menu should be disabled.
   protected isTabDisabled_(tab: TabInfo): boolean {
-    const isRestored =
-        (this.aimThreadRestoredTabs)
-            .some(restoredTab => restoredTab.tabId === tab.tabId);
+    const isRestored = this.contextManagementInComposeboxEnabled &&
+        (this.aimThreadRestoredTabs ||
+         []).some(restoredTab => restoredTab.tabId === tab.tabId);
     if (isRestored) {
       if (this.enableTabDeselection_ && this.isTabSelected_(tab)) {
         return false;
@@ -750,7 +751,9 @@ export class ContextualActionMenuElement extends
         maxTotal = this.inputState.maxTotalInputs;
       }
       const totalSelected = this.nonTabFileNum + this.disabledTabIds.size +
-          (this.aimThreadRestoredTabs || []).length;
+          (this.contextManagementInComposeboxEnabled ?
+               (this.aimThreadRestoredTabs || []).length :
+               0);
       const limitReached = totalSelected >= maxTotal;
       // Disable unselected tabs only when the total selected count reaches the limit.
       return limitReached;
@@ -775,7 +778,9 @@ export class ContextualActionMenuElement extends
     const activeRestoredTabs = allSelectedIds.map(id => suggestionsMap.get(id))
                                    .filter((tab): tab is TabInfo => !!tab)
                                    .reverse();
-    const reversedRestored = [...(this.aimThreadRestoredTabs || [])].reverse();
+    const reversedRestored = this.contextManagementInComposeboxEnabled ?
+        [...(this.aimThreadRestoredTabs || [])].reverse() :
+        [];
 
     return activeRestoredTabs.concat(reversedRestored);
   }
@@ -835,9 +840,9 @@ export class ContextualActionMenuElement extends
     }
 
 
-    const isRestored =
-        (this.aimThreadRestoredTabs)
-            .some(restoredTab => restoredTab.tabId === tabInfo.tabId);
+    const isRestored = this.contextManagementInComposeboxEnabled &&
+        (this.aimThreadRestoredTabs ||
+         []).some(restoredTab => restoredTab.tabId === tabInfo.tabId);
     if (this.isTabSelected_(tabInfo.tabId)) {
       // Allow deselecting the tab if the explicit tab deselection feature is
       // enabled. If disabled, we only allow deselecting newly-added tabs
