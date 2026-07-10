@@ -28,6 +28,15 @@ class BASE_I18N_EXPORT RegionSubtag;
 class LanguageTag;
 consteval LanguageTag GetKnownLanguageTag(std::string_view tag);
 
+namespace mojo {
+template <typename DataView, typename T>
+struct StructTraits;
+}  // namespace mojo
+
+namespace mojo_base::mojom {
+class LanguageTagDataView;
+}  // namespace mojo_base::mojom
+
 // A type-safe wrapper for BCP47 language tags (locales).
 //
 // Supported Format Specification:
@@ -128,6 +137,16 @@ class BASE_I18N_EXPORT LanguageTag {
  private:
   friend class LanguageTagConverter;
   friend consteval LanguageTag GetKnownLanguageTag(std::string_view tag);
+  // Allow Mojo StructTraits to default-construct an instance during IPC
+  // deserialization
+  friend struct mojo::StructTraits<mojo_base::mojom::LanguageTagDataView,
+                                   base::i18n::LanguageTag>;
+
+  // Default constructor is intended for internal use by Mojo StructTraits to
+  // allow for deserialization of the language tag from IPC.
+  // `mojo::DefaultConstruct` cannot be used here because of layered
+  // dependencies.
+  LanguageTag();
 
   std::string_view GetExtensionStringInternal(char key) const;
   // This constructor is intended for internal use by `LanguageTagConverter`.

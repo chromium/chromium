@@ -26,6 +26,7 @@ mojom_component("base") {
     "generic_pending_receiver.mojom",
     "int128.mojom",
     "jserror.mojom",
+    "language_tag.mojom",
     "memory_allocator_dump_cross_process_uid.mojom",
     "memory_pressure_level.mojom",
     "message_pump_type.mojom",
@@ -70,6 +71,20 @@ mojom_component("base") {
   macro_prefix = "MOJO_BASE_MOJOM"
 
   common_typemaps = [
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.LanguageTag"
+          cpp = "::base::i18n::LanguageTag"
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/language_tag_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//base:i18n",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
     {
       types = [
         {

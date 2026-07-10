@@ -1,0 +1,9 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module mojo_base.mojom;
+// Corresponds to the BCP47 language tag in base/i18n/language_tag.h
+struct LanguageTag {
+  // A string representing a BCP47 language tag.
+  string tag_string;
+};
