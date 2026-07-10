@@ -26,6 +26,10 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
+namespace policy {
+class PolicyService;
+}
+
 // Killswitch for the rules set by the "ProxyOverrideRules" policy.
 PROXY_CONFIG_EXPORT BASE_DECLARE_FEATURE(kEnableProxyOverrideRules);
 
@@ -96,9 +100,12 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
  public:
   // |proxy_config_service_task_runner| is the thread the ProxyConfigService
   // will live on. Use nullptr if it lives on the current thread.
+  // |policy_service| is required to check the affiliation over the user, but
+  // can be null if its usage is not applicable to the caller.
   PrefProxyConfigTrackerImpl(PrefService* pref_service,
                              scoped_refptr<base::SingleThreadTaskRunner>
-                                 proxy_config_service_task_runner);
+                                 proxy_config_service_task_runner,
+                             policy::PolicyService* policy_service);
 
   PrefProxyConfigTrackerImpl(const PrefProxyConfigTrackerImpl&) = delete;
   PrefProxyConfigTrackerImpl& operator=(const PrefProxyConfigTrackerImpl&) =
@@ -147,10 +154,13 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
 
   // Creates a proxy configuration from proxy-related preferences of
   // |pref_service|. Configuration is stored in |config|, return value indicates
-  // whether the configuration is valid.
+  // whether the configuration is valid. |policy_service| is required to check
+  // the affiliation over the user, but can be null if its usage is not
+  // applicable to the caller.
   static ProxyPrefs::ConfigState ReadPrefConfig(
       const PrefService* pref_service,
-      net::ProxyConfigWithAnnotation* config);
+      net::ProxyConfigWithAnnotation* config,
+      policy::PolicyService* policy_service);
 
  protected:
   // Get the proxy configuration currently defined by preferences.
@@ -181,6 +191,7 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
   net::ProxyConfigWithAnnotation pref_config_;
 
   raw_ptr<PrefService> pref_service_;
+  raw_ptr<policy::PolicyService> policy_service_ = nullptr;
   base::WeakPtr<ProxyConfigServiceImpl> proxy_config_service_impl_;
   PrefChangeRegistrar proxy_prefs_;
 

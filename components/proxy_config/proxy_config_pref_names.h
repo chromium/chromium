@@ -20,15 +20,12 @@ inline constexpr char kUseSharedProxies[] = "settings.use_shared_proxies";
 inline constexpr char kProxyOverrideRules[] = "proxy_override_rules";
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// Preferences to store the scope (user vs machine) and the affiliation status
-// corresponding to the value set in `kProxyOverrideRules`. They are used to
-// handle the policy differently when its source is a cloud user depending on
-// its affiliation status and the value of the
-// "EnableProxyOverrideRulesForAllUsers" policy. On CrOS, this is not used as
-// there isn't a way for the admin to set non-user cloud policies.
+// Preference to store the scope (user vs machine) corresponding to the value
+// set in `kProxyOverrideRules`. It is used to handle the policy differently
+// when its source is a cloud user depending on its affiliation status and the
+// value of the "EnableProxyOverrideRulesForAllUsers" policy. On CrOS, this is
+// not used as there isn't a way for the admin to set non-user cloud policies.
 inline constexpr char kProxyOverrideRulesScope[] = "proxy_override_rules_scope";
-inline constexpr char kProxyOverrideRulesAffiliation[] =
-    "proxy_override_rules_affiliation";
 
 // Preference to store the value of the "EnableProxyOverrideRulesForAllUsers"
 // policy.

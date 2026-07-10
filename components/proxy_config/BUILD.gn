@@ -72,6 +72,7 @@ source_set("unit_tests") {
     "//components/policy/core/browser",
     "//components/policy/core/browser:test_support",
     "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
     "//net",
     "//net:test_support",

@@ -52,12 +52,15 @@ ProxyServiceFactory::CreateProxyConfigService(PrefProxyConfigTracker* tracker,
 std::unique_ptr<PrefProxyConfigTracker>
 ProxyServiceFactory::CreatePrefProxyConfigTrackerOfProfile(
     PrefService* profile_prefs,
-    PrefService* local_state_prefs) {
+    PrefService* local_state_prefs,
+    policy::PolicyService* policy_service) {
 #if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<ash::ProxyConfigServiceImpl>(
       profile_prefs, local_state_prefs, nullptr);
 #else
-  return std::make_unique<PrefProxyConfigTrackerImpl>(profile_prefs, nullptr);
+  return std::make_unique<PrefProxyConfigTrackerImpl>(
+      profile_prefs, /*proxy_config_service_task_runner=*/nullptr,
+      policy_service);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -69,7 +72,8 @@ ProxyServiceFactory::CreatePrefProxyConfigTrackerOfLocalState(
   return std::make_unique<ash::ProxyConfigServiceImpl>(
       nullptr, local_state_prefs, nullptr);
 #else
-  return std::make_unique<PrefProxyConfigTrackerImpl>(local_state_prefs,
-                                                      nullptr);
+  return std::make_unique<PrefProxyConfigTrackerImpl>(
+      local_state_prefs,
+      /*proxy_config_service_task_runner=*/nullptr, /*policy_service=*/nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }

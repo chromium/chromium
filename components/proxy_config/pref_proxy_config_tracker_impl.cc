@@ -261,7 +261,8 @@ std::optional<net::ProxyConfig::ProxyOverrideRule> ValueToOverrideRule(
 
 // Returns true if proxy override rules were written to `config`.
 bool SetProxyOverrideRules(const PrefService* pref_service,
-                           net::ProxyConfigWithAnnotation* config) {
+                           net::ProxyConfigWithAnnotation* config,
+                           policy::PolicyService* policy_service) {
   const PrefService::Preference* pref =
       pref_service->FindPreference(proxy_config::prefs::kProxyOverrideRules);
   DCHECK(pref);
@@ -277,7 +278,7 @@ bool SetProxyOverrideRules(const PrefService* pref_service,
     return false;
   }
 
-  if (!proxy_config::ProxyOverrideRulesAllowed(pref_service)) {
+  if (!proxy_config::ProxyOverrideRulesAllowed(pref_service, policy_service)) {
     return false;
   }
 
@@ -427,11 +428,14 @@ base::WeakPtr<ProxyConfigServiceImpl> ProxyConfigServiceImpl::AsWeakPtr() {
 PrefProxyConfigTrackerImpl::PrefProxyConfigTrackerImpl(
     PrefService* pref_service,
     scoped_refptr<base::SingleThreadTaskRunner>
-        proxy_config_service_task_runner)
+        proxy_config_service_task_runner,
+    policy::PolicyService* policy_service)
     : pref_service_(pref_service),
+      policy_service_(policy_service),
       proxy_config_service_impl_(nullptr),
       proxy_config_service_task_runner_(proxy_config_service_task_runner) {
-  pref_config_state_ = ReadPrefConfig(pref_service_, &pref_config_);
+  pref_config_state_ =
+      ReadPrefConfig(pref_service_, &pref_config_, policy_service_);
   active_config_state_ = pref_config_state_;
   active_config_ = pref_config_;
 
@@ -532,8 +536,6 @@ void PrefProxyConfigTrackerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
       proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers, 0);
   registry->RegisterIntegerPref(proxy_config::prefs::kProxyOverrideRulesScope,
                                 0);
-  registry->RegisterBooleanPref(
-      proxy_config::prefs::kProxyOverrideRulesAffiliation, true);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
@@ -549,15 +551,14 @@ void PrefProxyConfigTrackerImpl::RegisterProfilePrefs(
       proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers, 0);
   registry->RegisterIntegerPref(proxy_config::prefs::kProxyOverrideRulesScope,
                                 0);
-  registry->RegisterBooleanPref(
-      proxy_config::prefs::kProxyOverrideRulesAffiliation, true);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
 // static
 ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::ReadPrefConfig(
     const PrefService* pref_service,
-    net::ProxyConfigWithAnnotation* config) {
+    net::ProxyConfigWithAnnotation* config,
+    policy::PolicyService* policy_service) {
   // Clear the configuration and source.
   *config = net::ProxyConfigWithAnnotation();
   const PrefService::Preference* pref =
@@ -581,7 +582,7 @@ ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::ReadPrefConfig(
 
   const PrefService::Preference* proxy_override_pref =
       pref_service->FindPreference(proxy_config::prefs::kProxyOverrideRules);
-  if (SetProxyOverrideRules(pref_service, config) &&
+  if (SetProxyOverrideRules(pref_service, config, policy_service) &&
       state == ProxyPrefs::CONFIG_UNSET) {
     if (proxy_override_pref->IsManaged()) {
       state = ProxyPrefs::CONFIG_POLICY_OVERRIDE;
@@ -720,7 +721,7 @@ void PrefProxyConfigTrackerImpl::OnProxyPrefChanged() {
   DCHECK(thread_checker_.CalledOnValidThread());
   net::ProxyConfigWithAnnotation new_config;
   ProxyPrefs::ConfigState config_state =
-      ReadPrefConfig(pref_service_, &new_config);
+      ReadPrefConfig(pref_service_, &new_config, policy_service_);
   if (pref_config_state_ != config_state ||
       (pref_config_state_ != ProxyPrefs::CONFIG_UNSET &&
        !pref_config_.value().Equals(new_config.value()))) {

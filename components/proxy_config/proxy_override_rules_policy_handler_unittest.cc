@@ -280,9 +280,13 @@ TEST_P(ProxyOverrideRulesPolicyHandlerTest, Test) {
 
   policy::PolicyErrorMap errors;
 
-  // Invalid list entries are tolerated, so in that case `CheckPolicySettings`
-  // will still return true.
-  ASSERT_TRUE(handler->CheckPolicySettings(map, &errors));
+  if (!GetParam().affiliated) {
+    ASSERT_FALSE(handler->CheckPolicySettings(map, &errors));
+  } else {
+    // Invalid list entries are tolerated, so in that case `CheckPolicySettings`
+    // will still return true.
+    ASSERT_TRUE(handler->CheckPolicySettings(map, &errors));
+  }
 
   ASSERT_FALSE(errors.empty());
   ASSERT_TRUE(errors.HasError(kPolicyName));
@@ -291,44 +295,7 @@ TEST_P(ProxyOverrideRulesPolicyHandlerTest, Test) {
   ASSERT_EQ(messages, GetParam().expected_messages);
 }
 
-TEST_F(ProxyOverrideRulesPolicyHandlerTest, AffiliationUpdatedWhenPolicyUnset) {
-  auto handler = std::make_unique<ProxyOverrideRulesPolicyHandler>(schema());
-
-  policy::PolicyMap policy_map;
-  // Scenario 1: Affiliated (empty device IDs)
-  policy_map.SetDeviceAffiliationIds({});
-  policy_map.SetUserAffiliationIds({"user_id"});
-
-  PrefValueMap prefs;
-  policy::PolicyErrorMap errors;
-
-  ASSERT_TRUE(handler->CheckPolicySettings(policy_map, &errors));
-  handler->ApplyPolicySettings(policy_map, &prefs);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  bool affiliated = false;
-  EXPECT_TRUE(
-      prefs.GetBoolean(prefs::kProxyOverrideRulesAffiliation, &affiliated));
-  EXPECT_TRUE(affiliated);
-#endif
-
-  // Scenario 2: Unaffiliated
-  policy_map.SetDeviceAffiliationIds({"device_id"});
-  policy_map.SetUserAffiliationIds({"user_id"});
-
-  prefs.Clear();
-  ASSERT_TRUE(handler->CheckPolicySettings(policy_map, &errors));
-  handler->ApplyPolicySettings(policy_map, &prefs);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(
-      prefs.GetBoolean(prefs::kProxyOverrideRulesAffiliation, &affiliated));
-  EXPECT_FALSE(affiliated);
-#endif
-}
-
-TEST_F(ProxyOverrideRulesPolicyHandlerTest,
-       AffiliationUpdatedWhenPolicyValueUnchanged) {
+TEST_F(ProxyOverrideRulesPolicyHandlerTest, UnaffiliatedUserPolicyRejected) {
   auto handler = std::make_unique<ProxyOverrideRulesPolicyHandler>(schema());
 
   const char kPolicyValue[] = R"([
@@ -346,35 +313,26 @@ TEST_F(ProxyOverrideRulesPolicyHandlerTest,
       base::JSONReader::Read(kPolicyValue, base::JSON_ALLOW_TRAILING_COMMAS),
       nullptr);
 
-  // Scenario 1: Affiliated
-  policy_map.SetDeviceAffiliationIds({"id"});
-  policy_map.SetUserAffiliationIds({"id"});
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Scenario 1: Unaffiliated user
+  policy_map.SetDeviceAffiliationIds({"device_id"});
+  policy_map.SetUserAffiliationIds({"user_id"});
 
   PrefValueMap prefs;
   policy::PolicyErrorMap errors;
 
-  ASSERT_TRUE(handler->CheckPolicySettings(policy_map, &errors));
+  EXPECT_FALSE(handler->CheckPolicySettings(policy_map, &errors));
+  EXPECT_TRUE(errors.HasError(kPolicyName));
+
+  // Scenario 2: Affiliated user
+  errors.Clear();
+  policy_map.SetUserAffiliationIds({"device_id"});
+  EXPECT_TRUE(handler->CheckPolicySettings(policy_map, &errors));
+  EXPECT_TRUE(errors.empty());
+
   handler->ApplyPolicySettings(policy_map, &prefs);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  bool affiliated = false;
-  EXPECT_TRUE(
-      prefs.GetBoolean(prefs::kProxyOverrideRulesAffiliation, &affiliated));
-  EXPECT_TRUE(affiliated);
-#endif
-
-  // Scenario 2: Unaffiliated
-  policy_map.SetUserAffiliationIds({"different_id"});
-
-  // ApplyPolicySettings should update the affiliation preference even if the
-  // policy value itself hasn't changed.
-  ASSERT_TRUE(handler->CheckPolicySettings(policy_map, &errors));
-  handler->ApplyPolicySettings(policy_map, &prefs);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(
-      prefs.GetBoolean(prefs::kProxyOverrideRulesAffiliation, &affiliated));
-  EXPECT_FALSE(affiliated);
+  const base::Value* val = nullptr;
+  EXPECT_TRUE(prefs.GetValue(prefs::kProxyOverrideRules, &val));
 #endif
 }
 

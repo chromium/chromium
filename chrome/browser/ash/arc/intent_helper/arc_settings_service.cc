@@ -534,7 +534,8 @@ void ArcSettingsServiceImpl::DefaultNetworkChanged(
 bool ArcSettingsServiceImpl::IsPrefProxyConfigApplied() const {
   net::ProxyConfigWithAnnotation config;
   return PrefProxyConfigTrackerImpl::PrefPrecedes(
-      PrefProxyConfigTrackerImpl::ReadPrefConfig(GetPrefs(), &config));
+      PrefProxyConfigTrackerImpl::ReadPrefConfig(GetPrefs(), &config,
+                                                 /*policy_service=*/nullptr));
 }
 
 void ArcSettingsServiceImpl::StartObservingSettingsChanges() {

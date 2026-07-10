@@ -263,8 +263,8 @@ bool UIProxyConfigService::MergeEnforcedProxyConfig(
 
   // Get prefs proxy config if available.
   net::ProxyConfigWithAnnotation pref_config;
-  ProxyPrefs::ConfigState pref_state =
-      ProxyConfigServiceImpl::ReadPrefConfig(top_pref_service, &pref_config);
+  ProxyPrefs::ConfigState pref_state = ProxyConfigServiceImpl::ReadPrefConfig(
+      top_pref_service, &pref_config, /*policy_service=*/nullptr);
 
   // Get network proxy config if available.
   net::ProxyConfigWithAnnotation network_config;

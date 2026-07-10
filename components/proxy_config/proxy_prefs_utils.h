@@ -11,6 +11,10 @@
 
 class PrefService;
 
+namespace policy {
+class PolicyService;
+}
+
 namespace proxy_config {
 
 // Constants used to parse the "ProxyOverrideRules" policy value.
@@ -42,7 +46,8 @@ PROXY_CONFIG_EXPORT net::ProxyChain ProxyOverrideRuleProxyFromString(
 // unaffiliated user and the "EnableProxyOverrideRulesForAllUsers" is not set to
 // allow it.
 PROXY_CONFIG_EXPORT bool ProxyOverrideRulesAllowed(
-    const PrefService* pref_service);
+    const PrefService* pref_service,
+    policy::PolicyService* policy_service);
 
 }  // namespace proxy_config
 

@@ -994,6 +994,10 @@ inline constexpr char kPendingMetricsReportingLevel[] =
 // Deprecated 07/2026.
 inline constexpr char kObsoleteMetricsReportingLevel[] =
     "user_experience_metrics.reporting_level";
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+inline constexpr char kProxyOverrideRulesAffiliation[] =
+    "proxy_override_rules_affiliation";
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1094,6 +1098,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 07/2026.
   registry->RegisterIntegerPref(kObsoleteMetricsReportingLevel, 0);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  registry->RegisterBooleanPref(kProxyOverrideRulesAffiliation, true);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1341,6 +1348,11 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 06/2026.
   registry->RegisterIntegerPref(kMetricsUserReportingLevel, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Deprecated 07/2026.
+  registry->RegisterBooleanPref(kProxyOverrideRulesAffiliation, true);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
 }  // namespace
@@ -2361,6 +2373,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 07/2026.
   local_state->ClearPref(kObsoleteMetricsReportingLevel);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Added 07/2026.
+  local_state->ClearPref(kProxyOverrideRulesAffiliation);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
@@ -2630,6 +2646,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 06/2026.
   syncer::ClearAccountKeyedPrefValue(
       profile_prefs, autofill::prefs::kAutofillAiOptInStatus, {});
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Added 07/2026.
+  profile_prefs->ClearPref(kProxyOverrideRulesAffiliation);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

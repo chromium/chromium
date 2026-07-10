@@ -88,7 +88,8 @@ ProxyConfigServiceImpl::ProxyConfigServiceImpl(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : PrefProxyConfigTrackerImpl(
           profile_prefs ? profile_prefs : local_state_prefs,
-          io_task_runner),
+          io_task_runner,
+          /*policy_service=*/nullptr),
       profile_prefs_(profile_prefs),
       local_state_prefs_(local_state_prefs) {
   const base::RepeatingClosure proxy_change_callback = base::BindRepeating(
@@ -221,8 +222,8 @@ ProxyConfigServiceImpl::GetActiveProxyConfigDictionary(
   // Apply Pref Proxy configuration if available.
   net::ProxyConfigWithAnnotation pref_proxy_config;
   ProxyPrefs::ConfigState pref_state =
-      PrefProxyConfigTrackerImpl::ReadPrefConfig(profile_prefs,
-                                                 &pref_proxy_config);
+      PrefProxyConfigTrackerImpl::ReadPrefConfig(
+          profile_prefs, &pref_proxy_config, /*policy_service=*/nullptr);
   if (PrefProxyConfigTrackerImpl::PrefPrecedes(pref_state)) {
     const PrefService::Preference* const pref =
         profile_prefs->FindPreference(::proxy_config::prefs::kProxy);

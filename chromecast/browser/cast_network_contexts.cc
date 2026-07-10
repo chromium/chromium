@@ -320,7 +320,9 @@ void CastNetworkContexts::AddProxyToNetworkContextParams(
   if (!proxy_config_service_) {
     pref_proxy_config_tracker_impl_ =
         std::make_unique<PrefProxyConfigTrackerImpl>(
-            CastBrowserProcess::GetInstance()->pref_service(), nullptr);
+            CastBrowserProcess::GetInstance()->pref_service(),
+            /*proxy_config_service_task_runner=*/nullptr,
+            /*policy_service=*/nullptr);
     proxy_config_service_ =
         pref_proxy_config_tracker_impl_->CreateTrackingProxyConfigService(
             nullptr);

@@ -165,8 +165,8 @@ class ChromeCommandLinePrefStoreProxyTest
     factory.set_command_line_prefs(
         new ChromeCommandLinePrefStore(&command_line_));
     pref_service_ = factory.Create(registry.get());
-    PrefProxyConfigTrackerImpl::ReadPrefConfig(pref_service_.get(),
-                                               &proxy_config_);
+    PrefProxyConfigTrackerImpl::ReadPrefConfig(
+        pref_service_.get(), &proxy_config_, /*policy_service=*/nullptr);
   }
 
  private:

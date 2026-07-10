@@ -29,7 +29,8 @@ ProxyServiceFactory::CreatePrefProxyConfigTrackerOfProfile(
     PrefService* browser_state_prefs,
     PrefService* local_state_prefs) {
   return std::make_unique<PrefProxyConfigTrackerImpl>(
-      browser_state_prefs, web::GetIOThreadTaskRunner({}));
+      browser_state_prefs, web::GetIOThreadTaskRunner({}),
+      /*policy_service=*/nullptr);
 }
 
 // static
@@ -37,7 +38,8 @@ std::unique_ptr<PrefProxyConfigTracker>
 ProxyServiceFactory::CreatePrefProxyConfigTrackerOfLocalState(
     PrefService* local_state_prefs) {
   return std::make_unique<PrefProxyConfigTrackerImpl>(
-      local_state_prefs, web::GetIOThreadTaskRunner({}));
+      local_state_prefs, web::GetIOThreadTaskRunner({}),
+      /*policy_service=*/nullptr);
 }
 
 // static

@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/proxy_service_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -49,7 +50,8 @@ ProxyConfigMonitor::ProxyConfigMonitor(Profile* profile) {
   if (!pref_proxy_config_tracker_) {
     pref_proxy_config_tracker_ =
         ProxyServiceFactory::CreatePrefProxyConfigTrackerOfProfile(
-            profile->GetPrefs(), g_browser_process->local_state());
+            profile->GetPrefs(), g_browser_process->local_state(),
+            profile->GetProfilePolicyConnector()->policy_service());
   }
 
   proxy_config_service_ = ProxyServiceFactory::CreateProxyConfigService(

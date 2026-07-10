@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "components/policy/core/common/mock_policy_service.h"
+#include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
@@ -132,27 +134,43 @@ TEST(ProxyPrefsUtilsTest, ProxyOverrideRuleProxyFromString) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 namespace {
 
-void SetAffiliationPrefs(TestingPrefServiceSimple& prefs,
-                         bool affiliated,
-                         int enabled_for_all_users) {
-  prefs.SetBoolean(prefs::kProxyOverrideRulesAffiliation, affiliated);
+void SetAffiliation(TestingPrefServiceSimple& prefs,
+                    policy::MockPolicyService& policy_service,
+                    policy::PolicyMap& policy_map,
+                    bool affiliated,
+                    int enabled_for_all_users) {
+  policy_map.Clear();
+  policy_map.SetDeviceAffiliationIds({"device_id"});
+  if (affiliated) {
+    policy_map.SetUserAffiliationIds({"device_id"});
+  } else {
+    policy_map.SetUserAffiliationIds({"other_id"});
+  }
+  EXPECT_CALL(policy_service, GetPolicies(testing::_))
+      .WillRepeatedly(testing::ReturnRef(policy_map));
   prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers,
                    enabled_for_all_users);
 }
 
 void VerifyUnaffiliatedRestriction(TestingPrefServiceSimple& prefs,
+                                   policy::MockPolicyService& policy_service,
+                                   policy::PolicyMap& policy_map,
                                    bool expected_restricted) {
   // Unaffiliated: restricted if `expected_restricted` is true.
-  SetAffiliationPrefs(prefs, /*affiliated=*/false, /*enabled_for_all_users=*/0);
-  EXPECT_EQ(ProxyOverrideRulesAllowed(&prefs), !expected_restricted);
+  SetAffiliation(prefs, policy_service, policy_map, /*affiliated=*/false,
+                 /*enabled_for_all_users=*/0);
+  EXPECT_EQ(ProxyOverrideRulesAllowed(&prefs, &policy_service),
+            !expected_restricted);
 
   // Unaffiliated but enabled by policy: always allowed.
-  SetAffiliationPrefs(prefs, /*affiliated=*/false, /*enabled_for_all_users=*/1);
-  EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs));
+  SetAffiliation(prefs, policy_service, policy_map, /*affiliated=*/false,
+                 /*enabled_for_all_users=*/1);
+  EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
 
   // Affiliated: always allowed.
-  SetAffiliationPrefs(prefs, /*affiliated=*/true, /*enabled_for_all_users=*/0);
-  EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs));
+  SetAffiliation(prefs, policy_service, policy_map, /*affiliated=*/true,
+                 /*enabled_for_all_users=*/0);
+  EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
 }
 
 }  // namespace
@@ -160,11 +178,14 @@ void VerifyUnaffiliatedRestriction(TestingPrefServiceSimple& prefs,
 TEST(ProxyPrefsUtilsTest, ProxyOverrideRulesAllowed) {
   TestingPrefServiceSimple prefs;
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(prefs.registry());
+  testing::NiceMock<policy::MockPolicyService> policy_service;
+  policy::PolicyMap policy_map;
 
   // If `kProxyOverrideRules` is not managed by policy or controlled by an
   // extension, it is always allowed.
-  SetAffiliationPrefs(prefs, /*affiliated=*/false, /*enabled_for_all_users=*/0);
-  EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs));
+  SetAffiliation(prefs, policy_service, policy_map, /*affiliated=*/false,
+                 /*enabled_for_all_users=*/0);
+  EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
 
   // Scenario 1: `kProxyOverrideRules` is controlled by an extension.
   // Affiliation is checked, but scope is ignored.
@@ -173,10 +194,12 @@ TEST(ProxyPrefsUtilsTest, ProxyOverrideRulesAllowed) {
 
   prefs.SetInteger(prefs::kProxyOverrideRulesScope,
                    policy::POLICY_SCOPE_MACHINE);
-  VerifyUnaffiliatedRestriction(prefs, /*expected_restricted=*/true);
+  VerifyUnaffiliatedRestriction(prefs, policy_service, policy_map,
+                                /*expected_restricted=*/true);
 
   prefs.SetInteger(prefs::kProxyOverrideRulesScope, policy::POLICY_SCOPE_USER);
-  VerifyUnaffiliatedRestriction(prefs, /*expected_restricted=*/true);
+  VerifyUnaffiliatedRestriction(prefs, policy_service, policy_map,
+                                /*expected_restricted=*/true);
 
   // Scenario 2: `kProxyOverrideRules` is managed by policy.
   prefs.SetManagedPref(prefs::kProxyOverrideRules,
@@ -185,12 +208,14 @@ TEST(ProxyPrefsUtilsTest, ProxyOverrideRulesAllowed) {
   // If rules are set at the machine scope, they are always allowed.
   prefs.SetInteger(prefs::kProxyOverrideRulesScope,
                    policy::POLICY_SCOPE_MACHINE);
-  VerifyUnaffiliatedRestriction(prefs, /*expected_restricted=*/false);
+  VerifyUnaffiliatedRestriction(prefs, policy_service, policy_map,
+                                /*expected_restricted=*/false);
 
   // If rules are set at the user scope, they are restricted for unaffiliated
   // users.
   prefs.SetInteger(prefs::kProxyOverrideRulesScope, policy::POLICY_SCOPE_USER);
-  VerifyUnaffiliatedRestriction(prefs, /*expected_restricted=*/true);
+  VerifyUnaffiliatedRestriction(prefs, policy_service, policy_map,
+                                /*expected_restricted=*/true);
 }
 #endif
 

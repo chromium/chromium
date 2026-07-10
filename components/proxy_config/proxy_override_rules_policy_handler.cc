@@ -68,11 +68,15 @@ bool ProxyOverrideRulesPolicyHandler::CheckPolicySettings(
     policy::PolicyErrorMap* errors) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // This code should run to set errors for
-  // `kEnableProxyOverrideRulesForAllUsers`.
+  // `kEnableProxyOverrideRulesForAllUsers`, but the regular proxy override
+  // rules policy might still be valid so we ignore the returned boolean.
   enabled_for_all_users_handler_.CheckPolicySettings(policies, errors);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
-  policy::SchemaValidatingPolicyHandler::CheckPolicySettings(policies, errors);
+  if (!policy::SchemaValidatingPolicyHandler::CheckPolicySettings(policies,
+                                                                  errors)) {
+    return false;
+  }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   const policy::PolicyMap::Entry* proxy_override_rules_policy =
@@ -83,6 +87,7 @@ bool ProxyOverrideRulesPolicyHandler::CheckPolicySettings(
       !policies.GetDeviceAffiliationIds().empty() &&
       !policies.IsUserAffiliated() && !UnaffiliatedPolicyAllowed(policies)) {
     errors->AddError(policy_name(), IDS_POLICY_UNAFFILIATED_USER_ERROR);
+    return false;
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
@@ -100,24 +105,12 @@ bool ProxyOverrideRulesPolicyHandler::CheckPolicySettings(
               CreateNewPath({}, base::checked_cast<int>(i)), errors);
   }
 
-  // ALWAYS return true to ensure ApplyPolicySettings runs, which is needed to
-  // update kProxyOverrideRulesAffiliation. The actual application of the
-  // policy value is guarded by CheckAndGetValue in ApplyPolicySettings.
   return true;
 }
 
 void ProxyOverrideRulesPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  // ALWAYS update affiliation, even if kProxyOverrideRules is not set.
-  // This ensures the state is captured in the Managed pref store and
-  // kept in sync with the latest policy bundle's affiliation status.
-  prefs->SetBoolean(proxy_config::prefs::kProxyOverrideRulesAffiliation,
-                    policies.GetDeviceAffiliationIds().empty() ||
-                        policies.IsUserAffiliated());
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
   const policy::PolicyMap::Entry* policy = policies.Get(policy_name());
   if (!policy) {
     return;

@@ -16,6 +16,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/buildflag.h"
+#include "components/policy/core/common/mock_policy_service.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
@@ -101,8 +104,11 @@ class PrefProxyConfigTrackerImplTest : public testing::Test {
         proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS);
     delegate_service_ =
         new TestProxyConfigService(fixed_config_, delegate_config_availability);
+    ON_CALL(mock_policy_service_, GetPolicies(_))
+        .WillByDefault(testing::ReturnRef(empty_policy_map_));
     proxy_config_tracker_ = std::make_unique<PrefProxyConfigTrackerImpl>(
-        pref_service_.get(), base::SingleThreadTaskRunner::GetCurrentDefault());
+        pref_service_.get(), base::SingleThreadTaskRunner::GetCurrentDefault(),
+        policy_service_);
     proxy_config_service_ =
         proxy_config_tracker_->CreateTrackingProxyConfigService(
             std::unique_ptr<net::ProxyConfigService>(delegate_service_));
@@ -121,6 +127,9 @@ class PrefProxyConfigTrackerImplTest : public testing::Test {
   std::unique_ptr<net::ProxyConfigService> proxy_config_service_;
   net::ProxyConfigWithAnnotation fixed_config_;
   std::unique_ptr<PrefProxyConfigTrackerImpl> proxy_config_tracker_;
+  policy::PolicyMap empty_policy_map_;
+  testing::NiceMock<policy::MockPolicyService> mock_policy_service_;
+  raw_ptr<policy::PolicyService> policy_service_ = &mock_policy_service_;
 };
 
 TEST_F(PrefProxyConfigTrackerImplTest, BaseConfiguration) {

@@ -4,6 +4,9 @@
 
 #include "components/proxy_config/proxy_prefs_utils.h"
 
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
@@ -58,13 +61,22 @@ net::ProxyChain ProxyOverrideRuleProxyFromString(std::string_view raw_value) {
   return net::PacResultElementToProxyChain(raw_value);
 }
 
-bool ProxyOverrideRulesAllowed(const PrefService* pref_service) {
+bool ProxyOverrideRulesAllowed(const PrefService* pref_service,
+                               policy::PolicyService* policy_service) {
   CHECK(pref_service);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  if (pref_service->GetBoolean(prefs::kProxyOverrideRulesAffiliation) ||
-      pref_service->GetInteger(prefs::kEnableProxyOverrideRulesForAllUsers) ==
-          1) {
+  if (pref_service->GetInteger(prefs::kEnableProxyOverrideRulesForAllUsers) ==
+      1) {
     return true;
+  }
+
+  if (policy_service) {
+    const policy::PolicyMap& policies = policy_service->GetPolicies(
+        policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
+    if (policies.GetDeviceAffiliationIds().empty() ||
+        policies.IsUserAffiliated()) {
+      return true;
+    }
   }
 
   const PrefService::Preference* pref =
