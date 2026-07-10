@@ -170,14 +170,12 @@ ScopedGKeyFile GetGKeyFileFromDict(const base::DictValue& data,
 }
 #endif
 
-std::vector<GtkPrintBackend*> GetPrintBackends() {
-  std::vector<GtkPrintBackend*> backends;
+void InitializePrintBackends() {
   std::unique_ptr<GList, GListDeleter> backends_list(
       gtk_print_backend_load_modules());
   for (GList* it = backends_list.get(); it; it = it->next) {
     auto* backend = reinterpret_cast<GtkPrintBackend*>(it->data);
     CHECK(backend);
-    backends.push_back(backend);
     // This is required to populate the printer list.
     if (gtk::GtkCheckVersion(4)) {
       WrapGObject(gtk_print_backend_get_printers(backend));
@@ -186,25 +184,35 @@ std::vector<GtkPrintBackend*> GetPrintBackends() {
           gtk_print_backend_get_printer_list(backend));
     }
   }
-
-  // This is required to wait for the printer list to be populated.
-  gtk_enumerate_printers(
-      [](GtkPrinter* printer, gpointer data) -> gboolean { return false; },
-      nullptr, nullptr, true);
-
-  return backends;
 }
 
-ScopedGObject<GtkPrinter> GetPrinterWithName(const char* name) {
-  static base::NoDestructor<std::vector<GtkPrintBackend*>> backends(
-      GetPrintBackends());
+ScopedGObject<GtkPrinter> GetPrinterWithName(std::string_view name) {
+  // One time initialization to ensure print backends are loaded and printer
+  // list is populated.
+  static bool initialized = []() {
+    InitializePrintBackends();
+    return true;
+  }();
+  (void)initialized;
 
-  for (GtkPrintBackend* backend : *backends) {
-    if (GtkPrinter* printer = gtk_print_backend_find_printer(backend, name)) {
-      return WrapGObject(printer);
-    }
-  }
-  return nullptr;
+  struct PrinterSearchData {
+    const std::string_view name;
+    ScopedGObject<GtkPrinter> printer;
+  };
+
+  PrinterSearchData data{name, nullptr};
+  gtk_enumerate_printers(
+      [](GtkPrinter* printer, gpointer user_data) -> gboolean {
+        auto* search_data = static_cast<PrinterSearchData*>(user_data);
+        const char* printer_name = gtk_printer_get_name(printer);
+        if (!printer_name || printer_name != search_data->name) {
+          return false;  // Keep enumerating.
+        }
+        search_data->printer = WrapGObject(printer);
+        return true;  // Done enumerating.
+      },
+      &data, nullptr, true);
+  return std::move(data.printer);
 }
 
 }  // namespace
@@ -256,8 +264,7 @@ void PrintDialogGtk::UpdateSettings(
     gtk_settings_ = gtk_print_settings_copy(GetLastUsedSettings().settings());
   }
 
-  printer_ =
-      GetPrinterWithName(base::UTF16ToUTF8(settings->device_name()).c_str());
+  printer_ = GetPrinterWithName(base::UTF16ToUTF8(settings->device_name()));
   if (printer_.get()) {
     gtk_print_settings_set_printer(gtk_settings_,
                                    gtk_printer_get_name(printer_.get()));
@@ -400,7 +407,7 @@ void PrintDialogGtk::LoadPrintSettings(const PrintSettings& settings) {
           printing::kLinuxSystemPrintDialogDataPrinter);
   CHECK(printer_name);
 
-  printer_ = GetPrinterWithName(printer_name->c_str());
+  printer_ = GetPrinterWithName(*printer_name);
 
   if (!gtk_settings_) {
     gtk_settings_ = gtk_print_settings_copy(GetLastUsedSettings().settings());
