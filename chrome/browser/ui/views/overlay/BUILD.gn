@@ -1,0 +1,137 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+source_set("overlay") {
+  public = [
+    "back_to_tab_button.h",
+    "back_to_tab_label_button.h",
+    "close_image_button.h",
+    "constants.h",
+    "hang_up_button.h",
+    "minimize_button.h",
+    "overlay_controls_fade_animation.h",
+    "overlay_window_image_button.h",
+    "overlay_window_live_caption_button.h",
+    "overlay_window_live_caption_dialog.h",
+    "playback_image_button.h",
+    "resize_handle_button.h",
+    "simple_overlay_window_image_button.h",
+    "skip_ad_label_button.h",
+    "toggle_camera_button.h",
+    "toggle_microphone_button.h",
+    "toggle_mute_button.h",
+    "video_overlay_window_views.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/picture_in_picture",
+    "//components/global_media_controls",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+
+  if (is_mac) {
+    public += [ "video_overlay_window_native_widget_mac.h" ]
+  }
+
+  if (is_chromeos) {
+    # video_overlay_window_views.h embeds a HighlightBorderOverlay member.
+    public_deps += [ "//chromeos/ui/frame" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "back_to_tab_button.cc",
+    "back_to_tab_label_button.cc",
+    "close_image_button.cc",
+    "hang_up_button.cc",
+    "minimize_button.cc",
+    "overlay_controls_fade_animation.cc",
+    "overlay_window_image_button.cc",
+    "overlay_window_live_caption_button.cc",
+    "overlay_window_live_caption_dialog.cc",
+    "playback_image_button.cc",
+    "resize_handle_button.cc",
+    "simple_overlay_window_image_button.cc",
+    "skip_ad_label_button.cc",
+    "toggle_camera_button.cc",
+    "toggle_microphone_button.cc",
+    "toggle_mute_button.cc",
+    "video_overlay_window_views.cc",
+  ]
+
+  deps = [
+    ":overlay",
+    "//chrome/browser/media",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/global_media_controls",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/picture_in_picture",
+    "//components/live_caption:constants",
+  ]
+
+  # video_overlay_window_views.cc includes chrome/browser/ui/browser.h to read
+  # Browser::app_name() (no BrowserWindowInterface accessor exists yet), which
+  # is a circular include against //chrome/browser/ui:ui. Reach it via
+  # browser_public_dependencies; the reverse edge is the
+  # allow_circular_includes_from entry on //chrome/browser/ui:ui.
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  if (is_mac) {
+    sources += [ "video_overlay_window_native_widget_mac.mm" ]
+    deps += [ "//components/remote_cocoa/common:mojo" ]
+    frameworks = [ "Cocoa.framework" ]
+  }
+
+  if (is_win) {
+    deps += [ "//ui/base/ime/win" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "overlay_controls_fade_animation_unittest.cc",
+    "video_overlay_window_views_unittest.cc",
+  ]
+  deps = [
+    ":overlay",
+    "//base/test:test_support",
+    "//chrome/browser/picture_in_picture",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/test:test_support",
+    "//components/global_media_controls",
+    "//components/live_caption:constants",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/soda:test_support",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//media",
+    "//services/media_session/public/cpp",
+    "//testing/gmock",
+    "//ui/base",
+    "//ui/color",
+    "//ui/compositor",
+    "//ui/display:test_support",
+    "//ui/events:test_support",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/native_theme:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

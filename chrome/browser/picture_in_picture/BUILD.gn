@@ -270,6 +270,7 @@ if (!is_android) {
       "//chrome/browser/ui:recently_audible_helper",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/views/overlay",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/picture_in_picture",
       "//chrome/browser/ui/web_applications",

@@ -4249,41 +4249,6 @@ static_library("ui") {
       "views/omnibox/webui_readonly_omnibox.h",
       "views/optimization_guide/optimization_guide_icon_view.cc",
       "views/optimization_guide/optimization_guide_icon_view.h",
-      "views/overlay/back_to_tab_button.cc",
-      "views/overlay/back_to_tab_button.h",
-      "views/overlay/back_to_tab_label_button.cc",
-      "views/overlay/back_to_tab_label_button.h",
-      "views/overlay/close_image_button.cc",
-      "views/overlay/close_image_button.h",
-      "views/overlay/constants.h",
-      "views/overlay/hang_up_button.cc",
-      "views/overlay/hang_up_button.h",
-      "views/overlay/minimize_button.cc",
-      "views/overlay/minimize_button.h",
-      "views/overlay/overlay_controls_fade_animation.cc",
-      "views/overlay/overlay_controls_fade_animation.h",
-      "views/overlay/overlay_window_image_button.cc",
-      "views/overlay/overlay_window_image_button.h",
-      "views/overlay/overlay_window_live_caption_button.cc",
-      "views/overlay/overlay_window_live_caption_button.h",
-      "views/overlay/overlay_window_live_caption_dialog.cc",
-      "views/overlay/overlay_window_live_caption_dialog.h",
-      "views/overlay/playback_image_button.cc",
-      "views/overlay/playback_image_button.h",
-      "views/overlay/resize_handle_button.cc",
-      "views/overlay/resize_handle_button.h",
-      "views/overlay/simple_overlay_window_image_button.cc",
-      "views/overlay/simple_overlay_window_image_button.h",
-      "views/overlay/skip_ad_label_button.cc",
-      "views/overlay/skip_ad_label_button.h",
-      "views/overlay/toggle_camera_button.cc",
-      "views/overlay/toggle_camera_button.h",
-      "views/overlay/toggle_microphone_button.cc",
-      "views/overlay/toggle_microphone_button.h",
-      "views/overlay/toggle_mute_button.cc",
-      "views/overlay/toggle_mute_button.h",
-      "views/overlay/video_overlay_window_views.cc",
-      "views/overlay/video_overlay_window_views.h",
       "views/page_info/about_this_site_side_panel_coordinator.cc",
       "views/page_info/about_this_site_side_panel_coordinator.h",
       "views/page_info/chosen_object_view.cc",
@@ -4777,6 +4742,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/location_bar:impl",
       "//chrome/browser/ui/views/location_bar/cookie_controls",
       "//chrome/browser/ui/views/location_bar/cookie_controls:impl",
+      "//chrome/browser/ui/views/overlay",
+      "//chrome/browser/ui/views/overlay:impl",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/page_action:impl",
       "//chrome/browser/ui/views/page_info",
@@ -4905,6 +4872,12 @@ static_library("ui") {
       # c/b/ui/browser.h
       # c/b/ui/views/close_bubble_on_tab_activation_helper.h
       "//chrome/browser/ui/views/bubble",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following header gets componentized:
+      # c/b/ui/browser.h (video_overlay_window_views.cc reads
+      # Browser::app_name(), which has no BrowserWindowInterface accessor yet)
+      "//chrome/browser/ui/views/overlay:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following headers get componentized:
@@ -5147,8 +5120,6 @@ static_library("ui") {
         "views/apps/chrome_native_app_window_views_mac.h",
         "views/apps/chrome_native_app_window_views_mac.mm",
         "views/chrome_views_delegate_mac.cc",
-        "views/overlay/video_overlay_window_native_widget_mac.h",
-        "views/overlay/video_overlay_window_native_widget_mac.mm",
         "views/permissions/permission_prompt_notifications_mac.cc",
         "views/permissions/permission_prompt_notifications_mac.h",
         "views/policy/enterprise_startup_dialog_mac_util.h",
