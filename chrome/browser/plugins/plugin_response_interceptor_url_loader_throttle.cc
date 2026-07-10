@@ -167,25 +167,24 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   if (response_head->mime_type == pdf::kPDFMimeType) {
     // A generic MIME handler extension called
     // chrome.mimeHandler.abortAndFallbackToNativeHandler() on a prior
-    // navigation for this embedder frame. Peek (not consume) at the
-    // fallback mark so the aborted extension does not re-claim its own
-    // response across the whole redirect chain -- the mark is cleared in
-    // `DidFinishNavigation()` once the re-fetch settles. Route the
-    // application/pdf response to the user agent's built-in PDF viewer.
-    // When the prior stream buffered the response body, take it now and
-    // replay it below instead of re-reading the reload's network body.
-    // The cached body is consumable only by the OOPIF PDF stream
-    // pipeline; the legacy MimeHandlerView GuestView path has no hook
-    // for a pre-fetched body pipe, so leave the pipe parked and let the
-    // reload re-fetch from the network.
+    // navigation for this embedder frame. Peek (not consume) at the fallback
+    // mark so the aborted extension does not re-claim its own response on
+    // reload -- the mark is cleared in `DidFinishNavigation()` once the
+    // re-fetch settles. Route the application/pdf response to the user agent's
+    // built-in PDF viewer. When the prior stream buffered the response body,
+    // take it now and replay it below instead of re-reading the reload's
+    // network body. The cached body is consumable only by the OOPIF PDF stream
+    // pipeline; the legacy MimeHandlerView GuestView path has no hook for a
+    // pre-fetched body pipe, so leave the pipe parked and let the reload
+    // re-fetch from the network.
     auto* stream_manager =
         MimeHandlerStreamManager::FromWebContents(web_contents);
-    if (stream_manager &&
-        stream_manager->IsPendingNativeFallback(frame_tree_node_id_)) {
+    if (stream_manager && stream_manager->IsPendingNativeFallback(
+                              frame_tree_node_id_, response_url)) {
       extension_id = extension_misc::kPdfExtensionId;
       if (chrome_pdf::features::IsOopifPdfEnabled()) {
-        cached_body =
-            stream_manager->TakeCachedFallbackBody(frame_tree_node_id_);
+        cached_body = stream_manager->TakeCachedFallbackBody(
+            frame_tree_node_id_, response_url);
       }
     }
   }

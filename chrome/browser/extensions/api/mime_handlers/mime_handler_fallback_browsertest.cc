@@ -6,10 +6,12 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -27,6 +29,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -318,6 +321,119 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
   EXPECT_EQ(pdf_url, web_contents->GetLastCommittedURL());
 }
 
+class MimeHandlerFallbackRedirectBrowserTest
+    : public MimeHandlerFallbackBrowserTest {
+ public:
+  MimeHandlerFallbackRedirectBrowserTest() = default;
+
+ protected:
+  void SetUpOnMainThread() override {
+    const base::FilePath chrome_test_data_dir =
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA);
+    const base::FilePath pdf_path =
+        chrome_test_data_dir.AppendASCII("pdf").AppendASCII("test.pdf");
+    ASSERT_TRUE(base::PathExists(pdf_path));
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::ReadFileToString(pdf_path, &pdf_data_));
+    }
+
+    // Register controllable responses before starting the server. Expect two
+    // requests to "/spoof.pdf".
+    controllable_response1_ =
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            embedded_test_server(), "/spoof.pdf");
+    controllable_response2_ =
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            embedded_test_server(), "/spoof.pdf");
+
+    MimeHandlerFallbackBrowserTest::SetUpOnMainThread();
+  }
+
+  const std::string& pdf_data() const { return pdf_data_; }
+
+  net::test_server::ControllableHttpResponse* controllable_response1() {
+    return controllable_response1_.get();
+  }
+
+  net::test_server::ControllableHttpResponse* controllable_response2() {
+    return controllable_response2_.get();
+  }
+
+ private:
+  std::string pdf_data_;
+  std::unique_ptr<net::test_server::ControllableHttpResponse>
+      controllable_response1_;
+  std::unique_ptr<net::test_server::ControllableHttpResponse>
+      controllable_response2_;
+};
+
+// Verify that fallback reload redirected to a different origin does not use the
+// cached body, preventing spoofing.
+IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackRedirectBrowserTest,
+                       FallbackRedirectToDifferentOriginDoesNotUseCache) {
+  if (!chrome_pdf::features::IsOopifPdfEnabled()) {
+    GTEST_SKIP() << "Cached-body fallback routing is OOPIF-only.";
+  }
+
+  ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
+  content::WebContents* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  const GURL start_url = embedded_test_server()->GetURL("a.com", "/spoof.pdf");
+
+  const auto pdf_extension_observer = MakePdfExtensionObserver();
+
+  // Start navigation (non-blocking).
+  web_contents->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(start_url));
+
+  // 1. Handle first request (attacker PDF).
+  net::test_server::ControllableHttpResponse* response1 =
+      controllable_response1();
+  response1->WaitForRequest();
+  response1->Send("HTTP/1.1 200 OK\r\n");
+  response1->Send("Content-Type: application/pdf\r\n");
+  response1->Send("\r\n");
+  response1->Send(pdf_data());
+  response1->Done();
+
+  // 2. Handle second request (fallback reload redirected to b.com).
+  net::test_server::ControllableHttpResponse* response2 =
+      controllable_response2();
+  response2->WaitForRequest();
+  const GURL target_url =
+      embedded_test_server()->GetURL("b.com", "/accessibility/multi-page.pdf");
+  response2->Send("HTTP/1.1 302 Found\r\n");
+  response2->Send("Location: " + target_url.spec() + "\r\n");
+  response2->Send("\r\n");
+  response2->Done();
+
+  // Now wait for the navigation to settle.
+  pdf_extension_observer->WaitForNavigationFinished();
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+
+  content::RenderFrameHost* const extension_host =
+      pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
+  ASSERT_TRUE(extension_host);
+
+  // Verify that the PDF has loaded.
+  EXPECT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+
+  // Get the page count.
+  const int page_count =
+      content::EvalJs(extension_host, "viewer.docLength_").ExtractInt();
+
+  // test.pdf has 1 page. accessibility/multi-page.pdf has 2 pages. Expect the
+  // browser to load the redirected PDF (multi-page, 2 pages). If spoofing
+  // occurs, the browser loads the cached PDF (test.pdf, 1 page).
+  EXPECT_EQ(2, page_count);
+
+  // Also verify the committed URL is the redirected one.
+  EXPECT_EQ(target_url, web_contents->GetLastCommittedURL());
+}
+
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(MimeHandlerFallbackBrowserTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(MimeHandlerFallbackRedirectBrowserTest);
 
 }  // namespace extensions

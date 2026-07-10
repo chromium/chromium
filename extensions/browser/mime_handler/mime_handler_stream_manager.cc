@@ -368,8 +368,8 @@ void MimeHandlerStreamManager::AbortAndFallbackToNativeHandler(
       stream_info->stream()->GetFallbackDataPipe();
   const size_t decoded_body_size =
       body.is_valid() ? stream_info->stream()->GetCachedBodySize() : 0u;
-  pending_native_fallback_frames_[embedder_ftn] =
-      CachedFallbackBody{std::move(body), decoded_body_size};
+  pending_native_fallback_frames_[embedder_ftn] = PendingNativeFallback{
+      original_url, CachedFallbackBody{std::move(body), decoded_body_size}};
 
   // Re-navigate just the embedder frame -- not the whole WebContents --
   // so iframe-hosted MIME handlers fall back without blowing away the
@@ -388,19 +388,24 @@ void MimeHandlerStreamManager::AbortAndFallbackToNativeHandler(
 }
 
 bool MimeHandlerStreamManager::IsPendingNativeFallback(
-    content::FrameTreeNodeId frame_tree_node_id) const {
-  return pending_native_fallback_frames_.contains(frame_tree_node_id);
+    content::FrameTreeNodeId frame_tree_node_id,
+    const GURL& response_url) const {
+  auto it = pending_native_fallback_frames_.find(frame_tree_node_id);
+  return it != pending_native_fallback_frames_.end() &&
+         response_url.EqualsIgnoringRef(it->second.original_url);
 }
 
 std::optional<MimeHandlerStreamManager::CachedFallbackBody>
 MimeHandlerStreamManager::TakeCachedFallbackBody(
-    content::FrameTreeNodeId frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id,
+    const GURL& response_url) {
   auto it = pending_native_fallback_frames_.find(frame_tree_node_id);
   if (it == pending_native_fallback_frames_.end() ||
-      !it->second.pipe.is_valid()) {
+      !response_url.EqualsIgnoringRef(it->second.original_url) ||
+      !it->second.body.pipe.is_valid()) {
     return std::nullopt;
   }
-  return std::move(it->second);
+  return std::move(it->second.body);
 }
 
 bool MimeHandlerStreamManager::PluginCanSave(
@@ -585,12 +590,10 @@ void MimeHandlerStreamManager::ReadyToCommitNavigation(
 
 void MimeHandlerStreamManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // Drop any native-fallback mark for the navigating frame. The mark
-  // must survive the full redirect chain (so the throttle's peek hits
-  // on each hop and the PDF extension_id is selected regardless of
-  // redirects), but by the time the navigation has committed or
-  // errored the re-fetch is over and the mark is spent. For a canceled
-  // navigation this still fires, so the entry is never leaked.
+  // Drop any native-fallback mark for the navigating frame. The mark is held
+  // until the re-navigation has committed or errored so the throttle can peek
+  // it from `WillProcessResponse`. For a canceled navigation this still fires,
+  // so the entry is never leaked.
   pending_native_fallback_frames_.erase(
       navigation_handle->GetFrameTreeNodeId());
 
