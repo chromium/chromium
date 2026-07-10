@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
@@ -196,20 +197,21 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, DawnWrite_SkiaVulkanRead) {
         SkImageInfo::Make(size.width(), size.height(), kRGBA_8888_SkColorType,
                           kOpaque_SkAlphaType, nullptr);
 
-    const int num_pixels = size.width() * size.height();
+    const size_t num_pixels = static_cast<size_t>(size.width()) * size.height();
     std::vector<uint8_t> dst_pixels(num_pixels * 4);
 
     // Read back pixels from Sk Image.
     EXPECT_TRUE(sk_image->readPixels(dst_info, dst_pixels.data(),
                                      dst_info.minRowBytes(), 0, 0));
 
-    for (int i = 0; i < num_pixels; i++) {
+    auto dst_pixels_span = base::span(dst_pixels);
+    for (size_t i = 0; i < num_pixels; i++) {
       // Compare the pixel values.
-      const uint8_t* pixel = UNSAFE_TODO(dst_pixels.data() + (i * 4));
+      auto pixel = dst_pixels_span.subspan(i * 4u, 4u);
       EXPECT_EQ(pixel[0], 0);
-      UNSAFE_TODO(EXPECT_EQ(pixel[1], 255));
-      UNSAFE_TODO(EXPECT_EQ(pixel[2], 0));
-      UNSAFE_TODO(EXPECT_EQ(pixel[3], 255));
+      EXPECT_EQ(pixel[1], 255);
+      EXPECT_EQ(pixel[2], 0);
+      EXPECT_EQ(pixel[3], 255);
     }
 
     skia_scoped_access->ApplyBackendSurfaceEndState();

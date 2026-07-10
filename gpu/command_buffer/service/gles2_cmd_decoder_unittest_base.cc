@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest_base.h"
 
 #include <stddef.h>
@@ -19,6 +14,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
@@ -145,7 +141,7 @@ GLES2DecoderTestBase::GLES2DecoderTestBase()
       cached_stencil_back_mask_(static_cast<GLuint>(-1)),
       shader_language_version_(100),
       shader_translator_cache_(gpu_preferences_) {
-  memset(immediate_buffer_, 0xEE, sizeof(immediate_buffer_));
+  UNSAFE_TODO(memset(immediate_buffer_, 0xEE, sizeof(immediate_buffer_)));
 }
 
 GLES2DecoderTestBase::~GLES2DecoderTestBase() = default;
@@ -431,8 +427,8 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
       command_buffer_service_->CreateTransferBufferHelper(kSharedBufferSize,
                                                           &shared_memory_id_);
   shared_memory_offset_ = kSharedMemoryOffset;
-  shared_memory_address_ =
-      static_cast<int8_t*>(buffer->memory()) + shared_memory_offset_;
+  shared_memory_address_ = UNSAFE_TODO(static_cast<int8_t*>(buffer->memory()) +
+                                       shared_memory_offset_);
   shared_memory_base_ = buffer->memory();
   ClearSharedMemory();
 
@@ -696,7 +692,7 @@ void GLES2DecoderTestBase::SetBucketData(
   cmd1.Init(bucket_id, data_size);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd1));
   if (data) {
-    memcpy(shared_memory_address_, data, data_size);
+    UNSAFE_TODO(memcpy(shared_memory_address_, data, data_size));
     cmd::SetBucketData cmd2;
     cmd2.Init(bucket_id, 0, data_size, shared_memory_id_, kSharedMemoryOffset);
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd2));
@@ -725,16 +721,17 @@ void GLES2DecoderTestBase::SetBucketAsCStrings(uint32_t bucket_id,
   cmd::SetBucketSize cmd1;
   cmd1.Init(bucket_id, total_size);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd1));
-  memcpy(shared_memory_address_, header.data(), header_size);
+  UNSAFE_TODO(memcpy(shared_memory_address_, header.data(), header_size));
   uint32_t offset = header_size;
   for (GLsizei ii = 0; ii < count; ++ii) {
     if (!str.empty() && str[ii]) {
       size_t str_len = strlen(str[ii]);
-      memcpy(static_cast<char*>(shared_memory_address_) + offset, str[ii],
-             str_len);
+      UNSAFE_TODO(memcpy(static_cast<char*>(shared_memory_address_) + offset,
+                         str[ii], str_len));
       offset += str_len;
     }
-    memcpy(static_cast<char*>(shared_memory_address_) + offset, &str_end, 1);
+    UNSAFE_TODO(memcpy(static_cast<char*>(shared_memory_address_) + offset,
+                       &str_end, 1));
     offset += 1;
   }
   cmd::SetBucketData cmd2;
@@ -2181,7 +2178,7 @@ void GLES2DecoderTestBase::DoBufferSubData(
         .Times(1)
         .RetiresOnSaturation();
   }
-  memcpy(shared_memory_address_, data, size);
+  UNSAFE_TODO(memcpy(shared_memory_address_, data, size));
   cmds::BufferSubData cmd;
   cmd.Init(target, offset, size, shared_memory_id_, shared_memory_offset_);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -2365,8 +2362,8 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
       command_buffer_service_->CreateTransferBufferHelper(kSharedBufferSize,
                                                           &shared_memory_id_);
   shared_memory_offset_ = kSharedMemoryOffset;
-  shared_memory_address_ =
-      static_cast<int8_t*>(buffer->memory()) + shared_memory_offset_;
+  shared_memory_address_ = UNSAFE_TODO(static_cast<int8_t*>(buffer->memory()) +
+                                       shared_memory_offset_);
   shared_memory_base_ = buffer->memory();
   shared_memory_size_ = kSharedBufferSize - shared_memory_offset_;
 
@@ -2401,12 +2398,12 @@ void GLES2DecoderPassthroughTestBase::SetBucketData(uint32_t bucket_id,
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   }
   if (data) {
-    memcpy(shared_memory_address_, data, data_size);
+    UNSAFE_TODO(memcpy(shared_memory_address_, data, data_size));
     cmd::SetBucketData cmd;
     cmd.Init(bucket_id, 0, static_cast<uint32_t>(data_size), shared_memory_id_,
              kSharedMemoryOffset);
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-    memset(shared_memory_address_, 0, data_size);
+    UNSAFE_TODO(memset(shared_memory_address_, 0, data_size));
   }
 }
 
@@ -2449,7 +2446,7 @@ void GLES2DecoderPassthroughTestBase::DoBufferData(GLenum target,
     EXPECT_TRUE(size >= 0);
     EXPECT_LT(static_cast<size_t>(size),
               kSharedBufferSize - kSharedMemoryOffset);
-    memcpy(shared_memory_address_, data, size);
+    UNSAFE_TODO(memcpy(shared_memory_address_, data, size));
     cmd.Init(target, size, shared_memory_id_, shared_memory_offset_, usage);
   } else {
     cmd.Init(target, size, 0, 0, usage);
@@ -2461,7 +2458,7 @@ void GLES2DecoderPassthroughTestBase::DoBufferSubData(GLenum target,
                                                       GLint offset,
                                                       GLsizeiptr size,
                                                       const void* data) {
-  memcpy(shared_memory_address_, data, size);
+  UNSAFE_TODO(memcpy(shared_memory_address_, data, size));
   cmds::BufferSubData cmd;
   cmd.Init(target, offset, size, shared_memory_id_, shared_memory_offset_);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -2547,7 +2544,8 @@ void GLES2DecoderPassthroughTestBase::DoGetIntegerv(GLenum pname,
   cmds::GetIntegerv::Result* cmd_result =
       GetSharedMemoryAs<cmds::GetIntegerv::Result*>();
   DCHECK(static_cast<size_t>(cmd_result->GetNumResults()) >= num_results);
-  std::copy(cmd_result->GetData(), cmd_result->GetData() + num_results, result);
+  std::copy(cmd_result->GetData(),
+            UNSAFE_TODO(cmd_result->GetData() + num_results), result);
 }
 
 // GCC requires these declarations, but MSVC requires they not be present

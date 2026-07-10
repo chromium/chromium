@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing.h"
 
 #include <EGL/egl.h>
@@ -19,6 +14,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_nsobject.h"
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_policy.h"
 #include "base/metrics/histogram_macros.h"
@@ -905,8 +901,8 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
   // IOSurface must wait upon before attempting to use that IOSurface on another
   // command queue. Store these events in the underlying IOSurfaceImageBacking.
   for (size_t i = 0; i < end_access_state.fenceCount; i++) {
-    auto fence = end_access_state.fences[i];
-    auto signaled_value = end_access_state.signaledValues[i];
+    auto fence = UNSAFE_TODO(end_access_state.fences[i]);
+    auto signaled_value = UNSAFE_TODO(end_access_state.signaledValues[i]);
 
     wgpu::SharedFenceExportInfo fence_export_info;
     wgpu::SharedFenceMTLSharedEventExportInfo fence_mtl_export_info;
@@ -1931,9 +1927,9 @@ bool IOSurfaceImageBacking::InitializePixels(
   }
 
   for (size_t y = 0; y < height; ++y) {
-    memcpy(dst_data, src_data, src_stride);
-    dst_data += dst_stride;
-    src_data += src_stride;
+    UNSAFE_TODO(memcpy(dst_data, src_data, src_stride));
+    UNSAFE_TODO(dst_data += dst_stride);
+    UNSAFE_TODO(src_data += src_stride);
   }
 
   return true;

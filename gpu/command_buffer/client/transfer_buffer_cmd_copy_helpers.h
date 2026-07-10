@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef GPU_COMMAND_BUFFER_CLIENT_TRANSFER_BUFFER_CMD_COPY_HELPERS_H_
 #define GPU_COMMAND_BUFFER_CLIENT_TRANSFER_BUFFER_CMD_COPY_HELPERS_H_
 
 #include <array>
 #include <bit>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_math.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
 
@@ -79,13 +75,13 @@ auto CopyArraysToBuffer(uint32_t count,
   }
 
   // Pointers to the copy sources
-  std::array<const int8_t*, arr_count> byte_pointers{
-      {([](bool b) { DCHECK(b); }(arrays),
-        reinterpret_cast<const int8_t*>(arrays + offset_count))...}};
+  std::array<const int8_t*, arr_count> byte_pointers{{(
+      [](bool b) { DCHECK(b); }(arrays),
+      reinterpret_cast<const int8_t*>(UNSAFE_TODO(arrays + offset_count)))...}};
 
   for (uint32_t i = 0; i < arr_count; ++i) {
-    memcpy(static_cast<int8_t*>(buffer) + byte_offsets[i], byte_pointers[i],
-           copy_lengths[i]);
+    UNSAFE_TODO(memcpy(static_cast<int8_t*>(buffer) + byte_offsets[i],
+                       byte_pointers[i], copy_lengths[i]));
   }
 
   return byte_offsets;

@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
-
 #ifndef GPU_COMMAND_BUFFER_SERVICE_RASTER_DECODER_UNITTEST_BASE_H_
 #define GPU_COMMAND_BUFFER_SERVICE_RASTER_DECODER_UNITTEST_BASE_H_
 
@@ -20,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
@@ -79,7 +74,8 @@ class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
   }
 
   void ClearSharedMemory() {
-    memset(shared_memory_base_, kInitialMemoryValue, kSharedBufferSize);
+    UNSAFE_TODO(
+        memset(shared_memory_base_, kInitialMemoryValue, kSharedBufferSize));
   }
 
   void SetUp() override;

@@ -9,6 +9,7 @@
 
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
@@ -186,20 +187,21 @@ class EGLImageBackingFactoryThreadSafeTest
         SkImageInfo::Make(size.width(), size.height(), kRGBA_8888_SkColorType,
                           kOpaque_SkAlphaType, nullptr);
 
-    const int num_pixels = size.width() * size.height();
+    const size_t num_pixels = static_cast<size_t>(size.width()) * size.height();
     std::vector<uint8_t> dst_pixels(num_pixels * 4);
 
     // Read back pixels from Sk Image.
     EXPECT_TRUE(sk_image->readPixels(dst_info, dst_pixels.data(),
                                      dst_info.minRowBytes(), 0, 0));
 
-    for (int i = 0; i < num_pixels; i++) {
+    auto dst_pixels_span = base::span(dst_pixels);
+    for (size_t i = 0; i < num_pixels; i++) {
       // Compare the pixel values.
-      const uint8_t* pixel = UNSAFE_TODO(dst_pixels.data() + (i * 4));
+      auto pixel = dst_pixels_span.subspan(i * 4u, 4u);
       EXPECT_EQ(pixel[0], expected_color[0]);
-      UNSAFE_TODO(EXPECT_EQ(pixel[1], expected_color[1]));
-      UNSAFE_TODO(EXPECT_EQ(pixel[2], expected_color[2]));
-      UNSAFE_TODO(EXPECT_EQ(pixel[3], expected_color[3]));
+      EXPECT_EQ(pixel[1], expected_color[1]);
+      EXPECT_EQ(pixel[2], expected_color[2]);
+      EXPECT_EQ(pixel[3], expected_color[3]);
     }
   }
 
@@ -239,17 +241,20 @@ class EGLImageBackingFactoryThreadSafeTest
         instance.WaitAny(1, &wait_info, std::numeric_limits<uint64_t>::max());
     DCHECK(status == wgpu::WaitStatus::Success);
 
-    const uint8_t* dst_pixels =
-        reinterpret_cast<const uint8_t*>(buffer.GetConstMappedRange());
-    for (int row = 0; row < size.height(); row++) {
-      for (int col = 0; col < size.width(); col++) {
+    // SAFETY: buffer.GetConstMappedRange() returns a pointer to a mapped range
+    // of size buffer_size.
+    auto dst_pixels_span = UNSAFE_BUFFERS(base::span(
+        reinterpret_cast<const uint8_t*>(buffer.GetConstMappedRange()),
+        buffer_size));
+    for (size_t row = 0; row < static_cast<size_t>(size.height()); row++) {
+      for (size_t col = 0; col < static_cast<size_t>(size.width()); col++) {
         // Compare the pixel values.
-        const uint8_t* pixel =
-            UNSAFE_TODO(dst_pixels + (row * buffer_stride) + col * 4);
+        auto pixel =
+            dst_pixels_span.subspan(row * buffer_stride + col * 4u, 4u);
         EXPECT_EQ(pixel[0], expected_color[0]);
-        UNSAFE_TODO(EXPECT_EQ(pixel[1], expected_color[1]));
-        UNSAFE_TODO(EXPECT_EQ(pixel[2], expected_color[2]));
-        UNSAFE_TODO(EXPECT_EQ(pixel[3], expected_color[3]));
+        EXPECT_EQ(pixel[1], expected_color[1]);
+        EXPECT_EQ(pixel[2], expected_color[2]);
+        EXPECT_EQ(pixel[3], expected_color[3]);
       }
     }
   }

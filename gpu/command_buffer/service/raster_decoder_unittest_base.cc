@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/raster_decoder_unittest_base.h"
 
 #include <stddef.h>
@@ -19,6 +14,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -67,7 +63,7 @@ RasterDecoderTestBase::RasterDecoderTestBase()
       shared_memory_base_(nullptr),
       ignore_cached_state_for_test_(GetParam()),
       memory_tracker_(nullptr) {
-  memset(immediate_buffer_, 0xEE, sizeof(immediate_buffer_));
+  UNSAFE_TODO(memset(immediate_buffer_, 0xEE, sizeof(immediate_buffer_)));
 }
 
 RasterDecoderTestBase::~RasterDecoderTestBase() = default;
@@ -187,8 +183,8 @@ void RasterDecoderTestBase::InitDecoder(const InitState& init) {
       command_buffer_service_->CreateTransferBufferHelper(kSharedBufferSize,
                                                           &shared_memory_id_);
   shared_memory_offset_ = kSharedMemoryOffset;
-  shared_memory_address_ =
-      static_cast<int8_t*>(buffer->memory()) + shared_memory_offset_;
+  shared_memory_address_ = UNSAFE_TODO(static_cast<int8_t*>(buffer->memory()) +
+                                       shared_memory_offset_);
   shared_memory_base_ = buffer->memory();
   ClearSharedMemory();
 }

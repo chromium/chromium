@@ -14,6 +14,7 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -159,20 +160,21 @@ class IOSurfaceImageBackingFactoryTest : public SharedImageTestBase {
         SkImageInfo::Make(size.width(), size.height(), kRGBA_8888_SkColorType,
                           kOpaque_SkAlphaType, nullptr);
 
-    const int num_pixels = size.width() * size.height();
+    const size_t num_pixels = static_cast<size_t>(size.width()) * size.height();
     std::vector<uint8_t> dst_pixels(num_pixels * 4);
 
     // Read back pixels from Sk Image.
     EXPECT_TRUE(sk_image->readPixels(dst_info, dst_pixels.data(),
                                      dst_info.minRowBytes(), 0, 0));
 
-    for (int i = 0; i < num_pixels; i++) {
+    auto dst_pixels_span = base::span(dst_pixels);
+    for (size_t i = 0; i < num_pixels; i++) {
       // Compare the pixel values.
-      const uint8_t* pixel = UNSAFE_TODO(dst_pixels.data() + (i * 4));
+      auto pixel = dst_pixels_span.subspan(i * 4u, 4u);
       EXPECT_EQ(pixel[0], expected_color[0]);
-      UNSAFE_TODO(EXPECT_EQ(pixel[1], expected_color[1]));
-      UNSAFE_TODO(EXPECT_EQ(pixel[2], expected_color[2]));
-      UNSAFE_TODO(EXPECT_EQ(pixel[3], expected_color[3]));
+      EXPECT_EQ(pixel[1], expected_color[1]);
+      EXPECT_EQ(pixel[2], expected_color[2]);
+      EXPECT_EQ(pixel[3], expected_color[3]);
     }
   }
 };

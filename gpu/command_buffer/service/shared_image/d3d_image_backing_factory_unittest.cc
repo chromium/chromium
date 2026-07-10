@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
 
 #include <dawn/dawn_proc.h>
@@ -19,6 +14,7 @@
 #include <utility>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -96,12 +92,12 @@ void FillNV12(uint8_t* data,
               uint8_t u_fill_value,
               uint8_t v_fill_value) {
   const size_t kYPlaneSize = size.width() * size.height();
-  memset(data, y_fill_value, kYPlaneSize);
-  uint8_t* uv_data = data + kYPlaneSize;
+  UNSAFE_TODO(memset(data, y_fill_value, kYPlaneSize));
+  uint8_t* uv_data = UNSAFE_TODO(data + kYPlaneSize);
   const size_t kUVPlaneSize = kYPlaneSize / 2;
   for (size_t i = 0; i < kUVPlaneSize; i += 2) {
-    uv_data[i] = u_fill_value;
-    uv_data[i + 1] = v_fill_value;
+    UNSAFE_TODO(uv_data[i]) = u_fill_value;
+    UNSAFE_TODO(uv_data[i + 1]) = v_fill_value;
   }
 }
 
@@ -112,14 +108,14 @@ void CheckNV12(const uint8_t* data,
                uint8_t u_fill_value,
                uint8_t v_fill_value) {
   const size_t kYPlaneSize = stride * size.height();
-  const uint8_t* uv_data = data + kYPlaneSize;
+  const uint8_t* uv_data = UNSAFE_TODO(data + kYPlaneSize);
   for (int i = 0; i < size.height(); i++) {
     for (int j = 0; j < size.width(); j++) {
       // ASSERT instead of EXPECT to exit on first failure to avoid log spam.
-      ASSERT_EQ(*(data + i * stride + j), y_fill_value);
+      ASSERT_EQ(UNSAFE_TODO(*(data + i * stride + j)), y_fill_value);
       if (i < size.height() / 2) {
         const uint8_t uv_value = (j % 2 == 0) ? u_fill_value : v_fill_value;
-        ASSERT_EQ(*(uv_data + i * stride + j), uv_value);
+        ASSERT_EQ(UNSAFE_TODO(*(uv_data + i * stride + j)), uv_value);
       }
     }
   }
@@ -230,16 +226,17 @@ class D3DImageBackingFactoryTest
         SkImageInfo::Make(size.width(), size.height(), kRGBA_8888_SkColorType,
                           kOpaque_SkAlphaType, nullptr);
 
-    const int num_pixels = size.width() * size.height();
+    const size_t num_pixels = static_cast<size_t>(size.width()) * size.height();
     std::vector<uint8_t> dst_pixels(num_pixels * 4);
 
     // Read back pixels from Sk Image.
     EXPECT_TRUE(ReadPixels(sk_image, dst_info, dst_pixels.data(),
                            dst_info.minRowBytes(), 0, 0));
 
-    for (int i = 0; i < num_pixels; i++) {
+    auto dst_pixels_span = base::span(dst_pixels);
+    for (size_t i = 0; i < num_pixels; i++) {
       // Compare the pixel values.
-      const uint8_t* pixel = dst_pixels.data() + (i * 4);
+      auto pixel = dst_pixels_span.subspan(i * 4u, 4u);
       EXPECT_EQ(pixel[0], expected_color[0]);
       EXPECT_EQ(pixel[1], expected_color[1]);
       EXPECT_EQ(pixel[2], expected_color[2]);
@@ -482,12 +479,15 @@ void D3DImageBackingFactoryTest::CheckDawnPixels(
       instance.WaitAny(1, &wait_info, std::numeric_limits<uint64_t>::max());
   DCHECK(status == wgpu::WaitStatus::Success);
 
-  const uint8_t* dst_pixels =
-      reinterpret_cast<const uint8_t*>(buffer.GetConstMappedRange());
-  for (int row = 0; row < size.height(); row++) {
-    for (int col = 0; col < size.width(); col++) {
+  // SAFETY: buffer.GetConstMappedRange() returns a pointer to a mapped range
+  // of size buffer_size.
+  auto dst_pixels_span = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<const uint8_t*>(buffer.GetConstMappedRange()),
+                 buffer_size));
+  for (size_t row = 0; row < static_cast<size_t>(size.height()); row++) {
+    for (size_t col = 0; col < static_cast<size_t>(size.width()); col++) {
       // Compare the pixel values.
-      const uint8_t* pixel = dst_pixels + (row * buffer_stride) + col * 4;
+      auto pixel = dst_pixels_span.subspan(row * buffer_stride + col * 4u, 4u);
       EXPECT_EQ(pixel[0], expected_color[0]);
       EXPECT_EQ(pixel[1], expected_color[1]);
       EXPECT_EQ(pixel[2], expected_color[2]);
@@ -1967,7 +1967,7 @@ void D3DImageBackingFactoryTest::RunMultiplanarUploadAndReadback(
                                     viz::ToClosestSkColorType(format, plane),
                                     alpha_type, color_space.ToSkColorSpace());
       DCHECK_LE(info.computeMinByteSize() + plane_offset, kDataSize);
-      pixmaps.emplace_back(info, buffer.data() + plane_offset,
+      pixmaps.emplace_back(info, UNSAFE_TODO(buffer.data() + plane_offset),
                            info.minRowBytes());
       plane_offset += info.computeMinByteSize();
     }
@@ -2190,7 +2190,7 @@ TEST_P(D3DImageBackingFactoryTest, ReadbackAfterSkiaWrite) {
   const uint8_t kExpectedColor[] = {0, 0, 255, 255};  // Blue
   for (size_t i = 0; i < num_pixels; ++i) {
     for (size_t j = 0; j < 4; ++j) {
-      ASSERT_EQ(readback_pixels[i * 4 + j], kExpectedColor[j])
+      ASSERT_EQ(readback_pixels[i * 4 + j], UNSAFE_TODO(kExpectedColor[j]))
           << "Mismatch at pixel " << i << " component " << j;
     }
   }
@@ -2451,7 +2451,7 @@ TEST_F(D3DImageBackingFactoryBufferTest, CreateSharedImageImportToDawn) {
 
   constexpr uint32_t kBufferData = 0x12345678;
   uint32_t* mapped_range = static_cast<uint32_t*>(src_buffer.GetMappedRange());
-  std::memcpy(mapped_range, &kBufferData, kBufferSize);
+  UNSAFE_TODO(std::memcpy(mapped_range, &kBufferData, kBufferSize));
   src_buffer.Unmap();
 
   // Copy data from the mappable buffer to the imported buffer.
