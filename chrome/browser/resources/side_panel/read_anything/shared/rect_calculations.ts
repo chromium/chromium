@@ -70,13 +70,8 @@ function combineIntersectingRects(unsortedRects: DOMRect[]): DOMRect[] {
     // line (e.g. side-by-side words). Merge them into a single rect.
     if (Math.abs(lastRect.top - currentRect.top) < 2 &&
         Math.abs(lastRect.bottom - currentRect.bottom) < 2) {
-      combinedRects[combinedRects.length - 1] = new DOMRect(
-          Math.min(lastRect.left, currentRect.left),
-          Math.min(lastRect.top, currentRect.top),
-          Math.max(lastRect.right, currentRect.right) -
-              Math.min(lastRect.left, currentRect.left),
-          Math.max(lastRect.bottom, currentRect.bottom) -
-              Math.min(lastRect.top, currentRect.top));
+      combinedRects[combinedRects.length - 1] =
+          mergeRects(lastRect, currentRect);
       continue;
     }
 
@@ -95,12 +90,21 @@ function combineIntersectingRects(unsortedRects: DOMRect[]): DOMRect[] {
     const isIntersecting = lastRect.bottom > currentRect.top &&
         lastRect.bottom <= currentRect.bottom;
     if (isIntersecting && (lastRect.bottom - currentRect.top) > threshold) {
-      combinedRects.pop();
+      combinedRects[combinedRects.length - 1] =
+          mergeRects(lastRect, currentRect);
+    } else {
+      combinedRects.push(currentRect);
     }
-    combinedRects.push(currentRect);
   }
 
   return combinedRects;
+}
+
+function mergeRects(rect1: DOMRect, rect2: DOMRect) {
+  return new DOMRect(
+      Math.min(rect1.left, rect2.left), Math.min(rect1.top, rect2.top),
+      Math.max(rect1.right, rect2.right) - Math.min(rect1.left, rect2.left),
+      Math.max(rect1.bottom, rect2.bottom) - Math.min(rect1.top, rect2.top));
 }
 
 // Returns the most common vertical distance between consecutive lines.

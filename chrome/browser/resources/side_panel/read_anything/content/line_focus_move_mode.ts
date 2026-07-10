@@ -129,18 +129,9 @@ export abstract class LineFocusMoveMode {
   }
 
   protected setFocalPoint(focalPointY: number, quietly: boolean = false): void {
-    const oldHeight = this.model_.getWindowHeight();
-    const oldTop = this.model_.getTop();
-    const oldFocalPoint = this.model_.getFocalPoint();
     this.model_.setFocalPoint(focalPointY);
     this.styleMode_.updateFocusBounds();
-    const heightDiff = Math.abs(oldHeight - this.model_.getWindowHeight());
-    const topDiff = Math.abs(oldTop - this.model_.getTop());
-    const focalDiff = Math.abs(oldFocalPoint - focalPointY);
-    if (!quietly &&
-        (focalDiff > this.movementThreshold ||
-         heightDiff > this.movementThreshold ||
-         topDiff > this.movementThreshold)) {
+    if (!quietly) {
       this.delegate_.notifyMove();
     }
   }
@@ -388,9 +379,24 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
   }
 
   protected moveToRect(rect: DOMRect): void {
-    const focalPoint = this.styleMode_.getFocalPointForRect(rect);
-    this.setFocalPoint(focalPoint);
+    const oldHeight = this.model_.getWindowHeight();
+    const oldTop = this.model_.getTop();
+    const oldFocalPoint = this.model_.getFocalPoint();
+
+    // Set the focal point quietly as the threshold calculation below will
+    // determine whether or not to notify of movement.
+    const newFocalPoint = this.styleMode_.getFocalPointForRect(rect);
+    this.setFocalPoint(newFocalPoint, /*quietly=*/ true);
     this.recenterCurrentTextLineIfNeeded(/*instant=*/ false);
+
+    const heightDiff = Math.abs(oldHeight - this.model_.getWindowHeight());
+    const topDiff = Math.abs(oldTop - this.model_.getTop());
+    const focalDiff = Math.abs(oldFocalPoint - newFocalPoint);
+    if (focalDiff > this.movementThreshold ||
+        heightDiff > this.movementThreshold ||
+        topDiff > this.movementThreshold) {
+      this.delegate_.notifyMove();
+    }
   }
 
   protected needsScrollBuffer(): boolean {
