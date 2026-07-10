@@ -8,6 +8,9 @@
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/window_open_disposition.h"
 
 class AutocompleteController;
@@ -23,10 +26,19 @@ void OpenMatch(AutocompleteController* autocomplete_controller,
                WindowOpenDisposition disposition,
                base::TimeTicks searchbox_focused_timestamp,
                base::TimeTicks first_modification_timestamp,
-               base::TimeTicks match_selection_timestamp);
+               base::TimeTicks match_selection_timestamp,
+               metrics::OmniboxEventProto::KeywordModeEntryMethod
+                   keyword_mode_entry_method);
 
-// Utility function to preserve histogram parity with OmniboxEditModel.
-void RecordDefaultSearchProviderSearchMetrics(bool is_off_the_record);
+// Utility functions to preserve histogram parity with OmniboxEditModel.
+void RecordNonActionSearchMetrics(TemplateURLService* template_url_service,
+                                  const AutocompleteMatch& match,
+                                  bool is_off_the_record,
+                                  base::TimeTicks match_selection_timestamp);
+void EmitAcceptedKeywordSuggestionHistogram(
+    metrics::OmniboxEventProto::KeywordModeEntryMethod entry_method,
+    const TemplateURL* turl);
+void RecordSuggestionUsedMetrics(const AutocompleteMatch& match);
 
 }  // namespace searchbox
 
