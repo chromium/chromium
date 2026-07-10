@@ -4188,24 +4188,6 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetActionId(kActionFeedback)
           .Build());
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  root_action_item_->AddChild(
-      ChromeMenuAction(
-          base::BindRepeating(
-              [](BrowserWindowInterface* browser_window_interface,
-                 actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                chrome::OpenReportUnsafeSiteDialog(browser_window_interface);
-              },
-              bwi),
-          kActionReportUnsafeSite, IDS_REPORT_UNSAFE_SITE,
-          IDS_REPORT_UNSAFE_SITE,
-          features::IsRoundedIconsEnabled() ? vector_icons::kWarningFilledIcon
-                                            : vector_icons::kWarningOldIcon,
-          /*is_pinnable=*/false)
-          .Build());
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
