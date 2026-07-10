@@ -128,12 +128,40 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
   return true;
 }
 
+// Returns whether enterprise policies allow AtMemory trigger.
+//
+// AtMemory is disabled for the Enterprise accounts and these are blocked in the
+// `PersonalContextService`. Additional checks are performed here to ensure
+// correct behavior for consumer accounts on enterprise devices.
+[[nodiscard]] bool SatisfiesEnterprisePolicies(const PrefService* pref_service,
+                                               std::string* debug_message) {
+  if (!pref_service) {
+    MaybeOutputReason(debug_message, "Prefs are not available.");
+    return false;
+  }
+
+  // TODO(crbug.com/521270638) Add a check for the AtMemory specific policy on
+  // top of the enterprise policy for Gemini.
+
+  constexpr int kGeminiSettingsAvailable = 0;
+  // TODO(crbug.com/393537628) Move the pref values enum to components and use
+  // this value here.
+  const bool gemini_settings_allowed =
+      pref_service->GetInteger(optimization_guide::prefs::kGeminiSettings) ==
+      kGeminiSettingsAvailable;
+  if (!gemini_settings_allowed) {
+    MaybeOutputReason(debug_message,
+                      "Disallowed by GeminiSettings enterprise policy.");
+  }
+  return gemini_settings_allowed;
+}
+
 // Returns true if AtMemory is supported for the user.
 //
 // Checks that AtMemory feature flags are enabled, At-Memory eligibility
 // criteria and PersonalContext eligibility criteria are met.
 // Contrary to `MayPerformAtMemoryAction`, does not check user-controlled
-// toggles.
+// nor admin-controlled toggles.
 [[nodiscard]] bool IsAtMemorySupported(
     personal_context::PersonalContextEligibilityService*
         personal_context_service,
@@ -148,8 +176,6 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
   if (!IsPersonalContextEligible(personal_context_service, debug_message)) {
     return false;
   }
-
-  // TODO(crbug.com/521270638) Check enterprise policy implementation.
 
   if (!IsSubscriptionTierEligible(subscription_eligibility_service,
                                   debug_message)) {
@@ -239,6 +265,10 @@ bool MayPerformAtMemoryAction(
   }
   if (!IsAtMemorySupported(personal_context_service,
                            subscription_eligibility_service, debug_message)) {
+    return false;
+  }
+
+  if (!SatisfiesEnterprisePolicies(pref_service, debug_message)) {
     return false;
   }
 

@@ -34,6 +34,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/testing_pref_service.h"
@@ -1115,6 +1116,8 @@ class AutocompleteHistoryManagerAtMemoryTest
         /*disabled_features=*/{});
 
     // Enable personal context toggle.
+    autofill_client_.GetPrefs()->registry()->RegisterIntegerPref(
+        optimization_guide::prefs::kGeminiSettings, 0);
     autofill_client_.GetPrefs()->SetBoolean(
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         true);
