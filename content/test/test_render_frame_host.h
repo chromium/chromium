@@ -168,7 +168,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   // Returns the number of FedCM issues of FederatedAuthUserInfoRequestResult
   // type `status_type` sent to DevTools. If `status_type` is std::nullopt,
   // returns the total number of FedCM issues of any type sent to DevTools.
-  int GetFederatedAuthUserInfoRequestIssueCount(
+  int GetFederatedUserInfoRequestIssueCount(
       std::optional<blink::mojom::FederatedAuthUserInfoRequestResult>
           status_type);
 

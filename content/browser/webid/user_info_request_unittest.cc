@@ -358,14 +358,12 @@ class UserInfoRequestTest : public RenderViewHostImplTestHarness {
   }
 
   void ExpectUniqueIssue(UserInfoRequestResult result) {
-    EXPECT_EQ(
-        iframe_render_frame_host_->GetFederatedAuthUserInfoRequestIssueCount(
-            result),
-        1);
-    EXPECT_EQ(
-        iframe_render_frame_host_->GetFederatedAuthUserInfoRequestIssueCount(
-            std::nullopt),
-        1);
+    EXPECT_EQ(iframe_render_frame_host_->GetFederatedUserInfoRequestIssueCount(
+                  result),
+              1);
+    EXPECT_EQ(iframe_render_frame_host_->GetFederatedUserInfoRequestIssueCount(
+                  std::nullopt),
+              1);
   }
 
  protected:

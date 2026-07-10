@@ -348,10 +348,10 @@ void UserInfoRequest::AddDevToolsIssue(UserInfoRequestResult error) {
   DCHECK_NE(error, UserInfoRequestResult::kSuccess);
 
   auto details = blink::mojom::InspectorIssueDetails::New();
-  auto federated_auth_user_info_request_details =
+  auto user_info_request_details =
       blink::mojom::FederatedAuthUserInfoRequestIssueDetails::New(error);
   details->federated_auth_user_info_request_details =
-      std::move(federated_auth_user_info_request_details);
+      std::move(user_info_request_details);
   render_frame_host_->ReportInspectorIssue(
       blink::mojom::InspectorIssueInfo::New(
           blink::mojom::InspectorIssueCode::kFederatedAuthUserInfoRequestIssue,

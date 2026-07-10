@@ -7165,14 +7165,14 @@ TEST_F(RequestTest, RecordNumRequestsPerDocumentMetric) {
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
 
-  // First auth request.
+  // First request.
   MockConfiguration configuration = kConfigurationValid;
   configuration.accounts_dialog_action = AccountsDialogAction::kNone;
   RunDontWaitForCallback(kDefaultRequestParameters, configuration);
   EXPECT_TRUE(did_show_accounts_dialog());
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
 
-  // Abort the first auth request.
+  // Abort the first request.
   request_->Abort();
 
   WaitForCurrentRequest();
@@ -7182,11 +7182,11 @@ TEST_F(RequestTest, RecordNumRequestsPerDocumentMetric) {
                                    /*selected_idp_config_url=*/std::nullopt};
   CheckExpectations(configuration, expectations);
 
-  // Reset test classes for second auth request.
+  // Reset test classes for second request.
   SetNetworkRequestManager(std::make_unique<TestIdpNetworkRequestManager>());
   request_helper_ = std::make_unique<RequestCallbackHelper>();
 
-  // Second auth request.
+  // Second request.
   configuration.accounts_dialog_action = AccountsDialogAction::kClose;
   expectations = {RequestTokenStatus::kError,
                   FederatedRequestResult::kShouldEmbargo,
@@ -8642,7 +8642,7 @@ TEST_F(RequestTest, SegmentationPlatformRecommendsAmbientVolume) {
 }
 
 TEST_F(RequestTest, MetricsForConsecutiveSuccessfulRequests) {
-  // First successful auth request.
+  // First successful request.
   RunTest(kDefaultRequestParameters, kExpectationSuccess, kConfigurationValid);
 
   // Reset some test helpers so that we can send the second request.
@@ -8651,7 +8651,7 @@ TEST_F(RequestTest, MetricsForConsecutiveSuccessfulRequests) {
   SetNetworkRequestManager(std::move(network_request_manager));
   request_helper_ = std::make_unique<RequestCallbackHelper>();
 
-  // Second successful auth request.
+  // Second successful request.
   RunTest(kDefaultRequestParameters, kExpectationSuccess, kConfigurationValid);
 
   // There should be two samples, one for each successful request.
@@ -8680,17 +8680,17 @@ TEST_F(RequestTest, MetricsForConsecutiveSuccessfulRequests) {
 // Test that completing a disconnect request while there is a pending request
 // and then later completing the pending request does not crash.
 TEST_F(RequestTest, DisconnectWithPendingRequest) {
-  // Start an auth request.
+  // Start an request.
   RunDontWaitForCallback(kDefaultRequestParameters, kConfigurationValid);
 
   // Complete a disconnect request.
   CompleteDisconnectRequest();
 
-  // Complete the auth request.
+  // Complete the request.
   WaitForCurrentRequest();
   CheckExpectations(kConfigurationValid, kExpectationSuccess);
 
-  // Auth request and disconnect request metrics should be recorded separately
+  // Request and disconnect request metrics should be recorded separately
   // with different session IDs.
   ExpectTwoUniqueSessionIDs();
 }

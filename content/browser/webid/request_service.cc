@@ -491,7 +491,7 @@ void RequestService::PreventSilentAccess(PreventSilentAccessCallback callback) {
   if (permission_delegate_->HasSharingPermission(
           render_frame_host().GetMainFrame()->GetLastCommittedOrigin())) {
     // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
-    // prerendering page. As FederatedAuthRequest runs behind the
+    // prerendering page. As Request runs behind the
     // BrowserInterfaceBinders, the service doesn't receive any request while
     // prerendering, and the CHECK should always meet the condition.
     CHECK(!render_frame_host().IsInLifecycleState(
@@ -531,16 +531,16 @@ bool RequestService::SetupIdentityRegistryFromPopup() {
   if (!rp_web_contents) {
     return false;
   }
-  Request* rp_auth_request = GetPageData(rp_web_contents->GetPrimaryPage())
-                                 ->PendingWebIdentityRequest();
-  if (!rp_auth_request) {
+  Request* rp_request = GetPageData(rp_web_contents->GetPrimaryPage())
+                            ->PendingWebIdentityRequest();
+  if (!rp_request) {
     return false;
   }
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(&render_frame_host());
   IdentityRegistry::CreateForWebContents(
-      web_contents, rp_auth_request->weak_ptr_factory_.GetWeakPtr(),
-      rp_auth_request->config_url_);
+      web_contents, rp_request->weak_ptr_factory_.GetWeakPtr(),
+      rp_request->config_url_);
   return true;
 #else
   return false;
@@ -776,7 +776,7 @@ void RequestService::SetIdpSigninStatus(
            options->accounts) {
         if (account.picture.has_value()) {
           // Guaranteed by Mojo deserialization traits (StructTraits::Read in
-          // federated_auth_request_mojom_traits.cc).
+          // federated_request_mojom_traits.cc).
           DCHECK(account.picture->is_valid());
           DCHECK(network::IsUrlPotentiallyTrustworthy(account.picture.value()));
           picture_urls.emplace_back(account.picture.value());

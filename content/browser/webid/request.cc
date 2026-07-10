@@ -170,7 +170,7 @@ Request::Request(RenderFrameHost* rfh, RequestService& request_service)
 Request::~Request() {
   // Ensures key data members are destructed in proper order and resolves any
   // pending promise.
-  if (auth_request_token_callback_) {
+  if (request_token_callback_) {
     CompleteRequestWithError(FederatedRequestResult::kError,
                              TokenStatus::kUnhandledRequest,
                              /*should_delay_callback=*/false);
@@ -183,7 +183,7 @@ void Request::BindReceiver(
 }
 
 void Request::Abort() {
-  if (!auth_request_token_callback_) {
+  if (!request_token_callback_) {
     // This can happen if the renderer requested an abort() after the browser
     // invoked the callback but before the renderer received the callback.
     return;
@@ -329,7 +329,7 @@ bool Request::RequestToken(
 
   should_complete_request_immediately_ = should_complete_request_immediately;
   mediation_requirement_ = requirement;
-  auth_request_token_callback_ = std::move(callback);
+  request_token_callback_ = std::move(callback);
   GetPageData(render_frame_host().GetPage())
       ->SetPendingWebIdentityRequest(this);
   network_manager_ = request_service_->CreateNetworkManager();
@@ -558,7 +558,7 @@ void Request::OnIdpSigninStatusReceived(const url::Origin& idp_config_origin,
 bool Request::HasPendingRequest() const {
   RequestPageData* page_data = GetPageData(render_frame_host().GetPage());
   bool has_pending_request = page_data->PendingWebIdentityRequest() != nullptr;
-  DCHECK(has_pending_request || !auth_request_token_callback_);
+  DCHECK(has_pending_request || !request_token_callback_);
   return has_pending_request;
 }
 
@@ -1422,7 +1422,7 @@ void Request::OnDismissErrorDialog(
 void Request::OnDialogDismissed(
     IdentityRequestDialogController::DismissReason dismiss_reason) {
   // If the request has already completed, ignore any subsequent dismissals.
-  if (!auth_request_token_callback_) {
+  if (!request_token_callback_) {
     return;
   }
 
@@ -1846,7 +1846,7 @@ void Request::CompleteRequest(
     std::optional<base::Value> token_data,
     bool should_delay_callback) {
   DCHECK(result == FederatedRequestResult::kSuccess || !token_data.has_value());
-  if (!auth_request_token_callback_) {
+  if (!request_token_callback_) {
     return;
   }
   // We don't just return if `complete_request_delayed_` is true because in the
@@ -1986,7 +1986,7 @@ void Request::CompleteRequestInternal(
     const std::optional<GURL>& selected_idp_config_url,
     std::optional<base::Value> token_data,
     bool is_auto_selected) {
-  if (!auth_request_token_callback_) {
+  if (!request_token_callback_) {
     return;
   }
   CleanUp();
@@ -2001,10 +2001,10 @@ void Request::CompleteRequestInternal(
   }
   RequestTokenStatus status =
       FederatedRequestResultToRequestTokenStatus(result);
-  std::move(auth_request_token_callback_)
+  std::move(request_token_callback_)
       .Run(status, selected_idp_config_url, std::move(token_data),
            std::move(error), is_auto_selected);
-  auth_request_token_callback_.Reset();
+  request_token_callback_.Reset();
 
   TRACE_EVENT_END("content.fedcm", perfetto_track_);
 }

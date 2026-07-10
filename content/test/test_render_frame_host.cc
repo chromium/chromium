@@ -316,7 +316,7 @@ int TestRenderFrameHost::GetFederatedRequestIssueCount(
   return it->second;
 }
 
-int TestRenderFrameHost::GetFederatedAuthUserInfoRequestIssueCount(
+int TestRenderFrameHost::GetFederatedUserInfoRequestIssueCount(
     std::optional<blink::mojom::FederatedAuthUserInfoRequestResult>
         status_type) {
   if (!status_type) {

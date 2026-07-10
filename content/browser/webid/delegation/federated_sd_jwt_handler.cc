@@ -41,12 +41,12 @@ std::vector<uint8_t> Sha256(std::string_view data) {
 FederatedSdJwtHandler::FederatedSdJwtHandler(
     const blink::mojom::IdentityProviderRequestOptionsPtr& provider,
     RenderFrameHost& render_frame_host,
-    webid::Request* federated_auth_request_impl)
+    webid::Request* request)
     : fields_(provider->fields),
       nonce_(provider->nonce),
       config_url_(provider->config->config_url),
       render_frame_host_(&render_frame_host),
-      federated_auth_request_impl_(federated_auth_request_impl) {
+      request_(request) {
   // Creates a throw away private key for a one-time use for
   // a single presentation. The public key gets sent to the
   // VC issuance endpoint and gets bound to the issued SD-JWT
@@ -75,19 +75,17 @@ void FederatedSdJwtHandler::ProcessSdJwt(const std::string& token) {
 
   auto value = sdjwt::SdJwt::Parse(token);
   if (!value) {
-    federated_auth_request_impl_->CompleteRequestWithError(
-        FederatedRequestResult::kError,
-        /*token_status=*/std::nullopt,
-        /*should_delay_callback=*/false);
+    request_->CompleteRequestWithError(FederatedRequestResult::kError,
+                                       /*token_status=*/std::nullopt,
+                                       /*should_delay_callback=*/false);
     return;
   }
 
   auto sd_jwt = sdjwt::SdJwt::From(*value);
   if (!sd_jwt) {
-    federated_auth_request_impl_->CompleteRequestWithError(
-        FederatedRequestResult::kError,
-        /*token_status=*/std::nullopt,
-        /*should_delay_callback=*/false);
+    request_->CompleteRequestWithError(FederatedRequestResult::kError,
+                                       /*token_status=*/std::nullopt,
+                                       /*should_delay_callback=*/false);
     return;
   }
 
@@ -126,10 +124,9 @@ void FederatedSdJwtHandler::OnSdJwtParsed(const sdjwt::Jwt& jwt) {
   disclosures_.clear();
 
   if (!selected) {
-    federated_auth_request_impl_->CompleteRequestWithError(
-        FederatedRequestResult::kError,
-        /*token_status=*/std::nullopt,
-        /*should_delay_callback=*/false);
+    request_->CompleteRequestWithError(FederatedRequestResult::kError,
+                                       /*token_status=*/std::nullopt,
+                                       /*should_delay_callback=*/false);
     return;
   }
 
@@ -143,17 +140,16 @@ void FederatedSdJwtHandler::OnSdJwtParsed(const sdjwt::Jwt& jwt) {
       sdjwt::CreateJwtSigner(*std::move(private_key_)));
 
   if (!sdjwtkb) {
-    federated_auth_request_impl_->CompleteRequestWithError(
-        FederatedRequestResult::kError,
-        /*token_status=*/std::nullopt,
-        /*should_delay_callback=*/false);
+    request_->CompleteRequestWithError(FederatedRequestResult::kError,
+                                       /*token_status=*/std::nullopt,
+                                       /*should_delay_callback=*/false);
     return;
   }
 
   auto token = sdjwtkb->Serialize();
   // TODO(crbug.com/380367784): introduce and use a more specific
   // TokenStatus type for SD-JWTs.
-  federated_auth_request_impl_->CompleteRequest(
+  request_->CompleteRequest(
       FederatedRequestResult::kSuccess,
       webid::RequestIdTokenStatus::kSuccessUsingTokenInHttpResponse,
       /*token_error=*/std::nullopt, config_url_, base::Value(token),

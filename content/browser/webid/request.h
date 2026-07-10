@@ -509,7 +509,7 @@ class CONTENT_EXPORT Request
   // since there's no browser UI involved. e.g. rp.example embeds
   // iframe1.example and iframe2.example. Both iframes can request user info
   // simultaneously.
-  RequestTokenCallback auth_request_token_callback_;
+  RequestTokenCallback request_token_callback_;
 
   OnFederatedTokenReceivedCallback token_received_callback_for_autofill_;
 
