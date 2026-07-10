@@ -346,9 +346,13 @@ void IntroUI::CreateIntroPageHandler(
   CHECK(page);
   intro_page_.reset();
   intro_page_.Bind(std::move(page));
+  if (animations_active_.has_value()) {
+    intro_page_->ToggleAnimations(*animations_active_);
+  }
 }
 
 void IntroUI::ToggleAnimations(bool active) {
+  animations_active_ = active;
   if (intro_page_.is_bound()) {
     intro_page_->ToggleAnimations(active);
   }
