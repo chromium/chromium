@@ -351,7 +351,9 @@ def RunNmOnIntermediates(target, output_directory):
   # llvm-nm can print 'no symbols' to stderr. Capture and count the number of
   # lines, to be returned to the caller.
   stdout, stderr = proc.communicate()
-  assert proc.returncode == 0, 'NM failed: ' + ' '.join(args)
+  assert proc.returncode == 0, (
+      f'NM returncode={proc.returncode}.\nstderr={stderr}\nstdout={stdout}\n'
+      'cmd=' + ' '.join(args))
   num_no_symbols = len(stderr.splitlines())
   lines = stdout.splitlines()
   # Empty .a file has no output.
