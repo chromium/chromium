@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Innstillinger for proxy-tjener</translation>
 <translation id="3550915441744863158">Chrome oppdateres automatisk slik at du alltid har den nyeste versjonen</translation>
 <translation id="3559533181353831840">Omtrent <ph name="TIME_LEFT" /> igjen</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Oppgi navnet på forhandleren og butikknummeret som denne demoenheten konfigureres for*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Hvis du ikke har butikknummeret, kan du skrive inn «0000» for å fortsette installasjonen av demomodus. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Merk: Google bruker denne informasjonen til å identifisere hvilken versjon av demomodus enheten skal motta, og til å måle bruken av demomodus.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Noe gikk galt. Prøv på nytt.</translation>
 <translation id="3577745545227000795">Innsamling av <ph name="DEVICE_OS" />-maskinvaredata</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Nei</translation>
 <translation id="4251377547188244181">Registrering som kiosk- og skiltenhet</translation>
 <translation id="4263223596040212967">Kontroller tastaturoppsettet og prøv på nytt.</translation>
+<translation id="4268490040465852105">Google-kontoen din er samme konto som du bruker til Gmail, YouTube, Chrome og andre Google-produkter.
+        Bruk kontoen din for å få enkel tilgang til alle bokmerkene dine, filene dine med mer.</translation>
 <translation id="4278498748067682896">Du kommer til å bruke en Kiosk og skilt-oppgradering, som gjør at enheten kun kan kjøres i kiosk- eller skiltmodus. Hvis du vil at brukere skal logge på enheten, må du gå tilbake og registrere den med Chrome Enterprise-oppgraderingen.</translation>
 <translation id="4287157641315808225">Ja, slå på ChromeVox</translation>
 <translation id="4289732974614035569">Velg en PIN-kode</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Velg lyst eller mørkt tema</translation>
 <translation id="5804259315582798390">Kunne ikke slå på lokal datagjenoppretting</translation>
 <translation id="5810809306422959727">Denne kontoen er ikke kvalifisert for foreldrekontroll</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Når du registrerer enhetene i organisasjonen din, konfigureres de for sentralisert enhetsadministrering. Det kan være flere årsaker til at organisasjonen din krever registrering:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Styrk sikkerheten<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Ved å konfigurere flere sikkerhetsinnstillinger kan organisasjonen beskytte bruker- og enhetsdata. Organisasjonen kan også utføre handlinger som ekstern tilbakestilling eller deaktivering av mistede enheter.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Tilpass opplevelsen<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Enhetens atferd ved oppstart, på påloggingsskjermen og etter pålogging kan tilpasses organisasjonens behov.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Tilby støtte<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Organisasjonen kan få ekstern tilgang til enhetsøkter for å utføre feilsøking.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Gi tilgang<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Apper, tjenester og nettverk fra organisasjonen er kanskje bare tilgjengelige på registrerte enheter.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Omtrent <ph name="TIME" /> minutter igjen</translation>
 <translation id="5852112051279473187">Beklager!  Det oppsto et problem under registrering av enheten din.  Prøv på nytt eller kontakt din brukerstøtterepresentant.</translation>
 <translation id="5852137567692933493">Omstart og Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Gå til ekstra innhold <ph name="CURRENT_ELEMENT" /> av <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Velg språk- og tastaturknappen. Det valgte språket er for øyeblikket <ph name="LANGUAGE" /></translation>
 <translation id="6040143037577758943">Lukk</translation>
+<translation id="6042193169866365541">Google-kontoen din er samme konto som du bruker til Gmail, YouTube, Chrome og andre Google-produkter.
+        Bruk kontoen din for å få enkel tilgang til alle bokmerkene dine, filene dine med mer. Hvis du ikke har konto, kan du opprette en på det neste skjermbildet.</translation>
 <translation id="6051354611314852653">Beklager. Systemet kunne ikke godkjenne API-tilgang for denne enheten.</translation>
 <translation id="6055544610007596637">Installer apper på <ph name="DEVICE_TYPE" /> fra Google Play-butikken</translation>
 <translation id="6069464830445383022">Google-kontoen din er Chromebook-påloggingen din</translation>

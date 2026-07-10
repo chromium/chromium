@@ -1438,6 +1438,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Tühistati 1 saidi tellimus}other{Tühistati # saidi tellimus}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 parool}other{# parooli}}</translation>
 <translation id="688730033107341407">Pärast väljalogimist eemaldatakse sellest seadmest teie järjehoidjad, paroolid ja muu Google’i kontol olev sisu.</translation>
+<translation id="6892009074348518725">Selle laienduse kasutamiseks logige Chrome'i sisse. Samuti saate Google'i kontol kasutada ja salvestada paroole ning muud.</translation>
 <translation id="6896758677409633944">Kopeeri</translation>
 <translation id="6898797562238201317">Kasuta kõigi Chrome'i andmete krüpteerimiseks Google'i kontol minu parooli</translation>
 <translation id="6900532703269623216">Parem kaitse</translation>

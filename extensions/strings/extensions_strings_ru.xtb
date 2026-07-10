@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Не удалось загрузить страницу <ph name="ABOUT_PAGE" />.</translation>
 <translation id="424963718355121712">Приложения должны загружаться с того сайта, с которым они работают</translation>
 <translation id="4306119971288449206">Приложения должны иметь тип контента "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4349181963619779233">С этого сайта нельзя добавлять расширения и приложения.</translation>
 <translation id="4625078469366263107">Включить приложение</translation>
 <translation id="4633003931260532286">Для расширения требуется <ph name="IMPORT_NAME" /> версии не ранее <ph name="IMPORT_VERSION" />. Сейчас установлена версия <ph name="INSTALLED_VERSION" />.</translation>
 <translation id="4660476621274971848">Ожидаемая версия: <ph name="EXPECTED_VERSION" />, полученная версия: <ph name="NEW_ID" /></translation>

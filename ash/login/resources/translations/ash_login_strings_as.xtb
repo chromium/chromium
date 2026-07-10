@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">প্ৰক্সি ছেটিংসমূহ</translation>
 <translation id="3550915441744863158">আপুনি সদায় সকলোতকৈ শেহতীয়া সংস্কৰণটো পাবলৈ Chrome স্বয়ংক্ৰিয়ভাৱে আপডে’ট হয়</translation>
 <translation id="3559533181353831840">প্ৰায় <ph name="TIME_LEFT" /> বাকী আছে</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />সেই খুচুৰা বিক্ৰেতাৰ নাম আৰু দোকানৰ নম্বৰ দিয়ক যাৰ বাবে এই ডেম’ ডিভাইচটো কনফিগাৰ কৰি থকা হৈছে*। <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />যদি আপুনি দোকানৰ নম্বৰটো নাজানে, তেন্তে ডেম’ ম’ড ইনষ্টল কৰাটো অব্যাহত ৰাখিবলৈ আপুনি "০০০০" দিব পাৰে। <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*টোকা: Googleএ ডিভাইচটোৱে কোনটো ডেম’ সংস্কৰণ পোৱা উচিত সেয়া চিনাক্ত কৰিবলৈ আৰু ডেম’ ম’ডৰ ব্যৱহাৰ জুখিবলৈ এই তথ্য ব্যৱহাৰ কৰে।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">কিবা ভুল হ’ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" />ৰ হাৰ্ডৱেৰৰ ডেটা সংগ্ৰহ</translation>
 <translation id="3602290021589620013">পূৰ্বদৰ্শন</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">নহয়</translation>
 <translation id="4251377547188244181">কিঅ’স্ক আৰু ছাইনেজৰ ডিভাইচৰ পঞ্জীয়ন</translation>
 <translation id="4263223596040212967">আপোনাৰ কীব'ৰ্ডৰ লে’আউট পৰীক্ষা কৰক আৰু আকৌ চেষ্টা কৰক</translation>
+<translation id="4268490040465852105">আপোনাৰ Google একাউণ্টটো হৈছে আপুনি Gmail, YouTube, Chrome আৰু Googleৰ আন প্ৰ’ডাক্টসমূহৰ বাবে ব্যৱহাৰ কৰা একেটাই একাউণ্ট।
+        আপোনাৰ আটাইবোৰ বুকমাৰ্ক, ফাইল আৰু আন বহুতো সহজে এক্সেছ কৰিবলৈ আপোনাৰ একাউণ্টটো ব্যৱহাৰ কৰক।</translation>
 <translation id="4278498748067682896">আপুনি এটা কিঅ’স্ক আৰু ছাইনেজ আপগ্ৰে’ড ব্যৱহাৰ কৰিব যিয়ে ডিভাইচটোক কেৱল কিঅ’স্ক অথবা ছাইনেজ ম’ডত চলিবলৈ দিয়ে। আপুনি যদি ব্যৱহাৰকাৰীয়ে ডিভাইচটোত ছাইন ইন কৰাটো বিচাৰে, অনুগ্ৰহ কৰি উভতি যাওক আৰু Chrome Enterpriseৰ আপগ্ৰে’ড ব্যৱহাৰ কৰি পঞ্জীয়ন কৰক।</translation>
 <translation id="4287157641315808225">হয়, ChromeVox সক্ৰিয় কৰক</translation>
 <translation id="4289732974614035569">পিন বাছনি কৰক</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">পোহৰ অথবা গাঢ় ৰঙৰ থীম বাছনি কৰক</translation>
 <translation id="5804259315582798390">স্থানীয় ডেটা পুনৰুদ্ধাৰ কৰাৰ সুবিধাটো সক্ষম কৰিব পৰা নগ’ল</translation>
 <translation id="5810809306422959727">এই একাউণ্টটো অভিভাৱকীয় নিয়ন্ত্ৰণসমূহ ব্যৱহাৰ কৰিবৰ বাবে যোগ্য নহয়</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />আপোনাৰ প্ৰতিষ্ঠানত নিজৰ ডিভাইচসমূহ পঞ্জীয়ন কৰিলে কেন্দ্ৰীভূত ডিভাইচ পৰিচালনাৰ বাবে সেইবোৰ ছেট আপ কৰা হয়। একাধিক কাৰণৰ বাবে আপোনাৰ প্ৰতিষ্ঠানক পঞ্জীয়নৰ প্ৰয়োজন হ’ব পাৰে:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />সুৰক্ষা উন্নত কৰিবলৈ<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />অতিৰিক্ত সুৰক্ষাৰ ছেটিংসমূহ কনফিগাৰ কৰি, প্ৰতিষ্ঠানটোৱে ব্যৱহাৰকাৰীৰ আৰু ডিভাইচৰ ডেটা সুৰক্ষিত কৰি ৰাখিব পাৰে। ই লগতে ৰিম’ট ৰিছেট কৰা বা কোনো হেৰুওৱা ডিভাইচ অক্ষম কৰাৰ দৰে কাৰ্য সম্পাদন কৰিব পাৰে।<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />অভিজ্ঞতা কাষ্টমাইজ কৰিবলৈ<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />বুটআপৰ সময়ত, লগ ইন কৰা স্ক্ৰীনত আৰু লগ ইন কৰাৰ পাছত প্ৰতিষ্ঠানৰ প্ৰয়োজন অনুসৰি ডিভাইচৰ আচৰণ কাষ্ট’মাইজ কৰিব পাৰি।<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />সহায় আগবঢ়াবলৈ<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />সমস্যা সমাধান কৰিবলৈ প্ৰতিষ্ঠানটোৱে কোনো ডিভাইচৰ ছেশ্বন দূৰৰ পৰা এক্সেছ কৰিব পাৰে।<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />এক্সেছ সক্ষম কীবলৈ<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />প্ৰতিষ্ঠানৰ এপ্‌সমূহ, সেৱা আৰু নেটৱর্ক কেৱল পঞ্জীয়নকৃত ডিভাইচবোৰতহে উপলব্ধ হ’ব পাৰে।<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">আনুমানিক <ph name="TIME" /> মিনিট বাকী আছে</translation>
 <translation id="5852112051279473187">ওঁহো!  এই ডিভাইচটো পঞ্জীয়ন কৰোতে নিশ্চিতভাৱে কিবা ভুল হৈছে।  অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক বা আপোনাৰ সহায়ক প্ৰতিনিধিৰ সৈতে সম্পর্ক কৰক।</translation>
 <translation id="5852137567692933493">ৰিষ্টাৰ্ট কৰি পাৱাৰৱাশ্ব কৰক</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">অতিৰিক্ত <ph name="TOTAL_ELEMENTS" /> টা সমলৰ <ph name="CURRENT_ELEMENT" /> নম্বৰটোলৈ নেভিগে’ট কৰক</translation>
 <translation id="6016972670657536680">ভাষা আৰু কীব’ৰ্ড বুটাম সলনি কৰক। বৰ্তমান বাছনি কৰা ভাষা হৈছে <ph name="LANGUAGE" />।</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
+<translation id="6042193169866365541">আপোনাৰ Google একাউণ্টটো হৈছে আপুনি Gmail, YouTube, Chrome আৰু Googleৰ আন প্ৰ’ডাক্টসমূহৰ বাবে ব্যৱহাৰ কৰা একেটাই একাউণ্ট।
+        আপোনাৰ আটাইবোৰ বুকমাৰ্ক, ফাইল আৰু আন বহুতো সহজে এক্সেছ কৰিবলৈ আপোনাৰ একাউণ্টটো ব্যৱহাৰ কৰক। যদি আপোনাৰ কোনো একাউণ্ট নাই, তেন্তে পৰৱৰ্তী স্ক্ৰীনত আপুনি এটা একাউণ্ট সৃষ্টি কৰিব পাৰিব।</translation>
 <translation id="6051354611314852653">আমি দুঃখিত!  ছিষ্টেমটোৱে এই ডিভাইচটোৰ বাবে API এক্সেছৰ অনুমোদন দিব নোৱাৰিলে।</translation>
 <translation id="6055544610007596637">Google Play Storeৰ পৰা আপোনাৰ <ph name="DEVICE_TYPE" />ৰ বাবে এপ্‌ ইনষ্টল কৰক</translation>
 <translation id="6069464830445383022">আপোনাৰ Chromebookত আপোনাৰ Google একাউণ্টৰ জৰিয়তে ছাইন ইন কৰিব লাগিব</translation>

@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Proxyindstillinger</translation>
 <translation id="3550915441744863158">Chrome opdateres automatisk, så du altid har den nyeste version</translation>
 <translation id="3559533181353831840">Ca. <ph name="TIME_LEFT" /> tilbage</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Angiv navnet på forhandleren og det butiksnummer, som denne demoenhed konfigureres til*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Hvis du ikke kender butiksnummeret, kan du skrive "0000" for at fortsætte installationen af demotilstand. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Bemærk! Google bruger disse oplysninger til at identificere, hvilken version af demotilstand enheden skal modtage, og til at måle brugen af demotilstand.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Der opstod en fejl. Prøv igen.</translation>
 <translation id="3577745545227000795">Indsamling af hardwaredata for <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Nej</translation>
 <translation id="4251377547188244181">Tilmelding af enhed til terminal- og signeringstilstand</translation>
 <translation id="4263223596040212967">Tjek dit tastaturlayout, og prøv igen.</translation>
+<translation id="4268490040465852105">Din Google-konto er den samme konto, som du bruger til Gmail, YouTube, Chrome og andre Google-produkter.
+        Brug din konto til nemt at få adgang til alle dine bogmærker, filer og meget mere.</translation>
 <translation id="4278498748067682896">Du skal bruge en terminal- og signeringsopgradering, der kun tillader, at enheden køres i terminal- eller signeringstilstand. Hvis du gerne vil have, at brugere logger ind på enheden, kan du gå tilbage og tilmelde dig via Chrome Enterprise Upgrade.</translation>
 <translation id="4287157641315808225">Ja, aktivér ChromeVox</translation>
 <translation id="4289732974614035569">Vælg en pinkode</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Vælg lyst eller mørkt tema</translation>
 <translation id="5804259315582798390">Gendannelse af lokale data kunne ikke aktiveres</translation>
 <translation id="5810809306422959727">Denne konto er ikke kvalificeret til indstillinger for børnesikring</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Hvis du tilmelder dine enheder i din organisation, konfigureres de til centraliseret enhedsadministration. Din organisation kan kræve tilmelding af flere årsager:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Øget sikkerhed<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Ved at konfigurere yderligere sikkerhedsindstillinger kan organisationen beskytte bruger- og enhedsdata. Den kan også udføre handlinger som f.eks. nulstilling af fjernadgang eller deaktivering af en mistet enhed.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Tilpasning af brugeroplevelsen<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Enhedsadfærden ved opstart, på loginskærmen og efter login kan tilpasses til organisationens behov.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Ydelse af support<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Organisationen kan opnå fjernadgang til en enhedssession for at foretage fejlfinding.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Muliggørelse af adgang<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Organisationsapps, -tjenester og -netværk er muligvis kun tilgængelige på tilmeldte enheder.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Omkring <ph name="TIME" /> minutter tilbage</translation>
 <translation id="5852112051279473187">Ups!  Noget gik galt under tilmeldingen af denne enhed.  Prøv igen, eller kontakt din supportrepræsentant.</translation>
 <translation id="5852137567692933493">Genstart og Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Gå til yderligere indhold <ph name="CURRENT_ELEMENT" /> ud af <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Vælg sprog og tastaturknap. <ph name="LANGUAGE" /> er i øjeblikket valgt som sprog.</translation>
 <translation id="6040143037577758943">Luk</translation>
+<translation id="6042193169866365541">Din Google-konto er den samme konto, som du bruger til Gmail, YouTube, Chrome og andre Google-produkter.
+        Brug din konto til nemt at få adgang til alle dine bogmærker, filer og meget mere. Hvis du ikke har en konto, kan du oprette en på den næste skærm.</translation>
 <translation id="6051354611314852653">Ups! Systemet har ikke godkendt API-adgang for denne enhed.</translation>
 <translation id="6055544610007596637">Installer apps til din <ph name="DEVICE_TYPE" /> via Google Play Butik</translation>
 <translation id="6069464830445383022">Brug din Google-konto, når du logger ind på din Chromebook</translation>

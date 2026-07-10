@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">មិនអាចដំណើរការទំព័រអំពីទេ '<ph name="ABOUT_PAGE" />'។</translation>
 <translation id="424963718355121712">កម្មវិធី​ត្រូវ​បាន​ផ្ដល់​ពី​ម៉ាស៊ីន​ដែល​ដែលវាមានឥទ្ធិពលលើ</translation>
 <translation id="4306119971288449206">កម្មវិធី​ត្រូវបាន​ផ្ដល់​ជា​ប្រភេទ​ខ្លឹមសារ "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4349181963619779233">មិនអាចបញ្ចូលកម្មវិធី និងកម្មវិធីបន្ថែមពីគេហទំព័រនេះបានទេ</translation>
 <translation id="4625078469366263107">បើក​កម្មវិធី</translation>
 <translation id="4633003931260532286">កម្មវិធី​បន្ថែម​តម្រូវ​ឱ្យមាន "<ph name="IMPORT_NAME" />" ដែល​មាន​កំណែ​ទាប​បំផុត "<ph name="IMPORT_VERSION" />" ប៉ុន្តែ​មាន​តែ​កំណែ "<ph name="INSTALLED_VERSION" />" ប៉ុណ្ណោះ​ដែល​ត្រូវ​បាន​ដំឡើង</translation>
 <translation id="4660476621274971848">កំណែ​ដែល​បានរំពឹង​ទុកគឺ "<ph name="EXPECTED_VERSION" />" ប៉ុន្តែ​​កំណែជាក់ស្ដែង "<ph name="NEW_ID" />"</translation>

@@ -1439,6 +1439,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Prenumerationen på 1 webbplats har avslutats}other{Prenumerationen på # webbplatser har avslutats}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 lösenord}other{# lösenord}}</translation>
 <translation id="688730033107341407">När du har loggat ut tas bokmärken, lösenord med mera i Google-kontot bort från enheten.</translation>
+<translation id="6892009074348518725">Logga in i Chrome om du vill använda det här tillägget. Du kommer även att kunna använda och spara dina lösenord med mera från ditt Google-konto.</translation>
 <translation id="6896758677409633944">Kopiera</translation>
 <translation id="6898797562238201317">Använd din egen lösenfras för att kryptera all Chrome-data i Google-kontot</translation>
 <translation id="6900532703269623216">Förbättrat skydd</translation>

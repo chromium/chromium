@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Прокси параметрлери</translation>
 <translation id="3550915441744863158">Chrome автоматтык түрдө жаңырып тургандыктан, ар дайым кычыраган жапжаңы версияда иштейсиз.</translation>
 <translation id="3559533181353831840">Болжол менен <ph name="TIME_LEFT" /> калды</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Бул демо түзмөк кайсы сатуучу жана кайсы дүкөн үчүн жөндөлүп жатканын көрсөтүү үчүн сатуучунун атын жана дүкөндүн номерин киргизиңиз*. <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Эгер дүкөндүн номерин билбесеңиз, Демо режимин орнотууну улантуу үчүн "0000" деп киргизсеңиз болот. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Эскертүү: Google бул маалымат аркылуу түзмөк Демо режиминин кайсы версиясы орнотулушу керектигин аныктап жана Демо режимдин колдонулушун талдайт.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Бир жерден ката кетти. Кайталап көрүңүз.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> аппараттык камсыздоо маалыматын чогултуу</translation>
 <translation id="3602290021589620013">Алдн-ала көз жүгртүү</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Жок</translation>
 <translation id="4251377547188244181">Киоскту жана белгилөөчү түзмөктү каттоо</translation>
 <translation id="4263223596040212967">Баскычтобуңуздун калыбын текшерип, кайталап көрүңүз.</translation>
+<translation id="4268490040465852105">Google аккаунтуңуз — Gmail, YouTube, Chrome жана башка Google кызматтарында колдонулган ошол эле аккаунт.
+        Бардык кыстармаларыңызга, файлдарыңызга жана башкаларга оңой кирүү үчүн аккаунтуңузду колдонуңуз.</translation>
 <translation id="4278498748067682896">Түзмөккө киоск же белгилөөчү түзмөк режиминде гана иштөөгө уруксат берүү үчүн Киоск же белгилөөчү түзмөк жаңыртуусу колдонулат. Колдонуучуларды түзмөккө киргизүү үчүн артка кайтып, Chrome Enterprise Upgrade'ге катталыңыз.</translation>
 <translation id="4287157641315808225">Ооба, ChromeVox иштетилсин</translation>
 <translation id="4289732974614035569">PIN код тандаңыз</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Жарык же караңгы теманы тандаңыз</translation>
 <translation id="5804259315582798390">Түзмөктөгү маалыматты калыбына келтирүү параметри иштетилген жок</translation>
 <translation id="5810809306422959727">Бул аккаунтта Ата-эненин көзөмөлүн колдонууга болбойт</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Уюмда катталган түзмөктөр борбордоштурулган түзмөктөрдү башкаргычка туураланат. Уюмуңуз бир нече себептен улам катталууну талап кылышы мүмкүн:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Коопсуздукту жакшыртуу<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Кошумча коопсуздук параметрлерин жөндөө менен уюм түзмөктөгү жана колдонуучунун маалыматтарын коопсуз сактай алат. Ошондой эле ал жоголгон түзмөктү өчүрүү же алыстан баштапкы абалга келтирүү сыяктуу аракеттерди жасашы мүмкүн.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Түзмөктү тууралоо<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+    <ph name="BEGIN_DESCRIPTION2" />Түзмөктүн жүктөө процессиндеги, кирүү экранындагы жана киргенден кийинки аракеттери уюмуңуздун муктаждыктарына жараша туураланышы мүмкүн.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Колдоо көрсөтүү<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+    <ph name="BEGIN_DESCRIPTION3" />Бузулууларды аныктап оңдоо үчүн уюм түзмөктөгү сеанска алыстан кире алат.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Кирүүгө уруксат берүү<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+    <ph name="BEGIN_DESCRIPTION4" />Уюмдун колдонмолорун, кызматтарын жана тармактарын каттоодон өткөн түзмөктөрдө гана колдонууга болот.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Болжол менен <ph name="TIME" /> мүнөт калды</translation>
 <translation id="5852112051279473187">Ой! Бул түзмөктү каттап жатканда бир жерден олуттуу ката кетти. Дагы бир жолу аракет кылып көрүңүз же колдоо өкүлүңүзгө кайрылыңыз.</translation>
 <translation id="5852137567692933493">Өчүрүп күйгүзүү жана жууп салуу</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" /> ичинен <ph name="CURRENT_ELEMENT" />-кошумча мазмунга чабыттоо</translation>
 <translation id="6016972670657536680">Тилди жана баскычтопту тандаңыз. Учурда <ph name="LANGUAGE" /> тили тандалган.</translation>
 <translation id="6040143037577758943">Жабуу</translation>
+<translation id="6042193169866365541">Google аккаунтуңуз — Gmail, YouTube, Chrome жана башка Google кызматтарында колдонулган ошол эле аккаунт.
+        Бардык кыстармаларыңызга, файлдарыңызга жана башкаларга оңой кирүү үчүн аккаунтуңузду колдонуңуз. Эгер аккаунтуңуз жок болсо, кийинки экранда аны түзө аласыз.</translation>
 <translation id="6051354611314852653">Ой! Система бул түзмөктүн API'не кирүүгө уруксат бере алган жок.</translation>
 <translation id="6055544610007596637">Колдонмолорду Google Play Store'дон <ph name="DEVICE_TYPE" /> түзмөгүңүзгө орнотуңуз</translation>
 <translation id="6069464830445383022">Chromebook'ка Google аккаунтуңуз менен киресиз</translation>

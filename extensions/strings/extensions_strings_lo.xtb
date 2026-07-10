@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">ບໍ່​ສາ​ມາດ​ໂຫຼດ​ກ່ຽວ​ກັບ​ຫນ້າ​ " <ph name="ABOUT_PAGE" /> .</translation>
 <translation id="424963718355121712">ຕ້ອງໃຊ້ແອັບຈາກໂຮສທີ່ພວກມັນມີຜົນກະທົບຕໍ່</translation>
 <translation id="4306119971288449206">ຕ້ອງໃຊ້ແອັບກັບເນື້ອຫາປະເພດ "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4349181963619779233">ບໍ່ສາມາດເພີ່ມສ່ວນຂະຫຍາຍ ແລະ ແອັບຈາກເວັບໄຊນີ້ໄດ້</translation>
 <translation id="4625078469366263107">ເປີດນຳໃຊ້ແອັບ</translation>
 <translation id="4633003931260532286">ສ່ວນຂະຫຍາຍຈຳເປັນຕ້ອງມີ "<ph name="IMPORT_NAME" />" ທີ່ມີເວີຊັນຕໍ່າສຸດ "<ph name="IMPORT_VERSION" />", ແຕ່ມີການຕິດຕັ້ງເວີຊັນ "<ph name="INSTALLED_VERSION" />" ເທົ່ານັ້ນ</translation>
 <translation id="4660476621274971848">ເວີຊັນທີ່ຄາດໄວ້ "<ph name="EXPECTED_VERSION" />", ແຕ່ເວີຊັນທີ່ຕິດຕັ້ງແມ່ນ "<ph name="NEW_ID" />"</translation>

@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Proxy 設定</translation>
 <translation id="3550915441744863158">Chrome 會自動更新，隨時讓您使用最新版本</translation>
 <translation id="3559533181353831840">大約剩餘 <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />輸入此示範裝置要設定的零售商名稱和商店編號*。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />如不知道商店編號，輸入「0000」即可繼續「示範模式」安裝。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*請注意：Google 會使用這些資料確認裝置應接收的「示範模式」版本，並評估「示範模式」的使用情況。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> 硬件資料收集聲明</translation>
 <translation id="3602290021589620013">預覽</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">否</translation>
 <translation id="4251377547188244181">註冊 Kiosk 或標牌裝置</translation>
 <translation id="4263223596040212967">請檢查您的鍵盤版面配置，然後再試一次。</translation>
+<translation id="4268490040465852105">Google 帳戶是指你在 Gmail、YouTube、Chrome 和其他 Google 產品使用的帳戶。
+        你可透過帳戶輕鬆存取所有書籤、檔案及其他內容。</translation>
 <translation id="4278498748067682896">您將使用「Kiosk 和標牌升級」授權，此授權只允許裝置在 Kiosk 或標牌模式下運作。如果您想使用者登入裝置，請返回並使用「Chrome Enterprise 升級」註冊。</translation>
 <translation id="4287157641315808225">是，啟動 ChromeVox</translation>
 <translation id="4289732974614035569">選擇 PIN</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">選取淺色或深色主題</translation>
 <translation id="5804259315582798390">無法啟用本機資料復原功能</translation>
 <translation id="5810809306422959727">此帳戶不符合家長監控設定的資格</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />在機構中註冊裝置，可設定裝置供集中管理。機構可能會基於多種原因要求你註冊：<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />加強安全保障<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />額外的安全設定有助機構保護使用者和裝置資料，另可執行遠端重設或停用遺失裝置等操作。<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />自訂體驗<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />機構可按需要自訂開機時、登入畫面和登入後的裝置行為。<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />提供支援<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />為協助排解疑難，機構可從遠端存取裝置工作階段。<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />啟用存取權<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />只有已註冊裝置可使用機構的應用程式、服務和網絡。<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">還有大約 <ph name="TIME" /> 分鐘</translation>
 <translation id="5852112051279473187">糟糕！註冊這部裝置時發生嚴重錯誤。請再試一次，或與您的支援代表聯絡。</translation>
 <translation id="5852137567692933493">重新啟動並執行 Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">導覽第 <ph name="CURRENT_ELEMENT" /> 個額外內容，共 <ph name="TOTAL_ELEMENTS" /> 個</translation>
 <translation id="6016972670657536680">選取語言和鍵盤按鈕。目前選取的語言為<ph name="LANGUAGE" />。</translation>
 <translation id="6040143037577758943">關閉</translation>
+<translation id="6042193169866365541">Google 帳戶是指你在 Gmail、YouTube、Chrome 和其他 Google 產品使用的帳戶。
+        你可透過帳戶輕鬆存取所有書籤、檔案及其他內容。如果沒有帳戶，請在下一個畫面建立。</translation>
 <translation id="6051354611314852653">糟糕！系統無法將 API 存取權授予這部裝置。</translation>
 <translation id="6055544610007596637">從 Google Play 商店安裝 <ph name="DEVICE_TYPE" /> 適用的應用程式</translation>
 <translation id="6069464830445383022">您的 Google 帳戶就是用來登入 Chromebook 的帳戶</translation>

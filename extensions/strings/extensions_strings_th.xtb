@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">ไม่สามารถโหลดหน้าเกี่ยวกับ "<ph name="ABOUT_PAGE" />"</translation>
 <translation id="424963718355121712">แอปต้องได้รับบริการจากโฮสต์ที่แอปนั้นมีผลกระทบ</translation>
 <translation id="4306119971288449206">แอปต้องได้รับบริการจากประเภทเนื้อหา "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4349181963619779233">เพิ่มส่วนขยายและแอปจากเว็บไซต์นี้ไม่ได้</translation>
 <translation id="4625078469366263107">เปิดใช้แอป</translation>
 <translation id="4633003931260532286">ส่วนขยายต้องใช้ "<ph name="IMPORT_NAME" />" เวอร์ชัน "<ph name="IMPORT_VERSION" />" เป็นอย่างน้อย แต่ที่ติดตั้งอยู่เป็นเวอร์ชัน "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4660476621274971848">เวอร์ชันที่คาดการณ์ "<ph name="EXPECTED_VERSION" />" แต่เวอร์ชันที่แจ้งคือ "<ph name="NEW_ID" />"</translation>

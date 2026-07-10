@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">ธุรกิจศึกษา</translation>
 <translation id="1542830386724426410">แสดงสิทธิประโยชน์และรางวัลของบัตรที่พร้อมใช้งานเมื่อชำระเงิน เป็นไปตามข้อกำหนดของผู้ออกบัตร <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">ประวัติราคา</translation>
+<translation id="1546286808622193216">เปรียบเทียบสิทธิประโยชน์ของบัตรด้วย Gemini</translation>
 <translation id="1549470594296187301">ต้องเปิดใช้ JavaScript เพื่อใช้ฟีเจอร์นี้</translation>
 <translation id="1553152622374372421">กีฬาฤดูหนาว</translation>
 <translation id="1553358976309200471">อัปเดต Chrome</translation>
@@ -2325,6 +2326,7 @@
 <translation id="4607608436550361748">ดูเคล็ดลับในการใช้ Chrome</translation>
 <translation id="460848736049414407">ถูกบล็อกโดยผู้ดูแลระบบ</translation>
 <translation id="4610279718074907952">เว็บไซต์นี้อยู่ในกลุ่มที่ <ph name="SET_OWNER" /> กำหนดไว้และสามารถดูกิจกรรมของคุณได้</translation>
+<translation id="4612631413844865947">เกิดข้อผิดพลาดในการประมวลผลคำสั่งซื้อของคุณที่ <ph name="MERCHANT_ORIGIN" /> ผ่าน <ph name="PAYMENT_APP_ORIGIN" /></translation>
 <translation id="46128681529823442">อุปกรณ์ฟุตบอล</translation>
 <translation id="4612904677925722054">เว็บไซต์นี้อาจมีเนื้อหาสำหรับผู้ใหญ่ พ่อแม่หรือผู้ปกครองต้องระบุว่าคุณเข้าชมเว็บไซต์นี้ได้</translation>
 <translation id="4619564267100705184">ยืนยันว่าเป็นคุณ</translation>
@@ -2414,6 +2416,7 @@
 <translation id="4744603770635761495">เส้นทางปฏิบัติการ</translation>
 <translation id="4744816391336495134">คุณสามารถใช้ลายนิ้วมือเพื่อยืนยันตัวตนทุกครั้งที่ใช้รหัสผ่านที่บันทึกไว้</translation>
 <translation id="4749011317274908093">คุณเข้าสู่โหมดไม่ระบุตัวตนแล้ว</translation>
+<translation id="4749620353539006322">รับรางวัลสูงสุด</translation>
 <translation id="4749924365937394956">การตรวจสอบสิทธิ์เซิร์ฟเวอร์</translation>
 <translation id="4750671009706599284">โทรศัพท์เครื่องนี้</translation>
 <translation id="4750917950439032686">ข้อมูลของคุณ (ตัวอย่างเช่น รหัสผ่านหรือหมายเลขบัตรเครดิต) จะเป็นส่วนตัวเมื่อส่งมายังเว็บไซต์นี้</translation>
@@ -2989,6 +2992,7 @@
 <translation id="5611398002774823980">บันทึกในบัญชี</translation>
 <translation id="561165882404867731">แปลหน้านี้โดยใช้ Google แปลภาษา</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ต้องการใช้ตำแหน่งเครื่องคอมพิวเตอร์ของคุณ</translation>
+<translation id="5613958591683399697">ถาม <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">ประกาศสำหรับผู้ใช้</translation>
 <translation id="5614520971155863709">เกมไพ่</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> เปลี่ยนเส้นทางของคุณบ่อยเกินไป</translation>

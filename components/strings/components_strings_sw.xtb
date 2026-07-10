@@ -350,6 +350,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1542105669288201090">Elimu ya Biashara</translation>
 <translation id="1542830386724426410">Onyesha zawadi na manufaa ya kadi yaliyopo wakati wa kulipa. Sheria na masharti ya mtoaji yanatumika. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Pata maelezo zaidi<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Historia ya bei</translation>
+<translation id="1546286808622193216">Linganisha manufaa ya kadi ukitumia Gemini</translation>
 <translation id="1549470594296187301">Lazima JavaScript iwashwe ili utumie kipengele hiki.</translation>
 <translation id="1553152622374372421">Michezo ya Msimu wa Baridi</translation>
 <translation id="1553358976309200471">Sasisha Chrome</translation>
@@ -2326,6 +2327,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4607608436550361748">Angalia vidokezo vya Chrome</translation>
 <translation id="460848736049414407">Imezuiwa na Msimamizi</translation>
 <translation id="4610279718074907952">Tovuti hii ipo katika kikundi kilichobainishwa na <ph name="SET_OWNER" />, ambacho kinaweza kuona shughuli zako</translation>
+<translation id="4612631413844865947">Hitilafu imetokea wakati wa kuchakata oda yako kwenye <ph name="MERCHANT_ORIGIN" /> kupitia <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Vifaa vya Kandanda</translation>
 <translation id="4612904677925722054">Huenda tovuti hii ikawa na maudhui ya watu wazima. Sharti mzazi au mlezi AKURUHUSU utembelee tovuti hii.</translation>
 <translation id="4619564267100705184">Thibitisha kwamba ni wewe</translation>
@@ -2415,6 +2417,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4744603770635761495">Njia Tekelezi</translation>
 <translation id="4744816391336495134">Unaweza kutumia alama ya kidole kuthibitisha kuwa ni wewe wakati wowote unapotumia nenosiri lililohifadhiwa</translation>
 <translation id="4749011317274908093">Unavinjari katika hali fiche</translation>
+<translation id="4749620353539006322">Ongeza zawadi</translation>
 <translation id="4749924365937394956">Uthibitishaji wa Seva</translation>
 <translation id="4750671009706599284">simu hii</translation>
 <translation id="4750917950439032686">Maelezo yako (kwa mfano, manenosiri, au namba za kadi za mikopo) ni ya faragha yanapotumwa kwenye tovuti hii.</translation>
@@ -2990,6 +2993,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="5611398002774823980">Hifadhi kwenye akaunti</translation>
 <translation id="561165882404867731">Tafsiri ukurasa huu ukitumia Google Tafsiri</translation>
 <translation id="5612720917913232150"><ph name="URL" /> inataka kutumia maelezo ya mahali kompyuta yako ilipo</translation>
+<translation id="5613958591683399697">Uliza <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Arifa ya Mtumiaji</translation>
 <translation id="5614520971155863709">Michezo ya Kadi</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> imekuelekeza upya mara nyingi mno.</translation>

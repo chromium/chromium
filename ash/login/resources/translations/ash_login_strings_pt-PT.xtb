@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Mantenha o conteúdo claro e iluminado</translation>
 <translation id="243179355394256322">A sua entidade limita a inscrição de dispositivos apenas a utilizadores autorizados. Este utilizador não está autorizado a inscrever dispositivos. Certifique-se de que o utilizador tem o privilégio de administrador "Inscrever hardware Google Meet" na secção Utilizadores da consola do administrador.</translation>
 <translation id="2439152382014731627">Repor palavra-passe do <ph name="DEVICE_TYPE" /></translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />A instalação <ph name="BEGIN_BOLD" />irá apagar todo o disco rígido<ph name="END_BOLD" />. Certifique-se de que é feita uma cópia de segurança dos seus dados.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Não pode cancelar a instalação depois de a iniciar.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Não pode adicionar utilizadores porque as chaves da API do Google estão em falta. Consulte <ph name="DETAILS_URL" /> para obter detalhes.</translation>
 <translation id="24786041351753425">Ative o serviço de recuperação de dados.</translation>
 <translation id="2485681265915754872">Termos de Utilização do Google Play</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Os Chromebooks utilizam apps em vez de software tradicional. Obtenha apps para produtividade, entretenimento e muito mais.</translation>
 <translation id="450867954911715010">Definições de acessibilidade</translation>
 <translation id="4519605771716872386">Sincronização de ficheiros ativada</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Experimente estes passos de resolução de problemas:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Certifique-se de que o dispositivo contém armazenamento interno funcional, como HDD, SSD ou eMMC
+    <ph name="LIST_ITEM" />Verifique se o armazenamento interno no dispositivo é superior a 16 GB
+    <ph name="LIST_ITEM" />Verifique a ligação ao armazenamento interno, se estiver fisicamente acessível
+    <ph name="LIST_ITEM" />Certifique-se de que está a usar um modelo certificado e verifique as notas de instalação
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Para obter mais ajuda, visite: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Quem quer adicionar a este dispositivo <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Se quiser mudar depois da inscrição, tem de fazer uma reposição de fábrica (Powerwash) do dispositivo.</translation>
 <translation id="4567512141633030272">Opção de início de sessão errada?</translation>
@@ -572,6 +583,8 @@
 <translation id="7189451821249468368">Não tem atualizações suficientes para inscrever este dispositivo. Entre em contacto com as vendas para comprar mais. Se considera que recebeu esta mensagem por engano, contacte o apoio técnico.</translation>
 <translation id="7202337678781136582">Leia o código QR com o seu telemóvel Android</translation>
 <translation id="7228854227189381547">Não mudar</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Para obter a melhor experiência, instale o <ph name="DEVICE_OS" /> no seu disco interno. Também pode instalá-lo mais tarde a partir do ecrã de início de sessão.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Se não tiver tudo pronto para instalar, pode executar a partir de uma unidade USB para o experimentar. Deste modo, mantém o seu SO e dados existentes, mas pode verificar limites ao nível do armazenamento e desempenho.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">As alterações vão ser aplicadas após a configuração</translation>
 <translation id="7260186537988033909">A inscrição de dispositivo no modo quiosque e sinalização está concluída</translation>
 <translation id="7284411326658527427">Cada pessoa pode personalizar a respetiva conta e manter os dados privados.</translation>
@@ -589,6 +602,8 @@
 <translation id="7416263748877373774">Não é possível carregar os Termos de Utilização. Verifique a ligação de rede e tente novamente.</translation>
 <translation id="7475742997309661417">O leitor de ecrã no ChromeOS, ChromeVox, é usado principalmente por pessoas cegas ou com visão reduzida para ler texto apresentado no ecrã com um sintetizador de voz ou um ecrã em braille. Prima sem soltar ambas as teclas de volume durante cinco segundos para ativar o ChromeVox. Quando o ChromeVox for ativado, irá ver uma apresentação rápida.</translation>
 <translation id="7476454130948140105">Bateria demasiado fraca para atualizar (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Algo correu mal e não foi possível instalar o <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Para obter mais ajuda, visite: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Antes de se inscrever, tem de limpar o TPM para que o <ph name="DEVICE_OS" /> possa assumir a propriedade do dispositivo.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Também pode desativar completamente o dispositivo TPM. Os seus dados continuarão a ser armazenados em segurança com encriptação de software, mas determinadas funcionalidades de segurança, como certificados protegidos por hardware, serão desativadas.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Pode alterar as definições do TPM reiniciando e introduzindo as definições do sistema BIOS/UEFI. Os passos variam consoante o modelo do dispositivo. Para mais informações, abra a documentação do <ph name="DEVICE_OS" /> num dispositivo separado antes de reiniciar: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

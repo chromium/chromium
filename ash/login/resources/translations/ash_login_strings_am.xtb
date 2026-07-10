@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">የተኪ ቅንብሮች</translation>
 <translation id="3550915441744863158">Chrome በራስ-ሰር ይዘመናል፣ ስለዚህ ሁልጊዜ አዲሱ ስሪት ይኖርዎታል</translation>
 <translation id="3559533181353831840"><ph name="TIME_LEFT" /> ገደማ ይቀራል</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />የቸርቻሪ ስም እና ይህ ቅንጭብ ማሳያ መሣሪያ እየተዋቀረ ያለበትን የመደብር ቁጥር ያስገቡ*። <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />የመደብር ቁጥሩን ካላወቁ በማሳያ ሁነታ ጭነት ለመቀጠል «0000» ብለው ማስገባት ይችላሉ። <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*ማስታወሻ፦ Google ይህን መረጃ መሣሪያው የትኛውን የማሳያ ሁነታ ሥሪት መቀበል እንዳለበት ለመለየት እና የማሳያ ሁነታ ጠቀሜታን ለመለካት ይጠቀምበታል።<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">የሆነ ችግር ተፈጥሯል። እንደገና ይሞክሩ።</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> የሃርድዌር መረጃ መሰብሰብ</translation>
 <translation id="3602290021589620013">ቅድመ-ዕይታ</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">አይ</translation>
 <translation id="4251377547188244181">የኪዮስክ እና የምልክት ቋንቋ መሣሪያ ምዝገባ</translation>
 <translation id="4263223596040212967">የእርስዎን የቁልፍ ሰሌዳ አቀማመጥ ይፈትሹ እና እንደገና ይሞክሩ።</translation>
+<translation id="4268490040465852105">የGoogle መለያዎ ለGmail፣ YouTube፣ Chrome እና ሌሎች የGoogle ምርቶች የሚጠቀሙበት ተመሳሳይ መለያ ነው።
+        ሁሉንም የእርስዎ ዕልባቶች፣ ፋይሎች እና ሌሎችም በቀላሉ ለመድረስ መለያዎን ይጠቀሙ።</translation>
 <translation id="4278498748067682896">መሣሪያው በኪዮስክ ወይም በምልክት ሁነታ ላይ ብቻ እንዲሰራ የሚያስችል የኪዮስክ እና የምልክት ማሻሻያ ይጠቀማሉ። ተጠቃሚዎች ወደ መሣሪያው እንዲገቡ ከፈለጉ እባክዎ ይመለሱ እና የChrome የንግድ ድርጅት ማሻሸያን በመጠቀም ይመዝገቡ።</translation>
 <translation id="4287157641315808225">አዎ፣ ChromeVoxን አግብር</translation>
 <translation id="4289732974614035569">አንድ ፒን ይምረጡ</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">የብርሃን ወይም ጠቆር ያለ ገጽታ ይምረጡ</translation>
 <translation id="5804259315582798390">የአካባቢያዊ ውሂብ መልሶ ማግኘትን ማንቃት አልተሳካም</translation>
 <translation id="5810809306422959727">ይህ መለያ ለወላጅ መቆጣጠሪያዎች ብቁ አይደለም</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />መሣሪያዎችዎን በድርጅትዎ ውስጥ መመዝገብ ለማዕከላዊ የመሣሪያ አስተዳደር ያዋቅረዋል። ድርጅትዎ ለበርካታ ምክንያቶች መመዝገብን ሊጠይቅ ይችላል፦<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />ደኅንነትን ማሻሻል<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />ተጨማሪ የደኅንነት ቅንብሮችን በማዋቀር ድርጅቱ የተጠቃሚ እና የመሣሪያ ውሂብን ደኅንነት ማቆየት ይችላል። እንዲሁም እንደ የርቀት ዳግም ማስጀመር ወይም የጠፋ መሣሪያን ማሰናከል ያሉ እርምጃዎችን ማከናወን ይችላል።<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />ተሞክሮውን ማበጀት<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />በሚነሳበት ጊዜ፣ በመለያ መግቢያው ማያ ገጽ ላይ እና በመለያ ከገባ በኋላ መሣሪያው የሚያሳየውን ባህሪ በድርጅቱ ፍላጎቶች መሠረት ማበጀት ይቻላል።<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />ድጋፍ ማቅረብ<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />ድርጅቱ መላ ፍለጋን ለማቅረብ የአንድ መሣሪያ ክፍለ ጊዜን በርቀት መድረስ ይችላል።<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />መዳረሻን ማንቃት<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />የድርጅት መተግበሪያዎች፣ አገልግሎቶች እና አውታረ መረቦች ሊገኙ የሚችሉት የተመዘገቡ መሣሪያዎች ላይ ብቻ ሊሆን ይችላል።<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053"><ph name="TIME" /> ደቂቃዎች አካባቢ ቀርቷል</translation>
 <translation id="5852112051279473187">ውይ!  ይህን መሣሪያ በመመዝገብ ላይ ሳለ የሆነ ስህተት ተፈጥሯል።  እባክዎ እንደገና ይሞክሩ ወይም የድጋፍ ተወካይዎን ያግኙ።</translation>
 <translation id="5852137567692933493">ዳግም አስጀምር እና ፓወርዋሽ አድርግ</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">ወደ ተጨማሪ ይዘት <ph name="CURRENT_ELEMENT" /> ከ<ph name="TOTAL_ELEMENTS" /> ይዳስሱ</translation>
 <translation id="6016972670657536680">የቋንቋ እና የቁልፍ ሰሌዳ አዝራርን ይምረጡ። አሁን የተመረጠው ቋንቋ <ph name="LANGUAGE" /> ነው።</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
+<translation id="6042193169866365541">የGoogle መለያዎ ለGmail፣ YouTube፣ Chrome እና ሌሎች የGoogle ምርቶች የሚጠቀሙበት ተመሳሳይ መለያ ነው።
+        ሁሉንም የእርስዎ ዕልባቶች፣ ፋይሎች እና ሌሎችም በቀላሉ ለመድረስ መለያዎን ይጠቀሙ። መለያ ከሌለዎ በሚቀጥለው ማያ ገጽ ላይ መፍጠር ይችላሉ።</translation>
 <translation id="6051354611314852653">ውይ!  ስርዓቱ የዚህ መሣሪያ ኤ ፒ አይ መዳረሻ መፍቀድ አልቻለም።</translation>
 <translation id="6055544610007596637">ለእርስዎ <ph name="DEVICE_TYPE" /> መተግበሪያዎችን ከGoogle Play መደብር ይጫኑ</translation>
 <translation id="6069464830445383022">የእርስዎ Google መለያ የእርስዎ Chromebook መግቢያ ነው</translation>

@@ -1955,7 +1955,6 @@
 <translation id="2517472476991765520">Іздеу</translation>
 <translation id="2518024842978892609">Клиентіңіздің сертификаттарын пайдалану</translation>
 <translation id="2518620532958109495">Толық экранға автоматты түрде кіруге рұқсаты бар</translation>
-<translation id="2519250377986324805">Қалай жасалатынын көру</translation>
 <translation id="2519517390894391510">Сертификат профилінің атауы</translation>
 <translation id="2520644704042891903">Қолжетімді ұяшық күтілуде…</translation>
 <translation id="2521427645491031107">Құрылғы параметрлерінде қолданбаларды синхрондау орнатылған</translation>
@@ -3523,6 +3522,7 @@
 <translation id="371370241367527062">Алдыңғы микрофон</translation>
 <translation id="37143699183660101">Курсор тұрақтылығы</translation>
 <translation id="3714610938239537183">2/4 қадамы: экспорттайтын диагностика деректерін таңдау</translation>
+<translation id="3715519518311454566">Gemini төменгі парақшасы жиылды.</translation>
 <translation id="3717133748480414053">Дағдылар веб-беттерді қысқаша мазмұндауға, тиімді ұсыныстарды іздеуге және т.б. көмектеседі.</translation>
 <translation id="3719245268140483218">Құрылғы оқиғасы</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> толтырылды.</translation>
@@ -6203,6 +6203,7 @@
 <translation id="5828181959764767444">Күннің батуы</translation>
 <translation id="5828545842856466741">Профиль қосу…</translation>
 <translation id="5828633471261496623">Басып шығару…</translation>
+<translation id="5829137022934788067">Осы таңдау туралы айтып бер</translation>
 <translation id="5829214552954466783"><ph name="USER_EMAIL" /> пайдаланушы аты үшін <ph name="CREDENTIAL_TYPE" /> бөлісу</translation>
 <translation id="5829544019044013776">Google Wallet-тегі төлеу әдістеріңіз</translation>
 <translation id="5830512293931520102">Құпия сөзіңіз шифрланады және ешкімге көрсетілмейді.</translation>
@@ -6993,6 +6994,7 @@
 <translation id="6455264371803474013">Белгілі бір сайттарда</translation>
 <translation id="6455521402703088376">Өшірулі • Бұл кеңейтімді әзірлеушісі жариялаудан бас тартқан</translation>
 <translation id="6455894534188563617">&amp;Жаңа қалта</translation>
+<translation id="6456162045957729200">Осы таңдауды түсіндір</translation>
 <translation id="645705751491738698">JavaScript қосуға салынған тыйымды сақтау</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> іске қосылмады</translation>
 <translation id="6458701200018867744">Жүктеп салынбады (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8103,7 +8105,6 @@
 <translation id="7314989823816739632">Романтика</translation>
 <translation id="7317342082064136423">Аккаунтыңызды растаңыз</translation>
 <translation id="731827437403763009">Жасанды интеллект инновациялары</translation>
-<translation id="7319320447721994672">Cookie файлдарын пайдаланатын сайтқа кірсеңіз, сайттың барлық мүмкіндігі жұмыс істеуі үшін, cookie файлдарын уақытша қосуыңыз керек болуы мүмкін.</translation>
 <translation id="7319983568955948908">Бөлісуді тоқтату</translation>
 <translation id="7320213904474460808">Желіні әдепкісінше таңдау</translation>
 <translation id="7321545336522791733">Сервер қолжетімді емес</translation>
@@ -8852,6 +8853,7 @@
 <translation id="7903481341948453971">Құпия сөздерді толтыру кезінде экран құлпын пайдаланыңыз</translation>
 <translation id="7903925330883316394">Утилита: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Катакана</translation>
+<translation id="7904492297081735975">&amp;Бетбелгілер реттегішін ашу</translation>
 <translation id="7904526211178107182">Linux порттарын желідегі басқа құрылғыларға қолжетімді етіңіз.</translation>
 <translation id="7907312522152480478">Басқа құрылғылардағы қойындыларды алу үшін жеке басыңызды растаңыз және тарих пен қойындыларды синхрондаңыз. Синхрондауды кез келген уақытта параметрлерде тоқтатуға болады. Google жүйесі Search және басқа да қызметтерді тарихыңызға негіздеп жекелендіре алады.</translation>
 <translation id="7907502219904644296">Рұқсатты өзгерту</translation>
@@ -10604,6 +10606,7 @@
 <translation id="942296794412775122">Микрофонды қосу/өшіру</translation>
 <translation id="942488123151518958">Кідірту (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> қолданбасы Chrome қойындысын және аудионы бөлісуде.</translation>
+<translation id="943744232549395906">Дауыспен теру тоқтатылды.</translation>
 <translation id="945522503751344254">Пікір жіберу</translation>
 <translation id="947156494302904893">Сіз кірген сайттар бот емес, шынайы адам екеніңізді растай алады.</translation>
 <translation id="947329552760389097">&amp;Элементтерді тексеру</translation>

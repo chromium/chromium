@@ -1955,7 +1955,6 @@
 <translation id="2517472476991765520">สแกน</translation>
 <translation id="2518024842978892609">ใช้ใบรับรองไคลเอ็นต์</translation>
 <translation id="2518620532958109495">ได้รับอนุญาตให้เข้าสู่โหมดเต็มหน้าจอโดยอัตโนมัติ</translation>
-<translation id="2519250377986324805">ดูวิธี</translation>
 <translation id="2519517390894391510">ชื่อโปรไฟล์ใบรับรอง</translation>
 <translation id="2520644704042891903">กำลังรอ Socket ที่ใช้งานได้...</translation>
 <translation id="2521427645491031107">มีการตั้งค่าการซิงค์แอปในการตั้งค่าอุปกรณ์</translation>
@@ -3523,6 +3522,7 @@
 <translation id="371370241367527062">ไมโครโฟนด้านหน้า</translation>
 <translation id="37143699183660101">ความเสถียรของเคอร์เซอร์</translation>
 <translation id="3714610938239537183">ขั้นตอนที่ 2 จาก 4: เลือกข้อมูลการวินิจฉัยที่จะส่งออก</translation>
+<translation id="3715519518311454566">ยุบ Bottom Sheet ของ Gemini แล้ว</translation>
 <translation id="3717133748480414053">ทักษะจะช่วยคุณสรุปหน้าเว็บ ค้นหาดีลสุดคุ้ม และอื่นๆ</translation>
 <translation id="3719245268140483218">เหตุการณ์ในอุปกรณ์</translation>
 <translation id="3719310907809321183">กรอกข้อมูล <ph name="CARD_IDENTIFIER" /> แล้ว</translation>
@@ -4989,6 +4989,7 @@
 <translation id="4849286518551984791">เวลาสากลเชิงพิกัด (UTC/GMT)</translation>
 <translation id="4849517651082200438">ไม่ต้องติดตั้ง</translation>
 <translation id="4849731766219625109">ใช้บัญชี <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ของคุณ</translation>
+<translation id="4850279708232718725">บอกฉันเกี่ยวกับเรื่องนี้</translation>
 <translation id="485053257961878904">ตั้งค่าการซิงค์การแจ้งเตือนไม่สำเร็จ</translation>
 <translation id="4850548109381269495">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตในอุปกรณ์ทั้ง 2 เครื่องแล้วเปิดบลูทูธ จากนั้นลองอีกครั้ง</translation>
 <translation id="4850669014075537160">การเลื่อน</translation>
@@ -6203,6 +6204,7 @@
 <translation id="5828181959764767444">พระอาทิตย์ตก</translation>
 <translation id="5828545842856466741">เพิ่มโปรไฟล์...</translation>
 <translation id="5828633471261496623">กำลังพิมพ์...</translation>
+<translation id="5829137022934788067">บอกฉันเกี่ยวกับตัวเลือกนี้</translation>
 <translation id="5829214552954466783">แชร์<ph name="CREDENTIAL_TYPE" />สำหรับชื่อผู้ใช้: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">วิธีการชำระเงินของคุณใน Google Wallet</translation>
 <translation id="5830512293931520102">รหัสผ่านของคุณได้รับการเข้ารหัสและจะไม่มีใครเห็นรหัสผ่านของคุณ</translation>
@@ -6333,6 +6335,7 @@
 <translation id="5922854266885514646">คลิก "ปรับแต่ง Chrome"</translation>
 <translation id="5924047253200400718">รับความช่วยเหลือ<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">ถามก่อนคัดลอกหรือย้ายไฟล์ Microsoft ไปยัง Google ไดรฟ์</translation>
+<translation id="5925057331573749968">ลงชื่อเข้าใช้ได้เร็วขึ้นด้วยคิวอาร์โค้ด</translation>
 <translation id="5926936390113611560">เปิดโปรไฟล์ทั้งหมด</translation>
 <translation id="592880897588170157">ดาวน์โหลดไฟล์ PDF แทนการเปิดโดยอัตโนมัติใน Chrome</translation>
 <translation id="5930567261594625340">ท้องฟ้ายามค่ำคืน</translation>
@@ -6993,6 +6996,7 @@
 <translation id="6455264371803474013">ในบางเว็บไซต์</translation>
 <translation id="6455521402703088376">ปิด • นักพัฒนาเลิกเผยแพร่ส่วนขยายนี้แล้ว</translation>
 <translation id="6455894534188563617">และโฟลเดอร์ใหม่</translation>
+<translation id="6456162045957729200">อธิบายส่วนนี้</translation>
 <translation id="645705751491738698">บล็อกการเรียกใช้ JavaScript</translation>
 <translation id="6457572529564180082">เปิดใช้งาน <ph name="APP_NAME" /> ไม่ได้</translation>
 <translation id="6458701200018867744">อัปโหลดไม่สำเร็จ (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)</translation>
@@ -8104,7 +8108,6 @@
 <translation id="7314989823816739632">โรแมนติก</translation>
 <translation id="7317342082064136423">ยืนยันบัญชี</translation>
 <translation id="731827437403763009">นวัตกรรม AI</translation>
-<translation id="7319320447721994672">หากเข้าชมเว็บไซต์ที่ใช้คุกกี้ คุณอาจต้องเปิดใช้คุกกี้ชั่วคราวเพื่อให้ฟีเจอร์ทั้งหมดของเว็บไซต์ทำงานได้</translation>
 <translation id="7319983568955948908">หยุดการแชร์</translation>
 <translation id="7320213904474460808">เครือข่ายเริ่มต้น</translation>
 <translation id="7321545336522791733">ไม่สามารถเข้าถึงเซิร์ฟเวอร์</translation>
@@ -8853,6 +8856,7 @@
 <translation id="7903481341948453971">ใช้การล็อกหน้าจอเมื่อป้อนรหัสผ่าน</translation>
 <translation id="7903925330883316394">ยูทิลิตี: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">คะตะคะนะ</translation>
+<translation id="7904492297081735975">&amp;เปิดการจัดการบุ๊กมาร์ก</translation>
 <translation id="7904526211178107182">ทำให้พอร์ต Linux ใช้งานได้กับอุปกรณ์อื่นๆ ในเครือข่าย</translation>
 <translation id="7907312522152480478">หากต้องการรับแท็บจากอุปกรณ์อื่นๆ ให้ยืนยันตัวตน รวมถึงซิงค์ประวัติการเข้าชมและแท็บ คุณหยุดการซิงค์ได้ทุกเมื่อในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
 <translation id="7907502219904644296">เปลี่ยนสิทธิ์เข้าถึง</translation>
@@ -9478,6 +9482,7 @@
 <translation id="8372678064309688510">บันทึกที่อยู่ของคุณแล้ว</translation>
 <translation id="8373652277231415614">ไดเรกทอรีที่แชร์ใน Crostini</translation>
 <translation id="8374243500935816406">ไม่อนุญาตให้เว็บไซต์จัดการหน้าต่างบนจอแสดงผลทั้งหมด</translation>
+<translation id="8375703478696038265">ขั้นตอนที่ <ph name="STEP_NUMBER" /> จาก <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">แจ้งให้เราทราบถึงสิ่งที่เกิดขึ้นกับ Google Cast</translation>
 <translation id="8376384591331888629">รวมคุกกี้ของบุคคลที่สามในเว็บไซต์นี้</translation>
 <translation id="8376451933628734023">โปรดถอนการติดตั้งหากเว็บแอปนี้พยายามหลอกล่อคุณให้คิดว่าเป็นแอปอื่น</translation>
@@ -10549,6 +10554,7 @@
 <translation id="9188142767272053574">เปิดใช้การแยกกระบวนการ</translation>
 <translation id="9192019773545828776">ฟังการอธิบายและอ่านออกเสียงเพื่อให้คุณใช้อุปกรณ์ได้โดยไม่ต้องมองหน้าจอ การอธิบายและอ่านออกเสียงอักษรเบรลล์จะพร้อมใช้งานกับอุปกรณ์ที่เชื่อมต่อ ใช้แป้น Ctrl + Alt + Z เพื่อเปิดและปิด ChromeVox ใช้แป้นค้นหา + ลูกศรซ้ายหรือลูกศรขวาเพื่อไปยังส่วนต่างๆ ใช้แป้นค้นหา + เว้นวรรคเพื่อเลือก (เปิดใช้งาน)</translation>
 <translation id="9195969368671142407">เมื่อองค์กรจำกัดการบันทึกลงในบัญชี Google ของคุณ คุณจะแชร์หรือเข้าร่วมกลุ่มแท็บไม่ได้</translation>
+<translation id="9197456336762295195">สแกนคิวอาร์โค้ดนี้ด้วยกล้องในอุปกรณ์ที่มีพาสคีย์สำหรับ google.com</translation>
 <translation id="919840898042157087">การเคลื่อนไหวแบบคงที่</translation>
 <translation id="9199503643457729322">คลิกเพื่อออกจากคู่มือความเป็นส่วนตัว</translation>
 <translation id="9199695835892108985">รีเซ็ตสิทธิ์ทั้งหมดของพอร์ตอนุกรมไหม</translation>
@@ -10605,6 +10611,7 @@
 <translation id="942296794412775122">เปิด/ปิดไมโครโฟน</translation>
 <translation id="942488123151518958">หยุดชั่วคราว (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> กำลังแชร์แท็บและเสียงใน Chrome</translation>
+<translation id="943744232549395906">หยุดการพิมพ์ด้วยเสียงแล้ว</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="947156494302904893">เว็บไซต์ที่เข้าชมสามารถยืนยันได้ว่าคุณเป็นคนจริงๆ ไม่ใช่บ็อต</translation>
 <translation id="947329552760389097">&amp;ตรวจสอบองค์ประกอบ</translation>

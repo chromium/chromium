@@ -1960,7 +1960,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2517472476991765520">Qidiruv</translation>
 <translation id="2518024842978892609">Mijoz sertifikatidan foydalaning</translation>
 <translation id="2518620532958109495">Butun ekranga avtomatik ochishi mumkin</translation>
-<translation id="2519250377986324805">Qanday qilib</translation>
 <translation id="2519517390894391510">Sertifikat profili nomi</translation>
 <translation id="2520644704042891903">Mavjud soket kutilmoqda...</translation>
 <translation id="2521427645491031107">Ilovalar sinxronlanishi qurilma Sozlamalarida saqlandi</translation>
@@ -4995,6 +4994,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4849286518551984791">Xalqaro universal vaqt (UTC/GMT)</translation>
 <translation id="4849517651082200438">O‘rnatilmasin</translation>
 <translation id="4849731766219625109"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hisobingiz orqali</translation>
+<translation id="4850279708232718725">Bu haqida gapirib ber</translation>
 <translation id="485053257961878904">Bildirishnomalar sinxronizatsiyasi sozlanmadi</translation>
 <translation id="4850548109381269495">Ikkala qurilmada internet aloqasini tekshiring va Bluetoothni yoqing. Keyin qaytadan urining.</translation>
 <translation id="4850669014075537160">Sahifani aylantirish</translation>
@@ -6343,6 +6343,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5922854266885514646">“Chromeni moslash” tugmasini bosing</translation>
 <translation id="5924047253200400718">Yordam sahifasiga o‘tish<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft fayllarini Google Drive xizmatiga koʻchirish yoki nusxalashdan oldin soʻralsin</translation>
+<translation id="5925057331573749968">QR kod bilan tezroq kiring</translation>
 <translation id="5926936390113611560">Barcha profillarni ochish</translation>
 <translation id="592880897588170157">PDF fayllarni Chrome brauzerida avtomatik ochmasdan yuklab olish</translation>
 <translation id="5930567261594625340">Tungi osmon</translation>
@@ -8115,7 +8116,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7314989823816739632">Romantik</translation>
 <translation id="7317342082064136423">Hisobni tasdiqlang</translation>
 <translation id="731827437403763009">Sunʼiy intellekt</translation>
-<translation id="7319320447721994672">Cookie fayllardan foydalanuvchi saytni ochsangiz, barcha sayt funksiyalari ishlashi uchun vaqtincha cookie fayllarni yoqishingiz kerak.</translation>
 <translation id="7319983568955948908">Ruxsatni yopish</translation>
 <translation id="7320213904474460808">Standart tarmoqni tanlash</translation>
 <translation id="7321545336522791733">Server ayni vaqtda ish faoliyatida emas</translation>
@@ -9491,6 +9491,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8372678064309688510">Manzilingiz saqlangan</translation>
 <translation id="8373652277231415614">Crostini umumiy kataloglari</translation>
 <translation id="8374243500935816406">Saytlarga barcha displeylaringizda oynalarni boshqarish uchun ruxsat berilmasin</translation>
+<translation id="8375703478696038265">Bosqich: <ph name="STEP_NUMBER" /> / <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Google Cast bilan bogʻliq fikr-mulohazalaringizni ulashing.</translation>
 <translation id="8376384591331888629">Bu saytdagi tashqi cookie fayllariga ham</translation>
 <translation id="8376451933628734023">Agar bu veb ilova shubhali ishlasa, uni oʻchirib tashlang.</translation>
@@ -10562,6 +10563,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="9188142767272053574">Jarayonlar izolyatsiyasini yoqish</translation>
 <translation id="9192019773545828776">Oʻqib eshittirish orqali qurilmadan ekranga qaramay foydalanish mumkin. Ulangan qurilmada brayl aloqasi ishlaydi. ChromeVoxni yoqib oʻchirish uchun Ctrl+Alt+Z tugmalarini bosing. Yonga harakatlanish uchun Search+Chap strelka yoki Oʻng strelka tugmalarini bosing. Tanlash uchun Search+Boʻshliq (faollashtirish) tugmalarini bosing.</translation>
 <translation id="9195969368671142407">Tashkilotingiz Google hisobingizga maʼlumotlarni saqlashni cheklasa, varaqlar guruhini ulashish yoki ularga qoʻshilish imkonsiz boʻladi</translation>
+<translation id="9197456336762295195">google.com uchun kirish kaliti bor qurilma kamerasida bu QR kodni skanerlang</translation>
 <translation id="919840898042157087">Statik harakat</translation>
 <translation id="9199503643457729322">Maxfiylik qoʻllanmasidan chiqish uchun bosing.</translation>
 <translation id="9199695835892108985">Seriyali portlar uchun barcha ruxsatlar tiklansinmi?</translation>

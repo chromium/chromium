@@ -73,6 +73,7 @@
 <translation id="4233778200880751280"><ph name="ABOUT_PAGE" /> sahifasini yuklab bo‘lmadi.</translation>
 <translation id="424963718355121712">Ilovalar yopilishidan avval ochiq qolgan saytlar bilan birga ishga tushiriladi</translation>
 <translation id="4306119971288449206">Ilovalar “<ph name="CONTENT_TYPE" />” kontent turi bilan ishga tushiriladi</translation>
+<translation id="4349181963619779233">Bu saytdan kengaytma va ilovalar kiritish imkonsiz</translation>
 <translation id="4625078469366263107">Ilovani yoqish</translation>
 <translation id="4633003931260532286">Kengaytmaga kamida “<ph name="IMPORT_VERSION" />” versiyadagi “<ph name="IMPORT_NAME" />” kerak, lekin hozir “<ph name="INSTALLED_VERSION" />” versiyasi o‘rnatilgan</translation>
 <translation id="4660476621274971848">“<ph name="EXPECTED_VERSION" />” versiyasi kutilayotgandi, lekin “<ph name="NEW_ID" />” versiyasi o‘rnatildi</translation>

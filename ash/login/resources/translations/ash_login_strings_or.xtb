@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">ପ୍ରୋକ୍ସି ସେଟିଂସ୍‌</translation>
 <translation id="3550915441744863158">Chrome ସ୍ଵଚାଳିତ ଭାବେ ଅପ୍‌ଡେଟ୍‌ ହୋଇଥାଏ, ଯାହାଦ୍ଵାରା ଆପଣଙ୍କର ସର୍ବଦା ସଦ୍ୟତମ ଭର୍ସନ୍ ରହିଥିବ।</translation>
 <translation id="3559533181353831840">ପାଖାପାଖି <ph name="TIME_LEFT" /> ବାକି ଅଛି</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />ରିଟେଲରଙ୍କ ନାମ ଏବଂ ଏହି ଡେମୋ ଡିଭାଇସ କନଫିଗର କରାଯାଇଥିବା ଷ୍ଟୋରର ନମ୍ବର ଲେଖନ୍ତୁ*। <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ଯଦି ଆପଣ ଷ୍ଟୋରର ନମ୍ବର ଜାଣିନାହାଁନ୍ତି, ତେବେ ଡେମୋ ମୋଡ ଇନଷ୍ଟଲେସନ ସହ ଜାରି ରଖିବାକୁ ଆପଣ "0000" ଲେଖିପାରିବେ। <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*ଧ୍ୟାନ ଦିଅନ୍ତୁ: ଡିଭାଇସଟି ଡେମୋ ମୋଡର କେଉଁ ଭର୍ସନ ପାଇବା ଉଚିତ ତାହା ଚିହ୍ନଟ କରିବା ଏବଂ ଡେମୋ ମୋଡର ବ୍ୟବହାରକୁ ମାପିବା ପାଇଁ Google ଏହି ସୂଚନାକୁ ବ୍ୟବହାର କରେ।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" />ର ହାର୍ଡୱେର ଡାଟା ସଂଗ୍ରହ</translation>
 <translation id="3602290021589620013">ପ୍ରିଭ୍ୟୁ</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">ନାହିଁ</translation>
 <translation id="4251377547188244181">କିଓସ୍କ ଏବଂ ସିଗ୍ନେଜ ଡିଭାଇସର ପଞ୍ଜିକରଣ</translation>
 <translation id="4263223596040212967">ଆପଣଙ୍କର କୀବୋର୍ଡ ଲେଆଉଟ୍ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="4268490040465852105">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ହେଉଛି Gmail, YouTube, Chrome ଏବଂ ଅନ୍ୟ Google ପ୍ରଡକ୍ଟ ପାଇଁ ଆପଣ ବ୍ୟବହାର କରୁଥିବା ସମାନ ଆକାଉଣ୍ଟ।
+        ଆପଣଙ୍କର ସମସ୍ତ ବୁକମାର୍କ, ଫାଇଲ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ସହଜରେ ଆକ୍ସେସ କରିବା ପାଇଁ ଆପଣଙ୍କ ଆକାଉଣ୍ଟକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="4278498748067682896">ଡିଭାଇସକୁ କେବଳ କିଓସ୍କ କିମ୍ବା ସାଇନେଜ ମୋଡରେ ଚଲାଇବା ପାଇଁ ଅନୁମତି ଦେଉଥିବା ଏକ କିଓସ୍କ ଏବଂ ସାଇନେଜ ଅପଗ୍ରେଡ ଆପଣ ବ୍ୟବହାର କରିବେ। ଯଦି ଉପଯୋଗକର୍ତ୍ତାମାନେ ଡିଭାଇସରେ ସାଇନ ଇନ କରନ୍ତୁ ବୋଲି ଆପଣ ଚାହାଁନ୍ତି, ତେବେ ଦୟାକରି ପଛକୁ ଯାଇ Chrome Enterprise Upgrade ବ୍ୟବହାର କରି ପଞ୍ଜିକରଣ କରନ୍ତୁ।</translation>
 <translation id="4287157641315808225">ହଁ, ChromeVoxକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="4289732974614035569">ଏକ PIN ବାଛନ୍ତୁ</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">ଲାଇଟ କିମ୍ବା ଡାର୍କ ଥିମକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="5804259315582798390">ସ୍ଥାନୀୟ ଡାଟା ରିକଭରି ସକ୍ଷମ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="5810809306422959727">ଏହି ଆକାଉଣ୍ଟ ବାପାମାଙ୍କ ନିୟନ୍ତ୍ରଣ ପାଇଁ ଯୋଗ୍ୟ ନୁହେଁ</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />ଆପଣଙ୍କ ସଂସ୍ଥାରେ ଆପଣଙ୍କ ଡିଭାଇସଗୁଡ଼ିକୁ ଏନରୋଲ କରିବା ଫଳରେ ଏହା ସେଣ୍ଟ୍ରାଲାଇଜ୍ଡ ଡିଭାଇସ ମେନେଜମେଣ୍ଟ ପାଇଁ ଏହାକୁ ସେଟ ଅପ କରେ। ଏକାଧିକ କାରଣ ପାଇଁ ଆପଣଙ୍କ ସଂସ୍ଥାର ଏନରୋଲମେଣ୍ଟ ଆବଶ୍ୟକ ହୋଇପାରେ:<ph name="END_DESCRIPTION" />
+    <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />ସୁରକ୍ଷା ବଢ଼ାଇବା<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+    <ph name="BEGIN_DESCRIPTION1" />ଅତିରିକ୍ତ ସୁରକ୍ଷା ସେଟିଂସକୁ କନଫିଗର କରି, ୟୁଜର ଓ ଡିଭାଇସ ଡାଟାକୁ ସଂସ୍ଥା ସୁରକ୍ଷିତ ରଖିପାରିବ। ଏହା ରିମୋଟ ରିସେଟ କିମ୍ବା ଏକ ହଜିଯାଇଥିବା ଡିଭାଇସକୁ ଅକ୍ଷମ କରିବା ପରି କାର୍ଯ୍ୟ ମଧ୍ୟ କରିପାରିବ।<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />ଅନୁଭୂତିକୁ କଷ୍ଟମାଇଜ କରିବା<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+    <ph name="BEGIN_DESCRIPTION2" />ବୁଟଅପରେ, ଲଗଇନ ସ୍କ୍ରିନରେ ଏବଂ ଲଗଇନ ପରେ ଡିଭାଇସର ଆଚରଣକୁ ସଂସ୍ଥାର ଆବଶ୍ୟକତା ଅନୁଯାୟୀ କଷ୍ଟମାଇଜ କରାଯାଇପାରିବ।<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />ସପୋର୍ଟ ପ୍ରଦାନ କରିବା<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />ଟ୍ରବୁଲସୁଟିଂ ପ୍ରଦାନ କରିବା ପାଇଁ ସଂସ୍ଥା ଏକ ଡିଭାଇସ ସେସନକୁ ରିମୋଟ ଭାବେ ଆକ୍ସେସ କରିପାରିବ।<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />ଆକ୍ସେସକୁ ସକ୍ଷମ କରିବା<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+    <ph name="BEGIN_DESCRIPTION4" />ସଂସ୍ଥାର ଆପ୍ସ, ସର୍ଭିସେସ ଏବଂ ନେଟୱାର୍କଗୁଡ଼ିକ କେବଳ ଏନରୋଲ ହୋଇଥିବା ଡିଭାଇସଗୁଡ଼ିକରେ ଉପଲବ୍ଧ ହୋଇପାରେ।<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">ପାଖାପାଖି <ph name="TIME" /> ମିନିଟ୍ ବାକି ଅଛି</translation>
 <translation id="5852112051279473187">ଓହୋ!  ଏହି ଡିଭାଇସ୍‍କୁ ତାଲିକାଭୁକ୍ତ କରିବା ସମୟରେ ପ୍ରକୃତରେ କିଛି ଭୁଲ୍‍ ହୋଇଯାଇଛି।  ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର ସହଯୋଗ ପ୍ରତିନିଧିଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="5852137567692933493">ରିଷ୍ଟାର୍ଟ ଏବଂ ପାୱାର୍‍ୱାସ୍ କରନ୍ତୁ</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />ଟିରୁ <ph name="CURRENT_ELEMENT" />ଟି ଅତିରିକ୍ତ ବିଷୟବସ୍ତୁକୁ ନାଭିଗେଟ୍ କରନ୍ତୁ</translation>
 <translation id="6016972670657536680">ଭାଷା ଓ କୀ-ବୋର୍ଡ ବଟନ୍‍କୁ ଚୟନ କରନ୍ତୁ। ବର୍ତ୍ତମାନ ଚୟନିତ ଭାଷା ହେଉଛି <ph name="LANGUAGE" />।</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
+<translation id="6042193169866365541">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ହେଉଛି Gmail, YouTube, Chrome ଏବଂ ଅନ୍ୟ Google ପ୍ରଡକ୍ଟ ପାଇଁ ଆପଣ ବ୍ୟବହାର କରୁଥିବା ସମାନ ଆକାଉଣ୍ଟ।
+        ଆପଣଙ୍କର ସମସ୍ତ ବୁକମାର୍କ, ଫାଇଲ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ସହଜରେ ଆକ୍ସେସ କରିବା ପାଇଁ ଆପଣଙ୍କ ଆକାଉଣ୍ଟକୁ ବ୍ୟବହାର କରନ୍ତୁ। ଯଦି ଆପଣଙ୍କର କୌଣସି ଆକାଉଣ୍ଟ ନାହିଁ, ତେବେ ଆପଣ ପରବର୍ତ୍ତୀ ସ୍କ୍ରିନରେ ଗୋଟିଏ ଆକାଉଣ୍ଟ ତିଆରି କରିପାରିବେ।</translation>
 <translation id="6051354611314852653">ଓହୋଃ!  ଏହି ଡିଭାଇସ୍ ପାଇଁ API ଆକ୍ସେସ୍ ଅଧିକୃତ କରିବାରେ ସିଷ୍ଟମ୍ ବିଫଳ ହେଲା।</translation>
 <translation id="6055544610007596637">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" /> ପାଇଁ Google Play Storeରୁ ଆପ୍ସ ଇନଷ୍ଟଲ କରନ୍ତୁ</translation>
 <translation id="6069464830445383022">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ହେଉଛି ଆପଣଙ୍କ Chromebookର ସାଇନ୍-ଇନ୍</translation>

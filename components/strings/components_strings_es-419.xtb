@@ -2327,6 +2327,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4607608436550361748">Ver sugerencias para Chrome</translation>
 <translation id="460848736049414407">Bloqueada por el administrador</translation>
 <translation id="4610279718074907952">Este sitio está en un grupo, definido por <ph name="SET_OWNER" />, que puede ver tu actividad</translation>
+<translation id="4612631413844865947">Se produjo un error al procesar tu pedido en <ph name="MERCHANT_ORIGIN" /> a través de <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Equipo para fútbol</translation>
 <translation id="4612904677925722054">Es posible que este sitio incluya contenido para mayores de edad. Debes contar con el permiso de tu madre, padre o tutor para poder visitar este sitio web.</translation>
 <translation id="4619564267100705184">Verificar tu identidad</translation>

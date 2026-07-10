@@ -1965,7 +1965,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2517472476991765520">Skann</translation>
 <translation id="2518024842978892609">Bruk klientsertifikatene dine</translation>
 <translation id="2518620532958109495">Nettsteder som har lov til å gå over i fullskjerm automatisk</translation>
-<translation id="2519250377986324805">Se hvordan</translation>
 <translation id="2519517390894391510">Navn på sertifikatprofil</translation>
 <translation id="2520644704042891903">Venter på tilgjengelig socket ...</translation>
 <translation id="2521427645491031107">Synkronisering av apper er angitt i enhetsinnstillingene</translation>
@@ -3535,6 +3534,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="371370241367527062">Mikrofon foran</translation>
 <translation id="37143699183660101">Markørstabilitet</translation>
 <translation id="3714610938239537183">Trinn 2 av 4: Velg diagnostikkdataene som skal eksporteres</translation>
+<translation id="3715519518311454566">Gemini-feltet nederst er skjult.</translation>
 <translation id="3717133748480414053">Ferdigheter kan hjelpe deg med å oppsummere nettsider, søke etter gode tilbud med mer</translation>
 <translation id="3719245268140483218">Enhetshendelse</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> er fylt ut.</translation>
@@ -6214,6 +6214,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5828181959764767444">Solnedgang</translation>
 <translation id="5828545842856466741">Legg til profil…</translation>
 <translation id="5828633471261496623">Skriver ut …</translation>
+<translation id="5829137022934788067">Fortell meg om dette valget</translation>
 <translation id="5829214552954466783">Del <ph name="CREDENTIAL_TYPE" /> for brukernavnet <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Betalingsmåtene dine i Google Wallet</translation>
 <translation id="5830512293931520102">Passordet ditt er kryptert og blir aldri sett av noen</translation>
@@ -7005,6 +7006,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6455264371803474013">På bestemte nettsteder</translation>
 <translation id="6455521402703088376">Av • Utvikleren har avpublisert denne utvidelsen</translation>
 <translation id="6455894534188563617">&amp;Ny mappe</translation>
+<translation id="6456162045957729200">Forklar dette valget</translation>
 <translation id="645705751491738698">Fortsett blokkering av JavaScript</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> kan ikke startes</translation>
 <translation id="6458701200018867744">Opplastingen mislyktes (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8116,7 +8118,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7314989823816739632">Romantisk</translation>
 <translation id="7317342082064136423">Bekreft kontoen din</translation>
 <translation id="731827437403763009">AI-innovasjoner</translation>
-<translation id="7319320447721994672">Hvis du besøker nettsteder som bruker informasjonskapsler, må du kanskje aktivere informasjonskapsler midlertidig for at alle funksjonene skal fungere.</translation>
 <translation id="7319983568955948908">Stopp deling</translation>
 <translation id="7320213904474460808">Bruk nettverk som standard</translation>
 <translation id="7321545336522791733">Tjeneren er ikke tilgjengelig</translation>
@@ -8866,6 +8867,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7903481341948453971">Bruk skjermlåsen ved utfylling av passord</translation>
 <translation id="7903925330883316394">Verktøy: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7904492297081735975">&amp;Åpne bokmerkebehandlingen</translation>
 <translation id="7904526211178107182">Gjør Linux-porter tilgjengelige for andre enheter på nettverket.</translation>
 <translation id="7907312522152480478">For å få fanene dine fra de andre enhetene dine, bekreft at det er deg, og synkroniser loggen og fanene dine. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="7907502219904644296">Endre tilgangen</translation>
@@ -10618,6 +10620,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="942296794412775122">Mikrofon på/av</translation>
 <translation id="942488123151518958">Sett på pause (K)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> deler lyd og en fane fra Chrome.</translation>
+<translation id="943744232549395906">Stemmestyrt skriving er stoppet</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
 <translation id="947156494302904893">Nettsteder du besøker, kan bekrefte at du er en ekte person og ikke en robot</translation>
 <translation id="947329552760389097">&amp;Undersøk elementer</translation>

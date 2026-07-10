@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Puhverserveri seaded</translation>
 <translation id="3550915441744863158">Chrome teeb värskendused automaatselt, nii et kasutate alati uusimat versiooni</translation>
 <translation id="3559533181353831840">Ligikaudu <ph name="TIME_LEFT" /> jäänud</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Sisestage selle jaemüüja nimi ja poe number, kelle jaoks seda demoseadet seadistatakse*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Kui te poe numbrit ei tea, saate demorežiimi installimisega jätkamiseks sisestada numbri 0000. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />* Märkus: Google kasutab seda teavet selleks, et tuvastada seadme jaoks vajalik demorežiim ja mõõta demorežiimi kasutamist.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Midagi läks valesti. Proovige uuesti.</translation>
 <translation id="3577745545227000795">Operatsioonisüsteemi <ph name="DEVICE_OS" /> riistvaraandmete kogumine</translation>
 <translation id="3602290021589620013">Eelvaade</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Ei</translation>
 <translation id="4251377547188244181">Kioski- ja teabeseadmete registreerimine</translation>
 <translation id="4263223596040212967">Kontrollige klaviatuuripaigutust ja proovige uuesti.</translation>
+<translation id="4268490040465852105">Teie Google'i konto on sama, mida kasutate Gmaili, YouTube'i, Chrome'i ja muude Google'i teenuste jaoks.
+        Kasutage oma kontot, et pääseda hõlpsalt juurde kõikidele oma järjehoidjatele, failidele ja muule.</translation>
 <translation id="4278498748067682896">Kasutate kioski- ja teabeseadmete versiooniuuendust, mis lubab seadet käitada ainult kioski- või teabeseadme režiimis. Kui soovite, et kasutajad logiksid seadmesse sisse, minge tagasi ja registreeruge Chrome Enterprise'i versiooniuuenduse kaudu.</translation>
 <translation id="4287157641315808225">Jah, aktiveeri ChromeVox</translation>
 <translation id="4289732974614035569">Valige PIN-kood</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Heleda või tumeda teema valimine</translation>
 <translation id="5804259315582798390">Kohalike andmete taastamise lubamine ebaõnnestus</translation>
 <translation id="5810809306422959727">See konto pole vanemliku järelevalve kasutamiseks sobilik</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Kui registreerite seadmed oma organisatsioonis, seadistate need tsentraliseeritud seadmehalduse jaoks. Teie organisatsioon võib registreerimist nõuda mitmel põhjusel.<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Täiustatud turve<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Täiendavate turbeseadete seadistamise korral saab organisatsioon hoida kasutajate ja seadmete andmeid turvaliselt. Samuti saab see teha selliseid toiminguid nagu kauglähtestamine ja kaotatud seadme keelamine.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Seadme toimimise kohandamine<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Seadme käitumist käivitumisel, sisselogimiskuval ja pärast sisselogimist saab organisatsiooni vajaduste järgi kohandada.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Toe pakkumine<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Organisatsioon pääseb kaugühenduse kaudu juurde seadme seansile, et teha veaotsingut.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Juurdepääsu lubamine<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Organisatsiooni rakendused, teenused ja võrgud võivad olla saadaval ainult registreeritud seadmetes.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Jäänud on umbes <ph name="TIME" /> minutit</translation>
 <translation id="5852112051279473187">Vabandust! Seadme registreerimisel läks miski väga valesti. Proovige uuesti või võtke ühendust toe esindajaga.</translation>
 <translation id="5852137567692933493">Taaskäivita ja tee Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Lisasisu juurde navigeerimine, üksus <ph name="CURRENT_ELEMENT" /> <ph name="TOTAL_ELEMENTS" />-st</translation>
 <translation id="6016972670657536680">Valige keele ja klaviatuuri nupp. Praegu on valitud <ph name="LANGUAGE" /> keel.</translation>
 <translation id="6040143037577758943">Sulge</translation>
+<translation id="6042193169866365541">Teie Google'i konto on sama, mida kasutate Gmaili, YouTube'i, Chrome'i ja muude Google'i teenuste jaoks.
+        Kasutage oma kontot, et pääseda hõlpsalt juurde kõikidele oma järjehoidjatele, failidele ja muule. Kui teil kontot ei ole, saate selle luua järgmisel ekraanikuval.</translation>
 <translation id="6051354611314852653">Vabandust! Süsteemil ei õnnestunud saada sellele seadmele API juurdepääsu.</translation>
 <translation id="6055544610007596637">Installige oma seadmesse <ph name="DEVICE_TYPE" /> Google Play poest rakendusi</translation>
 <translation id="6069464830445383022">Chromebooki saate sisse logida oma Google'i kontoga</translation>

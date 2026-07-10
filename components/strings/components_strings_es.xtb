@@ -1425,6 +1425,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para gestionar qué información quieres sincronizar en la configuración de Chrome</translation>
 <translation id="3203025201812691413">La URL no puede estar vacía</translation>
 <translation id="320323717674993345">Cancelar pago</translation>
+<translation id="3204534477198689393">Para mejorar las sugerencias y rellenar formularios más rápidamente, el contenido y las URLs de las páginas que visitas se pueden procesar en un espacio privado en la nube.</translation>
 <translation id="3207830513221832868">Puede que <ph name="BLOCKED_URL" /> incluya contenido no apto para menores</translation>
 <translation id="3207960819495026254">Añadido a marcadores</translation>
 <translation id="3208701679386778924">Envía un informe para que podamos mejorar las próximas actualizaciones de ChromeOS.</translation>
@@ -1480,6 +1481,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3272643614306383237">Menos de 1 MB. Algunos sitios pueden tardar más en cargarse la próxima vez que los visites.</translation>
 <translation id="3273738040255912340">Tu administrador puede hacer cambios en tu perfil y navegador de forma remota, analizar información del navegador mediante informes y realizar otras tareas necesarias. Es posible que la actividad de este dispositivo también se gestione fuera de Chromium. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">Guardar IBAN abierto a altura completa.</translation>
+<translation id="327455571215090823">Función Autocompletar más inteligente y privada</translation>
 <translation id="3281350579597955952">{0,plural, =1{La política del administrador no recomienda abrir este archivo en <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda abrir estos archivos en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Tu organización, <ph name="ENROLLMENT_DOMAIN" />, ha enviado algunos datos (como ajustes o políticas) a los siguientes sitios web.</translation>
 <translation id="3286372614333682499">vertical</translation>
@@ -2326,6 +2328,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4607608436550361748">Ver consejos de Chrome</translation>
 <translation id="460848736049414407">Bloqueado por el administrador</translation>
 <translation id="4610279718074907952">Este sitio está en un grupo, definido por <ph name="SET_OWNER" />, que puede ver tu actividad</translation>
+<translation id="4612631413844865947">No se ha podido procesar tu pedido de <ph name="MERCHANT_ORIGIN" /> en <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Equipamiento de fútbol</translation>
 <translation id="4612904677925722054">Puede que este sitio web incluya contenido no apto para menores. Tu padre, madre o tutor/a debe darte permiso para visitarlo.</translation>
 <translation id="4619564267100705184">Demostrar mi identidad</translation>
@@ -4804,7 +4807,7 @@ Más información:
 Más información:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Micrófono permitido esta vez</translation>
-<translation id="8421746712901926961">Guarda tu información en <ph name="GOOGLE_WALLET_TITLE_1" /> y realiza tareas más rápido, como rellenar formularios en los productos de Google. Puedes <ph name="MANAGE_INFO_LINK" /> en <ph name="GOOGLE_WALLET_TITLE_2" /> de <ph name="ACCOUNT" />.</translation>
+<translation id="8421746712901926961">Guarda tu información en <ph name="GOOGLE_WALLET_TITLE_1" /> y completa tareas más rápido, como rellenar formularios en los productos de Google. Puedes <ph name="MANAGE_INFO_LINK" /> en <ph name="GOOGLE_WALLET_TITLE_2" /> de <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8426945547715537628">¿Permitir la anulación del teclado?</translation>

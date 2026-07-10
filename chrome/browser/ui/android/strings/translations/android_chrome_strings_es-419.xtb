@@ -1438,6 +1438,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Se anuló la suscripción a 1 sitio}other{Se anuló la suscripción a # sitios}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 contraseña}other{# contraseñas}}</translation>
 <translation id="688730033107341407">Después de salir, los favoritos, las contraseñas y otros datos de tu Cuenta de Google se quitarán de este dispositivo.</translation>
+<translation id="6892009074348518725">Para usar esta extensión, accede a Chrome. También podrás usar y guardar tus contraseñas y otros datos de tu Cuenta de Google.</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6898797562238201317">Usar tu propia frase de contraseña para encriptar todos los datos de Chrome en tu Cuenta de Google</translation>
 <translation id="6900532703269623216">Protección mejorada</translation>

@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">ທຸລະກິດ ການສຶກສາ</translation>
 <translation id="1542830386724426410">ສະແດງສິດທິປະໂຫຍດ ແລະ ຮາງວັນຂອງບັດທີມີໃຫ້ໃນຕອນຈ່າຍເງິນ. ມີເງື່ອນໄຂຂອງຜູ້ອອກບັດ. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">ປະຫວັດລາຄາ</translation>
+<translation id="1546286808622193216">ປຽບທຽບສິດທິປະໂຫຍດຂອງບັດໂດຍໃຊ້ Gemini</translation>
 <translation id="1549470594296187301">ຕ້ອງເປີດໃຊ້ງານ JavaScript ເພື່ອໃຊ້ຄຸນສົມບັດໃຊ້ງານນີ້.</translation>
 <translation id="1553152622374372421">ກິລາລະດູໜາວ</translation>
 <translation id="1553358976309200471">ອັບ​ເດດ Chrome</translation>
@@ -2326,6 +2327,7 @@
 <translation id="4607608436550361748">ເບິ່ງເຄັດລັບ Chrome</translation>
 <translation id="460848736049414407">ຖືກບລັອກໂດຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="4610279718074907952">ເວັບໄຊນີ້ແມ່ນຢູ່ໃນກຸ່ມ, ເຊິ່ງກຳນົດໄວ້ໂດຍ <ph name="SET_OWNER" />, ທີ່ສາມາດເຫັນການເຄື່ອນໄຫວຂອງທ່ານ</translation>
+<translation id="4612631413844865947">ເກີດຂໍ້ຜິດພາດໃນການປະມວນຜົນຄຳສັ່ງຊື້ຂອງທ່ານຢູ່ <ph name="MERCHANT_ORIGIN" /> ຜ່ານ <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">ອຸປະກອນເຕະບານ</translation>
 <translation id="4612904677925722054">ເວັບໄຊນີ້ອາດມີເນື້ອຫາສຳລັບຜູ້ໃຫຍ່. ພໍ່ແມ່ ຫຼື ຜູ້ປົກຄອງຕ້ອງລະບຸວ່າທ່ານເຂົ້າເບິ່ງເວັບໄຊນີ້ໄດ້.</translation>
 <translation id="4619564267100705184">ຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້</translation>
@@ -2415,6 +2417,7 @@
 <translation id="4744603770635761495">ຊ່ອງ​ທາງ​ທີ່ປະ​ຕິ​ບັດໄດ້</translation>
 <translation id="4744816391336495134">ທ່ານສາມາດໃຊ້ລາຍນິ້ວມືຂອງທ່ານເພື່ອຢັ້ງຢືນວ່າແມ່ນທ່ານເມື່ອໃດກໍຕາມທີ່ທ່ານໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໄດ້</translation>
 <translation id="4749011317274908093">ທ່ານເຂົ້າໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນແລ້ວ</translation>
+<translation id="4749620353539006322">ເພີ່ມຮາງວັນໃຫ້ສູງສຸດ</translation>
 <translation id="4749924365937394956">ການພິສູດຢືນຢັນເຊີບເວີ</translation>
 <translation id="4750671009706599284">ໂທລະສັບນີ້</translation>
 <translation id="4750917950439032686">ຂໍ້ມູນຂອງທ່ານ (ຕົວຢ່າງ: ລະຫັດຜ່ານ ຫຼື ເລກບັດເຄຣດິດ) ແມ່ນເປັນຄວາມລັບເມື່ອມັນຖືກສົ່ງຫາເວັບໄຊນີ້.</translation>
@@ -2990,6 +2993,7 @@
 <translation id="5611398002774823980">ບັນທຶກໃນບັນຊີ</translation>
 <translation id="561165882404867731">ແປໜ້ານີ້ດ້ວຍ Google ແປພາສາ</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ຕ້ອງການໃຊ້ສະຖານທີ່ຂອງຄອມພິວເຕີຂອງທ່ານ</translation>
+<translation id="5613958591683399697">ຖາມ <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">ແຈ້ງ​ການ​ຜູ້ໃຊ້</translation>
 <translation id="5614520971155863709">ເກມໄພ້</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> ໄດ້ປ່ຽນເສັ້ນທາງທ່ານຫຼາຍຄັ້ງເກີນໄປ.</translation>

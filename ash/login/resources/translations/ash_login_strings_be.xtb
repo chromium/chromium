@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Налады проксі-сервера</translation>
 <translation id="3550915441744863158">Chrome абнаўляецца аўтаматычна, таму ў вас заўсёды будзе ўсталявана апошняя версія</translation>
 <translation id="3559533181353831840">Засталося: <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Укажыце імя ці назву рознічнага прадаўца і нумар крамы, для якой наладжваецца гэта дэманстрацыйная прылада*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Калі вы не ведаеце нумар крамы, увядзіце "0000", каб працягнуць наладжванне дэманстрацыйнага рэжыму. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Заўвага. Google выкарыстоўвае гэту інфармацыю, каб вызначыць патрэбную версію дэманстрацыйнага рэжыму для прылады і збіраць звесткі пра яго выкарыстанне.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Нешта пайшло не так. Паўтарыце спробу.</translation>
 <translation id="3577745545227000795">Збор даных аб апаратным забеспячэнні <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Перадпрагляд</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Не</translation>
 <translation id="4251377547188244181">Рэгістрацыя прылады для работы ў рэжыме кіёска і лічбавай знешняй рэкламы</translation>
 <translation id="4263223596040212967">Праверце раскладку клавіятуры і паўтарыце спробу.</translation>
+<translation id="4268490040465852105">Ваш Уліковы запіс Google – гэта той самы ўліковы запіс, які вы выкарыстоўваеце для Gmail, YouTube, Chrome і іншых прадуктаў Google.
+        З яго дапамогай вы можаце лёгка атрымліваць доступ да ўсіх вашых закладак, файлаў і не толькі.</translation>
 <translation id="4278498748067682896">Вы збіраецеся выкарыстаць ліцэнзію Kiosk &amp; Signage Upgrade, у выніку чаго прылада будзе працаваць толькі ў рэжыме кіёска або лічбавай знешняй рэкламы. Каб карыстальнікі маглі ўваходзіць ва ўліковы запіс на прыладзе, вярніцеся назад і зарэгіструйце яе з выкарыстаннем ліцэнзіі Chrome Enterprise Upgrade.</translation>
 <translation id="4287157641315808225">Так, актываваць ChromeVox</translation>
 <translation id="4289732974614035569">Увядзіце PIN-код</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Выберыце светлую або цёмную тэму</translation>
 <translation id="5804259315582798390">Не ўдалося ўключыць аднаўленне лакальных даных</translation>
 <translation id="5810809306422959727">Гэты ўліковы запіс не прыдатны для выкарыстання функцыі бацькоўскага кантролю</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Рэгістрацыя прылад у арганізацыі дазваляе наладзіць цэнтралізаванае кіраванне імі. Арганізацыя можа патрабаваць рэгістрацыю па некалькіх прычынах:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Павышэнне ўзроўню бяспекі<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Наладжваючы дадатковыя параметры бяспекі, арганізацыя можа захоўваць даныя карыстальнікаў і прылад у бяспецы. Таксама гэта дазваляе выконваць такія дзеянні, як дыстанцыйны скід і адключэнне згубленай прылады.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Наладжванне патрэбных функцый<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Паводзіны прылады пры загрузцы, на экране ўваходу і пасля ўваходу можна наладзіць згодна з патрэбамі арганізацыі.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Забеспячэнне падтрымкі<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Арганізацыя можа атрымліваць аддалены доступ да сеанса прылады для пошуку і выпраўлення непаладак.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Забеспячэнне доступу<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Праграмы, сэрвісы і сеткі арганізацыі можна зрабіць даступнымі толькі на зарэгістраваных прыладах.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Засталося каля <ph name="TIME" /> хв</translation>
 <translation id="5852112051279473187">Памылка!  Нешта пайшло зусім не так падчас рэгістрацыі прылады.  Паўтарыце спробу або звярніцеся да прадстаўніка службы падтрымкі.</translation>
 <translation id="5852137567692933493">Перазапусціць і скінуць налады функцыяй Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Перайсці да дадатковага змесціва: <ph name="CURRENT_ELEMENT" /> з <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Кнопка выбару мовы і рэгіёна. Зараз выбрана наступная мова: <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Закрыць</translation>
+<translation id="6042193169866365541">Ваш Уліковы запіс Google – гэта той самы ўліковы запіс, які вы выкарыстоўваеце для Gmail, YouTube, Chrome і іншых прадуктаў Google.
+        З яго дапамогай вы можаце лёгка атрымліваць доступ да ўсіх вашых закладак, файлаў і не толькі. Калі ў вас няма ўліковага запісу, вы можаце стварыць яго на наступным экране.</translation>
 <translation id="6051354611314852653">Памылка!  Сістэме не ўдалося аўтарызаваць доступ API для гэтай прылады.</translation>
 <translation id="6055544610007596637">Усталёўвайце праграмы для прылады <ph name="DEVICE_TYPE" /> з Крамы Google Play</translation>
 <translation id="6069464830445383022">Выкарыстоўвайце для ўваходу ў Chromebook свой Уліковы запіс Google</translation>

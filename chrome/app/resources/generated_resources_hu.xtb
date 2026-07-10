@@ -107,7 +107,7 @@
 <translation id="1069814191880976658">Válasszon másik képernyőt</translation>
 <translation id="1070357312245925724">Navigációs billentyűparancs</translation>
 <translation id="1070705170564860382">Megnyitás másik böngészőben <ph name="COUNTDOWN_SECONDS" /> másodperc múlva</translation>
-<translation id="1071661533099313342">Külön nézetek</translation>
+<translation id="1071661533099313342">Nézetek szétválasztása</translation>
 <translation id="1072700771426194907">USB-eszköz észlelve</translation>
 <translation id="1075920807995555452">Eszközeit, szerkesztőit és IDE-jeit a vállalkozása által kezelt környezetben futtathatja <ph name="DEVICE_TYPE" /> eszközén. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">Az oldalakon szövegkurzorral navigálhat</translation>
@@ -1966,7 +1966,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2517472476991765520">Szkennelés</translation>
 <translation id="2518024842978892609">Klienstanúsítványok használata</translation>
 <translation id="2518620532958109495">Automatikusan teljes képernyős módra válthatnak</translation>
-<translation id="2519250377986324805">Megnézem</translation>
 <translation id="2519517390894391510">Tanúsítványprofil neve</translation>
 <translation id="2520644704042891903">Várakozás elérhető socketre...</translation>
 <translation id="2521427645491031107">Az alkalmazások közötti szinkronizálást az eszközbeállításokban állíthatja be</translation>
@@ -3536,6 +3535,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="371370241367527062">Elülső mikrofon</translation>
 <translation id="37143699183660101">Kurzor stabilitása</translation>
 <translation id="3714610938239537183">4/2. lépés: Válassza ki az exportálni kívánt diagnosztikai adatokat</translation>
+<translation id="3715519518311454566">A Gemini alsó lapja összecsukva.</translation>
 <translation id="3717133748480414053">A készségek segítségével összefoglalhatja a weboldalakat, nagyszerű ajánlatokat kereshet stb.</translation>
 <translation id="3719245268140483218">Eszközesemény</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> kitöltve.</translation>
@@ -6220,6 +6220,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5828181959764767444">Napnyugta</translation>
 <translation id="5828545842856466741">Profil hozzáadása…</translation>
 <translation id="5828633471261496623">Nyomtatás...</translation>
+<translation id="5829137022934788067">Információkat kérek erről a kiválasztásról</translation>
 <translation id="5829214552954466783"><ph name="CREDENTIAL_TYPE" /> megosztása a következő felhasználónévre vonatkozóan: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Az Ön fizetési módjai a Google Walletben</translation>
 <translation id="5830512293931520102">Jelszava titkosítva van, és senki sem láthatja</translation>
@@ -6519,7 +6520,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6064764629679333574">Javíthatja a Bluetooth-mikrofon hangjának minőségét a kis felbontású hang nagy felbontásúra való feljavításával.</translation>
 <translation id="6065289257230303064">Tanúsítványtulajdonos könyvtárattribútumai</translation>
 <translation id="6066649679804058181">Csoport konvertálása könyvjelzőmappává</translation>
-<translation id="6069799426896362048">Külön nézetek</translation>
+<translation id="6069799426896362048">Nézetek szétválasztása</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> memória megtakarítva</translation>
 <translation id="6071995715087444295">Az illetéktelen kézbe került jelszavak előfordulásának ellenőrzéséhez jelentkezzen be Google-fiókjába</translation>
 <translation id="6073292342939316679">billentyűzet fényerejének csökkentése</translation>
@@ -7011,6 +7012,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6455264371803474013">Megadott webhelyeken</translation>
 <translation id="6455521402703088376">Ki • A fejlesztője megszüntette a bővítmény közzétételét</translation>
 <translation id="6455894534188563617">Új &amp;mappa</translation>
+<translation id="6456162045957729200">A kiválasztás magyarázata</translation>
 <translation id="645705751491738698">A JavaScript letiltásának fenntartása</translation>
 <translation id="6457572529564180082">A(z) <ph name="APP_NAME" /> nem indítható el</translation>
 <translation id="6458701200018867744">A feltöltés sikertelen (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8122,7 +8124,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7314989823816739632">Romantikus</translation>
 <translation id="7317342082064136423">Fiók igazolása</translation>
 <translation id="731827437403763009">AI-innovációk</translation>
-<translation id="7319320447721994672">Ha cookie-t használó webhelyre látogat, akkor előfordulhat, hogy a webhely összes funkciójának működéséhez ideiglenesen engedélyeznie kell a cookie-kat.</translation>
 <translation id="7319983568955948908">Megosztás leállítása</translation>
 <translation id="7320213904474460808">Hálózat alapértelmezetté tétele</translation>
 <translation id="7321545336522791733">A szerver nem áll rendelkezésre</translation>
@@ -8871,6 +8872,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7903481341948453971">Képernyőzár használata jelszavak kitöltésekor</translation>
 <translation id="7903925330883316394">Segédprogram: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7904492297081735975">&amp;Könyvjelzőkezelő megnyitása</translation>
 <translation id="7904526211178107182">Az alábbi linuxos portok legyenek hozzáférhetők a hálózaton lévő más eszközök számára.</translation>
 <translation id="7907312522152480478">Ha a többi eszközén lévő lapokhoz is szeretne hozzáférni, igazolja személyazonosságát, majd szinkronizálja az előzményeit és a lapjait. A beállítások között bármikor leállíthatja a szinkronizálást. A Google az Ön előzményei alapján személyre szabhatja a Keresőt és más szolgáltatásokat.</translation>
 <translation id="7907502219904644296">Hozzáférés módosítása</translation>
@@ -10623,6 +10625,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="942296794412775122">Mikrofon be/ki</translation>
 <translation id="942488123151518958">Szüneteltetés (k)</translation>
 <translation id="942532530371314860">A(z) <ph name="APP_NAME" /> megosztja a Chrome egy lapját és a hangot.</translation>
+<translation id="943744232549395906">Hangvezérelt írás leállítva</translation>
 <translation id="945522503751344254">Visszajelzés küldése</translation>
 <translation id="947156494302904893">A felkeresett webhelyek ellenőrizni tudják, hogy Ön valódi személy, nem pedig robot</translation>
 <translation id="947329552760389097">&amp;Elemek vizsgálata</translation>

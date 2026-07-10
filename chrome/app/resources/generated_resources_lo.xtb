@@ -1967,7 +1967,6 @@
 <translation id="2517472476991765520">ສະແກນ</translation>
 <translation id="2518024842978892609">ໃຊ້​ໃບ​ຢັ້ງ​ຢືນ​ລູກ​ຂ່າຍ​ຂອງ​ທ່ານ</translation>
 <translation id="2518620532958109495">ໄດ້ຮັບອະນຸຍາດໃຫ້ເຂົ້າສູ່ໂໝດເຕັມຈໍໂດຍອັດຕະໂນມັດ</translation>
-<translation id="2519250377986324805">ເບິ່ງວິທີ</translation>
 <translation id="2519517390894391510">ຊື່ໂປຣໄຟລ໌ໃບຮັບຮອງ</translation>
 <translation id="2520644704042891903">ກໍາລັງລໍຖ້າເຕົ້າຮັບທີ່ມີຢູ່...</translation>
 <translation id="2521427645491031107">ມີການຕັ້ງຄ່າການຊິ້ງແອັບໃນການຕັ້ງຄ່າອຸປະກອນ</translation>
@@ -3537,6 +3536,7 @@
 <translation id="371370241367527062">ໄມໂຄຣໂຟນໜ້າ</translation>
 <translation id="37143699183660101">ຄວາມສະຖຽນຂອງເຄີເຊີ</translation>
 <translation id="3714610938239537183">ຂັ້ນຕອນທີ 2 ຈາກທັງໝົດ 4 ຂັ້ນຕອນ: ເລືອກຂໍ້ມູນການວິນິໄສເພື່ອສົ່ງອອກ</translation>
+<translation id="3715519518311454566">ຫຍໍ້ຊີດລຸ່ມສຸດຂອງ Gemini ລົງແລ້ວ.</translation>
 <translation id="3717133748480414053">ທັກສະສາມາດຊ່ວຍທ່ານສະຫຼຸບໜ້າເວັບ, ຊອກຫາຂໍ້ສະເໜີສຸດຄຸ້ມ ແລະ ອື່ນໆໄດ້</translation>
 <translation id="3719245268140483218">ເຫດການອຸປະກອນ</translation>
 <translation id="3719310907809321183">ຕື່ມ <ph name="CARD_IDENTIFIER" /> ແລ້ວ.</translation>
@@ -5004,6 +5004,7 @@
 <translation id="4849286518551984791">ເວ​ລາ​ສາ​ກົນ​ກຳ​ນົດ (UTC/GMT)</translation>
 <translation id="4849517651082200438">ຢ່າຕິດຕັ້ງ</translation>
 <translation id="4849731766219625109">ໃຊ້ບັນຊີ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ຂອງທ່ານ</translation>
+<translation id="4850279708232718725">ບອກຂ້ອຍກ່ຽວກັບເລື່ອງນີ້</translation>
 <translation id="485053257961878904">ບໍ່ສາມາດຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນການແຈ້ງເຕືອນໄດ້</translation>
 <translation id="4850548109381269495">ຢູ່ອຸປະກອນທັງ 2 ເຄື່ອງ, ໃຫ້ກວດສອບການເຊື່ອມຕໍ່ອິນເຕີເນັດ ແລະ ເປີດ Bluetooth. ຈາກນັ້ນ, ລອງໃໝ່.</translation>
 <translation id="4850669014075537160">ການເລື່ອນ</translation>
@@ -6220,6 +6221,7 @@
 <translation id="5828181959764767444">ຕາເວັນຕົກ</translation>
 <translation id="5828545842856466741">ເພີ່ມໂປຣໄຟລ໌່...</translation>
 <translation id="5828633471261496623">ກໍາລັງພິມ...</translation>
+<translation id="5829137022934788067">ບອກຂ້ອຍກ່ຽວກັບການເລືອກນີ້</translation>
 <translation id="5829214552954466783">ແບ່ງປັນ <ph name="CREDENTIAL_TYPE" /> ສຳລັບຊື່ຜູ້ໃຊ້: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">ວິທີການຈ່າຍເງິນຂອງທ່ານໃນ Google Wallet</translation>
 <translation id="5830512293931520102">ໄດ້ມີການເຂົ້າລະຫັດລະຫັດຜ່ານຂອງທ່ານແລ້ວ ແລະ ຄົນອື່ນຈະບໍ່ມີທາງເຫັນມັນໄດ້</translation>
@@ -6350,6 +6352,7 @@
 <translation id="5922854266885514646">ຄລິກ "ປັບແຕ່ງ Chrome"</translation>
 <translation id="5924047253200400718">ຂໍຄວາມຊ່ວຍເຫຼືອ<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">ສອບຖາມກ່ອນສຳເນົາ ຫຼື ຍ້າຍໄຟລ໌ Microsoft ໄປໃສ່ Google Drive</translation>
+<translation id="5925057331573749968">ເຂົ້າສູ່ລະບົບໄດ້ໄວຂຶ້ນດ້ວຍລະຫັດ QR</translation>
 <translation id="5926936390113611560">ເປີດໂປຣໄຟລ໌ທັງໝົດ</translation>
 <translation id="592880897588170157">ດາວໂຫຼດໄຟລ໌ PDF ແທນການເປີດພວກມັນໂດຍອັດຕະໂນມັດໃນ Chrome</translation>
 <translation id="5930567261594625340">ທ້ອງຟ້າຕອນກາງຄືນ</translation>
@@ -7011,6 +7014,7 @@
 <translation id="6455264371803474013">ໃນເວັບໄຊສະເພາະ</translation>
 <translation id="6455521402703088376">ປິດຢູ່ • ສ່ວນຂະຫຍາຍນີ້ບໍ່ໄດ້ຖືກເຜີຍແຜ່ໂດຍນັກພັດທະນາ</translation>
 <translation id="6455894534188563617">&amp;ໂຟນເດີໃໝ່</translation>
+<translation id="6456162045957729200">ອະທິບາຍການເລືອກນີ້</translation>
 <translation id="645705751491738698">ສືບຕໍ່ບລັອກ JavaScript</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> ບໍ່ສາມາດຖືກເປີດໃຊ້ໄດ້</translation>
 <translation id="6458701200018867744">ການອັບໂຫຼດບໍ່ສຳເລັດ (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8121,7 +8125,6 @@
 <translation id="7314989823816739632">ໂຣແມນຕິກ</translation>
 <translation id="7317342082064136423">ຢັ້ງຢືນບັນຊີຂອງທ່ານ</translation>
 <translation id="731827437403763009">ນະວັດຕະກຳ AI</translation>
-<translation id="7319320447721994672">ຫາກທ່ານເຂົ້າເວັບໄຊໃດໜຶ່ງທີ່ໃຊ້ຄຸກກີ້, ທ່ານອາດຕ້ອງເປີດການນຳໃຊ້ຄຸກກີ້ເປັນການຊົ່ວຄາວເພື່ອເຮັດໃຫ້ຄຸນສົມບັດເວັບໄຊທັງໝົດໃຊ້ໄດ້.</translation>
 <translation id="7319983568955948908">ຢຸດການແຊຣ໌</translation>
 <translation id="7320213904474460808">ໃຫ້ເປັນເຄືອຂ່າຍເລີ່ມຕົ້ນ</translation>
 <translation id="7321545336522791733">ບໍ່ສາມາດຕິດຕໍ່ຫາເຊີບເວີໄດ້</translation>
@@ -8870,6 +8873,7 @@
 <translation id="7903481341948453971">ໃຊ້ການລັອກໜ້າຈໍຂອງທ່ານເມື່ອໃສ່ລະຫັດຜ່ານ</translation>
 <translation id="7903925330883316394">ການ​ໃຊ້ປະ​ໂຫຍດ​: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">ຄາຕາຄານະ</translation>
+<translation id="7904492297081735975">&amp;ເປີດຕົວຈັດການບຸກມາກ</translation>
 <translation id="7904526211178107182">ເຮັດໃຫ້ຜອດ Linux ໃຊ້ໄດ້ສຳລັບອຸປະກອນອື່ນໃນເຄືອຂ່າຍຂອງທ່ານ.</translation>
 <translation id="7907312522152480478">ເພື່ອຮັບແຖບຂອງທ່ານຈາກອຸປະກອນອື່ນໆ, ໃຫ້ຢັ້ງຢືນຕົວຕົນ ຮວມທັງຊິ້ງປະຫວັດ ແລະ ແຖບຂອງທ່ານ. ທ່ານສາມາດຢຸດການຊິ້ງໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ. Google ອາດປັບແຕ່ງການຊອກຫາ ແລະ ບໍລິການອື່ນໆໃຫ້ເປັນແບບສ່ວນຕົວໂດຍອີງຕາມປະຫວັດຂອງທ່ານ.</translation>
 <translation id="7907502219904644296">ປ່ຽນສິດເຂົ້າເຖິງ</translation>
@@ -9495,6 +9499,7 @@
 <translation id="8372678064309688510">ບັນທຶກທີ່ຢູ່ຂອງທ່ານແລ້ວ</translation>
 <translation id="8373652277231415614">ແຟ້ມທີ່ແບ່ງປັນຂອງ Crostini</translation>
 <translation id="8374243500935816406">ບໍ່ອະນຸຍາດເວັບໄຊໃຫ້ຈັດການໜ້າຈໍຢູ່ການສະແດງຜົນທັງໝົດຂອງທ່ານ</translation>
+<translation id="8375703478696038265">ຂັ້ນຕອນທີ <ph name="STEP_NUMBER" /> ຈາກທັງໝົດ <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">ບອກພວກເຮົາວ່າກຳລັງເກີດຫຍັງຂຶ້ນກັບ Google Cast.</translation>
 <translation id="8376384591331888629">ຮວມທັງຄຸກກີ້ພາກສ່ວນທີສາມໃນເວັບໄຊນີ້</translation>
 <translation id="8376451933628734023">ຫາກເວັບແອັບນີ້ພະຍາຍາມຫຼອກລໍ້ໃຫ້ທ່ານຄິດວ່າມັນເປັນແອັບອື່ນ, ໃຫ້ຖອນການຕິດຕັ້ງມັນອອກ.</translation>
@@ -10566,6 +10571,7 @@
 <translation id="9188142767272053574">ເປີດການນຳໃຊ້ການແຍກຂະບວນການ</translation>
 <translation id="9192019773545828776">ຟັງການຕອບສະໜອງແບບສຽງເວົ້າເພື່ອໃຫ້ທ່ານສາມາດໃຊ້ອຸປະກອນຂອງທ່ານໂດຍບໍ່ຕ້ອງເບິ່ງໜ້າຈໍ. ສາມາດສະແດງຄໍາຕິຊົມເປັນອັກສອນນູນໄດ້ກັບອຸປະກອນທີ່ເຊື່ອມຕໍ່ແລ້ວ. ໃຊ້ Ctrl + Alt + Z ເພື່ອເປີດ ແລະ ປິດ ChromeVox. ໃຊ້ຊອກຫາ + ລູກສອນຊ້າຍ ຫຼື ລູກສອນຂວາເພື່ອນໍາທາງ. ໃຊ້ຊອກຫາ + ຍະຫວ່າງເພື່ອເລືອກ (ເປີດນຳໃຊ້).</translation>
 <translation id="9195969368671142407">ເມື່ອອົງກອນຂອງທ່ານຈຳກັດການບັນທຶກໃສ່ໃນບັນຊີ Google ຂອງທ່ານ, ທ່ານຈະບໍ່ສາມາດແບ່ງປັນ ຫຼື ເຂົ້າຮ່ວມກຸ່ມແຖບໄດ້</translation>
+<translation id="9197456336762295195">ສະແກນລະຫັດ QR ນີ້ດ້ວຍກ້ອງຢູ່ອຸປະກອນທີ່ມີກະແຈຜ່ານຂອງທ່ານສຳລັບ google.com</translation>
 <translation id="919840898042157087">ການເຄື່ອນໄຫວແບບຄົງທີ່</translation>
 <translation id="9199503643457729322">ຄລິກເພື່ອອອກຈາກຂໍ້ແນະນຳຄວາມເປັນສ່ວນຕົວ.</translation>
 <translation id="9199695835892108985">ຣີເຊັດການອະນຸຍາດຜອດ Serial ທັງໝົດບໍ?</translation>
@@ -10622,6 +10628,7 @@
 <translation id="942296794412775122">ເປີດ/ປິດ ໄມໂຄຣໂຟນ</translation>
 <translation id="942488123151518958">ຢຸດຊົ່ວຄາວ (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> ກຳລັງແບ່ງປັນແຖບ Chrome ແລະ ສຽງ.</translation>
+<translation id="943744232549395906">ຢຸດການພິມດ້ວຍສຽງແລ້ວ</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
 <translation id="947156494302904893">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງສາມາດຢັ້ງຢືນໄດ້ວ່າທ່ານແມ່ນບຸກຄົນທີ່ແທ້ຈິງ ແລະ ບໍ່ແມ່ນບັອດ</translation>
 <translation id="947329552760389097">&amp;ກວດກາອົງປະກອບ</translation>

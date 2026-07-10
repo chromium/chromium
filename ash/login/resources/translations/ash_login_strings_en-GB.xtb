@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Proxy settings</translation>
 <translation id="3550915441744863158">Chrome updates automatically so you always have the freshest version</translation>
 <translation id="3559533181353831840">About <ph name="TIME_LEFT" /> left</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Enter the name of the retailer and the shop number for which this demo device is being configured*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />If you don't know the shop number, you can enter '0000' to continue with demo mode installation. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Note: Google uses this information to identify which version of demo mode the device should receive and to measure usage of demo mode.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Something went wrong. Try again.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> hardware data collection</translation>
 <translation id="3602290021589620013">Preview</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">No</translation>
 <translation id="4251377547188244181">Kiosk and signage device enrolment</translation>
 <translation id="4263223596040212967">Check your keyboard layout and try again.</translation>
+<translation id="4268490040465852105">Your Google Account is the same account that you use for Gmail, YouTube, Chrome and other Google products.
+        Use your account to easily access all of your bookmarks, files and more.</translation>
 <translation id="4278498748067682896">You will use a kiosk and signage upgrade which only allows the device to run in kiosk or signage mode. If you would like users to sign in to the device, please go back and enrol using Chrome Enterprise upgrade.</translation>
 <translation id="4287157641315808225">Yes, activate ChromeVox</translation>
 <translation id="4289732974614035569">Choose a PIN</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Select Light or Dark theme</translation>
 <translation id="5804259315582798390">Failed to enable local data recovery</translation>
 <translation id="5810809306422959727">This account isn't eligible for parental controls</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Enrolling your devices in your organisation sets it up for centralised device management. Your organisation may require enrolment for multiple reasons:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Enhance security<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />By configuring additional security settings, the organisation can keep user and device data safe. It can also perform actions such as remote reset or disabling a lost device.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Customise the experience<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />The device behaviour on bootup, on the login screen and after login can be customised to the organisation’s needs.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Provide support<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />The organisation can remotely access a device session in order to provide troubleshooting.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Enable access<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Organisation apps, services and networks may only be available on enrolled devices.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">About <ph name="TIME" /> minutes left</translation>
 <translation id="5852112051279473187">Oops!  Something went really wrong while enrolling this device.  Please try again or contact your support representative.</translation>
 <translation id="5852137567692933493">Restart and Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Navigate to extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Select language and keyboard button. Currently selected language is <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Close</translation>
+<translation id="6042193169866365541">Your Google Account is the same account that you use for Gmail, YouTube, Chrome and other Google products.
+        Use your account to easily access all of your bookmarks, files and more. If you don't have an account, you can create one on the next screen.</translation>
 <translation id="6051354611314852653">Oops!  The system failed to authorise API access for this device.</translation>
 <translation id="6055544610007596637">Install apps for your <ph name="DEVICE_TYPE" /> from the Google Play Store</translation>
 <translation id="6069464830445383022">Your Google Account is your Chromebook sign-in</translation>

@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">ให้ความรู้สึกสว่างและปลอดโปร่ง</translation>
 <translation id="243179355394256322">องค์กรของคุณจำกัดการลงทะเบียนอุปกรณ์ไว้สำหรับผู้ใช้ที่ได้รับอนุญาตเท่านั้น ผู้ใช้รายนี้ไม่ได้รับอนุญาตให้ลงทะเบียนอุปกรณ์ โปรดตรวจสอบว่าผู้ใช้มีสิทธิ์ของผู้ดูแลระบบในการ "ลงทะเบียนฮาร์ดแวร์ของ Google Meet" ในส่วน "ผู้ใช้" ของคอนโซลผู้ดูแลระบบ</translation>
 <translation id="2439152382014731627">รีเซ็ตรหัสผ่าน <ph name="DEVICE_TYPE" /></translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />การติดตั้ง<ph name="BEGIN_BOLD" />จะลบข้อมูลทั้งหมดในฮาร์ดไดรฟ์<ph name="END_BOLD" /> โปรดตรวจสอบว่าได้สำรองข้อมูลไว้แล้ว<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />เมื่อเริ่มการติดตั้งแล้วจะยกเลิกไม่ได้<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">คุณจะไม่สามารถเพิ่มผู้ใช้เนื่องจากไม่มีคีย์ของ Google API ดูรายละเอียดได้ที่ <ph name="DETAILS_URL" /></translation>
 <translation id="24786041351753425">เปิดใช้บริการกู้คืนข้อมูล</translation>
 <translation id="2485681265915754872">ข้อกำหนดในการให้บริการของ Google Play</translation>
@@ -228,6 +230,9 @@
 <translation id="3547954654003013442">การตั้งค่าพร็อกซี</translation>
 <translation id="3550915441744863158">Chrome จะอัปเดตโดยอัตโนมัติเพื่อให้คุณได้ใช้เวอร์ชันใหม่ที่สุดอยู่เสมอ</translation>
 <translation id="3559533181353831840">ใช้เวลาอีก <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />ป้อนชื่อผู้ค้าปลีกและหมายเลขร้านค้าที่มีการกำหนดค่าอุปกรณ์สาธิตนี้* <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />หากไม่ทราบหมายเลขร้านค้า ให้ป้อน "0000" เพื่อดำเนินการติดตั้งโหมดสาธิตต่อ <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*หมายเหตุ: Google ใช้ข้อมูลนี้เพื่อระบุเวอร์ชันของโหมดสาธิตที่อุปกรณ์ควรได้รับและวัดการใช้งานโหมดสาธิต<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">เกิดข้อผิดพลาด ลองใหม่</translation>
 <translation id="3577745545227000795">การรวบรวมข้อมูลฮาร์ดแวร์ของ <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">ดูตัวอย่าง</translation>
@@ -286,6 +291,8 @@
 <translation id="4250680216510889253">ไม่</translation>
 <translation id="4251377547188244181">การลงทะเบียนอุปกรณ์คีออสก์และป้าย</translation>
 <translation id="4263223596040212967">โปรดตรวจสอบรูปแบบแป้นพิมพ์แล้วลองอีกครั้ง</translation>
+<translation id="4268490040465852105">บัญชี Google เป็นบัญชีเดียวกับที่คุณใช้สำหรับ Gmail, YouTube, Chrome และผลิตภัณฑ์อื่นๆ ของ Google
+        ใช้บัญชีเพื่อเข้าถึงบุ๊กมาร์ก ไฟล์ และอื่นๆ ทั้งหมดได้อย่างง่ายดาย</translation>
 <translation id="4278498748067682896">คุณจะใช้ Kiosk &amp; Signage Upgrade ซึ่งอนุญาตให้อุปกรณ์ทำงานในโหมดคีออสก์หรือป้ายเท่านั้น หากต้องการให้ผู้ใช้ลงชื่อเข้าใช้อุปกรณ์ โปรดย้อนกลับแล้วลงทะเบียนด้วย Chrome Enterprise Upgrade</translation>
 <translation id="4287157641315808225">ใช่ เปิดใช้งาน ChromeVox</translation>
 <translation id="4289732974614035569">เลือก PIN</translation>
@@ -316,6 +323,15 @@
 <translation id="4487489714832036847">Chromebook จะใช้งานแอปแทนซอฟต์แวร์ดั้งเดิม รับแอปเพื่อประสิทธิภาพการทำงาน ความบันเทิง และอื่นๆ</translation>
 <translation id="450867954911715010">การตั้งค่าการเข้าถึง</translation>
 <translation id="4519605771716872386">การซิงค์ไฟล์เปิดอยู่</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />ลองทำตามขั้นตอนการแก้ปัญหาเหล่านี้
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />ตรวจสอบว่าอุปกรณ์มีที่จัดเก็บข้อมูลภายในที่ใช้งานได้ เช่น HDD, SSD หรือ eMMC
+    <ph name="LIST_ITEM" />ตรวจสอบว่าอุปกรณ์ที่ใช้เป็นที่จัดเก็บข้อมูลภายในมีขนาดใหญ่กว่า 16 GB
+    <ph name="LIST_ITEM" />ตรวจสอบการเชื่อมต่อกับที่จัดเก็บข้อมูลภายในด้วยสายตา หากทำได้
+    <ph name="LIST_ITEM" />ตรวจสอบว่าคุณใช้รุ่นที่ผ่านการรับรองและตรวจสอบบันทึกการติดตั้ง
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ดูความช่วยเหลือเพิ่มเติมได้ที่ g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">คุณต้องการเพิ่มใครใน <ph name="DEVICE_TYPE" /> เครื่องนี้</translation>
 <translation id="4566170377336116390">หากต้องการเปลี่ยนหลังจากลงทะเบียน คุณจะต้องรีเซ็ตอุปกรณ์เป็นค่าเริ่มต้น (Powerwash)</translation>
 <translation id="4567512141633030272">หากตัวเลือกการลงชื่อเข้าใช้ไม่ถูกต้อง</translation>
@@ -431,6 +447,15 @@
 <translation id="5800703268655655701">เลือกธีมสว่างหรือมืด</translation>
 <translation id="5804259315582798390">เปิดใช้การกู้คืนข้อมูลในเครื่องไม่สำเร็จ</translation>
 <translation id="5810809306422959727">บัญชีนี้ไม่มีสิทธิ์ใช้การควบคุมโดยผู้ปกครอง</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />การลงทะเบียนอุปกรณ์ในองค์กรเป็นการตั้งค่าการจัดการอุปกรณ์ส่วนกลาง องค์กรของคุณอาจกำหนดให้ต้องลงทะเบียนด้วยเหตุผลหลายประการดังต่อไปนี้<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />เพิ่มความปลอดภัย<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />องค์กรจะรักษาข้อมูลผู้ใช้และอุปกรณ์ให้ปลอดภัยได้ด้วยการกำหนดการตั้งค่าความปลอดภัยเพิ่มเติม อีกทั้งยังสามารถดำเนินการต่างๆ เช่น รีเซ็ตจากระยะไกลหรือปิดใช้อุปกรณ์ที่สูญหาย<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />ปรับแต่งประสบการณ์การใช้งาน<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />ลักษณะการทํางานของอุปกรณ์เมื่อเปิดเครื่อง ในหน้าจอการเข้าสู่ระบบ และหลังจากเข้าสู่ระบบแล้วจะปรับแต่งตามความต้องการขององค์กรได้<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />ให้การสนับสนุน<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />องค์กรจะเข้าถึงเซสชันของอุปกรณ์จากระยะไกลเพื่อช่วยแก้ปัญหาได้<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />เปิดใช้การเข้าถึง<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />แอป บริการ และเครือข่ายขององค์กรอาจใช้งานได้ในอุปกรณ์ที่ลงทะเบียนเท่านั้น<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">เหลือเวลาอีกประมาณ <ph name="TIME" /> นาที</translation>
 <translation id="5852112051279473187">อ๊ะ! เกิดข้อผิดพลาดขึ้นในขณะลงทะเบียนอุปกรณ์นี้ โปรดลองอีกครั้งหรือติดต่อตัวแทนการสนับสนุนของคุณ</translation>
 <translation id="5852137567692933493">รีสตาร์ทและ Powerwash</translation>
@@ -451,6 +476,8 @@
 <translation id="6016178549409952427">ไปที่เนื้อหาเพิ่มเติม <ph name="CURRENT_ELEMENT" /> จาก <ph name="TOTAL_ELEMENTS" /> รายการ</translation>
 <translation id="6016972670657536680">เลือกปุ่มภาษาและแป้นพิมพ์ ภาษาที่เลือกอยู่ในขณะนี้คือ <ph name="LANGUAGE" /></translation>
 <translation id="6040143037577758943">ปิด</translation>
+<translation id="6042193169866365541">บัญชี Google เป็นบัญชีเดียวกับที่คุณใช้สำหรับ Gmail, YouTube, Chrome และผลิตภัณฑ์อื่นๆ ของ Google
+        ใช้บัญชีเพื่อเข้าถึงบุ๊กมาร์ก ไฟล์ และอื่นๆ ทั้งหมดได้อย่างง่ายดาย หากไม่มีบัญชี คุณสามารถสร้างได้ในหน้าจอถัดไป</translation>
 <translation id="6051354611314852653">อ๊ะ!  ระบบล้มเหลวในการให้สิทธิ์การเข้าถึง API สำหรับอุปกรณ์นี้</translation>
 <translation id="6055544610007596637">ติดตั้งแอปสำหรับ <ph name="DEVICE_TYPE" /> จาก Google Play Store</translation>
 <translation id="6069464830445383022">ลงชื่อเข้าใช้ Chromebook ด้วยบัญชี Google ของคุณ</translation>
@@ -553,6 +580,8 @@
 <translation id="7189451821249468368">คุณมีการอัปเกรดไม่เพียงพอสำหรับการลงทะเบียนอุปกรณ์นี้ โปรดติดต่อฝ่ายขายเพื่อสั่งซื้อเพิ่มเติม หากคุณเชื่อว่าคุณเห็นข้อความนี้เนื่องจากข้อผิดพลาด โปรดติดต่อฝ่ายสนับสนุน</translation>
 <translation id="7202337678781136582">สแกนคิวอาร์โค้ดด้วยโทรศัพท์ Android</translation>
 <translation id="7228854227189381547">ไม่เปลี่ยน</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />ติดตั้ง <ph name="DEVICE_OS" /> ในดิสก์ภายในเพื่อให้ได้รับประสบการณ์การใช้งานที่ดีที่สุด คุณอาจติดตั้งภายหลังจากหน้าจอการเข้าสู่ระบบก็ได้<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />หากยังไม่พร้อมติดตั้ง คุณจะลองเรียกใช้งานจาก USB ดูก่อนก็ได้ วิธีนี้จะเก็บระบบปฏิบัติการและข้อมูลที่มีอยู่เอาไว้ แต่คุณอาจเห็นว่ามีขีดจำกัดของพื้นที่เก็บข้อมูลและประสิทธิภาพในการทำงาน<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">ระบบจะนำการเปลี่ยนแปลงมาใช้หลังจากตั้งค่าแล้ว</translation>
 <translation id="7260186537988033909">ลงทะเบียนอุปกรณ์คีออสก์และป้ายเสร็จสมบูรณ์</translation>
 <translation id="7284411326658527427">โดยแต่ละคนจะปรับเปลี่ยนการตั้งค่าบัญชีในแบบของตนและเก็บเป็นข้อมูลส่วนตัวได้</translation>
@@ -570,6 +599,8 @@
 <translation id="7416263748877373774">โหลดข้อกำหนดในการให้บริการไม่ได้ โปรดตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองใหม่</translation>
 <translation id="7475742997309661417">ChromeVox ซึ่งเป็นโปรแกรมอ่านหน้าจอใน ChromeOS นั้นเป็นเครื่องมือที่ผู้ตาบอดหรือมีสายตาเลือนรางใช้เป็นหลักในการอ่านข้อความที่แสดงอยู่บนหน้าจอที่ใช้โปรแกรมสังเคราะห์เสียงพูดหรือจอแสดงผลอักษรเบรลล์ กดปุ่มปรับระดับเสียงทั้ง 2 ปุ่มค้างไว้ 5 วินาทีเพื่อเปิด ChromeVox เมื่อเปิดใช้งาน ChromeVox ระบบจะแนะนำการใช้งานสั้นๆ</translation>
 <translation id="7476454130948140105">แบตเตอรี่เหลือน้อยเกินไปสำหรับอัปเดต (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />เกิดข้อผิดพลาดขึ้นจึงติดตั้ง <ph name="DEVICE_OS" /> ไม่ได้<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />ดูความช่วยเหลือเพิ่มเติมได้ที่ g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />ก่อนลงทะเบียน คุณต้องล้างข้อมูลใน TPM เพื่อให้ <ph name="DEVICE_OS" /> เข้าเป็นเจ้าของอุปกรณ์ได้<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />คุณอาจปิดอุปกรณ์ TPM ไปเลยก็ได้เช่นกัน ระบบจะยังคงจัดเก็บข้อมูลของคุณไว้อย่างปลอดภัยด้วยการเข้ารหัสซอฟต์แวร์ แต่ฟีเจอร์ความปลอดภัยบางอย่าง เช่น ใบรับรองแบบอิงฮาร์ดแวร์จะถูกปิดใช้<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />คุณเปลี่ยนการตั้งค่า TPM ได้ด้วยการรีบูตและเข้าสู่การตั้งค่า BIOS/UEFI ของระบบ โดยขั้นตอนจะแตกต่างกันไปในอุปกรณ์แต่ละรุ่น ดูข้อมูลเพิ่มเติมได้ในเอกสารประกอบเกี่ยวกับ <ph name="DEVICE_OS" /> ที่ลิงก์ g.co/flex/TPMHelp ในอุปกรณ์อีกเครื่องหนึ่งก่อนจะรีบูต<ph name="END_PARAGRAPH3" /></translation>

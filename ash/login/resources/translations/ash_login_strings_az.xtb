@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Proksi ayarları</translation>
 <translation id="3550915441744863158">Chrome avtomatik güncəlləşdiyi üçün həmişə son versiyada olur.</translation>
 <translation id="3559533181353831840">Təxminən <ph name="TIME_LEFT" /> qalıb</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Pərakəndə satıcının adını və bu demo cihazının konfiqurasiya olunduğu mağaza nömrəsini daxil edin*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Mağaza nömrəsini bilmirsinizsə, Demo Rejiminin quraşdırılmasına davam etmək üçün "0000" daxil edə bilərsiniz. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Qeyd: Google bu məlumatdan cihazın Demo Rejiminin hansı versiyasını almalı olduğunu müəyyən etmək və Demo Rejimindən istifadəni ölçmək üçün istifadə edir.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Xəta baş verdi. Yenidən cəhd edin.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> avadanlıq məlumat toplaması</translation>
 <translation id="3602290021589620013">Önizləmə</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Yox</translation>
 <translation id="4251377547188244181">Köşk və işarə cihazının qeydiyyatı</translation>
 <translation id="4263223596040212967">Klaviatura düzümünü yoxlayın və yenidən cəhd edin.</translation>
+<translation id="4268490040465852105">Google Hesabı Gmail, YouTube, Chrome və digər Google məhsulları üçün istifadə etdiyiniz eyni hesabdır.
+        Əlfəcin, fayl və digər məlumatlara asan giriş üçün hesabınızdan istifadə edin.</translation>
 <translation id="4278498748067682896">Cihazın yalnız köşk və ya işarə rejimində işləməsinə imkan verən Köşk və İşarə Güncəlləməsindən istifadə edəcəksiniz. İstifadəçilərin cihaza daxil olmasını istəyirsinizsə, geri qayıdın və Chrome Enterprise Upgrade ilə qeydiyyatdan keçin.</translation>
 <translation id="4287157641315808225">Bəli, ChromeVox'u aktiv edin</translation>
 <translation id="4289732974614035569">PİN seçin</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">İşıqlı və ya tünd tema seçin</translation>
 <translation id="5804259315582798390">Lokal datanın bərpasını aktivləşdirmək alınmadı</translation>
 <translation id="5810809306422959727">Bu hesab valideyn nəzarəti üçün uyğun deyil</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Cihazların təşkilatda qeydiyyatı onları mərkəzi cihaz idarəetməsi üçün ayarlayır. Təşkilat bir neçə səbəblə qeydiyyat tələb edə bilər:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Güvənliyi artırmaq<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Təşkilat əlavə güvənlik ayarları konfiqurasiya edərək istifadəçi və cihaz datasının təhlükəsizliyini təmin edə bilər. Məsafədən sıfırlama və ya itmiş cihazın deaktiv edilməsi kimi əməliyyatları da icra edə bilər.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Təcrübəni fərdiləşdirmək<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Başlatma zamanı, giriş ekranında və girişdən sonra cihaz fəaliyyəti təşkilatın tələblərinə uyğun fərdiləşdirilə bilər.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Dəstək təmin etmək<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Təşkilat nasazlıqların aradan qaldırılması üçün cihaz sessiyasına uzaqdan daxil ola bilər.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Giriş imkanı vermək<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Təşkilatın tətbiq, xidmət və şəbəkələri yalnız qeydiyyatdan keçirilmiş cihazlarda əlçatan ola bilər.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Təxminən <ph name="TIME" /> dəqiqə qaldı</translation>
 <translation id="5852112051279473187">Bu cihazı qeydiyyatdan keçirərkən xəta baş verdi.</translation>
 <translation id="5852137567692933493">Yenidən başlayın və sıfırlayın</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427"><ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /> əlavə məzmuna keçin</translation>
 <translation id="6016972670657536680">Dil və klaviatura düyməsini seçin. Hazırda <ph name="LANGUAGE" /> dili seçilib.</translation>
 <translation id="6040143037577758943">Qapat</translation>
+<translation id="6042193169866365541">Google Hesabı Gmail, YouTube, Chrome və digər Google məhsulları üçün istifadə etdiyiniz eyni hesabdır.
+        Əlfəcin, fayl və digər məlumatlara asan giriş üçün hesabınızdan istifadə edin. Hesabınız yoxdursa, növbəti ekranda yarada bilərsiniz.</translation>
 <translation id="6051354611314852653">Vay! Sistem bu cihaza olan API girişini doğrulaya bilmədi.</translation>
 <translation id="6055544610007596637">Google Play Marketdən <ph name="DEVICE_TYPE" /> cihazınız üçün tətbiqləri quraşdırın</translation>
 <translation id="6069464830445383022">Chromebook girişi üçün Google Hesabınız istifadə edilir</translation>

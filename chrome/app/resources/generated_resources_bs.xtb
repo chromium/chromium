@@ -1965,7 +1965,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2518024842978892609">Korištenje potvrda klijenata</translation>
 <translation id="2518620532958109495">Dozvoljen je automatski prikaz preko cijelog ekrana</translation>
-<translation id="2519250377986324805">Pogledajte kako</translation>
 <translation id="2519517390894391510">Naziv profila certifikata</translation>
 <translation id="2520644704042891903">Čekanje na dostupnu utičnicu...</translation>
 <translation id="2521427645491031107">Sinhronizacija aplikacija je postavljena u Postavkama uređaja</translation>
@@ -3535,6 +3534,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="371370241367527062">Prednji mikrofon</translation>
 <translation id="37143699183660101">Stabilnost kursora</translation>
 <translation id="3714610938239537183">2. korak od 4: odaberite dijagnostičke podatke za izvoz</translation>
+<translation id="3715519518311454566">Donja tabela Geminija je sužena.</translation>
 <translation id="3717133748480414053">Vještine vam mogu pomoći da sažimate web stranice, pretražujete odlične akcijske ponude i vršite druge radnje</translation>
 <translation id="3719245268140483218">Događaj uređaja</translation>
 <translation id="3719310907809321183">Kartica <ph name="CARD_IDENTIFIER" /> je popunjena.</translation>
@@ -6219,6 +6219,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5828181959764767444">Zalazak sunca</translation>
 <translation id="5828545842856466741">Dodaj profil…</translation>
 <translation id="5828633471261496623">Štampanje...</translation>
+<translation id="5829137022934788067">Reci mi o ovom odabiru</translation>
 <translation id="5829214552954466783">Dijeljenje akreditiva <ph name="CREDENTIAL_TYPE" /> za korisničko ime: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Vaši načini plaćanja u Google Novčaniku</translation>
 <translation id="5830512293931520102">Lozinka je šifrirana i nikada nije vidljiva drugima</translation>
@@ -7010,6 +7011,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6455264371803474013">Na određenim web lokacijama</translation>
 <translation id="6455521402703088376">Isključeno • Programer je opozvao objavu ekstenzije</translation>
 <translation id="6455894534188563617">&amp;Novi folder</translation>
+<translation id="6456162045957729200">Objasni ovaj odabir</translation>
 <translation id="645705751491738698">Nastavi blokirati JavaScript</translation>
 <translation id="6457572529564180082">Nije moguće pokrenuti aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="6458701200018867744">Otpremanje nije uspjelo (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8125,7 +8127,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7314989823816739632">Romantično</translation>
 <translation id="7317342082064136423">Potvrdite račun</translation>
 <translation id="731827437403763009">AI inovacije</translation>
-<translation id="7319320447721994672">Ako posjetite web lokaciju koja koristi kolačiće, možda ćete morati privremeno omogućiti kolačiće da koristite sve njene funkcije.</translation>
 <translation id="7319983568955948908">Prestani dijeliti</translation>
 <translation id="7320213904474460808">Zadana mreža</translation>
 <translation id="7321545336522791733">Server je nedostupan</translation>
@@ -8875,6 +8876,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7903481341948453971">Koristite zaključavanje ekrana prilikom popunjavanja lozinki</translation>
 <translation id="7903925330883316394">Uslužni proces: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7904492297081735975">&amp;Otvori upravitelj oznaka</translation>
 <translation id="7904526211178107182">Učinite Linux priključke dostupnim drugim uređajima na vašoj mreži.</translation>
 <translation id="7907312522152480478">Da dobijete kartice s drugih uređaja, potvrdite identitet i sinhronizirajte historiju i kartice. Sinhronizaciju možete zaustaviti bilo kada u postavkama. Google će možda personalizirati Pretraživanje i druge usluge na osnovu vaše historije.</translation>
 <translation id="7907502219904644296">Promijenite pristup</translation>
@@ -10627,6 +10629,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="942296794412775122">Uključi/isključi mikrofon</translation>
 <translation id="942488123151518958">Pauza (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> dijeli Chrome karticu i zvuk.</translation>
+<translation id="943744232549395906">Pisanje govorom je zaustavljeno</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="947156494302904893">Web lokacije koje posjećujete mogu potvrditi da ste stvarna osoba, a ne bot</translation>
 <translation id="947329552760389097">&amp;Provjeri elemente</translation>

@@ -349,7 +349,7 @@
 <translation id="2096239473850415494">Couldn't download</translation>
 <translation id="2096716221239095980">Delete all data</translation>
 <translation id="2104436223719117661">Trending searches</translation>
-<translation id="21133533946938348">Pin tab</translation>
+<translation id="21133533946938348">Pin Tab</translation>
 <translation id="2117650889962717098">Keep your browsing private by switching to Incognito mode</translation>
 <translation id="2119636449201577317">Open in…</translation>
 <translation id="2119962645034852864">Some services aren't available for your account</translation>
@@ -976,7 +976,7 @@
 <translation id="4310738531374808763">Customise your homepage</translation>
 <translation id="4316794575239200608">Neither your conversations with Gemini nor your <ph name="BEGIN_LINK" />Google Workspace data<ph name="END_LINK" /> will be reviewed by human reviewers or used to improve generative AI models.</translation>
 <translation id="4320848494125124980">Recent</translation>
-<translation id="4322394346347055525">Close other tabs</translation>
+<translation id="4322394346347055525">Close Other Tabs</translation>
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Turn on notifications</translation>
 <translation id="4326912346867677256">Tap 'Use password' to sign in securely.</translation>
@@ -1913,6 +1913,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="7425053386765766120">Add payment method…</translation>
 <translation id="7425346204213733349">Changes to your bookmarks, history, passwords and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account.</translation>
 <translation id="742664698522525515">Keep group?</translation>
+<translation id="7426745633088095666">Shared tabs</translation>
 <translation id="7431851541687113774">Turn off address detection</translation>
 <translation id="7431991332293347422">Control how your browsing history is used to personalise Search and more</translation>
 <translation id="7435356471928173109">Turned off by your administrator</translation>
@@ -2001,6 +2002,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="7696316012653762532">Options to translate the page</translation>
 <translation id="7700527812567437847">Search screen with Google Lens</translation>
 <translation id="7701040980221191251">None</translation>
+<translation id="7702428539671224160">Autofill payment info on <ph name="URL" /></translation>
 <translation id="7708994397325774423">Get all your passwords</translation>
 <translation id="7711440461521638739">You're not reusing any passwords</translation>
 <translation id="7712361583414030698">Viewing offline version</translation>

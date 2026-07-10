@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">‏הגדרות Proxy</translation>
 <translation id="3550915441744863158">‏Chrome מתעדכן באופן אוטומטי כך שתמיד משתמשים בגרסה העדכנית ביותר</translation>
 <translation id="3559533181353831840">הזמן שנשאר: בערך <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510">‏<ph name="BEGIN_PARAGRAPH1" />עליך להזין את שם הקמעונאי ואת מספר החנות שעבורם מוגדר מכשיר ההדגמה הזה*. <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />אם לא ידוע לך מה מספר החנות, אפשר פשוט להקליד "0000" כדי להמשיך בהתקנה של מצב ההדגמה. <ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />*הערה: Google נעזרת במידע הזה כדי לזהות את הגרסה של מצב ההדגמה שהמכשיר אמור לקבל, וכדי למדוד את השימוש במצב ההדגמה.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="3577745545227000795">איסוף נתוני חומרה של <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">לא</translation>
 <translation id="4251377547188244181">רישום של מכשיר שילוט וקיוסק</translation>
 <translation id="4263223596040212967">כדאי לבדוק את פריסת המקלדת ולנסות שוב.</translation>
+<translation id="4268490040465852105">‏חשבון Google הוא אותו החשבון שמשמש אותך ב-Gmail, ב-YouTube, ב-Chrome ובמוצרי Google אחרים.
+        החשבון מאפשר לך להשתמש בקלות בכל הסימניות, הקבצים ועוד.</translation>
 <translation id="4278498748067682896">‏השימוש בשדרוג של הקיוסק והשילוט מאפשר למכשיר לפעול רק במצב קיוסק או שילוט. אם רוצים לאפשר למשתמשים להיכנס לחשבון במכשיר, צריך לחזור אחורה ולבצע רישום באמצעות שדרוג ל-Chrome Enterprise.</translation>
 <translation id="4287157641315808225">‏כן, להפעלת ChromeVox</translation>
 <translation id="4289732974614035569">בחירת קוד אימות</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">בחירת עיצוב בהיר או כהה</translation>
 <translation id="5804259315582798390">נכשלה ההפעלה של שחזור הנתונים המקומיים</translation>
 <translation id="5810809306422959727">החשבון הזה לא מתאים לבקרת הורים</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />רישום המכשירים בארגון מגדיר אותם לניהול מכשירים מרוכז. יכול להיות שהארגון שלך ידרוש רישום מכמה סיבות:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />שיפור האבטחה<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />קביעת הגדרות אבטחה נוספות מאפשרת לארגון להגן על נתוני המשתמש והמכשיר. הארגון יכול גם לבצע פעולות כמו איפוס מרחוק או השבתה של מכשיר שאבד.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />התאמה אישית של חוויית השימוש<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+    <ph name="BEGIN_DESCRIPTION2" />אפשר להתאים אישית את התנהגות המכשיר בזמן ההפעלה, במסך ההתחברות ואחרי ההתחברות, בהתאם לצורכי הארגון.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />מתן תמיכה<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />כדי לפתור בעיות, הארגון יכול להיכנס מרחוק לסשן במכשיר.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />הפעלת גישה<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+    <ph name="BEGIN_DESCRIPTION4" />יכול להיות שאפליקציות, שירותים ורשתות של הארגון יהיו זמינים רק במכשירים רשומים.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">נותרו בערך <ph name="TIME" /> דקות</translation>
 <translation id="5852112051279473187">אופס! משהו השתבש בעת הרשמת התקן זה. יש לנסות שוב או לפנות לנציג תמיכה.</translation>
 <translation id="5852137567692933493">‏הפעלה מחדש וביצוע Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">ניווט אל תוכן נוסף <ph name="CURRENT_ELEMENT" /> מתוך <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">כפתור לבחירת שפה ומקלדת. השפה המוגדרת עכשיו היא <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">סגירה</translation>
+<translation id="6042193169866365541">‏חשבון Google הוא אותו החשבון שמשמש אותך ב-Gmail, ב-YouTube, ב-Chrome ובמוצרי Google אחרים.
+        החשבון מאפשר לך להשתמש בקלות בכל הסימניות, הקבצים ועוד. אם אין לך חשבון, תהיה לך אפשרות ליצור אותו במסך הבא.</translation>
 <translation id="6051354611314852653">‏אופס!  המערכת לא הצליחה לאמת את הגישה של מכשיר זה לממשק ה-API.</translation>
 <translation id="6055544610007596637">‏התקנת אפליקציות ל-<ph name="DEVICE_TYPE" /> מחנות Google Play</translation>
 <translation id="6069464830445383022">‏הכניסה ל-Chromebook תתבצע באמצעות חשבון Google</translation>

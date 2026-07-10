@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">પ્રૉક્સી સેટિંગ</translation>
 <translation id="3550915441744863158">Chrome ઑટોમૅટિક રીતે અપડેટ થાય છે, જેથી કરીને તમારી પાસે હંમેશાં સૌથી નવું વર્ઝન રહે છે.</translation>
 <translation id="3559533181353831840">લગભગ <ph name="TIME_LEFT" /> બાકી</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />આ ડેમો ડિવાઇસની ગોઠવણી જે રીટેલર માટે કરવામાં આવી રહી હોય, તેનું નામ અને સ્ટોર નંબર દાખલ કરો*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />જો તમે સ્ટોર નંબર જાણતા ન હો, તો ડેમો મોડનું ઇન્સ્ટૉલેશન ચાલુ રાખવા માટે તમે "0000" દાખલ કરી શકો છો. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*નોંધ: ડિવાઇસને ડેમો મોડનું કયું વર્ઝન મળવું જોઈએ તેની ઓળખ કરવા તેમજ ડેમો મોડના વપરાશની માપણી કરવા માટે Google આ માહિતીનો ઉપયોગ કરે છે.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">કંઈક ખોટું થયું. ફરી પ્રયાસ કરો.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" />ના હાર્ડવેર સંબંધિત ડેટાનું એકત્રીકરણ</translation>
 <translation id="3602290021589620013">પ્રીવ્યૂ કરો</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">નહીં</translation>
 <translation id="4251377547188244181">કિઓસ્ક કે સાઇનેજ ડિવાઇસની નોંધણી</translation>
 <translation id="4263223596040212967">તમારા કીબોર્ડનું લેઆઉટ ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
+<translation id="4268490040465852105">તમારું Google એકાઉન્ટ એ જ એકાઉન્ટ છે જે તમે Gmail, YouTube, Chrome અને Googleની અન્ય પ્રોડક્ટ માટે વાપરો છો.
+        તમારા બધા બુકમાર્ક, ફાઇલો અને અન્ય સરળતાથી ઍક્સેસ કરવા માટે તમારા એકાઉન્ટનો ઉપયોગ કરો.</translation>
 <translation id="4278498748067682896">તમે 'કિઓસ્ક અને સાઇનેજ અપગ્રેડ'નો ઉપયોગ કરશો, જે ડિવાઇસને ફક્ત કિઓસ્ક અને સાઇનેજ મોડમાં ચલાવવાની મંજૂરી આપે છે. જો તમે ઇચ્છતા હો કે વપરાશકર્તાઓ ડિવાઇસમાં સાઇન ઇન કરે, તો કૃપા કરીને પાછા જાઓ અને Chrome Enterprise Upgradeનો ઉપયોગ કરીને નોંધણી કરો.</translation>
 <translation id="4287157641315808225">હા, ChromeVox સક્રિય કરો</translation>
 <translation id="4289732974614035569">કોઈ પિન પસંદ કરો</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">લાઇટ કે ડાર્ક થીમ પસંદ કરો</translation>
 <translation id="5804259315582798390">સ્થાનિક ડેટા રિકવરી ચાલુ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="5810809306422959727">આ એકાઉન્ટ માતાપિતાના યોગ્ય નિયંત્રણો માટે યોગ્યતા ધરાવતું નથી</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />તમારા ડિવાઇસની નોંધણી તમારી સંસ્થામાં કરવાથી કેન્દ્રીયકૃત ડિવાઇસ મેનેજમેન્ટનું સેટઅપ થઈ જાય છે. એકથી વધુ કારણોસર તમારી સંસ્થામાં નોંધણી કરવાની આવશ્યકતા હોઈ શકે છે:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />વધારે સુરક્ષા<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />વધારાના સુરક્ષા સેટિંગની ગોઠવણી કરવાથી, તમારી સંસ્થા વપરાશકર્તાનો તેમજ ડિવાઇસનો ડેટા સલામત રાખી શકે છે. તે ખોવાયેલા કોઈ ડિવાઇસને રિમોટલી રીસેટ કે બંધ કરવા જેવી ઍક્શન પણ પર્ફોર્મ કરી શકે છે.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />અનુભવને કસ્ટમાઇઝ કરવા<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />સંસ્થાની આવશ્યકતાઓ પ્રમાણે બૂટઅપ સમયે, લૉગ ઇન સ્ક્રીન પર તેમજ લૉગ ઇન કર્યા પછીની ડિવાઇસની વર્તણૂકને કસ્ટમાઇઝ કરી શકાય છે.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />સપોર્ટ પ્રદાન કરવા<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />સમસ્યા નિવારણ કરવાની સગવડ પ્રદાન કરવા માટે, સંસ્થા કોઈ ડિવાઇસ સત્રને રિમોટલી ઍક્સેસ કરી શકે છે.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />ઍક્સેસ ચાલુ કરવા<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />સંસ્થાની ઍપ, સેવાઓ અને નેટવર્ક માત્ર નોંધણી કરેલા ડિવાઇસ પર જ ઉપલબ્ધ હોઈ શકે છે.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">લગભગ <ph name="TIME" /> મિનિટ બાકી</translation>
 <translation id="5852112051279473187">અરે! આ ડિવાઇસની નોંધણી કરતી વખતે ખરેખર કંઈક ખોટું થયું હતું. કૃપા કરીને ફરી પ્રયાસ કરો અથવા તમારા સપોર્ટ પ્રતિનિધિનો સંપર્ક કરો.</translation>
 <translation id="5852137567692933493">પુનઃપ્રારંભ કરો અને પાવરવૉશ કરો</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />માંથી વધારાના <ph name="CURRENT_ELEMENT" /> કન્ટેન્ટ પર નૅવિગેટ કરો</translation>
 <translation id="6016972670657536680">ભાષા અને કીબોર્ડ બટન પસંદ કરો. હાલમાં પસંદ કરેલ ભાષા <ph name="LANGUAGE" /> છે.</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
+<translation id="6042193169866365541">તમારું Google એકાઉન્ટ એ જ એકાઉન્ટ છે જે તમે Gmail, YouTube, Chrome અને Googleની અન્ય પ્રોડક્ટ માટે વાપરો છો.
+        તમારા બધા બુકમાર્ક, ફાઇલો અને અન્ય સરળતાથી ઍક્સેસ કરવા માટે તમારા એકાઉન્ટનો ઉપયોગ કરો. જો તમારી પાસે એકાઉન્ટ ન હોય તો તમે આગળની સ્ક્રીનમાં બનાવી શકો છો.</translation>
 <translation id="6051354611314852653">અરેરે!  આ ઉપકરણ માટે અધિકૃત API ઍક્સેસ કરવા આ સિસ્ટમ નિષ્ફળ થઈ છે.</translation>
 <translation id="6055544610007596637">Google Play Storeમાંથી તમારી <ph name="DEVICE_TYPE" /> માટે ઍપ ઇન્સ્ટૉલ કરો</translation>
 <translation id="6069464830445383022">તમારું Google એકાઉન્ટ જ તમારા Chromebookમાં સાઇન ઇન કરવાની રીત છે</translation>

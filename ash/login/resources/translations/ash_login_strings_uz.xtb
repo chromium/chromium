@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Yorugʻ va yengil muhitda ishlang</translation>
 <translation id="243179355394256322">Tashkilotingiz qurilmalarini faqatgina vakolatli foydalanuvchilar qayd qilishi mumkin. Bu foydalanuvchi qurilmalarni qayd qilish vakolatiga ega emas. Foydalanuvchi uchun Administrator konsoli orqali foydalanuvchilar boʻlimida ”Google Meet qurilmalarini qayd qilish” vakolati yoqilgan boʻlishi kerak.</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> parolini almashtirish</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Oʻrnatishda <ph name="BEGIN_BOLD" />qattiq diskdagi barcha maʼlumotlar oʻchirib tashlanadi<ph name="END_BOLD" />. Maʼlumotlaringizni zaxiralang.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Oʻrnatish boshlanganidan keyin uni bekor qilish imkonsiz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Foydalanuvchilarni qo‘sha olmaysiz, chunki Google API kalitlari yo‘q. Batafsil axborot uchun <ph name="DETAILS_URL" /> saytiga tashrif buyuring.</translation>
 <translation id="24786041351753425">Maʼlumotlarni tiklash xizmatini yoqing.</translation>
 <translation id="2485681265915754872">Google Play xizmat shartlari</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebook qurilmalarida odatiy dasturlar oʻrniga ilovalar ishlatiladi. Ish va unumdorlik, hordiq va boshqa turkumdagi ilovalarni oʻrnating.</translation>
 <translation id="450867954911715010">Qulayliklar</translation>
 <translation id="4519605771716872386">Fayllar sinxronizatsiyasi yoqildi</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Quyidagi nosozlikni tuzatish amallarini bajaring:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Qurilmangizda HDD, SSD yoki eMMC kabi ichki xotira mavjudligini tekshiring
+        <ph name="LIST_ITEM" />Ichki xotira qurilmangiz 16 GB dan katta ekanini tekshiring
+        <ph name="LIST_ITEM" />Jismonan kirish imkoni boʻlsa, ichki xotiraga ulanishni tekshiring
+        <ph name="LIST_ITEM" />Sertifikatlangan modeldan foydalanayotganingizni tekshiring va oʻrnatish qaydlarini tekshiring
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Yordam uchun quyidagi sahifaga tashrif buyuring: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Bu <ph name="DEVICE_TYPE" /> qurilmasiga kimni qoʻshmoqchisiz?</translation>
 <translation id="4566170377336116390">Qayd qilinganidan keyin eski rejimga qaytarish uchun qurilmani zavod sozlamalariga qaytarish (powerwash) lozim.</translation>
 <translation id="4567512141633030272">Boshqa hisobdan kirish yoqilsinmi?</translation>
@@ -569,6 +580,8 @@
 <translation id="7189451821249468368">Bu qurilmani qayd qilish uchun sizdagi DT litsenziyalari yetarli emas. Xarid qilish uchun savdo boʻlimiga murojaat qiling. Bu xabar xato boʻlsa, yordam xizmatiga murojaat qiling.</translation>
 <translation id="7202337678781136582">Android telefoningiz bilan QR kodni skanerlang</translation>
 <translation id="7228854227189381547">Almashmasin</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Toʻliq foydalanish uchun <ph name="DEVICE_OS" /> tizimini tashqi diskka oʻrnating. Uni keyinroq kirish ekranidan oʻrnatish ham mumkin.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Oʻrnatish uchun tayyor boʻlmasangiz, uni USB orqali ishga tushirib, sinab koʻrishingiz mumkin. Mavjud operatsion tizim va maʼlumotlaringiz saqlanib qoladi, lekin xotira va unumdorlik cheklovlari oshishi mumkin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Oʻzgarishlar sozlashdan keyin amal qiladi</translation>
 <translation id="7260186537988033909">Kiosk va reklama paneli qurilmasi qayd qilinishi yakunlandi</translation>
 <translation id="7284411326658527427">Har bir odamning hisobi alohida moslashtiriladi va ularning maʼlumotlari xavfsiz saqlanadi.</translation>
@@ -586,6 +599,8 @@
 <translation id="7416263748877373774">Xizmat shartlari yuklanmadi. Internetga ulanishni tekshiring va qaytadan urining.</translation>
 <translation id="7475742997309661417">ChromeOS tizimidagi ChromeVox ekranni oʻqish vositasidan asosan koʻzi ojiz va xira koʻradigan odamlar ekrandagi matnni sintezator yoki brayl ekranida oʻqish uchun foydalanadi. ChromeVox funksiyasini yoqish uchun har ikki tovush tugmasini birga besh soniya bosib turing. ChromeVox faollashsa, tezkor tanishtiruvdan oʻtasiz.</translation>
 <translation id="7476454130948140105">Batareya quvvati yetarli emas (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Qandaydir xatolik yuz berdi. <ph name="DEVICE_OS" /> tizimini oʻrnatish imkonsiz.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Batafsil: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> qurilmaga egalik qilishi uchun roʻyxatdan oʻtishdan oldin TPM tozalanishi kerak.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Bundan tashqari, TPM qurilmasini butunlay oʻchirib qoʻyishingiz mumkin. Maʼlumotlaringiz dasturiy shifrlash yordamida xavfsiz saqlanadi, lekin ayrim xavfsizlik funksiyalari, masalan, qurilma bilan ishlaydigan sertifikatlar oʻchiriladi. <ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Qayta ishga tushirish va BIOS/UEFI tizim sozlamalariga kirish orqali TPM sozlamalarini oʻzgartirish mumkin. Bosqichlar qurilma modeliga qarab oʻzgaradi. Batafsil axborot olish uchun qayta ishga tushirishdan oldin boshqa qurilmada <ph name="DEVICE_OS" /> hujjatlarini oching: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

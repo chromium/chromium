@@ -2326,6 +2326,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4607608436550361748">Tingnan ang mga tip sa Chrome</translation>
 <translation id="460848736049414407">Na-block ng Admin</translation>
 <translation id="4610279718074907952">Ang site na ito ay nasa isang grupo, na tinukoy ng <ph name="SET_OWNER" />, na makakakita ng iyong aktibidad</translation>
+<translation id="4612631413844865947">Nagka-error sa pagpoproseso ng iyong order sa <ph name="MERCHANT_ORIGIN" /> sa pamamagitan ng <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Kagamitan sa Soccer</translation>
 <translation id="4612904677925722054">Posibleng may pang-mature na content ang site na ito. Kailangang sabihin ng magulang o tagapag-alaga na OK na bisitahin mo ang website na ito.</translation>
 <translation id="4619564267100705184">I-verify na ikaw ito</translation>

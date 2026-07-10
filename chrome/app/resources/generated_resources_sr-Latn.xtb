@@ -1160,7 +1160,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1897120393475391208">Koristite jaku lozinku</translation>
 <translation id="1897860317037652061">Skeniranje nije uspelo</translation>
 <translation id="1898804291554630487">Postavite pitanje o ovoj stranici</translation>
-<translation id="1899172684246105747">Prilagodite pregledač uz opcije poput teme i tamnog režima.</translation>
+<translation id="1899172684246105747">Prilagodite pregledač pomoću opcija poput tema i tamnog režima.</translation>
 <translation id="1900305421498694955">Aplikacijama sa Google Play-a će možda trebati potpuni pristup sistemu datoteka da bi čitale i upisivale datoteke na spoljnim memorijskim uređajima. Datoteke i direktorijumi napravljeni na uređaju su vidljivi svima koji koriste spoljni disk. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">Zatražite od administratora da ažurira ovu aplikaciju</translation>
 <translation id="1901303067676059328">Izaberi &amp;sve</translation>
@@ -1954,7 +1954,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2518024842978892609">Koristi sertifikate klijenta</translation>
 <translation id="2518620532958109495">Dozvoljeno im je da automatski uđu u režim celog ekrana</translation>
-<translation id="2519250377986324805">Prikaži kako</translation>
 <translation id="2519517390894391510">Naziv profila sertifikata</translation>
 <translation id="2520644704042891903">Čeka se dostupan priključak...</translation>
 <translation id="2521427645491031107">Sinhronizacija aplikacija je podešena u podešavanjima uređaja</translation>
@@ -3524,6 +3523,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="371370241367527062">Prednji mikrofon</translation>
 <translation id="37143699183660101">Stabilnost kursora</translation>
 <translation id="3714610938239537183">2. korak od 4: Izaberite dijagnostičke podatke za izvoz</translation>
+<translation id="3715519518311454566">Donja tabela Gemini-ja je skupljena.</translation>
 <translation id="3717133748480414053">Veštine mogu da vam pomognu da rezimirate veb-stranice, nađete sjajne ponude i drugo</translation>
 <translation id="3719245268140483218">Događaj na uređaju</translation>
 <translation id="3719310907809321183">Uneli ste <ph name="CARD_IDENTIFIER" />.</translation>
@@ -6207,6 +6207,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5828181959764767444">Zalazak sunca</translation>
 <translation id="5828545842856466741">Dodaj profil…</translation>
 <translation id="5828633471261496623">Štampanje...</translation>
+<translation id="5829137022934788067">Reci mi više o ovom izboru</translation>
 <translation id="5829214552954466783">Delite <ph name="CREDENTIAL_TYPE" /> za korisničko ime: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Načini plaćanja u Google novčaniku</translation>
 <translation id="5830512293931520102">Lozinka je šifrovana i niko ne može da je vidi</translation>
@@ -6998,6 +6999,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6455264371803474013">Na određenim sajtovima</translation>
 <translation id="6455521402703088376">Isključeno • Programer je opozvao objavljivanje dodatka</translation>
 <translation id="6455894534188563617">&amp;Novi folder</translation>
+<translation id="6456162045957729200">Objasni ovaj izbor</translation>
 <translation id="645705751491738698">Nastavi blokiranje JavaScript-a</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> ne može da se pokrene</translation>
 <translation id="6458701200018867744">Otpremanje nije uspelo (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8113,7 +8115,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7314989823816739632">Romantično</translation>
 <translation id="7317342082064136423">Verifikujte nalog</translation>
 <translation id="731827437403763009">AI inovacije</translation>
-<translation id="7319320447721994672">Ako posećujete sajt koji koristi kolačiće, možda ćete morati privremeno da omogućite kolačiće kako bi sve funkcije sajta radile.</translation>
 <translation id="7319983568955948908">Zaustavi deljenje</translation>
 <translation id="7320213904474460808">Postavi kao podrazumevanu mrežu</translation>
 <translation id="7321545336522791733">Server nije dostupan</translation>
@@ -8863,6 +8864,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7903481341948453971">Koristite otključavanje ekrana kada popunjavate lozinke</translation>
 <translation id="7903925330883316394">Pomoćni proces: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">katakana</translation>
+<translation id="7904492297081735975">&amp;Otvori menadžer obeleživača</translation>
 <translation id="7904526211178107182">Učinite Linux portove dostupnim za druge uređaje na svojoj mreži.</translation>
 <translation id="7907312522152480478">Da biste preuzeli kartice sa drugih uređaja, potvrdite identitet i sinhronizujte istoriju i kartice. Uvek možete da zaustavite sinhronizaciju u podešavanjima. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
 <translation id="7907502219904644296">Promeni pristup</translation>
@@ -10615,6 +10617,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="942296794412775122">Uključi/isključi mikrofon</translation>
 <translation id="942488123151518958">Pauziraj (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> deli Chrome karticu i zvuk.</translation>
+<translation id="943744232549395906">Unos teksta glasom je zaustavljen</translation>
 <translation id="945522503751344254">Pošalji povratne informacije</translation>
 <translation id="947156494302904893">Sajtovi koje posećujete mogu da potvrde da ste stvarna osoba, a ne bot</translation>
 <translation id="947329552760389097">&amp;Proveri elemente</translation>

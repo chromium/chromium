@@ -139,6 +139,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2418307627282545839">Всичко изглежда ярко и ефирно</translation>
 <translation id="243179355394256322">Организацията ви разрешава регистрирането на устройства само от упълномощени потребители. Този потребител не е упълномощен да регистрира устройства. Той трябва да има администраторски права за регистриране на хардуерни устройства за Google Meet в секцията „Потребители“ в конзолата за администратори.</translation>
 <translation id="2439152382014731627">Задаване на нова парола за <ph name="DEVICE_TYPE" /></translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />При инсталирането <ph name="BEGIN_BOLD" />ще бъдат изтрити всички данни от твърдия ви диск<ph name="END_BOLD" />. Уверете се, че разполагате с тяхно резервно копие.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />След като инсталирането започне, не може да бъде отменено.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Няма да можете да добавяте потребители, тъй като липсват ключове за приложните програмни интерфейси (API) на Google. За подробности вижте <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Активиране на услугата за възстановяване на данни.</translation>
 <translation id="2485681265915754872">Общи условия на Google Play</translation>
@@ -228,6 +230,9 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3547954654003013442">Настройки за прокси сървър</translation>
 <translation id="3550915441744863158">Chrome се актуализира автоматично, така че винаги имате най-новата версия</translation>
 <translation id="3559533181353831840">Оставащото време е около <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Въведете името на търговеца и номера на магазина, за който се конфигурира това демонстрационно устройство.* <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ако не знаете номера на магазина, можете да въведете 0000, за да продължите инсталирането на демонстрационния режим. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />* Забележка: Google използва тази информация, за да определи коя версия на демонстрационния режим трябва да получи устройството и да измерва използването на режима.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Нещо се обърка. Опитайте отново.</translation>
 <translation id="3577745545227000795">Събиране на данни за хардуера от <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Визуализация</translation>
@@ -286,6 +291,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4250680216510889253">Не</translation>
 <translation id="4251377547188244181">Регистриране на устройство за павилионен режим или режим за дигитални знаци и надписи</translation>
 <translation id="4263223596040212967">Проверете клавиатурната си подредба и опитайте отново.</translation>
+<translation id="4268490040465852105">Това е същият профил в Google, който използвате за Gmail, YouTube, Chrome и други наши продукти.
+        Той ви осигурява лесен достъп до всичките ви отметки, файлове и др.</translation>
 <translation id="4278498748067682896">Ще използвате лиценз Kiosk &amp; Signage Upgrade, който позволява на устройството да работи само в павилионен режим или режим за дигитални знаци и надписи. Ако искате потребителите да влизат в профили на устройството, върнете се назад и го регистрирайте, като използвате Chrome Enterprise Upgrade.</translation>
 <translation id="4287157641315808225">Да, активиране на ChromeVox</translation>
 <translation id="4289732974614035569">Изберете ПИН</translation>
@@ -316,6 +323,15 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4487489714832036847">Chromebook работи с приложения вместо с традиционен софтуер. Получете приложения за продуктивност, забавления и др.</translation>
 <translation id="450867954911715010">Настройки за достъпност</translation>
 <translation id="4519605771716872386">Синхронизирането на файловете е включено</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Изпробвайте следните стъпки за отстраняване на неизправности:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Проверете дали устройството ви съдържа работещо вътрешно хранилище, като HDD, SSD или eMMC.
+        <ph name="LIST_ITEM" />Проверете дали вътрешното ви устройство за съхранение е по-голямо от 16 GB.
+        <ph name="LIST_ITEM" />Проверете връзката към вътрешното хранилище, ако е достъпна физически.
+        <ph name="LIST_ITEM" />Проверете дали използвате сертифициран модел, и вижте бележките за инсталиране.
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />За повече помощ посетете: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Кого искате да добавите към това устройство <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Ако след регистрирането искате да използвате устройството за други цели, ще трябва да възстановите фабричните му настройки (чрез Powerwash).</translation>
 <translation id="4567512141633030272">Неправилна опция за вход в профила?</translation>
@@ -431,6 +447,15 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5800703268655655701">Изберете светла или тъмна тема</translation>
 <translation id="5804259315582798390">Активирането на функцията за възстановяване на локалните данни не бе успешно</translation>
 <translation id="5810809306422959727">Този профил не отговаря на условията за родителски контроли</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Когато регистрирате устройства в организацията си, те се настройват с цел централизирано управление. Организацията ви може да изисква регистрация по няколко причини:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Подобряване на сигурността<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Като конфигурира допълнителни настройки за сигурност, организацията може да защити данните на потребителите и устройствата, както и да извършва различни действия, като например отдалечено нулиране или деактивиране на изгубено устройство.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Персонализиране на практическата работа<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Поведението на устройствата при стартиране, на екрана за вход и на следващите екрани може да бъде персонализирано според нуждите на организацията.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Осигуряване на поддръжка<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Организацията може да осъществява отдалечен достъп до сесия на устройството с цел отстраняване на неизправности.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Активиране на достъпа<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Приложенията, услугите и мрежите на организацията може да са налице само за регистрирани устройства.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Остават около <ph name="TIME" /> минути</translation>
 <translation id="5852112051279473187">Ами сега!  При записването на това устройство нещо се обърка сериозно.  Моля, опитайте отново или се свържете с представител на екипа за поддръжка.</translation>
 <translation id="5852137567692933493">Рестартиране и извършване на Powerwash</translation>
@@ -451,6 +476,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6016178549409952427">Преминаване към допълнително съдържание <ph name="CURRENT_ELEMENT" /> от <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Бутон за избиране на език и клавиатура. Понастоящем езикът е <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Затваряне</translation>
+<translation id="6042193169866365541">Това е същият профил в Google, който използвате за Gmail, YouTube, Chrome и други наши продукти.
+        Той ви осигурява лесен достъп до всичките ви отметки, файлове и др. Ако нямате профил, можете да си създадете такъв на следващия екран.</translation>
 <translation id="6051354611314852653">Ами сега!  Системата не успя да удостовери достъпа на това устройство до приложния програмен интерфейс (API).</translation>
 <translation id="6055544610007596637">Инсталирайте приложения за вашия <ph name="DEVICE_TYPE" /> от Google Play Магазин</translation>
 <translation id="6069464830445383022">Влизате в Chromebook с профила си в Google</translation>
@@ -556,6 +583,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7189451821249468368">Нямате достатъчно надстройки, за да запишете това устройство. Моля, свържете се с екипа за продажби, за да купите още. Ако смятате, че виждате това съобщение по погрешка, обърнете се към екипа за поддръжка.</translation>
 <translation id="7202337678781136582">Сканирайте QR кода с телефона си с Android</translation>
 <translation id="7228854227189381547">Без превключване</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />За най-добра практическа работа инсталирайте <ph name="DEVICE_OS" /> на вътрешния си диск. Можете да я инсталирате и по-късно от екрана за вход.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ако нямате готовност да инсталирате операционната система, можете да я изпробвате, като я стартирате от USB. По този начин ще запазите съществуващата си операционна система и данни, но може да забележите ограничения по отношение на хранилището и производителността.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Промените ще бъдат приложени след настройването</translation>
 <translation id="7260186537988033909">Регистрирането на устройството за павилионен режим или режим за дигитални знаци и надписи завърши</translation>
 <translation id="7284411326658527427">Всеки човек има възможност да персонализира профила си и да запази данните си частни.</translation>
@@ -573,6 +602,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7416263748877373774">Общите условия не могат да се заредят. Моля, проверете връзката си с мрежата и опитайте отново.</translation>
 <translation id="7475742997309661417">ChromeVox, екранният четец в ChromeOS, се използва основно от незрящи хора и лица със слабо зрение за четене на показван на екрана текст с помощта на синтезатор на говор или екран за брайлово писмо. Натиснете и двата бутона за силата на звука и ги задръжте за пет секунди, за да включите ChromeVox. Когато екранният четец е активиран, ще преминете през кратка обиколка.</translation>
 <translation id="7476454130948140105">Батерията е твърде изтощена (<ph name="BATTERY_PERCENT" />%) за стартиране на актуализацията</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Нещо се обърка и <ph name="DEVICE_OS" /> не се инсталира.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />За още помощ посетете g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Преди да се регистрирате, трябва да изчистите TPM, така че <ph name="DEVICE_OS" /> да може да поеме собствеността върху устройството.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Можете също изцяло да изключите устройството за TPM. Данните ви пак ще се съхраняват безопасно с помощта на софтуерно шифроване, но някои функции за сигурност, като хардуерно базирани сертификати, ще бъдат деактивирани.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Можете да промените настройките за TPM, като рестартирате и влезете в системните настройки на BIOS/UEFI. Стъпките варират според модела на устройството. За повече информация отворете документацията на <ph name="DEVICE_OS" /> на друго устройство, преди да рестартирате: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

@@ -1913,6 +1913,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7425053386765766120">결제 수단 추가…</translation>
 <translation id="7425346204213733349">북마크, 방문 기록, 비밀번호, 기타 설정이 더 이상 Google 계정에 동기화되지 않습니다. 하지만 기존 데이터는 Google 계정에 계속 저장됩니다.</translation>
 <translation id="742664698522525515">그룹을 유지하시겠습니까?</translation>
+<translation id="7426745633088095666">공유된 탭</translation>
 <translation id="7431851541687113774">주소 감지 사용 중지</translation>
 <translation id="7431991332293347422">검색 등을 맞춤설정하는 데 인터넷 방문 기록이 사용되는 방식 관리</translation>
 <translation id="7435356471928173109">관리자가 사용 중지했습니다.</translation>
@@ -2001,6 +2002,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7696316012653762532">페이지 번역 옵션</translation>
 <translation id="7700527812567437847">Google 렌즈로 화면 검색</translation>
 <translation id="7701040980221191251">없음</translation>
+<translation id="7702428539671224160"><ph name="URL" />에서 결제 정보 자동 완성 사용</translation>
 <translation id="7708994397325774423">모든 비밀번호 가져오기</translation>
 <translation id="7711440461521638739">재사용된 비밀번호가 없습니다</translation>
 <translation id="7712361583414030698">오프라인 버전 보는 중</translation>

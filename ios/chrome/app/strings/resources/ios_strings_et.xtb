@@ -1913,6 +1913,7 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="7425053386765766120">Makseviisi lisamine …</translation>
 <translation id="7425346204213733349">Järjehoidjates, ajaloos, paroolides ja muudes seadetes tehtud muudatusi ei sünkroonita enam teie Google'i kontoga. Teie olemasolevad andmed jäävad siiski teie Google'i kontole.</translation>
 <translation id="742664698522525515">Kas soovite grupi säilitada?</translation>
+<translation id="7426745633088095666">Jagatud vahelehed</translation>
 <translation id="7431851541687113774">Lülita aadressi tuvastamine välja</translation>
 <translation id="7431991332293347422">Juhtige, kuidas kasutatakse teie sirvimisajalugu otsingu ja muu isikupärastamiseks</translation>
 <translation id="7435356471928173109">Administraator on välja lülitanud</translation>
@@ -2001,6 +2002,7 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="7696316012653762532">Lehe tõlkimise võimalused</translation>
 <translation id="7700527812567437847">Otsige ekraanilt Google Lensiga</translation>
 <translation id="7701040980221191251">Pole</translation>
+<translation id="7702428539671224160">Makseteave täidetakse veebisaidil <ph name="URL" /> automaatselt.</translation>
 <translation id="7708994397325774423">Hankige juurdepääs kõigile oma paroolidele</translation>
 <translation id="7711440461521638739">Te ei kasuta ühtegi parooli mitu korda</translation>
 <translation id="7712361583414030698">Kuvatakse võrguühenduseta versiooni</translation>

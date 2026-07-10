@@ -1955,7 +1955,6 @@
 <translation id="2517472476991765520">اسکین کریں</translation>
 <translation id="2518024842978892609">اپنے کلائنٹ سرٹیفکیٹس استعمال کریں</translation>
 <translation id="2518620532958109495">خودکار طور پر مکمل اسکرین میں داخل ہونے کی اجازت ہے</translation>
-<translation id="2519250377986324805">طریقہ دیکھیں</translation>
 <translation id="2519517390894391510">سرٹیفیکیٹ پروفائل کا نام</translation>
 <translation id="2520644704042891903">دستیاب ساکٹ کا منتظر…</translation>
 <translation id="2521427645491031107">ایپس کی مطابقت پذیری آلے کی ترتیبات میں سیٹ ہے</translation>
@@ -3523,6 +3522,7 @@
 <translation id="371370241367527062">سامنے کا مائیکروفون</translation>
 <translation id="37143699183660101">کرسر کا استحکام</translation>
 <translation id="3714610938239537183">4 میں سے مرحلہ 2: برآمد کرنے کے لیے ڈائیگناسٹکس ڈیٹا منتخب کریں</translation>
+<translation id="3715519518311454566">‏‫Gemini کی نیچے کی شیٹ سکیڑ دی گئی۔</translation>
 <translation id="3717133748480414053">مہارتیں آپ کو ویب صفحات کا خلاصہ کرنے، زبردست ڈیلز تلاش کرنے اور بہت کچھ کرنے میں مدد کر سکتی ہیں</translation>
 <translation id="3719245268140483218">آلہ کا ایونٹ</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> پر کیا گیا۔</translation>
@@ -6204,6 +6204,7 @@
 <translation id="5828181959764767444">غروب آفتاب</translation>
 <translation id="5828545842856466741">پروفائل شامل کریں...</translation>
 <translation id="5828633471261496623">پرنٹ کیا جا رہا ہے…</translation>
+<translation id="5829137022934788067">مجھے اس انتخاب کے بارے میں بتائیں</translation>
 <translation id="5829214552954466783">صارف نام کے لیے <ph name="CREDENTIAL_TYPE" /> کا اشتراک کریں: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">‏‫Google والٹ میں آپ کی ادائیگی کے طریقے</translation>
 <translation id="5830512293931520102">آپ کا پاس ورڈ مرموز کردہ ہے اور کسی نے کبھی نہیں دیکھا</translation>
@@ -6995,6 +6996,7 @@
 <translation id="6455264371803474013">مخصوص سائٹس پر</translation>
 <translation id="6455521402703088376">آف ہے • اس ایکسٹینشن کی اشاعت اس کے ڈویلپر نے ختم کی تھی</translation>
 <translation id="6455894534188563617">&amp;نیا فولڈر</translation>
+<translation id="6456162045957729200">اس انتخاب کی وضاحت کریں</translation>
 <translation id="645705751491738698">‏JavaScript کو مسدود کرنا جاری رکھیں</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> کو لانچ نہیں کیا جا سکتا</translation>
 <translation id="6458701200018867744">اپ لوڈ نہیں ہو سکا (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)۔</translation>
@@ -8105,7 +8107,6 @@
 <translation id="7314989823816739632">رومانی</translation>
 <translation id="7317342082064136423">اپنے اکاؤنٹ کی توثیق کریں</translation>
 <translation id="731827437403763009">‏‫AI اختراعات</translation>
-<translation id="7319320447721994672">اگر آپ کوکیز استعمال کرنے والی سائٹ پر جاتے ہیں تو سائٹ کی تمام خصوصیات کو رو بہ عمل لانے کے لیے آپ کو عارضی طور پر کوکیز فعال کرنے کی ضرورت پڑ سکتی ہے۔</translation>
 <translation id="7319983568955948908">اشتراک بند کریں</translation>
 <translation id="7320213904474460808">نیٹ ورک کو ترجیح دیں</translation>
 <translation id="7321545336522791733">سرور ناقابل رسائی ہے</translation>
@@ -8855,6 +8856,7 @@
 <translation id="7903481341948453971">پاس ورڈز درج کرنے پر اپنا اسکرین لاک کا استعمال کریں</translation>
 <translation id="7903925330883316394">یوٹیلٹی: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">کٹاکانا</translation>
+<translation id="7904492297081735975">‫&amp;بک مارک مینیجر کھولیں</translation>
 <translation id="7904526211178107182">‏اپنے نیٹ ورک پر دیگر آلات کو Linux پورٹس دستیاب کرائیں۔</translation>
 <translation id="7907312522152480478">‏اپنے دیگر آلات سے اپنے ٹیبز حاصل کرنے کیلئے، توثیق کریں کہ یہ آپ ہی ہیں اور اپنی سرگزشت اور ٹیبز کو سنک کریں۔ آپ ترتیبات میں کسی بھی وقت سنکنگ کو روک سکتے ہیں۔ ‫Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
 <translation id="7907502219904644296">رسائی کو تبدیل کریں</translation>
@@ -10607,6 +10609,7 @@
 <translation id="942296794412775122">مائیکروفون آن یا آف کریں</translation>
 <translation id="942488123151518958">‏موقوف کریں (k)</translation>
 <translation id="942532530371314860">‏<ph name="APP_NAME" /> ایک Chrome ٹیب اور آڈیو کا اشتراک کر رہی ہے۔</translation>
+<translation id="943744232549395906">صوتی ٹائپنگ روک دی گئی</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="947156494302904893">آپ کی ملاحظہ کردہ سائٹس اس بات کی تصدیق کر سکتی ہیں کہ آپ ایک حقیقی شخص ہیں نہ کہ ایک بوٹ</translation>
 <translation id="947329552760389097">&amp;عناصر کا معائنہ کریں</translation>

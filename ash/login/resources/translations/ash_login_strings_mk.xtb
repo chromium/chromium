@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Поставки на прокси</translation>
 <translation id="3550915441744863158">Chrome автоматски се ажурира, па секогаш ја имате најновата верзија</translation>
 <translation id="3559533181353831840">Уште околу <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Внесете го името на продавачот на мало и бројот на продавницата за којашто се конфигурира демо-уредов*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ако не го знаете бројот на продавницата, може да внесете „0000“ за да продолжите со инсталирање на „Демо-режим“. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Забелешка: Google ги користи податоциве за да ја идентификува верзијата на „Демо-режим“ што треба да ја прими уредот и да го мери користењето на „Демо-режим“.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Нешто тргна наопаку. Обидете се повторно.</translation>
 <translation id="3577745545227000795">Прибирање хардверски податоци за <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Преглед</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Не</translation>
 <translation id="4251377547188244181">Регистрирација на киоск или уред за сигнализација</translation>
 <translation id="4263223596040212967">Проверете го распоредот на тастатурата и обидете се повторно.</translation>
+<translation id="4268490040465852105">Вашата сметка на Google е истата сметка што ја користите за Gmail, YouTube, Chrome и други производи на Google.
+        Користете ја вашата сметка за лесен пристап до сите ваши обележувачи, датотеки и друго.</translation>
 <translation id="4278498748067682896">Ќе користите „Надградба за киоск и уред за сигнализација“, којашто дозволува уредот да работи само во режим на киоск или уред за сигнализација. Ако сакате корисниците да се најавуваат на уредот, вратете се назад и регистрирајте се со „Надградбата за Chrome Enterprise“.</translation>
 <translation id="4287157641315808225">Да, активирај ChromeVox</translation>
 <translation id="4289732974614035569">Изберете PIN</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Изберете „Светла тема“ или „Темна тема“</translation>
 <translation id="5804259315582798390">Не може да се овозможи враќање на локални податоци</translation>
 <translation id="5810809306422959727">Сметкава не ги исполнува условите за родителски контроли</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Ако ги регистрирате вашите уреди во вашата организација, ќе ги поставите за централизирано управување со уредите. Вашата организација може да бара регистрација од повеќе причини:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Зголемување на безбедноста<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Со конфигурирањето дополнителни безбедносни поставки, организацијата може да ги штити податоците на корисникот и на уредот. Може да врши и дејства како далечинско ресетирање или оневозможување изгубен уред.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Приспособување на доживувањето<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Однесувањето на уредот при подигање, на екранот за најавување и по најавувањето може да се приспособи согласно со потребите на организацијата.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Обезбедување поддршка<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Организацијата може далечински да пристапи до конкретна сесија на уредот за да решава проблеми.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Овозможување на пристапот<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Апликациите, услугите и мрежите на организацијата може да бидат достапни само на регистрираните уреди.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Преостануваат околу <ph name="TIME" /> минути</translation>
 <translation id="5852112051279473187">Ах! Нешто тргна наопаку додека се запишуваше уредот. Обидете се повторно или контактирајте со претставник за поддршка.</translation>
 <translation id="5852137567692933493">Рестартирање и фабричко ресетирање</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Одете на дополнителните содржини под број <ph name="CURRENT_ELEMENT" /> од вкупно <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Изберете јазик и копче на тастатурата. Моментално е избран <ph name="LANGUAGE" /> јазик.</translation>
 <translation id="6040143037577758943">Затвори</translation>
+<translation id="6042193169866365541">Вашата сметка на Google е истата сметка што ја користите за Gmail, YouTube, Chrome и други производи на Google.
+        Користете ја вашата сметка за лесен пристап до сите ваши обележувачи, датотеки и друго. Ако немате сметка, може да си создадете на следниот екран.</translation>
 <translation id="6051354611314852653">Системот не успеа да овласти пристап до АПИ за овој уред.</translation>
 <translation id="6055544610007596637">Инсталирајте апликации за вашиот <ph name="DEVICE_TYPE" /> од Google Play Store</translation>
 <translation id="6069464830445383022">На Chromebook ќе се најавувате со сметката на Google</translation>

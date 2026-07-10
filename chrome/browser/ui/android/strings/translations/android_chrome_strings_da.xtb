@@ -1438,6 +1438,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Notifikationer fra 1 website er frameldt.}one{Notifikationer fra # website er frameldt.}other{Notifikationer fra # websites er frameldt.}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 adgangskode}one{# adgangskode}other{# adgangskoder}}</translation>
 <translation id="688730033107341407">Når du er logget ud, fjernes dine bogmærker, adgangskoder m.m. på din Google-konto fra denne enhed.</translation>
+<translation id="6892009074348518725">Log ind i Chrome for at bruge denne udvidelse. Du kan også bruge og gemme dine adgangskoder m.m. fra din Google-konto.</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6898797562238201317">Brug din egen adgangssætning til at kryptere alle Chrome-data på din Google-konto</translation>
 <translation id="6900532703269623216">Forbedret beskyttelse</translation>

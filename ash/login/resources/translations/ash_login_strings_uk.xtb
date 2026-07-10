@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Налаштування проксі-сервера</translation>
 <translation id="3550915441744863158">Chrome оновлюється автоматично, тому ви завжди маєте найновішу версію</translation>
 <translation id="3559533181353831840">Залишилося приблизно <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Введіть ім’я або назву продавця й номер магазину, для якого цей пристрій працюватиме в демонстраційному режимі*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Якщо ви не знаєте номер магазину, введіть "0000", щоб перейти до встановлення демоверсії. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />* Примітка: Google використовує цю інформацію, щоб визначити демоверсію, яка підходить для пристрою, і проаналізувати її використання.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Сталася помилка. Повторіть спробу.</translation>
 <translation id="3577745545227000795">Збір даних із пристрою "<ph name="DEVICE_OS" />"</translation>
 <translation id="3602290021589620013">Попередній перегляд</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Ні</translation>
 <translation id="4251377547188244181">Реєстрація термінала й вивіски на пристрої</translation>
 <translation id="4263223596040212967">Перевірте розкладку клавіатури й повторіть спробу.</translation>
+<translation id="4268490040465852105">Ваш обліковий запис Google – це той самий обліковий запис, який ви використовуєте для Gmail, YouTube, Chrome і інших продуктів Google.
+        За його допомогою ви можете легко отримувати доступ до всіх закладок, файлів тощо.</translation>
 <translation id="4278498748067682896">Ви збираєтеся використати ліцензію Kiosk &amp; Signage Upgrade. У такому разі пристрій працюватиме лише в режимі термінала або вивіски. Щоб користувачі могли входити в обліковий запис на пристрої, поверніться назад і зареєструйтеся за допомогою ліцензії Chrome Enterprise Upgrade.</translation>
 <translation id="4287157641315808225">Так, активувати ChromeVox</translation>
 <translation id="4289732974614035569">Виберіть PIN-код</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Виберіть світлу або темну тему</translation>
 <translation id="5804259315582798390">Не вдалося ввімкнути відновлення локальних даних</translation>
 <translation id="5810809306422959727">Для цього облікового запису не можна ввімкнути батьківський контроль</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Пристроями, які зареєстровано у вашій організації, можна керувати централізовано. Ваша організація може вимагати реєструвати пристрої з кількох причин.<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Покращення безпеки<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Завдяки додатковим налаштуванням безпеки ваша організація зможе захистити дані користувачів і пристроїв, а також виконувати різні дії, наприклад віддалено скинути або вимкнути втрачений пристрій.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Персоналізація взаємодії<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Поведінку пристрою під час запуску, на екрані входу й після входу можна буде налаштувати відповідно до потреб організації.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Надання підтримки<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Організація зможе отримувати віддалений доступ до сеансу на пристрої, щоб вирішувати проблеми.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Надання доступу<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Доступ до додатків, сервісів і мереж організації може бути наданий лише на зареєстрованих пристроях.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Залишилося приблизно <ph name="TIME" /> хв.</translation>
 <translation id="5852112051279473187">На жаль, під час реєстрації цього пристрою сталася значна помилка. Повторіть спробу або зв’яжіться з представником служби підтримки.</translation>
 <translation id="5852137567692933493">Перезапустити й виконати Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Перейти до додаткового контенту <ph name="CURRENT_ELEMENT" /> з <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Виберіть мову та кнопку на клавіатурі. Поточна мова: <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Закрити</translation>
+<translation id="6042193169866365541">Ваш обліковий запис Google – це той самий обліковий запис, який ви використовуєте для Gmail, YouTube, Chrome і інших продуктів Google.
+        За його допомогою ви можете легко отримувати доступ до всіх закладок, файлів тощо. Якщо у вас немає облікового запису, створіть його на наступному екрані.</translation>
 <translation id="6051354611314852653">Помилка. Системі на вдалося надати API доступ до цього пристрою.</translation>
 <translation id="6055544610007596637">Установіть додатки для <ph name="DEVICE_TYPE" /> із магазину Google Play</translation>
 <translation id="6069464830445383022">Ваш обліковий запис Google використовується для входу на Chromebook</translation>

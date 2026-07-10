@@ -1438,6 +1438,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Otkazali ste prijavu za 1 sajt}one{Otkazali ste prijavu za # sajt}few{Otkazali ste prijavu za # sajta}other{Otkazali ste prijavu za # sajtova}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 lozinka}one{# lozinka}few{# lozinke}other{# lozinki}}</translation>
 <translation id="688730033107341407">Kada se odjavite, obeleživači, lozinke i drugi sadržaj sa Google naloga će biti uklonjeni sa ovog uređaja.</translation>
+<translation id="6892009074348518725">Da biste koristili ovaj dodatak, prijavite se u Chrome. Moći ćete i da koristite i čuvate lozinke i drugo na Google nalogu.</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6898797562238201317">Koristite sopstvenu pristupnu frazu da biste šifrovali sve Chrome podatke na Google nalogu</translation>
 <translation id="6900532703269623216">Napredna zaštita</translation>

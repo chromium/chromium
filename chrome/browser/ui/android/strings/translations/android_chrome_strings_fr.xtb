@@ -1097,7 +1097,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5620928963363755975">Recherchez vos fichiers et vos pages dans les téléchargements, à partir du bouton "Plus d'options"</translation>
 <translation id="5628604359369369630">Non lu - Disponible hors connexion</translation>
 <translation id="5631483240431073854">Gérer les onglets ouverts</translation>
-<translation id="5632485077360054581">Démonstration</translation>
+<translation id="5632485077360054581">Voir comment faire</translation>
 <translation id="5639031457248936693"><ph name="WEBSITE" /> a besoin de votre autorisation pour exécuter <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Connecté en tant que <ph name="USER_NAME" />. Erreur liée au compte Google. Ouvre les paramètres.</translation>
 <translation id="5641456720590409793">L'<ph name="BEGIN_LINK1" />historique des recherches<ph name="END_LINK1" /> et d'<ph name="BEGIN_LINK2" />autres formes d'activité<ph name="END_LINK2" /> peuvent être enregistrés dans votre compte Google</translation>
@@ -1438,6 +1438,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Désabonnement effectué pour 1 site}one{Désabonnement effectué pour # site}other{Désabonnement effectué pour # sites}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 mot de passe}one{# mot de passe}other{# mots de passe}}</translation>
 <translation id="688730033107341407">Une fois que vous serez déconnecté, vos favoris, vos mots de passe et d'autres données de votre compte Google seront supprimés de cet appareil.</translation>
+<translation id="6892009074348518725">Pour utiliser cette extension, connectez-vous à Chrome. Vous pourrez également utiliser et enregistrer vos mots de passe et bien plus à partir de votre compte Google.</translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6898797562238201317">Utiliser votre propre phrase secrète pour chiffrer toutes les données Chrome de votre compte Google</translation>
 <translation id="6900532703269623216">Protection renforcée</translation>

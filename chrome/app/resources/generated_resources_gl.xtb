@@ -1955,7 +1955,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2518024842978892609">Usar os teus certificados de cliente</translation>
 <translation id="2518620532958109495">Permiso concedido para acceder ao modo de pantalla completa automaticamente</translation>
-<translation id="2519250377986324805">Máis información</translation>
 <translation id="2519517390894391510">Nome do perfil do certificado</translation>
 <translation id="2520644704042891903">Esperando polo socket dispoñible...</translation>
 <translation id="2521427645491031107">A sincronización das aplicacións defínese na configuración do dispositivo</translation>
@@ -3528,6 +3527,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="371370241367527062">Micrófono frontal</translation>
 <translation id="37143699183660101">Estabilidade do cursor</translation>
 <translation id="3714610938239537183">Paso 2 de 4: Selecciona datos de diagnóstico para exportalos</translation>
+<translation id="3715519518311454566">Contraeuse o panel inferior de Gemini.</translation>
 <translation id="3717133748480414053">Skills pode axudarche a resumir páxinas web, buscar ofertas fantásticas e moito máis</translation>
 <translation id="3719245268140483218">Evento do dispositivo</translation>
 <translation id="3719310907809321183">Formulario de <ph name="CARD_IDENTIFIER" /> cuberto.</translation>
@@ -6210,6 +6210,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5828181959764767444">Solpor</translation>
 <translation id="5828545842856466741">Engadir perfil…</translation>
 <translation id="5828633471261496623">Imprimindo...</translation>
+<translation id="5829137022934788067">Dáme información sobre esta selección</translation>
 <translation id="5829214552954466783">Compartir <ph name="CREDENTIAL_TYPE" /> do nome de usuario: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Os teus métodos de pago en Google Wallet</translation>
 <translation id="5830512293931520102">O teu contrasinal está encriptado e ninguén o pode ver</translation>
@@ -7000,6 +7001,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6455264371803474013">En sitios específicos</translation>
 <translation id="6455521402703088376">Desactivada • O programador anulou a publicación desta extensión</translation>
 <translation id="6455894534188563617">&amp;Novo cartafol</translation>
+<translation id="6456162045957729200">Explica esta selección</translation>
 <translation id="645705751491738698">Continuar bloqueando JavaScript</translation>
 <translation id="6457572529564180082">Non se pode iniciar <ph name="APP_NAME" /></translation>
 <translation id="6458701200018867744">Produciuse un erro ao cargar o rexistro (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8110,7 +8112,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7314989823816739632">Romántico</translation>
 <translation id="7317342082064136423">Verifica a túa conta</translation>
 <translation id="731827437403763009">Innovacións de IA</translation>
-<translation id="7319320447721994672">Se visitas un sitio que use cookies, é posible que necesites activalas temporalmente para que vaian ben todas as funcións do sitio.</translation>
 <translation id="7319983568955948908">Deixar de compartir</translation>
 <translation id="7320213904474460808">Establecer rede como predeterminada</translation>
 <translation id="7321545336522791733">Non se pode acceder ao servidor</translation>
@@ -8860,6 +8861,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7903481341948453971">Usar bloqueo de pantalla ao completar contrasinais</translation>
 <translation id="7903925330883316394">Utilidade: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7904492297081735975">&amp;Abrir xestor de marcadores</translation>
 <translation id="7904526211178107182">Fai que estean dispoñibles os portos Linux para outros dispositivos da túa rede.</translation>
 <translation id="7907312522152480478">Para obter pestanas doutros dispositivos, verifica a túa identidade e sincroniza o historial e as pestanas. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="7907502219904644296">Cambiar acceso</translation>
@@ -10612,6 +10614,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="942296794412775122">Activar ou desactivar micrófono</translation>
 <translation id="942488123151518958">Pór en pausa (K)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> está compartindo audio e unha pestana de Chrome.</translation>
+<translation id="943744232549395906">Detívose a escritura por voz</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="947156494302904893">Os sitios que visites poden verificar que es unha persoa real e non un bot</translation>
 <translation id="947329552760389097">&amp;Inspeccionar elementos</translation>

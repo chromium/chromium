@@ -1913,6 +1913,7 @@
 <translation id="7425053386765766120">お支払い方法を追加…</translation>
 <translation id="7425346204213733349">今後、ブックマーク、履歴、パスワード、その他の設定に行った変更は Google アカウントに同期されません。ただし、既存のデータは Google アカウントに保存されたままとなります。</translation>
 <translation id="742664698522525515">グループを保持しますか？</translation>
+<translation id="7426745633088095666">共有タブ</translation>
 <translation id="7431851541687113774">住所の検出をオフにする</translation>
 <translation id="7431991332293347422">検索などのパーソナライズに閲覧履歴がどのように使われるかを管理します</translation>
 <translation id="7435356471928173109">管理者によってオフにされています</translation>
@@ -2001,6 +2002,7 @@
 <translation id="7696316012653762532">ページ翻訳のオプション</translation>
 <translation id="7700527812567437847">Google レンズで画面を検索</translation>
 <translation id="7701040980221191251">なし</translation>
+<translation id="7702428539671224160"><ph name="URL" /> でお支払い情報を自動入力します</translation>
 <translation id="7708994397325774423">すべてのパスワードにアクセス</translation>
 <translation id="7711440461521638739">使い回されているパスワードはありません</translation>
 <translation id="7712361583414030698">オフライン版を表示しています</translation>

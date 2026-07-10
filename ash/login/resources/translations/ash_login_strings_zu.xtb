@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Izilungiselelo zommeleli</translation>
 <translation id="3550915441744863158">I-Chrome ibuyekeza ngokuzenzakalelayo ukuze uhlale unenguqulo entsha</translation>
 <translation id="3559533181353831840">Cishe u-<ph name="TIME_LEFT" /> osele</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Faka igama lomthengisi kanye nenombolo yesitolo le divayisi ye-demo elungiselelwa sona*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Uma ungayazi inombolo yesitolo, ungafaka okuthi "0000" ukuze uqhubeke nokufaka Imodi Ye-demo. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Qaphela: IGoogle isebenzisa lolu lwazi ukuhlonza ukuthi yiluphi uhlobo Lwemodi Ye-demo idivayisi okufanele iyithole kanye nokulinganisela ukusetshenziswa Kwemodi Ye-demo.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Kunento engahambanga kahle. Zama futhi.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> ukuqoqwa kwedatha yezingxenyekazi zekhompyutha</translation>
 <translation id="3602290021589620013">Hlola kuqala</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Cha</translation>
 <translation id="4251377547188244181">Ikhiyoski nokubhaliswa kudivayisi yezimpawu</translation>
 <translation id="4263223596040212967">Hlola isendlalelo sekhibhodi yakho bese uyazama futhi.</translation>
+<translation id="4268490040465852105">IGoogle Account yakho yi-akhawunti efanayo oyisebenzisela iGmail, iYouTube, iChrome, neminye imikhiqizo yeGoogle.
+        Sebenzisa i-akhawunti yakho ukuze ufinyelele kalula kuwo wonke amabhukhimakhi akho, amafayela, nokwengeziwe.</translation>
 <translation id="4278498748067682896">Uzosebenzisa i-Kiosk ne-Signage Upgrade evumela kuphela idivayisi ukuthi isebenze kukhiyoski noma kumodi yezimpawu. Uma ungathanda ukuthi abasebenzisi bangene ngemvume kudivayisi, sicela ubuyele emuva bese ubhalisa usebenzisa i-Chrome Enterprise Upgrade.</translation>
 <translation id="4287157641315808225">Yebo, yenza i-ChromeVox isebenze</translation>
 <translation id="4289732974614035569">Khetha Iphinikhodi</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Khetha itimu ekhanyayo noma emnyama</translation>
 <translation id="5804259315582798390">Yehlulekile ukunika amandla ukutholwa kwedatha yendawo</translation>
 <translation id="5810809306422959727">Le akhawunti ayifanelekeli izilawuli zomzali</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Ukubhalisa amadivayisi akho enhlanganweni yakho kuyisethela ukulawulwa kwedivayisi okunakho konke. Inhlangano yakho ingase idinge ukubhaliswa ngezizathu eziningi:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Thuthukisa ukuvikeleka<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Ngokulungiselela amasethingi engeziwe okuvikeleka, inhlangano ingagcina idatha yomsebenzisi neyedivayisi iphephile. Ingakwazi futhi ukwenza izenzo ezinjengokusetha kabusha ukude noma ukuvala idivayisi elahlekile.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Qamba ngokwabahlinzekelwayo umuzwa<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Ukuziphatha kwedivayisi ekuqaliseni, esikrinini sokungena ngemvume, nangemuva kokungena ngemvume kungaqanjwa ngokwabahlinzekelwayo ngokwezidingo zenhlangano.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Nikeza ukwesekwa<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Inhlangano ingafinyelela iseshini yedivayisi ikude ukuze ixazulule inkinga.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Gunyaza ukufinyelela<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Ama-app enhlangano, amasevisi, namanethiwekhi angatholakala kuphela kumadivayisi abhalisiwe.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Kusele okungenani amaminithi angu-<ph name="TIME" /></translation>
 <translation id="5852112051279473187">Iphutha! Kukhona into ehambe kabi kakhulu ngenkathi kubhaliswa le divayisi. Sicela uzame futhi noma uxhumane nomele usekelo.</translation>
 <translation id="5852137567692933493">Ukuqalisa kabusha ne-Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Zulazulela kokuqukethwe okungeziwe okungu-<ph name="CURRENT_ELEMENT" /> kokungu-<ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Khetha inkinobho yolimi nekhibhodi. Okwamanje ulimi olukhethiwe isi-<ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Vala</translation>
+<translation id="6042193169866365541">IGoogle Account yakho yi-akhawunti efanayo oyisebenzisela iGmail, iYouTube, iChrome, neminye imikhiqizo yeGoogle.
+        Sebenzisa i-akhawunti yakho ukuze ufinyelele kalula kuwo wonke amabhukhimakhi akho, amafayela, nokwengeziwe. Uma ungenayo i-akhawunti, ungakha eyodwa esikrinini esilandelayo.</translation>
 <translation id="6051354611314852653">Eshu! Isistimu ihlulekile ukugunyaza ukufinyelela kwe-API kwale divayisi.</translation>
 <translation id="6055544610007596637">Faka ama-app we-<ph name="DEVICE_TYPE" /> yakho kusukela ku-Google Play Store</translation>
 <translation id="6069464830445383022">I-akhawunti yakho ye-Google ingukungena kwakho ngemvume ku-Chromebook</translation>

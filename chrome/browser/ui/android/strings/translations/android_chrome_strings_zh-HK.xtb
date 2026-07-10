@@ -1438,6 +1438,7 @@
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{已取消訂閱 1 個網站}other{已取消訂閱 # 個網站}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 個密碼}other{# 個密碼}}</translation>
 <translation id="688730033107341407">登出後，系統會將 Google 帳戶中的書籤、密碼和其他資料從此裝置移除。</translation>
+<translation id="6892009074348518725">如要使用此擴充程式，請登入 Chrome。你還可以儲存並使用 Google 帳戶中的密碼和其他資料。</translation>
 <translation id="6896758677409633944">複製</translation>
 <translation id="6898797562238201317">使用密碼短語加密 Google 帳戶中的所有 Chrome 資料</translation>
 <translation id="6900532703269623216">強化保護功能</translation>

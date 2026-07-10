@@ -1426,6 +1426,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, jei norite tvarkyti sinchronizuojamą informaciją „Chrome“ nustatymuose</translation>
 <translation id="3203025201812691413">URL laukas negali būti tuščias</translation>
 <translation id="320323717674993345">Atšaukti mokėjimą</translation>
+<translation id="3204534477198689393">Kad būtų galima tobulinti pasiūlymus ir greičiau užpildyti formas, puslapių, kuriuose lankotės, turinys ir URL gali būti apdorojami privačioje erdvėje debesyje.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> gali būti suaugusiesiems skirto turinio</translation>
 <translation id="3207960819495026254">Pažymėta</translation>
 <translation id="3208701679386778924">Atsiųskite pranešimą, kad galėtume patobulinti kitus „ChromeOS“ naujinius.</translation>
@@ -1481,6 +1482,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3272643614306383237">Mažiau nei 1 MB. Per kitą apsilankymą kai kurios svetainės gali būti įkeltos gerokai lėčiau.</translation>
 <translation id="3273738040255912340">Administratorius gali nuotoliniu būdu atlikti profilio ir naršyklės pakeitimų, analizuoti informaciją apie naršyklę pateikdamas ataskaitas ir atlikti kitas reikiamas užduotis. Veiklą šiame įrenginyje taip pat galima tvarkyti ne naršyklėje „Chromium“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">IBAN išsaugojimo langas atidarytas per visą ekrano aukštį.</translation>
+<translation id="327455571215090823">Privatus išmanesnis automatinis pildymas</translation>
 <translation id="3281350579597955952">{0,plural, =1{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šio failo naudojant <ph name="DESTINATION_NAME" />}one{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šių failų naudojant <ph name="DESTINATION_NAME" />}few{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šių failų naudojant <ph name="DESTINATION_NAME" />}many{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šių failų naudojant <ph name="DESTINATION_NAME" />}other{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šių failų naudojant <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Jūsų organizacija (<ph name="ENROLLMENT_DOMAIN" />) nusiuntė tam tikros informacijos, pvz., informacijos apie nustatymus ar politikos nuostatas, toliau nurodytoms svetainėms.</translation>
 <translation id="3286372614333682499">portretas</translation>

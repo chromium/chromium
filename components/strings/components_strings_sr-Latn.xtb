@@ -2326,6 +2326,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4607608436550361748">Prikaži Chrome savete</translation>
 <translation id="460848736049414407">Blokirao je administrator</translation>
 <translation id="4610279718074907952">Ovaj sajt je u grupi, koju definiše <ph name="SET_OWNER" />, koji može da vidi vaše aktivnosti</translation>
+<translation id="4612631413844865947">Došlo je do greške pri obradi porudžbine na <ph name="MERCHANT_ORIGIN" /> preko <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Oprema za fudbal</translation>
 <translation id="4612904677925722054">Ovaj sajt možda ima sadržaj za stariju publiku. Roditelj ili staratelj mora da kaže da je u redu da posetiš ovaj veb-sajt.</translation>
 <translation id="4619564267100705184">Potvrdite identitet</translation>

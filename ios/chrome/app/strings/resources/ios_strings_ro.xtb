@@ -1913,6 +1913,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="7425053386765766120">Adaugă o metodă de plată…</translation>
 <translation id="7425346204213733349">Modificările marcajelor, istoricului, parolelor sau ale altor setări nu vor mai fi sincronizate cu Contul Google. Totuși, datele existente vor rămâne stocate în Contul Google.</translation>
 <translation id="742664698522525515">Păstrezi grupul?</translation>
+<translation id="7426745633088095666">File în comun</translation>
 <translation id="7431851541687113774">Dezactivează detectarea adresei</translation>
 <translation id="7431991332293347422">Controlează modul în care istoricul de navigare este folosit pentru a personaliza Căutarea și alte servicii</translation>
 <translation id="7435356471928173109">Dezactivată de administrator</translation>
@@ -2001,6 +2002,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="7696316012653762532">Opțiuni pentru a traduce pagina</translation>
 <translation id="7700527812567437847">Caută pe ecran cu Google Lens</translation>
 <translation id="7701040980221191251">Niciuna</translation>
+<translation id="7702428539671224160">Completarea automată a informațiilor de plată pe <ph name="URL" /></translation>
 <translation id="7708994397325774423">Accesează toate parolele</translation>
 <translation id="7711440461521638739">Nu refolosești parole</translation>
 <translation id="7712361583414030698">Se afișează versiunea offline</translation>

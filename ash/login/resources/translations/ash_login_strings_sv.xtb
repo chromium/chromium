@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Proxyinställningar</translation>
 <translation id="3550915441744863158">Chrome uppdateras automatiskt så att du alltid har den senaste versionen</translation>
 <translation id="3559533181353831840">Cirka <ph name="TIME_LEFT" /> kvar</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Ange namnet på återförsäljaren och det butiksnummer som demoenheten konfigureras för*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Om du inte känner till butiksnumret kan du ange 0000 för att fortsätta installera demoläget. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Obs! Google använder dessa uppgifter för att identifiera vilken version av demoläget som ska skickas till enheten och för att mäta användningen av demoläget.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Något gick fel. Försök igen.</translation>
 <translation id="3577745545227000795">Insamling av hårdvarudata för <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Förhandsgranskning</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Nej</translation>
 <translation id="4251377547188244181">Registrering av kiosk- och skyltningsenhet</translation>
 <translation id="4263223596040212967">Kontrollera tangentbordslayouten och försök igen.</translation>
+<translation id="4268490040465852105">Google-kontot är samma konto som du använder för Gmail, YouTube, Chrome och andra produkter från Google.
+        Med ditt konto kommer du enkelt åt alla dina bokmärken, filer och annat.</translation>
 <translation id="4278498748067682896">Du kommer att använda en Kiosk &amp; Signage Upgrade-licens. Den tillåter att enheten körs i kiosk- eller skyltningsläge. Om du vill att användare ska kunna logga in på enheten går du tillbaka och registrerar dig för Chrome Enterprise Upgrade.</translation>
 <translation id="4287157641315808225">Ja, aktivera ChromeVox</translation>
 <translation id="4289732974614035569">Välj pinkod</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Välj ljust eller mörkt tema</translation>
 <translation id="5804259315582798390">Det gick inte att aktivera lokal dataåterställning</translation>
 <translation id="5810809306422959727">Det här kontot uppfyller inte kraven för föräldrakontroller</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Om du registrerar dina enheter i organisationen konfigureras de för centraliserad enhetshantering. Organisationen kan kräva registrering av flera skäl:<ph name="END_DESCRIPTION" />
+    <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Förbättra säkerheten<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+    <ph name="BEGIN_DESCRIPTION1" />Genom att konfigurera ytterligare säkerhetsinställningar kan organisationen skydda användar- och enhetsuppgifter. Organisationen kan även utföra åtgärder som att fjärråterställa eller inaktivera en borttappad enhet.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Anpassa upplevelsen<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Enhetsbeteendet vid start, på inloggningsskärmen och efter inloggning kan anpassas efter organisationens behov.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Ge support<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Organisationen kan få fjärråtkomst till en enhetssession för att göra felsökning.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Aktivera åtkomst<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Organisationens appar, tjänster och nätverk är kanske bara tillgängliga på registrerade enheter.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Ca <ph name="TIME" /> minuter kvar</translation>
 <translation id="5852112051279473187">Hoppsan! Något gick verkligen fel när enheten skulle registreras. Försök igen eller kontakta support.</translation>
 <translation id="5852137567692933493">Starta om och gör en Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Navigera till extrainnehåll <ph name="CURRENT_ELEMENT" /> av <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Knapp för att välja språk och tangentbord. Nuvarande språkinställning: <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Stäng</translation>
+<translation id="6042193169866365541">Google-kontot är samma konto som du använder för Gmail, YouTube, Chrome och andra produkter från Google.
+        Med ditt konto kommer du enkelt åt alla dina bokmärken, filer och annat. Om du inte har något konto kan du skapa ett på nästa skärm.</translation>
 <translation id="6051354611314852653">Hoppsan! Det gick inte att auktorisera API-åtkomst för den här enheten.</translation>
 <translation id="6055544610007596637">Installera appar från Google Play Butik på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="6069464830445383022">Du loggar in på Chromebook med ditt Google-konto.</translation>

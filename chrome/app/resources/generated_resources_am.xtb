@@ -1963,7 +1963,6 @@
 <translation id="2517472476991765520">ቃኝ</translation>
 <translation id="2518024842978892609">የደንበኛ እውቅና ማረጋገጫዎችዎን ይጠቀማል</translation>
 <translation id="2518620532958109495">ወደ ሙሉ ገጽ ዕይታ በራስ-ሰር እንዲገባ ተፈቅዷል</translation>
-<translation id="2519250377986324805">እንዴት እንደሆነ ይመልከቱ</translation>
 <translation id="2519517390894391510">የእውቅና ማረጋገጫ መገለጫ ስም</translation>
 <translation id="2520644704042891903">የሚገኙ ሶኬቶችን በመጠባበቅ ላይ...</translation>
 <translation id="2521427645491031107">የመተግበሪያዎች ስምረት የመሣሪያ ቅንብሮች ውስጥ ይቀናበራል</translation>
@@ -3533,6 +3532,7 @@
 <translation id="371370241367527062">የፊት ማይክሮፎን</translation>
 <translation id="37143699183660101">የጠቋሚ መረጋጋት</translation>
 <translation id="3714610938239537183">እርምጃ 2 ከ4፦ ወደ ውጪ የሚላክ የምርመራ ውሂብ ይምረጡ</translation>
+<translation id="3715519518311454566">የGemini የግርጌ ሉህ ተሰብስቧል።</translation>
 <translation id="3717133748480414053">ክህሎቶች የድር ገጾችን ለማጠቃለል፣ ምርጥ ቅናሾችን ለመፈለግ እና ሌሎችም ሊያግዙዎት ይችላሉ</translation>
 <translation id="3719245268140483218">የመሣሪያ ክስተት</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> ተሞልቷል።</translation>
@@ -6215,6 +6215,7 @@
 <translation id="5828181959764767444">ፀሐይ መግባት</translation>
 <translation id="5828545842856466741">መገለጫ አክል...</translation>
 <translation id="5828633471261496623">በማተም ላይ...</translation>
+<translation id="5829137022934788067">ስለዚህ ምርጫ ንገረኝ</translation>
 <translation id="5829214552954466783"><ph name="CREDENTIAL_TYPE" />ን ለተጠቃሚ ስም <ph name="USER_EMAIL" /> ያጋሩ</translation>
 <translation id="5829544019044013776">በGoogle Wallet ውስጥ ያሉ የእርስዎ የመክፈያ ዘዴዎች</translation>
 <translation id="5830512293931520102">የይለፍ ቃልዎ የተመሰጠረ ነው እና በጭራሽ በማንም አይታይም</translation>
@@ -7006,6 +7007,7 @@
 <translation id="6455264371803474013">በተወሰኑ ጣቢያዎች ላይ</translation>
 <translation id="6455521402703088376">ጠፍቷል • ይህ ቅጥያ በገንቢው ከህትመት ወጥቷል</translation>
 <translation id="6455894534188563617">&amp;አዲስ አቃፊ</translation>
+<translation id="6456162045957729200">ይህን ምርጫ አብራራ</translation>
 <translation id="645705751491738698">ጃቫስክሪፕትን ማገድ ቀጥል</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> ሊጀመር አልተቻለም</translation>
 <translation id="6458701200018867744">ዝማኔ አልተሳካም (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)።</translation>
@@ -8119,7 +8121,6 @@
 <translation id="7314989823816739632">የፍቅር ስሜት የሚሰጥ</translation>
 <translation id="7317342082064136423">መለያዎን ያረጋግጡ</translation>
 <translation id="731827437403763009">የሰው ሠራሽ አስተውሎት ፈጠራዎች</translation>
-<translation id="7319320447721994672">ኩኪዎችን የሚጠቀም ጣቢያ ከጎበኙ ሁሉንም የጣቢያ ባህሪያት እንዲሰሩ ለማድረግ ኩኪዎችን በጊዜያዊነት ማንቃት ሊያስፈልግዎት ይችላል።</translation>
 <translation id="7319983568955948908">ማጋራት አቁም</translation>
 <translation id="7320213904474460808">በነባሪነት ወደ አውታረ መረቡ ተመለስ</translation>
 <translation id="7321545336522791733">አገልጋይ አይደረስበትም</translation>
@@ -8869,6 +8870,7 @@
 <translation id="7903481341948453971">የይለፍ ቃላትን በሚሞሉበት ጊዜ ማያ ገፅ መቆለፊያዎን ይጠቀሙ</translation>
 <translation id="7903925330883316394">ፍጆታ፦ <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">ካታካና</translation>
+<translation id="7904492297081735975">እና የዕልባት አቀናባሪን ይክፈቱ</translation>
 <translation id="7904526211178107182">በአውታረ መረብዎ ላይ የLinux ወደቦች ለሌሎች መሣሪያዎች የሚገኙ ያድርጓቸው።</translation>
 <translation id="7907312522152480478">ትሮችዎን ከሌሎች መሣሪያዎችዎ ለማግኘት፣ እርስዎ መሆንዎን ያረጋግጡ እና የእርስዎን ታሪክ እና ትሮች ያስምሩ። ቅንብሮች ውስጥ በማንኛውም ጊዜ ማስመር ማቆም ይችላሉ። Google በእርስዎ ታሪክ ላይ በመመሥረት ፍለጋን እና ሌሎች አገልግሎቶችን ግላዊነት ሊያላብስ ይችላል።</translation>
 <translation id="7907502219904644296">መዳረሻ ለውጥ</translation>
@@ -10626,6 +10628,7 @@ nil</translation>
 <translation id="942296794412775122">ማይክሮፎን አብራ/አጥፋ</translation>
 <translation id="942488123151518958">ባለበት አቁም (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> የChrome ትር እና ኦዲዮ እያጋራ ነው።</translation>
+<translation id="943744232549395906">የድምፅ ትየባ ቆሟል</translation>
 <translation id="945522503751344254">ግብረመልስ ላክ</translation>
 <translation id="947156494302904893">የሚጎበኟቸው ጣቢያዎች እርስዎ ቦት ሳይሆኑ እውነተኛ ሰው እንደሆኑ ማረጋገጥ ይችላሉ</translation>
 <translation id="947329552760389097">&amp;አባለ ነገሮችን መርምር</translation>

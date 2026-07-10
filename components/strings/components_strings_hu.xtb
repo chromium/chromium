@@ -2323,6 +2323,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4607608436550361748">Chrome-tippek megjelenítése</translation>
 <translation id="460848736049414407">Rendszergazda által letiltva</translation>
 <translation id="4610279718074907952">Ez a webhely egy olyan, a(z) <ph name="SET_OWNER" /> által meghatározott csoportban található, amely láthatja az Ön tevékenységeit</translation>
+<translation id="4612631413844865947">Hiba történt a megrendelés feldolgozása során a(z) <ph name="MERCHANT_ORIGIN" /> webhelyen a következőn keresztül: <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Futballfelszerelés</translation>
 <translation id="4612904677925722054">Ez a webhely felnőtteknek szóló tartalommal rendelkezhet. A szülődnek vagy a gondviselődnek jóvá kell hagynia a webhely felkeresését.</translation>
 <translation id="4619564267100705184">Igazolja személyazonosságát</translation>

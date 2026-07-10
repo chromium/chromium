@@ -1955,7 +1955,6 @@
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2518024842978892609">使用您的客户端证书</translation>
 <translation id="2518620532958109495">可以自动进入全屏模式</translation>
-<translation id="2519250377986324805">了解具体方法</translation>
 <translation id="2519517390894391510">证书名称</translation>
 <translation id="2520644704042891903">正在等待可用的套接字…</translation>
 <translation id="2521427645491031107">在设备设置中设置应用同步</translation>
@@ -3523,6 +3522,7 @@
 <translation id="371370241367527062">前置麦克风</translation>
 <translation id="37143699183660101">光标稳定性</translation>
 <translation id="3714610938239537183">步骤 2/4：选择要导出的诊断数据</translation>
+<translation id="3715519518311454566">Gemini 底部动作条已收起。</translation>
 <translation id="3717133748480414053">技能可帮助您总结网页内容、搜索超值优惠等</translation>
 <translation id="3719245268140483218">设备事件</translation>
 <translation id="3719310907809321183">已填充<ph name="CARD_IDENTIFIER" />。</translation>
@@ -6202,6 +6202,7 @@
 <translation id="5828181959764767444">日落</translation>
 <translation id="5828545842856466741">添加个人资料…</translation>
 <translation id="5828633471261496623">正在打印...</translation>
+<translation id="5829137022934788067">向我介绍一下所选内容</translation>
 <translation id="5829214552954466783">分享以下用户名的<ph name="CREDENTIAL_TYPE" />：<ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">您在 Google 钱包中的支付方式</translation>
 <translation id="5830512293931520102">您的密码会经过加密处理，且不会向任何人显示</translation>
@@ -6992,6 +6993,7 @@
 <translation id="6455264371803474013">在特定网站上</translation>
 <translation id="6455521402703088376">已关闭 • 此扩展程序已被其开发者取消发布</translation>
 <translation id="6455894534188563617">新建文件夹(&amp;N)</translation>
+<translation id="6456162045957729200">请解释所选内容</translation>
 <translation id="645705751491738698">继续拦截 JavaScript</translation>
 <translation id="6457572529564180082">无法启动“<ph name="APP_NAME" />”</translation>
 <translation id="6458701200018867744">上传失败（<ph name="WEBRTC_LOG_UPLOAD_TIME" />）。</translation>
@@ -8103,7 +8105,6 @@
 <translation id="7314989823816739632">浪漫</translation>
 <translation id="7317342082064136423">验证您的账号</translation>
 <translation id="731827437403763009">AI 创新功能</translation>
-<translation id="7319320447721994672">如果您访问的网站使用 Cookie，您可能需要暂时启用 Cookie，才能确保所有的网站功能均正常运行。</translation>
 <translation id="7319983568955948908">停止共享</translation>
 <translation id="7320213904474460808">设置默认网络</translation>
 <translation id="7321545336522791733">无法连接到服务器</translation>
@@ -8853,6 +8854,7 @@
 <translation id="7903481341948453971">填充密码时使用屏幕锁定</translation>
 <translation id="7903925330883316394">实用程序：<ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">片假名</translation>
+<translation id="7904492297081735975">打开书签管理器(&amp;O)</translation>
 <translation id="7904526211178107182">使 Linux 端口可供您网络上的其他设备使用。</translation>
 <translation id="7907312522152480478">要访问您从其他设备打开的标签页，请验证身份并同步历史记录和标签页。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="7907502219904644296">更改访问权限</translation>
@@ -10605,6 +10607,7 @@
 <translation id="942296794412775122">麦克风开/关</translation>
 <translation id="942488123151518958">暂停 (K)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> 正在共享 Chrome 标签页和音频。</translation>
+<translation id="943744232549395906">语音输入已停止</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="947156494302904893">您访问的网站可以验证您是真人而非机器人</translation>
 <translation id="947329552760389097">检查元素(&amp;I)</translation>

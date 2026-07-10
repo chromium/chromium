@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">Бизнес-образование</translation>
 <translation id="1542830386724426410">Показывать информацию о преимуществах и бонусах карты при оформлении покупки. Применяются условия эмитента. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Подробнее…<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">История изменения цен</translation>
+<translation id="1546286808622193216">Сравнивайте преимущества карт с помощью Gemini.</translation>
 <translation id="1549470594296187301">Для использования этой функции необходимо включить JavaScript.</translation>
 <translation id="1553152622374372421">Зимние виды спорта</translation>
 <translation id="1553358976309200471">Обновить Chrome</translation>
@@ -2415,6 +2416,7 @@
 <translation id="4744603770635761495">Путь к исполняемому файлу</translation>
 <translation id="4744816391336495134">Вы можете использовать отпечаток пальца, чтобы подтверждать свою личность при использовании сохраненных паролей.</translation>
 <translation id="4749011317274908093">Режим инкогнито</translation>
+<translation id="4749620353539006322">Максимум бонусов</translation>
 <translation id="4749924365937394956">Аутентификация сервера</translation>
 <translation id="4750671009706599284">этот смартфон</translation>
 <translation id="4750917950439032686">Информация, которую вы сообщаете этому сайту (например, пароли и номера банковских карт), защищена.</translation>
@@ -2990,6 +2992,7 @@
 <translation id="5611398002774823980">Сохранить в аккаунте</translation>
 <translation id="561165882404867731">Перевести эту страницу с помощью Google Переводчика</translation>
 <translation id="5612720917913232150">Сайт <ph name="URL" /> запрашивает данные о местоположении вашего компьютера.</translation>
+<translation id="5613958591683399697">Спросите <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Уведомление пользователя</translation>
 <translation id="5614520971155863709">Карточные игры</translation>
 <translation id="5617949217645503996">Сайт <ph name="HOST_NAME" /> выполнил переадресацию слишком много раз.</translation>
@@ -3760,7 +3763,7 @@
 <translation id="681021252041861472">Обязательное поле</translation>
 <translation id="6810899417690483278">Идентификатор персонализации</translation>
 <translation id="6816109178681043245">Спортивные товары</translation>
-<translation id="681631578600400068">Сохранить данные водительского удостоверения?</translation>
+<translation id="681631578600400068">Сохранить водительское удостоверение?</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">последовательные порты</translation>
 <translation id="6820686453637990663">CVC-код</translation>

@@ -1968,7 +1968,6 @@
 <translation id="2517472476991765520">স্কেন কৰক</translation>
 <translation id="2518024842978892609">আপোনাৰ ক্লায়েণ্টৰ প্ৰমাণপত্ৰ ব্যৱহাৰ কৰক</translation>
 <translation id="2518620532958109495">স্বয়ংক্ৰিয়ভাৱে পূৰ্ণ স্ক্ৰীনত প্ৰৱেশ কৰিবলৈ অনুমতি দিছে</translation>
-<translation id="2519250377986324805">কেনেকৈ কৰে চাওক</translation>
 <translation id="2519517390894391510">প্ৰমাণপত্ৰৰ প্ৰ’ফাইলৰ নাম</translation>
 <translation id="2520644704042891903">ছকেট উপলব্ধ হোৱালৈ অপেক্ষা কৰি থকা হৈছে...</translation>
 <translation id="2521427645491031107">ডিভাইচৰ ছেটিঙত এপ্‌ ছিংক কৰাৰ সুবিধাটো ছেট কৰা আছে</translation>
@@ -3538,6 +3537,7 @@
 <translation id="371370241367527062">সন্মুখৰ মাইক্ৰ’ফ’ন</translation>
 <translation id="37143699183660101">কাৰ্ছৰৰ সুস্থিৰতা</translation>
 <translation id="3714610938239537183">৪ টা পদক্ষেপৰ ২ নম্বৰটো: ৰপ্তানি কৰিবলৈ ডায়গন’ষ্টিক ডেটা বাছনি কৰক</translation>
+<translation id="3715519518311454566">Geminiৰ তলৰ শ্বীট সংকোচন কৰা হৈছে।</translation>
 <translation id="3717133748480414053">দক্ষতাই আপোনাক ৱেব পৃষ্ঠাৰ সাৰাংশ প্ৰস্তুত কৰাত, ভাল ডীল বিচাৰি পোৱাত আৰু আন বহুতো কামত সহায় কৰিব পাৰে</translation>
 <translation id="3719245268140483218">ডিভাইচৰ কাৰ্যকলাপ</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> পূৰ কৰা হৈছে।</translation>
@@ -6221,6 +6221,7 @@
 <translation id="5828181959764767444">সূৰ্যাস্ত</translation>
 <translation id="5828545842856466741">প্ৰ’ফাইল যোগ কৰক...</translation>
 <translation id="5828633471261496623">প্ৰিণ্ট কৰি থকা হৈছে...</translation>
+<translation id="5829137022934788067">মোক এই বাছনিটোৰ বিষয়ে কওক</translation>
 <translation id="5829214552954466783">এই ব্যৱহাৰকাৰীৰ নামৰ বাবে <ph name="CREDENTIAL_TYPE" /> শ্বেয়াৰ কৰক: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Google Walletত আপোনাৰ পৰিশোধ পদ্ধতিসমূহ</translation>
 <translation id="5830512293931520102">আপোনাৰ পাছৱৰ্ড এনক্ৰিপ্ট কৰা হৈছে আৰু সেইটো কেতিয়াও আন কোনেও চাব নোৱাৰে</translation>
@@ -7012,6 +7013,7 @@
 <translation id="6455264371803474013">বিশেষ ছাইটসমূহত</translation>
 <translation id="6455521402703088376">অফ আছে • এই এক্সটেনশ্বনটো ইয়াৰ বিকাশকৰ্তাই অপ্ৰকাশিত কৰিছে</translation>
 <translation id="6455894534188563617">&amp;নতুন ফ’ল্ডাৰ</translation>
+<translation id="6456162045957729200">এই বাছনিটো ব্যাখ্যা কৰক</translation>
 <translation id="645705751491738698">JavaScript অৱৰোধ কৰাটো অব্যাহত ৰাখক</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> লঞ্চ কৰিব নোৱাৰি</translation>
 <translation id="6458701200018867744">আপল’ড কৰিব পৰা নগ’ল (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)।</translation>
@@ -8124,7 +8126,6 @@
 <translation id="7314989823816739632">ৰোমাণ্টিক</translation>
 <translation id="7317342082064136423">আপোনাৰ একাউণ্ট সত্যাপন কৰক</translation>
 <translation id="731827437403763009">AIৰ অভিনৱত্ব</translation>
-<translation id="7319320447721994672">যদি আপুনি কুকি ব্যৱহাৰ কৰা ছাইটলৈ যায়, তেন্তে ছাইটৰ আটাইবোৰ সুবিধাই কাম কৰিবলৈ আপুনি কুকিসমূহ সাময়িকভাৱে সক্ষম কৰিব লাগিব।</translation>
 <translation id="7319983568955948908">শ্বেয়াৰ কৰা বন্ধ কৰক</translation>
 <translation id="7320213904474460808">নেটৱৰ্কক ডিফ’ল্ট বনাওক</translation>
 <translation id="7321545336522791733">ছাৰ্ভাৰৰ লগত সংযোগ কৰিব পৰা নাই</translation>
@@ -8874,6 +8875,7 @@
 <translation id="7903481341948453971">পাছৱৰ্ডসমূহ পূৰ কৰোঁতে আপোনাৰ স্ক্ৰীন লক ব্যৱহাৰ কৰক</translation>
 <translation id="7903925330883316394">ইউটিলিটি: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">কাটাকনা</translation>
+<translation id="7904492297081735975">&amp;বুকমাৰ্ক পৰিচালক খোলক</translation>
 <translation id="7904526211178107182">আপোনাৰ নেটৱর্কৰ অন্য ডিভাইচসমূহত Linux প’ৰ্টসমূহ উপলব্ধ কৰাওক।</translation>
 <translation id="7907312522152480478">আপোনাৰ অন্য ডিভাইচৰ টেবসমূহ পাবলৈ এইগৰাকী আপুনি বুলি সত্যাপন কৰক আৰু আপোনাৰ ইতিহাস আৰু টেব ছিংক কৰক। আপুনি যিকোনো সময়তে ছেটিঙত ছিংক কৰা বন্ধ কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
 <translation id="7907502219904644296">এক্সেছ সলনি কৰক</translation>
@@ -10626,6 +10628,7 @@
 <translation id="942296794412775122">মাইক্ৰ’ফ’ন অন আছে/অফ আছে</translation>
 <translation id="942488123151518958">পজ কৰক (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" />এ এটা Chrome টেব আৰু অডিঅ' শ্বেয়াৰ কৰি আছে।</translation>
+<translation id="943744232549395906">ভইচ টাইপিং বন্ধ হৈছে</translation>
 <translation id="945522503751344254">মতামত পঠিয়াওক</translation>
 <translation id="947156494302904893">আপুনি চোৱা ছাইটসমূহে আপুনি এগৰাকী প্ৰকৃত ব্যক্তি আৰু ব’ট নহয় বুলি সত্যাপন কৰিব পাৰে</translation>
 <translation id="947329552760389097">উপাদানসমূহ  &amp;পৰীক্ষা কৰক</translation>

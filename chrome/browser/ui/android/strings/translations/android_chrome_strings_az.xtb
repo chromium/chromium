@@ -1436,6 +1436,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{1 sayt abunəliyindən çıxıldı}other{# sayt abunəliyindən çıxıldı}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 parol}other{# parol}}</translation>
 <translation id="688730033107341407">Çıxdıqdan sonra əlfəcin, parol və Google Hesabındakı digər data bu cihazdan silinəcək.</translation>
+<translation id="6892009074348518725">Bu artırmadan istifadə etmək üçün Chrome-a daxil olun. Google Hesabınızdakı parol və digər məlumatları da istifadə edə və yadda saxlaya biləcəksiniz.</translation>
 <translation id="6896758677409633944">Kopyalayın</translation>
 <translation id="6898797562238201317">Google Hesabındakı bütün Chrome datasını şifrələmək üçün öz parol ifadələrinizdən istifadə edin</translation>
 <translation id="6900532703269623216">Təkmil qoruma</translation>

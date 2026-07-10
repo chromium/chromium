@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Podešavanja proksija</translation>
 <translation id="3550915441744863158">Chrome se automatski ažurira, pa uvek imate najnoviju verziju</translation>
 <translation id="3559533181353831840">Još oko <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Unesite naziv prodavca i broj prodavnice za koje se konfiguriše ovaj uređaj za demonstraciju*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ako ne znate broj prodavnice, možete da unesete 0000 da biste nastavili sa instalacijom režima demonstracije. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Napomena: Google koristi ove informacije da bi identifikovao koju verziju režima demonstracije uređaj treba da dobije i da bi merio korišćenje režima demonstracije.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Došlo je do greške. Probajte ponovo.</translation>
 <translation id="3577745545227000795">Prikupljanje podataka o hardveru za<ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Pregled</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Ne</translation>
 <translation id="4251377547188244181">Registracija kioska i uređaja za prijavljivanje</translation>
 <translation id="4263223596040212967">Proverite raspored tastature i probajte ponovo.</translation>
+<translation id="4268490040465852105">Google nalog je isti onaj nalog koji koristite za Gmail, YouTube, Chrome i druge Google proizvode.
+        Koristite nalog da biste lako pristupali svim obeleživačima, fajlovima i drugom sadržaju.</translation>
 <translation id="4278498748067682896">Koristićete nadogradnju kioska ili uređaja za prijavljivanje koja dozvoljava uređaju da radi samo u režimu kioska ili prijavljivanja. Ako želite da se korisnici prijavljuju na uređaj, vratite se i registrujte pomoću nadogradnje na Chrome za preduzeća.</translation>
 <translation id="4287157641315808225">Da, aktiviraj ChromeVox</translation>
 <translation id="4289732974614035569">Izaberite PIN</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Izaberite svetlu ili tamnu temu</translation>
 <translation id="5804259315582798390">Omogućavanje oporavka lokalnih podataka nije uspelo</translation>
 <translation id="5810809306422959727">Ovaj nalog ne ispunjava uslove za roditeljski nadzor</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Registrovanjem uređaja u organizaciji podešavate ih za centralizovano upravljanje uređajima. Organizacija može da zahteva registraciju iz više razloga:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Poboljšanje bezbednosti<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Konfigurisanjem dodatnih bezbednosnih podešavanja, organizacija može da održi bezbednost korisnika i podataka. Može i da obavlja radnje kao što su daljinsko resetovanje ili onemogućavanje izgubljenog uređaja.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Prilagođavanje doživljaja<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Ponašanje uređaja pri pokretanju, na ekranu za prijavljivanje i posle prijavljivanja može da se prilagodi potrebama organizacije.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Pružanje podrške<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Organizacija može daljinski da pristupa sesiji uređaja radi rešavanja problema.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Omogućavanje pristupa<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Aplikacije, usluge i mreže organizacije mogu da budu dostupne samo na registrovanim uređajima.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Ostalo je oko <ph name="TIME" /> minuta</translation>
 <translation id="5852112051279473187">Ups! Došlo je do ozbiljnog problema dok smo prijavljivali ovaj uređaj. Probajte ponovo ili kontaktirajte predstavnika podrške.</translation>
 <translation id="5852137567692933493">Restartuj i obavi Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Idi u <ph name="CURRENT_ELEMENT" />. element dodatnog sadržaja od <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Dugme za izbor jezika i tastature. Trenutno izabrani jezik je <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Zatvori</translation>
+<translation id="6042193169866365541">Google nalog je isti onaj nalog koji koristite za Gmail, YouTube, Chrome i druge Google proizvode.
+        Koristite nalog da biste lako pristupali svim obeleživačima, fajlovima i drugom sadržaju. Ako nemate nalog, možete da ga otvorite na sledećem ekranu.</translation>
 <translation id="6051354611314852653">Ups! Sistem nije uspeo da odobri pristup API-ju za ovaj uređaj.</translation>
 <translation id="6055544610007596637">Instalirajte aplikacije za <ph name="DEVICE_TYPE" /> iz Google Play prodavnice</translation>
 <translation id="6069464830445383022">Na Chromebook se prijavljujete pomoću Google naloga</translation>

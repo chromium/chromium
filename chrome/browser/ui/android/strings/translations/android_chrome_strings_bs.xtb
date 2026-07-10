@@ -1438,6 +1438,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Otkazali ste pretplatu na 1 web lokaciju}one{Otkazali ste pretplatu na # web lokaciju}few{Otkazali ste pretplatu na # web lokacije}other{Otkazali ste pretplatu na # web lokacija}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 lozinka}one{# lozinka}few{# lozinke}other{# lozinki}}</translation>
 <translation id="688730033107341407">Nakon što se odjavite, oznake, lozinke i drugo s vašeg Google računa će se ukloniti s ovog uređaja.</translation>
+<translation id="6892009074348518725">Da koristite ovu ekstenziju, prijavite se u Chrome. Također ćete moći koristiti i pohranjivati lozinke i drugo s Google računa.</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6898797562238201317">Koristi moj vlastiti pristupni izraz za šifriranje svih podataka Chromea na Google računu</translation>
 <translation id="6900532703269623216">Poboljšana zaštita</translation>

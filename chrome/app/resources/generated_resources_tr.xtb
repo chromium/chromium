@@ -1955,7 +1955,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2517472476991765520">Tara</translation>
 <translation id="2518024842978892609">İstemci sertifikalarınızı kullanma</translation>
 <translation id="2518620532958109495">Otomatik olarak tam ekrana geçilmesine izin verilenler</translation>
-<translation id="2519250377986324805">Nasıl yapılacağını öğrenin:</translation>
 <translation id="2519517390894391510">Sertifika Profil Adı</translation>
 <translation id="2520644704042891903">Kullanılabilir soket bekleniyor...</translation>
 <translation id="2521427645491031107">Uygulama senkronizasyonu cihazın Ayarlar bölümünden ayarlanır</translation>
@@ -3523,6 +3522,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="371370241367527062">Ön mikrofon</translation>
 <translation id="37143699183660101">İmleç sabitliği</translation>
 <translation id="3714610938239537183">Adım 2/4: Dışa aktarılacak teşhis verilerini seçin</translation>
+<translation id="3715519518311454566">Gemini alt sayfası daraltıldı.</translation>
 <translation id="3717133748480414053">Skills, web sayfalarını özetleme ve en iyi fırsatları arama gibi işlemler konusunda size yardımcı olabilir</translation>
 <translation id="3719245268140483218">Cihaz Etkinliği</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> doldurdu.</translation>
@@ -6207,6 +6207,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5828181959764767444">Gün batımı</translation>
 <translation id="5828545842856466741">Profil ekle...</translation>
 <translation id="5828633471261496623">Yazdırılıyor...</translation>
+<translation id="5829137022934788067">Bu seçim hakkında bilgi ver</translation>
 <translation id="5829214552954466783"><ph name="USER_EMAIL" /> kullanıcı adı için <ph name="CREDENTIAL_TYPE" /> bilgisini paylaş</translation>
 <translation id="5829544019044013776">Google Cüzdan'daki ödeme yöntemleriniz</translation>
 <translation id="5830512293931520102">Şifreniz şifrelenir ve başkaları tarafından görülmez</translation>
@@ -6998,6 +6999,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6455264371803474013">Belirli sitelerde</translation>
 <translation id="6455521402703088376">Kapalı • Bu uzantı, geliştiricisi tarafından yayından kaldırıldı</translation>
 <translation id="6455894534188563617">&amp;Yeni Klasör</translation>
+<translation id="6456162045957729200">Bu seçimi açıkla</translation>
 <translation id="645705751491738698">JavaScript'i engellemeye devam et</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> başlatılamıyor</translation>
 <translation id="6458701200018867744">Yükleme başarısız oldu (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8109,7 +8111,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7314989823816739632">Romantik</translation>
 <translation id="7317342082064136423">Hesabınızı doğrulayın</translation>
 <translation id="731827437403763009">Yapay zeka yenilikleri</translation>
-<translation id="7319320447721994672">Çerez kullanan bir siteyi ziyaret ederseniz tüm site özelliklerinin çalışması için çerezleri geçici olarak etkinleştirmeniz gerekebilir.</translation>
 <translation id="7319983568955948908">Paylaşmayı Durdur</translation>
 <translation id="7320213904474460808">Varsayılan olarak ağa bağlan</translation>
 <translation id="7321545336522791733">Sunucuya ulaşılamıyor</translation>
@@ -8858,6 +8859,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7903481341948453971">Şifreleri doldururken ekran kilidimi kullan</translation>
 <translation id="7903925330883316394">Yardımcı Program: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7904492297081735975">&amp;Yer işareti yöneticisini aç</translation>
 <translation id="7904526211178107182">Linux bağlantı noktalarını ağınızdaki diğer cihazların kullanımına sunun.</translation>
 <translation id="7907312522152480478">Diğer cihazlarınızdaki sekmeleri görmek için kimliğinizi doğrulayıp geçmişinizi ve sekmelerinizi senkronize edin. Senkronizasyonu istediğiniz zaman Ayarlar'dan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="7907502219904644296">Erişimi değiştir</translation>
@@ -10610,6 +10612,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="942296794412775122">Mikrofon açık/kapalı</translation>
 <translation id="942488123151518958">Duraklat (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" />, bir Chrome sekmesini ve sesi paylaşıyor.</translation>
+<translation id="943744232549395906">Sesle yazma durduruldu</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="947156494302904893">Ziyaret ettiğiniz siteler, bot olmadığınızı ve gerçek bir kişi olduğunuzu doğrulayabilir</translation>
 <translation id="947329552760389097">Öğeleri &amp;İncele</translation>

@@ -1955,7 +1955,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2517472476991765520">Scanner</translation>
 <translation id="2518024842978892609">Utiliser vos certificats client</translation>
 <translation id="2518620532958109495">Autorisés à passer automatiquement en plein écran</translation>
-<translation id="2519250377986324805">En savoir plus</translation>
 <translation id="2519517390894391510">Nom du profil du certificat</translation>
 <translation id="2520644704042891903">En attente d'une interface de connexion disponible…</translation>
 <translation id="2521427645491031107">La synchronisation des applis est configurée dans les paramètres de l'appareil</translation>
@@ -3523,6 +3522,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="371370241367527062">Micro avant</translation>
 <translation id="37143699183660101">Stabilité du curseur</translation>
 <translation id="3714610938239537183">Étape 2 sur 4 : Sélectionnez les données de diagnostic à exporter</translation>
+<translation id="3715519518311454566">Bottom sheet Gemini réduite.</translation>
 <translation id="3717133748480414053">Les compétences peuvent vous aider à résumer des pages Web, à rechercher des offres intéressantes et bien plus</translation>
 <translation id="3719245268140483218">Événement sur l'appareil</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> indiqué.</translation>
@@ -6206,6 +6206,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5828181959764767444">Coucher de soleil</translation>
 <translation id="5828545842856466741">Ajouter un profil…</translation>
 <translation id="5828633471261496623">Impression...</translation>
+<translation id="5829137022934788067">Donne-moi des infos sur cette sélection</translation>
 <translation id="5829214552954466783">Partager le <ph name="CREDENTIAL_TYPE" /> pour le nom d'utilisateur : <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Vos modes de paiement dans Google Wallet</translation>
 <translation id="5830512293931520102">Votre mot de passe est chiffré et personne ne peut le voir</translation>
@@ -6997,6 +6998,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6455264371803474013">Sur des sites spécifiques</translation>
 <translation id="6455521402703088376">Désactivée • Le développeur a annulé la publication de cette extension</translation>
 <translation id="6455894534188563617">&amp;Nouveau dossier</translation>
+<translation id="6456162045957729200">Explique cette sélection</translation>
 <translation id="645705751491738698">Continuer à bloquer JavaScript</translation>
 <translation id="6457572529564180082">Impossible de lancer <ph name="APP_NAME" /></translation>
 <translation id="6458701200018867744">Échec de l'importation (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8110,7 +8112,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7314989823816739632">Romantique</translation>
 <translation id="7317342082064136423">Validez votre compte</translation>
 <translation id="731827437403763009">Innovations IA</translation>
-<translation id="7319320447721994672">Si vous consultez un site qui utilise des cookies, vous devrez peut-être les activer temporairement pour que toutes les fonctionnalités du site soient opérationnelles.</translation>
 <translation id="7319983568955948908">Arrêter le partage</translation>
 <translation id="7320213904474460808">Définir un réseau par défaut</translation>
 <translation id="7321545336522791733">Serveur inaccessible</translation>
@@ -8860,6 +8861,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7903481341948453971">Utiliser le verrouillage de l'écran pour saisir les mots de passe</translation>
 <translation id="7903925330883316394">Utilitaire : <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7904492297081735975">&amp;Ouvrir le gestionnaire de favoris</translation>
 <translation id="7904526211178107182">Rendre les ports Linux disponibles pour les autres appareils de votre réseau.</translation>
 <translation id="7907312522152480478">Pour accédez à vos onglets sur vos autres appareils, validez votre identité et synchronisez votre historique et vos onglets. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="7907502219904644296">Modifier l'accès</translation>
@@ -10612,6 +10614,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="942296794412775122">Activer/Désactiver le micro</translation>
 <translation id="942488123151518958">Pause (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> partage un onglet Chrome et un contenu audio.</translation>
+<translation id="943744232549395906">Saisie vocale interrompue</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="947156494302904893">Les sites auxquels vous accédez peuvent vérifier que vous êtes une personne et non un robot</translation>
 <translation id="947329552760389097">&amp;Examiner les éléments</translation>

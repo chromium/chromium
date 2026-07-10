@@ -1969,7 +1969,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2518024842978892609">Brug dine klientcertifikater</translation>
 <translation id="2518620532958109495">Har tilladelse til automatisk at åbne i fuld skærm</translation>
-<translation id="2519250377986324805">Se hvordan</translation>
 <translation id="2519517390894391510">Navn på certifikatprofil</translation>
 <translation id="2520644704042891903">Venter på tilgængelig socket...</translation>
 <translation id="2521427645491031107">Synkronisering af apps angives i enhedsindstillingerne</translation>
@@ -3539,6 +3538,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="371370241367527062">Mikrofon på forsiden</translation>
 <translation id="37143699183660101">Markørstabilitet</translation>
 <translation id="3714610938239537183">Trin 2 af 4: Vælg de diagnosticeringsdata, der skal eksporteres</translation>
+<translation id="3715519518311454566">Gemini-feltet i bunden er skjult.</translation>
 <translation id="3717133748480414053">Færdigheder kan hjælpe dig med at opsummere websider, søge efter gode tilbud og meget andet</translation>
 <translation id="3719245268140483218">Enhedshændelse</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> er udfyldt.</translation>
@@ -6223,6 +6223,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5828181959764767444">Solnedgang</translation>
 <translation id="5828545842856466741">Tilføj profil...</translation>
 <translation id="5828633471261496623">Udskriver...</translation>
+<translation id="5829137022934788067">Fortæl mig om dette valg</translation>
 <translation id="5829214552954466783">Del <ph name="CREDENTIAL_TYPE" /> til brugernavnet: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Dine betalingsmetoder i Google Wallet</translation>
 <translation id="5830512293931520102">Din adgangskode er krypteret og kan ikke ses af nogen</translation>
@@ -7014,6 +7015,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6455264371803474013">På specifikke websites</translation>
 <translation id="6455521402703088376">Fra • Udgivelsen af denne udvidelse er fjernet af udvikleren</translation>
 <translation id="6455894534188563617">&amp;Ny mappe</translation>
+<translation id="6456162045957729200">Forklar dette valg</translation>
 <translation id="645705751491738698">Fortsæt blokering af JavaScript</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> kan ikke åbnes</translation>
 <translation id="6458701200018867744">Upload mislykkedes (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8127,7 +8129,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7314989823816739632">Romantisk</translation>
 <translation id="7317342082064136423">Verificer din konto</translation>
 <translation id="731827437403763009">AI-innovationer</translation>
-<translation id="7319320447721994672">Hvis du besøger et website, der anvender cookies, skal du muligvis midlertidigt aktivere cookies, så alle websitefunktionerne fungerer.</translation>
 <translation id="7319983568955948908">Stop deling</translation>
 <translation id="7320213904474460808">Vælg som standardnetværk</translation>
 <translation id="7321545336522791733">Serveren er utilgængelig</translation>
@@ -8877,6 +8878,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7903481341948453971">Brug din skærmlås, når du udfylder adgangskoder</translation>
 <translation id="7903925330883316394">Værktøj: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7904492297081735975">&amp;Åbn bogmærkeadministrator</translation>
 <translation id="7904526211178107182">Gør Linux-portene tilgængelige for andre enheder på dit netværk.</translation>
 <translation id="7907312522152480478">Hvis du vil have dine faner fra dine andre enheder, skal du verificere din identitet og synkronisere din historik og dine faner. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="7907502219904644296">Skift adgangstilladelse</translation>
@@ -10630,6 +10632,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="942296794412775122">Mikrofon til/fra</translation>
 <translation id="942488123151518958">Sæt på pause (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> deler en Chrome-fane og lyd.</translation>
+<translation id="943744232549395906">Indtaling er stoppet</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="947156494302904893">Websites, du besøger, kan verificere, at du er en rigtig person og ikke en bot</translation>
 <translation id="947329552760389097">&amp;Inspect Elements (Undersøg elementer)</translation>

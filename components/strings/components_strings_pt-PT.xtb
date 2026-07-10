@@ -350,6 +350,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1542105669288201090">Educação empresarial</translation>
 <translation id="1542830386724426410">Mostre as recompensas e as vantagens do cartão disponíveis no momento do pagamento. Aplicam-se os termos do emissor. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Saiba mais<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Histórico de preços</translation>
+<translation id="1546286808622193216">Compare as vantagens dos cartões com o Gemini</translation>
 <translation id="1549470594296187301">É necessário ativar o JavaScript para usar esta funcionalidade.</translation>
 <translation id="1553152622374372421">Desportos de inverno</translation>
 <translation id="1553358976309200471">Atualizar o Chrome</translation>
@@ -1425,6 +1426,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para gerir as informações que sincroniza nas Definições do Chrome.</translation>
 <translation id="3203025201812691413">O URL não pode estar vazio</translation>
 <translation id="320323717674993345">Cancelar pagamento</translation>
+<translation id="3204534477198689393">Para melhorar as sugestões e preencher formulários mais rapidamente, o conteúdo e os URLs das páginas que visita podem ser processados num espaço privado na nuvem.</translation>
 <translation id="3207830513221832868">O URL <ph name="BLOCKED_URL" /> pode ter conteúdo não apropriado para menores</translation>
 <translation id="3207960819495026254">Adicionado aos marcadores</translation>
 <translation id="3208701679386778924">Envie um relatório para que possamos melhorar mais atualizações do ChromeOS.</translation>
@@ -1480,6 +1482,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3272643614306383237">Menos de 1 MB. É possível que alguns sites sejam carregados mais lentamente na sua próxima visita.</translation>
 <translation id="3273738040255912340">O administrador pode fazer alterações ao perfil e navegador remotamente, analisar informações sobre o navegador através de relatórios e realizar outras tarefas necessárias. A atividade neste dispositivo também pode ser gerida fora do Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">"Guardar IBAN" aberto à altura total.</translation>
+<translation id="327455571215090823">Preenchimento automático mais inteligente, mantido em privado</translation>
 <translation id="3281350579597955952">{0,plural, =1{A política do administrador não recomenda abrir este ficheiro em <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda abrir estes ficheiros em <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">A sua entidade, <ph name="ENROLLMENT_DOMAIN" />, enviou algumas informações para os seguintes Websites, como definições ou políticas.</translation>
 <translation id="3286372614333682499">retrato</translation>
@@ -2416,6 +2419,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4744603770635761495">Caminho do Executável</translation>
 <translation id="4744816391336495134">Pode usar a impressão digital para validar a sua identidade sempre que usar uma palavra-passe guardada</translation>
 <translation id="4749011317274908093">Está na Navegação anónima</translation>
+<translation id="4749620353539006322">Maximize as recompensas</translation>
 <translation id="4749924365937394956">Autenticação do servidor</translation>
 <translation id="4750671009706599284">este telemóvel</translation>
 <translation id="4750917950439032686">As suas informações (por exemplo, palavras-passe ou números de cartões de crédito) são privadas quando são enviadas para este site.</translation>
@@ -2991,6 +2995,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5611398002774823980">Guardar na conta</translation>
 <translation id="561165882404867731">Traduza esta página com o Google Tradutor</translation>
 <translation id="5612720917913232150"><ph name="URL" /> quer utilizar a localização do seu computador.</translation>
+<translation id="5613958591683399697">Pergunte ao <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Aviso ao utilizador</translation>
 <translation id="5614520971155863709">Jogos de cartas</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> redirecionou-o demasiadas vezes.</translation>

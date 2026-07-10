@@ -1438,6 +1438,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Leiratkozott 1 webhelyről}other{Leiratkozott # webhelyről}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 jelszó}other{# jelszó}}</translation>
 <translation id="688730033107341407">Kijelentkezés után a Google-fiókjában lévő könyvjelzői, jelszavai és egyéb tartalmai el lesznek távolítva erről az eszközről.</translation>
+<translation id="6892009074348518725">Ha használni szeretné ezt a bővítményt, jelentkezzen be a Chrome-ba. Többek között a Google-fiókjában lévő jelszavakat is használhatja, és újakat is menthet.</translation>
 <translation id="6896758677409633944">Másolás</translation>
 <translation id="6898797562238201317">Saját összetett jelszó használata a Google-fiókjában tárolt Chrome-adatok mindegyikének titkosításához</translation>
 <translation id="6900532703269623216">Speciális védelem</translation>

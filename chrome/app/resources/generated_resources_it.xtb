@@ -1954,7 +1954,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2517472476991765520">Scansiona</translation>
 <translation id="2518024842978892609">Utilizza certificati client</translation>
 <translation id="2518620532958109495">Siti autorizzati ad attivare automaticamente la modalità a schermo intero</translation>
-<translation id="2519250377986324805">Scopri come fare</translation>
 <translation id="2519517390894391510">Nome profilo di certificato</translation>
 <translation id="2520644704042891903">In attesa di socket disponibile...</translation>
 <translation id="2521427645491031107">La sincronizzazione delle app è configurata nelle impostazioni del dispositivo</translation>
@@ -3524,6 +3523,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="371370241367527062">Microfono anteriore</translation>
 <translation id="37143699183660101">Stabilità del cursore</translation>
 <translation id="3714610938239537183">Passaggio 2 di 4: seleziona i dati diagnostici da esportare</translation>
+<translation id="3715519518311454566">Riquadro inferiore di Gemini compresso.</translation>
 <translation id="3717133748480414053">Skills può aiutarti a riassumere pagine web, cercare offerte e altro ancora</translation>
 <translation id="3719245268140483218">Evento dispositivo</translation>
 <translation id="3719310907809321183">Modulo per la carta <ph name="CARD_IDENTIFIER" /> compilato.</translation>
@@ -6205,6 +6205,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5828181959764767444">Tramonto</translation>
 <translation id="5828545842856466741">Aggiungi profilo…</translation>
 <translation id="5828633471261496623">Stampa in corso...</translation>
+<translation id="5829137022934788067">Parlami di questa selezione</translation>
 <translation id="5829214552954466783">Condividi <ph name="CREDENTIAL_TYPE" /> per il nome utente: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">I tuoi metodi di pagamento in Google Wallet</translation>
 <translation id="5830512293931520102">La tua password è criptata e non può essere visualizzata da nessuno</translation>
@@ -6995,6 +6996,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6455264371803474013">Su siti specifici</translation>
 <translation id="6455521402703088376">Off • La pubblicazione di questa estensione è stata annullata dallo sviluppatore</translation>
 <translation id="6455894534188563617">&amp;Nuova cartella</translation>
+<translation id="6456162045957729200">Spiega questa selezione</translation>
 <translation id="645705751491738698">Continua a bloccare JavaScript</translation>
 <translation id="6457572529564180082">Impossibile avviare <ph name="APP_NAME" /></translation>
 <translation id="6458701200018867744">Caricamento non riuscito (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8106,7 +8108,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7314989823816739632">Romantico</translation>
 <translation id="7317342082064136423">Verifica il tuo account</translation>
 <translation id="731827437403763009">Innovazioni dell'AI</translation>
-<translation id="7319320447721994672">Se visiti un sito che utilizza i cookie, potrebbe essere necessario attivarli temporaneamente perché il sito funzioni correttamente.</translation>
 <translation id="7319983568955948908">Interrompi condivisione</translation>
 <translation id="7320213904474460808">Scegli rete predefinita</translation>
 <translation id="7321545336522791733">Server non raggiungibile</translation>
@@ -8856,6 +8857,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7903481341948453971">Usa il blocco schermo durante l'inserimento delle password</translation>
 <translation id="7903925330883316394">Utility: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7904492297081735975">&amp;Apri Gestione preferiti</translation>
 <translation id="7904526211178107182">Rendi disponibili le porte Linux per altri dispositivi sulla tua rete.</translation>
 <translation id="7907312522152480478">Per recuperare le schede dagli altri tuoi dispositivi, esegui la verifica della tua identità e sincronizza la cronologia e le schede. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="7907502219904644296">Modifica accesso</translation>
@@ -10608,6 +10610,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="942296794412775122">Microfono on/off</translation>
 <translation id="942488123151518958">Metti in pausa (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> condivide l'audio e una scheda Chrome.</translation>
+<translation id="943744232549395906">Digitazione vocale interrotta</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="947156494302904893">I siti che visiti possono verificare che sei una persona reale e non un bot</translation>
 <translation id="947329552760389097">&amp;Ispeziona elementi</translation>

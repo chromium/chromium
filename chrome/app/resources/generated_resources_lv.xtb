@@ -1955,7 +1955,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2517472476991765520">Meklēt</translation>
 <translation id="2518024842978892609">Izmantot jūsu klientu sertifikātus</translation>
 <translation id="2518620532958109495">Ir atļauts automātiski pāriet pilnekrāna režīmā</translation>
-<translation id="2519250377986324805">Skatīt pamācību</translation>
 <translation id="2519517390894391510">Sertifikāta profila nosaukums</translation>
 <translation id="2520644704042891903">Notiek pieejamas ligzdas gaidīšana...</translation>
 <translation id="2521427645491031107">Ierīces iestatījumos ir iestatīta lietotņu sinhronizācija.</translation>
@@ -3523,6 +3522,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="371370241367527062">Priekšējais mikrofons</translation>
 <translation id="37143699183660101">Kursora stabilitāte</translation>
 <translation id="3714610938239537183">2. darbība no 4: eksportējamo diagnostikas datu atlasīšana</translation>
+<translation id="3715519518311454566">Gemini ekrāna apakšdaļas lapa ir sakļauta.</translation>
 <translation id="3717133748480414053">Prasmes var palīdzēt apkopot tīmekļa lapas, meklēt izdevīgus piedāvājumus un paveikt daudz ko citu.</translation>
 <translation id="3719245268140483218">Ierīces notikums</translation>
 <translation id="3719310907809321183">Aizpildīts kredītkartes numura lauks: <ph name="CARD_IDENTIFIER" />.</translation>
@@ -6204,6 +6204,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5828181959764767444">Saulriets</translation>
 <translation id="5828545842856466741">Pievienot profilu...</translation>
 <translation id="5828633471261496623">Notiek drukāšana...</translation>
+<translation id="5829137022934788067">Pastāsti man par šo atlasīto tekstu</translation>
 <translation id="5829214552954466783">Kopīgot datus (<ph name="CREDENTIAL_TYPE" />) lietotājvārdam: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Jūsu maksājumu veidi lietotnē Google maks</translation>
 <translation id="5830512293931520102">Jūsu parole ir šifrēta, un neviens to nekad neredzēs.</translation>
@@ -6994,6 +6995,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6455264371803474013">Konkrētās vietnēs</translation>
 <translation id="6455521402703088376">Izslēgts • Šī paplašinājuma publicēšanu atcēla tā izstrādātājs</translation>
 <translation id="6455894534188563617">&amp;Jauna mape</translation>
+<translation id="6456162045957729200">Paskaidro šo atlasīto tekstu</translation>
 <translation id="645705751491738698">Turpināt bloķēt JavaScript</translation>
 <translation id="6457572529564180082">Lietotni <ph name="APP_NAME" /> nevar palaist</translation>
 <translation id="6458701200018867744">Augšupielāde neizdevās (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8109,7 +8111,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7314989823816739632">Romantisks</translation>
 <translation id="7317342082064136423">Konta verifikācija</translation>
 <translation id="731827437403763009">MI inovācijas</translation>
-<translation id="7319320447721994672">Ja apmeklēsiet vietni, kurā tiek izmantoti sīkfaili, iespējams, īslaicīgi būs jāiespējo sīkfaili, lai visas vietnes funkcijas darbotos.</translation>
 <translation id="7319983568955948908">Pārtraukt koplietošanu</translation>
 <translation id="7320213904474460808">Noklusējuma tīkla iestatīšana</translation>
 <translation id="7321545336522791733">Serveris nav sasniedzams</translation>
@@ -8859,6 +8860,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7903481341948453971">Aizpildot paroles, izmantot ekrāna bloķēšanu</translation>
 <translation id="7903925330883316394">Utilīta: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7904492297081735975">&amp;Atvērt grāmatzīmju pārvaldnieku</translation>
 <translation id="7904526211178107182">Padariet Linux portus pieejamus citām ierīcēm jūsu tīklā.</translation>
 <translation id="7907312522152480478">Lai iegūtu cilnes no citām savām ierīcēm, verificējiet savu identitāti un sinhronizējiet vēsturi un cilnes. Jebkurā brīdī iestatījumos varat pārtraukt sinhronizēšanu. Google var personalizēt pakalpojumu Meklēšana un citus pakalpojumus, ņemot vērā jūsu vēsturi.</translation>
 <translation id="7907502219904644296">Mainīt piekļuvi</translation>
@@ -10611,6 +10613,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="942296794412775122">Ieslēgt/izslēgt mikrofonu</translation>
 <translation id="942488123151518958">Pārtraukt (k)</translation>
 <translation id="942532530371314860">Lietotne <ph name="APP_NAME" /> koplieto Chrome cilni un audio.</translation>
+<translation id="943744232549395906">Rakstīšana ar balsi ir apturēta</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
 <translation id="947156494302904893">Jūsu apmeklētās vietnes var apstiprināt, ka esat īsts cilvēks, nevis robots</translation>
 <translation id="947329552760389097">&amp;Pārbaudīt elementus</translation>

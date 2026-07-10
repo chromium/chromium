@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">व्यावसायिक शिक्षण</translation>
 <translation id="1542830386724426410">चेकआउट करताना उपलब्ध कार्डचे फायदे आणि रिवॉर्ड दाखवा. जारीकर्त्यांच्या अटी लागू. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />अधिक जाणून घ्या<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">किमतीचा इतिहास</translation>
+<translation id="1546286808622193216">Gemini वापरून कार्डच्या फायद्यांची तुलना करा</translation>
 <translation id="1549470594296187301">हे वैशिष्‍ट्य वापरण्‍यासाठी JavaScript सक्षम करणे आवश्‍यक आहे.</translation>
 <translation id="1553152622374372421">हिवाळ्‍यातील क्रीडा</translation>
 <translation id="1553358976309200471">Chrome अपडेट करा</translation>
@@ -2325,6 +2326,7 @@
 <translation id="4607608436550361748">Chrome शी संबंधित टिपा पहा</translation>
 <translation id="460848736049414407">अ‍ॅडमिनने ब्लॉक केलेली</translation>
 <translation id="4610279718074907952">ही साइट <ph name="SET_OWNER" /> द्वारे परिभाषित केलेल्या गटामध्ये आहे, जी तुमच्या अ‍ॅक्टिव्हिटी पाहू शकते</translation>
+<translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> द्वारे <ph name="MERCHANT_ORIGIN" /> वर तुमच्या ऑर्डरवर प्रक्रिया करताना एरर आली.</translation>
 <translation id="46128681529823442">सॉकर उपकरणे</translation>
 <translation id="4612904677925722054">या साइटमध्ये प्रौढ आशय असू शकतो. तुम्ही या वेबसाइटला भेट देऊ शकता अशी आई-वडिलांनी किंवा पालकांनी मंजुरी देणे आवश्यक आहे.</translation>
 <translation id="4619564267100705184">हे तुम्हीच असल्याची पडताळणी करा</translation>
@@ -2414,6 +2416,7 @@
 <translation id="4744603770635761495">कार्यवाहीयोग्य पथ</translation>
 <translation id="4744816391336495134">तुम्ही सेव्ह केलेला पासवर्ड वापरता, तेव्हा ते तुम्हीच असल्याची पडताळणी करण्यासाठी तुमचे फिंगरप्रिंट वापरू शकता</translation>
 <translation id="4749011317274908093">तुम्ही गुप्त मोडमध्ये आहात</translation>
+<translation id="4749620353539006322">रिवॉर्ड वाढवा</translation>
 <translation id="4749924365937394956">सर्व्हर ऑथेंटिकेशन</translation>
 <translation id="4750671009706599284">हा फोन</translation>
 <translation id="4750917950439032686">तुमची माहिती (उदाहरणार्थ, पासवर्ड किंवा क्रेडिट कार्ड क्रमांक) या साइटवर पाठविली जाते तेव्हा ती खाजगी राहते.</translation>
@@ -2989,6 +2992,7 @@
 <translation id="5611398002774823980">खात्यामध्ये सेव्ह करा</translation>
 <translation id="561165882404867731">या पेजचे Google Translate यासह भाषांतर करा</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ला तुमच्या काँप्युटरचे स्थान वापरायचे आहे</translation>
+<translation id="5613958591683399697"><ph name="ENGINE_NAME" /> ला विचारा</translation>
 <translation id="5614190747811328134">वापरकर्ता सूचना</translation>
 <translation id="5614520971155863709">पत्त्यांचे गेम</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> नी आपल्‍याला अनेक वेळा पुनर्निर्देशित केले.</translation>

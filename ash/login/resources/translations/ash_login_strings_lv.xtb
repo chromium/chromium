@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Starpniekservera iestatījumi</translation>
 <translation id="3550915441744863158">Pārlūks Chrome tiek automātiski atjaunināts, tādēļ jums vienmēr būs pieejama visjaunākā versija.</translation>
 <translation id="3559533181353831840">Aptuvenais atlikušais laiks: <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Ievadiet tā mazumtirgotāja nosaukumu un veikala numuru, kam tiek konfigurēta šī demonstrācijas ierīce*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ja nezināt veikala numuru, varat ievadīt “0000”, lai turpinātu demonstrācijas režīma instalēšanu. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />* Piezīme. Google izmanto šo informāciju, lai identificētu demonstrācijas režīma versiju, kas jāsaņem ierīcei, un novērtētu demonstrācijas režīma lietojumu.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Radās kļūda. Mēģiniet vēlreiz.</translation>
 <translation id="3577745545227000795">Aparatūras datu vākšana operētājsistēmā <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Priekšskatīt</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Nē</translation>
 <translation id="4251377547188244181">Kioska un digitālā ceļrāža ierīces reģistrācija</translation>
 <translation id="4263223596040212967">Pārbaudiet tastatūras izkārtojumu un mēģiniet vēlreiz.</translation>
+<translation id="4268490040465852105">Jūsu Google konts ir tas pats konts, kuru izmantojat pakalpojumos Gmail, YouTube, Chrome un citos Google produktos.
+        Izmantojiet savu kontu, lai ērti piekļūtu visām savām grāmatzīmēm, failiem un citam saturam.</translation>
 <translation id="4278498748067682896">Jūs izmantosiet kioska un digitālā ceļrāža jauninājumu, kas ļauj ierīcei darboties tikai kioska vai digitālā ceļrāža režīmā. Ja vēlaties, lai lietotāji pierakstītos ierīcē, atgriezieties un reģistrējiet ierīci, izmantojot jauninājumu Chrome Enterprise Upgrade.</translation>
 <translation id="4287157641315808225">Jā, aktivizēt ChromeVox</translation>
 <translation id="4289732974614035569">Izvēlieties PIN</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Gaišā vai tumšā motīva atlase</translation>
 <translation id="5804259315582798390">Neizdevās iespējot lokālo datu atkopšanu</translation>
 <translation id="5810809306422959727">Šis konts nav piemērots vecāku kontrolei</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Ja reģistrēsiet ierīces savā organizācijā, tajās tiks iespējota centralizēta ierīču pārvaldība. Jūsu organizācija var pieprasīt reģistrāciju vairāku iemeslu dēļ.<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Drošības uzlabošana<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Konfigurējot papildu drošības iestatījumus, organizācija var uzlabot lietotāju un ierīču datu drošību. Tā var veikt arī tādas darbības kā attāla atiestatīšana vai pazaudētas ierīces atspējošana.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Pieredzes pielāgošana<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Ierīces darbību pēc palaišanas, pieteikšanās ekrānā un pēc pieteikšanās var pielāgot organizācijas vajadzībām.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Atbalsta sniegšana<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Organizācija var attāli piekļūt ierīces sesijai, lai novērstu problēmas.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Piekļuves iespējošana<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Organizācijas lietotnes, pakalpojumi un tīkli var būt pieejami tikai reģistrētās ierīcēs.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Atlikušas apmēram <ph name="TIME" /> minūtes</translation>
 <translation id="5852112051279473187">Vai! Palaižot ierīci, kaut kas nogāja greizi. Lūdzu, mēģiniet vēlreiz vai sazinieties ar savu atbalsta pārstāvi.</translation>
 <translation id="5852137567692933493">Restartēt un aktivizēt funkciju Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Pāriet uz papildu satura <ph name="CURRENT_ELEMENT" />. elementu no <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Atlasiet valodas un tastatūras pogu. Pašlaik atlasītā valoda: <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
+<translation id="6042193169866365541">Jūsu Google konts ir tas pats konts, kuru izmantojat pakalpojumos Gmail, YouTube, Chrome un citos Google produktos.
+        Izmantojiet savu kontu, lai ērti piekļūtu visām savām grāmatzīmēm, failiem un citam saturam. Ja jums nav konta, varat to izveidot nākamajā ekrānā.</translation>
 <translation id="6051354611314852653">Hmm... Sistēmai neizdevās autorizēt šo ierīci API piekļuvei.</translation>
 <translation id="6055544610007596637">Instalējiet lietotnes savā ierīcē (<ph name="DEVICE_TYPE" />) no Google Play veikala</translation>
 <translation id="6069464830445383022">Jūsu Google konts — pierakstīšanās informācija Chromebook datoram</translation>

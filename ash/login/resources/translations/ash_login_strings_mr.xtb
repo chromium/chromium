@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">प्रखर आणि आरामदायी रंग ठेवा</translation>
 <translation id="243179355394256322">तुमची संस्था डिव्हाइसची नोंदणी फक्त अधिकृत वापरकर्त्यांपुरती मर्यादित करते. डिव्हाइसची नोंदणी करण्यासाठी हा वापरकर्ता अधिकृत नाही. कृपया ॲडमिन कन्सोलमधील वापरकर्ते विभागामध्ये वापरकर्त्याकडे "Google Meet हार्डवेअरमध्ये नोंदणी करा" हा अ‍ॅडमिनिस्ट्रेटर विशेषाधिकार असल्याची खात्री करा.</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> पासवर्ड रीसेट करा</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />इंस्टॉलेशन<ph name="BEGIN_BOLD" />तुमची संपूर्ण हार्ड ड्राइव्ह मिटवेल<ph name="END_BOLD" />. तुमच्या डेटाचा बॅकअप घेतला असल्याची खात्री करा.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />इंस्टॉलेशन सुरू झाल्यावर ते रद्द करता येऊ शकत नाही.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Google API की गहाळ असल्याने तुम्ही वापरकर्ते जोडण्‍यात सक्षम असणार नाही. तपशीलांसाठी <ph name="DETAILS_URL" /> पहा.</translation>
 <translation id="24786041351753425">डेटा रिकव्‍हरी सेवा सुरू करा.</translation>
 <translation id="2485681265915754872">Google Play सेवा अटी</translation>
@@ -228,6 +230,9 @@
 <translation id="3547954654003013442">प्रॉक्सी सेटिंग्ज</translation>
 <translation id="3550915441744863158">Chrome स्वयंचलितपणे अपडेट होते जेणेकरून आपल्याकडे नेहमी नवीन आवृत्ती असते</translation>
 <translation id="3559533181353831840">सुमारे <ph name="TIME_LEFT" /> शिल्लक</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />हे डेमो डिव्हाइस ज्या रिटेल विक्रेत्यासाठी कॉन्फिगर केले जात आहे, त्याचे नाव आणि स्टोअर नंबर एंटर करा*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />तुम्हाला स्टोअर नंबर माहीत नसल्यास, डेमो मोड इंस्टॉलेशन सुरू ठेवण्यासाठी तुम्ही "००००" एंटर करू शकता. <ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />*टीप: डिव्हाइसला डेमो मोडची कोणती आवृत्ती मिळावी हे ओळखण्यासाठी आणि डेमो मोडच्या वापराचे मापन करण्यासाठी Google ही माहिती वापरते.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> हार्डवेअर डेटा संग्रह</translation>
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
@@ -286,6 +291,8 @@
 <translation id="4250680216510889253">नाही</translation>
 <translation id="4251377547188244181">कियोस्क आणि सिन्येज डिव्हाइसची नोंदणी करणे</translation>
 <translation id="4263223596040212967">तुमचा कीबोर्ड लेआउट तपासा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="4268490040465852105">तुमचे Google खाते हे तुम्ही Gmail, YouTube, Chrome आणि इतर Google उत्पादनांसाठी वापरत असलेलेच खाते आहे.
+        तुमचे सर्व बुकमार्क, फाइल आणि बरेच काही सहज अ‍ॅक्सेस करण्यासाठी तुमचे खाते वापरा.</translation>
 <translation id="4278498748067682896">तुम्ही कियोस्क आणि सिन्येज अपग्रेड वापराल, जे डिव्हाइसला फक्त कियोस्क किंवा सिन्येज मोडमध्ये रन करण्याची परवानगी देते. तुम्हाला वापरकर्त्यांनी डिव्हाइसमध्ये साइन इन करावे असे वाटत असल्यास, कृपया मागे जा आणि Chrome Enterprise Upgrade वापरून नोंदणी करा.</translation>
 <translation id="4287157641315808225">होय, ChromeVox अ‍ॅक्टिव्हेट करा</translation>
 <translation id="4289732974614035569">एक पिन निवडा</translation>
@@ -316,6 +323,15 @@
 <translation id="4487489714832036847">पारंपरिक सॉफ्टवेअरऐवजी Chromebook अ‍ॅप्स वापरतात. उत्पादनक्षमता, मनोरंजन आणि बर्‍याच गोष्टींसाठी अ‍ॅप्स मिळवा.</translation>
 <translation id="450867954911715010">प्रवेशयोग्यता सेटिंग्ज</translation>
 <translation id="4519605771716872386">फाइल सिंक सुरू केले</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />ट्रबलशूटिंगच्या या पायऱ्या वापरून पहा:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />तुमच्या डिव्हाइसमध्ये HDD, SSD किंवा eMMC यांसारखे अंतर्गत स्टोरेज काम करत असल्याची खात्री करा
+        <ph name="LIST_ITEM" />तुमचे अंतर्गत स्टोरेज डिव्हाइस १६GB हून मोठे असल्याची खात्री करा
+        <ph name="LIST_ITEM" />प्रत्यक्षरीत्या ॲक्सेस करण्यायोग्य असल्यास, अंतर्गत स्टोरेजचे कनेक्शन तपासा
+        <ph name="LIST_ITEM" />तुम्ही प्रमाणित मॉडेल वापरत असल्याची खात्री करा आणि इंस्टॉलेशन टिपा तपासा
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />अधिक मदतीसाठी, पुढील लिंकला भेट द्या: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">तुम्हाला या <ph name="DEVICE_TYPE" /> वर कोणाला जोडायचे आहे?</translation>
 <translation id="4566170377336116390">तुम्हाला नोंदणीनंतर स्विच करायचे असल्यास, तुम्हाला तुमचे डिव्हाइस फॅक्टरी रीसेट (Powerwash) करावे लागेल.</translation>
 <translation id="4567512141633030272">साइन-इन करण्याचा पर्याय चुकीचा आहे का?</translation>
@@ -431,6 +447,15 @@
 <translation id="5800703268655655701">फिकट किंवा गडद थीम निवडा</translation>
 <translation id="5804259315582798390">स्थानिक डेटा रिकव्‍हरी सेटअप सुरू करता आले नाही</translation>
 <translation id="5810809306422959727">हे खाते पालक नियंत्रणांसाठी पात्र नाही</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />तुमच्‍या संस्‍थेमध्‍ये तुमच्‍या डिव्‍हाइसची नोंदणी केल्‍याने ती केंद्रित डिव्‍हाइस व्‍यवस्‍थापनासाठी सेट केली जातात. तुमच्या संस्थेला एकाहून अधिक कारणांसाठी नोंदणी आवश्यक असू शकते:<ph name="END_DESCRIPTION" />
+    <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />सुरक्षा वाढवणे<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+    <ph name="BEGIN_DESCRIPTION1" />अतिरिक्त सुरक्षा सेटिंग्ज कॉन्फिगर करून, संस्था ही वापरकर्ता आणि डिव्हाइस डेटा सुरक्षित ठेवू शकते. हे रिमोट रीसेट करणे किंवा हरवलेले डिव्हाइस बंद करणे यांसारख्या कृतीदेखील करू शकते.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />अनुभव कस्टमाइझ करणे<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />बूटअप झाल्यावर, लॉगिन स्क्रीनवर आणि लॉगिन केल्यानंतर डिव्हाइसचे वर्तन संस्थेच्या आवश्यकतेनुसार कस्टमाइझ केले जाऊ शकते.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />सपोर्ट पुरवणे<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+    <ph name="BEGIN_DESCRIPTION3" />ट्रबलशूटिंग पुरवण्यासाठी संस्था रिमोट पद्धतीने डिव्हाइस सेशन अ‍ॅक्सेस करू शकते.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />अ‍ॅक्सेस सुरू करणे<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+    <ph name="BEGIN_DESCRIPTION4" />संस्थेची ॲप्स, सेवा आणि नेटवर्क फक्त नोंदणीकृत डिव्हाइसवर उपलब्ध असतील.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">सुमारे <ph name="TIME" /> मिनिटे बाकी</translation>
 <translation id="5852112051279473187">अरेरे! या डिव्हाइसची नावनोंदणी करताना खरोखर काहीतरी चूक झाली. कृपया पुन्हा प्रयत्न करा आणि तुमच्या सपोर्ट प्रतिनिधीशी संपर्क साधा.</translation>
 <translation id="5852137567692933493">रीस्टार्ट करा आणि पॉवरवॉश करा</translation>
@@ -451,6 +476,8 @@
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" /> पैकी <ph name="CURRENT_ELEMENT" /> अतिरिक्त आशयावर नेव्हिगेट करा</translation>
 <translation id="6016972670657536680">भाषा आणि कीबोर्ड बटण निवडा. सध्या निवडलेली भाषा <ph name="LANGUAGE" /> आहे.</translation>
 <translation id="6040143037577758943">बंद करा</translation>
+<translation id="6042193169866365541">तुमचे Google खाते हे तुम्ही Gmail, YouTube, Chrome आणि इतर Google उत्पादनांसाठी वापरत असलेलेच खाते आहे.
+        तुमचे सर्व बुकमार्क, फाइल आणि बरेच काही सहज अ‍ॅक्सेस करण्यासाठी तुमचे खाते वापरा. तुमच्याकडे खाते नसल्यास, तुम्ही पुढील स्क्रीनवर ते तयार करू शकता.</translation>
 <translation id="6051354611314852653">अरेरे! सिस्टमला या डिव्हाइसाठी API ॲक्सेस ऑथोराइझ करण्यात अपयश आले.</translation>
 <translation id="6055544610007596637">Google Play Store वरून तुमच्या <ph name="DEVICE_TYPE" /> साठी अ‍ॅप्स इंस्टॉल करा</translation>
 <translation id="6069464830445383022">तुमचे Google खाते हेच तुमचे Chromebook साइन इन आहे</translation>
@@ -555,6 +582,8 @@
 <translation id="7189451821249468368">तुमच्याकडे या डिव्हाइसची नोंदणी करण्यासाठी पुरेसे अपग्रेड नाहीत. कृपया आणखी खरेदी करण्यासाठी विक्रीशी विभागाशी संपर्क साधा. हा मेसेज एररमुळे दिसत आहे असे वाटत असल्यास, कृपया सपोर्टशी संपर्क साधा.</translation>
 <translation id="7202337678781136582">तुमचा Android फोन वापरून QR कोड स्कॅन करा</translation>
 <translation id="7228854227189381547">स्विच करू नका</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />सर्वोत्तम अनुभवासाठी, <ph name="DEVICE_OS" /> हे तुमच्या अंतर्गत डिस्कवर इंस्टॉल करा. तुम्ही नंतर लॉग इन स्क्रीनवरूनदेखील इंस्टॉल करू शकता.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />तुम्ही इंस्टॉल करण्यासाठी तयार नसल्यास, तुम्ही ते वापरून पाहण्याकरिता USB वरून रन करू शकता. हे तुमचे आधीपासून असलेले OS आणि डेटा ठेवेल, पण तुम्हाला कदाचित स्टोरेज आणि परफॉर्मन्स मर्यादा दिसतील.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">सेटअपनंतर बदल लागू होतील</translation>
 <translation id="7260186537988033909">कियोस्क आणि सिन्येज डिव्हाइस नोंदणी पूर्ण झाली</translation>
 <translation id="7284411326658527427">प्रत्येक व्यक्ती स्वतःचे खाते पर्सनलाइझ करू शकते आणि डेटा खाजगी ठेवू शकते.</translation>
@@ -572,6 +601,8 @@
 <translation id="7416263748877373774">सेवा अटी लोड करता आल्या नाहीत. कृपया तुमचे नेटवर्क कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="7475742997309661417">ChromeOS, ChromeVox वरील स्क्रीन रीडर प्रामुख्याने दृष्टिहीन किंवा दृष्टिदोष असलेल्या लोकांद्वारे स्क्रीनवर प्रदर्शित केलेला मजकूर हा स्पीच सिंथेसायझर अथवा ब्रेल डिस्प्लेसह वाचण्यासाठी वापरले जाते. ChromeVox सुरू करण्यासाठी दोन्ही व्हॉल्यूम की पाच सेकंदांसाठी प्रेस करून धरून ठेवा. ChromeVox अ‍ॅक्टिव्हेट झाल्यावर, तुम्हाला झटपट फेरफटका मिळेल.</translation>
 <translation id="7476454130948140105">अपडेटसाठी बॅटरी खूप कमी (<ph name="BATTERY_PERCENT" />%) आहे</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />काहीतरी चूक झाली आणि <ph name="DEVICE_OS" /> इंस्टॉल करता आले नाही.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />अधिक मदत मिळवण्यासाठी, पुढील लिंकला भेट द्या: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />नोंदणी करण्यापूर्वी, तुम्ही TPM साफ करणे आवश्यक असेल जेणेकरून, <ph name="DEVICE_OS" /> हे डिव्हाइसची मालकी घेऊ शकते.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />तुम्ही TPM डिव्हाइस पूर्णपणेदेखील बंद करू शकता. तुमचा डेटा तरीही सॉफ्टवेअर एन्क्रिप्शनसह सुरक्षितरीत्या स्टोअर केला जाईल, पण हार्डवेअर-बॅक्ड सर्टिफिकेट यांसारखी विशिष्ट सुरक्षितता वैशिष्ट्ये बंद केली जातील.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />तुम्ही रीबूट करून आणि सिस्टीमची BIOS/UEFI सेटिंग्ज एंटर करून तुमची TPM सेटिंग्ज बदलू शकता. डिव्हाइसच्या मॉडेलनुसार पायऱ्या बदलतात. अधिक माहितीसाठी, तुम्ही रीबूट करण्यापूर्वी, स्वतंत्र डिव्हाइसवर <ph name="DEVICE_OS" /> दस्तऐवज उघडा: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Methu â llwytho'r dudalen ynghylch '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="424963718355121712">Rhaid cyflwyno apiau gan y gwesteiwr y maent effeithio arno</translation>
 <translation id="4306119971288449206">Rhaid cyflwyno apiau gyda'r math o gynnwys "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4349181963619779233">Ni ellir ychwanegu estyniadau ac apiau o'r wefan hon</translation>
 <translation id="4625078469366263107">Galluogi Ap</translation>
 <translation id="4633003931260532286">Mae'r estyniad yn gofyn "<ph name="IMPORT_NAME" />" gydag o leiaf y fersiwn"<ph name="IMPORT_VERSION" />", ond yr unig fersiwn sydd wedi'i gosod yw "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4660476621274971848">Disgwylir y fersiwn "<ph name="EXPECTED_VERSION" />", ond y fersiwn oedd "<ph name="NEW_ID" />"</translation>

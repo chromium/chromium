@@ -350,6 +350,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1542105669288201090">Addysg Busnes</translation>
 <translation id="1542830386724426410">Dangos buddion a gwobrau cerdyn sydd ar gael wrth y ddesg dalu. Mae telerau'r cyhoeddwr yn berthnasol. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Dysgu rhagor<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Hanes prisiau</translation>
+<translation id="1546286808622193216">Cymharu buddion cardiau gan ddefnyddio Gemini</translation>
 <translation id="1549470594296187301">Rhaid galluogi JavaScript i ddefnyddio'r nodwedd hon.</translation>
 <translation id="1553152622374372421">Chwaraeon y Gaeaf</translation>
 <translation id="1553358976309200471">Diweddarwch Chrome</translation>
@@ -2326,6 +2327,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4607608436550361748">Gweld awgrymiadau Chrome</translation>
 <translation id="460848736049414407">Wedi'i rwystro gan y Gweinyddwr</translation>
 <translation id="4610279718074907952">Mae'r wefan hon mewn grŵp, a ddiffinnir gan <ph name="SET_OWNER" />, sy'n gallu gweld eich gweithgarwch</translation>
+<translation id="4612631413844865947">Bu gwall wrth brosesu eich archeb ar <ph name="MERCHANT_ORIGIN" /> trwy <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Offer Pêl-droed</translation>
 <translation id="4612904677925722054">Mae'n bosib bod gan y wefan hon gynnwys aeddfed. Mae'n rhaid i riant neu warcheidwad ddweud ei bod yn iawn i ti ymweld â'r wefan hon.</translation>
 <translation id="4619564267100705184">Cadarnhewch mai chi sydd yno</translation>
@@ -2415,6 +2417,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4744603770635761495">Llwybr Gweithredadwy</translation>
 <translation id="4744816391336495134">Gallwch ddefnyddio'ch olion bysedd i gadarnhau mai chi sydd yno pryd bynnag y byddwch yn defnyddio cyfrinair sydd wedi'i gadw</translation>
 <translation id="4749011317274908093">Rydych wedi mynd yn Anhysbys</translation>
+<translation id="4749620353539006322">Uchafu gwobrau</translation>
 <translation id="4749924365937394956">Dilysu Gweinydd</translation>
 <translation id="4750671009706599284">y ffôn hwn</translation>
 <translation id="4750917950439032686">Mae eich gwybodaeth (er enghraifft, cyfrineiriau neu rifau cardiau credyd) yn breifat pan fydd yn cael ei hanfon i'r wefan hon.</translation>
@@ -2990,6 +2993,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5611398002774823980">Cadw yn y cyfrif</translation>
 <translation id="561165882404867731">Cyfieithu'r dudalen hon gyda Google Translate</translation>
 <translation id="5612720917913232150">Mae <ph name="URL" /> eisiau defnyddio lleoliad eich cyfrifiadur</translation>
+<translation id="5613958591683399697">Gofyn i <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Hysbysiad i'r Defnyddiwr</translation>
 <translation id="5614520971155863709">Gemau Cardiau</translation>
 <translation id="5617949217645503996">Gwnaeth <ph name="HOST_NAME" /> eich ailgyfeirio gormod o weithiau.</translation>

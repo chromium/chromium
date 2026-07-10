@@ -1438,6 +1438,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Bol zrušený odber 1 webu}few{Bol zrušený odber # webov}many{Unsubscribed from # sites}other{Bol zrušený odber # webov}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 heslo}few{# heslá}many{# passwords}other{# hesiel}}</translation>
 <translation id="688730033107341407">Po odhlásení budú záložky, heslá a ďalšie položky vo vašom účte Google odstránené z tohto zariadenia.</translation>
+<translation id="6892009074348518725">Ak chcete používať toto rozšírenie, prihláste sa do Chromu. Okrem toho budete môcť používať a ukladať heslá aj ďalšie položky zo svojho účtu Google.</translation>
 <translation id="6896758677409633944">Skopírovať</translation>
 <translation id="6898797562238201317">Šifrovať všetky údaje Chromu vo vašom účte Google pomocou vlastnej prístupovej frázy</translation>
 <translation id="6900532703269623216">Rozšírená ochrana</translation>

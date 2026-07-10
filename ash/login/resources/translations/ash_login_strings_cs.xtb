@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Nastavení proxy serveru</translation>
 <translation id="3550915441744863158">Chrome se automaticky aktualizuje, abyste měli vždy nejnovější verzi</translation>
 <translation id="3559533181353831840">Zbývá asi <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Zadejte název prodejce a číslo prodejny, pro které toto ukázkové zařízení konfigurujete*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Pokud číslo prodejny neznáte, můžete zadat „0000“ a pokračovat v instalaci ukázkového režimu. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Poznámka: Společnost Google tyto informace používá k určení verze ukázkového režimu, kterou má zařízení obdržet, a k měření využití ukázkového režimu.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Došlo k chybě. Zkuste to znovu.</translation>
 <translation id="3577745545227000795">Shromažďování dat o hardwaru systémem <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Náhled</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Ne</translation>
 <translation id="4251377547188244181">Registrace zařízení pro veřejný terminál a k signalizaci</translation>
 <translation id="4263223596040212967">Zkontrolujte rozložení klávesnice a zkuste to znovu.</translation>
+<translation id="4268490040465852105">Váš účet Google je účet, který používáte pro Gmail, YouTube, Chrome a další služby Google.
+        Pomocí svého účtu snadno získáte přístup ke všem svým záložkám, souborům a dalším položkám.</translation>
 <translation id="4278498748067682896">Budete používat Kiosk &amp; Signage Upgrade, který zařízení umožňuje běžet pouze v režimu veřejného terminálu nebo signalizace. Pokud chcete, aby se uživatelé na zařízení přihlašovali, vraťte se a zaregistrujte zařízení pomocí upgradu Chrome Enterprise.</translation>
 <translation id="4287157641315808225">Ano, aktivovat ChromeVox</translation>
 <translation id="4289732974614035569">Zvolte PIN</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Vyberte světlý nebo tmavý motiv</translation>
 <translation id="5804259315582798390">Aktivace obnovení místních dat se nezdařila</translation>
 <translation id="5810809306422959727">Tento účet nemůže používat rodičovskou kontrolu</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Tím, že zařízení zaregistrujete do organizace, je nastavíte pro centralizovanou správu zařízení. Vaše organizace může registraci vyžadovat z několika důvodů:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Vylepšení zabezpečení<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Organizace může nakonfigurovat další nastavení zabezpečení, aby data uživatelů a zařízení byla v bezpečí. Může také provést akce, jako je vzdálené resetování nebo deaktivace ztraceného zařízení.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Přizpůsobení prostředí<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Chování zařízení při spuštění, na přihlašovací obrazovce a po přihlášení lze přizpůsobit potřebám organizace.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Poskytování podpory<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Specialisté organizace se mohou vzdálené připojit k relaci zařízení a pomoci při řešení problémů.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Umožnění přístupu<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Aplikace, služby a sítě organizace mohou být dostupné pouze na zaregistrovaných zařízeních.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Zbývá přibližně <ph name="TIME" /> min</translation>
 <translation id="5852112051279473187">Při registraci zařízení došlo k závažnému problému. Zkuste to prosím znovu nebo kontaktujte zástupce podpory.</translation>
 <translation id="5852137567692933493">Restartovat a použít funkci Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Přejít k extra obsahu <ph name="CURRENT_ELEMENT" /> z <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Tlačítko pro výběr jazyka a klávesnice. Aktuálně je vybrána <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Zavřít</translation>
+<translation id="6042193169866365541">Váš účet Google je účet, který používáte pro Gmail, YouTube, Chrome a další služby Google.
+        Pomocí svého účtu snadno získáte přístup ke všem svým záložkám, souborům a dalším položkám. Pokud účet nemáte, můžete si ho na další obrazovce vytvořit.</translation>
 <translation id="6051354611314852653">Jejda! Systému se pro toto zařízení nepodařilo autorizovat přístup k rozhraní API.</translation>
 <translation id="6055544610007596637">Nainstalujte si z Obchodu Google Play aplikace pro zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="6069464830445383022">K přihlašování do Chromebooku slouží účet Google</translation>

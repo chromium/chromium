@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Setări proxy</translation>
 <translation id="3550915441744863158">Chrome se actualizează automat, astfel încât să aveți întotdeauna cea mai recentă versiune</translation>
 <translation id="3559533181353831840">Timp aproximativ rămas: <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Introdu numele comerciantului și numărul magazinului pentru care este configurat acest dispozitiv demonstrativ*. <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Dacă nu știi numărul magazinului, poți introduce „0000” pentru a continua cu instalarea modului demonstrativ. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Notă: Google folosește aceste informații pentru a identifica versiunea modului demonstrativ pe care trebuie să o primească dispozitivul și pentru a măsura utilizarea modului demonstrativ.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">A apărut o eroare. Încearcă din nou.</translation>
 <translation id="3577745545227000795">Colectarea datelor despre hardware prin <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Previzualizare</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Nu</translation>
 <translation id="4251377547188244181">Înregistrarea dispozitivului chioșc și pentru semne</translation>
 <translation id="4263223596040212967">Verifică structura tastaturii și încearcă din nou.</translation>
+<translation id="4268490040465852105">Contul Google este același cont pe care îl folosești pentru Gmail, YouTube, Chrome și alte produse Google.
+        Folosește contul pentru a accesa cu ușurință toate marcajele, fișierele și multe altele.</translation>
 <translation id="4278498748067682896">Vei folosi un upgrade Kiosk &amp; Signage în urma căruia dispozitivul va putea să ruleze doar în modul chioșc sau pentru semne. Dacă vrei ca utilizatorii să se conecteze la dispozitiv, revino și înregistrează-te folosind Upgrade-ul la Chrome Enterprise.</translation>
 <translation id="4287157641315808225">Da, activează ChromeVox</translation>
 <translation id="4289732974614035569">Alege un cod PIN</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Selectează tema luminoasă sau pe cea întunecată</translation>
 <translation id="5804259315582798390">Nu s-a putut activa recuperarea datelor locale</translation>
 <translation id="5810809306422959727">Acest cont nu este eligibil pentru controlul parental</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Dacă înregistrezi dispozitivele în organizație, acestea vor fi configurate pentru gestionarea centralizată. Organizația poate solicita înregistrarea din mai multe motive.<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Îmbunătățirea securității<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Prin configurarea setărilor de securitate suplimentare, organizația poate proteja datele utilizatorilor și ale dispozitivelor. Poate și să facă acțiuni cum ar fi resetarea de la distanță sau dezactivarea unui dispozitiv pierdut.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Personalizarea experienței<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Comportamentul dispozitivului la pornire, în ecranul de conectare și după conectare poate fi personalizat în funcție de nevoile organizației.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Asigurarea asistenței<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+    <ph name="BEGIN_DESCRIPTION3" />Organizația poate accesa de la distanță o sesiune pe dispozitiv pentru a asigura remedierea erorilor.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Permiterea accesului<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+    <ph name="BEGIN_DESCRIPTION4" />Aplicațiile, serviciile și rețelele organizației pot fi disponibile doar pe dispozitivele înregistrate.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Au mai rămas aproape <ph name="TIME" /> min.</translation>
 <translation id="5852112051279473187">Hopa! A apărut o eroare gravă la înregistrarea dispozitivului. Încearcă din nou sau contactează reprezentantul de asistență.</translation>
 <translation id="5852137567692933493">Reporniți și faceți Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Navighează la conținutul suplimentar <ph name="CURRENT_ELEMENT" /> din <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Butonul pentru selectarea limbii și a tastaturii. Limba selectată în prezent este <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Închide</translation>
+<translation id="6042193169866365541">Contul Google este același cont pe care îl folosești pentru Gmail, YouTube, Chrome și alte produse Google.
+        Folosește contul pentru a accesa cu ușurință toate marcajele, fișierele și multe altele. Dacă nu ai un cont, poți crea unul în ecranul următor.</translation>
 <translation id="6051354611314852653">Hopa! Sistemul nu a putut să autorizeze accesul la API pentru acest dispozitiv.</translation>
 <translation id="6055544610007596637">Instalează aplicații pentru <ph name="DEVICE_TYPE" /> din Magazinul Google Play</translation>
 <translation id="6069464830445383022">Contul tău Google reprezintă informațiile de conectare pentru Chromebook</translation>

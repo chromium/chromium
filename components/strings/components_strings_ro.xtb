@@ -2326,6 +2326,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4607608436550361748">Vezi sfaturile privind Chrome</translation>
 <translation id="460848736049414407">Blocat de administrator</translation>
 <translation id="4610279718074907952">Site-ul face parte dintr-un grup, definit de <ph name="SET_OWNER" />, care îți poate vedea activitatea</translation>
+<translation id="4612631413844865947">A apărut o eroare la procesarea comenzii pe <ph name="MERCHANT_ORIGIN" /> prin <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Echipament pentru fotbal</translation>
 <translation id="4612904677925722054">Site-ul poate include conținut destinat adulților. Părintele sau tutorele trebuie să spună că poți accesa acest site.</translation>
 <translation id="4619564267100705184">Confirmă-ți identitatea</translation>

@@ -1438,6 +1438,7 @@
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{已退订 1 个网站}other{已退订 # 个网站}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 个密码}other{# 个密码}}</translation>
 <translation id="688730033107341407">当您退出 Google 账号后，该账号中的书签、密码等信息都将从此设备中移除。</translation>
+<translation id="6892009074348518725">如需使用此扩展程序，请登录 Chrome。您还可以将密码等信息保存在您的 Google 账号中并使用这些信息。</translation>
 <translation id="6896758677409633944">复制</translation>
 <translation id="6898797562238201317">使用您自己的口令加密您 Google 账号中的所有 Chrome 数据</translation>
 <translation id="6900532703269623216">增强型保护</translation>

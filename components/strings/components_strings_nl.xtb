@@ -350,6 +350,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1542105669288201090">Bedrijfsonderwijs</translation>
 <translation id="1542830386724426410">Toon beschikbare kaartvoordelen en -beloningen bij het afrekenen. Er zijn voorwaarden van de uitgever van toepassing. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Meer informatie<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Prijsgeschiedenis</translation>
+<translation id="1546286808622193216">Kaartvoordelen vergelijken met Gemini</translation>
 <translation id="1549470594296187301">JavaScript moet aanstaan om deze functie te kunnen gebruiken.</translation>
 <translation id="1553152622374372421">Wintersporten</translation>
 <translation id="1553358976309200471">Chrome updaten</translation>
@@ -2410,6 +2411,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4744603770635761495">Uitvoerbaar pad</translation>
 <translation id="4744816391336495134">Je kunt je vingerafdruk gebruiken om te bevestigen dat jij het bent als je een opgeslagen wachtwoord gebruikt</translation>
 <translation id="4749011317274908093">Je bent incognito</translation>
+<translation id="4749620353539006322">Beloningen maximaliseren</translation>
 <translation id="4749924365937394956">Serververificatie</translation>
 <translation id="4750671009706599284">deze telefoon</translation>
 <translation id="4750917950439032686">Je gegevens (zoals wachtwoorden of creditcardnummers) zijn privé wanneer ze worden verzonden naar deze site.</translation>
@@ -2985,6 +2987,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5611398002774823980">Opslaan in account</translation>
 <translation id="561165882404867731">Deze pagina vertalen met Google Translate</translation>
 <translation id="5612720917913232150"><ph name="URL" /> wil de locatie van je computer gebruiken</translation>
+<translation id="5613958591683399697">Vragen aan <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Gebruikerskennisgeving</translation>
 <translation id="5614520971155863709">Kaartgames</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> heeft je te vaak omgeleid.</translation>

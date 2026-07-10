@@ -1438,6 +1438,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Unsubscribed from 1 site}other{Unsubscribed from # sites}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 password}other{# passwords}}</translation>
 <translation id="688730033107341407">After you sign out, your bookmarks, passwords and more in your Google Account will be removed from this device.</translation>
+<translation id="6892009074348518725">To use this extension, sign in to Chrome. You'll also be able to use and save your passwords and more from your Google Account.</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6898797562238201317">Use your own passphrase to encrypt all the Chrome data in your Google Account</translation>
 <translation id="6900532703269623216">Enhanced protection</translation>

@@ -2326,6 +2326,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4607608436550361748">Visa tips om Chrome</translation>
 <translation id="460848736049414407">Blockeras av administratören</translation>
 <translation id="4610279718074907952">Den här webbplatsen ingår i en grupp som definierats av <ph name="SET_OWNER" /> och som kan se din aktivitet</translation>
+<translation id="4612631413844865947">Det gick inte att behandla beställningen på <ph name="MERCHANT_ORIGIN" /> via <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Fotbollsutrustning</translation>
 <translation id="4612904677925722054">Den här webbplatsen kan ha innehåll för vuxna. En förälder eller vårdnadshavare måste godkänna att du besöker webbplatsen.</translation>
 <translation id="4619564267100705184">Verifiera din identitet</translation>

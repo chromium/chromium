@@ -2326,6 +2326,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4607608436550361748">Skoða ábendingar um Chrome</translation>
 <translation id="460848736049414407">Lokað af stjórnanda</translation>
 <translation id="4610279718074907952"><ph name="SET_OWNER" /> skilgreindi hópinn sem þetta vefsvæði er í og getur séð virkni þína</translation>
+<translation id="4612631413844865947">Villa kom upp við að vinna pöntunina þína <ph name="MERCHANT_ORIGIN" /> í gegnum <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Fótboltabúnaður</translation>
 <translation id="4612904677925722054">Þetta vefsvæði gæti innihaldið efni fyrir fullorðna. Foreldri þitt eða forsjáraðili verður að samþykkja að þú skoðir þetta vefsvæði.</translation>
 <translation id="4619564267100705184">Staðfestu hver þú ert</translation>

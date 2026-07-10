@@ -1160,7 +1160,7 @@
 <translation id="1897120393475391208">Користите јаку лозинку</translation>
 <translation id="1897860317037652061">Скенирање није успело</translation>
 <translation id="1898804291554630487">Поставите питање о овој страници</translation>
-<translation id="1899172684246105747">Прилагодите прегледач уз опције попут теме и тамног режима.</translation>
+<translation id="1899172684246105747">Прилагодите прегледач помоћу опција попут тема и тамног режима.</translation>
 <translation id="1900305421498694955">Апликацијама са Google Play-а ће можда требати потпуни приступ систему датотека да би читале и уписивале датотеке на спољним меморијским уређајима. Датотеке и директоријуми направљени на уређају су видљиви свима који користе спољни диск. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">Затражите од администратора да ажурира ову апликацију</translation>
 <translation id="1901303067676059328">Изабери &amp;све</translation>
@@ -1954,7 +1954,6 @@
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2518024842978892609">Користи сертификате клијента</translation>
 <translation id="2518620532958109495">Дозвољено им је да аутоматски уђу у режим целог екрана</translation>
-<translation id="2519250377986324805">Прикажи како</translation>
 <translation id="2519517390894391510">Назив профила сертификата</translation>
 <translation id="2520644704042891903">Чека се доступан прикључак...</translation>
 <translation id="2521427645491031107">Синхронизација апликација је подешена у подешавањима уређаја</translation>
@@ -3524,6 +3523,7 @@
 <translation id="371370241367527062">Предњи микрофон</translation>
 <translation id="37143699183660101">Стабилност курсора</translation>
 <translation id="3714610938239537183">2. корак од 4: Изаберите дијагностичке податке за извоз</translation>
+<translation id="3715519518311454566">Доња табела Gemini-ја је скупљена.</translation>
 <translation id="3717133748480414053">Вештине могу да вам помогну да резимирате веб-странице, нађете сјајне понуде и друго</translation>
 <translation id="3719245268140483218">Догађај на уређају</translation>
 <translation id="3719310907809321183">Унели сте <ph name="CARD_IDENTIFIER" />.</translation>
@@ -6207,6 +6207,7 @@
 <translation id="5828181959764767444">Залазак сунца</translation>
 <translation id="5828545842856466741">Додај профил…</translation>
 <translation id="5828633471261496623">Штампање...</translation>
+<translation id="5829137022934788067">Реци ми више о овом избору</translation>
 <translation id="5829214552954466783">Делите <ph name="CREDENTIAL_TYPE" /> за корисничко име: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Начини плаћања у Google новчанику</translation>
 <translation id="5830512293931520102">Лозинка је шифрована и нико не може да је види</translation>
@@ -6998,6 +6999,7 @@
 <translation id="6455264371803474013">На одређеним сајтовима</translation>
 <translation id="6455521402703088376">Искључено • Програмер је опозвао објављивање додатка</translation>
 <translation id="6455894534188563617">&amp;Нови фолдер</translation>
+<translation id="6456162045957729200">Објасни овај избор</translation>
 <translation id="645705751491738698">Настави блокирање JavaScript-а</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> не може да се покрене</translation>
 <translation id="6458701200018867744">Отпремање није успело (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8113,7 +8115,6 @@
 <translation id="7314989823816739632">Романтично</translation>
 <translation id="7317342082064136423">Верификујте налог</translation>
 <translation id="731827437403763009">AI иновације</translation>
-<translation id="7319320447721994672">Ако посећујете сајт који користи колачиће, можда ћете морати привремено да омогућите колачиће како би све функције сајта радиле.</translation>
 <translation id="7319983568955948908">Заустави дељење</translation>
 <translation id="7320213904474460808">Постави као подразумевану мрежу</translation>
 <translation id="7321545336522791733">Сервер није доступан</translation>
@@ -8863,6 +8864,7 @@
 <translation id="7903481341948453971">Користите откључавање екрана када попуњавате лозинке</translation>
 <translation id="7903925330883316394">Помоћни процес: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">катакана</translation>
+<translation id="7904492297081735975">&amp;Отвори менаџер обележивача</translation>
 <translation id="7904526211178107182">Учините Linux портове доступним за друге уређаје на својој мрежи.</translation>
 <translation id="7907312522152480478">Да бисте преузели картице са других уређаја, потврдите идентитет и синхронизујте историју и картице. Увек можете да зауставите синхронизацију у подешавањима. Google може да персонализује Претрагу и друге услуге на основу историје.</translation>
 <translation id="7907502219904644296">Промени приступ</translation>
@@ -10615,6 +10617,7 @@
 <translation id="942296794412775122">Укључи/искључи микрофон</translation>
 <translation id="942488123151518958">Паузирај (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> дели Chrome картицу и звук.</translation>
+<translation id="943744232549395906">Унос текста гласом је заустављен</translation>
 <translation id="945522503751344254">Пошаљи повратне информације</translation>
 <translation id="947156494302904893">Сајтови које посећујете могу да потврде да сте стварна особа, а не бот</translation>
 <translation id="947329552760389097">&amp;Провери елементе</translation>

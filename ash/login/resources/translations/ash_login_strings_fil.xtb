@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Mga setting ng proxy</translation>
 <translation id="3550915441744863158">Awtomatikong nag-a-update ang Chrome upang palagi kang mayroon ng pinakabagong bersyon</translation>
 <translation id="3559533181353831840">Humigit-kumulang <ph name="TIME_LEFT" /> pa ang natitira</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Ilagay ang pangalan ng retailer at ang numero ng store kung para saan kino-configure ang demo device na ito*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Kung hindi mo alam ang numero ng store, puwede kang maglagay ng "0000" para magpatuloy sa pag-install ng Demo Mode. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Tandaan: Ginagamit ng Google ang impormasyong ito para tukuyin kung aling bersyon ng Demo Mode ang dapat matanggap ng device at para masukat ang paggamit ng Demo Mode.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Nagkaproblema. Subukan ulit.</translation>
 <translation id="3577745545227000795">Pagkolekta ng data ng hardware ng <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">I-preview</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Hindi</translation>
 <translation id="4251377547188244181">Pag-enroll ng kiosk at signage device</translation>
 <translation id="4263223596040212967">Tingnan ang layout ng iyong keyboard at subukan ulit.</translation>
+<translation id="4268490040465852105">Ang iyong Google Account ay ang parehong account na ginagamit mo para sa Gmail, YouTube, Chrome, at iba pang produkto ng Google.
+        Gamitin ang account mo para madaling ma-access ang lahat ng iyong bookmark, file, at higit pa.</translation>
 <translation id="4278498748067682896">Gagamit ka ng Pag-upgrade sa Kiosk at Signage na nagbibigay-daan lang sa device na tumakbo sa kiosk o signage mode. Kung gusto mong mag-sign in sa device ang mga user, bumalik at mag-enroll gamit ang Chrome Enterprise Upgrade.</translation>
 <translation id="4287157641315808225">Oo, i-activate ang ChromeVox</translation>
 <translation id="4289732974614035569">Pumili ng PIN</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Pumili ng maliwanag o madilim na tema</translation>
 <translation id="5804259315582798390">Hindi na-enable ang pag-recover ng lokal na data</translation>
 <translation id="5810809306422959727">Hindi kwalipikado ang account na ito para sa parental controls</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Sa pag-enroll ng iyong mga device sa organisasyon mo, mase-set up ang mga ito para sa sentralisadong pamamahala ng device. Posibleng mag-require ng pag-enroll ang iyong organisasyon para sa maraming dahilan:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Paigtingin ang seguridad<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Sa pamamagitan ng pag-configure ng mga karagdagang setting ng seguridad, mapapanatili ng organisasyon na ligtas ang data ng user at device. Maisasagawa rin nito ang mga aksyon tulad ng remote na pag-reset o pag-disable ng nawawalang device.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />I-customize ang experience<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Puwedeng i-customize ang gawi ng device sa pag-boot up, sa screen sa pag-log in, at pagkatapos mag-log in ayon sa mga pangangailangan ng organisasyon.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Magbigay ng suporta<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Puwedeng remote na i-access ng organisasyon ang isang session ng device para makapag-troubleshoot.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Mag-enable ng access<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Posibleng sa mga naka-enroll na device lang available ang mga app, serbisyo, at network ng organisasyon.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Mga <ph name="TIME" /> (na) minuto ang natitira</translation>
 <translation id="5852112051279473187">Oops!  May mali talagang nangyari habang itinatala ang device na ito.  Mangyaring subukan ulit o makipag-ugnayan sa iyong kinatawan sa suporta.</translation>
 <translation id="5852137567692933493">I-restart at I-powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Mag-navigate sa karagdagang content na <ph name="CURRENT_ELEMENT" /> sa <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Button ng pumili ng wika at keyboard. Ang kasalukuyang napiling wika ay <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Isara</translation>
+<translation id="6042193169866365541">Ang iyong Google Account ay ang parehong account na ginagamit mo para sa Gmail, YouTube, Chrome, at iba pang produkto ng Google.
+        Gamitin ang account mo para madaling ma-access ang lahat ng iyong bookmark, file, at higit pa. Kung wala kang account, puwede kang gumawa nito sa susunod na screen.</translation>
 <translation id="6051354611314852653">Oops! Nabigong pahintulutan ng system ang pag-access sa API para sa device na ito.</translation>
 <translation id="6055544610007596637">Mag-install ng mga app para sa iyong <ph name="DEVICE_TYPE" /> mula sa Google Play Store</translation>
 <translation id="6069464830445383022">Ang iyong Google Account ang gagamitin mo sa pag-sign in sa Chromebook</translation>

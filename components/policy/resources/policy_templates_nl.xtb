@@ -2685,6 +2685,7 @@ Als je het beleid instelt op 2 (Uitgezet), staat het de integratie van het Googl
 <translation id="2707733461906745082">Profielscheiding</translation>
 <translation id="2707873794476722903">Safe Browsing is actief in de standaardmodus.</translation>
 <translation id="2709516037105925701">Automatisch invullen</translation>
+<translation id="2712089199157322391">Sta ontwikkelaarstools toe voor standaard webbrowsen, maar beperk ze voor door de organisatie geïnstalleerde en ingebouwde extensies voor beheerde gebruikers (geblokkeerd op pagina's die deze extensies insluiten sinds M150, behalve voor de ingebouwde pdf-viewer).</translation>
 <translation id="2713913573196284609">Deze waarde is beëindigd vanaf M121. In M121 en daarna worden waarden behandeld als EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Altijd statistieken naar Google sturen</translation>
 <translation id="2714359695399346815">Als je dit beleid toepast of niet instelt, kun je STUN-servers gebruiken, zodat externe clients dit apparaat kunnen zien en er verbinding mee kunnen maken, zelfs door een firewall.

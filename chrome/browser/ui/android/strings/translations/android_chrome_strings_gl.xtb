@@ -1438,6 +1438,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Cancelaches a subscrición a 1 sitio}other{Cancelaches a subscrición a # sitios}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 contrasinal}other{# contrasinais}}</translation>
 <translation id="688730033107341407">Cando peches a sesión, os marcadores, os contrasinais e outros datos da túa Conta de Google quitaranse deste dispositivo.</translation>
+<translation id="6892009074348518725">Para usar esta extensión, inicia sesión en Chrome. Tamén poderás usar e gardar os teus contrasinais e outros datos da túa Conta de Google.</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6898797562238201317">Usa a túa propia frase de acceso para encriptar todos os datos de Chrome na túa Conta de Google</translation>
 <translation id="6900532703269623216">Protección mellorada</translation>

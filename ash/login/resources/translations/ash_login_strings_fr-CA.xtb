@@ -228,6 +228,9 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3547954654003013442">Paramètres de mandataire</translation>
 <translation id="3550915441744863158">Chrome se met automatiquement à jour afin que vous ayez toujours la version la plus récente</translation>
 <translation id="3559533181353831840">Il reste environ <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Saisissez le nom du détaillant et le numéro de magasin pour lequel cet appareil démo est configuré*. <ph name="END_PARAGRAPH1" />
+<ph name="BEGIN_PARAGRAPH2" />Si vous ne connaissez pas le numéro du magasin, vous pouvez entrer « 0000 » pour continuer l'installation en mode Démo. <ph name="END_PARAGRAPH2" />
+<ph name="BEGIN_PARAGRAPH3" />* Remarque : Google utilise ces informations pour identifier la version du mode Démo que l'appareil doit recevoir et pour mesurer l'utilisation du mode Démo.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3577745545227000795">Collecte des données matérielles par <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Aperçu</translation>
@@ -286,6 +289,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4250680216510889253">Non</translation>
 <translation id="4251377547188244181">Inscription d'appareil kiosque et d'affichage</translation>
 <translation id="4263223596040212967">Vérifiez la disposition de votre clavier et réessayez.</translation>
+<translation id="4268490040465852105">Votre compte Google est le même compte que vous utilisez pour Gmail, YouTube, Chrome et d'autres produits Google.
+        Utilisez votre compte pour accéder facilement à tous vos favoris, vos fichiers et plus encore.</translation>
 <translation id="4278498748067682896">Vous utiliserez une mise à niveau pour Kiosk et affichage qui permet à l'appareil de fonctionner uniquement en mode Kiosque et affichage. Si vous souhaitez que les utilisateurs se connectent à l'appareil, veuillez revenir en arrière et vous inscrire en utilisant la mise à niveau de Chrome Enterprise.</translation>
 <translation id="4287157641315808225">Oui, activer ChromeVox</translation>
 <translation id="4289732974614035569">Choisir un NIP</translation>
@@ -431,6 +436,15 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5800703268655655701">Sélectionner le thème clair ou sombre</translation>
 <translation id="5804259315582798390">Échec d'activation de la récupération des données locales</translation>
 <translation id="5810809306422959727">Ce compte n'est pas admissible aux contrôles parentaux</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />L'inscription de vos appareils dans votre organisation entraînera la configuration de ceux-ci pour la gestion centralisée des appareils. Votre organisation peut nécessiter une inscription pour plusieurs raisons :<ph name="END_DESCRIPTION" />
+<ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Améliorer la sécurité<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+<ph name="BEGIN_DESCRIPTION1" />En configurant des paramètres de sécurité supplémentaires, l'organisation peut protéger les données des utilisateurs et des appareils. Elle peut également effectuer des actions, notamment la réinitialisation à distance ou la désactivation d'un appareil perdu.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Personnaliser l'expérience<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+<ph name="BEGIN_DESCRIPTION2" />Le comportement de l'appareil au démarrage, sur l'écran de connexion et après la connexion peut être personnalisé en fonction des besoins de l'organisation.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Offrir de l'assistance<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+<ph name="BEGIN_DESCRIPTION3" />L'organisation peut accéder à distance à une session d'appareil afin de fournir un dépannage.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Activer l'accès<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+<ph name="BEGIN_DESCRIPTION4" />Les applis, les services et les réseaux de l'organisation sont uniquement accessibles sur les appareils inscrits.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Il reste environ <ph name="TIME" /> min</translation>
 <translation id="5852112051279473187">Oups! Une erreur est survenue lors de l'inscription de cet appareil. Veuillez réessayer ou communiquer avec votre représentant du soutien technique.</translation>
 <translation id="5852137567692933493">Redémarrer et lancer la réinitialisation « Powerwash »</translation>
@@ -451,6 +465,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6016178549409952427">Naviguer vers l'élément de contenu supplémentaire <ph name="CURRENT_ELEMENT" /> sur <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Sélectionnez une langue et une touche du clavier. Langue actuellement sélectionnée : <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Fermer</translation>
+<translation id="6042193169866365541">Votre compte Google est le même compte que vous utilisez pour Gmail, YouTube, Chrome et d'autres produits Google.
+        Utilisez votre compte pour accéder facilement à tous vos favoris, vos fichiers et plus encore. Si vous n'avez pas de compte, vous pouvez en créer un sur l'écran suivant.</translation>
 <translation id="6051354611314852653">Oups… Échec de l'autorisation d'accès à l'API pour cet appareil.</translation>
 <translation id="6055544610007596637">Installez des applications pour votre <ph name="DEVICE_TYPE" /> à partir de la boutique Google Play Store</translation>
 <translation id="6069464830445383022">Pour vous connecter à votre Chromebook, servez-vous de votre compte Google</translation>

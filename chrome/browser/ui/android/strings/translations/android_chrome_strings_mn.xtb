@@ -1438,6 +1438,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{1 сайтаас захиалгаа цуцалсан}other{# сайтаас захиалгаа цуцалсан}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 нууц үг}other{# нууц үг}}</translation>
 <translation id="688730033107341407">Таныг гарсны дараа таны Google Бүртгэл дэх хавчуурга, нууц үг болон бусад зүйлийг энэ төхөөрөмжөөс хасна.</translation>
+<translation id="6892009074348518725">Энэ өргөтгөлийг ашиглахын тулд Chrome-д нэвтэрнэ үү. Та мөн нууц үг болон бусад зүйлээ Google Бүртгэлээсээ ашиглах, хадгалах боломжтой болно.</translation>
 <translation id="6896758677409633944">Хуулах</translation>
 <translation id="6898797562238201317">Google Бүртгэлийнхээ Chrome-н бүх өгөгдлийг шифрлэхийн тулд өөрийн нэвтрэх үгийг ашиглах</translation>
 <translation id="6900532703269623216">Сайжруулсан хамгаалалт</translation>

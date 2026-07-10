@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Cadwch bethau'n llachar ac yn awyrog</translation>
 <translation id="243179355394256322">Mae eich sefydliad yn cyfyngu cofrestru dyfais i ddefnyddwyr awdurdodedig yn unig. Nid yw'r defnyddiwr hwn wedi'i awdurdodi i gofrestru dyfeisiau. Gwnewch yn siŵr bod gan y defnyddiwr y fraint gweinyddwr "Cofrestru caledwedd Google Meet" yn adran Defnyddwyr y Panel Gweinyddwr.</translation>
 <translation id="2439152382014731627">Ailosod cyfrinair <ph name="DEVICE_TYPE" /></translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Bydd gosod <ph name="BEGIN_BOLD" />yn dileu'ch gyriant caled cyfan<ph name="END_BOLD" />. Gwnewch yn siŵr bod gennych gopïau wrth gefn o'ch data.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Unwaith y bydd gosod yn dechrau, ni ellir ei ganslo.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Ni fyddwch yn gallu ychwanegu defnyddwyr oherwydd bod allweddi API Google ar goll. Gweler <ph name="DETAILS_URL" /> am fanylion.</translation>
 <translation id="24786041351753425">Galluogi'r gwasanaeth adfer data.</translation>
 <translation id="2485681265915754872">Telerau gwasanaeth Google Play</translation>
@@ -228,6 +230,9 @@
 <translation id="3547954654003013442">Gosodiadau dirprwyol</translation>
 <translation id="3550915441744863158">Mae Chrome yn diweddaru'n awtomatig fel bod gennych y fersiwn fwyaf ffres bob amser</translation>
 <translation id="3559533181353831840">Tua <ph name="TIME_LEFT" /> ar ôl</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Rhowch enw'r adwerthwr a rhif y siop y mae'r ddyfais arddangos hon yn cael ei ffurfweddu ar ei chyfer*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Os nad ydych yn gwybod rhif y siop, gallwch roi "0000" i barhau â gosodiad Modd Demo. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Sylwer: Mae Google yn defnyddio'r wybodaeth hon i nodi pa fersiwn o'r Modd Demo y dylai'r ddyfais ei derbyn ac i fesur y defnydd o'r Modd Demo.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Aeth rhywbeth o'i le. Rhowch gynnig arall arni.</translation>
 <translation id="3577745545227000795">Casgliad data caledwedd <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Rhagolwg</translation>
@@ -286,6 +291,8 @@
 <translation id="4250680216510889253">Na</translation>
 <translation id="4251377547188244181">Cofrestru dyfais ciosg neu arwyddion</translation>
 <translation id="4263223596040212967">Gwiriwch gynllun eich bysellfwrdd a rhowch gynnig arall arni.</translation>
+<translation id="4268490040465852105">Eich Cyfrif Google yw'r un cyfrif rydych yn ei ddefnyddio ar gyfer Gmail, YouTube, Chrome a chynhyrchion Google eraill.
+        Defnyddiwch eich cyfrif i gael mynediad hawdd at eich holl nodau tudalen, ffeiliau a rhagor.</translation>
 <translation id="4278498748067682896">Byddwch yn defnyddio Uwchraddiad Ciosg ac Arwyddion sydd ond yn caniatáu i'r ddyfais redeg yn y modd ciosg neu arwyddion. Os hoffech i ddefnyddwyr fewngofnodi i'r ddyfais, ewch yn ôl a chofrestrwch gan ddefnyddio Uwchraddiad Chrome Enterprise.</translation>
 <translation id="4287157641315808225">Ie, gweithredu ChromeVox</translation>
 <translation id="4289732974614035569">Dewiswch PIN</translation>
@@ -316,6 +323,15 @@
 <translation id="4487489714832036847">Mae Chromebooks yn defnyddio apiau yn lle meddalwedd draddodiadol. Cael apiau ar gyfer cynhyrchiant, adloniant, a rhagor.</translation>
 <translation id="450867954911715010">Gosodiadau hygyrchedd</translation>
 <translation id="4519605771716872386">Cysoni ffeil wedi'i droi ymlaen</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Rhowch gynnig ar y camau datrys problemau hyn:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Gwnewch yn siŵr bod eich dyfais yn cynnwys storfa fewnol sy'n gweithio megis HDD, SSD neu eMMC
+        <ph name="LIST_ITEM" />Gwiriwch fod eich dyfais storfa fewnol yn fwy nag 16GB
+        <ph name="LIST_ITEM" />Gwiriwch y cysylltiad â'r storfa fewnol, os yw'n hygyrch yn ffisegol
+        <ph name="LIST_ITEM" />Gwnewch yn siŵr eich bod yn defnyddio model sydd wedi'i ardystio a gwiriwch nodiadau gosod
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Am ragor o help, ewch i: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Pwy hoffech chi ychwanegu at y <ph name="DEVICE_TYPE" /> hwn?</translation>
 <translation id="4566170377336116390">Os ydych am newid ar ôl cofrestru, bydd angen i chi ailosod eich dyfais i'r gosodiadau ffatri (powerwash).</translation>
 <translation id="4567512141633030272">Opsiwn mewngofnodi anghywir?</translation>
@@ -431,6 +447,15 @@
 <translation id="5800703268655655701">Dewis thema golau neu dywyll</translation>
 <translation id="5804259315582798390">Wedi methu â galluogi adferiad data lleol</translation>
 <translation id="5810809306422959727">Nid yw'r cyfrif hwn yn gymwys ar gyfer rheolaethau rhieni</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Mae cofrestru'ch dyfeisiau yn eich sefydliad yn eu gosod ar gyfer rheoli dyfeisiau'n ganolog. Mae'n bosib y bydd angen cofrestru ar eich sefydliad am sawl rheswm:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Gwella diogelwch<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Trwy ffurfweddu gosodiadau diogelwch ychwanegol, gall y sefydliad gadw data defnyddwyr a dyfais yn ddiogel. Gall hefyd gyflawni gweithredoedd megis ailosod o bell neu analluogi dyfais sydd ar goll.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Addasu'r profiad<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+    <ph name="BEGIN_DESCRIPTION2" />Gellir addasu ymddygiad y ddyfais i anghenion y sefydliad wrth gychwyn, ar y sgrîn mewngofnodi, ac ar ôl mewngofnodi .<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Darparu cefnogaeth<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+    <ph name="BEGIN_DESCRIPTION3" />Gall y sefydliad gyrchu sesiwn dyfais o bell er mwyn datrys problemau.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Galluogi mynediad<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Mae'n bosib mai dim ond ar ddyfeisiau sydd wedi'u cofrestru y bydd apiau, gwasanaethau a rhwydweithiau'r sefydliad ar gael.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Tua <ph name="TIME" /> o funudau ar ôl</translation>
 <translation id="5852112051279473187">Wps!  Aeth rhywbeth o'i le wrth gofrestru'r ddyfais hon.  Rhowch gynnig arall arni neu cysylltwch â'ch cynrychiolydd cymorth.</translation>
 <translation id="5852137567692933493">Ailddechrau a chlirio'r ddyfais yn gyfan gwbl</translation>
@@ -451,6 +476,8 @@
 <translation id="6016178549409952427">Llywio i gynnwys ychwanegol <ph name="CURRENT_ELEMENT" /> o <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Dewis iaith a botwm bysellfwrdd. Yr iaith a ddewisir ar hyn o bryd yw <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Cau</translation>
+<translation id="6042193169866365541">Eich Cyfrif Google yw'r un cyfrif rydych yn ei ddefnyddio ar gyfer Gmail, YouTube, Chrome a chynhyrchion Google eraill.
+        Defnyddiwch eich cyfrif i gael mynediad hawdd at eich holl nodau tudalen, ffeiliau a rhagor. Os nad oes gennych gyfrif, gallwch greu un ar y sgrîn nesaf.</translation>
 <translation id="6051354611314852653">Wps!  Gwnaeth y system fethu ag awdurdodi mynediad API ar gyfer y ddyfais hon.</translation>
 <translation id="6055544610007596637">Gosod apiau ar gyfer eich <ph name="DEVICE_TYPE" /> o'r Google Play Store</translation>
 <translation id="6069464830445383022">Manylion mewngofnodi eich Cyfrif Google yw eich manylion mewngofnodi Chromebook</translation>
@@ -556,6 +583,8 @@
 <translation id="7189451821249468368">Nid oes gennych ddigon o uwchraddiadau i gofrestru'r ddyfais hon. Cysylltwch â'r tîm gwerthu i brynu rhagor. Os ydych yn credu eich bod yn gweld y neges hon drwy gamgymeriad, cysylltwch â'r tîm cymorth.</translation>
 <translation id="7202337678781136582">Sganiwch y cod QR gyda'ch ffôn Android</translation>
 <translation id="7228854227189381547">Peidio â newid</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />I gael y profiad gorau, gosodwch <ph name="DEVICE_OS" /> i'ch disg mewnol. Gallwch hefyd ei osod yn nes ymlaen o'r sgrîn mewngofnodi.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Os nad ydych yn barod i'w osod, gallwch ei redeg o USB i roi cynnig arni. Bydd hyn yn cadw eich data ac OS presennol, ond mae'n bosib y byddwch yn gweld cyfyngiadau o ran storfa a pherfformiad.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Bydd newidiadau yn cael eu cymhwyso ar ôl gosod</translation>
 <translation id="7260186537988033909">Wedi cwblhau cofrestru dyfais ciosg neu arwyddion</translation>
 <translation id="7284411326658527427">Gall pob person bersonoleiddio ei gyfrif a chadw data yn breifat.</translation>
@@ -573,6 +602,8 @@
 <translation id="7416263748877373774">Ni ellir llwytho'r Telerau Gwasanaeth. Gwiriwch eich cysylltiad rhwydwaith a rhowch gynnig arall arni.</translation>
 <translation id="7475742997309661417">Mae'r darllenydd sgrîn ar ChromeOS, ChromeVox, yn cael ei ddefnyddio'n bennaf gan bobl â dallineb neu olwg gwan i ddarllen testun sy'n cael ei arddangos ar y sgrîn gyda syntheseisydd lleferydd neu ddangosydd braille. Pwyswch a daliwch y ddwy fysell lefel sain am bum eiliad i droi ChromeVox ymlaen. Pan fydd ChromeVox wedi'i weithredu, byddwch yn mynd trwy daith gyflym.</translation>
 <translation id="7476454130948140105">Mae'r batri yn rhy isel i ddiweddaru (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Aeth rhywbeth o'i le ac ni fu modd gosod <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Am ragor o help, ewch i: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Cyn cofrestru mae angen i chi glirio'r ffeil TPM fel y gall <ph name="DEVICE_OS" /> gymryd perchnogaeth o'r ddyfais.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Gallwch hefyd ddiffodd y ddyfais TPM yn gyfan gwbl. Bydd eich data yn dal i gael eu storio'n ddiogel gydag amgryptio meddalwedd, ond bydd rhai nodweddion diogelwch megis tystysgrifau â chefnogaeth caledwedd yn cael eu hanalluogi.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Gallwch newid eich gosodiadau TPM drwy ailgychwyn a mynd i osodiadau BIOS/UEFI y system. Mae'r camau'n amrywio yn seiliedig ar fodel y ddyfais. Am ragor o wybodaeth, agorwch ddogfennaeth <ph name="DEVICE_OS" /> ar ddyfais ar wahân cyn i chi ailgychwyn: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

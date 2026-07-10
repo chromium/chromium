@@ -72,6 +72,7 @@
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' पृष्ठाविषयी लोड करू शकलो नाही.</translation>
 <translation id="424963718355121712">परिणाम होतो अशा होस्टवरून ॲप्स दिली जाणे आवश्यक आहे</translation>
 <translation id="4306119971288449206">अ‍ॅप्स "<ph name="CONTENT_TYPE" />" आशय प्रकारासह दिली जाणे आवश्यक आहे</translation>
+<translation id="4349181963619779233">या वेबसाइटवरून एक्स्टेंशन आणि अ‍ॅप्स जोडली जाऊ शकत नाहीत</translation>
 <translation id="4625078469366263107">अ‍ॅप सुरू करा</translation>
 <translation id="4633003931260532286">एक्स्टेंशनला किमान आवृत्ती "<ph name="IMPORT_VERSION" />" सह "<ph name="IMPORT_NAME" />" ची गरज आहे, परंतु केवळ आवृत्ती "<ph name="INSTALLED_VERSION" />" इंस्टॉल केली गेली आहे</translation>
 <translation id="4660476621274971848">अपेक्षित आवृत्ती "<ph name="EXPECTED_VERSION" />", परंतु आवृत्ती "<ph name="NEW_ID" />" होती</translation>

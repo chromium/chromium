@@ -2326,6 +2326,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4607608436550361748">See Chrome tips</translation>
 <translation id="460848736049414407">Blocked by admin</translation>
 <translation id="4610279718074907952">This site is in a group, defined by <ph name="SET_OWNER" />, that can see your activity</translation>
+<translation id="4612631413844865947">There was an error processing your order on <ph name="MERCHANT_ORIGIN" /> via <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Football Equipment</translation>
 <translation id="4612904677925722054">This site may have mature content. A parent or guardian has to say that it's OK for you to visit this website.</translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
@@ -4244,7 +4245,7 @@ Additional details:
 <translation id="7552846755917812628">Try the following tips:</translation>
 <translation id="7554242657529665960">From your administrator: '<ph name="ADMIN_MESSAGE" />'</translation>
 <translation id="7554475479213504905">Reload and show anyway</translation>
-<translation id="7554791636758816595">New tab</translation>
+<translation id="7554791636758816595">New Tab</translation>
 <translation id="755597522379497407">Biological sciences</translation>
 <translation id="7556328470713619625">Use a passkey</translation>
 <translation id="7557077170802745837">Mergers and acquisitions</translation>

@@ -2326,6 +2326,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4607608436550361748">Vaadake Chrome'i nõuandeid</translation>
 <translation id="460848736049414407">Administraator on blokeerinud</translation>
 <translation id="4610279718074907952">See sait on omaniku <ph name="SET_OWNER" /> määratud grupis, mis näeb teie tegevusi</translation>
+<translation id="4612631413844865947">Teie tellimuse töötlemisel veebisaidil <ph name="MERCHANT_ORIGIN" /> makserakenduse <ph name="PAYMENT_APP_ORIGIN" /> kaudu ilmnes viga.</translation>
 <translation id="46128681529823442">Jalgpallivarustus</translation>
 <translation id="4612904677925722054">See sait võib sisaldada täiskasvanutele mõeldud sisu. Veebisaidi külastamiseks vajad vanema või eestkostja luba.</translation>
 <translation id="4619564267100705184">Kinnitage, et see olete teie</translation>

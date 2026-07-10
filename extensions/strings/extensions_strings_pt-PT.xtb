@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Não foi possível carregar a página acerca de "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">As aplicações têm de ser publicadas a partir do anfitrião que afetam.</translation>
 <translation id="4306119971288449206">As aplicações têm de ser publicadas com o tipo de conteúdo "<ph name="CONTENT_TYPE" />".</translation>
+<translation id="4349181963619779233">Não é possível adicionar apps e extensões a partir deste Website</translation>
 <translation id="4625078469366263107">Ativar aplicação</translation>
 <translation id="4633003931260532286">A extensão requer "<ph name="IMPORT_NAME" />" com, pelo menos, a versão "<ph name="IMPORT_VERSION" />", mas apenas está instalada a versão "<ph name="INSTALLED_VERSION" />".</translation>
 <translation id="4660476621274971848">A versão esperada era "<ph name="EXPECTED_VERSION" />", mas a versão foi "<ph name="NEW_ID" />".</translation>

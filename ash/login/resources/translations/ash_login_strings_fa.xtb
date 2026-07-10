@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">تنظیمات پروکسی</translation>
 <translation id="3550915441744863158">‏Chrome به صورت خودکار به‌روزرسانی می‌شود تا همیشه تازه‌ترین نسخه را در اختیار داشته باشید.</translation>
 <translation id="3559533181353831840">تقریباً <ph name="TIME_LEFT" /> باقی مانده است</translation>
+<translation id="3567129848895158510">‏<ph name="BEGIN_PARAGRAPH1" />نام فروشنده و شماره فروشگاهی را که این دستگاه نسخه نمایشی برای آن پیکربندی می‌شود وارد کنید.* <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />اگر شماره فروشگاه را نمی‌دانید، می‌توانید «۰۰۰۰» را برای ادامه نصب «حالت نمایشی» وارد کنید. <ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />*توجه: Google از این اطلاعات برای تعیین نسخه «حالت نمایشی» که دستگاه باید دریافت کند و برای سنجش میزان استفاده از «حالت نمایشی» استفاده می‌کند.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">مشکلی پیش آمد. دوباره امتحان کنید.</translation>
 <translation id="3577745545227000795">مجموعه داده‌های سخت‌افزار <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">پیش‌نمایش</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">نه</translation>
 <translation id="4251377547188244181">ثبت‌نام دستگاه کیوسک و تابلوی دیجیتال</translation>
 <translation id="4263223596040212967">جانمایی صفحه‌کلید را بررسی کنید و دوباره امتحان کنید.</translation>
+<translation id="4268490040465852105">‏«حساب Google» شما همان حسابی است که برای Gmail،‏ YouTube،‏ Chrome، و دیگر محصولات Google استفاده می‌کنید.
+        از حسابتان برای دسترسی راحت به همه نشانک‌ها، فایل‌ها، و موارد دیگر استفاده کنید.</translation>
 <translation id="4278498748067682896">‏از «ارتقای کیوسک و تابلوی دیجیتال» استفاده خواهید کرد. این ابزار فقط اجازه اجرا شدن در حالت کیوسک یا تابلوی دیجیتال را به دستگاه می‌دهد. اگر می‌خواهید کاربران به سیستم دستگاه وارد شوند، لطفاً به مرحله قبل برگردید و بااستفاده از «ارتقای Chrome Enterprise» ثبت‌نام کنید.</translation>
 <translation id="4287157641315808225">‏بله، ChromeVox فعال شود</translation>
 <translation id="4289732974614035569">پین انتخاب کنید</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">زمینه روشن یا تیره را انتخاب کنید</translation>
 <translation id="5804259315582798390">بازیابی داده محلی فعال نشد</translation>
 <translation id="5810809306422959727">این حساب برای کنترل‌های والدین واجد شرایط نیست</translation>
+<translation id="5819206523222900309">‫<ph name="BEGIN_DESCRIPTION" />با ثبت‌نام دستگاه‌ها در سازمان‌تان، آن را برای مدیریت متمرکز دستگاه تنظیم می‌کنید. ممکن است سازمان‌تان به دلایل مختلفی ثبت‌نام را الزامی کند:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />بهبود امنیت<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />با پیکربندی تنظیمات امنیتی بیشتر، سازمان می‌تواند امنیت داده‌های کاربر و دستگاه را حفظ کند. این ویژگی همچنین امکان اقداماتی مانند بازنشانی کنترل از راه دور یا غیرفعال کردن دستگاه مفقودشده را فراهم می‌کند.<ph name="END_DESCRIPTION1" />
+        ‫<ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />سفارشی‌سازی تجربه<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />رفتار دستگاه در زمان راه‌اندازی، در صفحه ورود به سیستم، و بعداز وارد شدن به سیستم را می‌توان متناسب با نیازهای سازمان سفارشی کرد.<ph name="END_DESCRIPTION2" />
+        ‫<ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />ارائه پشتیبانی<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />سازمان می‌تواند به منظور عیب‌یابی، از راه دور به جلسه دستگاه دسترسی داشته باشد.<ph name="END_DESCRIPTION3" />
+        ‫<ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />فعال کردن دسترسی<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />برنامه‌ها، سرویس‌ها، و شبکه‌های سازمان ممکن است فقط در دستگاه‌های ثبت‌نام‌شده دردسترس باشند.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">حدود <ph name="TIME" /> دقیقه باقی مانده است</translation>
 <translation id="5852112051279473187">متأسفانه هنگام ثبت این دستگاه واقعا مشکلی روی داد. لطفاً دوباره امتحان کنید یا با نماینده پشتیبانی خود تماس بگیرید.</translation>
 <translation id="5852137567692933493">‏راه‌اندازی مجدد و Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">پیمایش به محتوای اضافی <ph name="CURRENT_ELEMENT" /> از <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">دکمه انتخاب زبان و صفحه‌کلید. درحال‌حاضر زبان <ph name="LANGUAGE" /> انتخاب شده است.</translation>
 <translation id="6040143037577758943">بستن</translation>
+<translation id="6042193169866365541">‏«حساب Google» شما همان حسابی است که برای Gmail،‏ YouTube،‏ Chrome، و دیگر محصولات Google استفاده می‌کنید.
+        از حسابتان برای دسترسی راحت به همه نشانک‌ها، فایل‌ها، و موارد دیگر استفاده کنید. اگر حساب ندارید، می‌توانید در صفحه بعدی حسابی ایجاد کنید.</translation>
 <translation id="6051354611314852653">‏متأسفانه سیستم نتوانست دسترسی API را برای این دستگاه راستی‌آزمایی کند.</translation>
 <translation id="6055544610007596637">‏از «فروشگاه Google Play» برای <ph name="DEVICE_TYPE" /> خود، برنامه نصب کنید</translation>
 <translation id="6069464830445383022">‏ورود به سیستم در Chromebook با «حساب Google» انجام می‌شود</translation>

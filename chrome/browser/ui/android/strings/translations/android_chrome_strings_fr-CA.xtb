@@ -1438,6 +1438,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Désabonné de 1 site}one{Désabonné de # site}other{Désabonné de # sites}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 mot de passe}one{# mot de passe}other{# mots de passe}}</translation>
 <translation id="688730033107341407">Après la déconnexion, vos favoris, vos mots de passe et d'autres éléments de votre compte Google sont retirés de cet appareil.</translation>
+<translation id="6892009074348518725">Pour utiliser cette extension, connectez-vous à Chrome. Vous pourrez également utiliser et enregistrer vos mots de passe et plus encore à partir de votre compte Google.</translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6898797562238201317">Utiliser votre propre phrase de passe pour chiffrer toutes les données Chrome de votre compte Google</translation>
 <translation id="6900532703269623216">Protection renforcée</translation>

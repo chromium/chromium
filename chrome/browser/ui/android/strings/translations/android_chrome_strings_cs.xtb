@@ -1438,6 +1438,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Byl odhlášen odběr oznámení z 1 webu}few{Byl odhlášen odběr oznámení ze # webů}many{Byl odhlášen odběr oznámení z # webu}other{Byl odhlášen odběr oznámení z # webů}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 heslo}few{# hesla}many{# hesla}other{# hesel}}</translation>
 <translation id="688730033107341407">Po odhlášení budou z tohoto zařízení odstraněny záložky, hesla a další položky z vašeho účtu Google.</translation>
+<translation id="6892009074348518725">Pokud chcete používat toto rozšíření, přihlaste se do Chromu. Budete moct taky používat svá hesla a další informace z účtu Google a ukládat je do něj.</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
 <translation id="6898797562238201317">Veškerá data Chromu ve vašem účtu Google šifrovat pomocí vaší vlastní heslové fráze</translation>
 <translation id="6900532703269623216">Vylepšená ochrana</translation>

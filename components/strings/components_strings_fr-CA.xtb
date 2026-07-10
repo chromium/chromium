@@ -2326,6 +2326,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4607608436550361748">Afficher les astuces de Chrome</translation>
 <translation id="460848736049414407">Bloqué par l'administrateur</translation>
 <translation id="4610279718074907952">Ce site fait partie d'un groupe défini par <ph name="SET_OWNER" />, qui peut voir votre activité</translation>
+<translation id="4612631413844865947">Une erreur s'est produite lors du traitement de votre commande sur <ph name="MERCHANT_ORIGIN" /> par le biais de <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Équipement de soccer</translation>
 <translation id="4612904677925722054">Ce site peut comporter un contenu pour adultes. Un parent ou un tuteur doit indiquer que tu es autorisé à visiter ce site Web.</translation>
 <translation id="4619564267100705184">Confirmer votre identité</translation>

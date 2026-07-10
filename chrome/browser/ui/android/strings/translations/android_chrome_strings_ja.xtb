@@ -1438,6 +1438,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{1 件のサイトの登録を解除しました}other{# 件のサイトの登録を解除しました}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 件のパスワード}other{# 件のパスワード}}</translation>
 <translation id="688730033107341407">ログアウトすると、Google アカウントのブックマークやパスワードなどの設定がこのデバイスから削除されます。</translation>
+<translation id="6892009074348518725">この拡張機能を使用するには、Chrome にログインしてください。Google アカウントのパスワードなどの使用や保存もできるようになります。</translation>
 <translation id="6896758677409633944">コピー</translation>
 <translation id="6898797562238201317">独自のパスフレーズを使用して Google アカウントの Chrome データをすべて暗号化する</translation>
 <translation id="6900532703269623216">保護強化機能</translation>

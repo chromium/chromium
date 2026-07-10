@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Прокси параметрлері</translation>
 <translation id="3550915441744863158">Chrome автоматты түрде жаңартылады, сондықтан әрқашан ең жаңа нұсқасына ие боласыз.</translation>
 <translation id="3559533181353831840">Шамамен <ph name="TIME_LEFT" /> қалды.</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Бөлшек сатушы атын және осы демо құрылғы конфигурацияланатын дүкен нөмірін енгізіңіз*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Дүкен нөмірін білмесеңіз, демо режимін орнатуды жалғастыру үшін "0000" деп енгізуіңізге болады. <ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />* Ескертпе: Google осы ақпаратты демо режимінің құрылғыға қажетті нұсқасын анықтау және демо режимінің пайдаланылуын өлшеу үшін қолданады.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Бірдеңе дұрыс болмады. Қайталап көріңіз.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> жабдық деректерін жинау</translation>
 <translation id="3602290021589620013">Алдын ала көру</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Жоқ</translation>
 <translation id="4251377547188244181">Құрылғыны киоск режимінде немесе цифрлық тақтада тіркеу</translation>
 <translation id="4263223596040212967">Пернетақта форматын тексеріңіз және қайталап көріңіз.</translation>
+<translation id="4268490040465852105">Google аккаунты — Gmail, YouTube, Chrome және басқа Google өнімдері үшін пайдаланылатын бір аккаунт.
+        Барлық бетбелгіні, файлды және т.б. оңай пайдалану үшін аккаунтыңызды қолданыңыз.</translation>
 <translation id="4278498748067682896">Құрылғыға киоск немесе цифрлық тақта режимінде ғана жұмыс істеуге мүмкіндік беретін Kiosk &amp; Signage Upgrade лицензиясын пайдаланасыз. Пайдаланушыларға құрылғыға кіруге рұқсат бергіңіз келсе, Chrome Enterprise Upgrade лицензиясын пайдаланып, тіркеліңіз.</translation>
 <translation id="4287157641315808225">Иә, ChromeVox-ты іске қосамын</translation>
 <translation id="4289732974614035569">PIN кодын таңдау</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Жарық немесе қараңғы режимді таңдау</translation>
 <translation id="5804259315582798390">Жергілікті деректерді қалпына келтіруді қосу сәтсіз болды</translation>
 <translation id="5810809306422959727">Бұл аккаунт ата-ана бақылауына жарамайды</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Ұйымыңызда құрылғыларды тіркесеңіз, ол орталықтандырылған құрылғыларды басқару үшін реттеледі. Ұйымыңыз бірнеше себепке байланысты тіркеуді талап етуі мүмкін:<ph name="END_DESCRIPTION" />
+    <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Қауіпсіздікті жақсарту<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+    <ph name="BEGIN_DESCRIPTION1" />Қосымша қауіпсіздік параметрлерін конфигурациялау арқылы ұйым пайдаланушы мен құрылғы деректерін қауіпсіз сақтай алады. Сонымен қатар ол қашықтан қайта орнату немесе жоғалған құрылғыны өшіру сияқты әрекеттерді орындай алады.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Тәжірибені бейімдеу<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Жүктелу кезіндегі, кіру экранындағы және кіргеннен кейінгі құрылғы әрекетін ұйымның қажеттіліктеріне қарай бейімдеуге болады.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Қолдау көрсету<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+    <ph name="BEGIN_DESCRIPTION3" />Ұйым ақауларды жою мақсатында құрылғы сеансына қашықтан кіре алады.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Кіру рұқсатын беру<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Ұйым қолданбалары, қызметтері және желілері тек тіркелген құрылғыларда қолжетімді болуы мүмкін.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Шамамен <ph name="TIME" /> минут қалды</translation>
 <translation id="5852112051279473187">Бұл құрылғыны тіркеу кезінде бірдеңе дұрыс болмады. Қайталап көріңіз немесе қолдау қызметінің өкіліне хабарласыңыз.</translation>
 <translation id="5852137567692933493">Қайта іске қосу және Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427"><ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" />-картадағы қосымша контентке өту</translation>
 <translation id="6016972670657536680">Тіл және пернетақта түймесін таңдаңыз. Ағымдағы таңдалған тіл: <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Жабу</translation>
+<translation id="6042193169866365541">Google аккаунты — Gmail, YouTube, Chrome және басқа Google өнімдері үшін пайдаланылатын бір аккаунт.
+        Барлық бетбелгіні, файлды және т.б. оңай пайдалану үшін аккаунтыңызды қолданыңыз. Аккаунтыңыз болмаса, келесі экранда біреуін жасауға болады.</translation>
 <translation id="6051354611314852653">Жүйенің API осы құрылғыға кіру құқығын авторизациялауы сәтсіз аяқталды.</translation>
 <translation id="6055544610007596637">Google Play Store-дан <ph name="DEVICE_TYPE" /> құрылғысына арналған қолданбаларды орнатыңыз</translation>
 <translation id="6069464830445383022">Google аккаунтымен Chromebook құрылғысына кіріңіз</translation>

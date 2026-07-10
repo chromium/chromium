@@ -1438,6 +1438,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Þú sagðir upp áskrift að einu vefsvæði}one{Þú sagðir upp áskrift að # vefsvæði}other{Þú sagðir upp áskrift að # vefsvæðum}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{Eitt aðgangsorð}one{# aðgangsorð}other{# aðgangsorð}}</translation>
 <translation id="688730033107341407">Eftir að þú skráir þig út verða bókamerki, aðgangsorð og fleira á Google-reikningnum þínum fjarlægt úr þessu tæki.</translation>
+<translation id="6892009074348518725">Skráðu þig inn á Chrome til að nota þessa viðbót. Þú getur líka notað og vistað aðgangsorðin þín og fleira af Google-reikningnum þínum.</translation>
 <translation id="6896758677409633944">Afrita</translation>
 <translation id="6898797562238201317">Nota þitt eigið aðgangsorð til að dulkóða öll Chrome-gögn á Google-reikningnum þínum</translation>
 <translation id="6900532703269623216">Aukin vörn</translation>

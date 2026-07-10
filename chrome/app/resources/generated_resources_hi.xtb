@@ -1968,7 +1968,6 @@
 <translation id="2517472476991765520">स्कैन करें</translation>
 <translation id="2518024842978892609">अपने क्‍लाइंट प्रमाणपत्रों का उपयोग करें</translation>
 <translation id="2518620532958109495">फ़ुल स्क्रीन मोड को अपने-आप चालू करने की अनुमति है</translation>
-<translation id="2519250377986324805">इसका तरीका देखें</translation>
 <translation id="2519517390894391510">प्रमाणपत्र वाली प्रोफ़ाइल का नाम</translation>
 <translation id="2520644704042891903">उपलब्ध सॉकेट की प्रतीक्षा की जा रही है...</translation>
 <translation id="2521427645491031107">ऐप्लिकेशन सिंक करने की सुविधा, डिवाइस की सेटिंग में सेट की गई है</translation>
@@ -3538,6 +3537,7 @@
 <translation id="371370241367527062">सामने वाला माइक्रोफ़ोन</translation>
 <translation id="37143699183660101">कर्सर की स्थिरता</translation>
 <translation id="3714610938239537183">चार में से दूसरा चरण: एक्सपोर्ट करने के लिए डाइग्नोस्टिक्स डेटा चुनें</translation>
+<translation id="3715519518311454566">Gemini की बॉटम शीट को छोटा किया गया.</translation>
 <translation id="3717133748480414053">स्किल की मदद से, वेब पेजों की खास जानकारी जनरेट की जा सकती है, बेहतरीन ऑफ़र ढूंढे जा सकते हैं, और अन्य काम किए जा सकते हैं</translation>
 <translation id="3719245268140483218">डिवाइस पर होने वाले इवेंट</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> का फ़ॉर्म भरा गया.</translation>
@@ -6219,6 +6219,7 @@
 <translation id="5828181959764767444">सूर्यास्त</translation>
 <translation id="5828545842856466741">प्रोफ़ाइल जोड़ें...</translation>
 <translation id="5828633471261496623">प्रिंट हो रहा है...</translation>
+<translation id="5829137022934788067">मुझे इसके बारे में बताओ</translation>
 <translation id="5829214552954466783">इस उपयोगकर्ता नाम के लिए <ph name="CREDENTIAL_TYPE" /> शेयर करें: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Google Wallet में पेमेंट के तरीके</translation>
 <translation id="5830512293931520102">आपका पासवर्ड एन्क्रिप्ट (सुरक्षित) किया जाता है और किसी को भी नहीं दिखता है</translation>
@@ -7010,6 +7011,7 @@
 <translation id="6455264371803474013">कुछ खास साइटों पर</translation>
 <translation id="6455521402703088376">बंद है • इस एक्सटेंशन को इसके डेवलपर ने अनपब्लिश कर दिया था</translation>
 <translation id="6455894534188563617">&amp;नया फ़ोल्डर</translation>
+<translation id="6456162045957729200">इसके बारे में जानकारी दो</translation>
 <translation id="645705751491738698">JavaScript को अवरोधित करना जारी रखें</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> को लॉन्च नहीं किया जा सकता</translation>
 <translation id="6458701200018867744">अपलोड नहीं हो सका (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8123,7 +8125,6 @@
 <translation id="7314989823816739632">रोमैंटिक</translation>
 <translation id="7317342082064136423">अपने खाते की पुष्टि करें</translation>
 <translation id="731827437403763009">एआई के इनोवेशन</translation>
-<translation id="7319320447721994672">अगर ऐसी किसी साइट पर विज़िट किया गया है जो कुकी इस्तेमाल करती है, तो आपको कुछ समय के लिए कुकी को अनुमति देनी पड़ सकती है, ताकि साइट की सभी सुविधाएं काम कर सकें.</translation>
 <translation id="7319983568955948908">शेयर करना बंद करें</translation>
 <translation id="7320213904474460808">नेटवर्क चुनें</translation>
 <translation id="7321545336522791733">सर्वर पहुंच योग्य नहीं है</translation>
@@ -8872,6 +8873,7 @@
 <translation id="7903481341948453971">पासवर्ड डालते समय स्क्रीन लॉक का इस्तेमाल करें</translation>
 <translation id="7903925330883316394">उपयोगिता: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">काताकाना</translation>
+<translation id="7904492297081735975">बुकमार्क मैनेजर खोलें</translation>
 <translation id="7904526211178107182">Linux को अपने नेटवर्क के दूसरे डिवाइस के लिए उपलब्ध कराएं.</translation>
 <translation id="7907312522152480478">अपने अन्य डिवाइसों से टैब पाने के लिए, अपनी पहचान की पुष्टि करें. साथ ही, अपना ब्राउज़िंग इतिहास और टैब का डेटा सिंक करें. सिंक करने की सुविधा को सेटिंग में जाकर किसी भी समय बंद किया जा सकता है. Google आपके इतिहास के आधार पर, Search और अन्य सेवाओं को आपकी दिलचस्पी के मुताबिक बना सकता है.</translation>
 <translation id="7907502219904644296">ऐक्सेस बदलें</translation>
@@ -10624,6 +10626,7 @@
 <translation id="942296794412775122">माइक्रोफ़ोन चालू/बंद है</translation>
 <translation id="942488123151518958">रोकें (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> एक Chrome टैब और ऑडियो शेयर कर रहा है.</translation>
+<translation id="943744232549395906">बोली को लिखाई में बदलने की सुविधा रोकी गई</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="947156494302904893">किसी साइट को विज़िट करने पर, वह इस बात की पुष्टि कर सकती है कि आप बॉट के बजाय असली उपयोगकर्ता हैं</translation>
 <translation id="947329552760389097">&amp;एलिमेंट जाँचें</translation>

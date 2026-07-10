@@ -1967,7 +1967,6 @@
 <translation id="2517472476991765520">סריקה</translation>
 <translation id="2518024842978892609">שימוש באישורי הלקוח</translation>
 <translation id="2518620532958109495">יש הרשאה לעבור למסך מלא באופן אוטומטי</translation>
-<translation id="2519250377986324805">איך עושים את זה?</translation>
 <translation id="2519517390894391510">שם פרופיל האישור</translation>
 <translation id="2520644704042891903">רגע, אנחנו מחפשים את המקום המתאים…</translation>
 <translation id="2521427645491031107">סנכרון האפליקציות נקבע בהגדרות המכשיר</translation>
@@ -3537,6 +3536,7 @@
 <translation id="371370241367527062">מיקרופון קדמי</translation>
 <translation id="37143699183660101">יציבות הסמן</translation>
 <translation id="3714610938239537183">שלב 2 מתוך 4: בחירת נתוני אבחון לייצוא</translation>
+<translation id="3715519518311454566">‏הגיליון התחתון של Gemini מכווץ.</translation>
 <translation id="3717133748480414053">מיומנויות מאפשרות לך לסכם דפי אינטרנט, לחפש מבצעים נהדרים ועוד</translation>
 <translation id="3719245268140483218">אירועים במכשיר</translation>
 <translation id="3719310907809321183">הפרטים של <ph name="CARD_IDENTIFIER" /> מולאו.</translation>
@@ -6222,6 +6222,7 @@
 <translation id="5828181959764767444">שקיעה</translation>
 <translation id="5828545842856466741">הוספת פרופיל...</translation>
 <translation id="5828633471261496623">ההדפסה מתבצעת...</translation>
+<translation id="5829137022934788067">אני רוצה לקבל מידע על הבחירה הזו</translation>
 <translation id="5829214552954466783">שיתוף <ph name="CREDENTIAL_TYPE" /> של שם המשתמש: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">‏אמצעי התשלום שלך ב-Google Wallet</translation>
 <translation id="5830512293931520102">הסיסמה שלך מוצפנת ואף אחד לא יכול לראות אותה</translation>
@@ -7013,6 +7014,7 @@
 <translation id="6455264371803474013">באתרים ספציפיים</translation>
 <translation id="6455521402703088376">כבוי • הפרסום של התוסף הזה בוטל על ידי המפתח שלו</translation>
 <translation id="6455894534188563617">&amp;תיקייה חדשה</translation>
+<translation id="6456162045957729200">אני רוצה לקבל הסבר על הבחירה הזו</translation>
 <translation id="645705751491738698">‏אני רוצה להמשיך לחסום JavaScript</translation>
 <translation id="6457572529564180082">אי אפשר להפעיל את <ph name="APP_NAME" /></translation>
 <translation id="6458701200018867744">ההעלאה נכשלה (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8128,7 +8130,6 @@
 <translation id="7314989823816739632">רומנטי</translation>
 <translation id="7317342082064136423">צריך לאמת את החשבון</translation>
 <translation id="731827437403763009">‏חידושים מבוססי-AI</translation>
-<translation id="7319320447721994672">‏בביקור באתר שמשתמש בקובצי cookie, יכול להיות שיהיה צורך להפעיל קובצי Cookie באופן זמני כדי להפעיל את כל התכונות של האתר.</translation>
 <translation id="7319983568955948908">הפסקת השיתוף</translation>
 <translation id="7320213904474460808">הגדרת הרשת כברירת המחדל</translation>
 <translation id="7321545336522791733">השרת אינו נגיש</translation>
@@ -8878,6 +8879,7 @@
 <translation id="7903481341948453971">שימוש בנעילת המסך במהלך מילוי סיסמאות</translation>
 <translation id="7903925330883316394">תוכנית שירות: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">קאטקאנה</translation>
+<translation id="7904492297081735975">&amp;פתיחת ניהול הסימניות</translation>
 <translation id="7904526211178107182">‏הגדרת יציאות Linux שזמינות למכשירים אחרים ברשת.</translation>
 <translation id="7907312522152480478">‏כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, עליך לאמת את הזהות ולסנכרן את ההיסטוריה ואת הכרטיסיות. בהגדרות אפשר תמיד להפסיק את הסנכרון. ‫Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="7907502219904644296">שינוי הרשאת הגישה</translation>
@@ -10630,6 +10632,7 @@
 <translation id="942296794412775122">הפעלה או השבתה של המיקרופון</translation>
 <translation id="942488123151518958">‏השהיה (k)</translation>
 <translation id="942532530371314860">‏<ph name="APP_NAME" /> משתף כרטיסייה ואודיו של Chrome.</translation>
+<translation id="943744232549395906">ההכתבה נעצרה</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="947156494302904893">אתרים שמבקרים בהם יכולים לאמת שמדובר באדם אמיתי ולא בבוט</translation>
 <translation id="947329552760389097">&amp;בדיקת רכיבים</translation>

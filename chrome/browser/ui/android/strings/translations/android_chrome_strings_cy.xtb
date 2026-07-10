@@ -1439,6 +1439,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Wedi dad-danysgrifio o 1 wefan}zero{Wedi dad-danysgrifio o # gwefan}two{Wedi dad-danysgrifio o # wefan}few{Wedi dad-danysgrifio o # gwefan}many{Wedi dad-danysgrifio o # gwefan}other{Wedi dad-danysgrifio o # gwefan}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 cyfrinair}zero{# cyfrinair}two{# gyfrinair}few{# chyfrinair}many{# chyfrinair}other{# cyfrinair}}</translation>
 <translation id="688730033107341407">Ar ôl i chi allgofnodi, bydd eich nodau tudalen, cyfrineiriau a rhagor yn eich Cyfrif Google yn cael eu tynnu o'r ddyfais hon.</translation>
+<translation id="6892009074348518725">I ddefnyddio'r estyniad hwn, mewngofnodwch i Chrome. Byddwch hefyd yn gallu defnyddio a chadw eich cyfrineiriau a rhagor o'ch Cyfrif Google.</translation>
 <translation id="6896758677409633944">Copïo</translation>
 <translation id="6898797562238201317">Defnyddiwch eich cyfrinymadrodd eich hun i amgryptio'r holl ddata Chrome yn eich Cyfrif Google</translation>
 <translation id="6900532703269623216">Gwell amddiffyniad</translation>

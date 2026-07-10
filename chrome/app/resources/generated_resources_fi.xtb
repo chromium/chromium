@@ -1967,7 +1967,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2517472476991765520">Etsi</translation>
 <translation id="2518024842978892609">Käyttää käyttöoikeusvarmenteita.</translation>
 <translation id="2518620532958109495">Automaattinen siirtyminen koko näytön tilaan sallittu</translation>
-<translation id="2519250377986324805">Katso ohjeet</translation>
 <translation id="2519517390894391510">Varmenneprofiilin nimi</translation>
 <translation id="2520644704042891903">Odotetaan vastakkeen vapautumista…</translation>
 <translation id="2521427645491031107">Sovellusten synkronointi määritetään laiteasetuksissa</translation>
@@ -5002,6 +5001,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4849286518551984791">Asetettu yleisaika (Coordinated Universal Time, UTC/GMT)</translation>
 <translation id="4849517651082200438">Älä asenna</translation>
 <translation id="4849731766219625109">Käytä tätä tiliä: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="4850279708232718725">Kerro tästä</translation>
 <translation id="485053257961878904">Ilmoitusten synkronointia ei voitu ottaa käyttöön</translation>
 <translation id="4850548109381269495">Tarkista internetyhteys ja laita Bluetooth päälle molemmilla laitteilla. Yritä sitten uudelleen.</translation>
 <translation id="4850669014075537160">Vieritys</translation>
@@ -6350,6 +6350,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="5922854266885514646">Valitse "Yksilöi Chromea"</translation>
 <translation id="5924047253200400718">Lue ohjeita <ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Kysy ennen Microsoft-tiedostojen kopioimista tai siirtämistä Google Driveen</translation>
+<translation id="5925057331573749968">Kirjaudu sisään nopeammin QR-koodilla</translation>
 <translation id="5926936390113611560">Avaa kaikki profiilit</translation>
 <translation id="592880897588170157">Lataa PDF-tiedostot automaattisen Chromessa avaamisen sijaan.</translation>
 <translation id="5930567261594625340">Yötaivas</translation>
@@ -8123,7 +8124,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7314989823816739632">Romanttinen</translation>
 <translation id="7317342082064136423">Tilin todentaminen</translation>
 <translation id="731827437403763009">Tekoälyinnovaatiot</translation>
-<translation id="7319320447721994672">Jos käyt sivustolla, jolla käytetään evästeitä, sinun on ehkä otettava evästeet tilapäisesti käyttöön, jotta kaikki sivuston ominaisuudet toimivat.</translation>
 <translation id="7319983568955948908">Lopeta jakaminen</translation>
 <translation id="7320213904474460808">Aseta oletusverkko</translation>
 <translation id="7321545336522791733">Palvelimeen ei saada yhteyttä.</translation>
@@ -9499,6 +9499,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8372678064309688510">Osoite on tallennettu</translation>
 <translation id="8373652277231415614">Crostinin jaetut hakemistot</translation>
 <translation id="8374243500935816406">Älä salli sivustojen hallinnoida ikkunoita kaikilla näytöillä</translation>
+<translation id="8375703478696038265">Vaihe <ph name="STEP_NUMBER" />/<ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Kerro meille, mitä Google Castin kanssa tapahtuu</translation>
 <translation id="8376384591331888629">Mukaan lukien kolmannen osapuolen evästeet tällä sivustolla</translation>
 <translation id="8376451933628734023">Jos tämä verkkosovellus yrittää huijata sinua luulemaan, että se on jokin toinen sovellus, poista se.</translation>
@@ -10570,6 +10571,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="9188142767272053574">Ota prosessin eristäminen käyttöön</translation>
 <translation id="9192019773545828776">Kuule äänipalautetta, jonka avulla voit käyttää laitetta näyttöä katsomatta. Pistekirjoituspalaute on käytettävissä verkkoon yhdistettävillä laitteilla. Laita ChromeVox päälle tai pois päältä painamalla Ctrl + Alt + Z. Siirry painamalla Haku + vasen nuoli tai oikea nuoli. Valitse (aktivoi) kohta painamalla Haku + välilyönti.</translation>
 <translation id="9195969368671142407">Kun organisaatiosi rajoittaa tallentamista Google-tilillesi, et voi jakaa välilehtiryhmiä tai liittyä niihin</translation>
+<translation id="9197456336762295195">Skannaa QR-koodi sen laitteen kameralla, jolla on google.comin avainkoodi</translation>
 <translation id="919840898042157087">Staattinen liike</translation>
 <translation id="9199503643457729322">Klikkaa siirtyäksesi pois yksityisyysoppaasta.</translation>
 <translation id="9199695835892108985">Nollataanko kaikki sarjaporttien luvat?</translation>

@@ -1956,7 +1956,6 @@
 <translation id="2517472476991765520">સ્કૅન કરો</translation>
 <translation id="2518024842978892609">તમારા ક્લાઇન્ટ પ્રમાણપત્રોનો ઉપયોગ કરો</translation>
 <translation id="2518620532958109495">ઑટોમૅટિક રીતે પૂર્ણ સ્ક્રીનમાં દાખલ થવાની મંજૂરી છે</translation>
-<translation id="2519250377986324805">તેની રીત જુઓ</translation>
 <translation id="2519517390894391510">પ્રમાણપત્ર પ્રોફાઇલનું નામ</translation>
 <translation id="2520644704042891903">ઉપલબ્ધ સોકેટ માટે રાહ જુએ છે ...</translation>
 <translation id="2521427645491031107">ઍપ સિંક કરવાની સુવિધા ડિવાઇસના સેટિંગમાં સેટ કરેલી છે</translation>
@@ -3526,6 +3525,7 @@
 <translation id="371370241367527062">આગળનો માઇક્રોફોન</translation>
 <translation id="37143699183660101">કર્સરની સ્થિરતા</translation>
 <translation id="3714610938239537183">4માંથી પગલું 2: નિકાસ કરવા માટે ડાયગ્નોસ્ટિક્સ ડેટા પસંદ કરો</translation>
+<translation id="3715519518311454566">Gemini બોટમ શીટ નાની કરી.</translation>
 <translation id="3717133748480414053">વેબપેજનો સારાંશ આપવા, શ્રેષ્ઠ ડીલ શોધવા અને બીજું ઘણું કરવામાં કૌશલ્યો તમારી મદદ કરી શકે છે</translation>
 <translation id="3719245268140483218">ડિવાઇસ ઇવેન્ટ</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" />નું ફોર્મ ભર્યું.</translation>
@@ -6211,6 +6211,7 @@
 <translation id="5828181959764767444">સૂર્યાસ્ત</translation>
 <translation id="5828545842856466741">પ્રોફાઇલ ઉમેરો...</translation>
 <translation id="5828633471261496623">છાપકામ...</translation>
+<translation id="5829137022934788067">મને આ પસંદગી વિશે જણાવો</translation>
 <translation id="5829214552954466783">વપરાશકર્તાના આ નામ માટે <ph name="CREDENTIAL_TYPE" /> શેર કરો: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Google Walletમાં શામેલ તમારી ચુકવણી પદ્ધતિઓ</translation>
 <translation id="5830512293931520102">તમારો પાસવર્ડ એન્ક્રિપ્ટેડ છે અને કોઈએ ક્યારેય જોયો નથી</translation>
@@ -7003,6 +7004,7 @@ USB ડિવાઇસ</translation>
 <translation id="6455264371803474013">વિશિષ્ટ સાઇટ પર</translation>
 <translation id="6455521402703088376">બંધ • આ એક્સ્ટેન્શન તેના ડેવલપર દ્વારા અનપબ્લિશ કરવામાં આવ્યું હતું</translation>
 <translation id="6455894534188563617">&amp;નવું ફોલ્ડર</translation>
+<translation id="6456162045957729200">આ પસંદગી સમજાવો</translation>
 <translation id="645705751491738698">JavaScript ને અવરોધિત કરવાનું ચાલુ રાખો</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> લૉન્ચ કરી શકાતી નથી</translation>
 <translation id="6458701200018867744">અપલોડ નિષ્ફળ થયું (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8116,7 +8118,6 @@ USB ડિવાઇસ</translation>
 <translation id="7314989823816739632">રોમાંટિક</translation>
 <translation id="7317342082064136423">તમારું એકાઉન્ટ ચકાસો</translation>
 <translation id="731827437403763009">AI ઇનોવેશન</translation>
-<translation id="7319320447721994672">કુકીનો ઉપયોગ કરતી હોય એવી કોઈ સાઇટની તમે જ્યારે મુલાકાત લો છો, ત્યારે તે સાઇટની બધી સુવિધાઓ સારી રીતે કામ કરે એ માટે તમારે હંગામી રીતે તમારે કુકીને મંજૂરી આપવી જરૂરી હોઈ શકે છે.</translation>
 <translation id="7319983568955948908">શેર કરવાનું રોકો</translation>
 <translation id="7320213904474460808">ડિફૉલ્ટ કરેલું નેટવર્ક</translation>
 <translation id="7321545336522791733">સર્વર પહોંચની બહાર છે</translation>
@@ -8866,6 +8867,7 @@ USB ડિવાઇસ</translation>
 <translation id="7903481341948453971">પાસવર્ડ ભરતી વખતે તમારા સ્ક્રીન લૉકનો ઉપયોગ કરો</translation>
 <translation id="7903925330883316394">ઉપયોગિતા: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">કટકાન</translation>
+<translation id="7904492297081735975">&amp;બુકમાર્ક મેનેજર ખોલો</translation>
 <translation id="7904526211178107182">તમારા નેટવર્ક પરના અન્ય ડિવાઇસ માટે Linux પોર્ટને ઉપલબ્ધ કરાવો.</translation>
 <translation id="7907312522152480478">તમારા અન્ય ડિવાઇસમાંના તમારા ટૅબ મેળવવા માટે, આ તમે જ છો તેની ચકાસણી કરો તથા તમારો ઇતિહાસ અને ટૅબ સિંક કરો. તમે કોઈપણ સમયે સેટિંગમાં જઈને સિંક કરવાનું બંધ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
 <translation id="7907502219904644296">ઍક્સેસ બદલો</translation>
@@ -10613,6 +10615,7 @@ USB ડિવાઇસ</translation>
 <translation id="942296794412775122">માઇક્રોફોન ચાલુ/બંધ કરો</translation>
 <translation id="942488123151518958">થોભાવો (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" />, Chrome ટૅબ અને ઑડિઓને શેર કરી રહી છે.</translation>
+<translation id="943744232549395906">વૉઇસ ટાઇપિંગની સુવિધા રોકી</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="947156494302904893">તમે મુલાકાત લો છો એ વિવિધ સાઇટ એ વાતની ચકાસણી કરી શકે છે કે તમે જ અસલી વપરાશકર્તા છો અને બૉટ નથી</translation>
 <translation id="947329552760389097">&amp;ઘટકોની તપાસ કરો</translation>

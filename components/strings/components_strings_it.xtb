@@ -2323,6 +2323,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4607608436550361748">Leggi i suggerimenti di Chrome</translation>
 <translation id="460848736049414407">Bloccato dall'amministratore</translation>
 <translation id="4610279718074907952">Questo sito fa parte di un gruppo, definito da <ph name="SET_OWNER" />, che può vedere la tua attività</translation>
+<translation id="4612631413844865947">Si è verificato un errore durante l'elaborazione dell'ordine su <ph name="MERCHANT_ORIGIN" /> tramite <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Attrezzature e articoli per il calcio</translation>
 <translation id="4612904677925722054">Questo sito potrebbe includere contenuti inappropriati per i minori. Un genitore o tutore deve autorizzarti a visitare questo sito web.</translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>

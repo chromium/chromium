@@ -1438,6 +1438,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Te-ai dezabonat de la un site}few{Te-ai dezabonat de la # site-uri}other{Te-ai dezabonat de la # de site-uri}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{O parolă}few{# parole}other{# de parole}}</translation>
 <translation id="688730033107341407">După ce te deconectezi, marcajele, parolele și altele din Contul Google vor fi eliminate de pe acest dispozitiv.</translation>
+<translation id="6892009074348518725">Pentru a folosi această extensie, conectează-te la Chrome. În plus, vei putea să folosești și să salvezi parolele și alte date din Contul Google.</translation>
 <translation id="6896758677409633944">Copiază</translation>
 <translation id="6898797562238201317">Folosește propria expresie de acces pentru a cripta toate datele Chrome din Contul Google</translation>
 <translation id="6900532703269623216">Protecție îmbunătățită</translation>

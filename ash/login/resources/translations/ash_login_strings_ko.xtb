@@ -229,6 +229,9 @@
 <translation id="3547954654003013442">프록시 설정</translation>
 <translation id="3550915441744863158">Chrome은 자동으로 업데이트되므로 항상 최신 버전을 사용할 수 있습니다.</translation>
 <translation id="3559533181353831840">약 <ph name="TIME_LEFT" /> 남음</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />이 데모 기기를 구성하려는 소매업체 이름과 상점 번호를 입력합니다*. <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />상점 번호를 모르는 경우 '0000'을 입력하여 데모 모드 설치를 계속 진행할 수 있습니다. <ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />*참고: Google은 이 정보를 사용하여 기기에 설치해야 하는 데모 모드 버전을 파악하고 데모 모드의 사용량을 측정합니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">문제가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> 하드웨어 데이터 수집</translation>
 <translation id="3602290021589620013">미리보기</translation>
@@ -287,6 +290,8 @@
 <translation id="4250680216510889253">아니요</translation>
 <translation id="4251377547188244181">키오스크 및 사이니지 기기 등록</translation>
 <translation id="4263223596040212967">키보드 레이아웃을 확인한 다음 다시 시도해 주세요.</translation>
+<translation id="4268490040465852105">Google 계정이란 Gmail, YouTube, Chrome, 기타 Google 제품에 사용하는 계정과 동일한 계정입니다.
+        내 계정을 사용하여 모든 북마크, 파일 등에 쉽게 액세스해 보세요.</translation>
 <translation id="4278498748067682896">기기가 키오스크 또는 사이니지 모드로만 실행되도록 하는 키오스크 및 사이니지 업그레이드를 사용합니다. 사용자가 기기에 로그인할 수 있게 하려면 뒤로 돌아가서 Chrome Enterprise 업그레이드를 사용해 등록하세요.</translation>
 <translation id="4287157641315808225">예, ChromeVox 활성화</translation>
 <translation id="4289732974614035569">PIN 선택</translation>
@@ -433,6 +438,15 @@
 <translation id="5800703268655655701">밝은 테마 또는 어두운 테마 선택</translation>
 <translation id="5804259315582798390">로컬 데이터 복구를 사용 설정할 수 없음</translation>
 <translation id="5810809306422959727">자녀 보호 기능을 사용할 수 없는 계정</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />조직에 기기를 등록하면 중앙 기기 관리가 설정됩니다. 다음과 같은 여러 이유로 조직에서 등록을 요구할 수 있습니다.<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />보안 강화<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />추가 보안 설정을 구성하면 조직에서 사용자 및 기기 데이터를 안전하게 보호합니다. 또한 분실 기기 원격 초기화 또는 사용 중지와 같은 작업을 수행할 수도 있습니다.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />환경 맞춤설정<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />부팅, 로그인 화면, 로그인 후 기기 동작을 조직의 필요에 따라 맞춤설정할 수 있습니다.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />지원 제공<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+    <ph name="BEGIN_DESCRIPTION3" />조직에서 문제 해결을 위해 원격으로 기기 세션에 액세스할 수 있습니다.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />액세스 사용 설정<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />등록된 기기에서만 조직 앱, 서비스, 네트워크를 사용할 수 있습니다.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">약 <ph name="TIME" />분 남음</translation>
 <translation id="5852112051279473187">기기를 등록하는 중에 문제가 발생했습니다. 다시 시도하거나 지원 담당자에게 문의하세요.</translation>
 <translation id="5852137567692933493">다시 시작 및 Powerwash</translation>
@@ -453,6 +467,8 @@
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />개 중 <ph name="CURRENT_ELEMENT" />번째 추가 콘텐츠로 이동</translation>
 <translation id="6016972670657536680">언어 및 키보드 버튼을 선택하세요. 현재 선택된 언어는 <ph name="LANGUAGE" />입니다.</translation>
 <translation id="6040143037577758943">닫기</translation>
+<translation id="6042193169866365541">Google 계정이란 Gmail, YouTube, Chrome, 기타 Google 제품에 사용하는 계정과 동일한 계정입니다.
+        내 계정을 사용하여 모든 북마크, 파일 등에 쉽게 액세스해 보세요. 계정이 없는 경우 다음 화면에서 계정을 만들 수 있습니다.</translation>
 <translation id="6051354611314852653">시스템에서 이 기기에 대한 API 액세스를 승인하지 못했습니다.</translation>
 <translation id="6055544610007596637">Google Play 스토어에서 <ph name="DEVICE_TYPE" />용 앱 설치</translation>
 <translation id="6069464830445383022">Google 계정으로 Chromebook 로그인하기</translation>

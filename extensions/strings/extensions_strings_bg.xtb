@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Страницата с информация <ph name="ABOUT_PAGE" /> не можа да се зареди.</translation>
 <translation id="424963718355121712">Приложенията трябва да се показват от хоста, който засягат</translation>
 <translation id="4306119971288449206">Приложенията трябва да се показват с тип съдържание „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4349181963619779233">От този уебсайт не могат да се добавят разширения и приложения</translation>
 <translation id="4625078469366263107">Активиране на приложението</translation>
 <translation id="4633003931260532286">Разширението изисква <ph name="IMPORT_VERSION" /> или по-нова версия на <ph name="IMPORT_NAME" />, но само <ph name="INSTALLED_VERSION" /> е инсталирана</translation>
 <translation id="4660476621274971848">Очакваната версия е <ph name="EXPECTED_VERSION" />, но тя бе <ph name="NEW_ID" /></translation>

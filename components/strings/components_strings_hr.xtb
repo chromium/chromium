@@ -2325,6 +2325,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4607608436550361748">Pogledajte Chromeove savjete</translation>
 <translation id="460848736049414407">Blokirao administrator</translation>
 <translation id="4610279718074907952">Ova je web-lokacija u grupi koju definira <ph name="SET_OWNER" /> i koja može vidjeti vaše aktivnosti</translation>
+<translation id="4612631413844865947">Došlo je do pogreške pri obradi vaše narudžbe na web-lokaciji <ph name="MERCHANT_ORIGIN" /> putem usluge <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Oprema za nogomet</translation>
 <translation id="4612904677925722054">Ova web-lokacija može sadržavati sadržaj za odrasle. Roditelj ili skrbnik mora ti dopustiti da posjetiš ovu web-lokaciju.</translation>
 <translation id="4619564267100705184">Potvrdite svoj identitet</translation>

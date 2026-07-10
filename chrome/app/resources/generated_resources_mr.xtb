@@ -1968,7 +1968,6 @@
 <translation id="2517472476991765520">स्कॅन करा</translation>
 <translation id="2518024842978892609">तुमची क्लायंट प्रमाणप‍त्रे वापरा</translation>
 <translation id="2518620532958109495">फुल स्क्रीनमध्ये आपोआप एंटर करण्याची अनुमती दिली आहे</translation>
-<translation id="2519250377986324805">कसे ते पहा</translation>
 <translation id="2519517390894391510">सर्टिफिकेट प्रोफाइल नाव</translation>
 <translation id="2520644704042891903">उपलब्ध सॉकेटची प्रतीक्षा करत आहे...</translation>
 <translation id="2521427645491031107">अ‍ॅप्स सिंक हे डिव्हाइस सेटिंग्ज मध्ये सेट केले आहे</translation>
@@ -3538,6 +3537,7 @@
 <translation id="371370241367527062">समोरील मायक्रोफोन</translation>
 <translation id="37143699183660101">कर्सरची स्थिरता</translation>
 <translation id="3714610938239537183">पायरी ४ पैकी २: एक्सपोर्ट करण्यासाठी निदानासंबंधित डेटा निवडा</translation>
+<translation id="3715519518311454566">Gemini च्या तळाशी असलेली शीट कोलॅप्स केली आहे.</translation>
 <translation id="3717133748480414053">कौशल्यांमुळे तुम्हाला वेब पेजचा सारांश देण्यात, उत्तम डील शोधण्यात आणि आणखी बऱ्याच गोष्टी करण्यात मदत होऊ शकते</translation>
 <translation id="3719245268140483218">डिव्हाइस इव्‍हेंट</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> भरला आहे.</translation>
@@ -5003,6 +5003,7 @@
 <translation id="4849286518551984791">समन्वित जागतिक वेळ (UTC/GMT)</translation>
 <translation id="4849517651082200438">इंस्टॉल करू नका</translation>
 <translation id="4849731766219625109">तुमचे <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> खाते वापरा</translation>
+<translation id="4850279708232718725">मला याबद्दल सांगा</translation>
 <translation id="485053257961878904">सूचना सिंक करणे सेट करता आले नाही</translation>
 <translation id="4850548109381269495">दोन्ही डिव्हाइसवर, तुमचे इंटरनेट कनेक्शन तपासा आणि ब्लूटूथ सुरू करा. त्यानंतर, पुन्हा प्रयत्न करा.</translation>
 <translation id="4850669014075537160">स्क्रोलिंग</translation>
@@ -6220,6 +6221,7 @@
 <translation id="5828181959764767444">सूर्यास्त</translation>
 <translation id="5828545842856466741">प्रोफाइल जोडा…</translation>
 <translation id="5828633471261496623">प्रिंट करत आहे...</translation>
+<translation id="5829137022934788067">मला या निवडीबद्दल सांग</translation>
 <translation id="5829214552954466783">वापरकर्ता नावासाठी <ph name="CREDENTIAL_TYPE" /> शेअर करा: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Google Wallet मधील तुमच्या पेमेंट पद्धती</translation>
 <translation id="5830512293931520102">तुमचा पासवर्ड एन्क्रिप्ट केलेला आहे आणि तो कधीच कोणालाही दिसत नाही</translation>
@@ -6350,6 +6352,7 @@
 <translation id="5922854266885514646">"Chrome कस्टमाइझ करा" वर क्लिक करा</translation>
 <translation id="5924047253200400718">मदत मिळवा<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft फाइल कॉपी करण्यापूर्वी किंवा Google Drive वर हलवण्यापूर्वी विचारा</translation>
+<translation id="5925057331573749968">QR कोड वापरून आणखी जलद साइन इन करा</translation>
 <translation id="5926936390113611560">सर्व प्रोफाइल उघडा</translation>
 <translation id="592880897588170157">पीडीएफ फाइल Chromeमध्ये आपोआप उघडण्यापेक्षा त्या डाउनलोड करा</translation>
 <translation id="5930567261594625340">रात्रीचे आकाश</translation>
@@ -7013,6 +7016,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6455264371803474013">विशिष्ट साइटवर</translation>
 <translation id="6455521402703088376">बंद केले • हे एक्स्टेंशन त्याच्या डेव्हलपरने अप्रकाशित केले होते</translation>
 <translation id="6455894534188563617">नवीन फोल्‍डर</translation>
+<translation id="6456162045957729200">या निवडीचे स्पष्टीकरण द्या</translation>
 <translation id="645705751491738698">JavaScript ब्लॉक करणे सुरू ठेवा</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> लाँच केले जाऊ शकत नाही</translation>
 <translation id="6458701200018867744">अपलोड करता आले नाही (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8124,7 +8128,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7314989823816739632">रोमँटिक</translation>
 <translation id="7317342082064136423">तुमच्या खात्याची पडताळणी करा</translation>
 <translation id="731827437403763009">AI नवकल्पना</translation>
-<translation id="7319320447721994672">तुम्ही कुकी वापरत असलेल्या साइटना भेट दिल्यास, साइटच्या सर्व वैशिष्ट्यांनी काम करण्यासाठी तुम्हाला कुकी तात्पुरत्या सुरू कराव्या लागू शकतात.</translation>
 <translation id="7319983568955948908">सामायिकरण थांबवा</translation>
 <translation id="7320213904474460808">नेटवर्कवर डीफॉल्ट करा</translation>
 <translation id="7321545336522791733">सर्व्हर आवाक्याबाहेर आहे</translation>
@@ -8874,6 +8877,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7903481341948453971">पासवर्ड भरताना तुमचे स्क्रीन लॉक वापरा</translation>
 <translation id="7903925330883316394">उयुक्तता: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">कॅटाकाना</translation>
+<translation id="7904492297081735975">&amp;बुकमार्क व्यवस्थापक उघडा</translation>
 <translation id="7904526211178107182">तुमच्या नेटवर्कवरील इतर डिव्हाइसना Linux पोर्ट उपलब्ध करून द्या.</translation>
 <translation id="7907312522152480478">तुमच्या इतर डिव्हाइसवरील टॅब मिळवण्यासाठी, हे तुम्हीच आहात याची पडताळणी करा आणि तुमचा इतिहास व टॅब सिंक करा. तुम्ही सेटिंग्जमध्ये कधीही सिंक करणे थांबवू शकता. Google तुमच्या इतिहासाच्या आधारे Search आणि इतर सेवा पर्सनलाइझ करू शकते.</translation>
 <translation id="7907502219904644296">अ‍ॅक्सेस बदला</translation>
@@ -9499,6 +9503,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8372678064309688510">तुमचा ॲड्रेस सेव्ह केला आहे</translation>
 <translation id="8373652277231415614">Crostini ने शेअर केलेल्या डिरेक्टरी</translation>
 <translation id="8374243500935816406">साइटना तुमच्या सर्व डिस्प्लेवर विंडो व्यवस्थापित करण्याची अनुमती देऊ नका</translation>
+<translation id="8375703478696038265"><ph name="TOTAL_STEPS" /> पैकी <ph name="STEP_NUMBER" /> पायरी</translation>
 <translation id="8376137163494131156">आम्हाला Google Cast बद्दल तुमचे मत सांगा.</translation>
 <translation id="8376384591331888629">या साइटवरील तृतीय-पक्ष कुकीच्या समावेशासह</translation>
 <translation id="8376451933628734023">हे वेब ॲप तुम्हाला ते वेगळे ॲप असल्याचे भासवून फसवण्याचा प्रयत्न करत असल्यास, ते अनइंस्टॉल करा.</translation>
@@ -10570,6 +10575,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9188142767272053574">प्रक्रिया आयसोलेशन सुरू करा</translation>
 <translation id="9192019773545828776">वाचिक फीडबॅक ऐका, जेणेकरून तुम्हाला स्क्रीनकडे न पाहता तुमचे डिव्हाइस वापरता येईल. कनेक्ट केलेल्या डिव्हाइससह ब्रेल फीडबॅक उपलब्ध आहे. ChromeVox सुरू आणि बंद करण्यासाठी Ctrl + Alt + Z वापरा. नेव्हिगेट करण्यासाठी Search + लेफ्ट अ‍ॅरो किंवा राइट अ‍ॅरो वापरा. निवडण्यासाठी (अ‍ॅक्टिव्हेट करण्यासाठी) Search + Space प्रेस करा.</translation>
 <translation id="9195969368671142407">तुमची संस्था ही तुमच्या Google खाते मध्ये सेव्ह करणे मर्यादित करते, तेव्हा तुम्ही टॅब गट शेअर करू शकत नाही किंवा त्यामध्ये सामील होऊ शकत नाही</translation>
+<translation id="9197456336762295195">google.com साठी तुमची पासकी असलेल्या डिव्हाइसवरील कॅमेरा वापरून हा QR कोड स्कॅन करा</translation>
 <translation id="919840898042157087">हालचाल - स्थिर</translation>
 <translation id="9199503643457729322">गोपनीयता मार्गदर्शक यामधून बाहेर पडण्यासाठी क्लिक करा.</translation>
 <translation id="9199695835892108985">सर्व सिरीअल पोर्ट परवानग्या रीसेट करायच्या का?</translation>
@@ -10626,6 +10632,7 @@ I feel - विटांची इमारत</translation>
 <translation id="942296794412775122">मायक्रोफोन सुरू/बंद करा</translation>
 <translation id="942488123151518958">थांबवा (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> Chrome टॅब आणि ऑडिओ शेअर करीत आहे.</translation>
+<translation id="943744232549395906">व्हॉइस टायपिंग थांबवले आहे</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="947156494302904893">तुम्ही खरी व्यक्ती आहात आणि बॉट नाही याची तुम्ही भेट देता त्या साइट पडताळणी करू शकतात</translation>
 <translation id="947329552760389097">&amp;तपासणी घटक</translation>

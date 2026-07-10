@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Configuración de proxy</translation>
 <translation id="3550915441744863158">Chrome se actualiza automáticamente para que siempre tengas la versión más reciente</translation>
 <translation id="3559533181353831840">Tiempo restante aproximado: <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Introduce el nombre del comercio y el número de la tienda para la que se está configurando este dispositivo de demostración*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Si no sabes cuál es el número de la tienda, puedes introducir "0000" para continuar con la instalación del modo Demo. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />* Nota: Google usa esta información para identificar la versión del modo Demo que debe recibir el dispositivo y para medir el uso del modo Demo.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Se ha producido un error. Inténtalo de nuevo.</translation>
 <translation id="3577745545227000795">Recogida de datos de hardware de <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Vista previa</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">No</translation>
 <translation id="4251377547188244181">Registro de dispositivo de kiosco y señalización</translation>
 <translation id="4263223596040212967">Revisa el diseño del teclado y vuelve a intentarlo.</translation>
+<translation id="4268490040465852105">Tu cuenta de Google es la misma que usas en Gmail, YouTube, Chrome y otros productos de Google.
+        Usa tu cuenta para acceder fácilmente a todos tus marcadores, archivos y mucho más.</translation>
 <translation id="4278498748067682896">Usarás una Licencia de Kiosco y Señalización, que solo permite que el dispositivo funcione en modo Kiosco o en modo Señalización. Si quieres que los usuarios inicien sesión en el dispositivo, vuelve atrás y regístrate usando una Licencia de Chrome Enterprise.</translation>
 <translation id="4287157641315808225">Sí, activar ChromeVox</translation>
 <translation id="4289732974614035569">Elige un PIN</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Seleccionar tema claro u oscuro</translation>
 <translation id="5804259315582798390">No se ha podido habilitar la recuperación de datos locales</translation>
 <translation id="5810809306422959727">Esta cuenta no es apta para el control parental</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Al registrar tus dispositivos en tu organización, se configurarán para que se puedan gestionar de forma centralizada. Tu organización puede requerir que se registren los dispositivos por varias razones:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Reforzar la seguridad<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />La organización puede proteger los datos de los usuarios y de los dispositivos configurando ajustes de seguridad adicionales. También puede realizar acciones como restablecer o inhabilitar de forma remota un dispositivo que se haya perdido.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Personalizar la experiencia<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />El comportamiento del dispositivo al iniciarse, en la pantalla de inicio de sesión y después de iniciar sesión se puede personalizar según las necesidades de la organización.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Ofrecer asistencia<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />La organización puede acceder de forma remota a una sesión de un dispositivo para solucionar problemas.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Habilitar el acceso<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Es posible que las aplicaciones, los servicios y las redes de la organización solo estén disponibles en los dispositivos registrados.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Unos <ph name="TIME" /> minutos</translation>
 <translation id="5852112051279473187">¡Ups! Algo no ha funcionado como debía al registrar este dispositivo. Inténtalo de nuevo o ponte en contacto con tu representante de asistencia técnica.</translation>
 <translation id="5852137567692933493">Reiniciar y Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Desplázate al contenido adicional <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Botón para seleccionar el idioma y el teclado (actualmente: <ph name="LANGUAGE" />).</translation>
 <translation id="6040143037577758943">Cerrar</translation>
+<translation id="6042193169866365541">Tu cuenta de Google es la misma que usas en Gmail, YouTube, Chrome y otros productos de Google.
+        Usa tu cuenta para acceder fácilmente a todos tus marcadores, archivos y mucho más. Si no tienes ninguna cuenta, puedes crear una en la siguiente pantalla.</translation>
 <translation id="6051354611314852653">¡Vaya! El sistema no ha podido autorizar el acceso de este dispositivo a la API.</translation>
 <translation id="6055544610007596637">Descarga aplicaciones para tu <ph name="DEVICE_TYPE" /> desde Google Play Store</translation>
 <translation id="6069464830445383022">Tu cuenta de Google te permitirá iniciar sesión en el Chromebook</translation>

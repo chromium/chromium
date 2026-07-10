@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Paramètres de proxy</translation>
 <translation id="3550915441744863158">Chrome se met à jour automatiquement afin que vous disposiez toujours de la version la plus récente.</translation>
 <translation id="3559533181353831840">Il reste environ <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Saisissez le nom du marchand et le numéro du magasin pour lesquels cet appareil de démonstration est configuré*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Si vous ne connaissez pas le numéro du magasin, vous pouvez saisir "0000" pour poursuivre l'installation en mode démo. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Remarque : Google utilise ces informations pour identifier la version du mode démo que l'appareil doit recevoir et pour mesurer l'utilisation de ce mode.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3577745545227000795">Collecte des données matérielles par <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Aperçu</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Non</translation>
 <translation id="4251377547188244181">Enregistrement de l'appareil avec Kiosk &amp; Signage</translation>
 <translation id="4263223596040212967">Vérifiez la disposition de votre clavier et réessayez.</translation>
+<translation id="4268490040465852105">Il s'agit du compte Google que vous utilisez pour Gmail, YouTube, Chrome et les autres produits Google.
+        Utilisez votre compte pour accéder facilement à vos favoris, fichiers et bien plus.</translation>
 <translation id="4278498748067682896">Vous allez utiliser une mise à niveau Kiosk &amp; Signage qui permet uniquement à l'appareil de s'exécuter en mode kiosque ou signalétique. Si vous voulez que les utilisateurs se connectent à l'appareil, veuillez revenir en arrière et vous enregistrer avec Chrome Enterprise Upgrade.</translation>
 <translation id="4287157641315808225">Oui, activer ChromeVox</translation>
 <translation id="4289732974614035569">Sélectionner un code</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Sélectionnez un thème clair ou sombre</translation>
 <translation id="5804259315582798390">Échec de l'activation de la récupération des données locales</translation>
 <translation id="5810809306422959727">Ce compte n'est pas éligible au contrôle parental</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />L'enregistrement de vos appareils dans votre organisation permet de les gérer de manière centralisée. Votre organisation peut exiger cet enregistrement pour plusieurs raisons :<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Renforcer la sécurité<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />En configurant des paramètres de sécurité supplémentaires, votre organisation peut préserver la sécurité des données liées aux utilisateurs et appareils. Elle peut aussi accomplir différentes actions, comme effectuer une réinitialisation à distance ou désactiver un appareil égaré.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Personnaliser l'expérience<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Le comportement d'un appareil au démarrage, sur l'écran de connexion et après la connexion peut être personnalisé en fonction des besoins de votre organisation.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Fournir une assistance<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+    <ph name="BEGIN_DESCRIPTION3" />Votre organisation peut accéder à distance à une session sur un appareil à des fins de dépannage.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Permettre l'accès<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Il est possible que les applis, services et réseaux de votre organisation ne soient disponibles que sur les appareils enregistrés.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Environ <ph name="TIME" /> minutes restantes</translation>
 <translation id="5852112051279473187">Petit problème ! Une erreur est survenue lors de l'enregistrement de cet appareil. Veuillez réessayer ou contacter votre représentant de l'assistance technique.</translation>
 <translation id="5852137567692933493">Redémarrer et lancer Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Accéder au contenu supplémentaire <ph name="CURRENT_ELEMENT" /> sur <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Bouton de sélection de la langue et du clavier. Langue actuellement sélectionnée : <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Fermer</translation>
+<translation id="6042193169866365541">Il s'agit du compte Google que vous utilisez pour Gmail, YouTube, Chrome et les autres produits Google.
+        Utilisez votre compte pour accéder facilement à vos favoris, fichiers et bien plus. Si vous n'avez pas de compte, vous pouvez en créer un sur l'écran suivant.</translation>
 <translation id="6051354611314852653">Petit problème… Échec de l'autorisation d'accès à l'API pour cet appareil.</translation>
 <translation id="6055544610007596637">Installez des applis pour votre <ph name="DEVICE_TYPE" /> depuis le Google Play Store</translation>
 <translation id="6069464830445383022">Connectez-vous à votre Chromebook à l'aide de votre compte Google</translation>

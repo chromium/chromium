@@ -139,6 +139,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2418307627282545839">Houd alles licht en luchtig</translation>
 <translation id="243179355394256322">Je organisatie beperkt apparaatinschrijving tot alleen geautoriseerde gebruikers. Deze gebruiker is niet geautoriseerd om apparaten in te schrijven. Zorg ervoor dat de gebruiker het beheerdersrecht Google Meet-hardware inschrijven heeft in het gedeelte Gebruikers van de Beheerdersconsole.</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" />-wachtwoord resetten</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Tijdens de installatie <ph name="BEGIN_BOLD" />wordt je hele harde schijf gewist<ph name="END_BOLD" />. Zorg dat je een back-up van je gegevens hebt.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Zodra de installatie is gestart, kun je deze niet meer annuleren.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Je kunt geen gebruikers toevoegen omdat Google API-sleutels ontbreken. Bekijk <ph name="DETAILS_URL" /> voor details.</translation>
 <translation id="24786041351753425">Gegevensherstelservice aanzetten</translation>
 <translation id="2485681265915754872">Servicevoorwaarden van Google Play</translation>
@@ -321,6 +323,15 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4487489714832036847">Chromebooks gebruiken apps in plaats van traditionele software. Download apps voor productiviteit, entertainment en meer.</translation>
 <translation id="450867954911715010">Toegankelijkheidsinstellingen</translation>
 <translation id="4519605771716872386">Bestandssynchronisatie staat aan</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Probeer deze stappen voor probleemoplossing:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />Zorg dat je apparaat werkende interne opslag bevat, zoals een HDD, SSD of eMMC.
+<ph name="LIST_ITEM" />Check of je interne opslagapparaat groter is dan 16 GB.
+<ph name="LIST_ITEM" />Check de verbinding met de interne opslag als deze fysiek toegankelijk is.
+<ph name="LIST_ITEM" />Zorg dat je een gecertificeerd model gebruikt en check de installatieopmerkingen.
+<ph name="END_LIST" />
+<ph name="END_PARAGRAPH1" />
+<ph name="BEGIN_PARAGRAPH2" />Ga voor meer hulp naar g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Wie wil je toevoegen aan dit <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Als je na het inschrijven wilt wisselen, moet je de fabrieksinstellingen terugzetten (powerwash) op je apparaat.</translation>
 <translation id="4567512141633030272">Verkeerde inlogoptie?</translation>
@@ -569,6 +580,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7189451821249468368">Je hebt niet voldoende upgrades om dit apparaat in te schrijven. Neem contact op met de salesafdeling om meer upgrades te kopen. Als je denkt dat dit bericht ten onrechte wordt weergegeven, neem je contact op met support.</translation>
 <translation id="7202337678781136582">Scan de QR-code met je Android-telefoon</translation>
 <translation id="7228854227189381547">Niet overschakelen</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Installeer <ph name="DEVICE_OS" /> op de interne schijf voor de beste functionaliteit. Je kunt het besturingssysteem ook later installeren via het inlogscherm.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Als je nog niet klaar bent om te installeren, kun je het OS uitvoeren via USB om het eerst uit te proberen. Je houdt dan je bestaande OS en gegevens, maar je ziet misschien wel opslag- en prestatielimieten.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">De wijzigingen worden toegepast na het instellen</translation>
 <translation id="7260186537988033909">Apparaatinschrijving voor kiosken en digitale borden afgerond</translation>
 <translation id="7284411326658527427">Ze kunnen ieder hun account personaliseren en gegevens privé houden.</translation>
@@ -586,6 +599,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7416263748877373774">De Servicevoorwaarden kunnen niet worden geladen. Check de netwerkverbinding en probeer het opnieuw.</translation>
 <translation id="7475742997309661417">ChromeVox, de schermlezer op ChromeOS, wordt voornamelijk gebruikt door blinden en slechtzienden om tekst op het scherm te lezen met een spraaksynthesizer of brailleleesregel. Houd beide volumeknoppen 5 seconden ingedrukt om ChromeVox aan te zetten. Zodra ChromeVox is geactiveerd, krijg je een korte rondleiding.</translation>
 <translation id="7476454130948140105">Batterij niet voldoende opgeladen voor update (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Er ging iets mis en <ph name="DEVICE_OS" /> kan niet worden geïnstalleerd.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ga naar g.co/flex/InstallErrors voor meer hulp.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Voordat je je inschrijft, moet je de TPM wissen, zodat <ph name="DEVICE_OS" /> eigenaar van het apparaat kan worden.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Je kunt de TPM op het apparaat ook helemaal uitzetten. Je gegevens worden nog steeds beveiligd opgeslagen met softwareversleuteling, maar bepaalde beveiligingsfuncties zoals hardware-ondersteunde certificaten worden uitgezet.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Je kunt je TPM-instellingen wijzigen door opnieuw op te starten en naar de systeem-BIOS/UEFI-instellingen te gaan. De stappen hiervoor variëren op basis van het apparaatmodel. Open voor meer informatie de <ph name="DEVICE_OS" />-documentatie op een afzonderlijk apparaat voordat je opnieuw opstart: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

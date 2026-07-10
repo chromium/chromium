@@ -1955,7 +1955,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2518024842978892609">Je clientcertificaten gebruiken</translation>
 <translation id="2518620532958109495">Toestemming om automatisch op volledig scherm te openen</translation>
-<translation id="2519250377986324805">Bekijk hier hoe</translation>
 <translation id="2519517390894391510">Naam van certificaatprofiel</translation>
 <translation id="2520644704042891903">Wachten op beschikbare socket...</translation>
 <translation id="2521427645491031107">App-synchronisatie is ingesteld in de apparaatinstellingen</translation>
@@ -4989,6 +4988,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4849286518551984791">Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">Niet installeren</translation>
 <translation id="4849731766219625109">Je account voor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> gebruiken</translation>
+<translation id="4850279708232718725">Vertel me meer hierover</translation>
 <translation id="485053257961878904">Kan synchronisatie van meldingen niet instellen</translation>
 <translation id="4850548109381269495">Check op beide apparaten je internetverbinding en zet bluetooth aan. Probeer het daarna opnieuw.</translation>
 <translation id="4850669014075537160">Scrollen</translation>
@@ -6334,6 +6334,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5922854266885514646">Klik op Chrome aanpassen</translation>
 <translation id="5924047253200400718">Hulp nodig?<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Vragen voordat Microsoft-bestanden worden gekopieerd of verplaatst naar Google Drive</translation>
+<translation id="5925057331573749968">Sneller inloggen met een QR-code</translation>
 <translation id="5926936390113611560">Alle profielen openen</translation>
 <translation id="592880897588170157">Download pdf-bestanden in plaats van ze automatisch te openen in Chrome</translation>
 <translation id="5930567261594625340">Nachtelijke hemel</translation>
@@ -8106,7 +8107,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7314989823816739632">Romantisch</translation>
 <translation id="7317342082064136423">Je account laten verifiëren</translation>
 <translation id="731827437403763009">AI-innovaties</translation>
-<translation id="7319320447721994672">Als je een site bezoekt die cookies gebruikt, moet je cookies misschien tijdelijk aanzetten zodat alle sitefuncties werken.</translation>
 <translation id="7319983568955948908">Delen stoppen</translation>
 <translation id="7320213904474460808">Standaardnetwerk gebruiken</translation>
 <translation id="7321545336522791733">Server niet bereikbaar</translation>
@@ -9481,6 +9481,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8372678064309688510">Je adres is opgeslagen</translation>
 <translation id="8373652277231415614">Gedeelde directory's voor Crostini</translation>
 <translation id="8374243500935816406">Niet toestaan dat sites vensters beheren op al je schermen</translation>
+<translation id="8375703478696038265">Stap <ph name="STEP_NUMBER" /> van <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Vertel ons hoe goed Google Cast werkt.</translation>
 <translation id="8376384591331888629">Inclusief cookies van derden op deze site</translation>
 <translation id="8376451933628734023">Als deze web-app zich voordoet als een andere app, verwijder je deze.</translation>
@@ -10553,6 +10554,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9188142767272053574">Procesisolatie aanzetten</translation>
 <translation id="9192019773545828776">Krijg gesproken feedback zodat je je apparaat kunt gebruiken zonder naar het scherm te kijken. Braillefeedback is beschikbaar met een verbonden apparaat. Gebruik Ctrl + Alt + Z om ChromeVox aan en uit te zetten. Gebruik Zoeken + pijl-links of pijl-rechts om te navigeren. Gebruik Zoeken + spatiebalk om te selecteren (activeren).</translation>
 <translation id="9195969368671142407">Als je organisatie opslaan in je Google-account beperkt, kun je geen tabbladgroepen delen of eraan deelnemen</translation>
+<translation id="9197456336762295195">Scan deze QR-code met de camera op het apparaat waarop je toegangssleutel voor google.com staat</translation>
 <translation id="919840898042157087">Statische beweging</translation>
 <translation id="9199503643457729322">Klik om de Privacygids te verlaten.</translation>
 <translation id="9199695835892108985">Rechten voor alle seriële poorten resetten?</translation>

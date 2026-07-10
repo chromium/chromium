@@ -1956,7 +1956,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2517472476991765520">Escanear</translation>
 <translation id="2518024842978892609">Utilizar tus certificados de cliente</translation>
 <translation id="2518620532958109495">Con permiso para activar la pantalla completa automáticamente</translation>
-<translation id="2519250377986324805">Ver cómo</translation>
 <translation id="2519517390894391510">Nombre de perfil del certificado</translation>
 <translation id="2520644704042891903">Esperando conector disponible...</translation>
 <translation id="2521427645491031107">La sincronización de aplicaciones se establece en los ajustes del dispositivo</translation>
@@ -3526,6 +3525,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="371370241367527062">Micrófono delantero</translation>
 <translation id="37143699183660101">Estabilidad del cursor</translation>
 <translation id="3714610938239537183">Paso 2 de 4: Selecciona los datos de diagnóstico que quieras exportar</translation>
+<translation id="3715519518311454566">Hoja inferior de Gemini contraída.</translation>
 <translation id="3717133748480414053">Las habilidades pueden ayudarte a resumir páginas web y buscar buenas ofertas, entre otras cosas</translation>
 <translation id="3719245268140483218">Evento de dispositivo</translation>
 <translation id="3719310907809321183">Se ha rellenado <ph name="CARD_IDENTIFIER" />.</translation>
@@ -6207,6 +6207,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5828181959764767444">Atardecer</translation>
 <translation id="5828545842856466741">Añadir perfil...</translation>
 <translation id="5828633471261496623">Imprimiendo...</translation>
+<translation id="5829137022934788067">Dame información sobre esta selección</translation>
 <translation id="5829214552954466783">Compartir <ph name="CREDENTIAL_TYPE" /> del nombre de usuario <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Tus métodos de pago en Google Wallet</translation>
 <translation id="5830512293931520102">Tu contraseña está cifrada y nadie la puede ver</translation>
@@ -6998,6 +6999,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6455264371803474013">En sitios específicos</translation>
 <translation id="6455521402703088376">Desactivada • El desarrollador ha anulado la publicación de esta extensión</translation>
 <translation id="6455894534188563617">&amp;Nueva carpeta</translation>
+<translation id="6456162045957729200">Explica esta selección</translation>
 <translation id="645705751491738698">Seguir bloqueando JavaScript</translation>
 <translation id="6457572529564180082">No se puede iniciar <ph name="APP_NAME" /></translation>
 <translation id="6458701200018867744">No se ha podido subir (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8109,7 +8111,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7314989823816739632">Romántico</translation>
 <translation id="7317342082064136423">Verifica tu cuenta</translation>
 <translation id="731827437403763009">Innovaciones de IA</translation>
-<translation id="7319320447721994672">Si visitas un sitio que usa cookies, es posible que tengas que habilitarlas temporalmente para que funcionen todas las funciones del sitio.</translation>
 <translation id="7319983568955948908">Dejar de compartir</translation>
 <translation id="7320213904474460808">Establecer como red predeterminada</translation>
 <translation id="7321545336522791733">No se puede acceder al servidor</translation>
@@ -8859,6 +8860,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7903481341948453971">Usar el bloqueo de pantalla para rellenar contraseñas</translation>
 <translation id="7903925330883316394">Utilidad: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7904492297081735975">&amp;Abrir administrador de marcadores</translation>
 <translation id="7904526211178107182">Permite que los puertos de Linux estén disponibles para otros dispositivos de tu red.</translation>
 <translation id="7907312522152480478">Para ver las pestañas de tus otros dispositivos, verifica que eres tú y sincroniza tu historial y tus pestañas. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="7907502219904644296">Cambiar acceso</translation>
@@ -10611,6 +10613,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="942296794412775122">Activar o desactivar micrófono</translation>
 <translation id="942488123151518958">Pausar (K)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> está compartiendo audio y una pestaña de Chrome.</translation>
+<translation id="943744232549395906">Se ha detenido Escribir por voz</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="947156494302904893">Los sitios que visitas pueden verificar que eres una persona real y no un bot</translation>
 <translation id="947329552760389097">&amp;Inspeccionar elementos</translation>

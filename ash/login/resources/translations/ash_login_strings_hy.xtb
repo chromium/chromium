@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Պրոքսի-սերվերի կարգավորումներ</translation>
 <translation id="3550915441744863158">Chrome-ը ինքնաթարմացվում է, որպեսզի դուք միշտ ունենաք ամենավերջին տարբերակը</translation>
 <translation id="3559533181353831840">Լիցքը կբավարարի մոտ <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Մուտքագրեք խանութի անվանումը և մասնաճյուղի համարը, որում սարքը պետք է աշխատի դեմո ռեժիմում*։ <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Եթե չգիտեք մասնաճյուղի համարը, մուտքագրեք «0000»՝ դեմո ռեժիմի տեղադրումը շարունակելու համար։ <ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />*Նշում. Google-ն օգտագործում է այս տեղեկությունները՝ որոշելու, թե դեմո ռեժիմի որ տարբերակը պետք է ստանա սարքը, և հավաքելու դեմո ռեժիմի օգտագործման վիճակագրությունը։<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Սխալ առաջացավ։ Նորից փորձեք։</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> օպերացիոն համակարգով աշխատող սարքակազմի տվյալների հավաքում</translation>
 <translation id="3602290021589620013">Նախադիտում</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Ոչ</translation>
 <translation id="4251377547188244181">Սարքի գրանցում կրպակի և ցուցանակի ռեժիմում</translation>
 <translation id="4263223596040212967">Ստուգեք ստեղնաշարի դասավորությունը և նորից փորձեք։</translation>
+<translation id="4268490040465852105">Ձեր Google հաշիվը նույն հաշիվն է, որն օգտագործում եք Gmail-ի, YouTube-ի, Chrome-ի և Google-ի այլ պրոդուկտների համար։
+        Դրա շնորհիվ հեշտությամբ կարող եք բացել ձեր բոլոր էջանիշները, ֆայլերը և այլն։</translation>
 <translation id="4278498748067682896">Դուք կօգտագործեք Kiosk &amp; Signage Upgrade լիցենզիան, որը թույլ է տալիս աշխատեցնել սարքը միայն կրպակի կամ ցուցանակի ռեժիմում։ Եթե ուզում եք, որ օգտատերերը կարողանան մուտք գործել սարք, ապա օգտագործեք Chrome Enterprise Upgrade լիցենզիան։</translation>
 <translation id="4287157641315808225">Այո, ակտիվացնել ChromeVox-ը</translation>
 <translation id="4289732974614035569">Ընտրեք PIN կոդ</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Ընտրեք բաց կամ մուգ թեմա</translation>
 <translation id="5804259315582798390">Չհաջողվեց միացնել սարքի տվյալների վերականգնումը</translation>
 <translation id="5810809306422959727">Այս հաշվի միջոցով հնարավոր չէ օգտագործել ծնողական վերահսկողությունը</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Եթե գրանցեք ձեր սարքերը կազմակերպությունում, ապա դրանք հնարավոր կլինի կարգավորել կենտրոնացված կառավարման համար։ Ձեր կազմակերպությունը կարող է պահանջել սարքերի գրանցումը մի քանի պատճառներով․<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Անվտանգության բարձրացում<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Անվտանգության լրացուցիչ կարգավորումներ սահմանելով՝ կազմակերպությունը կարող է ապահով պահել օգտատիրոջ և սարքի տվյալները։ Այն կարող է նաև կատարել այնպիսի գործողություններ, ինչպիսիք են հեռակա վերակայումը կամ կորցրած սարքի անջատումը։<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Անհատականացում<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Սարքի վարքագիծը բեռնման ժամանակ, մուտքի էկրանին և մուտքից հետո կարելի է հարմարեցնել կազմակերպության կարիքներին։<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Աջակցման տրամադրում<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+    <ph name="BEGIN_DESCRIPTION3" />Կազմակերպությունը կարող է հեռակա մուտք գործել սարքի աշխատաշրջան՝ անսարքությունները վերացնելու համար։<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Հասանելիության տրամադրում<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Կազմակերպության հավելվածները, ծառայությունները և ցանցերը կարող են հասանելի լինել միայն գրանցված սարքերում։<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Մնացել է մոտ <ph name="TIME" /> րոպե</translation>
 <translation id="5852112051279473187">Ինչ-որ սխալ տեղի ունեցավ այս սարքը գրանցելիս: Փորձեք նորից կամ կապվեք ձեր աջակցման կենտրոնի հետ:</translation>
 <translation id="5852137567692933493">Վերագործարկում և Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Անցնել լրացուցիչ բովանդակություն <ph name="CURRENT_ELEMENT" />՝ <ph name="TOTAL_ELEMENTS" />-ից</translation>
 <translation id="6016972670657536680">Ընտրեք լեզուն և ստեղնաշարը։ Ընթացիկ լեզուն՝ <ph name="LANGUAGE" />։</translation>
 <translation id="6040143037577758943">Փակել</translation>
+<translation id="6042193169866365541">Ձեր Google հաշիվը նույն հաշիվն է, որն օգտագործում եք Gmail-ի, YouTube-ի, Chrome-ի և Google-ի այլ պրոդուկտների համար։
+        Դրա շնորհիվ հեշտությամբ կարող եք բացել ձեր բոլոր էջանիշները, ֆայլերը և այլն։ Եթե չունեք հաշիվ, կարող եք ստեղծել այն հաջորդ էկրանին։</translation>
 <translation id="6051354611314852653">Չհաջողվեց API-ին մուտք շնորհել այս սարքում:</translation>
 <translation id="6055544610007596637">Հավելվածներ տեղադրեք ձեր <ph name="DEVICE_TYPE" /> սարքի համար Google Play Խանութից</translation>
 <translation id="6069464830445383022">Մուտք գործեք Google հաշվով</translation>

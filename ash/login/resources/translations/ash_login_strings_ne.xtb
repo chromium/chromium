@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">प्रोक्सी सेटिङहरू</translation>
 <translation id="3550915441744863158">Chrome स्वत: अपडेट हुन्छ त्यसैले तपाईंसँग सधै ताजा संस्करण हुन्छ।</translation>
 <translation id="3559533181353831840">लगभग <ph name="TIME_LEFT" /> बाँकी छ</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />तपाईं जुन खुद्रा विक्रेताको प्रयोगका लागि यो डेमो डिभाइस कन्फिगर गर्दै हुनुहुन्छ त्यो खुद्रा विक्रेताको नाम र स्टोर नम्बर हाल्नुहोस्*। <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />तपाईंलाई स्टोर नम्बर थाहा छैन भने तपाईं "0000" हालेर डेमो मोड इन्स्टल गर्ने प्रक्रिया जारी राख्न सक्नुहुन्छ। <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*ध्यान दिनु पर्ने कुरा: Google ले डिभाइसमा डेमो मोडको कुन संस्करण प्रयोग गर्नु पर्छ भन्ने कुरा पत्ता लगाउने र डेमो मोडको प्रयोग मापन गर्ने प्रयोजनका लागि यो जानकारी प्रयोग गर्छ।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">कुनै समस्या आयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> ले हार्डवेयरसम्बन्धी डेटा सङ्कलन गर्ने सम्बन्धमा</translation>
 <translation id="3602290021589620013">प्रिभ्यु गर्नुहोस्</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">होइन</translation>
 <translation id="4251377547188244181">किअस्क र साइनेज डिभाइस दर्ता गर्ने प्रक्रिया</translation>
 <translation id="4263223596040212967">आफ्नो किबोर्डको लेआउटको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="4268490040465852105">तपाईंको Google खाता भनेको तपाईंले Gmail, YouTube र Chrome लगायतका Google का उत्पादनहरूमा प्रयोग गर्ने खाता हो।
+        आफ्नो खाताका सहायताले आफ्ना बुकमार्क र फाइललगायतका सबै कुराहरू सजिलैसँग प्रयोग गर्नुहोस्।</translation>
 <translation id="4278498748067682896">तपाईंले Kiosk &amp; Signage अपग्रेड प्रयोग गर्नु पर्ने हुन्छ। तपाईंले यो इजाजतपत्र प्रयोग गरेपछि यो डिभाइस किअस्क वा साइनेज मोडमा मात्र चलाउन मिल्छ। तपाईं प्रयोगकर्ताहरू यो डिभाइसमा साइन इन गरून् भनी चाहनुहुन्छ भने पछाडि जानुहोस् र Chrome Enterprise अपग्रेड प्रयोग गरी डिभाइस दर्ता गर्नुहोस्।</translation>
 <translation id="4287157641315808225">अँ, ChromeVox अन गर्नुहोस्</translation>
 <translation id="4289732974614035569">PIN छान्नुहोस्</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">उज्यालो वा अँध्यारो थिम चयन गर्नुहोस्</translation>
 <translation id="5804259315582798390">लोकल डेटा रिकभर गर्ने सुविधा अन गर्न सकिएन</translation>
 <translation id="5810809306422959727">यो खातामा अभिभावकीय नियन्त्रणहरू प्रयोग गर्न मिल्दैन</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />तपाईंले सङ्गठनमा आफ्ना डिभाइसहरू दर्ता गरेपछि एकै ठाउँबाट डिभाइस व्यवस्थापन गर्ने सुविधा सेटअप हुन्छ। तपाईंको सङ्गठनले तोकेको नियमअनुसार निम्न एक वा सोभन्दा बढी कारणहरूका लागि डिभाइस दर्ता गर्नु पर्ने हुन सक्छ:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />सुरक्षा परिष्कार गर्न<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />यो सङ्गठनले सुरक्षासम्बन्धी अतिरिक्त सेटिङ कन्फिगर गरेर प्रयोगकर्ता तथा डिभाइससम्बन्धी जानकारी सुरक्षित राख्न सक्छ। यसले हराएको डिभाइस टाढैबाट रिसेट गर्ने वा अफ गर्ने जस्ता कार्यहरू गर्न पनि सक्छ।<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />सुविधा कस्टमाइज गर्न<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />बुटअप गर्दा, लग इन स्क्रिनमा र लग इन गरेपछि डिभाइसको व्यवहार यो सङ्गठनका आवश्यकताअनुसार कस्टमाइज गरिन सक्छ।<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />सहायता प्रदान गर्न<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />यो सङ्गठनले समस्या निवारण गर्नका निम्ति डिभाइससम्बन्धी सत्र टाढैबाट एक्सेस गर्न सक्छ।<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />एक्सेस अन गर्न<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />सङ्गठनका एप, सेवा र नेटवर्कहरू दर्ता गरिएका डिभाइसहरूमा मात्र उपलब्ध हुन सक्छन्।<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">करीव <ph name="TIME" /> मिनेट बाँकी</translation>
 <translation id="5852112051279473187">ओहो! यो डिभाइस भर्ना गर्दा केही साँच्चै गलत भयो। फेरि प्रयास गर्नुहोस् वा आफ्नो सहायता प्रतिनिधि सम्पर्क गर्नुहोस्।</translation>
 <translation id="5852137567692933493">पुन: सुरु गर्नुहोस् र पावरसफाइ</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" /> वटा थप सामग्रीमध्ये <ph name="CURRENT_ELEMENT" /> औँ सामग्रीमा जानुहोस्</translation>
 <translation id="6016972670657536680">भाषा र किबोर्डको बटन चयन गर्नुहोस्। हाल <ph name="LANGUAGE" /> भाषा चयन गरिएको छ।</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
+<translation id="6042193169866365541">तपाईंको Google खाता भनेको तपाईंले Gmail, YouTube र Chrome लगायतका Google का उत्पादनहरूमा प्रयोग गर्ने खाता हो।
+        आफ्नो खाताका सहायताले आफ्ना बुकमार्क र फाइललगायतका सबै कुराहरू सजिलैसँग प्रयोग गर्नुहोस्। तपाईंसँग खाता छैन भने तपाईं अर्को स्क्रिनमा नयाँ खाता बनाउन सक्नुहुन्छ।</translation>
 <translation id="6051354611314852653">ओहो! प्रणालीले यस यन्त्रको लागि API पहुँच अधिकार गर्न असफल भयो।</translation>
 <translation id="6055544610007596637">Google Play स्टोरबाट आफ्नो <ph name="DEVICE_TYPE" /> मा चल्ने एपहरू इन्स्टल गर्नुहोस्</translation>
 <translation id="6069464830445383022">तपाईंको Chromebook मा साइन इन गर्ने विधि भनेको तपाईंको Google खाता नै हो</translation>

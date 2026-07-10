@@ -1913,6 +1913,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7425053386765766120">Додај начин плаћања…</translation>
 <translation id="7425346204213733349">Промене обележивача, историје, лозинки и других подешавања се више неће синхронизовати са Google налогом. Међутим, постојећи подаци ће остати сачувани на Google налогу.</translation>
 <translation id="742664698522525515">Желите да задржите групу?</translation>
+<translation id="7426745633088095666">Дељене картице</translation>
 <translation id="7431851541687113774">Искључи откривање адресе</translation>
 <translation id="7431991332293347422">Контролишите како се историја прегледања користи за персонализовање Претраге и других услуга</translation>
 <translation id="7435356471928173109">Искључио је администратор</translation>
@@ -2001,6 +2002,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7696316012653762532">Опције за превод странице</translation>
 <translation id="7700527812567437847">Претражи екран помоћу Google објектива</translation>
 <translation id="7701040980221191251">Ништа</translation>
+<translation id="7702428539671224160">Аутоматско попуњавање информацијa о плаћању на <ph name="URL" /></translation>
 <translation id="7708994397325774423">Преузмите све лозинке</translation>
 <translation id="7711440461521638739">Ниједну лозинку не користите за више налога</translation>
 <translation id="7712361583414030698">Прегледате офлајн верзију</translation>
@@ -2170,7 +2172,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8233237502828137700">Затворите промотивни банер</translation>
 <translation id="823339794112333264">Укључи микрофон</translation>
 <translation id="8250920743982581267">Документи</translation>
-<translation id="8252980988000695656">Google објектив је завршен.</translation>
+<translation id="8252980988000695656">Радња Google објектива је завршена.</translation>
 <translation id="8258734532103758067">I've exported my data (Извезао/ла сам податке)</translation>
 <translation id="8258999165172757081">Додато</translation>
 <translation id="8261506727792406068">Избриши</translation>

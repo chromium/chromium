@@ -2326,6 +2326,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4607608436550361748">Se tips til Chrome</translation>
 <translation id="460848736049414407">Blokeret af administrator</translation>
 <translation id="4610279718074907952">Dette website er i en gruppe, der er defineret af <ph name="SET_OWNER" />, og som kan se din aktivitet</translation>
+<translation id="4612631413844865947">Der opstod en fejl under behandlingen af din ordre <ph name="MERCHANT_ORIGIN" /> via <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Fodboldudstyr</translation>
 <translation id="4612904677925722054">Dette website kan have indhold, der er uegnet for børn. En forælder eller værge skal godkende, at du må besøge dette website.</translation>
 <translation id="4619564267100705184">Verificer din identitet</translation>

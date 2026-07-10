@@ -1957,7 +1957,6 @@
 <translation id="2517472476991765520">ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="2518024842978892609">ଆପଣଙ୍କ କ୍ଲାଏଣ୍ଟର ସାର୍ଟିଫିକେଟ୍‍ଗୁଡ଼ିକ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2518620532958109495">ସ୍ୱତଃ ପୂର୍ଣ୍ଣସ୍କ୍ରିନରେ ପ୍ରବେଶ କରିବା ପାଇଁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
-<translation id="2519250377986324805">କିପରି କରିବେ ତାହା ଦେଖନ୍ତୁ</translation>
 <translation id="2519517390894391510">ସାର୍ଟିଫିକେଟ୍ ପ୍ରୋଫାଇଲ୍ ନାମ</translation>
 <translation id="2520644704042891903">ଉପଲବ୍ଧ ଥିବା ସକେଟ୍‍ ପାଇଁ ଅପେକ୍ଷାରତ...</translation>
 <translation id="2521427645491031107">ଆପ୍ସ ସିଙ୍କକୁ ଡିଭାଇସ ସେଟିଂସରେ ସେଟ କରାଯାଇଛି</translation>
@@ -3527,6 +3526,7 @@
 <translation id="371370241367527062">ସାମ୍‌ନାପଟର ମାଇକ୍ରୋଫୋନ୍</translation>
 <translation id="37143699183660101">କର୍ସର ସ୍ଥିରତା</translation>
 <translation id="3714610938239537183">4ଟିରୁ 2 ନମ୍ବର ଷ୍ଟେପ: ଏକ୍ସପୋର୍ଟ କରିବା ପାଇଁ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଡାଟା ଚୟନ କରନ୍ତୁ</translation>
+<translation id="3715519518311454566">Gemini ବଟମ ସିଟ ସଙ୍କୁଚିତ ହୋଇଛି।</translation>
 <translation id="3717133748480414053">ୱେବ ପୃଷ୍ଠାଗୁଡ଼ିକର ସାରାଂଶ ତିଆରି କରିବା, ବଢ଼ିଆ ଡିଲଗୁଡ଼ିକ ସର୍ଚ୍ଚ କରିବା ଏବଂ ଆହୁରି ଅନେକ କିଛି କରିବାରେ ଦକ୍ଷତାଗୁଡ଼ିକ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିପାରିବ</translation>
 <translation id="3719245268140483218">ଡିଭାଇସ ଇଭେଣ୍ଟ</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> ପୂରଣ କରାଯାଇଛି।</translation>
@@ -6207,6 +6207,7 @@
 <translation id="5828181959764767444">ସୂର୍ଯ୍ୟାସ୍ତ</translation>
 <translation id="5828545842856466741">ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରନ୍ତୁ...</translation>
 <translation id="5828633471261496623">ପ୍ରିଣ୍ଟିଂ...</translation>
+<translation id="5829137022934788067">ଏହି ଚୟନ ବିଷୟରେ ମୋତେ କୁହନ୍ତୁ</translation>
 <translation id="5829214552954466783">ୟୁଜରନେମ ପାଇଁ <ph name="CREDENTIAL_TYPE" /> ସେୟାର କରନ୍ତୁ: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Google Walletରେ ଆପଣଙ୍କ ପେମେଣ୍ଟ ପଦ୍ଧତି</translation>
 <translation id="5830512293931520102">ଆପଣଙ୍କର ପାସୱାର୍ଡ ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି ଏବଂ କେହି ଦେଖିପାରିବେ ନାହିଁ</translation>
@@ -6997,6 +6998,7 @@
 <translation id="6455264371803474013">ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ୍‌ଗୁଡ଼ିକରେ</translation>
 <translation id="6455521402703088376">ବନ୍ଦ ଅଛି • ଏହି ଏକ୍ସଟେନସନକୁ ଏହାର ଡେଭେଲପରଙ୍କ ଦ୍ୱାରା ଅନପବ୍ଲିସ କରାଯାଇଛି</translation>
 <translation id="6455894534188563617">&amp;ନୂଆ ଫୋଲ୍ଡର୍‌</translation>
+<translation id="6456162045957729200">ଏହି ଚୟନକୁ ବର୍ଣ୍ଣନା କରନ୍ତୁ</translation>
 <translation id="645705751491738698">JavaScript ଅବରୋଧ କରିବା ପ୍ରକ୍ରିୟା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" />କୁ ଲଞ୍ଚ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="6458701200018867744">ଅପ୍‌ଲୋଡ୍‌ ବିଫଳ ହେଲା (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)।</translation>
@@ -8109,7 +8111,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7314989823816739632">ରୋମାଣ୍ଟିକ</translation>
 <translation id="7317342082064136423">ଆପଣଙ୍କ ଆକାଉଣ୍ଟ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="731827437403763009">AI ଇନୋଭେସନ</translation>
-<translation id="7319320447721994672">ଯଦି ଆପଣ କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରୁଥିବା ଏକ ସାଇଟକୁ ଭିଜିଟ କରନ୍ତି ତେବେ ସାଇଟର ସମସ୍ତ ଫିଚର କାମ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ଅସ୍ଥାୟୀ ଭାବରେ କୁକୀଗୁଡ଼ିକୁ ସକ୍ଷମ କରିବାର ଆବଶ୍ୟକତା ହୋଇପାରେ।</translation>
 <translation id="7319983568955948908">ସେୟାର୍‍ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="7320213904474460808">ନେଟୱାର୍କ ପାଇଁ ଡିଫଲ୍ଟ</translation>
 <translation id="7321545336522791733">ସର୍ଭର୍ ଅପହଞ୍ଚ ଦୂରତାରେ ଅଛି</translation>
@@ -8859,6 +8860,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7903481341948453971">ପାସୱାର୍ଡଗୁଡ଼ିକ ପୂରଣ କରିବା ବେଳେ ଆପଣଙ୍କ ସ୍କ୍ରିନ ଲକ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="7903925330883316394">ଉପଯୋଗିତାଗୁଡିକ: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">କାଟାକାନା</translation>
+<translation id="7904492297081735975">&amp;ବୁକମାର୍କ ମେନେଜର ଖୋଲନ୍ତୁ</translation>
 <translation id="7904526211178107182">ଆପଣଙ୍କ ନେଟୱାର୍କରେ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ପାଇଁ Linux ପୋର୍ଟଗୁଡ଼ିକ ଉପଲବ୍ଧ କରାନ୍ତୁ।</translation>
 <translation id="7907312522152480478">ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସରୁ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ପାଇବାକୁ, ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଇତିହାସ ଏବଂ ଟାବଗୁଡ଼ିକୁ ସିଙ୍କ କରନ୍ତୁ। ଆପଣ ଯେ କୌଣସି ସମୟରେ ସେଟିଂସରେ ସିଙ୍କ କରିବା ବନ୍ଦ କରିପାରିବେ। Google ଆପଣଙ୍କ ଇତିହାସ ଆଧାରରେ Search ଏବଂ ଅନ୍ୟ ସର୍ଭିସକୁ ପର୍ସନାଲାଇଜ କରିପାରେ।</translation>
 <translation id="7907502219904644296">ଆକ୍ସେସ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
@@ -10610,6 +10612,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="942296794412775122">ମାଇକ୍ରୋଫୋନ ଚାଲୁ/ବନ୍ଦ ଅଛି</translation>
 <translation id="942488123151518958">ବିରତ କରନ୍ତୁ (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> ଏକ ଟାବ୍‍ ଏବଂ ଅଡ଼ିଓ ସେୟାର୍‌ କରୁଛି।</translation>
+<translation id="943744232549395906">ଭଏସ ଟାଇପିଂ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="947156494302904893">ଆପଣ ଜଣେ ପ୍ରକୃତ ବ୍ୟକ୍ତି ଏବଂ ଏକ ବୋଟ ନୁହଁନ୍ତି ବୋଲି ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟ ଯାଞ୍ଚ କରିପାରିବ</translation>
 <translation id="947329552760389097">&amp;ଉପାଦାନଗୁଡ଼ିକ ନିରୀକ୍ଷଣ କରନ୍ତୁ</translation>

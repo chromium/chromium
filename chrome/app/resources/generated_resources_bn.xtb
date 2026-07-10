@@ -1968,7 +1968,6 @@
 <translation id="2517472476991765520">স্ক্যান করুন</translation>
 <translation id="2518024842978892609">আপনার ক্লায়েন্ট শংসাপত্র ব্যবহার করুন</translation>
 <translation id="2518620532958109495">অটোমেটিক ফুল-স্ক্রিন মোডে যাওয়ার অনুমতি আছে</translation>
-<translation id="2519250377986324805">কীভাবে করবেন দেখুন</translation>
 <translation id="2519517390894391510">সার্টিফিকেট প্রোফাইলের নাম</translation>
 <translation id="2520644704042891903">উপলব্ধ সকেটের জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="2521427645491031107">অ্যাপ সিঙ্ক ডিভাইস সেটিংসে সেট করা হয়েছে</translation>
@@ -3538,6 +3537,7 @@
 <translation id="371370241367527062">সামনের মাইক্রোফোন</translation>
 <translation id="37143699183660101">কার্সরের স্থিতিশীলতা</translation>
 <translation id="3714610938239537183">৪টির মধ্যে ২ নম্বর ধাপ: এক্সপোর্ট করার জন্য ডায়াগনস্টিকস ডেটা বেছে নিন</translation>
+<translation id="3715519518311454566">Gemini-র নিচের শিট আড়াল করা আছে।</translation>
 <translation id="3717133748480414053">স্কিল আপনাকে ওয়েব পেজের সারসংক্ষেপ করতে, দারুণ ডিল খুঁজতে এবং আরও অনেক কিছুতে সাহায্য করতে পারে</translation>
 <translation id="3719245268140483218">ডিভাইসে হওয়া ইভেন্ট</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> পূরণ করা হয়েছে।</translation>
@@ -6223,6 +6223,7 @@
 <translation id="5828181959764767444">সূর্যাস্ত</translation>
 <translation id="5828545842856466741">প্রোফাইল যোগ করুন...</translation>
 <translation id="5828633471261496623">মুদ্রন হচ্ছে...</translation>
+<translation id="5829137022934788067">এই বেছে নেওয়া অংশ সম্পর্কে বলো</translation>
 <translation id="5829214552954466783">ব্যবহারকারীর নামের জন্য <ph name="CREDENTIAL_TYPE" /> শেয়ার করুন: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Google Wallet-এ আপনার পেমেন্ট পদ্ধতি</translation>
 <translation id="5830512293931520102">আপনার পাসওয়ার্ড এনক্রিপটেড এবং অন্য কেউ দেখতে পাবে না</translation>
@@ -7014,6 +7015,7 @@
 <translation id="6455264371803474013">নির্দিষ্ট সাইটগুলিতে</translation>
 <translation id="6455521402703088376">বন্ধ আছে • ডেভেলপার এই এক্সটেনশনটি প্রকাশনা থেকে সরিয়ে নিয়েছেন</translation>
 <translation id="6455894534188563617">&amp;নতুন ফোল্ডার</translation>
+<translation id="6456162045957729200">এই বেছে নেওয়া অংশ ব্যাখ্যা করো</translation>
 <translation id="645705751491738698">জাভাস্ক্রিপ্ট ব্লক করা চালিয়ে যান</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> লঞ্চ করা যাবে না</translation>
 <translation id="6458701200018867744">আপলোড করা যায়নি (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)।</translation>
@@ -8127,7 +8129,6 @@
 <translation id="7314989823816739632">রোম্যান্টিক</translation>
 <translation id="7317342082064136423">আপনার অ্যাকাউন্ট যাচাই করুন</translation>
 <translation id="731827437403763009">AI উদ্ভাবন</translation>
-<translation id="7319320447721994672">কুকি ব্যবহার করে এমন কোনও সাইট আপনি ভিজিট করলে, সাইটের সব ফিচার যাতে কাজ করে সেইজন্য সাময়িকভাবে আপনাকে কুকি চালু করতে হতে পারে।</translation>
 <translation id="7319983568955948908">শেয়ার করা বন্ধ করুন</translation>
 <translation id="7320213904474460808">ডিফল্ট নেটওয়ার্ক</translation>
 <translation id="7321545336522791733">সার্ভারে সংযোগ করা যাচ্ছে না</translation>
@@ -8877,6 +8878,7 @@
 <translation id="7903481341948453971">পাসওয়ার্ড পূরণ করার সময় আপনার স্ক্রিন লক ব্যবহার করুন</translation>
 <translation id="7903925330883316394">উপযোগিতা: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">কাটাকানা</translation>
+<translation id="7904492297081735975">&amp;বুকমার্ক পরিচালক খুলুন</translation>
 <translation id="7904526211178107182">আপনার নেটওয়ার্কের অন্যান্য ডিভাইসে Linux পোর্টগুলি উপলভ্য করুন।</translation>
 <translation id="7907312522152480478">আপনার অন্যান্য ডিভাইস থেকে আপনার ট্যাব পেতে, আপনিই সেই ব্যক্তি কিনা তা যাচাই করুন এবং আপনার ইতিহাস ও ট্যাব সিঙ্ক করুন। সেটিংস থেকে আপনি যেকোনও সময় সিঙ্ক করা বন্ধ করতে পারবেন। আপনার ইতিহাসের ভিত্তিতে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে, Google এই ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="7907502219904644296">অ্যাক্সেস পরিবর্তন করুন</translation>
@@ -10629,6 +10631,7 @@
 <translation id="942296794412775122">মাইক্রোফোন চালু/বন্ধ করা আছে</translation>
 <translation id="942488123151518958">পজ করুন (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> একটি Chrome ট্যাব ও অডিও শেয়ার করছে।</translation>
+<translation id="943744232549395906">ভয়েস টাইপিং বন্ধ হয়ে গেছে</translation>
 <translation id="945522503751344254">মতামত জানান</translation>
 <translation id="947156494302904893">আপনি যে সাইটগুলি দেখেন সেগুলি যাচাই করতে পারে যে আপনি একজন প্রকৃত ব্যক্তি এবং বট নন</translation>
 <translation id="947329552760389097">&amp;এলিমেন্ট ইন্সপেক্ট করুন</translation>

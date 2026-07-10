@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Proxy-stillingar</translation>
 <translation id="3550915441744863158">Chrome uppfærist sjálfkrafa þannig að þú ert alltaf með nýjustu útgáfuna</translation>
 <translation id="3559533181353831840">Um <ph name="TIME_LEFT" /> eftir</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Sláðu inn heiti söluaðilans og númer verslunarinnar sem þetta prufutæki verður stillt fyrir*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ef þú veist ekki númer verslunarinnar geturðu slegið inn „0000“ til að halda uppsetningu prufustillingar áfram. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Athugaðu: Google notar þessar upplýsingar til að sjá hvaða útgáfa prufustillingar er rétt fyrir tækið og til að mæla notkun prufustillingar.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Eitthvað fór úrskeiðis. Reyndu aftur.</translation>
 <translation id="3577745545227000795">Söfnun vélbúnaðargagna í <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Forskoða</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Nei</translation>
 <translation id="4251377547188244181">Skráning tækis í sjálfsala- og merkingastillingu.</translation>
 <translation id="4263223596040212967">Athugaðu lyklaskipanina og reyndu aftur.</translation>
+<translation id="4268490040465852105">Google-reikningurinn þinn er sami reikningur og þú notar fyrir Gmail, YouTube, Chrome og aðrar Google-vörur.
+        Notaðu reikninginn þinn til að fá greiðan aðgang að öllum bókamerkjum, skrám og fleiru.</translation>
 <translation id="4278498748067682896">Þú munt nota uppfærslu fyrir sjálfsala og merkingar sem gerir tækinu eingöngu kleift að keyra í sjálfsala- eða merkingastillingu. Ef þú vilt að notendur geti skráð sig inn í tækið skaltu fara til baka og skrá þig með Chrome Enterprise uppfærslu.</translation>
 <translation id="4287157641315808225">Já, kveikja á ChromeVox</translation>
 <translation id="4289732974614035569">Veldu PIN-númer</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Veldu ljóst eða dökkt þema</translation>
 <translation id="5804259315582798390">Ekki tókst að virkja endurheimt staðbundinna gagna</translation>
 <translation id="5810809306422959727">Þessi reikningur er ekki gjaldgengur fyrir barnalæsingar</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Ef tækin þín eru skráð innan fyrirtækisins verða þau sett upp fyrir miðlæga tækjastjórnun. Fyrirtækið þitt kann að fara fram á skráningu af ýmsum ástæðum:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Auka öryggi<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Með því að búa til viðbótaröryggisstillingar getur fyrirtækið haldið notanda- og tækjagögnum öruggum. Það getur einnig framkvæmt aðgerðir á borð við fjartengda endurstillingu eða gert týnt tæki óvirkt.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Sérsníða upplifunina<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Hægt er að sérsníða virkni tækisins við ræsingu, á innskráningarskjánum og eftir innskráningu að þörfum fyrirtækisins.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Veita stuðning<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Fyrirtækið getur fengið fjaraðgang að tækjalotu til bilanagreiningar.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Veita aðgang<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Forrit, þjónustur og net fyrirtækisins kunna aðeins að vera í boði í skráðum tækjum.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Um <ph name="TIME" /> mínútur eftir</translation>
 <translation id="5852112051279473187">Obbobobb! Eitthvað fór verulega úrskeiðis við skráninguna á þessu tæki. Reyndu aftur eða hafðu samband við þjónustufulltrúa.</translation>
 <translation id="5852137567692933493">Endurræsa og djúphreinsa</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Fletta á aukaefni <ph name="CURRENT_ELEMENT" /> af <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Hnappur til að velja tungumál og lyklaborð. Tungumál sem nú er valið: <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Loka</translation>
+<translation id="6042193169866365541">Google-reikningurinn þinn er sami reikningur og þú notar fyrir Gmail, YouTube, Chrome og aðrar Google-vörur.
+        Notaðu reikninginn þinn til að fá greiðan aðgang að öllum bókamerkjum, skrám og fleiru. Ef þú átt ekki reikning geturðu stofnað hann á næsta skjá.</translation>
 <translation id="6051354611314852653">Úbbs! Kerfinu tókst ekki að heimila forritaskilaaðgang fyrir þetta tæki.</translation>
 <translation id="6055544610007596637">Settu upp forrit fyrir <ph name="DEVICE_TYPE" /> í Google Play Store</translation>
 <translation id="6069464830445383022">Google reikningurinn þinn er notaður fyrir innskráningu á Chromebook</translation>

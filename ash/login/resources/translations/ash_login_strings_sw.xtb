@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Hufanya iwe angavu na ya kuvutia</translation>
 <translation id="243179355394256322">Shirika lako linaruhusu vifaa visajiliwe na watumiaji walioidhinishwa pekee. Mtumiaji huyu hajaidhinishwa kusajili vifaa. Tafadhali hakikisha kwamba mtumiaji ana mamlaka ya msimamizi ya "Kusajili maunzi ya Google Meet" katika sehemu ya Watumiaji kwenye dashibodi ya Msimamizi.</translation>
 <translation id="2439152382014731627">Kubadilisha nenosiri la <ph name="DEVICE_TYPE" /></translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Hatua ya uwekaji <ph name="BEGIN_BOLD" />itafuta data yote kwenye diski yako kuu<ph name="END_BOLD" />. Hakikisha kuwa umehifadhi nakala ya data yako.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Uwekaji ukianza hauwezi kukatishwa.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Hutaweza kuwaongeza watumiaji kwa sababu funguo za API ya Google hazipo. Angalia <ph name="DETAILS_URL" /> kwa maelezo.</translation>
 <translation id="24786041351753425">Ruhusu huduma ya kurejesha data.</translation>
 <translation id="2485681265915754872">Sheria na Masharti ya Google Play</translation>
@@ -228,6 +230,9 @@
 <translation id="3547954654003013442">Mipangilio ya proksi</translation>
 <translation id="3550915441744863158">Chrome husasisha kiotomatiki, kwa hivyo, kila wakati utakuwa na toleo jipya zaidi</translation>
 <translation id="3559533181353831840">Zimesalia takribani <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Weka jina la muuzaji wa rejareja na namba ya duka ambayo inatumika kuweka mipangilio katika kifaa hiki cha majaribio*. <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Iwapo hujui namba ya duka, unaweza kuweka "0000" ili uendelee na hatua ya kuweka Hali ya Onyesho. <ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />*Kumbuka: Google hutumia maelezo haya ili kutambua aina ya toleo la Hali ya Onyesho ambalo kifaa kinapaswa kupokea na kupima matumizi ya Hali ya Onyesho.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Hitilafu fulani imetokea. Jaribu tena.</translation>
 <translation id="3577745545227000795">Ukusanyaji wa data ya maunzi unaofanywa na <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Hakiki</translation>
@@ -286,6 +291,8 @@
 <translation id="4250680216510889253">La</translation>
 <translation id="4251377547188244181">Uandikishaji wa kifaa cha skrini ya kuonyesha matangazo na mabango ya dijitali</translation>
 <translation id="4263223596040212967">Angalia muundo wa kibodi yako kisha ujaribu tena.</translation>
+<translation id="4268490040465852105">Akaunti yako ya Google ni sawa na akaunti unayotumia kwenye Gmail, YouTube, Chrome na bidhaa nyingine za Google.
+        Tumia akaunti yako ili ufikie kwa urahisi alamisho, faili zako zote na mengineyo.</translation>
 <translation id="4278498748067682896">Utatumia toleo jipya la skrini ya kuonyesha matangazo na mabango ya dijitali ambayo huruhusu tu kifaa kufanya kazi kwenye hali ya skrini ya kuonyesha matangazo au mabango ya dijitali. Iwapo ungependa watumiaji waingie katika akaunti kwenye kifaa, tafadhali rudi nyuma na ujiandikishe ukitumia Chrome Enterprise Upgrade.</translation>
 <translation id="4287157641315808225">Ndiyo, washa ChromeVox</translation>
 <translation id="4289732974614035569">Chagua PIN</translation>
@@ -316,6 +323,15 @@
 <translation id="4487489714832036847">Chromebook hutumia programu badala ya programu ya zamani. Pata programu za tija, burudani na zaidi.</translation>
 <translation id="450867954911715010">Mipangilio ya zana za walio na matatizo ya kuona au kusikia</translation>
 <translation id="4519605771716872386">Kipengele cha kusawazisha faili kimewashwa</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Jaribu hatua hizi za utatuzi:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Hakikisha kuwa kifaa chako kina hifadhi ya mfumo inayofanya kazi kama vile HDD, SSD au eMMC
+        <ph name="LIST_ITEM" />Hakikisha kuwa kifaa chako cha hifadhi ya mfumo kina nafasi inayozidi GB 16
+        <ph name="LIST_ITEM" />Kagua muunganisho wa kifaa cha hifadhi ya mfumo, ikiwa unaweza kukifikia moja kwa moja
+        <ph name="LIST_ITEM" />Hakikisha kuwa unatumia muundo uliothibitishwa na uangalie madokezo ya uwekaji
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Kwa usaidizi zaidi, tembelea: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Ungependa kumwongeza nani kwenye kifaa hiki cha <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Iwapo unataka kubadilisha baada ya uandikishaji, utahitajika kurejesha mipangilio ya kifaa chako iliyotoka nayo kiwandani (Powerwash).</translation>
 <translation id="4567512141633030272">Je, chaguo hilo la kuingia katika akaunti si sahihi?</translation>
@@ -431,6 +447,15 @@
 <translation id="5800703268655655701">Chagua mandhari meupe au meusi</translation>
 <translation id="5804259315582798390">Imeshindwa kuwasha mipangilio ya kurejesha data iliyo kwenye kifaa</translation>
 <translation id="5810809306422959727">Akaunti hii haijatimiza masharti ya vidhibiti vya wazazi</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Kuandikisha vifaa vyako kwenye shirika lako kunaviwekea mipangilio ya udhibiti wa vifaa wa pamoja. Huenda shirika lako likahitaji kujiandikisha kwa sababu nyingi:<ph name="END_DESCRIPTION" />
+    <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Kuboresha usalama<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+    <ph name="BEGIN_DESCRIPTION1" />Unapoweka mipangilio ya ziada ya usalama, shirika linaweza kuhakikisha usalama wa data ya mtumiaji na kifaa. Linaweza pia kutekeleza vitendo kama vile kubadilisha hali kutoka mbali au kuzima kifaa kilichopotea.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Kuweka mapendeleo ya matumizi<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Hali ya kifaa kinapowashwa, kwenye skrini ya kuingia na baada ya kuingia inaweza kubadilishwa kulingana na mapendeleo ya shirika.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Kutoa usaidizi<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Shirika linaweza kufikia vipindi vya kifaa kutoka mbali ili kufanya utatuzi.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Kuruhusu ufikiaji<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Programu, huduma na mitandao ya shirika vinaweza tu kupatikana kwenye vifaa vilivyoandikishwa.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Zimesalia karibu dakika <ph name="TIME" /></translation>
 <translation id="5852112051279473187">Lo! Hitilafu imetokea wakati wa kusajili kifaa hiki. Tafadhali jaribu tena au uwasiliane na mwakilishi atakayekusaidia.</translation>
 <translation id="5852137567692933493">Anzisha upya na Powerwash</translation>
@@ -451,6 +476,8 @@
 <translation id="6016178549409952427">Nenda kwenye maudhui mengine <ph name="CURRENT_ELEMENT" /> kati ya <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Chagua kitufe cha lugha na kibodi. Lugha uliyochagua kwa sasa ni <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Funga</translation>
+<translation id="6042193169866365541">Akaunti yako ya Google ni sawa na akaunti unayotumia kwenye Gmail, YouTube, Chrome na bidhaa nyingine za Google.
+        Tumia akaunti yako ili ufikie kwa urahisi alamisho, faili zako zote na mengineyo. Ikiwa huna akaunti, unaweza kufungua kwenye skrini inayofuata.</translation>
 <translation id="6051354611314852653">Lo! Mfumo ulishindwa kuidhinisha ufikiaji wa API kwa kifaa hiki.</translation>
 <translation id="6055544610007596637">Sakinisha programu za <ph name="DEVICE_TYPE" /> yako, kutoka kwenye Duka la Google Play</translation>
 <translation id="6069464830445383022">Tumia Akaunti yako ya Google kuingia katika Chromebook yako</translation>
@@ -556,6 +583,8 @@ mbadala inafanya kazi. Ikiwa huamini kuwa unastahili kutumia
 <translation id="7189451821249468368">Huna leseni za kutosha kusajili kifaa hiki. Tafadhali wasiliana na huduma ya mauzo ili ununue nyingine. Ikiwa unaamini kuwa unaona ujumbe huu kimakosa, tafadhali wasiliana na kituo cha usaidizi.</translation>
 <translation id="7202337678781136582">Changanua msimbo wa QR ukitumia simu yako ya Android</translation>
 <translation id="7228854227189381547">Usibadilishe</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Ili upate hali bora zaidi ya utumiaji, weka <ph name="DEVICE_OS" /> kwenye diski yako ya ndani. Unaweza pia kuiweka baadaye kutoka kwenye skrini ya kuingia katika akaunti.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ikiwa hauko tayari kuweka, unaweza kuitumia kutoka kwenye USB ili uijaribu. Hatua hii itadumisha mfumo wa uendeshaji na data yako iliyopo, lakini huenda ukaona vizuizi vya nafasi ya hifadhi na utendaji.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Mabadiliko yataanza kutumika baada ya kuweka mipangilio</translation>
 <translation id="7260186537988033909">Uandikishaji wa kifaa cha skrini ya kuonyesha matangazo na mabango ya dijitali umekamilika</translation>
 <translation id="7284411326658527427">Kila mtu anaweza kuweka mapendeleo kwenye akaunti yake na kuweka data yake iwe ya faragha.</translation>
@@ -573,6 +602,8 @@ mbadala inafanya kazi. Ikiwa huamini kuwa unastahili kutumia
 <translation id="7416263748877373774">Imeshindwa kupakia Sheria na Masharti. Tafadhali kagua muunganisho wako wa mtandao kisha ujaribu tena.</translation>
 <translation id="7475742997309661417">Kisoma skrini kilicho kwenye ChromeOS, ChromeVox kinatumiwa kimsingi na watu wasio na uwezo wa kuona kabisa au wale wenye uwezo mdogo wa kuona ili kusoma maandishi yanayoonyeshwa kwenye skrini kupitia zana ya kuchanganua matamshi au skrini ya nukta nundu. Bonyeza na ushikilie vitufe vyote viwili vya sauti kwa sekunde tano ili uwashe ChromeVox. ChromeVox ikishawashwa, utapata maelekezo ya haraka ya jinsi ya kuitumia.</translation>
 <translation id="7476454130948140105">Betri haina chaji ya kutosha ili kuweza kusasisha (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Hitilafu fulani imetokea na imeshindwa kuweka <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Kwa usaidizi zaidi, tembelea: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Kabla ya kuandikisha, unahitaji kuondoa Chipu Inayolinda Mfumo (TPM) ili <ph name="DEVICE_OS" /> ichukue umiliki wa kifaa.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Unaweza pia kuzima kabisa Chipu Inayolinda Mfumo (TPM) kwenye kifaa. Data yako itaendelea kuhifadhiwa kwa usalama kwa kutumia mbinu ya kusimba programu kwa njia fiche, lakini vipengele fulani vya usalama kama vile vyeti vilivyohifadhiwa kwenye maunzi vitazimwa.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Unaweza kubadilisha mipangilio yako ya Chipu Inayolinda Mfumo (TPM) kwa kuwasha kifaa tena na kuweka mipangilio ya mfumo ya BIOS/UEFI. Hatua hizo hutofautiana kulingana na muundo wa kifaa. Kwa maelezo zaidi, fungua hati ya <ph name="DEVICE_OS" /> kwenye kifaa tofauti kabla ya kuwasha tena kifaa: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

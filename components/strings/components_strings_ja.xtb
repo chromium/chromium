@@ -2326,6 +2326,7 @@
 <translation id="4607608436550361748">Chrome のヒントを表示</translation>
 <translation id="460848736049414407">管理者によりブロック済み</translation>
 <translation id="4610279718074907952">このサイトは、<ph name="SET_OWNER" /> により定義され、アクティビティを確認できるグループに属しています</translation>
+<translation id="4612631413844865947"><ph name="MERCHANT_ORIGIN" /> で <ph name="PAYMENT_APP_ORIGIN" /> 経由のご注文の処理中にエラーが発生しました。</translation>
 <translation id="46128681529823442">サッカー用品</translation>
 <translation id="4612904677925722054">このサイトには成人向けコンテンツが含まれている可能性があります。このウェブサイトへのアクセスを保護者に許可してもらう必要があります。</translation>
 <translation id="4619564267100705184">本人確認</translation>

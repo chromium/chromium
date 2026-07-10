@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Δεν ήταν δυνατή η φόρτωση της σελίδας πληροφοριών "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">Οι εφαρμογές θα πρέπει να προβάλλονται από τον κεντρικό υπολογιστή που επηρεάζουν</translation>
 <translation id="4306119971288449206">Οι εφαρμογές θα πρέπει να προβάλλονται με τον τύπο περιεχομένου "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4349181963619779233">Δεν είναι δυνατή η προσθήκη επεκτάσεων και εφαρμογών από αυτόν τον ιστότοπο</translation>
 <translation id="4625078469366263107">Ενεργοποίηση εφαρμογής</translation>
 <translation id="4633003931260532286">Η επέκταση απαιτεί "<ph name="IMPORT_NAME" />" με ελάχιστη έκδοση "<ph name="IMPORT_VERSION" />", αλλά είναι εγκατεστημένη μόνο η έκδοση "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4660476621274971848">Αναμενόταν η έκδοση "<ph name="EXPECTED_VERSION" />", ωστόσο η έκδοση ήταν η "<ph name="NEW_ID" />"</translation>

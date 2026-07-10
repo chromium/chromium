@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Instaanbedienerinstellings …</translation>
 <translation id="3550915441744863158">Chrome dateer outomaties op sodat jy altyd die varsste weergawe het</translation>
 <translation id="3559533181353831840">Ongeveer <ph name="TIME_LEFT" /> oor</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Voer die naam van die kleinhandelaar en die winkelnommer in waarvoor hierdie demonstrasietoestel opgestel word*. <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />As jy nie die winkelnommer ken nie, kan jy “0000” invoer om met installering van demonstrasiemodus voort te gaan. <ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />*Let wel: Google gebruik hierdie inligting om te identifiseer watter weergawe van demonstrasiemodus die toestel moet ontvang, en om die gebruik van demonstrasiemodus te meet.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Iets was fout. Probeer weer.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" />-hardewaredata-insameling</translation>
 <translation id="3602290021589620013">Voorskou</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Nee</translation>
 <translation id="4251377547188244181">Inskrywing van kiosk- en naambordtoestel</translation>
 <translation id="4263223596040212967">Geen jou sleutelborduitleg na en probeer weer.</translation>
+<translation id="4268490040465852105">Jou Google-rekening is dieselfde rekening as wat jy vir Gmail, YouTube, Chrome en ander Google-produkte gebruik.
+        Gebruik jou rekening om maklik toegang tot al jou boekmerke, lêers en meer te verkry.</translation>
 <translation id="4278498748067682896">Jy sal ’n Kiosk en Naambord-opgradering gebruik wat die toestel slegs toelaat om in kiosk- of naambordmodus te werk. Gaan asseblief terug en skryf in met Chrome Enterpirse-opgradering as jy wil hê dat gebruikers by die toestel aanmeld.</translation>
 <translation id="4287157641315808225">Ja, aktiveer ChromeVox</translation>
 <translation id="4289732974614035569">Kies 'n PIN</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Kies lig- of donkertema</translation>
 <translation id="5804259315582798390">Kon nie terugstelling van plaaslike data aktiveer nie</translation>
 <translation id="5810809306422959727">Hierdie rekening kwalifiseer nie vir ouerkontroles nie</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />As jy jou toestelle by jou organisasie inskryf, word dit opgestel vir gesentraliseerde toestelbestuur. Jou organisasie kan om verskeie redes inskrywing vereis:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Verbeter sekuriteit<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Die organisasie kan gebruiker- en toesteldata veilig hou deur bykomende sekuriteitinstellings op te stel. Dit kan ook handelinge uitvoer, soos afstandterugstel of die deaktivering van ’n verlore toestel.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Pasmaak die ervaring<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Die toestel se optrede tydens selflaai, op die aanmeldskerm en ná aanmelding kan volgens die organisasie se behoeftes gepasmaak word.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Verskaf ondersteuning<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Die organisasie kan afstandtoegang tot ’n toestelsessie kry om foutsporing te verskaf.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Aktiveer toegang<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+    <ph name="BEGIN_DESCRIPTION4" />Organisasieapps, -dienste en -netwerke is dalk net op ingeskrewe toestelle beskikbaar.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Ongeveer <ph name="TIME" /> minute oor</translation>
 <translation id="5852112051279473187">Oeps! Iets het lelik skeefgeloop terwyl hierdie toestel ingeskryf is. Probeer asseblief weer of kontak jou steundiensverteenwoordiger.</translation>
 <translation id="5852137567692933493">Herbegin en kragwas</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Navigeer na ekstra inhoud <ph name="CURRENT_ELEMENT" /> van <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Kies taal en sleutelbord-knoppie. Die taal wat tans gekies is, is <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Maak toe</translation>
+<translation id="6042193169866365541">Jou Google-rekening is dieselfde rekening as wat jy vir Gmail, YouTube, Chrome en ander Google-produkte gebruik.
+        Gebruik jou rekening om maklik toegang tot al jou boekmerke, lêers en meer te verkry. As jy nie ’n rekening het nie, kan jy op die volgende skerm een skep.</translation>
 <translation id="6051354611314852653">Oeps! Die stelsel kon nie API-toegang vir hierdie toestel magtig nie.</translation>
 <translation id="6055544610007596637">Installeer programme vir jou <ph name="DEVICE_TYPE" /> van die Google Play Winkel af</translation>
 <translation id="6069464830445383022">Jou Google-rekening is jou Chromebook-aanmelding</translation>

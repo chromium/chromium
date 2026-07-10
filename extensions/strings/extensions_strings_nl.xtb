@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">De informatiepagina '<ph name="ABOUT_PAGE" />' kan niet worden geladen.</translation>
 <translation id="424963718355121712">Apps moeten worden weergegeven vanaf de host waarop ze betrekking hebben</translation>
 <translation id="4306119971288449206">Apps moeten worden weergegeven met inhoudstype '<ph name="CONTENT_TYPE" />'</translation>
+<translation id="4349181963619779233">Extensies en apps kunnen niet worden toegevoegd vanaf deze website</translation>
 <translation id="4625078469366263107">App aanzetten</translation>
 <translation id="4633003931260532286">Voor deze extensie is minimaal versie '<ph name="IMPORT_VERSION" />' van '<ph name="IMPORT_NAME" />' vereist, maar alleen versie '<ph name="INSTALLED_VERSION" />' is geïnstalleerd</translation>
 <translation id="4660476621274971848">Verwachte versie '<ph name="EXPECTED_VERSION" />', maar versie is '<ph name="NEW_ID" />'</translation>

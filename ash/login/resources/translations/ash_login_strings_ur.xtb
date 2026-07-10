@@ -229,6 +229,9 @@
 <translation id="3547954654003013442">پراکسی ترتیبات</translation>
 <translation id="3550915441744863158">‏Chrome خودکار طور پر اپ ڈیٹ ہو جاتا ہے لہذا آپ کے پاس ہمیشہ تازہ ترین ورژن ہوتا ہے</translation>
 <translation id="3559533181353831840">تقریباً <ph name="TIME_LEFT" /> باقی ہے</translation>
+<translation id="3567129848895158510">‏<ph name="BEGIN_PARAGRAPH1" />ریٹیلر کا نام اور اسٹور نمبر درج کریں جس کیلئے اس ڈیمو آلہ کو کنفیگر کیا جا رہا ہے*۔ <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />اگر آپ کو اسٹور نمبر معلوم نہیں ہے تو آپ ڈیمو موڈ کی انسٹالیشن جاری رکھنے کیلئے "0000" درج کر سکتے ہیں۔ ⁧‫<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*نوٹ: Google اس معلومات کا استعمال درج ذیل چیزوں کیلئے کرتا ہے، ڈیمو موڈ کے استعمال کی پیمائش کرنے کیلئے اور اس بات کی نشاندہی کرنے کیلئے کہ ڈیمو موڈ کا کون سا ورژن آلہ کو موصول ہونا چاہیے۔<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> ہارڈویئر ڈیٹا کلکشن</translation>
 <translation id="3602290021589620013">پیش منظر</translation>
@@ -287,6 +290,8 @@
 <translation id="4250680216510889253">نہیں</translation>
 <translation id="4251377547188244181">کیوسک اور سائنیج آلہ کا اندراج</translation>
 <translation id="4263223596040212967">اپنے کی بورڈ کا لے آؤٹ چیک کریں اور دوبارہ کوشش کریں۔</translation>
+<translation id="4268490040465852105">‏آپ کا Google اکاؤنٹ وہی اکاؤنٹ ہے جو آپ Gmail, YouTube, Chrome اور دیگر Google سروسز کیلئے استعمال کرتے ہیں۔
+        اپنے تمام بُک مارکس اور فائلز وغیرہ تک آسانی سے رسائی حاصل کرنے کیلئے اپنے اکاؤنٹ کا استعمال کریں۔</translation>
 <translation id="4278498748067682896">‏آپ کیوسک اور سائنیج اپ گریڈ استعمال کریں گے جو صرف آلہ کو کیوسک یا سائنیج موڈ میں چلنے دیتا ہے۔ اگر آپ چاہتے ہیں کہ صارفین آلے میں سائن ان کریں تو براہ کرم واپس جائیں اور Chrome انٹرپرائز اپ گریڈ کا استعمال کر کے اندراج کریں۔</translation>
 <translation id="4287157641315808225">‏ہاں، ChromeVox کو فعال کریں</translation>
 <translation id="4289732974614035569">‏PIN منتخب کریں</translation>
@@ -433,6 +438,15 @@
 <translation id="5800703268655655701">ہلکی یا گہرا تھیم منتخب کریں</translation>
 <translation id="5804259315582798390">مقامی ڈیٹا کی بازیابی کو فعال کرنے میں ناکام</translation>
 <translation id="5810809306422959727">یہ اکاؤنٹ پیرنٹل کنٹرولز کے لیے محفوظ نہیں ہے</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />اپنی تنظیم میں آلات کا اندراج کرنے سے ایک ہی جگہ سے آلہ کا نظم کرنے کی سہولت سیٹ اپ ہو جاتی ہے۔ آپ کی تنظیم کو متعدد وجوہات کی بنا پر اندراج کی ضرورت پڑ سکتی ہے:<ph name="END_DESCRIPTION" />
+    <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />سیکیورٹی کو بہتر بنانے کے لیے<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+    <ph name="BEGIN_DESCRIPTION1" />سیکیورٹی کی اضافی ترتیبات کو کنفیگر کر کے، تنظیم صارف اور آلہ کے ڈیٹا کو محفوظ رکھ سکتی ہے۔ یہ ریموٹ ری سیٹ یا گم شدہ آلہ کو غیر فعال کرنے جیسے کام بھی انجام دے سکتی ہے۔<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />تجربہ کو ذاتی نوعیت کا بنانے کے لیے<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+    <ph name="BEGIN_DESCRIPTION2" />بوٹ اپ پر، لاگ ان اسکرین پر اور لاگ ان کے بعد آلہ کے رویے کو تنظیم کے مطابق حسب ضرورت بنایا جا سکتا ہے۔<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />سپورٹ فراہم کرنے کے لیے<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+    <ph name="BEGIN_DESCRIPTION3" />تنظیم ٹربل شوٹنگ فراہم کرنے کے لیے ایک آلہ سیشن تک دور سے رسائی حاصل کر سکتی ہے۔<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />رسائی فعال کرنے کے لیے<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+    <ph name="BEGIN_DESCRIPTION4" />تنظیمی ایپس، سروسز اور نیٹ ورکس صرف اندراج شدہ آلات پر دستیاب ہو سکتے ہیں۔<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">تقریباً <ph name="TIME" /> منٹ باقی</translation>
 <translation id="5852112051279473187">افوہ!  اس آلہ کا اندراج کرتے وقت واقعی کچھ غلط ہوگیا۔  براہ کرم دوبارہ کوشش کریں یا اپنے سپورٹ نمائندہ سے رابطہ کریں۔</translation>
 <translation id="5852137567692933493">دوبارہ شروع کریں اور پاور واش کریں</translation>
@@ -453,6 +467,8 @@
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" /> میں سے اضافی مواد <ph name="CURRENT_ELEMENT" /> پر جائیں</translation>
 <translation id="6016972670657536680">زبان اور کی بورڈ بٹن کو منتخب کریں۔ فی الحال منتخب کردہ زبان <ph name="LANGUAGE" /> ہے۔</translation>
 <translation id="6040143037577758943">بند کریں</translation>
+<translation id="6042193169866365541">‏آپ کا Google اکاؤنٹ وہی اکاؤنٹ ہے جو آپ Gmail, YouTube, Chrome اور دیگر Google سروسز کیلئے استعمال کرتے ہیں۔
+        اپنے تمام بُک مارکس اور فائلز وغیرہ تک آسانی سے رسائی حاصل کرنے کیلئے اپنے اکاؤنٹ کا استعمال کریں۔ اگر آپ کے پاس اکاؤنٹ نہیں ہے تو آپ اگلی اسکرین پر ایک اکاؤنٹ تخلیق کر سکتے ہیں۔</translation>
 <translation id="6051354611314852653">‏افوہ!  سسٹم اس آلہ کیلئے API رسائی کی اجازت دینے میں ناکام ہوگیا۔</translation>
 <translation id="6055544610007596637">‏Google Play اسٹور سے اپنے <ph name="DEVICE_TYPE" /> کے لیے ایپس انسٹال کریں</translation>
 <translation id="6069464830445383022">‏آپ کا Google اکاؤنٹ آپ کا Chromebook سائن ان ہے</translation>

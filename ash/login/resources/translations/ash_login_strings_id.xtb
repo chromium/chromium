@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Setelan proxy</translation>
 <translation id="3550915441744863158">Chrome memperbarui secara otomatis jadi Anda selalu memiliki versi terbaru</translation>
 <translation id="3559533181353831840">Sekitar <ph name="TIME_LEFT" /> lagi</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Masukkan nama retailer dan nomor toko tujuan konfigurasi perangkat demo ini*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Jika nomor toko tidak diketahui, Anda dapat memasukkan "0000" untuk melanjutkan penginstalan Mode Demo. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Catatan: Google menggunakan informasi ini untuk mengidentifikasi versi Mode Demo yang harus diterima perangkat dan mengukur penggunaan Mode Demo.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Terjadi error. Coba lagi.</translation>
 <translation id="3577745545227000795">Pengumpulan data hardware <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Pratinjau</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Tidak</translation>
 <translation id="4251377547188244181">Pendaftaran perangkat kios dan reklame</translation>
 <translation id="4263223596040212967">Periksa tata letak keyboard Anda dan coba lagi.</translation>
+<translation id="4268490040465852105">Akun Google Anda adalah akun yang sama dengan yang Anda gunakan untuk Gmail, YouTube, Chrome, dan produk Google lainnya.
+        Gunakan akun Anda untuk mengakses semua bookmark, file, dan lainnya dengan mudah.</translation>
 <translation id="4278498748067682896">Anda akan menggunakan Upgrade Kios &amp; Reklame yang hanya mengizinkan perangkat berjalan dalam mode kios dan reklame. Jika Anda ingin pengguna login ke perangkat, kembali dan daftar menggunakan Chrome Enterprise Upgrade.</translation>
 <translation id="4287157641315808225">Ya, aktifkan ChromeVox</translation>
 <translation id="4289732974614035569">Pilih PIN</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Pilih tema terang atau gelap</translation>
 <translation id="5804259315582798390">Gagal mengaktifkan pemulihan data lokal</translation>
 <translation id="5810809306422959727">Akun ini tidak memenuhi syarat kontrol orang tua</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Mendaftarkan perangkat ke organisasi Anda akan menyiapkannya untuk pengelolaan perangkat terpusat. Organisasi Anda mungkin mewajibkan pendaftaran karena beberapa alasan:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Meningkatkan keamanan<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Dengan mengonfigurasi setelan keamanan tambahan, organisasi dapat menjaga keamanan data pengguna dan perangkat. Setelan ini juga dapat melakukan tindakan seperti mereset dari jarak jauh atau menonaktifkan perangkat yang hilang.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Menyesuaikan pengalaman<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Perilaku perangkat saat booting, di layar login, dan setelah login dapat disesuaikan dengan kebutuhan organisasi.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Memberikan dukungan<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Organisasi dapat mengakses sesi perangkat dari jarak jauh untuk membantu memecahkan masalah.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Mengaktifkan akses<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Aplikasi, layanan, dan jaringan organisasi mungkin hanya tersedia di perangkat yang sudah terdaftar.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Sekitar <ph name="TIME" /> menit lagi</translation>
 <translation id="5852112051279473187">Ups!  Benar-benar terjadi error saat mendaftarkan perangkat ini. Harap coba lagi atau hubungi perwakilan dukungan Anda.</translation>
 <translation id="5852137567692933493">Mulai Ulang dan Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Membuka konten tambahan <ph name="CURRENT_ELEMENT" /> dari <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Pilih bahasa dan tombol keyboard. Saat ini, bahasa yang dipilih adalah <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Tutup</translation>
+<translation id="6042193169866365541">Akun Google Anda adalah akun yang sama dengan yang Anda gunakan untuk Gmail, YouTube, Chrome, dan produk Google lainnya.
+        Gunakan akun Anda untuk mengakses semua bookmark, file, dan lainnya dengan mudah. Jika belum memiliki akun, Anda dapat membuatnya di layar berikutnya.</translation>
 <translation id="6051354611314852653">Ups!  Sistem gagal memberi otorisasi akses API untuk perangkat ini.</translation>
 <translation id="6055544610007596637">Instal aplikasi untuk <ph name="DEVICE_TYPE" /> dari Google Play Store</translation>
 <translation id="6069464830445383022">Akun Google Anda adalah kunci akses Chromebook Anda</translation>

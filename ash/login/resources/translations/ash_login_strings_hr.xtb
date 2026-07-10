@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Proxy postavke</translation>
 <translation id="3550915441744863158">Chrome se automatski ažurira tako da uvijek imate najnoviju verziju</translation>
 <translation id="3559533181353831840">Još približno <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Unesite naziv prodavača i broj trgovine za koji se konfigurira demo-uređaj*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ako ne znate broj trgovine, možete unijeti 0000 da biste nastavili s instaliranjem demo načina. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Napomena: Google upotrebljava te informacije za prepoznavanje verzije demo načina koju uređaj treba primiti i za mjerenje upotrebe demo načina.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Nešto nije u redu. Pokušajte ponovo.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> – prikupljanje podataka o hardveru</translation>
 <translation id="3602290021589620013">Pregled</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Ne</translation>
 <translation id="4251377547188244181">Registracija uređaja za kiosk i znakovlje</translation>
 <translation id="4263223596040212967">Provjerite izgled tipkovnice i pokušajte ponovo.</translation>
+<translation id="4268490040465852105">Vaš Google račun isti je račun koji upotrebljavate za Gmail, YouTube, Chrome i ostale Googleove proizvode.
+        Pomoću računa možete jednostavno pristupiti svim svojim oznakama, datotekama i drugim podacima.</translation>
 <translation id="4278498748067682896">Upotrebljavat ćete nadogradnju kioska i znakovlja koja uređaju omogućuje pokretanje samo načina rada kioska ili znakovlja. Ako želite da se korisnici prijave na uređaj, vratite se i registrirajte pomoću Nadogradnje za Chrome za poduzeća.</translation>
 <translation id="4287157641315808225">Da, aktiviraj ChromeVox</translation>
 <translation id="4289732974614035569">Odaberite PIN</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Odabir svijetle ili tamne teme</translation>
 <translation id="5804259315582798390">Omogućivanje oporavka lokalnih podataka nije uspjelo</translation>
 <translation id="5810809306422959727">Ovaj račun ne ispunjava uvjete za roditeljski nadzor</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Prijava uređaja u organizaciji postavlja ih za centralizirano upravljanje uređajima. Vaša organizacija može zahtijevati prijavu iz više razloga:<ph name="END_DESCRIPTION" />
+    <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />poboljšanje sigurnosti<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+    <ph name="BEGIN_DESCRIPTION1" />konfiguriranjem dodatnih sigurnosnih postavki organizacija može sačuvati sigurnost korisnika i podataka o uređaju. Može izvršavati i radnje kao što su daljinsko poništavanje ili onemogućavanje izgubljenog uređaja.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Prilagođavanje doživljaja<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+    <ph name="BEGIN_DESCRIPTION2" />Ponašanje uređaja prilikom pokretanja, na zaslonu za prijavu i nakon prijave može se prilagoditi potrebama organizacije.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Pružanje podrške<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+    <ph name="BEGIN_DESCRIPTION3" />Organizacija može daljinski pristupiti sesiji uređaja kako bi riješila problem.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Omogući pristup<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Aplikacije, usluge i mreže organizacije mogu biti dostupne samo na prijavljenim uređajima.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Preostalo je oko <ph name="TIME" /> min</translation>
 <translation id="5852112051279473187">Ups!  Došlo je do problema prilikom prijavljivanja ovog uređaja.  Pokušajte ponovo ili kontaktirajte svog predstavnika podrške.</translation>
 <translation id="5852137567692933493">Pokreni ponovo i izvrši Powerwash</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Idite na dodatni sadržaj <ph name="CURRENT_ELEMENT" /> od <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Gumb za odabir jezika i tipkovnice. Trenutačno je odabran <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Zatvori</translation>
+<translation id="6042193169866365541">Vaš Google račun isti je račun koji upotrebljavate za Gmail, YouTube, Chrome i ostale Googleove proizvode.
+        Pomoću računa možete jednostavno pristupiti svim svojim oznakama, datotekama i drugim podacima. Ako nemate račun, možete ga izraditi na sljedećem zaslonu.</translation>
 <translation id="6051354611314852653">Ups! Sustav nije uspio autorizirati pristup API-ja za ovaj uređaj.</translation>
 <translation id="6055544610007596637">Instalirajte aplikacije za svoj uređaj <ph name="DEVICE_TYPE" /> iz Trgovine Google Play</translation>
 <translation id="6069464830445383022">Vaš Google račun koristi se za prijavu na Chromebook</translation>

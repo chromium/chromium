@@ -1955,7 +1955,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2517472476991765520">Digitalizar</translation>
 <translation id="2518024842978892609">Usar os certificados de cliente</translation>
 <translation id="2518620532958109495">Com autorização para mudar automaticamente para ecrã inteiro</translation>
-<translation id="2519250377986324805">Veja como</translation>
 <translation id="2519517390894391510">Nome do perfil do certificado</translation>
 <translation id="2520644704042891903">A aguardar ligação disponível...</translation>
 <translation id="2521427645491031107">A sincronização de apps está definida nas Definições do dispositivo</translation>
@@ -4994,6 +4993,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4849286518551984791">Tempo universal coordenado (UTC/GMT)</translation>
 <translation id="4849517651082200438">Não instalar</translation>
 <translation id="4849731766219625109">Usar conta do <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="4850279708232718725">Saber mais sobre isto</translation>
 <translation id="485053257961878904">Não foi possível configurar a sincronização de notificações</translation>
 <translation id="4850548109381269495">Em ambos os dispositivos, verifique a sua ligação à Internet e ative o Bluetooth. Em seguida, tente novamente.</translation>
 <translation id="4850669014075537160">Deslocamento</translation>
@@ -6343,6 +6343,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5922854266885514646">Clique em "Personalizar o Chrome"</translation>
 <translation id="5924047253200400718">Obter ajuda<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Perguntar antes de copiar ou mover ficheiros da Microsoft para o Google Drive</translation>
+<translation id="5925057331573749968">Inicie sessão mais rapidamente com um código QR</translation>
 <translation id="5926936390113611560">Abrir todos os perfis</translation>
 <translation id="592880897588170157">Transferir ficheiros PDF em vez de os abrir automaticamente no Chrome</translation>
 <translation id="5930567261594625340">Céu noturno</translation>
@@ -8116,7 +8117,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7314989823816739632">Romântico</translation>
 <translation id="7317342082064136423">Valide a sua conta</translation>
 <translation id="731827437403763009">Inovações de IA</translation>
-<translation id="7319320447721994672">Se visitar um site que use cookies, pode ter de ativar temporariamente os cookies para que todas as funcionalidades do site funcionem.</translation>
 <translation id="7319983568955948908">Terminar Partilha</translation>
 <translation id="7320213904474460808">Predefinir rede</translation>
 <translation id="7321545336522791733">Servidor inacessível</translation>
@@ -9492,6 +9492,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8372678064309688510">A sua morada foi guardada</translation>
 <translation id="8373652277231415614">Diretórios partilhados do Crostini</translation>
 <translation id="8374243500935816406">Não permitir que os sites façam a gestão de janelas em todos os seus ecrãs</translation>
+<translation id="8375703478696038265">Passo <ph name="STEP_NUMBER" /> de <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Diga-nos o que se passa com o Google Cast.</translation>
 <translation id="8376384591331888629">Incluindo cookies de terceiros neste site</translation>
 <translation id="8376451933628734023">Se esta app para a Web estiver a tentar fazer-se passar por uma app diferente, desinstale-a.</translation>
@@ -10563,6 +10564,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9188142767272053574">Ativar isolamento de processos</translation>
 <translation id="9192019773545828776">Obtenha feedback de voz para poder usar o dispositivo sem olhar para o ecrã. O feedback em braille está disponível com um dispositivo ligado. Use Ctrl + Alt + Z para ativar e desativar o ChromeVox. Use Pesquisa + seta para a esquerda ou seta para a direita para navegar. Use Pesquisa + barra de espaço para selecionar (ativar).</translation>
 <translation id="9195969368671142407">Quando a sua organização limita a gravação na sua Conta Google, não pode partilhar nem aderir a grupos de separadores</translation>
+<translation id="9197456336762295195">Leia este código QR com a câmara do dispositivo que tem a sua chave de acesso para google.com</translation>
 <translation id="919840898042157087">Movimento estático</translation>
 <translation id="9199503643457729322">Clique para sair do Guia de privacidade.</translation>
 <translation id="9199695835892108985">Repor todas as autorizações das portas de série?</translation>

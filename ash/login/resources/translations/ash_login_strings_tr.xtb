@@ -227,6 +227,7 @@
 <translation id="3547954654003013442">Proxy ayarları</translation>
 <translation id="3550915441744863158">Chrome otomatik olarak güncellenir, böylece her zaman en yeni sürüme sahip olursunuz.</translation>
 <translation id="3559533181353831840">Yaklaşık <ph name="TIME_LEFT" /> kaldı</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Perakendecinin adını ve bu demo cihazın yapılandırıldığı mağaza numarasını girin*. <ph name="END_PARAGRAPH1" /> <ph name="BEGIN_PARAGRAPH2" />Mağaza numarasını bilmiyorsanız "0000" yazarak demo modu kurulumuna devam edebilirsiniz. <ph name="END_PARAGRAPH2" /> <ph name="BEGIN_PARAGRAPH3" />*Not: Google, bu kodları kullanarak cihazın, demo modunun hangi sürümünü alması gerektiğini belirler ve demo modunun kullanımını ölçer.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Bir sorun oldu. Tekrar deneyin.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> donanım verileri toplama</translation>
 <translation id="3602290021589620013">Önizleme</translation>
@@ -285,6 +286,8 @@
 <translation id="4250680216510889253">Hayır</translation>
 <translation id="4251377547188244181">Kiosk ve tabela cihaz kaydı</translation>
 <translation id="4263223596040212967">Klavye düzeninizi kontrol edip tekrar deneyin.</translation>
+<translation id="4268490040465852105">Google Hesabınız; Gmail, YouTube, Chrome ve diğer Google ürünlerinde kullandığınız hesaptır.
+        Tüm yer işaretlerinize, dosyalarınıza ve diğer içeriklere kolayca erişmek için hesabınızı kullanın.</translation>
 <translation id="4278498748067682896">Cihazın yalnızca kiosk veya tabela modunda çalışmasına izin veren Kiosk ve Tabela Güncellemesi'ni kullanacaksınız. Kullanıcıların cihazda oturum açmasını istiyorsanız lütfen geri dönüp Chrome Enterprise Yükseltme kullanarak kaydolun.</translation>
 <translation id="4287157641315808225">Evet, ChromeVox'u etkinleştir</translation>
 <translation id="4289732974614035569">PIN seçin</translation>
@@ -429,6 +432,10 @@
 <translation id="5800703268655655701">Açık veya koyu temayı seçin</translation>
 <translation id="5804259315582798390">Yerel veri kurtarma özelliği etkinleştirilemedi</translation>
 <translation id="5810809306422959727">Bu hesap, ebeveyn denetimleri için uygun değil</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Kuruluşunuza kaydettiğiniz cihazlar, merkezi cihaz yönetimi için ayarlanır. Kuruluşunuzun, kaydolma işlemini zorunlu kılmasının birkaç nedeni olabilir:<ph name="END_DESCRIPTION" /> <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Güvenliği artırma<ph name="END_BOLD" /><ph name="END_SUBTITLE1" /> <ph name="BEGIN_DESCRIPTION1" />Kuruluş, ek güvenlik ayarları yapılandırarak kullanıcı ve cihaz verilerinin güvenliğini sağlayabilir. Ayrıca, uzaktan sıfırlama veya kayıp bir cihazı devre dışı bırakma gibi işlemleri de yapabilir.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Deneyimi özelleştirme<ph name="END_BOLD" /><ph name="END_SUBTITLE2" /> <ph name="BEGIN_DESCRIPTION2" />Başlangıçta, giriş ekranında ve giriş yaptıktan sonra geçerli olan cihaz davranışı, kuruluşun ihtiyaçlarına göre özelleştirilebilir.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Destek sağlama<ph name="END_BOLD" /><ph name="END_SUBTITLE3" /> <ph name="BEGIN_DESCRIPTION3" />Kuruluş, sorun gidermek için cihaz oturumuna uzaktan erişebilir.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Erişimi etkinleştirme<ph name="END_BOLD" /><ph name="END_SUBTITLE4" /> <ph name="BEGIN_DESCRIPTION4" />Kuruluş uygulamaları, hizmetleri ve ağları yalnızca kayıtlı cihazlarda kullanılabilir.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Yaklaşık <ph name="TIME" /> dakika kaldı</translation>
 <translation id="5852112051279473187">Hata! Bu cihaz kaydettirilirken bir sorun oluştu. Lütfen tekrar deneyin veya destek temsilcinizle iletişim kurun.</translation>
 <translation id="5852137567692933493">Tekrar başlat ve Powerwash uygula</translation>
@@ -449,6 +456,8 @@
 <translation id="6016178549409952427"><ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /> ekstra içeriğe git</translation>
 <translation id="6016972670657536680">Dil ve klavye düğmesini seçin. Şu anda seçili dil: <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Kapat</translation>
+<translation id="6042193169866365541">Google Hesabınız; Gmail, YouTube, Chrome ve diğer Google ürünlerinde kullandığınız hesaptır.
+        Tüm yer işaretlerinize, dosyalarınıza ve diğer içeriklere kolayca erişmek için hesabınızı kullanın. Hesabınız yoksa sonraki ekranda oluşturabilirsiniz.</translation>
 <translation id="6051354611314852653">Hata!  Sistem bu cihaz için API erişimini yetkilendiremedi.</translation>
 <translation id="6055544610007596637"><ph name="DEVICE_TYPE" /> cihazınız için Google Play Store'dan uygulama yükleyin</translation>
 <translation id="6069464830445383022">Google Hesabınızla Chromebook'unuzda oturum açarsınız</translation>

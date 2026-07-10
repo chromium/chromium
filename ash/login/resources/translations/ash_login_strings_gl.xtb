@@ -228,6 +228,9 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="3547954654003013442">Configuración do proxy</translation>
 <translation id="3550915441744863158">Chrome actualízase automaticamente para que sempre dispoñas da versión máis recente</translation>
 <translation id="3559533181353831840">Tempo restante aproximado: <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Indica o nome do punto de venda e o número da tenda para a que se está configurando este dispositivo de demostración*. <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Se non sabes o número da tenda, podes poñer "0000" para continuar coa instalación do modo de demostración. <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Nota: Google utiliza esta información para identificar a versión do modo de demostración que debe recibir o dispositivo e medir o uso do modo mencionado.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Produciuse un erro. Téntao de novo.</translation>
 <translation id="3577745545227000795">Recompilación de datos de hardware por parte de <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Previsualizar</translation>
@@ -286,6 +289,8 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="4250680216510889253">Non</translation>
 <translation id="4251377547188244181">Inscrición do dispositivo coa actualización de quiosco e de sinalización</translation>
 <translation id="4263223596040212967">Comproba a distribución do teclado e téntao de novo.</translation>
+<translation id="4268490040465852105">A túa Conta de Google é a mesma que utilizas para Gmail, YouTube, Chrome e outros produtos de Google.
+        Úsaa para acceder facilmente aos teus marcadores, ficheiros e moito máis.</translation>
 <translation id="4278498748067682896">Utilizarás unha actualización de quiosco e de sinalización que só lle permite ao dispositivo executarse no modo de quiosco ou de sinalización. Se queres que os usuarios inicien sesión no dispositivo, volve atrás e inscríbete a través da actualización de Chrome Enterprise.</translation>
 <translation id="4287157641315808225">Si, activar ChromeVox</translation>
 <translation id="4289732974614035569">Escolle un PIN</translation>
@@ -431,6 +436,15 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="5800703268655655701">Seleccionar o tema escuro ou o claro</translation>
 <translation id="5804259315582798390">Non se puido activar a recuperación de datos locais</translation>
 <translation id="5810809306422959727">Esta conta non cumpre os requisitos para usar nela os controis parentais</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Ao inscribir os teus dispositivos na túa organización, configúranse para o xestor de dispositivos centralizado. Pode que se requira o rexistro por diversos motivos:<ph name="END_DESCRIPTION" />
+    <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Mellorar a seguranza<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+    <ph name="BEGIN_DESCRIPTION1" />Ao configurar opcións de seguranza adicionais, a organización pode protexer os datos dos dispositivos e dos usuarios. Tamén pode realizar accións como levar a cabo un restablecemento en remoto ou desactivar un dispositivo que se perdese.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Personalizar a experiencia<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />A organización pode adaptar, segundo as súas necesidades, o comportamento do dispositivo no arranque, na pantalla de inicio de sesión e despois do acceso.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Ofrecer asistencia<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />A organización pode acceder de maneira remota a calquera sesión dun dispositivo para solucionar problemas.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Activar acceso<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+    <ph name="BEGIN_DESCRIPTION4" />Pode que só os dispositivos rexistrados poidan acceder ás aplicacións, servizos e redes da organización.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Quedan uns <ph name="TIME" /> minutos</translation>
 <translation id="5852112051279473187">Algo non funcionou como debía ao rexistrar este dispositivo. Téntao de novo ou ponte en contacto co teu representante de asistencia técnica.</translation>
 <translation id="5852137567692933493">Reinicio e Powerwash</translation>
@@ -451,6 +465,8 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="6016178549409952427">Ir ao contido extra: <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Selecciona o idioma e o botón do teclado. O idioma seleccionado actualmente é: <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Pechar</translation>
+<translation id="6042193169866365541">A túa Conta de Google é a mesma que utilizas para Gmail, YouTube, Chrome e outros produtos de Google.
+        Úsaa para acceder facilmente aos teus marcadores, ficheiros e moito máis. Se non tes ningunha conta, podes crear unha na seguinte pantalla.</translation>
 <translation id="6051354611314852653">O sistema non puido autorizar o acceso á API para este dispositivo.</translation>
 <translation id="6055544610007596637">Instala aplicacións para o teu dispositivo (<ph name="DEVICE_TYPE" />) desde Google Play Store</translation>
 <translation id="6069464830445383022">A túa Conta de Google permite iniciar sesión no Chromebook</translation>

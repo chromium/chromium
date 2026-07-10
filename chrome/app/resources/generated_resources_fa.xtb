@@ -1144,7 +1144,7 @@
 <translation id="1877860345998737529">تغییر وضعیت اختصاص دادن کلیدها به کنش‌ها</translation>
 <translation id="1878477879455105085">بازشده</translation>
 <translation id="1878885068166344708">وقتی تمرکز را جابه‌جا می‌کنید، مورد برجسته می‌شود. برای تغییر تمرکز، جهش را فشار دهید یا موردی را انتخاب کنید.</translation>
-<translation id="1879000426787380528">با حساب زیر وارد سیستم شوید</translation>
+<translation id="1879000426787380528">ورود به سیستم به‌عنوان</translation>
 <translation id="1880214489933905933">معکوس کردن نماها</translation>
 <translation id="1880618477732738742">تغییر و اعطای دسترسی به ویژگی‌هایی مثل موقعیت جغرافیایی، میکروفون، دوربین، کوکی‌ها، و غیره، برای همه وب‌سایت‌ها و افزونه‌های شما، ازجمله این افزونه.</translation>
 <translation id="1881445033931614352">جانمایی صفحه‌کلید</translation>
@@ -1967,7 +1967,6 @@
 <translation id="2517472476991765520">اسکن</translation>
 <translation id="2518024842978892609">استفاده از گواهی‌های کلاینت شما</translation>
 <translation id="2518620532958109495">ورود خودکار به حالت تمام‌صفحه مجاز است</translation>
-<translation id="2519250377986324805">دیدن روش کار</translation>
 <translation id="2519517390894391510">نام نمایه گواهینامه</translation>
 <translation id="2520644704042891903">در انتظار برای سوکت موجود...</translation>
 <translation id="2521427645491031107">همگام‌سازی برنامه‌ها در «تنظیمات» دستگاه تنظیم می‌شود</translation>
@@ -3537,6 +3536,7 @@
 <translation id="371370241367527062">میکروفون جلو</translation>
 <translation id="37143699183660101">پایداری مکان‌نما</translation>
 <translation id="3714610938239537183">مرحله ۲ از ۴: انتخاب داده‌های عیب‌یابی برای صادر کردن</translation>
+<translation id="3715519518311454566">‏«برگ زیرین Gemini» جمع شد.</translation>
 <translation id="3717133748480414053">مهارت‌ها می‌توانند به شما کمک کنند صفحات وب را خلاصه کنید، تخفیف‌های عالی را جستجو کنید، و غیره</translation>
 <translation id="3719245268140483218">رویداد دستگاه</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> تکمیل شد.</translation>
@@ -6221,6 +6221,7 @@
 <translation id="5828181959764767444">غروب</translation>
 <translation id="5828545842856466741">افزودن نمایه…</translation>
 <translation id="5828633471261496623">در حال چاپ...</translation>
+<translation id="5829137022934788067">درباره این انتخاب به من بگو</translation>
 <translation id="5829214552954466783">هم‌رسانی <ph name="CREDENTIAL_TYPE" /> برای نام کاربری: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">‏روش‌های پرداخت شما در «کیف پول Google»</translation>
 <translation id="5830512293931520102">گذرواژه شما رمزگذاری شده است و برای هیچ‌کس قابل‌مشاهده نیست</translation>
@@ -7012,6 +7013,7 @@
 <translation id="6455264371803474013">در سایت‌هایی خاص</translation>
 <translation id="6455521402703088376">خاموش • این افزونه توسط توسعه‌دهنده‌اش لغو انتشار شده است</translation>
 <translation id="6455894534188563617">پوشه &amp;جدید</translation>
+<translation id="6456162045957729200">این انتخاب را توضیح دهید</translation>
 <translation id="645705751491738698">ادامه مسدودکردن جاوا اسکریپت</translation>
 <translation id="6457572529564180082">‫<ph name="APP_NAME" /> راه‌اندازی نمی‌شود</translation>
 <translation id="6458701200018867744">بارگذاری انجام نشد (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8125,7 +8127,6 @@
 <translation id="7314989823816739632">عاشقانه</translation>
 <translation id="7317342082064136423">حسابتان را درستی‌سنجی کنید</translation>
 <translation id="731827437403763009">نوآوری‌های هوش مصنوعی</translation>
-<translation id="7319320447721994672">اگر به سایتی بروید که از کوکی استفاده می‌کند، ممکن است لازم باشد کوکی‌ها را موقتاً فعال کنید تا همه ویژگی‌های سایت کار کند.</translation>
 <translation id="7319983568955948908">توقف هم‌رسانی</translation>
 <translation id="7320213904474460808">شبکه پیش‌فرض</translation>
 <translation id="7321545336522791733">سرور غیرقابل دسترسی است</translation>
@@ -8875,6 +8876,7 @@
 <translation id="7903481341948453971">استفاده از قفل صفحه هنگام تکمیل گذرواژه‌ها</translation>
 <translation id="7903925330883316394">ابزار کمکی: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">کاتاکانا</translation>
+<translation id="7904492297081735975">&amp;باز کردن «مدیر نشانک»</translation>
 <translation id="7904526211178107182">‏درگاه‌های Linux را در دسترس دستگاه‌های دیگری که در شبکه‌تان موجود هستند قرار دهید.</translation>
 <translation id="7907312522152480478">‏برای اینکه به زبانه‌های بازشده در سایر دستگاه‌ها دسترسی داشته باشید، هویتتان را درستی‌سنجی کنید و سابقه و زبانه‌ها را همگام‌سازی کنید. هرزمان بخواهید می‌توانید همگام‌سازی را در تنظیمات متوقف کنید. Google ممکن است «جستجو» و سرویس‌های دیگر را براساس سابقه‌تان شخصی‌سازی کند.</translation>
 <translation id="7907502219904644296">تغییر دسترسی</translation>
@@ -10627,6 +10629,7 @@
 <translation id="942296794412775122">روشن/ خاموش کردن میکروفون</translation>
 <translation id="942488123151518958">‏مکث کردن (k)</translation>
 <translation id="942532530371314860">‏<ph name="APP_NAME" /> در حال اشتراک‌گذاری یک برگه Chrome و صوت است.</translation>
+<translation id="943744232549395906">«تایپ گفتاری» متوقف شد</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 <translation id="947156494302904893">سایت‌هایی که بازدید می‌کنید می‌توانند درستی‌سنجی کنند که شما شخص واقعی هستید و روبات نیستید</translation>
 <translation id="947329552760389097">&amp;بازرسی عناصر</translation>
