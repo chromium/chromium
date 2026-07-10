@@ -54,6 +54,17 @@ ui::NativeTheme::PreferredContrast OsSettingsProviderGtk::PreferredContrast()
                        : ui::NativeTheme::PreferredContrast::kNoPreference;
 }
 
+bool OsSettingsProviderGtk::PrefersOverlayScrollbars() const {
+  gboolean overlay_scrolling = TRUE;
+  GtkSettings* settings = gtk_settings_get_default();
+  if (settings && g_object_class_find_property(G_OBJECT_GET_CLASS(settings),
+                                               "gtk-overlay-scrolling")) {
+    g_object_get(settings, "gtk-overlay-scrolling", &overlay_scrolling,
+                 nullptr);
+  }
+  return overlay_scrolling;
+}
+
 base::TimeDelta OsSettingsProviderGtk::CaretBlinkInterval() const {
   // Default value for `gtk-cursor-blink-time` from
   // https://docs.gtk.org/gtk3/property.Settings.gtk-cursor-blink-time.html.

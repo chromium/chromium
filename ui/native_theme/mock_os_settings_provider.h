@@ -37,6 +37,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) MockOsSettingsProvider
   std::optional<SkColor> AccentColor() const override;
   std::optional<SkColor> Color(ColorId color_id) const override;
   std::optional<ColorProviderKey::SchemeVariant> SchemeVariant() const override;
+  bool PrefersOverlayScrollbars() const override;
   base::TimeDelta CaretBlinkInterval() const override;
 
   // Setters for all the above settings.
@@ -52,6 +53,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) MockOsSettingsProvider
   void SetAccentColor(SkColor accent_color);
   void SetColor(ColorId color_id, SkColor color);
   void SetSchemeVariant(ColorProviderKey::SchemeVariant scheme_variant);
+  void SetPrefersOverlayScrollbars(bool prefers_overlay_scrollbars);
   void SetCaretBlinkInterval(base::TimeDelta caret_blink_interval);
 
  private:
@@ -68,6 +70,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) MockOsSettingsProvider
   std::optional<SkColor> accent_color_;
   base::flat_map<ColorId, SkColor> colors_;
   std::optional<ColorProviderKey::SchemeVariant> scheme_variant_;
+  bool prefers_overlay_scrollbars_ = true;
   base::TimeDelta caret_blink_interval_ = kDefaultCaretBlinkInterval;
 };
 

@@ -228,6 +228,10 @@ bool OsSettingsProvider::PrefersInvertedColors() const {
   return false;
 }
 
+bool OsSettingsProvider::PrefersOverlayScrollbars() const {
+  return true;
+}
+
 bool OsSettingsProvider::ForcedColorsActive() const {
   return false;
 }

@@ -117,5 +117,9 @@ TEST_F(OsSettingsProviderTest, PreferredContrast) {
   EXPECT_EQ(os_settings_provider().PreferredContrast(), kNoPreference);
 }
 
+TEST_F(OsSettingsProviderTest, PrefersOverlayScrollbars) {
+  EXPECT_TRUE(os_settings_provider().PrefersOverlayScrollbars());
+}
+
 }  // namespace
 }  // namespace ui

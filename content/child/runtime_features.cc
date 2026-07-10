@@ -480,10 +480,8 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
 
   // These checks are custom wrappers around base::FeatureList::IsEnabled
   // They're moved here to distinguish them from actual base checks
-#if !BUILDFLAG(IS_CHROMEOS)
   WebRuntimeFeatures::EnableOverlayScrollbars(
       ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar());
-#endif
   WebRuntimeFeatures::EnableFluentScrollbars(ui::IsFluentScrollbarEnabled());
 #if BUILDFLAG(IS_ANDROID)
   WebRuntimeFeatures::EnableDesktopAndroidScrollbars(

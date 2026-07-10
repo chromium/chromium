@@ -62,6 +62,14 @@ OsSettingsProviderWin::OsSettingsProviderWin()
       RegisterColorFilteringRegkeyObserver();
     }
   }
+  if (hkcu_accessibility_regkey_.Open(HKEY_CURRENT_USER,
+                                      L"Control Panel\\Accessibility",
+                                      KEY_READ | KEY_NOTIFY) == ERROR_SUCCESS) {
+    UpdateForAccessibilityRegkey();
+    if (observers_can_operate) {
+      RegisterAccessibilityRegkeyObserver();
+    }
+  }
   UpdateColors();
 
   // Initialize forced colors (high contrast) state.
@@ -116,6 +124,10 @@ bool OsSettingsProviderWin::PrefersReducedTransparency() const {
 
 bool OsSettingsProviderWin::PrefersInvertedColors() const {
   return prefers_inverted_colors_;
+}
+
+bool OsSettingsProviderWin::PrefersOverlayScrollbars() const {
+  return prefers_overlay_scrollbars_;
 }
 
 bool OsSettingsProviderWin::ForcedColorsActive() const {
@@ -217,6 +229,35 @@ void OsSettingsProviderWin::UpdateForColorFilteringRegkey() {
   // 4 = Protanopia
   // 5 = Tritanopia
   prefers_inverted_colors_ = filter_type == 1;
+}
+
+void OsSettingsProviderWin::RegisterAccessibilityRegkeyObserver() {
+  CHECK(hkcu_accessibility_regkey_.Valid());
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  hkcu_accessibility_regkey_.StartWatching(base::BindOnce(
+      [](OsSettingsProviderWin* provider) {
+        const bool old_prefers_overlay_scrollbars =
+            provider->PrefersOverlayScrollbars();
+        provider->UpdateForAccessibilityRegkey();
+        if (provider->PrefersOverlayScrollbars() !=
+            old_prefers_overlay_scrollbars) {
+          provider->NotifyOnSettingsChanged();
+        }
+
+        // `StartWatching()`'s callback is one-shot and must be re-registered
+        // for future notifications.
+        provider->RegisterAccessibilityRegkeyObserver();
+      },
+      base::Unretained(this)));
+}
+
+void OsSettingsProviderWin::UpdateForAccessibilityRegkey() {
+  CHECK(hkcu_accessibility_regkey_.Valid());
+
+  DWORD dynamic_scrollbars = 1;
+  hkcu_accessibility_regkey_.ReadValueDW(L"DynamicScrollbars",
+                                         &dynamic_scrollbars);
+  prefers_overlay_scrollbars_ = (dynamic_scrollbars != 0);
 }
 
 void OsSettingsProviderWin::OnAccentColorMaybeChanged() {

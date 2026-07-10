@@ -38,6 +38,7 @@
 #include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_base.h"
+#include "ui/native_theme/os_settings_provider.h"
 
 namespace ui {
 
@@ -65,7 +66,9 @@ void NativeThemeFluent::SetArrowIconsAvailableForTesting(bool available) {
 }
 
 NativeThemeFluent::NativeThemeFluent() {
-  set_use_overlay_scrollbar(IsFluentOverlayScrollbarEnabled());
+  set_use_overlay_scrollbar(
+      IsFluentOverlayScrollbarEnabled() &&
+      OsSettingsProvider::Get().PrefersOverlayScrollbars());
 }
 
 NativeThemeFluent::~NativeThemeFluent() = default;

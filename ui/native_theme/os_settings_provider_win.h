@@ -30,6 +30,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderWin
   ColorProviderKey::UserColorSource PreferredColorSource() const override;
   bool PrefersReducedTransparency() const override;
   bool PrefersInvertedColors() const override;
+  bool PrefersOverlayScrollbars() const override;
   bool ForcedColorsActive() const override;
   std::optional<SkColor> AccentColor() const override;
   std::optional<SkColor> Color(ColorId color_id) const override;
@@ -39,10 +40,12 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderWin
   // Registers an observer to monitor the respective registry keys.
   void RegisterThemesRegkeyObserver();
   void RegisterColorFilteringRegkeyObserver();
+  void RegisterAccessibilityRegkeyObserver();
 
   // Updates values affected by the respective registry keys.
   void UpdateForThemesRegkey();
   void UpdateForColorFilteringRegkey();
+  void UpdateForAccessibilityRegkey();
 
   // Updates `accent_color_`. If it changed, notifies callbacks.
   void OnAccentColorMaybeChanged();
@@ -65,6 +68,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderWin
   // Inverted colors registry key.
   base::win::RegKey hkcu_color_filtering_regkey_;
 
+  // Accessibility registry key.
+  base::win::RegKey hkcu_accessibility_regkey_;
+
   // Accent color subscription.
   base::CallbackListSubscription accent_color_subscription_ =
       AccentColorObserver::Get()->Subscribe(
@@ -74,6 +80,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderWin
   bool in_dark_mode_ = false;
   bool prefers_reduced_transparency_ = false;
   bool prefers_inverted_colors_ = false;
+  bool prefers_overlay_scrollbars_ = true;
   bool forced_colors_active_ = false;
   std::optional<SkColor> accent_color_ =
       AccentColorObserver::Get()->accent_color();

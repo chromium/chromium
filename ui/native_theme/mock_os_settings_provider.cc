@@ -64,6 +64,10 @@ MockOsSettingsProvider::SchemeVariant() const {
   return scheme_variant_;
 }
 
+bool MockOsSettingsProvider::PrefersOverlayScrollbars() const {
+  return prefers_overlay_scrollbars_;
+}
+
 base::TimeDelta MockOsSettingsProvider::CaretBlinkInterval() const {
   return caret_blink_interval_;
 }
@@ -122,6 +126,12 @@ void MockOsSettingsProvider::SetColor(ColorId color_id, SkColor color) {
 void MockOsSettingsProvider::SetSchemeVariant(
     ColorProviderKey::SchemeVariant scheme_variant) {
   scheme_variant_ = scheme_variant;
+  NotifyOnSettingsChanged();
+}
+
+void MockOsSettingsProvider::SetPrefersOverlayScrollbars(
+    bool prefers_overlay_scrollbars) {
+  prefers_overlay_scrollbars_ = prefers_overlay_scrollbars;
   NotifyOnSettingsChanged();
 }
 

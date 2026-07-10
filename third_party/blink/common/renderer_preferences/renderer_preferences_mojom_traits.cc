@@ -47,7 +47,7 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
 
   out->use_custom_colors = data.use_custom_colors();
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   out->use_overlay_scrollbar = data.use_overlay_scrollbar();
 #endif
 

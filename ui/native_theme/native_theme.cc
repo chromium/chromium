@@ -426,6 +426,12 @@ bool NativeTheme::UpdateWebInstance() const {
   // Refactor to a settings struct or similar.
 
   bool updated_web_instance = false;
+  if (IsFluentOverlayScrollbarEnabled() &&
+      associated_web_instance_->use_overlay_scrollbar() !=
+          use_overlay_scrollbar()) {
+    associated_web_instance_->use_overlay_scrollbar_ = use_overlay_scrollbar();
+    updated_web_instance = true;
+  }
   if (associated_web_instance_->forced_colors() != forced_colors()) {
     associated_web_instance_->forced_colors_ = forced_colors();
     updated_web_instance = true;
@@ -525,6 +531,7 @@ bool NativeTheme::UpdateVariablesForToolkitSettings() {
       os_settings_provider.PreferredColorSource();
   const auto new_caret_blink_interval =
       os_settings_provider.CaretBlinkInterval();
+  const auto new_use_overlay_scrollbar = CalculateUseOverlayScrollbar();
 
   // Set updated values and see if anything changed.
   bool updated = false;
@@ -564,6 +571,10 @@ bool NativeTheme::UpdateVariablesForToolkitSettings() {
     caret_blink_interval_ = new_caret_blink_interval;
     updated = true;
   }
+  if (use_overlay_scrollbar() != new_use_overlay_scrollbar) {
+    use_overlay_scrollbar_ = new_use_overlay_scrollbar;
+    updated = true;
+  }
 
   return updated;
 }
@@ -584,6 +595,13 @@ NativeTheme::PreferredColorScheme NativeTheme::CalculatePreferredColorScheme()
 NativeTheme::PreferredContrast NativeTheme::CalculatePreferredContrast() const {
   return IsForcedHighContrast() ? PreferredContrast::kMore
                                 : OsSettingsProvider::Get().PreferredContrast();
+}
+
+bool NativeTheme::CalculateUseOverlayScrollbar() const {
+  if (IsFluentOverlayScrollbarEnabled()) {
+    return OsSettingsProvider::Get().PrefersOverlayScrollbars();
+  }
+  return use_overlay_scrollbar_;
 }
 
 }  // namespace ui

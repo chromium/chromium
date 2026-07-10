@@ -591,6 +591,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   ColorProviderKey::ForcedColors CalculateForcedColors() const;
   PreferredColorScheme CalculatePreferredColorScheme() const;
   PreferredContrast CalculatePreferredContrast() const;
+  bool CalculateUseOverlayScrollbar() const;
 
   base::CallbackListSubscription os_settings_changed_subscription_;
   base::CallbackListSubscription update_delay_subscription_;

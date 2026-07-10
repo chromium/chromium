@@ -698,10 +698,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // browser.
   void DoDeferredCloseWindowSoon();
 
-#if BUILDFLAG(IS_CHROMEOS)
-  void UpdateUseOverlayScrollbar(bool use_overlay_scrollbar);
-#endif
-
   WebViewImpl(
       WebViewClient*,
       mojom::blink::PageVisibilityState visibility,
