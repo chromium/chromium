@@ -8,7 +8,6 @@ import "chromeos/components/in_session_auth/mojom/in_session_auth.mojom";
 import "chromeos/components/payments/mojom/payment_app.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
-import "chromeos/crosapi/mojom/probe_service.mojom";
 import "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
