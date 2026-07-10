@@ -51,6 +51,8 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojoMac
 
   mojo::Remote<mojom::ExternalBeginFrameControllerClient> remote_client_;
 
+  bool cb_to_vsync_provider_set_ = false;
+
   // Callback to FrameSinkManagerImpl::UpdateVSyncDisplays(), used to notify
   // all root frame sinks on the specified display to refresh their vsync
   // sources.

@@ -25,13 +25,6 @@ ExternalBeginFrameSourceMojoMac::ExternalBeginFrameSourceMojoMac(
   CHECK(remote_client_);
 
   receiver_.Bind(std::move(controller_receiver));
-
-  // Connect to VSyncProviderMac.
-  ui::NeedsBeginFrameCB callback = base::BindRepeating(
-      &ExternalBeginFrameSourceMojoMac::NeedsBeginFrameWithId,
-      weak_factory_.GetWeakPtr());
-  ui::VSyncProviderMac::GetInstance()->SetCallbackForRemoteNeedsBeginFrame(
-      std::move(callback));
 }
 
 ExternalBeginFrameSourceMojoMac::~ExternalBeginFrameSourceMojoMac() {
@@ -60,6 +53,20 @@ void ExternalBeginFrameSourceMojoMac::SetSupportedDisplayLinkId(
   if (ui::VSyncProviderMac::GetInstance()->IsDisplayLinkInBrowserValid(
           display_id) == is_browser_vsync_supported) {
     return;
+  }
+
+  // Connect to VSyncProviderMac.
+  // Set the NeedsBeginFrameWithId callback right before calling
+  // update_vsync_displays_cb_ to ensure we only record the ExternalDisplayLink
+  // histograms after it's connected. Move this back to Ctor if those histograms
+  // are no longer needed.
+  if (!cb_to_vsync_provider_set_) {
+    cb_to_vsync_provider_set_ = true;
+    ui::NeedsBeginFrameCB callback = base::BindRepeating(
+        &ExternalBeginFrameSourceMojoMac::NeedsBeginFrameWithId,
+        weak_factory_.GetWeakPtr());
+    ui::VSyncProviderMac::GetInstance()->SetCallbackForRemoteNeedsBeginFrame(
+        std::move(callback));
   }
 
   // Update VSyncProvider on whether the CADisplayLink created in the Browser
