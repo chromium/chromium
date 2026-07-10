@@ -23,7 +23,7 @@ const CGSize kBarricadeTapeTileSize = {10.0, 10.0};
 // Height of the barricade tape.
 const CGFloat kBarricadeTapeHeight = 6.0;
 
-constexpr CGFloat kInputPlateMargin = 10.0f;
+constexpr CGFloat kInputPlateMargin = 16.0f;
 constexpr CGFloat kTitleVerticalMargin = 12.0;
 constexpr CGFloat kHeaderCenteringVerticalMargin = 16.0;
 constexpr CGFloat kThresholdForClosedState = 0.12;
