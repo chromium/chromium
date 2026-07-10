@@ -36,6 +36,16 @@ bool MakeContextCurrentOnGpuThread(SharedContextState* context_state,
   return context_state->MakeCurrent(/*surface=*/nullptr, needs_gl);
 }
 
+void DestroyFactoryOnGpuThread(
+    std::unique_ptr<gpu::SharedImageFactory> shared_image_factory) {
+  if (shared_image_factory && shared_image_factory->HasImages()) {
+    // Some of the backings might require a current GL context to be destroyed.
+    bool have_context = MakeContextCurrentOnGpuThread(
+        shared_image_factory->shared_context_state(), /*needs_gl=*/true);
+    shared_image_factory->DestroyAllSharedImages(have_context);
+  }
+}
+
 }  // namespace
 
 // static
@@ -72,13 +82,13 @@ ArcSharedImageInterface::ArcSharedImageInterface(
       gpu_task_runner_(std::move(gpu_task_runner)) {}
 
 ArcSharedImageInterface::~ArcSharedImageInterface() {
-  CHECK(gpu_task_runner_->BelongsToCurrentThread());
-  if (shared_image_factory_->HasImages()) {
-    // Some of the backings might require a current GL context to be destroyed.
-    bool have_context = MakeContextCurrentOnGpuThread(/*needs_gl=*/true);
-    shared_image_factory_->DestroyAllSharedImages(have_context);
+  if (gpu_task_runner_->BelongsToCurrentThread()) {
+    DestroyFactoryOnGpuThread(std::move(shared_image_factory_));
+  } else {
+    gpu_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DestroyFactoryOnGpuThread,
+                                  std::move(shared_image_factory_)));
   }
-  shared_image_factory_.reset();
 }
 
 scoped_refptr<ClientSharedImage> ArcSharedImageInterface::CreateSharedImage(
