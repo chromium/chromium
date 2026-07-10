@@ -53,6 +53,8 @@ namespace media {
 
 namespace {
 
+constexpr base::TimeDelta kGpuChannelTimeout = base::Seconds(3);
+
 mojom::MeteringMode ToMojomMeteringMode(
     PhotoCapabilities::AndroidMeteringMode android_mode) {
   switch (android_mode) {
@@ -446,17 +448,28 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
   VideoCaptureFormat format(gfx::Size(desc.width, desc.height),
                             capture_format_.frame_rate, video_pixel_format);
 
-  if (!need_ycbcr_info_.has_value()) {
-    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host =
-        VideoCaptureGpuChannelHost::GetInstance().GetGpuChannel();
+  auto gpu_channel_host =
+      VideoCaptureGpuChannelHost::GetInstance().GetGpuChannel();
+  auto sii =
+      VideoCaptureGpuChannelHost::GetInstance().GetSharedImageInterface();
 
-    if (gpu_channel_host) {
-      auto skia_backend = gpu_channel_host->gpu_info().skia_backend_type;
-      need_ycbcr_info_ =
-          (skia_backend == gpu::SkiaBackendType::kGraphiteDawnVulkan);
-    } else {
-      need_ycbcr_info_ = false;
+  if (!gpu_channel_host || !sii) {
+    if (first_failed_shared_image_time_.is_null()) {
+      first_failed_shared_image_time_ = current_time;
+    } else if (current_time - first_failed_shared_image_time_ >
+               kGpuChannelTimeout) {
+      SetErrorState(media::VideoCaptureError::kAndroidFailedToStartCapture,
+                    FROM_HERE,
+                    "Failed to get GpuChannel or SharedImageInterface.");
     }
+    return;
+  }
+  first_failed_shared_image_time_ = base::TimeTicks();
+
+  if (!need_ycbcr_info_.has_value()) {
+    auto skia_backend = gpu_channel_host->gpu_info().skia_backend_type;
+    need_ycbcr_info_ =
+        (skia_backend == gpu::SkiaBackendType::kGraphiteDawnVulkan);
   }
 
   if (*need_ycbcr_info_ && !ycbcr_info_) {
@@ -467,15 +480,6 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
                     FROM_HERE, "Failed to get Vulkan YCbCr info.");
       return;
     }
-  }
-
-  auto sii =
-      VideoCaptureGpuChannelHost::GetInstance().GetSharedImageInterface();
-  if (!sii) {
-    LOG(ERROR) << "Failed to get SharedImageInterface.";
-    SetErrorState(media::VideoCaptureError::kAndroidFailedToStartCapture,
-                  FROM_HERE, "Failed to get SharedImageInterface.");
-    return;
   }
 
   gfx::GpuMemoryBufferHandle gmb_handle;

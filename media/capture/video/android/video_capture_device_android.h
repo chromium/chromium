@@ -235,6 +235,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
   std::optional<bool> need_ycbcr_info_;
   std::optional<gpu::VulkanYCbCrInfo> ycbcr_info_;
 
+  base::TimeTicks first_failed_shared_image_time_;
+
   base::WeakPtrFactory<VideoCaptureDeviceAndroid> weak_ptr_factory_{this};
 };
 
