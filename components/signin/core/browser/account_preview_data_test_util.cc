@@ -8,13 +8,14 @@
 #include "base/strings/stringprintf.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace signin {
 
-void MockSuccessfulStatsFetch(
-    network::TestURLLoaderFactory* test_url_loader_factory,
-    const DataTypeCounts& counts) {
-  std::string stats_json = base::StringPrintf(
+namespace {
+
+std::string FormatStatsJson(const DataTypeCounts& counts) {
+  return base::StringPrintf(
       R"({
     "dataTypeStatistics": [
       {
@@ -32,12 +33,9 @@ void MockSuccessfulStatsFetch(
     ]
   })",
       counts.bookmark_count, counts.password_count, counts.history_count);
-  test_url_loader_factory->AddResponse(kTestStatsUrl, stats_json);
 }
 
-void MockSuccessfulPreviewsFetch(
-    network::TestURLLoaderFactory* test_url_loader_factory,
-    const std::vector<std::string>& domains) {
+std::string FormatPreviewsJson(const std::vector<std::string>& domains) {
   std::vector<std::string> entries;
   for (size_t i = 0; i < domains.size(); ++i) {
     entries.push_back(base::StringPrintf(R"(
@@ -51,15 +49,41 @@ void MockSuccessfulPreviewsFetch(
       })",
                                          i, domains[i].c_str()));
   }
-  std::string previews_json =
-      base::StringPrintf(R"({
+  return base::StringPrintf(R"({
     "entitiesPreviews": [
       %s
     ]
   })",
-                         base::JoinString(entries, ",").c_str());
+                            base::JoinString(entries, ",").c_str());
+}
 
-  test_url_loader_factory->AddResponse(kTestPreviewsUrl, previews_json);
+void SimulateSuccessfulStatsFetch(
+    network::TestURLLoaderFactory* test_url_loader_factory,
+    const DataTypeCounts& counts) {
+  EXPECT_TRUE(test_url_loader_factory->SimulateResponseForPendingRequest(
+      kTestStatsUrl, FormatStatsJson(counts)));
+}
+
+void SimulateSuccessfulPreviewsFetch(
+    network::TestURLLoaderFactory* test_url_loader_factory,
+    const std::vector<std::string>& domains) {
+  EXPECT_TRUE(test_url_loader_factory->SimulateResponseForPendingRequest(
+      kTestPreviewsUrl, FormatPreviewsJson(domains)));
+}
+
+}  // namespace
+
+void MockSuccessfulStatsFetch(
+    network::TestURLLoaderFactory* test_url_loader_factory,
+    const DataTypeCounts& counts) {
+  test_url_loader_factory->AddResponse(kTestStatsUrl, FormatStatsJson(counts));
+}
+
+void MockSuccessfulPreviewsFetch(
+    network::TestURLLoaderFactory* test_url_loader_factory,
+    const std::vector<std::string>& domains) {
+  test_url_loader_factory->AddResponse(kTestPreviewsUrl,
+                                       FormatPreviewsJson(domains));
 }
 
 void MockSuccessfulFetch(network::TestURLLoaderFactory* test_url_loader_factory,
@@ -84,6 +108,14 @@ void MockFailedPreviewsFetch(
   test_url_loader_factory->AddResponse(GURL(kTestPreviewsUrl),
                                        network::mojom::URLResponseHead::New(),
                                        "", status);
+}
+
+void SimulateSuccessfulFetch(
+    network::TestURLLoaderFactory* test_url_loader_factory,
+    const DataTypeCounts& counts,
+    const std::vector<std::string>& domains) {
+  SimulateSuccessfulStatsFetch(test_url_loader_factory, counts);
+  SimulateSuccessfulPreviewsFetch(test_url_loader_factory, domains);
 }
 
 }  // namespace signin

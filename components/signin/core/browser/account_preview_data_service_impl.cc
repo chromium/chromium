@@ -6,6 +6,7 @@
 
 #include <absl/container/flat_hash_set.h>
 
+#include "base/barrier_closure.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "components/prefs/pref_service.h"
@@ -99,7 +100,13 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
   account_id_to_gaia_id_.erase(it);
 
   cached_data_.erase(gaia_id);
-  active_fetchers_.erase(gaia_id);
+  if (active_fetchers_.contains(gaia_id)) {
+    // `all_accounts_fetched_barrier_` relies on fecher results, so it should be
+    // called before clearing the active fetcher.
+    CHECK(!all_accounts_fetched_barrier_.is_null());
+    all_accounts_fetched_barrier_.Run();
+    active_fetchers_.erase(gaia_id);
+  }
 
   // TODO(crbug.com/532419984): Restrict this computation if the removed account
   // is the current preferred account.
@@ -111,7 +118,12 @@ void AccountPreviewDataServiceImpl::SetFetchCompleteCallbackForTesting(
   fetch_complete_callback_for_testing_ = std::move(callback);
 }
 
-void AccountPreviewDataServiceImpl::OnFetchCompleted(
+void AccountPreviewDataServiceImpl::SetAllDataAvailableCallbackForTesting(
+    base::OnceClosure callback) {
+  all_data_available_callback_for_testing_ = std::move(callback);
+}
+
+void AccountPreviewDataServiceImpl::OnSingleFetchCompleted(
     const GaiaId& gaia_id,
     std::optional<AccountPreviewData> data) {
   bool loaded = data.has_value();
@@ -123,6 +135,9 @@ void AccountPreviewDataServiceImpl::OnFetchCompleted(
   active_fetchers_.erase(gaia_id);
   // `gaia_id` is owned by the fetcher and should not be used beyond this point.
 
+  CHECK(!all_accounts_fetched_barrier_.is_null());
+  all_accounts_fetched_barrier_.Run();
+
   if (fetch_complete_callback_for_testing_) {
     std::move(fetch_complete_callback_for_testing_).Run();
   }
@@ -133,8 +148,6 @@ void AccountPreviewDataServiceImpl::OnRefreshTokensLoaded() {
     EnsureAllAccountsFetched();
   }
 }
-
-
 
 void AccountPreviewDataServiceImpl::OnIdentityManagerShutdown(
     IdentityManager* identity_manager) {
@@ -156,12 +169,29 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched() {
   }
 
   deferred_refresh_pending_ = false;
+
+  std::vector<GaiaId> gaia_ids_to_fetch;
   for (const auto& account :
        identity_manager_->GetAccountsWithRefreshTokens()) {
     account_id_to_gaia_id_[account.account_id] = account.gaia;
     if (!cached_data_.contains(account.gaia)) {
-      FetchAccountPreviewData(account.gaia);
+      gaia_ids_to_fetch.push_back(account.gaia);
     }
+  }
+
+  if (gaia_ids_to_fetch.empty()) {
+    all_accounts_fetched_barrier_.Reset();
+    OnAllFetchesCompleted();
+    return;
+  }
+
+  all_accounts_fetched_barrier_ = base::BarrierClosure(
+      gaia_ids_to_fetch.size(),
+      base::BindOnce(&AccountPreviewDataServiceImpl::OnAllFetchesCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  for (const auto& gaia_id : gaia_ids_to_fetch) {
+    FetchAccountPreviewData(gaia_id);
   }
 }
 
@@ -178,15 +208,35 @@ void AccountPreviewDataServiceImpl::FetchAccountPreviewData(
 }
 
 void AccountPreviewDataServiceImpl::StartFetch(const GaiaId& gaia_id) {
+  // Existing fetchers will still call `all_accounts_fetched_barrier_` as
+  // expected. It is safe to just ignore the request.
   if (active_fetchers_.contains(gaia_id)) {
+    return;
+  }
+
+  // Ensures that the account was not removed while waiting for the network. If
+  // so, do not start the fetch.
+  if (!identity_manager_->HasAccountWithRefreshToken(
+          CoreAccountId::FromGaiaId(gaia_id))) {
     return;
   }
 
   CHECK(!network_delay_helper_->AreNetworkCallsDelayed());
   active_fetchers_[gaia_id] = std::make_unique<AccountPreviewDataFetcher>(
       gaia_id, identity_manager_, url_loader_factory_, channel_,
-      base::BindOnce(&AccountPreviewDataServiceImpl::OnFetchCompleted,
+      base::BindOnce(&AccountPreviewDataServiceImpl::OnSingleFetchCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AccountPreviewDataServiceImpl::OnAllFetchesCompleted() {
+  all_accounts_fetched_barrier_.Reset();
+
+  // TODO(crbug.com/530144650): Implement heuristic to compute the preferred
+  // account and preferred data types, and store it in prefs.
+
+  if (all_data_available_callback_for_testing_) {
+    std::move(all_data_available_callback_for_testing_).Run();
+  }
 }
 
 }  // namespace signin

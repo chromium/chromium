@@ -56,6 +56,13 @@ void MockFailedPreviewsFetch(
     network::TestURLLoaderFactory* test_url_loader_factory,
     net::Error error_code);
 
+// Simulates successful responses for the oldest matching pending stats and
+// previews fetches.
+void SimulateSuccessfulFetch(
+    network::TestURLLoaderFactory* test_url_loader_factory,
+    const DataTypeCounts& counts = {},
+    const std::vector<std::string>& domains = {});
+
 }  // namespace signin
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_ACCOUNT_PREVIEW_DATA_TEST_UTIL_H_

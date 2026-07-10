@@ -4,6 +4,8 @@
 
 #include "components/signin/core/browser/account_preview_data_service_impl.h"
 
+#include "base/functional/callback_forward.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -32,6 +34,40 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace signin {
+
+class AllDataAvailableWaiter {
+ public:
+  explicit AllDataAvailableWaiter(AccountPreviewDataServiceImpl* service)
+      : service_(service) {
+    service_->SetAllDataAvailableCallbackForTesting(base::BindOnce(
+        &AllDataAvailableWaiter::OnAllDataAvailable, base::Unretained(this)));
+  }
+
+  ~AllDataAvailableWaiter() {
+    // Clears the callback to avoid any unexpected callback after the waiter is
+    // destroyed.
+    service_->SetAllDataAvailableCallbackForTesting(base::OnceClosure());
+  }
+
+  bool is_all_data_available() const { return is_all_data_available_; }
+
+  void Wait() {
+    if (is_all_data_available_) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+ private:
+  void OnAllDataAvailable() {
+    is_all_data_available_ = true;
+    run_loop_.Quit();
+  }
+
+  raw_ptr<AccountPreviewDataServiceImpl> service_;
+  bool is_all_data_available_ = false;
+  base::RunLoop run_loop_;
+};
 
 class AccountPreviewDataServiceTest : public testing::Test {
  public:
@@ -267,6 +303,44 @@ TEST_F(AccountPreviewDataServiceTest,
   EXPECT_TRUE(service_->HasActiveFetcherForTesting(account2.gaia));
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(AccountPreviewDataServiceTest, OnAllFetchesCompleted) {
+  AllDataAvailableWaiter waiter(service_.get());
+
+  // 1. Make both accounts available. This starts stats fetch for both.
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+
+  // We should have 4 pending requests (2 for stats, 2 for previews).
+  ASSERT_EQ(4, test_url_loader_factory_.NumPending());
+
+  // 2. Resolve account1's fetch.
+  base::RunLoop account1_completed_loop;
+  service_->SetFetchCompleteCallbackForTesting(
+      account1_completed_loop.QuitClosure());
+  SimulateSuccessfulFetch(&test_url_loader_factory_);
+  account1_completed_loop.Run();
+
+  // account1 is cached, but account2 is still fetching (its stats fetch is
+  // pending). The callback should NOT have been triggered.
+  EXPECT_FALSE(waiter.is_all_data_available());
+  EXPECT_TRUE(service_->GetAccountPreviewData(account1.gaia).has_value());
+  EXPECT_FALSE(service_->GetAccountPreviewData(account2.gaia).has_value());
+
+  // 3. Resolve account2's fetch.
+  SimulateSuccessfulFetch(&test_url_loader_factory_);
+
+  // Run the loop. Now that both fetches are completed, the callback should
+  // trigger and quit the loop.
+  waiter.Wait();
+  EXPECT_TRUE(waiter.is_all_data_available());
+  EXPECT_TRUE(service_->GetAccountPreviewData(account1.gaia).has_value());
+  EXPECT_TRUE(service_->GetAccountPreviewData(account2.gaia).has_value());
+}
+#endif
+
 TEST_F(AccountPreviewDataServiceTest, GetPreferredAccountForPromo) {
   // 1. Initially empty when no cookies.
   {
@@ -436,6 +510,63 @@ TEST_F(AccountPreviewDataServiceTest, QueuesFetchWhenOffline) {
   EXPECT_EQ(5U, data->counts[syncer::BOOKMARKS]);
   EXPECT_EQ(10U, data->counts[syncer::PASSWORDS]);
   EXPECT_EQ(15U, data->counts[syncer::HISTORY]);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       DoesNotStartFetchIfAccountRemovedWhileWaitingForNetwork) {
+  // 1. Start with network calls delayed so that StartFetch() is queued.
+  network_delay_helper_->SetNetworkCallsDelayed(true);
+
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+  service_->OnRefreshTokenUpdatedForAccount(account_info);
+
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account_info.gaia));
+
+  // 2. Remove the account while network calls are still delayed.
+  identity_test_env_.RemoveRefreshTokenForAccount(account_info.account_id);
+
+  // 3. Unblock network calls. The queued StartFetch() callback will run,
+  // but should return early without starting a fetcher since the account was
+  // removed.
+  network_delay_helper_->SetNetworkCallsDelayed(false);
+
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account_info.gaia));
+  EXPECT_FALSE(service_->GetAccountPreviewData(account_info.gaia).has_value());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       RemovingAccountDuringActiveFetchCompletesBarrier) {
+  // Make account1 and account2 available. This starts active fetches for both,
+  // but we do NOT provide mock network responses yet, so they remain active.
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+
+  ASSERT_TRUE(service_->HasActiveFetcherForTesting(account1.gaia));
+  ASSERT_TRUE(service_->HasActiveFetcherForTesting(account2.gaia));
+
+  // Set up a waiter for all fetches completed.
+  base::RunLoop all_fetches_run_loop;
+  service_->SetAllDataAvailableCallbackForTesting(
+      all_fetches_run_loop.QuitClosure());
+
+  // Remove account1 while its fetch is still active.
+  // This should run the barrier once, and erase the fetcher for account1.
+  identity_test_env_.RemoveRefreshTokenForAccount(account1.account_id);
+
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account1.gaia));
+
+  // Since account1 was removed, mocking a successful fetch would trigger the
+  // fetch for account2.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  // Wait for all data available (which triggers when the barrier runs to
+  // completion).
+  all_fetches_run_loop.Run();
+
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account2.gaia));
 }
 
 }  // namespace signin

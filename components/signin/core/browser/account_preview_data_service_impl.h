@@ -62,6 +62,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   }
 
   void SetFetchCompleteCallbackForTesting(base::OnceClosure callback);
+  void SetAllDataAvailableCallbackForTesting(base::OnceClosure callback);
 
   // IdentityManager::Observer implementation:
   void OnRefreshTokenUpdatedForAccount(
@@ -76,8 +77,9 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void EnsureAllAccountsFetched();
   void FetchAccountPreviewData(const GaiaId& gaia_id);
   void StartFetch(const GaiaId& gaia_id);
-  void OnFetchCompleted(const GaiaId& gaia_id,
-                        std::optional<AccountPreviewData> data);
+  void OnSingleFetchCompleted(const GaiaId& gaia_id,
+                              std::optional<AccountPreviewData> data);
+  void OnAllFetchesCompleted();
 
   raw_ptr<IdentityManager> identity_manager_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -89,12 +91,14 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   bool deferred_refresh_pending_ = false;
 
   base::OnceClosure fetch_complete_callback_for_testing_;
+  base::OnceClosure all_data_available_callback_for_testing_;
 
   absl::flat_hash_map<GaiaId, AccountPreviewData, GaiaId::Hash> cached_data_;
   absl::flat_hash_map<GaiaId,
                       std::unique_ptr<AccountPreviewDataFetcher>,
                       GaiaId::Hash>
       active_fetchers_;
+  base::RepeatingClosure all_accounts_fetched_barrier_;
 
   // Mapping used to look up gaia_id based on account_id, used when an account
   // is removed.
