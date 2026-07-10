@@ -58,6 +58,11 @@ class OmniboxContextMenu : public views::MenuDelegate,
   // ui::MenuModelDelegate:
   void OnIconChanged(int command_id) override;
 
+  // Returns minimum preferred width for `menu`. Submenus return the default
+  // width; top-level menu width depends on whether a shared tabs submenu is
+  // present.
+  int GetMinimumMenuWidth(const views::MenuItemView* menu) const;
+
  private:
   const raw_ptr<views::Widget> parent_widget_;
   std::unique_ptr<OmniboxContextMenuController> controller_;

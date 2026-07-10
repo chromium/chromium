@@ -88,10 +88,9 @@ int OmniboxContextMenu::GetMaxWidthForMenu(views::MenuItemView* menu) {
       !base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox)) {
     return kDefaultMenuWidth;
   }
-  // If is top level menu, return main menu's width;
-  // otherwise it is the submenu, so return submenu's (default width).
-  int width =
-      (menu == menu_) ? kMainMenuWidthWithSubmenuEnabled : kDefaultMenuWidth;
+  // If top level menu, return main menu's minimum width plus submenu
+  // width; otherwise return default width (320px) for submenus.
+  int width = GetMinimumMenuWidth(menu);
   // The context menu has drop shadow and borders drawn. Ensure that
   // those are not taken into account when calculating the minimum width.
   if (menu->HasSubmenu() && menu->GetSubmenu()->GetScrollViewContainer()) {
@@ -145,15 +144,13 @@ void OmniboxContextMenu::RunMenuAt(const gfx::Point& point,
   if (menu_ && menu_->HasSubmenu()) {
     if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
         base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox)) {
-      // Set main menu to the narrower width when a submenu is enabled.
-      menu_->GetSubmenu()->set_minimum_preferred_width(
-          kMainMenuWidthWithSubmenuEnabled);
+      menu_->GetSubmenu()->set_minimum_preferred_width(GetMinimumMenuWidth(menu_));
       // Apply preferred width to each submenu width; this is more robust
       // than applying the width to the submenu itself or a command ID, which
       // causes the width of submenu items to be incorrect.
       for (views::MenuItemView* item : menu_->GetSubmenu()->GetMenuItems()) {
         if (item->HasSubmenu()) {
-          item->GetSubmenu()->set_minimum_preferred_width(kDefaultMenuWidth);
+          item->GetSubmenu()->set_minimum_preferred_width(GetMinimumMenuWidth(item));
         }
       }
     } else {
@@ -246,4 +243,14 @@ void OmniboxContextMenu::OnIconChanged(int command_id) {
   if (menu_item) {
     menu_item->SetIcon(model->GetIconAt(index.value()));
   }
+}
+
+int OmniboxContextMenu::GetMinimumMenuWidth(const views::MenuItemView* menu) const {
+  if (menu != menu_) {
+    return kDefaultMenuWidth;
+  }
+  bool has_tabs_submenu =
+      controller_ && controller_->shared_tabs_menu_model() != nullptr;
+  return has_tabs_submenu ? kMainMenuWidthWithSubmenuEnabled
+                          : kDefaultMenuWidth;
 }
