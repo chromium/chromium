@@ -67,12 +67,13 @@ TEST_F(ActorContainerConfigSlotTest, Assign_NonemptyProto) {
   EXPECT_TRUE(slot.value().IsActuationAllowed(kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigSlotTest, Assign_AbsentProtoThenIgnoresSecondCall) {
+TEST_F(ActorContainerConfigSlotTest, Assign_AbsentProtoThenAcceptsSecondCall) {
   ActorContainerConfigSlot slot;
   slot.Assign(std::nullopt);
 
-  slot.Assign(AgentContainerConfig());
-  EXPECT_FALSE(slot.has_value());
+  slot.Assign(CreateConfigAllowingNavigation(kExampleHost));
+  EXPECT_TRUE(slot.has_value());
+  EXPECT_TRUE(slot.value().IsActuationAllowed(kExampleOrigin));
 }
 
 TEST_F(ActorContainerConfigSlotTest, Assign_PresentProtoThenIgnoresSecondCall) {

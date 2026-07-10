@@ -14,8 +14,7 @@ class AgentContainerConfig;
 
 namespace origin_gating {
 
-// A slot that optionally holds an ActorContainerConfig. The slot may be
-// assigned to at most once, and it may be locked in the "empty" state.
+// A slot that optionally holds an ActorContainerConfig.
 class ActorContainerConfigSlot {
  public:
   ActorContainerConfigSlot();
@@ -26,8 +25,7 @@ class ActorContainerConfigSlot {
   ~ActorContainerConfigSlot();
 
   // Assigns the `config` to this instance, if provided. This method is a no-op
-  // except for the first time it is called (even if the first call provided
-  // `std::nullopt`).
+  // except for the first time it is called with a non-nullopt payload.
   void Assign(
       base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
           config);
@@ -37,7 +35,6 @@ class ActorContainerConfigSlot {
   const ActorContainerConfig& value() const { return config_.value(); }
 
  private:
-  bool assigned_ = false;
   std::optional<ActorContainerConfig> config_;
 };
 
