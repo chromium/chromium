@@ -47,10 +47,8 @@ SkillsUiWindowController* SkillsUiWindowController::From(
 void SkillsUiWindowController::OnSkillSaved(std::string_view skill_id,
                                             bool hide_toast_button) {
   last_saved_skill_id_ = skill_id;
-  ToastId toast_id = hide_toast_button ? ToastId::kSkillSavedWithoutInvokeButton
-                                       : ToastId::kSkillSaved;
-  ToastParams params(toast_id);
-  ShowSkillToast(std::move(params));
+  ShowToast(hide_toast_button ? ToastId::kSkillSavedWithoutInvokeButton
+                              : ToastId::kSkillSaved);
 }
 
 void SkillsUiWindowController::OnSkillDeleted(std::string_view skill_id) {
@@ -66,6 +64,11 @@ void SkillsUiWindowController::OnSkillDeleted(std::string_view skill_id) {
   params.toast_close_callback = base::ScopedClosureRunner(
       base::BindOnce(&SkillsUiWindowController::OnToastClosed,
                      weak_factory_.GetWeakPtr(), last_deleted_skill_id_));
+  ShowSkillToast(std::move(params));
+}
+
+void SkillsUiWindowController::ShowToast(ToastId toast_id) {
+  ToastParams params(toast_id);
   ShowSkillToast(std::move(params));
 }
 

@@ -58,7 +58,7 @@ export function urlMatchesApiAllowedOrigin(url: URL): boolean {
 // TODO(b/529400161): Consider moving to another file.
 export interface SkillsWebviewBridgeDelegate {
   onError(): void;
-  onShowToast(skillId: string, toastType: ToastType): void;
+  onShowToast(toastType: ToastType): void;
 }
 
 /**
@@ -199,13 +199,13 @@ export class SkillsWebviewBridge {
     }
   }
 
-  private handleShowToastMessage(data: {skillId: string, toastType: string}) {
-    // TODO(b/529320994): Handle other toast strings in future.
+  private handleShowToastMessage(data: {toastType: string}) {
     // TODO(b/529405584): Refactor toastType to be an enum & consider how we
     // want to surface errors to the user if skillId does not exist.
-    if (data.toastType === 'save_and_invoke') {
-      assert(data.skillId);
-      this.delegate_.onShowToast(data.skillId, ToastType.kSaveAndInvoke);
+    if (data.toastType === 'save') {
+      this.delegate_.onShowToast(ToastType.kSave);
+    } else if (data.toastType === 'delete') {
+      this.delegate_.onShowToast(ToastType.kDelete);
     }
   }
 

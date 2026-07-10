@@ -169,13 +169,11 @@ suite('SkillsWebviewBridgeTest', () => {
     mockTimer.uninstall();
   });
 
-  test('HostReceivesShowToastMessage_SaveAndInvoke', () => {
-    let receivedSkillId = '';
+  test('HostReceivesShowToastMessage_Delete', () => {
     let receivedToastType: ToastType|null = null;
     const delegate: SkillsWebviewBridgeDelegate = {
       onError: () => {},
-      onShowToast: (skillId, toastType) => {
-        receivedSkillId = skillId;
+      onShowToast: (toastType: ToastType) => {
         receivedToastType = toastType;
       },
     };
@@ -201,15 +199,13 @@ suite('SkillsWebviewBridgeTest', () => {
     const toastEvent = new MessageEvent('message', {
       data: {
         type: SKILLS_SHOW_TOAST,
-        toastType: 'save_and_invoke',
-        skillId: 'test-skill-id',
+        toastType: 'delete',
       },
       origin: new URL(SKILLS_HOST_URL).origin,
       source: window,
     });
     window.dispatchEvent(toastEvent);
 
-    assertEquals('test-skill-id', receivedSkillId);
-    assertEquals(ToastType.kSaveAndInvoke, receivedToastType);
+    assertEquals(ToastType.kDelete, receivedToastType);
   });
 });

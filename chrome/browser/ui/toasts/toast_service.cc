@@ -411,13 +411,15 @@ void ToastService::RegisterToasts(
           features::IsRoundedIconsEnabled() ? kDeleteIcon : kDeleteOldIcon,
           IDS_SKILL_DELETED_TOAST_BODY)
           .AddCloseButton()
-          .AddActionButton(IDS_SKILL_UNDO_TOAST_BUTTON,
-                           base::BindRepeating(
-                               [](BrowserWindowInterface* window) {
-                                 skills::SkillsUiWindowController::From(window)
-                                     ->UndoLastSkillRemoval();
-                               },
-                               base::Unretained(browser_window_interface)))
+          .AddActionButton(
+              IDS_SKILL_UNDO_TOAST_BUTTON,
+              // TODO(crbug.com/532203296): Wire undo callback for v2.
+              base::BindRepeating(
+                  [](BrowserWindowInterface* window) {
+                    skills::SkillsUiWindowController::From(window)
+                        ->UndoLastSkillRemoval();
+                  },
+                  base::Unretained(browser_window_interface)))
           .Build());
 
   toast_registry_->RegisterToast(

@@ -42,7 +42,7 @@ class SkillsPageHandlerV2 : public ::skills::mojom::SkillsPageHandler {
 
   // ::skills::mojom::SkillsPageHandler:
   void SyncCookies(SyncCookiesCallback callback) override;
-  void ShowToast(const std::string& skill_id, ToastType toast_type) override;
+  void ShowToast(ToastType toast_type) override;
 
  private:
   mojo::Receiver<::skills::mojom::SkillsPageHandler> receiver_;

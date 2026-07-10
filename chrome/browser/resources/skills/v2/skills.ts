@@ -36,7 +36,7 @@ async function init() {
 
   const delegate: SkillsWebviewBridgeDelegate = {
     onError: () => showError(webview, ErrorType.REMOTE_AUTHORITY_UNREACHABLE),
-    onShowToast: (skillId, toastType) => handler.showToast(skillId, toastType),
+    onShowToast: (toastType) => handler.showToast(toastType),
   };
 
   // Initiate handshake. Show error page on failure.

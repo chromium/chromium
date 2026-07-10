@@ -35,6 +35,9 @@ class SkillsUiWindowController {
   // Called after a skill has been deleted from the UI.
   void OnSkillDeleted(std::string_view skill_id);
 
+  // Shows a toast for the given ToastId.
+  void ShowToast(ToastId toast_id);
+
   // Called after a skill deletion has been undone from the UI.
   void UndoLastSkillRemoval();
   // Invokes last saved skill in sidepanel.
