@@ -9587,6 +9587,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_ENABLE_PIN_BUTTON_LABEL" desc="Accessibility label for the button that pins reading mode to the toolbar.">
         Unpin reading mode
       </message>
+      <message name="IDS_READING_MODE_APPEARANCE_LABEL" desc="Accessibility label for the appearance combobox of the reading mode feature.">
+        Appearance
+      </message>
       <message name="IDS_READING_MODE_COLORS_COMBOBOX_LABEL" desc="Accessibility label for the colors combobox of the reading mode feature.">
         Color theme
       </message>
