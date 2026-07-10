@@ -404,7 +404,8 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
         result->new_hidden_state =
             !vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs();
         result->new_toggle_state =
-            vertical_tab_strip_state_controller->IsCollapsed();
+            vertical_tab_strip_state_controller->GetCollapseState() !=
+            tabs::VerticalTabStripCollapseState::kExpanded;
       }
       break;
     }
