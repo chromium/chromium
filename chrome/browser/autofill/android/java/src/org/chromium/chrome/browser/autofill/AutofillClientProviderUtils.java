@@ -126,12 +126,6 @@ public class AutofillClientProviderUtils {
     }
 
     @CalledByNative
-    public static void unsetThirdPartyModePref() {
-        SharedPreferencesManager prefManager = ChromeSharedPreferences.getInstance();
-        prefManager.removeKey(AUTOFILL_THIRD_PARTY_MODE_STATE);
-    }
-
-    @CalledByNative
     public static void updatePackageUsedForAutofill(
             @JniType("PrefService*") PrefService prefs, boolean currentlyUsesPlatformAutofill) {
         if (currentlyUsesPlatformAutofill) {

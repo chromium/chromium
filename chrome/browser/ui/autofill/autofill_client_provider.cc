@@ -44,14 +44,8 @@ void RecordWhetherAndroidPrefResets(PrefService& prefs,
 // Sets a shared pref that allows external apps to use a ContentResolver to
 // figure out whether Chrome is using platform autofill over the default.
 void SetSharedPrefForSettingsContentProvider(bool uses_platform_autofill) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillThirdPartyModeContentProvider)) {
-    Java_AutofillClientProviderUtils_setThirdPartyModePref(
-        base::android::AttachCurrentThread(), uses_platform_autofill);
-  } else {
-    Java_AutofillClientProviderUtils_unsetThirdPartyModePref(
-        base::android::AttachCurrentThread());
-  }
+  Java_AutofillClientProviderUtils_setThirdPartyModePref(
+      base::android::AttachCurrentThread(), uses_platform_autofill);
 }
 
 AndroidAutofillAvailabilityStatus GetAndroidAutofillAvailabilityStatus(
