@@ -48,6 +48,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -63,6 +64,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "pdf/buildflags.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -185,6 +187,14 @@ void DebuggerApiTest::SetUpCommandLine(base::CommandLine* command_line) {
   // We need to hold onto |command_line| in order to modify it during the test.
   command_line_ = command_line;
 }
+
+class DebuggerFileAccessApiTest : public DebuggerApiTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DebuggerApiTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(::switches::kAllowFileAccessFromFiles);
+  }
+};
 
 void DebuggerApiTest::SetUpOnMainThread() {
   ExtensionApiTest::SetUpOnMainThread();
@@ -317,10 +327,16 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   EXPECT_TRUE(RunAttachFunction(other_ext_url, std::string()));
 }
 
-IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
+IN_PROC_BROWSER_TEST_F(DebuggerFileAccessApiTest,
                        DebuggerAllowedOnFileUrlsWithFileAccess) {
+  base::FilePath worker_path =
+      test_data_dir_.AppendASCII("debugger_file_access")
+          .AppendASCII("worker.html");
+  GURL worker_url = net::FilePathToFileURL(worker_path);
+  std::string custom_arg = worker_url.spec() + "|enabled";
+
   EXPECT_TRUE(RunExtensionTest("debugger_file_access",
-                               {.custom_arg = "enabled"},
+                               {.custom_arg = custom_arg.c_str()},
                                {.allow_file_access = true}))
       << message_;
 }
@@ -328,9 +344,17 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // TODO(crbug.com/441339825): Fails on desktop Android with an error about
 // access to localhost.
-IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
+IN_PROC_BROWSER_TEST_F(DebuggerFileAccessApiTest,
                        DebuggerNotAllowedOnFileUrlsWithoutAccess) {
-  EXPECT_TRUE(RunExtensionTest("debugger_file_access")) << message_;
+  base::FilePath worker_path =
+      test_data_dir_.AppendASCII("debugger_file_access")
+          .AppendASCII("worker.html");
+  GURL worker_url = net::FilePathToFileURL(worker_path);
+  std::string custom_arg = worker_url.spec() + "|disabled";
+
+  EXPECT_TRUE(RunExtensionTest("debugger_file_access",
+                               {.custom_arg = custom_arg.c_str()}))
+      << message_;
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

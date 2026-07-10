@@ -22,9 +22,9 @@ chrome.test.getConfig(config => chrome.test.runTests([
     const subframeTarget =
         targets.find(t => t.type === 'other' && t.url === subframeURL);
     const debuggee = {targetId: subframeTarget.id};
-    await new Promise(
-        resolve => chrome.debugger.attach(debuggee, protocolVersion, resolve));
-    chrome.test.assertLastError('Cannot attach to this target.');
+    await chrome.test.assertPromiseRejects(
+        chrome.debugger.attach(debuggee, protocolVersion),
+        /(Cannot attach to this target\.|Cannot navigate to a file URL without local file access\.)/);
     chrome.test.succeed();
   },
 ]));

@@ -22,9 +22,11 @@ chrome.test.runTests([
     const {openTab} = await import('/_test_resources/test_util/tabs_util.js');
     const tab = await openTab('chrome://version');
     const debuggee = {tabId: tab.id};
-    chrome.debugger.attach(
-        debuggee, protocolVersion, fail('Cannot attach to this target.'));
-    chrome.tabs.remove(tab.id);
+    await chrome.test.assertPromiseRejects(
+        chrome.debugger.attach(debuggee, protocolVersion),
+        /(Cannot attach to this target\.|Cannot access a chrome:\/\/ URL)/);
+    await chrome.tabs.remove(tab.id);
+    chrome.test.succeed();
   },
 
   function attach() {

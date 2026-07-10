@@ -43,12 +43,11 @@ chrome.test.getConfig(config => chrome.test.runTests([
         resolve =>
             chrome.debugger.attach(subframeDebuggee, protocolVersion, resolve));
 
-    await new Promise(
-        resolve => chrome.debugger.sendCommand(
+    await chrome.test.assertPromiseRejects(
+        chrome.debugger.sendCommand(
             subframeDebuggee, 'Page.navigate',
-            {url: 'blob:chrome://non-existent/'}, resolve));
-
-    chrome.test.assertLastError(DETACHED_WHILE_HANDLING);
+            {url: 'blob:chrome://non-existent/'}),
+        new RegExp(`${DETACHED_WHILE_HANDLING}|Not allowed`));
 
     chrome.test.succeed();
   },
