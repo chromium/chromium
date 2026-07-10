@@ -573,13 +573,14 @@ TEST_F(HostResolverServiceEndpointRequestTest, ResolveLocally) {
   UseNonDelayedDnsRules("ok");
 
   // The first local only request should complete synchronously with a cache
-  // miss.
+  // miss. The return value should be squashed while GetResolveErrorInfo()
+  // should provide the detailed error.
   {
     ResolveHostParameters parameters;
     parameters.source = HostResolverSource::LOCAL_ONLY;
     Requester requester = CreateRequester("https://ok", std::move(parameters));
     int rv = requester.Start();
-    EXPECT_THAT(rv, IsError(ERR_DNS_CACHE_MISS));
+    EXPECT_THAT(rv, IsError(ERR_NAME_NOT_RESOLVED));
     EXPECT_THAT(requester.request()->GetResolveErrorInfo(),
                 ResolveErrorInfo(ERR_DNS_CACHE_MISS));
   }
@@ -616,6 +617,31 @@ TEST_F(HostResolverServiceEndpointRequestTest, ResolveLocally) {
                     ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
                     ElementsAre(MakeIPEndPoint("::1", 443)))));
   }
+}
+
+// Test that a request fails with a squashed error code when its
+// ResolveContext is shut down before Start(). GetResolveErrorInfo() should
+// provide the detailed error.
+TEST_F(HostResolverServiceEndpointRequestTest, ContextShutDownBeforeStart) {
+  UseNonDelayedDnsRules("ok");
+
+  auto resolve_context2 = std::make_unique<ResolveContext>(
+      resolve_context_->url_request_context(), /*enable_caching=*/true);
+  resolver_->RegisterResolveContext(resolve_context2.get());
+
+  Requester requester(resolver_->CreateServiceEndpointRequest(
+      HostResolver::Host(url::SchemeHostPort(GURL("https://ok"))),
+      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle,
+      NetLogWithSource(), ResolveHostParameters(), resolve_context2.get()));
+
+  // Simulate a context shutdown before Start().
+  resolver_->DeregisterResolveContext(resolve_context2.get());
+  resolve_context2.reset();
+
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(requester.request()->GetResolveErrorInfo(),
+              ResolveErrorInfo(ERR_CONTEXT_SHUT_DOWN));
 }
 
 // Test that a local only request fails due to a blocked reachability check.
@@ -1572,7 +1598,9 @@ TEST_F(HostResolverServiceEndpointRequestTest,
   parameters.source = HostResolverSource::LOCAL_ONLY;
   Requester requester = CreateRequester("https://ok", std::move(parameters));
   int rv = requester.Start();
-  EXPECT_THAT(rv, IsError(ERR_DNS_CACHE_MISS));
+  EXPECT_THAT(rv, IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(requester.request()->GetResolveErrorInfo(),
+              ResolveErrorInfo(ERR_DNS_CACHE_MISS));
   EXPECT_FALSE(requester.request()->GetStaleInfo());
 }
 

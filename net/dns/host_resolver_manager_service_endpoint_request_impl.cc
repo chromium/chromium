@@ -93,13 +93,15 @@ int HostResolverManager::ServiceEndpointRequestImpl::Start(Delegate* delegate) {
 
   if (!resolve_context_) {
     error_info_ = ResolveErrorInfo(ERR_CONTEXT_SHUT_DOWN);
-    return ERR_CONTEXT_SHUT_DOWN;
+    return HostResolver::SquashErrorCode(ERR_CONTEXT_SHUT_DOWN);
   }
 
   delegate_ = delegate;
 
   next_state_ = State::kCheckIPv6Reachability;
-  return DoLoop(OK);
+  // Squash the error code like asynchronous completions. The detailed error
+  // is available via GetResolveErrorInfo().
+  return HostResolver::SquashErrorCode(DoLoop(OK));
 }
 
 const HostCache::EntryStaleness*
@@ -182,6 +184,7 @@ HostResolverManager::ServiceEndpointRequestImpl::GetResolutionDetails() const {
 
 ResolveErrorInfo
 HostResolverManager::ServiceEndpointRequestImpl::GetResolveErrorInfo() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return error_info_;
 }
 
