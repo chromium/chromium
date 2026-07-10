@@ -35,6 +35,8 @@ struct FieldTrialTestingExperiment {
   const char* const forcing_flag;
   const base::span<const char* const> hardware_classes;
   const base::span<const char* const> exclude_hardware_classes;
+  const base::span<const char* const> hardware_manufacturers;
+  const base::span<const char* const> exclude_hardware_manufacturers;
 };
 
 struct FieldTrialTestingStudy {

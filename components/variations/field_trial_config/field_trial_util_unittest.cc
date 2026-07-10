@@ -47,6 +47,8 @@ class ExperimentBuilder {
         forcing_flag,
         hardware_classes,
         exclude_hardware_classes,
+        hardware_manufacturers,
+        exclude_hardware_manufacturers,
     };
   }
 
@@ -62,6 +64,8 @@ class ExperimentBuilder {
   const char* forcing_flag = nullptr;
   base::raw_span<const char*> hardware_classes = {};
   base::raw_span<const char*> exclude_hardware_classes = {};
+  base::raw_span<const char*> hardware_manufacturers = {};
+  base::raw_span<const char*> exclude_hardware_manufacturers = {};
 };
 
 // TODO(crbug.com/40742801): Remove when fake VariationsServiceClient created.
@@ -1122,5 +1126,146 @@ TEST_F(FieldTrialUtilTest,
   EXPECT_EQ("TestGroup", base::FieldTrialList::FindFullName("TestTrial"));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(FieldTrialUtilTest,
+       AssociateParamsFromFieldTrialConfigWithHardwareManufacturerMatch) {
+  std::string hardware_manufacturer =
+      ClientFilterableState::GetHardwareManufacturer();
+  std::string unmatched_hardware_manufacturer = hardware_manufacturer + "foo";
+  const char* manufacturers[] = {
+      hardware_manufacturer.c_str(),
+      unmatched_hardware_manufacturer.c_str(),
+  };
+
+  const Study::Platform platforms[] = {Study::PLATFORM_ANDROID,
+                                       Study::PLATFORM_ANDROID_WEBVIEW};
+  ExperimentBuilder experiment_builder;
+  experiment_builder.name = "TestGroup";
+  experiment_builder.platforms = platforms;
+  experiment_builder.hardware_manufacturers = manufacturers;
+  FieldTrialTestingExperiment experiment[]{experiment_builder.Build()};
+
+  FieldTrialTestingStudy study[]{{
+      /*name=*/"TestTrial",
+      /*experiments=*/experiment,
+  }};
+
+  FieldTrialTestingConfig config = {
+      /*studies=*/study,
+  };
+
+  base::FeatureList feature_list;
+  AssociateParamsFromFieldTrialConfig(
+      config, Study::PLATFORM_ANDROID_WEBVIEW,
+      variation_service_client_.GetCurrentFormFactor(), &feature_list);
+
+  EXPECT_EQ("TestGroup", base::FieldTrialList::FindFullName("TestTrial"));
+}
+
+TEST_F(FieldTrialUtilTest,
+       AssociateParamsFromFieldTrialConfigWithHardwareManufacturerMismatch) {
+  std::string hardware_manufacturer =
+      ClientFilterableState::GetHardwareManufacturer();
+  std::string unmatched_hardware_manufacturer = hardware_manufacturer + "foo";
+  const char* manufacturers[] = {
+      unmatched_hardware_manufacturer.c_str(),
+  };
+
+  const Study::Platform platforms[] = {Study::PLATFORM_ANDROID,
+                                       Study::PLATFORM_ANDROID_WEBVIEW};
+  ExperimentBuilder experiment_builder;
+  experiment_builder.name = "TestGroup";
+  experiment_builder.platforms = platforms;
+  experiment_builder.hardware_manufacturers = manufacturers;
+  FieldTrialTestingExperiment experiment[]{experiment_builder.Build()};
+
+  FieldTrialTestingStudy study[]{{
+      /*name=*/"TestTrial",
+      /*experiments=*/experiment,
+  }};
+
+  FieldTrialTestingConfig config = {
+      /*studies=*/study,
+  };
+
+  base::FeatureList feature_list;
+  AssociateParamsFromFieldTrialConfig(
+      config, Study::PLATFORM_ANDROID_WEBVIEW,
+      variation_service_client_.GetCurrentFormFactor(), &feature_list);
+
+  EXPECT_EQ("", base::FieldTrialList::FindFullName("TestTrial"));
+}
+
+TEST_F(FieldTrialUtilTest,
+       AssociateParamsFromFieldTrialConfigWithExcludHardwareManufacturerMatch) {
+  std::string hardware_manufacturer =
+      ClientFilterableState::GetHardwareManufacturer();
+  std::string unmatched_hardware_manufacturer = hardware_manufacturer + "foo";
+  const char* manufacturers[] = {
+      hardware_manufacturer.c_str(),
+      unmatched_hardware_manufacturer.c_str(),
+  };
+
+  const Study::Platform platforms[] = {Study::PLATFORM_ANDROID,
+                                       Study::PLATFORM_ANDROID_WEBVIEW};
+  ExperimentBuilder experiment_builder;
+  experiment_builder.name = "TestGroup";
+  experiment_builder.platforms = platforms;
+  experiment_builder.exclude_hardware_manufacturers = manufacturers;
+  FieldTrialTestingExperiment experiment[]{experiment_builder.Build()};
+
+  FieldTrialTestingStudy study[]{{
+      /*name=*/"TestTrial",
+      /*experiments=*/experiment,
+  }};
+
+  FieldTrialTestingConfig config = {
+      /*studies=*/study,
+  };
+
+  base::FeatureList feature_list;
+  AssociateParamsFromFieldTrialConfig(
+      config, Study::PLATFORM_ANDROID_WEBVIEW,
+      variation_service_client_.GetCurrentFormFactor(), &feature_list);
+
+  EXPECT_EQ("", base::FieldTrialList::FindFullName("TestTrial"));
+}
+
+TEST_F(
+    FieldTrialUtilTest,
+    AssociateParamsFromFieldTrialConfigWithExcludHardwareManufacturerMismatch) {
+  std::string hardware_manufacturer =
+      ClientFilterableState::GetHardwareManufacturer();
+  std::string unmatched_hardware_manufacturer = hardware_manufacturer + "foo";
+  const char* manufacturers[] = {
+      unmatched_hardware_manufacturer.c_str(),
+  };
+
+  const Study::Platform platforms[] = {Study::PLATFORM_ANDROID,
+                                       Study::PLATFORM_ANDROID_WEBVIEW};
+  ExperimentBuilder experiment_builder;
+  experiment_builder.name = "TestGroup";
+  experiment_builder.platforms = platforms;
+  experiment_builder.exclude_hardware_manufacturers = manufacturers;
+  FieldTrialTestingExperiment experiment[]{experiment_builder.Build()};
+
+  FieldTrialTestingStudy study[]{{
+      /*name=*/"TestTrial",
+      /*experiments=*/experiment,
+  }};
+
+  FieldTrialTestingConfig config = {
+      /*studies=*/study,
+  };
+
+  base::FeatureList feature_list;
+  AssociateParamsFromFieldTrialConfig(
+      config, Study::PLATFORM_ANDROID_WEBVIEW,
+      variation_service_client_.GetCurrentFormFactor(), &feature_list);
+
+  EXPECT_EQ("TestGroup", base::FieldTrialList::FindFullName("TestTrial"));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace variations

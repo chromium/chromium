@@ -102,6 +102,14 @@ def _CreateExperiment(experiment_data, platforms, form_factors,
       'exclude_hardware_classes')
   if exclude_hardware_classes_data:
     experiment['exclude_hardware_classes'] = exclude_hardware_classes_data
+  hardware_manufacturers_data = experiment_data.get('hardware_manufacturers')
+  if hardware_manufacturers_data:
+    experiment['hardware_manufacturers'] = hardware_manufacturers_data
+  exclude_hardware_manufacturers_data = experiment_data.get(
+      'exclude_hardware_manufacturers')
+  if exclude_hardware_manufacturers_data:
+    experiment[
+        'exclude_hardware_manufacturers'] = exclude_hardware_manufacturers_data
   params_data = experiment_data.get('params')
   if (params_data):
     experiment['params'] = [{'key': param, 'value': params_data[param]}

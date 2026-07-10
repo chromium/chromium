@@ -90,6 +90,16 @@
                 "field": "exclude_hardware_classes",
                 "type": "array",
                 "contents": { "type": "string"}
+              },
+              {
+                "field": "hardware_manufacturers",
+                "type": "array",
+                "contents": { "type": "string"}
+              },
+              {
+                "field": "exclude_hardware_manufacturers",
+                "type": "array",
+                "contents": { "type": "string"}
               }
             ]
           }

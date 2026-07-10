@@ -138,6 +138,14 @@ Study::Filter CreateFilter(const FieldTrialTestingExperiment& experiment) {
   for (const auto* excluded_hw_class : experiment.exclude_hardware_classes) {
     filter.add_exclude_hardware_class(excluded_hw_class);
   }
+  for (const auto* included_hw_manufacturer :
+       experiment.hardware_manufacturers) {
+    filter.add_hardware_manufacturer(included_hw_manufacturer);
+  }
+  for (const auto* excluded_hw_manufacturer :
+       experiment.exclude_hardware_manufacturers) {
+    filter.add_exclude_hardware_manufacturer(excluded_hw_manufacturer);
+  }
   return filter;
 }
 
@@ -162,6 +170,8 @@ void ChooseExperiment(
     base::FeatureList* feature_list) {
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
   std::string hardware_class = ClientFilterableState::GetHardwareClass();
+  std::string hardware_manufacturer =
+      ClientFilterableState::GetHardwareManufacturer();
   const bool is_benchmarking_enabled =
       command_line.HasSwitch(::switches::kEnableBenchmarking) ||
       command_line.GetSwitchValueASCII(
@@ -177,6 +187,8 @@ void ChooseExperiment(
           HasFormFactor(experiment, current_form_factor) &&
           HasMinOSVersion(experiment) &&
           internal::CheckStudyHardwareClass(filter, hardware_class) &&
+          internal::CheckStudyHardwareManufacturer(filter,
+                                                   hardware_manufacturer) &&
           IsEnabledForBenchmarking(experiment, is_benchmarking_enabled)) {
         chosen_experiment = &experiment;
       }

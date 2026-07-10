@@ -19,8 +19,9 @@ from collections import OrderedDict
 VALID_EXPERIMENT_KEYS = [
     'name', 'forcing_flag', 'params', 'enable_features', 'disable_features',
     'min_os_version', 'disable_benchmarking', 'hardware_classes',
-    'exclude_hardware_classes', '//0', '//1', '//2', '//3', '//4', '//5', '//6',
-    '//7', '//8', '//9'
+    'exclude_hardware_classes', 'hardware_manufacturers',
+    'exclude_hardware_manufacturers', '//0', '//1', '//2', '//3', '//4', '//5',
+    '//6', '//7', '//8', '//9'
 ]
 
 FIELDTRIAL_CONFIG_FILE_NAME = 'fieldtrial_testing_config.json'
@@ -58,6 +59,8 @@ def PrettyPrint(contents):
   #                     disable_benchmarking: "'true' or 'false'; optional"
   #                     hardware_classes: [sorted classes]
   #                     exclude_hardware_classes: [sorted classes]
+  #                     hardware_manufacturers: [sorted manufacturers]
+  #                     exclude_hardware_manufacturers: [sorted manufacturers]
   #                     (Unexpected extra keys will be caught by the validator)
   #                 }
   #             ],
@@ -113,6 +116,12 @@ def PrettyPrint(contents):
         if 'exclude_hardware_classes' in experiment_group:
           ordered_experiment_group['exclude_hardware_classes'] = \
               sorted(experiment_group['exclude_hardware_classes'])
+        if 'hardware_manufacturers' in experiment_group:
+          ordered_experiment_group['hardware_manufacturers'] = \
+              sorted(experiment_group['hardware_manufacturers'])
+        if 'exclude_hardware_manufacturers' in experiment_group:
+          ordered_experiment_group['exclude_hardware_manufacturers'] = \
+              sorted(experiment_group['exclude_hardware_manufacturers'])
         ordered_study_config['experiments'].append(ordered_experiment_group)
       ordered_study.append(ordered_study_config)
     ordered_config[key] = ordered_study
