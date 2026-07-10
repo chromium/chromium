@@ -651,7 +651,9 @@ public class ToolbarTest {
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL)
+    @EnableFeatures(
+            ChromeFeatureList.HOME_BUTTON_REMOVAL
+                    + ":set_default_to_false_on_homepage_on_desktop/false")
     @ImportantFormFactors(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testHomeButton_loadsNtpOnSameTab() {
         WebPageStation webPage = mPage;
@@ -703,7 +705,10 @@ public class ToolbarTest {
     @Test
     @LargeTest
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
-    @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    @EnableFeatures({
+        ChromeFeatureList.HOME_BUTTON_REMOVAL
+                + ":keep_home_button_on_ntp/true/set_default_to_false_on_homepage_on_desktop/false"
+    })
     public void testHomeButtonVisibility_KeepOnNtp_Toggle() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

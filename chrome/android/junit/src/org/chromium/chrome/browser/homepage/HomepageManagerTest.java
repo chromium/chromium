@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -818,5 +819,27 @@ public class HomepageManagerTest {
                 "Homepage menu item should be shown with keep_on_ntp and apply_to_all_countries set"
                         + " to true in non-US geo.",
                 homepageManager.shouldShowHomepageMenuItem());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.HOME_BUTTON_REMOVAL + ":set_default_to_false_on_homepage_on_desktop/true"
+    })
+    public void testGetPrefHomepageEnabled_DesktopDefaultFalse() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        HomepageManager homepageManager = HomepageManager.getInstance();
+
+        // Without preference written in SharedPreferences, should default to false on Desktop.
+        Assert.assertFalse(
+                "getPrefHomepageEnabled should default to false on Desktop",
+                homepageManager.getPrefHomepageEnabled());
+
+        // Once toggle is explicitly enabled, should read true from SharedPreferences.
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
+        Assert.assertTrue(
+                "getPrefHomepageEnabled should return true after preference is set.",
+                homepageManager.getPrefHomepageEnabled());
+        DeviceInfo.setIsDesktopForTesting(false);
     }
 }

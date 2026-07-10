@@ -1832,6 +1832,14 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sHomeButtonRemovalKeepOnNtp =
             newBooleanCachedFeatureParam(HOME_BUTTON_REMOVAL, "keep_home_button_on_ntp", false);
 
+    // This flag sets the default of "Homepage" to false in Chrome setting on android desktops.
+    public static final BooleanCachedFeatureParam
+            sHomeButtonRemovalSetDefaultToFalseOnHomepageOnDesktop =
+                    newBooleanCachedFeatureParam(
+                            HOME_BUTTON_REMOVAL,
+                            "set_default_to_false_on_homepage_on_desktop",
+                            true);
+
     public static final BooleanCachedFeatureParam sInitFeatureListEarly =
             newBooleanCachedFeatureParam(LOAD_NATIVE_EARLY, "init_feature_list_early", true);
 
@@ -2003,6 +2011,7 @@ public abstract class ChromeFeatureList {
                     sHomeButtonRemovalApplyToAllCountries,
                     sHomeButtonRemovalEverywhere,
                     sHomeButtonRemovalKeepOnNtp,
+                    sHomeButtonRemovalSetDefaultToFalseOnHomepageOnDesktop,
                     sInitFeatureListEarly,
                     sLockTopControlsForceAdjustHeightOnStartup,
                     sLowMemoryDeviceThresholdMb,

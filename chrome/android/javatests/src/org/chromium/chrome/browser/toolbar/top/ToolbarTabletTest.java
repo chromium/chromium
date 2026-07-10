@@ -55,6 +55,9 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+@EnableFeatures(
+        ChromeFeatureList.HOME_BUTTON_REMOVAL
+                + ":set_default_to_false_on_homepage_on_desktop/false")
 public class ToolbarTabletTest {
     @ClassRule
     public static AutoResetCtaTransitTestRule mActivityTestRule =
@@ -89,7 +92,10 @@ public class ToolbarTabletTest {
     @Test
     @SmallTest
     @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    @EnableFeatures({
+        ChromeFeatureList.HOME_BUTTON_REMOVAL
+                + ":keep_home_button_on_ntp/true/set_default_to_false_on_homepage_on_desktop/false"
+    })
     public void testLastOmniboxButtonFocus_notClipped_withHomeButtonRemovalKeepOnNtp()
             throws IOException {
         testLastOmniboxButtonFocus_notClippedImpl("last_button_focused_with_home_button_removal");
