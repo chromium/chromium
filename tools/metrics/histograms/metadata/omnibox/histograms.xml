@@ -317,6 +317,12 @@ chromium-metrics-reviews@google.com.
       summary="Search Results Page zero-prefix suggestion prefetch"/>
 </variants>
 
+<variants name="OmniboxPopupWebUIType">
+  <variant name="Aim" summary="Aim WebUI"/>
+  <variant name="FullWebUI" summary="Full WebUI"/>
+  <variant name="WebUI" summary="Classic WebUI"/>
+</variants>
+
 <variants name="OmniboxProviders">
 <!--
 Keep consistent with active providers. Doesn't need to include every provider in
@@ -3609,29 +3615,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.Popup.Aim.DeferredShowVisualStateReadyDuration"
-    units="ms" expires_after="2026-12-22">
-  <owner>avivkiss@chromium.org</owner>
-  <owner>mahmadi@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Records the duration it took for the visual state callback to be called (or
-    fallback timeout to be reached) during a deferred show of the AI Mode popup.
-    Logged every time the popup show is triggered.
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.Popup.Aim.DeferredShowVisualStateReadyFromTimeout"
-    enum="Boolean" expires_after="2026-12-22">
-  <owner>avivkiss@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Records whether the deferred show of the AI Mode popup was triggered by the
-    fallback timer task (True) or the visual state callback (False). Logged
-    every time the popup show is triggered.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.Popup.Aim.PresenterShowLatency.ToPaint" units="ms"
     expires_after="2026-12-22">
   <owner>mahmadi@chromium.org</owner>
@@ -3692,31 +3675,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.Popup.FullWebUI.DeferredShowVisualStateReadyDuration"
-    units="ms" expires_after="2026-12-22">
-  <owner>khalidpeer@chromium.org</owner>
-  <owner>avivkiss@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Records the duration it took for the visual state callback to be called (or
-    fallback timeout to be reached) during a deferred show of the Full WebUI
-    popup. Logged every time the popup show is triggered.
-  </summary>
-</histogram>
-
-<histogram
-    name="Omnibox.Popup.FullWebUI.DeferredShowVisualStateReadyFromTimeout"
-    enum="Boolean" expires_after="2026-12-22">
-  <owner>khalidpeer@chromium.org</owner>
-  <owner>avivkiss@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Records whether the deferred show of the Full WebUI popup was triggered by
-    the fallback timer task (True) or the visual state callback (False). Logged
-    every time the popup show is triggered.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.Popup.FullWebUI.PresenterShowLatency.ToPaint"
     units="ms" expires_after="2026-12-22">
   <owner>khalidpeer@chromium.org</owner>
@@ -3748,17 +3706,19 @@ Keep consistent with active providers. Doesn't need to include every provider in
     enum="OmniboxPopupResultToContentReadyEarlyExitReason"
     expires_after="2026-11-12">
   <owner>mych@chromium.org</owner>
+  <owner>ryanakiyama@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
-    Records the number of times the popup (Views or WebUI) was shown but not
-    being able to record the Omnibox.Popup.ResultToContentReady metric due to
-    various early exit reasons.
+    Records the number of times the Views popup was shown but not being able to
+    record the Omnibox.Popup.ResultToContentReady metric due to various early
+    exit reasons.
   </summary>
 </histogram>
 
 <histogram name="Omnibox.Popup.ResultToContentReadyOnFirstShow" units="ms"
     expires_after="2026-11-12">
   <owner>mych@chromium.org</owner>
+  <owner>ryanakiyama@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     Measures the latency from when the Omnibox controller receives a new set of
@@ -3766,14 +3726,15 @@ Keep consistent with active providers. Doesn't need to include every provider in
     after popup creation. Recorded at most once per popup lifetime.
 
     The starting point is when the controller receives autocomplete results and
-    begins updating the UI. The end point is when content is ready (visual state
-    synchronized for WebUI, compositor presentation for Views).
+    begins updating the UI. The end point is when content is ready (compositor
+    presentation for Views).
   </summary>
 </histogram>
 
 <histogram name="Omnibox.Popup.ResultToContentReadyPerShow" units="ms"
     expires_after="2026-11-12">
   <owner>mych@chromium.org</owner>
+  <owner>ryanakiyama@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     Measures the latency from when the Omnibox controller receives a new set of
@@ -3781,8 +3742,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
     popup transitions from closed to open.
 
     The starting point is when the controller receives autocomplete results and
-    begins updating the UI. The end point is when content is ready (visual state
-    synchronized for WebUI, compositor presentation for Views).
+    begins updating the UI. The end point is when content is ready (compositor
+    presentation for Views).
   </summary>
 </histogram>
 
@@ -3814,27 +3775,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
     reloaded before showing the classic WebUI Omnibox popup.
 
     Recorded every time the classic WebUI Omnibox popup web content is shown.
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.Popup.WebUI.DeferredShowVisualStateReadyDuration"
-    units="ms" expires_after="2026-12-22">
-  <owner>avivkiss@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Records the duration it took for the visual state callback to be called (or
-    fallback timeout to be reached) during a deferred show of the WebUI popup.
-    Logged every time the popup show is triggered.
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.Popup.WebUI.DeferredShowVisualStateReadyFromFallback"
-    enum="Boolean" expires_after="2026-12-22">
-  <owner>avivkiss@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Records whether the deferred show of the WebUI popup was triggered by the
-    fallback timer task (True) or the visual state callback (False).
   </summary>
 </histogram>
 
@@ -3889,6 +3829,70 @@ Keep consistent with active providers. Doesn't need to include every provider in
     this does not take into account the time the DOM change task spends in the
     message loop nor its duration.
   </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.Popup.{WebUIType}.DeferredShowVisualStateReadyDuration"
+    units="ms" expires_after="2026-12-22">
+  <owner>avivkiss@chromium.org</owner>
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the duration it took for the visual state callback to be called (or
+    fallback timeout to be reached) during a deferred show of the {WebUIType}
+    popup. Logged every time the popup show is triggered.
+  </summary>
+  <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
+</histogram>
+
+<histogram
+    name="Omnibox.Popup.{WebUIType}.DeferredShowVisualStateReadyFromTimeout"
+    enum="Boolean" expires_after="2026-12-22">
+  <owner>avivkiss@chromium.org</owner>
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records whether the deferred show of the {WebUIType} popup was triggered by
+    the fallback timer task (True) or the visual state callback (False). Logged
+    every time the popup show is triggered.
+  </summary>
+  <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
+</histogram>
+
+<histogram name="Omnibox.Popup.{WebUIType}.ResultToContentReadyEarlyExitReason"
+    enum="OmniboxPopupResultToContentReadyEarlyExitReason"
+    expires_after="2026-11-12">
+  <owner>mych@chromium.org</owner>
+  <owner>ryanakiyama@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the reason for early exit when the ResultToContentReady latency
+    cannot be recorded for the {WebUIType} popup.
+  </summary>
+  <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
+</histogram>
+
+<histogram name="Omnibox.Popup.{WebUIType}.ResultToContentReadyOnFirstShow"
+    units="ms" expires_after="2026-11-12">
+  <owner>mych@chromium.org</owner>
+  <owner>ryanakiyama@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the latency from when the popup results are updated to the first
+    visual state change of the {WebUIType} popup on the first show.
+  </summary>
+  <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
+</histogram>
+
+<histogram name="Omnibox.Popup.{WebUIType}.ResultToContentReadyPerShow"
+    units="ms" expires_after="2026-11-12">
+  <owner>ryanakiyama@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the latency from when the popup results are updated to the first
+    visual state change of the {WebUIType} popup.
+  </summary>
+  <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
 </histogram>
 
 <histogram name="Omnibox.ProviderTime2.{OmniboxProvider}" units="ms"

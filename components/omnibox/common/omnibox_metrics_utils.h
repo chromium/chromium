@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_COMMON_OMNIBOX_METRICS_UTILS_H_
 
 #include <string>
+#include <string_view>
 
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
@@ -53,7 +54,8 @@ std::string GetModelModeString(omnibox::ModelMode mode);
 std::string GetContextTypeString(ContextType type);
 
 void LogResultToContentReadyEarlyExitReason(
-    ResultToContentReadyEarlyExitReason reason);
+    ResultToContentReadyEarlyExitReason reason,
+    std::string_view prefix);
 
 }  // namespace omnibox
 
