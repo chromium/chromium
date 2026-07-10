@@ -1,10 +1,12 @@
 include_rules = [
   "+chrome/browser/contextual_cueing",
+  "+chrome/browser/favicon",
   "+chrome/browser/ui/browser_window",
   "+chrome/browser/ui/page_action",
   "+chrome/grit",
   "+components/vector_icons",
   "+chrome/browser/sync",
+  "+components/favicon/core",
   "+components/multistep_filter/content",
   "+components/multistep_filter/core",
   "+components/prefs",
@@ -26,5 +28,8 @@ specific_include_rules = {
     "+components/prefs",
     "+components/signin/public/identity_manager",
     "+components/version_info",
+  ],
+  ".*unittest\\.cc": [
+    "+components/favicon/core/test",
   ],
 }

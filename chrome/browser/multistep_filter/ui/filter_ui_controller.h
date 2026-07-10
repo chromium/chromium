@@ -10,11 +10,18 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/menus/simple_menu_model.h"
+
+namespace favicon {
+class FaviconService;
+}
 
 namespace tabs {
 class TabInterface;
@@ -81,6 +88,9 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
 
     // Tracks metrics across view states and flushes upon destruction.
     std::unique_ptr<FilterAcceptanceMetricsLogger> metrics_logger;
+
+    // Cached favicon image for the source host.
+    std::optional<ui::ImageModel> favicon;
   };
 
   static FilterUiController* From(tabs::TabInterface* tab);
@@ -125,6 +135,11 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
   // Shows the cue for the given suggestion.
   void ShowCue(const UrlFilterSuggestion& suggestion);
 
+  // Shows the cue with the given favicon.
+  void ShowCueWithFavicon();
+
+  void OnFaviconAvailable(const favicon_base::FaviconImageResult& result);
+
   // Helper check to verify if the contextual cue feature is enabled.
   bool ShouldShowCue() const;
 
@@ -161,6 +176,12 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
 
   // Service for user preferences.
   raw_ptr<PrefService> pref_service_ = nullptr;
+
+  // Service for fetching favicons.
+  raw_ptr<favicon::FaviconService> favicon_service_ = nullptr;
+
+  // Tracker for pending favicon requests.
+  base::CancelableTaskTracker favicon_task_tracker_;
 
   // Factory for dismissal callbacks. Must be the last member variable to
   // ensure that it is destroyed first, invalidating all weak pointers before

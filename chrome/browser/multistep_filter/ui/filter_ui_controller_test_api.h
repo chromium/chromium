@@ -47,6 +47,10 @@ class FilterUiControllerTestApi {
     controller_->pref_service_ = service;
   }
 
+  void set_favicon_service(favicon::FaviconService* service) {
+    controller_->favicon_service_ = service;
+  }
+
   // Exposes private SimpleMenuModel::Delegate overrides for verification.
   bool IsCommandIdChecked(int command_id) const {
     return controller_->IsCommandIdChecked(command_id);
