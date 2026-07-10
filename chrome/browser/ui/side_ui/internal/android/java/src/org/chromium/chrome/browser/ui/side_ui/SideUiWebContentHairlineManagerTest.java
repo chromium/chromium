@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.side_ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.ui.base.TestActivity;
@@ -35,14 +37,19 @@ public class SideUiWebContentHairlineManagerTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private SideUiStateProvider mSideUiStateProvider;
 
     private SideUiWebContentHairlineContainer mHairlineContainer;
     private SideUiWebContentHairlineManager mManager;
 
+    private MarginLayoutParams mLayoutParams;
+
     @Before
     public void setUp() {
         TestActivity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
+
+        mLayoutParams = new MarginLayoutParams(0, 0);
 
         mHairlineContainer =
                 (SideUiWebContentHairlineContainer)
@@ -50,19 +57,72 @@ public class SideUiWebContentHairlineManagerTest {
                                 .inflate(
                                         R.layout.side_ui_web_content_hairline_container,
                                         /* root= */ null);
-        mHairlineContainer.setLayoutParams(new MarginLayoutParams(0, 0));
+        mHairlineContainer.setLayoutParams(mLayoutParams);
 
-        mManager = new SideUiWebContentHairlineManager(mSideUiStateProvider, mHairlineContainer);
+        mManager =
+                new SideUiWebContentHairlineManager(
+                        mBrowserControlsStateProvider, mSideUiStateProvider, mHairlineContainer);
     }
 
     @Test
     public void testDestroy() {
-        ArgumentCaptor<SideUiObserver> observerCaptor =
+        ArgumentCaptor<BrowserControlsStateProvider.Observer> controlsObserverCaptor =
+                ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
+        verify(mBrowserControlsStateProvider).addObserver(controlsObserverCaptor.capture());
+
+        ArgumentCaptor<SideUiObserver> sideUiObserverCaptor =
                 ArgumentCaptor.forClass(SideUiObserver.class);
-        verify(mSideUiStateProvider).addObserver(observerCaptor.capture());
+        verify(mSideUiStateProvider).addObserver(sideUiObserverCaptor.capture());
 
         mManager.destroy();
-        verify(mSideUiStateProvider).removeObserver(observerCaptor.getValue());
+        verify(mBrowserControlsStateProvider).removeObserver(controlsObserverCaptor.getValue());
+        verify(mSideUiStateProvider).removeObserver(sideUiObserverCaptor.getValue());
+    }
+
+    @Test
+    public void testTopControlsHeightChangedUpdatesMargin() {
+        ArgumentCaptor<BrowserControlsStateProvider.Observer> observerCaptor =
+                ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
+        verify(mBrowserControlsStateProvider).addObserver(observerCaptor.capture());
+        BrowserControlsStateProvider.Observer observer = observerCaptor.getValue();
+        View topHairline = mHairlineContainer.getTopHairline();
+
+        // 1. Non-zero offset: show top hairline.
+        when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(100f);
+        observer.onTopControlsHeightChanged(100, 0);
+
+        assertEquals("Top margin should be updated.", 100, mLayoutParams.topMargin);
+        assertEquals(View.VISIBLE, topHairline.getVisibility());
+
+        // 2. Zero offset: hide top hairline.
+        when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(0f);
+        observer.onTopControlsHeightChanged(0, 0);
+
+        assertEquals("Top margin should be updated to 0.", 0, mLayoutParams.topMargin);
+        assertEquals(View.INVISIBLE, topHairline.getVisibility());
+    }
+
+    @Test
+    public void testControlsOffsetChangedUpdatesMargin() {
+        ArgumentCaptor<BrowserControlsStateProvider.Observer> observerCaptor =
+                ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
+        verify(mBrowserControlsStateProvider).addObserver(observerCaptor.capture());
+        BrowserControlsStateProvider.Observer observer = observerCaptor.getValue();
+        View topHairline = mHairlineContainer.getTopHairline();
+
+        // 1. Non-zero offset: show top hairline.
+        when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(50f);
+        observer.onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
+
+        assertEquals("Top margin should be updated.", 50, mLayoutParams.topMargin);
+        assertEquals(View.VISIBLE, topHairline.getVisibility());
+
+        // 2. Zero offset: hide top hairline.
+        when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(0f);
+        observer.onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
+
+        assertEquals("Top margin should be updated to 0.", 0, mLayoutParams.topMargin);
+        assertEquals(View.INVISIBLE, topHairline.getVisibility());
     }
 
     @Test

@@ -23,6 +23,11 @@ import org.chromium.build.annotations.Nullable;
         super(context, attrs);
     }
 
+    /** Returns the top hairline ImageView. */
+    /* package */ ImageView getTopHairline() {
+        return findViewById(R.id.top_web_content_hairline);
+    }
+
     /** Returns the left hairline ImageView. */
     /* package */ ImageView getLeftHairline() {
         return findViewById(R.id.left_web_content_hairline);

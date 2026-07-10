@@ -102,8 +102,6 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mAnchorContainerParent = anchorContainerParent;
 
-        // TODO(crbug.com/485309827): Account for the height of Side UI. Specifically, show beneath
-        //  the tab strip when it is visible.
         ViewGroup leftAnchorContainer = (ViewGroup) leftAnchorContainerStub.inflate();
         ViewGroup rightAnchorContainer = (ViewGroup) rightAnchorContainerStub.inflate();
         assert mAnchorContainerParent == leftAnchorContainer.getParent();
@@ -121,7 +119,9 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
                 (SideUiWebContentHairlineContainer) webContentHairlineContainerStub.inflate();
         mWebContentsHairlineManager =
                 new SideUiWebContentHairlineManager(
-                        /* sideUiStateProvider= */ this, webContentHairlineContainer);
+                        browserControlsStateProvider,
+                        /* sideUiStateProvider= */ this,
+                        webContentHairlineContainer);
 
         mActivityLifecycleDispatcher.register(this);
     }
