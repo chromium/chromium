@@ -129,6 +129,8 @@ namespace pdfViewerPrivate {
     long uniqueId;
     // Serialized SkTypeface
     ArrayBuffer serializedTypeface;
+    // For a crash key in the event deserialization fails
+    DOMString name;
   };
 
   dictionary GetTextInfoResult {
