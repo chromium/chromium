@@ -30,6 +30,9 @@
 // The search engine/Doodle logo view.
 @property(nonatomic, strong) UIView* searchEngineLogoView;
 
+// The Most Visited Tiles (MVTs) view controller.
+@property(nonatomic, strong) UIViewController* mostVisitedViewController;
+
 // Sets the feed view controller to embed in the redesign bottom sheet.
 - (void)setFeedViewController:(UIViewController*)feedViewController;
 

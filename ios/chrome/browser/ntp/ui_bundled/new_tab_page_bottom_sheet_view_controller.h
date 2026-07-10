@@ -12,9 +12,10 @@
 // Delegate for events in the bottom sheet view controller.
 @protocol NewTabPageBottomSheetViewControllerDelegate <NSObject>
 
-// Called when the fake location bar in the bottom sheet is tapped.
-- (void)bottomSheetViewControllerDidTapFakeLocationBar:
-    (NewTabPageBottomSheetViewController*)bottomSheetViewController;
+// Called when the bottom sheet top offset is updated.
+- (void)bottomSheetViewController:
+            (NewTabPageBottomSheetViewController*)bottomSheetViewController
+               didUpdateTopOffset:(CGFloat)topOffset;
 
 @end
 
@@ -31,6 +32,22 @@
 
 // Clears state and delegates.
 - (void)invalidate;
+
+// Returns the expanded offset of the bottom sheet.
+- (CGFloat)expandedOffset;
+
+// Returns the resting offset of the bottom sheet.
+- (CGFloat)restingOffset;
+
+// Returns the collapsed offset of the bottom sheet.
+- (CGFloat)collapsedOffset;
+
+// Notification that the feed scroll view scrolled.
+- (void)feedScrollViewDidScroll:(UIScrollView*)scrollView;
+
+// Notification that the feed scroll view finished dragging.
+- (void)feedScrollViewDidEndDragging:(UIScrollView*)scrollView
+                      willDecelerate:(BOOL)decelerate;
 
 @end
 

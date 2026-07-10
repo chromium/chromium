@@ -25,32 +25,14 @@ TEST_F(NewTabPageBottomSheetViewControllerTest, TestLoadView) {
   EXPECT_NE(nil, view_controller_.view);
 }
 
-// Tests that tapping the fake location bar invokes the delegate method.
-TEST_F(NewTabPageBottomSheetViewControllerTest, TestDelegateCallback) {
-  id delegate_mock =
-      OCMProtocolMock(@protocol(NewTabPageBottomSheetViewControllerDelegate));
-  view_controller_.delegate = delegate_mock;
-
-  OCMExpect([delegate_mock
-      bottomSheetViewControllerDidTapFakeLocationBar:view_controller_]);
+// Tests that the feed view controller is correctly embedded as a child view
+// controller.
+TEST_F(NewTabPageBottomSheetViewControllerTest, TestEmbedFeedViewController) {
+  UIViewController* child_vc = [[UIViewController alloc] init];
+  view_controller_.feedViewController = child_vc;
 
   [view_controller_ loadViewIfNeeded];
 
-  // Find fake location bar in subviews by accessibilityIdentifier and simulate
-  // tap.
-  UIView* contentView =
-      ((UIVisualEffectView*)view_controller_.view).contentView;
-  UIControl* fakeLocationBar = nil;
-  for (UIView* subview in contentView.subviews) {
-    if ([subview.accessibilityIdentifier
-            isEqualToString:@"ntp-redesign-fake-omnibox"] &&
-        [subview isKindOfClass:[UIControl class]]) {
-      fakeLocationBar = static_cast<UIControl*>(subview);
-      break;
-    }
-  }
-  EXPECT_NE(nil, fakeLocationBar);
-  [fakeLocationBar sendActionsForControlEvents:UIControlEventTouchUpInside];
-
-  [delegate_mock verify];
+  EXPECT_EQ(child_vc.parentViewController, view_controller_);
+  EXPECT_TRUE([child_vc.view isDescendantOfView:view_controller_.view]);
 }

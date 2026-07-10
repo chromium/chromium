@@ -867,6 +867,8 @@
   if (IsNTPRedesignEnabled()) {
     self.NTPRedesignViewController.NTPContentDelegate = self;
     self.NTPRedesignViewController.feedViewController = self.feedViewController;
+    self.NTPRedesignViewController.mostVisitedViewController =
+        self.contentSuggestionsCoordinator.viewController;
     [self configureMainViewControllerUsing:self.NTPRedesignViewController];
     return;
   }
