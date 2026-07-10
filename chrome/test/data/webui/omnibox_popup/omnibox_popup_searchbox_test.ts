@@ -259,7 +259,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       sequenceNumber: 1,
       text: 'test.com',
       selection: {start: 0, end: 4},
-      userInputInProgress: true,
+      userInputInProgress: false,
       fullUrl: full_url,
       isFocused: true,
       permanentDisplayText: '',
@@ -306,45 +306,9 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertFalse(searchbox.$.input === searchbox.shadowRoot.activeElement);
   });
 
-  // TODO(crbug.com/529516876): Fix and re-enable
-  test.skip('HandlesManualBlur', async () => {
-    // Test default sequence number (0) when no state is set.
-    const input = searchbox.$.input.inputElement;
-    input.focus();
-    await microtasksFinished();
-
-    assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
-    input.blur();
-    await microtasksFinished();
-
-    assertEquals(1, handler.getCallCount('onManualBlur'));
-    assertEquals(0, handler.getArgs('onManualBlur')[0]);
-    assertFalse(searchbox.$.input === searchbox.shadowRoot.activeElement);
-
-    // Test active sequence number (42) after receiving state.
-    handler.reset();
-    callbackRouter.setInputState({
-      sequenceNumber: 42,
-      text: 'hello',
-      selection: {start: 5, end: 5},
-      userInputInProgress: true,
-      fullUrl: '',
-      isFocused: true,
-      permanentDisplayText: '',
-      showFullUrl: false,
-    });
-    await microtasksFinished();
-
-    input.blur();
-    await microtasksFinished();
-
-    assertEquals(1, handler.getCallCount('onManualBlur'));
-    assertEquals(42, handler.getArgs('onManualBlur')[0]);
-  });
-
   test('HandlesRevert', async () => {
     // Test revert is called with default sequence number (0).
-    searchbox.clearAutocompleteMatches();
+    searchbox.revert();
     await microtasksFinished();
 
     assertEquals(1, handler.getCallCount('revert'));
@@ -365,36 +329,168 @@ suite('OmniboxPopupSearchboxTest', function() {
     });
     await microtasksFinished();
 
-    searchbox.clearAutocompleteMatches();
+    searchbox.revert();
     await microtasksFinished();
 
     assertEquals(1, handler.getCallCount('revert'));
     assertEquals(42, handler.getArgs('revert')[0]);
   });
 
-  test('IgnoresManualBlurWhenWindowInactive', async () => {
-    // Override `document.visibilityState` to 'hidden'.
-    Object.defineProperty(document, 'visibilityState', {
-      value: 'hidden',
-      configurable: true,
+  test('SubsequentSelectionChangesNotIgnoredAfterFocus', async () => {
+    // Set the input state via Mojo with isFocused = true.
+    callbackRouter.setInputState({
+      sequenceNumber: 1,
+      text: 'hello world',
+      selection: {start: 0, end: 0},
+      userInputInProgress: false,
+      fullUrl: '',
+      isFocused: true,
+      permanentDisplayText: '',
+      showFullUrl: false,
     });
+    await microtasksFinished();
+
+    // The input should be focused.
+    const input = searchbox.$.input.inputElement;
+    assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+    await new Promise(resolve => requestAnimationFrame(resolve));
+
+    // Reset handler call count.
+    handler.reset();
+
+    // Simulate the user changing selection (e.g. by dragging/clicking)
+    // inside the already focused input.
+    input.setSelectionRange(1, 4);
+    await microtasksFinished();
+
+    // Check if the handler was notified.
+    assertEquals(1, handler.getCallCount('onSelectionChanged'));
+  });
+
+  test('MousedownZeroLengthSelectionGuards', async () => {
+    const input = searchbox.$.input.inputElement;
+    input.value = '';
+    await microtasksFinished();
+
+    const mousedownEvent = new MouseEvent('mousedown', {
+      bubbles: true,
+      cancelable: true,
+    });
+    input.dispatchEvent(mousedownEvent);
+    await microtasksFinished();
+
+    assertEquals(0, input.selectionStart);
+    assertEquals(0, input.selectionEnd);
+    assertEquals('', input.value);
+  });
+
+  test('ClearsInputTextAndNotifiesHandler', async () => {
+    callbackRouter.setInputState({
+      sequenceNumber: 5,
+      text: 'hello',
+      selection: {start: 0, end: 5},
+      userInputInProgress: false,
+      fullUrl: '',
+      isFocused: true,
+      permanentDisplayText: '',
+      showFullUrl: false,
+    });
+    await microtasksFinished();
+    handler.reset();
+
+    searchbox.$.input.dispatchEvent(new CustomEvent(
+        'searchbox-input-text-updated',
+        {detail: {value: '   ', isComposing: false}}));
+    await microtasksFinished();
+
+    assertEquals(1, handler.getCallCount('onInputCleared'));
+    assertEquals(5, handler.getArgs('onInputCleared')[0]);
+  });
+
+  test('ExecutesDeferredFocusOnVisibilityChange', async () => {
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'hidden', configurable: true});
+
+    callbackRouter.setInputState({
+      sequenceNumber: 1,
+      text: 'test',
+      selection: {start: 0, end: 4},
+      userInputInProgress: false,
+      fullUrl: '',
+      isFocused: true,
+      permanentDisplayText: '',
+      showFullUrl: false,
+    });
+    await microtasksFinished();
 
     const input = searchbox.$.input.inputElement;
-    input.focus();
+    input.blur();
+    assertFalse(searchbox.shadowRoot.activeElement === searchbox.$.input);
+
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'visible', configurable: true});
+    document.dispatchEvent(new Event('visibilitychange'));
     await microtasksFinished();
 
     assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
-    input.blur();
+  });
+
+  // Verifies that when `setFocus(true)` IPC is received while
+  // `document.visibilityState` is hidden, focus and select-all are deferred
+  // until `visibilitychange` occurs (`DeferredFocusAction.FOCUS_AND_SELECT`).
+  test('ExecutesDeferredFocusAndSelectOnVisibilityChange', async () => {
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'hidden', configurable: true});
+
+    // Trigger dedicated `setFocus` IPC while document is hidden.
+    callbackRouter.setFocus(true);
     await microtasksFinished();
 
-    // Verify `onManualBlur` is NOT called because `document.visibilityState` is
-    // hidden.
-    assertEquals(0, handler.getCallCount('onManualBlur'));
+    const input = searchbox.$.input.inputElement;
+    assertFalse(searchbox.shadowRoot.activeElement === searchbox.$.input);
 
-    // Restore `document.visibilityState` to 'visible'.
-    Object.defineProperty(document, 'visibilityState', {
-      value: 'visible',
-      configurable: true,
-    });
+    // Make visible and dispatch `visibilitychange` event.
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'visible', configurable: true});
+    document.dispatchEvent(new Event('visibilitychange'));
+    await microtasksFinished();
+
+    // Verify both focus AND select occurred
+    // (`DeferredFocusAction.FOCUS_AND_SELECT`).
+    assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+    assertEquals(0, input.selectionStart);
+    assertEquals(input.value.length, input.selectionEnd);
+  });
+
+  test('RequestsAndAppliesInitialInputStateOnConnected', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const testText = 'chrome://version';
+
+    // Mock `handler.requestInputState()` to simulate C++ responding with
+    // initial state.
+    handler.requestInputState = () => {
+      callbackRouter.setInputState({
+        sequenceNumber: 1,
+        text: testText,
+        selection: {start: 0, end: testText.length},
+        userInputInProgress: false,
+        fullUrl: '',
+        isFocused: true,
+        permanentDisplayText: testText,
+        showFullUrl: false,
+      });
+    };
+
+    // Attach searchbox to DOM.
+    const newSearchbox = document.createElement('omnibox-popup-searchbox');
+    document.body.appendChild(newSearchbox);
+    await microtasksFinished();
+
+    // Verify `requestInputState()` was called once and DOM input was populated.
+    assertEquals(1, handler.getCallCount('requestInputState'));
+    const input = newSearchbox.$.input.inputElement;
+    assertEquals(testText, input.value);
+    assertEquals(0, input.selectionStart);
+    assertEquals(testText.length, input.selectionEnd);
   });
 });
