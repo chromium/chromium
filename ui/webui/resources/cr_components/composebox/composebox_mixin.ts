@@ -205,7 +205,11 @@ export const ComposeboxEmbedderMixin =
         // late-arriving autocomplete updates or automatic focus restoration
         // before navigation completes.
         accessor submitting: boolean = false;
+        // Current tabs attached to composebox for this turn (query).
         accessor addedTabsIds: Map<number, UnguessableToken> = new Map();
+        // Persistent tabs from previous queries/turns in this conversation
+        // (that AIM has confirmed that it has received), OR tabs that were part
+        // of a past historical conversation that was loaded.
         accessor aimThreadRestoredTabs: TabInfo[] = [];
         accessor isDraggingFile: boolean = false;
         accessor enableImageContextualSuggestions: boolean =
@@ -263,6 +267,7 @@ export const ComposeboxEmbedderMixin =
         accessor contextMenuEnabled: boolean =
             loadTimeData.getBoolean('composeboxShowContextMenu');
         accessor errorMessage: string = '';
+        // Files/tabs added by the user for the current turn (query).
         accessor files: Map<UnguessableToken, ComposeboxFile> = new Map();
         accessor fileUploadsComplete: boolean = true;
         accessor hasAllowedInputs: boolean = false;
@@ -1616,14 +1621,19 @@ export const ComposeboxEmbedderMixin =
           // clearing, clear input here.
           if (!querySubmitted) {
             this.resetModes();
-            this.resetRestoredTabs();
+            // If context management flag is on, do not delete persisted
+            // (restored) tabs.
+            if (!this.contextManagementInComposeboxEnabled) {
+              this.resetRestoredTabs();
+            }
           }
-          const undeletableFiles = querySubmitted ?
-              Array.from(this.files.values())
-                  .filter(
-                      file => !file.isDeletable ||
-                          (file.tabId &&
-                           this.contextManagementInComposeboxEnabled)) :
+
+          // `undeletableFiles` is for files; `SubmitCleanup()` still deletes
+          // TABS only after this, regardless of `undeletableFiles`. Adding tabs
+          // to `undeletableFiles` does nothing to prevent deletion from
+          // `this.files`. Adding files to `undeletableFiles` does prevent
+          // deletion.
+          const undeletableFiles =
               Array.from(this.files.values()).filter(file => !file.isDeletable);
           if (undeletableFiles.length !== this.files.size) {
             this.files =
@@ -1640,9 +1650,18 @@ export const ComposeboxEmbedderMixin =
                   .map(file => file.uuid));
           this.smartComposeInlineHint = '';
           this.resetSmartComposeStats();
+          // Ask the searchbox handler to clear its own state when the clear all
+          // button is clicked. Otherwise, it will clear its own state when mojo submit
+          // query is sent.
+          // TODO(crbug.com/532712756): Browser process should fully own
+          // clearing logic, and frontend should listen and follow which files
+          // browser process says to keep. This is better than having to
+          // maintain and align two different hard coded logic for clearing
+          // files across composebox (here) and browser process code (session
+          // handle). `restoredTabs` is the server telling the frontend which tabs
+          // are persistent, but the logic for clearing context on submit/clear all
+          // should still be handled by browser process, not frontend and browser process.
           if (!querySubmitted) {
-            // If the query was submitted, the searchbox handler will clear its
-            // own uploaded file state when the query submission is handled.
             this.getSearchboxHandler().clearFiles(shouldBlockAutoSuggestedTabs);
           }
           this.fileUploadsComplete = this.pendingUploads.size === 0;
@@ -2490,6 +2509,7 @@ export const ComposeboxEmbedderMixin =
               .length;
         }
 
+        // Returns all attached tabs in composebox.
         getSharedTabs(): TabInfo[] {
           return Array.from(this.files.values())
               .filter(file => !!file.url)

@@ -21,9 +21,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {DriveDisclaimerStatus, DriveUploadError, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -1415,6 +1416,7 @@ suite('ComposeboxMixinTest', () => {
   test(
       'clearAllInputs clears restored tabs if querySubmitted is false',
       async () => {
+        element.contextManagementInComposeboxEnabled = false;
         element.aimThreadRestoredTabs = [{
           tabId: 1,
           title: 'Stale Tab',
@@ -1511,4 +1513,122 @@ suite('ComposeboxMixinTest', () => {
     await element.onContextMenuClosed();
     assertFalse(element.shareTabsFlyoutOpen);
   });
+
+  // Restored tabs are tabs that the server has said it has received. These are
+  // used as tabs that persist across queries.
+  test(
+      'clearAllInputs respects contextManagementInComposeboxEnabled' +
+          ' flag for resetRestoredTabs',
+      async () => {
+        element.aimThreadRestoredTabs = [{
+          tabId: 1,
+          title: 'Restored Tab',
+          url: 'about:blank?1',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        }];
+
+        // Query submitted (querySubmitted = true): restored tabs are NOT
+        // reset regardless of flag.
+        element.clearAllInputs(
+            /* querySubmitted= */ true,
+            /* shouldBlockAutoSuggestedTabs= */ false);
+        await microtasksFinished();
+        assertEquals(1, element.aimThreadRestoredTabs.length);
+
+        // Flag OFF: "clearAllInputs(querySubmitted = false)" resets restored
+        // tabs (clear all button pressed).
+        element.contextManagementInComposeboxEnabled = false;
+        element.clearAllInputs(
+            /* querySubmitted= */ false,
+            /* shouldBlockAutoSuggestedTabs= */ false);
+        await microtasksFinished();
+        assertEquals(0, element.aimThreadRestoredTabs.length);
+
+        // Reset restored tabs.
+        element.aimThreadRestoredTabs = [{
+          tabId: 1,
+          title: 'Restored Tab',
+          url: 'about:blank?1',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        }];
+
+        // Explicit new thread / resetRestoredTabs clears restored tabs
+        // regardless of flag.
+        element.resetRestoredTabs();
+        await microtasksFinished();
+        assertEquals(0, element.aimThreadRestoredTabs.length);
+
+        // Reset restored tabs.
+        element.aimThreadRestoredTabs = [{
+          tabId: 1,
+          title: 'Restored Tab',
+          url: 'about:blank?1',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        }];
+
+        // Flag ON: "clearAllInputs(querySubmitted = false)" (clear all button
+        // pressed) preserves restored tabs.
+        element.contextManagementInComposeboxEnabled = true;
+        element.clearAllInputs(
+            /* querySubmitted= */ false,
+            /* shouldBlockAutoSuggestedTabs= */ false);
+        await microtasksFinished();
+        assertEquals(1, element.aimThreadRestoredTabs.length);
+
+        // Query submitted "(querySubmitted = true)": restored tabs are NOT
+        // reset regardless of flag.
+        element.clearAllInputs(
+            /* querySubmitted= */ true,
+            /* shouldBlockAutoSuggestedTabs= */ false);
+        await microtasksFinished();
+        assertEquals(1, element.aimThreadRestoredTabs.length);
+
+        // Explicit new thread / resetRestoredTabs clears restored tabs
+        // regardless of flag.
+        element.resetRestoredTabs();
+        await microtasksFinished();
+        assertEquals(0, element.aimThreadRestoredTabs.length);
+      });
+
+  test(
+      'undeletableFiles preserves non-deletable files but' +
+          ' after, submitCleanup clears tabs',
+      async () => {
+        const dummyToken1 = {
+          high: 1n,
+          low: 1n,
+        } as unknown as UnguessableToken;
+        const dummyToken2 = {
+          high: 2n,
+          low: 2n,
+        } as unknown as UnguessableToken;
+
+        const undeletableFile = ComposeboxFile.createFromFile(
+            dummyToken1, {name: 'file.pdf', type: 'application/pdf'},
+            ContextUploadStatus.kUploadSuccessful, {isDeletable: false});
+
+        const tabFile = ComposeboxFile.createFromTab(
+            dummyToken2, 123, 'Tab Title',
+            {url: 'about:blank'} as unknown as Url, {isDeletable: false});
+
+        element.files = new Map([
+          [dummyToken1, undeletableFile],
+          [dummyToken2, tabFile],
+        ]);
+        element.addedTabsIds = new Map([[123, dummyToken2]]);
+
+        // Submit cleanup deletes active turn tabs regardless of `isDeletable`.
+        element.submitCleanup();
+        await microtasksFinished();
+
+        // Verify: tab is deleted, but non-deletable file remains.
+        assertFalse(element.files.has(dummyToken2));
+        assertTrue(element.files.has(dummyToken1));
+      });
 });
