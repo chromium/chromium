@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/check_deref.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
@@ -17,7 +16,6 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/search/ntp_features.h"
@@ -309,9 +307,7 @@ bool IsInstantNTPURL(const GURL& url, Profile* profile) {
 
 bool IsWebUiNtpEnabled() {
 #if BUILDFLAG(IS_ANDROID)
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kUseWebUiNtp) ||
-         base::FeatureList::IsEnabled(chrome::android::kUseWebUiNtpAndroid);
+  return base::FeatureList::IsEnabled(chrome::android::kUseWebUiNtpAndroid);
 #else
   return true;
 #endif

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.url_constants;
 
-import org.chromium.base.CommandLine;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -31,10 +30,7 @@ public class UrlOverrideUtils {
      * NTP override only applies to desktop Android platforms.
      */
     public static boolean isWebUiNtpOverrideEnabled() {
-        boolean useWebUiNtp =
-                CommandLine.getInstance().hasSwitch("use-webui-ntp")
-                        || ChromeFeatureList.sUseWebUiNtpAndroid.isEnabled();
-        if (!useWebUiNtp) {
+        if (!ChromeFeatureList.sUseWebUiNtpAndroid.isEnabled()) {
             return false;
         }
         return ChromeSharedPreferences.getInstance()
