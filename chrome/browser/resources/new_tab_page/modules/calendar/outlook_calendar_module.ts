@@ -62,24 +62,32 @@ export class OutlookCalendarModuleElement extends
     return [
       {
         action: 'dismiss',
-        icon: 'modules:visibility_off',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:visibility-off' :
+            'modules:visibility_off-old',
         text: this.i18nRecursive(
             '', 'modulesDismissForHoursButtonText',
             'calendarModuleDismissHours'),
       },
       {
         action: 'disable',
-        icon: 'modules:block',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:block' :
+            'modules:block-old',
         text: this.i18n('modulesOutlookCalendarDisableButtonText'),
       },
       {
         action: 'signout',
-        icon: 'modules:logout',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:logout' :
+            'modules:logout-old',
         text: this.i18n('modulesMicrosoftSignOutButtonText'),
       },
       {
         action: 'info',
-        icon: 'modules:info',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:info' :
+            'modules:info-old',
         text: this.i18n('moduleInfoButtonTitle'),
       },
     ];

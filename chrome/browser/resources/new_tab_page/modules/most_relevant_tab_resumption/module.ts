@@ -91,22 +91,28 @@ export class MostRelevantTabResumptionModuleElement extends I18nMixinLit
 
   protected getMenuItems_(): MenuItem[] {
     return [
-        {
-          action: 'dismiss',
-          icon: 'modules:thumb_down',
-          text: this.i18n('modulesMostRelevantTabResumptionDismissAll'),
-        },
-        {
-          action: 'disable',
-          icon: 'modules:block',
-          text: this.i18nRecursive(
-              '', 'modulesDisableButtonTextV2', 'modulesTabResumptionTitle'),
-        },
-        {
-          action: 'info',
-          icon: 'modules:info',
-          text: this.i18n('moduleInfoButtonTitle'),
-        },
+      {
+        action: 'dismiss',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:thumb-down' :
+            'modules:thumb_down-old',
+        text: this.i18n('modulesMostRelevantTabResumptionDismissAll'),
+      },
+      {
+        action: 'disable',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:block' :
+            'modules:block-old',
+        text: this.i18nRecursive(
+            '', 'modulesDisableButtonTextV2', 'modulesTabResumptionTitle'),
+      },
+      {
+        action: 'info',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:info' :
+            'modules:info-old',
+        text: this.i18n('moduleInfoButtonTitle'),
+      },
     ];
   }
 
@@ -200,19 +206,25 @@ export class MostRelevantTabResumptionModuleElement extends I18nMixinLit
   protected computeIcon_(urlVisit: URLVisit): string {
     switch (urlVisit.formFactor) {
       case FormFactor.kDesktop:
-        return 'tab_resumption:computer';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'tab_resumption:desktop-windows' :
+            'tab_resumption:computer-old';
       case FormFactor.kPhone:
-        return 'tab_resumption:phone';
+        return 'tab_resumption:phone-custom';
       case FormFactor.kTablet:
-        return 'tab_resumption:tablet';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'tab_resumption:tablet-android' :
+            'tab_resumption:tablet-old';
       case FormFactor.kAutomotive:
-        return 'tab_resumption:automotive';
+        return 'tab_resumption:automotive-custom';
       case FormFactor.kWearable:
-        return 'tab_resumption:wearable';
+        return 'tab_resumption:wearable-custom';
       case FormFactor.kTv:
         return 'tab_resumption:tv';
       default:
-        return 'tab_resumption:globe';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'tab_resumption:public' :
+            'tab_resumption:globe-old';
     }
   }
 
@@ -234,6 +246,12 @@ export class MostRelevantTabResumptionModuleElement extends I18nMixinLit
 
   protected onInfoDialogClose_() {
     this.showInfoDialog_ = false;
+  }
+
+  protected getCheckSmallIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'modules:check-small' :
+        'modules:done-old';
   }
 }
 

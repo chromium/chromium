@@ -20,8 +20,9 @@
     <hr id="actionMenuDivider" ?hidden="${!this.showDivider_()}">
     <button id="customize-module" class="dropdown-item"
           @click="${this.onButtonClick_}" data-action="customize-module">
-    <cr-icon class="action-menu-icon cr-icon" icon="modules:tune"></cr-icon>
-        $i18n{modulesCustomizeButtonText}
+      <cr-icon class="action-menu-icon cr-icon"
+          icon="${this.getTuneIcon_()}"></cr-icon>
+      $i18n{modulesCustomizeButtonText}
     </button>
   ` : ''}
 </cr-action-menu>

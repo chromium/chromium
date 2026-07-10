@@ -63,28 +63,36 @@ export class MicrosoftFilesModuleElement extends
 
   protected getMenuItems_(): MenuItem[] {
     return [
-        {
-          action: 'dismiss',
-          icon: 'modules:visibility_off',
-          text: this.i18nRecursive(
-              '', 'modulesDismissForHoursButtonText',
-              'fileSuggestionDismissHours'),
-        },
-        {
-          action: 'disable',
-          icon: 'modules:block',
-          text: this.i18n('modulesMicrosoftFilesDisableButtonText'),
-        },
-        {
-          action: 'signout',
-          icon: 'modules:logout',
-          text: this.i18n('modulesMicrosoftSignOutButtonText'),
-        },
-        {
-          action: 'info',
-          icon: 'modules:info',
-          text: this.i18n('moduleInfoButtonTitle'),
-        },
+      {
+        action: 'dismiss',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:visibility-off' :
+            'modules:visibility_off-old',
+        text: this.i18nRecursive(
+            '', 'modulesDismissForHoursButtonText',
+            'fileSuggestionDismissHours'),
+      },
+      {
+        action: 'disable',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:block' :
+            'modules:block-old',
+        text: this.i18n('modulesMicrosoftFilesDisableButtonText'),
+      },
+      {
+        action: 'signout',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:logout' :
+            'modules:logout-old',
+        text: this.i18n('modulesMicrosoftSignOutButtonText'),
+      },
+      {
+        action: 'info',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:info' :
+            'modules:info-old',
+        text: this.i18n('moduleInfoButtonTitle'),
+      },
     ];
   }
 

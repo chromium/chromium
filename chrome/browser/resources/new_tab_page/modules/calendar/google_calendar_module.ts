@@ -6,6 +6,7 @@ import './calendar.js';
 import '../info_dialog.js';
 import '../module_header.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CalendarEvent} from '../../calendar_data.mojom-webui.js';
@@ -61,23 +62,29 @@ export class GoogleCalendarModuleElement extends
 
   protected getMenuItems_(): MenuItem[] {
     return [
-        {
-          action: 'dismiss',
-          icon: 'modules:visibility_off',
-          text: this.i18nRecursive(
-              '', 'modulesDismissForHoursButtonText',
-              'calendarModuleDismissHours'),
-        },
-        {
-          action: 'disable',
-          icon: 'modules:block',
-          text: this.i18n('modulesGoogleCalendarDisableButtonText'),
-        },
-        {
-          action: 'info',
-          icon: 'modules:info',
-          text: this.i18n('moduleInfoButtonTitle'),
-        },
+      {
+        action: 'dismiss',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:visibility-off' :
+            'modules:visibility_off-old',
+        text: this.i18nRecursive(
+            '', 'modulesDismissForHoursButtonText',
+            'calendarModuleDismissHours'),
+      },
+      {
+        action: 'disable',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:block' :
+            'modules:block-old',
+        text: this.i18n('modulesGoogleCalendarDisableButtonText'),
+      },
+      {
+        action: 'info',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:info' :
+            'modules:info-old',
+        text: this.i18n('moduleInfoButtonTitle'),
+      },
     ];
   }
 

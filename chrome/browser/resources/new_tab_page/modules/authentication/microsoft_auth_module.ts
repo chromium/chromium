@@ -56,16 +56,20 @@ export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
 
   protected getMenuItems_(): MenuItem[] {
     return [
-        {
-          action: 'dismiss',
-          icon: 'modules:visibility_off',
-          text: this.i18n('modulesMicrosoftAuthDismiss'),
-        },
-        {
-          action: 'disable',
-          icon: 'modules:block',
-          text: this.i18n('modulesMicrosoftAuthDisable'),
-        },
+      {
+        action: 'dismiss',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:visibility-off' :
+            'modules:visibility_off-old',
+        text: this.i18n('modulesMicrosoftAuthDismiss'),
+      },
+      {
+        action: 'disable',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:block' :
+            'modules:block-old',
+        text: this.i18n('modulesMicrosoftAuthDisable'),
+      },
     ];
   }
 

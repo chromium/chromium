@@ -8,6 +8,7 @@ import './icons.html.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './customize_buttons.css.js';
@@ -64,6 +65,7 @@ export class CustomizeButtonsElement extends CrLitElement {
         reflect: true,
         type: Boolean,
       },
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -76,6 +78,8 @@ export class CustomizeButtonsElement extends CrLitElement {
   accessor showWallpaperSearch: boolean = false;
   accessor showWallpaperSearchButton: boolean = false;
   accessor wallpaperSearchButtonAnimationEnabled: boolean = false;
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override connectedCallback() {
     super.connectedCallback();

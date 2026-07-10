@@ -76,9 +76,9 @@ const InteractiveBrowserTestApi::DeepQuery kPathToDismissOption = {
 
 constexpr char kPromoTextId[] = "#bodyText";
 constexpr char kPromoIconId[] = "#bodyIcon";
-constexpr char kSignInIconName[] = "account_circle";
-constexpr char kExtensionsIconName[] = "my_extensions";
-constexpr char kCustomizationIconName[] = "palette";
+constexpr char kSignInIconName[] = "account-circle-custom";
+constexpr char kExtensionsIconName[] = "my-extensions-custom";
+constexpr char kCustomizationIconName[] = "palette-custom";
 const std::u16string kShortPromoText = u"Short promo text";
 const std::u16string kLongPromoText =
     u"This is a long promo text string that should cause the promo to grow "

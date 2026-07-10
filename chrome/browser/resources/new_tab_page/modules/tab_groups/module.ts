@@ -13,6 +13,7 @@ import './icon_container.js';
 
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -129,24 +130,30 @@ export class TabGroupsModuleElement extends TabGroupsModuleElementBase {
 
   protected getMenuItems_(): MenuItem[] {
     return [
-        {
-          action: 'dismiss',
-          icon: 'modules:visibility_off',
-          text: this.i18nRecursive(
-              '', 'modulesDismissForHoursButtonText',
-              'tabGroupsModuleDismissHours'),
-        },
-        {
-          action: 'disable',
-          icon: 'modules:block',
-          text: this.i18nRecursive(
-              '', 'modulesDisableButtonTextV2', 'modulesTabGroupsTitle'),
-        },
-        {
-          action: 'info',
-          icon: 'modules:info',
-          text: this.i18n('moduleInfoButtonTitle'),
-        },
+      {
+        action: 'dismiss',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:visibility-off' :
+            'modules:visibility_off-old',
+        text: this.i18nRecursive(
+            '', 'modulesDismissForHoursButtonText',
+            'tabGroupsModuleDismissHours'),
+      },
+      {
+        action: 'disable',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:block' :
+            'modules:block-old',
+        text: this.i18nRecursive(
+            '', 'modulesDisableButtonTextV2', 'modulesTabGroupsTitle'),
+      },
+      {
+        action: 'info',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'modules:info' :
+            'modules:info-old',
+        text: this.i18n('moduleInfoButtonTitle'),
+      },
     ];
   }
 
@@ -201,6 +208,18 @@ export class TabGroupsModuleElement extends TabGroupsModuleElementBase {
     this.fire('usage');
     recordSmallCount('NewTabPage.TabGroups.ClickTabGroupIndex', index);
     this.handler_.openTabGroup(id);
+  }
+
+  protected getLibraryAddIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'tab_groups:library-add' :
+        'tab_groups:create_new_tab_group-old';
+  }
+
+  protected getGroupIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'tab_groups:group' :
+        'tab_groups:shared_tab_group-old';
   }
 }
 

@@ -89,6 +89,12 @@ export class ModuleHeaderElement extends CrLitElement {
   protected showDivider_(): boolean {
     return this.menuItems?.length > 0;
   }
+
+  protected getTuneIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'modules:tune' :
+        'modules:tune-old';
+  }
 }
 
 declare global {
