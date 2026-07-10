@@ -90,9 +90,10 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
   cached_data_.erase(gaia_id);
   if (active_fetchers_.contains(gaia_id)) {
     // `all_accounts_fetched_barrier_` relies on fecher results, so it should be
-    // called before clearing the active fetcher.
-    CHECK(!all_accounts_fetched_barrier_.is_null());
-    all_accounts_fetched_barrier_.Run();
+    // called before clearing the active fetcher, if available.
+    if (all_accounts_fetched_barrier_) {
+      all_accounts_fetched_barrier_.Run();
+    }
     active_fetchers_.erase(gaia_id);
   }
 
