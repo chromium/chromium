@@ -128,6 +128,7 @@ WebPointerEvent CreateMinimalTouchPointerEvent(WebInputEvent::Type type,
                            WebPointerProperties::Button::kLeft, position,
                            position),
       1, 1);
+  event.SetTimeStamp(base::TimeTicks::Now());
   event.SetFrameScale(1);
   return event;
 }

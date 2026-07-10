@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/render_frame_impl.h"
@@ -86,10 +87,6 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   const int kMaxOutputCharacters = 1024;
   std::string output;
 
-  NSEvent* arrowDownKeyDown =
-      CmdDeadKeyEvent(NSEventTypeKeyDown, kVK_DownArrow);
-  NSEvent* arrowUpKeyDown = CmdDeadKeyEvent(NSEventTypeKeyDown, kVK_UpArrow);
-
   // First test when javascript does not eat keypresses -- should scroll.
   RenderFrameImpl::FromWebFrame(web_view_->MainFrame()->ToWebLocalFrame())
       ->set_send_content_state_immediately(true);
@@ -98,8 +95,10 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   const char* kArrowDownScrollDown = "40,false,false,true,false\n9844";
   blink_widget->AddEditCommandForNextKeyEvent(
       blink::WebString::FromLatin1("moveToEndOfDocument"), blink::WebString());
-  SendNativeKeyEvent(input::NativeWebKeyboardEvent(
-      base::apple::OwnedNSEvent(arrowDownKeyDown)));
+  input::NativeWebKeyboardEvent arrowDownKeyDown1(base::apple::OwnedNSEvent(
+      CmdDeadKeyEvent(NSEventTypeKeyDown, kVK_DownArrow)));
+  arrowDownKeyDown1.SetTimeStamp(base::TimeTicks::Now());
+  SendNativeKeyEvent(arrowDownKeyDown1);
   base::RunLoop().RunUntilIdle();
   ExecuteJavaScriptForTests("scroll.textContent = window.pageYOffset");
   output = TestWebFrameContentDumper::DumpWebViewAsText(web_view_,
@@ -111,8 +110,10 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   blink_widget->AddEditCommandForNextKeyEvent(
       blink::WebString::FromLatin1("moveToBeginningOfDocument"),
       blink::WebString());
-  SendNativeKeyEvent(
-      input::NativeWebKeyboardEvent(base::apple::OwnedNSEvent(arrowUpKeyDown)));
+  input::NativeWebKeyboardEvent arrowUpKeyDown1(base::apple::OwnedNSEvent(
+      CmdDeadKeyEvent(NSEventTypeKeyDown, kVK_UpArrow)));
+  arrowUpKeyDown1.SetTimeStamp(base::TimeTicks::Now());
+  SendNativeKeyEvent(arrowUpKeyDown1);
   base::RunLoop().RunUntilIdle();
   ExecuteJavaScriptForTests("scroll.textContent = window.pageYOffset");
   output = TestWebFrameContentDumper::DumpWebViewAsText(web_view_,
@@ -128,8 +129,10 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   const char* kArrowDownNoScroll = "40,false,false,true,false\n100";
   blink_widget->AddEditCommandForNextKeyEvent(
       blink::WebString::FromLatin1("moveToEndOfDocument"), blink::WebString());
-  SendNativeKeyEvent(input::NativeWebKeyboardEvent(
-      base::apple::OwnedNSEvent(arrowDownKeyDown)));
+  input::NativeWebKeyboardEvent arrowDownKeyDown2(base::apple::OwnedNSEvent(
+      CmdDeadKeyEvent(NSEventTypeKeyDown, kVK_DownArrow)));
+  arrowDownKeyDown2.SetTimeStamp(base::TimeTicks::Now());
+  SendNativeKeyEvent(arrowDownKeyDown2);
   base::RunLoop().RunUntilIdle();
   ExecuteJavaScriptForTests("scroll.textContent = window.pageYOffset");
   output = TestWebFrameContentDumper::DumpWebViewAsText(web_view_,
@@ -141,8 +144,10 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   blink_widget->AddEditCommandForNextKeyEvent(
       blink::WebString::FromLatin1("moveToBeginningOfDocument"),
       blink::WebString());
-  SendNativeKeyEvent(
-      input::NativeWebKeyboardEvent(base::apple::OwnedNSEvent(arrowUpKeyDown)));
+  input::NativeWebKeyboardEvent arrowUpKeyDown2(base::apple::OwnedNSEvent(
+      CmdDeadKeyEvent(NSEventTypeKeyDown, kVK_UpArrow)));
+  arrowUpKeyDown2.SetTimeStamp(base::TimeTicks::Now());
+  SendNativeKeyEvent(arrowUpKeyDown2);
   base::RunLoop().RunUntilIdle();
   ExecuteJavaScriptForTests("scroll.textContent = window.pageYOffset");
   output = TestWebFrameContentDumper::DumpWebViewAsText(web_view_,
