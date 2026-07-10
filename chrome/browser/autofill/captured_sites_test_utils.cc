@@ -2451,6 +2451,7 @@ bool TestRecipeReplayer::SimulateLeftMouseClickAt(
       blink::WebInputEvent::GetStaticTimeStampForTests());
   mouse_event.button = blink::WebMouseEvent::Button::kLeft;
   mouse_event.SetPositionInWidget(point.x(), point.y());
+  mouse_event.SetTimeStamp(base::TimeTicks::Now());
 
   // Mac needs positionInScreen for events to plugins.
   gfx::Rect offset =
