@@ -7273,6 +7273,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpSharepointModuleVariations,
                                     "DesktopNtpModules")},
 
+    {"ntp-starter-chip", flag_descriptions::kNtpStarterChipName,
+     flag_descriptions::kNtpStarterChipDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpStarterChip)},
+
     {"ntp-tab-groups-module", flag_descriptions::kNtpTabGroupsModuleName,
      flag_descriptions::kNtpTabGroupsModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpTabGroupsModule,

@@ -6640,6 +6640,10 @@ inline constexpr char kNtpSharepointModuleName[] = "NTP Sharepoint Module";
 inline constexpr char kNtpSharepointModuleDescription[] =
     "Shows the Sharepoint module on the New Tab Page.";
 
+inline constexpr char kNtpStarterChipName[] = "NTP Starter Chip";
+inline constexpr char kNtpStarterChipDescription[] =
+    "Enables the starter chip on the New Tab Page.";
+
 inline constexpr char kNtpTabGroupsModuleName[] = "NTP Tab Groups Module";
 inline constexpr char kNtpTabGroupsModuleDescription[] =
     "Shows the Tab Groups module on the New Tab Page.";

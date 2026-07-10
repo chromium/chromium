@@ -7074,6 +7074,11 @@
     "expiry_milestone": 151
   },
   {
+    "name": "ntp-starter-chip",
+    "owners": [ "rtatum@google.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ntp-tab-groups-module",
     "owners": [ "tiborg@chromium.org", "dpenning@chromium.org" ],
     "expiry_milestone": 150
