@@ -19,5 +19,18 @@
       "https://*.corp.google.com/search*",
       "https://*.prod.google.com/search*"
     ]
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "input_plate.html"
+      ],
+      "matches": [
+        "https://*.google.com/*",
+        "https://*.corp.google.com/*",
+        "https://*.prod.google.com/*",
+        "https://*.googlers.com/*"
+      ]
+    }
+  ]
 }
