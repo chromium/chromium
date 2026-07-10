@@ -18,7 +18,7 @@ extern const char kAccountIdMigrationState[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kAccountInfo[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const char kAccountPreviewDataDict[];
+extern const char kAccountPreviewPreference[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kAccountPreviewDataLastUpdatePref[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

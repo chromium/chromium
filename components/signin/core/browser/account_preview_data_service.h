@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_ACCOUNT_PREVIEW_DATA_SERVICE_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_ACCOUNT_PREVIEW_DATA_SERVICE_H_
 
-#include <optional>
+#include <vector>
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/account_preview_data.h"
@@ -22,7 +22,7 @@ class AccountPreviewDataService : public KeyedService {
  public:
   struct AccountPreviewPreference {
     GaiaId gaia_id;
-    std::optional<syncer::DataType> preferred_data_type;
+    std::vector<syncer::DataType> preferred_data_types;
   };
 
   AccountPreviewDataService() = default;

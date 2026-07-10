@@ -80,8 +80,14 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void OnSingleFetchCompleted(const GaiaId& gaia_id,
                               std::optional<AccountPreviewData> data);
   void OnAllFetchesCompleted();
+  AccountPreviewPreference ComputePreferredAccount() const;
+
+  AccountPreviewPreference ReadPreviewPreferenceFromPrefs() const;
+  void WritePreviewPreferenceToPrefs(
+      const AccountPreviewPreference& preference);
 
   raw_ptr<IdentityManager> identity_manager_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper_;
   const version_info::Channel channel_;

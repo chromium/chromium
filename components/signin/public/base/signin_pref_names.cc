@@ -19,8 +19,8 @@ const char kAccountIdMigrationState[] = "account_id_migration_state";
 // tracked by this signin.
 const char kAccountInfo[] = "account_info";
 
-// Dictionary pref that contains the cached account preview data.
-const char kAccountPreviewDataDict[] = "signin.account_preview_data_dict";
+// Dictionary pref that contains the AccountPreviewPreference result.
+const char kAccountPreviewPreference[] = "signin.account_preview_preference";
 
 // Time pref that tracks the last time account preview data was refreshed.
 const char kAccountPreviewDataLastUpdatePref[] =

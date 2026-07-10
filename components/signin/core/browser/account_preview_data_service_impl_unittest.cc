@@ -342,29 +342,39 @@ TEST_F(AccountPreviewDataServiceTest, OnAllFetchesCompleted) {
 #endif
 
 TEST_F(AccountPreviewDataServiceTest, GetPreferredAccountForPromo) {
-  // 1. Initially empty when no cookies.
+  // 1. Initially empty.
   {
     AccountPreviewDataService::AccountPreviewPreference preference =
         service_->GetPreferredAccountForPromo();
     EXPECT_TRUE(preference.gaia_id.empty());
-    EXPECT_EQ(std::nullopt, preference.preferred_data_type);
+    EXPECT_TRUE(preference.preferred_data_types.empty());
   }
 
-  // 2. Set cookies with multiple accounts.
+  // Mock successful fetches.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  base::RunLoop all_data_available_loop;
+  service_->SetAllDataAvailableCallbackForTesting(
+      all_data_available_loop.QuitClosure());
+
+  // 2. Make accounts available.
   AccountInfo account1 =
       identity_test_env_.MakeAccountAvailable("account1@gmail.com");
   AccountInfo account2 =
       identity_test_env_.MakeAccountAvailable("account2@gmail.com");
 
-  identity_test_env_.SetCookieAccounts(
-      {{account1.email, account1.gaia}, {account2.email, account2.gaia}});
+  all_data_available_loop.Run();
 
-  // 3. Verify it returns the first account from cookies.
+  // 3. Verify it returns empty preference (since heuristic is to be
+  // implemented).
+  // TODO(crbug.com/530144650): When the heuristic is implemented, this test
+  // should be updated to expect a non-empty preference.
   {
     AccountPreviewDataService::AccountPreviewPreference preference =
         service_->GetPreferredAccountForPromo();
-    EXPECT_EQ(account1.gaia, preference.gaia_id);
-    EXPECT_EQ(std::nullopt, preference.preferred_data_type);
+    EXPECT_TRUE(preference.gaia_id.empty());
+    EXPECT_TRUE(preference.preferred_data_types.empty());
   }
 }
 

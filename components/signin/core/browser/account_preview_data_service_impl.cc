@@ -9,6 +9,7 @@
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/values.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_preview_data.h"
 #include "components/signin/core/browser/account_preview_data_fetcher.h"
@@ -20,6 +21,11 @@
 
 namespace signin {
 
+namespace {
+constexpr char kPreferredAccountDictGaiaIdKey[] = "gaia_id";
+constexpr char kPreferredAccountDictDataTypesKey[] = "data_types";
+}  // namespace
+
 AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
     IdentityManager* identity_manager,
     PrefService* pref_service,
@@ -28,6 +34,7 @@ AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
     version_info::Channel channel,
     const metrics::ProfileMetricsService* profile_metrics_service)
     : identity_manager_(identity_manager),
+      pref_service_(pref_service),
       url_loader_factory_(std::move(url_loader_factory)),
       network_delay_helper_(std::move(network_delay_helper)),
       channel_(channel),
@@ -49,23 +56,7 @@ AccountPreviewDataServiceImpl::~AccountPreviewDataServiceImpl() = default;
 
 AccountPreviewDataService::AccountPreviewPreference
 AccountPreviewDataServiceImpl::GetPreferredAccountForPromo() const {
-  AccountPreviewPreference preference;
-  // TODO(crbug.com/530144650): By default we will choose the first account in
-  // the cookie jar, with no preferred_data_type (this aligns with the current
-  // behavior), until the heuristic is properly defined, which will end up using
-  // the information from `GetAccountPreviewData()`.
-  preference.preferred_data_type = std::nullopt;
-
-  AccountsInCookieJarInfo cookie_info =
-      identity_manager_->GetAccountsInCookieJar();
-  if (cookie_info.AreAccountsFresh()) {
-    const std::vector<gaia::ListedAccount>& accounts =
-        cookie_info.GetValidSignedInAccounts();
-    if (!accounts.empty()) {
-      preference.gaia_id = accounts[0].gaia_id;
-    }
-  }
-  return preference;
+  return ReadPreviewPreferenceFromPrefs();
 }
 
 std::optional<AccountPreviewData>
@@ -228,15 +219,63 @@ void AccountPreviewDataServiceImpl::StartFetch(const GaiaId& gaia_id) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+AccountPreviewDataService::AccountPreviewPreference
+AccountPreviewDataServiceImpl::ComputePreferredAccount() const {
+  // TODO(crbug.com/530144650): Implement heuristic to compute the preferred
+  // account and preferred data types.
+  return AccountPreviewPreference();
+}
+
 void AccountPreviewDataServiceImpl::OnAllFetchesCompleted() {
   all_accounts_fetched_barrier_.Reset();
 
-  // TODO(crbug.com/530144650): Implement heuristic to compute the preferred
-  // account and preferred data types, and store it in prefs.
+  WritePreviewPreferenceToPrefs(ComputePreferredAccount());
 
   if (all_data_available_callback_for_testing_) {
     std::move(all_data_available_callback_for_testing_).Run();
   }
+}
+
+AccountPreviewDataService::AccountPreviewPreference
+AccountPreviewDataServiceImpl::ReadPreviewPreferenceFromPrefs() const {
+  AccountPreviewPreference preference;
+
+  const base::DictValue& dict =
+      pref_service_->GetDict(prefs::kAccountPreviewPreference);
+  const std::string* gaia_id_str =
+      dict.FindString(kPreferredAccountDictGaiaIdKey);
+  if (gaia_id_str) {
+    preference.gaia_id = GaiaId(*gaia_id_str);
+  }
+
+  const base::ListValue* data_types_list =
+      dict.FindList(kPreferredAccountDictDataTypesKey);
+  if (data_types_list) {
+    for (const base::Value& val : *data_types_list) {
+      if (val.is_int()) {
+        // TODO(crbug.com/532419984): Consider using DataTypeForHistograms (or
+        // equivalent) to ensure data type alignment when storing and
+        // retrieving values from pref.
+        auto data_type = static_cast<syncer::DataType>(val.GetInt());
+        if (syncer::IsRealDataType(data_type)) {
+          preference.preferred_data_types.push_back(data_type);
+        }
+      }
+    }
+  }
+  return preference;
+}
+
+void AccountPreviewDataServiceImpl::WritePreviewPreferenceToPrefs(
+    const AccountPreviewPreference& preference) {
+  base::DictValue dict;
+  dict.Set(kPreferredAccountDictGaiaIdKey, preference.gaia_id.ToString());
+  base::ListValue data_types_list;
+  for (syncer::DataType data_type : preference.preferred_data_types) {
+    data_types_list.Append(static_cast<int>(data_type));
+  }
+  dict.Set(kPreferredAccountDictDataTypesKey, std::move(data_types_list));
+  pref_service_->SetDict(prefs::kAccountPreviewPreference, std::move(dict));
 }
 
 }  // namespace signin
