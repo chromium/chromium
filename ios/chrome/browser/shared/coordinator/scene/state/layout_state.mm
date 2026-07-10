@@ -139,6 +139,15 @@ UIInterfaceOrientation GetTargetInterfaceOrientation(
   [_observers layoutState:self didChangeAssistantContainerCutoutRadius:radius];
 }
 
+- (void)setGeminiFloatyInvoked:(BOOL)invoked
+                       passKey:(LayoutStateAssistantPassKey)passKey {
+  if (_geminiFloatyInvoked == invoked) {
+    return;
+  }
+  _geminiFloatyInvoked = invoked;
+  [_observers layoutState:self didChangeGeminiFloatyInvoked:invoked];
+}
+
 - (void)setToolbarPosition:(ToolbarPosition)position
                    passKey:(LayoutStateToolbarPassKey)passKey {
   if (_toolbarPosition == position) {

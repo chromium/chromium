@@ -165,4 +165,19 @@ TEST_F(LayoutStateTest, CutoutRadius) {
   [mock_observer verify];
 }
 
+// Tests that geminiFloatyInvoked updates observers.
+TEST_F(LayoutStateTest, GeminiFloatyInvoked) {
+  id mock_observer = OCMProtocolMock(@protocol(LayoutStateObserver));
+  [layout_state_ addObserver:mock_observer];
+
+  OCMExpect([mock_observer layoutState:layout_state_
+          didChangeGeminiFloatyInvoked:YES]);
+
+  [layout_state_ setGeminiFloatyInvoked:YES passKey:AssistantPassKey()];
+
+  EXPECT_TRUE(layout_state_.geminiFloatyInvoked);
+
+  [mock_observer verify];
+}
+
 }  // namespace

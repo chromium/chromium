@@ -14,6 +14,7 @@
 #import "base/trace_event/trace_event.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_container_view_controller.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_presentation_context.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
@@ -408,6 +409,11 @@ inline LayoutStateScenePassKey PassKey() {
   [self updateLayoutForViews];
 }
 
+- (void)layoutState:(LayoutState*)layoutState
+    didChangeGeminiFloatyInvoked:(BOOL)geminiFloatyInvoked {
+  [self updateLayoutForViews];
+}
+
 #pragma mark - Private
 
 // Ensures the Assistant container view remains properly layered below the App
@@ -629,9 +635,10 @@ inline LayoutStateScenePassKey PassKey() {
     case AppBarPosition::kBottom: {
       CGFloat minHeight =
           IsAppBarHiddenInFullscreen() ? 0 : kAppBarHeightFullscreen;
+      CGFloat portraitHeight =
+          CurrentAppBarHeightPortrait(self.layoutState.geminiFloatyInvoked);
       CGFloat appBarHeight =
-          minHeight -
-          _fullscreenProgress * (minHeight - AppBarHeightPortrait());
+          minHeight - _fullscreenProgress * (minHeight - portraitHeight);
       insets.bottom += appBarHeight;
       break;
     }

@@ -150,6 +150,7 @@
                          tabGridState:sceneState.tabGridState
                        incognitoState:sceneState.incognitoState
              lensOverlayStateNotifier:sceneState.lensOverlayStateNotifier];
+  _mediator.layoutState = sceneState.layoutState;
   _mediator.sceneHandler = sceneHandler;
   _mediator.lensHandler = HandlerForProtocol(regularDispatcher, LensCommands);
   _mediator.delegate = self;

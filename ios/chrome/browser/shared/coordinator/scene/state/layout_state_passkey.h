@@ -17,6 +17,7 @@ class AssistantContainerViewControllerPassKeyFactory;
 class AssistantContainerAnimatorPassKeyFactory;
 class MainToolbarCoordinatorPassKeyFactory;
 class MainToolbarMediatorPassKeyFactory;
+class AppBarMediatorPassKeyFactory;
 
 // Forward-declare the test helper class defined in
 // layout_state_test_passkey_factory.h.
@@ -36,6 +37,7 @@ typedef base::PassKey<layout_state::SceneViewControllerPassKeyFactory,
 typedef base::PassKey<
     layout_state::AssistantContainerViewControllerPassKeyFactory,
     layout_state::AssistantContainerAnimatorPassKeyFactory,
+    layout_state::AppBarMediatorPassKeyFactory,
     layout_state::LayoutStateTestPassKeyFactory>
     LayoutStateAssistantPassKey;
 

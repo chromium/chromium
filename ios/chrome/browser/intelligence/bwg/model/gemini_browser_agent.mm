@@ -827,7 +827,11 @@ CGFloat GeminiBrowserAgent::GetFloatyOffset() {
         [layout_guide_center referencedViewUnderName:kAppBarGuide];
     if (app_bar_view &&
         scene_state.layoutState.appBarPosition == AppBarPosition::kBottom) {
-      max_bottom_inset += AppBarHeightPortrait();
+      CGFloat portrait_height =
+          (is_floaty_invoked_ && IsAppBarHiddenInFullscreen())
+              ? kAppBarHeightFullscreen
+              : AppBarHeightPortrait();
+      max_bottom_inset += portrait_height;
     }
   }
 
@@ -863,7 +867,11 @@ CGFloat GeminiBrowserAgent::GetFullyExpandedFloatyOffset() {
         [layout_guide_center referencedViewUnderName:kAppBarGuide];
     if (app_bar_view &&
         scene_state.layoutState.appBarPosition == AppBarPosition::kBottom) {
-      max_bottom_inset += AppBarHeightPortrait();
+      CGFloat portrait_height =
+          (is_floaty_invoked_ && IsAppBarHiddenInFullscreen())
+              ? kAppBarHeightFullscreen
+              : AppBarHeightPortrait();
+      max_bottom_inset += portrait_height;
     }
   }
 
@@ -1220,6 +1228,7 @@ void GeminiBrowserAgent::DismissFloaty() {
   entry_point_ = gemini::EntryPoint::Unknown;
   UpdateGeminiLiveIconVisibility();
   ios::provider::ResetGemini();
+  ResetFullscreenDisabler();
 }
 
 void GeminiBrowserAgent::ForceDismissFloaty() {
@@ -1744,6 +1753,11 @@ bool GeminiBrowserAgent::IsFullscreenInitialized() {
 
 void GeminiBrowserAgent::ResetFullscreenDisabler() {
   if (!fullscreen_disabler_) {
+    return;
+  }
+
+  if (IsChromeNextIaEnabled() && IsAppBarHiddenInFullscreen() &&
+      is_floaty_invoked_) {
     return;
   }
 
