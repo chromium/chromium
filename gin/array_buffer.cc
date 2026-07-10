@@ -57,8 +57,7 @@ void* ArrayBufferAllocator::AllocateInternal(size_t length) {
 #else
   constexpr auto new_flags = flags;
 #endif
-  return partition_->AllocInline<new_flags>(length,
-                                            "gin::ArrayBufferAllocator");
+  return partition_->Alloc<new_flags>(length, "gin::ArrayBufferAllocator");
 }
 
 void ArrayBufferAllocator::Free(void* data, size_t length) {
