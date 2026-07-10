@@ -577,6 +577,7 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
     should_recreate_shared_image = true;
   }
 
+  gpu::SyncToken sync_token;
   if (!shared_image || should_recreate_shared_image) {
     auto multiplanar_si_format = viz::MultiPlaneFormat::kNV12;
 #if BUILDFLAG(IS_OZONE)
@@ -603,12 +604,14 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
         gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
         std::move(gmb_handle));
     CHECK(shared_image);
+    sync_token = shared_image->creation_sync_token();
   } else {
-    sii->UpdateSharedImage(video_frame_init_data.buffer_context->gmb_resources()
-                               ->release_sync_token,
-                           video_frame_init_data.buffer_context->gmb_resources()
-                               ->shared_image->mailbox());
+    sync_token = video_frame_init_data.buffer_context->gmb_resources()
+                     ->shared_image->BackingWasExternallyUpdated(
+                         video_frame_init_data.buffer_context->gmb_resources()
+                             ->release_sync_token);
   }
+  sii->VerifySyncToken(sync_token);
 
 #if BUILDFLAG(IS_WIN)
   video_frame_init_data.buffer_context->gmb_resources()
@@ -616,7 +619,6 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
           video_frame_init_data.ready_buffer->info->is_premapped);
 #endif
 
-  const gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
   CHECK(shared_image);
 
   auto frame = media::VideoFrame::WrapMappableSharedImage(
