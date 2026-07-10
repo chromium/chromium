@@ -26,6 +26,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/base/data_type.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -119,6 +120,128 @@ TEST_F(AccountPreviewDataServiceTest, RemovesCachedData) {
   service_->OnRefreshTokenRemovedForAccount(account_info.account_id);
 
   EXPECT_FALSE(service_->GetAccountPreviewData(account_info.gaia).has_value());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       AddingAccountDoesNotTriggerRefreshForCachedAccount) {
+  // Mock response and set callback for account1 fetch.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+
+  // Make account1 available. This starts fetch for account1.
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  run_loop.Run();
+
+  EXPECT_TRUE(service_->GetAccountPreviewData(account1.gaia).has_value());
+
+  // Make account2 available.
+  // We do NOT mock any response for account1 (and it should not fetch it
+  // anyway). We mock success for account2.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+
+  // Fetch should only be triggered for the new account2, not the cached
+  // account1.
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account1.gaia));
+  EXPECT_TRUE(service_->HasActiveFetcherForTesting(account2.gaia));
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       AddingAccountTriggersRefreshForUncachedAccount) {
+  // 1. Mock fetch failure and set callback.
+  MockFailedStatsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  MockFailedPreviewsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+
+  // Make account1 available so it starts fetch and fails.
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  run_loop.Run();
+
+  EXPECT_FALSE(service_->GetAccountPreviewData(account1.gaia).has_value());
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account1.gaia));
+
+  // 2. Make account2 available (triggers EnsureAllAccountsFetched()).
+  // This should trigger fetch for both account1 and account2.
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+
+  EXPECT_TRUE(service_->HasActiveFetcherForTesting(account1.gaia));
+  EXPECT_TRUE(service_->HasActiveFetcherForTesting(account2.gaia));
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       RemovingAccountDoesNotTriggerRefreshForCachedAccount) {
+  // Mock successful response and set callback for first fetch.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  base::RunLoop run_loop1;
+  service_->SetFetchCompleteCallbackForTesting(run_loop1.QuitClosure());
+
+  // Make account1 available (starts fetch for account1).
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  run_loop1.Run();
+
+  // Mock successful response and set callback for second fetch.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  base::RunLoop run_loop2;
+  service_->SetFetchCompleteCallbackForTesting(run_loop2.QuitClosure());
+
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+  run_loop2.Run();
+
+  EXPECT_TRUE(service_->GetAccountPreviewData(account1.gaia).has_value());
+  EXPECT_TRUE(service_->GetAccountPreviewData(account2.gaia).has_value());
+
+  // Remove account1. This triggers EnsureAllAccountsFetched().
+  identity_test_env_.RemoveRefreshTokenForAccount(account1.account_id);
+
+  // account1 is cleared. No fetches should start for the remaining cached
+  // account2.
+  EXPECT_FALSE(service_->GetAccountPreviewData(account1.gaia).has_value());
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account1.gaia));
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account2.gaia));
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       RemovingAccountTriggersRefreshForUncachedAccount) {
+  // 1. Make account1 available, fetch and cache it successfully.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  base::RunLoop run_loop1;
+  service_->SetFetchCompleteCallbackForTesting(run_loop1.QuitClosure());
+
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  run_loop1.Run();
+  EXPECT_TRUE(service_->GetAccountPreviewData(account1.gaia).has_value());
+
+  // 2. Mock failure responses, set callback, and make account2 available.
+  MockFailedStatsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  MockFailedPreviewsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  base::RunLoop run_loop2;
+  service_->SetFetchCompleteCallbackForTesting(run_loop2.QuitClosure());
+
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+  run_loop2.Run();
+
+  EXPECT_FALSE(service_->GetAccountPreviewData(account2.gaia).has_value());
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account2.gaia));
+
+  // 3. Remove account1. This triggers EnsureAllAccountsFetched().
+  identity_test_env_.RemoveRefreshTokenForAccount(account1.account_id);
+
+  // account1 is cleared. Fetch should start for the remaining uncached
+  // account2.
+  EXPECT_FALSE(service_->GetAccountPreviewData(account1.gaia).has_value());
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account1.gaia));
+  EXPECT_TRUE(service_->HasActiveFetcherForTesting(account2.gaia));
 }
 
 TEST_F(AccountPreviewDataServiceTest, GetPreferredAccountForPromo) {

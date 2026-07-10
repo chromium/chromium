@@ -42,10 +42,6 @@ AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
           &AccountPreviewDataServiceImpl::RefreshAllAccountPreviewData,
           weak_ptr_factory_.GetWeakPtr()));
   repeating_timer_->Start();
-
-  if (identity_manager_->AreRefreshTokensLoaded()) {
-    OnRefreshTokensLoaded();
-  }
 }
 
 AccountPreviewDataServiceImpl::~AccountPreviewDataServiceImpl() = default;
@@ -87,7 +83,7 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenUpdatedForAccount(
   // fetching requests. Startup should only rely on the repeating timer and
   // refresh all accounts preview data.
   if (identity_manager_->AreRefreshTokensLoaded()) {
-    FetchAccountPreviewData(account_info.gaia);
+    EnsureAllAccountsFetched();
   }
 }
 
@@ -102,6 +98,10 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
   GaiaId gaia_id = info.gaia;
   cached_data_.erase(gaia_id);
   active_fetchers_.erase(gaia_id);
+
+  // TODO(crbug.com/532419984): Restrict this computation if the removed account
+  // is the current preferred account.
+  EnsureAllAccountsFetched();
 }
 
 void AccountPreviewDataServiceImpl::SetFetchCompleteCallbackForTesting(
@@ -128,7 +128,7 @@ void AccountPreviewDataServiceImpl::OnFetchCompleted(
 
 void AccountPreviewDataServiceImpl::OnRefreshTokensLoaded() {
   if (deferred_refresh_pending_) {
-    RefreshAllAccountPreviewData();
+    EnsureAllAccountsFetched();
   }
 }
 
@@ -142,8 +142,12 @@ void AccountPreviewDataServiceImpl::OnIdentityManagerShutdown(
 }
 
 void AccountPreviewDataServiceImpl::RefreshAllAccountPreviewData() {
-  CHECK(identity_manager_);
+  cached_data_.clear();
+  EnsureAllAccountsFetched();
+}
 
+void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched() {
+  CHECK(identity_manager_);
   if (!identity_manager_->AreRefreshTokensLoaded()) {
     deferred_refresh_pending_ = true;
     return;
@@ -152,7 +156,9 @@ void AccountPreviewDataServiceImpl::RefreshAllAccountPreviewData() {
   deferred_refresh_pending_ = false;
   for (const auto& account :
        identity_manager_->GetAccountsWithRefreshTokens()) {
-    FetchAccountPreviewData(account.gaia);
+    if (!cached_data_.contains(account.gaia)) {
+      FetchAccountPreviewData(account.gaia);
+    }
   }
 }
 

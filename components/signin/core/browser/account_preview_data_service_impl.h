@@ -73,6 +73,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
 
  private:
   void RefreshAllAccountPreviewData();
+  void EnsureAllAccountsFetched();
   void FetchAccountPreviewData(const GaiaId& gaia_id);
   void StartFetch(const GaiaId& gaia_id);
   void OnFetchCompleted(const GaiaId& gaia_id,
