@@ -186,3 +186,23 @@ source_set("unit_tests") {
     deps += [ "//chrome/browser/download:test_support" ]
   }
 }
+
+if (is_android) {
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "background_loader_offliner_browsertest.cc" ]
+    deps = [
+      ":impl",
+      ":offline_pages",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui_android",
+      "//components/offline_pages/core",
+      "//components/offline_pages/core/background:background_offliner",
+      "//content/test:test_support",
+      "//net:test_support",
+    ]
+  }
+}
