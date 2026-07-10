@@ -5,6 +5,7 @@
 #include "services/device/geolocation/public_ip_address_geolocator.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -75,7 +76,7 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
   }
 
   // Deal with PublicIpAddressGeolocator bad message.
-  void OnGeolocatorBadMessage(const std::string& message) {
+  void OnGeolocatorBadMessage(std::string_view message) {
     receiver_set_.ReportBadMessage(message);
   }
 

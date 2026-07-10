@@ -39,8 +39,7 @@ void SelfDeletingURLLoaderFactory::Clone(
   receivers_.Add(this, std::move(loader));
 }
 
-void SelfDeletingURLLoaderFactory::ReportBadMessage(
-    const std::string& message) {
+void SelfDeletingURLLoaderFactory::ReportBadMessage(std::string_view message) {
   receivers_.ReportBadMessage(message);
   if (receivers_.empty()) {
     delete this;

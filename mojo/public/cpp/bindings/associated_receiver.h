@@ -307,7 +307,7 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   // message dispatch. If you need to do asynchronous work before determining
   // the legitimacy of a message, use GetBadMessageCallback() and retain its
   // result until ready to invoke or discard it.
-  NOT_TAIL_CALLED void ReportBadMessage(const std::string& error) {
+  NOT_TAIL_CALLED void ReportBadMessage(std::string_view error) {
     GetBadMessageCallback().Run(error);
   }
 
