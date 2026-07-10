@@ -133,27 +133,37 @@ public class SideUiWebContentHairlineManagerTest {
         SideUiObserver observer = observerCaptor.getValue();
         View leftHairline = mHairlineContainer.getLeftHairline();
         View rightHairline = mHairlineContainer.getRightHairline();
+        View leftRoundedCorner = mHairlineContainer.getLeftRoundedCorner();
+        View rightRoundedCorner = mHairlineContainer.getRightRoundedCorner();
 
         // 1. Assert initially INVISIBLE.
         assertEquals(View.INVISIBLE, leftHairline.getVisibility());
+        assertEquals(View.INVISIBLE, leftRoundedCorner.getVisibility());
         assertEquals(View.INVISIBLE, rightHairline.getVisibility());
+        assertEquals(View.INVISIBLE, rightRoundedCorner.getVisibility());
 
         // 2. Show left SideUI.
         SideUiSpecs showLeftSpecs = new SideUiSpecs(Map.of(AnchorSide.LEFT, 100));
         observer.onSideUiSpecsChanged(showLeftSpecs);
         assertEquals(View.VISIBLE, leftHairline.getVisibility());
+        assertEquals(View.VISIBLE, leftRoundedCorner.getVisibility());
         assertEquals(View.INVISIBLE, rightHairline.getVisibility());
+        assertEquals(View.INVISIBLE, rightRoundedCorner.getVisibility());
 
         // 3. Hide left SideUI and show right SideUI.
         SideUiSpecs showRightSpecs = new SideUiSpecs(Map.of(AnchorSide.RIGHT, 50));
         observer.onSideUiSpecsChanged(showRightSpecs);
         assertEquals(View.INVISIBLE, leftHairline.getVisibility());
+        assertEquals(View.INVISIBLE, leftRoundedCorner.getVisibility());
         assertEquals(View.VISIBLE, rightHairline.getVisibility());
+        assertEquals(View.VISIBLE, rightRoundedCorner.getVisibility());
 
         // 4. Hide right SideUI.
         SideUiSpecs hideAllSpecs = new SideUiSpecs(Collections.emptyMap());
         observer.onSideUiSpecsChanged(hideAllSpecs);
         assertEquals(View.INVISIBLE, leftHairline.getVisibility());
+        assertEquals(View.INVISIBLE, leftRoundedCorner.getVisibility());
         assertEquals(View.INVISIBLE, rightHairline.getVisibility());
+        assertEquals(View.INVISIBLE, rightRoundedCorner.getVisibility());
     }
 }

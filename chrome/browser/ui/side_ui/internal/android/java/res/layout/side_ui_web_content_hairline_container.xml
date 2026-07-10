@@ -42,4 +42,24 @@ found in the LICENSE file.
         android:importantForAccessibility="no"
         tools:ignore="RtlHardcoded" />
 
+    <ImageView
+        android:id="@+id/left_web_content_rounded_corner"
+        android:src="@drawable/rounded_corner_left"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|left"
+        android:importantForAccessibility="no"
+        tools:ignore="RtlHardcoded" />
+
+    <ImageView
+        android:id="@+id/right_web_content_rounded_corner"
+        android:src="@drawable/rounded_corner_right"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
+        android:importantForAccessibility="no"
+        tools:ignore="RtlHardcoded" />
+
 </org.chromium.chrome.browser.ui.side_ui.SideUiWebContentHairlineContainer>

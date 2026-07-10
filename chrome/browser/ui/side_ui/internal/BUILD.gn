@@ -6,6 +6,8 @@ import("//build/config/android/rules.gni")
 
 android_resources("java_resources") {
   sources = [
+    "android/java/res/drawable/rounded_corner_left.xml",
+    "android/java/res/drawable/rounded_corner_right.xml",
     "android/java/res/drawable/vertical_hairline.xml",
     "android/java/res/layout/side_ui_web_content_hairline_container.xml",
     "android/java/res/values/dimens.xml",

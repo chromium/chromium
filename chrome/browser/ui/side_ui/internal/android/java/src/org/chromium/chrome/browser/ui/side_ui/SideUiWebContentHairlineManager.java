@@ -135,16 +135,25 @@ import java.util.Set;
 
         @Override
         public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
+            // TODO(crbug.com/525353575): Investigate if we need to update rounded corner logic for
+            //  different height side containers.
+            // TODO(crbug.com/530332806): Investigate if we need to disable rounded corners for VT.
             int leftHairlineVisibility =
                     sideUiSpecs.getWidth(AnchorSide.LEFT) == 0 ? View.INVISIBLE : View.VISIBLE;
             mSideUiWebContentHairlineContainer
                     .getLeftHairline()
+                    .setVisibility(leftHairlineVisibility);
+            mSideUiWebContentHairlineContainer
+                    .getLeftRoundedCorner()
                     .setVisibility(leftHairlineVisibility);
 
             int rightHairlineVisibility =
                     sideUiSpecs.getWidth(AnchorSide.RIGHT) == 0 ? View.INVISIBLE : View.VISIBLE;
             mSideUiWebContentHairlineContainer
                     .getRightHairline()
+                    .setVisibility(rightHairlineVisibility);
+            mSideUiWebContentHairlineContainer
+                    .getRightRoundedCorner()
                     .setVisibility(rightHairlineVisibility);
 
             super.onSideUiSpecsChanged(sideUiSpecs);

@@ -7,4 +7,5 @@ found in the LICENSE file.
 
 <resources>
     <dimen name="vertical_hairline_width">1dp</dimen>
+    <dimen name="rounded_corner_radius">8dp</dimen>
 </resources>

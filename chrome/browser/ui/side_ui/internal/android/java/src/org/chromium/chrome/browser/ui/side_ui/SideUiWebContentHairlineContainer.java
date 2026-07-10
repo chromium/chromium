@@ -37,4 +37,14 @@ import org.chromium.build.annotations.Nullable;
     /* package */ ImageView getRightHairline() {
         return findViewById(R.id.right_web_content_hairline);
     }
+
+    /** Returns the left rounded corner ImageView. */
+    /* package */ ImageView getLeftRoundedCorner() {
+        return findViewById(R.id.left_web_content_rounded_corner);
+    }
+
+    /** Returns the right rounded corner ImageView. */
+    /* package */ ImageView getRightRoundedCorner() {
+        return findViewById(R.id.right_web_content_rounded_corner);
+    }
 }
