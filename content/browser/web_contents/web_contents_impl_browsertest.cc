@@ -3622,6 +3622,94 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, TitleUpdateOnRestore) {
 
 namespace {
 
+// A WebContentsDelegate whose AddNewContents() runs a caller-provided closure
+// before returning. The closure is used to destroy the opener WebContents
+// synchronously, simulating the re-entrant destruction that can happen when
+// AddNewContents() spins a nested run loop (e.g. on Windows, showing the new
+// browser window dispatches native messages that can close the opener window).
+class DestroyOpenerOnAddNewContentsDelegate : public WebContentsDelegate {
+ public:
+  explicit DestroyOpenerOnAddNewContentsDelegate(base::OnceClosure on_add)
+      : on_add_(std::move(on_add)) {}
+
+  WebContents* AddNewContents(
+      WebContents* source,
+      std::unique_ptr<WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override {
+    // Keep the new popup alive so that CreateNewWindow()'s `weak_new_contents`
+    // guard does NOT short-circuit. Otherwise the function would return early
+    // before reaching the code that dereferences the (now destroyed) opener,
+    // and the regression would not be exercised.
+    new_contents_ = std::move(new_contents);
+    WebContents* raw_new_contents = new_contents_.get();
+    if (on_add_) {
+      std::move(on_add_).Run();
+    }
+    return raw_new_contents;
+  }
+
+ private:
+  base::OnceClosure on_add_;
+  std::unique_ptr<WebContents> new_contents_;
+};
+
+}  // namespace
+
+// Regression test for a use-after-free where the opener WebContents is
+// destroyed re-entrantly while WebContentsImpl::CreateNewWindow() is calling
+// WebContentsDelegate::AddNewContents(). With an opener-suppressed
+// (`noopener`) window.open(), CreateNewWindow() drives the new window through
+// the delegate and then keeps using `this` (and `delegate_`/`opener`) after
+// AddNewContents() returns. If the opener is torn down during that call, the
+// trailing code used to run on freed memory. See crbug.com/527676561.
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       CreateNewWindowOpenerDestroyedInAddNewContents) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Create an opener WebContents owned by the test, so the delegate can destroy
+  // it from within AddNewContents().
+  WebContents::CreateParams create_params(
+      shell()->web_contents()->GetBrowserContext());
+  create_params.desired_renderer_state =
+      WebContents::CreateParams::kInitializeAndWarmupRendererProcess;
+  std::unique_ptr<WebContents> opener(WebContents::Create(create_params));
+  WebContents* opener_ptr = opener.get();
+
+  base::RunLoop run_loop;
+  DestroyOpenerOnAddNewContentsDelegate delegate(
+      base::BindLambdaForTesting([&]() {
+        // Destroy the opener (`this` inside CreateNewWindow()) synchronously.
+        opener.reset();
+        run_loop.Quit();
+      }));
+  opener_ptr->SetDelegate(&delegate);
+
+  const GURL opener_url(
+      embedded_test_server()->GetURL("a.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(opener_ptr, opener_url));
+
+  // Open a new window with `noopener` so CreateNewWindow() takes the
+  // opener-suppressed path that shows/navigates the window via the delegate.
+  // The script is run fire-and-forget because the opener frame is destroyed
+  // while the window.open() IPC is being handled.
+  const GURL popup_url(
+      embedded_test_server()->GetURL("a.com", "/title2.html"));
+  ExecuteScriptAsync(
+      opener_ptr,
+      JsReplace("window.open($1, '_blank', 'noopener');", popup_url));
+
+  // The opener is destroyed during AddNewContents(). The test passes if this
+  // completes without a use-after-free (caught under ASAN).
+  run_loop.Run();
+  EXPECT_FALSE(opener);
+}
+
+namespace {
+
 class OutgoingSetRendererPrefsMojoWatcher {
  public:
   explicit OutgoingSetRendererPrefsMojoWatcher(RenderViewHostImpl* rvh)
