@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/css_position_axis_list_interpolation_type.h"
@@ -30,10 +29,6 @@
 #include "third_party/blink/renderer/core/css/shape_functions.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
-#include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
-#include "third_party/blink/renderer/core/style/shape_value.h"
 #include "third_party/blink/renderer/core/style/style_shape.h"
 #include "third_party/blink/renderer/core/svg/svg_path_blender.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_source.h"
@@ -476,55 +471,21 @@ class ShapeInterpolationReader {
   LengthPoint origin_;
 };
 
-// Returns the property's shape() value along with its boxes.
-// If the property's value is not a shape(), returns default-constructed info.
-struct ShapeOrPathInfo {
-  STACK_ALLOCATED();
-
- public:
-  const BasicShape* shape = nullptr;
-  ShapeReferenceBox box;
-};
-
-const ShapeOrPathInfo GetShapeOrPath(const CSSProperty& property,
-                                     const ComputedStyle& style) {
-  const BasicShape* shape = nullptr;
-  ShapeReferenceBox box;
-  switch (property.PropertyID()) {
-    case CSSPropertyID::kClipPath: {
-      auto* operation = DynamicTo<ShapeClipPathOperation>(style.ClipPath());
-      if (!operation) {
-        return ShapeOrPathInfo();
-      }
-      shape = &operation->GetBasicShape();
-      box.geometry = operation->GetGeometryBox();
+BasicShapeInfo GetShapeOrPath(const CSSProperty& property,
+                              const ComputedStyle& style) {
+  BasicShapeInfo info =
+      shape_property_functions::GetBasicShape(property, style);
+  if (!info.shape) {
+    return {};
+  }
+  switch (info.shape->GetType()) {
+    case BasicShape::kStylePathType:
+    case BasicShape::kStyleShapeType:
       break;
-    }
-    case CSSPropertyID::kOffsetPath: {
-      auto* operation = DynamicTo<ShapeOffsetPathOperation>(style.OffsetPath());
-      if (!operation) {
-        return ShapeOrPathInfo();
-      }
-      shape = &operation->GetBasicShape();
-      box.coord = operation->GetCoordBox();
-      break;
-    }
-    case CSSPropertyID::kShapeOutside: {
-      const ShapeValue* shape_value = style.ShapeOutside();
-      if (!shape_value || shape_value->GetType() != ShapeValue::kShape) {
-        return ShapeOrPathInfo();
-      }
-      shape = &shape_value->Shape();
-      box.shape = shape_value->CssBox();
-      break;
-    }
     default:
-      NOTREACHED();
+      return {};
   }
-  if (IsA<StylePath>(shape) || IsA<StyleShape>(shape)) {
-    return {shape, box};
-  }
-  return ShapeOrPathInfo();
+  return info;
 }
 
 class InheritedShapeChecker
@@ -667,26 +628,10 @@ void CSSShapeInterpolationType::ApplyStandardPropertyValue(
   BasicShape* shape = CreateShape(interpolable_value, *non_interpolable_value,
                                   state.CssToLengthConversionData());
   CHECK(shape);
-  ShapeReferenceBox box =
-      To<ShapeNonInterpolableValue>(*non_interpolable_value).GetBox();
-  switch (CssProperty().PropertyID()) {
-    case CSSPropertyID::kClipPath:
-      state.StyleBuilder().SetClipPath(
-          MakeGarbageCollected<ShapeClipPathOperation>(
-              *shape, box.geometry.value_or(GeometryBox::kBorderBox)));
-      break;
-    case CSSPropertyID::kOffsetPath:
-      state.StyleBuilder().SetOffsetPath(
-          MakeGarbageCollected<ShapeOffsetPathOperation>(
-              *shape, box.coord.value_or(CoordBox::kBorderBox)));
-      break;
-    case CSSPropertyID::kShapeOutside:
-      state.StyleBuilder().SetShapeOutside(MakeGarbageCollected<ShapeValue>(
-          *shape, box.shape.value_or(ShapeBox::kMarginBox)));
-      break;
-    default:
-      NOTREACHED();
-  }
+  shape_property_functions::SetBasicShape(
+      CssProperty(), *shape,
+      To<ShapeNonInterpolableValue>(*non_interpolable_value).GetBox(),
+      state.StyleBuilder());
 }
 
 void CSSShapeInterpolationType::Composite(
@@ -799,37 +744,9 @@ InterpolationValue CSSShapeInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState&,
     ConversionCheckers&) const {
-  const CSSValue* first_value = &value;
-  ShapeReferenceBox box;
-  // Fill in defaults.
-  switch (CssProperty().PropertyID()) {
-    case CSSPropertyID::kClipPath:
-      box.geometry = GeometryBox::kBorderBox;
-      break;
-    case CSSPropertyID::kOffsetPath:
-      box.coord = CoordBox::kBorderBox;
-      break;
-    case CSSPropertyID::kShapeOutside:
-      box.shape = ShapeBox::kMarginBox;
-      break;
-    default:
-      break;
-  }
-  if (const auto* list = DynamicTo<CSSValueList>(value)) {
-    first_value = &list->First();
-    if (list->length() == 2) {
-      if (const auto* ident = DynamicTo<CSSIdentifierValue>(list->Last())) {
-        if (CssProperty().PropertyID() == CSSPropertyID::kClipPath) {
-          box.geometry = ident->ConvertTo<GeometryBox>();
-        } else if (CssProperty().PropertyID() == CSSPropertyID::kOffsetPath) {
-          box.coord = ident->ConvertTo<CoordBox>();
-        } else if (CssProperty().PropertyID() == CSSPropertyID::kShapeOutside) {
-          box.shape = ident->ConvertTo<ShapeBox>();
-        }
-      }
-    }
-  }
-  return MaybeConvertCSSValue(*first_value, CssProperty(), box);
+  BasicShapeCssInfo css_info =
+      shape_property_functions::GetCssBasicShape(CssProperty(), value);
+  return MaybeConvertCSSValue(*css_info.shape, CssProperty(), css_info.box);
 }
 
 InterpolationValue

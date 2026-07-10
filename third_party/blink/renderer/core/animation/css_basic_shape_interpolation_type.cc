@@ -12,90 +12,34 @@
 #include "third_party/blink/renderer/core/animation/basic_shape_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/shape_property_functions.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
-#include "third_party/blink/renderer/core/css/css_identifier_value.h"
-#include "third_party/blink/renderer/core/css/css_identifier_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
-#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
-#include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 namespace {
 
-struct BasicShapeInfo {
-  STACK_ALLOCATED();
-
- public:
-  const BasicShape* shape = nullptr;
-  ShapeReferenceBox box;
-};
-
 BasicShapeInfo GetBasicShapeInfo(const CSSProperty& property,
                                  const ComputedStyle& style) {
-  BasicShapeInfo info;
-  info.box.geometry = GeometryBox::kBorderBox;
-  info.box.coord = CoordBox::kBorderBox;
-  info.box.shape = ShapeBox::kMarginBox;
-  switch (property.PropertyID()) {
-    case CSSPropertyID::kShapeOutside:
-      if (!style.ShapeOutside())
-        return info;
-      if (style.ShapeOutside()->GetType() != ShapeValue::kShape)
-        return info;
-      info.shape = &style.ShapeOutside()->Shape();
-      info.box.shape = style.ShapeOutside()->CssBox();
-      return info;
-    case CSSPropertyID::kOffsetPath: {
-      auto* offset_path_operation =
-          DynamicTo<ShapeOffsetPathOperation>(style.OffsetPath());
-      if (!offset_path_operation) {
-        return info;
-      }
-      const auto& shape = offset_path_operation->GetBasicShape();
-
-      // Path, Shape and Ray shapes are handled by PathInterpolationType,
-      // ShapeInterpolationType and RayInterpolationType.
-      if (shape.GetType() == BasicShape::kStylePathType ||
-          shape.GetType() == BasicShape::kStyleRayType ||
-          shape.GetType() == BasicShape::kStyleShapeType) {
-        return info;
-      }
-
-      info.shape = &shape;
-      info.box.coord = offset_path_operation->GetCoordBox();
-      return info;
-    }
-    case CSSPropertyID::kClipPath: {
-      auto* clip_path_operation =
-          DynamicTo<ShapeClipPathOperation>(style.ClipPath());
-      if (!clip_path_operation)
-        return info;
-      const auto& shape = clip_path_operation->GetBasicShape();
-
-      // Path shape is handled by PathInterpolationType.
-      // Shape is handled by ShapeInterpolationType
-      if (shape.GetType() == BasicShape::kStylePathType ||
-          shape.GetType() == BasicShape::kStyleShapeType) {
-        return info;
-      }
-
-      info.shape = &shape;
-      info.box.geometry = clip_path_operation->GetGeometryBox();
-      return info;
-    }
-    case CSSPropertyID::kObjectViewBox:
-      info.shape = style.ObjectViewBox();
-      return info;
-    default:
-      NOTREACHED();
+  BasicShapeInfo info =
+      shape_property_functions::GetBasicShape(property, style);
+  if (!info.shape) {
+    return {};
   }
+  switch (info.shape->GetType()) {
+    case BasicShape::kBasicShapeCircleType:
+    case BasicShape::kBasicShapeEllipseType:
+    case BasicShape::kBasicShapeInsetType:
+    case BasicShape::kBasicShapePolygonType:
+      break;
+    default:
+      return {};
+  }
+  return info;
 }
 
 class UnderlyingCompatibilityChecker
@@ -188,34 +132,10 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState&,
     ConversionCheckers&) const {
-  ShapeReferenceBox box = {GeometryBox::kBorderBox, CoordBox::kBorderBox,
-                           ShapeBox::kMarginBox};
-  if (!value.IsBaseValueList()) {
-    return basic_shape_interpolation_functions::MaybeConvertCSSValue(
-        value, CssProperty(), box);
-  }
-
-  const auto& list = To<CSSValueList>(value);
-  const CSSValue& first = list.First();
-  // Path, Shape and Ray shapes are handled by PathInterpolationType,
-  // ShapeInterpolationType and RayInterpolationType.
-  if (first.IsPathValue() || first.IsShapeValue() || first.IsRayValue()) {
-    return nullptr;
-  }
-  if (list.length() == 2) {
-    const CSSValue& tail = list.Item(1);
-    if (const auto* ident = DynamicTo<CSSIdentifierValue>(tail)) {
-      if (CssProperty().PropertyID() == CSSPropertyID::kClipPath) {
-        box.geometry = ident->ConvertTo<GeometryBox>();
-      } else if (CssProperty().PropertyID() == CSSPropertyID::kOffsetPath) {
-        box.coord = ident->ConvertTo<CoordBox>();
-      } else if (CssProperty().PropertyID() == CSSPropertyID::kShapeOutside) {
-        box.shape = ident->ConvertTo<ShapeBox>();
-      }
-    }
-  }
+  BasicShapeCssInfo css_info =
+      shape_property_functions::GetCssBasicShape(CssProperty(), value);
   return basic_shape_interpolation_functions::MaybeConvertCSSValue(
-      first, CssProperty(), box);
+      *css_info.shape, CssProperty(), css_info.box);
 }
 
 PairwiseInterpolationValue CSSBasicShapeInterpolationType::MaybeMergeSingles(
@@ -262,29 +182,10 @@ void CSSBasicShapeInterpolationType::ApplyStandardPropertyValue(
       interpolable_value, *non_interpolable_value,
       state.CssToLengthConversionData());
   CHECK(shape);
-  ShapeReferenceBox box =
-      basic_shape_interpolation_functions::GetBox(*non_interpolable_value);
-  switch (CssProperty().PropertyID()) {
-    case CSSPropertyID::kShapeOutside:
-      state.StyleBuilder().SetShapeOutside(MakeGarbageCollected<ShapeValue>(
-          *shape, box.shape.value_or(ShapeBox::kMarginBox)));
-      break;
-    case CSSPropertyID::kOffsetPath:
-      state.StyleBuilder().SetOffsetPath(
-          MakeGarbageCollected<ShapeOffsetPathOperation>(
-              *shape, box.coord.value_or(CoordBox::kBorderBox)));
-      break;
-    case CSSPropertyID::kClipPath:
-      state.StyleBuilder().SetClipPath(
-          MakeGarbageCollected<ShapeClipPathOperation>(
-              *shape, box.geometry.value_or(GeometryBox::kBorderBox)));
-      break;
-    case CSSPropertyID::kObjectViewBox:
-      state.StyleBuilder().SetObjectViewBox(shape);
-      break;
-    default:
-      NOTREACHED();
-  }
+  shape_property_functions::SetBasicShape(
+      CssProperty(), *shape,
+      basic_shape_interpolation_functions::GetBox(*non_interpolable_value),
+      state.StyleBuilder());
 }
 
 }  // namespace blink
