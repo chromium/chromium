@@ -7,7 +7,6 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/style/switch.h"
 #include "base/time/time.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/network/shill_device_power_state_observer.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"

@@ -4,7 +4,6 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/time/time.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/network/shill_service_util.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"

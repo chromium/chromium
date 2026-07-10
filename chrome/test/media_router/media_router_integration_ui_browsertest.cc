@@ -7,7 +7,6 @@
 #include "chrome/browser/ui/media_router/media_router_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/media_router/media_router_integration_browsertest.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
