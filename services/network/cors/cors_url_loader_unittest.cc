@@ -573,6 +573,136 @@ TEST_F(CorsURLLoaderTest, DeviceBoundSessionUsageCrossOriginCors) {
             client().response_head()->device_bound_session_usage);
 }
 
+TEST_F(CorsURLLoaderTest, DidUseServerHttpAuthSameOrigin) {
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  CreateLoaderAndStart(origin, url, mojom::RequestMode::kNoCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  auto response = mojom::URLResponseHead::New();
+  response->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      "HTTP/1.1 200 OK\nContent-Type: image/png\n");
+  response->did_use_server_http_auth = true;
+  NotifyLoaderClientOnReceiveResponse(std::move(response));
+  NotifyLoaderClientOnComplete(net::OK);
+
+  RunUntilComplete();
+
+  ASSERT_TRUE(client().has_received_response());
+  EXPECT_EQ(mojom::FetchResponseType::kBasic,
+            client().response_head()->response_type);
+  EXPECT_TRUE(client().response_head()->did_use_server_http_auth);
+}
+
+TEST_F(CorsURLLoaderTest, DidUseServerHttpAuthCrossOriginNoCors) {
+  const GURL origin("https://example.com");
+  const GURL url("https://other.example.com/foo.png");
+  CreateLoaderAndStart(origin, url, mojom::RequestMode::kNoCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  auto response = mojom::URLResponseHead::New();
+  response->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      "HTTP/1.1 200 OK\nContent-Type: image/png\n");
+  response->did_use_server_http_auth = true;
+  NotifyLoaderClientOnReceiveResponse(std::move(response));
+  NotifyLoaderClientOnComplete(net::OK);
+
+  RunUntilComplete();
+
+  ASSERT_TRUE(client().has_received_response());
+  EXPECT_EQ(mojom::FetchResponseType::kOpaque,
+            client().response_head()->response_type);
+  EXPECT_FALSE(client().response_head()->did_use_server_http_auth);
+}
+
+TEST_F(CorsURLLoaderTest, DidUseServerHttpAuthCrossOriginCors) {
+  const GURL origin("https://example.com");
+  const GURL url("https://other.example.com/foo.png");
+  CreateLoaderAndStart(origin, url, mojom::RequestMode::kCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  auto response = mojom::URLResponseHead::New();
+  response->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      "HTTP/1.1 200 OK\nContent-Type: image/png\n");
+  response->headers->SetHeader("Access-Control-Allow-Origin",
+                               "https://example.com");
+  response->did_use_server_http_auth = true;
+  NotifyLoaderClientOnReceiveResponse(std::move(response));
+  NotifyLoaderClientOnComplete(net::OK);
+
+  RunUntilComplete();
+
+  ASSERT_TRUE(client().has_received_response());
+  EXPECT_EQ(mojom::FetchResponseType::kCors,
+            client().response_head()->response_type);
+  EXPECT_FALSE(client().response_head()->did_use_server_http_auth);
+}
+
+TEST_F(CorsURLLoaderTest, DidUseServerHttpAuthSameOriginRedirect) {
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  const GURL new_url("https://example.com/bar.png");
+  CreateLoaderAndStart(origin, url, mojom::RequestMode::kNoCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  auto response = mojom::URLResponseHead::New();
+  response->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      "HTTP/1.1 301 Moved Permanently\n");
+  response->did_use_server_http_auth = true;
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url),
+                                      std::move(response));
+  RunUntilRedirectReceived();
+
+  ASSERT_TRUE(client().has_received_redirect());
+  EXPECT_EQ(mojom::FetchResponseType::kBasic,
+            client().response_head()->response_type);
+  EXPECT_TRUE(client().response_head()->did_use_server_http_auth);
+}
+
+TEST_F(CorsURLLoaderTest, DidUseServerHttpAuthCrossOriginNoCorsRedirect) {
+  const GURL origin("https://example.com");
+  const GURL url("https://other.example.com/foo.png");
+  const GURL new_url("https://other.example.com/bar.png");
+  CreateLoaderAndStart(origin, url, mojom::RequestMode::kNoCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  auto response = mojom::URLResponseHead::New();
+  response->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      "HTTP/1.1 301 Moved Permanently\n");
+  response->did_use_server_http_auth = true;
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url),
+                                      std::move(response));
+  RunUntilRedirectReceived();
+
+  ASSERT_TRUE(client().has_received_redirect());
+  EXPECT_EQ(mojom::FetchResponseType::kOpaque,
+            client().response_head()->response_type);
+  EXPECT_FALSE(client().response_head()->did_use_server_http_auth);
+}
+
+TEST_F(CorsURLLoaderTest, DidUseServerHttpAuthManualRedirect) {
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  const GURL new_url("https://example.com/bar.png");
+  CreateLoaderAndStart(origin, url, mojom::RequestMode::kNavigate,
+                       mojom::RedirectMode::kManual,
+                       mojom::CredentialsMode::kInclude);
+  RunUntilCreateLoaderAndStartCalled();
+
+  auto response = mojom::URLResponseHead::New();
+  response->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      "HTTP/1.1 301 Moved Permanently\n");
+  response->did_use_server_http_auth = true;
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url),
+                                      std::move(response));
+  RunUntilRedirectReceived();
+
+  ASSERT_TRUE(client().has_received_redirect());
+  EXPECT_EQ(mojom::FetchResponseType::kOpaqueRedirect,
+            client().response_head()->response_type);
+  EXPECT_FALSE(client().response_head()->did_use_server_http_auth);
+}
+
 TEST_F(CorsURLLoaderTest,
        CrossOriginRequestFetchRequestWithCorsModeButMismatchedCorsHeader) {
   const GURL origin("https://example.com");

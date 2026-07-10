@@ -707,6 +707,7 @@ void CorsURLLoader::OnReceiveResponse(
   if (response_head->response_type != mojom::FetchResponseType::kBasic) {
     response_head->device_bound_session_usage =
         mojom::DeviceBoundSessionUsage::kUnknown;
+    response_head->did_use_server_http_auth = false;
   }
 
   forwarding_client_->OnReceiveResponse(
@@ -785,6 +786,7 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
     response_head->timing_allow_passed = !timing_allow_failed_flag_;
     response_head->device_bound_session_usage =
         mojom::DeviceBoundSessionUsage::kUnknown;
+    response_head->did_use_server_http_auth = false;
     forwarding_client_->OnReceiveRedirect(censored_redirect_info,
                                           std::move(response_head));
     return;
@@ -863,6 +865,7 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
   if (response_head->response_type != mojom::FetchResponseType::kBasic) {
     response_head->device_bound_session_usage =
         mojom::DeviceBoundSessionUsage::kUnknown;
+    response_head->did_use_server_http_auth = false;
   }
   forwarding_client_->OnReceiveRedirect(redirect_info,
                                         std::move(response_head));

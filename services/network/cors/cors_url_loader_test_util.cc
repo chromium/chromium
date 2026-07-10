@@ -110,6 +110,13 @@ void TestURLLoaderFactory::NotifyClientOnReceiveRedirect(
   client_remote_->OnReceiveRedirect(redirect_info, std::move(response));
 }
 
+void TestURLLoaderFactory::NotifyClientOnReceiveRedirect(
+    const net::RedirectInfo& redirect_info,
+    mojom::URLResponseHeadPtr response_head) {
+  DCHECK(client_remote_);
+  client_remote_->OnReceiveRedirect(redirect_info, std::move(response_head));
+}
+
 void TestURLLoaderFactory::ResetClientRemote() {
   client_remote_.reset();
 }

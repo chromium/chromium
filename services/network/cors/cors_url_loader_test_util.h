@@ -92,6 +92,9 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
       const net::RedirectInfo& redirect_info,
       const std::vector<std::pair<std::string, std::string>>& extra_headers);
 
+  void NotifyClientOnReceiveRedirect(const net::RedirectInfo& redirect_info,
+                                     mojom::URLResponseHeadPtr response_head);
+
   bool IsCreateLoaderAndStartCalled() { return !!client_remote_; }
 
   void SetOnCreateLoaderAndStart(const base::RepeatingClosure& closure) {
@@ -224,6 +227,14 @@ class CorsURLLoaderTestBase : public testing::Test {
     DCHECK(test_url_loader_factory_);
     test_url_loader_factory_->NotifyClientOnReceiveRedirect(redirect_info,
                                                             extra_headers);
+  }
+
+  void NotifyLoaderClientOnReceiveRedirect(
+      const net::RedirectInfo& redirect_info,
+      mojom::URLResponseHeadPtr response_head) {
+    DCHECK(test_url_loader_factory_);
+    test_url_loader_factory_->NotifyClientOnReceiveRedirect(
+        redirect_info, std::move(response_head));
   }
 
   void NotifyLoaderClientOnComplete(int error_code) {
