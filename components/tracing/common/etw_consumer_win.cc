@@ -363,8 +363,10 @@ void EtwConsumer::HandleFileIoEvent(const EVENT_HEADER& header,
         DLOG(ERROR) << "Error decoding FileIo_OpEnd event";
       }
       break;
+    case 78:  // Map file
     case 79:  // Path delete
     case 80:  // Path rename
+    case 81:  // Map file pattern
       if (!DecodeFileIoPathOperationEvent(header, buffer_context, pointer_size,
                                           packet_data)) {
         DLOG(ERROR) << "Error decoding FileIo_PathOperation event";
