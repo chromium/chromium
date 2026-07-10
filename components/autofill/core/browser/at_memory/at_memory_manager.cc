@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
 #include "components/autofill/core/browser/at_memory/at_memory_utils.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -39,6 +40,7 @@
 #include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
 #include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -487,9 +489,8 @@ std::optional<std::u16string> GetAttributeFillValue(
   if (!attribute) {
     return std::nullopt;
   }
-  const FormStructure* form_structure = manager.FindCachedFormById(form_id);
-  const AutofillField* autofill_field =
-      form_structure ? form_structure->GetFieldById(field_id) : nullptr;
+  const auto [form_structure, autofill_field] =
+      manager.FindFormAndField(form_id, field_id);
   const std::string app_locale = manager.client().GetAppLocale();
   // Using `GetFillingValueAndTypeForEntity` is preferred when the field is
   // known because it handles field-specific requirements such as state/country
@@ -514,18 +515,24 @@ AtMemoryManager::AtMemoryManager(BrowserAutofillManager* manager)
 AtMemoryManager::~AtMemoryManager() = default;
 
 void AtMemoryManager::OnPopupShown(
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id,
     AutofillSuggestionTriggerSource trigger_source,
     base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
         parent_suggestion_metadata,
     bool is_context_secure,
     UpdateSuggestionsCallback update_callback,
-    FormSignature form_signature,
-    FieldSignature field_signature) {
+    ukm::SourceId ukm_source_id) {
   if (at_memory_metrics_recorder_ || !IsAtMemoryTriggerSource(trigger_source)) {
     return;
   }
 
   if (!parent_suggestion_metadata) {
+    const auto [form, field] = owner_->FindFormAndField(form_id, field_id);
+    const FormSignature form_signature =
+        form ? form->form_signature() : FormSignature(0);
+    const FieldSignature field_signature =
+        field ? field->GetFieldSignature() : FieldSignature(0);
     trigger_source_ = trigger_source;
     is_context_secure_ = is_context_secure;
     update_callback_ = std::move(update_callback);
