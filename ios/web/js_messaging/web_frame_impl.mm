@@ -69,6 +69,31 @@ NSString* CreateFunctionCallWithParameters(const std::string& name,
                        [parameter_strings componentsJoinedByString:@","]];
 }
 
+void LogInterestingScriptResultError(const web::ScriptContext& context) {
+  UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.InterestingScriptError", true);
+
+  if (!base::FeatureList::IsEnabled(web::features::kLogCrWebJavaScriptErrors)) {
+    return;
+  }
+
+  if (!context.web_state) {
+    web::WebJsErrorReportProcessor::LogProcessorUnavailable();
+    return;
+  }
+
+  web::WebJsErrorReportProcessor* report_processor =
+      web::WebJsErrorReportProcessor::FromBrowserState(
+          context.web_state->GetBrowserState());
+  if (!report_processor) {
+    web::WebJsErrorReportProcessor::LogProcessorUnavailable();
+    return;
+  }
+
+  report_processor->ReportJavaScriptExecutionFailed(
+      context.api.value_or(""), context.security_origin, context.error,
+      context.is_main_frame);
+}
+
 // The NSError message returned for frames which can not execute JavaScript.
 // This string is used to filter these errors because they share a more general
 // error code `WKErrorJavaScriptExceptionOccurred`.
@@ -95,20 +120,6 @@ void LogScriptResultError(const web::ScriptContext& context) {
         << "JavaScript error occurred with kAssertOnJavaScriptErrors enabled.";
   }
 
-  // Ignore WKErrorJavaScriptResultTypeIsUnsupported error due to the WebView
-  // or WebFrame being released or navigated while a JavaScript function is
-  // executing. In case of a webstate navigation, the old web_frames are
-  // destroyed, and checking `!web_frame` catches this case.
-  bool isTypeUnsupportedResultError =
-      [context.error.domain isEqualToString:WKErrorDomain] &&
-      context.error.code == WKErrorJavaScriptResultTypeIsUnsupported;
-
-  if ((!context.web_state || !context.web_frame) &&
-      isTypeUnsupportedResultError) {
-    UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.InterestingScriptError", false);
-    return;
-  }
-
   // Do not log invalid target frame errors. This error means that the frame is
   // no longer valid. This is an expected failure state as native code only has
   // an outdated view of the web frames (updated asyncronously via JS messages
@@ -127,28 +138,25 @@ void LogScriptResultError(const web::ScriptContext& context) {
     return;
   }
 
-  UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.InterestingScriptError", true);
+  // Ignore WKErrorJavaScriptResultTypeIsUnsupported error due to the WebView
+  // or WebFrame being released or navigated while a JavaScript function is
+  // executing. In case of a webstate navigation, the old web_frames are
+  // destroyed, and checking `!web_frame` catches this case.
+  bool isTypeUnsupportedResultError =
+      [context.error.domain isEqualToString:WKErrorDomain] &&
+      context.error.code == WKErrorJavaScriptResultTypeIsUnsupported;
 
-  if (!base::FeatureList::IsEnabled(web::features::kLogCrWebJavaScriptErrors)) {
+  if (isTypeUnsupportedResultError) {
+    if (!context.web_state || !context.web_frame) {
+      UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.InterestingScriptError", false);
+    } else if (context.web_frame) {
+      context.web_frame->CacheError(std::move(context));
+    }
+
     return;
   }
 
-  if (!context.web_state) {
-    web::WebJsErrorReportProcessor::LogProcessorUnavailable();
-    return;
-  }
-
-  web::WebJsErrorReportProcessor* report_processor =
-      web::WebJsErrorReportProcessor::FromBrowserState(
-          context.web_state->GetBrowserState());
-  if (!report_processor) {
-    web::WebJsErrorReportProcessor::LogProcessorUnavailable();
-    return;
-  }
-
-  report_processor->ReportJavaScriptExecutionFailed(
-      context.api.value_or(""), context.security_origin, context.error,
-      context.is_main_frame);
+  LogInterestingScriptResultError(context);
 }
 
 void OnJavaScriptExecutedInContentWorld(
@@ -162,6 +170,9 @@ void OnJavaScriptExecutedInContentWorld(
 
     std::move(callback).Run(nullptr, error);
   } else {
+    if (context.web_frame) {
+      context.web_frame->ProcessCachedErrors();
+    }
     std::move(callback).Run(web::ValueResultFromWKResult(value).get(), nil);
   }
 }
@@ -174,6 +185,8 @@ void JSExecutionCompleteReplyWithResultForMessageId(web::ScriptContext context,
     if (error) {
       context.error = error;
       LogScriptResultError(context);
+    } else {
+      context.web_frame->ProcessCachedErrors();
     }
     context.web_frame->OnJSResultReceivedForMessageWithId(message_id, value);
   }
@@ -182,15 +195,9 @@ void JSExecutionCompleteReplyWithResultForMessageId(web::ScriptContext context,
 void JSExecutionComplete(web::ScriptContext context, id value, NSError* error) {
   if (error) {
     context.error = error;
-    bool unsupportedResultError =
-        [error.domain isEqualToString:WKErrorDomain] &&
-        error.code == WKErrorJavaScriptResultTypeIsUnsupported;
-    // `JSExecutionComplete` is only called if the caller is NOT interested in
-    // the returned value from JS so we can safely ignore unsupported type
-    // errors and do not need to report them.
-    if (!unsupportedResultError) {
-      LogScriptResultError(context);
-    }
+    LogScriptResultError(context);
+  } else if (context.web_frame) {
+    context.web_frame->ProcessCachedErrors();
   }
 }
 
@@ -542,6 +549,17 @@ void WebFrameImpl::WebStateDestroyed(web::WebState* web_state) {
 void WebFrameImpl::OnJSResultReceivedForMessageWithId(int message_id,
                                                       id value) {
   CompleteRequest(message_id, web::ValueResultFromWKResult(value).get());
+}
+
+void WebFrameImpl::CacheError(ScriptContext error) {
+  cached_errors_.push_back(std::move(error));
+}
+
+void WebFrameImpl::ProcessCachedErrors() {
+  for (const ScriptContext& error : cached_errors_) {
+    LogInterestingScriptResultError(error);
+  }
+  cached_errors_.clear();
 }
 
 ScriptContext::ScriptContext(base::WeakPtr<web::WebState> web_state,

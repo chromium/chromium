@@ -73,6 +73,13 @@ class WebFrameImpl final : public WebFrame,
   // The associated web state.
   WebState* GetWebState();
 
+  // Caches a JavaScript execution error for later logging if webframe is
+  // confirmed to still exist. Used to ensure errors are not reported if they
+  // were caused by a frame disappearing due to navigation.
+  void CacheError(ScriptContext error);
+  // Processes and clears all cached JavaScript execution errors.
+  void ProcessCachedErrors();
+
   // WebFrame:
   WebFrameInternal* GetWebFrameInternal() override;
   std::string GetFrameId() const override;
@@ -216,6 +223,9 @@ class WebFrameImpl final : public WebFrame,
   raw_ptr<web::WebState> web_state_ = nullptr;
   // The frame's content world.
   ContentWorld content_world_;
+
+  // The list of cached JavaScript execution errors.
+  std::vector<ScriptContext> cached_errors_;
 
   base::WeakPtrFactory<WebFrameImpl> weak_ptr_factory_{this};
 };
