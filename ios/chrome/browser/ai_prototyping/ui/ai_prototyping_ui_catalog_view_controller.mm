@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_ui_catalog_view_controller.h"
 
+#import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_actor_tool_chip_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_mutator.h"
-#import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
@@ -40,7 +40,13 @@ NSString* const kUICatalogCellIdentifier = @"UICatalogCell";
   [self.tableView registerClass:[UITableViewCell class]
          forCellReuseIdentifier:kUICatalogCellIdentifier];
 
-  _items = @[];
+  AIPrototypingUICatalogItem* chipsItem =
+      [[AIPrototypingUICatalogItem alloc] init];
+  chipsItem.title = @"Actor Tool Chips";
+  chipsItem.viewControllerClass =
+      [AIPrototypingActorToolChipViewController class];
+
+  _items = @[ chipsItem ];
 }
 
 #pragma mark - UITableViewDataSource
