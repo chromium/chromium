@@ -11,7 +11,7 @@
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 #if PA_BUILDFLAG(IS_LINUX) && \
     (PA_BUILDFLAG(PA_ARCH_CPU_X86) || PA_BUILDFLAG(PA_ARCH_CPU_X86_64))
@@ -351,4 +351,4 @@ TEST_F(PartitionAllocStackTest, StackAlignment) {
 
 }  // namespace partition_alloc::internal
 
-#endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#endif  // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)

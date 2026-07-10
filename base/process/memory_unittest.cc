@@ -122,7 +122,7 @@ TEST(MemoryTest, AllocatorShimWorking) {
 // OpenBSD does not support these tests. Don't test these on ASan/TSan/MSan
 // configurations: only test the real allocator.
 #if !BUILDFLAG(IS_OPENBSD) && PA_BUILDFLAG(USE_ALLOCATOR_SHIM) && \
-    !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+    !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 namespace {
 
@@ -729,7 +729,7 @@ TEST_F(OutOfMemoryHandledTest, UncheckedAlignedAlloc) {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_OPENBSD) && PA_BUILDFLAG(USE_ALLOCATOR_SHIM) &&
-        // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+        // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 #if BUILDFLAG(IS_MAC) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

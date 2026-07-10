@@ -26,8 +26,8 @@ bool IsAllocatorInitialized() {
   // Set by allocator_shim_override_ucrt_symbols_win.h when the
   // shimmed _set_new_mode() is called.
   return allocator_shim::g_is_win_shim_layer_initialized;
-#elif BUILDFLAG(IS_APPLE) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
-    !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&                      \
+#elif BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
+    !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&                           \
     PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   // From allocator_interception_mac.mm.
   return allocator_shim::g_replaced_default_zone;

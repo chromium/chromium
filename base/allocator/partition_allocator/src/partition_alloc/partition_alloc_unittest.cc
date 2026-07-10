@@ -6,7 +6,7 @@
 
 #include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/slot_start.h"
-#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 #include <algorithm>
 #include <cstddef>
@@ -6632,4 +6632,4 @@ TEST_P(PartitionAllocTest, MultipleThreadCachePerThread) {
 }
 }  // namespace partition_alloc::internal
 
-#endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#endif  // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)

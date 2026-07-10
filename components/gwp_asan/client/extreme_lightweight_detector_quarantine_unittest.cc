@@ -4,6 +4,7 @@
 
 #include "components/gwp_asan/client/extreme_lightweight_detector_quarantine.h"
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/internal/partition_page_internal.h"  // nogncheck
 #include "partition_alloc/internal/partition_root_internal.h"  // nogncheck
 #include "partition_alloc/partition_alloc_for_testing.h"
@@ -14,7 +15,7 @@
 
 namespace gwp_asan::internal {
 
-#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 namespace {
 
@@ -142,6 +143,6 @@ TEST_P(PartitionAllocExtremeLightweightDetectorQuarantineTest,
   ASSERT_EQ(0u, stats.cumulative_count);
 }
 
-#endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#endif  // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 }  // namespace gwp_asan::internal

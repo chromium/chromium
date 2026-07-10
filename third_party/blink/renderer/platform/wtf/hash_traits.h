@@ -30,6 +30,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "partition_alloc/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
@@ -171,7 +172,7 @@ struct GenericHashTraitsBase {
 
   // The starting table size. Can be overridden when we know beforehand that a
   // hash table will have at least N entries.
-#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
   // The allocation pool for nodes is one big chunk that ASAN has no insight
   // into, so it can cloak errors. Make it as small as possible to force nodes
   // to be allocated individually where ASAN can see them.

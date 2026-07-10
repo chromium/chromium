@@ -19,6 +19,7 @@
 #include "base/test/test_future.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/extended_api.h"
 #include "partition_alloc/partition_alloc_for_testing.h"
 #include "partition_alloc/scheduler_loop_quarantine_support.h"
@@ -79,7 +80,7 @@ class BrowserUIThreadSchedulerLoopQuarantineTest : public testing::Test {
 
 TEST_F(BrowserUIThreadSchedulerLoopQuarantineTest,
        TestAllocationGetPurgedFromQuarantineAfterTaskCompletion) {
-#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
   GTEST_SKIP() << "This test does not work with memory tools.";
 #elif !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
     !PA_CONFIG(THREAD_CACHE_SUPPORTED)

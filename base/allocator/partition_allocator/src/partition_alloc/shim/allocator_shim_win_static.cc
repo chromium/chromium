@@ -26,7 +26,7 @@
 #error This code is only for Windows static build.
 #endif
 
-#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 #error The allocator shim should not be compiled when building for memory tools.
 #endif
 

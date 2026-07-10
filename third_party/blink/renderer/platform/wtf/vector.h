@@ -40,6 +40,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "partition_alloc/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/atomic_operations.h"
@@ -88,7 +89,7 @@ inline constexpr bool kEnableActiveIteratorChecks =
 // alive. Defined in vector.cc to avoid header bloat and LTO inlining.
 NOINLINE WTF_EXPORT void ReportVectorBackingFreedWhileIteratorsAlive();
 
-#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 // The allocation pool for nodes is one big chunk that ASAN has no insight
 // into, so it can cloak errors. Make it as small as possible to force nodes
 // to be allocated individually where ASAN can see them.

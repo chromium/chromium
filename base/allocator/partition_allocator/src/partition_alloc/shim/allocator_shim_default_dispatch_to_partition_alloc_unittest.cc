@@ -22,7 +22,7 @@
 #include <malloc/malloc.h>
 #endif
 
-#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
+#if !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
     PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 namespace allocator_shim::internal {
@@ -242,5 +242,5 @@ TEST(PartitionAllocAsMalloc, TryFreeDefaultFallbackToFindZoneAndFree_Nullptr) {
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
 }  // namespace allocator_shim::internal
-#endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
+#endif  // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
         // PA_BUILDFLAG(USE_PARTITION_ALLOC)

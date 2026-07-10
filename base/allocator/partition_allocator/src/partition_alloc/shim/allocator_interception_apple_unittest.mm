@@ -50,7 +50,7 @@ class AllocatorInterceptionTest : public testing::Test {
   }
 };
 
-#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 TEST_F(AllocatorInterceptionTest, ShimNewMallocZones) {
   InitializeAllocatorShim();
   ChromeMallocZone* default_malloc_zone =

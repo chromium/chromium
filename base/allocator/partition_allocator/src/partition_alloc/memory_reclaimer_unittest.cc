@@ -25,7 +25,7 @@
 
 // Otherwise, PartitionAlloc doesn't allocate any memory, and the tests are
 // meaningless.
-#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 namespace partition_alloc {
 
@@ -150,4 +150,4 @@ TEST_F(MemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
 
 }  // namespace partition_alloc
 
-#endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#endif  // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)

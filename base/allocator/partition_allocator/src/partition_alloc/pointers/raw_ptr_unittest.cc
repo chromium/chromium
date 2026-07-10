@@ -1631,7 +1631,7 @@ TEST_F(RawPtrTest, AllowUninitialized) {
 namespace base::internal {
 
 #if PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) && \
-    !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+    !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 void HandleOOM(size_t unused_size) {
   PA_LOG(FATAL) << "Out of memory";
@@ -2460,7 +2460,7 @@ TEST_F(BackupRefPtrTest, QuarantineHook) {
 }
 
 #endif  // PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&
-        // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+        // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 #if PA_BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL)
 

@@ -510,7 +510,7 @@ PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::AlignedFree(
     void* object,
     void* context) {
   constexpr partition_alloc::FreeFlags kMaybeAlignedFreeForMemoryTool =
-#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
       partition_alloc::FreeFlags::kAlignedFreeForMemoryTool;
 #else
       partition_alloc::FreeFlags::kNone;

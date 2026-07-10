@@ -442,7 +442,7 @@ TEST_F(TaskAnnotatorBacktraceIntegrationTest, SingleThreadedNested) {
 }
 
 TEST(SchedulerLoopQuarantineTaskControlledPurgeTest, PurgeAfterTaskCompletion) {
-#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
   GTEST_SKIP() << "This test does not work with memory tools.";
 #elif !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
     !PA_CONFIG(THREAD_CACHE_SUPPORTED)
@@ -489,7 +489,7 @@ TEST(SchedulerLoopQuarantineTaskControlledPurgeTest, PurgeAfterTaskCompletion) {
 }
 
 TEST(SchedulerLoopQuarantineTaskControlledPurgeTest, PauseInBetweenTasks) {
-#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
   GTEST_SKIP() << "This test does not work with memory tools.";
 #elif !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
     !PA_CONFIG(THREAD_CACHE_SUPPORTED)
@@ -549,7 +549,7 @@ TEST(SchedulerLoopQuarantineTaskControlledPurgeTest, PauseInBetweenTasks) {
 
 TEST(SchedulerLoopQuarantineTaskControlledPurgeTest,
      ConfigureInsideTask_TrueToTrue) {
-#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
   GTEST_SKIP() << "This test does not work with memory tools.";
 #elif !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
     !PA_CONFIG(THREAD_CACHE_SUPPORTED)
@@ -599,7 +599,7 @@ TEST(SchedulerLoopQuarantineTaskControlledPurgeTest,
 
 TEST(SchedulerLoopQuarantineTaskControlledPurgeTest,
      ConfigureInsideTask_TrueToFalse) {
-#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
   GTEST_SKIP() << "This test does not work with memory tools.";
 #elif !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
     !PA_CONFIG(THREAD_CACHE_SUPPORTED)
@@ -650,7 +650,7 @@ TEST(SchedulerLoopQuarantineTaskControlledPurgeTest,
 
 TEST(SchedulerLoopQuarantineTaskControlledPurgeTest,
      ConfigureInsideTask_FalseToTrue) {
-#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
   GTEST_SKIP() << "This test does not work with memory tools.";
 #elif !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
     !PA_CONFIG(THREAD_CACHE_SUPPORTED)

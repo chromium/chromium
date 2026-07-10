@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/memory_reclaimer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,7 +15,7 @@ namespace blink {
 
 // Otherwise, PartitionAlloc doesn't allocate any memory, and the tests are
 // meaningless.
-#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 class PartitionsTest : public ::testing::Test {
  protected:
@@ -74,6 +75,6 @@ TEST_F(PartitionsTest, Decommit) {
   EXPECT_LT(Partitions::TotalSizeOfCommittedPages(), committed_after);
 }
 
-#endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#endif  // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 }  // namespace blink

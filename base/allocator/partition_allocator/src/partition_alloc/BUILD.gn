@@ -140,6 +140,10 @@ declare_args() {
   partition_alloc_realloc_growth_factor_mitigation = false
 }
 
+# Sanitizers replace the allocator, don't use our own.
+memory_tool_replaces_allocator =
+    is_asan || is_hwasan || is_lsan || is_tsan || is_msan
+
 pa_buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
@@ -182,6 +186,7 @@ pa_buildflag_header("buildflags") {
     "IS_COMPONENT_BUILD=$is_component_build",
     "IS_DEBUG=$partition_alloc_is_debug",
     "IS_HWASAN=$is_hwasan",
+    "MEMORY_TOOL_REPLACES_ALLOCATOR=$memory_tool_replaces_allocator",
     "OFFICIAL=$partition_alloc_is_official_build",
     "RAW_PTR_ZERO_ON_CONSTRUCT=$raw_ptr_zero_on_construct",
     "RAW_PTR_ZERO_ON_DESTRUCT=$raw_ptr_zero_on_destruct",

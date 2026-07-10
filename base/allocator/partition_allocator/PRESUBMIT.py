@@ -361,12 +361,9 @@ def CheckUnexpectedPreprocessorDefines(input_api, output_api):
         'HAS_HW_CAPS',
         'HAVE_BACKTRACE',
         'LINUX_NAME_REGION',
-        'MEMORY_TOOL_REPLACES_ALLOCATOR',
         'NDEBUG',
         'NEEDS_HANDLING_OF_HW_CAPABILITIES',
     }
-
-
     target_path_prefix = (
         'base/allocator/partition_allocator/src/partition_alloc/')
 

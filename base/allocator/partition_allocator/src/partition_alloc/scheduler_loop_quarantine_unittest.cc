@@ -17,7 +17,7 @@
 
 namespace partition_alloc {
 
-#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 namespace {
 
@@ -318,6 +318,6 @@ TYPED_TEST(ThreadBoundSchedulerLoopQuarantineTest,
 
 }  // namespace
 
-#endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#endif  // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 }  // namespace partition_alloc

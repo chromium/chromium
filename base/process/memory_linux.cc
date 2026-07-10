@@ -19,7 +19,7 @@
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "partition_alloc/shim/allocator_shim.h"  // nogncheck
-#elif !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && defined(LIBC_GLIBC)
+#elif !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR) && defined(LIBC_GLIBC)
 extern "C" {
 void* __libc_malloc(size_t);
 void __libc_free(void*);
@@ -116,7 +116,7 @@ bool AdjustOOMScore(ProcessId process, int score) {
 bool UncheckedCalloc(size_t num_items, size_t size, void** result) {
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   *result = allocator_shim::UncheckedCalloc(num_items, size);
-#elif defined(MEMORY_TOOL_REPLACES_ALLOCATOR) || !defined(LIBC_GLIBC)
+#elif PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR) || !defined(LIBC_GLIBC)
   *result = calloc(num_items, size);
 #elif defined(LIBC_GLIBC)
   *result = __libc_calloc(num_items, size);
@@ -127,7 +127,7 @@ bool UncheckedCalloc(size_t num_items, size_t size, void** result) {
 bool UncheckedMalloc(size_t size, void** result) {
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   *result = allocator_shim::UncheckedAlloc(size);
-#elif defined(MEMORY_TOOL_REPLACES_ALLOCATOR) || !defined(LIBC_GLIBC)
+#elif PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR) || !defined(LIBC_GLIBC)
   *result = malloc(size);
 #elif defined(LIBC_GLIBC)
   *result = __libc_malloc(size);
@@ -138,7 +138,7 @@ bool UncheckedMalloc(size_t size, void** result) {
 void UncheckedFree(void* ptr) {
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   allocator_shim::UncheckedFree(ptr);
-#elif defined(MEMORY_TOOL_REPLACES_ALLOCATOR) || !defined(LIBC_GLIBC)
+#elif PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR) || !defined(LIBC_GLIBC)
   free(ptr);
 #elif defined(LIBC_GLIBC)
   __libc_free(ptr);

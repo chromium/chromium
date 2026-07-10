@@ -56,13 +56,13 @@
 
 // When a memory tool is replacing malloc to keep aligned behaviour working we
 // use window's aligned_malloc and aligned_free, but otherwise we need memalign.
-#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 #if PA_BUILDFLAG(PA_COMPILER_MSVC)
 #include <malloc.h>
 #else
 #include <stdlib.h>
 #endif  // PA_BUILDFLAG(PA_COMPILER_MSVC)
-#endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#endif  // PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 namespace partition_alloc::internal {
 
