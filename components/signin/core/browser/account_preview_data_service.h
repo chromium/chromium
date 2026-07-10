@@ -9,6 +9,7 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/account_preview_data.h"
+#include "components/sync/base/data_type.h"
 #include "google_apis/gaia/gaia_id.h"
 
 class PrefRegistrySimple;
@@ -19,6 +20,11 @@ namespace signin {
 // signed-in accounts in the profile.
 class AccountPreviewDataService : public KeyedService {
  public:
+  struct AccountPreviewPreference {
+    GaiaId gaia_id;
+    std::optional<syncer::DataType> preferred_data_type;
+  };
+
   AccountPreviewDataService() = default;
   AccountPreviewDataService(const AccountPreviewDataService&) = delete;
   AccountPreviewDataService& operator=(const AccountPreviewDataService&) =
@@ -28,10 +34,10 @@ class AccountPreviewDataService : public KeyedService {
   // Registers the preferences used by this service.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Retrieves the cached preview data for the given account. Returns
-  // std::nullopt if not available or not yet fetched.
-  virtual std::optional<AccountPreviewData> GetAccountPreviewData(
-      const GaiaId& gaia_id) = 0;
+  // From the list of accounts with refresh tokens, get the account that has the
+  // most interesting preview data. If the preview data for accounts are not
+  // fetched yet, the first account is returned by default.
+  virtual AccountPreviewPreference GetPreferredAccountForPromo() const = 0;
 };
 
 }  // namespace signin

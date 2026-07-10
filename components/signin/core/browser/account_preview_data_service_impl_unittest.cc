@@ -121,6 +121,33 @@ TEST_F(AccountPreviewDataServiceTest, RemovesCachedData) {
   EXPECT_FALSE(service_->GetAccountPreviewData(account_info.gaia).has_value());
 }
 
+TEST_F(AccountPreviewDataServiceTest, GetPreferredAccountForPromo) {
+  // 1. Initially empty when no cookies.
+  {
+    AccountPreviewDataService::AccountPreviewPreference preference =
+        service_->GetPreferredAccountForPromo();
+    EXPECT_TRUE(preference.gaia_id.empty());
+    EXPECT_EQ(std::nullopt, preference.preferred_data_type);
+  }
+
+  // 2. Set cookies with multiple accounts.
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+
+  identity_test_env_.SetCookieAccounts(
+      {{account1.email, account1.gaia}, {account2.email, account2.gaia}});
+
+  // 3. Verify it returns the first account from cookies.
+  {
+    AccountPreviewDataService::AccountPreviewPreference preference =
+        service_->GetPreferredAccountForPromo();
+    EXPECT_EQ(account1.gaia, preference.gaia_id);
+    EXPECT_EQ(std::nullopt, preference.preferred_data_type);
+  }
+}
+
 TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshDefersUntilTokensLoaded) {
   // Destroy the service created in SetUp to prevent it from fetching when we
   // make the account available.

@@ -14,6 +14,7 @@
 #include "components/signin/core/browser/account_preview_metrics_recorder.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace signin {
@@ -49,8 +50,30 @@ AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
 
 AccountPreviewDataServiceImpl::~AccountPreviewDataServiceImpl() = default;
 
+AccountPreviewDataService::AccountPreviewPreference
+AccountPreviewDataServiceImpl::GetPreferredAccountForPromo() const {
+  AccountPreviewPreference preference;
+  // TODO(crbug.com/530144650): By default we will choose the first account in
+  // the cookie jar, with no preferred_data_type (this aligns with the current
+  // behavior), until the heuristic is properly defined, which will end up using
+  // the information from `GetAccountPreviewData()`.
+  preference.preferred_data_type = std::nullopt;
+
+  AccountsInCookieJarInfo cookie_info =
+      identity_manager_->GetAccountsInCookieJar();
+  if (cookie_info.AreAccountsFresh()) {
+    const std::vector<gaia::ListedAccount>& accounts =
+        cookie_info.GetValidSignedInAccounts();
+    if (!accounts.empty()) {
+      preference.gaia_id = accounts[0].gaia_id;
+    }
+  }
+  return preference;
+}
+
 std::optional<AccountPreviewData>
-AccountPreviewDataServiceImpl::GetAccountPreviewData(const GaiaId& gaia_id) {
+AccountPreviewDataServiceImpl::GetAccountPreviewData(
+    const GaiaId& gaia_id) const {
   auto it = cached_data_.find(gaia_id);
   if (it != cached_data_.end()) {
     return it->second;

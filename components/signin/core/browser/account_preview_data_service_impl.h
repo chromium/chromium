@@ -51,8 +51,11 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   ~AccountPreviewDataServiceImpl() override;
 
   // AccountPreviewDataService implementation:
+  AccountPreviewPreference GetPreferredAccountForPromo() const override;
+
+  // Retrieves the cached preview data. Exposed specifically for testing.
   std::optional<AccountPreviewData> GetAccountPreviewData(
-      const GaiaId& gaia_id) override;
+      const GaiaId& gaia_id) const;
 
   bool HasActiveFetcherForTesting(const GaiaId& gaia_id) const {
     return active_fetchers_.contains(gaia_id);
