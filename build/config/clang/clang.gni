@@ -89,6 +89,13 @@ declare_args() {
   lld_emit_indexes_and_imports = false
 }
 
+# Siso's remote execution rules are based off the prefix
+# "../../third_party/llvm-build/Release+Asserts/bin/clang++".
+# Thus, when using a custom clang base path, we cannot use remote execution.
+assert(!use_remoteexec || clang_base_path == default_clang_base_path,
+       "Custom clang_base_path is not supported with use_remoteexec = true. " +
+           "Please set use_remoteexec = false in your args.gn.")
+
 # We don't really need to collect a corpus for the host tools, just for the
 # target.
 lld_emit_indexes_and_imports =
