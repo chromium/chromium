@@ -96,12 +96,30 @@ found in the LICENSE file.
     <dimen name="compositor_tab_title_favicon_bubble_outer_size">10dp</dimen>
     <dimen name="compositor_tab_title_favicon_bubble_offset">6dp</dimen>
 
-    <!-- Tab strip button alpha values -->
+    <!-- Tab strip buttons -->
+    <!-- y-offset for folio = lowered tab container + (tab container size - bg size)/2 -
+         folio tab title y-offset = 2 + (38 - 32)/2 - 2 = 3dp -->
+    <dimen name="tab_strip_button_y_offset">3dp</dimen>
+    <dimen name="tab_strip_button_bg_size">32dp</dimen>
     <item name="tab_strip_button_bg_hover_alpha" format="float" type="dimen">0.08</item>
     <item name="tab_strip_button_bg_peripheral_pressed_alpha" format="float" type="dimen">0.12</item>
     <item name="tab_strip_button_bg_pressed_alpha" format="float" type="dimen">0.2</item>
 
-    <!-- Glic button alpha values -->
+    <!-- Tab strip Glic buttons -->
+    <!-- vertical margin = tab strip height - glic background height = 40 - 32 = 8dp. -->
+    <dimen name="tab_strip_glic_button_margin_height">8dp</dimen>
+    <dimen name="tab_strip_glic_button_bg_width">42dp</dimen>
+    <dimen name="tab_strip_glic_button_start_padding">6dp</dimen>
+    <dimen name="tab_strip_glic_icon_width">16dp</dimen>
+    <dimen name="tab_strip_glic_icon_text_padding">4dp</dimen>
+    <dimen name="tab_strip_glic_button_standard_end_padding">10dp</dimen>
+    <dimen name="tab_strip_glic_button_shortened_end_padding">4dp</dimen>
+    <dimen name="tab_strip_glic_dismiss_icon_width">24dp</dimen>
+    <dimen name="tab_strip_glic_dismiss_button_y_offset">7dp</dimen>
+    <dimen name="tab_strip_glic_button_corner_radius">10dp</dimen>
+    <dimen name="tab_strip_glic_button_inner_corner_radius">2dp</dimen>
+    <dimen name="tab_strip_glic_actor_button_gap">2dp</dimen>
+    <dimen name="tab_strip_window_controls_divider_width">2dp</dimen>
     <item name="tab_strip_glic_button_bg_hover_alpha" format="float" type="dimen">0.20</item>
     <item name="tab_strip_glic_button_bg_pressed_alpha" format="float" type="dimen">0.30</item>
     <item name="tab_strip_glic_button_icon_unfocused_alpha" format="float" type="dimen">0.65</item>
