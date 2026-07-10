@@ -20,7 +20,7 @@ mojom("test_api_mojom") {
 build_webui_tests("build") {
   cc_test_files = [
     "os_settings_browsertest.cc",
-    "os_settings_focus_test.cc",
+    "os_settings_focus_interactive_uitest.cc",
   ]
 
   files = [

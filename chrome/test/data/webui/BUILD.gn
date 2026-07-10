@@ -428,10 +428,10 @@ source_set("interactive_ui_tests") {
 
   if (is_chromeos) {
     sources += [
-      "chromeos/ash_common/cr_elements/ash_common_cr_elements_focus_test.cc",
-      "chromeos/cr_focus_row_behavior_interactive_test.cc",
-      "chromeos/print_preview/print_preview_focus_test.cc",
-      "chromeos/settings/os_settings_focus_test.cc",
+      "chromeos/ash_common/cr_elements/ash_common_cr_elements_focus_interactive_uitest.cc",
+      "chromeos/cr_focus_row_behavior_interactive_uitest.cc",
+      "chromeos/print_preview/print_preview_focus_interactive_uitest.cc",
+      "chromeos/settings/os_settings_focus_interactive_uitest.cc",
     ]
   }
 

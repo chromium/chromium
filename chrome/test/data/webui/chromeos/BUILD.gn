@@ -87,7 +87,7 @@ build_webui_tests("build") {
   ts_composite = true
   cc_test_files = [
     "cr_components_chromeos_v3_browsertest.cc",
-    "cr_focus_row_behavior_interactive_test.cc",
+    "cr_focus_row_behavior_interactive_uitest.cc",
     "crostini_installer_browsertest.cc",
     "internet_config_dialog_browsertest.cc",
     "internet_detail_dialog_browsertest.cc",
