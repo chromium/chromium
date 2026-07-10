@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_multi_turn_model_executor.h"
 #include "components/optimization_guide/core/inference/model_handler.h"
 
 namespace optimization_guide {
@@ -25,8 +26,8 @@ struct TabSignals;
 
 // Handler for the Contextual Tasks Multi-Turn Tab Relevance model.
 class ContextualTasksContextMultiTurnModelHandler
-    : public optimization_guide::ModelHandler<std::vector<float>,
-                                              const std::vector<float>&> {
+    : public optimization_guide::ModelHandler<MultiTurnModelOutput,
+                                              const MultiTurnModelInput&> {
  public:
   ContextualTasksContextMultiTurnModelHandler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
@@ -38,18 +39,9 @@ class ContextualTasksContextMultiTurnModelHandler
       const QueryStateSignals& query_signals,
       const std::vector<TabSignals>& batch_tab_signals,
       base::OnceCallback<
-          void(const std::vector<std::optional<std::vector<float>>>&,
-               const std::vector<std::vector<float>>&)> callback);
+          void(const std::vector<std::optional<MultiTurnModelOutput>>&)>
+              callback);
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(ContextualTasksContextMultiTurnModelHandlerTest,
-                           ExtractMultiTurnModelFeatures);
-
-  // Extracts the features from the given signals based on the model metadata.
-  static std::vector<float> ExtractModelFeatures(
-      const optimization_guide::proto::TabRelevanceModelMetadata& metadata,
-      const QueryStateSignals& query_signals,
-      const TabSignals& tab_signals);
 };
 
 }  // namespace contextual_tasks

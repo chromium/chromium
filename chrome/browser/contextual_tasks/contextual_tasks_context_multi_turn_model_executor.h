@@ -12,10 +12,31 @@
 
 namespace contextual_tasks {
 
+// Structured input containing pre-padded vectors for the 11 model inputs
+struct MultiTurnModelInput {
+  std::vector<float> query_embedding;
+  std::vector<float> conversation_thread_queries_embeddings;
+  std::vector<float> conversation_thread_titles_embeddings;
+  std::vector<float> active_title_embedding;
+  std::vector<float> active_passages_embeddings;
+  std::vector<float> candidate_tab_title_embedding;
+  std::vector<float> candidate_tab_passages_embeddings;
+  std::vector<float> query_length;
+  std::vector<float> query_title_lexical_similarity;
+  std::vector<float> candidate_tab_recency;
+  std::vector<float> candidate_tab_last_duration;
+};
+
+// Structured output containing the score and all similarities
+struct MultiTurnModelOutput {
+  float score;
+  std::vector<float> cosine_similarities;
+};
+
 // Executor for the Contextual Tasks Multi-Turn Tab Relevance model.
 class ContextualTasksContextMultiTurnModelExecutor
-    : public optimization_guide::BaseModelExecutor<std::vector<float>,
-                                                   const std::vector<float>&> {
+    : public optimization_guide::BaseModelExecutor<MultiTurnModelOutput,
+                                                   const MultiTurnModelInput&> {
  public:
   ContextualTasksContextMultiTurnModelExecutor();
   ~ContextualTasksContextMultiTurnModelExecutor() override;
@@ -23,8 +44,8 @@ class ContextualTasksContextMultiTurnModelExecutor
  protected:
   // optimization_guide::BaseModelExecutor:
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
-                  const std::vector<float>& input) override;
-  std::optional<std::vector<float>> Postprocess(
+                  const MultiTurnModelInput& input) override;
+  std::optional<MultiTurnModelOutput> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
 };
 

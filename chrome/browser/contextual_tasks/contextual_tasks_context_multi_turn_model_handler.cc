@@ -15,7 +15,6 @@
 #include "components/optimization_guide/proto/tab_relevance_model_metadata.pb.h"
 
 namespace contextual_tasks {
-
 namespace {
 
 void AppendEmbedding(const std::vector<float>& embedding,
@@ -49,8 +48,8 @@ ContextualTasksContextMultiTurnModelHandler::
     ContextualTasksContextMultiTurnModelHandler(
         optimization_guide::OptimizationGuideModelProvider* model_provider,
         scoped_refptr<base::SequencedTaskRunner> background_task_runner)
-    : optimization_guide::ModelHandler<std::vector<float>,
-                                       const std::vector<float>&>(
+    : optimization_guide::ModelHandler<MultiTurnModelOutput,
+                                       const MultiTurnModelInput&>(
           model_provider,
           background_task_runner,
           std::make_unique<ContextualTasksContextMultiTurnModelExecutor>(),
@@ -70,111 +69,76 @@ void ContextualTasksContextMultiTurnModelHandler::
         const QueryStateSignals& query_signals,
         const std::vector<TabSignals>& batch_tab_signals,
         base::OnceCallback<
-            void(const std::vector<std::optional<std::vector<float>>>&,
-                 const std::vector<std::vector<float>>&)> callback) {
+            void(const std::vector<std::optional<MultiTurnModelOutput>>&)>
+                callback) {
   std::optional<optimization_guide::proto::TabRelevanceModelMetadata> metadata =
       ParsedSupportedFeaturesForLoadedModel<
           optimization_guide::proto::TabRelevanceModelMetadata>();
   if (!metadata) {
-    std::move(callback).Run(std::vector<std::optional<std::vector<float>>>(
-                                batch_tab_signals.size()),
-                            std::vector<std::vector<float>>());
+    std::move(callback).Run(std::vector<std::optional<MultiTurnModelOutput>>(
+        batch_tab_signals.size()));
     return;
   }
 
-  std::vector<std::vector<float>> ml_features_batch;
-  ml_features_batch.reserve(batch_tab_signals.size());
+  std::vector<MultiTurnModelInput> ml_inputs;
+  ml_inputs.reserve(batch_tab_signals.size());
   for (const auto& tab_signals : batch_tab_signals) {
-    ml_features_batch.push_back(
-        ExtractModelFeatures(*metadata, query_signals, tab_signals));
+    MultiTurnModelInput input;
+
+    AppendEmbedding(query_signals.query_embedding,
+                    metadata->num_embedding_dimensions(),
+                    input.query_embedding);
+
+    AppendMultipleEmbeddings(
+        query_signals.conversation_thread_queries_embeddings,
+        metadata->num_conversation_thread_turns(),
+        metadata->num_embedding_dimensions(),
+        input.conversation_thread_queries_embeddings);
+
+    AppendMultipleEmbeddings(
+        query_signals.conversation_thread_titles_embeddings,
+        metadata->max_titles_per_thread(),
+        metadata->num_embedding_dimensions(),
+        input.conversation_thread_titles_embeddings);
+
+    AppendEmbedding(query_signals.context_tab_title_embedding,
+                    metadata->num_embedding_dimensions(),
+                    input.active_title_embedding);
+
+    AppendMultipleEmbeddings(query_signals.context_tab_passages_embeddings,
+                             metadata->num_passages_per_tab(),
+                             metadata->num_embedding_dimensions(),
+                             input.active_passages_embeddings);
+
+    AppendEmbedding(tab_signals.candidate_title_embedding,
+                    metadata->num_embedding_dimensions(),
+                    input.candidate_tab_title_embedding);
+
+    AppendMultipleEmbeddings(tab_signals.candidate_passages_embeddings,
+                             metadata->num_passages_per_tab(),
+                             metadata->num_embedding_dimensions(),
+                             input.candidate_tab_passages_embeddings);
+
+    input.query_length.push_back(
+        static_cast<float>(query_signals.query_word_count));
+
+    input.query_title_lexical_similarity.push_back(
+        static_cast<float>(tab_signals.num_query_title_matching_words));
+
+    input.candidate_tab_recency.push_back(
+        tab_signals.duration_since_last_active.has_value()
+            ? tab_signals.duration_since_last_active->InSecondsF()
+            : -1.0f);
+
+    input.candidate_tab_last_duration.push_back(
+        tab_signals.duration_of_last_visit.has_value()
+            ? tab_signals.duration_of_last_visit->InSecondsF()
+            : -1.0f);
+
+    ml_inputs.push_back(std::move(input));
   }
 
-  BatchExecuteModelWithInput(
-      base::BindOnce(
-          [](base::OnceCallback<void(
-                 const std::vector<std::optional<std::vector<float>>>&,
-                 const std::vector<std::vector<float>>&)> cb,
-             std::vector<std::vector<float>> features,
-             const std::vector<std::optional<std::vector<float>>>& scores) {
-            std::move(cb).Run(scores, features);
-          },
-          std::move(callback), ml_features_batch),
-      ml_features_batch);
-}
-
-// static
-std::vector<float>
-ContextualTasksContextMultiTurnModelHandler::ExtractModelFeatures(
-    const optimization_guide::proto::TabRelevanceModelMetadata& metadata,
-    const QueryStateSignals& query_signals,
-    const TabSignals& tab_signals) {
-  std::vector<float> features;
-
-  for (int feature : metadata.input_feature_sequence()) {
-    switch (feature) {
-      case optimization_guide::proto::TabRelevanceModelMetadata::
-          TAB_RELEVANCE_FEATURE_QUERY_EMBEDDING:
-        AppendEmbedding(query_signals.query_embedding,
-                        metadata.num_embedding_dimensions(), features);
-        break;
-      case optimization_guide::proto::TabRelevanceModelMetadata::
-          TAB_RELEVANCE_FEATURE_CONVERSATION_THREAD_QUERIES_EMBEDDINGS:
-        AppendMultipleEmbeddings(
-            query_signals.conversation_thread_queries_embeddings,
-            metadata.num_conversation_thread_turns(),
-            metadata.num_embedding_dimensions(), features);
-        break;
-      case optimization_guide::proto::TabRelevanceModelMetadata::
-          TAB_RELEVANCE_FEATURE_CONVERSATION_THREAD_TITLES_EMBEDDINGS:
-        AppendMultipleEmbeddings(
-            query_signals.conversation_thread_titles_embeddings,
-            metadata.max_titles_per_thread(),
-            metadata.num_embedding_dimensions(), features);
-        break;
-      case optimization_guide::proto::TabRelevanceModelMetadata::
-          TAB_RELEVANCE_FEATURE_ACTIVE_TITLE_EMBEDDING:
-        AppendEmbedding(query_signals.context_tab_title_embedding,
-                        metadata.num_embedding_dimensions(), features);
-        break;
-      case optimization_guide::proto::TabRelevanceModelMetadata::
-          TAB_RELEVANCE_FEATURE_ACTIVE_PASSAGES_EMBEDDINGS:
-        AppendMultipleEmbeddings(query_signals.context_tab_passages_embeddings,
-                                 metadata.num_passages_per_tab(),
-                                 metadata.num_embedding_dimensions(), features);
-        break;
-      case optimization_guide::proto::TabRelevanceModelMetadata::
-          TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_TITLE_EMBEDDING:
-        AppendEmbedding(tab_signals.candidate_title_embedding,
-                        metadata.num_embedding_dimensions(), features);
-        break;
-      case optimization_guide::proto::TabRelevanceModelMetadata::
-          TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_PASSAGES_EMBEDDINGS:
-        AppendMultipleEmbeddings(tab_signals.candidate_passages_embeddings,
-                                 metadata.num_passages_per_tab(),
-                                 metadata.num_embedding_dimensions(), features);
-        break;
-      case optimization_guide::proto::TabRelevanceModelMetadata::
-          TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_RECENCY:
-        features.push_back(
-            tab_signals.duration_since_last_active.has_value()
-                ? tab_signals.duration_since_last_active->InSecondsF()
-                : -1.0f);
-        break;
-      case optimization_guide::proto::TabRelevanceModelMetadata::
-          TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_LAST_DURATION:
-        features.push_back(
-            tab_signals.duration_of_last_visit.has_value()
-                ? tab_signals.duration_of_last_visit->InSecondsF()
-                : -1.0f);
-        break;
-      case optimization_guide::proto::TabRelevanceModelMetadata::
-          TAB_RELEVANCE_FEATURE_UNKNOWN:
-        features.push_back(0.0f);
-        break;
-    }
-  }
-
-  return features;
+  BatchExecuteModelWithInput(std::move(callback), ml_inputs);
 }
 
 }  // namespace contextual_tasks

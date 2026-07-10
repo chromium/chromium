@@ -74,6 +74,31 @@ class ContextualTasksMultiTurnModelProvider
   optimization_guide::proto::Any model_metadata_;
 };
 
+class TestContextualTasksContextMultiTurnModelHandler
+    : public ContextualTasksContextMultiTurnModelHandler {
+ public:
+  using ContextualTasksContextMultiTurnModelHandler::
+      ContextualTasksContextMultiTurnModelHandler;
+
+  void BatchExecuteModelWithInput(
+      BatchExecutionCallback callback,
+      typename optimization_guide::ModelExecutor<
+          MultiTurnModelOutput,
+          const MultiTurnModelInput&>::ConstRefInputVector batch_input)
+      override {
+    last_inputs_ = batch_input;
+    ContextualTasksContextMultiTurnModelHandler::BatchExecuteModelWithInput(
+        std::move(callback), batch_input);
+  }
+
+  const std::vector<MultiTurnModelInput>& last_inputs() const {
+    return last_inputs_;
+  }
+
+ private:
+  std::vector<MultiTurnModelInput> last_inputs_;
+};
+
 }  // namespace
 
 class ContextualTasksContextMultiTurnModelHandlerTest : public testing::Test {
@@ -103,12 +128,8 @@ class ContextualTasksContextMultiTurnModelHandlerTest : public testing::Test {
     model_handler_.reset();
     model_provider_.reset();
 
-    // Enqueue a QuitClosure immediately after the DeleteSoon cleanup tasks
-    // to ensure the executor is fully destroyed before test exit.
-    base::RunLoop run_loop;
-    task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
+    // Ensure all background tasks and delayed deletions are fully processed.
+    task_environment_.RunUntilIdle();
   }
 
   ContextualTasksContextMultiTurnModelHandler* model_handler() const {
@@ -122,67 +143,7 @@ class ContextualTasksContextMultiTurnModelHandlerTest : public testing::Test {
 };
 
 TEST_F(ContextualTasksContextMultiTurnModelHandlerTest,
-       ExtractMultiTurnModelFeatures) {
-  optimization_guide::proto::TabRelevanceModelMetadata metadata;
-  metadata.set_num_conversation_thread_turns(1);
-  metadata.set_max_titles_per_thread(1);
-  metadata.set_num_embedding_dimensions(4);
-  metadata.set_num_passages_per_tab(1);
-
-  metadata.add_input_feature_sequence(
-      optimization_guide::proto::TabRelevanceModelMetadata::
-          TAB_RELEVANCE_FEATURE_QUERY_EMBEDDING);
-  metadata.add_input_feature_sequence(
-      optimization_guide::proto::TabRelevanceModelMetadata::
-          TAB_RELEVANCE_FEATURE_CONVERSATION_THREAD_QUERIES_EMBEDDINGS);
-  metadata.add_input_feature_sequence(
-      optimization_guide::proto::TabRelevanceModelMetadata::
-          TAB_RELEVANCE_FEATURE_ACTIVE_TITLE_EMBEDDING);
-  metadata.add_input_feature_sequence(
-      optimization_guide::proto::TabRelevanceModelMetadata::
-          TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_TITLE_EMBEDDING);
-
-  QueryStateSignals query_signals;
-  query_signals.query_embedding = {0.1f, 0.2f,
-                                   0.3f};  // Expected 4, 4th padded.
-  query_signals.conversation_thread_queries_embeddings.push_back(
-      {0.4f, 0.5f});  // Expected 4, 3rd/4th padded.
-  query_signals.context_tab_title_embedding = {0.6f, 0.7f, 0.8f, 0.9f};
-
-  TabSignals tab_signals;
-  tab_signals.candidate_title_embedding = {1.0f, 1.1f, 1.2f, 1.3f};
-
-  std::vector<float> features =
-      ContextualTasksContextMultiTurnModelHandler::ExtractModelFeatures(
-          metadata, query_signals, tab_signals);
-
-  ASSERT_EQ(features.size(), 16u);
-  EXPECT_EQ(features[0], 0.1f);   // Query embedding [0]
-  EXPECT_EQ(features[1], 0.2f);   // Query embedding [1]
-  EXPECT_EQ(features[2], 0.3f);   // Query embedding [2]
-  EXPECT_EQ(features[3], 0.0f);   // Query embedding [3] (padded)
-  EXPECT_EQ(features[4], 0.4f);   // Conversation query embedding [0]
-  EXPECT_EQ(features[5], 0.5f);   // Conversation query embedding [1]
-  EXPECT_EQ(features[6], 0.0f);   // Conversation query embedding [2] (padded)
-  EXPECT_EQ(features[7], 0.0f);   // Conversation query embedding [3] (padded)
-  EXPECT_EQ(features[8], 0.6f);   // Active title embedding [0]
-  EXPECT_EQ(features[9], 0.7f);   // Active title embedding [1]
-  EXPECT_EQ(features[10], 0.8f);  // Active title embedding [2]
-  EXPECT_EQ(features[11], 0.9f);  // Active title embedding [3]
-  EXPECT_EQ(features[12], 1.0f);  // Candidate title embedding [0]
-  EXPECT_EQ(features[13], 1.1f);  // Candidate title embedding [1]
-  EXPECT_EQ(features[14], 1.2f);  // Candidate title embedding [2]
-  EXPECT_EQ(features[15], 1.3f);  // Candidate title embedding [3]
-}
-
-// TODO(524489645): failing on Linux UBSan Tests.
-#if defined(UNDEFINED_SANITIZER)
-#define MAYBE_ExecuteModelWithSignals DISABLED_ExecuteModelWithSignals
-#else
-#define MAYBE_ExecuteModelWithSignals ExecuteModelWithSignals
-#endif  // defined(UNDEFINED_SANITIZER)
-TEST_F(ContextualTasksContextMultiTurnModelHandlerTest,
-       MAYBE_ExecuteModelWithSignals) {
+       ExecuteModelWithSignals) {
   ContextualTasksContextMultiTurnModelHandler* handler = model_handler();
 
   optimization_guide::proto::TabRelevanceModelMetadata metadata;
@@ -199,40 +160,198 @@ TEST_F(ContextualTasksContextMultiTurnModelHandlerTest,
           TAB_RELEVANCE_FEATURE_CONVERSATION_THREAD_QUERIES_EMBEDDINGS);
   metadata.add_input_feature_sequence(
       optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_CONVERSATION_THREAD_TITLES_EMBEDDINGS);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
           TAB_RELEVANCE_FEATURE_ACTIVE_TITLE_EMBEDDING);
   metadata.add_input_feature_sequence(
       optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_ACTIVE_PASSAGES_EMBEDDINGS);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
           TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_TITLE_EMBEDDING);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_PASSAGES_EMBEDDINGS);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_QUERY_LENGTH);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_QUERY_TITLE_LEXICAL_SIMILARITY);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_RECENCY);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_LAST_DURATION);
   SetModelMetadata(metadata);
 
   QueryStateSignals query_signals;
+  query_signals.query_word_count = 3;
   query_signals.query_embedding = {0.1f, 0.2f, 0.3f, 0.4f};
   query_signals.conversation_thread_queries_embeddings.push_back(
       {0.4f, 0.5f, 0.6f, 0.7f});
+  query_signals.conversation_thread_titles_embeddings.push_back(
+      {0.5f, 0.6f, 0.7f, 0.8f});
   query_signals.context_tab_title_embedding = {0.6f, 0.7f, 0.8f, 0.9f};
+  query_signals.context_tab_passages_embeddings.push_back(
+      {0.7f, 0.8f, 0.9f, 1.0f});
 
   std::vector<TabSignals> batch_tab_signals(1);
   batch_tab_signals[0].candidate_title_embedding = {1.0f, 1.1f, 1.2f, 1.3f};
+  batch_tab_signals[0].candidate_passages_embeddings.push_back(
+      {1.1f, 1.2f, 1.3f, 1.4f});
+  batch_tab_signals[0].num_query_title_matching_words = 1;
+  batch_tab_signals[0].duration_since_last_active = base::Seconds(1);
+  batch_tab_signals[0].duration_of_last_visit = base::Seconds(2);
 
-  base::test::TestFuture<const std::vector<std::optional<std::vector<float>>>&,
-                         const std::vector<std::vector<float>>&>
+  base::test::TestFuture<const std::vector<std::optional<MultiTurnModelOutput>>&>
       future;
   handler->BatchExecuteModelWithSignalsForConversationThread(
       query_signals, batch_tab_signals, future.GetCallback());
 
-  const auto& results = future.Get<0>();
+  const auto& results = future.Get();
   ASSERT_EQ(results.size(), 1u);
   ASSERT_TRUE(results[0].has_value());
-  ASSERT_EQ(results[0]->size(), 5u);
-  EXPECT_NEAR((*results[0])[0], 0.1f, 1e-5);
-  EXPECT_NEAR((*results[0])[1], 0.2f, 1e-5);
-  EXPECT_NEAR((*results[0])[2], 0.3f, 1e-5);
-  EXPECT_NEAR((*results[0])[3], 0.4f, 1e-5);
-  EXPECT_NEAR((*results[0])[4], 0.5f, 1e-5);
 
-  const auto& features = future.Get<1>();
-  ASSERT_EQ(features.size(), 1u);
-  EXPECT_EQ(features[0].size(), 16u);
+  // Verify score
+  EXPECT_GE(results[0]->score, 0.0f);
+  EXPECT_LE(results[0]->score, 1.0f);
+  // Verify similarities shape is correct (dummy model has 5 similarities)
+  EXPECT_EQ(results[0]->cosine_similarities.size(), 5u);
+}
+
+TEST_F(ContextualTasksContextMultiTurnModelHandlerTest,
+       ExtractMultiTurnModelFeatures) {
+  auto test_handler =
+      std::make_unique<TestContextualTasksContextMultiTurnModelHandler>(
+          model_provider_.get(), task_environment_.GetMainThreadTaskRunner());
+
+  optimization_guide::proto::TabRelevanceModelMetadata metadata;
+  metadata.set_num_conversation_thread_turns(1);
+  metadata.set_max_titles_per_thread(1);
+  metadata.set_num_embedding_dimensions(4);
+  metadata.set_num_passages_per_tab(1);
+
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_QUERY_EMBEDDING);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_CONVERSATION_THREAD_QUERIES_EMBEDDINGS);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_CONVERSATION_THREAD_TITLES_EMBEDDINGS);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_ACTIVE_TITLE_EMBEDDING);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_ACTIVE_PASSAGES_EMBEDDINGS);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_TITLE_EMBEDDING);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_PASSAGES_EMBEDDINGS);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_QUERY_LENGTH);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_QUERY_TITLE_LEXICAL_SIMILARITY);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_RECENCY);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_LAST_DURATION);
+
+  optimization_guide::proto::Any any;
+  any.set_type_url("type.googleapis.com/TabRelevanceModelMetadata");
+  metadata.SerializeToString(any.mutable_value());
+  model_provider_->SetModelMetadata(any);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return test_handler->GetModelInfo().has_value(); }));
+
+  QueryStateSignals query_signals;
+  query_signals.query_word_count = 3;
+  query_signals.query_embedding = {0.1f, 0.2f, 0.3f, 0.4f};
+  query_signals.conversation_thread_queries_embeddings.push_back(
+      {0.4f, 0.5f, 0.6f, 0.7f});
+  query_signals.conversation_thread_titles_embeddings.push_back(
+      {0.5f, 0.6f, 0.7f, 0.8f});
+  query_signals.context_tab_title_embedding = {0.6f, 0.7f, 0.8f, 0.9f};
+  query_signals.context_tab_passages_embeddings.push_back(
+      {0.7f, 0.8f, 0.9f, 1.0f});
+
+  std::vector<TabSignals> batch_tab_signals(1);
+  batch_tab_signals[0].candidate_title_embedding = {1.0f, 1.1f, 1.2f, 1.3f};
+  batch_tab_signals[0].candidate_passages_embeddings.push_back(
+      {1.1f, 1.2f, 1.3f, 1.4f});
+  batch_tab_signals[0].num_query_title_matching_words = 2;
+  batch_tab_signals[0].duration_since_last_active = base::Seconds(120);
+  batch_tab_signals[0].duration_of_last_visit = base::Seconds(300);
+
+  base::test::TestFuture<const std::vector<std::optional<MultiTurnModelOutput>>&>
+      future;
+  test_handler->BatchExecuteModelWithSignalsForConversationThread(
+      query_signals, batch_tab_signals, future.GetCallback());
+
+  // Wait for execution to complete to ensure proper cleanup.
+  auto results = future.Get();
+  ASSERT_EQ(results.size(), 1u);
+
+  // Wait until we captured the inputs
+  const auto& inputs = test_handler->last_inputs();
+  ASSERT_EQ(inputs.size(), 1u);
+
+  // Assert correct values and padding dimensions
+  // 1. query_embedding
+  EXPECT_EQ(inputs[0].query_embedding.size(), 4u);
+  EXPECT_NEAR(inputs[0].query_embedding[0], 0.1f, 1e-5);
+  EXPECT_NEAR(inputs[0].query_embedding[3], 0.4f, 1e-5);
+
+  // 2. conversation_queries_embeddings
+  EXPECT_EQ(inputs[0].conversation_thread_queries_embeddings.size(), 4u);
+  EXPECT_NEAR(inputs[0].conversation_thread_queries_embeddings[0], 0.4f, 1e-5);
+
+  // 3. conversation_titles_embeddings
+  EXPECT_EQ(inputs[0].conversation_thread_titles_embeddings.size(), 4u);
+  EXPECT_NEAR(inputs[0].conversation_thread_titles_embeddings[0], 0.5f, 1e-5);
+
+  // 4. active_title_embedding
+  EXPECT_EQ(inputs[0].active_title_embedding.size(), 4u);
+  EXPECT_NEAR(inputs[0].active_title_embedding[0], 0.6f, 1e-5);
+
+  // 5. active_passages_embeddings
+  EXPECT_EQ(inputs[0].active_passages_embeddings.size(), 4u);
+  EXPECT_NEAR(inputs[0].active_passages_embeddings[0], 0.7f, 1e-5);
+
+  // 6. candidate_title_embedding
+  EXPECT_EQ(inputs[0].candidate_tab_title_embedding.size(), 4u);
+  EXPECT_NEAR(inputs[0].candidate_tab_title_embedding[0], 1.0f, 1e-5);
+
+  // 7. candidate_passages_embeddings
+  EXPECT_EQ(inputs[0].candidate_tab_passages_embeddings.size(), 4u);
+  EXPECT_NEAR(inputs[0].candidate_tab_passages_embeddings[0], 1.1f, 1e-5);
+
+  // 8. query_length
+  ASSERT_EQ(inputs[0].query_length.size(), 1u);
+  EXPECT_NEAR(inputs[0].query_length[0], 3.0f, 1e-5);
+
+  // 9. lexical match (now raw match count, as per Abhay's feed!)
+  ASSERT_EQ(inputs[0].query_title_lexical_similarity.size(), 1u);
+  EXPECT_NEAR(inputs[0].query_title_lexical_similarity[0], 2.0f, 1e-5);
+
+  // 10. tab recency
+  ASSERT_EQ(inputs[0].candidate_tab_recency.size(), 1u);
+  EXPECT_NEAR(inputs[0].candidate_tab_recency[0], 120.0f, 1e-5);
+
+  // 11. tab last visitor
+  ASSERT_EQ(inputs[0].candidate_tab_last_duration.size(), 1u);
+  EXPECT_NEAR(inputs[0].candidate_tab_last_duration[0], 300.0f, 1e-5);
 }
 
 }  // namespace contextual_tasks
