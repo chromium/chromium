@@ -5881,6 +5881,7 @@ public class StripLayoutHelper
 
     public void handleDragEnter(
             float currX, float lastX, boolean isSourceStrip, boolean draggedTabIncognito) {
+        finishAnimations();
         if (isSourceStrip) {
             // Drag enter event after reorder was stopped. no-op.
             if (!mReorderDelegate.getInReorderMode()) return;
@@ -5923,6 +5924,7 @@ public class StripLayoutHelper
     }
 
     public void handleDragExit(boolean isSourceStrip, boolean draggedTabIncognito) {
+        finishAnimations();
         if (isSourceStrip) {
             // Drag exit event after reorder was stopped. no-op.
             if (!mReorderDelegate.getInReorderMode()) return;
