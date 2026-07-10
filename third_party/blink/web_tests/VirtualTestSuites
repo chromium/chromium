@@ -2320,6 +2320,8 @@
       "arthursonzogni@chromium.org"
     ]
   },
+  "CSS Paint worklets require a compositor to pass. Because this suite tests a",
+  "shipping configuration, it never expires.",
   {
     "prefix": "off-main-thread-css-paint",
     "platforms": [
@@ -2329,22 +2331,17 @@
     ],
     "bases": [
       "external/wpt/css/css-paint-api",
-      "http/tests/csspaint",
-      "http/tests/inspector-protocol/paint-worklet"
-    ],
-    "exclusive_tests": [
-      "http/tests/inspector-protocol/paint-worklet"
+      "http/tests/csspaint"
     ],
     "args": [
       "--enable-threaded-compositing",
-      "--enable-blink-features=OffMainThreadCSSPaint",
       "--enable-gpu-rasterization",
       "--enable-accelerated-2d-canvas"
     ],
     "owners": [
       "ikilpatrick@chromium.org"
     ],
-    "expires": "Dec 1, 2026"
+    "expires": "never"
   },
   "The origin trials suite tests that OT-controlled features are exposed to",
   "the web as expected, so should not expire.",
@@ -3621,6 +3618,7 @@
       "fast/events/pointerevents/pinch",
       "http/tests/devtools/isolated-code-cache",
       "http/tests/devtools/tracing",
+      "http/tests/inspector-protocol/paint-worklet",
       "http/tests/worklet",
       "inspector-protocol/css/css-get-keyframes-for-view-transitions.js",
       "inspector-protocol/css/css-get-styles-for-nested-view-transition.js",
@@ -3657,6 +3655,7 @@
       "external/wpt/requestidlecallback",
       "external/wpt/scheduler/tentative/yield/yield-priority-idle-callbacks.html",
       "http/tests/devtools/isolated-code-cache",
+      "http/tests/inspector-protocol/paint-worklet",
       "external/wpt/css/css-view-transitions",
       "wpt_internal/html/script-execution",
       "wpt_internal/route",

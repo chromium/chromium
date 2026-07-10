@@ -826,7 +826,6 @@ TEST_P(AnimationCompositorAnimationsTest,
 
 TEST_P(AnimationCompositorAnimationsTest,
        CanStartEffectOnCompositorCustomCssProperty) {
-  ScopedOffMainThreadCSSPaintForTest off_main_thread_css_paint(true);
   RegisterProperty(GetDocument(), "--foo", "<number>", "0", false);
   RegisterProperty(GetDocument(), "--bar", "<length>", "10px", false);
   RegisterProperty(GetDocument(), "--loo", "<color>", "rgb(0, 0, 0)", false);
@@ -2062,8 +2061,6 @@ TEST_P(AnimationCompositorAnimationsTest,
 
 TEST_P(AnimationCompositorAnimationsTest,
        CreateCustomFloatPropertyAnimationWithNonAsciiName) {
-  ScopedOffMainThreadCSSPaintForTest off_main_thread_css_paint(true);
-
   String property_name = "--東京都";
   RegisterProperty(GetDocument(), property_name, "<number>", "0", false);
   SetCustomProperty(property_name, "10");
@@ -2083,8 +2080,6 @@ TEST_P(AnimationCompositorAnimationsTest,
 
 TEST_P(AnimationCompositorAnimationsTest,
        CreateSimpleCustomFloatPropertyAnimation) {
-  ScopedOffMainThreadCSSPaintForTest off_main_thread_css_paint(true);
-
   RegisterProperty(GetDocument(), "--foo", "<number>", "0", false);
   SetCustomProperty("--foo", "10");
 
@@ -2119,8 +2114,6 @@ TEST_P(AnimationCompositorAnimationsTest,
 
 TEST_P(AnimationCompositorAnimationsTest,
        CreateSimpleCustomColorPropertyAnimation) {
-  ScopedOffMainThreadCSSPaintForTest off_main_thread_css_paint(true);
-
   RegisterProperty(GetDocument(), "--foo", "<color>", "rgb(0, 0, 0)", false);
   SetCustomProperty("--foo", "rgb(0, 0, 0)");
 
@@ -2154,8 +2147,6 @@ TEST_P(AnimationCompositorAnimationsTest,
 }
 
 TEST_P(AnimationCompositorAnimationsTest, MixedCustomPropertyAnimation) {
-  ScopedOffMainThreadCSSPaintForTest off_main_thread_css_paint(true);
-
   RegisterProperty(GetDocument(), "--foo", "<number> | <color>", "0", false);
   SetCustomProperty("--foo", "0");
 

@@ -182,7 +182,6 @@ void RunAddGlobalScopesTestOnWorklet(
 }
 
 TEST_F(PaintWorkletProxyClientTest, AddGlobalScopes) {
-  ScopedOffMainThreadCSSPaintForTest off_main_thread_css_paint(true);
   // Global scopes must be created on worker threads.
   std::unique_ptr<WorkerThread> worklet_thread =
       CreateThreadAndProvidePaintWorkletProxyClient(
@@ -236,7 +235,6 @@ void RunPaintTestOnWorklet(WorkerThread* thread,
 }
 
 TEST_F(PaintWorkletProxyClientTest, Paint) {
-  ScopedOffMainThreadCSSPaintForTest off_main_thread_css_paint(true);
   RunMultipleGlobalScopeTestsOnWorklet(&RunPaintTestOnWorklet);
 }
 
@@ -311,7 +309,6 @@ void RunDefinitionsMustBeCompatibleTestOnWorklet(
 }
 
 TEST_F(PaintWorkletProxyClientTest, DefinitionsMustBeCompatible) {
-  ScopedOffMainThreadCSSPaintForTest off_main_thread_css_paint(true);
   RunMultipleGlobalScopeTestsOnWorklet(
       &RunDefinitionsMustBeCompatibleTestOnWorklet);
 }
@@ -383,7 +380,6 @@ void RunAllDefinitionsMustBeRegisteredBeforePostingTestOnWorklet(
 
 TEST_F(PaintWorkletProxyClientTest,
        AllDefinitionsMustBeRegisteredBeforePosting) {
-  ScopedOffMainThreadCSSPaintForTest off_main_thread_css_paint(true);
   RunMultipleGlobalScopeTestsOnWorklet(
       &RunAllDefinitionsMustBeRegisteredBeforePostingTestOnWorklet);
 }

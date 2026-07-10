@@ -920,6 +920,11 @@ class PixelTestPages():
     ]
 
     return [
+        PixelTestPage('pixel_paintWorklet_transform.html',
+                      base_name + '_PaintWorkletTransform',
+                      crop_action=ca.NonWhiteContentCropAction(
+                          initial_crop=ca.FixedRectCropAction(0, 0, 200, 200)),
+                      browser_args=browser_args),
         PixelTestPage('pixel_background.html',
                       base_name + '_GpuRasterization_BlueBox',
                       crop_action=ca.FixedRectCropAction(0, 0, 220, 220),
@@ -945,22 +950,6 @@ class PixelTestPages():
             # Small Fuchsia screens result in an incomplete capture
             # without this.
             should_capture_full_screenshot_func=CaptureFullScreenshotOnFuchsia),
-    ]
-
-  # Pages that should be run with off-thread paint worklet flags.
-  @staticmethod
-  def PaintWorkletPages(base_name: str) -> list[PixelTestPage]:
-    browser_args = [
-        '--enable-blink-features=OffMainThreadCSSPaint',
-        '--enable-gpu-rasterization'
-    ]
-
-    return [
-        PixelTestPage('pixel_paintWorklet_transform.html',
-                      base_name + '_PaintWorkletTransform',
-                      crop_action=ca.NonWhiteContentCropAction(
-                          initial_crop=ca.FixedRectCropAction(0, 0, 200, 200)),
-                      browser_args=browser_args),
     ]
 
   # Pages that should be run with experimental canvas features.

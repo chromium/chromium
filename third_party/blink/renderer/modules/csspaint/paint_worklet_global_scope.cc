@@ -113,7 +113,6 @@ PaintWorkletGlobalScope* PaintWorkletGlobalScope::Create(
 PaintWorkletGlobalScope* PaintWorkletGlobalScope::Create(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     WorkerThread* thread) {
-  DCHECK(RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled());
   return MakeGarbageCollected<PaintWorkletGlobalScope>(
       std::move(creation_params), thread);
 }

@@ -43,9 +43,7 @@ PaintWorklet::PaintWorklet(LocalDOMWindow& window)
       pending_generator_registry_(
           MakeGarbageCollected<PaintWorkletPendingGeneratorRegistry>()),
       worklet_id_(PaintWorkletIdGenerator::NextId()),
-      is_paint_off_thread_(
-          RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled() &&
-          Thread::CompositorThread()) {}
+      is_paint_off_thread_(Thread::CompositorThread()) {}
 
 PaintWorklet::~PaintWorklet() = default;
 
@@ -54,8 +52,8 @@ void PaintWorklet::AddPendingGenerator(const String& name,
   pending_generator_registry_->AddPendingGenerator(name, generator);
 }
 
-void PaintWorklet::ResetIsPaintOffThreadForTesting() {
-  is_paint_off_thread_ = RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled();
+void PaintWorklet::ResetIsPaintOffThreadForTesting(bool is_off_thread) {
+  is_paint_off_thread_ = is_off_thread;
 }
 
 // We start with a random global scope when a new frame starts. Then within this
@@ -171,9 +169,8 @@ void PaintWorklet::RegisterCSSPaintDefinition(const String& name,
     // definition associated with |name|
     //
     // We are looking for kNumGlobalScopesPerThread number of definitions
-    // regiserered from RegisterCSSPaintDefinition and one extra definition from
-    // RegisterMainThreadDocumentPaintDefinition if OffMainThreadCSSPaintEnabled
-    // is true.
+    // registered from RegisterCSSPaintDefinition and one extra definition from
+    // RegisterMainThreadDocumentPaintDefinition
     unsigned required_registered_count = is_paint_off_thread_
                                              ? kNumGlobalScopesPerThread + 1
                                              : kNumGlobalScopesPerThread;

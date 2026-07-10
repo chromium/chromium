@@ -4341,10 +4341,6 @@
       status: "stable",
     },
     {
-      name: "OffMainThreadCSSPaint",
-      status: "stable",
-    },
-    {
       name: "OffscreenCanvasGetContextAttributes",
       status: "stable",
     },

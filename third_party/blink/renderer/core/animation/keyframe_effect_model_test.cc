@@ -766,7 +766,6 @@ TEST_F(AnimationKeyframeEffectModel,
 }
 
 TEST_F(AnimationKeyframeEffectModel, CompositorSnapshotUpdateCustomProperty) {
-  ScopedOffMainThreadCSSPaintForTest off_main_thread_css_paint(true);
   DummyExceptionStateForTesting exception_state;
 
   // Compositor keyframe value available after snapshot
@@ -783,7 +782,6 @@ TEST_F(AnimationKeyframeEffectModel, CompositorSnapshotUpdateCustomProperty) {
 }
 
 TEST_F(AnimationKeyframeEffectModel, CompositorUpdateColorProperty) {
-  ScopedOffMainThreadCSSPaintForTest off_main_thread_css_paint(true);
   DummyExceptionStateForTesting exception_state;
 
   element->style()->setProperty(GetDocument().GetExecutionContext(), "color",

@@ -70,9 +70,6 @@ CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(
                                            nullptr);
     }
     case CSSPropertyID::kVariable: {
-      if (!RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled()) {
-        return nullptr;
-      }
       const AtomicString& property_name = property.CustomPropertyName();
       const CSSValue* value = style.GetVariableValue(property_name);
 

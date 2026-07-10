@@ -91,7 +91,7 @@ class MODULES_EXPORT PaintWorklet : public Worklet,
     proxy_client_ = proxy_client;
   }
 
-  void ResetIsPaintOffThreadForTesting();
+  void ResetIsPaintOffThreadForTesting(bool is_off_thread = true);
 
  protected:
   // Since paint worklet has more than one global scope, we MUST override this

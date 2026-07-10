@@ -28,11 +28,9 @@ CSSPaintValue::CSSPaintValue(CSSCustomIdentValue* name,
     : CSSImageGeneratorValue(kPaintClass),
       name_(name),
       paint_image_generator_observer_(MakeGarbageCollected<Observer>(this)),
-      off_thread_paint_state_(
-          (!threaded_compositing_enabled ||
-           !RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled())
-              ? OffThreadPaintState::kMainThread
-              : OffThreadPaintState::kUnknown) {}
+      off_thread_paint_state_(!threaded_compositing_enabled
+                                  ? OffThreadPaintState::kMainThread
+                                  : OffThreadPaintState::kUnknown) {}
 
 CSSPaintValue::CSSPaintValue(CSSCustomIdentValue* name)
     : CSSPaintValue(name, Thread::CompositorThread()) {}

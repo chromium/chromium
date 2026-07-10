@@ -111,7 +111,6 @@ class PaintWorkletGlobalScopeTest : public PageTestBase {
 };
 
 TEST_F(PaintWorkletGlobalScopeTest, BasicParsing) {
-  ScopedOffMainThreadCSSPaintForTest off_main_thread_css_paint(true);
   RunTestOnWorkletThread(
       &PaintWorkletGlobalScopeTest::RunBasicParsingTestOnWorklet);
 }
