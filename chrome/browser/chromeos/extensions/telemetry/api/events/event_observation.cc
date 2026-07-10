@@ -11,7 +11,6 @@
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
-#include "chromeos/ash/components/telemetry_extension/events/telemetry_event_service_converters.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"

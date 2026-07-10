@@ -23,7 +23,6 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_info.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
-#include "chromeos/ash/components/telemetry_extension/routines/routine_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"

@@ -19,7 +19,6 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_manager.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/ash/components/telemetry_extension/diagnostics/mojo_utils.h"
-#include "chromeos/ash/components/telemetry_extension/routines/routine_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
