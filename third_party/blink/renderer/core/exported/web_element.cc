@@ -170,6 +170,9 @@ WebString WebElement::TagName() const {
 WebString WebElement::GetIdAttribute() const {
   return ConstUnwrap<Element>()->GetIdAttribute();
 }
+WebString WebElement::Nonce() const {
+  return ConstUnwrap<Element>()->nonce();
+}
 
 bool WebElement::HasHTMLTagName(const WebString& tag_name) const {
   const auto* html_element =

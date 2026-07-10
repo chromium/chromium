@@ -5516,6 +5516,25 @@ TEST_F(FormFieldConversionTest, WebFormControlElementToFormField) {
                                                     .id_attribute = u"element",
                                                     .value = u"value"}));
 }
+// We should be able to extract a nonce even if CSP is enabled (which clears
+// the nonce content attribute).
+TEST_F(FormFieldConversionTest, WebFormControlElementToFormFieldNonceWithCSP) {
+  LoadHTML(R"(
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+    <input id=element nonce=testnonce>
+  )");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      WebFormElement(), element, nullptr, &result);
+
+  EXPECT_EQ(result.nonce(), u"testnonce");
+}
 
 // We should be able to extract a text field with autocomplete="off".
 TEST_F(FormFieldConversionTest,

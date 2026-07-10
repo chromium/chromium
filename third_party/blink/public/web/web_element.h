@@ -88,6 +88,8 @@ class BLINK_EXPORT WebElement : public WebNode {
   WebString TagName() const;
   // Returns the id attribute.
   WebString GetIdAttribute() const;
+  // Returns the cryptographic nonce.
+  WebString Nonce() const;
   // Check if this element has the specified local tag name, and the HTML
   // namespace. Tag name matching is case-insensitive.
   bool HasHTMLTagName(const WebString&) const;
