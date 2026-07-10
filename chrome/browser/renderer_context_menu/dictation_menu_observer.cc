@@ -28,10 +28,7 @@ DictationMenuObserver::~DictationMenuObserver() = default;
 void DictationMenuObserver::InitMenu(const content::ContextMenuParams& params) {
   // Note that `field_renderer_id` is `DOMNodeIdType` within blink. Its value
   // is only meaningful within the renderer that generated it.
-  content::RenderFrameHost* rfh = proxy_->GetRenderFrameHost();
-  target_element_dom_id_ = content::GlobalDOMNodeId{
-      rfh ? rfh->GetWeakDocumentPtr() : content::WeakDocumentPtr(),
-      blink::DOMNodeIdType(static_cast<int>(params.field_renderer_id))};
+  target_element_dom_id_ = params.form_field_dom_node_id;
 
   DictationKeyedService* service = GetDictationService();
   if (service && service->ShouldShowContextMenuItem()) {

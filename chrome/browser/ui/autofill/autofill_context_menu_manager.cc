@@ -176,7 +176,8 @@ bool IsLikelyDogfoodClient() {
 // Returns true if the field is a username or password field.
 bool IsPasswordFormField(ContentPasswordManagerDriver& password_manager_driver,
                          const content::ContextMenuParams& params) {
-  const FieldRendererId current_field_renderer_id(params.field_renderer_id);
+  const FieldRendererId current_field_renderer_id(
+      params.field_renderer_id.value());
   return password_manager_driver.GetPasswordManager()
       ->GetPasswordFormCache()
       ->GetPasswordForm(&password_manager_driver, current_field_renderer_id);
@@ -190,8 +191,8 @@ base::DictValue LoadTriggerFormAndFieldLogs(
     return base::DictValue();
   }
 
-  FormGlobalId form_global_id = {frame_token,
-                                 FormRendererId(params.form_renderer_id)};
+  FormGlobalId form_global_id = {
+      frame_token, FormRendererId(params.form_renderer_id.value())};
 
   base::DictValue trigger_form_logs;
   if (const FormStructure* form = manager.FindCachedFormById(form_global_id)) {
@@ -199,7 +200,7 @@ base::DictValue LoadTriggerFormAndFieldLogs(
 
     if (params.form_control_type) {
       FieldGlobalId field_global_id = {
-          frame_token, FieldRendererId(params.field_renderer_id)};
+          frame_token, FieldRendererId(params.field_renderer_id.value())};
       if (const AutofillField* field = form->GetFieldById(field_global_id)) {
         trigger_form_logs.Set("triggerFieldSignature",
                               field->FieldSignatureAsStr());
@@ -479,12 +480,12 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
       password_manager_util::ManualPasswordGenerationEnabled(
           &password_manager_driver) &&
       password_manager_driver.IsPasswordFieldForPasswordManager(
-          FieldRendererId(params_.field_renderer_id),
+          FieldRendererId(params_.field_renderer_id.value()),
           params_.form_control_type);
   const bool add_passkey_from_another_device_option =
       webauthn::IsPasskeyFromAnotherDeviceContextMenuEnabled(
-          delegate_->GetRenderFrameHost(), params_.form_renderer_id,
-          params_.field_renderer_id);
+          delegate_->GetRenderFrameHost(), params_.form_renderer_id.value(),
+          params_.field_renderer_id.value());
   const bool add_import_passwords_option = !add_select_password_option;
 
   if (add_select_password_option) {
@@ -547,7 +548,8 @@ void AutofillContextMenuManager::
 void AutofillContextMenuManager::ExecuteFallbackForAtMemoryCommand(
     AutofillDriver& driver) {
   driver.RendererShouldTriggerSuggestions(
-      {driver.GetFrameToken(), FieldRendererId(params_.field_renderer_id)},
+      {driver.GetFrameToken(),
+       FieldRendererId(params_.field_renderer_id.value())},
       AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
 }
 
@@ -575,7 +577,7 @@ void AutofillContextMenuManager::ExecuteFallbackForSelectPasswordCommand(
     AutofillDriver& autofill_driver) {
   autofill_driver.RendererShouldTriggerSuggestions(
       /*field_id=*/{autofill_driver.GetFrameToken(),
-                    FieldRendererId(params_.field_renderer_id)},
+                    FieldRendererId(params_.field_renderer_id.value())},
       AutofillSuggestionTriggerSource::kManualFallbackPasswords);
 
   LogSelectPasswordManualFallbackContextMenuEntryAccepted();

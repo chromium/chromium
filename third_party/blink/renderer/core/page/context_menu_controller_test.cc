@@ -2075,8 +2075,10 @@ TEST_F(ContextMenuControllerTest, CheckRendererIdFromContextMenuOnTextField) {
         form_element, ui::mojom::blink::MenuSourceType::kMouse));
     ContextMenuData context_menu_data =
         GetWebFrameClient().GetContextMenuData();
-    EXPECT_EQ(context_menu_data.form_renderer_id != 0,
+    EXPECT_EQ(!context_menu_data.form_renderer_id.is_null(),
               is_form_renderer_id_present);
+    EXPECT_EQ(!context_menu_data.field_renderer_id.is_null(),
+              is_field_renderer_id_present);
     EXPECT_EQ(context_menu_data.form_control_type, form_control_type);
   }
 }

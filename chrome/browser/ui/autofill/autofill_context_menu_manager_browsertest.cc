@@ -71,6 +71,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/menus/simple_menu_model.h"
@@ -250,9 +251,9 @@ content::ContextMenuParams CreateContextMenuParams(
   rv.page_url = GURL("http://test.page/");
   rv.form_control_type = form_control_type;
   if (form_renderer_id) {
-    rv.form_renderer_id = form_renderer_id->value();
+    rv.form_renderer_id = blink::DOMNodeIdType(form_renderer_id->value());
   }
-  rv.field_renderer_id = field_render_id.value();
+  rv.field_renderer_id = blink::DOMNodeIdType(field_render_id.value());
   return rv;
 }
 
@@ -1192,7 +1193,7 @@ IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest,
   content::ContextMenuParams params = CreateContextMenuParams();
   params.form_control_type = std::nullopt;
   params.is_content_editable_for_autofill = true;
-  params.field_renderer_id = 123;
+  params.field_renderer_id = blink::DOMNodeIdType(123);
   autofill_context_menu_manager()->set_params_for_testing(params);
 
   autofill_context_menu_manager()->AppendItems();

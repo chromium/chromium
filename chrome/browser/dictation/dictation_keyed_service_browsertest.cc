@@ -23,6 +23,7 @@
 #include "chrome/common/extensions/api/dictation_private.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -142,7 +143,9 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        ExecuteContextMenuCommand) {
   content::ContextMenuParams params;
   params.is_editable = true;
-  params.field_renderer_id = 123;
+  params.form_field_dom_node_id = content::GlobalDOMNodeId(
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
+      blink::DOMNodeIdType(123));
   TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
                                  params);
   menu.Init();

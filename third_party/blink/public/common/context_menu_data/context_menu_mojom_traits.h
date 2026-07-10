@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
@@ -18,21 +19,7 @@
 
 namespace mojo {
 
-template <>
-struct BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::FormRendererIdDataView, uint64_t> {
-  static uint64_t id(uint64_t r) { return r; }
 
-  static bool Read(blink::mojom::FormRendererIdDataView data, uint64_t* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::FieldRendererIdDataView, uint64_t> {
-  static uint64_t id(uint64_t r) { return r; }
-
-  static bool Read(blink::mojom::FieldRendererIdDataView data, uint64_t* out);
-};
 
 template <>
 struct BLINK_COMMON_EXPORT
@@ -202,12 +189,12 @@ struct BLINK_COMMON_EXPORT
     return r.is_content_editable_for_autofill;
   }
 
-  static uint64_t field_renderer_id(
+  static blink::DOMNodeIdType field_renderer_id(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.field_renderer_id;
   }
 
-  static uint64_t form_renderer_id(
+  static blink::DOMNodeIdType form_renderer_id(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.form_renderer_id;
   }

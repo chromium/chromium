@@ -108,6 +108,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -1072,8 +1073,9 @@ class RenderViewContextMenuUsePasskeyFromAnotherDeviceTest
     NotifyFormManagerAndWait(form);
 
     content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
-    params.form_renderer_id = form.renderer_id().value();
-    params.field_renderer_id = form.fields()[0].renderer_id().value();
+    params.form_renderer_id = blink::DOMNodeIdType(form.renderer_id().value());
+    params.field_renderer_id =
+        blink::DOMNodeIdType(form.fields()[0].renderer_id().value());
 
     auto menu = std::make_unique<TestRenderViewContextMenu>(
         *web_contents()->GetPrimaryMainFrame(), params);

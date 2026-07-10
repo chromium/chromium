@@ -214,6 +214,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/error_navigation_trigger.h"
 #include "content/public/browser/feature_observer_client.h"
+#include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/browser/network_service_util.h"
@@ -9826,6 +9827,9 @@ void RenderFrameHostImpl::ShowContextMenu(
         GetProcess(), bad_message::RFH_NEGATIVE_SELECTION_START_OFFSET);
     return;
   }
+
+  validated_params.form_field_dom_node_id =
+      GlobalDOMNodeId{GetWeakDocumentPtr(), validated_params.field_renderer_id};
 
   delegate_->ShowContextMenu(*this, std::move(context_menu_client),
                              validated_params);

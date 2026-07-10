@@ -37,6 +37,7 @@
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
@@ -111,11 +112,11 @@ namespace {
 void SetAutofillData(Node* node, ContextMenuData& data) {
   if (auto* form_control = DynamicTo<HTMLFormControlElement>(node)) {
     data.form_control_type = form_control->FormControlType();
-    data.field_renderer_id = form_control->GetDomNodeId();
+    data.field_renderer_id = DOMNodeIdType(form_control->GetDomNodeId());
     if (auto* form = form_control->GetOwningFormForAutofill()) {
-      data.form_renderer_id = form->GetDomNodeId();
+      data.form_renderer_id = DOMNodeIdType(form->GetDomNodeId());
     } else {
-      data.form_renderer_id = 0;
+      data.form_renderer_id = DOMNodeIdType();
     }
     // If a field has been a password field then it should be treated as a
     // password field for the purposes of autofill. (If needed in the future,
@@ -136,8 +137,8 @@ void SetAutofillData(Node* node, ContextMenuData& data) {
         !DynamicTo<HTMLFormElement>(node) &&
         !DynamicTo<HTMLFormControlElement>(node);
     if (data.is_content_editable_for_autofill) {
-      data.field_renderer_id = html_element->GetDomNodeId();
-      data.form_renderer_id = html_element->GetDomNodeId();
+      data.field_renderer_id = DOMNodeIdType(html_element->GetDomNodeId());
+      data.form_renderer_id = DOMNodeIdType(html_element->GetDomNodeId());
     }
   }
 }

@@ -4808,7 +4808,8 @@ void RenderViewContextMenu::ExecOpenCompose() {
     client->GetManager().OpenCompose(
         *driver,
         autofill::FieldGlobalId(
-            frame_token, autofill::FieldRendererId(params_.field_renderer_id)),
+            frame_token,
+            autofill::FieldRendererId(params_.field_renderer_id.value())),
         compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);
     BrowserUserEducationInterface::From(GetBrowser())
         ->NotifyNewBadgeFeatureUsed(compose::features::kEnableCompose);

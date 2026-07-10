@@ -12,6 +12,7 @@ import "third_party/blink/public/mojom/forms/form_control_type.mojom";
 import "ui/base/mojom/menu_source_type.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
+import "third_party/blink/public/mojom/dom/dom_node_id.mojom";
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.blink_public.common
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: ContextMenuDataMediaType
@@ -52,19 +53,6 @@ struct Accelerator {
   int32 modifiers;
 };
 
-// Container for information about the form renderer id from where the context
-// menu was triggered.
-// autofill::FormRendererId
-struct FormRendererId {
-  uint64 id;
-};
-
-// Container for information about the field renderer id where the context menu
-// was triggered.
-// autofill::FieldRendererId
-struct FieldRendererId {
-  uint64 id;
-};
 
 // Container for information about entries in an HTML select popup menu and
 // custom entries of the context menu.
@@ -222,13 +210,11 @@ struct UntrustworthyContextMenuParams {
   // Identifies the element the context menu was invoked on if either
   // `form_control_type` is engaged or `is_content_editable_for_autofill` is
   // true.
-  // See `autofill::FieldRendererId` for the semantics of renderer IDs.
-  FieldRendererId field_renderer_id;
+  blink.mojom.DOMNodeId field_renderer_id;
 
   // Identifies form to which the field identified by `field_renderer_id` is
   // associated.
-  // See `autofill::FormRendererId` for the semantics of renderer IDs.
-  FormRendererId form_renderer_id;
+  blink.mojom.DOMNodeId form_renderer_id;
 };
 
 // Defines methods for Context menu to commnicate from the browser to the

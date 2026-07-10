@@ -8,6 +8,7 @@
 #include <map>
 
 #include "content/common/content_export.h"
+#include "content/public/browser/global_dom_node_id.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -49,6 +50,10 @@ struct CONTENT_EXPORT ContextMenuParams
 
   // Extra properties for the context menu.
   std::map<std::string, std::string> properties;
+
+  // If the context menu was opened over a form field element or editable its
+  // identifying GlobalDOMNodeId will be in this field.
+  GlobalDOMNodeId form_field_dom_node_id;
 
  private:
   // RenderFrameHostImpl is responsible for validating and sanitizing

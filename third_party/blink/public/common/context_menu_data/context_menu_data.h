@@ -36,6 +36,7 @@
 
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-shared.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
@@ -187,13 +188,11 @@ struct ContextMenuData {
   // Identifies the element the context menu was invoked on if either
   // `form_control_type` is engaged or `is_content_editable_for_autofill` is
   // true.
-  // See `autofill::FieldRendererId` for the semantics of renderer IDs.
-  uint64_t field_renderer_id = 0;
+  DOMNodeIdType field_renderer_id;
 
   // Identifies form to which the field identified by `field_renderer_id` is
   // associated.
-  // See `autofill::FormRendererId` for the semantics of renderer IDs.
-  uint64_t form_renderer_id = 0;
+  DOMNodeIdType form_renderer_id;
 
   ContextMenuData()
       : media_type(blink::mojom::ContextMenuDataMediaType::kNone),

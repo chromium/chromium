@@ -25,6 +25,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 
 namespace autofill {
 namespace {
@@ -39,9 +40,9 @@ content::ContextMenuParams CreateContextMenuParams(
   rv.page_url = GURL("http://test.page/");
   rv.form_control_type = blink::mojom::FormControlType::kInputText;
   if (form_renderer_id) {
-    rv.form_renderer_id = form_renderer_id->value();
+    rv.form_renderer_id = blink::DOMNodeIdType(form_renderer_id->value());
   }
-  rv.field_renderer_id = field_render_id.value();
+  rv.field_renderer_id = blink::DOMNodeIdType(field_render_id.value());
   return rv;
 }
 
