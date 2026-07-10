@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_context_menu_invocation_helper.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
@@ -814,6 +815,41 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
                           .webui_contents();
   ASSERT_TRUE(ui_contents);
   EXPECT_EQ(ui_contents->GetVisibility(), content::Visibility::HIDDEN);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeWithInvalidContextMultipleFormats) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), GURL("about:blank")));
+
+  // Create mock AdditionalContext with both image/png and text formats.
+  auto context_mojom = CreateMockAdditionalContext();
+
+  auto text_data = mojom::ContextData::New();
+  text_data->mime_type = kMimeTypeGlicSelection;
+  std::string my_text = "test";
+  text_data->data = mojo_base::BigBuffer(
+      std::vector<uint8_t>(my_text.begin(), my_text.end()));
+  context_mojom->parts.push_back(
+      mojom::AdditionalContextPart::NewData(std::move(text_data)));
+
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+
+  content::RenderFrameHost* rfh = tab->GetContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+
+  // Trigger clipboard policy check. This will fail with kInvalidConfiguration
+  // because having both formats is invalid for the clipboard metadata.
+  options.additional_context = AdditionalTabContext(
+      std::move(context_mojom), rfh->GetGlobalId(), PolicyCheck::kClipboard);
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kInvalidConfiguration);
+  EXPECT_FALSE(GetInstanceForTab(tab));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithTabsToPin) {
