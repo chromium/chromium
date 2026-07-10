@@ -267,7 +267,8 @@
                 [[item.label]]
               </div>
               <settings-dropdown-menu
-                  label="[[item.label]]"
+                  label="[[i18n('sidePanelAlignmentA11yLabel', item.label,
+                                '$i18n{sidePanelPosition}')]]"
                   menu-options="[[sidePanelAlignmentOptions_]]"
                   data-entry-id$="[[item.id]]"
                   pref-key="side_panel.is_right_aligned"
@@ -285,7 +286,9 @@
               $i18n{sidePanelAlignmentChromePanels}
             </div>
             <settings-dropdown-menu id="sidePanelPosition"
-                label="$i18n{sidePanelAlignmentChromePanels}"
+                label="[[i18n('sidePanelAlignmentA11yLabel',
+                              '$i18n{sidePanelAlignmentChromePanels}',
+                              '$i18n{sidePanelPosition}')]]"
                 pref-key="side_panel.is_right_aligned"
                 menu-options="[[sidePanelAlignmentOptions_]]">
             </settings-dropdown-menu>
