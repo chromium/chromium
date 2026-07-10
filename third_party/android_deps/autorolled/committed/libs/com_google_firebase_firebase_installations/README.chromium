@@ -1,7 +1,7 @@
 Name: firebase-installations
 Short Name: firebase-installations
-URL: https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-installations/19.1.0/firebase-installations-19.1.0.aar
-Version: 19.1.0
+URL: https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-installations/19.1.1/firebase-installations-19.1.1.aar
+Version: 19.1.1
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

@@ -1,7 +1,7 @@
 Name: firebase-messaging
 Short Name: firebase-messaging
-URL: https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-messaging/25.1.0/firebase-messaging-25.1.0.aar
-Version: 25.1.0
+URL: https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-messaging/25.1.1/firebase-messaging-25.1.1.aar
+Version: 25.1.1
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

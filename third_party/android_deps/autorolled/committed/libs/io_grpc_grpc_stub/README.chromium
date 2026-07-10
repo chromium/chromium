@@ -1,7 +1,7 @@
 Name: io.grpc:grpc-stub
 Short Name: grpc-stub
-URL: https://repo.maven.apache.org/maven2/io/grpc/grpc-stub/1.82.1/grpc-stub-1.82.1.jar
-Version: 1.82.1
+URL: https://repo.maven.apache.org/maven2/io/grpc/grpc-stub/1.82.2/grpc-stub-1.82.2.jar
+Version: 1.82.2
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

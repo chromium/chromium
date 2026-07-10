@@ -1627,7 +1627,7 @@
     {
         "name": "firebase-installations",
         "group": "com.google.firebase",
-        "version": "19.1.0"
+        "version": "19.1.1"
     },
     {
         "name": "firebase-installations-interop",
@@ -1642,7 +1642,7 @@
     {
         "name": "firebase-messaging",
         "group": "com.google.firebase",
-        "version": "25.1.0"
+        "version": "25.1.1"
     },
     {
         "name": "google-java-format",
@@ -1692,7 +1692,7 @@
     {
         "name": "protobuf-javalite",
         "group": "com.google.protobuf",
-        "version": "4.35.1"
+        "version": "4.36.0-RC1"
     },
     {
         "name": "protobuf-lite",
@@ -1877,12 +1877,12 @@
     {
         "name": "grpc-api",
         "group": "io.grpc",
-        "version": "1.82.1"
+        "version": "1.82.2"
     },
     {
         "name": "grpc-stub",
         "group": "io.grpc",
-        "version": "1.82.1"
+        "version": "1.82.2"
     },
     {
         "name": "rxandroid",
