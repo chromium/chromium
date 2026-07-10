@@ -140,6 +140,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/ui/views/js_optimization",
       "//chrome/browser/ui/views/location_bar/cookie_controls",
+      "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/send_tab_to_self",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
@@ -4249,42 +4250,6 @@ static_library("ui") {
       "views/omnibox/webui_readonly_omnibox.h",
       "views/optimization_guide/optimization_guide_icon_view.cc",
       "views/optimization_guide/optimization_guide_icon_view.h",
-      "views/page_info/about_this_site_side_panel_coordinator.cc",
-      "views/page_info/about_this_site_side_panel_coordinator.h",
-      "views/page_info/chosen_object_view.cc",
-      "views/page_info/chosen_object_view.h",
-      "views/page_info/chosen_object_view_observer.h",
-      "views/page_info/merchant_trust_side_panel_coordinator.cc",
-      "views/page_info/merchant_trust_side_panel_coordinator.h",
-      "views/page_info/page_info_ad_personalization_content_view.cc",
-      "views/page_info/page_info_ad_personalization_content_view.h",
-      "views/page_info/page_info_cookies_content_view.cc",
-      "views/page_info/page_info_cookies_content_view.h",
-      "views/page_info/page_info_main_view.cc",
-      "views/page_info/page_info_main_view.h",
-      "views/page_info/page_info_merchant_trust_content_view.cc",
-      "views/page_info/page_info_merchant_trust_content_view.h",
-      "views/page_info/page_info_merchant_trust_controller.cc",
-      "views/page_info/page_info_merchant_trust_controller.h",
-      "views/page_info/page_info_merchant_trust_coordinator.cc",
-      "views/page_info/page_info_merchant_trust_coordinator.h",
-      "views/page_info/page_info_permission_content_view.cc",
-      "views/page_info/page_info_permission_content_view.h",
-      "views/page_info/page_info_security_content_view.cc",
-      "views/page_info/page_info_security_content_view.h",
-      "views/page_info/page_info_view_factory.cc",
-      "views/page_info/page_info_view_factory.h",
-      "views/page_info/permission_toggle_row_view.cc",
-      "views/page_info/permission_toggle_row_view.h",
-      "views/page_info/permission_toggle_row_view_observer.h",
-      "views/page_info/safety_tip_page_info_bubble_view.cc",
-      "views/page_info/safety_tip_page_info_bubble_view.h",
-      "views/page_info/security_information_view.cc",
-      "views/page_info/security_information_view.h",
-      "views/page_info/star_rating_view.cc",
-      "views/page_info/star_rating_view.h",
-      "views/page_info/web_view_side_panel_view.cc",
-      "views/page_info/web_view_side_panel_view.h",
       "views/passwords/account_chooser_dialog_view.cc",
       "views/passwords/account_chooser_dialog_view.h",
       "views/passwords/auto_signin_first_run_dialog_view.cc",
@@ -4903,12 +4868,14 @@ static_library("ui") {
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following headers get componentized:
-      # c/b/ui/browser.h, browser_window.h
+      # c/b/ui/browser.h, browser_commands.h, browser_window.h
+      # c/b/ui/view_ids.h
       # c/b/ui/views/bubble_anchor_util_views.h
-      # c/b/ui/views/page_info/page_info_main_view.h
-      # c/b/ui/views/page_info/page_info_merchant_trust_content_view.h
-      # c/b/ui/views/page_info/page_info_merchant_trust_coordinator.h
-      # c/b/ui/views/page_info/page_info_security_content_view.h
+      # c/b/ui/views/frame/browser_view.h
+      # c/b/ui/views/frame/contents_container_outline.h
+      # c/b/ui/views/frame/contents_container_view.h
+      # c/b/ui/views/frame/multi_contents_view.h
+      # c/b/ui/views/sub_apps_permission_explanation.h
       "//chrome/browser/ui/views/page_info:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the

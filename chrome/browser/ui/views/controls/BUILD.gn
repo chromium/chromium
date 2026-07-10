@@ -37,7 +37,6 @@ source_set("controls") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/views/accessibility",
-    "//chrome/browser/ui/views/page_info",
     "//chrome/browser/ui/views/web_apps",
     "//components/constrained_window",
     "//components/content_settings/browser/ui",
