@@ -27,10 +27,11 @@ fn test_basic_message_write_and_send() {
     let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
     let (dummy_handle, _) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
 
-    let hello = system::message::RawMojoMessage::new_with_data(b"hello", vec![dummy_handle.into()])
-        .unwrap();
+    let hello =
+        system::message::WritableMessage::new_with_data(b"hello", vec![dummy_handle.into()])
+            .unwrap();
 
-    let write_result = endpoint_b.write(hello);
+    let write_result = endpoint_b.write(hello.finalize_for_sending());
     expect_true!(write_result.is_ok());
 
     // Attempt to read the result.
@@ -40,13 +41,13 @@ fn test_basic_message_write_and_send() {
         Ok("hello".to_string())
     );
     // Call the other read function just so we have some coverage of it
-    // The function may only be called once per message, so the second call should
-    // fail.
-    let (_, _) = hello_msg.read_data().unwrap();
-    expect_true!(hello_msg.read_data().is_err());
+    // The function may only be called once per message, and it consumes the
+    // message, returning a new state.
+    let (_handles, bytes_only_msg) = hello_msg.read_data().unwrap();
+
     // Calling read_bytes is independent of read_data and can be done many times.
-    let _ = hello_msg.read_bytes().unwrap();
-    let _ = hello_msg.read_bytes().unwrap();
+    let _ = bytes_only_msg.read_bytes().unwrap();
+    let _ = bytes_only_msg.read_bytes().unwrap();
 }
 
 #[gtest(RustSystemAPITestSuite, DataPipeWriteAndSendTest)]
@@ -117,8 +118,8 @@ fn test_trap_signal_on_readable() {
 
     trap.arm().expect("Failed to arm trap");
 
-    let hello = system::message::RawMojoMessage::new_with_bytes(b"hello").unwrap();
-    let write_result = endpoint_b.write(hello);
+    let hello = system::message::WritableMessage::new_with_bytes(b"hello").unwrap();
+    let write_result = endpoint_b.write(hello.finalize_for_sending());
     expect_true!(write_result.is_ok());
     {
         let count = hit_count.lock().unwrap();
@@ -176,7 +177,10 @@ fn test_make_regular_trap() {
 
 #[gtest(RustSystemAPITestSuite, ReportBadMessage)]
 fn test_report_bad_message() {
-    let mut msg = system::message::RawMojoMessage::new_with_bytes(b"moist").unwrap();
+    let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
+    let msg = system::message::WritableMessage::new_with_bytes(b"moist").unwrap();
+    endpoint_b.write(msg.finalize_for_sending()).unwrap();
+    let mut received_msg = endpoint_a.read().unwrap();
 
     let err_msg: Arc<Mutex<String>> = Arc::new(Mutex::new("".to_string()));
     let err_msg_clone = err_msg.clone();
@@ -184,10 +188,44 @@ fn test_report_bad_message() {
         *err_msg_clone.try_lock().unwrap() = msg.to_string()
     });
 
-    let _ = msg.report_bad_message("OH NO!");
+    let _ = received_msg.report_bad_message("OH NO!");
 
     // SAFETY: We're single-threaded so this isn't racy
     expect_eq!("OH NO!".to_string(), (*err_msg.try_lock().unwrap()).clone());
 
     test_util::set_default_process_error_handler(|_| {});
+}
+
+#[gtest(RustSystemAPITestSuite, TypestateTransitions)]
+fn test_typestate_transitions() {
+    let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
+    let (dummy_handle, _) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
+
+    // State 1: WritableMessage
+    let msg: system::message::WritableMessage =
+        system::message::WritableMessage::new_with_data(b"hello", vec![dummy_handle.into()])
+            .unwrap();
+
+    // State 2: SendableMessage
+    let sendable_msg: system::message::SendableMessage = msg.finalize_for_sending();
+    let write_result = endpoint_b.write(sendable_msg);
+    expect_true!(write_result.is_ok());
+
+    // State 3: FullyReadableWithHandlesMessage
+    let fully_readable_msg: system::message::FullyReadableWithHandlesMessage =
+        endpoint_a.read().expect("failed to read");
+
+    // Can read bytes in FullyReadable
+    let bytes = fully_readable_msg.read_bytes().unwrap();
+    expect_eq!(bytes, b"hello");
+
+    // State 4: ReadableBytesOnlyMessage
+    // (Consumes fully_readable_msg and produces bytes_only_msg)
+    let (handles, bytes_only_msg): (_, system::message::ReadableBytesOnlyMessage) =
+        fully_readable_msg.read_data().unwrap();
+    expect_eq!(handles.len(), 1);
+
+    // Can still read bytes in BytesOnly
+    let bytes2 = bytes_only_msg.read_bytes().unwrap();
+    expect_eq!(bytes2, b"hello");
 }

@@ -8,47 +8,66 @@ chromium::import! {
 
 use mojo_ffi::message;
 use mojo_ffi::{MessageHandle, MojoError, MojoResult, UntypedHandle};
+use std::marker::PhantomData;
 
 /// An object representing a Mojo message that can be (or has been) sent through
-/// a pipe. This type is not thread-safe, and must be used from a single thread
-/// at a time.
+/// a pipe. This can be determined based on which State the MojoMessage is at.
+/// This type is not thread-safe, and must be used from a single thread at a
+/// time.
 ///
 /// Logically, the message has two components: a payload composed of raw bytes,
 /// and zero or more untyped mojo handles which are sent alongside the payload.
 /// These components can be accessed and manipulated using the message's
-/// methods.
+/// methods under specific States, as defined below.
 ///
-/// TODO(crbug.com/493265340): Messages have various conditions which determine
-/// which operations are permitted. We can probably encapsulate this using a
-/// typestate pattern. More research on the possible states is needed, but it
-/// would probably look something like `WriteableMessage` -> `SendableMessage`
-/// -> <pipe> -> `FullyReadableMessage` -> `BytesOnlyReadableMessage`.
-///
-/// But, y'know, with better names.
-pub struct RawMojoMessage {
+/// State definitions ---
+/// Type aliases for the different States of a MojoMessage. The order in which
+/// these types appear is the order in which the MojoMessage transitions between
+/// States.
+pub struct Writable;
+pub type WritableMessage = MojoMessage<Writable>;
+pub struct Sendable;
+pub type SendableMessage = MojoMessage<Sendable>;
+pub struct FullyReadableWithHandles;
+pub type FullyReadableWithHandlesMessage = MojoMessage<FullyReadableWithHandles>;
+pub struct ReadableBytesOnly;
+pub type ReadableBytesOnlyMessage = MojoMessage<ReadableBytesOnly>;
+
+/// All MojoMessage with different States are represented by this struct.
+pub struct MojoMessage<State> {
     pub(crate) message_handle: MessageHandle,
+    // PhantomData is used to associate this struct with a type `State` that
+    // tracks the message's State (Writable, Sendable, etc.). This allows the
+    // compiler to enforce invariants about the message's State.
+    _phantom: PhantomData<State>,
 }
 
-impl From<MessageHandle> for RawMojoMessage {
+/// We assume the caller knows what State the handle belongs in (e.g., when
+/// pulling from a pipe, it's FullyReadable).
+impl<State> From<MessageHandle> for MojoMessage<State> {
     fn from(message_handle: MessageHandle) -> Self {
-        Self { message_handle }
+        Self { message_handle, _phantom: PhantomData }
     }
 }
 
-impl From<RawMojoMessage> for MessageHandle {
-    fn from(message: RawMojoMessage) -> Self {
+/// We can always extract the inner handle regardless of the State
+impl<State> From<MojoMessage<State>> for MessageHandle {
+    fn from(message: MojoMessage<State>) -> Self {
         message.message_handle
     }
 }
 
-impl Default for RawMojoMessage {
+/// Default can specifically mean a new Writable message, as it's the first
+/// State of the MojoMessage.
+impl Default for WritableMessage {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl RawMojoMessage {
-    /// Construct an empty RawMojoMessage
+/// Writable State implementation, the first State.
+impl WritableMessage {
+    /// Construct an empty MojoMessage, in a Writable State.
     pub fn new() -> Self {
         message::MojoCreateMessage(message::CreateMessageFlags::empty()).into()
     }
@@ -121,32 +140,48 @@ impl RawMojoMessage {
         self.append_data(&[], handles).map(|_| ())
     }
 
-    /// Retrieve the payload, if present, and attached handles from this message
-    /// object.
+    /// Mark the message as ready to be sent.
+    ///
+    /// STATE TRANSITION: Consumes `self` (Writable) and returns `Sendable`
+    pub fn finalize_for_sending(mut self) -> MojoMessage<Sendable> {
+        let ret = message::MojoAppendMessageData(
+            &mut self.message_handle,
+            message::AppendMessageDataFlags::COMMIT_SIZE,
+            &[],
+            vec![],
+        );
+        debug_assert!(ret.is_ok());
+
+        // Return a new MojoMessage with the Sendable State
+        MojoMessage { message_handle: self.message_handle, _phantom: PhantomData }
+    }
+}
+
+/// Sendable implementation, the second State of `MojoMessage`.
+/// Sendable messages should have no methods. They are to be consumed by the
+/// Mojo message pipe when writing to a message pipe endpoint.
+impl SendableMessage {}
+
+impl FullyReadableWithHandlesMessage {
+    /// Retrieve the attached handles from this message object.
     ///
     /// Because this function transfers ownership of the handles to the caller,
-    /// it may only be called *once* per message object. Any further calls will
-    /// return `Err(NotFound)`, unless the message never had any handles
-    /// attached in the first place.
-    ///
-    /// If you need to read only the payload, use `read_bytes` instead,
-    /// which does not have this restriction and does not prevent `read_data`
-    /// function from being called later.
+    /// it consumes the message and returns a `ReadableBytesOnlyMessage` from
+    /// which no further handles can be read.
     ///
     /// # Possible Error Codes
     /// - `FailedPrecondition`: If the message was not received from elsewhere
     ///   via a message pipe.
-    /// - `NotFound`: If this function has already been called on `self`.
-    /// - `Aborted`: if the message is in an unrecoverable state.
-    pub fn read_data(&self) -> MojoResult<(&[u8], Vec<UntypedHandle>)> {
+    /// - `Aborted`: if the message is in an unrecoverable State.
+    pub fn read_data(self) -> MojoResult<(Vec<UntypedHandle>, ReadableBytesOnlyMessage)> {
         // First, query the message to see how many handles are attached.
         let num_handles = match message::MojoGetMessageData(
             &self.message_handle,
             Some(Vec::new().spare_capacity_mut()),
         ) {
             // If the call succeeded, then no handles were attached, and we're done!
-            message::GetMessageDataStatus::Success { bytes, .. } => {
-                return Ok((bytes, vec![]));
+            message::GetMessageDataStatus::Success { .. } => {
+                return Ok((vec![], self.into_readablebytesonlymessage()));
             }
             message::GetMessageDataStatus::NotEnoughCapacity { num_handles_attached } => {
                 num_handles_attached
@@ -162,12 +197,12 @@ impl RawMojoMessage {
 
         match message::MojoGetMessageData(&self.message_handle, Some(handles.spare_capacity_mut()))
         {
-            // If the call succeeded, then no handles were attached, and we're done!
-            message::GetMessageDataStatus::Success { bytes, num_handles_written } => {
+            // If the call succeeded, then we successfully read the attached handles!
+            message::GetMessageDataStatus::Success { num_handles_written, .. } => {
                 // SAFETY: `MojoGetMessageData` guarantees that the first `num_handles_written`
                 // elements of `handles` are now initialized.
                 unsafe { handles.set_len(num_handles_written) };
-                return Ok((bytes, handles));
+                return Ok((handles, self.into_readablebytesonlymessage()));
             }
             message::GetMessageDataStatus::NotEnoughCapacity { .. } => {
                 // We just allocated enough capacity
@@ -179,6 +214,12 @@ impl RawMojoMessage {
         };
     }
 
+    /// Helper to transition the State to `ReadableBytesOnlyMessage`. Called by
+    /// read_data` after the handles have been read.
+    fn into_readablebytesonlymessage(self) -> ReadableBytesOnlyMessage {
+        MojoMessage { message_handle: self.message_handle, _phantom: PhantomData }
+    }
+
     /// Read just the bytes of this message's payload, ignoring any attached
     /// handles.
     ///
@@ -187,7 +228,7 @@ impl RawMojoMessage {
     /// # Possible Error Codes
     /// - `FailedPrecondition`: If the message was not received from elsewhere
     ///   via a message pipe.
-    /// - `Aborted`: if the message is in an unrecoverable state.
+    /// - `Aborted`: if the message is in an unrecoverable State.
     pub fn read_bytes(&self) -> MojoResult<&[u8]> {
         match message::MojoGetMessageData(&self.message_handle, None) {
             // If the call succeeded, then no handles were attached, and we're done!
@@ -204,17 +245,6 @@ impl RawMojoMessage {
         };
     }
 
-    /// Mark the message as ready to be sent.
-    pub fn finalize_for_sending(&mut self) {
-        let ret = message::MojoAppendMessageData(
-            &mut self.message_handle,
-            message::AppendMessageDataFlags::COMMIT_SIZE,
-            &[],
-            vec![],
-        );
-        debug_assert!(ret.is_ok());
-    }
-
     /// Tell the underlying mojo system that this message was malformed, which
     /// will trigger the error handler which was set up during mojo
     /// initialization. Typically this will result in the process that
@@ -229,6 +259,34 @@ impl RawMojoMessage {
     pub fn report_bad_message(&mut self, error_msg: &str) -> Result<(), BadMessageError> {
         // Ignore the MojoError; this can only fail if the message_handle is invalid,
         // and we guarantee that it's valid as part of this type.
+        // SAFETY: We guarantee that our contained handle is alive.
+        message::MojoNotifyBadMessage(&mut self.message_handle, error_msg);
+        Err(BadMessageError)
+    }
+}
+
+impl ReadableBytesOnlyMessage {
+    /// Read just the bytes of this message's payload, ignoring any attached
+    /// handles. This function can be called multiple times.
+    pub fn read_bytes(&self) -> MojoResult<&[u8]> {
+        match message::MojoGetMessageData(&self.message_handle, None) {
+            message::GetMessageDataStatus::Success { bytes, .. } => {
+                return Ok(bytes);
+            }
+            message::GetMessageDataStatus::NotEnoughCapacity { .. } => {
+                unreachable!()
+            }
+            message::GetMessageDataStatus::Error(err) => {
+                return Err(err);
+            }
+        };
+    }
+
+    /// Similar to `FullyReadableWithHandlesMessage::report_bad_message`. We
+    /// should generally discontinue using a known-bad message as soon as we
+    /// detect that it's bad. The `BadMessageError` return type is intended to
+    /// make it harder to forget to do so.
+    pub fn report_bad_message(&mut self, error_msg: &str) -> Result<(), BadMessageError> {
         // SAFETY: We guarantee that our contained handle is alive.
         message::MojoNotifyBadMessage(&mut self.message_handle, error_msg);
         Err(BadMessageError)

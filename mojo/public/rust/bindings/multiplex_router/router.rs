@@ -258,7 +258,11 @@ impl MultiplexRouter {
         // a disconnected ID will be ignored on the other side.
         if self.shared_state.lock().unwrap().registry.endpoint_map.contains_key(&interface_id) {
             msg.header.interface_id = interface_id;
-            self.endpoint_watcher.with(|watcher| watcher.send_message(msg.into()));
+            self.endpoint_watcher.with(|watcher| {
+                watcher.send_message(
+                    system::message::WritableMessage::from(msg).finalize_for_sending(),
+                )
+            });
         }
     }
 
@@ -287,7 +291,9 @@ impl MultiplexRouter {
             self.endpoint_watcher.with(|watcher| {
                 // The send can only fail if the entire other side is closed,
                 // in which case we don't need to tell it anything.
-                let _ = watcher.send_message(msg.into());
+                let _ = watcher.send_message(
+                    system::message::WritableMessage::from(msg).finalize_for_sending(),
+                );
             });
 
             self.schedule_all_possible_tasks();
@@ -301,7 +307,7 @@ impl MultiplexRouter {
     /// run whenever there's an incoming message.
     fn incoming_message_handler(
         &self,
-        raw_message: system::message::RawMojoMessage,
+        raw_message: system::message::FullyReadableWithHandlesMessage,
         _sender: ResponseSender,
     ) {
         let Some(message) = MojomMessage::parse_raw_or_report_bad_message(raw_message) else {

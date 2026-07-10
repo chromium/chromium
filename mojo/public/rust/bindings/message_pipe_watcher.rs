@@ -12,7 +12,7 @@ chromium::import! {
 }
 
 use sequenced_task_runner::SequencedTaskRunnerHandle;
-use system::message::RawMojoMessage;
+use system::message::{FullyReadableWithHandlesMessage, SendableMessage};
 use system::message_pipe::MessageEndpoint;
 use system::mojo_types::MojoResult;
 use system::trap::{ArmResult, HandleSignals, Trap, TrapError, TrapEvent, TriggerCondition};
@@ -75,7 +75,7 @@ impl ResponseSender {
     ///
     /// Returns true iff the message was successfully sent. This can only fail
     /// if one or both sides of the pipe have been closed.
-    pub fn try_send_response(&self, msg: RawMojoMessage) -> bool {
+    pub fn try_send_response(&self, msg: SendableMessage) -> bool {
         if let Some(state) = self.state_weak.upgrade() {
             return state.endpoint.write(msg).is_ok();
         }
@@ -94,12 +94,12 @@ impl ResponseSender {
 /// 2. A (weak) reference to the endpoint in question, so the handler can send a
 ///    response if it wishes.
 pub trait MessagePipeWatcherHandler:
-    FnMut(RawMojoMessage, ResponseSender) + Send + 'static
+    FnMut(FullyReadableWithHandlesMessage, ResponseSender) + Send + 'static
 {
 }
 
 impl<T> MessagePipeWatcherHandler for T where
-    T: FnMut(RawMojoMessage, ResponseSender) + Send + 'static
+    T: FnMut(FullyReadableWithHandlesMessage, ResponseSender) + Send + 'static
 {
 }
 
@@ -222,7 +222,7 @@ impl MessagePipeWatcher {
     ///
     /// # Possible Error Codes:
     /// - `FailedPrecondition`: If the other end of the message pipe is closed.
-    pub fn send_message(&self, msg: RawMojoMessage) -> MojoResult<()> {
+    pub fn send_message(&self, msg: SendableMessage) -> MojoResult<()> {
         self.shared_state.endpoint.write(msg)
     }
 

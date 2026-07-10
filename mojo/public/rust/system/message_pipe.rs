@@ -6,7 +6,7 @@ chromium::import! {
   "//mojo/public/rust/c_mojo_api" as mojo_ffi;
 }
 
-use crate::message::RawMojoMessage;
+use crate::message::{FullyReadableWithHandlesMessage, SendableMessage};
 use crate::mojo_types::declare_trappable_typed_handle;
 use mojo_ffi::message_pipe;
 use mojo_ffi::MojoResult;
@@ -30,7 +30,7 @@ impl MessageEndpoint {
     ///   still open.
     /// - `FailedPrecondition`: If there's no message and the other end of the
     ///   pipe is closed.
-    pub fn read(&self) -> MojoResult<RawMojoMessage> {
+    pub fn read(&self) -> MojoResult<FullyReadableWithHandlesMessage> {
         message_pipe::MojoReadMessage(&self.handle).map(|handle| handle.into())
     }
 
@@ -38,8 +38,7 @@ impl MessageEndpoint {
     ///
     /// # Possible Error Codes:
     /// - `FailedPrecondition`: If the other end of the message pipe is closed.
-    pub fn write(&self, mut msg: RawMojoMessage) -> MojoResult<()> {
-        msg.finalize_for_sending();
-        message_pipe::MojoWriteMessage(&self.handle, msg.message_handle)
+    pub fn write(&self, msg: SendableMessage) -> MojoResult<()> {
+        message_pipe::MojoWriteMessage(&self.handle, msg.into())
     }
 }
