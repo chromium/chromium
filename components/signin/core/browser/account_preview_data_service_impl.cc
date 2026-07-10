@@ -8,6 +8,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
@@ -16,6 +17,7 @@
 #include "components/signin/core/browser/account_preview_metrics_recorder.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -225,6 +227,9 @@ void AccountPreviewDataServiceImpl::StartFetch(const GaiaId& gaia_id) {
 
 AccountPreviewDataService::AccountPreviewPreference
 AccountPreviewDataServiceImpl::ComputePreferredAccount() const {
+  CHECK(base::FeatureList::IsEnabled(
+      switches::kEnableAccountPreviewPreferredAccount));
+
   // TODO(crbug.com/530144650): Implement heuristic to compute the preferred
   // account and preferred data types.
   return AccountPreviewPreference();
@@ -234,7 +239,10 @@ void AccountPreviewDataServiceImpl::OnAllFetchesCompleted(
     bool should_reset_periodic_timer) {
   all_accounts_fetched_barrier_.Reset();
 
-  WritePreviewPreferenceToPrefs(ComputePreferredAccount());
+  if (base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewPreferredAccount)) {
+    WritePreviewPreferenceToPrefs(ComputePreferredAccount());
+  }
 
   if (should_reset_periodic_timer) {
     ResetTimer();

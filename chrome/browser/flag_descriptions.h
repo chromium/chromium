@@ -1794,6 +1794,21 @@ inline constexpr char kImageDescriptionsAlternateRoutingDescription[] =
     "When adding automatic captions to images, use a different route to "
     "acquire descriptions.";
 
+inline constexpr char kEnableAccountPreviewDataName[] =
+    "Enable Account Preview Data";
+inline constexpr char kEnableAccountPreviewDataDescription[] =
+    "Enables fetching and storing account preview data for signed-in accounts.";
+
+inline constexpr char kEnableAccountPreviewEntityPreviewsName[] =
+    "Enable Account Preview Entity Previews";
+inline constexpr char kEnableAccountPreviewEntityPreviewsDescription[] =
+    "Enables fetching and storing entity preview data for signed-in accounts.";
+
+inline constexpr char kEnableAccountPreviewPreferredAccountName[] =
+    "Enable Account Preview Preferred Account";
+inline constexpr char kEnableAccountPreviewPreferredAccountDescription[] =
+    "Controls whether computing and storing the preferred account is enabled.";
+
 inline constexpr char kEnableClientCertificateProvisioningOnAndroidName[] =
     "Enable client certificate provisioning on Android";
 inline constexpr char

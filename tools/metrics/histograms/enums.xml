@@ -7983,6 +7983,7 @@ from previous Chrome versions.
   <int value="-2104950596" label="HandwritingGesture:enabled"/>
   <int value="-2104757592"
       label="OmniboxUseExistingAutocompleteClient:enabled"/>
+  <int value="-2104746066" label="EnableAccountPreviewEntityPreviews:enabled"/>
   <int value="-2104240590" label="TimeOfDayDlc:disabled"/>
   <int value="-2103692632" label="EnhancedNetworkVoices:disabled"/>
   <int value="-2102286055" label="WebViewVulkanIntermediateBuffer:disabled"/>
@@ -8425,6 +8426,8 @@ from previous Chrome versions.
   <int value="-1973722176" label="VoiceSearchOnLocalNtp:enabled"/>
   <int value="-1973559591" label="AppDiscoveryForOobe:enabled"/>
   <int value="-1973106081" label="JupiterScreensaver:disabled"/>
+  <int value="-1972935791"
+      label="enable-account-preview-entity-previews:disabled"/>
   <int value="-1972383451" label="disable-pinch"/>
   <int value="-1972312724" label="OfflinePagesLoadSignalCollecting:enabled"/>
   <int value="-1972219399" label="NTPSaveToOffline:enabled"/>
@@ -8548,6 +8551,7 @@ from previous Chrome versions.
   <int value="-1935055754" label="WebShare:enabled"/>
   <int value="-1934661084" label="ForceUnifiedConsentBump:disabled"/>
   <int value="-1934298758" label="MacCatapSystemAudioLoopbackCapture:enabled"/>
+  <int value="-1934260888" label="enable-account-preview-data:enabled"/>
   <int value="-1933425042" label="OfflinePreviews:enabled"/>
   <int value="-1933262156" label="PwaRestoreUiAtStartup:enabled"/>
   <int value="-1932609987" label="CSSBackdropFilter:disabled"/>
@@ -9485,6 +9489,8 @@ from previous Chrome versions.
   <int value="-1627961164"
       label="PressAndHoldEscToExitBrowserFullscreen:disabled"/>
   <int value="-1627943653" label="BiometricAuthenticationForFilling:enabled"/>
+  <int value="-1627807244"
+      label="enable-account-preview-entity-previews:enabled"/>
   <int value="-1626355048" label="ExtensionManifestV2Disabled:disabled"/>
   <int value="-1626110605" label="WebBundles:disabled"/>
   <int value="-1625881240" label="FullscreenExitUI:disabled"/>
@@ -11101,6 +11107,8 @@ from previous Chrome versions.
   <int value="-1125840399" label="ViewsBrowserWindows:enabled"/>
   <int value="-1125133283" label="disable-threaded-scrolling"/>
   <int value="-1124684239" label="LensEnableImageTranslate:enabled"/>
+  <int value="-1124462463"
+      label="EnableAccountPreviewPreferredAccount:enabled"/>
   <int value="-1124173285" label="kAccessibilityMagnifierFollowsSts:enabled"/>
   <int value="-1124129866" label="FedCmSkipWellKnownForSameSite:enabled"/>
   <int value="-1123824206" label="ArcS2Idle:enabled"/>
@@ -11817,6 +11825,8 @@ from previous Chrome versions.
   <int value="-892428689" label="ManualPasswordGenerationAndroid:enabled"/>
   <int value="-892297699" label="EditContext:enabled"/>
   <int value="-891856063" label="MidiManagerAndroid:enabled"/>
+  <int value="-891163701"
+      label="enable-account-preview-preferred-account:disabled"/>
   <int value="-890843885" label="ComposeboxDriveContextMenuOption:disabled"/>
   <int value="-889670978" label="AssistantRoutines:disabled"/>
   <int value="-889192283" label="WebUIOmniboxFullPopupV2:disabled"/>
@@ -13548,6 +13558,7 @@ from previous Chrome versions.
   <int value="-335331552" label="TabGroupsForTablets:disabled"/>
   <int value="-334873793" label="MediaSessionNotification:enabled"/>
   <int value="-334654963" label="JupiterScreensaver:enabled"/>
+  <int value="-332313804" label="enable-account-preview-data:disabled"/>
   <int value="-332018524" label="ContextualTasksContextLibrary:enabled"/>
   <int value="-332010491" label="RetailCoupons:enabled"/>
   <int value="-331952590" label="OmniboxTriggerForPrerender2:enabled"/>
@@ -14285,6 +14296,7 @@ from previous Chrome versions.
   <int value="-99433146" label="LacrosLaunchAtLoginScreen:enabled"/>
   <int value="-99310969"
       label="DeviceBoundSessionAccessObserverSharedRemote:disabled"/>
+  <int value="-98451548" label="EnableAccountPreviewPreferredAccount:disabled"/>
   <int value="-97599565" label="WebViewNewInvalidateHeuristic:disabled"/>
   <int value="-97511671" label="AnimatedImageDragShadow:disabled"/>
   <int value="-97145978" label="DesktopPWAsStayInWindow:enabled"/>
@@ -16278,6 +16290,8 @@ from previous Chrome versions.
   <int value="547884840"
       label="AutofillEnableCardInfoRuntimeRetrieval:disabled"/>
   <int value="548028412" label="AutofillEnableVcn3dsAuthentication:enabled"/>
+  <int value="548371012"
+      label="enable-account-preview-preferred-account:enabled"/>
   <int value="548503129" label="ImpulseScrollAnimations:enabled"/>
   <int value="548613700" label="CSSTextBoxTrim:enabled"/>
   <int value="548618823" label="SyncAndroidPromosWithSingleButton:enabled"/>
@@ -18219,6 +18233,7 @@ from previous Chrome versions.
   <int value="1177174300" label="LayoutNGTable:disabled"/>
   <int value="1177628103" label="GaiaActionButtons:disabled"/>
   <int value="1177821222" label="CCTNavigationInfoScreenshot:enabled"/>
+  <int value="1178566071" label="EnableAccountPreviewData:enabled"/>
   <int value="1178640449" label="ProductivityLauncher:disabled"/>
   <int value="1179013979"
       label="OmniboxUIExperimentMaxAutocompleteMatches:enabled"/>
@@ -20827,6 +20842,7 @@ from previous Chrome versions.
   <int value="1989739884" label="CustomizeChromeWallpaperSearch:enabled"/>
   <int value="1989877247" label="ToolbarGlicButtonResizing:enabled"/>
   <int value="1989877708" label="PostScriptPrinting:enabled"/>
+  <int value="1990368474" label="EnableAccountPreviewEntityPreviews:disabled"/>
   <int value="1990468492" label="AndroidWindowOcclusion:disabled"/>
   <int value="1990528959" label="SchemefulSameSite:disabled"/>
   <int value="1990562608"
@@ -20978,6 +20994,7 @@ from previous Chrome versions.
   <int value="2037562553" label="OmniboxBubbleUrlSuggestions:disabled"/>
   <int value="2037623368" label="attribution-reporting-debug-mode"/>
   <int value="2037756154" label="enable-impl-side-painting"/>
+  <int value="2037763822" label="EnableAccountPreviewData:disabled"/>
   <int value="2037825045" label="DisableAutofillStrikeSystem:enabled"/>
   <int value="2038036881" label="NewShortcutMapping:enabled"/>
   <int value="2039276757" label="EnableOverviewRoundedCorners:enabled"/>

@@ -13401,11 +13401,27 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kTextHighlightFullLink)},
 #endif
 #if BUILDFLAG(IS_ANDROID)
-    {"cct-tab-resumption",
-     flag_descriptions::kCctTabResumptionName,
+    {"cct-tab-resumption", flag_descriptions::kCctTabResumptionName,
      flag_descriptions::kCctTabResumptionDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCctTabResumption)},
 #endif
+
+    {"enable-account-preview-data",
+     flag_descriptions::kEnableAccountPreviewDataName,
+     flag_descriptions::kEnableAccountPreviewDataDescription, kOsAll,
+     FEATURE_VALUE_TYPE(switches::kEnableAccountPreviewData)},
+
+    {"enable-account-preview-entity-previews",
+     flag_descriptions::kEnableAccountPreviewEntityPreviewsName,
+     flag_descriptions::kEnableAccountPreviewEntityPreviewsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(switches::kEnableAccountPreviewEntityPreviews)},
+
+    {"enable-account-preview-preferred-account",
+     flag_descriptions::kEnableAccountPreviewPreferredAccountName,
+     flag_descriptions::kEnableAccountPreviewPreferredAccountDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(switches::kEnableAccountPreviewPreferredAccount)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

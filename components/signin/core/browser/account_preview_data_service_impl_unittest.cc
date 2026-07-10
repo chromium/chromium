@@ -75,7 +75,8 @@ class AccountPreviewDataServiceTest : public testing::Test {
       : identity_test_env_(&test_url_loader_factory_) {
     feature_list_.InitWithFeatures(
         {switches::kEnableAccountPreviewData,
-         switches::kEnableAccountPreviewEntityPreviews},
+         switches::kEnableAccountPreviewEntityPreviews,
+         switches::kEnableAccountPreviewPreferredAccount},
         {});
   }
 
@@ -686,6 +687,37 @@ TEST_F(AccountPreviewDataServiceTest,
   EXPECT_FALSE(service_->GetAccountPreviewData(account2.gaia).has_value());
   EXPECT_FALSE(service_->HasActiveFetcherForTesting(account1.gaia));
   EXPECT_FALSE(service_->GetAccountPreviewData(account1.gaia).has_value());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       DoesNotComputePreferredAccountWhenFeatureDisabled) {
+  // Disable preferred account computation feature flag.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kEnableAccountPreviewPreferredAccount);
+
+  // Force write a fake GAIA ID in prefs that is not present in signed-in
+  // accounts.
+  const GaiaId kFakeGaiaId("fake_preferred_gaia_id");
+  base::DictValue dict;
+  dict.Set("gaia_id", kFakeGaiaId.ToString());
+  prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
+
+  // Sign in and trigger fetch with a different account.
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  base::RunLoop run_loop;
+  service_->SetAllDataAvailableCallbackForTesting(run_loop.QuitClosure());
+  service_->OnRefreshTokenUpdatedForAccount(account);
+  run_loop.Run();
+
+  // Verify that the preferred account in prefs was NOT overwritten or
+  // recomputed by OnAllFetchesCompleted() because the feature flag is disabled.
+  AccountPreviewDataService::AccountPreviewPreference preference =
+      service_->GetPreferredAccountForPromo();
+  EXPECT_EQ(kFakeGaiaId, preference.gaia_id);
 }
 
 }  // namespace signin

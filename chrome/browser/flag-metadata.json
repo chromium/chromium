@@ -3026,6 +3026,21 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-account-preview-data",
+    "owners": [ "rsult@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "enable-account-preview-entity-previews",
+    "owners": [ "rsult@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "enable-account-preview-preferred-account",
+    "owners": [ "rsult@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-activityless-signin-all-entry-point",
     "owners": [ "agonch@google.com", "chrome-signin-mobile-team@google.com" ],
     "expiry_milestone": 152
