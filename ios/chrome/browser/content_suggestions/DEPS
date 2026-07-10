@@ -22,6 +22,8 @@ include_rules = [
   "+ios/chrome/browser/instructions_bottom_sheet/ui",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
   "+ios/chrome/browser/lens/ui_bundled",
+  "+ios/chrome/browser/level_up/model",
+  "+ios/chrome/browser/level_up/ui",
   "+ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h",
   "+ios/chrome/browser/menu/ui_bundled",
   "+ios/chrome/browser/metrics/model/new_tab_page_uma.h",

@@ -69,6 +69,7 @@ source_set("cells") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/app_bundle_promo/ui",
     "//ios/chrome/browser/content_suggestions/default_browser/ui",
+    "//ios/chrome/browser/content_suggestions/level_up/ui",
     "//ios/chrome/browser/content_suggestions/magic_stack/public:constants",
     "//ios/chrome/browser/content_suggestions/magic_stack/public:utils",
     "//ios/chrome/browser/content_suggestions/price_tracking_promo/ui",

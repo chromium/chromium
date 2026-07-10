@@ -23,6 +23,7 @@ class AppStoreBundleService;
 class AuthenticationService;
 @class ContentSuggestionsMetricsRecorder;
 enum class ContentSuggestionsModuleType;
+class LevelUpService;
 @protocol HomeStartDataSource;
 @class MagicStackModule;
 @protocol MagicStackRankingModelDelegate;
@@ -57,6 +58,7 @@ class TipsManagerIOS;
              templateURLService:(TemplateURLService*)templateURLService
           appStoreBundleService:(AppStoreBundleService*)appStoreBundleService
                   bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+                 levelUpService:(LevelUpService*)levelUpService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

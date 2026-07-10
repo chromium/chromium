@@ -417,6 +417,8 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kAppBundlePromo:
     case ContentSuggestionsModuleType::kDefaultBrowser:
       return l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TITLE);
+    case ContentSuggestionsModuleType::kLevelUp:
+      return l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_LEVEL_UP);
     default:
       NOTREACHED();
   }

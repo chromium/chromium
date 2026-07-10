@@ -11,6 +11,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/values.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/commerce/core/commerce_feature_list.h"
@@ -46,6 +47,7 @@
 #import "ios/chrome/browser/content_suggestions/app_bundle_promo/ui/app_bundle_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/default_browser/coordinator/default_browser_mediator.h"
 #import "ios/chrome/browser/content_suggestions/default_browser/ui/default_browser_config.h"
+#import "ios/chrome/browser/content_suggestions/level_up/ui/level_up_config.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/coordinator/magic_stack_ranking_model_delegate.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_utils.h"
 #import "ios/chrome/browser/content_suggestions/model/content_suggestions_metrics_constants.h"
@@ -83,6 +85,7 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
+#import "ios/chrome/browser/level_up/model/level_up_service.h"
 #import "ios/chrome/browser/ntp/ui_bundled/home_start_data_source.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
@@ -92,7 +95,9 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util.h"
 
 using segmentation_platform::TipIdentifier;
 using segmentation_platform::TipIdentifierForOutputLabel;
@@ -149,6 +154,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   ContentSuggestionsModuleType _ephemeralCardToShow;
   raw_ptr<TemplateURLService, DanglingUntriaged> _templateURLService;
   raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> _bookmarkModel;
+  raw_ptr<LevelUpService, DanglingUntriaged> _levelUpService;
 }
 
 - (instancetype)
@@ -162,7 +168,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                     tipsManager:(TipsManagerIOS*)tipsManager
              templateURLService:(TemplateURLService*)templateURLService
           appStoreBundleService:(AppStoreBundleService*)appStoreBundleService
-                  bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel {
+                  bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+                 levelUpService:(LevelUpService*)levelUpService {
   self = [super init];
   if (self) {
     _segmentationService = segmentationService;
@@ -175,6 +182,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     _templateURLService = templateURLService;
     _bookmarkModel = bookmarkModel;
     _tipsManager = tipsManager;
+    _levelUpService = levelUpService;
 
     for (id mediator in moduleMediators) {
       if ([mediator isKindOfClass:[MostVisitedTilesMediator class]]) {
@@ -508,6 +516,11 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   [order addObject:@(int(ContentSuggestionsModuleType::kSafetyCheck))];
 }
 
+// Adds the Level Up module to `order` based on the current Level Up state.
+- (void)addLevelUpToMagicStackOrder:(NSMutableArray*)order {
+  [order addObject:@(int(ContentSuggestionsModuleType::kLevelUp))];
+}
+
 // Starts a fetch of the ephemeral card to show from Segmentation.
 - (void)fetchEphemeralCardFromSegmentationPlatform {
   segmentation_platform::PredictionOptions options;
@@ -525,13 +538,13 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       segmentation_platform::processing::ProcessedValue::FromFloat(
           _shoppingService->IsShoppingListEligible()));
 
-    inputContext->metadata_args.emplace(
-        segmentation_platform::kSendTabInfobarReceivedInLastSession,
-        segmentation_platform::processing::ProcessedValue::FromFloat(
-            !_prefService
-                 ->GetString(send_tab_to_self::prefs::
-                                 kIOSSendTabToSelfLastReceivedTabURLPref)
-                 .empty()));
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kSendTabInfobarReceivedInLastSession,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          !_prefService
+               ->GetString(send_tab_to_self::prefs::
+                               kIOSSendTabToSelfLastReceivedTabURLPref)
+               .empty()));
 
   if (_tipsManager) {
     // Profile signals
@@ -685,9 +698,9 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         break;
       }
     } else if (label == segmentation_platform::kSendTabNotificationPromo) {
-        _ephemeralCardToShow = ContentSuggestionsModuleType::kSendTabPromo;
-        card = _sendTabPromoMediator.sendTabPromoConfigToShow;
-        break;
+      _ephemeralCardToShow = ContentSuggestionsModuleType::kSendTabPromo;
+      card = _sendTabPromoMediator.sendTabPromoConfigToShow;
+      break;
     } else if (label == segmentation_platform::kAppBundlePromoEphemeralModule &&
                areTipsCardsEnabled) {
       _ephemeralCardToShow = ContentSuggestionsModuleType::kAppBundlePromo;
@@ -864,7 +877,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     return;
   }
 
-
   NSMutableArray* magicStackOrder = [NSMutableArray array];
   for (const std::string& label : result.ordered_labels) {
     if (label == segmentation_platform::kMostVisitedTiles) {
@@ -884,6 +896,9 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     } else if (label == segmentation_platform::kShopCard) {
       [magicStackOrder
           addObject:@(int(ContentSuggestionsModuleType::kShopCard))];
+    } else if (label == segmentation_platform::kLevelUp) {
+      [magicStackOrder
+          addObject:@(int(ContentSuggestionsModuleType::kLevelUp))];
     }
   }
 
@@ -938,6 +953,15 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
           [magicStackOrder addObject:_defaultBrowserMediator.config];
         }
         break;
+      case ContentSuggestionsModuleType::kLevelUp: {
+        if (IsLevelUpEnabled()) {
+          LevelUpConfig* config = [self createLevelUpConfig];
+          if (config) {
+            [magicStackOrder addObject:config];
+          }
+        }
+        break;
+      }
       default:
         break;
     }
@@ -997,6 +1021,15 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
           [magicStackOrder addObject:_shopCardMediator.shopCardItemToShow];
         }
         break;
+      case ContentSuggestionsModuleType::kLevelUp: {
+        if (IsLevelUpEnabled()) {
+          LevelUpConfig* config = [self createLevelUpConfig];
+          if (config) {
+            [magicStackOrder addObject:config];
+          }
+        }
+        break;
+      }
       default:
         // These module types should not have been added by the logic
         // receiving the order list from Segmentation.
@@ -1041,6 +1074,116 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
   return lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
       LensEntrypoint::NewTabPage, isGoogleDefaultSearchProvider);
+}
+
+// Returns YES if all tasks in `category` are completed.
+- (BOOL)isCategoryCompleted:(LevelUpTaskCategory)category {
+  if (!_levelUpService) {
+    return YES;
+  }
+  for (const auto& [type, taskInfo] : _levelUpService->GetTasks()) {
+    if (taskInfo->GetCategory() == category &&
+        !_levelUpService->IsTaskCompleted(type)) {
+      return NO;
+    }
+  }
+  return YES;
+}
+
+// Returns the category for the Level Up card based on the latest completed
+// task.
+- (std::optional<LevelUpTaskCategory>)levelUpCategory {
+  const base::ListValue& completedTasks =
+      _prefService->GetList(prefs::kLevelUpCompletedTasks);
+  if (!completedTasks.empty()) {
+    std::string latestTaskId = completedTasks.back().GetString();
+    for (const auto& [type, taskInfo] : _levelUpService->GetTasks()) {
+      if (TaskTypeToString(type) == latestTaskId) {
+        LevelUpTaskCategory latestCategory = taskInfo->GetCategory();
+        if (![self isCategoryCompleted:latestCategory]) {
+          return latestCategory;
+        }
+      }
+    }
+  }
+
+  // If the latest category was fully completed, find the first category with
+  // incomplete tasks.
+  std::vector<LevelUpTaskCategory> categories = {
+      LevelUpTaskCategory::kProductivity, LevelUpTaskCategory::kSearch,
+      LevelUpTaskCategory::kSafety};
+
+  for (LevelUpTaskCategory category : categories) {
+    if (![self isCategoryCompleted:category]) {
+      return category;
+    }
+  }
+
+  // If all categories are completed, return empty so the card won't
+  // be shown.
+  return std::nullopt;
+}
+
+// Returns the title for the given `category`.
+- (NSString*)titleForCategory:(LevelUpTaskCategory)category {
+  switch (category) {
+    case LevelUpTaskCategory::kProductivity:
+      // TODO(crbug.com/513244362): Add localization strings.
+      return @"";
+    case LevelUpTaskCategory::kSearch:
+      // TODO(crbug.com/513244362): Add localization strings.
+      return @"";
+    case LevelUpTaskCategory::kSafety:
+      // TODO(crbug.com/513244362): Add localization strings.
+      return @"";
+  }
+}
+
+// Returns the number of remaining tasks for the given `category`.
+- (int)remainingTasksForCategory:(LevelUpTaskCategory)category {
+  if (!_levelUpService) {
+    return 0;
+  }
+  int remaining = 0;
+  for (const auto& [type, taskInfo] : _levelUpService->GetTasks()) {
+    if (taskInfo->GetCategory() == category &&
+        !_levelUpService->IsTaskCompleted(type)) {
+      remaining++;
+    }
+  }
+  return remaining;
+}
+
+// Returns the total number of tasks for the given `category`.
+- (int)totalTasksForCategory:(LevelUpTaskCategory)category {
+  if (!_levelUpService) {
+    return 0;
+  }
+  int total = 0;
+  for (const auto& [type, taskInfo] : _levelUpService->GetTasks()) {
+    if (taskInfo->GetCategory() == category) {
+      total++;
+    }
+  }
+  return total;
+}
+
+// Returns the configured LevelUpConfig if incomplete tasks exist, or nil
+// otherwise.
+- (LevelUpConfig*)createLevelUpConfig {
+  std::optional<LevelUpTaskCategory> category = [self levelUpCategory];
+  if (!category) {
+    return nil;
+  }
+  LevelUpConfig* config = [[LevelUpConfig alloc] init];
+  config.titleText = [self titleForCategory:*category];
+  int remaining = [self remainingTasksForCategory:*category];
+  config.descriptionText = l10n_util::GetPluralNSStringF(
+      IDS_IOS_LEVEL_UP_TASKS_REMAINING, remaining);
+  int total = [self totalTasksForCategory:*category];
+  config.progressTotal = total;
+  config.progressCompleted = total - remaining;
+  return config;
 }
 
 #pragma mark - Testing category methods

@@ -104,6 +104,7 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
+#import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -528,7 +529,9 @@ using segmentation_platform::TipIdentifier;
             appStoreBundleService:AppStoreBundleServiceFactory::GetForProfile(
                                       self.profile)
                     bookmarkModel:ios::BookmarkModelFactory::GetForProfile(
-                                      profile)];
+                                      self.profile)
+                   levelUpService:LevelUpServiceFactory::GetForProfile(
+                                      self.profile)];
   _magicStackRankingModel.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
   self.contentSuggestionsMediator.magicStackRankingModel =
