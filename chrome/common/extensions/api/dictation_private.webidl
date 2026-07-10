@@ -25,12 +25,19 @@ dictionary DictationContext {
   DOMString editableContent;
 };
 
+dictionary StartStreamFlags {
+  // Starts the stream in "eval" mode, useful for recording inputs.
+  required boolean evalMode;
+};
+
 dictionary StartStreamDetails {
   // The unique identifier of the stream.
   required long streamId;
   // The context of the dictation session. May be omitted if context is passed
   // asynchronously in the ContextUpdate event instead.
   DictationContext context;
+  // Flags used to experimentally modify the behavior of the extension.
+  required StartStreamFlags flags;
 };
 
 callback OnStartStreamListener = undefined (StartStreamDetails details);

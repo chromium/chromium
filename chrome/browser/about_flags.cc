@@ -4801,6 +4801,13 @@ const FeatureEntry::FeatureVariation kGlassFrameVariations[] = {
     {"expand-on-hover 10% glass", kGlassFrameEoH90, nullptr},
     {"disable liquid glass effect", kDisableLiquidGlassEffect, nullptr}};
 
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kDictationEvalModeParam[] = {
+    {"eval_mode", "true"}};
+const FeatureEntry::FeatureVariation kDictationVariations[] = {
+    {"with evaluation mode", kDictationEvalModeParam, nullptr}};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -13391,8 +13398,10 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(IS_ANDROID)
     {"dictation", flag_descriptions::kDictationName,
      flag_descriptions::kDictationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(dictation::kDictation)},
-#endif
+     FEATURE_WITH_PARAMS_VALUE_TYPE(dictation::kDictation,
+                                    kDictationVariations,
+                                    "Dictation")},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
     {"ntp-vision", flag_descriptions::kNtpVisionName,

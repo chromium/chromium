@@ -59,6 +59,10 @@ class ExtensionApiTestStreamProvider : public dictation::StreamProvider {
     context.editable_content = "Existing content";
     details.context = std::move(context);
 
+    api::dictation_private::StartStreamFlags flags;
+    flags.eval_mode = dictation::kDictationEvalMode.Get();
+    details.flags = std::move(flags);
+
     base::ListValue event_args =
         api::dictation_private::OnStartStream::Create(details);
 
@@ -149,6 +153,19 @@ class DictationPrivateApiTest : public ExtensionApiTest {
       dictation::CreateEnablingFeatureList();
 };
 
+class DictationPrivateApiEvalModeTest : public DictationPrivateApiTest {
+ public:
+  DictationPrivateApiEvalModeTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        dictation::kDictation,
+        {{"use_component_extension", "false"}, {"eval_mode", "true"}});
+  }
+  ~DictationPrivateApiEvalModeTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(DictationPrivateApiTest, Basic) {
   ResultCatcher catcher;
   ExtensionTestMessageListener ready_listener("ready");
@@ -196,6 +213,42 @@ IN_PROC_BROWSER_TEST_F(DictationPrivateApiTest, Basic) {
             state_changes[0]);
   EXPECT_EQ(dictation::StreamProvider::StreamState::kComplete,
             state_changes[1]);
+}
+
+IN_PROC_BROWSER_TEST_F(DictationPrivateApiEvalModeTest, StartStreamFlags) {
+  // This must match the STREAM_ID_EXPECTING_EVAL_MODE const in the test
+  // extension.
+  constexpr int kStreamIdExpectingEvalMode = 456;
+
+  ResultCatcher catcher;
+  ExtensionTestMessageListener ready_listener("ready");
+  ready_listener.set_failure_message("failed");
+
+  base::FilePath extension_path =
+      test_data_dir_.AppendASCII("dictation_private/allowed");
+  const Extension* extension = LoadExtension(extension_path);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  dictation::DictationKeyedService* service =
+      dictation::DictationKeyedService::Get(profile());
+  ASSERT_TRUE(service);
+  dictation::DictationMultiplexer& multiplexer = service->multiplexer();
+
+  const dictation::DictationMultiplexer::StreamId test_stream_id(
+      kStreamIdExpectingEvalMode);
+  ExtensionApiTestStreamProvider test_stream_provider(
+      profile(), extension->id(), test_stream_id);
+  multiplexer.RegisterStreamProvider(test_stream_id, &test_stream_provider);
+
+  auto target = std::make_unique<dictation::Target>(
+      content::GlobalDOMNodeId{content::WeakDocumentPtr()});
+  test_stream_provider.BindToTargetAndConnect(std::move(target));
+
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  multiplexer.UnregisterStreamProvider(test_stream_id);
 }
 
 // Test that a non-allowlisted extension cannot access the API.

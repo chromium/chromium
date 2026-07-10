@@ -2,14 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This must match the kStreamIdExpectingEvalMode const in
+// dictation_private_apitest.cc
+const STREAM_ID_EXPECTING_EVAL_MODE = 456;
+
 if (chrome.dictationPrivate === undefined) {
   console.error('chrome.dictationPrivate is undefined');
   chrome.test.sendMessage('failed');
 } else {
   chrome.dictationPrivate.onStartStream.addListener(async (details) => {
-    const {streamId, context} = details;
+    const {streamId, context, flags} = details;
     const {annotatedPageContent, innerText, editableContent} = context;
-    chrome.test.assertEq(123, streamId);
+
+    chrome.test.assertTrue(flags !== undefined);
+    if (streamId === STREAM_ID_EXPECTING_EVAL_MODE) {
+      chrome.test.assertEq(true, flags.evalMode);
+    } else {
+      chrome.test.assertEq(false, flags.evalMode);
+    }
     chrome.test.assertTrue(annotatedPageContent instanceof ArrayBuffer);
     const view = new Uint8Array(annotatedPageContent);
     chrome.test.assertEq(3, view.length);

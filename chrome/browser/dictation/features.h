@@ -13,6 +13,10 @@ namespace dictation {
 // Enables the dictation feature.
 BASE_DECLARE_FEATURE(kDictation);
 
+// Runs dictation streams in "eval mode" which can be used to record inputs
+// usable for an eval.
+extern const base::FeatureParam<bool> kDictationEvalMode;
+
 // If true, uses the component extension for dictation. Can be set to false
 // which prevents installation of the component extension and relies on the user
 // or test installing a regular extension to handle communication via the

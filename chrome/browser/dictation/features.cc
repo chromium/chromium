@@ -10,6 +10,9 @@ namespace dictation {
 
 BASE_FEATURE(kDictation, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kDictationEvalMode{&kDictation, "eval_mode",
+                                                  false};
+
 const base::FeatureParam<bool> kUseComponentExtension{
     &kDictation, "use_component_extension", true};
 
