@@ -75,7 +75,6 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
       scoped_refptr<base::SequencedTaskRunner> video_task_runner,
       MediaStreamDescriptor* media_stream_descriptor,
       std::unique_ptr<WebVideoFrameSubmitter> submitter,
-      bool use_surface_layer,
       const base::WeakPtr<WebMediaPlayerMS>& player);
   ~WebMediaPlayerMSCompositor() override;
 

@@ -220,7 +220,6 @@ WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
     scoped_refptr<base::SequencedTaskRunner> video_task_runner,
     MediaStreamDescriptor* media_stream_descriptor,
     std::unique_ptr<WebVideoFrameSubmitter> submitter,
-    bool use_surface_layer,
     const base::WeakPtr<WebMediaPlayerMS>& player)
     : video_frame_compositor_task_runner_(video_frame_compositor_task_runner),
       video_task_runner_(video_task_runner),
@@ -235,18 +234,16 @@ WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
       stopped_(true),
       render_started_(!stopped_) {
   weak_this_ = weak_ptr_factory_.GetWeakPtr();
-  if (use_surface_layer) {
-    submitter_ = std::move(submitter);
+  submitter_ = std::move(submitter);
 
-    PostCrossThreadTask(
-        *video_frame_compositor_task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&WebMediaPlayerMSCompositor::InitializeSubmitter,
-                            weak_this_));
-    update_submission_state_callback_ = base::BindPostTask(
-        video_frame_compositor_task_runner_,
-        ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-            &WebMediaPlayerMSCompositor::SetIsSurfaceVisible, weak_this_)));
-  }
+  PostCrossThreadTask(
+      *video_frame_compositor_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&WebMediaPlayerMSCompositor::InitializeSubmitter,
+                          weak_this_));
+  update_submission_state_callback_ = base::BindPostTask(
+      video_frame_compositor_task_runner_,
+      ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+          &WebMediaPlayerMSCompositor::SetIsSurfaceVisible, weak_this_)));
 
   auto* video_component = GetVideoComponent(media_stream_descriptor);
   const bool is_remote_video = video_component && video_component->Remote();
@@ -1103,10 +1100,6 @@ void WebMediaPlayerMSCompositor::CheckForFrameChanges(
   }
 
   if (new_frame_transform.has_value()) {
-    PostCrossThreadTask(
-        *main_task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&WebMediaPlayerMS::OnTransformChanged, player_,
-                            *new_frame_transform));
     if (submitter_)
       submitter_->SetTransform(*new_frame_transform);
   }

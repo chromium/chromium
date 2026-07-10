@@ -83,6 +83,23 @@ class ExtendedMockMediaStreamVideoSource : public MockMediaStreamVideoSource {
   base::OnceClosure has_seen_screencast_content_type_callback_;
 };
 
+class MockWebVideoFrameSubmitter : public WebVideoFrameSubmitter {
+ public:
+  MOCK_METHOD2(Initialize, void(cc::VideoFrameProvider*, bool));
+  MOCK_METHOD0(StartRendering, void());
+  MOCK_METHOD0(StopRendering, void());
+  MOCK_METHOD0(StopUsingProvider, void());
+  MOCK_METHOD0(DidReceiveFrame, void());
+  MOCK_METHOD1(EnableSubmission, void(viz::SurfaceId));
+  MOCK_METHOD1(SetTransform, void(media::VideoTransformation));
+  MOCK_METHOD1(SetIsSurfaceVisible, void(bool));
+  MOCK_METHOD1(SetIsPageVisible, void(bool));
+  MOCK_METHOD1(SetForceSubmit, void(bool));
+  MOCK_METHOD1(SetForceBeginFrames, void(bool));
+  MOCK_CONST_METHOD0(IsDrivingFrameUpdates, bool());
+  MOCK_CONST_METHOD0(GetExpectedDisplayTime, std::optional<base::TimeTicks>());
+};
+
 class WebMediaPlayerMSCompositorTest : public testing::Test {
  public:
   static constexpr double TENX = 10;
@@ -132,7 +149,9 @@ class WebMediaPlayerMSCompositorTest : public testing::Test {
     auto* descriptor = MakeGarbageCollected<MediaStreamDescriptor>(
         MediaStreamComponentVector{}, MediaStreamComponentVector{component});
     compositor_ = std::make_unique<WebMediaPlayerMSCompositor>(
-        main_thread_, main_thread_, descriptor, nullptr, false, nullptr);
+        main_thread_, main_thread_, descriptor,
+        std::make_unique<testing::NiceMock<MockWebVideoFrameSubmitter>>(),
+        nullptr);
   }
 
   void PresentFrames(base::span<const Timestamps> timestamps) {
@@ -322,23 +341,6 @@ TEST_F(WebMediaPlayerMSCompositorTest, PeriodicallyEmitsMetrics) {
             1 + 5);
 }
 
-class MockWebVideoFrameSubmitter : public WebVideoFrameSubmitter {
- public:
-  MOCK_METHOD2(Initialize, void(cc::VideoFrameProvider*, bool));
-  MOCK_METHOD0(StartRendering, void());
-  MOCK_METHOD0(StopRendering, void());
-  MOCK_METHOD0(StopUsingProvider, void());
-  MOCK_METHOD0(DidReceiveFrame, void());
-  MOCK_METHOD1(EnableSubmission, void(viz::SurfaceId));
-  MOCK_METHOD1(SetTransform, void(media::VideoTransformation));
-  MOCK_METHOD1(SetIsSurfaceVisible, void(bool));
-  MOCK_METHOD1(SetIsPageVisible, void(bool));
-  MOCK_METHOD1(SetForceSubmit, void(bool));
-  MOCK_METHOD1(SetForceBeginFrames, void(bool));
-  MOCK_CONST_METHOD0(IsDrivingFrameUpdates, bool());
-  MOCK_CONST_METHOD0(GetExpectedDisplayTime, std::optional<base::TimeTicks>());
-};
-
 // Tests that WebMediaPlayerMSCompositor wires GetExpectedDisplayTime() from the
 // submitter into the expected_display_time field of the video frame metadata.
 class WebMediaPlayerMSCompositorSubmitterTest : public testing::Test {
@@ -377,8 +379,7 @@ class WebMediaPlayerMSCompositorSubmitterTest : public testing::Test {
             [&init_loop](cc::VideoFrameProvider*, bool) { init_loop.Quit(); });
 
     compositor_ = std::make_unique<WebMediaPlayerMSCompositor>(
-        main_thread_, main_thread_, descriptor, std::move(submitter),
-        /*use_surface_layer=*/true, nullptr);
+        main_thread_, main_thread_, descriptor, std::move(submitter), nullptr);
     if (render_with_algorithm) {
       compositor_->SetAlgorithmEnabledForTesting(true);
     }

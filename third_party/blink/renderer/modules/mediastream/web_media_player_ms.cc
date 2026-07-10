@@ -24,7 +24,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/layers/video_frame_provider_client_impl.h"
-#include "cc/layers/video_layer.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_log.h"
 #include "media/base/media_track.h"
@@ -352,8 +351,7 @@ WebMediaPlayerMS::WebMediaPlayerMS(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     const WebString& sink_id,
     CreateSurfaceLayerBridgeCB create_bridge_callback,
-    std::unique_ptr<WebVideoFrameSubmitter> submitter,
-    bool use_surface_layer)
+    std::unique_ptr<WebVideoFrameSubmitter> submitter)
     : internal_frame_(std::make_unique<MediaStreamInternalFrameWrapper>(frame)),
       network_state_(WebMediaPlayer::kNetworkStateEmpty),
       ready_state_(WebMediaPlayer::kReadyStateHaveNothing),
@@ -382,8 +380,7 @@ WebMediaPlayerMS::WebMediaPlayerMS(
               main_render_task_runner_,
               this,
               &WebMediaPlayerMS::StopForceBeginFrames)),
-      submitter_(std::move(submitter)),
-      use_surface_layer_(use_surface_layer) {
+      submitter_(std::move(submitter)) {
   DCHECK(client);
   DCHECK(delegate_);
   weak_this_ = weak_factory_.GetWeakPtr();
@@ -415,10 +412,6 @@ void WebMediaPlayerMS::Shutdown() {
 
   // Destruct compositor resources in the proper order.
   get_client()->SetCcLayer(nullptr);
-  if (video_layer_) {
-    DCHECK(!use_surface_layer_);
-    video_layer_->StopUsingProvider();
-  }
 
   if (frame_deliverer_) {
     video_task_runner_->DeleteSoon(FROM_HERE, std::move(frame_deliverer_));
@@ -497,7 +490,7 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
 
   compositor_ = std::make_unique<WebMediaPlayerMSCompositor>(
       compositor_task_runner_, video_task_runner_, web_stream_,
-      std::move(submitter_), use_surface_layer_, weak_this_);
+      std::move(submitter_), weak_this_);
 
   // We can receive a call to RequestVideoFrameCallback() before |compositor_|
   // is created. In that case, we suspend the request, and wait until now to
@@ -1296,12 +1289,6 @@ void WebMediaPlayerMS::ActivateSurfaceLayerForVideo(
   // Note that we might or might not already be in VideoLayer mode.
   DCHECK(!bridge_);
 
-  // If we're in VideoLayer mode, then get rid of the layer.
-  if (video_layer_) {
-    client_->SetCcLayer(nullptr);
-    video_layer_ = nullptr;
-  }
-
   bridge_ = std::move(create_bridge_callback_)
                 .Run(this, compositor_->GetUpdateSubmissionStateCallback());
   bridge_->CreateSurfaceLayer();
@@ -1336,10 +1323,8 @@ void WebMediaPlayerMS::OnFirstFrameReceived(
 
   has_first_frame_ = true;
 
-  if (use_surface_layer_)
-    ActivateSurfaceLayerForVideo(video_transform);
+  ActivateSurfaceLayerForVideo(video_transform);
 
-  OnTransformChanged(video_transform);
   OnOpacityChanged(is_opaque);
 
   SetReadyState(WebMediaPlayer::kReadyStateHaveMetadata);
@@ -1354,29 +1339,8 @@ void WebMediaPlayerMS::OnOpacityChanged(bool is_opaque) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   opaque_ = is_opaque;
-  if (!bridge_) {
-    // Opacity can be changed during the session without resetting
-    // |video_layer_|.
-    video_layer_->SetContentsOpaque(opaque_);
-  } else {
-    DCHECK(bridge_);
-    bridge_->SetContentsOpaque(opaque_);
-  }
-}
-
-void WebMediaPlayerMS::OnTransformChanged(
-    media::VideoTransformation video_transform) {
-  DVLOG(1) << __func__;
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  if (!bridge_) {
-    // Keep the old |video_layer_| alive until SetCcLayer() is called with a new
-    // pointer, as it may use the pointer from the last call.
-    auto new_video_layer =
-        cc::VideoLayer::Create(compositor_.get(), video_transform);
-    get_client()->SetCcLayer(new_video_layer.get());
-    video_layer_ = std::move(new_video_layer);
-  }
+  DCHECK(bridge_);
+  bridge_->SetContentsOpaque(opaque_);
 }
 
 bool WebMediaPlayerMS::IsInPictureInPicture() const {

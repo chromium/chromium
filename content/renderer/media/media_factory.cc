@@ -742,7 +742,7 @@ MediaFactory::CreateWebMediaPlayerForMediaStream(
       render_thread->GetGpuFactories(), sink_id,
       base::BindOnce(&blink::WebSurfaceLayerBridge::Create,
                      parent_frame_sink_id),
-      std::move(submitter), /*use_surface_layer=*/true);
+      std::move(submitter));
 }
 
 media::RendererWebMediaPlayerDelegate*
