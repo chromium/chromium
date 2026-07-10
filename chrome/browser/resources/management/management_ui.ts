@@ -358,45 +358,75 @@ export class ManagementUiElement extends ManagementUiElementBase {
       string {
     switch (reportingType) {
       case DeviceReportingType.SUPERVISED_USER:
-        return 'management:supervised-user';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:supervised-user-circle-filled' :
+            'management:supervised-user-old';
       case DeviceReportingType.DEVICE_ACTIVITY:
-        return 'management:timelapse';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:timelapse' :
+            'management:timelapse-old';
       case DeviceReportingType.STATISTIC:
-        return 'management:bar-chart';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:bar-chart' :
+            'management:bar-chart-old';
       case DeviceReportingType.DEVICE:
         return 'cr:computer';
       case DeviceReportingType.CRASH_REPORT:
-        return 'management:crash';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:release-alert' :
+            'management:crash-old';
       case DeviceReportingType.APP_INFO_AND_ACTIVITY:
-        return 'management:timelapse';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:timelapse' :
+            'management:timelapse-old';
       case DeviceReportingType.LOGS:
-        return 'management:report';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:report-filled' :
+            'management:report-old';
       case DeviceReportingType.PRINT:
         return 'cr:print';
       case DeviceReportingType.PRINT_JOBS:
         return 'cr:print';
       case DeviceReportingType.DLP_EVENTS:
-        return 'management:policy';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:policy-filled' :
+            'management:policy-old';
       case DeviceReportingType.CROSTINI:
-        return 'management:linux';
+        return 'management:linux-custom';
       case DeviceReportingType.USERNAME:
-        return 'management:account-circle';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:account-circle-filled' :
+            'management:account-circle-old';
       case DeviceReportingType.EXTENSION:
         return 'cr:extension';
       case DeviceReportingType.ANDROID_APPLICATION:
-        return 'management:play-store';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:play-prism-filled' :
+            'management:play-store-old';
       case DeviceReportingType.LOGIN_LOGOUT:
-        return 'management:timelapse';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:timelapse' :
+            'management:timelapse-old';
       case DeviceReportingType.CRD_SESSIONS:
-        return 'management:timelapse';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:timelapse' :
+            'management:timelapse-old';
       case DeviceReportingType.PERIPHERALS:
-        return 'management:usb';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:usb' :
+            'management:usb-old';
       case DeviceReportingType.LEGACY_TECH:
-        return 'management:legacy-tech';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:language' :
+            'management:legacy-tech-old';
       case DeviceReportingType.WEBSITE_INFO_AND_ACTIVITY:
-        return 'management:web';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:web' :
+            'management:web-old';
       case DeviceReportingType.FILE_EVENTS:
-        return 'management:policy';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:policy-filled' :
+            'management:policy-old';
       default:
         return 'cr:computer';
     }
@@ -459,13 +489,21 @@ export class ManagementUiElement extends ManagementUiElementBase {
       case ReportingType.EXTENSIONS:
         return 'cr:extension';
       case ReportingType.USER:
-        return 'management:account-circle';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:account-circle-filled' :
+            'management:account-circle-old';
       case ReportingType.USER_ACTIVITY:
-        return 'management:public';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:public' :
+            'management:public-old';
       case ReportingType.LEGACY_TECH:
-        return 'management:legacy-tech';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:language' :
+            'management:legacy-tech-old';
       case ReportingType.URL:
-        return 'management:link';
+        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'management:link' :
+            'management:link-old';
       default:
         return 'cr:security';
     }
