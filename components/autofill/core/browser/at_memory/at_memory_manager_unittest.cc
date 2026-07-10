@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,12 +66,16 @@ using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::NiceMock;
 using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::SaveArg;
+using ::testing::Test;
+using ::testing::Values;
+using ::testing::WithParamInterface;
 
 class MockAutofillClient : public TestAutofillClient {
  public:
@@ -114,7 +119,7 @@ class MockAutofillAiAccessManager : public AutofillAiAccessManager {
               (override));
 };
 
-class AtMemoryManagerTest : public testing::Test,
+class AtMemoryManagerTest : public Test,
                             public WithTestAutofillClientDriverManager<
                                 NiceMock<MockAutofillClient>,
                                 TestAutofillDriver,
@@ -123,7 +128,7 @@ class AtMemoryManagerTest : public testing::Test,
   void SetUp() override {
     InitAutofillClient();
     auto mock_query_service =
-        std::make_unique<testing::NiceMock<MockAtMemoryQueryService>>();
+        std::make_unique<NiceMock<MockAtMemoryQueryService>>();
     mock_query_service_ptr_ = mock_query_service.get();
     autofill_client().set_at_memory_query_service(
         std::move(mock_query_service));
@@ -173,10 +178,9 @@ class AtMemoryManagerTest : public testing::Test,
                           callback) mutable {
           callback.Run(MemorySearchResults(status, std::move(entries)));
         });
-    testing::InSequence s;
-    EXPECT_CALL(
-        update_callback_,
-        Run(testing::IsEmpty(), AutofillSuggestionTriggerSource::kAtMemory));
+    InSequence s;
+    EXPECT_CALL(update_callback_,
+                Run(IsEmpty(), AutofillSuggestionTriggerSource::kAtMemory));
     EXPECT_CALL(update_callback_,
                 Run(_, AutofillSuggestionTriggerSource::kAtMemory))
         .WillOnce(SaveArg<0>(&final_suggestions));
@@ -242,9 +246,8 @@ TEST_F(AtMemoryManagerTest, OnFilterChanged_EmptyFilterClearsSuggestions) {
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
-  EXPECT_CALL(
-      update_callback_,
-      Run(testing::IsEmpty(), AutofillSuggestionTriggerSource::kAtMemory));
+  EXPECT_CALL(update_callback_,
+              Run(IsEmpty(), AutofillSuggestionTriggerSource::kAtMemory));
 
   manager().OnFilterChanged(u"");
 }
@@ -264,9 +267,8 @@ TEST_F(AtMemoryManagerTest,
       .WillOnce(SaveArg<1>(&search_callback));
 
   // Expect that executing the query immediately clears suggestions.
-  EXPECT_CALL(
-      update_callback_,
-      Run(testing::IsEmpty(), AutofillSuggestionTriggerSource::kAtMemory));
+  EXPECT_CALL(update_callback_,
+              Run(IsEmpty(), AutofillSuggestionTriggerSource::kAtMemory));
 
   manager().OnSearchSubmitted(u"query");
 
@@ -625,12 +627,11 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
   EXPECT_CALL(mock_query_service(), Query(std::u16string_view(u"query"), _))
       .WillOnce(RunOnceCallback<1>(std::move(results)));
 
-  testing::InSequence s;
+  InSequence s;
   // Executing the query immediately clears existing suggestions before
   // returning search results.
-  EXPECT_CALL(
-      update_callback_,
-      Run(testing::IsEmpty(), AutofillSuggestionTriggerSource::kAtMemory));
+  EXPECT_CALL(update_callback_,
+              Run(IsEmpty(), AutofillSuggestionTriggerSource::kAtMemory));
   EXPECT_CALL(
       update_callback_,
       Run(ElementsAre(EqualsAtMemorySuggestion(MemoryDataType::kAddressFull),
@@ -639,6 +640,38 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
                           ElementsAre(EqualsAtMemorySuggestion(
                               MemoryDataType::kDriversLicenseState)))),
           AutofillSuggestionTriggerSource::kAtMemory));
+
+  manager().OnSearchSubmitted(u"query");
+}
+
+// Tests that SPII entries are retained in the search results when the device
+// does not support OS reauth, but the debug feature is enabled.
+TEST_F(AtMemoryManagerTest,
+       KeepsSpiiWhenDeviceReauthNotSupportedWithDebugFlag) {
+  base::test::ScopedFeatureList debug_features(
+      features::debug::kAtMemoryNoDeviceReauthCheck);
+  autofill_client().set_supports_device_reauth(false);
+
+  MemorySearchResults results(
+      MemorySearchStatus::kFinalResponseSuccess,
+      {MemorySearchResult(MemoryDataType::kIban, u"IBAN", u"1234")});
+
+  manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         FormSignature(0), FieldSignature(0));
+
+  EXPECT_CALL(mock_query_service(), Query(std::u16string_view(u"query"), _))
+      .WillOnce(RunOnceCallback<1>(std::move(results)));
+
+  InSequence s;
+  // Executing the query immediately clears existing suggestions before
+  // returning search results.
+  EXPECT_CALL(update_callback_,
+              Run(IsEmpty(), AutofillSuggestionTriggerSource::kAtMemory));
+  EXPECT_CALL(update_callback_,
+              Run(ElementsAre(EqualsAtMemorySuggestion(MemoryDataType::kIban)),
+                  AutofillSuggestionTriggerSource::kAtMemory));
 
   manager().OnSearchSubmitted(u"query");
 }
@@ -1012,9 +1045,8 @@ TEST_F(AtMemoryManagerTest, OnPopupShown_SubPopup_DoesNotResetRecorder) {
 
 enum class SourceScenario { kNoSources, kAutofillOnly, kGmailOnly, kMixed };
 
-class AtMemoryManagerIconTest
-    : public AtMemoryManagerTest,
-      public ::testing::WithParamInterface<SourceScenario> {
+class AtMemoryManagerIconTest : public AtMemoryManagerTest,
+                                public WithParamInterface<SourceScenario> {
  public:
   SourceScenario scenario() const { return GetParam(); }
 
@@ -1106,10 +1138,10 @@ TEST_P(AtMemoryManagerIconTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AtMemoryManagerIconTest,
-                         ::testing::Values(SourceScenario::kNoSources,
-                                           SourceScenario::kAutofillOnly,
-                                           SourceScenario::kGmailOnly,
-                                           SourceScenario::kMixed));
+                         Values(SourceScenario::kNoSources,
+                                SourceScenario::kAutofillOnly,
+                                SourceScenario::kGmailOnly,
+                                SourceScenario::kMixed));
 
 }  // namespace
 

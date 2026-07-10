@@ -11,7 +11,11 @@
 
 namespace autofill::features::debug {
 
-// Bypasses the enablement checks (PersonalContext, Gemini subscription tier
+// When enabled, SPII data is not removed from AtMemory search results when the
+// client does not support device reauth.
+BASE_FEATURE(kAtMemoryNoDeviceReauthCheck, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Bypasses the eligibility checks (PersonalContext, Gemini subscription tier
 // and other) for local testing and teamfooding.
 BASE_FEATURE(kAtMemorySkipEnablementChecks, base::FEATURE_DISABLED_BY_DEFAULT);
 

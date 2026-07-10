@@ -45,6 +45,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -807,7 +808,10 @@ void AtMemoryManager::OnSearchResultsReceived(
 
   // If the context is insecure or the device doesn't support OS reauth, filter
   // out any SPII entries and metadata from the results.
-  if (!is_context_secure_ || !owner_->client().SupportsDeviceReauth()) {
+  if (!is_context_secure_ ||
+      (!owner_->client().SupportsDeviceReauth() &&
+       !base::FeatureList::IsEnabled(
+           features::debug::kAtMemoryNoDeviceReauthCheck))) {
     std::erase_if(result.entries,
                   [](const accessibility_annotator::MemorySearchResult& entry) {
                     return IsSpiiMemoryDataType(entry.type);
