@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "mojo/public/cpp/base/big_string_mojom_traits.h"
+#include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/proxy_chain.h"
@@ -154,6 +155,36 @@ struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
+    StructTraits<network::mojom::DynamicRoutingRuleDataView,
+                 net::ProxyConfig::DynamicRoutingRule> {
+  static const net::ProxyHostMatchingRules& destination_matchers(
+      const net::ProxyConfig::DynamicRoutingRule& r) {
+    return r.destination_matchers;
+  }
+  static const net::ProxyList& proxy_list(
+      const net::ProxyConfig::DynamicRoutingRule& r) {
+    return r.proxy_list;
+  }
+
+  static bool Read(network::mojom::DynamicRoutingRuleDataView data,
+                   net::ProxyConfig::DynamicRoutingRule* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
+    StructTraits<network::mojom::DynamicRoutingConfigDataView,
+                 net::ProxyConfig::DynamicRoutingConfig> {
+  static const std::vector<net::ProxyConfig::DynamicRoutingRule>& routing_rules(
+      const net::ProxyConfig::DynamicRoutingConfig& r) {
+    return r.routing_rules;
+  }
+
+  static bool Read(network::mojom::DynamicRoutingConfigDataView data,
+                   net::ProxyConfig::DynamicRoutingConfig* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
     StructTraits<network::mojom::ProxyConfigDataView, net::ProxyConfig> {
  public:
   static bool auto_detect(const net::ProxyConfig& r) { return r.auto_detect(); }
@@ -171,6 +202,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
   static const std::vector<net::ProxyConfig::ProxyOverrideRule>&
   proxy_override_rules(const net::ProxyConfig& r) {
     return r.proxy_override_rules();
+  }
+  static const net::ProxyConfig::DynamicRoutingConfig& dynamic_routing_config(
+      const net::ProxyConfig& r) {
+    return r.dynamic_routing_config();
   }
   static bool Read(network::mojom::ProxyConfigDataView data,
                    net::ProxyConfig* out_proxy_config);

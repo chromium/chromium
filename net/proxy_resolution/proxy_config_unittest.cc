@@ -100,6 +100,26 @@ TEST(ProxyConfigTest, Equals) {
 
   EXPECT_TRUE(config1.Equals(config2));
   EXPECT_TRUE(config2.Equals(config1));
+
+  // Test |ProxyConfig::dynamic_routing_config|.
+
+  ProxyConfig::DynamicRoutingRule dynamic_rule;
+  dynamic_rule.destination_matchers.AddRuleFromString("*.org");
+  dynamic_rule.proxy_list.AddProxyChain(
+      ProxyChain(ProxyUriToProxyServer("foo:333", ProxyServer::SCHEME_HTTPS)));
+
+  ProxyConfig::DynamicRoutingConfig dynamic_config;
+  dynamic_config.routing_rules = {dynamic_rule};
+
+  config2.set_dynamic_routing_config(dynamic_config);
+
+  EXPECT_FALSE(config1.Equals(config2));
+  EXPECT_FALSE(config2.Equals(config1));
+
+  config1.set_dynamic_routing_config(dynamic_config);
+
+  EXPECT_TRUE(config1.Equals(config2));
+  EXPECT_TRUE(config2.Equals(config1));
 }
 
 enum class TestCondition {
@@ -427,6 +447,23 @@ ProxyConfigToValueTestCase GetTestCaseOverrideRule() {
           "foo:333]\",\"direct://\"]}]}"};
 }
 
+ProxyConfigToValueTestCase GetTestCaseDynamicRoutingConfig() {
+  ProxyConfig::DynamicRoutingRule rule;
+  rule.destination_matchers.AddRuleFromString("http://www.example.com");
+  rule.proxy_list.AddProxyChain(
+      ProxyChain(ProxyUriToProxyServer("foo:333", ProxyServer::SCHEME_HTTPS)));
+
+  ProxyConfig::DynamicRoutingConfig dynamic_config;
+  dynamic_config.routing_rules = {std::move(rule)};
+
+  auto config = ProxyConfig::CreateDirect();
+  config.set_dynamic_routing_config(std::move(dynamic_config));
+  return {std::move(config),
+          "{\"dynamic_routing_config\":{\"routing_rules\":[{\"destination_"
+          "matchers\":[\"http://www.example.com\"],\"proxy_list\":[\"[https://"
+          "foo:333]\"]}]}}"};
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     ProxyConfigToValueTest,
@@ -443,7 +480,8 @@ INSTANTIATE_TEST_SUITE_P(
                     GetTestCaseMultiProxyChainProxyPerScheme(),
 #endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
                     GetTestCaseSingleProxyList(),
-                    GetTestCaseOverrideRule()));
+                    GetTestCaseOverrideRule(),
+                    GetTestCaseDynamicRoutingConfig()));
 
 TEST(ProxyConfigTest, ParseProxyRules) {
   const struct {

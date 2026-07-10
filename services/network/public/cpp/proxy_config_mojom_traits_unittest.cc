@@ -234,5 +234,58 @@ TEST(ProxyConfigTraitsTest, ProxyOverrideRules_EmptyProxyList) {
           annotated_config, copied_config));
 }
 
+TEST(ProxyConfigTraitsTest, DynamicRoutingConfig) {
+  net::ProxyConfig::DynamicRoutingRule rule;
+  rule.destination_matchers.AddRuleFromString("192.168.1.1");
+  rule.destination_matchers.AddRuleFromString("*.org:443");
+  rule.destination_matchers.AddRuleFromString("www.google.com");
+  rule.proxy_list.AddProxyChain(net::ProxyChain(
+      net::ProxyUriToProxyServer("foo:333", net::ProxyServer::SCHEME_HTTPS)));
+
+  net::ProxyConfig::DynamicRoutingConfig config;
+  config.routing_rules = {rule};
+
+  net::ProxyConfig proxy_config;
+  proxy_config.set_dynamic_routing_config(config);
+  net::ProxyConfigWithAnnotation annotated_config(proxy_config,
+                                                  TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_TRUE(TestProxyConfigRoundTrip(annotated_config));
+}
+
+TEST(ProxyConfigTraitsTest, DynamicRoutingConfig_EmptyDestinationMatchers) {
+  net::ProxyConfig::DynamicRoutingRule rule;
+  rule.proxy_list.AddProxyChain(net::ProxyChain(
+      net::ProxyUriToProxyServer("foo:333", net::ProxyServer::SCHEME_HTTPS)));
+
+  net::ProxyConfig::DynamicRoutingConfig config;
+  config.routing_rules = {rule};
+
+  net::ProxyConfig proxy_config;
+  proxy_config.set_dynamic_routing_config(config);
+  net::ProxyConfigWithAnnotation annotated_config(proxy_config,
+                                                  TRAFFIC_ANNOTATION_FOR_TESTS);
+  net::ProxyConfigWithAnnotation copied_config;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::ProxyConfigWithAnnotation>(
+          annotated_config, copied_config));
+}
+
+TEST(ProxyConfigTraitsTest, DynamicRoutingConfig_EmptyProxyList) {
+  net::ProxyConfig::DynamicRoutingRule rule;
+  rule.destination_matchers.AddRuleFromString("192.168.1.1");
+
+  net::ProxyConfig::DynamicRoutingConfig config;
+  config.routing_rules = {rule};
+
+  net::ProxyConfig proxy_config;
+  proxy_config.set_dynamic_routing_config(config);
+  net::ProxyConfigWithAnnotation annotated_config(proxy_config,
+                                                  TRAFFIC_ANNOTATION_FOR_TESTS);
+  net::ProxyConfigWithAnnotation copied_config;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::ProxyConfigWithAnnotation>(
+          annotated_config, copied_config));
+}
+
 }  // namespace
 }  // namespace network

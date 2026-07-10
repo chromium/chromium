@@ -466,6 +466,15 @@ mojom("mojom_proxy_config") {
           mojom = "network.mojom.ProxyConfig"
           cpp = "::net::ProxyConfig"
         },
+
+        {
+          mojom = "network.mojom.DynamicRoutingRule"
+          cpp = "::net::ProxyConfig::DynamicRoutingRule"
+        },
+        {
+          mojom = "network.mojom.DynamicRoutingConfig"
+          cpp = "::net::ProxyConfig::DynamicRoutingConfig"
+        },
       ]
       traits_headers =
           [ "//services/network/public/cpp/proxy_config_mojom_traits.h" ]

@@ -146,6 +146,23 @@ bool StructTraits<network::mojom::ProxyOverrideRuleDataView,
          !out->proxy_list.IsEmpty();
 }
 
+bool StructTraits<network::mojom::DynamicRoutingRuleDataView,
+                  net::ProxyConfig::DynamicRoutingRule>::
+    Read(network::mojom::DynamicRoutingRuleDataView data,
+         net::ProxyConfig::DynamicRoutingRule* out) {
+  return data.ReadDestinationMatchers(&out->destination_matchers) &&
+         data.ReadProxyList(&out->proxy_list) &&
+         !out->destination_matchers.rules().empty() &&
+         !out->proxy_list.IsEmpty();
+}
+
+bool StructTraits<network::mojom::DynamicRoutingConfigDataView,
+                  net::ProxyConfig::DynamicRoutingConfig>::
+    Read(network::mojom::DynamicRoutingConfigDataView data,
+         net::ProxyConfig::DynamicRoutingConfig* out) {
+  return data.ReadRoutingRules(&out->routing_rules);
+}
+
 bool StructTraits<network::mojom::ProxyConfigDataView, net::ProxyConfig>::Read(
     network::mojom::ProxyConfigDataView data,
     net::ProxyConfig* out_proxy_config) {
@@ -154,6 +171,13 @@ bool StructTraits<network::mojom::ProxyConfigDataView, net::ProxyConfig>::Read(
     return false;
   }
   out_proxy_config->set_proxy_override_rules(std::move(proxy_override_rules));
+
+  net::ProxyConfig::DynamicRoutingConfig dynamic_routing_config;
+  if (!data.ReadDynamicRoutingConfig(&dynamic_routing_config)) {
+    return false;
+  }
+  out_proxy_config->set_dynamic_routing_config(
+      std::move(dynamic_routing_config));
 
   std::string pac_url;
   if (!data.ReadPacUrl(&pac_url) ||

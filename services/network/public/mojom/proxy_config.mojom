@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/big_string.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "url/mojom/scheme_host_port.mojom";
 
@@ -59,9 +60,21 @@ struct ProxyOverrideRule {
   ProxyList proxy_list;
 };
 
+// These fields mirror those of `net::ProxyConfig::DynamicRoutingRule`.
+struct DynamicRoutingRule {
+  ProxyHostMatchingRules destination_matchers;
+  ProxyList proxy_list;
+};
+
+// These fields mirror those of `net::ProxyConfig::DynamicRoutingConfig`.
+struct DynamicRoutingConfig {
+  array<DynamicRoutingRule> routing_rules;
+};
+
 // These fields mirror those of `net::ProxyConfig`.
 struct ProxyConfig {
   array<ProxyOverrideRule> proxy_override_rules;
+  DynamicRoutingConfig dynamic_routing_config;
   bool auto_detect;
   // If true, indicates that the `ProxyConfig` object was created from system
   // settings.

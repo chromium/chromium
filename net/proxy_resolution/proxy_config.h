@@ -6,9 +6,12 @@
 #define NET_PROXY_RESOLUTION_PROXY_CONFIG_H_
 
 #include <string>
+#include <vector>
 
+#include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/proxy_resolution/proxy_host_matching_rules.h"
 #include "net/proxy_resolution/proxy_list.h"
@@ -21,10 +24,12 @@ class ProxyInfo;
 
 // ProxyConfig describes a user's proxy settings.
 //
-// There are three categories of proxy settings:
+// There are four categories of proxy settings:
 // (1) Override rules (enterprise administrator-configured hosts and conditions)
-// (2) Automatic (indicates the methods to obtain a PAC script)
-// (3) Manual (simple set of proxy servers per scheme, and bypass patterns)
+// (2) Dynamic routing configuration (configured by enterprise Provisioning
+//     Domains policy)
+// (3) Automatic (indicates the methods to obtain a PAC script)
+// (4) Manual (simple set of proxy servers per scheme, and bypass patterns)
 //
 // When multiple settings types are specified, the above ordering is used for
 // precedence.
@@ -214,6 +219,39 @@ class NET_EXPORT ProxyConfig {
     ProxyList proxy_list;
   };
 
+  // Defines a dynamic proxy routing rule that maps destination URLs matching
+  // `destination_matchers` to a list of proxy servers in `proxy_list`.
+  struct NET_EXPORT DynamicRoutingRule {
+    DynamicRoutingRule();
+    DynamicRoutingRule(const DynamicRoutingRule& other);
+    DynamicRoutingRule& operator=(const DynamicRoutingRule& other);
+    DynamicRoutingRule(DynamicRoutingRule&& other);
+    DynamicRoutingRule& operator=(DynamicRoutingRule&& other);
+    ~DynamicRoutingRule();
+
+    bool operator==(const DynamicRoutingRule& other) const;
+
+    bool MatchesDestination(const GURL& url) const;
+
+    ProxyHostMatchingRules destination_matchers;
+    ProxyList proxy_list;
+  };
+
+  // Holds dynamic proxy routing configuration from Enterprise provisioning
+  // domains, containing a list of `DynamicRoutingRule`s.
+  struct NET_EXPORT DynamicRoutingConfig {
+    DynamicRoutingConfig();
+    DynamicRoutingConfig(const DynamicRoutingConfig& other);
+    DynamicRoutingConfig& operator=(const DynamicRoutingConfig& other);
+    DynamicRoutingConfig(DynamicRoutingConfig&& other);
+    DynamicRoutingConfig& operator=(DynamicRoutingConfig&& other);
+    ~DynamicRoutingConfig();
+
+    bool operator==(const DynamicRoutingConfig& other) const = default;
+
+    std::vector<DynamicRoutingRule> routing_rules;
+  };
+
   ProxyConfig();
   ProxyConfig(const ProxyConfig& config);
   ProxyConfig(ProxyConfig&& config);
@@ -239,6 +277,14 @@ class NET_EXPORT ProxyConfig {
 
   void set_proxy_override_rules(std::vector<ProxyOverrideRule> rules) {
     proxy_override_rules_ = std::move(rules);
+  }
+
+  const DynamicRoutingConfig& dynamic_routing_config() const {
+    return dynamic_routing_config_;
+  }
+
+  void set_dynamic_routing_config(DynamicRoutingConfig config) {
+    dynamic_routing_config_ = std::move(config);
   }
 
   ProxyRules& proxy_rules() { return proxy_rules_; }
@@ -297,6 +343,12 @@ class NET_EXPORT ProxyConfig {
   // checked before the other fields in this class, see the comment on top of
   // `ProxyConfig` for more details.
   std::vector<ProxyOverrideRule> proxy_override_rules_;
+
+  // Dynamic routing configuration received from provisioning domains, which
+  // is configured by ProxyProvisioningDomains enterprise policy. These rules
+  // are applied similarly to `proxy_override_rules_` but with lower precedence.
+  // See the comment on top of `ProxyConfig` for more details.
+  DynamicRoutingConfig dynamic_routing_config_;
 
   // True if the proxy configuration should be auto-detected.
   bool auto_detect_ = false;
