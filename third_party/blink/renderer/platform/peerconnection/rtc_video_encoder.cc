@@ -2211,12 +2211,12 @@ RTCVideoEncoder::Impl::CreateNV12SharedImageFrame(
     }
   }
 
-  gpu::SyncToken sync_token;
+  gpu::SyncToken sync_token = nv12_shared_image->creation_sync_token();
   {
-    TRACE_EVENT("webrtc", "CreateNV12SharedImageFrame-GenVerifiedSyncToken");
+    TRACE_EVENT("webrtc", "CreateNV12SharedImageFrame-VerifySyncToken");
     auto* sii = gpu_factories_->SharedImageInterface();
     CHECK(sii);
-    sync_token = sii->GenVerifiedSyncToken();
+    sii->VerifySyncToken(sync_token);
   }
   // The timestamp is set later in EncodeOneFrameWithNativeInput().
   frame = media::VideoFrame::WrapMappableSharedImage(
@@ -2444,7 +2444,8 @@ bool RTCVideoEncoder::Impl::CreateBlackMappableSIFrame(
   std::ranges::fill(mapping->GetMemoryForPlane(0), 0x0);
   std::ranges::fill(mapping->GetMemoryForPlane(1), 0x80);
 
-  gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
+  gpu::SyncToken sync_token = shared_image->creation_sync_token();
+  sii->VerifySyncToken(sync_token);
   black_frame_ = media::VideoFrame::WrapMappableSharedImage(
       std::move(shared_image), sync_token, base::NullCallback(),
       gfx::Rect(mapping->Size()), natural_size, base::TimeDelta());
