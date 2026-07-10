@@ -143,6 +143,7 @@ source_set("unit_tests") {
   sources = [
     "chrome_hid_delegate_unittest.cc",
     "hid_chooser_context_unittest.cc",
+    "hid_policy_allowed_devices_unittest.cc",
   ]
 
   deps = [
@@ -159,10 +160,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (is_win || is_mac || is_linux || is_chromeos) {
-    sources += [ "hid_policy_allowed_devices_unittest.cc" ]
-  }
 
   if (is_chromeos) {
     sources += [ "hid_pinned_notification_unittest.cc" ]
