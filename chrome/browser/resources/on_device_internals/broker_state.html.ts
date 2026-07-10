@@ -33,6 +33,12 @@ export function getHtml(this: OnDeviceInternalsBrokerStateElement) {
         <cr-button class="cr-button-gap"
             @click="${this.onResetCrashCountClick_}">Reset</cr-button>
       </div>
+      <div class="cr-row continuation">
+        <div class="cr-padded-text">
+          <a href="chrome://crashes">
+              View global crash reports (chrome://crashes)</a>
+        </div>
+      </div>
     </div>` :
           ''}
     <div class="card">

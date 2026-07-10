@@ -67,6 +67,12 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
         You may need to restart the browser for the changes to take effect.
       </span>
     </div>
+    <div class="cr-row continuation">
+      <div class="cr-padded-text">
+        <a href="chrome://crashes">
+            View global crash reports (chrome://crashes)</a>
+      </div>
+    </div>
   </div>
   <h3>Foundational model criteria</h3>
   ${(Object.keys(this.pageData_.baseModel.registrationCriteria).length === 0) ?
