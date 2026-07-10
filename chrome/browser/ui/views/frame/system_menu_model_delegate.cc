@@ -121,8 +121,11 @@ bool SystemMenuModelDelegate::GetAcceleratorForCommandId(
 }
 
 bool SystemMenuModelDelegate::IsItemForCommandIdDynamic(int command_id) const {
-  return std::set{IDC_RESTORE_TAB, IDC_TAB_SEARCH_TOGGLE_PIN,
-                  IDC_GLIC_TOGGLE_PIN, IDC_TOGGLE_VERTICAL_TABS,
+  return std::set{IDC_RESTORE_TAB,
+                  IDC_TAB_SEARCH_TOGGLE_PIN,
+                  IDC_GLIC_TOGGLE_PIN,
+                  IDC_TOGGLE_VERTICAL_TABS,
+                  IDC_TOGGLE_VERTICAL_TABS_COLLAPSE,
                   IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER}
       .contains(command_id);
 }
@@ -163,6 +166,13 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
       string_id = controller->ShouldDisplayVerticalTabs()
                       ? IDS_SWITCH_TO_HORIZONTAL_TAB
                       : IDS_SWITCH_TO_VERTICAL_TAB;
+      break;
+    }
+    case IDC_TOGGLE_VERTICAL_TABS_COLLAPSE: {
+      auto* controller = tabs::VerticalTabStripStateController::From(browser_);
+      CHECK(controller);
+      string_id = controller->IsCollapsed() ? IDS_EXPAND_VERTICAL_TABS
+                                            : IDS_COLLAPSE_VERTICAL_TABS;
       break;
     }
     case IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER: {
@@ -218,6 +228,17 @@ void SystemMenuModelDelegate::ExecuteCommand(int command_id, int event_flags) {
         const bool is_vertical = !controller->ShouldDisplayVerticalTabs();
         tabs::RecordVerticalTabStripModeChanged(
             is_vertical, tabs::VerticalTabStripEntryPoint::kSystemContextMenu);
+      }
+      break;
+    }
+    case IDC_TOGGLE_VERTICAL_TABS_COLLAPSE: {
+      auto* controller = tabs::VerticalTabStripStateController::From(browser_);
+      if (controller) {
+        const bool collapse = controller->GetCollapseState() ==
+                              tabs::VerticalTabStripCollapseState::kExpanded;
+        base::RecordAction(base::UserMetricsAction(
+            collapse ? "VerticalTabs_TabStrip_ContextMenuToggleCollapsed"
+                     : "VerticalTabs_TabStrip_ContextMenuToggleUncollapsed"));
       }
       break;
     }

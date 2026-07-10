@@ -116,6 +116,8 @@ const struct AcceleratorMapping {
     {IDC_TAB_SEARCH, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, ui::VKEY_A},
     {IDC_CREATE_NEW_TAB_GROUP, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
      ui::VKEY_P},
+    {IDC_TOGGLE_VERTICAL_TABS_COLLAPSE, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+     ui::VKEY_L},
 };
 
 ui::Accelerator AcceleratorForCloseWindow() {

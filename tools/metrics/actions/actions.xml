@@ -54807,6 +54807,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="VerticalTabs_TabStrip_KeyboardShortcutToggleCollapsed">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user collapses the vertical tab strip using the keyboard
+    shortcut.
+  </description>
+</action>
+
+<action name="VerticalTabs_TabStrip_KeyboardShortcutToggleUncollapsed">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user uncollapses the vertical tab strip using the keyboard
+    shortcut.
+  </description>
+</action>
+
 <action name="VerticalTabs_TabStrip_ResizeToCollapsed">
   <owner>charlesmeng@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
