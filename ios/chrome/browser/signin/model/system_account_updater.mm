@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/signin/model/system_account_updater.h"
 
+#import "base/apple/backup_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/barrier_callback.h"
 #import "base/check_deref.h"
 #import "base/check_is_test.h"
@@ -159,6 +161,7 @@ void WriteAvatars(const SystemIdentityInfoDataList& list) {
     if (data) {
       NSURL* path = info.avatar_path(avatar_folder);
       if ([data writeToURL:path atomically:YES]) {
+        base::apple::SetBackupExclusion(base::apple::NSURLToFilePath(path));
         [avatars addObject:path];
       }
     }
@@ -187,7 +190,9 @@ void WriteAvatar(const SystemIdentityInfoData& info) {
 
   NSURL* path = info.avatar_path(avatar_folder);
   if (NSData* data = info.avatar_data()) {
-    [data writeToURL:path atomically:YES];
+    if ([data writeToURL:path atomically:YES]) {
+      base::apple::SetBackupExclusion(base::apple::NSURLToFilePath(path));
+    }
   } else {
     NSFileManager* manager = [NSFileManager defaultManager];
     [manager removeItemAtURL:path error:nil];
