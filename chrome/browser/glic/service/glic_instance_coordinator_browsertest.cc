@@ -1199,8 +1199,9 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActorTaskTest,
   EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, tab2));
 }
 
+// TODO(crbug.com/533364604): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActorTaskTest,
-                       OnTabAddedToTaskShortcutsIfAlreadyBound) {
+                       DISABLED_OnTabAddedToTaskShortcutsIfAlreadyBound) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
 

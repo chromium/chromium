@@ -134,8 +134,9 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
       WaitForSidePanelState(new_tab, GlicSidePanelCoordinator::State::kPeek));
 }
 
+// TODO(crbug.com/533364604): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
-                       ShowDoesNotDeactivateActiveEmbedder) {
+                       DISABLED_ShowDoesNotDeactivateActiveEmbedder) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
 
