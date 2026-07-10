@@ -5,6 +5,7 @@
 package org.chromium.ui.listmenu;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -56,5 +57,16 @@ public class ListSectionDividerViewBinderUnitTest {
 
         verify(mDividerInternalView)
                 .setBackgroundColor(mContext.getColor(R.color.divider_color_light));
+    }
+
+    @Test
+    @SmallTest
+    public void testColor_DefaultOrZero() {
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(ListSectionDividerProperties.ALL_KEYS).build();
+        ListSectionDividerViewBinder.bind(
+                propertyModel, mDividerView, ListSectionDividerProperties.COLOR_ID);
+
+        verifyNoInteractions(mDividerInternalView);
     }
 }

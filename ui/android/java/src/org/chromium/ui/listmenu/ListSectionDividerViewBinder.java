@@ -6,8 +6,10 @@ package org.chromium.ui.listmenu;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.res.Resources;
 import android.view.View;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.Px;
 import androidx.core.content.ContextCompat;
@@ -52,11 +54,11 @@ public class ListSectionDividerViewBinder {
                         view.getPaddingBottom());
             }
         } else if (propertyKey == ListSectionDividerProperties.COLOR_ID) {
-            view.findViewById(R.id.divider_view)
-                    .setBackgroundColor(
-                            ContextCompat.getColor(
-                                    view.getContext(),
-                                    model.get(ListSectionDividerProperties.COLOR_ID)));
+            final @ColorRes int colorId = model.get(ListSectionDividerProperties.COLOR_ID);
+            if (colorId != Resources.ID_NULL) {
+                view.findViewById(R.id.divider_view)
+                        .setBackgroundColor(ContextCompat.getColor(view.getContext(), colorId));
+            }
         }
     }
 }
