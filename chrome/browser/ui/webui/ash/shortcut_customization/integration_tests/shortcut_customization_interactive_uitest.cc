@@ -124,10 +124,7 @@ class ShortcutCustomizationInteractiveUiTest : public InteractiveAshTest {
   ui::test::InteractiveTestApi::StepBuilder SendKeyPressEvent(
       ui::KeyboardCode key,
       int modifier) {
-    return Do([key, modifier]() {
-      ui::test::EventGenerator(Shell::GetPrimaryRootWindow())
-          .PressKey(key, modifier);
-    });
+    return SendKeyPress(webcontents_id_, key, modifier);
   }
 
   auto OpenEditShortcutDialog(const DeepQuery& query) {
