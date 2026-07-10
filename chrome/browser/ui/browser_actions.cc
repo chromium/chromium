@@ -2677,6 +2677,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("OpenActiveTabInPwaWindow"));
                 web_app::ReparentWebAppForActiveTab(
                     bwi->GetBrowserForMigrationOnly());
               },
@@ -2856,6 +2858,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("Accel_SelectNumberedTab"));
                 chrome::SelectLastTab(bwi);
               },
               bwi))
@@ -3000,6 +3004,9 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 chrome::AddNewTabToGroup(bwi);
+                base::UmaHistogramEnumeration(
+                    "TabGroups.Shortcuts",
+                    chrome::TabGroupShortcut::kAddNewTabToGroup);
               },
               bwi))
           .SetActionId(kActionAddNewTabToGroup)
@@ -3011,6 +3018,9 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 chrome::CreateNewTabGroup(bwi);
+                base::UmaHistogramEnumeration(
+                    "TabGroups.Shortcuts",
+                    chrome::TabGroupShortcut::kCreateNewTabGroup);
               },
               bwi))
           .SetActionId(kActionCreateNewTabGroup)
@@ -3044,6 +3054,9 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 chrome::CloseTabGroup(bwi);
+                base::UmaHistogramEnumeration(
+                    "TabGroups.Shortcuts",
+                    chrome::TabGroupShortcut::kCloseTabGroup);
               },
               bwi))
           .SetActionId(kActionCloseTabGroup)
@@ -3055,6 +3068,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 chrome::GroupAllUngroupedTabs(bwi);
+                base::RecordAction(
+                    base::UserMetricsAction("TabGroups_GroupAllUngroupedTabs"));
               },
               bwi))
           .SetActionId(kActionGroupUngroupedTabs)
@@ -3165,6 +3180,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("Accel_Focus_Toolbar"));
                 chrome::FocusToolbar(bwi);
               },
               bwi))
@@ -3190,6 +3207,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("Accel_Focus_Search"));
                 chrome::FocusSearch(bwi);
               },
               bwi))
@@ -3234,6 +3253,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("Accel_Focus_Bookmarks"));
                 chrome::FocusBookmarksToolbar(bwi);
               },
               bwi))
@@ -3537,6 +3558,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("Accel_Advanced_Print"));
                 chrome::BasicPrint(bwi);
               },
               bwi))
@@ -3612,6 +3635,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(base::UserMetricsAction("CreateShortcut"));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
                 chrome::CreateDesktopShortcutForActiveWebContents(
                     bwi->GetBrowserForMigrationOnly());
@@ -4257,6 +4281,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("Accel_Show_App_Menu"));
                 chrome::ShowAppMenu(bwi);
               },
               bwi))
