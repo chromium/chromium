@@ -38,8 +38,8 @@ TEST_F(BoxDefinitionsTest, Stereoscopic3DBoxParsing) {
       0x02                     // stereo_mode (Side-by-Side Left First)
   });
 
-  std::unique_ptr<BoxReader> reader(BoxReader::ReadConcatentatedBoxes(
-      kData.data(), kData.size(), &media_log_));
+  std::unique_ptr<BoxReader> reader(
+      BoxReader::ReadConcatentatedBoxes(kData, &media_log_));
   ASSERT_TRUE(reader->ScanChildren());
 
   Stereoscopic3DVideo st3d;
@@ -83,8 +83,8 @@ TEST_F(BoxDefinitionsTest, SphericalVideoEquirectangularParsing) {
       0x00, 0x00, 0x00, 0x28   // bounds_right = 40
   });
 
-  std::unique_ptr<BoxReader> reader(BoxReader::ReadConcatentatedBoxes(
-      kData.data(), kData.size(), &media_log_));
+  std::unique_ptr<BoxReader> reader(
+      BoxReader::ReadConcatentatedBoxes(kData, &media_log_));
   ASSERT_TRUE(reader->ScanChildren());
 
   SphericalVideo sv3d;

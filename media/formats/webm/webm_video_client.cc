@@ -37,7 +37,7 @@ media::VideoCodecProfile GetAV1CodecProfile(const std::vector<uint8_t>& data) {
   }
 
   mp4::AV1CodecConfigurationRecord av1_config;
-  if (av1_config.Parse(data.data(), data.size())) {
+  if (av1_config.Parse(data)) {
     return av1_config.profile;
   }
 

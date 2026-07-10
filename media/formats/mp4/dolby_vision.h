@@ -35,7 +35,7 @@ struct MEDIA_EXPORT DOVIDecoderConfigurationRecord {
   //       context and therefore the box header is not expected to be present
   //       in |data|.
   // Returns true if |data| was successfully parsed.
-  bool ParseForTesting(const uint8_t* data, int data_size);
+  bool ParseForTesting(base::span<const uint8_t> data);
 };
 
 // The structures of the configuration is defined in Dolby Streams Within the

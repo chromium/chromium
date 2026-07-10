@@ -693,8 +693,8 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       profile = AV1PROFILE_PROFILE_MAIN;
       if (codec_context->extradata && codec_context->extradata_size) {
         mp4::AV1CodecConfigurationRecord av1_config;
-        if (av1_config.Parse(codec_context->extradata,
-                             codec_context->extradata_size)) {
+        if (av1_config.Parse(
+                AVCodecContextExtraDataToSpan(codec_context.get()))) {
           profile = av1_config.profile;
         } else {
           DLOG(WARNING) << "Failed to parse AV1 extra data for profile.";

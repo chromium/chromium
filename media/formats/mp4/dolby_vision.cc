@@ -37,9 +37,9 @@ bool DolbyVisionConfiguration8::Parse(BoxReader* reader) {
          dovi_config.dv_profile > 7 && dovi_config.dv_profile <= 20;
 }
 
-bool DOVIDecoderConfigurationRecord::ParseForTesting(const uint8_t* data,
-                                                     int data_size) {
-  BufferReader reader(data, data_size);
+bool DOVIDecoderConfigurationRecord::ParseForTesting(
+    base::span<const uint8_t> data) {
+  BufferReader reader(data);
   NullMediaLog media_log;
   return Parse(&reader, &media_log);
 }

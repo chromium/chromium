@@ -43,8 +43,7 @@ static bool ReadAllPsshBoxes(
   // so this simply verifies that |input| only contains 'pssh' boxes and
   // nothing else.
   std::unique_ptr<mp4::BoxReader> input_reader(
-      mp4::BoxReader::ReadConcatentatedBoxes(input.data(), input.size(),
-                                             &media_log));
+      mp4::BoxReader::ReadConcatentatedBoxes(input, &media_log));
   std::vector<mp4::ProtectionSystemSpecificHeader> raw_pssh_boxes;
   if (!input_reader->ReadAllChildrenAndCheckFourCC(&raw_pssh_boxes))
     return false;
@@ -56,8 +55,7 @@ static bool ReadAllPsshBoxes(
   // ignoring any boxes that can't be parsed.
   for (const auto& raw_pssh_box : raw_pssh_boxes) {
     std::unique_ptr<mp4::BoxReader> raw_pssh_reader(
-        mp4::BoxReader::ReadConcatentatedBoxes(raw_pssh_box.raw_box.data(),
-                                               raw_pssh_box.raw_box.size(),
+        mp4::BoxReader::ReadConcatentatedBoxes(raw_pssh_box.raw_box,
                                                &media_log));
     // ReadAllChildren() appends any successfully parsed box onto it's
     // parameter, so |pssh_boxes| will contain the collection of successfully

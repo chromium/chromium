@@ -485,8 +485,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieMediaDataInformation) {
 
   // `written_data` test.
   std::unique_ptr<mp4::BoxReader> box_reader(
-      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
-                                             written_data.size(), nullptr));
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data, nullptr));
   // `minf`.
   uint32_t fourcc;
   EXPECT_TRUE(box_reader->SkipBytes(kTotalSizeLength));
@@ -555,8 +554,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieMediaMultipleSampleBoxes) {
   // MediaInformation will have multiple sample boxes even though they
   // not added exclusively.
   std::unique_ptr<mp4::BoxReader> box_reader(
-      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
-                                             written_data.size(), nullptr));
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data, nullptr));
 
   // `stbl`.
   uint32_t fourcc;
@@ -639,8 +637,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieVisualSampleEntry) {
   // MediaInformation will have multiple sample boxes even though they
   // not added exclusively.
   std::unique_ptr<mp4::BoxReader> box_reader(
-      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
-                                             written_data.size(), nullptr));
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data, nullptr));
 
   EXPECT_TRUE(box_reader->ScanChildren());
 
@@ -699,8 +696,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAVCDecoderConfigurationRecord) {
   // MediaInformation will have multiple sample boxes even though they
   // not added exclusively.
   std::unique_ptr<mp4::BoxReader> box_reader(
-      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
-                                             written_data.size(), nullptr));
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data, nullptr));
 
   EXPECT_TRUE(box_reader->ScanChildren());
 
@@ -759,8 +755,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4AacAudioSampleEntry) {
   // MediaInformation will have multiple sample boxes even though they
   // not added exclusively.
   std::unique_ptr<mp4::BoxReader> box_reader(
-      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
-                                             written_data.size(), nullptr));
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data, nullptr));
 
   EXPECT_TRUE(box_reader->ScanChildren());
 
@@ -826,8 +821,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieHEVCDecoderConfigurationRecord) {
   FlushAndWait(&box_writer);
 
   std::unique_ptr<mp4::BoxReader> box_reader(
-      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
-                                             written_data.size(), nullptr));
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data, nullptr));
 
   EXPECT_TRUE(box_reader->ScanChildren());
 
@@ -860,8 +854,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieVPConfigurationRecord) {
   // MediaInformation will have multiple sample boxes even though they
   // not added exclusively.
   std::unique_ptr<mp4::BoxReader> box_reader(
-      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
-                                             written_data.size(), nullptr));
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data, nullptr));
 
   EXPECT_TRUE(box_reader->ScanChildren());
 
@@ -905,8 +898,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4OpusAudioSampleEntry) {
   // MediaInformation will have multiple sample boxes even though they
   // not added exclusively.
   std::unique_ptr<mp4::BoxReader> box_reader(
-      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
-                                             written_data.size(), nullptr));
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data, nullptr));
 
   EXPECT_TRUE(box_reader->ScanChildren());
 

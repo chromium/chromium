@@ -79,26 +79,28 @@ std::vector<uint8_t> ESDescriptor::CreateEsds(
   };
 #pragma pack(pop)
 
-  std::vector<uint8_t> esds_data(sizeof(EsDescriptor) + aac_extra_data.size());
-  auto* esds = UNSAFE_TODO(reinterpret_cast<EsDescriptor*>(esds_data.data()));
-
-  esds->tag = kESDescrTag;
+  EsDescriptor esds = {};
+  esds.tag = kESDescrTag;
   EncodeDescriptorSize(
       sizeof(EsDescriptor) - sizeof(Descriptor) + aac_extra_data.size(),
-      esds->size);
+      esds.size);
 
-  esds->decoder_config.tag = kDecoderConfigDescrTag;
+  esds.decoder_config.tag = kDecoderConfigDescrTag;
   EncodeDescriptorSize(sizeof(DecoderConfigDescriptor) - sizeof(Descriptor) +
                            aac_extra_data.size(),
-                       esds->decoder_config.size);
-  esds->decoder_config.aot = kISO_14496_3;  // AAC.
-  esds->decoder_config.flags = 0x15;        // AudioStream
+                       esds.decoder_config.size);
+  esds.decoder_config.aot = kISO_14496_3;  // AAC.
+  esds.decoder_config.flags = 0x15;        // AudioStream
 
-  esds->decoder_config.extra_data.tag = kDecoderSpecificInfoTag;
+  esds.decoder_config.extra_data.tag = kDecoderSpecificInfoTag;
   EncodeDescriptorSize(aac_extra_data.size(),
-                       esds->decoder_config.extra_data.size);
+                       esds.decoder_config.extra_data.size);
 
-  std::ranges::copy(aac_extra_data, esds_data.begin() + sizeof(EsDescriptor));
+  std::vector<uint8_t> esds_data(sizeof(EsDescriptor) + aac_extra_data.size());
+  auto esds_span = base::span(esds_data);
+  esds_span.first<sizeof(EsDescriptor)>().copy_from(
+      base::byte_span_from_ref(esds));
+  esds_span.subspan<sizeof(EsDescriptor)>().copy_from(aac_extra_data);
 
   DCHECK(ESDescriptor().Parse(esds_data));
   return esds_data;

@@ -761,7 +761,7 @@ bool AVCDecoderConfigurationRecord::Parse(BoxReader* reader) {
 }
 
 bool AVCDecoderConfigurationRecord::Parse(base::span<const uint8_t> data) {
-  BufferReader reader(data.data(), data.size());
+  BufferReader reader(data);
   NullMediaLog media_log;
   return ParseInternal(&reader, &media_log);
 }
@@ -1042,8 +1042,8 @@ bool AV1CodecConfigurationRecord::Parse(BoxReader* reader) {
   return ParseInternal(reader, reader->media_log());
 }
 
-bool AV1CodecConfigurationRecord::Parse(const uint8_t* data, int data_size) {
-  BufferReader reader(data, data_size);
+bool AV1CodecConfigurationRecord::Parse(base::span<const uint8_t> data) {
+  BufferReader reader(data);
   NullMediaLog media_log;
   return ParseInternal(&reader, &media_log);
 }
@@ -1788,7 +1788,7 @@ bool IamfSpecificBox::Parse(BoxReader* reader) {
 
   RCHECK(reader->SkipBytes(config_obus_size));
 
-  BufferReader config_reader(ia_descriptors.data(), ia_descriptors.size());
+  BufferReader config_reader(ia_descriptors);
 
   while (config_reader.pos() < config_reader.buffer().size()) {
     RCHECK(ReadOBU(&config_reader));

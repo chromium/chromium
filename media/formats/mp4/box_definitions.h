@@ -276,7 +276,7 @@ struct MEDIA_EXPORT AV1CodecConfigurationRecord : Box {
   // Note: This method is intended to parse data outside the MP4StreamParser
   //       context and therefore the box header is not expected to be present
   //       in |data|
-  bool Parse(const uint8_t* data, int data_size);
+  bool Parse(base::span<const uint8_t> data);
 
   VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
 

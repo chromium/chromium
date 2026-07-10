@@ -153,7 +153,7 @@ bool HEVCDecoderConfigurationRecord::Serialize(
 }
 
 bool HEVCDecoderConfigurationRecord::Parse(base::span<const uint8_t> data) {
-  BufferReader reader(data.data(), data.size());
+  BufferReader reader(data);
   // TODO(wolenetz): Questionable MediaLog usage, http://crbug.com/712310
   NullMediaLog media_log;
   return ParseInternal(&reader, &media_log);

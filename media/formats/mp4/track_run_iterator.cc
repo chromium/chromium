@@ -307,8 +307,8 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
     std::unique_ptr<BufferReader> sample_encryption_reader;
     uint32_t sample_encryption_entries_count = 0;
     if (!sample_encryption_data.empty()) {
-      sample_encryption_reader = std::make_unique<BufferReader>(
-          sample_encryption_data.data(), sample_encryption_data.size());
+      sample_encryption_reader =
+          std::make_unique<BufferReader>(sample_encryption_data);
       RCHECK(sample_encryption_reader->Read4(&sample_encryption_entries_count));
     }
 
@@ -593,8 +593,8 @@ bool TrackRunIterator::CacheAuxInfo(base::span<const uint8_t> buf) {
       info_size = run_itr_->aux_info_sizes[i];
 
     if (IsSampleEncrypted(i)) {
-      BufferReader reader(buf.subspan(base::checked_cast<size_t>(pos)).data(),
-                          info_size);
+      BufferReader reader(buf.subspan(base::checked_cast<size_t>(pos),
+                                      base::checked_cast<size_t>(info_size)));
       const uint8_t iv_size = GetIvSize(i);
       const bool has_subsamples = info_size > iv_size;
       SampleEncryptionEntry& entry = sample_encryption_entries[i];

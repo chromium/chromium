@@ -77,6 +77,15 @@ TEST(ESDescriptorTest, EmptyDataTest) {
   EXPECT_FALSE(es_desc.Parse(data));
 }
 
+TEST(ESDescriptorTest, CreateEsdsTest) {
+  std::vector<uint8_t> extra_data = {0x12, 0x10};
+  std::vector<uint8_t> esds_data = ESDescriptor::CreateEsds(extra_data);
+  ESDescriptor es_desc;
+  EXPECT_TRUE(es_desc.Parse(esds_data));
+  EXPECT_EQ(es_desc.object_type(), kISO_14496_3);
+  EXPECT_EQ(es_desc.decoder_specific_info(), extra_data);
+}
+
 }  // namespace mp4
 
 }  // namespace media

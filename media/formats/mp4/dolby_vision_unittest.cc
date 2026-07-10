@@ -16,7 +16,7 @@ TEST_F(DOVIDecoderConfigurationRecordTest, Profile0Level1ELTrackTest) {
   DOVIDecoderConfigurationRecord dv_config;
   constexpr auto kTestData = std::array<uint8_t, 4>{0x00, 0x00, 0x00, 0x0E};
 
-  dv_config.ParseForTesting(kTestData.data(), kTestData.size());
+  dv_config.ParseForTesting(kTestData);
 
   EXPECT_EQ(dv_config.dv_version_major, 0);
   EXPECT_EQ(dv_config.dv_version_minor, 0);
@@ -34,7 +34,7 @@ TEST_F(DOVIDecoderConfigurationRecordTest, Profile4Test) {
   constexpr auto kTestData =
       std::array<uint8_t, 5>{0x00, 0x00, 0x08, 0x16, 0x20};
 
-  EXPECT_FALSE(dv_config.ParseForTesting(kTestData.data(), kTestData.size()));
+  EXPECT_FALSE(dv_config.ParseForTesting(kTestData));
 }
 
 TEST_F(DOVIDecoderConfigurationRecordTest, Profile5Test) {
@@ -42,7 +42,7 @@ TEST_F(DOVIDecoderConfigurationRecordTest, Profile5Test) {
   constexpr auto kTestData =
       std::array<uint8_t, 5>{0x00, 0x00, 0x0A, 0x17, 0x00};
 
-  dv_config.ParseForTesting(kTestData.data(), kTestData.size());
+  dv_config.ParseForTesting(kTestData);
 
   EXPECT_EQ(dv_config.dv_version_major, 0);
   EXPECT_EQ(dv_config.dv_version_minor, 0);
@@ -60,7 +60,7 @@ TEST_F(DOVIDecoderConfigurationRecordTest, Profile8Point1Test) {
   constexpr auto kTestData =
       std::array<uint8_t, 5>{0x00, 0x00, 0x10, 0x17, 0x10};
 
-  dv_config.ParseForTesting(kTestData.data(), kTestData.size());
+  dv_config.ParseForTesting(kTestData);
 
   EXPECT_EQ(dv_config.dv_version_major, 0);
   EXPECT_EQ(dv_config.dv_version_minor, 0);
@@ -78,7 +78,7 @@ TEST_F(DOVIDecoderConfigurationRecordTest, Profile8Point4Test) {
   constexpr auto kTestData =
       std::array<uint8_t, 5>{0x01, 0x00, 0x10, 0x2d, 0x40};
 
-  dv_config.ParseForTesting(kTestData.data(), kTestData.size());
+  dv_config.ParseForTesting(kTestData);
 
   EXPECT_EQ(dv_config.dv_version_major, 1);
   EXPECT_EQ(dv_config.dv_version_minor, 0);
@@ -96,7 +96,7 @@ TEST_F(DOVIDecoderConfigurationRecordTest, Profile9Test) {
   constexpr auto kTestData =
       std::array<uint8_t, 5>{0x00, 0x00, 0x12, 0x17, 0x20};
 
-  dv_config.ParseForTesting(kTestData.data(), kTestData.size());
+  dv_config.ParseForTesting(kTestData);
 
   EXPECT_EQ(dv_config.dv_version_major, 0);
   EXPECT_EQ(dv_config.dv_version_minor, 0);
@@ -114,7 +114,7 @@ TEST_F(DOVIDecoderConfigurationRecordTest, Profile10Test) {
   constexpr auto kTestData =
       std::array<uint8_t, 5>{0x02, 0x01, 0x14, 0x25, 0x10};
 
-  dv_config.ParseForTesting(kTestData.data(), kTestData.size());
+  dv_config.ParseForTesting(kTestData);
 
   EXPECT_EQ(dv_config.dv_version_major, 2);
   EXPECT_EQ(dv_config.dv_version_minor, 1);
@@ -131,7 +131,7 @@ TEST_F(DOVIDecoderConfigurationRecordTest, ParseNotEnoughData) {
   DOVIDecoderConfigurationRecord dv_config;
   constexpr auto kTestData = std::array<uint8_t, 3>{0x00, 0x00, 0x0C};
 
-  EXPECT_FALSE(dv_config.ParseForTesting(kTestData.data(), kTestData.size()));
+  EXPECT_FALSE(dv_config.ParseForTesting(kTestData));
 }
 
 TEST(DolbyVisionColorSpaceTest, Profile5ReturnsIPTPQApproximation) {
