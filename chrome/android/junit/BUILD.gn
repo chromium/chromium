@@ -725,6 +725,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/customtabs/CustomTabNavigationBarControllerTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabNavigationEventObserverUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabNightModeStateControllerTest.java",
+      "src/org/chromium/chrome/browser/customtabs/CustomTabObserverUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabStatusBarColorProviderTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabsConnectionUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabsFilterTouchUnitTest.java",

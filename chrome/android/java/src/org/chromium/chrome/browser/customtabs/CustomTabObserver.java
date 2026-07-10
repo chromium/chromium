@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.customtabs;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Process;
 import android.os.SystemClock;
@@ -15,13 +18,16 @@ import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.ClientManager.CalledWarmup;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
@@ -30,6 +36,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -76,6 +84,9 @@ public class CustomTabObserver extends EmptyTabObserver {
 
     // Lets Long press on links select the link text instead of triggering context menu.
     private boolean mLongPressLinkSelectText;
+
+    private int mContentBitmapWidth;
+    private int mContentBitmapHeight;
 
     @IntDef({State.RESET, State.WAITING_LOAD_START, State.WAITING_LOAD_FINISH})
     @Retention(RetentionPolicy.SOURCE)
@@ -154,6 +165,28 @@ public class CustomTabObserver extends EmptyTabObserver {
     public CustomTabObserver(boolean openedByChrome, @Nullable SessionHolder<?> token) {
         mCustomTabsConnection = openedByChrome ? null : CustomTabsConnection.getInstance();
         mSession = token;
+        if (mCustomTabsConnection != null
+                && ChromeFeatureList.sCctNavigationInfoScreenshot.isEnabled()
+                && mCustomTabsConnection.shouldSendNavigationInfoForSession(mSession)) {
+            Context appContext = ContextUtils.getApplicationContext();
+            Resources resources = appContext.getResources();
+            float desiredWidth =
+                    resources
+                            .getDimensionPixelSize(R.dimen.custom_tabs_screenshot_width);
+            float desiredHeight =
+                    resources
+                            .getDimensionPixelSize(R.dimen.custom_tabs_screenshot_height);
+            Rect bounds = TabUtils.estimateContentSize(appContext);
+            if (bounds.width() == 0 || bounds.height() == 0) {
+                mContentBitmapWidth = Math.round(desiredWidth);
+                mContentBitmapHeight = Math.round(desiredHeight);
+            } else {
+                float scale =
+                        Math.min(desiredWidth / bounds.width(), desiredHeight / bounds.height());
+                mContentBitmapWidth = Math.round(bounds.width() * scale);
+                mContentBitmapHeight = Math.round(bounds.height() * scale);
+            }
+        }
         resetPageLoadTracking();
     }
 
@@ -458,10 +491,24 @@ public class CustomTabObserver extends EmptyTabObserver {
     private void captureNavigationInfo(final Tab tab) {
         if (mCustomTabsConnection == null) return;
         if (!mCustomTabsConnection.shouldSendNavigationInfoForSession(mSession)) return;
-        if (tab.getWebContents() == null) return;
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null) return;
         String title = tab.getTitle();
         if (TextUtils.isEmpty(title)) return;
-        mCustomTabsConnection.sendNavigationInfo(mSession, tab.getUrl().getSpec(), title, null);
+
+        String urlString = tab.getUrl().getSpec();
+        if (ChromeFeatureList.sCctNavigationInfoScreenshot.isEnabled()) {
+            ShareImageFileUtils.captureScreenshotForContents(
+                    webContents,
+                    mContentBitmapWidth,
+                    mContentBitmapHeight,
+                    (@Nullable Uri snapshotPath) -> {
+                        mCustomTabsConnection.sendNavigationInfo(
+                                mSession, urlString, title, snapshotPath);
+                    });
+        } else {
+            mCustomTabsConnection.sendNavigationInfo(mSession, urlString, title, /* snapshotPath= */ null);
+        }
     }
 
     private void callOnTwaStartupTimeAvailable(Runnable callback) {

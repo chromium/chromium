@@ -18216,6 +18216,7 @@ from previous Chrome versions.
   <int value="1177120582" label="InstallableInkDrop:disabled"/>
   <int value="1177174300" label="LayoutNGTable:disabled"/>
   <int value="1177628103" label="GaiaActionButtons:disabled"/>
+  <int value="1177821222" label="CCTNavigationInfoScreenshot:enabled"/>
   <int value="1178640449" label="ProductivityLauncher:disabled"/>
   <int value="1179013979"
       label="OmniboxUIExperimentMaxAutocompleteMatches:enabled"/>
@@ -20347,6 +20348,7 @@ from previous Chrome versions.
   <int value="1834481596"
       label="DeviceBoundSessionsFederatedRegistration:enabled"/>
   <int value="1834651417" label="GlicDetached:disabled"/>
+  <int value="1834879433" label="CCTNavigationInfoScreenshot:disabled"/>
   <int value="1834968807" label="OmniboxAutocompleteTitles:enabled"/>
   <int value="1835075399" label="PostQuantumCECPQ2:disabled"/>
   <int value="1835523483" label="OmniboxUIExperimentSwapTitleAndUrl:enabled"/>

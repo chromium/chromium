@@ -220,6 +220,8 @@ found in the LICENSE file.
     <dimen name="bookmark_bar_min_height">40dp</dimen>
 
     <!-- Custom Tabs dimensions -->
+    <dimen name="custom_tabs_screenshot_width">300dp</dimen>
+    <dimen name="custom_tabs_screenshot_height">190dp</dimen>
     <dimen name="custom_tabs_drag_handle_padding_top">12dp</dimen>
     <dimen name="custom_tabs_drag_handle_padding_bottom">32dp</dimen>
     <dimen name="custom_tabs_drag_handle_padding_side">4dp</dimen>

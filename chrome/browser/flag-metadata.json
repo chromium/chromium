@@ -1631,6 +1631,11 @@
     "expiry_milestone": 180
   },
   {
+    "name": "cct-navigation-info-screenshot",
+    "owners": [ "tivi@google.com", "chrome-connective-tissue@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "cct-navigation-metrics",
     "owners": ["jinsukkim@chromium.org", "twellington@chromium.org"],
     "expiry_milestone": 155

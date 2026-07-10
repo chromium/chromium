@@ -7799,6 +7799,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCCTIncognitoAvailableToThirdPartyDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTIncognitoAvailableToThirdParty)},
+    {"cct-navigation-info-screenshot",
+     flag_descriptions::kCCTNavigationInfoScreenshotName,
+     flag_descriptions::kCCTNavigationInfoScreenshotDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTNavigationInfoScreenshot)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
