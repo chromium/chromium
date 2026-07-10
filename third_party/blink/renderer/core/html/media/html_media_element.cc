@@ -956,13 +956,22 @@ void HTMLMediaElement::DidRecalcStyle(const StyleRecalcChange change) {
     UpdateLayoutObject();
 }
 
-void HTMLMediaElement::ScheduleTextTrackResourceLoad() {
-  DVLOG(3) << "scheduleTextTrackResourceLoad(" << *this << ")";
+void HTMLMediaElement::ScheduleAutomaticTextTrackSelection() {
+  DVLOG(3) << "scheduleAutomaticTextTrackSelection(" << *this << ")";
 
-  pending_action_flags_ |= kLoadTextTrackResource;
-
-  if (!load_timer_.IsActive())
-    load_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
+  // Queue "honor user preferences for automatic text track selection" on the
+  // media element event task source so it runs after media events already
+  // queued there (e.g. 'play'); the spec requires this selection to be a task
+  // that does not preempt pending media events. Scheduling at most one task at
+  // a time coalesces several track additions in the same turn into a single
+  // selection pass.
+  if (!text_track_selection_task_handle_.IsActive()) {
+    text_track_selection_task_handle_ = PostCancellableTask(
+        *GetDocument().GetTaskRunner(TaskType::kMediaElementEvent), FROM_HERE,
+        BindOnce(&HTMLMediaElement::
+                     HonorUserPreferencesForAutomaticTextTrackSelection,
+                 WrapWeakPersistent(this)));
+  }
 }
 
 void HTMLMediaElement::ScheduleNextSourceChild() {
@@ -987,9 +996,8 @@ void HTMLMediaElement::ScheduleEvent(Event* event) {
 }
 
 void HTMLMediaElement::LoadTimerFired(TimerBase*) {
-  if (pending_action_flags_ & kLoadTextTrackResource)
-    HonorUserPreferencesForAutomaticTextTrackSelection();
-
+  // Text track selection is scheduled separately on the kMediaElementEvent
+  // task source via ScheduleAutomaticTextTrackSelection().
   if (pending_action_flags_ & kLoadMediaResource) {
     if (load_state_ == kLoadingFromSourceElement)
       LoadNextSourceChild();
@@ -1108,8 +1116,6 @@ void HTMLMediaElement::InvokeLoadAlgorithm() {
     lazy_media_load_state_ = LazyMediaLoadState::kNone;
     LazyMediaHelper::StopMonitoring(this);
   }
-  // FIXME: Figure out appropriate place to reset LoadTextTrackResource if
-  // necessary and set pending_action_flags_ to 0 here.
   pending_action_flags_ &= ~kLoadMediaResource;
   if (sent_stalled_event_) {
     sent_stalled_event_ = false;
@@ -1967,6 +1973,17 @@ void HTMLMediaElement::TextTrackModeChanged(TextTrack* track) {
   // mode again.
   if (IsA<LoadableTextTrack>(track))
     track->SetHasBeenConfigured(true);
+
+  // Selection now runs after LoadInternal() has built
+  // text_tracks_when_resource_selection_began_, the list of tracks autoplay
+  // waits for before reaching HAVE_ENOUGH_DATA. A track that selection enables
+  // this late is missing from that list, so add it here (unless playback is
+  // already ready) so autoplay still waits for its cues to load.
+  if (web_media_player_ && track->mode() != TextTrackMode::kDisabled &&
+      ready_state_ < kHaveEnoughData &&
+      !text_tracks_when_resource_selection_began_.Contains(track)) {
+    text_tracks_when_resource_selection_began_.push_back(track);
+  }
 
   if (track->IsRendered()) {
     GetDocument().GetStyleEngine().AddTextTrack(track);
@@ -3744,7 +3761,7 @@ void HTMLMediaElement::DidAddTrackElement(HTMLTrackElement* track_element) {
   // Do not schedule the track loading until parsing finishes so we don't start
   // before all tracks in the markup have been added.
   if (IsFinishedParsingChildren())
-    ScheduleTextTrackResourceLoad();
+    ScheduleAutomaticTextTrackSelection();
 }
 
 void HTMLMediaElement::DidRemoveTrackElement(HTMLTrackElement* track_element) {
