@@ -18,40 +18,30 @@ namespace blink {
 namespace {
 
 ShapeReferenceBox GetDefaultBox(CSSPropertyID property_id) {
-  ShapeReferenceBox box;
   switch (property_id) {
     case CSSPropertyID::kClipPath:
-      box.geometry = GeometryBox::kBorderBox;
-      break;
+      return GeometryBox::kBorderBox;
     case CSSPropertyID::kOffsetPath:
-      box.coord = CoordBox::kBorderBox;
-      break;
+      return CoordBox::kBorderBox;
     case CSSPropertyID::kShapeOutside:
-      box.shape = ShapeBox::kMarginBox;
-      break;
+      return ShapeBox::kMarginBox;
     default:
-      break;
+      return {};
   }
-  return box;
 }
 
 ShapeReferenceBox GetBox(CSSPropertyID property_id,
                          const CSSIdentifierValue& ident) {
-  ShapeReferenceBox box;
   switch (property_id) {
     case CSSPropertyID::kClipPath:
-      box.geometry = ident.ConvertTo<GeometryBox>();
-      break;
+      return ident.ConvertTo<GeometryBox>();
     case CSSPropertyID::kOffsetPath:
-      box.coord = ident.ConvertTo<CoordBox>();
-      break;
+      return ident.ConvertTo<CoordBox>();
     case CSSPropertyID::kShapeOutside:
-      box.shape = ident.ConvertTo<ShapeBox>();
-      break;
+      return ident.ConvertTo<ShapeBox>();
     default:
-      break;
+      return {};
   }
-  return box;
 }
 
 }  // namespace
@@ -65,10 +55,7 @@ BasicShapeInfo shape_property_functions::GetBasicShape(
       if (!operation) {
         return {};
       }
-      BasicShapeInfo info;
-      info.shape = &operation->GetBasicShape();
-      info.box.geometry = operation->GetGeometryBox();
-      return info;
+      return {&operation->GetBasicShape(), operation->GetGeometryBox()};
     }
     case CSSPropertyID::kD:
       return {style.D()};
@@ -79,20 +66,14 @@ BasicShapeInfo shape_property_functions::GetBasicShape(
       if (!operation) {
         return {};
       }
-      BasicShapeInfo info;
-      info.shape = &operation->GetBasicShape();
-      info.box.coord = operation->GetCoordBox();
-      return info;
+      return {&operation->GetBasicShape(), operation->GetCoordBox()};
     }
     case CSSPropertyID::kShapeOutside: {
       const ShapeValue* shape_value = style.ShapeOutside();
       if (!shape_value || shape_value->GetType() != ShapeValue::kShape) {
         return {};
       }
-      BasicShapeInfo info;
-      info.shape = &shape_value->Shape();
-      info.box.shape = shape_value->CssBox();
-      return info;
+      return {&shape_value->Shape(), shape_value->CssBox()};
     }
     default:
       NOTREACHED();
@@ -106,7 +87,7 @@ void shape_property_functions::SetBasicShape(const CSSProperty& property,
   switch (property.PropertyID()) {
     case CSSPropertyID::kClipPath:
       builder.SetClipPath(MakeGarbageCollected<ShapeClipPathOperation>(
-          shape, box.geometry.value_or(GeometryBox::kBorderBox)));
+          shape, std::get<GeometryBox>(box)));
       break;
     case CSSPropertyID::kD:
       builder.SetD(&To<StylePath>(shape));
@@ -116,11 +97,11 @@ void shape_property_functions::SetBasicShape(const CSSProperty& property,
       break;
     case CSSPropertyID::kOffsetPath:
       builder.SetOffsetPath(MakeGarbageCollected<ShapeOffsetPathOperation>(
-          shape, box.coord.value_or(CoordBox::kBorderBox)));
+          shape, std::get<CoordBox>(box)));
       break;
     case CSSPropertyID::kShapeOutside:
-      builder.SetShapeOutside(MakeGarbageCollected<ShapeValue>(
-          shape, box.shape.value_or(ShapeBox::kMarginBox)));
+      builder.SetShapeOutside(
+          MakeGarbageCollected<ShapeValue>(shape, std::get<ShapeBox>(box)));
       break;
     default:
       NOTREACHED();

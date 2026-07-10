@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SHAPE_PROPERTY_FUNCTIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SHAPE_PROPERTY_FUNCTIONS_H_
 
-#include <optional>
+#include <variant>
 
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -18,13 +18,8 @@ class CSSValue;
 class ComputedStyle;
 class ComputedStyleBuilder;
 
-struct ShapeReferenceBox {
-  std::optional<GeometryBox> geometry;
-  std::optional<CoordBox> coord;
-  std::optional<ShapeBox> shape;
-
-  bool operator==(const ShapeReferenceBox&) const = default;
-};
+using ShapeReferenceBox =
+    std::variant<std::monostate, GeometryBox, CoordBox, ShapeBox>;
 
 struct BasicShapeInfo {
   STACK_ALLOCATED();
