@@ -5389,6 +5389,7 @@ if (!is_android) {
       "chrome_worker_browsertest.cc",
       "crash_recovery_browsertest.cc",
       "fast_shutdown_browsertest.cc",
+      "file_select_helper_browsertest.cc",
       "icon_loader_browsertest.cc",
       "iframe_browsertest.cc",
       "l10n_util_browsertest.cc",
@@ -5408,6 +5409,7 @@ if (!is_android) {
       ":chained_back_navigation_tracker",
       ":chrome_browser_main",
       ":chrome_content_browser_client",
+      ":file_select_helper",
       ":icon_loader",
       ":platform_util_internal",
       "//base",
@@ -5439,6 +5441,7 @@ if (!is_android) {
       "//pdf:features",
       "//storage/browser:test_support",
       "//testing/gtest",
+      "//ui/shell_dialogs:test_support",
     ]
 
     if (is_win || is_linux || is_chromeos) {
