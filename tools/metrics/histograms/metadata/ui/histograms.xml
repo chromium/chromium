@@ -1267,6 +1267,30 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
+<histogram name="Views.FocusRing.RefreshLayer.Time" units="microseconds"
+    expires_after="2026-10-10">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the duration of all FocusRing::RefreshLayer calls. Recorded when the
+    focus ring's layer is refreshed. This captures fast cached cases as well as
+    slow layer creation/destruction cases. This metric is only reported for
+    clients with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Views.FocusRing.RefreshLayer.Time.NotCached"
+    units="microseconds" expires_after="2026-10-10">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the duration of FocusRing::RefreshLayer calls that result in actual
+    layer creation or destruction. Recorded when the focus ring's layer is
+    refreshed and results in actual layer creation or destruction. This metric
+    is only reported for clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Views.InvalidatesDuringLayout" units="count"
     expires_after="2026-11-22">
   <owner>dpranke@chromium.org</owner>

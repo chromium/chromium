@@ -11,7 +11,9 @@
 
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
@@ -374,6 +376,19 @@ void FocusRing::Refresh() {
 }
 
 void FocusRing::RefreshLayer(bool should_paint) {
+  TRACE_EVENT0("views", "FocusRing::RefreshLayer");
+  base::ScopedUmaHistogramTimer timer(
+      "Views.FocusRing.RefreshLayer.Time",
+      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
+
+  bool will_change_layer = (should_paint != !!layer());
+  std::optional<base::ScopedUmaHistogramTimer> not_cached_timer;
+  if (will_change_layer) {
+    not_cached_timer.emplace("Views.FocusRing.RefreshLayer.Time.NotCached",
+                             base::ScopedUmaHistogramTimer::
+                                 ScopedHistogramTiming::kMicrosecondTimes);
+  }
+
   SetVisible(should_paint);
   if (should_paint) {
     // A layer is necessary to paint beyond the parent's bounds.
