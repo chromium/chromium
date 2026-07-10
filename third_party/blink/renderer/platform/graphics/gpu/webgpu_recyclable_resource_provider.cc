@@ -33,7 +33,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
@@ -141,16 +140,14 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
           gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
           gpu::SHARED_IMAGE_USAGE_GLES2_READ;
 
-      auto client_shared_image = sii->CreateSharedImage(
+      shared_image_ = sii->CreateSharedImage(
           {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
            shared_image_usage_flags, "CanvasResourceRaster"},
           gpu::kNullSurfaceHandle);
 
-      if (client_shared_image) {
-        resource_ = base::MakeRefCounted<CanvasResourceSharedImage>(
-            std::move(client_shared_image));
-        resource_->Initialize(/*client=*/nullptr, context_provider_wrapper_,
-                              hdr_metadata_, /*is_accelerated=*/true);
+      if (shared_image_) {
+        WaitSyncToken(shared_image_->creation_sync_token());
+        release_sync_token_ = shared_image_->creation_sync_token();
       }
     }
   }
@@ -172,8 +169,8 @@ void WebGpuRecyclableResourceProvider::OnContextDestroyed() {
 void WebGpuRecyclableResourceProvider::WaitSyncToken(
     const gpu::SyncToken& sync_token) {
   if (sync_token.HasData()) {
-    resource()->set_acquire_sync_token(sync_token);
-    resource()->GetSharedImage()->UpdateDestructionSyncToken(sync_token);
+    acquire_sync_token_ = sync_token;
+    shared_image_->UpdateDestructionSyncToken(acquire_sync_token_);
   }
 }
 
@@ -192,8 +189,8 @@ bool WebGpuRecyclableResourceProvider::IsGpuContextLost() const {
 }
 
 void WebGpuRecyclableResourceProvider::PrepareForWebGPUDummyMailbox() {
-  if (resource()) {
-    resource()->SetReleaseSyncToken(resource()->acquire_sync_token());
+  if (shared_image_) {
+    release_sync_token_ = acquire_sync_token_;
   }
 }
 
@@ -204,15 +201,14 @@ WebGpuRecyclableResourceProvider::BeginExternalOverwrite(
     return nullptr;
   }
 
-
   // NOTE: Invoking WillDrawInternal() ensures that this invocation of
   // EndAccess() will generate a new sync token.
   auto access = WillDrawInternal();
   auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-  resource()->SetReleaseSyncToken(sync_token);
-  resource()->GetSharedImage()->UpdateDestructionSyncToken(sync_token);
-  internal_access_sync_token = resource_->sync_token();
-  return resource_->GetSharedImage();
+  release_sync_token_ = sync_token;
+  shared_image_->UpdateDestructionSyncToken(sync_token);
+  internal_access_sync_token = release_sync_token_;
+  return shared_image_;
 }
 
 void WebGpuRecyclableResourceProvider::EndExternalWrite(
@@ -229,11 +225,11 @@ void WebGpuRecyclableResourceProvider::EndExternalWrite(
   // write to complete by ensuring that a new sync token is generated on the
   // internal interface. This new sync token will be chained after
   // `external_write_sync_token` thanks to the wait above.
-  auto access = resource()->GetSharedImage()->BeginRasterAccess(
-      RasterInterface(), resource()->acquire_sync_token(), /*readonly=*/true);
+  auto access = shared_image_->BeginRasterAccess(
+      RasterInterface(), acquire_sync_token_, /*readonly=*/true);
   auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-  resource()->SetReleaseSyncToken(sync_token);
-  resource()->GetSharedImage()->UpdateDestructionSyncToken(sync_token);
+  release_sync_token_ = sync_token;
+  shared_image_->UpdateDestructionSyncToken(sync_token);
 }
 
 void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
@@ -281,7 +277,7 @@ void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
                                      : gpu::raster::MsaaMode::kNoMSAA,
                             can_use_lcd_text, /*visible=*/true, GetColorSpace(),
                             /*hdr_headroom=*/0.f,
-                            resource()->GetSharedImage()->mailbox().name);
+                            shared_image_->mailbox().name);
 
     auto* image_provider = GetOrCreateImageProvider();
     ri->RasterCHROMIUM(
@@ -292,8 +288,8 @@ void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
 
     ri->EndRasterCHROMIUM();
     auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-    resource()->SetReleaseSyncToken(sync_token);
-    resource()->GetSharedImage()->UpdateDestructionSyncToken(sync_token);
+    release_sync_token_ = sync_token;
+    shared_image_->UpdateDestructionSyncToken(sync_token);
 
     if (canvas_image_provider_) {
       canvas_image_provider_->ReleaseLockedImages();
@@ -304,10 +300,10 @@ void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
 
 std::unique_ptr<gpu::RasterScopedAccess>
 WebGpuRecyclableResourceProvider::WillDrawInternal() {
-  DCHECK(resource_);
-  return resource()->GetSharedImage()->BeginRasterAccess(
-      RasterInterface(), resource()->acquire_sync_token(),
-      /*readonly=*/false);
+  DCHECK(shared_image_);
+  return shared_image_->BeginRasterAccess(RasterInterface(),
+                                          acquire_sync_token_,
+                                          /*readonly=*/false);
 }
 
 bool WebGpuRecyclableResourceProvider::UploadToBackingSharedImage(
@@ -334,13 +330,12 @@ bool WebGpuRecyclableResourceProvider::UploadToBackingSharedImage(
 
   auto access = WillDrawInternal();
 
-  auto client_si = resource()->GetSharedImage();
-  RasterInterface()->WritePixels(client_si->mailbox(), /*dst_x_offset=*/0,
+  RasterInterface()->WritePixels(shared_image_->mailbox(), /*dst_x_offset=*/0,
                                  /*dst_y_offset=*/0,
-                                 client_si->GetTextureTarget(), subset);
+                                 shared_image_->GetTextureTarget(), subset);
   auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-  resource()->SetReleaseSyncToken(sync_token);
-  resource()->GetSharedImage()->UpdateDestructionSyncToken(sync_token);
+  release_sync_token_ = sync_token;
+  shared_image_->UpdateDestructionSyncToken(sync_token);
 
   is_cleared_ = true;
 
@@ -366,26 +361,18 @@ bool WebGpuRecyclableResourceProvider::CopyToBackingSharedImage(
 
   auto dst_access = WillDrawInternal();
 
-  auto dst_client_si = resource()->GetSharedImage();
-  if (!dst_client_si) {
-    auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(dst_access));
-    resource()->SetReleaseSyncToken(sync_token);
-    resource()->GetSharedImage()->UpdateDestructionSyncToken(sync_token);
-    return false;
-  }
-
   std::unique_ptr<gpu::RasterScopedAccess> src_access =
       shared_image->BeginRasterAccess(raster, ready_sync_token,
                                       /*readonly=*/true);
-  raster->CopySharedImage(shared_image->mailbox(), dst_client_si->mailbox(),
+  raster->CopySharedImage(shared_image->mailbox(), shared_image_->mailbox(),
                           /*xoffset=*/0,
                           /*yoffset=*/0, copy_rect.x(), copy_rect.y(),
                           copy_rect.width(), copy_rect.height());
   completion_sync_token =
       gpu::RasterScopedAccess::EndAccess(std::move(src_access));
   auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(dst_access));
-  resource()->SetReleaseSyncToken(sync_token);
-  resource()->GetSharedImage()->UpdateDestructionSyncToken(sync_token);
+  release_sync_token_ = sync_token;
+  shared_image_->UpdateDestructionSyncToken(sync_token);
   is_cleared_ = true;
   return true;
 }
@@ -395,14 +382,14 @@ WebGpuRecyclableResourceProvider::GetSharedImage() const {
   if (IsGpuContextLost()) {
     return nullptr;
   }
-  return resource_ ? resource_->GetSharedImage() : nullptr;
+  return shared_image_;
 }
 
 gpu::SyncToken WebGpuRecyclableResourceProvider::GetSyncToken() const {
   if (IsGpuContextLost()) {
     return gpu::SyncToken();
   }
-  return resource_ ? resource_->sync_token() : gpu::SyncToken();
+  return shared_image_ ? release_sync_token_ : gpu::SyncToken();
 }
 
 CanvasImageProvider*
@@ -434,15 +421,15 @@ WebGpuRecyclableResourceProvider::GetOrCreateImageProvider() {
 
 base::ByteSize WebGpuRecyclableResourceProvider::EstimatedSizeInBytes() const {
   base::ByteSize result;
-  if (resource_) {
-    result += resource_->EstimatedSizeInBytes();
+  if (shared_image_) {
+    result += shared_image_->EstimatedSizeInBytes();
   }
   return result;
 }
 
 void WebGpuRecyclableResourceProvider::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
-  if (!resource() || !resource()->IsValid()) {
+  if (!shared_image_) {
     return;
   }
 
@@ -451,16 +438,15 @@ void WebGpuRecyclableResourceProvider::OnMemoryDump(
 
   std::string dump_name =
       base::StringPrintf("%s/CanvasResource_0x%" PRIXPTR, path.c_str(),
-                         reinterpret_cast<uintptr_t>(resource()));
+                         reinterpret_cast<uintptr_t>(this));
   auto* dump = pmd->CreateAllocatorDump(dump_name);
-  auto client_si = resource()->GetSharedImage();
   size_t memory_size =
-      client_si->format().EstimatedSizeInBytes(client_si->size());
+      shared_image_->format().EstimatedSizeInBytes(shared_image_->size());
   dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                   base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                   memory_size);
 
-  client_si->OnMemoryDump(
+  shared_image_->OnMemoryDump(
       pmd, dump->guid(),
       static_cast<int>(gpu::TracingImportance::kClientOwner));
 }

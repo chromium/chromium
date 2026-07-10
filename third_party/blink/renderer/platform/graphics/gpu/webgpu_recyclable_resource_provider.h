@@ -21,7 +21,6 @@
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -137,13 +136,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
 
   gpu::raster::RasterInterface* RasterInterface() const;
 
-  CanvasResourceSharedImage* resource() {
-    return static_cast<CanvasResourceSharedImage*>(resource_.get());
-  }
-  const CanvasResourceSharedImage* resource() const {
-    return static_cast<const CanvasResourceSharedImage*>(resource_.get());
-  }
-
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const {
     return context_provider_wrapper_;
@@ -162,8 +154,9 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
 
-
-  scoped_refptr<CanvasResourceSharedImage> resource_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
+  gpu::SyncToken acquire_sync_token_;
+  gpu::SyncToken release_sync_token_;
 
   bool is_cleared_ = false;
 
