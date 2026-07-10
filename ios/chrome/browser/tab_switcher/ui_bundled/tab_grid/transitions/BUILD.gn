@@ -34,3 +34,8 @@ source_set("transitions_context") {
   deps = [ "//base" ]
   visibility = [ "//ios/chrome/browser/*" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [ "animations:unit_tests" ]
+}

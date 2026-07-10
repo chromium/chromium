@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TRANSITIONS_ANIMATIONS_TAB_GRID_TRANSITION_ANIMATION_H_
 #define IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TRANSITIONS_ANIMATIONS_TAB_GRID_TRANSITION_ANIMATION_H_
 
+#import <Foundation/Foundation.h>
+
 #import "base/ios/block_types.h"
 
 // Protocol for the tab grid transition animations.

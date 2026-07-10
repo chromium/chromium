@@ -623,6 +623,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs/tests:unit_tests",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:unit_tests",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars:unit_tests",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions:unit_tests",
     "//ios/chrome/browser/tabs/model:unit_tests",
     "//ios/chrome/browser/tabs/model/inactive_tabs:unit_tests",
     "//ios/chrome/browser/tabs_search/model:unit_tests",
