@@ -24,6 +24,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <array>
+#include <string_view>
 #include <tuple>
 
 #include "base/clang_profiling_buildflags.h"
@@ -82,18 +84,18 @@ void TestPipeOrSocketPair(base::ScopedFD read_end, base::ScopedFD write_end) {
   BPF_ASSERT_EQ(EPERM, errno);
 
   const ssize_t kTestTransferSize = 4;
-  static const char kTestString[kTestTransferSize] = {'T', 'E', 'S', 'T'};
+  static constexpr std::array<char, kTestTransferSize> kTestString = {'T', 'E',
+                                                                      'S', 'T'};
   ssize_t transfered = 0;
 
   transfered = HANDLE_EINTR(
-      UNSAFE_TODO(write(write_end.get(), kTestString, kTestTransferSize)));
+      write(write_end.get(), kTestString.data(), kTestString.size()));
   BPF_ASSERT_EQ(kTestTransferSize, transfered);
-  char read_buf[kTestTransferSize + 1] = {};
-  transfered = HANDLE_EINTR(
-      UNSAFE_TODO(read(read_end.get(), read_buf, sizeof(read_buf))));
+  std::array<char, kTestTransferSize> read_buf = {};
+  transfered =
+      HANDLE_EINTR(read(read_end.get(), read_buf.data(), read_buf.size()));
   BPF_ASSERT_EQ(kTestTransferSize, transfered);
-  BPF_ASSERT_EQ(0,
-                UNSAFE_TODO(memcmp(kTestString, read_buf, kTestTransferSize)));
+  BPF_ASSERT_EQ(kTestString, read_buf);
 }
 
 // Test that a few easy-to-test system calls are allowed.
