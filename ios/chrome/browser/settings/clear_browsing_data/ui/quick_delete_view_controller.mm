@@ -248,6 +248,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // No-op: This ViewController doesn't show the "Manage other data" cell.
 }
 
+- (void)setShouldShowFooter:(BOOL)shouldShowFooter {
+  // No-op: This ViewController doesn't have a footer.
+}
+
 - (void)setHistorySummary:(NSString*)historySummary {
   // No-op: This ViewController doesn't show the individual summaries for each
   // browsing data type.

@@ -25,6 +25,10 @@ enum class TimePeriod;
 // Sets the ViewController with the subtitle for the "Manage other data" cell.
 - (void)setManageOtherDataSubtitle:(NSString*)manageOtherDataSubtitle;
 
+// Sets whether the Quick Delete Browsing Data ViewController should show the
+// disclaimer footer string.
+- (void)setShouldShowFooter:(BOOL)shouldShowFooter;
+
 // Sets the ViewController with the history summary.
 - (void)setHistorySummary:(NSString*)historySummary;
 

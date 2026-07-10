@@ -293,6 +293,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   [_consumer setTimeRange:_selectedTimeRange];
   [_consumer setManageOtherDataTitle:[self manageOtherDataTitle]];
   [_consumer setManageOtherDataSubtitle:[self manageOtherDataSubtitle]];
+  [_consumer setShouldShowFooter:_isSignedIn];
   [_consumer
       setHistorySelection:_prefs->GetBoolean(
                               browsing_data::prefs::kDeleteBrowsingHistory)];
@@ -541,9 +542,11 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       _isSignedIn = YES;
+      [_consumer setShouldShowFooter:YES];
       break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       _isSignedIn = NO;
+      [_consumer setShouldShowFooter:NO];
       break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
