@@ -832,6 +832,34 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_ink_ink_authoring_java") {
+    deps = [ ":androidx_ink_ink_authoring_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_ink_ink_authoring_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_ink_ink_authoring_android/ink-authoring-android.aar"
+    info_path = "../androidx/committed/libs/androidx_ink_ink_authoring_android/androidx_ink_ink_authoring_android.info"
+    enable_bytecode_checks = false
+    deps = [
+      ":androidx_collection_collection_java",
+      ":androidx_core_core_java",
+      ":androidx_core_core_ktx_java",
+      ":androidx_fragment_fragment_ktx_java",
+      ":androidx_graphics_graphics_core_java",
+      ":androidx_ink_ink_brush_java",
+      ":androidx_ink_ink_geometry_java",
+      ":androidx_ink_ink_nativeloader_java",
+      ":androidx_ink_ink_rendering_java",
+      ":androidx_ink_ink_strokes_java",
+      ":androidx_input_input_motionprediction_java",
+      ":androidx_test_espresso_espresso_idling_resource_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_ink_ink_brush_android_java") {
     aar_path = "../androidx/cipd/libs/androidx_ink_ink_brush_android/ink-brush-android.aar"
     info_path = "../androidx/committed/libs/androidx_ink_ink_brush_android/androidx_ink_ink_brush_android.info"
@@ -2261,6 +2289,7 @@ if (!limit_android_deps) {
       ":androidx_compose_animation_animation_core_java",
       ":androidx_compose_foundation_foundation_java",
       ":androidx_compose_foundation_foundation_layout_java",
+      ":androidx_compose_material3_material3_ripple_java",
       ":androidx_compose_material_material_ripple_java",
       ":androidx_compose_runtime_runtime_java",
       ":androidx_compose_ui_ui_java",
@@ -2268,6 +2297,40 @@ if (!limit_android_deps) {
       ":androidx_compose_ui_ui_util_java",
       ":androidx_graphics_graphics_shapes_java",
       ":androidx_lifecycle_lifecycle_common_java8_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_compose_material3_material3_ripple_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_compose_material3_material3_ripple_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt(
+      "androidx_compose_material3_material3_ripple_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_compose_material3_material3_ripple_android/material3-ripple-android.aar"
+    info_path = "../androidx/committed/libs/androidx_compose_material3_material3_ripple_android/androidx_compose_material3_material3_ripple_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_collection_collection_java",
+      ":androidx_compose_animation_animation_java",
+      ":androidx_compose_foundation_foundation_java",
+      ":androidx_compose_runtime_runtime_java",
+      ":androidx_compose_ui_ui_util_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -3028,47 +3091,6 @@ if (!limit_android_deps) {
       ":androidx_annotation_annotation_java",
       ":androidx_collection_collection_java",
       ":androidx_core_core_ktx_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_java_group("androidx_ink_ink_authoring_java") {
-    # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.template
-    visibility = [
-      ":*",
-      "//third_party/android_deps:*",
-    ]
-    deps = [ ":androidx_ink_ink_authoring_android_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_android_aar_prebuilt("androidx_ink_ink_authoring_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_ink_ink_authoring_android/ink-authoring-android.aar"
-    info_path = "../androidx/committed/libs/androidx_ink_ink_authoring_android/androidx_ink_ink_authoring_android.info"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.template
-    visibility = [
-      ":*",
-      "//third_party/android_deps:*",
-    ]
-    deps = [
-      ":androidx_collection_collection_java",
-      ":androidx_core_core_java",
-      ":androidx_core_core_ktx_java",
-      ":androidx_fragment_fragment_ktx_java",
-      ":androidx_graphics_graphics_core_java",
-      ":androidx_ink_ink_brush_java",
-      ":androidx_ink_ink_geometry_java",
-      ":androidx_ink_ink_nativeloader_java",
-      ":androidx_ink_ink_rendering_java",
-      ":androidx_ink_ink_strokes_java",
-      ":androidx_input_input_motionprediction_java",
-      ":androidx_test_espresso_espresso_idling_resource_java",
-      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }

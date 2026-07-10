@@ -29,6 +29,7 @@
     "committed/libs/androidx_compose_foundation_foundation_android",
     "committed/libs/androidx_compose_foundation_foundation_layout_android",
     "committed/libs/androidx_compose_material3_material3_android",
+    "committed/libs/androidx_compose_material3_material3_ripple_android",
     "committed/libs/androidx_compose_material_material_ripple_android",
     "committed/libs/androidx_compose_runtime_runtime_android",
     "committed/libs/androidx_compose_runtime_runtime_annotation_android",

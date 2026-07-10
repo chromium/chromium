@@ -1,0 +1,20 @@
+Name: Compose Material3 Ripple
+Short Name: material3-ripple-android
+URL: https://androidx.dev/snapshots/builds/15831903/artifacts/repository/androidx/compose/material3/material3-ripple-android/1.5.0-SNAPSHOT/material3-ripple-android-1.5.0-20260710.131952-1.aar
+Version: 1.5.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Building block APIs to build ripples that follow a Material 3 specification.
+
+See also: https://developer.android.com/jetpack/androidx/releases/compose-material3#1.5.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.
