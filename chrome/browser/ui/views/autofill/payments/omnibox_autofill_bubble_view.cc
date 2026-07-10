@@ -29,8 +29,12 @@ class SuggestionButton : public views::Button {
   METADATA_HEADER(SuggestionButton, views::Button)
  public:
   SuggestionButton(std::unique_ptr<PopupRowContentView> content_view,
-                   const std::u16string& accessible_name)
-      : content_view_(AddChildView(std::move(content_view))) {
+                   const std::u16string& accessible_name,
+                   PressedCallback pressed_callback,
+                   base::RepeatingClosure selected_callback)
+      : views::Button(std::move(pressed_callback)),
+        content_view_(AddChildView(std::move(content_view))),
+        selected_callback_(std::move(selected_callback)) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetRequestFocusOnPress(true);
@@ -59,10 +63,21 @@ class SuggestionButton : public views::Button {
 
  private:
   void UpdateSelectionState(bool selected) {
-    content_view_->UpdateStyle(selected);
+    if (selected_ != selected) {
+      selected_ = selected;
+      content_view_->UpdateStyle(selected);
+      if (selected_) {
+        RequestFocus();
+        if (selected_callback_) {
+          selected_callback_.Run();
+        }
+      }
+    }
   }
 
   raw_ptr<PopupRowContentView> content_view_;
+  base::RepeatingClosure selected_callback_;
+  bool selected_ = false;
 };
 
 BEGIN_METADATA(SuggestionButton)
@@ -151,6 +166,7 @@ void OmniboxAutofillBubbleView::Init() {
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL));
 
+  size_t row_index = 0;
   for (const auto& suggestion : suggestions) {
     std::unique_ptr<PopupRowContentView> content_view;
     if (suggestion.type == SuggestionType::kVirtualCreditCardEntry) {
@@ -165,12 +181,32 @@ void OmniboxAutofillBubbleView::Init() {
     }
 
     auto suggestion_button = std::make_unique<SuggestionButton>(
-        std::move(content_view), suggestion.main_text.value);
+        std::move(content_view), suggestion.main_text.value,
+        base::BindRepeating(&OmniboxAutofillBubbleView::OnSuggestionAccepted,
+                            base::Unretained(this), suggestion, row_index),
+        base::BindRepeating(&OmniboxAutofillBubbleView::OnSuggestionSelected,
+                            base::Unretained(this), suggestion));
     // Ensures the first suggestion is initially focused.
     if (!initially_focused_view_) {
       initially_focused_view_ = suggestion_button.get();
     }
     suggestions_container->AddChildView(std::move(suggestion_button));
+    row_index++;
+  }
+}
+
+void OmniboxAutofillBubbleView::OnSuggestionAccepted(
+    const Suggestion& suggestion,
+    size_t row_index) {
+  if (controller_) {
+    controller_->OnSuggestionAccepted(suggestion, row_index);
+  }
+}
+
+void OmniboxAutofillBubbleView::OnSuggestionSelected(
+    const Suggestion& suggestion) {
+  if (controller_) {
+    controller_->OnSuggestionSelected(suggestion);
   }
 }
 

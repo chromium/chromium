@@ -70,6 +70,8 @@ class OmniboxAutofillBubbleController : public AutofillBubbleControllerBase {
 
   void OnSuggestionsShown();
   void OnBubbleClosed(PaymentsUiClosedReason reason);
+  void OnSuggestionSelected(const Suggestion& suggestion);
+  void OnSuggestionAccepted(const Suggestion& suggestion, size_t row);
 
   bool ShouldShowGooglePayLogo() const;
 

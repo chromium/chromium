@@ -129,6 +129,45 @@ TEST_F(OmniboxAutofillBubbleControllerTest, OnSuggestionsShown) {
   controller_->OnSuggestionsShown();
 }
 
+TEST_F(OmniboxAutofillBubbleControllerTest, OnSuggestionSelected) {
+  std::vector<Suggestion> suggestions = {
+      Suggestion(u"Card", SuggestionType::kCreditCardEntry)};
+
+  base::MockRepeatingCallback<void(const Suggestion&)>
+      did_select_suggestion_callback;
+
+  controller_->Initialize(suggestions, base::DoNothing(), base::DoNothing(),
+                          did_select_suggestion_callback.Get(),
+                          base::DoNothing());
+
+  EXPECT_CALL(
+      did_select_suggestion_callback,
+      Run(testing::Field(&Suggestion::type, SuggestionType::kCreditCardEntry)));
+  controller_->OnSuggestionSelected(suggestions[0]);
+}
+
+TEST_F(OmniboxAutofillBubbleControllerTest, OnSuggestionAccepted) {
+  std::vector<Suggestion> suggestions = {
+      Suggestion(u"Card", SuggestionType::kCreditCardEntry)};
+
+  base::MockRepeatingCallback<void(
+      const Suggestion&, const AutofillSuggestionDelegate::SuggestionMetadata&)>
+      did_accept_suggestion_callback;
+
+  controller_->Initialize(suggestions, base::DoNothing(), base::DoNothing(),
+                          base::DoNothing(),
+                          did_accept_suggestion_callback.Get());
+
+  size_t expected_row = 2;
+  EXPECT_CALL(
+      did_accept_suggestion_callback,
+      Run(testing::Field(&Suggestion::type, SuggestionType::kCreditCardEntry),
+          testing::Property(
+              &AutofillSuggestionDelegate::SuggestionMetadata::row,
+              expected_row)));
+  controller_->OnSuggestionAccepted(suggestions[0], expected_row);
+}
+
 struct ClosedReasonMapping {
   PaymentsUiClosedReason closed_reason;
   SuggestionHidingReason hiding_reason;

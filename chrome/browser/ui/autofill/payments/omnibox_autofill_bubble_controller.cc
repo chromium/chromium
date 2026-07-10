@@ -143,6 +143,23 @@ void OmniboxAutofillBubbleController::OnBubbleClosed(
   ResetBubbleViewAndInformBubbleManager();
 }
 
+void OmniboxAutofillBubbleController::OnSuggestionSelected(
+    const Suggestion& suggestion) {
+  if (did_select_suggestion_callback_) {
+    did_select_suggestion_callback_.Run(suggestion);
+  }
+}
+
+void OmniboxAutofillBubbleController::OnSuggestionAccepted(
+    const Suggestion& suggestion,
+    size_t row) {
+  if (did_accept_suggestion_callback_) {
+    AutofillSuggestionDelegate::SuggestionMetadata metadata{
+        .multi_index = {row}};
+    did_accept_suggestion_callback_.Run(suggestion, metadata);
+  }
+}
+
 base::WeakPtr<OmniboxAutofillBubbleController>
 OmniboxAutofillBubbleController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
