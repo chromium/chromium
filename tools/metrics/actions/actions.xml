@@ -5071,6 +5071,14 @@ should be able to be added at any place in this file.
   <description>The survey infobar was displayed.</description>
 </action>
 
+<action name="Android.TabStrip.GlicButton.Unpin">
+  <owner>mklw@google.com</owner>
+  <description>
+    User tapped 'Unpin' on the Glic button context menu to unpin the Glic button
+    from the tab strip.
+  </description>
+</action>
+
 <action name="Android.TabStripMenu.BookmarkAllTabs">
   <obsolete>Generalized/renamed to Android.BookmarkAllTabs in 3/26.</obsolete>
   <owner>mklw@google.com</owner>

@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicPrefNames;
@@ -80,6 +81,8 @@ public class GlicButtonContextMenuCoordinatorUnitTest {
 
     @Test
     public void testClickUnpin() {
+        var userActionTester = new UserActionTester();
+
         // Show menu
         mCoordinator.showMenu(mRectProvider, mActivity, mProfile, /* menuWidth= */ 250f);
 
@@ -98,5 +101,6 @@ public class GlicButtonContextMenuCoordinatorUnitTest {
         // Verify the menu dismissed and the pin state updated
         assertFalse("Menu should be dismissed.", mCoordinator.isShowing());
         verify(mPrefService).setBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, false);
+        assertEquals(1, userActionTester.getActionCount("Android.TabStrip.GlicButton.Unpin"));
     }
 }
