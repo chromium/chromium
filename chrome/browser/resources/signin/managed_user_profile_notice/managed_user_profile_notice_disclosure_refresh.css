@@ -28,13 +28,9 @@ main {
 }
 
 #headerContainer {
+  margin-bottom: 16px;
   position: relative;
   width: 100%;
-}
-
-:host(:not([revamp-enabled])) #headerContainer,
-:host([revamp-enabled][app-mode='profile-picker']) #headerContainer {
-  padding-bottom: 24px;
 }
 
 :host([revamp-enabled][app-mode='first-run']) #headerContainer {
@@ -99,13 +95,13 @@ main {
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
   margin-block-end: 24px;
 }
 
 .title {
   box-sizing: border-box;
-  font-size: 60px;
+  font-size: 32px;
   margin: 0;
   padding-inline: 48px;
   width: 100%;
@@ -168,17 +164,14 @@ main {
   margin: 0;
 }
 
-@media screen and ((max-width: 780px) or (max-height: 600px)) {
+/* Keep consistent with managed_user_profile_notice_app_refresh.css */
+@media screen and ((max-width: 1024px) or (max-height: 750px)) {
   #avatarContainer {
     --avatar-size: 64px;
   }
 
   :host([revamp-enabled][app-mode='first-run']) #headerContainer {
     height: 140px;
-  }
-
-  .title {
-    font-size: 32px;
   }
 
   .subtitle {
