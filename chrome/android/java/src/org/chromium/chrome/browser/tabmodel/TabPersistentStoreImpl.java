@@ -605,7 +605,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             }
         } catch (Exception e) {
             // Catch generic exception to prevent a corrupted state from crashing app.
-            Log.d(TAG, "mergeState exception: " + e.toString(), e);
+            Log.d(TAG, "mergeState exception: %s", e.toString(), e);
         }
 
         // Restore the tabs from the second activity asynchronously.
@@ -1493,10 +1493,9 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             onStateLoaded();
             Log.d(
                     TAG,
-                    "Loaded tab lists; counts: "
-                            + mTabModelSelector.getModel(false).getCount()
-                            + ","
-                            + mTabModelSelector.getModel(true).getCount());
+                    "Loaded tab lists; counts: %d,%d",
+                    mTabModelSelector.getModel(false).getCount(),
+                    mTabModelSelector.getModel(true).getCount());
 
             // If there were any duplicate tab ids seen, then force a write to overwrite tab ids.
             if (ChromeFeatureList.sAndroidTabDeclutterDedupeTabIdsKillSwitch.isEnabled()
@@ -1797,7 +1796,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         return new BackgroundOnlyAsyncTask<@Nullable DataInputStream>() {
             @Override
             protected @Nullable DataInputStream doInBackground() {
-                Log.d(TAG, "Starting to fetch tab list for " + stateFileName);
+                Log.d(TAG, "Starting to fetch tab list for %s", stateFileName);
                 File stateFile = new File(getStateDirectory(), stateFileName);
                 if (!stateFile.exists()) {
                     Log.d(TAG, "State file does not exist.");
@@ -1918,10 +1917,9 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
         Log.d(
                 TAG,
-                "Recording tab lists; counts: "
-                        + normalInfo.ids.size()
-                        + ", "
-                        + incognitoInfo.ids.size());
+                "Recording tab lists; counts: %d, %d",
+                normalInfo.ids.size(),
+                incognitoInfo.ids.size());
 
         // TODO(https://crbug.com/445197903): This is a modification to shared prefs that may not be
         // correct if this store isn't authoritative. Move this into an observer.

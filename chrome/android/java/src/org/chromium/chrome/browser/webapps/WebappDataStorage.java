@@ -575,7 +575,7 @@ public class WebappDataStorage {
                 TaskTraits.BEST_EFFORT_MAY_BLOCK,
                 () -> {
                     if (!new File(pendingUpdateFilePath).delete()) {
-                        Log.d(TAG, "Failed to delete file " + pendingUpdateFilePath);
+                        Log.d(TAG, "Failed to delete file %s", pendingUpdateFilePath);
                     }
                 });
     }

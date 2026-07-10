@@ -117,7 +117,9 @@ public class CustomTabTabPersistencePolicyTest {
 
     @After
     public void tearDown() {
-        mMockDirectory.tearDown();
+        if (mMockDirectory != null) {
+            mMockDirectory.tearDown();
+        }
 
         for (Activity activity : ApplicationStatus.getRunningActivities()) {
             ThreadUtils.runOnUiThreadBlocking(

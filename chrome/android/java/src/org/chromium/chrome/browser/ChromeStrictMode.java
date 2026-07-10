@@ -56,7 +56,7 @@ public class ChromeStrictMode {
         if (TextUtils.isEmpty(stackTrace)) {
             Log.d(TAG, "StrictMode violation stack trace was empty.");
         } else {
-            Log.d(TAG, "Upload stack trace: " + stackTrace);
+            Log.d(TAG, "Upload stack trace: %s", stackTrace);
             JavaExceptionReporter.reportStackTrace(stackTrace);
         }
     }

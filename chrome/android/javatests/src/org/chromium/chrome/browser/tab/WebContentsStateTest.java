@@ -46,7 +46,9 @@ public class WebContentsStateTest {
 
     @After
     public void tearDown() {
-        mTestTabModelDirectory.tearDown();
+        if (mTestTabModelDirectory != null) {
+            mTestTabModelDirectory.tearDown();
+        }
     }
 
     private static void writeFile(File directory, String filename, byte[] data) throws Exception {

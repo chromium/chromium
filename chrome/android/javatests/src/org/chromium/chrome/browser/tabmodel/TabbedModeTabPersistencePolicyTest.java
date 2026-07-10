@@ -150,7 +150,9 @@ public class TabbedModeTabPersistencePolicyTest {
 
     @After
     public void tearDown() {
-        mMockDirectory.tearDown();
+        if (mMockDirectory != null) {
+            mMockDirectory.tearDown();
+        }
 
         for (Activity activity : ApplicationStatus.getRunningActivities()) {
             activity.finishAndRemoveTask();

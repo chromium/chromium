@@ -45,7 +45,9 @@ public class TabStateTest {
 
     @After
     public void tearDown() {
-        mTestTabModelDirectory.tearDown();
+        if (mTestTabModelDirectory != null) {
+            mTestTabModelDirectory.tearDown();
+        }
     }
 
     private void loadAndCheckTabState(TestTabModelDirectory.TabStateInfo info) throws Exception {

@@ -802,7 +802,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             // through the size parameter.
             size.set(getView().getWidth(), getView().getHeight());
             touch.set(mDragShadowOffset.x, mDragShadowOffset.y);
-            Log.d(TAG, "DnD onProvideShadowMetrics: " + mDragShadowOffset);
+            Log.d(TAG, "DnD onProvideShadowMetrics: %s", mDragShadowOffset);
         }
 
         boolean getShadowShownForTesting() {

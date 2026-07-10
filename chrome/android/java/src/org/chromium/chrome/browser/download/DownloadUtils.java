@@ -636,15 +636,14 @@ public class DownloadUtils {
         } catch (ActivityNotFoundException ex) {
             Log.d(
                     TAG,
-                    "Activity not found for "
-                            + intent.getType()
-                            + " over "
-                            + assumeNonNull(intent.getData()).getScheme(),
+                    "Activity not found for %s over %s",
+                    intent.getType(),
+                    assumeNonNull(intent.getData()).getScheme(),
                     ex);
         } catch (SecurityException ex) {
-            Log.d(TAG, "cannot open intent: " + intent, ex);
+            Log.d(TAG, "cannot open intent: %s", intent, ex);
         } catch (Exception ex) {
-            Log.d(TAG, "cannot open intent: " + intent, ex);
+            Log.d(TAG, "cannot open intent: %s", intent, ex);
         }
 
         return false;

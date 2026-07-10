@@ -80,7 +80,7 @@ public class AndroidTaskUtils {
             List<ActivityManager.AppTask> tasksToFinish) {
         Intent removedIntent = null;
         for (ActivityManager.AppTask task : tasksToFinish) {
-            Log.d(TAG, "Removing task with duplicated data: " + task);
+            Log.d(TAG, "Removing task with duplicated data: %s", task);
             removedIntent = getBaseIntentFromTask(task);
             task.finishAndRemoveTask();
         }

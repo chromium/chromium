@@ -126,7 +126,7 @@ public class DigitalCredentialsCreationDelegate {
                                             "Response doesn't contain responseJson"));
                             return;
                         }
-                        Log.d(TAG, "Response JSON: " + responseJson);
+                        Log.d(TAG, "Response JSON: %s", responseJson);
 
                         DigitalCredential digitalCredential = parseResponse(responseJson);
                         if (digitalCredential == null) {

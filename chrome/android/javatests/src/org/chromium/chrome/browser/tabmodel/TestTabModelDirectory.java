@@ -471,7 +471,9 @@ public class TestTabModelDirectory {
 
     /** Nukes all the testing data. */
     public void tearDown() {
-        FileUtils.recursivelyDeleteFile(mTestingDirectory, FileUtils.DELETE_ALL);
+        if (mTestingDirectory != null) {
+            FileUtils.recursivelyDeleteFile(mTestingDirectory, FileUtils.DELETE_ALL);
+        }
     }
 
     /** Returns the base data directory. */

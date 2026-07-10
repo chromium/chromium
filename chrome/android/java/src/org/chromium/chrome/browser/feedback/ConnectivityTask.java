@@ -220,12 +220,12 @@ public class ConnectivityTask {
         }
 
         /**
-         * Starts the current task by calling the appropriate method on the
-         * {@link ConnectivityChecker}.
-         * The result will be put in {@link #mResult} when it comes back from the network stack.
+         * Starts the current task by calling the appropriate method on the {@link
+         * ConnectivityChecker}. The result will be put in {@link #mResult} when it comes back from
+         * the network stack.
          */
         public void start(Profile profile, int timeoutMs) {
-            Log.v(TAG, "Starting task for " + mType);
+            Log.v(TAG, "Starting task for %d", mType);
             switch (mType) {
                 case Type.CHROME_HTTP:
                     ConnectivityChecker.checkConnectivityChromeNetworkStack(
@@ -251,10 +251,9 @@ public class ConnectivityTask {
             ThreadUtils.assertOnUiThread();
             Log.v(
                     TAG,
-                    "Got result for "
-                            + getHumanReadableType(mType)
-                            + ": result = "
-                            + getHumanReadableResult(result));
+                    "Got result for %s: result = %s",
+                    getHumanReadableType(mType),
+                    getHumanReadableResult(result));
             mResult.put(mType, result);
             if (isDone()) postCallbackResult();
         }

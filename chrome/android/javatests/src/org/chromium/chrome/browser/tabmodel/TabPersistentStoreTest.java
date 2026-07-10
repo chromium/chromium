@@ -422,7 +422,9 @@ public class TabPersistentStoreTest {
                             mChromeActivity, ActivityState.DESTROYED);
                     ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
                 });
-        mMockDirectory.tearDown();
+        if (mMockDirectory != null) {
+            mMockDirectory.tearDown();
+        }
     }
 
     private TabPersistentStoreImpl buildTabPersistentStore(
