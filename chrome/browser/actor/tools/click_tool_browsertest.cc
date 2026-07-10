@@ -85,10 +85,13 @@ class UserInteractionObserver : public content::WebContentsObserver {
 class ActorClickToolBrowserTest : public ActorToolsTest {
  public:
   ActorClickToolBrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        ::features::kGlicActor,
-        {{features::kGlicActorClickDelay.name, "200ms"},
-         {features::kGlicActorPolicyControlExemption.name, "true"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{::features::kGlicActor,
+          {{features::kGlicActorClickDelay.name, "200ms"},
+           {features::kGlicActorPolicyControlExemption.name, "true"}}},
+         {features::kGlicActorRejectInteractionDisallowedTargets, {}}},
+        /*disabled_features=*/{});
   }
 
   ~ActorClickToolBrowserTest() override = default;
@@ -97,6 +100,31 @@ class ActorClickToolBrowserTest : public ActorToolsTest {
     ActorToolsTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class ActorClickToolInteractionDisallowedTargetFeatureDisabledTest
+    : public ActorToolsTest {
+ public:
+  ActorClickToolInteractionDisallowedTargetFeatureDisabledTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{::features::kGlicActor,
+          {{features::kGlicActorClickDelay.name, "200ms"},
+           {features::kGlicActorPolicyControlExemption.name, "true"}}}},
+        /*disabled_features=*/
+        {features::kGlicActorRejectInteractionDisallowedTargets});
+  }
+
+  ~ActorClickToolInteractionDisallowedTargetFeatureDisabledTest() override =
+      default;
+
+  void SetUpOnMainThread() override {
+    ActorToolsTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
   }
 
  private:
@@ -189,6 +217,185 @@ IN_PROC_BROWSER_TEST_F(ActorClickToolBrowserTest, ClickTool_DisabledElement) {
   EXPECT_THAT(
       EvalJs(web_contents(), "mouse_event_log.join(',')").ExtractString(),
       testing::Not(testing::HasSubstr("mousedown")));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorClickToolBrowserTest,
+                       ClickTool_DisabledCoordinateTextFailsValidation) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Aim at the button text because coordinate hit testing may return that text
+  // node instead of the disabled <button> element.
+  gfx::Point click_point = gfx::ToFlooredPoint(
+      GetCenterCoordinatesOfElementWithId(web_contents(), "disabled"));
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*active_tab(), click_point);
+  ActResultFuture result_fail;
+  actor_task().Act(ToRequestList(action), result_fail.GetCallback());
+  ExpectErrorResult(result_fail, mojom::ActionResultCode::kElementDisabled);
+
+  // Actor validation should stop before Blink sees trusted mouse events.
+  EXPECT_THAT(
+      EvalJs(web_contents(), "mouse_event_log.join(',')").ExtractString(),
+      testing::Not(testing::HasSubstr("mousedown")));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ActorClickToolBrowserTest,
+    ClickTool_DisabledFieldsetNonFormControlTargetsStillClick) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(ExecJs(web_contents(), R"JS(
+    document.body.innerHTML = `
+      <fieldset id="disabled-fieldset" disabled>
+        <legend><div id="legend-action">Legend action</div></legend>
+        <div id="non-form-control-action">Non-form-control action</div>
+        <input id="disabled-input" value="still disabled">
+      </fieldset>`;
+    mouse_event_log = [];
+    legend_clicked = false;
+    non_form_control_clicked = false;
+    input_clicked = false;
+    document.getElementById('legend-action').addEventListener('click', () => {
+      legend_clicked = true;
+    });
+    document.getElementById('non-form-control-action')
+        .addEventListener('click', () => {
+      non_form_control_clicked = true;
+    });
+    document.getElementById('disabled-input').addEventListener('click', () => {
+      input_clicked = true;
+    });
+  )JS"));
+
+  struct ClickableDescendant {
+    const char* selector;
+    const char* clicked_flag;
+  };
+  const ClickableDescendant clickable_descendants[] = {
+      {
+          // The first legend is exempt from disabled fieldset inheritance.
+          "#legend-action",
+          "legend_clicked",
+      },
+      {
+          // Disabled fieldsets only disable descendant form controls. Custom
+          // clickable content still receives normal trusted click events.
+          "#non-form-control-action",
+          "non_form_control_clicked",
+      },
+  };
+
+  for (const ClickableDescendant& descendant : clickable_descendants) {
+    SCOPED_TRACE(descendant.selector);
+    ASSERT_TRUE(ExecJs(web_contents(), "mouse_event_log = []"));
+
+    std::optional<int> target_id =
+        GetDOMNodeId(*main_frame(), descendant.selector);
+    ASSERT_TRUE(target_id);
+
+    std::unique_ptr<ToolRequest> action =
+        MakeClickRequest(*main_frame(), target_id.value());
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+
+    EXPECT_EQ(true, EvalJs(web_contents(), descendant.clicked_flag));
+    EXPECT_THAT(
+        EvalJs(web_contents(), "mouse_event_log.join(',')").ExtractString(),
+        testing::HasSubstr("mousedown"));
+  }
+
+  ASSERT_TRUE(ExecJs(web_contents(), "mouse_event_log = []"));
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#disabled-input");
+  ASSERT_TRUE(input_id);
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), input_id.value());
+  ActResultFuture result_fail;
+  actor_task().Act(ToRequestList(action), result_fail.GetCallback());
+  ExpectErrorResult(result_fail, mojom::ActionResultCode::kElementDisabled);
+
+  // The disabled fieldset still blocks real form controls under it.
+  EXPECT_EQ(false, EvalJs(web_contents(), "input_clicked"));
+  EXPECT_THAT(
+      EvalJs(web_contents(), "mouse_event_log.join(',')").ExtractString(),
+      testing::Not(testing::HasSubstr("mousedown")));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ActorClickToolBrowserTest,
+    ClickTool_InteractionDisallowedDomNodeTargetsDoNotClick) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(ExecJs(web_contents(), R"JS(
+    const wrapper = document.createElement('div');
+    wrapper.inert = true;
+    const button = document.getElementById('clickable');
+    button.parentNode.insertBefore(wrapper, button);
+    wrapper.appendChild(button);
+    mouse_event_log = [];
+    button_clicked = false;
+    button_click_count = null;
+  )JS"));
+
+  std::optional<int> node_id = GetDOMNodeId(*main_frame(), "button#clickable");
+  ASSERT_TRUE(node_id);
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), node_id.value());
+  ActResultFuture result_fail;
+  actor_task().Act(ToRequestList(action), result_fail.GetCallback());
+  ExpectErrorResult(result_fail, mojom::ActionResultCode::kElementDisabled);
+
+  // Validation must stop before the page sees trusted mouse events.
+  EXPECT_THAT(
+      EvalJs(web_contents(), "mouse_event_log.join(',')").ExtractString(),
+      testing::Not(testing::HasSubstr("mousedown")));
+  EXPECT_EQ(false, EvalJs(web_contents(), "button_clicked"));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorClickToolBrowserTest,
+                       ClickTool_AriaDisabledAncestorStillClicksDescendant) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(ExecJs(web_contents(), R"(
+    const button = document.getElementById('clickable');
+    const disabled_root = document.createElement('div');
+    disabled_root.id = 'disabled-root';
+    disabled_root.ariaDisabled = true;
+    button.parentNode.insertBefore(disabled_root, button);
+    disabled_root.appendChild(button);
+    button.textContent = 'Aria disabled subtree button';
+  )"));
+
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "mouse_event_log = [];"
+                     "button_clicked = false;"
+                     "button_click_count = null;"));
+
+  std::optional<int> button_id =
+      GetDOMNodeId(*main_frame(), "button#clickable");
+  ASSERT_TRUE(button_id);
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), button_id.value());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_THAT(
+      EvalJs(web_contents(), "mouse_event_log.join(',')").ExtractString(),
+      testing::HasSubstr("mousedown[BUTTON#clickable]"));
+  EXPECT_EQ(true, EvalJs(web_contents(), "button_clicked"));
 }
 
 // Sending a click to an element that's not in the viewport should cause it to
@@ -294,8 +501,11 @@ IN_PROC_BROWSER_TEST_F(ActorClickToolBrowserTest, ClickTool_SentToCoordinate) {
   }
 
   ASSERT_TRUE(ExecJs(web_contents(), "mouse_event_log = []"));
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "document.getElementById('clickable').ariaDisabled = "
+                     "true"));
 
-  // Send a second click to a coordinate on the button.
+  // Coordinate clicks use normal DOM-event behavior and skip ARIA checks.
   {
     gfx::Point click_point = gfx::ToFlooredPoint(
         GetCenterCoordinatesOfElementWithId(web_contents(), "clickable"));
@@ -749,6 +959,23 @@ class ActorClickToolOccludedDirectActivationDisabledBrowserTest
   base::test::ScopedFeatureList validation_feature_list_;
 };
 
+class ActorClickToolDirectActivationDisallowedFlagDisabledTest
+    : public ActorClickToolInteractionDisallowedTargetFeatureDisabledTest {
+ public:
+  ActorClickToolDirectActivationDisallowedFlagDisabledTest() {
+    // Keep click-behind enabled while the broader interaction-disallowed target
+    // rejection rollout is disabled. Direct activation must still reject
+    // author-blocked targets because it bypasses normal DOM hit testing.
+    validation_feature_list_.InitWithFeatures(
+        {features::kGlicActorToctouValidation,
+         features::kGlicActorOccludedDirectActivation},
+        {features::kGlicActorRejectInteractionDisallowedTargets});
+  }
+
+ private:
+  base::test::ScopedFeatureList validation_feature_list_;
+};
+
 class ActorClickToolDirectActivationNoToctouBrowserTest
     : public ActorClickToolBrowserTest {
  public:
@@ -1119,6 +1346,52 @@ IN_PROC_BROWSER_TEST_F(ActorClickToolValidationBrowserTest,
   ExpectDirectActivationRejectedDuringRendererValidation(
       "/actor/click_occluded_by_fixed.html?inert=target-parent",
       mojom::ActionResultCode::kTargetNodeInteractionPointObscured);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ActorClickToolDirectActivationDisallowedFlagDisabledTest,
+    ClickTool_DirectActivation_RejectsInertTargetWhenFlagDisabled) {
+  const GURL url = embedded_test_server()->GetURL(
+      "/actor/click_occluded_by_fixed.html?inert=target-parent");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::optional<int> target_id = GetDOMNodeId(*main_frame(), "#target");
+  ASSERT_TRUE(target_id);
+
+  // The fixed panel still covers the inert target. The test is specifically
+  // checking that direct activation refuses to bypass the target's inert state
+  // even when the normal click/type rollout flag is disabled.
+  ASSERT_THAT(
+      EvalJs(web_contents(), kTargetCenterHitElementIdScript).ExtractString(),
+      testing::AnyOf(testing::Eq("fixed-container"),
+                     testing::Eq("panel-child")));
+
+  auto click = mojom::ClickAction::New();
+  click->type = mojom::ClickType::kLeftOnOccludedTarget;
+  click->count = mojom::ClickCount::kSingle;
+
+  auto invocation = mojom::ToolInvocation::New();
+  invocation->task_id = actor_task().id();
+  invocation->action = mojom::ToolAction::NewClick(std::move(click));
+  invocation->target = mojom::ToolTarget::NewDomNodeId(target_id.value());
+  invocation->observed_target =
+      ActorClickToolValidationBrowserTest::MakeBroadObservedTarget(
+          target_id.value());
+
+  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
+  main_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
+      &chrome_render_frame);
+
+  TestFuture<mojom::InitializeToolResultPtr> initialize_future;
+  chrome_render_frame->InitializeTool(std::move(invocation),
+                                      initialize_future.GetCallback());
+  mojom::InitializeToolResultPtr initialize_result = initialize_future.Take();
+
+  ASSERT_TRUE(initialize_result->is_error_result());
+  EXPECT_EQ(mojom::ActionResultCode::kTargetNodeInteractionPointObscured,
+            initialize_result->get_error_result()->code);
+  EXPECT_THAT(EvalJs(web_contents(), "click_log.join(',')").ExtractString(),
+              testing::IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(

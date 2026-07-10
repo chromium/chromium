@@ -289,8 +289,9 @@ void WebElement::Click() {
 }
 
 std::optional<WebElementInteractionDisallowedReason>
-WebElement::InteractionDisallowedReason() {
-  Element* element = Unwrap<Element>();
+WebElement::InteractionDisallowedReason(bool check_aria) const {
+  // Querying can update lifecycle state, but it never retargets this wrapper.
+  Element* element = const_cast<Element*>(ConstUnwrap<Element>());
   if (const auto* form_control =
           blink::DynamicTo<HTMLFormControlElement>(element)) {
     if (form_control->IsDisabledFormControl()) {
@@ -315,12 +316,16 @@ WebElement::InteractionDisallowedReason() {
     }
   }
 
+  if (!check_aria) {
+    return std::nullopt;
+  }
+
   // Note: this helper does not currently scan for ARIA modal dialogs.
   // Enforcing that here would require scanning the whole document for all
   // elements with role=dialog or role=alertdialog and aria-modal=true, then
-  // rejecting targets outside any visible dialog's flat-tree subtree. Clicking
-  // outside native modal dialogs is already handled by checking for inertness.
-  // See https://crrev.com/c/8007486 for a prototype implementation.
+  // rejecting targets outside any visible dialog's flat-tree subtree.
+  // Clicking outside native modal dialogs is already handled by checking for
+  // inertness. See https://crrev.com/c/8007486 for a prototype implementation.
   if (std::optional<WebElementInteractionDisallowedReason> aria_reason =
           GetAriaInteractionDisallowedReason(*element)) {
     return aria_reason;
@@ -346,7 +351,7 @@ bool WebElement::SimulateAccessibilityClick() {
     return false;
   }
 
-  if (InteractionDisallowedReason().has_value()) {
+  if (InteractionDisallowedReason(/*check_aria=*/true).has_value()) {
     return false;
   }
 

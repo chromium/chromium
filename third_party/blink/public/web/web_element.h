@@ -127,11 +127,12 @@ class BLINK_EXPORT WebElement : public WebNode {
   // Returns the reason actor-style interaction should treat this element as
   // disallowed, or nullopt when it may still try the action.
   //
-  // This covers native disabled form controls, computed inertness, inclusive
-  // ancestor aria-disabled=true or aria-hidden=true, exact
-  // role=none/presentation on this element, and missing layout.
+  // This always covers native disabled form controls, computed inertness,
+  // pointer-events:none, and missing layout. When `check_aria` is true, this
+  // also treats aria-disabled, aria-hidden, and role=none/presentation as
+  // disallowed. Use `check_aria=true` for accessibility-style activation paths.
   std::optional<WebElementInteractionDisallowedReason>
-  InteractionDisallowedReason();
+  InteractionDisallowedReason(bool check_aria) const;
 
   // Simulates the accessibility-style click activation sequence on this
   // element. This uses the same event-dispatch semantics as Blink accessibility

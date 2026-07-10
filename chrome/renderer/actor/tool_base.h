@@ -16,6 +16,7 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/renderer/actor/journal.h"
 #include "components/actor/core/task_id.h"
+#include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_page_popup.h"
 #include "third_party/blink/public/web/web_widget.h"
@@ -134,6 +135,22 @@ class ToolBase {
       TargetOcclusionMode occlusion_mode =
           TargetOcclusionMode::kRequireUnoccluded) const;
 
+  // Returns whether actor should reject the target for disabled state or for a
+  // caller-enabled Blink interaction barrier.
+  bool ShouldRejectInteractionDisallowedTarget(
+      const ResolvedTarget& resolved_target,
+      bool check_aria,
+      bool reject_non_disabled_reasons) const;
+
+  // Returns the element whose interaction-disallowed state should be checked.
+  // Coordinate hit tests can resolve to text or an internal child, such as a
+  // select's UA-shadow button. Validate the nearest element ancestor or host,
+  // if present, so internal hit-test details do not block or bypass the action.
+  // If TOCTOU validation matched an observed APC target, validate that observed
+  // target for the same reason.
+  blink::WebElement GetTargetElementForValidation(
+      const ResolvedTarget& resolved_target) const;
+
   // Raw ref since this is owned by ToolExecutor whose lifetime is tied to
   // RenderFrame.
   base::raw_ref<content::RenderFrame> frame_;
@@ -148,6 +165,19 @@ class ToolBase {
   mojom::ActionResultPtr ValidateTimeOfUse(
       const ResolvedTarget& resolved_target,
       TargetOcclusionMode occlusion_mode) const;
+
+  // Returns whether the validation element is a disabled native form control.
+  // This stays separate from Blink's general disallowed-state helper so actor
+  // does not depend on disabled being reported before other reasons.
+  bool IsDisabledFormControlTarget(
+      const blink::WebElement& validation_element) const;
+
+  // Returns whether Blink reports a general interaction barrier for the
+  // validation element. Callers keep disabled rejection separate before
+  // consulting this helper.
+  bool HasInteractionDisallowedTarget(
+      const blink::WebElement& validation_element,
+      bool check_aria) const;
 
   bool is_revalidation_ = false;
 };

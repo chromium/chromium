@@ -308,6 +308,9 @@ TEST_F(WebElementTest, InteractionDisallowedReasonDetectsDisallowedStates) {
        WebElementInteractionDisallowedReason::kDisabled},
       {"<fieldset disabled><button id=testElement>Target</button></fieldset>",
        WebElementInteractionDisallowedReason::kDisabled},
+      {"<fieldset disabled><div id=testElement contenteditable>Target</div>"
+       "</fieldset>",
+       std::nullopt},
       {"<button id=testElement style='display:none'>Target</button>",
        WebElementInteractionDisallowedReason::kNoLayoutObject},
       {"<div id=testElement style='display:contents'>Target</div>",
@@ -378,7 +381,38 @@ TEST_F(WebElementTest, InteractionDisallowedReasonDetectsDisallowedStates) {
   for (const auto& test_case : test_cases) {
     InsertHTML(String(test_case.html));
     EXPECT_EQ(test_case.expected_reason,
-              TestElement().InteractionDisallowedReason())
+              TestElement().InteractionDisallowedReason(/*check_aria=*/true))
+        << test_case.html;
+  }
+}
+
+TEST_F(WebElementTest, InteractionDisallowedReasonCanSkipAriaChecks) {
+  struct TestCase {
+    const char* html;
+    std::optional<WebElementInteractionDisallowedReason> expected_reason;
+  };
+
+  const TestCase test_cases[] = {
+      {"<button id=testElement disabled>Target</button>",
+       WebElementInteractionDisallowedReason::kDisabled},
+      {"<div inert><button id=testElement>Target</button></div>",
+       WebElementInteractionDisallowedReason::kInert},
+      {"<button id=testElement style='pointer-events:none'>Target</button>",
+       WebElementInteractionDisallowedReason::kPointerEventsNone},
+      // Callers that do not opt into ARIA should preserve legacy DOM behavior.
+      {"<div aria-disabled=true><button id=testElement>Target</button></div>",
+       std::nullopt},
+      {"<div aria-hidden=true><button id=testElement>Target</button></div>",
+       std::nullopt},
+      {"<div id=testElement role=none>Target</div>", std::nullopt},
+      {"<div id=testElement role=presentation>Target</div>", std::nullopt},
+  };
+
+  for (const auto& test_case : test_cases) {
+    InsertHTML(String(test_case.html));
+    EXPECT_EQ(test_case.expected_reason,
+              TestElement().InteractionDisallowedReason(
+                  /*check_aria=*/false))
         << test_case.html;
   }
 }

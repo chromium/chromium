@@ -25,6 +25,7 @@
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
+#include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_hit_test_result.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -35,6 +36,7 @@
 
 using base::UmaHistogramEnumeration;
 using blink::WebElement;
+using blink::WebFormControlElement;
 using blink::WebFrameWidget;
 using blink::WebHitTestResult;
 using blink::WebLocalFrame;
@@ -67,6 +69,15 @@ enum class TimeOfUseResult {
   kMaxValue = kNoValidApcNode,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:TimeOfUseResult)
+
+WebElement GetElementOrNearestElementAncestor(WebNode node) {
+  // Hit testing can return text. Validation APIs live on elements. If the walk
+  // reaches the document instead, this returns null and validation is skipped.
+  while (!node.IsNull() && !node.IsElementNode()) {
+    node = node.ParentNode();
+  }
+  return node.DynamicTo<WebElement>();
+}
 
 enum class WebElementAuthorBarrierReason {
   kNone = 0,
@@ -157,11 +168,8 @@ WebElementAuthorBarrierReason GetWebElementAuthorBarrierReason(
   // document-wide scan. That validation belongs in APC/higher layers; see the
   // prototype at crrev.com/c/8007486.
 
-  // Blink folds native modal background inertness, pointer-events:none,
-  // aria-hidden, and similar interaction-disallowed states into this cheap
-  // check.
-  // Modeless dialog elements stay interactive and are not barriers here.
-  if (element.InteractionDisallowedReason().has_value()) {
+  // Direct activation uses accessibility-style clicks, so ARIA can block it.
+  if (element.InteractionDisallowedReason(/*check_aria=*/true).has_value()) {
     return WebElementAuthorBarrierReason::kInert;
   }
 
@@ -367,6 +375,80 @@ ToolBase::ResolveResult ToolBase::ValidateAndResolveTarget(
   }
 
   return resolved_target.value();
+}
+
+bool ToolBase::ShouldRejectInteractionDisallowedTarget(
+    const ResolvedTarget& resolved_target,
+    bool check_aria,
+    bool reject_non_disabled_reasons) const {
+  WebElement validation_element =
+      GetTargetElementForValidation(resolved_target);
+  if (validation_element.IsNull()) {
+    return false;
+  }
+
+  if (IsDisabledFormControlTarget(validation_element)) {
+    return true;
+  }
+
+  return reject_non_disabled_reasons &&
+         HasInteractionDisallowedTarget(validation_element, check_aria);
+}
+
+bool ToolBase::IsDisabledFormControlTarget(
+    const WebElement& validation_element) const {
+  if (validation_element.IsNull()) {
+    return false;
+  }
+
+  WebFormControlElement form_control =
+      validation_element.DynamicTo<WebFormControlElement>();
+  return !form_control.IsNull() && !form_control.IsEnabled();
+}
+
+bool ToolBase::HasInteractionDisallowedTarget(
+    const WebElement& validation_element,
+    bool check_aria) const {
+  if (validation_element.IsNull()) {
+    return false;
+  }
+
+  std::optional<blink::WebElementInteractionDisallowedReason>
+      disallowed_reason =
+          validation_element.InteractionDisallowedReason(check_aria);
+  return disallowed_reason.has_value();
+}
+
+WebElement ToolBase::GetTargetElementForValidation(
+    const ResolvedTarget& resolved_target) const {
+  if (target_->is_coordinate_dip() && observed_target_ &&
+      observed_target_->node_attribute->dom_node_id) {
+    WebNode observed_node = GetNodeFromIdIncludingPopup(
+        frame_.get(), *observed_target_->node_attribute->dom_node_id);
+
+    // Click and type coordinate targets both arrive here after hit testing.
+    // When TOCTOU matched the coordinate to an observed APC node, validate the
+    // observed element instead of an internal hit-test descendant.
+    // `ValidateTimeOfUse()` already proves this containment for normal
+    // coordinate targets. Recheck it here so this helper remains safe if
+    // callers use it before or after validation changes.
+    if (!observed_node.IsNull() &&
+        observed_node.ContainsViaFlatTree(&resolved_target.node)) {
+      return GetElementOrNearestElementAncestor(observed_node);
+    }
+  }
+
+  WebElement resolved_element =
+      GetElementOrNearestElementAncestor(resolved_target.node);
+  if (target_->is_coordinate_dip() && !resolved_element.IsNull() &&
+      resolved_target.node.IsInUserAgentShadowRoot()) {
+    WebElement shadow_host = resolved_element.OwnerShadowHost();
+    if (!shadow_host.IsNull()) {
+      return shadow_host;
+    }
+  }
+
+  return resolved_element;
 }
 
 bool ToolBase::EnsureTargetInView() {

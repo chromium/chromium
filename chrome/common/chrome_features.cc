@@ -452,6 +452,12 @@ const base::FeatureParam<bool> kGlicActorPolicyControlExemption{
 
 BASE_FEATURE(kGlicActorPermissionsBypass, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables rejecting actor click and type targets when Blink reports a
+// non-disabled, non-ARIA interaction-disallowed state. Disabled controls are
+// always rejected.
+BASE_FEATURE(kGlicActorRejectInteractionDisallowedTargets,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicActorToctouValidation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the explicit actor path that directly activates an observed DOM node

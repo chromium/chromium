@@ -36,7 +36,6 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/web/web_element.h"
-#include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_hit_test_result.h"
 #include "third_party/blink/public/web/web_input_element.h"
@@ -52,7 +51,6 @@ namespace actor {
 
 using ::blink::WebCoalescedInputEvent;
 using ::blink::WebElement;
-using ::blink::WebFormControlElement;
 using ::blink::WebInputEvent;
 using ::blink::WebInputEventResult;
 using ::blink::WebKeyboardEvent;
@@ -689,22 +687,31 @@ ValidationResult TypeTool::Validate() {
     return ValidationResult(std::move(resolved_target.error()));
   }
 
+  const WebNode& node = resolved_target->node;
   if (target_->is_dom_node_id()) {
-    const WebNode& node = resolved_target->node;
     if (!node.IsElementNode()) {
       return ValidationResult(
           MakeResult(mojom::ActionResultCode::kTypeTargetNotElement));
     }
-
-    WebElement element = node.To<WebElement>();
-    if (WebFormControlElement form_control =
-            element.DynamicTo<WebFormControlElement>()) {
-      if (!form_control.IsEnabled()) {
-        return ValidationResult(
-            MakeResult(mojom::ActionResultCode::kElementDisabled));
-      }
-    }
   }
+
+  // Type dispatch follows normal DOM-event behavior, so it skips ARIA checks.
+  // The rollout flag only controls non-disabled Blink-disallowed states.
+  // This also covers coordinate targets. Legacy coordinate-based typing skipped
+  // the early disabled-control check and reached Blink event dispatch; this now
+  // fails validation like DOM-node type targets.
+  const bool reject_non_disabled_reasons = base::FeatureList::IsEnabled(
+      features::kGlicActorRejectInteractionDisallowedTargets);
+  if (ShouldRejectInteractionDisallowedTarget(*resolved_target,
+                                              /*check_aria=*/false,
+                                              reject_non_disabled_reasons)) {
+    return ValidationResult(MakeResult(
+        mojom::ActionResultCode::kElementDisabled,
+        /*requires_page_stabilization=*/false,
+        "The target element is disabled, inert, hidden, or otherwise "
+        "unavailable."));
+  }
+
   resolved_target_ = std::move(resolved_target.value());
   return ValidationResult(MakeOkResult(), resolved_target_->widget_point);
 }
