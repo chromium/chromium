@@ -130,6 +130,7 @@ source_set("browser_tests") {
     sources += [
       "device_chooser_extension_browsertest.cc",
       "extension_install_dialog_view_browsertest.cc",
+      "extension_install_dialog_view_supervised_browsertest.cc",
       "extension_post_install_dialog_view_utils_browsertest.cc",
       "extensions_request_access_hover_card_coordinator_browsertest.cc",
       "generic_mime_handler_chip_browsertest.cc",
@@ -167,6 +168,20 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/ui/signin",
       "//components/signin/public/identity_manager:test_support",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "dialogs/document_scanner_discovery_confirmation_dialog_browsertest.cc",
+      "dialogs/document_scanner_start_scan_confirmation_dialog_browsertest.cc",
+      "dialogs/request_file_system_dialog_browsertest.cc",
+      "extension_dialog_bounds_browsertest.cc",
+      "media_galleries_dialog_views_browsertest.cc",
+    ]
+    deps += [
+      "//chrome/browser/media_galleries:test_support",
+      "//chrome/browser/ui:browser_select_file_dialog_controller",
     ]
   }
 }
