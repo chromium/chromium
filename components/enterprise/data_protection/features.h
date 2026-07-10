@@ -13,6 +13,8 @@ BASE_DECLARE_FEATURE(kEnableAndroidEnterpriseScreenshotProtection);
 
 BASE_DECLARE_FEATURE(kEnableDeepScanVerdictCacheSize);
 
+BASE_DECLARE_FEATURE(kEnableWatermarkTimestampTimezone);
+
 BASE_DECLARE_FEATURE_PARAM(size_t, kVerdictCacheMaxSize);
 BASE_DECLARE_FEATURE_PARAM(bool, kVerdictCacheRemoveQueryParams);
 

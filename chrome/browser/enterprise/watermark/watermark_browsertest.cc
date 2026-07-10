@@ -4,9 +4,12 @@
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_overlay_view.h"
@@ -30,6 +33,8 @@
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
+#include "components/enterprise/data_protection/features.h"
+#include "components/enterprise/data_protection/utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
@@ -61,9 +66,19 @@ It was not split
 This is another very long line that should be split up into multiple lines
 )";
 
+constexpr char kTimestampUtcWatermarkMessage[] =
+    "Confidential (UTC)\nuser@example.com\n";
+constexpr char kTimestampTokyoWatermarkMessage[] =
+    "Confidential (Tokyo)\nuser@example.com\n";
+constexpr char kTimestampTorontoWatermarkMessage[] =
+    "Confidential (Toronto)\nuser@example.com\n";
+constexpr char kTimestampKolkataWatermarkMessage[] =
+    "Confidential (Kolkata)\nuser@example.com\n";
+
 struct WatermarkTextParams {
   const char* test_suffix;
   const char* watermark_text;
+  const char* timezone = nullptr;
 };
 
 struct WatermarkParams {
@@ -96,12 +111,18 @@ class WatermarkBrowserTest
 
   // Returns true if a watermark view object was available to set the watermark.
   bool SetWatermark(const std::string& watermark_message) {
+    std::string message = watermark_message;
+    if (GetParam().timezone) {
+      base::test::ScopedRestoreDefaultTimezone timezone(GetParam().timezone);
+      message += enterprise_data_protection::FormatWatermarkTimestamp(
+          base::Time::FromSecondsSinceUnixEpoch(1700000000));
+    }
     if (auto* data_protection_overlay_view =
             BrowserView::GetBrowserViewForBrowser(browser())
                 ->GetContentsContainerViews()[0]
                 ->data_protection_overlay_view()) {
       data_protection_overlay_view->SetWatermarkText(
-          watermark_message, kTestFillColor, kTestOutlineColor, kTestFontSize);
+          message, kTestFillColor, kTestOutlineColor, kTestFontSize);
       return true;
     }
     return false;
@@ -161,7 +182,17 @@ INSTANTIATE_TEST_SUITE_P(
     WatermarkBrowserTest,
     testing::Values(
         WatermarkTextParams{"Multilingual", kMultilingualWatermarkMessage},
-        WatermarkTextParams{"LongLines", kLongLinesWatermarkMessage}));
+        WatermarkTextParams{"LongLines", kLongLinesWatermarkMessage},
+        WatermarkTextParams{"TimestampUtc", kTimestampUtcWatermarkMessage,
+                            "UTC"},
+        WatermarkTextParams{"TimestampTokyo", kTimestampTokyoWatermarkMessage,
+                            "Asia/Tokyo"},
+        WatermarkTextParams{"TimestampToronto",
+                            kTimestampTorontoWatermarkMessage,
+                            "America/Toronto"},
+        WatermarkTextParams{"TimestampKolkata",
+                            kTimestampKolkataWatermarkMessage,
+                            "Asia/Kolkata"}));
 
 // Test fixture for the default chrome://watermark page.
 class WatermarkTestPageBrowserTest : public UiBrowserTest {
@@ -214,7 +245,7 @@ class FakeRealTimeUrlLookupService
     // Only add a watermark for watermark.com URLs.
     if (url.GetHost() == "watermark.com") {
       safe_browsing::MatchedUrlNavigationRule::WatermarkMessage wm;
-      wm.set_watermark_message("custom_messge");
+      wm.set_watermark_message("custom_message");
       wm.mutable_timestamp()->set_seconds(base::Time::Now().ToTimeT());
       *matched_url_navigation_rule->mutable_watermark_message() = wm;
     }
@@ -231,7 +262,10 @@ class FakeRealTimeUrlLookupService
 
 class WatermarkBrowserNavigationTest : public InProcessBrowserTest {
  public:
-  WatermarkBrowserNavigationTest() = default;
+  WatermarkBrowserNavigationTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        enterprise_data_protection::kEnableWatermarkTimestampTimezone);
+  }
   WatermarkBrowserNavigationTest(const WatermarkBrowserNavigationTest&) =
       delete;
   WatermarkBrowserNavigationTest& operator=(
@@ -284,6 +318,7 @@ class WatermarkBrowserNavigationTest : public InProcessBrowserTest {
   test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   base::CallbackListSubscription create_services_subscription_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest, Apply_NoWatermark) {
@@ -323,6 +358,45 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
   EXPECT_TRUE(browser_view->GetContentsContainerViews()[0]
                   ->data_protection_overlay_view()
                   ->has_text_for_testing());
+}
+
+class WatermarkBrowserNavigationTestDisabled
+    : public WatermarkBrowserNavigationTest {
+ public:
+  WatermarkBrowserNavigationTestDisabled() {
+    disabled_feature_list_.InitAndDisableFeature(
+        enterprise_data_protection::kEnableWatermarkTimestampTimezone);
+  }
+
+ private:
+  base::test::ScopedFeatureList disabled_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
+                       Apply_WatermarkTextFormat) {
+  NavigateToAndWait(GURL("https://watermark.com"));
+  auto* overlay_view = BrowserView::GetBrowserViewForBrowser(browser())
+                           ->GetContentsContainerViews()[0]
+                           ->data_protection_overlay_view();
+  EXPECT_TRUE(overlay_view->has_text_for_testing());
+  std::string text = overlay_view->watermark_text_for_testing();
+  EXPECT_NE(text.find("custom_message"), std::string::npos);
+  EXPECT_TRUE(base::MatchPattern(text, "*????-??-?? ??:??:?? (UTC+??:??)") ||
+              base::MatchPattern(text, "*????-??-?? ??:??:?? (UTC-??:??)"))
+      << "Actual watermark text: " << text;
+}
+
+IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTestDisabled,
+                       Apply_WatermarkTextFormat_FlagDisabled) {
+  NavigateToAndWait(GURL("https://watermark.com"));
+  auto* overlay_view = BrowserView::GetBrowserViewForBrowser(browser())
+                           ->GetContentsContainerViews()[0]
+                           ->data_protection_overlay_view();
+  EXPECT_TRUE(overlay_view->has_text_for_testing());
+  std::string text = overlay_view->watermark_text_for_testing();
+  EXPECT_NE(text.find("custom_message"), std::string::npos);
+  EXPECT_TRUE(base::MatchPattern(text, "*????-??-??T??:??:??.???Z"))
+      << "Actual watermark text: " << text;
 }
 
 IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,

@@ -4,10 +4,12 @@
 
 #include "components/enterprise/data_protection/utils.h"
 
+#include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "components/enterprise/data_protection/features.h"
 
 namespace enterprise_data_protection {
 
@@ -61,6 +63,11 @@ UrlSettings GetUrlSettings(
   return settings;
 }
 
+std::string FormatWatermarkTimestamp(const base::Time& time) {
+  return base::UnlocalizedTimeFormatWithPattern(
+      time, "yyyy-MM-dd HH:mm:ss '(UTC'xxx')'");
+}
+
 std::string GetWatermarkString(
     const std::string& identifier,
     const safe_browsing::MatchedUrlNavigationRule& rule) {
@@ -73,7 +80,10 @@ std::string GetWatermarkString(
 
   std::string watermark_text = base::StrCat(
       {identifier, "\n",
-       base::TimeFormatAsIso8601(TimestampToTime(watermark.timestamp()))});
+       base::FeatureList::IsEnabled(kEnableWatermarkTimestampTimezone)
+           ? FormatWatermarkTimestamp(TimestampToTime(watermark.timestamp()))
+           : base::TimeFormatAsIso8601(
+                 TimestampToTime(watermark.timestamp()))});
 
   if (!watermark.watermark_message().empty()) {
     watermark_text =

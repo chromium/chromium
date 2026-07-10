@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 
 namespace enterprise_data_protection {
@@ -35,6 +36,10 @@ struct UrlSettings {
 UrlSettings GetUrlSettings(
     const std::string& identifier,
     const safe_browsing::RTLookupResponse* rt_lookup_response);
+
+// Formats a `base::Time` into the watermark timestamp string:
+// YYYY-MM-DD HH:MM:SS (UTC±HH:MM).
+std::string FormatWatermarkTimestamp(const base::Time& time);
 
 // Return the watermark string to display if present in `threat_info`.
 std::string GetWatermarkString(

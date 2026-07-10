@@ -4,8 +4,13 @@
 
 #include "components/enterprise/data_protection/utils.h"
 
+#include <vector>
+
 #include "base/strings/stringprintf.h"
+#include "base/test/icu_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/enterprise/data_protection/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_data_protection {
@@ -41,6 +46,15 @@ std::unique_ptr<safe_browsing::RTLookupResponse> BuildDummyResponse(
   AddDummyMatchedRule(*rt_lookup_response, watermark_text, allow_screenshot);
   return rt_lookup_response;
 }
+
+struct WatermarkFormatTestCase {
+  const char* timezone;
+  int64_t seconds;
+  int32_t nanos = 0;
+  const char* custom_message = "";
+  const char* identifier = "user@example.com";
+  const char* expected_text = "";
+};
 
 }  // namespace
 
@@ -94,5 +108,71 @@ TEST_F(DataProtectionUtilsTest, GetWatermarkString_NoMessage) {
   safe_browsing::MatchedUrlNavigationRule rule;
   EXPECT_TRUE(GetWatermarkString("identifier", rule).empty());
 }
+
+TEST_F(DataProtectionUtilsTest, GetWatermarkString_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kEnableWatermarkTimestampTimezone);
+
+  safe_browsing::MatchedUrlNavigationRule rule;
+  auto* watermark = rule.mutable_watermark_message();
+  watermark->set_watermark_message("Confidential");
+  watermark->mutable_timestamp()->set_seconds(1700000000);
+  watermark->mutable_timestamp()->set_nanos(0);
+
+  std::string result = GetWatermarkString("user@example.com", rule);
+  EXPECT_EQ(result, "Confidential\nuser@example.com\n2023-11-14T22:13:20.000Z");
+}
+
+class DataProtectionUtilsTimezoneTest
+    : public testing::TestWithParam<WatermarkFormatTestCase> {
+ protected:
+  DataProtectionUtilsTimezoneTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kEnableWatermarkTimestampTimezone);
+  }
+  base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(DataProtectionUtilsTimezoneTest, FormatsTimestamp) {
+  const auto& param = GetParam();
+  base::test::ScopedRestoreDefaultTimezone tz(param.timezone);
+
+  safe_browsing::MatchedUrlNavigationRule rule;
+  auto* watermark = rule.mutable_watermark_message();
+  watermark->set_watermark_message(param.custom_message);
+  watermark->mutable_timestamp()->set_seconds(param.seconds);
+  watermark->mutable_timestamp()->set_nanos(param.nanos);
+
+  EXPECT_EQ(GetWatermarkString(param.identifier, rule), param.expected_text);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DataProtectionUtilsTimezoneTest,
+    testing::ValuesIn(std::vector<WatermarkFormatTestCase>{
+        {"UTC", 1700000000, 0, "Confidential", "user@example.com",
+         "Confidential\nuser@example.com\n2023-11-14 22:13:20 (UTC+00:00)"},
+        {"Asia/Tokyo", 1700000000, 0, "Internal Use Only", "user@example.com",
+         "Internal Use Only\nuser@example.com\n2023-11-15 07:13:20 "
+         "(UTC+09:00)"},
+        {"America/Toronto", 1700000000, 0, "Do Not Copy", "user@example.com",
+         "Do Not Copy\nuser@example.com\n2023-11-14 17:13:20 (UTC-05:00)"},
+        {"Asia/Kolkata", 1700000000, 0, "Restricted", "user@example.com",
+         "Restricted\nuser@example.com\n2023-11-15 03:43:20 (UTC+05:30)"},
+        {"Asia/Kathmandu", 1705000000, 0, "", "user@example.com",
+         "user@example.com\n2024-01-12 00:51:40 (UTC+05:45)"},
+        {"UTC", 1700000000, 0, "", "user@example.com",
+         "user@example.com\n2023-11-14 22:13:20 (UTC+00:00)"},
+        {"America/Los_Angeles", 0, 0, "", "user@example.com",
+         "user@example.com\n1969-12-31 16:00:00 (UTC-08:00)"},
+        {"Africa/Casablanca", 1709249400, 0, "", "user@example.com",
+         "user@example.com\n2024-03-01 00:30:00 (UTC+01:00)"},
+        {"America/Los_Angeles", 1710064800, 0, "", "user@example.com",
+         "user@example.com\n2024-03-10 03:00:00 (UTC-07:00)"},
+        {"Asia/Tokyo", 1700000000, 999999000, "Subsecond Test",
+         "user@example.com",
+         "Subsecond Test\nuser@example.com\n2023-11-15 07:13:20 (UTC+09:00)"},
+    }));
 
 }  // namespace enterprise_data_protection

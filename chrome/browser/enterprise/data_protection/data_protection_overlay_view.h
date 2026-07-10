@@ -47,6 +47,10 @@ class DataProtectionOverlayView : public views::View {
 
   bool has_text_for_testing() const { return !watermark_block_.record.empty(); }
 
+  const std::string& watermark_text_for_testing() const {
+    return watermark_text_;
+  }
+
   // Wrapper of `SchedulePaint()`, virtual for testing.
   virtual void InvalidateView();
 

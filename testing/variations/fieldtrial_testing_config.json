@@ -10546,6 +10546,24 @@
             ]
         }
     ],
+    "EnableWatermarkTimestampTimezone": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableWatermarkTimestampTimezone"
+                    ]
+                }
+            ]
+        }
+    ],
     "EncryptBookmarks_Phase1": [
         {
             "platforms": [

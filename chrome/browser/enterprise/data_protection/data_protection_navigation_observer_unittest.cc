@@ -10,6 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
+#include "base/test/icu_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -27,6 +29,7 @@
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
+#include "components/enterprise/data_protection/features.h"
 #include "components/enterprise/data_protection/utils.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -902,7 +905,14 @@ struct WatermarkStringParams {
 };
 
 class DataProtectionWatermarkStringTest
-    : public testing::TestWithParam<WatermarkStringParams> {};
+    : public testing::TestWithParam<WatermarkStringParams> {
+ protected:
+  DataProtectionWatermarkStringTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kEnableWatermarkTimestampTimezone);
+  }
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 }  // namespace
 
@@ -910,20 +920,21 @@ INSTANTIATE_TEST_SUITE_P(
     DataProtectionWatermarkStringTest,
     DataProtectionWatermarkStringTest,
     testing::Values(
-        WatermarkStringParams(
-            "example@email.com",
-            "custom_message",
-            1709181364,
-            "custom_message\nexample@email.com\n2024-02-29T04:36:04.000Z"),
+        WatermarkStringParams("example@email.com",
+                              "custom_message",
+                              1709181364,
+                              "custom_message\nexample@email.com\n2024-02-29 "
+                              "04:36:04 (UTC+00:00)"),
         WatermarkStringParams(
             "<device-id>",
             "custom_message",
             1709181364,
-            "custom_message\n<device-id>\n2024-02-29T04:36:04.000Z"),
-        WatermarkStringParams("example@email.com",
-                              "",
-                              1709181364,
-                              "example@email.com\n2024-02-29T04:36:04.000Z"),
+            "custom_message\n<device-id>\n2024-02-29 04:36:04 (UTC+00:00)"),
+        WatermarkStringParams(
+            "example@email.com",
+            "",
+            1709181364,
+            "example@email.com\n2024-02-29 04:36:04 (UTC+00:00)"),
         WatermarkStringParams("example@email.com",
                               std::nullopt,
                               1709181364,
@@ -931,6 +942,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(DataProtectionWatermarkStringTest,
        TestGetWatermarkStringFromThreatInfo) {
+  base::test::ScopedRestoreDefaultTimezone tz("UTC");
   safe_browsing::RTLookupResponse::ThreatInfo threat_info =
       GetTestThreatInfo(GetParam().custom_message, GetParam().timestamp_seconds,
                         GetParam().custom_message.has_value());
@@ -938,6 +950,20 @@ TEST_P(DataProtectionWatermarkStringTest,
       enterprise_data_protection::GetWatermarkString(
           GetParam().identifier, threat_info.matched_url_navigation_rule()),
       GetParam().expected);
+}
+
+TEST_F(DataProtectionNavigationObserverTest,
+       TestGetWatermarkStringFromThreatInfo_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kEnableWatermarkTimestampTimezone);
+
+  base::test::ScopedRestoreDefaultTimezone tz("UTC");
+  safe_browsing::RTLookupResponse::ThreatInfo threat_info =
+      GetTestThreatInfo("custom_message", 1709181364, true);
+
+  EXPECT_EQ(enterprise_data_protection::GetWatermarkString(
+                "example@email.com", threat_info.matched_url_navigation_rule()),
+            "custom_message\nexample@email.com\n2024-02-29T04:36:04.000Z");
 }
 
 class SinglePageAppWatermarkTest : public DataProtectionNavigationObserverTest {
@@ -1002,10 +1028,18 @@ class OrderedDataProtectionNavigationObserverTest
     : public DataProtectionNavigationObserverTest,
       public testing::WithParamInterface<bool> {
  public:
+  OrderedDataProtectionNavigationObserverTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kEnableWatermarkTimestampTimezone);
+  }
   bool IsNavigationFinishedAfterVerdictReceived() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(OrderedDataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
+  base::test::ScopedRestoreDefaultTimezone tz("UTC");
   chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event;
   expected_event.set_url("https://test/");
   expected_event.set_event_result(
@@ -1052,7 +1086,7 @@ TEST_P(OrderedDataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
   EXPECT_EQ(watermark_text,
             "custom_message\n" +
                 connectors_service->GetRealTimeUrlCheckIdentifier() +
-                "\n2024-02-29T04:36:04.000Z");
+                "\n2024-02-29 04:36:04 (UTC+00:00)");
 
   // Value should be cached.
   auto* user_data = DataProtectionPageUserData::GetForPage(
