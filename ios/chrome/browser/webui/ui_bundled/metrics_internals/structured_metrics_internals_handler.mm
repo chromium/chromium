@@ -1,13 +1,18 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/metrics_internals/structured_metrics_internals_handler.h"
+#import "ios/chrome/browser/webui/ui_bundled/metrics_internals/structured_metrics_internals_handler.h"
 
-#include "base/functional/bind.h"
-#include "base/values.h"
-#include "chrome/browser/browser_process.h"
-#include "components/metrics_services_manager/metrics_services_manager.h"
+#import "components/metrics/structured/buildflags/buildflags.h"
+
+#if BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)
+
+#import "base/functional/bind.h"
+#import "base/values.h"
+#import "components/metrics_services_manager/metrics_services_manager.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/web/public/webui/web_ui_ios.h"
 
 // LINT.IfChange(structured_metrics_internals_handler)
 
@@ -15,7 +20,8 @@ StructuredMetricsInternalsHandler::StructuredMetricsInternalsHandler()
     : base_handler_(std::make_unique<
                     metrics::structured::StructuredMetricsInternalsHandlerBase>(
           this,
-          g_browser_process->GetMetricsServicesManager()
+          GetApplicationContext()
+              ->GetMetricsServicesManager()
               ->GetStructuredMetricsService())) {}
 
 StructuredMetricsInternalsHandler::~StructuredMetricsInternalsHandler() =
@@ -37,19 +43,19 @@ void StructuredMetricsInternalsHandler::RegisterMessages() {
 void StructuredMetricsInternalsHandler::ResolvePageCallback(
     const base::ValueView callback_id,
     const base::ValueView response) {
-  ResolveJavascriptCallback(callback_id, response);
+  web_ui()->ResolveJavascriptCallback(callback_id, response);
 }
 
 void StructuredMetricsInternalsHandler::HandleFetchStructuredMetricsEvents(
     const base::ListValue& args) {
-  AllowJavascript();
   base_handler_->HandleFetchStructuredMetricsEvents(args[0]);
 }
 
 void StructuredMetricsInternalsHandler::HandleFetchStructuredMetricsSummary(
     const base::ListValue& args) {
-  AllowJavascript();
   base_handler_->HandleFetchStructuredMetricsSummary(args[0]);
 }
 
-// LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/metrics_internals/structured_metrics_internals_handler.mm)
+// LINT.ThenChange(//chrome/browser/ui/webui/metrics_internals/structured_metrics_internals_handler.cc)
+
+#endif  // BUILDFLAG(STRUCTURED_METRICS_DEBUG_ENABLED)

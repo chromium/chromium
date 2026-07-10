@@ -1,20 +1,20 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_METRICS_INTERNALS_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_METRICS_INTERNALS_HANDLER_H_
+#ifndef IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_METRICS_INTERNALS_METRICS_INTERNALS_HANDLER_H_
+#define IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_METRICS_INTERNALS_METRICS_INTERNALS_HANDLER_H_
 
 #include <memory>
 
 #include "components/metrics/debug/metrics_internals_handler_base.h"
-#include "content/public/browser/web_ui_message_handler.h"
+#include "ios/web/public/webui/web_ui_ios_message_handler.h"
 
 // LINT.IfChange(metrics_internals_handler)
 
 // UI Handler for chrome://metrics-internals.
 class MetricsInternalsHandler
-    : public content::WebUIMessageHandler,
+    : public web::WebUIIOSMessageHandler,
       public metrics::MetricsInternalsHandlerBase::Delegate {
  public:
   MetricsInternalsHandler();
@@ -24,9 +24,7 @@ class MetricsInternalsHandler
 
   ~MetricsInternalsHandler() override;
 
-  // content::WebUIMessageHandler:
-  void OnJavascriptAllowed() override;
-  void OnJavascriptDisallowed() override;
+  // web::WebUIIOSMessageHandler:
   void RegisterMessages() override;
 
   // metrics::MetricsInternalsHandlerBase::Delegate:
@@ -49,6 +47,6 @@ class MetricsInternalsHandler
   std::unique_ptr<metrics::MetricsInternalsHandlerBase> base_handler_;
 };
 
-// LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/metrics_internals/metrics_internals_handler.h)
+// LINT.ThenChange(//chrome/browser/ui/webui/metrics_internals/metrics_internals_handler.h)
 
-#endif  // CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_METRICS_INTERNALS_HANDLER_H_
+#endif  // IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_METRICS_INTERNALS_METRICS_INTERNALS_HANDLER_H_
