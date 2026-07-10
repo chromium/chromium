@@ -6312,7 +6312,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Personalization.Ambient.LinkToGooglePhotosClicked"
     enum="BooleanHit" expires_after="2025-06-30">
-  <owner>pzliu@google.com</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Emitted whenever the user clicks the hyperlink to config Google Photos from
@@ -6322,7 +6322,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Personalization.AmbientMode.AlbumsPath"
     enum="AmbientModeTopicSource" expires_after="2025-08-31">
-  <owner>pzliu@chromium.org</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Emitted when a user navigates to the ambient mode albums selection page in
@@ -6356,7 +6356,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Personalization.AmbientMode.ScreenSaverDuration"
     enum="AmbientModeDurationOption" expires_after="2025-06-30">
-  <owner>pzliu@google.com</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Emitted when a user selects a new screen saver duration option.
@@ -6378,7 +6378,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Personalization.App.Duration" units="ms"
     expires_after="2025-06-30">
-  <owner>pzliu@google.com</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Records the amount of time a user spends in the Personalization App on each
@@ -6388,7 +6388,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Personalization.DynamicColor.ColorScheme.Settled"
     enum="PersonalizationDynamicColorColorScheme" expires_after="2025-12-28">
-  <owner>ericamlee@chromium.org</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Records the color scheme that the user has settled on. Emitted once for
@@ -6398,7 +6398,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Personalization.DynamicColor.StaticColor.Settled"
     enum="PersonalizationDynamicColorStaticColor" expires_after="2025-12-28">
-  <owner>ericamlee@chromium.org</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Records the static color that the user has settled on. Emitted once for
@@ -7481,7 +7481,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.SeaPen.CreateButton" enum="SeaPenTemplateId"
     expires_after="2026-11-15">
-  <owner>ericamlee@google.com</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Records the user's selected template when they create SeaPen thumbnails.
@@ -7545,7 +7545,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.SeaPen.Freeform.SamplePrompt.SampleClicked"
     enum="SeaPenSamplePromptId" expires_after="2026-07-05">
-  <owner>ericamlee@google.com</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Emmitted when the user clicks a sample prompt for a freeform query.
@@ -7554,7 +7554,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.SeaPen.Freeform.SamplePrompt.Shuffle.Clicked"
     enum="BooleanClicked" expires_after="2026-07-05">
-  <owner>ericamlee@google.com</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Emmitted when the user shuffles the sample prompts for a freeform query.
@@ -7563,7 +7563,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.SeaPen.Freeform.Suggestion.Clicked" enum="BooleanClicked"
     expires_after="2026-07-05">
-  <owner>ericamlee@google.com</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Emmitted when the user clicks a suggestion for a freeform query.
@@ -7572,7 +7572,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.SeaPen.Freeform.Suggestion.Shuffle.Clicked"
     enum="BooleanClicked" expires_after="2026-07-05">
-  <owner>ericamlee@google.com</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Emmitted when the user shuffles the suggestions for a freeform query.
@@ -7581,7 +7581,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.SeaPen.Freeform.Tab.Clicked" enum="SeaPenFreeformTab"
     expires_after="2026-07-05">
-  <owner>ericamlee@google.com</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>Emitted when the user clicks on a freeform tab.</summary>
 </histogram>
@@ -7599,7 +7599,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.SeaPen.Freeform.{AppName}.Visited" enum="BooleanHit"
     expires_after="2026-11-29">
-  <owner>ericamlee@google.com</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Emitted when a user navigates to the Freeform SeaPen page in the {AppName}
@@ -7632,7 +7632,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.SeaPen.ThumbnailClicked" enum="SeaPenTemplateId"
     expires_after="2026-07-05">
-  <owner>pzliu@google.com</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Records the template ID of the image when the user clicks a thumbnail to set
@@ -7641,7 +7641,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.WordCount" units="int" expires_after="2026-07-05">
-  <owner>pzliu@google.com</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Records the number of words in the SeaPen text query when the user clicks
@@ -7663,7 +7663,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.SeaPen.{AppName}.Visited" enum="BooleanHit"
     expires_after="2026-07-05">
-  <owner>pzliu@google.com</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Emitted when a user navigates to the SeaPen page in the {AppName} App. This
@@ -7675,7 +7675,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.SeaPen.{AppName}.{Source}.ImageSet" enum="BooleanHit"
     expires_after="2026-11-29">
-  <owner>pzliu@google.com</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Emmitted when the user sets a {Source} SeaPen image as {AppName}.
@@ -7686,7 +7686,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.SeaPen.{TemplateName}.UserFeedback" enum="Boolean"
     expires_after="2026-07-05">
-  <owner>pzliu@google.com</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Record the thumbs up/thumbs down feedback for SeaPen template {TemplateName}
@@ -8482,7 +8482,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Style.ColorPalette.KMeansAlgorithm" enum="BooleanEnabled"
     expires_after="2026-07-13">
-  <owner>ericamlee@google.com</owner>
   <owner>skau@google.com</owner>
   <owner>cowmoo@google.com</owner>
   <summary>
