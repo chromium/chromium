@@ -238,6 +238,9 @@ export {ParentalControlsSettingsCardElement} from './parental_controls_page/pare
 export type {PersonalizationHubBrowserProxy} from './personalization_page/personalization_hub_browser_proxy.js';
 export {PersonalizationHubBrowserProxyImpl} from './personalization_page/personalization_hub_browser_proxy.js';
 export {SettingsPersonalizationPageElement} from './personalization_page/personalization_page.js';
+export {LockScreenUnlockType, LockStateMixin} from './lock_state_mixin.js';
+export {QuickUnlockBrowserProxyImpl} from './os_people_page/quick_unlock_browser_proxy.js';
+export type {QuickUnlockBrowserProxy} from './os_people_page/quick_unlock_browser_proxy.js';
 export {createRouter as createRouterForTesting, Route, Router, routes} from './router.js';
 export {getPersonalizationSearchHandler, setPersonalizationSearchHandlerForTesting} from './search/personalization_search_handler.js';
 export {getSettingsSearchHandler, setSettingsSearchHandlerForTesting} from './search/settings_search_handler.js';

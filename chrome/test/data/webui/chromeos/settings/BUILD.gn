@@ -38,6 +38,7 @@ build_webui_tests("build") {
     "fake_user_action_recorder.ts",
     "fake_users_private.ts",
     "lock_screen_subpage_test.ts",
+    "lock_state_mixin_test.ts",
     "onc_mojo_test.ts",
     "os_page_availability_test.ts",
     "os_settings_routes_test.ts",

@@ -339,6 +339,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       case AuthFactor.kGaiaPassword:
       case AuthFactor.kLocalPassword:
       case AuthFactor.kCryptohomePin:
+      case AuthFactor.kCryptohomePinV2:
         this.updateCurrentUnlockMethodLabel_(this.authToken);
         break;
       default:

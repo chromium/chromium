@@ -727,6 +727,10 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, LockScreenSubpage) {
   RunSettingsTest("lock_screen_subpage_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, LockStateMixin) {
+  RunSettingsTest("lock_state_mixin_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, MainPageContainer) {
   RunSettingsTest("main_page_container/main_page_container_test.js");
 }

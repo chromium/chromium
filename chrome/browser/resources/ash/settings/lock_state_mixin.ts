@@ -217,14 +217,20 @@ export const LockStateMixin = dedupingMixin(
               'settings.enable_screen_lock.changed', (isEnabled: boolean) => {
                 // When the screen lock setting changes, if it's disabled,
                 // we immediately set the unlock type to NONE. Otherwise,
-                // the subsequent Promise.all will correctly determine the
-                // unlock type based on configured factors.
+                // we re-evaluate the configured factors to determine the
+                // correct unlock type.
                 if (!isEnabled) {
                   this.selectedUnlockType =
                       LockScreenUnlockType.LOCK_SCREEN_NONE;
+                } else {
+                  this.updateUnlockType_();
                 }
               });
 
+          return this.updateUnlockType_();
+        }
+
+        private updateUnlockType_(): Promise<void> {
           return Promise
               .all([
                 this.fingerprintBrowserProxy_.getNumFingerprints(),
