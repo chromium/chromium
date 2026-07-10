@@ -55,7 +55,7 @@ RateLimitingKeyManager::RateLimitingKeyManager(const std::string& stable_input)
 RateLimitingKeyManager::~RateLimitingKeyManager() = default;
 
 const std::string& RateLimitingKeyManager::GetCurrentRateLimitingKey(
-    const std::string& profile_id) {
+    const base::UnguessableToken& profile_id) {
   base::Time now = base::Time::Now();
   auto it = rate_limiting_keys_.find(profile_id);
   if (it == rate_limiting_keys_.end() || it->second.is_expired(now)) {

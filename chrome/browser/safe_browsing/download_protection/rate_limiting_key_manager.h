@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 
 namespace safe_browsing {
 
@@ -34,8 +35,9 @@ class RateLimitingKeyManager {
   ~RateLimitingKeyManager();
 
   // Returns a non-expired rate_limiting_key value for the Profile with given
-  // `UniqueId()`.
-  const std::string& GetCurrentRateLimitingKey(const std::string& profile_id);
+  // `UniqueToken()`.
+  const std::string& GetCurrentRateLimitingKey(
+      const base::UnguessableToken& profile_id);
 
  private:
   class RateLimitingKey;
@@ -46,10 +48,10 @@ class RateLimitingKeyManager {
   // The stable input used in generating RateLimitingKeys.
   const std::string stable_input_;
 
-  // Map from Profile's UniqueId() to that Profile's most recent
+  // Map from Profile's UniqueToken() to that Profile's most recent
   // rate_limiting_key. Expired entries are garbage-collected periodically
   // (whenever new ones are inserted).
-  std::map<std::string, RateLimitingKey> rate_limiting_keys_;
+  std::map<base::UnguessableToken, RateLimitingKey> rate_limiting_keys_;
 };
 
 }  // namespace safe_browsing

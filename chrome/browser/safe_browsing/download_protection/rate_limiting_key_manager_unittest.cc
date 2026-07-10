@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/download_protection/rate_limiting_key_manager.h"
 
 #include "base/test/task_environment.h"
+#include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
@@ -24,8 +25,10 @@ class RateLimitingKeyManagerTest : public testing::Test {
 
 TEST_F(RateLimitingKeyManagerTest, GeneratesUniqueKeys) {
   InitManagerWithStableInput("stable_input");
-  std::string key1 = manager_->GetCurrentRateLimitingKey("1");
-  std::string key2 = manager_->GetCurrentRateLimitingKey("2");
+  auto token1 = base::UnguessableToken::CreateForTesting(0, 1);
+  auto token2 = base::UnguessableToken::CreateForTesting(0, 2);
+  std::string key1 = manager_->GetCurrentRateLimitingKey(token1);
+  std::string key2 = manager_->GetCurrentRateLimitingKey(token2);
 
   EXPECT_FALSE(key1.empty());
   EXPECT_FALSE(key2.empty());
@@ -34,28 +37,31 @@ TEST_F(RateLimitingKeyManagerTest, GeneratesUniqueKeys) {
 
 TEST_F(RateLimitingKeyManagerTest, ReturnsSameKeyForSameProfile) {
   InitManagerWithStableInput("stable_input");
-  std::string key1 = manager_->GetCurrentRateLimitingKey("1");
-  std::string key1_again = manager_->GetCurrentRateLimitingKey("1");
+  auto token = base::UnguessableToken::CreateForTesting(0, 1);
+  std::string key1 = manager_->GetCurrentRateLimitingKey(token);
+  std::string key1_again = manager_->GetCurrentRateLimitingKey(token);
 
   EXPECT_EQ(key1, key1_again);
 }
 
 TEST_F(RateLimitingKeyManagerTest, ReturnsSameKeyForSameProfileBeforeExpiry) {
   InitManagerWithStableInput("stable_input");
-  std::string key1 = manager_->GetCurrentRateLimitingKey("1");
+  auto token = base::UnguessableToken::CreateForTesting(0, 1);
+  std::string key1 = manager_->GetCurrentRateLimitingKey(token);
   task_environment_.FastForwardBy(0.5 * RateLimitingKeyManager::kTimeToLive);
-  std::string key1_again = manager_->GetCurrentRateLimitingKey("1");
+  std::string key1_again = manager_->GetCurrentRateLimitingKey(token);
 
   EXPECT_EQ(key1, key1_again);
 }
 
 TEST_F(RateLimitingKeyManagerTest, ReturnsNewKeysForSameProfileAfterExpiry) {
   InitManagerWithStableInput("stable_input");
-  std::string key1 = manager_->GetCurrentRateLimitingKey("1");
+  auto token = base::UnguessableToken::CreateForTesting(0, 1);
+  std::string key1 = manager_->GetCurrentRateLimitingKey(token);
   task_environment_.FastForwardBy(1.1 * RateLimitingKeyManager::kTimeToLive);
-  std::string key1_new = manager_->GetCurrentRateLimitingKey("1");
+  std::string key1_new = manager_->GetCurrentRateLimitingKey(token);
   task_environment_.FastForwardBy(1.1 * RateLimitingKeyManager::kTimeToLive);
-  std::string key1_newer = manager_->GetCurrentRateLimitingKey("1");
+  std::string key1_newer = manager_->GetCurrentRateLimitingKey(token);
 
   EXPECT_NE(key1, key1_new);
   EXPECT_NE(key1, key1_newer);
@@ -63,18 +69,19 @@ TEST_F(RateLimitingKeyManagerTest, ReturnsNewKeysForSameProfileAfterExpiry) {
 }
 
 TEST_F(RateLimitingKeyManagerTest, DifferentInstancesGenerateUniqueKeys) {
+  auto token = base::UnguessableToken::CreateForTesting(0, 1);
   InitManagerWithStableInput("stable_input");
-  std::string manager1_key1 = manager_->GetCurrentRateLimitingKey("1");
+  std::string manager1_key1 = manager_->GetCurrentRateLimitingKey(token);
 
   // Instantiating a different manager, even if using the same stable_input
   // value, should result in newly generated keys.
   InitManagerWithStableInput("stable_input");
-  std::string manager2_key1 = manager_->GetCurrentRateLimitingKey("1");
+  std::string manager2_key1 = manager_->GetCurrentRateLimitingKey(token);
 
   // A different instance with a different stable_input should also generate
   // distinct keys.
   InitManagerWithStableInput("different_stable_input");
-  std::string manager3_key1 = manager_->GetCurrentRateLimitingKey("1");
+  std::string manager3_key1 = manager_->GetCurrentRateLimitingKey(token);
 
   EXPECT_NE(manager1_key1, manager2_key1);
   EXPECT_NE(manager2_key1, manager3_key1);

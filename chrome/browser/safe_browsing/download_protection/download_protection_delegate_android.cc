@@ -226,7 +226,7 @@ DownloadProtectionDelegateAndroid::ProduceClientDownloadRequestModifications(
   if (profile) {
     modifications.emplace_back(base::BindOnce(
         &DownloadProtectionDelegateAndroid::PopulateRateLimitingKey,
-        weak_factory_.GetWeakPtr(), profile->UniqueId()));
+        weak_factory_.GetWeakPtr(), profile->UniqueToken()));
   }
 
   return modifications;
@@ -345,7 +345,7 @@ bool DownloadProtectionDelegateAndroid::MayCheckItem(
 }
 
 void DownloadProtectionDelegateAndroid::PopulateRateLimitingKey(
-    const std::string& profile_id,
+    const base::UnguessableToken& profile_id,
     CollectModificationCallback callback) {
   if (!rate_limiting_key_manager_) {
     base::OnceCallback<void(const std::string&)> on_got_safety_net_id =

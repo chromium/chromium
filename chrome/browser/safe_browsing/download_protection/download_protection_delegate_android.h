@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_delegate.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/download_protection/rate_limiting_key_manager.h"
@@ -82,7 +83,7 @@ class DownloadProtectionDelegateAndroid : public DownloadProtectionDelegate {
   // ClientDownloadRequest. If there's no initialized RateLimitingKeyManager,
   // this kicks off a lookup of safety_net_id in order to initialize the
   // manager, then tries again using that.
-  void PopulateRateLimitingKey(const std::string& profile_id,
+  void PopulateRateLimitingKey(const base::UnguessableToken& profile_id,
                                CollectModificationCallback callback);
 
   void InitRateLimitingKeyManager(const std::string& safety_net_id);
