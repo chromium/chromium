@@ -31,6 +31,7 @@ import chromium_src.tools.metrics.common.presubmit_util as presubmit_caching_sup
 import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
 import chromium_src.tools.metrics.histograms.histograms_allowlist_check as histograms_allowlist_check
 import chromium_src.tools.metrics.histograms.print_histogram_names as print_histogram_names
+import chromium_src.tools.metrics.histograms.histogram_validation as histogram_validation
 
 # Cannot be called CheckType because by convention PRESUBMIT will try to call
 # anything with a Check prefix as a function.
@@ -311,26 +312,32 @@ def CheckBooleansAreEnums(input_api,
 # Execute prefix for executing the checks on cache miss.
 def ExecuteCheckBooleansAreEnums(input_api, output_api):
   """Checks that histograms that use Booleans do not use units."""
-  results = []
   cwd = input_api.PresubmitLocalPath()
-  inclusion_pattern = input_api.re.compile(r'units="[Bb]oolean')
+
+  affected_files = []
+  for affected_file in input_api.AffectedFiles(include_deletes=False):
+    filepath = input_api.os_path.relpath(affected_file.AbsoluteLocalPath(), cwd)
+    if 'histograms.xml' in filepath:
+      affected_files.append(
+          histogram_validation.AffectedFileForLineCheck(
+              path=filepath,
+              changed_lines=list(affected_file.ChangedContents())))
+
+  validation_errors = histogram_validation.check_booleans_are_enums(
+      affected_files)
+
+  if not validation_errors:
+    return []
+
+  results = []
+  for filepath, line_number, line in validation_errors:
+    results.append('%s:%s\n\t%s' % (filepath, line_number, line.strip()))
+
   units_warning = """
   You are using 'units' for a boolean histogram, but you should be using
   'enum' instead."""
 
-  # Only for changed files, do corresponding checks if the file is
-  # histograms.xml or enums.xml.
-  for affected_file in input_api.AffectedFiles(include_deletes=False):
-    filepath = input_api.os_path.relpath(affected_file.AbsoluteLocalPath(), cwd)
-    if 'histograms.xml' in filepath:
-      for line_number, line in affected_file.ChangedContents():
-        if inclusion_pattern.search(line):
-          results.append('%s:%s\n\t%s' % (filepath, line_number, line.strip()))
-
-  # If a histograms.xml file was changed, check for units="[Bb]oolean".
-  if results:
-    return [output_api.PresubmitPromptOrNotify(units_warning, results)]
-  return results
+  return [output_api.PresubmitPromptOrNotify(units_warning, results)]
 
 
 def CheckRemovedSegmentationHistograms(input_api, output_api):
@@ -367,8 +374,9 @@ def CheckRemovedSegmentationHistograms(input_api, output_api):
     # If the file is empty or doesn't exist, there's nothing to check.
     return []
 
-  removed_segmentation_histograms = removed_histograms.intersection(
-      segmentation_histograms)
+  removed_segmentation_histograms = (
+      histogram_validation.check_removed_segmentation_histograms(
+          removed_histograms, segmentation_histograms))
 
   if removed_segmentation_histograms:
     return [
