@@ -60,9 +60,9 @@ TEST(URLRequestJobFactoryTest, NoProtocolHandler) {
       base::test::TaskEnvironment::MainThreadType::IO);
   TestDelegate delegate;
   auto request_context = CreateTestURLRequestContextBuilder()->Build();
-  std::unique_ptr<URLRequest> request(
-      request_context->CreateRequest(GURL("foo://bar"), DEFAULT_PRIORITY,
-                                     &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request(request_context->CreateRequest(
+      GURL("foo://bar"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request->Start();
 
   delegate.RunUntilComplete();
@@ -77,9 +77,9 @@ TEST(URLRequestJobFactoryTest, BasicProtocolHandler) {
   context_builder->SetProtocolHandler("foo",
                                       std::make_unique<DummyProtocolHandler>());
   auto request_context = context_builder->Build();
-  std::unique_ptr<URLRequest> request(
-      request_context->CreateRequest(GURL("foo://bar"), DEFAULT_PRIORITY,
-                                     &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request(request_context->CreateRequest(
+      GURL("foo://bar"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request->Start();
 
   delegate.RunUntilComplete();

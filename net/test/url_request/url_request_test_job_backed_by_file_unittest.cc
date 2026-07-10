@@ -227,7 +227,8 @@ void URLRequestTestJobBackedByFileEventsTest::RunRequestWithPath(
   const GURL kUrl("http://intercepted-url/");
 
   std::unique_ptr<URLRequest> request(context_->CreateRequest(
-      kUrl, DEFAULT_PRIORITY, &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS));
+      kUrl, DEFAULT_PRIORITY, &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
   TestScopedURLInterceptor interceptor(
       kUrl, std::make_unique<TestURLRequestTestJobBackedByFile>(
                 request.get(), path,

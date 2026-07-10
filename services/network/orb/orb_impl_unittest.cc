@@ -1707,7 +1707,7 @@ class ResponseAnalyzerTest : public testing::Test,
     // Initialize |request| from the parameters.
     std::unique_ptr<net::URLRequest> request = context_->CreateRequest(
         GURL(scenario.target_url), net::DEFAULT_PRIORITY, &delegate_,
-        TRAFFIC_ANNOTATION_FOR_TESTS);
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
     request->set_initiator(
         url::Origin::Create(GURL(scenario.initiator_origin)));
 

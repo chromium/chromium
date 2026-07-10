@@ -137,7 +137,8 @@ std::unique_ptr<net::URLRequest> CreateSimpleRequest(
     const std::string& form_data_type,
     const std::string& form_data) {
   std::unique_ptr<net::URLRequest> request(request_context.CreateRequest(
-      url, net::DEFAULT_PRIORITY, delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      url, net::DEFAULT_PRIORITY, delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
   if (!form_data_type.empty()) {
     net::HttpRequestHeaders extra_headers;
     extra_headers.SetHeader(net::HttpRequestHeaders::kContentType,

@@ -14,6 +14,7 @@
 #include "components/variations/net/variations_flags.h"
 #include "components/variations/variations.mojom.h"
 #include "net/base/isolation_info.h"
+#include "net/base/network_handle.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
@@ -78,7 +79,7 @@ std::unique_ptr<net::URLRequest> CreateURLRequest(
     const std::string& isolation_info_frame_origin_url) {
   std::unique_ptr<net::URLRequest> request = context->CreateRequest(
       GURL("https://foo.google.com"), net::DEFAULT_PRIORITY, nullptr,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   if (!request_initiator_url.empty()) {
     request->set_initiator(url::Origin::Create(GURL(request_initiator_url)));

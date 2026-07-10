@@ -844,7 +844,8 @@ TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocket) {
   GURL https_page =
       https_server.GetURL(test_server_hostname, "/hsts-headers.html");
   std::unique_ptr<URLRequest> request(context_->CreateRequest(
-      https_page, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      https_page, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
   request->Start();
   delegate.RunUntilComplete();
   EXPECT_EQ(OK, delegate.request_status());
@@ -879,7 +880,8 @@ TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocketNotApplied) {
   TestDelegate delegate;
   GURL https_page = https_server.GetURL("/hsts-headers.html");
   std::unique_ptr<URLRequest> request(context_->CreateRequest(
-      https_page, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      https_page, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
   request->Start();
   delegate.RunUntilComplete();
   EXPECT_EQ(OK, delegate.request_status());
@@ -913,7 +915,8 @@ TEST_F(WebSocketEndToEndTest, HstsWebSocketToHttps) {
       https_server.GetURL(test_server_hostname, "/simple.html"), "http");
   url::Origin http_origin = url::Origin::Create(http_page);
   std::unique_ptr<URLRequest> request(context_->CreateRequest(
-      http_page, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      http_page, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
   request->set_isolation_info(IsolationInfo::Create(
       IsolationInfo::RequestType::kMainFrame, http_origin, http_origin,
       SiteForCookies::FromOrigin(http_origin)));

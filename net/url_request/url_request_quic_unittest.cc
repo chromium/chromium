@@ -145,7 +145,8 @@ class URLRequestQuicTest : public TestWithTaskEnvironment,
       const GURL& url,
       URLRequest::Delegate* delegate) {
     return context->CreateRequest(url, DEFAULT_PRIORITY, delegate,
-                                  TRAFFIC_ANNOTATION_FOR_TESTS);
+                                  TRAFFIC_ANNOTATION_FOR_TESTS,
+                                  net::handles::kInvalidNetworkHandle);
   }
 
   // Returns the port that `server_` is listening on. `server_` must be non-null

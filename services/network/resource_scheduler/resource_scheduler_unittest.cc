@@ -192,7 +192,8 @@ class ResourceSchedulerTest : public testing::Test {
       net::RequestPriority priority,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) {
     std::unique_ptr<net::URLRequest> url_request(context_->CreateRequest(
-        GURL(url), priority, nullptr, traffic_annotation));
+        GURL(url), priority, nullptr, traffic_annotation,
+        net::handles::kInvalidNetworkHandle));
     return url_request;
   }
 

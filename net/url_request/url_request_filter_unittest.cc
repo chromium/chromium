@@ -60,11 +60,13 @@ TEST(URLRequestFilter, BasicMatching) {
 
   const GURL kUrl1("http://foo.com/");
   std::unique_ptr<URLRequest> request1(context->CreateRequest(
-      kUrl1, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      kUrl1, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
 
   const GURL kUrl2("http://bar.com/");
   std::unique_ptr<URLRequest> request2(context->CreateRequest(
-      kUrl2, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      kUrl2, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
 
   // Check AddUrlInterceptor checks for invalid URLs.
   EXPECT_FALSE(filter->AddUrlInterceptor(

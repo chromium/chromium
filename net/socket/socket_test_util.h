@@ -1256,6 +1256,7 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
       pending_read_datagrams_callback_;
   size_t pending_max_packet_size_ = 0;
   CompletionOnceCallback pending_write_callback_;
+  CompletionOnceCallback pending_connect_callback_;
 
   NetLogWithSource net_log_;
 

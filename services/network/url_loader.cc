@@ -473,6 +473,7 @@ URLLoader::URLLoader(
 
   url_request_ = url_request_context_->CreateRequest(
       request.url, request.priority, this, traffic_annotation,
+      net::handles::kInvalidNetworkHandle,
       /*is_for_websockets=*/false, request.net_log_create_info);
 
   // If the request is to a URL that we can determine is an LNA request from

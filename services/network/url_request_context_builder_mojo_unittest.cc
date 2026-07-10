@@ -85,7 +85,8 @@ TEST_F(URLRequestContextBuilderMojoTest, MojoProxyResolver) {
   net::TestDelegate delegate;
   std::unique_ptr<net::URLRequest> request(context->CreateRequest(
       GURL("http://hats:12345/echoheader?Foo"), net::DEFAULT_PRIORITY,
-      &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
   request->SetExtraRequestHeaderByName("Foo", "Bar", false);
   request->Start();
   delegate.RunUntilComplete();
@@ -121,7 +122,8 @@ TEST_F(URLRequestContextBuilderMojoTest, ShutdownWithHungRequest) {
   net::TestDelegate delegate;
   std::unique_ptr<net::URLRequest> request(context->CreateRequest(
       GURL("http://hats:12345/echoheader?Foo"), net::DEFAULT_PRIORITY,
-      &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
   request->Start();
   connection_listener.WaitForConnections();
 

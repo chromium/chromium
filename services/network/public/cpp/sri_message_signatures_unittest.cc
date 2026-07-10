@@ -114,9 +114,9 @@ const GURL kExampleURL = GURL("https://example.test/");
 std::unique_ptr<net::URLRequest> CreateRequest(
     const net::URLRequestContext& context,
     const GURL& url) {
-  std::unique_ptr<net::URLRequest> request =
-      context.CreateRequest(url, net::DEFAULT_PRIORITY, /*delegate=*/nullptr,
-                            TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<net::URLRequest> request = context.CreateRequest(
+      url, net::DEFAULT_PRIORITY, /*delegate=*/nullptr,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   return request;
 }
 
@@ -1852,10 +1852,12 @@ class SRIMessageSignatureRequestHeaderTest : public testing::Test {
   SRIMessageSignatureRequestHeaderTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         context_(net::CreateTestURLRequestContextBuilder()->Build()),
-        url_request_(context_->CreateRequest(kExampleURL,
-                                             net::DEFAULT_PRIORITY,
-                                             /*delegate=*/nullptr,
-                                             TRAFFIC_ANNOTATION_FOR_TESTS)) {}
+        url_request_(
+            context_->CreateRequest(kExampleURL,
+                                    net::DEFAULT_PRIORITY,
+                                    /*delegate=*/nullptr,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS,
+                                    net::handles::kInvalidNetworkHandle)) {}
 
   net::URLRequest* url_request() const { return url_request_.get(); }
 

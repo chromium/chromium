@@ -41,6 +41,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_handle.h"
 #include "net/socket/server_socket.h"
 #include "net/socket/tcp_server_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -303,14 +304,16 @@ TEST_F(DevToolsHttpHandlerTest, MutatingActionsiRequireSafeVerb) {
   GURL url(base::StringPrintf("http://127.0.0.1:%d/json/new", port));
   auto request_context = net::CreateTestURLRequestContextBuilder()->Build();
   auto request = request_context->CreateRequest(
-      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle);
   request->Start();
   delegate.RunUntilComplete();
   EXPECT_GE(delegate.request_status(), 0);
   EXPECT_EQ(405, request->response_info().headers->response_code());
 
   request = request_context->CreateRequest(
-      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle);
   request->set_method("POST");
   request->Start();
   delegate.RunUntilComplete();
@@ -324,7 +327,8 @@ TEST_F(DevToolsHttpHandlerTest, MutatingActionsiRequireSafeVerb) {
       .WillOnce(Return(base::MakeRefCounted<MockDevToolsAgentHost>()));
 
   request = request_context->CreateRequest(
-      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle);
   request->set_method("PUT");
   request->Start();
   delegate.RunUntilComplete();
@@ -355,7 +359,8 @@ TEST_F(DevToolsHttpHandlerTest, TestJsonNew) {
   GURL url(base::StringPrintf("http://127.0.0.1:%d/json/new", port));
   auto request_context = net::CreateTestURLRequestContextBuilder()->Build();
   auto request = request_context->CreateRequest(
-      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle);
   request->set_method("PUT");
   request->Start();
   delegate.RunUntilComplete();
@@ -369,7 +374,8 @@ TEST_F(DevToolsHttpHandlerTest, TestJsonNew) {
       "http://127.0.0.1:%d/json/new?%s", port,
       base::EscapeQueryParamValue("http://example.com", true).c_str()));
   request = request_context->CreateRequest(
-      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle);
   request->set_method("PUT");
   request->Start();
   delegate.RunUntilComplete();
@@ -383,7 +389,8 @@ TEST_F(DevToolsHttpHandlerTest, TestJsonNew) {
       "http://127.0.0.1:%d/json/new?%s&for_tab", port,
       base::EscapeQueryParamValue("http://example.com", true).c_str()));
   request = request_context->CreateRequest(
-      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle);
   request->set_method("PUT");
   request->Start();
   delegate.RunUntilComplete();
@@ -411,7 +418,8 @@ TEST_F(DevToolsHttpHandlerTest, TestJsonList) {
   GURL url(base::StringPrintf("http://127.0.0.1:%d/json", port));
   auto request_context = net::CreateTestURLRequestContextBuilder()->Build();
   auto request = request_context->CreateRequest(
-      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle);
   request->set_method("PUT");
   request->Start();
   delegate.RunUntilComplete();
@@ -423,7 +431,8 @@ TEST_F(DevToolsHttpHandlerTest, TestJsonList) {
           base::MakeRefCounted<MockDevToolsAgentHostWithType>("tab")}));
   url = GURL(base::StringPrintf("http://127.0.0.1:%d/json/list", port));
   request = request_context->CreateRequest(
-      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle);
   request->set_method("PUT");
   request->Start();
   delegate.RunUntilComplete();
@@ -438,7 +447,8 @@ TEST_F(DevToolsHttpHandlerTest, TestJsonList) {
           base::MakeRefCounted<MockDevToolsAgentHostWithType>("tab")}));
   url = GURL(base::StringPrintf("http://127.0.0.1:%d/json/list?for_tab", port));
   request = request_context->CreateRequest(
-      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle);
   request->set_method("PUT");
   request->Start();
   delegate.RunUntilComplete();
@@ -482,7 +492,7 @@ class DevToolsHttpHandlerWithServerTest : public DevToolsHttpHandlerTest {
     net::TestDelegate delegate;
     auto request = request_context_->CreateRequest(
         GURL(url), net::DEFAULT_PRIORITY, &delegate,
-        TRAFFIC_ANNOTATION_FOR_TESTS);
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
     for (auto const& [key, value] : headers) {
       request->SetExtraRequestHeaderByName(key, value, true);
     }
@@ -508,7 +518,8 @@ class DevToolsWebSocketHandlerTest : public DevToolsHttpHandlerWithServerTest {
     GURL url(base::StringPrintf("http://127.0.0.1:%d/json/version", port));
     net::TestDelegate delegate;
     auto request = request_context_->CreateRequest(
-        url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+        url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle);
     request->Start();
     delegate.RunUntilComplete();
     EXPECT_GE(delegate.request_status(), 0);

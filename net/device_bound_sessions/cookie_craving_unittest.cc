@@ -669,7 +669,8 @@ TEST_F(CookieCravingTest, ShouldIncludeCantCreateCanonicalCookie) {
                             CookieScopeSemantics::UNKNOWN, false};
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      GURL(kUrlString), IDLE, &delegate, kDummyAnnotation);
+      GURL(kUrlString), IDLE, &delegate, kDummyAnnotation,
+      net::handles::kInvalidNetworkHandle);
 
   DbscRequest dbsc_request(request.get());
   // Confirm the valid craving is able to be included in the request.

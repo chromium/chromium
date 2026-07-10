@@ -268,7 +268,8 @@ TEST_F(SessionServiceImplTest, RegisterSuccess) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
 
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
@@ -298,7 +299,8 @@ TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
 
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
@@ -328,7 +330,8 @@ TEST_F(SessionServiceImplTest, SetChallengeForBoundSession) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   DbscRequest dbsc_request(request.get());
@@ -359,7 +362,8 @@ TEST_F(SessionServiceImplTest, SetChallengeForBoundSessionBlockedCookies) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
 
   network_delegate()->set_cookie_options(TestNetworkDelegate::NO_SET_COOKIE);
 
@@ -384,7 +388,8 @@ TEST_F(SessionServiceImplTest, ExpiryExtendedOnUser) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -437,7 +442,8 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnDeferral) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
 
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
@@ -471,7 +477,8 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnSetChallenge) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   base::test::TestFuture<SessionAccess> future;
@@ -661,7 +668,8 @@ TEST_F(SessionServiceImplTest, EventObserverOnRefresh) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -706,7 +714,8 @@ TEST_F(SessionServiceImplTest, EventObserverOnRefreshNoSessionChange) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -755,7 +764,8 @@ TEST_F(SessionServiceImplTest, EventObserverOnRefreshTermination) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -813,7 +823,8 @@ TEST_F(SessionServiceImplTest, EventObserverOnRefreshTransientError) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -857,7 +868,8 @@ TEST_F(SessionServiceImplTest, EventObserverOnRefreshCapturedFailedRequest) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
   DbscRequest dbsc_request(request.get());
 
@@ -916,7 +928,8 @@ TEST_F(SessionServiceImplTest, EventObserverOnProactiveRefresh) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -973,7 +986,8 @@ TEST_F(SessionServiceImplTest, EventObserverOnProactiveAndDeferredRefresh) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -998,7 +1012,8 @@ TEST_F(SessionServiceImplTest, EventObserverOnProactiveAndDeferredRefresh) {
   base::test::TestFuture<RefreshResult> future;
   dbsc_request.reset();
   request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   dbsc_request = std::make_unique<DbscRequest>(request.get());
   service().DeferRequestForRefresh(*dbsc_request, deferral,
                                    future.GetCallback());
@@ -1040,7 +1055,8 @@ TEST_F(SessionServiceImplTest, EventObserverOnChallenge) {
   ASSERT_EQ(params.size(), 1u);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
   DbscRequest dbsc_request(request.get());
 
@@ -1077,7 +1093,8 @@ TEST_F(SessionServiceImplTest, EventObserverOnChallenge_NoSessionId) {
   ASSERT_EQ(params.size(), 1u);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
   DbscRequest dbsc_request(request.get());
 
@@ -1115,7 +1132,8 @@ TEST_F(SessionServiceImplTest, EventObserverOnChallenge_NoSessionMatch) {
   ASSERT_EQ(params.size(), 1u);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
   DbscRequest dbsc_request(request.get());
 
@@ -1153,7 +1171,8 @@ TEST_F(SessionServiceImplTest, EventObserverOnChallenge_CantSetBoundCookie) {
   ASSERT_EQ(params.size(), 1u);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   network_delegate()->set_cookie_options(TestNetworkDelegate::NO_SET_COOKIE);
   DbscRequest dbsc_request(request.get());
 
@@ -1286,7 +1305,8 @@ TEST_F(SessionServiceImplTest, RefreshedSessionKeepsCreationDate) {
       "SessionA", kRefreshUrlString, kOrigin);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
   DbscRequest dbsc_request(request.get());
   base::test::TestFuture<RefreshResult> refresh_future;
@@ -1385,7 +1405,8 @@ TEST_F(SessionServiceImplTest, RefreshedSessionKeepsAttestationKey) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
   DbscRequest dbsc_request(request.get());
   base::test::TestFuture<RefreshResult> refresh_future;
@@ -1469,7 +1490,8 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestRestart) {
   // Create a request to kTestUrl and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -1517,7 +1539,8 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_FatalError) {
   // Create a request to kTestUrl and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -1566,7 +1589,8 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_NonFatalError) {
   // Create a request to kTestUrl and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -1614,7 +1638,8 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -1669,7 +1694,8 @@ TEST_F(SessionServiceImplTest, RefreshWithInvalidParams) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -1727,7 +1753,8 @@ TEST_F(SessionServiceImplTest, SessionTerminationFromContinueFalse) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -1770,7 +1797,8 @@ TEST_F(SessionServiceImplTest, NetLogRefresh) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   base::test::TestFuture<RefreshResult> future;
@@ -1796,7 +1824,8 @@ TEST_F(SessionServiceImplTest, RefreshUpdatesConfig) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   base::test::TestFuture<RefreshResult> future;
@@ -1826,7 +1855,8 @@ TEST_F(SessionServiceImplTest, SessionSigningQuota) {
                          Session::Id(kSessionId)};
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   // Repeated refreshes don't exceed the signing quota if they don't trigger
@@ -1917,7 +1947,8 @@ TEST_F(SessionServiceImplNoRefreshQuotaTest, SessionRefreshQuotaDisabled) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   // The third refresh is not throttled because the refresh quota is disabled.
@@ -1938,7 +1969,8 @@ TEST_F(SessionServiceImplTest, SessionBackoff) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   HttpRequestHeaders extra_headers;
@@ -1969,7 +2001,8 @@ TEST_F(SessionServiceImplTest, RepeatedDeferral) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
 
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
@@ -1999,7 +2032,8 @@ TEST_F(SessionServiceImplTest, AddsDebugHeader) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
 
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
@@ -2033,7 +2067,8 @@ TEST_F(SessionServiceImplTest, NoDebugHeaderOnSuccess) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
 
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
@@ -2330,7 +2365,8 @@ TEST_F(SessionServiceImplTest, EmptyResponseOnRegistration) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
 
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
@@ -2357,7 +2393,8 @@ TEST_F(SessionServiceImplTest, EmptyResponseOnRefresh) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -2405,7 +2442,8 @@ TEST_F(SessionServiceImplTest, EmptyResponseOnRefresh) {
 TEST_F(SessionServiceImplTest, SessionUsage) {
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   EXPECT_EQ(request->device_bound_session_usage().size(), 0);
@@ -2435,7 +2473,8 @@ TEST_P(SessionServiceImplRequestModeTest, ShouldDefer) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
   request->set_device_bound_session_mode(GetParam());
 
@@ -2455,7 +2494,8 @@ TEST_P(SessionServiceImplRequestModeTest, ShouldDefer) {
 TEST_P(SessionServiceImplRequestModeTest, HandleRegistrationHeader) {
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_device_bound_session_mode(GetParam());
 
   auto headers = base::MakeRefCounted<HttpResponseHeaders>("HTTP/1.1 200 OK\n");
@@ -2490,7 +2530,8 @@ TEST_P(SessionServiceImplRequestModeTest, HandleChallengeHeader) {
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
   request->set_device_bound_session_mode(GetParam());
 
@@ -2720,7 +2761,8 @@ TEST_F(SessionServiceImplWithStoreTest, RequestsWaitForSessionsToLoad) {
   // having completed.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   HttpRequestHeaders extra_headers;
@@ -2761,7 +2803,8 @@ TEST_F(SessionServiceImplWithStoreTest, RequestDestroyedDuringAsyncKeyRestore) {
   // Create a request that should be deferred due to the session
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   HttpRequestHeaders extra_headers;
@@ -2812,7 +2855,8 @@ TEST_F(SessionServiceImplWithStoreTest,
   // Create request1 that should be deferred due to the session
   net::TestDelegate delegate1;
   std::unique_ptr<URLRequest> request1 =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate1, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate1, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request1->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   HttpRequestHeaders extra_headers1;
@@ -2837,7 +2881,8 @@ TEST_F(SessionServiceImplWithStoreTest,
   // Create request2 and defer it while RestoreSessionBindingKey is pending
   net::TestDelegate delegate2;
   std::unique_ptr<URLRequest> request2 =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate2, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate2, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request2->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   HttpRequestHeaders extra_headers2;
@@ -2885,7 +2930,8 @@ TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
   // Create a request that should be deferred due to the session
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   HttpRequestHeaders extra_headers;
@@ -2931,7 +2977,8 @@ TEST_F(SessionServiceImplWithStoreTest, RecoveryFromTransientSigningError) {
   // Create Request A
   net::TestDelegate delegate_a;
   std::unique_ptr<URLRequest> request_a =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate_a, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate_a, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request_a->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   HttpRequestHeaders extra_headers_a;
@@ -2963,7 +3010,8 @@ TEST_F(SessionServiceImplWithStoreTest, RecoveryFromTransientSigningError) {
   // Create Request B
   net::TestDelegate delegate_b;
   std::unique_ptr<URLRequest> request_b =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate_b, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate_b, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request_b->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   HttpRequestHeaders extra_headers_b;
@@ -3072,7 +3120,8 @@ TEST_F(SessionServiceImplWithStoreTest, FederatedRegistrationKeyUnrestored) {
 TEST_F(SessionServiceImplWithStoreTest, NoSessionUsageDuringInitialization) {
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   HttpRequestHeaders extra_headers;
@@ -3190,7 +3239,8 @@ TEST_F(SessionServiceImplTest, DeferringRefreshBlocksDeferring) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -3221,13 +3271,15 @@ TEST_F(SessionServiceImplTest, DeferredWaitersCanTriggerAnotherRefresh) {
   // Create two requests.
   net::TestDelegate delegate1;
   std::unique_ptr<URLRequest> request1 =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate1, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate1, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request1->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
   DbscRequest dbsc_request1(request1.get());
 
   net::TestDelegate delegate2;
   std::unique_ptr<URLRequest> request2 =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate2, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate2, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request2->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
   DbscRequest dbsc_request2(request2.get());
 
@@ -3294,7 +3346,8 @@ TEST_F(SessionServiceImplTest, ProactiveRefreshBlocksDeferring) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -3329,7 +3382,8 @@ TEST_F(SessionServiceImplTest, ProactiveRefreshBlocksDeferring) {
   base::test::TestFuture<RefreshResult> future;
   dbsc_request.reset();
   request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   dbsc_request = std::make_unique<DbscRequest>(request.get());
   service().DeferRequestForRefresh(*dbsc_request, deferral,
                                    future.GetCallback());
@@ -3363,7 +3417,8 @@ TEST_F(SessionServiceImplTest, ProactiveRefreshBlocksProactive) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -3392,7 +3447,8 @@ TEST_F(SessionServiceImplTest, ProactiveRefreshBlocksProactive) {
   // Another request should not do another proactive refresh
   dbsc_request.reset();
   request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
   request->set_maybe_sent_cookies({{*cookie.get(), access_result}});
   dbsc_request = std::make_unique<DbscRequest>(request.get());
@@ -3428,7 +3484,8 @@ TEST_F(SessionServiceImplTest, DeferringRefreshBlocksProactive) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -3445,7 +3502,8 @@ TEST_F(SessionServiceImplTest, DeferringRefreshBlocksProactive) {
   // trigger proactive refresh.
   dbsc_request.reset();
   request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -3494,7 +3552,8 @@ TEST_F(SessionServiceImplTest, FailedProactiveRefreshBlocksProactiveRefresh) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -3527,7 +3586,8 @@ TEST_F(SessionServiceImplTest, FailedProactiveRefreshBlocksProactiveRefresh) {
   // Another request should not do another proactive refresh
   dbsc_request.reset();
   request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
   request->set_maybe_sent_cookies({{*cookie.get(), access_result}});
   dbsc_request = std::make_unique<DbscRequest>(request.get());
@@ -3557,7 +3617,8 @@ TEST_F(SessionServiceImplTest, NoProactiveRefreshNeededYet) {
   // Create a request and try to defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -3603,7 +3664,8 @@ TEST_F(SessionServiceImplTest, SessionDeletionDuringRefresh_ConfigChange) {
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -3660,7 +3722,8 @@ TEST_F(SessionServiceImplTest,
   // Create a request and defer it.
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));

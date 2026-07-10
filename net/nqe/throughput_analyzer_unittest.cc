@@ -163,9 +163,9 @@ TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequests) {
                   context->host_resolver(), url::SchemeHostPort(test_case.url),
                   NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
     for (size_t i = 0; i < 1000; ++i) {
-      std::unique_ptr<URLRequest> request(
-          context->CreateRequest(test_case.url, DEFAULT_PRIORITY,
-                                 &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      std::unique_ptr<URLRequest> request(context->CreateRequest(
+          test_case.url, DEFAULT_PRIORITY, &test_delegate,
+          TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
       throughput_analyzer.NotifyStartTransaction(*(request.get()),
                                                  {tick_clock->NowTicks(), 0});
       requests.push_back(std::move(request));
@@ -240,9 +240,9 @@ TEST_F(ThroughputAnalyzerTest,
                                             : NetworkAnonymizationKey(),
                   handles::kInvalidNetworkHandle));
     for (size_t i = 0; i < 1000; ++i) {
-      std::unique_ptr<URLRequest> request(
-          context->CreateRequest(kUrl, DEFAULT_PRIORITY, &test_delegate,
-                                 TRAFFIC_ANNOTATION_FOR_TESTS));
+      std::unique_ptr<URLRequest> request(context->CreateRequest(
+          kUrl, DEFAULT_PRIORITY, &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+          net::handles::kInvalidNetworkHandle));
       if (use_network_isolation_key) {
         request->set_isolation_info(net::IsolationInfo::Create(
             net::IsolationInfo::RequestType::kOther, kSiteOrigin, kSiteOrigin,
@@ -289,7 +289,7 @@ TEST_F(ThroughputAnalyzerTest, TestMinRequestsForThroughputSample) {
       delegate.set_on_complete(base::DoNothing());
       std::unique_ptr<URLRequest> request_not_local(context->CreateRequest(
           GURL("http://example.com/echo.html"), DEFAULT_PRIORITY, &delegate,
-          TRAFFIC_ANNOTATION_FOR_TESTS));
+          TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
       request_not_local->Start();
       requests_not_local.push_back(std::move(request_not_local));
     }
@@ -411,7 +411,8 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequests) {
       not_local_test_delegates[i].set_on_complete(base::DoNothing());
       std::unique_ptr<URLRequest> request_not_local(context->CreateRequest(
           GURL("http://example.com/echo.html"), DEFAULT_PRIORITY,
-          &not_local_test_delegates[i], TRAFFIC_ANNOTATION_FOR_TESTS));
+          &not_local_test_delegates[i], TRAFFIC_ANNOTATION_FOR_TESTS,
+          net::handles::kInvalidNetworkHandle));
       request_not_local->Start();
       requests_not_local.push_back(std::move(request_not_local));
     }
@@ -479,14 +480,14 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequestsCheckedOnlyPeriodically) {
   for (size_t i = 0; i < 2; ++i) {
     std::unique_ptr<URLRequest> request_not_local(context->CreateRequest(
         GURL("http://example.com/echo.html"), DEFAULT_PRIORITY, &test_delegate,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
     request_not_local->Start();
     requests_not_local.push_back(std::move(request_not_local));
   }
 
   std::unique_ptr<URLRequest> some_other_request(context->CreateRequest(
       GURL("http://example.com/echo.html"), DEFAULT_PRIORITY, &test_delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
 
   test_delegate.RunUntilComplete();
 
@@ -552,14 +553,14 @@ TEST_F(ThroughputAnalyzerTest, TestLastReceivedTimeIsUpdated) {
 
   std::unique_ptr<URLRequest> request_not_local(context->CreateRequest(
       GURL("http://example.com/echo.html"), DEFAULT_PRIORITY, &test_delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request_not_local->Start();
 
   test_delegate.RunUntilComplete();
 
   std::unique_ptr<URLRequest> some_other_request(context->CreateRequest(
       GURL("http://example.com/echo.html"), DEFAULT_PRIORITY, &test_delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
 
   // Start time for the request is t=0 second. The request will be marked as
   // hanging at t=5 seconds.
@@ -608,7 +609,7 @@ TEST_F(ThroughputAnalyzerTest, TestRequestDeletedImmediately) {
 
   std::unique_ptr<URLRequest> request_not_local(context->CreateRequest(
       GURL("http://example.com/echo.html"), DEFAULT_PRIORITY, &test_delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request_not_local->Start();
 
   test_delegate.RunUntilComplete();
@@ -688,15 +689,16 @@ TEST_F(ThroughputAnalyzerTest,
       not_local_test_delegates[i].set_on_complete(base::DoNothing());
       std::unique_ptr<URLRequest> request_not_local(context->CreateRequest(
           GURL("http://example.com/echo.html"), DEFAULT_PRIORITY,
-          &not_local_test_delegates[i], TRAFFIC_ANNOTATION_FOR_TESTS));
+          &not_local_test_delegates[i], TRAFFIC_ANNOTATION_FOR_TESTS,
+          net::handles::kInvalidNetworkHandle));
       request_not_local->Start();
       requests_not_local.push_back(std::move(request_not_local));
     }
 
     if (test.start_local_request) {
-      request_local = context->CreateRequest(GURL("http://127.0.0.1/echo.html"),
-                                             DEFAULT_PRIORITY, &local_delegate,
-                                             TRAFFIC_ANNOTATION_FOR_TESTS);
+      request_local = context->CreateRequest(
+          GURL("http://127.0.0.1/echo.html"), DEFAULT_PRIORITY, &local_delegate,
+          TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
       request_local->Start();
     }
 
@@ -804,7 +806,8 @@ TEST_F(ThroughputAnalyzerTest, TestThroughputWithNetworkRequestsOverlap) {
       in_flight_test_delegates[i].set_on_complete(base::DoNothing());
       std::unique_ptr<URLRequest> request_network_1 = context->CreateRequest(
           GURL("http://example.com/echo.html"), DEFAULT_PRIORITY,
-          &in_flight_test_delegates[i], TRAFFIC_ANNOTATION_FOR_TESTS);
+          &in_flight_test_delegates[i], TRAFFIC_ANNOTATION_FOR_TESTS,
+          net::handles::kInvalidNetworkHandle);
       requests_in_flight.push_back(std::move(request_network_1));
       requests_in_flight.back()->Start();
     }
@@ -868,16 +871,16 @@ TEST_F(ThroughputAnalyzerTest, TestThroughputWithMultipleNetworkRequests) {
 
   std::unique_ptr<URLRequest> request_1 = context->CreateRequest(
       GURL("http://example.com/echo.html"), DEFAULT_PRIORITY, &test_delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   std::unique_ptr<URLRequest> request_2 = context->CreateRequest(
       GURL("http://example.com/echo.html"), DEFAULT_PRIORITY, &test_delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   std::unique_ptr<URLRequest> request_3 = context->CreateRequest(
       GURL("http://example.com/echo.html"), DEFAULT_PRIORITY, &test_delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   std::unique_ptr<URLRequest> request_4 = context->CreateRequest(
       GURL("http://example.com/echo.html"), DEFAULT_PRIORITY, &test_delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   request_1->Start();
   request_2->Start();

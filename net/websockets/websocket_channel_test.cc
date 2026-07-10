@@ -2689,7 +2689,8 @@ TEST_F(WebSocketChannelEventInterfaceTest, OnURLRequestConnected) {
   std::unique_ptr<URLRequestContext> context =
       CreateTestURLRequestContextBuilder()->Build();
   std::unique_ptr<URLRequest> request = context->CreateRequest(
-      wss_url, net::DEFAULT_PRIORITY, nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
+      wss_url, net::DEFAULT_PRIORITY, nullptr, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle);
 
   EXPECT_CALL(*event_interface_,
               OnURLRequestConnectedCalled(request.get(), transport_info, _))

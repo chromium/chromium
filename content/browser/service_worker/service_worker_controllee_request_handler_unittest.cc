@@ -28,6 +28,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_content_browser_client.h"
+#include "net/base/network_handle.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
@@ -82,7 +83,8 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
               url,
               net::DEFAULT_PRIORITY,
               &test->url_request_delegate_,
-              TRAFFIC_ANNOTATION_FOR_TESTS)),
+              TRAFFIC_ANNOTATION_FOR_TESTS,
+              net::handles::kInvalidNetworkHandle)),
           handler_(std::make_unique<ServiceWorkerControlleeRequestHandler>(
               test->context()->AsWeakPtr(),
               /*fetch_event_client_id=*/"",

@@ -26,9 +26,9 @@ TestURLRequestMaker::~TestURLRequestMaker() = default;
 
 std::unique_ptr<net::URLRequest> TestURLRequestMaker::MakeURLRequest(
     std::string_view spec) {
-  return context_->CreateRequest(GURL(spec),
-                                 net::RequestPriority::DEFAULT_PRIORITY,
-                                 &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS);
+  return context_->CreateRequest(
+      GURL(spec), net::RequestPriority::DEFAULT_PRIORITY, &delegate_,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 }
 
 TrustTokenRequestHelperTest::TrustTokenRequestHelperTest(

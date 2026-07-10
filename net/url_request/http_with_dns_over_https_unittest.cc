@@ -378,7 +378,8 @@ TEST_F(HttpsWithDnsOverHttpsTest, EndToEnd) {
   TestDelegate d;
   GURL main_url = https_server_.GetURL(kHostname, "/test");
   std::unique_ptr<URLRequest> req(context()->CreateRequest(
-      main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+      main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
   req->Start();
   d.RunUntilComplete();
   EXPECT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
@@ -407,7 +408,8 @@ TEST_F(HttpsWithDnsOverHttpsTest, EndToEndWithIsolationInfo) {
   TestDelegate d;
   GURL main_url = https_server_.GetURL(kHostname, "/test");
   std::unique_ptr<URLRequest> req(context()->CreateRequest(
-      main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+      main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
 
   url::Origin origin = url::Origin::Create(main_url);
   req->set_isolation_info(
@@ -436,7 +438,8 @@ TEST_F(HttpsWithDnsOverHttpsTest, EndToEndFail) {
   TestDelegate d;
   GURL main_url = https_server_.GetURL(kHostname, "/test");
   std::unique_ptr<URLRequest> req(context()->CreateRequest(
-      main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+      main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
   req->Start();
   d.RunUntilComplete();
   EXPECT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
@@ -485,7 +488,8 @@ TEST_F(HttpsWithDnsOverHttpsTest, HttpsUpgrade) {
     // Fetch the http URL.
     TestDelegate d;
     std::unique_ptr<URLRequest> req(context()->CreateRequest(
-        http_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+        http_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle));
     req->Start();
     d.RunUntilComplete();
     ASSERT_THAT(d.request_status(), IsOk());
@@ -524,7 +528,8 @@ TEST_F(HttpsWithDnsOverHttpsTest, HttpsMetadata) {
   TestDelegate d;
 
   std::unique_ptr<URLRequest> req(context()->CreateRequest(
-      main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+      main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
   req->Start();
   d.RunUntilComplete();
   ASSERT_THAT(d.request_status(), IsOk());
@@ -583,7 +588,8 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHello) {
 
     TestDelegate d;
     std::unique_ptr<URLRequest> r = context()->CreateRequest(
-        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle);
     r->Start();
     EXPECT_TRUE(r->is_pending());
 
@@ -654,7 +660,8 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloStaleKey) {
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r = context()->CreateRequest(
-        url_stale, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+        url_stale, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle);
     r->Start();
     EXPECT_TRUE(r->is_pending());
 
@@ -671,9 +678,9 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloStaleKey) {
   // decrypt the ClientHello, nor handshake as `kWrongPublicName`.
   {
     TestDelegate d;
-    std::unique_ptr<URLRequest> r =
-        context()->CreateRequest(url_wrong_public_name, DEFAULT_PRIORITY, &d,
-                                 TRAFFIC_ANNOTATION_FOR_TESTS);
+    std::unique_ptr<URLRequest> r = context()->CreateRequest(
+        url_wrong_public_name, DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
     r->Start();
     EXPECT_TRUE(r->is_pending());
 
@@ -732,7 +739,8 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloFallback) {
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r = context()->CreateRequest(
-        url_stale, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+        url_stale, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle);
     r->Start();
     EXPECT_TRUE(r->is_pending());
     d.RunUntilComplete();
@@ -747,9 +755,9 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloFallback) {
   // decrypt the ClientHello, nor handshake as `kWrongPublicName`.
   {
     TestDelegate d;
-    std::unique_ptr<URLRequest> r =
-        context()->CreateRequest(url_wrong_public_name, DEFAULT_PRIORITY, &d,
-                                 TRAFFIC_ANNOTATION_FOR_TESTS);
+    std::unique_ptr<URLRequest> r = context()->CreateRequest(
+        url_wrong_public_name, DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
     r->Start();
     EXPECT_TRUE(r->is_pending());
     d.RunUntilComplete();
@@ -808,7 +816,8 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloFallbackTLS12) {
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r = context()->CreateRequest(
-        url_stale, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+        url_stale, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle);
     r->Start();
     EXPECT_TRUE(r->is_pending());
     d.RunUntilComplete();
@@ -823,9 +832,9 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloFallbackTLS12) {
   // decrypt the ClientHello, nor handshake as `kWrongPublicName`.
   {
     TestDelegate d;
-    std::unique_ptr<URLRequest> r =
-        context()->CreateRequest(url_wrong_public_name, DEFAULT_PRIORITY, &d,
-                                 TRAFFIC_ANNOTATION_FOR_TESTS);
+    std::unique_ptr<URLRequest> r = context()->CreateRequest(
+        url_wrong_public_name, DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
     r->Start();
     EXPECT_TRUE(r->is_pending());
     d.RunUntilComplete();
@@ -966,7 +975,8 @@ TEST_F(DnsOverHttpsReportingTest, ReportingApi) {
     GURL url = https_server_.GetURL(kHostname, "/foo");
     TestDelegate delegate;
     std::unique_ptr<URLRequest> request = context()->CreateRequest(
-        url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+        url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle);
     request->Start();
     delegate.RunUntilComplete();
     ASSERT_THAT(delegate.request_status(), IsOk());
@@ -980,7 +990,8 @@ TEST_F(DnsOverHttpsReportingTest, ReportingApi) {
     GURL url = https_server_.GetURL("fail.com", "/foo");
     TestDelegate delegate;
     std::unique_ptr<URLRequest> request = context()->CreateRequest(
-        url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+        url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle);
     request->Start();
     delegate.RunUntilComplete();
     EXPECT_THAT(delegate.request_status(), IsError(ERR_NAME_NOT_RESOLVED));

@@ -34,7 +34,8 @@ class ConfigureUrlRequestTest : public testing::Test {
 
   std::unique_ptr<net::URLRequest> CreateURLRequest(const GURL& url) {
     return context_->CreateRequest(url, net::DEFAULT_PRIORITY, &delegate_,
-                                   TRAFFIC_ANNOTATION_FOR_TESTS);
+                                   TRAFFIC_ANNOTATION_FOR_TESTS,
+                                   net::handles::kInvalidNetworkHandle);
   }
 
   base::test::TaskEnvironment task_environment_;

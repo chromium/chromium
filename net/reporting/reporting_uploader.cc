@@ -154,8 +154,11 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     DCHECK(upload->state == PendingUpload::CREATED);
 
     upload->state = PendingUpload::SENDING_PREFLIGHT;
-    upload->request = context_->CreateRequest(upload->url, IDLE, this,
-                                              kReportUploadTrafficAnnotation);
+    upload->request = context_->CreateRequest(
+        upload->url, IDLE, this, kReportUploadTrafficAnnotation,
+        // TODO(crbug.com/527774896): Support targeting a specific network for
+        // Reporting APIs.
+        net::handles::kInvalidNetworkHandle);
 
     upload->request->set_method("OPTIONS");
 
@@ -192,8 +195,11 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
            upload->state == PendingUpload::SENDING_PREFLIGHT);
 
     upload->state = PendingUpload::SENDING_PAYLOAD;
-    upload->request = context_->CreateRequest(upload->url, IDLE, this,
-                                              kReportUploadTrafficAnnotation);
+    upload->request = context_->CreateRequest(
+        upload->url, IDLE, this, kReportUploadTrafficAnnotation,
+        // TODO(crbug.com/527774896): Support targeting a specific network for
+        // Reporting APIs.
+        net::handles::kInvalidNetworkHandle);
     upload->request->set_method("POST");
 
     upload->request->SetLoadFlags(LOAD_DISABLE_CACHE);

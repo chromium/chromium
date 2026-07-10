@@ -30,6 +30,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_connection_info.h"
@@ -620,7 +621,8 @@ TEST_F(DomainReliabilityMonitorTest, RealRequest) {
   std::unique_ptr<net::URLRequest> url_request =
       url_request_context_->CreateRequest(test_server.GetURL("/close-socket"),
                                           net::DEFAULT_PRIORITY, &test_delegate,
-                                          TRAFFIC_ANNOTATION_FOR_TESTS);
+                                          TRAFFIC_ANNOTATION_FOR_TESTS,
+                                          net::handles::kInvalidNetworkHandle);
   url_request->set_isolation_info(kIsolationInfo);
   url_request->Start();
 

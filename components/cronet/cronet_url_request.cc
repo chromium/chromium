@@ -21,6 +21,7 @@
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_handle.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
@@ -299,7 +300,10 @@ void CronetURLRequest::NetworkTasks::Start(
           << initial_url_.possibly_invalid_spec().c_str()
           << " priority: " << RequestPriorityToString(initial_priority_);
   url_request_ = context->GetURLRequestContext(network_)->CreateRequest(
-      initial_url_, net::DEFAULT_PRIORITY, this, MISSING_TRAFFIC_ANNOTATION);
+      initial_url_, net::DEFAULT_PRIORITY, this, MISSING_TRAFFIC_ANNOTATION,
+      // TODO(crbug.com/495684670): Update multi-network Cronet to rely on
+      // UrlRequest's target_network instead of URLRequestContext's.
+      net::handles::kInvalidNetworkHandle);
   url_request_->SetLoadFlags(initial_load_flags_);
   url_request_->set_method(method);
   url_request_->SetExtraRequestHeaders(*request_headers);

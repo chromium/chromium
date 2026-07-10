@@ -235,9 +235,9 @@ TEST_F(NetworkQualityEstimatorTest, TestKbpsRTTUpdates) {
   context_builder->SuppressSettingSocketPerformanceWatcherFactoryForTesting();
   auto context = context_builder->Build();
 
-  std::unique_ptr<URLRequest> request(
-      context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                             &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request(context->CreateRequest(
+      estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
                         net::LOAD_DISABLE_CACHE);
   request->Start();
@@ -280,9 +280,9 @@ TEST_F(NetworkQualityEstimatorTest, TestKbpsRTTUpdates) {
   histogram_tester.ExpectBucketCount(
       "NQE.RTT.ObservationSource", NETWORK_QUALITY_OBSERVATION_SOURCE_HTTP, 1);
 
-  std::unique_ptr<URLRequest> request2(
-      context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                             &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request2(context->CreateRequest(
+      estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request2->SetLoadFlags(request2->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
                          net::LOAD_DISABLE_CACHE);
   request2->Start();
@@ -305,9 +305,9 @@ TEST_F(NetworkQualityEstimatorTest, TestKbpsRTTUpdates) {
   EXPECT_FALSE(
       estimator.GetRecentDownlinkThroughputKbps(base::TimeTicks(), &kbps));
 
-  std::unique_ptr<URLRequest> request3(
-      context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                             &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request3(context->CreateRequest(
+      estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request3->SetLoadFlags(request3->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
                          net::LOAD_DISABLE_CACHE);
   request3->Start();
@@ -355,9 +355,9 @@ TEST_F(NetworkQualityEstimatorTest, Caching) {
     // the beginning of the second request from the network traffic observed
     // from the first request.
     for (size_t i = 0; i < 2; ++i) {
-      std::unique_ptr<URLRequest> request(
-          context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                                 &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      std::unique_ptr<URLRequest> request(context->CreateRequest(
+          estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+          TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
       request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
                             net::LOAD_DISABLE_CACHE);
       request->Start();
@@ -470,9 +470,9 @@ TEST_F(NetworkQualityEstimatorTest, CachingDisabled) {
   // the beginning of the second request from the network traffic observed from
   // the first request.
   for (size_t i = 0; i < 2; ++i) {
-    std::unique_ptr<URLRequest> request(
-        context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                               &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    std::unique_ptr<URLRequest> request(context->CreateRequest(
+        estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
     request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
                           net::LOAD_DISABLE_CACHE);
     request->Start();
@@ -595,9 +595,9 @@ TEST_F(NetworkQualityEstimatorTest, StoreObservations) {
 
   const size_t kMaxObservations = 10;
   for (size_t i = 0; i < kMaxObservations; ++i) {
-    std::unique_ptr<URLRequest> request(
-        context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                               &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    std::unique_ptr<URLRequest> request(context->CreateRequest(
+        estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
     request->Start();
     test_delegate.RunUntilComplete();
 
@@ -642,9 +642,9 @@ TEST_F(NetworkQualityEstimatorTest, ComputedPercentiles) {
   auto context = context_builder->Build();
 
   for (size_t i = 0; i < 10U; ++i) {
-    std::unique_ptr<URLRequest> request(
-        context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                               &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    std::unique_ptr<URLRequest> request(context->CreateRequest(
+        estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
     request->Start();
     test_delegate.RunUntilComplete();
   }
@@ -1270,9 +1270,9 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_TestThroughputNoRequestOverlap) {
     context_builder->set_network_quality_estimator(&estimator);
     auto context = context_builder->Build();
 
-    std::unique_ptr<URLRequest> request(
-        context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                               &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    std::unique_ptr<URLRequest> request(context->CreateRequest(
+        estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
     request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
                           net::LOAD_DISABLE_CACHE);
     request->Start();
@@ -1328,9 +1328,9 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_TestEffectiveConnectionTypeObserver) {
 
   tick_clock.Advance(base::Minutes(60));
 
-  std::unique_ptr<URLRequest> request(
-      context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                             &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request(context->CreateRequest(
+      estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
                         net::LOAD_DISABLE_CACHE);
   request->Start();
@@ -1355,9 +1355,9 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_TestEffectiveConnectionTypeObserver) {
 
   // Next request should not trigger recomputation of effective connection type
   // since there has been no change in the clock.
-  std::unique_ptr<URLRequest> request2(
-      context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                             &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request2(context->CreateRequest(
+      estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request2->SetLoadFlags(request2->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
                          net::LOAD_DISABLE_CACHE);
   request2->Start();
@@ -1575,9 +1575,9 @@ TEST_F(NetworkQualityEstimatorTest, TestRTTAndThroughputEstimatesObserver) {
       downstream_throughput_kbps);
   tick_clock.Advance(base::Minutes(60));
 
-  std::unique_ptr<URLRequest> request(
-      context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                             &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request(context->CreateRequest(
+      estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request->Start();
   test_delegate.RunUntilComplete();
   EXPECT_EQ(http_rtt, observer.http_rtt());
@@ -1588,9 +1588,9 @@ TEST_F(NetworkQualityEstimatorTest, TestRTTAndThroughputEstimatesObserver) {
 
   // The next request should not trigger recomputation of RTT or throughput
   // since there has been no change in the clock.
-  std::unique_ptr<URLRequest> request2(
-      context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                             &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request2(context->CreateRequest(
+      estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request2->Start();
   test_delegate.RunUntilComplete();
   EXPECT_LE(1, observer.notifications_received() - notifications_received);
@@ -1715,9 +1715,9 @@ TEST_F(NetworkQualityEstimatorTest,
   estimator.set_recent_effective_connection_type(EFFECTIVE_CONNECTION_TYPE_2G);
   tick_clock.Advance(base::Minutes(60));
 
-  std::unique_ptr<URLRequest> request(
-      context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                             &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request(context->CreateRequest(
+      estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
                         net::LOAD_DISABLE_CACHE);
   request->Start();
@@ -1801,17 +1801,17 @@ TEST_F(NetworkQualityEstimatorTest, TestRttThroughputObservers) {
   EXPECT_EQ(0U, throughput_observer.observations().size());
   base::TimeTicks then = base::TimeTicks::Now();
 
-  std::unique_ptr<URLRequest> request(
-      context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                             &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request(context->CreateRequest(
+      estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
                         net::LOAD_DISABLE_CACHE);
   request->Start();
   test_delegate.RunUntilComplete();
 
-  std::unique_ptr<URLRequest> request2(
-      context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                             &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request2(context->CreateRequest(
+      estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request2->SetLoadFlags(request2->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
                          net::LOAD_DISABLE_CACHE);
   request2->Start();
@@ -1918,9 +1918,9 @@ TEST_F(NetworkQualityEstimatorTest, TestGlobalSocketWatcherThrottle) {
 
   EXPECT_EQ(0U, rtt_observer.observations().size());
   EXPECT_TRUE(tcp_watcher->ShouldNotifyUpdatedRTT());
-  std::unique_ptr<URLRequest> request(
-      context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                             &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request(context->CreateRequest(
+      estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
                         net::LOAD_DISABLE_CACHE);
   request->Start();
@@ -2001,9 +2001,9 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_TestTCPSocketRTT) {
         ++before_count_tcp_rtt_observations;
     }
 
-    std::unique_ptr<URLRequest> request(
-        context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                               &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    std::unique_ptr<URLRequest> request(context->CreateRequest(
+        estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
     request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
                           net::LOAD_DISABLE_CACHE);
     request->Start();
@@ -2166,9 +2166,9 @@ TEST_F(NetworkQualityEstimatorTest,
       EXPECT_EQ(1U, ect_observer.effective_connection_types().size());
     }
 
-    std::unique_ptr<URLRequest> request(
-        context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
-                               &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    std::unique_ptr<URLRequest> request(context->CreateRequest(
+        estimator.GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
     request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
                           net::LOAD_DISABLE_CACHE);
     request->Start();
@@ -2883,7 +2883,8 @@ TEST_F(NetworkQualityEstimatorTest,
   // Resolve to a tiny fast payload.
   std::unique_ptr<URLRequest> request(context->CreateRequest(
       estimator.GetEchoURL().Resolve("/echo.html"), DEFAULT_PRIORITY,
-      &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
   request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
                         net::LOAD_DISABLE_CACHE);
   request->Start();
@@ -2963,7 +2964,8 @@ TEST_P(NetworkQualityEstimatorIsPrivateHostCacheTest, IsPrivateHostCaching) {
 
   GURL url("http://www.google.com");
   std::unique_ptr<URLRequest> request(context->CreateRequest(
-      url, DEFAULT_PRIORITY, &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      url, DEFAULT_PRIORITY, &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
 
   // 1. First call: Should always trigger a physical resolution.
   estimator.IsPrivateHost(*request);

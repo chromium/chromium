@@ -79,10 +79,12 @@ class SecHeaderHelpersTestBase : public PlatformTest {
   SecHeaderHelpersTestBase()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         context_(net::CreateTestURLRequestContextBuilder()->Build()),
-        url_request_(context_->CreateRequest(GURL(kSecureSite),
-                                             net::DEFAULT_PRIORITY,
-                                             /*delegate=*/nullptr,
-                                             TRAFFIC_ANNOTATION_FOR_TESTS)) {
+        url_request_(
+            context_->CreateRequest(GURL(kSecureSite),
+                                    net::DEFAULT_PRIORITY,
+                                    /*delegate=*/nullptr,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS,
+                                    net::handles::kInvalidNetworkHandle)) {
     url_request_->set_initiator(
         url::Origin::Create(GURL(kPrivilegedInitiator)));
 
@@ -310,10 +312,12 @@ class SecHeaderHelpersFileSchemeTest
   SecHeaderHelpersFileSchemeTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         context_(net::CreateTestURLRequestContextBuilder()->Build()),
-        url_request_(context_->CreateRequest(GURL(kFile),
-                                             net::DEFAULT_PRIORITY,
-                                             /*delegate=*/nullptr,
-                                             TRAFFIC_ANNOTATION_FOR_TESTS)) {}
+        url_request_(
+            context_->CreateRequest(GURL(kFile),
+                                    net::DEFAULT_PRIORITY,
+                                    /*delegate=*/nullptr,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS,
+                                    net::handles::kInvalidNetworkHandle)) {}
 
   net::URLRequest* url_request() const { return url_request_.get(); }
 
@@ -525,10 +529,12 @@ class FrameTopSecHeaderHelpersTest : public PlatformTest,
   FrameTopSecHeaderHelpersTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         context_(net::CreateTestURLRequestContextBuilder()->Build()),
-        url_request_(context_->CreateRequest(GetParam(),
-                                             net::DEFAULT_PRIORITY,
-                                             /*delegate=*/nullptr,
-                                             TRAFFIC_ANNOTATION_FOR_TESTS)) {
+        url_request_(
+            context_->CreateRequest(GetParam(),
+                                    net::DEFAULT_PRIORITY,
+                                    /*delegate=*/nullptr,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS,
+                                    net::handles::kInvalidNetworkHandle)) {
     url_request_->set_initiator(
         url::Origin::Create(GURL(kPrivilegedInitiator)));
     url_request_->set_storage_access_status(net::StorageAccessStatusCache(
@@ -673,10 +679,12 @@ class FrameAncestorsSecHeaderHelpersTest
  public:
   FrameAncestorsSecHeaderHelpersTest()
       : context_(net::CreateTestURLRequestContextBuilder()->Build()),
-        url_request_(context_->CreateRequest(GetParam().url_request_dest,
-                                             net::DEFAULT_PRIORITY,
-                                             /*delegate=*/nullptr,
-                                             TRAFFIC_ANNOTATION_FOR_TESTS)) {
+        url_request_(
+            context_->CreateRequest(GetParam().url_request_dest,
+                                    net::DEFAULT_PRIORITY,
+                                    /*delegate=*/nullptr,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS,
+                                    net::handles::kInvalidNetworkHandle)) {
     url_request_->set_initiator(
         url::Origin::Create(GURL(kPrivilegedInitiator)));
     url_request_->set_storage_access_status(net::StorageAccessStatusCache(

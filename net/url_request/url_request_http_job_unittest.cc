@@ -178,9 +178,9 @@ TEST_F(URLRequestHttpJobSetUpSourceTest, SetUpSourceFails) {
   StaticSocketDataProvider socket_data(reads, writes);
   socket_factory_.AddSocketDataProvider(&socket_data);
 
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate_,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   auto job = std::make_unique<TestURLRequestHttpJob>(request.get());
   job->set_use_null_source_stream(true);
   TestScopedURLInterceptor interceptor(request->url(), std::move(job));
@@ -202,9 +202,9 @@ TEST_F(URLRequestHttpJobSetUpSourceTest, UnknownEncoding) {
   StaticSocketDataProvider socket_data(reads, writes);
   socket_factory_.AddSocketDataProvider(&socket_data);
 
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate_,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   auto job = std::make_unique<TestURLRequestHttpJob>(request.get());
   TestScopedURLInterceptor interceptor(request->url(), std::move(job));
   request->Start();
@@ -247,9 +247,9 @@ TEST_F(URLRequestHttpJobSetUpSourceTest, NestedStreamsDepth10) {
   StaticSocketDataProvider socket_data(reads, writes);
   socket_factory_.AddSocketDataProvider(&socket_data);
 
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate_,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   auto job = std::make_unique<TestURLRequestHttpJob>(request.get());
   TestScopedURLInterceptor interceptor(request->url(), std::move(job));
   request->Start();
@@ -272,9 +272,9 @@ TEST_F(URLRequestHttpJobSetUpSourceTest, NestedStreamsDepth11) {
   StaticSocketDataProvider socket_data(reads, writes);
   socket_factory_.AddSocketDataProvider(&socket_data);
 
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate_,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   auto job = std::make_unique<TestURLRequestHttpJob>(request.get());
   TestScopedURLInterceptor interceptor(request->url(), std::move(job));
   request->Start();
@@ -324,7 +324,7 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestFailureWithoutProxy) {
   std::unique_ptr<URLRequest> request =
       http_job_with_proxy.context_->CreateRequest(
           GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
-          TRAFFIC_ANNOTATION_FOR_TESTS);
+          TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   request->Start();
   ASSERT_TRUE(request->is_pending());
@@ -370,7 +370,7 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestSuccessfulWithOneProxy) {
   std::unique_ptr<URLRequest> request =
       http_job_with_proxy.context_->CreateRequest(
           GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
-          TRAFFIC_ANNOTATION_FOR_TESTS);
+          TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   request->Start();
   ASSERT_TRUE(request->is_pending());
@@ -420,7 +420,7 @@ TEST_F(URLRequestHttpJobWithProxyTest,
   std::unique_ptr<URLRequest> request =
       http_job_with_proxy.context_->CreateRequest(
           GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
-          TRAFFIC_ANNOTATION_FOR_TESTS);
+          TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   request->Start();
   ASSERT_TRUE(request->is_pending());
@@ -443,9 +443,9 @@ class URLRequestHttpJobTest : public TestWithTaskEnvironment {
     context_builder->set_net_log(NetLog::Get());
     context_ = context_builder->Build();
 
-    req_ = context_->CreateRequest(GURL("http://www.example.com"),
-                                   DEFAULT_PRIORITY, &delegate_,
-                                   TRAFFIC_ANNOTATION_FOR_TESTS);
+    req_ = context_->CreateRequest(
+        GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate_,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   }
 
   MockNetworkLayer& network_layer() {
@@ -459,7 +459,8 @@ class URLRequestHttpJobTest : public TestWithTaskEnvironment {
       const GURL& url,
       URLRequest::Delegate* delegate) {
     auto req = context.CreateRequest(url, DEFAULT_PRIORITY, delegate,
-                                     TRAFFIC_ANNOTATION_FOR_TESTS);
+                                     TRAFFIC_ANNOTATION_FOR_TESTS,
+                                     net::handles::kInvalidNetworkHandle);
     req->set_initiator(url::Origin::Create(url));
     req->set_site_for_cookies(SiteForCookies::FromUrl(url));
     return req;
@@ -494,9 +495,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   socket_factory_.AddSocketDataProvider(&socket_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   request->Start();
   ASSERT_TRUE(request->is_pending());
@@ -519,9 +520,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest, TestSuccessfulHead) {
   socket_factory_.AddSocketDataProvider(&socket_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   request->set_method("HEAD");
   request->Start();
@@ -546,9 +547,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest, TestSuccessfulHeadWithContent) {
   socket_factory_.AddSocketDataProvider(&socket_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   request->set_method("HEAD");
   request->Start();
@@ -581,7 +582,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest, TestSuccessfulCachedHeadRequest) {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> request = context_->CreateRequest(
         GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
-        TRAFFIC_ANNOTATION_FOR_TESTS);
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
     request->set_isolation_info(kTestIsolationInfo);
     request->Start();
@@ -607,7 +608,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest, TestSuccessfulCachedHeadRequest) {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> request = context_->CreateRequest(
         GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
-        TRAFFIC_ANNOTATION_FOR_TESTS);
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
     // Use the cached version.
     request->SetLoadFlags(LOAD_SKIP_CACHE_VALIDATION);
@@ -634,9 +635,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   socket_factory_.AddSocketDataProvider(&socket_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   request->Start();
   ASSERT_TRUE(request->is_pending());
@@ -659,9 +660,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest, TestContentLengthFailedRequest) {
   socket_factory_.AddSocketDataProvider(&socket_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   request->Start();
   ASSERT_TRUE(request->is_pending());
@@ -685,9 +686,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   socket_factory_.AddSocketDataProvider(&socket_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   delegate.set_cancel_in_received_data(true);
   request->Start();
@@ -725,9 +726,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   socket_factory_.AddSocketDataProvider(&final_socket_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.redirect.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.redirect.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   request->Start();
   ASSERT_TRUE(request->is_pending());
@@ -748,9 +749,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   socket_factory_.AddSocketDataProvider(&socket_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   delegate.set_cancel_in_response_started(true);
   request->Start();
@@ -768,9 +769,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   socket_factory_.AddSocketDataProvider(&socket_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   request->Start();
   request->Cancel();
@@ -793,9 +794,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest, TestHttpTimeToFirstByte) {
   socket_factory_.AddSocketDataProvider(&socket_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   histograms.ExpectTotalCount("Net.HttpTimeToFirstByte", 0);
 
   request->Start();
@@ -817,9 +818,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   socket_factory_.AddSocketDataProvider(&socket_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   request->Start();
   request->Cancel();
@@ -844,10 +845,10 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
       socket_factory_.AddSocketDataProvider(&socket_data);
 
       TestDelegate delegate;
-      std::unique_ptr<URLRequest> request =
-          context_->CreateRequest(GURL("http://www.example.com/"),
-                                  static_cast<net::RequestPriority>(priority),
-                                  &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+      std::unique_ptr<URLRequest> request = context_->CreateRequest(
+          GURL("http://www.example.com/"),
+          static_cast<net::RequestPriority>(priority), &delegate,
+          TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
       request->Start();
       delegate.RunUntilComplete();
@@ -885,7 +886,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   TestDelegate delegate;
   std::unique_ptr<URLRequest> request = context_->CreateRequest(
       GURL("https://www.example.com/"), DEFAULT_PRIORITY, &delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   request->Start();
   delegate.RunUntilComplete();
   EXPECT_THAT(delegate.request_status(), IsOk());
@@ -915,7 +916,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   TestDelegate delegate;
   std::unique_ptr<URLRequest> request = context_->CreateRequest(
       GURL("https://www.example.com/"), DEFAULT_PRIORITY, &delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   request->Start();
   delegate.RunUntilComplete();
   EXPECT_THAT(delegate.request_status(), IsOk());
@@ -961,7 +962,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   TestDelegate delegate;
   std::unique_ptr<URLRequest> request = context_->CreateRequest(
       GURL("https://www.example.com/"), DEFAULT_PRIORITY, &delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   request->Start();
   delegate.RunUntilComplete();
   EXPECT_THAT(delegate.request_status(), IsOk());
@@ -995,7 +996,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   TestDelegate delegate;
   std::unique_ptr<URLRequest> request = context_->CreateRequest(
       GURL("https://www.example.com/"), DEFAULT_PRIORITY, &delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   request->Start();
   delegate.RunUntilComplete();
   EXPECT_THAT(delegate.request_status(), IsOk());
@@ -1045,7 +1046,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   TestDelegate delegate;
   std::unique_ptr<URLRequest> request = context_->CreateRequest(
       GURL("https://www.example.com/"), DEFAULT_PRIORITY, &delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   request->Start();
   delegate.RunUntilComplete();
   EXPECT_THAT(delegate.request_status(), IsOk());
@@ -1074,9 +1075,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest, EncodingAdvertisementOnRange) {
   socket_factory_.AddSocketDataProvider(&socket_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   // Make the extra header to trigger the change in "Accepted-Encoding"
   HttpRequestHeaders headers;
@@ -1111,9 +1112,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest, RangeRequestOverrideEncoding) {
   socket_factory_.AddSocketDataProvider(&socket_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   // Explicitly set "Accept-Encoding" to make sure it's not overridden by
   // AddExtraHeaders
@@ -1137,9 +1138,9 @@ TEST_F(URLRequestHttpJobTest, TestCancelWhileReadingCookies) {
   auto context = context_builder->Build();
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                             &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
   request->Start();
   request->Cancel();
@@ -1250,7 +1251,7 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectTest) {
         TestNetworkDelegate network_delegate;
         std::unique_ptr<URLRequest> r(context_->CreateRequest(
             url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
-            is_for_websockets));
+            net::handles::kInvalidNetworkHandle, is_for_websockets));
 
         // Only apply for main frame navigation based runs.
         if (is_main_frame_navigation) {
@@ -1346,7 +1347,8 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectTestMPArchFrames) {
         TestDelegate d;
         TestNetworkDelegate network_delegate;
         std::unique_ptr<URLRequest> r(context_->CreateRequest(
-            url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS, false));
+            url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+            net::handles::kInvalidNetworkHandle, false));
 
         // Only apply for main frame navigation based runs.
         if (is_main_frame_navigation) {
@@ -1455,7 +1457,7 @@ TEST_F(URLRequestHttpJobTest, ShouldBypassHSTS) {
       TestNetworkDelegate network_delegate;
       std::unique_ptr<URLRequest> r(context_->CreateRequest(
           url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
-          is_for_websockets));
+          net::handles::kInvalidNetworkHandle, is_for_websockets));
       if (!is_for_websockets) {
         r->set_isolation_info(IsolationInfo::Create(
             IsolationInfo::RequestType::kMainFrame, origin, origin,
@@ -1501,9 +1503,9 @@ class URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest
         std::make_unique<
             testing::StrictMock<device_bound_sessions::SessionServiceMock>>());
     context_ = context_builder->Build();
-    request_ = context_->CreateRequest(GURL("https://www.example.com"),
-                                       DEFAULT_PRIORITY, &delegate_,
-                                       TRAFFIC_ANNOTATION_FOR_TESTS);
+    request_ = context_->CreateRequest(
+        GURL("https://www.example.com"), DEFAULT_PRIORITY, &delegate_,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
     request_->set_device_bound_session_mode(
         net::DeviceBoundSessionMode::kAllowed);
   }
@@ -1904,7 +1906,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
 
   std::unique_ptr<URLRequest> request = context_->CreateRequest(
       GURL("wss://www.example.com"), DEFAULT_PRIORITY, &delegate_,
-      TRAFFIC_ANNOTATION_FOR_TESTS, /*is_for_websockets=*/true);
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle,
+      /*is_for_websockets=*/true);
   request->set_device_bound_session_mode(net::DeviceBoundSessionMode::kAllowed);
   HttpRequestHeaders headers = WebSocketCommonTestHeaders();
   request->SetExtraRequestHeaders(headers);
@@ -2057,9 +2060,9 @@ TEST_F(URLRequestHttpJobTest, ShouldBypassHSTSResponseAndConnectionNotReused) {
 
     net_log_observer_.Clear();
     TestDelegate delegate;
-    std::unique_ptr<URLRequest> req(
-        context->CreateRequest(insecure_url, DEFAULT_PRIORITY, &delegate,
-                               TRAFFIC_ANNOTATION_FOR_TESTS));
+    std::unique_ptr<URLRequest> req(context->CreateRequest(
+        insecure_url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle));
     req->SetLoadFlags(net::LOAD_SHOULD_BYPASS_HSTS);
     req->set_disallow_credentials();
     req->Start();
@@ -2084,9 +2087,9 @@ TEST_F(URLRequestHttpJobTest, ShouldBypassHSTSResponseAndConnectionNotReused) {
     ASSERT_TRUE(https_server.Start(common_port));
 
     TestDelegate delegate;
-    std::unique_ptr<URLRequest> req(
-        context->CreateRequest(insecure_url, DEFAULT_PRIORITY, &delegate,
-                               TRAFFIC_ANNOTATION_FOR_TESTS));
+    std::unique_ptr<URLRequest> req(context->CreateRequest(
+        insecure_url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle));
     req->set_disallow_credentials();
     url::Origin insecure_origin = url::Origin::Create(insecure_url);
     req->set_isolation_info(IsolationInfo::Create(
@@ -2138,7 +2141,8 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectCallback) {
     extra_headers.SetHeader("X-HSTS-Test", "1");
 
     std::unique_ptr<URLRequest> r(context->CreateRequest(
-        url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+        url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle));
     r->SetExtraRequestHeaders(extra_headers);
     bool seen_raw_request_headers = false;
     bool seen_raw_response_headers = false;
@@ -2173,7 +2177,8 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectCallback) {
     TestDelegate delegate;
 
     std::unique_ptr<URLRequest> r(context->CreateRequest(
-        url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+        url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle));
     r->SetRequestHeadersCallback(base::BindRepeating([](HttpRawRequestHeaders) {
       ADD_FAILURE() << "RequestHeadersCallback unexpectedly called.";
     }));
@@ -2195,7 +2200,8 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectCallback) {
     TestDelegate delegate;
 
     std::unique_ptr<URLRequest> r(context->CreateRequest(
-        url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+        url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle));
     r->SetRequestHeadersCallback(base::BindRepeating([](HttpRawRequestHeaders) {
       ADD_FAILURE() << "RequestHeadersCallback unexpectedly called.";
     }));
@@ -2235,9 +2241,9 @@ TEST_F(URLRequestHttpJobWithBrotliSupportTest, NoBrotliAdvertisementOverHttp) {
   socket_factory_.AddSocketDataProvider(&socket_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   request->Start();
   delegate.RunUntilComplete();
 
@@ -2269,9 +2275,9 @@ TEST_F(URLRequestHttpJobWithBrotliSupportTest, BrotliAdvertisement) {
   socket_factory_.AddSocketDataProvider(&socket_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("https://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("https://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   request->Start();
   delegate.RunUntilComplete();
 
@@ -2347,7 +2353,7 @@ TEST_F(URLRequestHttpJobWithBrotliSupportTest, DefaultAcceptEncodingOverriden) {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> request = context_->CreateRequest(
         GURL("https://www.example.com"), DEFAULT_PRIORITY, &delegate,
-        TRAFFIC_ANNOTATION_FOR_TESTS);
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
     request->set_accepted_stream_types(test.accepted_types);
     request->Start();
     delegate.RunUntilComplete();
@@ -2403,9 +2409,9 @@ TEST_F(URLRequestHttpJobWithCheckClearTextPermittedTest,
         env, test.cleartext_permitted);
 
     TestDelegate delegate;
-    std::unique_ptr<URLRequest> request =
-        context_->CreateRequest(GURL(test.url), DEFAULT_PRIORITY, &delegate,
-                                TRAFFIC_ANNOTATION_FOR_TESTS);
+    std::unique_ptr<URLRequest> request = context_->CreateRequest(
+        GURL(test.url), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
     request->Start();
     delegate.RunUntilComplete();
 
@@ -2434,10 +2440,10 @@ class URLRequestHttpJobWebSocketTest : public TestWithTaskEnvironment {
     auto context_builder = CreateTestURLRequestContextBuilder();
     context_builder->set_client_socket_factory_for_testing(&socket_factory_);
     context_ = context_builder->Build();
-    req_ =
-        context_->CreateRequest(GURL("ws://www.example.org"), DEFAULT_PRIORITY,
-                                &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS,
-                                /*is_for_websockets=*/true);
+    req_ = context_->CreateRequest(
+        GURL("ws://www.example.org"), DEFAULT_PRIORITY, &delegate_,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle,
+        /*is_for_websockets=*/true);
   }
 
   std::unique_ptr<URLRequestContext> context_;
@@ -2536,7 +2542,8 @@ class SameSiteBypassNetworkDelegate : public TestNetworkDelegate {
 void RunRequest(URLRequestContext* context, const GURL& url) {
   TestDelegate delegate;
   std::unique_ptr<URLRequest> request = context->CreateRequest(
-      url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+      url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle);
 
   // Make this a laxly same-site context to allow setting
   // SameSite=Lax-by-default cookies.
@@ -2805,7 +2812,8 @@ TEST_F(URLRequestHttpJobTest, GetFirstPartySetsCacheFilterMatchInfo) {
   {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> req(context->CreateRequest(
-        kTestUrl, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+        kTestUrl, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle));
     req->set_isolation_info(kTestIsolationInfo);
     req->set_disallow_credentials();
     req->Start();
@@ -2815,7 +2823,8 @@ TEST_F(URLRequestHttpJobTest, GetFirstPartySetsCacheFilterMatchInfo) {
   {  // Test using the cached response.
     TestDelegate delegate;
     std::unique_ptr<URLRequest> req(context->CreateRequest(
-        kTestUrl, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+        kTestUrl, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle));
     req->SetLoadFlags(LOAD_SKIP_CACHE_VALIDATION);
     req->set_disallow_credentials();
     req->set_isolation_info(kTestIsolationInfo);
@@ -2836,7 +2845,8 @@ TEST_F(URLRequestHttpJobTest, GetFirstPartySetsCacheFilterMatchInfo) {
   {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> req(context->CreateRequest(
-        kTestUrl, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+        kTestUrl, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle));
     req->SetLoadFlags(LOAD_SKIP_CACHE_VALIDATION);
     req->set_disallow_credentials();
     req->set_isolation_info(kTestIsolationInfo);
@@ -2869,7 +2879,8 @@ TEST_F(URLRequestHttpJobTest, SetPartitionedCookie) {
         https_test.GetURL(
             "/set-cookie?__Host-foo=bar;SameSite=None;Secure;Path=/"
             ";Partitioned;"),
-        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle));
 
     req->set_isolation_info(kTestIsolationInfo);
     req->Start();
@@ -2881,7 +2892,7 @@ TEST_F(URLRequestHttpJobTest, SetPartitionedCookie) {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> req(context->CreateRequest(
         https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
     req->set_isolation_info(kTestIsolationInfo);
     req->Start();
     delegate.RunUntilComplete();
@@ -2897,7 +2908,7 @@ TEST_F(URLRequestHttpJobTest, SetPartitionedCookie) {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> req(context->CreateRequest(
         https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
     req->set_isolation_info(kOtherTestIsolationInfo);
     req->Start();
     delegate.RunUntilComplete();
@@ -2915,7 +2926,7 @@ TEST_F(URLRequestHttpJobTest, SetPartitionedCookie) {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> req(context->CreateRequest(
         https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
     req->set_isolation_info(kHttpTestIsolationInfo);
     req->Start();
     delegate.RunUntilComplete();
@@ -2947,7 +2958,8 @@ TEST_F(URLRequestHttpJobTest, PartitionedCookiePrivacyMode) {
         https_test.GetURL(
             "/set-cookie?__Host-partitioned=0;SameSite=None;Secure;Path=/"
             ";Partitioned;&__Host-unpartitioned=1;SameSite=None;Secure;Path=/"),
-        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle));
     req->set_isolation_info(kTestIsolationInfo);
     req->Start();
     ASSERT_TRUE(req->is_pending());
@@ -2958,7 +2970,7 @@ TEST_F(URLRequestHttpJobTest, PartitionedCookiePrivacyMode) {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> req(context->CreateRequest(
         https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
     req->set_isolation_info(kTestIsolationInfo);
     req->Start();
     delegate.RunUntilComplete();
@@ -2974,7 +2986,7 @@ TEST_F(URLRequestHttpJobTest, PartitionedCookiePrivacyMode) {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> req(context->CreateRequest(
         https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
     req->set_isolation_info(kTestIsolationInfo);
     req->Start();
     delegate.RunUntilComplete();
@@ -3007,7 +3019,7 @@ TEST_F(URLRequestHttpJobTest, PartitionedCookiePrivacyMode) {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> req(context->CreateRequest(
         https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
     req->set_isolation_info(kTestIsolationInfo);
     req->Start();
     delegate.RunUntilComplete();
@@ -3058,7 +3070,8 @@ TEST_F(URLRequestHttpJobTest, IgnoreUnsafeMethodForSameSiteLax) {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> req(context->CreateRequest(
         https_test.GetURL("/set-cookie?name=value;SameSite=Lax;Secure;Path=/"),
-        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle));
     req->set_isolation_info(kTestIsolationInfo);
     req->set_site_for_cookies(kTestIsolationInfo.site_for_cookies());
     req->set_initiator(kCrossSiteOrigin);
@@ -3073,7 +3086,7 @@ TEST_F(URLRequestHttpJobTest, IgnoreUnsafeMethodForSameSiteLax) {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> req(context->CreateRequest(
         https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
     req->set_isolation_info(kTestIsolationInfo);
     req->set_site_for_cookies(kTestIsolationInfo.site_for_cookies());
     req->set_initiator(kCrossSiteOrigin);
@@ -3102,7 +3115,8 @@ TEST_F(URLRequestHttpJobTest, ForceIgnoreSiteForCookiesFromNetworkDelegate) {
   auto create_cross_site_request = [&](const GURL& url,
                                        TestDelegate& delegate) {
     std::unique_ptr<URLRequest> req = context->CreateRequest(
-        url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+        url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle);
     req->set_site_for_cookies(SiteForCookies::FromOrigin(kCrossSiteOrigin));
     req->set_initiator(kCrossSiteOrigin);
     return req;
@@ -3155,9 +3169,9 @@ TEST_F(URLRequestHttpJobTest,
   delegate.set_platform_network_access_behavior(
       TestDelegate::PlatformNetworkAccessBehavior::kGrant);
 
-  std::unique_ptr<URLRequest> req(
-      context->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                             &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> req(context->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   req->Start();
 
   // The request should not have completed yet because
@@ -3188,9 +3202,9 @@ TEST_F(URLRequestHttpJobTest, PlatformLocalNetworkAccessPermissionDenied_Sync) {
   delegate.set_platform_network_access_behavior(
       TestDelegate::PlatformNetworkAccessBehavior::kDeny);
 
-  std::unique_ptr<URLRequest> req(
-      context->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                             &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> req(context->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   req->Start();
   delegate.RunUntilComplete();
 
@@ -3223,9 +3237,9 @@ TEST_F(URLRequestHttpJobTest,
       TestDelegate::PlatformNetworkAccessBehavior::kGrant);
   delegate.set_async_platform_local_network_access_decision(true);
 
-  std::unique_ptr<URLRequest> req(
-      context->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                             &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> req(context->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   req->Start();
   delegate.RunUntilComplete();
 
@@ -3252,9 +3266,9 @@ TEST_F(URLRequestHttpJobTest,
       TestDelegate::PlatformNetworkAccessBehavior::kDeny);
   delegate.set_async_platform_local_network_access_decision(true);
 
-  std::unique_ptr<URLRequest> req(
-      context->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                             &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> req(context->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   req->Start();
   delegate.RunUntilComplete();
 
@@ -3281,9 +3295,9 @@ TEST_F(URLRequestHttpJobTest, PlatformLocalNetworkAccessDefault_Sync) {
   delegate.set_platform_network_access_behavior(
       TestDelegate::PlatformNetworkAccessBehavior::kDefault);
 
-  std::unique_ptr<URLRequest> req(
-      context->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                             &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> req(context->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   req->Start();
   delegate.RunUntilComplete();
 
@@ -3309,9 +3323,9 @@ TEST_F(URLRequestHttpJobTest, PlatformLocalNetworkAccessDefault_Async) {
       TestDelegate::PlatformNetworkAccessBehavior::kDefault);
   delegate.set_async_platform_local_network_access_decision(true);
 
-  std::unique_ptr<URLRequest> req(
-      context->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                             &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> req(context->CreateRequest(
+      GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   req->Start();
   delegate.RunUntilComplete();
 
@@ -3334,9 +3348,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   socket_factory_.AddSSLSocketDataProvider(&ssl_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("https://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("https://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 0);
 
   request->Start();
@@ -3360,9 +3374,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   socket_factory_.AddSSLSocketDataProvider(&ssl_data);
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("https://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request = context_->CreateRequest(
+      GURL("https://www.example.com"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 0);
 
   request->Start();

@@ -111,9 +111,9 @@ class TrustTokenKeyCommitmentControllerTest : public ::testing::Test {
 
  protected:
   std::unique_ptr<net::URLRequest> MakeURLRequest(std::string spec) {
-    return context_->CreateRequest(GURL(spec),
-                                   net::RequestPriority::DEFAULT_PRIORITY,
-                                   &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS);
+    return context_->CreateRequest(
+        GURL(spec), net::RequestPriority::DEFAULT_PRIORITY, &delegate_,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   }
   const net::URLRequest& IssuerURLRequest() { return *issuer_request_; }
   base::test::TaskEnvironment env_;

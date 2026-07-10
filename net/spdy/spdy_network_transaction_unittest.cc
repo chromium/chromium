@@ -2540,7 +2540,8 @@ TEST_P(SpdyNetworkTransactionTest, RedirectGetRequest) {
   TestDelegate delegate;
 
   std::unique_ptr<URLRequest> request = spdy_url_request_context->CreateRequest(
-      default_url_, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+      default_url_, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle);
   request->Start();
   delegate.RunUntilRedirect();
 

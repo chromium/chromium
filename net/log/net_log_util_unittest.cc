@@ -151,9 +151,9 @@ TEST(NetLogUtil, CreateNetLogEntriesForActiveObjectsOneContext) {
   for (size_t num_requests = 0; num_requests < 5; ++num_requests) {
     std::vector<std::unique_ptr<URLRequest>> requests;
     for (size_t i = 0; i < num_requests; ++i) {
-      requests.push_back(context->CreateRequest(GURL("about:life"),
-                                                DEFAULT_PRIORITY, &delegate,
-                                                TRAFFIC_ANNOTATION_FOR_TESTS));
+      requests.push_back(context->CreateRequest(
+          GURL("about:life"), DEFAULT_PRIORITY, &delegate,
+          TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
     }
     std::set<URLRequestContext*> contexts;
     contexts.insert(context.get());
@@ -181,9 +181,9 @@ TEST(NetLogUtil, CreateNetLogEntriesForActiveObjectsMultipleContexts) {
     for (size_t i = 0; i < num_requests; ++i) {
       contexts.push_back(CreateTestURLRequestContextBuilder()->Build());
       context_set.insert(contexts[i].get());
-      requests.push_back(
-          contexts[i]->CreateRequest(GURL("about:hats"), DEFAULT_PRIORITY,
-                                     &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      requests.push_back(contexts[i]->CreateRequest(
+          GURL("about:hats"), DEFAULT_PRIORITY, &delegate,
+          TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
     }
     RecordingNetLogObserver net_log_observer;
     CreateNetLogEntriesForActiveObjects(context_set, &net_log_observer);
@@ -205,8 +205,9 @@ TEST(NetLogUtil, CreateNetLogEntriesForActiveObjectsRedactsCredentials) {
   auto context = CreateTestURLRequestContextBuilder()->Build();
   TestDelegate delegate;
   std::vector<std::unique_ptr<URLRequest>> requests;
-  requests.push_back(context->CreateRequest(url, DEFAULT_PRIORITY, &delegate,
-                                            TRAFFIC_ANNOTATION_FOR_TESTS));
+  requests.push_back(context->CreateRequest(
+      url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
   std::set<URLRequestContext*> contexts;
   contexts.insert(context.get());
   // The mode of the observer should be ignored.

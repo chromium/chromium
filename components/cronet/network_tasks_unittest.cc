@@ -168,9 +168,14 @@ class NetworkTasksTest : public testing::Test {
     std::atomic_bool url_request_created = false;
     PostToNetworkThreadSync(base::BindLambdaForTesting([&]() {
       auto* context = network_tasks_->GetURLRequestContext(network);
-      url_request_ = context->CreateRequest(GURL("http://www.foo.com"),
-                                            net::DEFAULT_PRIORITY, nullptr,
-                                            TRAFFIC_ANNOTATION_FOR_TESTS);
+      url_request_ = context->CreateRequest(
+          GURL("http://www.foo.com"), net::DEFAULT_PRIORITY, nullptr,
+          TRAFFIC_ANNOTATION_FOR_TESTS,
+          // TODO(crbug.com/495684670): Update
+          // multi-network Cronet to rely on
+          // UrlRequest's target_network
+          // instead of URLRequestContext's.
+          net::handles::kInvalidNetworkHandle);
       url_request_created = !!url_request_;
     }));
     EXPECT_TRUE(url_request_created);

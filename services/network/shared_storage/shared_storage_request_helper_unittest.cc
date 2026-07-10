@@ -151,9 +151,9 @@ class SharedStorageRequestHelperTest : public net::TestWithTaskEnvironment {
 
   [[nodiscard]] std::unique_ptr<net::URLRequest> CreateTestUrlRequest(
       const GURL& url) {
-    auto request =
-        context_->CreateRequest(url, net::RequestPriority::DEFAULT_PRIORITY,
-                                &test_delegate_, TRAFFIC_ANNOTATION_FOR_TESTS);
+    auto request = context_->CreateRequest(
+        url, net::RequestPriority::DEFAULT_PRIORITY, &test_delegate_,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
 
     return request;
   }

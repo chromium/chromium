@@ -127,7 +127,8 @@ class URLRequestQuicPerfTest : public ::testing::Test {
                                             RequestPriority priority,
                                             URLRequest::Delegate* delegate) {
     return context_->CreateRequest(url, priority, delegate,
-                                   TRAFFIC_ANNOTATION_FOR_TESTS);
+                                   TRAFFIC_ANNOTATION_FOR_TESTS,
+                                   net::handles::kInvalidNetworkHandle);
   }
 
   URLRequestContext* context() const { return context_.get(); }

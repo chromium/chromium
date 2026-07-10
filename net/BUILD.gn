@@ -3185,6 +3185,7 @@ target(_test_target_type, "net_unittests") {
     "tools/dump_cache/dump_cache_helper_unittest.cc",
     "tools/quic/quic_simple_client_test.cc",
     "tools/tld_cleanup/tld_cleanup_util_unittest.cc",
+    "url_request/multinetwork_unittest.cc",
     "url_request/redirect_info_unittest.cc",
     "url_request/redirect_util_unittest.cc",
     "url_request/storage_access_status_cache_unittest.cc",

@@ -75,9 +75,9 @@ void TestNetworkQualityEstimator::RunOneRequest() {
   auto builder = CreateTestURLRequestContextBuilder();
   builder->set_network_quality_estimator(this);
   auto context = builder->Build();
-  std::unique_ptr<URLRequest> request(
-      context->CreateRequest(GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
-                             TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request(context->CreateRequest(
+      GetEchoURL(), DEFAULT_PRIORITY, &test_delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
   request->Start();
   test_delegate.RunUntilComplete();

@@ -514,7 +514,11 @@ void Job::StartURLRequest(URLRequestContext* context) {
           policy_exception_justification: "Not implemented."
         })");
   url_request_ = context->CreateRequest(request_params_->url, DEFAULT_PRIORITY,
-                                        this, traffic_annotation);
+                                        this, traffic_annotation,
+                                        // TODO(crbug.com/527780908): Support
+                                        // targeting a specific network for
+                                        // certificate validation.
+                                        net::handles::kInvalidNetworkHandle);
   if (request_params_->http_method == HTTP_METHOD_POST)
     url_request_->set_method("POST");
   url_request_->set_disallow_credentials();

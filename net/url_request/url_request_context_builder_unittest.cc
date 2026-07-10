@@ -126,7 +126,7 @@ TEST_F(URLRequestContextBuilderTest, DefaultSettings) {
   TestDelegate delegate;
   std::unique_ptr<URLRequest> request(context->CreateRequest(
       test_server_.GetURL("/echoheader?Foo"), DEFAULT_PRIORITY, &delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
   request->set_method("GET");
   request->SetExtraRequestHeaderByName("Foo", "Bar", false);
   request->Start();
@@ -142,7 +142,8 @@ TEST_F(URLRequestContextBuilderTest, UserAgent) {
   TestDelegate delegate;
   std::unique_ptr<URLRequest> request(context->CreateRequest(
       test_server_.GetURL("/echoheader?User-Agent"), DEFAULT_PRIORITY,
-      &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle));
   request->set_method("GET");
   request->Start();
   delegate.RunUntilComplete();

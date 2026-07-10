@@ -2019,7 +2019,11 @@ int MockUDPClientSocket::ConnectAsync(const IPEndPoint& address,
   if (mode == SYNCHRONOUS) {
     return result;
   }
-  RunCallbackAsync(std::move(callback), result);
+  if (result == ERR_IO_PENDING) {
+    pending_connect_callback_ = std::move(callback);
+  } else {
+    RunCallbackAsync(std::move(callback), result);
+  }
   return ERR_IO_PENDING;
 }
 
@@ -2043,7 +2047,11 @@ int MockUDPClientSocket::ConnectUsingNetworkAsync(
   if (mode == SYNCHRONOUS) {
     return result;
   }
-  RunCallbackAsync(std::move(callback), result);
+  if (result == ERR_IO_PENDING) {
+    pending_connect_callback_ = std::move(callback);
+  } else {
+    RunCallbackAsync(std::move(callback), result);
+  }
   return ERR_IO_PENDING;
 }
 
@@ -2065,7 +2073,11 @@ int MockUDPClientSocket::ConnectUsingDefaultNetworkAsync(
   if (mode == SYNCHRONOUS) {
     return result;
   }
-  RunCallbackAsync(std::move(callback), result);
+  if (result == ERR_IO_PENDING) {
+    pending_connect_callback_ = std::move(callback);
+  } else {
+    RunCallbackAsync(std::move(callback), result);
+  }
   return ERR_IO_PENDING;
 }
 
@@ -2137,7 +2149,9 @@ void MockUDPClientSocket::OnWriteComplete(int rv) {
 }
 
 void MockUDPClientSocket::OnConnectComplete(const MockConnect& data) {
-  NOTIMPLEMENTED();
+  if (!pending_connect_callback_.is_null()) {
+    RunCallback(std::move(pending_connect_callback_), data.result);
+  }
 }
 
 void MockUDPClientSocket::OnDataProviderDestroyed() {

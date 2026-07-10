@@ -9,6 +9,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
+#include "net/base/network_handle.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
@@ -21,7 +22,9 @@ base::ListValue GetDevToolsListFromPort(uint16_t port) {
   net::TestDelegate delegate;
 
   std::unique_ptr<net::URLRequest> request(request_context->CreateRequest(
-      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      // Targeting a specific network is not supported for fuchsia_web.
+      net::handles::kInvalidNetworkHandle));
   request->Start();
   delegate.RunUntilComplete();
 

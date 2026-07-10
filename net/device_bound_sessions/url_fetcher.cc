@@ -62,6 +62,9 @@ URLFetcher::URLFetcher(const URLRequestContext* context,
                                       IDLE,
                                       this,
                                       kRegistrationTrafficAnnotation,
+                                      // TODO(crbug.com/533319700): Support
+                                      // targeting a network for DBSC fetches.
+                                      net::handles::kInvalidNetworkHandle,
                                       /*is_for_websockets=*/false,
                                       net_log_source)),
       buf_(base::MakeRefCounted<IOBufferWithSize>(kBufferSize)) {

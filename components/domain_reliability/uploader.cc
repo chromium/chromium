@@ -15,6 +15,7 @@
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_handle.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -128,7 +129,10 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
     std::unique_ptr<net::URLRequest> request =
         url_request_context_->CreateRequest(
             upload_url, net::RequestPriority::IDLE, this /* delegate */,
-            traffic_annotation);
+            traffic_annotation,
+            // TODO(crbug.com/527798032): Consider retrieving the correct target
+            // network from the entity originating this report.
+            net::handles::kInvalidNetworkHandle);
     request->set_method("POST");
     request->set_disallow_credentials();
     request->SetExtraRequestHeaderByName(net::HttpRequestHeaders::kContentType,

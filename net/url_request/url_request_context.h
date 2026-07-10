@@ -125,6 +125,7 @@ class NET_EXPORT URLRequestContext final {
       RequestPriority priority,
       URLRequest::Delegate* delegate,
       NetworkTrafficAnnotationTag traffic_annotation,
+      handles::NetworkHandle target_network,
       bool is_for_websockets = false,
       const std::optional<net::NetLogSource> net_log_source =
           std::nullopt) const;

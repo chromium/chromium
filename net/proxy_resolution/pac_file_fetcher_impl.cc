@@ -170,8 +170,11 @@ int PacFileFetcherImpl::Fetch(
 
   // Use highest priority, so if socket pools are being used for other types of
   // requests, PAC requests are aren't blocked on them.
-  cur_request_ = url_request_context_->CreateRequest(url, MAXIMUM_PRIORITY,
-                                                     this, traffic_annotation);
+  cur_request_ = url_request_context_->CreateRequest(
+      url, MAXIMUM_PRIORITY, this, traffic_annotation,
+      // TODO(crbug.com/517071653): Support targeting a specific network for
+      // PAC fetches.
+      net::handles::kInvalidNetworkHandle);
   // DBSC should be disabled for PAC fetches to avoid a circular dependency
   // leading to a deadlock: fetching a PAC file might trigger a DBSC
   // session refresh, which in turn might require another PAC fetch

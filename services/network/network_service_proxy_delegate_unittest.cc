@@ -112,7 +112,8 @@ class NetworkServiceProxyDelegateTest : public testing::Test {
 
   std::unique_ptr<net::URLRequest> CreateRequest(const GURL& url) {
     return context_->CreateRequest(url, net::DEFAULT_PRIORITY, nullptr,
-                                   TRAFFIC_ANNOTATION_FOR_TESTS);
+                                   TRAFFIC_ANNOTATION_FOR_TESTS,
+                                   net::handles::kInvalidNetworkHandle);
   }
 
   void SetConfig(mojom::CustomProxyConfigPtr config) {
