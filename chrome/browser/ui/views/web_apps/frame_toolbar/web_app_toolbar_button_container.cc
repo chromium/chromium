@@ -353,6 +353,15 @@ void WebAppToolbarButtonContainer::UpdateStatusIconsVisibility() {
   }
 }
 
+// When Window Controls Overlay is enabled dynamically by the user clicking the
+// expand arrow toggle button, we clean up and remove the ephemeral uninstall
+// button if it exists.
+void WebAppToolbarButtonContainer::WindowControlsOverlayEnabledChanged() {
+  if (uninstall_button_ && browser_view_->IsWindowControlsOverlayEnabled()) {
+    RemoveChildViewT(std::exchange(uninstall_button_, nullptr));
+  }
+}
+
 void WebAppToolbarButtonContainer::SetColors(SkColor foreground_color,
                                              SkColor background_color,
                                              bool color_changed) {

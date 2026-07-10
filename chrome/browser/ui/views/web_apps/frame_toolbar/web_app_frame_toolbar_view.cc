@@ -424,6 +424,7 @@ void WebAppFrameToolbarView::OnWindowControlsOverlayEnabledChanged() {
     DestroyLayer();
     views::SetHitTestComponent(this, static_cast<int>(HTNOWHERE));
   }
+  right_container_->WindowControlsOverlayEnabledChanged();
   right_container_->extensions_toolbar_coordinator()
       ->GetExtensionsContainerViewController()
       ->WindowControlsOverlayEnabledChanged(

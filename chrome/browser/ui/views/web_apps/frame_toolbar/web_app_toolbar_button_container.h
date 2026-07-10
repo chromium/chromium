@@ -64,6 +64,8 @@ class WebAppToolbarButtonContainer : public views::View,
 
   void UpdateStatusIconsVisibility();
 
+  void WindowControlsOverlayEnabledChanged();
+
   void SetColors(SkColor foreground_color,
                  SkColor background_color,
                  bool color_changed);

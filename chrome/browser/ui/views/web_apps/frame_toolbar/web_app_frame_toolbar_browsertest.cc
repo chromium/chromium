@@ -3863,7 +3863,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
 }
 
 class WebAppFrameToolbarUninstallButtonTest
-    : public WebAppFrameToolbarBrowserTest {
+    : public WebAppFrameToolbarBrowserTest_WindowControlsOverlay {
  private:
   base::test::ScopedFeatureList feature_list_{features::kWebAppInstallDialog};
 };
@@ -3992,4 +3992,22 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarUninstallButtonTest,
       helper()->web_app_frame_toolbar()->get_right_container_for_testing();
   EXPECT_NE(toolbar_right_container->uninstall_button(), nullptr);
   EXPECT_TRUE(toolbar_right_container->uninstall_button()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarUninstallButtonTest,
+                       RemovedWhenWindowControlsOverlayToggled) {
+  InstallAndLaunchWebApp();
+
+  WebAppToolbarButtonContainer* toolbar_right_container =
+      helper()->web_app_frame_toolbar()->get_right_container_for_testing();
+
+  // First launch: uninstall button should be visible before WCO mode is
+  // enabled.
+  EXPECT_NE(toolbar_right_container->uninstall_button(), nullptr);
+  EXPECT_TRUE(toolbar_right_container->uninstall_button()->GetVisible());
+
+  // Toggle WCO mode on. Once enabled, the ephemeral uninstall button is
+  // removed.
+  ToggleWindowControlsOverlayAndWait();
+  EXPECT_EQ(toolbar_right_container->uninstall_button(), nullptr);
 }
