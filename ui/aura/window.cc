@@ -1043,7 +1043,8 @@ void Window::UpdateVisualState() {
 void Window::GetDebugInfo(const aura::Window* active_window,
                           const aura::Window* focused_window,
                           const aura::Window* capture_window,
-                          std::ostringstream* out) const {
+                          std::ostringstream* out,
+                          bool scrub_data) const {
   std::string name(GetName());
   if (name.empty())
     name = "\"\"";
@@ -1053,6 +1054,10 @@ void Window::GetDebugInfo(const aura::Window* active_window,
                                 ->VisibleWindowCanOccludeOtherWindows(this);
   bool has_opaque_regions = !opaque_regions_for_occlusion().empty();
   *out << " " << name << "<" << GetId() << ">";
+  std::u16string title(GetTitle());
+  if (!title.empty() && !scrub_data) {
+    *out << " title=\"" << base::UTF16ToUTF8(title) << "\"";
+  }
   *out << " (" << this << ")"
        << " type=" << aura::Window::WindowTypeToString(GetType());
   *out << ((this == active_window) ? " [active]" : "")
@@ -1097,14 +1102,25 @@ void Window::GetDebugInfo(const aura::Window* active_window,
 }
 
 #if DCHECK_IS_ON()
-std::string Window::GetWindowHierarchy(int depth) const {
+std::string Window::GetWindowHierarchy(int depth,
+                                       const Window* active_window) const {
   std::ostringstream out;
   std::string indent_str(depth * 2, ' ');
   out << indent_str;
-  GetDebugInfo(nullptr, nullptr, nullptr, &out);
+
+  const Window* root_window = GetRootWindow();
+  const Window* focused_window = nullptr;
+  const Window* capture_window = nullptr;
+  if (root_window) {
+    Window* mutable_root = const_cast<Window*>(root_window);
+    focused_window = client::GetFocusClient(mutable_root)->GetFocusedWindow();
+    capture_window = client::GetCaptureClient(mutable_root)->GetCaptureWindow();
+  }
+
+  GetDebugInfo(active_window, focused_window, capture_window, &out);
   out << std::endl;
   for (Window* child : children_) {
-    out << child->GetWindowHierarchy(depth + 1);
+    out << child->GetWindowHierarchy(depth + 1, active_window);
   }
   return out.str();
 }
@@ -1112,7 +1128,7 @@ std::string Window::GetWindowHierarchy(int depth) const {
 void Window::PrintWindowHierarchy(int depth) const {
   VLOG(0) << GetWindowHierarchy(depth);
 }
-#endif
+#endif  // DCHECK_IS_ON()
 
 void Window::RemoveOrDestroyChildren() {
   while (!children_.empty()) {

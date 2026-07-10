@@ -4505,6 +4505,63 @@ TEST_P(WindowActualScreenBoundsTest, VerifyWindowActualBoundsDuringAnimation) {
   bounds_checker.WaitForAnimationCompletion();
 }
 
+#if DCHECK_IS_ON()
+TEST_F(WindowTest, GetWindowHierarchy) {
+  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}));
+  std::unique_ptr<Window> w2(CreateTestWindow({.window_id = 2}));
+
+  w1->SetTitle(u"Window 1");
+
+  Window* w11 =
+      CreateTestWindow({.parent = w1.get(), .window_id = 11}).release();
+
+  // Parent them to root
+  root_window()->AddChild(w1.get());
+  root_window()->AddChild(w2.get());
+
+  // Set focus to w11
+  w11->Focus();
+
+  // Set capture to w2
+  w2->SetCapture();
+
+  // Active window mark test (we pass w1 as active window)
+  std::string hierarchy = root_window()->GetWindowHierarchy(0, w1.get());
+
+  // Verify hierarchy contains:
+  // - w1 with title and [active]
+  // - w11 with [focused]
+  // - w2 with [capture]
+
+  size_t pos_w1 = hierarchy.find("<1>");
+  ASSERT_NE(pos_w1, std::string::npos);
+  size_t nl_w1 = hierarchy.find("\n", pos_w1);
+  std::string line_w1 = hierarchy.substr(pos_w1, nl_w1 - pos_w1);
+  EXPECT_TRUE(line_w1.find("title=\"Window 1\"") != std::string::npos);
+  EXPECT_TRUE(line_w1.find("[active]") != std::string::npos);
+  EXPECT_FALSE(line_w1.find("[focused]") != std::string::npos);
+  EXPECT_FALSE(line_w1.find("[capture]") != std::string::npos);
+
+  size_t pos_w11 = hierarchy.find("<11>");
+  ASSERT_NE(pos_w11, std::string::npos);
+  size_t nl_w11 = hierarchy.find("\n", pos_w11);
+  std::string line_w11 = hierarchy.substr(pos_w11, nl_w11 - pos_w11);
+  EXPECT_TRUE(line_w11.find("[focused]") != std::string::npos);
+  EXPECT_FALSE(line_w11.find("[active]") != std::string::npos);
+  EXPECT_FALSE(line_w11.find("[capture]") != std::string::npos);
+
+  size_t pos_w2 = hierarchy.find("<2>");
+  ASSERT_NE(pos_w2, std::string::npos);
+  size_t nl_w2 = hierarchy.find("\n", pos_w2);
+  std::string line_w2 = hierarchy.substr(pos_w2, nl_w2 - pos_w2);
+  EXPECT_TRUE(line_w2.find("[capture]") != std::string::npos);
+  EXPECT_FALSE(line_w2.find("[active]") != std::string::npos);
+  EXPECT_FALSE(line_w2.find("[focused]") != std::string::npos);
+
+  w2->ReleaseCapture();
+}
+#endif
+
 }  // namespace
 }  // namespace test
 }  // namespace aura

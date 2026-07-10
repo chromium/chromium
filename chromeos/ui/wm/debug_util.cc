@@ -35,16 +35,14 @@ void PrintWindowHierarchy(const aura::Window* active_window,
                           std::ostringstream* out) {
   *out << std::string(indent, ' ');
   *out << " [window]";
-  window->GetDebugInfo(active_window, focused_window, capture_window, out);
+  window->GetDebugInfo(active_window, focused_window, capture_window, out,
+                       scrub_data);
   if (window->GetAllPropertyKeys().contains(chromeos::kWindowStateTypeKey)) {
     *out << " state=" << window->GetProperty(chromeos::kWindowStateTypeKey);
   }
 
   std::u16string title(window->GetTitle());
   if (!title.empty()) {
-    if (!scrub_data) {
-      *out << " title=\"" << title << "\"";
-    }
     out_window_titles->push_back(base::UTF16ToUTF8(title));
   }
 

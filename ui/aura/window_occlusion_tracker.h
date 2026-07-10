@@ -225,7 +225,8 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   friend void Window::GetDebugInfo(const aura::Window* active_window,
                                    const aura::Window* focused_window,
                                    const aura::Window* capture_window,
-                                   std::ostringstream* out) const;
+                                   std::ostringstream* out,
+                                   bool scrub_data) const;
 
   struct RootWindowState {
     // Number of Windows whose occlusion state is tracked under this root

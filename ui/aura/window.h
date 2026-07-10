@@ -524,10 +524,12 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   void GetDebugInfo(const aura::Window* active_window,
                     const aura::Window* focused_window,
                     const aura::Window* capture_window,
-                    std::ostringstream* out) const;
+                    std::ostringstream* out,
+                    bool scrub_data = false) const;
 #if DCHECK_IS_ON()
   // These methods are useful when debugging.
-  std::string GetWindowHierarchy(int depth) const;
+  std::string GetWindowHierarchy(int depth,
+                                 const Window* active_window = nullptr) const;
   void PrintWindowHierarchy(int depth) const;
 #endif
 
