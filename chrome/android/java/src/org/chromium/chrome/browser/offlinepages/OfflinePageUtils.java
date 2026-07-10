@@ -165,7 +165,7 @@ public class OfflinePageUtils {
                 int tabId) {
             if (tabId == Tab.INVALID_TAB_ID) return;
 
-            Log.d(TAG, "showReloadSnackbar called with controller " + snackbarController);
+            Log.d(TAG, "showReloadSnackbar called with controller %s", snackbarController);
             Snackbar snackbar =
                     Snackbar.make(
                                     context.getString(R.string.offline_pages_viewing_offline_page),

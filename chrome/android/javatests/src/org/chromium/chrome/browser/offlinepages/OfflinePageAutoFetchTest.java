@@ -527,16 +527,17 @@ public class OfflinePageAutoFetchTest {
         }
         Log.d(TAG, "Logging additional context");
         int tabCount = tabModel.getCount();
-        Log.d(TAG, "Tab Count: " + tabCount);
+        Log.d(TAG, "Tab Count: %d", tabCount);
         for (int i = 0; i < tabCount; ++i) {
             String title = ChromeTabUtils.getTitleOnUiThread(tabModel.getTabAt(i));
             String current = tabModel.index() == i ? "*current" : "";
-            Log.d(TAG, "Tab " + String.valueOf(i) + " '" + title + "' " + current);
+            Log.d(TAG, "Tab %d '%s' %s", i, title, current);
         }
         try {
             Log.d(
                     TAG,
-                    "Request Coordinator state:" + OfflineTestUtil.dumpRequestCoordinatorState());
+                    "Request Coordinator state: %s",
+                    OfflineTestUtil.dumpRequestCoordinatorState());
         } catch (TimeoutException e) {
         }
     }

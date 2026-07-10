@@ -133,7 +133,7 @@ class DirectWritingServiceCallback extends IDirectWritingServiceCallback.Stub {
     private void handleDwGesture(Bundle bundle) {
         if (mStylusWritingImeCallback == null) return;
         String gestureType = bundle.getString(GESTURE_BUNDLE_KEY_GESTURE_TYPE, "");
-        Log.d(TAG, "Received Direct Writing gesture of type: " + gestureType);
+        Log.d(TAG, "Received Direct Writing gesture of type: %s", gestureType);
         if (TextUtils.isEmpty(gestureType)) return;
 
         // When the gesture recognized is not at a valid character position in the HTML input field,
@@ -177,7 +177,7 @@ class DirectWritingServiceCallback extends IDirectWritingServiceCallback.Stub {
             if (!TextUtils.isEmpty(textAlternative)) {
                 // Commit fallback text if available for unsupported gesture. This is to provide
                 // default behaviour for any unsupported gesture which is yet to be implemented.
-                Log.d(TAG, "Commit fallback text for unsupported gesture: " + gestureType);
+                Log.d(TAG, "Commit fallback text for unsupported gesture: %s", gestureType);
                 mStylusWritingImeCallback.sendCompositionToNative(
                         textAlternative, textAlternative.length(), /* isCommit= */ true);
             } else {

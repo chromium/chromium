@@ -45,9 +45,7 @@ class DirectWritingServiceBinder {
             new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder service) {
-                    Log.d(
-                            TAG,
-                            "onServiceConnected for " + mPackageName + ", ComponentName=" + name);
+                    Log.d(TAG, "onServiceConnected for %s, ComponentName=%s", mPackageName, name);
                     mRemoteDwService = IDirectWritingService.Stub.asInterface(service);
                     registerCallback();
                     updateConfiguration();
@@ -57,10 +55,9 @@ class DirectWritingServiceBinder {
                 public void onServiceDisconnected(ComponentName name) {
                     Log.d(
                             TAG,
-                            "onServiceDisconnected for "
-                                    + mPackageName
-                                    + ", ComponentName="
-                                    + name);
+                            "onServiceDisconnected for %s, ComponentName=%s",
+                            mPackageName,
+                            name);
                     // When service is disconnected for any reason, it is needed to unbind the
                     // service so that we can reconnect and start writing again. This also ensures
                     // service callback is registered again which would have been reset at service

@@ -295,12 +295,10 @@ public class OfflinePageTabObserver extends EmptyTabObserver
     public void onConnectionTypeChanged(int connectionType) {
         Log.d(
                 TAG,
-                "Got connectivity event, connectionType: "
-                        + connectionType
-                        + ", is connected: "
-                        + OfflinePageUtils.isConnected()
-                        + ", controller: "
-                        + mSnackbarController);
+                "Got connectivity event, connectionType: %d, is connected: %b, controller: %s",
+                connectionType,
+                OfflinePageUtils.isConnected(),
+                mSnackbarController);
         maybeShowReloadSnackbar(mCurrentTab, true);
 
         // Since we are loosing the connection, next time we connect, we still want to show a

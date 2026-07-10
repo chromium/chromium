@@ -72,8 +72,8 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
         if (defaultIme == null) {
             Log.d(
                     TAG,
-                    "Stylus handwriting feature is not supported as "
-                            + "default IME could not be fetched.");
+                    "Stylus handwriting feature is not supported as default IME could not be"
+                            + " fetched.");
             return false;
         }
 
