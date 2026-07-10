@@ -2610,6 +2610,8 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_EQ(controller.GetEntryCount(), 2);
   EXPECT_EQ(controller.GetEntryAtIndex(0)->GetURL(),
             GURL("chrome://contextual-tasks/"));
+  EXPECT_FALSE(controller.NeedsReload());
+  EXPECT_FALSE(side_panel_contents->IsLoading());
 
   // Verify that the back-button navigation metric was recorded.
   EXPECT_EQ(1, user_action_tester.GetActionCount(

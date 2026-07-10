@@ -2012,6 +2012,15 @@ void ContextualTasksUiService::OnBackButtonExpandsSidePanel(
                 side_panel_contents->GetController()
                     .GetLastCommittedEntryIndex(),
                 content::RestoreType::kRestored, &entries);
+
+            // Calling Restore() marks the NavigationController with
+            // NeedsReload() = true. Since side_panel_contents is already live
+            // and committed, consume and stop the reload immediately so it does
+            // not refresh when subsequently shown.
+            if (side_panel_contents->GetController().NeedsReload()) {
+              side_panel_contents->GetController().LoadIfNecessary();
+              side_panel_contents->Stop();
+            }
           }
         }
         tab_strip_model->CloseWebContentsAt(
