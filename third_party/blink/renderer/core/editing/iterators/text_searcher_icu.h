@@ -48,6 +48,7 @@ class CORE_EXPORT TextSearcherIcu {
  private:
   void SetPattern(base::span<const UChar> pattern);
   void SetCaseSensitivity(bool case_sensitive);
+  void SetAllowOverlapMatches(bool overlap);
   bool ShouldSkipCurrentMatch(const MatchResultIcu&) const;
   std::optional<MatchResultIcu> NextMatchResultInternal();
   bool IsCorrectKanaMatch(base::span<const UChar> text,

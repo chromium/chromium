@@ -97,8 +97,6 @@ class CORE_EXPORT TextFragmentFinder
 
   void OnFindMatchInRangeComplete(String search_text,
                                   RangeInFlatTree* range,
-                                  bool word_start_bounded,
-                                  bool word_end_bounded,
                                   const EphemeralRangeInFlatTree& match);
 
   void FindMatchInRange(String search_text,
@@ -119,6 +117,9 @@ class CORE_EXPORT TextFragmentFinder
   void SetPrefixMatch(EphemeralRangeInFlatTree range);
 
   bool HasValidRanges();
+
+  // Runs the match steps in a loop, advancing one step per iteration.
+  void DriveStateMachine();
 
   Client& client_;
   const TextFragmentSelector selector_;
@@ -149,6 +150,10 @@ class CORE_EXPORT TextFragmentFinder
   Member<RangeInFlatTree> match_range_;
   // Used for running FindBuffer tasks.
   Member<FindBufferRunner> find_buffer_runner_;
+  // Set by GoToStep. Stays false if a step awaits its async callback.
+  bool drive_next_step_ = false;
+  // Re-entrance guard for DriveStateMachine.
+  bool in_drive_loop_ = false;
 };
 
 }  // namespace blink

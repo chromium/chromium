@@ -26,42 +26,6 @@ namespace blink {
 
 namespace {
 
-// TODO(crbug/924965): Determine how this should check node boundaries. This
-// treats node boundaries as word boundaries, for example "o" is a whole word
-// match in "f<i>o</i>o".
-// Determines whether the |start| and/or |end| positions of |range| are on a
-// word boundaries.
-bool IsWordBounded(EphemeralRangeInFlatTree range, bool start, bool end) {
-  if (!start && !end)
-    return true;
-
-  wtf_size_t start_position = range.StartPosition().OffsetInContainerNode();
-
-  if (start_position != 0 && start) {
-    String start_text = range.StartPosition().AnchorNode()->textContent();
-    start_text.Ensure16Bit();
-    wtf_size_t word_start =
-        FindWordStartBoundary(start_text.Span16(), start_position);
-    if (word_start != start_position)
-      return false;
-  }
-
-  wtf_size_t end_position = range.EndPosition().OffsetInContainerNode();
-  String end_text = range.EndPosition().AnchorNode()->textContent();
-
-  if (end_position != end_text.length() && end) {
-    end_text.Ensure16Bit();
-    // We expect end_position to be a word boundary, and FindWordEndBoundary
-    // finds the next word boundary, so start from end_position - 1.
-    wtf_size_t word_end =
-        FindWordEndBoundary(end_text.Span16(), end_position - 1);
-    if (word_end != end_position)
-      return false;
-  }
-
-  return true;
-}
-
 PositionInFlatTree FirstWordBoundaryAfter(PositionInFlatTree position) {
   wtf_size_t offset = position.OffsetInContainerNode();
   String text = position.AnchorNode()->textContent();
@@ -125,8 +89,6 @@ PositionInFlatTree TextFragmentFinder::PreviousTextPosition(
 void TextFragmentFinder::OnFindMatchInRangeComplete(
     String search_text,
     RangeInFlatTree* search_range,
-    bool word_start_bounded,
-    bool word_end_bounded,
     const EphemeralRangeInFlatTree& match) {
   // If any of our ranges became invalid, stop the search.
   if (!HasValidRanges()) {
@@ -136,27 +98,23 @@ void TextFragmentFinder::OnFindMatchInRangeComplete(
     return;
   }
 
-  if (match.IsNull() ||
-      IsWordBounded(match, word_start_bounded, word_end_bounded)) {
-    switch (step_) {
-      case kMatchPrefix:
-        OnPrefixMatchComplete(match);
-        break;
-      case kMatchTextStart:
-        OnTextStartMatchComplete(match);
-        break;
-      case kMatchTextEnd:
-        OnTextEndMatchComplete(match);
-        break;
-      case kMatchSuffix:
-        OnSuffixMatchComplete(match);
-        break;
-    }
-    return;
+  switch (step_) {
+    case kMatchPrefix:
+      OnPrefixMatchComplete(match);
+      break;
+    case kMatchTextStart:
+      OnTextStartMatchComplete(match);
+      break;
+    case kMatchTextEnd:
+      OnTextEndMatchComplete(match);
+      break;
+    case kMatchSuffix:
+      OnSuffixMatchComplete(match);
+      break;
   }
-  search_range->SetStart(match.EndPosition());
-  FindMatchInRange(search_text, search_range, word_start_bounded,
-                   word_end_bounded);
+
+  // Only needed in async mode; a no-op when called synchronously.
+  DriveStateMachine();
 }
 
 void TextFragmentFinder::FindMatchInRange(String search_text,
@@ -164,11 +122,15 @@ void TextFragmentFinder::FindMatchInRange(String search_text,
                                           bool word_start_bounded,
                                           bool word_end_bounded) {
   find_buffer_runner_->FindMatchInRange(
-      search_range, search_text, FindOptions().SetCaseInsensitive(true),
+      search_range, search_text,
+      FindOptions()
+          .SetCaseInsensitive(true)
+          .SetRequireWordBoundedStart(word_start_bounded)
+          .SetRequireWordBoundedEnd(word_end_bounded)
+          .SetAllowOverlapMatches(true),
       BindOnce(&TextFragmentFinder::OnFindMatchInRangeComplete,
                WrapWeakPersistent(this), search_text,
-               WrapWeakPersistent(search_range), word_start_bounded,
-               word_end_bounded));
+               WrapWeakPersistent(search_range)));
 }
 
 void TextFragmentFinder::FindPrefix() {
@@ -344,20 +306,33 @@ void TextFragmentFinder::OnSuffixMatchComplete(
 
 void TextFragmentFinder::GoToStep(SelectorMatchStep step) {
   step_ = step;
-  switch (step_) {
-    case kMatchPrefix:
-      FindPrefix();
-      break;
-    case kMatchTextStart:
-      FindTextStart();
-      break;
-    case kMatchTextEnd:
-      FindTextEnd();
-      break;
-    case kMatchSuffix:
-      FindSuffix();
-      break;
+  drive_next_step_ = true;
+}
+
+void TextFragmentFinder::DriveStateMachine() {
+  if (in_drive_loop_) {
+    return;
   }
+
+  in_drive_loop_ = true;
+  while (drive_next_step_) {
+    drive_next_step_ = false;
+    switch (step_) {
+      case kMatchPrefix:
+        FindPrefix();
+        break;
+      case kMatchTextStart:
+        FindTextStart();
+        break;
+      case kMatchTextEnd:
+        FindTextEnd();
+        break;
+      case kMatchSuffix:
+        FindSuffix();
+        break;
+    }
+  }
+  in_drive_loop_ = false;
 }
 
 // static
@@ -431,6 +406,7 @@ void TextFragmentFinder::FindMatchFromPosition(
   potential_match_.Clear();
   prefix_match_.Clear();
   GoToStep(kMatchPrefix);
+  DriveStateMachine();
 }
 
 void TextFragmentFinder::OnMatchComplete() {

@@ -211,6 +211,53 @@ TEST_F(TextFragmentFinderTest, TextEndMatchNotInRange) {
   Mock::VerifyAndClearExpectations(&client);
 }
 
+// Tests that a range end term matches a valid occurrence that overlaps an
+// earlier word-boundary-rejected candidate, rather than skipping past it.
+TEST_F(TextFragmentFinderTest, TextEndMatchOverlap) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p>The first witness was the Hatter. He came in with a teacup in one hand and a piece of bread-and-butter in the other.</p>
+  )HTML");
+
+  TextFragmentSelector selector(TextFragmentSelector::SelectorType::kExact,
+                                "he came", "and a", "", "");
+  MockTextFragmentFinderClient client;
+
+  MockTextFragmentFinder* finder = MakeGarbageCollected<MockTextFragmentFinder>(
+      client, selector, &GetDocument(),
+      TextFragmentFinder::FindBufferRunnerType::kSynchronous);
+
+  EXPECT_CALL(client, NoMatchFound()).Times(0);
+  EXPECT_CALL(client, DidFindMatch(_, _)).Times(1);
+  finder->FindMatch();
+  Mock::VerifyAndClearExpectations(&client);
+}
+
+// Tests that inline node boundaries are not treated as word boundaries
+TEST_F(TextFragmentFinderTest, TextNodeBoundaryNotWordBoundary) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p>f<i>o</i>o</p>
+  )HTML");
+
+  TextFragmentSelector selector(TextFragmentSelector::SelectorType::kExact, "o",
+                                "", "", "");
+  MockTextFragmentFinderClient client;
+
+  MockTextFragmentFinder* finder = MakeGarbageCollected<MockTextFragmentFinder>(
+      client, selector, &GetDocument(),
+      TextFragmentFinder::FindBufferRunnerType::kSynchronous);
+
+  EXPECT_CALL(client, NoMatchFound()).Times(1);
+  EXPECT_CALL(client, DidFindMatch(_, _)).Times(0);
+  finder->FindMatch();
+  Mock::VerifyAndClearExpectations(&client);
+}
+
 // Tests that a text match is not found in the given range even though it is in
 // the document, but it is before the range.
 TEST_F(TextFragmentFinderTest, TextMatchNotFoundBeforeRange) {
