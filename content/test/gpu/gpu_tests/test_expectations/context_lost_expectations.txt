@@ -236,9 +236,8 @@ crbug.com/365565140 [ angle-metal asan graphite-enabled intel-0x3e9b arch-x86_64
 crbug.com/365565140 [ angle-opengl debug graphite-disabled intel-0x3e9b arch-x86_64 no-asan no-clang-coverage sonoma ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 
 # Renderer Hung Possibly just Slow
-crbug.com/338574390 [ mac intel-0x3e9b angle-metal asan graphite-disabled ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 crbug.com/338574390 [ amd-0x7340 angle-metal debug graphite-enabled mac no-clang-coverage ] ContextLost_WebGPUBlockedAfterJSNavigation [ Failure ]
-crbug.com/380088337 [ mac intel-0x3e9b angle-metal asan ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
+crbug.com/380088337 [ angle-metal asan graphite-enabled intel-0x3e9b sonoma ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
 
 ###############################
 # Permanent Slow Expectations #
