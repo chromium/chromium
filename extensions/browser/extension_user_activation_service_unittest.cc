@@ -47,13 +47,6 @@ class ExtensionUserActivationServiceTest : public ExtensionsTest {
 #define MAYBE_TransientActivation TransientActivation
 #endif
 TEST_F(ExtensionUserActivationServiceTest, MAYBE_TransientActivation) {
-#if defined(MEMORY_SANITIZER)
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
-                    "See crbug.com/477426026.";
-  }
-#endif
-
   const ExtensionId kExtensionId = std::string("foo");
 
   EXPECT_FALSE(service()->HasTransientActivation(kExtensionId));
@@ -106,13 +99,6 @@ TEST_F(ExtensionUserActivationServiceTest,
 #endif
 TEST_F(ExtensionUserActivationServiceTest,
        MAYBE_TransientActivation_MultipleExtensions) {
-#if defined(MEMORY_SANITIZER)
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
-                    "See crbug.com/477426026.";
-  }
-#endif
-
   const ExtensionId kExtensionId1 = std::string("foo");
   const ExtensionId kExtensionId2 = std::string("bar");
 
