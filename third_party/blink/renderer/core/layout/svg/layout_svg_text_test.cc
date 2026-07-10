@@ -149,9 +149,8 @@ TEST_F(LayoutSVGTextTest, SubtreeLayout) {
   GetElementById("t")->setAttribute(svg_names::kTransformAttr,
                                     AtomicString("scale(0.5)"));
   GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
-  EXPECT_TRUE(frame_view->IsSubtreeLayout());
+  EXPECT_TRUE(frame_view->HasSubtreeLayoutRoots());
 
-  ;
   uint32_t pre_layout_count = frame_view->BlockLayoutCountForTesting();
   UpdateAllLifecyclePhasesForTest();
   // Only the <text> and its parent <svg> should be laid out again.

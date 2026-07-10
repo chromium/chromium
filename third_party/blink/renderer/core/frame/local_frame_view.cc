@@ -635,7 +635,7 @@ void LocalFrameView::CountObjectsNeedingLayout(unsigned& needs_layout_objects,
                                                bool& is_subtree) {
   needs_layout_objects = 0;
   total_objects = 0;
-  is_subtree = IsSubtreeLayout();
+  is_subtree = HasSubtreeLayoutRoots();
   if (is_subtree) {
     layout_subtree_root_list_.CountObjectsNeedingLayout(needs_layout_objects,
                                                         total_objects);
@@ -695,11 +695,10 @@ void LocalFrameView::PerformLayout() {
     ClearLayoutSubtreeRootsAndMarkContainingBlocks();
   GetLayoutView()->ClearHitTestCache();
 
-  const bool in_subtree_layout = IsSubtreeLayout();
+  const bool has_subtree_layout_roots = HasSubtreeLayoutRoots();
 
   Document* document = GetFrame().GetDocument();
-  if (!in_subtree_layout) {
-    ClearLayoutSubtreeRootsAndMarkContainingBlocks();
+  if (!has_subtree_layout_roots) {
     Node* body = document->body();
     if (IsA<HTMLFrameSetElement>(body) && body->GetLayoutObject()) {
       body->GetLayoutObject()->SetChildNeedsLayout();
@@ -727,8 +726,6 @@ void LocalFrameView::PerformLayout() {
 
   gfx::Size old_size(Size());
 
-  DCHECK(in_subtree_layout || layout_subtree_root_list_.IsEmpty());
-
   double contents_height_before_layout =
       GetLayoutView()->DocumentRect().Height();
   TRACE_EVENT_BEGIN(
@@ -746,7 +743,7 @@ void LocalFrameView::PerformLayout() {
   {
     // TODO(szager): Remove this after diagnosing crash.
     DocumentLifecycle::CheckNoTransitionScope check_no_transition(Lifecycle());
-    if (in_subtree_layout) {
+    if (has_subtree_layout_roots) {
       // This map will be used to avoid rebuilding several times the fragment
       // tree spine of a common ancestor.
       HeapHashMap<Member<const LayoutBox>, unsigned> fragment_tree_spines;
@@ -1676,13 +1673,13 @@ bool LocalFrameView::NeedsLayout() const {
 
   auto* layout_view = GetLayoutView();
   return LayoutPending() || (layout_view && layout_view->NeedsLayout()) ||
-         IsSubtreeLayout();
+         HasSubtreeLayoutRoots();
 }
 
 NOINLINE bool LocalFrameView::CheckDoesNotNeedLayout() const {
   CHECK_FOR_DIRTY_LAYOUT(!LayoutPending());
   CHECK_FOR_DIRTY_LAYOUT(!GetLayoutView() || !GetLayoutView()->NeedsLayout());
-  CHECK_FOR_DIRTY_LAYOUT(!IsSubtreeLayout());
+  CHECK_FOR_DIRTY_LAYOUT(!HasSubtreeLayoutRoots());
   return true;
 }
 

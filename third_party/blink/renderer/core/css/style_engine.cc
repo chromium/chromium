@@ -4895,7 +4895,7 @@ bool StyleEngine::AllowSkipStyleRecalcForScope() const {
     // inside skipped subtrees if we allowed skipping. If we start out with an
     // empty list, any added ones will be a result of an element style recalc,
     // which means the will not be inside a skipped subtree.
-    return !view->IsSubtreeLayout();
+    return !view->HasSubtreeLayoutRoots();
   }
   return true;
 }

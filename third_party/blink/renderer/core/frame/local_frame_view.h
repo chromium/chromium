@@ -552,10 +552,9 @@ class CORE_EXPORT LocalFrameView final
 
   void OnCommitRequested();
 
-  // FIXME: This should probably be renamed as the 'inSubtreeLayout' parameter
-  // passed around the LocalFrameView layout methods can be true while this
-  // returns false.
-  bool IsSubtreeLayout() const { return !layout_subtree_root_list_.IsEmpty(); }
+  bool HasSubtreeLayoutRoots() const {
+    return !layout_subtree_root_list_.IsEmpty();
+  }
 
   // The window that hosts the LocalFrameView. The LocalFrameView will
   // communicate scrolls and repaints to the host window in the window's
