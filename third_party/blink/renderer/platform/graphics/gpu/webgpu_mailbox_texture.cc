@@ -89,10 +89,16 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
       recyclable_canvas_resource->resource_provider();
   DCHECK(resource_provider);
 
-  // Skip copy if constructing dummy mailbox texture, but still ensure waiting
-  // on the underlying canvas resource.
   if (is_dummy_mailbox_texture) {
-    resource_provider->PrepareForWebGPUDummyMailbox();
+    // Since we skip the copy, we must ensure WebGPU still waits for the
+    // previous usage of this recycled resource to finish. We do this by
+    // setting the release sync token (which WebGPU will wait on via
+    // GetSyncToken()) to the acquire sync token (which represents the
+    // completion of the previous usage).
+    if (resource_provider->GetSharedImage()) {
+      resource_provider->set_release_sync_token(
+          resource_provider->acquire_sync_token());
+    }
   } else {
     bool copy_success = false;
     if (image->IsTextureBacked()) {

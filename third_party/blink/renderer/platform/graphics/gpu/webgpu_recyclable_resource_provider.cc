@@ -188,11 +188,6 @@ bool WebGpuRecyclableResourceProvider::IsGpuContextLost() const {
          raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
 }
 
-void WebGpuRecyclableResourceProvider::PrepareForWebGPUDummyMailbox() {
-  if (shared_image_) {
-    release_sync_token_ = acquire_sync_token_;
-  }
-}
 
 scoped_refptr<gpu::ClientSharedImage>
 WebGpuRecyclableResourceProvider::BeginExternalOverwrite(

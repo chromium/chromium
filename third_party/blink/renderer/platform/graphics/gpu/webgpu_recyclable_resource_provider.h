@@ -80,9 +80,12 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   void DoExternalOverdraw(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
-  // This is a workaround to ensure WaitSyncToken() is still called even when
-  // copying is effectively skipped due to a dummy WebGPU texture.
-  void PrepareForWebGPUDummyMailbox();
+  const gpu::SyncToken& acquire_sync_token() const {
+    return acquire_sync_token_;
+  }
+  void set_release_sync_token(const gpu::SyncToken& token) {
+    release_sync_token_ = token;
+  }
 
   // Returns the ClientSharedImage backing this
   // WebGpuRecyclableResourceProvider, if one exists, after flushing the
