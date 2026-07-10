@@ -3807,6 +3807,18 @@
       "features": [
         "disable_media_foundation_d3d_video_processing"
       ]
+    },
+    {
+      "id": 482,
+      "cr_bugs": [496807874],
+      "description": "Split full-image level 0 PBO uploads via TexSubImage2D into two calls to work around driver bugs.",
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Imagination.*",
+      "features": [
+        "split_level_0_pbo_full_sub_image_2d"
+      ]
     }
   ]
 }

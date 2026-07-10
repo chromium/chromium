@@ -444,7 +444,9 @@ DecoderTextureState::DecoderTextureState(
       unpack_alignment_workaround_with_unpack_buffer(
           workarounds.unpack_alignment_workaround_with_unpack_buffer),
       unpack_overlapping_rows_separately_unpack_buffer(
-          workarounds.unpack_overlapping_rows_separately_unpack_buffer) {}
+          workarounds.unpack_overlapping_rows_separately_unpack_buffer),
+      split_level_0_pbo_full_sub_image_2d(
+          workarounds.split_level_0_pbo_full_sub_image_2d) {}
 
 TextureManager::DestructionObserver::DestructionObserver() = default;
 
@@ -2934,6 +2936,16 @@ void TextureManager::ValidateAndDoTexSubImage(
     }
   }
 
+  if (texture_state->split_level_0_pbo_full_sub_image_2d && args.level == 0 &&
+      buffer &&
+      args.command_type ==
+          DoTexSubImageArguments::CommandType::kTexSubImage2D &&
+      full_image && args.width > 0 && args.height > 0) {
+    TRACE_EVENT0("gpu", "SplitLevel0PboFullSubImage2dWorkaround");
+    DoTexSubImageSplitLevel0PboWorkaround(texture_state, state, args);
+    return;
+  }
+
   if (full_image && !texture->IsImmutable()) {
     TRACE_EVENT0("gpu", "FullImage");
     GLenum internal_format;
@@ -3180,6 +3192,68 @@ void TextureManager::DoTexSubImageLayerByLayerWorkaround(
   // Restore unpack state
   glPixelStorei(GL_UNPACK_ALIGNMENT, unpack_params.alignment);
   glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, unpack_params.image_height);
+}
+
+void TextureManager::DoTexSubImageSplitLevel0PboWorkaround(
+    DecoderTextureState* texture_state,
+    ContextState* state,
+    const DoTexSubImageArguments& args) {
+  DCHECK(state->bound_pixel_unpack_buffer.get());
+  DCHECK_EQ(args.level, 0);
+  DCHECK(args.command_type ==
+         DoTexSubImageArguments::CommandType::kTexSubImage2D);
+  DCHECK(args.width > 0 && args.height > 0);
+  DCHECK(args.xoffset == 0 && args.yoffset == 0 && args.zoffset == 0);
+
+  uint32_t base_offset = ToGLuint(args.pixels);
+  GLenum format = AdjustTexFormat(feature_info_.get(), args.format);
+  PixelStoreParams params = state->GetUnpackParams(ContextState::k2D);
+
+  uint32_t size = 0;
+  uint32_t padded_row_size = 0;
+  if (!GLES2Util::ComputeImageDataSizesES3(
+          args.width, args.height, 1, args.format, args.type, params, &size,
+          nullptr, &padded_row_size, nullptr, nullptr)) {
+    return;
+  }
+
+  GLint first_width = 0;
+  GLint first_height = 0;
+  GLint second_x = args.xoffset;
+  GLint second_y = args.yoffset;
+  GLsizei second_width = 1;
+  uint32_t second_offset = 0;
+
+  if (args.height > 1) {
+    first_width = args.width;
+    first_height = args.height - 1;
+    second_y = args.yoffset + args.height - 1;
+    second_width = args.width;
+    second_offset = static_cast<uint32_t>(args.height - 1) * padded_row_size;
+  } else {
+    DCHECK_EQ(args.height, 1);
+    uint32_t pixel_bytes =
+        GLES2Util::ComputeImageGroupSize(args.format, args.type);
+
+    if (args.width > 1) {
+      first_width = args.width - 1;
+      first_height = 1;
+    }
+
+    second_x = args.xoffset + args.width - 1;
+    second_offset = static_cast<uint32_t>(args.width - 1) * pixel_bytes;
+  }
+
+  if (first_width > 0 && first_height > 0) {
+    glTexSubImage2D(args.target, args.level, args.xoffset, args.yoffset,
+                    first_width, first_height, format, args.type,
+                    reinterpret_cast<const void*>(base_offset));
+  }
+
+  uint32_t total_second_offset = base_offset + second_offset;
+  glTexSubImage2D(args.target, args.level, second_x, second_y, second_width, 1,
+                  format, args.type,
+                  reinterpret_cast<const void*>(total_second_offset));
 }
 
 // static
