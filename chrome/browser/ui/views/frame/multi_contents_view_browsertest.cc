@@ -526,12 +526,6 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewWebContentsReLayoutBrowserTest,
                        EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes) {
-#if BUILDFLAG(IS_OZONE)
-  // TODO(crbug.com/429495554): Investigate why this test failed on wayland.
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    GTEST_SKIP();
-  }
-#endif
   auto* tab_strip_model = browser()->tab_strip_model();
 
   const GURL test_url = embedded_test_server()->GetURL(kReLayoutTestURL);
@@ -567,13 +561,24 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewWebContentsReLayoutBrowserTest,
       .Wait();
   RunScheduledLayouts();
 
-  EXPECT_TRUE(base::test::RunUntil(
-      [this, split_tab]() { return GetResizeCount(split_tab) >= 2; }));
+  int expected_resize = 2;
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    // On Wayland, entering and exiting fullscreen each trigger 2 resizes. There
+    // is an immediate synchronous layout followed by an async layout after the
+    // Wayland compositor responds.
+    expected_resize = 4;
+  }
+#endif
+
+  EXPECT_TRUE(base::test::RunUntil([this, split_tab, expected_resize]() {
+    return GetResizeCount(split_tab) >= expected_resize;
+  }));
   RunScheduledLayouts();
 
   // The WebContents is resized two times, one each when entering and exiting
   // fullscreen.
-  EXPECT_EQ(GetResizeCount(split_tab), 2);
+  EXPECT_EQ(GetResizeCount(split_tab), expected_resize);
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, OnlyFocusTabsInSplitView) {
