@@ -9,7 +9,7 @@
 
 namespace {
 // Amount of divergence allowed between wall clock and tick clock.
-const uint32_t kClockDivergenceSeconds = 60;
+constexpr uint32_t kClockDivergenceSeconds = 60;
 }  // namespace
 
 namespace network_time {

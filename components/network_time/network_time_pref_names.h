@@ -5,14 +5,17 @@
 #ifndef COMPONENTS_NETWORK_TIME_NETWORK_TIME_PREF_NAMES_H_
 #define COMPONENTS_NETWORK_TIME_NETWORK_TIME_PREF_NAMES_H_
 
-namespace network_time {
-namespace prefs {
+namespace network_time::prefs {
 
-extern const char kNetworkTimeMapping[];
+// Stores a pair of local time and corresponding network time to bootstrap
+// network time tracker when browser starts.
+inline constexpr char kNetworkTimeMapping[] =
+    "network_time.network_time_mapping";
 
-extern const char kNetworkTimeQueriesEnabled[];
+// Stores a boolean indicating whether network time queries should be enabled.
+inline constexpr char kNetworkTimeQueriesEnabled[] =
+    "network_time.network_time_queries_enabled";
 
-}  // namespace prefs
-}  // namespace network_time
+}  // namespace network_time::prefs
 
 #endif  // COMPONENTS_NETWORK_TIME_NETWORK_TIME_PREF_NAMES_H_

@@ -107,35 +107,35 @@ constexpr base::FeatureParam<NetworkTimeTracker::FetchBehavior> kFetchBehavior{
     &kFetchBehaviorOptions};
 
 // Number of time measurements performed in a given network time calculation.
-const uint32_t kNumTimeMeasurements = 7;
+constexpr uint32_t kNumTimeMeasurements = 7;
 
 // Maximum time lapse before deserialized data are considered stale.
-const uint32_t kSerializedDataMaxAgeDays = 7;
+constexpr uint32_t kSerializedDataMaxAgeDays = 7;
 
 // Name of a pref that stores the wall clock time, via
 // |InMillisecondsFSinceUnixEpoch|.
-const char kPrefTime[] = "local";
+constexpr char kPrefTime[] = "local";
 
 // Name of a pref that stores the tick clock time, via |ToInternalValue|.
-const char kPrefTicks[] = "ticks";
+constexpr char kPrefTicks[] = "ticks";
 
 // Name of a pref that stores the time uncertainty, via |ToInternalValue|.
-const char kPrefUncertainty[] = "uncertainty";
+constexpr char kPrefUncertainty[] = "uncertainty";
 
 // Name of a pref that stores the network time via
 // |InMillisecondsFSinceUnixEpoch|.
-const char kPrefNetworkTime[] = "network";
+constexpr char kPrefNetworkTime[] = "network";
 
 // Time server's maximum allowable clock skew, in seconds.  (This is a property
 // of the time server that we happen to know.  It's unlikely that it would ever
 // be that badly wrong, but all the same it's included here to document the very
 // rough nature of the time service provided by this class.)
-const uint32_t kTimeServerMaxSkewSeconds = 10;
+constexpr uint32_t kTimeServerMaxSkewSeconds = 10;
 
-const char kTimeServiceURL[] = "http://clients2.google.com/time/1/current";
+constexpr char kTimeServiceURL[] = "http://clients2.google.com/time/1/current";
 
 // This is an ECDSA prime256v1 named-curve key.
-const int kKeyVersion = 10;
+constexpr int kKeyVersion = 10;
 constexpr auto kPubKey = std::to_array<uint8_t>({
     0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x02,
     0x01, 0x06, 0x08, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x03, 0x01, 0x07, 0x03,
