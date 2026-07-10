@@ -224,14 +224,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarPixelInteractiveUiTest, Basic) {
   BasicPixelTest(browser(), "Basic");
 }
 
-// TODO(crbug.com/513510081): Flaky on linux-win-cross-rel.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_IncognitoBasic DISABLED_IncognitoBasic
-#else
-#define MAYBE_IncognitoBasic IncognitoBasic
-#endif
-IN_PROC_BROWSER_TEST_F(WebUIToolbarPixelInteractiveUiTest,
-                       MAYBE_IncognitoBasic) {
+IN_PROC_BROWSER_TEST_F(WebUIToolbarPixelInteractiveUiTest, IncognitoBasic) {
   BasicPixelTest(CreateIncognitoBrowser(), "IncognitoBasic");
 }
 
