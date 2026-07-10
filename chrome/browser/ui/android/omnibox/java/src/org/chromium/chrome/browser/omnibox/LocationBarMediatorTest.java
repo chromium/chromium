@@ -774,6 +774,24 @@ public class LocationBarMediatorTest {
         assertFalse(input.shouldAllowUserTextAutocompletion());
     }
 
+    @Test
+    public void testOnUrlTextChanged_preservesSelection() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mMediator.onUrlFocusChange(true);
+
+        FuseboxSessionState state = mSessionState;
+        AutocompleteInput input = state.getAutocompleteInput();
+
+        doReturn(true).when(mUrlCoordinator).shouldAutocomplete();
+        doReturn(3).when(mUrlCoordinator).getSelectionStart();
+        doReturn(3).when(mUrlCoordinator).getSelectionEnd();
+
+        mMediator.onUrlTextChanged("tezst");
+        assertEquals(3, input.getSelection().from);
+        assertEquals(3, input.getSelection().to);
+    }
+
     /** Verifies that typing a space after text triggers site search. */
     @Test
     public void testOnUrlTextChangedTypedSpaceTriggersSiteSearch() {

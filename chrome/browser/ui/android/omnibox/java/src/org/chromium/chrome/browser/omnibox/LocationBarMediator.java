@@ -837,8 +837,12 @@ class LocationBarMediator
         updateButtonVisibility();
         if (mCurrentInput == null) return;
 
+        TextSelection selection =
+                new TextSelection(
+                        mUrlCoordinator.getSelectionStart(), mUrlCoordinator.getSelectionEnd());
         mCurrentInput
                 .setUserText(text)
+                .setSelection(selection)
                 .setAllowUserTextAutocompletion(mUrlCoordinator.shouldAutocomplete());
         updateShowStandbyRing();
     }
