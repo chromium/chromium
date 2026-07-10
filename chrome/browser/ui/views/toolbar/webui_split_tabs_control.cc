@@ -146,10 +146,8 @@ void WebUISplitTabsControl::OnSplitTabChanged(const SplitTabChange& change) {
 
 void WebUISplitTabsControl::UpdateVisibility(
     const toolbar_ui_api::mojom::SplitTabsControlState* state) {
-  bool should_be_visible = state->is_pinned || state->is_current_tab_split;
-
-  if (should_be_visible != is_visible_) {
-    is_visible_ = should_be_visible;
+  if (state->should_be_shown != is_visible_) {
+    is_visible_ = state->should_be_shown;
     delegate_->OnPreferredSizeChanged();
   }
 }
@@ -159,7 +157,7 @@ void WebUISplitTabsControl::UpdateState() {
   auto s = webui_toolbar::ComputeTabSplitStatus(delegate_->GetBrowser());
   state->is_current_tab_split = s.is_split;
   state->location = s.location;
-  state->is_pinned = pin_state_.GetValue();
+  state->should_be_shown = pin_state_.GetValue() || s.is_split;
   state->is_context_menu_visible = menu_runner_ && menu_runner_->IsRunning();
   UpdateVisibility(state.get());
   delegate_->OnSplitTabsControlStateChanged(std::move(state));

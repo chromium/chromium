@@ -43,7 +43,7 @@ export class SplitTabsButtonElement extends SplitTabsButtonElementBase {
   protected accessor state: SplitTabsControlState = {
     isCurrentTabSplit: false,
     location: SplitTabActiveLocation.kStart,
-    isPinned: false,
+    shouldBeShown: false,
     isContextMenuVisible: false,
   };
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();

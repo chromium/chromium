@@ -199,7 +199,7 @@ struct ReloadControlState {
 struct SplitTabsControlState {
   bool is_current_tab_split;
   SplitTabActiveLocation location;
-  bool is_pinned;
+  bool should_be_shown;
   bool is_context_menu_visible;
 };
 

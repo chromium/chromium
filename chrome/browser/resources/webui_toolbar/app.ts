@@ -211,7 +211,7 @@ export class ToolbarAppElement extends AppElementBase {
     splitTabsControlState: {
       isCurrentTabSplit: false,
       location: SplitTabActiveLocation.kStart,
-      isPinned: false,
+      shouldBeShown: false,
       isContextMenuVisible: false,
     },
     backForwardControlState: {

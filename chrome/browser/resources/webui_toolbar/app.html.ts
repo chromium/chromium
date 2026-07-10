@@ -38,8 +38,7 @@ ${this.isBackForwardButtonEnabled_ ? html`
   ${this.isSplitTabsButtonEnabled_ ? html`
     <split-tabs-button id="split-tabs"
         .state="${this.navigationControlsState_.splitTabsControlState}"
-        .hidden="${!this.navigationControlsState_.splitTabsControlState.isPinned &&
-                   !this.navigationControlsState_.splitTabsControlState.isCurrentTabSplit}">
+        .hidden="${!this.navigationControlsState_.splitTabsControlState.shouldBeShown}">
     </split-tabs-button>
   ` : ''}
   ${this.isLocationBarEnabled_ ? html`
