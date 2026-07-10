@@ -124,7 +124,10 @@ NSSet<NSString*>* GetItmsSchemes() {
                        // There's no evidence that itms-bookss is actually
                        // supported, but over-inclusion costs less than
                        // under-inclusion.
-                       @"itms-books", @"itms-bookss", nil];
+                       @"itms-books", @"itms-bookss", @"itms-services",
+                       @"itms-beta", @"itms-betas", @"itms-watch",
+                       @"itms-watchs", @"itms-podcasts", @"itms-podcastss",
+                       nil];
   });
   return schemes;
 }

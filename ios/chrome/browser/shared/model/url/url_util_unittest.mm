@@ -89,4 +89,40 @@ TEST_F(ChromeURLUtilTest, GetAllBundleURLSchemes) {
   EXPECT_TRUE([schemes containsObject:unittestScheme]);
 }
 
+TEST_F(ChromeURLUtilTest, UrlHasAppStoreScheme) {
+  EXPECT_TRUE(UrlHasAppStoreScheme(
+      GURL("itms://itunes.apple.com/us/app/appname/id123")));
+  EXPECT_TRUE(UrlHasAppStoreScheme(
+      GURL("itmss://itunes.apple.com/us/app/appname/id123")));
+  EXPECT_TRUE(UrlHasAppStoreScheme(
+      GURL("itms-apps://itunes.apple.com/us/app/appname/id123")));
+  EXPECT_TRUE(UrlHasAppStoreScheme(
+      GURL("itms-appss://itunes.apple.com/us/app/appname/id123")));
+  EXPECT_TRUE(UrlHasAppStoreScheme(
+      GURL("itms-books://itunes.apple.com/us/app/appname/id123")));
+  EXPECT_TRUE(UrlHasAppStoreScheme(
+      GURL("itms-bookss://itunes.apple.com/us/app/appname/id123")));
+  EXPECT_TRUE(UrlHasAppStoreScheme(
+      GURL("itms-services://?action=download-manifest&url=https://example.com/"
+           "app.plist")));
+  EXPECT_TRUE(
+      UrlHasAppStoreScheme(GURL("itms-beta://testflight.apple.com/join/123")));
+  EXPECT_TRUE(
+      UrlHasAppStoreScheme(GURL("itms-betas://testflight.apple.com/join/123")));
+  EXPECT_TRUE(
+      UrlHasAppStoreScheme(GURL("itms-watch://testflight.apple.com/join/123")));
+  EXPECT_TRUE(UrlHasAppStoreScheme(
+      GURL("itms-watchs://testflight.apple.com/join/123")));
+  EXPECT_TRUE(UrlHasAppStoreScheme(
+      GURL("itms-podcasts://testflight.apple.com/join/123")));
+  EXPECT_TRUE(UrlHasAppStoreScheme(
+      GURL("itms-podcastss://testflight.apple.com/join/123")));
+
+  EXPECT_FALSE(UrlHasAppStoreScheme(
+      GURL("https://itunes.apple.com/us/app/appname/id123")));
+  EXPECT_FALSE(UrlHasAppStoreScheme(
+      GURL("http://itunes.apple.com/us/app/appname/id123")));
+  EXPECT_FALSE(UrlHasAppStoreScheme(GURL("not-itms://foo")));
+}
+
 }  // namespace
