@@ -19,10 +19,10 @@
 # files in` out/gn2bp/`. We can't simply include "out/gn2bp/**" because gn2bp
 # sometimes generates files in directories that we don't want to import.
 def with_gn2bp(patterns):
-  return patterns + ["out/gn2bp/" + pattern for pattern in patterns]
+    return patterns + ["out/gn2bp/" + pattern for pattern in patterns]
 
 def glob_with_gn2bp(include, exclude = []):
-  return glob(with_gn2bp(include), exclude = with_gn2bp(exclude))
+    return glob(with_gn2bp(include), exclude = with_gn2bp(exclude))
 
 # The set of files to be read from the origin (Chromium src/).
 origin_files = glob_with_gn2bp([
@@ -42,10 +42,10 @@ origin_files = glob_with_gn2bp([
     "tools/metrics/**",
     # https://crbug.com/514683156
     "tools/i18n/generate_canonical_locales_list.py",
-  ]) + glob_with_gn2bp(["base/**"], exclude = [
+]) + glob_with_gn2bp(["base/**"], exclude = [
     # Exclude test files to reduce the number of gn2bp files
     "base/tracing/test/**",
-  ]) + glob_with_gn2bp(["build/**"], exclude = [
+]) + glob_with_gn2bp(["build/**"], exclude = [
     # Per aosp/2367109
     "build/android/CheckInstallApk-debug.apk",
     "build/android/unused_resources/**",
@@ -54,19 +54,19 @@ origin_files = glob_with_gn2bp([
     # We don't care about siso, and the contents of the .sisoenv file tend to be
     # non-deterministic, causing spurious diffs.
     "build/config/siso/**",
-  ]) + glob_with_gn2bp(["components/cronet/**"], exclude = [
+]) + glob_with_gn2bp(["components/cronet/**"], exclude = [
     # Don't copy gn2bp itself. It's unnecessary, and can cause confusion when
     # people unfamiliar with gn2bp try to understand where to run it and where
     # to make changes. Excluding it makes it clear gn2bp is meant to live in
     # Chromium and Chromium only. It also avoids Code Search pollution.
     "components/cronet/gn2bp/**",
-  ]) + glob_with_gn2bp(["testing/**"], exclude = [
+]) + glob_with_gn2bp(["testing/**"], exclude = [
     # Per aosp/2399270
     "testing/buildbot/**",
     # Exclude test files to reduce the number of gn2bp files
     "testing/fuzzer/**",
     "testing/libfuzzer/fuzzers/wasm_corpus/**",
-  ]) - glob(["**/third_party/**"]) + glob_with_gn2bp([
+]) - glob(["**/third_party/**"]) + glob_with_gn2bp([
     "base/third_party/cityhash/**",
     "base/third_party/cityhash_v103/**",
     "base/third_party/double_conversion/**",
@@ -119,195 +119,146 @@ origin_files = glob_with_gn2bp([
     "third_party/simdutf/**",
     "third_party/perfetto/**",
     "third_party/zstd/**",
-  ]) + glob_with_gn2bp([
+]) + glob_with_gn2bp([
     "third_party/compiler-rt/**",
-  ], exclude = [
+], exclude = [
     # This is not used, and contains a large number of files that slows down
     # imports and checkouts.
     "third_party/compiler-rt/src/test/**",
-  ]) + glob_with_gn2bp([
+]) + glob_with_gn2bp([
     "third_party/libc++/**",
-  ], exclude = [
+], exclude = [
     # This is not used, and contains a huge number of files (~10k) that slows
     # down imports and checkouts.
     "third_party/libc++/src/test/**",
-  ]) + glob_with_gn2bp([
+]) + glob_with_gn2bp([
     "components/cbor/**",
-  ]) + glob_with_gn2bp([
+]) + glob_with_gn2bp([
     "third_party/llvm-libc/**",
-  ], exclude = [
+], exclude = [
     # This is not used, and contains a large number of files that slows down
     # imports and checkouts.
-    "third_party/llvm-libc/src/test/**"
-  ]) + glob_with_gn2bp([
+    "third_party/llvm-libc/src/test/**",
+]) + glob_with_gn2bp([
     "third_party/boringssl/**",
-  ], exclude = [
+], exclude = [
     # This is not used, and contains a large number of files that slows down
     # imports and checkouts.
     "third_party/boringssl/src/fuzz/**",
     "third_party/boringssl/src/pki/testdata/**",
-  ]) + glob_with_gn2bp([
+]) + glob_with_gn2bp([
     # Note: Only used for tests.
-    "third_party/quic_trace/**"
-  ], exclude = [
+    "third_party/quic_trace/**",
+], exclude = [
     # This is not used and it doesn't have a README.chromium for us to generate
     # a license.
-    "third_party/quic_trace/src/third_party/glew/**"
-  ]) + glob_with_gn2bp([
+    "third_party/quic_trace/src/third_party/glew/**",
+]) + glob_with_gn2bp([
     "third_party/rust/anstyle/**",
     "third_party/rust/chromium_crates_io/vendor/anstyle-v*/**",
-
     "third_party/rust/clap/**",
     "third_party/rust/chromium_crates_io/vendor/clap-v*/**",
-
     "third_party/rust/clap_builder/**",
     "third_party/rust/chromium_crates_io/vendor/clap_builder-v*/**",
-
     "third_party/rust/clap_lex/**",
     "third_party/rust/chromium_crates_io/vendor/clap_lex-v*/**",
-
     "third_party/rust/codespan_reporting/**",
     "third_party/rust/chromium_crates_io/vendor/codespan-reporting-v*/**",
-
     "third_party/rust/cxx/**",
     "third_party/rust/chromium_crates_io/vendor/cxx-v*/**",
-
     "third_party/rust/cxxbridge_cmd/**",
     "third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v*/**",
-
     "third_party/rust/cxxbridge_macro/**",
     "third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v*/**",
-
     "third_party/rust/displaydoc/**",
     "third_party/rust/chromium_crates_io/vendor/displaydoc-v*/**",
-
     "third_party/rust/either/**",
     "third_party/rust/chromium_crates_io/vendor/either-v*/**",
-
     "third_party/rust/equivalent/**",
     "third_party/rust/chromium_crates_io/vendor/equivalent-v*/**",
-
     "third_party/rust/foldhash/**",
     "third_party/rust/chromium_crates_io/vendor/foldhash-v*/**",
-
     "third_party/rust/hashbrown/**",
     "third_party/rust/chromium_crates_io/vendor/hashbrown-v*/**",
-
     "third_party/rust/hmac_sha256/**",
     "third_party/rust/chromium_crates_io/vendor/hmac-sha256-v*/**",
-
     "third_party/rust/icu_collections/**",
     "third_party/rust/chromium_crates_io/vendor/icu_collections-v*/**",
-
     "third_party/rust/icu_locale/**",
     "third_party/rust/chromium_crates_io/vendor/icu_locale-v*/**",
-
     "third_party/rust/icu_locale_core/**",
     "third_party/rust/chromium_crates_io/vendor/icu_locale_core-v*/**",
-
     "third_party/rust/icu_locale_data/**",
     "third_party/rust/chromium_crates_io/vendor/icu_locale_data-v*/**",
-
     "third_party/rust/icu_provider/**",
     "third_party/rust/chromium_crates_io/vendor/icu_provider-v*/**",
-
     "third_party/rust/indexmap/**",
     "third_party/rust/chromium_crates_io/vendor/indexmap-v*/**",
-
     "third_party/rust/itoa/**",
     "third_party/rust/chromium_crates_io/vendor/itoa-v*/**",
-
     "third_party/rust/litemap/**",
     "third_party/rust/chromium_crates_io/vendor/litemap-v*/**",
-
     "third_party/rust/log/**",
     "third_party/rust/chromium_crates_io/vendor/log-v*/**",
-
     "third_party/rust/memchr/**",
     "third_party/rust/chromium_crates_io/vendor/memchr-v*/**",
-
     "third_party/rust/potential_utf/**",
     "third_party/rust/chromium_crates_io/vendor/potential_utf-v*/**",
-
     "third_party/rust/proc_macro2/**",
     "third_party/rust/chromium_crates_io/vendor/proc-macro2-v*/**",
-
     "third_party/rust/quote/**",
     "third_party/rust/chromium_crates_io/vendor/quote-v*/**",
-
     "third_party/rust/rustversion/**",
     "third_party/rust/chromium_crates_io/vendor/rustversion-v*/**",
-
     "third_party/rust/ryu/**",
     "third_party/rust/chromium_crates_io/vendor/ryu-v*/**",
-
     "third_party/rust/serde/**",
     "third_party/rust/chromium_crates_io/vendor/serde-v*/**",
-
     "third_party/rust/serde_core/**",
     "third_party/rust/chromium_crates_io/vendor/serde_core-v*/**",
-
     "third_party/rust/serde_derive/**",
     "third_party/rust/chromium_crates_io/vendor/serde_derive-v*/**",
-
     "third_party/rust/serde_json_lenient/**",
     "third_party/rust/chromium_crates_io/vendor/serde_json_lenient-v*/**",
-
     "third_party/rust/stable_deref_trait/**",
     "third_party/rust/chromium_crates_io/vendor/stable_deref_trait-v*/**",
-
     "third_party/rust/strsim/**",
     "third_party/rust/chromium_crates_io/vendor/strsim-v*/**",
-
     "third_party/rust/syn/**",
     "third_party/rust/chromium_crates_io/vendor/syn-v*/**",
-
     "third_party/rust/synstructure/**",
     "third_party/rust/chromium_crates_io/vendor/synstructure-v*/**",
-
     "third_party/rust/termcolor/**",
     "third_party/rust/chromium_crates_io/vendor/termcolor-v*/**",
-
     "third_party/rust/tinystr/**",
     "third_party/rust/chromium_crates_io/vendor/tinystr-v*/**",
-
     "third_party/rust/unicode_ident/**",
     "third_party/rust/chromium_crates_io/vendor/unicode-ident-v*/**",
-
     "third_party/rust/unicode_width/**",
     "third_party/rust/chromium_crates_io/vendor/unicode-width-v*/**",
-
     "third_party/rust/utf8_iter/**",
     "third_party/rust/chromium_crates_io/vendor/utf8_iter-v*/**",
-
     "third_party/rust/writeable/**",
     "third_party/rust/chromium_crates_io/vendor/writeable-v*/**",
-
     "third_party/rust/yoke/**",
     "third_party/rust/chromium_crates_io/vendor/yoke-v*/**",
-
     "third_party/rust/yoke_derive/**",
     "third_party/rust/chromium_crates_io/vendor/yoke-derive-v*/**",
-
     "third_party/rust/zerofrom/**",
     "third_party/rust/chromium_crates_io/vendor/zerofrom-v*/**",
-
     "third_party/rust/zerofrom_derive/**",
     "third_party/rust/chromium_crates_io/vendor/zerofrom-derive-v*/**",
-
     "third_party/rust/zerotrie/**",
     "third_party/rust/chromium_crates_io/vendor/zerotrie-v*/**",
-
     "third_party/rust/zerovec/**",
     "third_party/rust/chromium_crates_io/vendor/zerovec-v*/**",
-
     "third_party/rust/zerovec_derive/**",
     "third_party/rust/chromium_crates_io/vendor/zerovec-derive-v*/**",
-  ]) + glob([
+]) + glob([
     # Include any files generated by gn2bp in the root. Subdirectories are
     # handled by with_gn2bp above.
     "out/gn2bp/*",
-  ]) - glob([
+]) - glob([
     # We only want to import the Android.bp build files that we generated
     # ourselves; get rid of any spurious Android build files that may also be
     # present in the origin
@@ -315,7 +266,6 @@ origin_files = glob_with_gn2bp([
     "**/Android.mk",
     # Remove Bazel BUILD files as they are recognized in AOSP (roboleaf).
     "**/BUILD",
-
     "**/*OWNERS",
     "**/.git/**",
     "**/.gitignore",
@@ -349,10 +299,10 @@ origin_files = glob_with_gn2bp([
     # These files accidentally trigger the "NDK-API-Review" submit requirement
     # in Android Gerrit. See https://crbug.com/411039623.
     "**/*.map.txt",
-  ], exclude = [
+], exclude = [
     # Don't apply the above rules to any files that we generated ourselves.
-    "out/gn2bp/**"
-  ]) - glob_with_gn2bp([
+    "out/gn2bp/**",
+]) - glob_with_gn2bp([
     # https://crbug.com/404202679: last, to make sure we never upload internal code.
     # Cronet does not bundle/depend on any internal code. Having said that, the
     # internal builder that takes care of importing code in Android requires access
@@ -364,117 +314,117 @@ origin_files = glob_with_gn2bp([
     # This way, //internal is available to the bot at runtime, but copybara will not
     # import it into Android.
     "internal/**",
-  ])
+])
 
 def destination_files_for_channel(import_channel):
-  # These files are manually maintained in the destination and do not
-  # exist in the origin.
-  destination_files_to_exclude_per_channel = [
-      "METADATA",
-      "MODULE_LICENSE_BSD",
+    # These files are manually maintained in the destination and do not
+    # exist in the origin.
+    destination_files_to_exclude_per_channel = [
+        "METADATA",
+        "MODULE_LICENSE_BSD",
 
-      # TODO: https://crbug.com/387975197 - we shouldn't have to manually
-      # maintain this list; ideally Copybara should handle this automatically
-      # through the consistency file just like it does for partial file diffs.
-      "components/cronet/android/test/src/org/chromium/net/AndroidManifest.xml",
-  ]
-  # The scope of the import in the destination (AOSP //external/cronet/channel).
-  #
-  # Each destination file in this set will be 3-way-merged with its counterpart
-  # file from the filtered and transformed origin.
-  #
-  # If a destination file in this set had a counterpart in the last import origin
-  # (the "baseline" - as evidenced by the file being listed in the consistency
-  # file), but that file was deleted in the mean time and does not exist in the
-  # current origin, the file will be deleted in the destination.
-  #
-  # If a destination file in this set has no counterpart in the last import
-  # origin nor the current origin, copybara will fail with a "Detected full-file
-  # diffs when generating consistency file" error. This can happen if this set is
-  # expanded or if new files have been created in the destination. See
-  # https://crbug.com/387975197.
-  #
-  # Note: These are post-transformation files. As such, we have to be aware of
-  # which channel we're importing, since we must consider the files within that
-  # channel subdirectory.
-  return glob([import_channel + "/**"]) - glob(
-    [import_channel + "/" + file for file in destination_files_to_exclude_per_channel]
-  )
+        # TODO: https://crbug.com/387975197 - we shouldn't have to manually
+        # maintain this list; ideally Copybara should handle this automatically
+        # through the consistency file just like it does for partial file diffs.
+        "components/cronet/android/test/src/org/chromium/net/AndroidManifest.xml",
+    ]
+
+    # The scope of the import in the destination (AOSP //external/cronet/channel).
+    #
+    # Each destination file in this set will be 3-way-merged with its counterpart
+    # file from the filtered and transformed origin.
+    #
+    # If a destination file in this set had a counterpart in the last import origin
+    # (the "baseline" - as evidenced by the file being listed in the consistency
+    # file), but that file was deleted in the mean time and does not exist in the
+    # current origin, the file will be deleted in the destination.
+    #
+    # If a destination file in this set has no counterpart in the last import
+    # origin nor the current origin, copybara will fail with a "Detected full-file
+    # diffs when generating consistency file" error. This can happen if this set is
+    # expanded or if new files have been created in the destination. See
+    # https://crbug.com/387975197.
+    #
+    # Note: These are post-transformation files. As such, we have to be aware of
+    # which channel we're importing, since we must consider the files within that
+    # channel subdirectory.
+    return glob([import_channel + "/**"]) - glob(
+        [import_channel + "/" + file for file in destination_files_to_exclude_per_channel],
+    )
 
 def workflow(name, destination, destination_files, mode, additional_transform, consistency_file_path):
-  core.workflow(
-      name = name,
-      authoring = authoring.overwrite("Cronet Mainline Eng <cronet-mainline-eng+copybara@google.com>"),
-      # Origin folder is specified via source_ref argument, see import_cronet.sh
-      origin = folder.origin(
-        # gn2bp generates LICENSE symlinks under out/gn2bp. These symlinks are
-        # technically broken in the origin - they only become valid when out/gn2bp
-        # is overlaid onto the destination root by the move transform.
-        broken_symlinks_mode = 'COPY_AS_IS',
-      ),
-      origin_files = origin_files,
-      destination = destination,
-      destination_files = destination_files,
-      mode = mode,
-      transformations = [
-        core.move("out/gn2bp", ""),
-        additional_transform,
-      ],
-      consistency_file_path = consistency_file_path,
-      merge_import = core.merge_import_config(
-          package_path = "",
-          use_consistency_file = True,
-      ),
-  )
+    core.workflow(
+        name = name,
+        authoring = authoring.overwrite("Cronet Mainline Eng <cronet-mainline-eng+copybara@google.com>"),
+        # Origin folder is specified via source_ref argument, see import_cronet.sh
+        origin = folder.origin(
+            # gn2bp generates LICENSE symlinks under out/gn2bp. These symlinks are
+            # technically broken in the origin - they only become valid when out/gn2bp
+            # is overlaid onto the destination root by the move transform.
+            broken_symlinks_mode = "COPY_AS_IS",
+        ),
+        origin_files = origin_files,
+        destination = destination,
+        destination_files = destination_files,
+        mode = mode,
+        transformations = [
+            core.move("out/gn2bp", ""),
+            additional_transform,
+        ],
+        consistency_file_path = consistency_file_path,
+        merge_import = core.merge_import_config(
+            package_path = "",
+            use_consistency_file = True,
+        ),
+    )
 
 def per_channel_workflow(name, destination, mode):
-  for import_channel in ["tot", "stable"]:
-    workflow(
-      name = import_channel + "_" + name,
-      destination = destination,
-      destination_files = destination_files_for_channel(import_channel),
-      mode = mode,
-      additional_transform = core.move("", import_channel),
-      consistency_file_path = import_channel + "/chromium.bara.consistency"
-    )
+    for import_channel in ["tot", "stable"]:
+        workflow(
+            name = import_channel + "_" + name,
+            destination = destination,
+            destination_files = destination_files_for_channel(import_channel),
+            mode = mode,
+            additional_transform = core.move("", import_channel),
+            consistency_file_path = import_channel + "/chromium.bara.consistency",
+        )
 
 # Workflow for importing code from Chromium to AOSP Gerrit via a Chromium CI
 # as a pending CL, including Android build files generated by gn2bp.
 per_channel_workflow(
-  name = "import_cronet_to_aosp_gerrit_autosubmit",
-  destination = git.gerrit_destination(
-      url = "https://googleplex-android.googlesource.com/platform/external/cronet",
-      fetch = "main",
-      push_to_refs_for = "main",
-      labels = [
-        "Presubmit-Ready+1",
-        "Autosubmit+1",
-      ]
-  ),
-  mode = "SQUASH",
+    name = "import_cronet_to_aosp_gerrit_autosubmit",
+    destination = git.gerrit_destination(
+        url = "https://googleplex-android.googlesource.com/platform/external/cronet",
+        fetch = "main",
+        push_to_refs_for = "main",
+        labels = [
+            "Presubmit-Ready+1",
+            "Autosubmit+1",
+        ],
+    ),
+    mode = "SQUASH",
 )
 
 per_channel_workflow(
-  name = "import_cronet_to_aosp_gerrit_no_autosubmit",
-  destination = git.gerrit_destination(
-      url = "https://googleplex-android.googlesource.com/platform/external/cronet",
-      fetch = "main",
-      push_to_refs_for = "main",
-      labels = [
-        "Presubmit-Ready+1",
-      ]
-  ),
-  mode = "SQUASH",
+    name = "import_cronet_to_aosp_gerrit_no_autosubmit",
+    destination = git.gerrit_destination(
+        url = "https://googleplex-android.googlesource.com/platform/external/cronet",
+        fetch = "main",
+        push_to_refs_for = "main",
+        labels = [
+            "Presubmit-Ready+1",
+        ],
+    ),
+    mode = "SQUASH",
 )
-
 
 # Same as above, but importing to some git branch. Used for manual testing.
 per_channel_workflow(
-  name = "import_cronet_to_git_branch",
-  destination = git.destination(
-    # Parameters intentionally left blank, to be filled out through the copybara
-    # command line.
-    url = "Git destination to be passed through command line",
-  ),
-  mode = "SQUASH",
+    name = "import_cronet_to_git_branch",
+    destination = git.destination(
+        # Parameters intentionally left blank, to be filled out through the copybara
+        # command line.
+        url = "Git destination to be passed through command line",
+    ),
+    mode = "SQUASH",
 )
