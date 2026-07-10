@@ -352,6 +352,82 @@ TEST(TimeFormattingTest, TimeFormatHTTP) {
   EXPECT_EQ("Sat, 30 Apr 2011 22:42:07 GMT", TimeFormatHTTP(time));
 }
 
+// Regression test: `TimeFormatHTTP()` must render the weekday, month, and day
+// from UTC as unlocalized English, independent of both the machine's local
+// timezone and the ICU default locale (set to a non-English locale below). Each
+// case places the local wall-clock on a different calendar day than UTC --
+// negative-offset zones roll back to the previous day, positive-offset zones
+// forward to the next day -- so a weekday/month taken from local time would
+// disagree with the UTC output (e.g. "Sat, 01 Apr 2011 ..." for an instant that
+// is Sunday, May 1 in GMT). A month boundary always also moves the day, so
+// there is no "month-only" case.
+TEST(TimeFormattingTest, TimeFormatHTTPUsesGmtRegardlessOfTimeZone) {
+  // Use a non-English default locale so the assertions also verify that the
+  // weekday/month names stay English (RFC 7231) rather than being localized.
+  test::ScopedRestoreICUDefaultLocale restore_locale;
+  i18n::SetICUDefaultLocale("fr_FR");
+
+  // Negative offset (Los Angeles): the local wall-clock is the previous day.
+  {
+    // Previous day, same month (Jan 15 00:30 UTC == Jan 14 PST).
+    test::ScopedRestoreDefaultTimezone time_zone("America/Los_Angeles");
+    Time time;
+    ASSERT_TRUE(Time::FromUTCExploded({.year = 2011,
+                                       .month = 1,
+                                       .day_of_week = 6,
+                                       .day_of_month = 15,
+                                       .hour = 0,
+                                       .minute = 30,
+                                       .second = 0},
+                                      &time));
+    EXPECT_EQ("Sat, 15 Jan 2011 00:30:00 GMT", TimeFormatHTTP(time));
+  }
+  {
+    // Previous day and month (May 1 00:30 UTC == Apr 30 PDT).
+    test::ScopedRestoreDefaultTimezone time_zone("America/Los_Angeles");
+    Time time;
+    ASSERT_TRUE(Time::FromUTCExploded({.year = 2011,
+                                       .month = 5,
+                                       .day_of_week = 0,
+                                       .day_of_month = 1,
+                                       .hour = 0,
+                                       .minute = 30,
+                                       .second = 0},
+                                      &time));
+    EXPECT_EQ("Sun, 01 May 2011 00:30:00 GMT", TimeFormatHTTP(time));
+  }
+
+  // Positive offset (Tokyo): the local wall-clock is the next day.
+  {
+    // Next day, same month (Jan 15 23:30 UTC == Jan 16 JST).
+    test::ScopedRestoreDefaultTimezone time_zone("Asia/Tokyo");
+    Time time;
+    ASSERT_TRUE(Time::FromUTCExploded({.year = 2011,
+                                       .month = 1,
+                                       .day_of_week = 6,
+                                       .day_of_month = 15,
+                                       .hour = 23,
+                                       .minute = 30,
+                                       .second = 0},
+                                      &time));
+    EXPECT_EQ("Sat, 15 Jan 2011 23:30:00 GMT", TimeFormatHTTP(time));
+  }
+  {
+    // Next day and month (Apr 30 23:30 UTC == May 1 JST).
+    test::ScopedRestoreDefaultTimezone time_zone("Asia/Tokyo");
+    Time time;
+    ASSERT_TRUE(Time::FromUTCExploded({.year = 2011,
+                                       .month = 4,
+                                       .day_of_week = 6,
+                                       .day_of_month = 30,
+                                       .hour = 23,
+                                       .minute = 30,
+                                       .second = 0},
+                                      &time));
+    EXPECT_EQ("Sat, 30 Apr 2011 23:30:00 GMT", TimeFormatHTTP(time));
+  }
+}
+
 TEST(TimeFormattingTest, TimeDurationFormat) {
   test::ScopedRestoreICUDefaultLocale restore_locale;
   TimeDelta delta = Minutes(15 * 60 + 42);

@@ -9,6 +9,7 @@
 
 #include "base/i18n/icubridge/date_time_formatter.h"
 #include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/tags.h"
 #include "base/i18n/timezone.h"
 #include "base/i18n/unicodestring.h"
 #include "base/notreached.h"
@@ -246,10 +247,18 @@ std::string TimeFormatAsIso8601(const Time& time) {
 }
 
 std::string TimeFormatHTTP(const Time& time) {
-  std::string day_of_week = base::UTF16ToUTF8(
-      GetDateTimeFormatter().Format(time, i18n::datetime_options::E::Short()));
-  std::string month_long = base::UTF16ToUTF8(
-      GetDateTimeFormatter().Format(time, i18n::datetime_options::M::Medium()));
+  // Get the weekday and month names as unlocalized English (RFC 7231 fixes them
+  // to English) in GMT (to match the `UTCExplode()` below). `Format()` would
+  // otherwise use the process default locale and the local timezone: a non-
+  // English locale would localize the names, and for a near-midnight-UTC
+  // instant in a non-GMT zone the weekday/month would disagree with the UTC day
+  // (e.g. "Sat, 01 Apr" for a Sunday, May 1 GMT instant).
+  const i18n::TimeZone gmt = i18n::TimeZone::GMT();
+  static constexpr i18n::LanguageTag en_us = i18n::GetKnownLanguageTag("en-US");
+  std::string day_of_week = base::UTF16ToUTF8(GetDateTimeFormatter().Format(
+      time, en_us, i18n::datetime_options::E::Short().with_time_zone(gmt)));
+  std::string month_long = base::UTF16ToUTF8(GetDateTimeFormatter().Format(
+      time, en_us, i18n::datetime_options::M::Medium().with_time_zone(gmt)));
   Time::Exploded exploded;
   time.UTCExplode(&exploded);
   // This is mimic the skeleton: "E, dd MMM yyyy HH:mm:ss 'GMT'"
