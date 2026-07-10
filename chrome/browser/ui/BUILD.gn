@@ -92,6 +92,7 @@ if (!is_android) {
       "//build:branding_buildflags",
       "//chrome/app:command_ids",
       "//chrome/app/vector_icons",
+      "//chrome/browser/browsing_data",
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/devtools",
@@ -118,6 +119,7 @@ if (!is_android) {
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/customize_chrome",
+      "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/page_info",
       "//chrome/browser/ui/passwords",
@@ -161,6 +163,9 @@ if (!is_android) {
     }
     if (is_chromeos) {
       deps += [ "//chrome/browser/ui/ash/multi_user" ]
+    }
+    if (is_win || is_mac || is_linux) {
+      deps += [ "//chrome/browser/ui/startup/default_browser_prompt" ]
     }
   }
 }

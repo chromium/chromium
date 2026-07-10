@@ -537,9 +537,6 @@
 #define IDC_PROJECTS_PANEL_TOGGLE_PIN 53322
 #define IDC_EVERYTHING_MENU_TOGGLE_PIN 53323
 
-// Show contextual tasks side panel.
-#define IDC_SHOW_CONTEXTUAL_TASKS_SIDE_PANEL                  54000
-
 // Omnibox context menu
 #define IDC_OMNIBOX_CONTEXT_ADD_IMAGE                         54010
 #define IDC_OMNIBOX_CONTEXT_ADD_FILE                          54011

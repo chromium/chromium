@@ -21,6 +21,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
@@ -41,6 +42,9 @@
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/autofill/payments/payments_churned_users_bubble_controller.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/search_engines/ai_mode_button_config.h"
@@ -49,6 +53,8 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_zoom.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #include "chrome/browser/ui/browser_commands_mac.h"
@@ -1197,6 +1203,18 @@ void BrowserActions::InitializeChromeMenuActions() {
                   chrome::ShowClearBrowsingDataDialog(
                       browser_for_opening_webui);
                 }
+#if !BUILDFLAG(IS_ANDROID)
+                ui::ElementContext browser_element_context =
+                    BrowserElements::From(bwi)->GetContext();
+                ui::TrackedElement* const tracked_element =
+                    ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                        kBrowserViewElementId, browser_element_context);
+                if (tracked_element) {
+                  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+                      tracked_element, browsing_data_important_sites_util::
+                                           kShowClearBrowsingDataDialogEventId);
+                }
+#endif  // !BUILDFLAG(IS_ANDROID)
               },
               bwi, is_incognito),
           kActionClearBrowsingData, IDS_CLEAR_BROWSING_DATA,
@@ -2024,6 +2042,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("InstallWebAppFromMenu"));
                 web_app::ShowPwaInstallDialog(bwi);
               },
               bwi))
@@ -3031,7 +3051,14 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                chrome::FocusNextTabGroup(bwi);
+                if (base::i18n::IsRTL()) {
+                  chrome::FocusPreviousTabGroup(bwi);
+                } else {
+                  chrome::FocusNextTabGroup(bwi);
+                }
+                base::UmaHistogramEnumeration(
+                    "TabGroups.Shortcuts",
+                    chrome::TabGroupShortcut::kFocusNextTabGroup);
               },
               bwi))
           .SetActionId(kActionFocusNextTabGroup)
@@ -3042,7 +3069,14 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                chrome::FocusPreviousTabGroup(bwi);
+                if (base::i18n::IsRTL()) {
+                  chrome::FocusNextTabGroup(bwi);
+                } else {
+                  chrome::FocusPreviousTabGroup(bwi);
+                }
+                base::UmaHistogramEnumeration(
+                    "TabGroups.Shortcuts",
+                    chrome::TabGroupShortcut::kFocusPrevTabGroup);
               },
               bwi))
           .SetActionId(kActionFocusPrevTabGroup)
@@ -3861,22 +3895,6 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 Profile* profile = bwi->GetProfile();
-                if (profile->IsIncognitoProfile()) {
-                  chrome::CloseAllBrowsersWithIncognitoProfile(profile);
-                } else {
-                  profiles::CloseProfileWindows(profile);
-                }
-              },
-              bwi))
-          .SetActionId(kActionCloseProfile)
-          .Build());
-
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                Profile* profile = bwi->GetProfile();
                 signin::IdentityManager* identity_manager =
                     IdentityManagerFactory::GetForProfileIfExists(profile);
                 if (identity_manager && identity_manager->HasPrimaryAccount(
@@ -3977,6 +3995,10 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                  actions::ActionInvocationContext context) {
                 base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
                     ->StartSetAsDefault(base::DoNothing());
+                chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(
+                    bwi->GetProfile());
+                DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
+                    DefaultBrowserPromptManager::CloseReason::kAccept);
               },
               bwi))
           .SetActionId(kActionSetBrowserAsDefault)
@@ -4061,6 +4083,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetActionId(kActionSearch)
           .Build());
 
+#if !BUILDFLAG(IS_CHROMEOS)
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
@@ -4071,6 +4094,23 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               bwi))
           .SetActionId(kActionCustomizeChrome)
           .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                Profile* profile = bwi->GetProfile();
+                if (profile->IsIncognitoProfile()) {
+                  chrome::CloseAllBrowsersWithIncognitoProfile(profile);
+                } else {
+                  profiles::CloseProfileWindows(profile);
+                }
+              },
+              bwi))
+          .SetActionId(kActionCloseProfile)
+          .Build());
+#endif
 
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
