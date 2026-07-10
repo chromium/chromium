@@ -667,6 +667,35 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerStartedWhileRunning) {
   EXPECT_EQ(s_counter, 0);
 }
 
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest,
+       TimerRestartedFromCallbackCanBeStopped) {
+  OneShotDelayedBackgroundTimer timer;
+  int run_count = 0;
+
+  timer.Start(FROM_HERE, base::Seconds(10),
+              base::BindRepeating(
+                  [](OneShotDelayedBackgroundTimer* t, int* count) {
+                    (*count)++;
+                    t->Start(FROM_HERE, base::Seconds(20),
+                             base::BindOnce([](int* c) { (*c)++; }, count));
+                  },
+                  &timer, &run_count));
+
+  ASSERT_TRUE(timer.IsRunning());
+
+  PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
+
+  EXPECT_EQ(run_count, 1);
+  EXPECT_TRUE(timer.IsRunning());
+
+  timer.Stop();
+  EXPECT_FALSE(timer.IsRunning());
+
+  PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
+
+  EXPECT_EQ(run_count, 1);
+}
+
 TEST_F(PreFreezeBackgroundMemoryTrimmerTest, BoolTaskRunDirectly) {
   std::optional<MemoryReductionTaskContext> called_task_type = std::nullopt;
   PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTask(

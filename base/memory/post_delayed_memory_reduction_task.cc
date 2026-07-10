@@ -98,8 +98,8 @@ class OneShotDelayedBackgroundTimer::TaskImpl final
             [](TaskImpl* timer,
                OnceCallback<void(MemoryReductionTaskContext)> task,
                MemoryReductionTaskContext in_pre_freeze) {
-              std::move(task).Run(in_pre_freeze);
               timer->task_ = nullptr;
+              std::move(task).Run(in_pre_freeze);
             },
             // |base::Unretained(this)| is safe here because destroying this
             // will cancel the task. We do not need to worry about race

@@ -58,6 +58,10 @@ class TestGlicWebContentsWarmingPool : public GlicWebContentsWarmingPool {
                : nullptr;
   }
 
+  bool IsExpiryTimerRunningForTesting() const {
+    return expiry_timer_.IsRunning();
+  }
+
  private:
   raw_ptr<content::TestWebContentsFactory> factory_;
 };
@@ -581,6 +585,35 @@ TEST_F(GlicWebContentsWarmingPoolTest, OnMemoryPressureStateless) {
   histogram_tester.ExpectUniqueSample(
       "Glic.WarmingPool.HitStatus",
       GlicWebContentsWarmingPool::WarmingPoolStatus::kCold, 1);
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest,
+       ExpiryTimerRemainsStoppableAfterReloadAfterExpiry) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+  TestGlicWebContentsWarmingPool warming_pool(&profile_,
+                                              &web_contents_factory_);
+  warming_pool.EnsurePreload();
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_TRUE(warming_pool.IsExpiryTimerRunningForTesting());
+
+  // Fast-forward to trigger OnContainerExpired().
+  // OnContainerExpired() reloads the container and restarts expiry_timer_.
+  task_environment_.FastForwardBy(
+      features::kGlicWebContentsWarmingPoolExpiryDelay.Get());
+
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_TRUE(warming_pool.IsExpiryTimerRunningForTesting());
+
+  // Taking the reloaded container must stop the expiry timer so it cannot fire
+  // when warmed_container_ is null.
+  warming_pool.TakeContainer();
+  EXPECT_FALSE(warming_pool.IsExpiryTimerRunningForTesting());
 }
 
 }  // namespace glic
