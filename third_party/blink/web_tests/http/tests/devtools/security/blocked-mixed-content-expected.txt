@@ -17,7 +17,7 @@ Blocked mixed content
 Your page requested non-secure resources that were blocked.
         </DIV>
         <BUTTON class=security-mixed-content devtools-link text-button link-style role=link tabindex=0 >
-View 1 request in Network Panel
+View 1 request in Network panel
         </BUTTON>
     </DIV>
 </DIV>
