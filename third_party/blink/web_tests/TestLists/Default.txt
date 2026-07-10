@@ -125,6 +125,7 @@ external/wpt/css/css-align/content-distribution/place-content-shorthand-002.html
 external/wpt/css/css-align/content-distribution/place-content-shorthand-003.html
 external/wpt/css/css-align/default-alignment/place-items-shorthand-001.html
 external/wpt/css/css-backgrounds/background-clip/clip-text-constrain-geometry.html
+external/wpt/css/css-color/crashtests/stop-color-invalid-rgb.html
 external/wpt/css/css-conditional/crashtests/supports-malformed.html
 external/wpt/css/css-display/display-contents-computed-style.html
 external/wpt/css/css-grid/grid-definition/grid-template-columns-rows-resolved-values-001.xht
@@ -279,6 +280,7 @@ external/wpt/streams/piping/multiple-propagation.html
 external/wpt/streams/readable-streams/floating-point-total-queue-size.html
 external/wpt/streams/writable-streams/bad-strategies.html
 external/wpt/streams/writable-streams/brand-checks.html
+external/wpt/svg/crashtests/image-dispatch-event-on-destruct.html
 external/wpt/touch-events/historical.html
 external/wpt/touch-events/touch-globaleventhandler-interface.html
 external/wpt/touch-events/touch-retargeting.html
@@ -434,7 +436,6 @@ fast/css/line-height-font-order.html
 fast/css/line-thickness-underline-strikethrough-overline.html
 fast/css/namespaces/empty-namespace-compound-selector-2.xhtml
 fast/css/nth-child-dynamic.html
-fast/css/parse-color-int-or-percent-crash.html
 fast/css/text-overflow-ellipsis.html
 fast/css/text-overflow-ellipsis-strict.html
 fast/css/variables/accessing-variable-as-named-property.html
@@ -856,7 +857,6 @@ svg/custom/favicon-link.svg
 svg/custom/recursive-use2.svg
 svg/custom/svg-use-style-float-crash.svg
 svg/custom/use-invalid-font-face.svg
-svg/dispatch-event-crash-on-destruct.html
 svg/dom/smil-methods.svg
 svg/dom/SVGStyleElement/disable-svg-style-element.html
 svg/dom/SVGStyleElement/style-langspace.html
