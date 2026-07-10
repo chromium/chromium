@@ -13,13 +13,13 @@
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_test_utils.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_util_test_support.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -55,13 +55,6 @@ class SceneCoordinatorTest : public PlatformTest {
   SceneCoordinatorTest() {
     base_view_controller_ = [[UIViewController alloc] init];
 
-    fake_scene_ = FakeSceneWithIdentifier([[NSUUID UUID] UUIDString]);
-    scene_state_ = [[SceneStateWithFakeScene alloc] initWithScene:fake_scene_
-                                                         appState:nil];
-
-    profile_state_ = OCMClassMock([ProfileState class]);
-    scene_state_.profileState = profile_state_;
-
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
@@ -72,13 +65,15 @@ class SceneCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = std::move(builder).Build();
-    OCMStub([profile_state_ profile]).andReturn(profile_.get());
 
-    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
-    browser_->CreateInactiveBrowser();
+    profile_state_ = [[ProfileState alloc] initWithAppState:nil];
+    SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
+    profile_state_.profile = profile_.get();
 
-    incognito_browser_ = std::make_unique<TestBrowser>(
-        profile_->GetOffTheRecordProfile(), scene_state_);
+    scene_state_ = [[FakeSceneState alloc] initWithAppState:nil
+                                                    profile:profile_.get()];
+    [scene_state_ connectWithOptions:{.profile_state = profile_state_,
+                                      .identifier = "scene"}];
 
     profile_->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -86,19 +81,19 @@ class SceneCoordinatorTest : public PlatformTest {
 
     coordinator_ = [[SceneCoordinator alloc]
         initWithTabOpener:OCMProtocolMock(@protocol(TabOpening))];
+    [coordinator_
+        setBrowsersFromProvider:scene_state_.browserProviderInterface];
+  }
 
-    id mock_interface = OCMProtocolMock(@protocol(BrowserProviderInterface));
-    id mock_main_provider = OCMProtocolMock(@protocol(BrowserProvider));
-    OCMStub([mock_interface mainBrowserProvider]).andReturn(mock_main_provider);
-    OCMStub([mock_main_provider browser]).andReturn(browser_.get());
-
-    id mock_incognito_provider = OCMProtocolMock(@protocol(BrowserProvider));
-    OCMStub([mock_interface incognitoBrowserProvider])
-        .andReturn(mock_incognito_provider);
-    OCMStub([mock_incognito_provider browser])
-        .andReturn(incognito_browser_.get());
-
-    [coordinator_ setBrowsersFromProvider:mock_interface];
+  void TearDown() override {
+    @autoreleasepool {
+      [coordinator_ stop];
+      [scene_state_ shutdown];
+      coordinator_ = nil;
+      scene_state_ = nil;
+      profile_state_ = nil;
+      base_view_controller_ = nil;
+    }
   }
 
   void MakePrimaryAccountAvailable(const std::string& email) {
@@ -117,16 +112,12 @@ class SceneCoordinatorTest : public PlatformTest {
       web::WebTaskEnvironment::IOThreadType::REAL_THREAD,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-
-  std::unique_ptr<TestProfileIOS> profile_;
-  std::unique_ptr<Browser> browser_;
-  std::unique_ptr<Browser> incognito_browser_;
-  SceneCoordinator* coordinator_;
-  SceneState* scene_state_;
-  ProfileState* profile_state_;
-  id fake_scene_;
-  UIViewController* base_view_controller_;
   network::TestURLLoaderFactory test_loader_factory_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  UIViewController* base_view_controller_;
+  FakeSceneState* scene_state_;
+  ProfileState* profile_state_;
+  SceneCoordinator* coordinator_;
 };
 
 // Tests that "Report an issue" populates user feedback data with available
