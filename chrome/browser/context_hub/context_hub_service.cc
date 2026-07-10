@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/check_deref.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -24,7 +25,7 @@
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/optimization_guide/proto/string_value.pb.h"
+#include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
 
@@ -109,81 +110,90 @@ void ContextHubService::GetAllEntries(
 }
 
 // TODO(crbug.com/531938478): Update to handle APC ingestion.
-void ContextHubService::GenerateTabGroups(std::string prompt) {
-  optimization_guide::proto::StringValue request;
-  request.set_value(std::move(prompt));
+void ContextHubService::GenerateTabGroups(std::vector<TabData> tabs,
+                                          GroupTabsCallback callback) {
+  optimization_guide::proto::ContextHubRequest request;
+  request.set_request_type(
+      optimization_guide::proto::CONTEXT_HUB_REQUEST_TYPE_GROUPING);
+  for (const TabData& tab : tabs) {
+    optimization_guide::proto::EntryItem* entry_item =
+        request.add_entry_items();
+    optimization_guide::proto::Tab* tab_proto = entry_item->mutable_tab();
+    tab_proto->set_tab_id(tab.id);
+    tab_proto->set_title(tab.title);
+    tab_proto->set_url(tab.url.spec());
+  }
 
-  // TODO(crbug.com/531920873): Use prod feature key once available.
   optimization_guide_remote_model_executor_->ExecuteModel(
-      optimization_guide::ModelBasedCapabilityKey::kTest, request,
+      optimization_guide::ModelBasedCapabilityKey::kContextHub, request,
       optimization_guide::ModelExecutionOptions(),
       base::BindOnce(&ContextHubService::HandleModelExecutionResult,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), std::move(tabs),
+                     std::move(callback)));
 }
 
 void ContextHubService::HandleModelExecutionResult(
+    std::vector<TabData> tabs,
+    GroupTabsCallback callback,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  std::optional<optimization_guide::proto::ContextHubResponse> response;
   if (result.response.has_value()) {
-    std::optional<optimization_guide::proto::StringValue> string_value =
-        optimization_guide::ParsedAnyMetadata<
-            optimization_guide::proto::StringValue>(result.response.value());
-    if (string_value) {
-      // TODO(crbug.com/482383206): Handle model execution response.
-      DVLOG(1) << "Model execution result: " << string_value->value();
+    response = optimization_guide::ParsedAnyMetadata<
+        optimization_guide::proto::ContextHubResponse>(*result.response);
+  }
+  if (!response || !response->has_group_response()) {
+    std::move(callback).Run({}, std::move(tabs));
+    return;
+  }
+
+  std::vector<TabGroupData> groups;
+  std::vector<TabData> ungrouped_tabs;
+
+  base::flat_map<int32_t, size_t> tab_index_map;
+  for (size_t i = 0; i < tabs.size(); ++i) {
+    tab_index_map.emplace(tabs[i].id, i);
+  }
+
+  for (const optimization_guide::proto::TabGroup& group_proto :
+       response->group_response().tab_groups()) {
+    std::vector<int32_t> valid_tab_ids;
+    for (const optimization_guide::proto::Tab& tab_proto : group_proto.tabs()) {
+      int32_t tab_id = static_cast<int32_t>(tab_proto.tab_id());
+      if (tab_index_map.contains(tab_id) &&
+          std::ranges::find(valid_tab_ids, tab_id) == valid_tab_ids.end()) {
+        valid_tab_ids.push_back(tab_id);
+      }
+    }
+
+    if (valid_tab_ids.size() >= 2) {
+      TabGroupData group_data;
+      group_data.label = group_proto.label();
+      for (int32_t tab_id : valid_tab_ids) {
+        group_data.tabs.push_back(std::move(tabs[tab_index_map[tab_id]]));
+        tab_index_map.erase(tab_id);
+      }
+      groups.push_back(std::move(group_data));
     }
   }
+
+  for (context_hub::TabData& tab : tabs) {
+    if (tab_index_map.contains(tab.id)) {
+      ungrouped_tabs.push_back(std::move(tab));
+    }
+  }
+
+  std::move(callback).Run(std::move(groups), std::move(ungrouped_tabs));
 }
 
 void ContextHubService::GroupTabs(std::vector<TabData> tabs,
                                   GroupTabsCallback callback) {
-  std::vector<TabGroupData> groups;
-  std::vector<TabData> ungrouped_tabs;
-
   if (tabs.size() < 2) {
-    std::move(callback).Run(std::move(groups), std::move(tabs));
+    std::move(callback).Run({}, std::move(tabs));
     return;
   }
 
-  // TODO(crbug.com/531922328): Replace this the call to MES for grouping.
-  static constexpr std::array<const char*, 5> kLabels = {
-      "Work", "Shopping", "Research", "Social", "News"};
-
-  size_t current_tab_index = 0;
-  size_t group_number = 1;
-
-  // Cluster tabs sequentially into randomized groups of 2 or 3 tabs.
-  while (current_tab_index < tabs.size()) {
-    size_t remaining_tabs_count = tabs.size() - current_tab_index;
-    // If there is only 1 tab remaining, it cannot form a group. Move it to
-    // ungrouped.
-    if (remaining_tabs_count == 1) {
-      ungrouped_tabs.push_back(std::move(tabs[current_tab_index]));
-      break;
-    }
-
-    size_t group_size =
-        std::min(remaining_tabs_count,
-                 static_cast<size_t>(2 + base::RandIntInclusive(0, 1)));
-
-    TabGroupData group;
-    const char* label_prefix =
-        kLabels[base::RandIntInclusive(0, kLabels.size() - 1)];
-    group.label =
-        base::StrCat({label_prefix, " ", base::NumberToString(group_number++)});
-
-    for (size_t offset = 0; offset < group_size; ++offset) {
-      group.tabs.push_back(std::move(tabs[current_tab_index + offset]));
-    }
-    groups.push_back(std::move(group));
-    current_tab_index += group_size;
-  }
-
-  // Wrap in PostTask to simulate asynchronous grouping for the future LLM
-  // based clustering.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(groups),
-                                std::move(ungrouped_tabs)));
+  GenerateTabGroups(std::move(tabs), std::move(callback));
 }
 
 }  // namespace context_hub

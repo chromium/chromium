@@ -84,20 +84,23 @@ class ContextHubService : public KeyedService {
   // Returns all entries from the memory bank.
   void GetAllEntries(MemoryBank::GetAllEntriesCallback callback) const;
 
-  // Generates tab groups based on the provided `prompt`.
-  void GenerateTabGroups(std::string prompt);
-
   base::WeakPtr<ContextHubService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
  private:
+  // Generates tab groups based on the provided `tabs` and invokes `callback`
+  // with the resulting groups and any ungrouped tabs.
+  void GenerateTabGroups(std::vector<TabData> tabs, GroupTabsCallback callback);
+
   // Handles the async response from the AutoTodos fetch.
   void OnAutoTodosFetched(AutoTodosCallback callback,
                           personal_context::FetchContextResult result);
 
   // Handles the result of the model execution from `GenerateTabGroups`.
   void HandleModelExecutionResult(
+      std::vector<TabData> tabs,
+      GroupTabsCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 

@@ -22,6 +22,7 @@
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
@@ -47,10 +48,7 @@ class MockTabProvider : public ContextHubPageHandler::TabProvider {
               GetTabs,
               (content::WebContents*),
               (override));
-  MOCK_METHOD(void,
-              SwitchToTab,
-              (content::WebContents*, int32_t),
-              (override));
+  MOCK_METHOD(void, SwitchToTab, (content::WebContents*, int32_t), (override));
 };
 #endif
 
@@ -102,6 +100,11 @@ class ContextHubPageHandlerTest : public testing::Test {
   personal_context::MockPersonalContextService* GetMockService() {
     return static_cast<personal_context::MockPersonalContextService*>(
         PersonalContextServiceFactory::GetForProfile(&profile_));
+  }
+
+  MockOptimizationGuideKeyedService* GetMockOptimizationGuideService() {
+    return static_cast<MockOptimizationGuideKeyedService*>(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(&profile_));
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -381,16 +384,56 @@ TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_NoTabs) {
 TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_WithTabs) {
   std::vector<std::unique_ptr<content::WebContents>> test_tabs;
   std::vector<content::WebContents*> raw_test_tabs;
+  std::vector<int32_t> tab_ids;
   for (int i = 0; i < 5; ++i) {
-    auto tab = content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    auto tab =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     sessions::SessionTabHelper::CreateForWebContents(
         tab.get(), sessions::SessionTabHelper::DelegateLookup());
+    tab_ids.push_back(sessions::SessionTabHelper::IdForTab(tab.get()).id());
     raw_test_tabs.push_back(tab.get());
     test_tabs.push_back(std::move(tab));
   }
 
   EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
       .WillOnce(testing::Return(raw_test_tabs));
+
+  EXPECT_CALL(
+      *GetMockOptimizationGuideService(),
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce([tab_ids](
+                    optimization_guide::ModelBasedCapabilityKey feature,
+                    const google::protobuf::MessageLite& request_metadata,
+                    const optimization_guide::ModelExecutionOptions& options,
+                    optimization_guide::
+                        OptimizationGuideModelExecutionResultCallback
+                            callback) {
+        optimization_guide::proto::ContextHubResponse response;
+        optimization_guide::proto::GroupResponse* group_response =
+            response.mutable_group_response();
+        optimization_guide::proto::TabGroup* group1 =
+            group_response->add_tab_groups();
+        group1->set_label("Group 1");
+        group1->add_tabs()->set_tab_id(tab_ids[0]);
+        group1->add_tabs()->set_tab_id(tab_ids[1]);
+
+        optimization_guide::proto::TabGroup* group2 =
+            group_response->add_tab_groups();
+        group2->set_label("Group 2");
+        group2->add_tabs()->set_tab_id(tab_ids[2]);
+        group2->add_tabs()->set_tab_id(tab_ids[3]);
+
+        optimization_guide::proto::Any any_response;
+        any_response.set_type_url(
+            "type.googleapis.com/optimization_guide.proto.ContextHubResponse");
+        response.SerializeToString(any_response.mutable_value());
+
+        std::move(callback).Run(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::ok(std::move(any_response)), nullptr),
+            nullptr);
+      });
 
   base::test::TestFuture<std::vector<browser::context_hub::mojom::TabGroupPtr>,
                          std::vector<browser::context_hub::mojom::TabInfoPtr>>
@@ -401,6 +444,7 @@ TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_WithTabs) {
                        std::vector<browser::context_hub::mojom::TabInfoPtr>>());
 
   auto [groups, ungrouped_tabs] = future.Take();
+  EXPECT_EQ(groups.size(), 2u);
   size_t total_tabs = ungrouped_tabs.size();
   for (const auto& group : groups) {
     total_tabs += group->tabs.size();
