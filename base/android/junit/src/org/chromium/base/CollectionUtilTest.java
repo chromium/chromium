@@ -23,15 +23,17 @@ public class CollectionUtilTest {
     /** Tests that the computed call origin is the correct one. */
     @Test
     public void testStrengthen() {
-        // Java never GC's small constants, so there's no risk of the weak refs becoming null.
-        ArrayList<WeakReference<Integer>> weakList = new ArrayList<>();
-        weakList.add(new WeakReference<>(0));
-        weakList.add(new WeakReference<>(1));
-        weakList.add(new WeakReference<>(2));
+        Object o1 = new Object();
+        Object o2 = new Object();
+        Object o3 = new Object();
+        ArrayList<WeakReference<Object>> weakList = new ArrayList<>();
+        weakList.add(new WeakReference<>(o1));
+        weakList.add(new WeakReference<>(o2));
+        weakList.add(new WeakReference<>(o3));
 
-        assertEquals(Arrays.asList(0, 1, 2), CollectionUtil.strengthen(weakList));
+        assertEquals(Arrays.asList(o1, o2, o3), CollectionUtil.strengthen(weakList));
 
         weakList.set(1, new WeakReference<>(null));
-        assertEquals(Arrays.asList(0, 2), CollectionUtil.strengthen(weakList));
+        assertEquals(Arrays.asList(o1, o3), CollectionUtil.strengthen(weakList));
     }
 }

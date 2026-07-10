@@ -91,7 +91,7 @@ def main(argv):
   # Keep consistent with javac_args release flag in
   # //build/android/gyp/compile_java.py and
   # compileOptions in //build/android/gradle/android.jinja
-  javac_cmd = ['--release', '21']
+  javac_cmd = ['--release', '25']
 
   # Turbine reads lists from command line args by consuming args until one
   # starts with double dash (--). Thus command line args should be grouped

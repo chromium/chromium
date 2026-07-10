@@ -87,6 +87,7 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'TryFailRefactoring',
     'TypeParameterNaming',
     'UngroupedOverloads',
+    'UnnamedVariable',
     'UnnecessaryAnonymousClass',
     'UnnecessaryBoxedAssignment',
     'UnnecessaryDefaultInEnumSwitch',
