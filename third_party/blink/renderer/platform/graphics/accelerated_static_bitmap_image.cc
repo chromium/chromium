@@ -292,18 +292,15 @@ void AcceleratedStaticBitmapImage::EnsureSyncTokenVerified() {
   if (mailbox_ref_->verified_flush())
     return;
 
-  // If the original context was created on a different thread, we need to
-  // fallback to using the shared GPU context.
-  auto context_provider_wrapper =
-      mailbox_ref_->is_cross_thread()
-          ? SharedGpuContext::ContextProviderWrapper()
-          : ContextProviderWrapper();
+  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
   if (!context_provider_wrapper)
     return;
 
   auto sync_token = mailbox_ref_->sync_token();
   int8_t* token_data = sync_token.GetData();
-  ContextProvider()->InterfaceBase()->VerifySyncTokensCHROMIUM(&token_data, 1);
+  context_provider_wrapper->ContextProvider()
+      .InterfaceBase()
+      ->VerifySyncTokensCHROMIUM(&token_data, 1);
   sync_token.SetVerifyFlush();
   mailbox_ref_->set_sync_token(sync_token);
 }
