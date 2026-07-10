@@ -172,7 +172,7 @@ using tab_groups::SharingState;
                                 fromView:cell];
     }];
 
-    if ([self canSendToYourDevicesForItem:item]) {
+    if ([self canSendToYourDeviceForItem:item]) {
       sendTabToSelfAction = [actionFactory actionToSendTabToSelfWithBlock:^{
         [weakSelf.contextMenuDelegate sendTabToSelfWithIdentifier:tabID];
       }];
@@ -451,7 +451,7 @@ using tab_groups::SharingState;
 #pragma mark - Private
 
 // Returns `YES` if the tab `item` can be sent to another device.
-- (BOOL)canSendToYourDevicesForItem:(TabItem*)item {
+- (BOOL)canSendToYourDeviceForItem:(TabItem*)item {
   if (!base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfExtraEntryPoints)) {
     return NO;

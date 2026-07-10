@@ -22,7 +22,7 @@
 
 @interface TabContextMenuHelper (Testing)
 - (BOOL)canCloseOtherTabsForTabWithID:(web::WebStateID)tabID;
-- (BOOL)canSendToYourDevicesForItem:(TabItem*)item;
+- (BOOL)canSendToYourDeviceForItem:(TabItem*)item;
 @end
 
 namespace {
@@ -173,21 +173,21 @@ TEST_F(TabContextMenuHelperTest, CanCloseOtherTabs_MultipleTabsInGroup) {
   EXPECT_TRUE([helper_ canCloseOtherTabsForTabWithID:identifier_b]);
 }
 
-// Tests that `canSendToYourDevicesForItem:` returns NO if the feature flag is
+// Tests that `canSendToYourDeviceForItem:` returns NO if the feature flag is
 // disabled.
-TEST_F(TabContextMenuHelperTest, CanSendToYourDevices_FeatureDisabled) {
+TEST_F(TabContextMenuHelperTest, CanSendToYourDevice_FeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       send_tab_to_self::kSendTabToSelfExtraEntryPoints);
 
   TabItem* item = [[TabItem alloc] initWithTitle:@"Google"
                                              URL:GURL("https://google.com")];
-  EXPECT_FALSE([helper_ canSendToYourDevicesForItem:item]);
+  EXPECT_FALSE([helper_ canSendToYourDeviceForItem:item]);
 }
 
-// Tests that `canSendToYourDevicesForItem:` returns YES if the feature flag is
+// Tests that `canSendToYourDeviceForItem:` returns YES if the feature flag is
 // enabled and service offers it.
-TEST_F(TabContextMenuHelperTest, CanSendToYourDevices_FeatureEnabled) {
+TEST_F(TabContextMenuHelperTest, CanSendToYourDevice_FeatureEnabled) {
   base::test::ScopedFeatureList scoped_feature_list{
       send_tab_to_self::kSendTabToSelfExtraEntryPoints};
 
@@ -199,12 +199,12 @@ TEST_F(TabContextMenuHelperTest, CanSendToYourDevices_FeatureEnabled) {
 
   TabItem* item = [[TabItem alloc] initWithTitle:@"Google"
                                              URL:GURL("https://google.com")];
-  EXPECT_TRUE([helper_ canSendToYourDevicesForItem:item]);
+  EXPECT_TRUE([helper_ canSendToYourDeviceForItem:item]);
 }
 
-// Tests that `canSendToYourDevicesForItem:` returns NO if the sync service does
+// Tests that `canSendToYourDeviceForItem:` returns NO if the sync service does
 // not offer it.
-TEST_F(TabContextMenuHelperTest, CanSendToYourDevices_NoDisplayReason) {
+TEST_F(TabContextMenuHelperTest, CanSendToYourDevice_NoDisplayReason) {
   base::test::ScopedFeatureList scoped_feature_list{
       send_tab_to_self::kSendTabToSelfExtraEntryPoints};
 
@@ -215,12 +215,12 @@ TEST_F(TabContextMenuHelperTest, CanSendToYourDevices_NoDisplayReason) {
 
   TabItem* item = [[TabItem alloc] initWithTitle:@"Google"
                                              URL:GURL("https://google.com")];
-  EXPECT_FALSE([helper_ canSendToYourDevicesForItem:item]);
+  EXPECT_FALSE([helper_ canSendToYourDeviceForItem:item]);
 }
 
-// Tests that `canSendToYourDevicesForItem:` returns NO if the profile is
+// Tests that `canSendToYourDeviceForItem:` returns NO if the profile is
 // incognito.
-TEST_F(TabContextMenuHelperTest, CanSendToYourDevices_Incognito) {
+TEST_F(TabContextMenuHelperTest, CanSendToYourDevice_Incognito) {
   base::test::ScopedFeatureList scoped_feature_list{
       send_tab_to_self::kSendTabToSelfExtraEntryPoints};
 
@@ -231,7 +231,7 @@ TEST_F(TabContextMenuHelperTest, CanSendToYourDevices_Incognito) {
 
   TabItem* item = [[TabItem alloc] initWithTitle:@"Google"
                                              URL:GURL("https://google.com")];
-  EXPECT_FALSE([otr_helper canSendToYourDevicesForItem:item]);
+  EXPECT_FALSE([otr_helper canSendToYourDeviceForItem:item]);
 }
 
 }  // namespace

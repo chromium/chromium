@@ -85,7 +85,7 @@ class Tracker;
 // Returns whether the location bar can send the current tab to other devices.
 - (BOOL)locationBarCanSendTabToSelf;
 
-// Notifies the delegate that the "Send to Your Devices" context menu item was
+// Notifies the delegate that the "Send to your device" context menu item was
 // tapped.
 - (void)locationBarSendTabToSelfTapped;
 

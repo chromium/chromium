@@ -344,8 +344,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 if (tabBookmarkerSupplier != null) {
                     addTabToReadingListItemCallback(tabBookmarkerSupplier, tabs);
                 }
-            } else if (menuId == R.id.send_to_your_devices_menu_id) {
-                sendTabToYourDevicesItemCallback(
+            } else if (menuId == R.id.send_to_your_device_menu_id) {
+                sendTabToYourDeviceItemCallback(
                         tabModel,
                         anchorInfo,
                         windowAndroid,
@@ -518,7 +518,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
     }
 
-    private static void sendTabToYourDevicesItemCallback(
+    private static void sendTabToYourDeviceItemCallback(
             TabModel tabModel,
             AnchorInfo anchorInfo,
             WindowAndroid windowAndroid,
@@ -964,7 +964,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
         return new ListItemBuilder()
                 .withTitle(title)
-                .withMenuId(R.id.send_to_your_devices_menu_id)
+                .withMenuId(R.id.send_to_your_device_menu_id)
                 .build();
     }
 
@@ -1047,7 +1047,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             recordUserAction("NewTabToTheRight", /* isMultipleTabs= */ false);
         } else if (menuId == R.id.add_tab_to_reading_list_menu_id) {
             recordUserAction("AddTabToReadingList", isMultipleTabs);
-        } else if (menuId == R.id.send_to_your_devices_menu_id) {
+        } else if (menuId == R.id.send_to_your_device_menu_id) {
             recordUserAction("SendToYourDevices", false);
         } else if (menuId == R.id.toggle_tab_layout_menu_id) {
             recordUserAction("ToggleTabLayout", /* isMultipleTabs= */ false);

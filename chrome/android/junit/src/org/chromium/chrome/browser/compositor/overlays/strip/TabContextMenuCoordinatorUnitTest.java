@@ -556,7 +556,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 10
         assertEquals(
-                R.id.send_to_your_devices_menu_id,
+                R.id.send_to_your_device_menu_id,
                 modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 11
@@ -757,7 +757,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 10
         assertEquals(
-                R.id.send_to_your_devices_menu_id,
+                R.id.send_to_your_device_menu_id,
                 modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 11
@@ -2220,7 +2220,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
-    public void testSendToYourDevices() {
+    public void testSendToYourDevice() {
         SendTabToSelfCoordinator mockSttsCoordinator = Mockito.mock(SendTabToSelfCoordinator.class);
         TabContextMenuCoordinator.setSendTabToSelfCreatorForTesting(
                 (context,
@@ -2258,7 +2258,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // Click on the menu action item
         mOnItemClickedCallback.onClick(
-                R.id.send_to_your_devices_menu_id,
+                R.id.send_to_your_device_menu_id,
                 new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
                 /* collaborationId= */ null,
                 /* listViewTouchTracker= */ null);
@@ -2268,7 +2268,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
-    public void testSendToYourDevicesMenuItem_isNotShownWhenDisplayReasonNull() {
+    public void testSendToYourDeviceMenuItem_isNotShownWhenDisplayReasonNull() {
         when(mSendTabToSelfAndroidBridgeNatives.getEntryPointDisplayReason(any(), any()))
                 .thenReturn(null);
 
@@ -2277,8 +2277,8 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         assertNull(
-                "Send to Your Devices menu item should not be present when displayReason is null",
-                findItemByMenuId(modelList, R.id.send_to_your_devices_menu_id));
+                "Send to Your Device menu item should not be present when displayReason is null",
+                findItemByMenuId(modelList, R.id.send_to_your_device_menu_id));
     }
 
     @Test
