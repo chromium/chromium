@@ -6,6 +6,7 @@ include_rules = [
   "+chrome/browser/policy/profile_policy_connector.h",
   "+chrome/browser/policy/chrome_extension_policy_migrator.h",
   "+chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h",
+  "+chrome/browser/win/isolated_browser_support.h",
 
   "-components",
   "+components/keyed_service/content",

@@ -26,6 +26,7 @@
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
+#include "chrome/browser/win/isolated_browser_support.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
@@ -279,6 +280,15 @@ bool TryLaunchWithExec(const GURL& url,
   auto cmd_line = CreateCommandLine(url, path, args);
 
   base::LaunchOptions options;
+
+  const auto unisolated_token = chrome::GetUnisolatedAccessToken();
+  if (!unisolated_token) {
+    return false;
+  }
+
+  // Always run alternative browsers unisolated.
+  options.using_token = unisolated_token->get();
+
   if (!base::LaunchProcess(cmd_line, options).IsValid()) {
     LOG(ERROR) << "Could not start the alternative browser! Error: "
                << GetLastError();

@@ -78,6 +78,7 @@ source_set("impl") {
 
   if (is_win) {
     sources += [ "alternative_browser_driver_win.cc" ]
+    deps += [ "//chrome/browser/win:isolated_browser_support" ]
   }
 
   if (is_mac || is_linux) {

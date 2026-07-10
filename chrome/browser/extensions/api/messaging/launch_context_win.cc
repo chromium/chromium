@@ -31,6 +31,7 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/win/isolated_browser_support.h"
 #include "crypto/random.h"
 #include "net/base/file_stream.h"
 #include "net/base/net_errors.h"
@@ -127,6 +128,14 @@ base::Process LaunchNativeExeDirectly(const std::wstring& command,
   options.handles_to_inherit.push_back(options.stdin_handle);
   options.handles_to_inherit.push_back(options.stdout_handle);
 
+  const auto unisolated_token = chrome::GetUnisolatedAccessToken();
+  if (!unisolated_token) {
+    return base::Process();
+  }
+
+  // Always run native messaging hosts unisolated.
+  options.using_token = unisolated_token->get();
+
   // Inherit Chrome's STD_ERROR_HANDLE, if set, into the Native Host. If Chrome
   // was not started with standard error redirected, this value will be null.
   if (options.stderr_handle != NULL) {
@@ -151,6 +160,15 @@ base::Process LaunchNativeHostViaCmd(const std::wstring& command,
   std::wstring comspec;
   ::GetEnvironmentVariable(
       L"COMSPEC", base::WriteInto(&comspec, comspec_length), comspec_length);
+
+  const auto unisolated_token = chrome::GetUnisolatedAccessToken();
+
+  if (!unisolated_token) {
+    return base::Process();
+  }
+
+  // Always run native messaging hosts unisolated.
+  options.using_token = unisolated_token->get();
 
   return base::LaunchProcess(
       base::StrCat({comspec, L" /d /s /c \"", command, L"\" < ", in_pipe_name,
