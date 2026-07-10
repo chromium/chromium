@@ -65,6 +65,10 @@ bool LensOverlayTabHelper::IsLensOverlayInvokedOnCurrentNavigationItem() {
     return false;
   }
 
+  if (!IsLensOverlaySameTabNavigationEnabled(GetProfilePrefs())) {
+    return true;
+  }
+
   bool is_lens_overlay_invoked = false;
 
   if (web_state_->GetNavigationManager() &&

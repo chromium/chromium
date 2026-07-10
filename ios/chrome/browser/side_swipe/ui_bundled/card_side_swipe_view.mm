@@ -236,20 +236,11 @@ const CGFloat kResizeFactor = 4;
   [card setHidden:NO];
 
   web::WebState* webState = _webStateList->GetWebStateAt(index);
-  PrefService* prefs =
-      ProfileIOS::FromBrowserState(webState->GetBrowserState())->GetPrefs();
   // Lens overlay displays content fullscreen and hides the vertical toolbars.
   if (LensOverlayTabHelper* lensOverlayTabHelper =
           LensOverlayTabHelper::FromWebState(webState)) {
-    BOOL lensOverlayShown;
-
-    if (IsLensOverlaySameTabNavigationEnabled(prefs)) {
-      lensOverlayShown =
-          lensOverlayTabHelper->IsLensOverlayInvokedOnCurrentNavigationItem();
-    } else {
-      lensOverlayShown =
-          lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
-    }
+    BOOL lensOverlayShown =
+        lensOverlayTabHelper->IsLensOverlayInvokedOnCurrentNavigationItem();
 
     UIImage* lensOverlaySnapshot = lensOverlayTabHelper->GetViewportSnapshot();
     if (lensOverlayShown && lensOverlaySnapshot) {

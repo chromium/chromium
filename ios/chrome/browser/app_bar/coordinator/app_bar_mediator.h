@@ -26,6 +26,7 @@ class GeminiBrowserAgent;
 class GeminiService;
 @class IncognitoState;
 @protocol LensCommands;
+@class LensOverlayStateNotifier;
 class PrefService;
 @protocol SceneCommands;
 @protocol SettingsCommands;
@@ -113,7 +114,9 @@ class WebStateList;
                   (AimEligibilityService*)aimEligibilityService
                           URLLoader:(UrlLoadingBrowserAgent*)URLLoader
                        tabGridState:(TabGridState*)tabGridState
-                     incognitoState:(IncognitoState*)incognitoState;
+                     incognitoState:(IncognitoState*)incognitoState
+           lensOverlayStateNotifier:
+               (LensOverlayStateNotifier*)lensOverlayStateNotifier;
 
 - (instancetype)init NS_UNAVAILABLE;
 

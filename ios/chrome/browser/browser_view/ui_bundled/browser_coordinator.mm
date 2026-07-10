@@ -5040,20 +5040,12 @@ const char kChromeAppStoreUrl[] =
 
   NSMutableArray<UIView*>* overlays = [NSMutableArray array];
 
-  PrefService* prefs = browser->GetProfile()->GetPrefs();
   LensOverlayTabHelper* lensOverlayTabHelper =
       LensOverlayTabHelper::FromWebState(webState);
 
   if (lensOverlayTabHelper) {
-    BOOL isLensOverlayCurrentlyInvoked;
-
-    if (IsLensOverlaySameTabNavigationEnabled(prefs)) {
-      isLensOverlayCurrentlyInvoked =
-          lensOverlayTabHelper->IsLensOverlayInvokedOnCurrentNavigationItem();
-    } else {
-      isLensOverlayCurrentlyInvoked =
-          lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
-    }
+    BOOL isLensOverlayCurrentlyInvoked =
+        lensOverlayTabHelper->IsLensOverlayInvokedOnCurrentNavigationItem();
 
     // A lens overlay is invoked in the given web state.
     if (isLensOverlayCurrentlyInvoked) {
