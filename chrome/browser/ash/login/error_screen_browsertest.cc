@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/app_mode/test/network_state_mixin.h"
@@ -36,6 +37,7 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user_manager.h"
@@ -158,9 +160,11 @@ class NetworkErrorScreenTest : public InProcessBrowserTest {
     network_helper_->profile_test()->AddService(
         ShillProfileClient::GetSharedProfilePath(), kWifiServiceName);
 
-    // Network modification notifications are posted asynchronously. Wait until
-    // idle to ensure observers are notified.
-    base::RunLoop().RunUntilIdle();
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return network_helper_->network_state_handler()
+                 ->GetNetworkStateFromServicePath(
+                     kWifiServiceName, /*configured_only=*/false) != nullptr;
+    }));
   }
 
   std::unique_ptr<WizardContext> wizard_context_;
