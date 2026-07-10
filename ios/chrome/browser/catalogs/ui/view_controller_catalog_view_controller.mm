@@ -6,7 +6,9 @@
 
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_action.h"
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_view_controller.h"
+#import "ios/chrome/browser/catalogs/ui/demo_button_stack_view_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 
 namespace {
 
@@ -18,6 +20,7 @@ enum SectionIdentifier {
 // Item types used per ViewController section.
 enum ItemType {
   kItemTypeAlertViewController = kItemTypeEnumZero,
+  kItemTypeButtonStackViewController,
 };
 
 }  // namespace
@@ -45,11 +48,17 @@ enum ItemType {
       [[TableViewTextItem alloc] initWithType:kItemTypeAlertViewController];
   alertItem.text = @"AlertViewController";
 
+  TableViewTextItem* buttonStackItem = [[TableViewTextItem alloc]
+      initWithType:kItemTypeButtonStackViewController];
+  buttonStackItem.text = @"ButtonStackViewController";
+
   // Add sections.
   [model addSectionWithIdentifier:kSectionIdentifierViewController];
 
   // Add items.
   [model addItem:alertItem
+      toSectionWithIdentifier:kSectionIdentifierViewController];
+  [model addItem:buttonStackItem
       toSectionWithIdentifier:kSectionIdentifierViewController];
 }
 
@@ -60,6 +69,12 @@ enum ItemType {
   switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
     case kItemTypeAlertViewController: {
       [self presentViewController:[self configuredAlertViewController]
+                         animated:YES
+                       completion:nil];
+      break;
+    }
+    case kItemTypeButtonStackViewController: {
+      [self presentViewController:[self configuredButtonStackViewController]
                          animated:YES
                        completion:nil];
       break;
@@ -105,6 +120,22 @@ enum ItemType {
   [alertViewController setActions:actions];
 
   return alertViewController;
+}
+
+// Initializes and configures the `ButtonStackViewController`.
+- (DemoButtonStackViewController*)configuredButtonStackViewController {
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
+  configuration.primaryActionString = @"Primary";
+  configuration.secondaryActionString = @"Secondary";
+  configuration.tertiaryActionString = @"Tertiary";
+
+  // The `ButtonStackViewController` should always be subclassed.
+  DemoButtonStackViewController* buttonStackViewController =
+      [[DemoButtonStackViewController alloc]
+          initWithConfiguration:configuration];
+
+  return buttonStackViewController;
 }
 
 @end
