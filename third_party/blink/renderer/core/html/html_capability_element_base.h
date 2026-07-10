@@ -211,6 +211,8 @@ class CORE_EXPORT HTMLCapabilityElementBase
   FRIEND_TEST_ALL_PREFIXES(HTMLCapabilityElementBaseIntersectionTest,
                            IntersectionChanged);
   FRIEND_TEST_ALL_PREFIXES(HTMLCapabilityElementBaseIntersectionTest,
+                           MovePEPCFromIframeAndDestroyIframe);
+  FRIEND_TEST_ALL_PREFIXES(HTMLCapabilityElementBaseIntersectionTest,
                            IntersectionChangedDisableEnableDisable);
   FRIEND_TEST_ALL_PREFIXES(HTMLCapabilityElementBaseIntersectionTest,
                            ContainerDivRotates);
