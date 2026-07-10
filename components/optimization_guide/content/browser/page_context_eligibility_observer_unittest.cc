@@ -125,7 +125,8 @@ class PageContextEligibilityObserverTest
 
   std::unique_ptr<PageContextEligibilityObserver> CreateObserver(
       std::string account = std::string(),
-      base::RepeatingCallback<void(bool)> callback = base::DoNothing()) {
+      base::RepeatingCallback<void(PageContextEligibilityStatus)> callback =
+          base::DoNothing()) {
     auto observer = PageContextEligibilityObserver::Create(
         web_contents(), std::move(account), std::move(callback));
     task_environment()->RunUntilIdle();
@@ -221,18 +222,20 @@ TEST_F(PageContextEligibilityObserverTest, EligibilityChangeNotification) {
       .WillRepeatedly(testing::Return(true));
 
   int callback_count = 0;
-  bool last_eligibility = false;
+  PageContextEligibilityStatus last_eligibility =
+      PageContextEligibilityStatus::kUnknown;
 
   auto observer_ptr = CreateObserver(
       std::string(), base::BindRepeating(
-                         [](int* count, bool* last_val, bool is_eligible) {
+                         [](int* count, PageContextEligibilityStatus* last_val,
+                            PageContextEligibilityStatus status) {
                            (*count)++;
-                           *last_val = is_eligible;
+                           *last_val = status;
                          },
                          &callback_count, &last_eligibility));
   ASSERT_TRUE(observer_ptr);
   EXPECT_EQ(1, callback_count);
-  EXPECT_TRUE(last_eligibility);
+  EXPECT_EQ(PageContextEligibilityStatus::kEligible, last_eligibility);
   PageContextEligibilityObserver& observer = *observer_ptr;
 
   // Change to false
@@ -248,7 +251,7 @@ TEST_F(PageContextEligibilityObserverTest, EligibilityChangeNotification) {
 
   CallOnMetaTagsChanged(observer, std::move(page_metadata));
   EXPECT_EQ(2, callback_count);
-  EXPECT_FALSE(last_eligibility);
+  EXPECT_EQ(PageContextEligibilityStatus::kNotEligible, last_eligibility);
 
   // Redundant update (still false) should not trigger callback
   auto page_metadata2 = blink::mojom::PageMetadata::New();
@@ -271,7 +274,7 @@ TEST_F(PageContextEligibilityObserverTest, EligibilityChangeNotification) {
       .WillOnce(testing::Return(true));
   CallOnMetaTagsChanged(observer, nullptr);
   EXPECT_EQ(3, callback_count);
-  EXPECT_TRUE(last_eligibility);
+  EXPECT_EQ(last_eligibility, PageContextEligibilityStatus::kEligible);
 }
 
 TEST_F(PageContextEligibilityObserverTest, NavigationResetsObserver) {

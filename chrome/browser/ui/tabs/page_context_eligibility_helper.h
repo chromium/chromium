@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
@@ -41,12 +42,13 @@ class PageContextEligibilityHelper : public tabs::ContentsObservingTabFeature {
 
   static PageContextEligibilityHelper* From(tabs::TabInterface* tab);
 
-  // Returns whether the current page context is eligible and the tab is active.
-  // Returns std::nullopt until loaded, or if the tab is inactive.
-  std::optional<bool> IsPageContextEligible() const;
+  // Returns the current page context eligibility status of the active tab.
+  // Returns kUnknown until loaded, or if the tab is inactive.
+  optimization_guide::PageContextEligibilityStatus IsPageContextEligible()
+      const;
 
-  using EligibilityChangeCallback =
-      base::RepeatingCallback<void(std::optional<bool>)>;
+  using EligibilityChangeCallback = base::RepeatingCallback<void(
+      optimization_guide::PageContextEligibilityStatus)>;
 
   // Registers a callback to be notified when eligibility changes.
   base::CallbackListSubscription RegisterEligibilityChangeCallback(
@@ -63,14 +65,27 @@ class PageContextEligibilityHelper : public tabs::ContentsObservingTabFeature {
  private:
   void OnTabActivated(tabs::TabInterface* tab);
   void OnTabDeactivated(tabs::TabInterface* tab);
-  void OnEligibilityChanged(bool is_eligible);
+  void OnWillDetach(tabs::TabInterface* tab,
+                    tabs::TabInterface::DetachReason reason);
+  void OnEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus status);
   std::string GetAccountEmail();
 
-  base::RepeatingCallbackList<void(std::optional<bool>)> callbacks_;
+  void CreateObserver(content::WebContents* contents);
+  void ResetObserverAndNotifyUnknown();
+  void NotifyEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus status);
+
+  base::RepeatingCallbackList<void(
+      optimization_guide::PageContextEligibilityStatus)>
+      callbacks_;
 
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
   std::unique_ptr<optimization_guide::PageContextEligibilityObserver> observer_;
+
+  optimization_guide::PageContextEligibilityStatus last_eligibility_ =
+      optimization_guide::PageContextEligibilityStatus::kUnknown;
 
   ui::ScopedUnownedUserData<PageContextEligibilityHelper>
       scoped_unowned_user_data_;

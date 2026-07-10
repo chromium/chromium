@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
-
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
@@ -118,8 +118,10 @@ class PageContextEligibilityHelperTest
     base::RunLoop run_loop;
     base::CallbackListSubscription sub =
         helper->RegisterEligibilityChangeCallback(base::BindRepeating(
-            [](base::RunLoop* run_loop, std::optional<bool> val) {
-              if (val.has_value()) {
+            [](base::RunLoop* run_loop,
+               optimization_guide::PageContextEligibilityStatus val) {
+              if (val !=
+                  optimization_guide::PageContextEligibilityStatus::kUnknown) {
                 run_loop->Quit();
               }
             },
@@ -135,11 +137,24 @@ class PageContextEligibilityHelperTest
                                tabs::TabInterface* tab) {
     helper->OnTabDeactivated(tab);
   }
+  void TriggerOnDiscardContents(PageContextEligibilityHelper* helper,
+                                tabs::TabInterface* tab,
+                                content::WebContents* old_contents,
+                                content::WebContents* new_contents) {
+    helper->OnDiscardContents(tab, old_contents, new_contents);
+  }
+  void TriggerOnWillDetach(PageContextEligibilityHelper* helper,
+                           tabs::TabInterface* tab,
+                           tabs::TabInterface::DetachReason reason) {
+    helper->OnWillDetach(tab, reason);
+  }
 
   void SetMockEligibility(bool eligible) {
     g_mock_is_eligible_with_account = eligible;
+    static int count = 0;
     content::WebContentsTester::For(web_contents())
-        ->NavigateAndCommit(GURL("https://example.com/"));
+        ->NavigateAndCommit(
+            GURL("https://example.com/" + base::NumberToString(++count)));
     task_environment()->RunUntilIdle();
   }
 
@@ -162,13 +177,16 @@ TEST_F(PageContextEligibilityHelperTest, BasicEligibility) {
 
   CreateHelper();
 
-  EXPECT_EQ(helper_->IsPageContextEligible(), std::optional<bool>(true));
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kEligible);
 
   SetMockEligibility(true);
-  EXPECT_EQ(helper_->IsPageContextEligible(), std::optional<bool>(true));
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kEligible);
 
   SetMockEligibility(false);
-  EXPECT_EQ(helper_->IsPageContextEligible(), std::optional<bool>(false));
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kNotEligible);
 }
 
 TEST_F(PageContextEligibilityHelperTest, CallbacksNotified) {
@@ -180,24 +198,28 @@ TEST_F(PageContextEligibilityHelperTest, CallbacksNotified) {
 
   CreateHelper();
 
-  std::optional<bool> callback_val = true;
+  optimization_guide::PageContextEligibilityStatus callback_val =
+      optimization_guide::PageContextEligibilityStatus::kEligible;
   int callback_count = 0;
   base::CallbackListSubscription sub =
       helper_->RegisterEligibilityChangeCallback(base::BindRepeating(
-          [](std::optional<bool>* out_val, int* out_count,
-             std::optional<bool> val) {
+          [](optimization_guide::PageContextEligibilityStatus* out_val,
+             int* out_count,
+             optimization_guide::PageContextEligibilityStatus val) {
             *out_val = val;
             (*out_count)++;
           },
           &callback_val, &callback_count));
 
   SetMockEligibility(false);
-  EXPECT_EQ(callback_val, std::optional<bool>(false));
-  EXPECT_EQ(1, callback_count);
+  EXPECT_EQ(callback_val,
+            optimization_guide::PageContextEligibilityStatus::kNotEligible);
+  EXPECT_EQ(2, callback_count);
 
   SetMockEligibility(true);
-  EXPECT_EQ(callback_val, std::optional<bool>(true));
-  EXPECT_EQ(2, callback_count);
+  EXPECT_EQ(callback_val,
+            optimization_guide::PageContextEligibilityStatus::kEligible);
+  EXPECT_EQ(4, callback_count);
 }
 
 TEST_F(PageContextEligibilityHelperTest, TabActivationDeactivation) {
@@ -210,16 +232,125 @@ TEST_F(PageContextEligibilityHelperTest, TabActivationDeactivation) {
   CreateHelper();
 
   // Initially active, helper has valid eligibility
-  EXPECT_EQ(helper_->IsPageContextEligible(), std::optional<bool>(true));
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kEligible);
 
-  // Deactivate the tab: observer is destroyed, returns nullopt
+  // Deactivate the tab: observer is destroyed, returns kUnknown
   TriggerOnTabDeactivated(helper_.get(), &*mock_tab_);
-  EXPECT_EQ(helper_->IsPageContextEligible(), std::nullopt);
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kUnknown);
 
-  // Activate the tab: observer is recreated, returns true
+  // Activate the tab: observer is recreated, returns kEligible
   TriggerOnTabActivated(helper_.get(), &*mock_tab_);
   WaitForEligibility(helper_.get());
-  EXPECT_EQ(helper_->IsPageContextEligible(), std::optional<bool>(true));
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kEligible);
+}
+
+TEST_F(PageContextEligibilityHelperTest, NavigationUpdatesEligibility) {
+  EXPECT_CALL(*mock_api_, CheckPageEligibility(testing::_))
+      .WillRepeatedly(Return(optimization_guide::PageEligibilityResult{
+          .status = optimization_guide::PageEligibility::kEligible,
+          .meta_tag_names_affecting_eligibility = {.data = nullptr,
+                                                   .size = 0}}));
+
+  CreateHelper();
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kEligible);
+
+  std::vector<optimization_guide::PageContextEligibilityStatus> updates;
+  updates.push_back(helper_->IsPageContextEligible());
+
+  base::CallbackListSubscription sub =
+      helper_->RegisterEligibilityChangeCallback(base::BindRepeating(
+          [](std::vector<optimization_guide::PageContextEligibilityStatus>*
+                 out_updates,
+             optimization_guide::PageContextEligibilityStatus val) {
+            out_updates->push_back(val);
+          },
+          &updates));
+
+  SetMockEligibility(false);
+
+  std::vector<optimization_guide::PageContextEligibilityStatus>
+      expected_updates = {
+          optimization_guide::PageContextEligibilityStatus::kEligible,
+          optimization_guide::PageContextEligibilityStatus::kUnknown,
+          optimization_guide::PageContextEligibilityStatus::kNotEligible,
+      };
+  EXPECT_EQ(updates, expected_updates);
+}
+
+TEST_F(PageContextEligibilityHelperTest,
+       DiscardContentsRecreatesObserverWithNewContents) {
+  EXPECT_CALL(*mock_api_, CheckPageEligibility(testing::_))
+      .WillRepeatedly(Return(optimization_guide::PageEligibilityResult{
+          .status = optimization_guide::PageEligibility::kEligible,
+          .meta_tag_names_affecting_eligibility = {.data = nullptr,
+                                                   .size = 0}}));
+  SetMockEligibility(true);
+  CreateHelper();
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kEligible);
+
+  std::vector<optimization_guide::PageContextEligibilityStatus> updates;
+  base::CallbackListSubscription sub =
+      helper_->RegisterEligibilityChangeCallback(base::BindRepeating(
+          [](std::vector<optimization_guide::PageContextEligibilityStatus>*
+                 out_updates,
+             optimization_guide::PageContextEligibilityStatus val) {
+            out_updates->push_back(val);
+          },
+          &updates));
+
+  std::unique_ptr<content::WebContents> new_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(new_contents.get())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+
+  TriggerOnDiscardContents(helper_.get(), &*mock_tab_, web_contents(),
+                           new_contents.get());
+  WaitForEligibility(helper_.get());
+
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kEligible);
+  std::vector<optimization_guide::PageContextEligibilityStatus>
+      expected_updates = {
+          optimization_guide::PageContextEligibilityStatus::kUnknown,
+          optimization_guide::PageContextEligibilityStatus::kEligible,
+      };
+  EXPECT_EQ(updates, expected_updates);
+}
+
+TEST_F(PageContextEligibilityHelperTest, WillDetachDeleteResetsToUnknown) {
+  EXPECT_CALL(*mock_api_, CheckPageEligibility(testing::_))
+      .WillRepeatedly(Return(optimization_guide::PageEligibilityResult{
+          .status = optimization_guide::PageEligibility::kEligible,
+          .meta_tag_names_affecting_eligibility = {.data = nullptr,
+                                                   .size = 0}}));
+  SetMockEligibility(true);
+  CreateHelper();
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kEligible);
+
+  std::vector<optimization_guide::PageContextEligibilityStatus> updates;
+  base::CallbackListSubscription sub =
+      helper_->RegisterEligibilityChangeCallback(base::BindRepeating(
+          [](std::vector<optimization_guide::PageContextEligibilityStatus>*
+                 out_updates,
+             optimization_guide::PageContextEligibilityStatus val) {
+            out_updates->push_back(val);
+          },
+          &updates));
+
+  TriggerOnWillDetach(helper_.get(), &*mock_tab_,
+                      tabs::TabInterface::DetachReason::kDelete);
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kUnknown);
+  EXPECT_EQ(
+      updates,
+      std::vector<optimization_guide::PageContextEligibilityStatus>{
+          optimization_guide::PageContextEligibilityStatus::kUnknown});
 }
 
 }  // namespace tabs

@@ -135,9 +135,7 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
   void SendAdditionalContextToPanel(
       tabs::TabInterface* tab_interface,
       const std::u16string& selected_text) override {
-    if (page_context_tracker() && !selected_text.empty() &&
-        page_context_tracker()->IsPageContextEligible() ==
-            optimization_guide::PageContextEligibilityStatus::kNotEligible) {
+    if (!IsPageContextEligible() && !selected_text.empty()) {
       return;
     }
     last_sent_context_ = selected_text;

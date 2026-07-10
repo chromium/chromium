@@ -239,14 +239,14 @@ GlicSelectionObserver::GlicSelectionObserver(content::WebContents* web_contents)
   }
 
   auto* tab_interface = tabs::TabInterface::MaybeGetFromContents(web_contents);
-  if (tab_interface) {
-    auto* helper = tabs::PageContextEligibilityHelper::From(tab_interface);
-    if (helper) {
-      page_context_eligibility_subscription_ =
-          helper->RegisterEligibilityChangeCallback(base::BindRepeating(
-              &GlicSelectionObserver::OnPageContextEligibilityChanged,
-              weak_ptr_factory_.GetWeakPtr()));
-    }
+  auto* helper = tab_interface
+                     ? tabs::PageContextEligibilityHelper::From(tab_interface)
+                     : nullptr;
+  if (helper) {
+    page_context_eligibility_subscription_ =
+        helper->RegisterEligibilityChangeCallback(base::BindRepeating(
+            &GlicSelectionObserver::OnPageContextEligibilityChanged,
+            weak_ptr_factory_.GetWeakPtr()));
   } else {
     CreatePageContextEligibilityAPI(std::move(account));
   }
@@ -945,7 +945,7 @@ void GlicSelectionObserver::SendAdditionalContextToPanel(
   }
 
   // If the page is not eligible, do not send the additional context.
-  if (IsPageContextEligible() == false && !selected_text.empty()) {
+  if (!IsPageContextEligible() && !selected_text.empty()) {
     return;
   }
 
@@ -956,32 +956,30 @@ void GlicSelectionObserver::SendAdditionalContextToPanel(
   }
 }
 
-std::optional<bool> GlicSelectionObserver::IsPageContextEligible() const {
+bool GlicSelectionObserver::IsPageContextEligible() const {
   auto* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
   if (tab_interface) {
     auto* helper = tabs::PageContextEligibilityHelper::From(tab_interface);
     if (helper) {
-      return helper->IsPageContextEligible();
+      return helper->IsPageContextEligible() ==
+             optimization_guide::PageContextEligibilityStatus::kEligible;
     }
   }
   if (page_context_tracker_) {
-    auto status = page_context_tracker_->IsPageContextEligible();
-    if (status == optimization_guide::PageContextEligibilityStatus::kUnknown) {
-      return std::nullopt;
-    }
-    return status ==
+    return page_context_tracker_->IsPageContextEligible() ==
            optimization_guide::PageContextEligibilityStatus::kEligible;
   }
-  return std::nullopt;
+  return false;
 }
 
 void GlicSelectionObserver::OnPageContextEligibilityChanged(
-    std::optional<bool> is_eligible) {
-  // If the page context transitions into a liminal state (nullopt) or becomes
-  // ineligible (false), and we've already sent selection context, we should
-  // clear it.
-  if (is_eligible != true && has_sent_selection_context_) {
+    optimization_guide::PageContextEligibilityStatus status) {
+  // If the page context transitions into a liminal state (kUnknown) or becomes
+  // ineligible (kNotEligible), and we've already sent selection context, we
+  // should clear it.
+  if (status != optimization_guide::PageContextEligibilityStatus::kEligible &&
+      has_sent_selection_context_) {
     auto* tab_interface =
         tabs::TabInterface::MaybeGetFromContents(web_contents());
     if (tab_interface) {
@@ -1010,9 +1008,10 @@ void GlicSelectionObserver::OnPageContextEligibilityAPILoaded(
       optimization_guide::PageContextEligibilityObserver::Create(
           web_contents(), std::move(account),
           base::BindRepeating(
-              [](base::WeakPtr<GlicSelectionObserver> observer, bool eligible) {
+              [](base::WeakPtr<GlicSelectionObserver> observer,
+                 optimization_guide::PageContextEligibilityStatus status) {
                 if (observer) {
-                  observer->OnPageContextEligibilityChanged(eligible);
+                  observer->OnPageContextEligibilityChanged(status);
                 }
               },
               weak_ptr_factory_.GetWeakPtr()));

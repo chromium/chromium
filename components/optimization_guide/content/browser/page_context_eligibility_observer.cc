@@ -19,10 +19,9 @@ namespace optimization_guide {
 
 // static
 std::unique_ptr<PageContextEligibilityObserver>
-PageContextEligibilityObserver::Create(
-    content::WebContents* web_contents,
-    std::string account,
-    base::RepeatingCallback<void(bool)> callback) {
+PageContextEligibilityObserver::Create(content::WebContents* web_contents,
+                                       std::string account,
+                                       EligibilityChangedCallback callback) {
   if (!web_contents) {
     return nullptr;
   }
@@ -33,7 +32,7 @@ PageContextEligibilityObserver::Create(
 PageContextEligibilityObserver::PageContextEligibilityObserver(
     content::WebContents* web_contents,
     std::string account,
-    base::RepeatingCallback<void(bool)> callback)
+    EligibilityChangedCallback callback)
     : content::WebContentsObserver(web_contents),
       account_(std::move(account)),
       callback_(std::move(callback)) {
@@ -42,8 +41,19 @@ PageContextEligibilityObserver::PageContextEligibilityObserver(
 
 PageContextEligibilityObserver::~PageContextEligibilityObserver() = default;
 
-void PageContextEligibilityObserver::CheckEligibilityAndNotify() {
+bool PageContextEligibilityObserver::CanComputePageContextEligibility() const {
   if (!is_api_loaded_) {
+    return false;
+  }
+  if (!observed_meta_tag_names_.empty() &&
+      !received_meta_tags_for_current_page_) {
+    return false;
+  }
+  return true;
+}
+
+void PageContextEligibilityObserver::CheckEligibilityAndNotify() {
+  if (!CanComputePageContextEligibility()) {
     return;
   }
   bool is_eligible = ComputePageContextEligibility();
@@ -56,7 +66,7 @@ void PageContextEligibilityObserver::CheckEligibilityAndNotify() {
   if (is_initial_evaluation || last_eligibility_ != current_eligibility) {
     last_eligibility_ = current_eligibility;
     if (callback_) {
-      callback_.Run(is_eligible);
+      callback_.Run(current_eligibility);
     }
   }
 }
@@ -67,7 +77,7 @@ PageContextEligibilityObserver::IsPageContextEligible() const {
 }
 
 bool PageContextEligibilityObserver::ComputePageContextEligibility() {
-  if (is_permanently_ineligible_) {
+  if (is_permanently_ineligible_ || !web_contents()) {
     return false;
   }
 
@@ -79,20 +89,51 @@ bool PageContextEligibilityObserver::ComputePageContextEligibility() {
                                           current_metadata_, api_holder_);
 }
 
+void PageContextEligibilityObserver::ResetToUnknown() {
+  meta_tags_observer_.reset();
+  current_metadata_.clear();
+  received_meta_tags_for_current_page_ = false;
+  if (last_eligibility_ != PageContextEligibilityStatus::kUnknown) {
+    last_eligibility_ = PageContextEligibilityStatus::kUnknown;
+    if (callback_) {
+      callback_.Run(PageContextEligibilityStatus::kUnknown);
+    }
+  }
+}
+
+// When the primary page changes, immediately transition eligibility to
+// `kUnknown` to clear state from the previous page. If the new page's
+// eligibility is conditional on `<meta>` tags, evaluation is asynchronous
+// while waiting for IPC `OnMetaTagsChanged` from the renderer.
 void PageContextEligibilityObserver::PrimaryPageChanged(content::Page& page) {
+  ResetToUnknown();
   UpdateObserver();
 }
 
+// We only update eligibility on `RenderFrameCreated` and `RenderFrameDeleted`
+// for subframes (`render_frame_host->GetParent() != nullptr`) belonging to the
+// primary page.
+//
+// For main frames, when a navigation starts that requires a new RenderFrameHost
+// (e.g. with RenderDocument enabled), updating eligibility on frame creation
+// is redundant and premature because the tab's eligibility does not change
+// until the new RenderFrameHost commits (handled via `PrimaryPageChanged`).
+//
+// For subframes, `RenderFrameCreated` handles new child frames attaching to
+// the primary page, and `RenderFrameDeleted` is essential to recompute
+// eligibility when a subframe is removed.
 void PageContextEligibilityObserver::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  if (&render_frame_host->GetPage() == &web_contents()->GetPrimaryPage()) {
+  if (render_frame_host->GetParent() &&
+      &render_frame_host->GetPage() == &web_contents()->GetPrimaryPage()) {
     UpdateObserver();
   }
 }
 
 void PageContextEligibilityObserver::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  if (&render_frame_host->GetPage() == &web_contents()->GetPrimaryPage()) {
+  if (render_frame_host->GetParent() &&
+      &render_frame_host->GetPage() == &web_contents()->GetPrimaryPage()) {
     UpdateObserver();
   }
 }
@@ -118,8 +159,12 @@ void PageContextEligibilityObserver::DidFinishNavigation(
   }
 }
 
+void PageContextEligibilityObserver::WebContentsDestroyed() {
+  ResetToUnknown();
+}
+
 void PageContextEligibilityObserver::UpdateObserver() {
-  if (!is_api_loaded_) {
+  if (!is_api_loaded_ || !web_contents()) {
     return;
   }
   std::vector<optimization_guide::FrameUrl> current_frames;
@@ -167,7 +212,6 @@ void PageContextEligibilityObserver::UpdateObserver() {
           base::BindRepeating(
               &PageContextEligibilityObserver::OnMetaTagsChanged,
               base::Unretained(this)));
-      meta_tags_observer_->DispatchMetadata();
     }
   }
 
@@ -176,6 +220,7 @@ void PageContextEligibilityObserver::UpdateObserver() {
 
 void PageContextEligibilityObserver::OnMetaTagsChanged(
     blink::mojom::PageMetadataPtr metadata) {
+  received_meta_tags_for_current_page_ = true;
   current_metadata_.clear();
   if (!metadata) {
     CheckEligibilityAndNotify();
