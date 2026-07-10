@@ -386,6 +386,30 @@ public class ActorNotificationFactoryTest {
                         ActorTaskState.ACTING, ActorTaskState.PAUSED_BY_USER));
     }
 
+    @Test
+    public void testBuildTaskStartsSoonNotification() {
+        NotificationWrapper wrapper = ActorNotificationFactory.buildTaskStartsSoonNotification();
+
+        assertNotNull("Notification wrapper should not be null", wrapper);
+        Notification notification = wrapper.getNotification();
+        assertNotNull("Notification should not be null", notification);
+        ShadowNotification shadowNotification = shadowOf(notification);
+
+        assertEquals(
+                "Content title should match",
+                mContext.getString(R.string.actor_notification_title_task_starts_soon),
+                shadowNotification.getContentTitle());
+        assertEquals(
+                "Content text should match",
+                mContext.getString(R.string.actor_notification_body_task_starts_soon),
+                shadowNotification.getContentText());
+
+        assertEquals(
+                "Notification ID should match",
+                ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID,
+                wrapper.getMetadata().id);
+    }
+
     private void assertSmallIcon(Notification notification) {
         assertNotNull("Small icon should not be null", notification.getSmallIcon());
         assertEquals(

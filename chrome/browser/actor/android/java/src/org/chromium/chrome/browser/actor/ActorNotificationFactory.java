@@ -32,6 +32,8 @@ public class ActorNotificationFactory {
     public static final String EXTRA_SHOW_ACTOR_CONTROL =
             "org.chromium.chrome.browser.actor.SHOW_ACTOR_CONTROL";
 
+    public static final int TASK_STARTS_SOON_NOTIFICATION_ID = 101;
+
     @IntDef({
         NotificationCategory.RUNNING,
         NotificationCategory.PAUSED,
@@ -227,5 +229,29 @@ public class ActorNotificationFactory {
         if (intent == null) return null;
         return PendingIntentProvider.getActivity(
                 context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    /**
+     * Builds a notification to show that the foreground service has started and the task will start
+     * soon.
+     *
+     * @return The built {@link NotificationWrapper}.
+     */
+    // TODO(crbug.com/533082119): Enable translation when UX is finalized.
+    public static NotificationWrapper buildTaskStartsSoonNotification() {
+        Context context = ContextUtils.getApplicationContext();
+        NotificationMetadata metadata =
+                new NotificationMetadata(
+                        NotificationUmaTracker.SystemNotificationType.ACTOR,
+                        /* notificationTag= */ null,
+                        TASK_STARTS_SOON_NOTIFICATION_ID);
+        return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
+                        ChromeChannelDefinitions.ChannelId.ACTOR, metadata)
+                .setSmallIcon(R.drawable.ic_chrome)
+                .setContentTitle(
+                        context.getString(R.string.actor_notification_title_task_starts_soon))
+                .setContentText(
+                        context.getString(R.string.actor_notification_body_task_starts_soon))
+                .buildNotificationWrapper();
     }
 }
