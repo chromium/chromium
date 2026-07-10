@@ -3359,6 +3359,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_GEMINI_LIVE_CONSENT_FIRST_BOX_BODY" desc="Body text for the first box of the Gemini Live Consent page.">
         Live will use your microphone. Tapping the Live button turns on the mic. To turn off the mic, tap the stop button or close Gemini.
       </message>
+      <message name="IDS_IOS_GEMINI_LIVE_CONSENT_MANAGED_SECOND_BOX_BODY" desc="Body text for the second box of the Gemini Live Consent page for managed accounts.">
+        Your organization's data and recordings won't be used to improve generative AI models. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Your Privacy &amp; Gemini<ph name="END_LINK">END_LINK</ph>
+      </message>
       <message name="IDS_IOS_GEMINI_LIVE_CONSENT_SECOND_BOX_BODY" desc="Body text for the second box of the Gemini Live Consent page.">
         Recordings of your interactions with Live and content you share with it are saved and processed per the <ph name="BEGIN_LINK">BEGIN_LINK</ph>Gemini Apps Privacy Notice<ph name="END_LINK">END_LINK</ph>. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>

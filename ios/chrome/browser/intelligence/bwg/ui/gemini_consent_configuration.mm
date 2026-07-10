@@ -87,7 +87,7 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
     case GeminiFirstRunType::kLive: {
       NSArray<GeminiConsentRow*>* rows = @[
         [self liveFirstRow],
-        [self liveSecondRow],
+        [self liveSecondRowForManaged:isManaged],
         [self liveThirdRow],
       ];
       return [[GeminiConsentConfiguration alloc] initWithRows:rows
@@ -493,17 +493,19 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 }
 
 // Builds the second live FRE consent row.
-+ (GeminiConsentRow*)liveSecondRow {
++ (GeminiConsentRow*)liveSecondRowForManaged:(BOOL)isManaged {
   UIImage* icon = DefaultSymbolWithConfiguration(
       kInfoCircleSymbol, [self defaultSymbolConfiguration]);
   NSString* text =
-      l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_CONSENT_SECOND_BOX_BODY);
-  NSAttributedString* body =
-      [self attributedTextForBody:text
-                          actions:@[
-                            kGeminiLivePrivacyNoticeLinkAction,
-                            kGeminiLiveLearnMoreLinkAction
-                          ]];
+      isManaged
+          ? l10n_util::GetNSString(
+                IDS_IOS_GEMINI_LIVE_CONSENT_MANAGED_SECOND_BOX_BODY)
+          : l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_CONSENT_SECOND_BOX_BODY);
+  NSArray<NSString*>* actions =
+      isManaged ? @[ kGeminiLivePrivacyHubManagedLinkAction ] : @[
+        kGeminiLivePrivacyNoticeLinkAction, kGeminiLiveLearnMoreLinkAction
+      ];
+  NSAttributedString* body = [self attributedTextForBody:text actions:actions];
   return [[GeminiConsentRow alloc] initWithIcon:icon title:nil body:body];
 }
 

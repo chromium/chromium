@@ -16,6 +16,14 @@
 // Create the Gemini logo with a diagonal linear gradient color palette.
 + (UIImage*)createGradientGeminiLogo:(CGFloat)pointSize;
 
+// Returns the expected content height of `targetView` when constrained to
+// `containerWidth`. Measures using `containerWidth` when established (> 0) so
+// that text wrapping heights are computed correctly, preventing clipping. Falls
+// back to unconstrained measurement when `containerWidth` is 0 (i.e. at early
+// initialization/viewDidLoad, before layout is resolved).
++ (CGFloat)contentHeightForView:(UIView*)targetView
+             withContainerWidth:(CGFloat)containerWidth;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_GEMINI_UI_UTILS_H_

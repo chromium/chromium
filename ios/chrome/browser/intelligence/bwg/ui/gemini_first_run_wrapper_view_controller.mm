@@ -137,6 +137,14 @@ const CGFloat kInsetAdjustment = 20;
   [self.sheetPresentationController invalidateDetents];
 }
 
+// Re-calculates and updates the sheet's content height constraint after the
+// actual screen layout (width) is resolved, ensuring text wrapping is accounted
+// for.
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  [self updateContentHeightConstraint];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   if (_currentChildViewController == _promoViewController) {
@@ -154,11 +162,14 @@ const CGFloat kInsetAdjustment = 20;
 
 #pragma mark - Private
 
-// Updates the content height constraint.
+// Updates the content height constraint and invalidates the sheet presentation
+// detents if the height has changed.
 - (void)updateContentHeightConstraint {
-  _contentHeightConstraint.constant =
-      [_currentChildViewController contentHeight];
-  [self.sheetPresentationController invalidateDetents];
+  CGFloat newHeight = [_currentChildViewController contentHeight];
+  if (newHeight != _contentHeightConstraint.constant) {
+    _contentHeightConstraint.constant = newHeight;
+    [self.sheetPresentationController invalidateDetents];
+  }
 }
 
 // Creates and returns the stack view containing the animated logos.

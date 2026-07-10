@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_accordion_view.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_mutator.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -62,10 +63,10 @@ const CGFloat kHeaderIconSizeMultiplier = 0.55;
 
 #pragma mark - GeminiFirstRunViewControllerProtocol
 
+// Returns the expected content height of this view.
 - (CGFloat)contentHeight {
-  return
-      [_mainStackView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
-          .height;
+  return [GeminiUIUtils contentHeightForView:_mainStackView
+                          withContainerWidth:self.view.bounds.size.width];
 }
 
 #pragma mark - GeminiFirstRunStep
@@ -245,6 +246,9 @@ const CGFloat kHeaderIconSizeMultiplier = 0.55;
   } else if ([actionString
                  isEqualToString:kGeminiLivePrivacyPolicyLinkAction]) {
     [self.mutator openNewTabWithURL:GURL(kLivePrivacyPolicyLinkURL)];
+  } else if ([actionString
+                 isEqualToString:kGeminiLivePrivacyHubManagedLinkAction]) {
+    [self.mutator openNewTabWithURL:GURL(kLivePrivacyHubManagedLinkURL)];
   } else if ([actionString isEqualToString:kGeminiKoreanTermsLinkAction]) {
     [self.mutator openNewTabWithURL:GURL(kKoreanTermsFootnoteLinkURL)];
   } else if ([actionString isEqualToString:kGeminiWatchLinkAction]) {

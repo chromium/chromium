@@ -51,9 +51,9 @@ class GeminiConsentConfigurationTest : public PlatformTest {
                         country:country];
   }
 
-  GeminiConsentConfiguration* BuildLiveConfiguration() {
+  GeminiConsentConfiguration* BuildLiveConfiguration(BOOL is_managed) {
     return [GeminiConsentConfiguration
-        configurationForManaged:NO
+        configurationForManaged:is_managed
                          strict:NO
                            type:GeminiFirstRunType::kLive
                         country:kUSCountryCode];
@@ -154,7 +154,7 @@ TEST_F(GeminiConsentConfigurationTest, StrictConsentFootnote) {
 
 // Tests that Live configuration has exactly 3 rows and a custom header.
 TEST_F(GeminiConsentConfigurationTest, LiveConfigurationStructure) {
-  GeminiConsentConfiguration* config = BuildLiveConfiguration();
+  GeminiConsentConfiguration* config = BuildLiveConfiguration(NO);
   ASSERT_NE(nil, config);
   EXPECT_EQ(3U, config.rows.count);
   EXPECT_FALSE(config.collapsible);
@@ -167,7 +167,7 @@ TEST_F(GeminiConsentConfigurationTest, LiveConfigurationStructure) {
 
 // Tests properties of Live rows and links.
 TEST_F(GeminiConsentConfigurationTest, LiveRowPropertiesAndLinks) {
-  GeminiConsentConfiguration* config = BuildLiveConfiguration();
+  GeminiConsentConfiguration* config = BuildLiveConfiguration(NO);
 
   // Row 1
   GeminiConsentRow* row1 = config.rows[0];
@@ -190,6 +190,18 @@ TEST_F(GeminiConsentConfigurationTest, LiveRowPropertiesAndLinks) {
       l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_CONSENT_THIRD_BOX_BODY));
   EXPECT_NSEQ(parsedText3.string, row3.body.string);
   EXPECT_TRUE(HasLinkWithAction(row3.body, kGeminiLivePrivacyPolicyLinkAction));
+}
+
+// Tests properties of Live rows and links for managed accounts.
+TEST_F(GeminiConsentConfigurationTest, LiveRowPropertiesAndLinksForManaged) {
+  GeminiConsentConfiguration* config = BuildLiveConfiguration(YES);
+  GeminiConsentRow* row = config.rows[1];
+  EXPECT_EQ(nil, row.title);
+  StringWithTags parsedText = ParseStringWithLinks(l10n_util::GetNSString(
+      IDS_IOS_GEMINI_LIVE_CONSENT_MANAGED_SECOND_BOX_BODY));
+  EXPECT_NSEQ(parsedText.string, row.body.string);
+  EXPECT_TRUE(
+      HasLinkWithAction(row.body, kGeminiLivePrivacyHubManagedLinkAction));
 }
 
 // Tests properties of the updated consent normal layout.
