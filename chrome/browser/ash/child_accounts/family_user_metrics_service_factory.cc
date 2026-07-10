@@ -39,7 +39,7 @@ FamilyUserMetricsServiceFactory::FamilyUserMetricsServiceFactory()
               .Build()) {
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
   DependsOn(ChildUserServiceFactory::GetInstance());
-  DependsOn(SupervisedUserServiceFactory::GetInstance());
+  DependsOn(supervised_user::SupervisedUserServiceFactory::GetInstance());
 }
 
 FamilyUserMetricsServiceFactory::~FamilyUserMetricsServiceFactory() = default;

@@ -15,15 +15,14 @@ class BrowserContext;
 class Profile;
 
 namespace supervised_user {
+
 class SupervisedUserService;
-}  // namespace supervised_user
 
 // Factory creating SupervisedUserService for regular profiles.
 // SupervisedUserService is not created for incognito and guest profile.
 class SupervisedUserServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static supervised_user::SupervisedUserService* GetForProfile(
-      Profile* profile);
+  static SupervisedUserService* GetForProfile(Profile* profile);
 
   static supervised_user::SupervisedUserService* GetForProfileIfExists(
       Profile* profile);
@@ -43,5 +42,7 @@ class SupervisedUserServiceFactory : public ProfileKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
+
+}  // namespace supervised_user
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SERVICE_FACTORY_H_

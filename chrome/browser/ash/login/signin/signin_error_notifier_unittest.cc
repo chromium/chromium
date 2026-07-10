@@ -118,7 +118,7 @@ TEST_F(SigninErrorNotifierTest, NoNotificationAfterAddSupervisionEnabled) {
 
   // Mark signout required.
   supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile());
+      supervised_user::SupervisedUserServiceFactory::GetForProfile(profile());
   service->set_signout_required_after_supervision_enabled();
 
   SetAuthError(

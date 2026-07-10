@@ -415,7 +415,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   SigninMetricsServiceFactory::GetInstance();
   SigninProfileInfoUpdaterFactory::GetInstance();
   SupervisedUserMetricsServiceFactory::GetInstance();
-  SupervisedUserServiceFactory::GetInstance();
+  supervised_user::SupervisedUserServiceFactory::GetInstance();
   SubscriptionEligibilityServiceFactory::GetInstance();
   SyncInvalidationsServiceFactory::GetInstance();
   SyncServiceFactory::GetInstance();

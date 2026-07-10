@@ -309,7 +309,7 @@ void ProcessMirrorHeader(
     // by supervision being enabled for an account.  In this situation, a
     // complete signout is required.
     supervised_user::SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForProfile(profile);
+        supervised_user::SupervisedUserServiceFactory::GetForProfile(profile);
     if (service && service->signout_required_after_supervision_enabled()) {
       return;
     }

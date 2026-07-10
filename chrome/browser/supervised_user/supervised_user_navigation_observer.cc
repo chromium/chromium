@@ -110,7 +110,7 @@ SupervisedUserNavigationObserver::SupervisedUserNavigationObserver(
         supervised_user_url_filtering_service());
   } else {
     supervised_user_service_observation_.Observe(
-        SupervisedUserServiceFactory::GetForProfile(profile));
+        supervised_user::SupervisedUserServiceFactory::GetForProfile(profile));
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -554,7 +554,7 @@ void SupervisedUserNavigationObserver::MaybeUpdateRequestedHosts() {
 
 supervised_user::SupervisedUserService*
 SupervisedUserNavigationObserver::supervised_user_service() const {
-  return SupervisedUserServiceFactory::GetForProfile(
+  return supervised_user::SupervisedUserServiceFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
 }
 

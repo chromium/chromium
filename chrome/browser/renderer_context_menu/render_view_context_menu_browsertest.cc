@@ -972,7 +972,7 @@ class ContextMenuForSupervisedUsersBrowserTest
     : public ContextMenuBrowserTestBase {
  protected:
   supervised_user::SupervisedUserService* GetSupervisedUserService() {
-    return SupervisedUserServiceFactory::GetForProfile(browser()->GetProfile());
+    return supervised_user::SupervisedUserServiceFactory::GetForProfile(browser()->GetProfile());
   }
 
   supervised_user::KidsManagementApiServerMock& kids_management_api_mock() {

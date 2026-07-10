@@ -123,7 +123,7 @@ bool IsShowingInterstitialForState(web::WebState* web_state) {
   mocked_creator->SetEnabled();
 
   supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(
+      supervised_user::SupervisedUserServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalProfile());
   CHECK(service);
   service->remote_web_approvals_manager().ClearApprovalRequestsCreators();
@@ -158,7 +158,7 @@ bool IsShowingInterstitialForState(web::WebState* web_state) {
 }
 
 + (void)setDefaultClassifyURLNavigationIsAllowed:(BOOL)is_allowed {
-  SupervisedUserServiceFactory::GetInstance()
+  supervised_user::SupervisedUserServiceFactory::GetInstance()
       ->GetForProfile(chrome_test_util::GetOriginalProfile())
       ->GetURLFilter()
       ->SetURLCheckerClientForTesting(std::make_unique<StaticUrlCheckerClient>(

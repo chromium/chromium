@@ -47,7 +47,7 @@ class SupervisedUserServiceFactoryTest : public PlatformTest {
 // SupervisedUserService.
 TEST_F(SupervisedUserServiceFactoryTest, CreateService) {
   supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(GetRegularProfile());
+      supervised_user::SupervisedUserServiceFactory::GetForProfile(GetRegularProfile());
   EXPECT_TRUE(service);
 }
 
@@ -57,6 +57,6 @@ TEST_F(SupervisedUserServiceFactoryTest, ReturnsNullOnOffTheRecordProfile) {
   ProfileIOS* otr_profile = GetOffTheRecordProfile();
   ASSERT_TRUE(otr_profile);
   supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(otr_profile);
+      supervised_user::SupervisedUserServiceFactory::GetForProfile(otr_profile);
   EXPECT_FALSE(service);
 }

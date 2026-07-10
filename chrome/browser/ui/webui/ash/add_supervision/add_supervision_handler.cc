@@ -120,7 +120,7 @@ void AddSupervisionHandler::LogOut() {
 
 void AddSupervisionHandler::NotifySupervisionEnabled() {
   supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(Profile::FromWebUI(web_ui_));
+      supervised_user::SupervisedUserServiceFactory::GetForProfile(Profile::FromWebUI(web_ui_));
   service->set_signout_required_after_supervision_enabled();
 
   // Force full sign-in the next time the user is at the login screen.

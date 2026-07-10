@@ -1075,7 +1075,7 @@ class ManagementApiSupervisedUserTest : public ManagementApiUnitTest {
   }
 
   supervised_user::SupervisedUserService* GetSupervisedUserService() {
-    return SupervisedUserServiceFactory::GetForProfile(profile());
+    return supervised_user::SupervisedUserServiceFactory::GetForProfile(profile());
   }
 
   SupervisedUserExtensionsDelegate* GetSupervisedUserExtensionsDelegate() {

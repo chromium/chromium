@@ -52,7 +52,7 @@ const char kSupervisedUserInterstitialType[] = "kSupervisedUserInterstitial";
 
 SupervisedUserErrorContainer::SupervisedUserErrorContainer(
     web::WebState* web_state)
-    : supervised_user_service_(*SupervisedUserServiceFactory::GetForProfile(
+    : supervised_user_service_(*supervised_user::SupervisedUserServiceFactory::GetForProfile(
           ProfileIOS::FromBrowserState(web_state->GetBrowserState()))),
       supervised_user_url_filtering_service_(
           *supervised_user::SupervisedUserUrlFilteringServiceFactory::

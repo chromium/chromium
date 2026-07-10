@@ -37,7 +37,7 @@ ChildAccountServiceFactory::ChildAccountServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   // Required to consume changes indicated by this service.
-  DependsOn(SupervisedUserServiceFactory::GetInstance());
+  DependsOn(supervised_user::SupervisedUserServiceFactory::GetInstance());
   DependsOn(ListFamilyMembersServiceFactory::GetInstance());
 }
 
@@ -50,7 +50,7 @@ ChildAccountServiceFactory::BuildServiceInstanceForBrowserContext(
 
   CHECK(profile->GetPrefs());
   CHECK(ListFamilyMembersServiceFactory::GetForProfile(profile));
-  CHECK(SupervisedUserServiceFactory::GetForProfile(profile));
+  CHECK(supervised_user::SupervisedUserServiceFactory::GetForProfile(profile));
 
   return std::make_unique<supervised_user::ChildAccountService>(
       *profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),

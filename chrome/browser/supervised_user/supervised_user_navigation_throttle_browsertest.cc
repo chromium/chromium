@@ -461,7 +461,7 @@ void SupervisedUserIframeFilterTest::SetUpOnMainThread() {
   SupervisedUserNavigationThrottleTestBase::SetUpOnMainThread();
 
   supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(browser()->profile());
+      supervised_user::SupervisedUserServiceFactory::GetForProfile(browser()->profile());
   supervised_user::FamilyLinkSettingsService* family_link_settings_service =
       supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
           browser()->profile()->GetProfileKey());

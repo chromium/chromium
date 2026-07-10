@@ -137,7 +137,7 @@ class SupervisedUserService : public KeyedService {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // Use |SupervisedUserServiceFactory::GetForProfile(..)| to get
+  // Use |supervised_user::SupervisedUserServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
   // Public to allow visibility to iOS factory.
   SupervisedUserService(

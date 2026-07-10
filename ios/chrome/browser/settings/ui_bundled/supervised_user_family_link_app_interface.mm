@@ -41,7 +41,7 @@ namespace {
 supervised_user::FamilyLinkSettingsState::Services
 GetSupervisedUserServicesForProfile(ProfileIOS* profile) {
   supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile);
+      supervised_user::SupervisedUserServiceFactory::GetForProfile(profile);
   supervised_user::SupervisedUserUrlFilteringService* url_filtering_service =
       supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
           profile);

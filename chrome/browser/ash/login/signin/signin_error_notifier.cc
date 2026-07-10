@@ -327,7 +327,7 @@ void SigninErrorNotifier::HandleDeviceAccountError(
   // If this error has occurred because a user's account has just been converted
   // to a Family Link Supervised account, then suppress the notification.
   supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile_);
+      supervised_user::SupervisedUserServiceFactory::GetForProfile(profile_);
   if (service->signout_required_after_supervision_enabled())
     return;
 

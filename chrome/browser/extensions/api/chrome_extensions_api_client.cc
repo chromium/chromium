@@ -531,7 +531,7 @@ ChromeExtensionsAPIClient::GetFactoryDependencies() {
 #if !BUILDFLAG(IS_ANDROID)
   dependencies.push_back(InstantServiceFactory::GetInstance());
 #endif
-  dependencies.push_back(SupervisedUserServiceFactory::GetInstance());
+  dependencies.push_back(supervised_user::SupervisedUserServiceFactory::GetInstance());
   return dependencies;
 }
 

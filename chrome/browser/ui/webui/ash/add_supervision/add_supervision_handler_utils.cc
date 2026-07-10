@@ -33,7 +33,7 @@ void LogOutHelper() {
 
 bool EnrollmentCompleted() {
   supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(
+      supervised_user::SupervisedUserServiceFactory::GetForProfile(
           ProfileManager::GetPrimaryUserProfile());
   return service->signout_required_after_supervision_enabled();
 }

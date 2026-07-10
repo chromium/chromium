@@ -28,7 +28,7 @@ SigninErrorNotifierFactory::SigninErrorNotifierFactory()
               .Build()) {
   DependsOn(SigninErrorControllerFactory::GetInstance());
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
-  DependsOn(SupervisedUserServiceFactory::GetInstance());
+  DependsOn(supervised_user::SupervisedUserServiceFactory::GetInstance());
 }
 
 SigninErrorNotifierFactory::~SigninErrorNotifierFactory() = default;

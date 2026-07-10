@@ -29,7 +29,7 @@ SupervisedUserMetricsServiceFactory::GetInstance() {
 
 SupervisedUserMetricsServiceFactory::SupervisedUserMetricsServiceFactory()
     : ProfileKeyedServiceFactoryIOS("SupervisedUserMetricsService") {
-  DependsOn(SupervisedUserServiceFactory::GetInstance());
+  DependsOn(supervised_user::SupervisedUserServiceFactory::GetInstance());
   DependsOn(
       supervised_user::SupervisedUserUrlFilteringServiceFactory::GetInstance());
 }
@@ -39,7 +39,7 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   return std::make_unique<supervised_user::SupervisedUserMetricsService>(
       profile->GetPrefs(),
-      *SupervisedUserServiceFactory::GetForProfile(profile),
+      *supervised_user::SupervisedUserServiceFactory::GetForProfile(profile),
       *supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
           profile),
       GetApplicationContext()->GetDeviceParentalControls(),

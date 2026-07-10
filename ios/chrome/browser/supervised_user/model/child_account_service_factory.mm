@@ -30,13 +30,13 @@ ChildAccountServiceFactory::ChildAccountServiceFactory()
     : ProfileKeyedServiceFactoryIOS("ChildAccountService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   // Required to consume changes indicated by this service.
-  DependsOn(SupervisedUserServiceFactory::GetInstance());
+  DependsOn(supervised_user::SupervisedUserServiceFactory::GetInstance());
   DependsOn(ListFamilyMembersServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
 ChildAccountServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
-  CHECK(SupervisedUserServiceFactory::GetForProfile(profile));
+  CHECK(supervised_user::SupervisedUserServiceFactory::GetForProfile(profile));
   return std::make_unique<supervised_user::ChildAccountService>(
       CHECK_DEREF(profile->GetPrefs()),
       IdentityManagerFactory::GetForProfile(profile),

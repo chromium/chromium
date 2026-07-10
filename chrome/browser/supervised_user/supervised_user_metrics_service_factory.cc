@@ -52,7 +52,7 @@ SupervisedUserMetricsServiceFactory::SupervisedUserMetricsServiceFactory()
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   // Used for tracking web filter metrics.
-  DependsOn(SupervisedUserServiceFactory::GetInstance());
+  DependsOn(supervised_user::SupervisedUserServiceFactory::GetInstance());
   DependsOn(
       supervised_user::SupervisedUserUrlFilteringServiceFactory::GetInstance());
 }
@@ -82,7 +82,7 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<supervised_user::SupervisedUserMetricsService>(
       profile->GetPrefs(),
-      CHECK_DEREF(SupervisedUserServiceFactory::GetForProfile(profile)),
+      CHECK_DEREF(supervised_user::SupervisedUserServiceFactory::GetForProfile(profile)),
       CHECK_DEREF(supervised_user::SupervisedUserUrlFilteringServiceFactory::
                       GetForProfile(profile)),
       g_browser_process->device_parental_controls(),

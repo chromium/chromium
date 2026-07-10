@@ -95,7 +95,7 @@ AvatarMenu::AvatarMenu(ProfileAttributesStorage* profile_storage,
   // of changes to the custodian info.
   if (browser_) {
     auto* supervised_user_service =
-        SupervisedUserServiceFactory::GetForProfile(browser_->GetProfile());
+        supervised_user::SupervisedUserServiceFactory::GetForProfile(browser_->GetProfile());
     if (supervised_user_service) {
       supervised_user_observation_.Observe(supervised_user_service);
     }

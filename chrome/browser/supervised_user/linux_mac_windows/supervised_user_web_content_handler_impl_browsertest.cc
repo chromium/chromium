@@ -79,7 +79,7 @@ class SupervisedUserWebContentHandlerImplTest
     Profile* profile =
         Profile::FromBrowserContext(contents()->GetBrowserContext());
     supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForProfile(profile);
+        supervised_user::SupervisedUserServiceFactory::GetForProfile(profile);
     supervised_user::FamilyLinkUrlFilter* url_filter =
         supervised_user_service->GetURLFilter();
     CHECK(url_filter);

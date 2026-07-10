@@ -683,7 +683,7 @@ void ParentPermissionDialogView::ShowDialogInternal() {
 
 void ParentPermissionDialogView::LoadParentEmailAddresses() {
   supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(params_->profile);
+      supervised_user::SupervisedUserServiceFactory::GetForProfile(params_->profile);
 
   if (service->GetCustodian()) {
     parent_permission_email_addresses_.push_back(
@@ -710,7 +710,7 @@ void ParentPermissionDialogView::CloseWithReason(
 GaiaId ParentPermissionDialogView::GetParentObfuscatedGaiaID(
     const std::u16string& parent_email) const {
   supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(params_->profile);
+      supervised_user::SupervisedUserServiceFactory::GetForProfile(params_->profile);
 
   if (service->GetCustodian() && service->GetCustodian()->GetEmailAddress() ==
                                      base::UTF16ToUTF8(parent_email)) {

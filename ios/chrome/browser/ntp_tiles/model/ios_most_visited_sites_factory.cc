@@ -26,7 +26,7 @@ std::unique_ptr<ntp_tiles::MostVisitedSites>
 IOSMostVisitedSitesFactory::NewForBrowserState(ProfileIOS* profile) {
   return std::make_unique<ntp_tiles::MostVisitedSites>(
       profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
-      SupervisedUserServiceFactory::GetForProfile(profile),
+      supervised_user::SupervisedUserServiceFactory::GetForProfile(profile),
       supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
           profile),
       ios::TopSitesFactory::GetForProfile(profile),

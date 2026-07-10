@@ -583,7 +583,7 @@ void SessionControllerClientImpl::OnLoginUserProfilePrepared(Profile* profile) {
 
     // Watch for changes to supervised user manager/custodians.
     supervised_user_service_observation_.Observe(
-        SupervisedUserServiceFactory::GetForProfile(supervised_user_profile_));
+        supervised_user::SupervisedUserServiceFactory::GetForProfile(supervised_user_profile_));
   }
 
   base::RepeatingClosure session_info_changed_closure = base::BindRepeating(

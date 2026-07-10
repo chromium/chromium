@@ -51,7 +51,7 @@ class SupervisedUserExtensionsMetricsDelegateImplTest
     supervised_user_metrics_service_ =
         std::make_unique<supervised_user::SupervisedUserMetricsService>(
             profile()->GetPrefs(),
-            *SupervisedUserServiceFactory::GetForProfile(profile()),
+            *supervised_user::SupervisedUserServiceFactory::GetForProfile(profile()),
             *supervised_user::SupervisedUserUrlFilteringServiceFactory::
                 GetForProfile(profile()),
             device_parental_controls_,

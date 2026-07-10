@@ -81,7 +81,7 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 
   auto most_visited_sites = std::make_unique<ntp_tiles::MostVisitedSites>(
       profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
-      SupervisedUserServiceFactory::GetForProfile(profile),
+      supervised_user::SupervisedUserServiceFactory::GetForProfile(profile),
       supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
           profile),
       TopSitesFactory::GetForProfile(profile),

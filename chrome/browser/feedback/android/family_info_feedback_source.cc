@@ -43,7 +43,7 @@ FamilyInfoFeedbackSource::FamilyInfoFeedbackSource(
     const base::android::JavaRef<jobject>& obj,
     Profile* profile)
     : supervised_user_service_(
-          SupervisedUserServiceFactory::GetForProfile(profile)),
+          supervised_user::SupervisedUserServiceFactory::GetForProfile(profile)),
       url_filtering_service_(
           *supervised_user::SupervisedUserUrlFilteringServiceFactory::
               GetForProfile(profile)),

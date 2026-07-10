@@ -10,6 +10,7 @@
 #import "components/supervised_user/core/browser/device_parental_controls.h"
 #import "components/supervised_user/core/browser/family_link_settings_service.h"
 #import "components/supervised_user/core/browser/family_link_url_filter.h"
+#import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_url_checker_client.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
@@ -22,11 +23,11 @@
 #import "ios/chrome/common/channel_info.h"
 #import "url/gurl.h"
 
+namespace supervised_user {
 namespace {
 
 // Implementation of the supervised user filter delegate interface.
-class FilterDelegateImpl
-    : public supervised_user::FamilyLinkUrlFilter::Delegate {
+class FilterDelegateImpl : public FamilyLinkUrlFilter::Delegate {
  public:
   bool SupportsWebstoreURL(const GURL& url) const override { return false; }
 };
@@ -34,11 +35,10 @@ class FilterDelegateImpl
 }  // namespace
 
 // static
-supervised_user::SupervisedUserService*
-SupervisedUserServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<supervised_user::SupervisedUserService>(
-          profile, /*create=*/true);
+SupervisedUserService* SupervisedUserServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<SupervisedUserService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -51,7 +51,7 @@ SupervisedUserServiceFactory::SupervisedUserServiceFactory()
     : ProfileKeyedServiceFactoryIOS("SupervisedUserService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
-  DependsOn(supervised_user::FamilyLinkSettingsServiceFactory::GetInstance());
+  DependsOn(FamilyLinkSettingsServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -63,19 +63,16 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForProfile(profile);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       profile->GetSharedURLLoaderFactory();
-  supervised_user::FamilyLinkSettingsService& family_link_settings_service =
-      CHECK_DEREF(
-          supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
-              profile));
-  return std::make_unique<supervised_user::SupervisedUserService>(
+  FamilyLinkSettingsService& family_link_settings_service =
+      CHECK_DEREF(FamilyLinkSettingsServiceFactory::GetForProfile(profile));
+  return std::make_unique<SupervisedUserService>(
       identity_manager, url_loader_factory, CHECK_DEREF(profile->GetPrefs()),
       family_link_settings_service,
       &CHECK_DEREF(SyncServiceFactory::GetForProfile(profile)),
-      std::make_unique<supervised_user::FamilyLinkUrlFilter>(
+      std::make_unique<FamilyLinkUrlFilter>(
           family_link_settings_service, CHECK_DEREF(profile->GetPrefs()),
           std::make_unique<FilterDelegateImpl>(),
-          std::make_unique<
-              supervised_user::SupervisedUserUrlCheckerClient>(
+          std::make_unique<SupervisedUserUrlCheckerClient>(
               identity_manager, url_loader_factory,
               CHECK_DEREF(profile->GetPrefs()),
               platform_delegate->GetCountryCode(),
@@ -83,3 +80,5 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
       std::move(platform_delegate),
       GetApplicationContext()->GetDeviceParentalControls());
 }
+
+}  // namespace supervised_user
