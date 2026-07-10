@@ -76,7 +76,8 @@ void DrivePickerHostController::ShowDrivePickerHost(
   }
 
   auto view = std::make_unique<DrivePickerHostView>(
-      browser_window_interface_->GetProfile(), browser_window_interface_);
+      browser_window_interface_->GetProfile(), browser_window_interface_,
+      request->type());
   DrivePickerHostView* view_ptr = view.get();
   picker_view_ = view.get();
 
