@@ -421,8 +421,12 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.ToString();
     });
 
-// TODO(crbug.com/454761015): Re-enable after fixing.
-IN_PROC_BROWSER_TEST_P(NtpRealboxUiScreenshotTest, DISABLED_Screenshots) {
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Screenshots DISABLED_Screenshots
+#else
+#define MAYBE_Screenshots Screenshots
+#endif
+IN_PROC_BROWSER_TEST_P(NtpRealboxUiScreenshotTest, MAYBE_Screenshots) {
   // Force a consistent window size to exercise realbox layout within New Tab
   // Page bounds.
   auto screen_size = gfx::Size(1000, 1200);
