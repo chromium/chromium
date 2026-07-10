@@ -723,9 +723,9 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateVideoFrame(
           bpp_numerator / bpp_denom);
 
   scoped_refptr<VideoFrame> frame = CreateMappableSharedImageVideoFrame(
-      VideoPixelFormat::PIXEL_FORMAT_NV12, alloc_size, visible_rect, alloc_size,
-      kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-      test_sii_.get());
+      VideoPixelFormat::PIXEL_FORMAT_NV12, gfx::ColorSpace::CreateREC709(),
+      alloc_size, visible_rect, alloc_size, kNullTimestamp,
+      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, test_sii_.get());
 
   std::unique_ptr<VideoFrameMapper> frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
@@ -743,15 +743,12 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateVideoFrame(
            mapped_frame->stride(VideoFrame::Plane::kUV));
 
   auto gmb = CreateGpuMemoryBufferHandle(frame.get());
-  viz::SharedImageFormat format_nv12 = viz::SharedImageFormat::MultiPlane(
-      viz::SharedImageFormat::PlaneConfig::kY_UV,
-      viz::SharedImageFormat::Subsampling::k420,
-      viz::SharedImageFormat::ChannelFormat::k8);
+  viz::SharedImageFormat format_nv12 = viz::MultiPlaneFormat::kNV12;
   format_nv12.SetPrefersExternalSampler();
   shared_image_factory_->CreateSharedImage(
       mailbox,
       gpu::SharedImageInfo(
-          format_nv12, frame->coded_size(), gfx::ColorSpace::CreateSRGB(),
+          format_nv12, frame->coded_size(), gfx::ColorSpace::CreateREC709(),
           kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
           gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel"),
       std::move(gmb));
@@ -768,8 +765,9 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateFramebuffer(
   scoped_refptr<VideoFrame> frame = CreateMappableSharedImageVideoFrame(
       is_10bit ? VideoPixelFormat::PIXEL_FORMAT_XR30
                : VideoPixelFormat::PIXEL_FORMAT_ARGB,
-      coded_size, gfx::Rect(coded_size), coded_size, kNullTimestamp,
-      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, test_sii_.get());
+      gfx::ColorSpace::CreateSRGB(), coded_size, gfx::Rect(coded_size),
+      coded_size, kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
+      test_sii_.get());
 
   auto gmb = CreateGpuMemoryBufferHandle(frame.get());
   auto si_format = is_10bit ? viz::SinglePlaneFormat::kBGRA_1010102

@@ -150,6 +150,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
   constexpr gfx::Size kCodedSize(320, 240);
   constexpr gfx::Rect kVisibleRect(kCodedSize);
   constexpr gfx::Size kNaturalSize(kCodedSize);
+  constexpr gfx::ColorSpace kColorSpace(gfx::ColorSpace::CreateREC709());
   constexpr auto kTimeStamp = base::Milliseconds(1234);
   constexpr gfx::BufferUsage kBufferUsage =
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
@@ -168,8 +169,8 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
         break;
       case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE:
         frame = CreateMappableSharedImageVideoFrame(
-            kPixelFormat, kCodedSize, kVisibleRect, kNaturalSize, kTimeStamp,
-            kBufferUsage, test_sii.get());
+            kPixelFormat, kColorSpace, kCodedSize, kVisibleRect, kNaturalSize,
+            kTimeStamp, kBufferUsage, test_sii.get());
         break;
       default:
         NOTREACHED();
