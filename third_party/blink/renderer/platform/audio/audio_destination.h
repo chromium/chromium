@@ -283,7 +283,7 @@ class PLATFORM_EXPORT AudioDestination final
       base::WaitableEvent::InitialState::NOT_SIGNALED};
 
   const bool is_output_buffer_bypassed_ = false;
-  bool state_change_underrun_in_bypass_mode_ = false;
+  std::atomic<bool> is_state_change_underrun_in_bypass_mode_ = false;
 
   // Incremented on every Start() to identify tasks from the current session.
   // uint32 is safe because overflow requires over 100,000 years of typical

@@ -163,6 +163,10 @@ int AudioDestination::Render(base::TimeDelta delay,
   };
 
   if (is_output_buffer_bypassed_) {
+    // Reset the underrun flag at the start of rendering to ensure we only
+    // catch underruns occurring during this active session's lifetime.
+    is_state_change_underrun_in_bypass_mode_.store(false,
+                                                   std::memory_order_relaxed);
     // Fill the FIFO if necessary.
     const uint32_t frames_available = fifo_->FramesAvailable();
     const uint32_t frames_to_render = number_of_frames > frames_available
@@ -171,13 +175,15 @@ int AudioDestination::Render(base::TimeDelta delay,
     if (worklet_task_runner_) {
       // Use the dual-thread rendering if the AudioWorklet is activated.
       output_buffer_bypass_wait_event_.Reset();
+      const uint32_t current_session_id =
+          session_id_.load(std::memory_order_relaxed);
       const bool posted_successfully = PostCrossThreadTask(
           *worklet_task_runner_, FROM_HERE,
           CrossThreadBindOnce(
               &AudioDestination::RequestRenderWait, WrapRefCounted(this),
               number_of_frames, frames_to_render, delay, delay_timestamp,
               glitch_info, /*request_timestamp=*/base::TimeTicks::Now(),
-              session_id_.load(std::memory_order_relaxed)));
+              current_session_id));
 
       if (posted_successfully) {
         TRACE_EVENT0("webaudio", "AudioDestination::Render waiting");
@@ -204,26 +210,46 @@ int AudioDestination::Render(base::TimeDelta delay,
         base::WaitableEvent* events[] = {&output_buffer_bypass_wait_event_,
                                          &output_buffer_bypass_stop_event_};
         size_t signaled_index = base::WaitableEvent::WaitMany(events);
-        if (signaled_index == 1) {
-          state_change_underrun_in_bypass_mode_ = true;
+        if (signaled_index == 1 ||
+            current_session_id !=
+                session_id_.load(std::memory_order_acquire)) {
+          // The stop event was signaled (e.g., Pause() or Stop() was called
+          // on the main thread) or the session changed during wait. We treat
+          // this as an expected state change underrun.
+          is_state_change_underrun_in_bypass_mode_.store(
+              true, std::memory_order_relaxed);
         }
       } else {
-        // The render request failed to post
-        state_change_underrun_in_bypass_mode_ = true;
+        // If posting the task fails, it means the worklet is shutting down
+        // or the task runner is invalid. This will cause the audio thread
+        // to wake up from WaitMany via the stop event or timeout and find an
+        // empty FIFO. We set the underrun flag to true to allow it to bypass
+        // the CHECK.
+        is_state_change_underrun_in_bypass_mode_.store(
+            true, std::memory_order_relaxed);
       }
     } else {
       // Otherwise use the single-thread rendering.
-      state_change_underrun_in_bypass_mode_ = !RequestRender(
-          number_of_frames, frames_to_render, delay, delay_timestamp,
-          glitch_info, /*request_timestamp=*/base::TimeTicks::Now(),
-          session_id_.load(std::memory_order_relaxed));
+      if (!RequestRender(
+              number_of_frames, frames_to_render, delay, delay_timestamp,
+              glitch_info,
+              /*request_timestamp=*/base::TimeTicks::Now(),
+              session_id_.load(std::memory_order_relaxed))) {
+        is_state_change_underrun_in_bypass_mode_.store(
+            true, std::memory_order_relaxed);
+      }
     }
 
     const uint32_t frames_after_render = fifo_->FramesAvailable();
     if (frames_after_render < number_of_frames) {
-      // This can happen if the device has stopped or is stopping when
-      // `Render()` is called.
-      CHECK(state_change_underrun_in_bypass_mode_);
+      // A FIFO underrun (insufficient frames) is only permitted if it was
+      // caused by a known state change (e.g., the destination is pausing,
+      // resuming, or stopping, which results in tasks being discarded or
+      // not posted). If an underrun occurs during normal execution without
+      // a state change, it indicates a critical logic error or thread
+      // leak. We CHECK this flag to catch such errors early.
+      CHECK(is_state_change_underrun_in_bypass_mode_.load(
+          std::memory_order_relaxed));
       output_bus_->Zero();
       fifo_->Pull(output_bus_.get(), frames_after_render);
       return frames_after_render;
@@ -352,6 +378,9 @@ void AudioDestination::Resume() {
   }
   output_buffer_bypass_stop_event_.Reset();
   SetDeviceState(DeviceState::kRunning);
+  // Signal the wait event to unblock the audio thread if it was waiting on the
+  // old session. This prevents hangs if Pause() and Resume() happened quickly.
+  output_buffer_bypass_wait_event_.Signal();
   web_audio_device_->Resume();
 }
 
@@ -590,17 +619,28 @@ void AudioDestination::RequestRenderWait(
     const media::AudioGlitchInfo& glitch_info,
     base::TimeTicks request_timestamp,
     uint32_t session_id) {
-  if (session_id != session_id_.load(std::memory_order_acquire)) {
-    return;
+  bool success = false;
+  if (session_id == session_id_.load(std::memory_order_acquire)) {
+    success = RequestRender(frames_requested, frames_to_render, delay,
+                            delay_timestamp, glitch_info, request_timestamp,
+                            session_id);
   }
-  bool success = RequestRender(frames_requested, frames_to_render, delay,
-                               delay_timestamp, glitch_info, request_timestamp,
-                               session_id);
+
+  // We check the session ID again because the session might have changed
+  // concurrently (e.g. Pause() called on the main thread) while
+  // RequestRender was executing. If it changed, we must treat this as a
+  // state-change underrun and avoid signaling to prevent waking up subsequent
+  // sessions early.
   if (session_id != session_id_.load(std::memory_order_acquire)) {
-    return;
+    is_state_change_underrun_in_bypass_mode_.store(true,
+                                                   std::memory_order_relaxed);
+  } else {
+    if (!success) {
+      is_state_change_underrun_in_bypass_mode_.store(
+          true, std::memory_order_relaxed);
+    }
+    output_buffer_bypass_wait_event_.Signal();
   }
-  state_change_underrun_in_bypass_mode_ = !success;
-  output_buffer_bypass_wait_event_.Signal();
 }
 
 bool AudioDestination::RequestRender(size_t frames_requested,

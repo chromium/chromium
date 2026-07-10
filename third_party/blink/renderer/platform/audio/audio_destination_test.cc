@@ -10,6 +10,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
+#include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/thread_annotations.h"
 #include "media/audio/audio_features.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
@@ -131,6 +136,81 @@ class AudioCallback : public AudioIOCallback {
   int render_call_count_ = 0;
   media::AudioGlitchInfo::Accumulator glitch_accumulator_;
   base::TimeDelta last_latency_;
+};
+
+// A custom TaskRunner that intercepts posted tasks and allows the test to
+// control the execution flow. Specifically, it can block the calling thread
+// (the audio thread) inside `PostDelayedTask` to simulate OS preemption/delay
+// before the audio thread can enter `WaitMany` in `AudioDestination::Render`.
+class InterceptingTaskRunner : public base::SingleThreadTaskRunner {
+ public:
+  InterceptingTaskRunner() = default;
+
+  // Intercepts the task, signals `task_posted_event_` to notify the test,
+  // and blocks the calling thread if `should_block_calling_thread_` is true.
+  bool PostDelayedTask(const base::Location& from_here,
+                       base::OnceClosure task,
+                       base::TimeDelta delay) override {
+    base::AutoLock auto_lock(lock_);
+    tasks_.push_back(std::move(task));
+    task_posted_event_.Signal();
+    if (should_block_calling_thread_) {
+      base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+      resume_calling_thread_event_.Wait();
+    }
+    return true;
+  }
+
+  bool PostNonNestableDelayedTask(const base::Location& from_here,
+                                  base::OnceClosure task,
+                                  base::TimeDelta delay) override {
+    return PostDelayedTask(from_here, std::move(task), delay);
+  }
+
+  bool RunsTasksInCurrentSequence() const override { return true; }
+
+  // Runs all currently intercepted tasks.
+  void RunPendingTasks() {
+    std::vector<base::OnceClosure> tasks_to_run;
+    {
+      base::AutoLock auto_lock(lock_);
+      tasks_to_run.swap(tasks_);
+    }
+    for (auto& task : tasks_to_run) {
+      std::move(task).Run();
+    }
+  }
+
+  // Returns the number of intercepted tasks waiting to be run.
+  size_t NumPendingTasks() const {
+    base::AutoLock auto_lock(lock_);
+    return tasks_.size();
+  }
+
+  // Enables or disables blocking the calling thread inside `PostDelayedTask`.
+  void SetShouldBlockCallingThread(bool block) {
+    should_block_calling_thread_ = block;
+  }
+
+  // Signals the calling thread to resume execution if it was blocked.
+  void SignalResume() {
+    resume_calling_thread_event_.Signal();
+  }
+
+  // Blocks the test main thread until a task is posted via `PostDelayedTask`.
+  void WaitTaskPosted() {
+    task_posted_event_.Wait();
+    task_posted_event_.Reset();
+  }
+
+ private:
+  ~InterceptingTaskRunner() override = default;
+
+  mutable base::Lock lock_;
+  std::vector<base::OnceClosure> tasks_ GUARDED_BY(lock_);
+  base::WaitableEvent task_posted_event_;
+  base::WaitableEvent resume_calling_thread_event_;
+  bool should_block_calling_thread_ = false;
 };
 
 class AudioDestinationTest
@@ -493,13 +573,21 @@ TEST_F(AudioDestinationTest, BypassOutputBufferingOrphanedTask) {
   audio_destination->Stop();
 }
 
-// Verifies that the tab does not crash due to a race condition when the audio
-// destination is stopped immediately after a pause/resume cycle.
-// Without the fix, the old audio thread (leaked on pause) wakes up when the
-// new session task signals the wait event, consumes the FIFO frames, and leaves
-// the new thread to wake up on Stop() and encounter a CHECK crash due to an
-// empty FIFO and no stop state propagation.
-TEST_F(AudioDestinationTest, BypassOutputBufferingCrash) {
+// Verifies that the audio thread does not block indefinitely when a
+// pause/resume cycle occurs immediately after a render task is posted,
+// but before the audio thread enters WaitMany().
+//
+// The "indefinite hang" (thread leak) is the root cause of the CHECK crash
+// reported in crbug.com/528653884. When the audio thread leaks and blocks in
+// WaitMany(), it remains alive. During a subsequent session, it wakes up
+// unexpectedly when the new task signals the shared wait event, consumes the
+// FIFO frames, and leaves the new thread to wake up on Stop() and encounter a
+// CHECK crash due to an empty FIFO and no stop state propagation.
+//
+// This test ensures that the audio thread is correctly unblocked (and does not
+// hang) when the in-flight task is discarded due to a session ID mismatch.
+TEST_F(AudioDestinationTest,
+       BypassOutputBufferingPauseResumeRaceDeterministic) {
   base::test::TaskEnvironment task_environment;
   blink::WebRuntimeFeatures::EnableFeatureFromString(
       "WebAudioBypassOutputBuffering", true);
@@ -517,36 +605,29 @@ TEST_F(AudioDestinationTest, BypassOutputBufferingCrash) {
       context_sample_rate,
       WebAudioLatencyHint(WebAudioLatencyHint::kCategoryInteractive));
 
-  auto worklet_task_runner =
-      base::MakeRefCounted<base::TestSimpleTaskRunner>();
-  audio_destination->SetWorkletTaskRunner(worklet_task_runner);
+  auto intercepting_task_runner =
+      base::MakeRefCounted<InterceptingTaskRunner>();
+  audio_destination->SetWorkletTaskRunner(intercepting_task_runner);
 
   auto audio_bus = media::AudioBus::Create(
       Platform::Current()->AudioHardwareOutputChannels(),
       audio_destination->FramesPerBuffer());
 
-  auto wait_for_pending_tasks =
-      [](scoped_refptr<base::TestSimpleTaskRunner> runner, size_t expected) {
-        while (runner->NumPendingTasks() < expected) {
-          base::PlatformThread::Sleep(base::Milliseconds(10));
-        }
-      };
-
   // Start the destination.
   audio_destination->Start();
 
-  std::unique_ptr<NonMainThread> audio_thread1 =
-      NonMainThread::CreateThread(
-          ThreadCreationParams(ThreadType::kTestThread));
-  std::unique_ptr<NonMainThread> audio_thread2 =
+  std::unique_ptr<NonMainThread> audio_thread =
       NonMainThread::CreateThread(
           ThreadCreationParams(ThreadType::kTestThread));
 
-  base::WaitableEvent render1_finished_event;
-  base::WaitableEvent render2_finished_event;
+  base::WaitableEvent render_finished_event;
 
-  // Post Render 1 on Thread 1. It will block in WaitMany().
-  audio_thread1->GetTaskRunner()->PostTask(
+  // Instruct the task runner to block the audio thread when it posts the task.
+  intercepting_task_runner->SetShouldBlockCallingThread(true);
+
+  // Post Render on the audio thread. It will block inside the TaskRunner's
+  // PostDelayedTask before it can return to Render() and enter WaitMany().
+  audio_thread->GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](scoped_refptr<AudioDestination> destination,
@@ -555,45 +636,44 @@ TEST_F(AudioDestinationTest, BypassOutputBufferingCrash) {
                                 media::AudioGlitchInfo(), bus);
             event->Signal();
           },
-          audio_destination, audio_bus.get(), &render1_finished_event));
+          audio_destination, audio_bus.get(), &render_finished_event));
 
-  // Wait until Thread 1 has posted its task to the worklet and is blocking.
-  wait_for_pending_tasks(worklet_task_runner, 1u);
+  // Wait until the audio thread has posted the task (and is now blocked inside
+  // PostDelayedTask).
+  intercepting_task_runner->WaitTaskPosted();
 
-  // Pause. This signals the stop event and unblocks Thread 1.
+  // Now, pause the destination. This signals the stop event and increments the
+  // session ID.
   audio_destination->Pause();
 
-  // Wait for Thread 1 to finish. This ensures Thread 1 is fully unblocked
-  // and exited before we resume, avoiding any thread leaks or races.
-  render1_finished_event.Wait();
-
-  // Run the discarded task from the first render session.
-  EXPECT_EQ(worklet_task_runner->NumPendingTasks(), 1u);
-  worklet_task_runner->RunPendingTasks();
-
-  // Resume.
+  // Resume the destination. This resets the stop event and increments the
+  // session ID again.
   audio_destination->Resume();
 
-  // Post Render 2 on Thread 2. It will also block.
-  audio_thread2->GetTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](scoped_refptr<AudioDestination> destination,
-             media::AudioBus* bus, base::WaitableEvent* event) {
-            destination->Render(base::Milliseconds(90), base::TimeTicks::Now(),
-                                media::AudioGlitchInfo(), bus);
-            event->Signal();
-          },
-          audio_destination, audio_bus.get(), &render2_finished_event));
+  // Let the audio thread resume. It will return from PostDelayedTask and enter
+  // WaitMany() inside Render().
+  intercepting_task_runner->SignalResume();
 
-  // Wait until Thread 2 has also posted its task and is blocking.
-  wait_for_pending_tasks(worklet_task_runner, 1u);
+  // Wait a moment to ensure the audio thread has entered WaitMany().
+  base::PlatformThread::Sleep(base::Milliseconds(100));
 
-  // Run the task to let the second Render() complete.
-  worklet_task_runner->RunPendingTasks();
+  // The queue now contains the orphaned task from the first session
+  // (before the pause/resume).
+  EXPECT_EQ(intercepting_task_runner->NumPendingTasks(), 1u);
 
-  // Wait for Thread 2 to finish.
-  render2_finished_event.Wait();
+  // Run the pending tasks.
+  // - Without the fix: The orphaned task runs, sees the session ID mismatch,
+  //   and returns early without signaling output_buffer_bypass_wait_event_.
+  //   The audio thread remains blocked in WaitMany() forever
+  //   (test hangs/fails).
+  // - With the fix: Resume() has already signaled the event, allowing the
+  //   audio thread to wake up, detect the session mismatch, set
+  //   is_state_change_underrun_in_bypass_mode_ = true, and return safely.
+  //   The orphaned task runs here and discards itself without signaling.
+  intercepting_task_runner->RunPendingTasks();
+
+  // The Render() call should finish promptly.
+  render_finished_event.Wait();
 
   // Clean up.
   audio_destination->Stop();
