@@ -61,17 +61,17 @@
         [[i18n('siteSettingsSiteClearStorageConfirmationNew', pageTitle_)]]
         <div class="detail-list">
           <div class="detail">
-            <cr-icon icon="all-sites:logout" aria-hidden="true"
+            <cr-icon icon="all-sites:logout-custom" aria-hidden="true"
                 role="presentation"></cr-icon>
             $i18n{siteSettingsSiteClearStorageSignOut}
           </div>
           <div class="detail">
-            <cr-icon icon="all-sites:offline" aria-hidden="true"
+            <cr-icon icon="all-sites:offline-custom" aria-hidden="true"
                 role="presentation"></cr-icon>
             $i18n{siteSettingsSiteDeleteStorageOfflineData}
           </div>
           <div class="detail" id="adPersonalization">
-            <cr-icon icon="all-sites:tag" aria-hidden="true"
+            <cr-icon icon="[[getShoppingmodeIcon_()]]" aria-hidden="true"
                 role="presentation"></cr-icon>
             $i18n{siteSettingsRemoveSiteAdPersonalization}
           </div>

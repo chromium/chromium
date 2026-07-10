@@ -502,6 +502,12 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
           new URLSearchParams('site=' + this.parentAppOrigin_));
     }
   }
+
+  protected getShoppingmodeIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'all-sites:shoppingmode' :
+        'all-sites:tag-old';
+  }
 }
 
 declare global {
