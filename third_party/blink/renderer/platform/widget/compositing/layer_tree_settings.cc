@@ -35,6 +35,10 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/overlay_scrollbar_constants.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 namespace blink {
 
 namespace {
@@ -55,7 +59,10 @@ constexpr base::FeatureParam<double> kFadeDurationScalingFactor{
 bool ShouldUseDesktopOverlayScrollbars() {
 #if BUILDFLAG(IS_ANDROID)
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableDesktopAndroidScrollbars);
+             switches::kEnableDesktopAndroidScrollbars) &&
+         // This feature is not ready for non-desktop devices. See
+         // crbug.com/522529331.
+         base::android::device_info::is_desktop();
 #else
   return ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar();
 #endif  // BUILDFLAG(IS_ANDROID)
