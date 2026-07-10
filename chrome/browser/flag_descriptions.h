@@ -8371,6 +8371,10 @@ inline constexpr char kAccessiblePDFFormName[] = "Accessible PDF Forms";
 inline constexpr char kAccessiblePDFFormDescription[] =
     "Enables accessibility support for PDF forms.";
 
+inline constexpr char kPdfBrotliDecodeName[] = "PDF Brotli Decode";
+inline constexpr char kPdfBrotliDecodeDescription[] =
+    "Enables support for the experimental PDF 2.0 /BrotliDecode filter.";
+
 inline constexpr char kPdfInk2Name[] = "PDF Ink Signatures";
 inline constexpr char kPdfInk2Description[] =
     "Enables the ability to annotate PDFs using a new ink library.";
