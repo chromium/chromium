@@ -50,6 +50,22 @@ void HTMLCanvasPainter::PaintReplaced(const PaintInfo& paint_info,
         .MarkFirstContentfulPaint();
   }
 
+  if (canvas->IsInCanvasSubtree() && canvas->layoutSubtree()) {
+    if (DrawingRecorder::UseCachedDrawingIfPossible(
+            context, layout_html_canvas_, paint_info.phase)) {
+      return;
+    }
+    BoxDrawingRecorder recorder(context, layout_html_canvas_, paint_info.phase,
+                                paint_offset);
+    // For nested layoutsubtree canvases, record a placeholder CustomDataOp
+    // with the DOMNodeId. When GetCanvasChildPaintRecord() is called, this
+    // placeholder is replaced with the nested canvas's actual unaccelerated
+    // snapshot.
+    context.Canvas()->recordCustomData(
+        static_cast<uint32_t>(canvas->GetDomNodeId()));
+    return;
+  }
+
   if (auto* layer = canvas->ContentsCcLayer()) {
     // TODO(crbug.com/705019): For a texture layer canvas, setting the layer
     // background color to an opaque color will cause the layer to be treated as

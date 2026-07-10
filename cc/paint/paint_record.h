@@ -5,6 +5,7 @@
 #ifndef CC_PAINT_PAINT_RECORD_H_
 #define CC_PAINT_PAINT_RECORD_H_
 
+#include "base/containers/flat_map.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "third_party/skia/include/core/SkPicture.h"
@@ -34,6 +35,11 @@ class CC_PAINT_EXPORT PaintRecord {
 
   bool EqualsForTesting(const PaintRecord& other) const {
     return buffer_->EqualsForTesting(*other.buffer_);
+  }
+
+  PaintRecord ReplaceCustomData(
+      const base::flat_map<uint32_t, PaintRecord>& replacements) const {
+    return buffer_->ReplaceCustomData(replacements);
   }
 
   const PaintOpBuffer& buffer() const {

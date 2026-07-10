@@ -203,6 +203,18 @@ bool PendingLayer::Matches(const PendingLayer& old_pending_layer) const {
 // merged_area - (home_area + guest_area) <= kMergeSparsityAreaTolerance
 static constexpr float kMergeSparsityAreaTolerance = 10000;
 
+static DOMNodeId GetCanvasChildId(const EffectPaintPropertyNode& effect) {
+  if (!effect.IsInCanvasSubtree()) {
+    return kInvalidDOMNodeId;
+  }
+  for (const auto* e = &effect; e; e = e->UnaliasedParent()) {
+    if (e->HasCanvasChildState()) {
+      return e->CanvasChildId();
+    }
+  }
+  return kInvalidDOMNodeId;
+}
+
 bool PendingLayer::CanMerge(
     const PendingLayer& guest,
     LCDTextPreference lcd_text_preference,
@@ -214,11 +226,23 @@ bool PendingLayer::CanMerge(
     bool& merged_text_known_to_be_on_opaque_background,
     wtf_size_t& merged_solid_color_chunk_index,
     cc::HitTestOpaqueness& merged_hit_test_opaqueness) const {
+  DOMNodeId home_canvas_child_id =
+      GetCanvasChildId(GetPropertyTreeState().Effect());
+  DOMNodeId guest_canvas_child_id =
+      GetCanvasChildId(guest.GetPropertyTreeState().Effect());
+  if (home_canvas_child_id != guest_canvas_child_id &&
+      (home_canvas_child_id != kInvalidDOMNodeId ||
+       guest_canvas_child_id != kInvalidDOMNodeId)) {
+    return false;
+  }
+
   // Force merge all content under canvas so that it can be drawn using
   // html-in-canvas APIs, and so that it is not drawn as a regular
   // cc::Layer.
-  bool force_merge = GetPropertyTreeState().Effect().IsInCanvasSubtree() &&
-                     guest.GetPropertyTreeState().Effect().IsInCanvasSubtree();
+  bool force_merge =
+      GetPropertyTreeState().Effect().IsInCanvasSubtree() &&
+      guest.GetPropertyTreeState().Effect().IsInCanvasSubtree() &&
+      home_canvas_child_id == guest_canvas_child_id;
 
   std::optional<PropertyTreeState> optional_merged_state =
       CanUpcastWith(guest, guest.GetPropertyTreeState(), is_composited_scroll);

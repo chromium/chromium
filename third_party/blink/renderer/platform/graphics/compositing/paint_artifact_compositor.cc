@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
@@ -18,6 +19,8 @@
 #include "cc/layers/solid_color_scrollbar_layer.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_op.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/mutator_host.h"
@@ -52,6 +55,28 @@ namespace blink {
 // the sequence number through the use of a dirty bit or similar. See
 // http://crbug.com/692842#c4.
 static int g_s_property_tree_sequence_number = 1;
+
+namespace {
+
+void FindCustomDataPlaceholders(
+    const cc::PaintOpBuffer& buffer,
+    const PaintArtifactCompositor::GetCanvasSnapshotCallback& callback,
+    base::flat_map<uint32_t, cc::PaintRecord>& replacements) {
+  for (const cc::PaintOp& op : buffer) {
+    if (op.GetType() == cc::PaintOpType::kCustomData) {
+      uint32_t id = static_cast<const cc::CustomDataOp&>(op).id;
+      if (std::optional<cc::PaintRecord> snapshot = callback.Run(id)) {
+        replacements[id] = std::move(*snapshot);
+      }
+    } else if (op.GetType() == cc::PaintOpType::kDrawRecord) {
+      FindCustomDataPlaceholders(
+          static_cast<const cc::DrawRecordOp&>(op).record.buffer(), callback,
+          replacements);
+    }
+  }
+}
+
+}  // namespace
 
 class PaintArtifactCompositor::OldPendingLayerMatcher {
   STACK_ALLOCATED();
@@ -119,7 +144,20 @@ PaintArtifactCompositor::GetCanvasChildPaintRecord(DOMNodeId child_id) const {
     return std::nullopt;
   }
   auto& pending_layer = pending_layers_[it->value];
-  return pending_layer.GetCanvasChildPaintRecord();
+  auto child_record = pending_layer.GetCanvasChildPaintRecord();
+  if (!child_record) {
+    return std::nullopt;
+  }
+  if (get_canvas_snapshot_callback_) {
+    base::flat_map<uint32_t, cc::PaintRecord> replacements;
+    FindCustomDataPlaceholders(child_record->record.buffer(),
+                               get_canvas_snapshot_callback_, replacements);
+    if (!replacements.empty()) {
+      child_record->record =
+          child_record->record.ReplaceCustomData(replacements);
+    }
+  }
+  return child_record;
 }
 
 const CanvasChildPaintState* PaintArtifactCompositor::GetCanvasChildPaintState(

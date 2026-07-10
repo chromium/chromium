@@ -385,12 +385,11 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
           DynamicTo<HTMLCanvasElement>(element->parentElement());
       if (IsA<LayoutBox>(object) && canvas_parent &&
           canvas_parent->layoutSubtree() && canvas_parent->GetLayoutObject() &&
-          canvas_parent->GetLayoutObject()->IsCanvas() &&
-          !canvas_parent->IsInCanvasSubtree()) {
+          canvas_parent->GetLayoutObject()->IsCanvas()) {
         reasons |= CompositingReason::kCanvasChild;
       } else {
         // Disable compositing for elements in canvas subtrees other than the
-        // direct children of the outermost canvas element.
+        // direct children of canvas elements.
         return CompositingReason::kNone;
       }
     }

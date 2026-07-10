@@ -10,6 +10,7 @@
 #include "cc/layers/picture_layer.h"
 #include "cc/layers/recording_source.h"
 #include "cc/layers/surface_layer.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_host.h"
@@ -4214,6 +4215,147 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayers) {
   // Non-direct children should still not get layers.
   EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a_wct"));
   EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a_bdf"));
+}
+
+TEST_P(CompositingSimTest, NestedCanvasDrawElementLayers) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+
+  InitializeWithHTML(R"HTML(
+    <canvas id="canvas" layoutsubtree width="200" height="300">
+      <div id="target" style="width: 100px; height: 300px;">
+        <div id="sibling_div_a" style="width: 100px; height: 100px; background: #0f0;"></div>
+        <canvas id="nested_canvas" layoutsubtree width="100" height="100">
+          <div id="nested_canvas_target_a" style="width: 50px; height: 50px; background: #00f;"></div>
+          <div id="nested_canvas_target_b" style="width: 50px; height: 50px; background: #0ff;">
+            <div id="nested_canvas_target_b_child" style="width: 10px; height: 10px; background: #000; will-change: transform;"></div>
+          </div>
+        </canvas>
+        <div id="sibling_div_b" style="width: 100px; height: 100px; background: #ff0; position: relative; margin-top: -10px;"></div>
+      </div>
+    </canvas>
+  )HTML");
+  Compositor().BeginFrame();
+
+  // Direct children of #canvas get a layer.
+  auto* target_layer = CcLayerByDOMElementId("target");
+  EXPECT_TRUE(target_layer);
+
+  // Direct children of #nested_canvas get a layer.
+  auto* nested_canvas_target_a_layer =
+      CcLayerByDOMElementId("nested_canvas_target_a");
+  EXPECT_TRUE(nested_canvas_target_a_layer);
+  auto* nested_canvas_target_b_layer =
+      CcLayerByDOMElementId("nested_canvas_target_b");
+  EXPECT_TRUE(nested_canvas_target_b_layer);
+
+  // Composited content under canvas, other than direct children, is disabled.
+  EXPECT_FALSE(CcLayerByDOMElementId("sibling_div_a"));
+  EXPECT_FALSE(CcLayerByDOMElementId("nested_canvas_target_b_child"));
+  EXPECT_FALSE(CcLayerByDOMElementId("sibling_div_b"));
+  EXPECT_FALSE(CcLayerByDOMElementId("nested_canvas"));
+
+  // The canvas subtree layers should have display items.
+  EXPECT_GT(GetPictureLayerTotalOpCount(target_layer), 0u);
+  EXPECT_GT(GetPictureLayerTotalOpCount(nested_canvas_target_a_layer), 0u);
+  EXPECT_GT(GetPictureLayerTotalOpCount(nested_canvas_target_b_layer), 0u);
+
+  // Ensure canvas_child_id is set correctly.
+  auto* target = GetElementById("target");
+  auto target_id = CompositorElementIdFromDOMNodeId(target->GetDomNodeId());
+  EXPECT_EQ(target_layer->canvas_child_id(), target_id);
+  auto* nested_canvas_target_a = GetElementById("nested_canvas_target_a");
+  auto nested_canvas_target_a_id =
+      CompositorElementIdFromDOMNodeId(nested_canvas_target_a->GetDomNodeId());
+  EXPECT_EQ(nested_canvas_target_a_layer->canvas_child_id(),
+            nested_canvas_target_a_id);
+  auto* nested_canvas_target_b = GetElementById("nested_canvas_target_b");
+  auto nested_canvas_target_b_id =
+      CompositorElementIdFromDOMNodeId(nested_canvas_target_b->GetDomNodeId());
+  EXPECT_EQ(nested_canvas_target_b_layer->canvas_child_id(),
+            nested_canvas_target_b_id);
+}
+
+TEST_P(CompositingSimTest, CanvasChildPaintRecordWithNestedCanvas) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+
+  InitializeWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #parent_child { width: 100px; height: 100px; background: blue; }
+      #nested_child { width: 50px; height: 50px; background: green; }
+    </style>
+    <canvas id="parent_canvas" width="200" height="200" layoutsubtree>
+      <div id="parent_child">
+        <canvas id="nested_canvas" width="100" height="100" layoutsubtree>
+          <div id="nested_child"></div>
+        </canvas>
+      </div>
+    </canvas>
+  )HTML");
+  Compositor().BeginFrame();
+
+  // Direct children of the parent canvas get a layer.
+  EXPECT_TRUE(CcLayerByDOMElementId("parent_child"));
+
+  // The nested canvas itself should not get a layer.
+  EXPECT_FALSE(CcLayerByDOMElementId("nested_canvas"));
+
+  // Direct children of the nested canvas should get a layer.
+  EXPECT_TRUE(CcLayerByDOMElementId("nested_child"));
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      GetElementById("nested_child")->GetDomNodeId()));
+
+  // The parent canvas child's paint record should contain the rendering of the
+  // nested canvas (e.g., as a DrawImage, DrawImageRect, or DrawRecord op)
+  // replacing the placeholder.
+  auto parent_child_record =
+      paint_artifact_compositor()->GetCanvasChildPaintRecord(
+          GetElementById("parent_child")->GetDomNodeId());
+  EXPECT_TRUE(parent_child_record);
+  EXPECT_FALSE(parent_child_record->record.empty());
+
+  bool has_nested_canvas_rendering = false;
+  for (const cc::PaintOp& op : parent_child_record->record) {
+    if (op.GetType() == cc::PaintOpType::kDrawImage ||
+        op.GetType() == cc::PaintOpType::kDrawImageRect ||
+        op.GetType() == cc::PaintOpType::kDrawRecord) {
+      has_nested_canvas_rendering = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(has_nested_canvas_rendering);
+}
+
+TEST_P(CompositingSimTest, DirectChildNestedCanvasDrawElementLayers) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+
+  InitializeWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <canvas id="parent_canvas" width="200" height="200" layoutsubtree>
+      <canvas id="nested_canvas" width="100" height="100" layoutsubtree>
+        <div id="nested_child" style="width: 50px; height: 50px; background: green;"></div>
+      </canvas>
+    </canvas>
+  )HTML");
+  Compositor().BeginFrame();
+
+  // The nested canvas (as a direct child of parent_canvas) gets a layer.
+  EXPECT_TRUE(CcLayerByDOMElementId("nested_canvas"));
+
+  // Direct children of the nested canvas should also get a layer.
+  EXPECT_TRUE(CcLayerByDOMElementId("nested_child"));
+
+  // The nested canvas paint record should be retrievable for parent_canvas.
+  auto nested_canvas_record =
+      paint_artifact_compositor()->GetCanvasChildPaintRecord(
+          GetElementById("nested_canvas")->GetDomNodeId());
+  EXPECT_TRUE(nested_canvas_record);
+
+  // The nested child paint record should be retrievable for nested_canvas.
+  auto nested_child_record =
+      paint_artifact_compositor()->GetCanvasChildPaintRecord(
+          GetElementById("nested_child")->GetDomNodeId());
+  EXPECT_TRUE(nested_child_record);
 }
 
 TEST_P(CompositingSimTest, CanvasDrawElementLayersWithWillChange) {

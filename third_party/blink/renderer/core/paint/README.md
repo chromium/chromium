@@ -582,11 +582,36 @@ like layout, hit testing, accessibility, etc. See the
     cc::Layer has `DrawsContent()` set to false so that it participates in hit
     testing but does not render.
 *   **Compositing disabled for other descendants**: Composited layers are
-    disabled for all content *below* the direct children of the canvas. This
-    ensures the full content is available in the canvas child's `cc::Layer`,
-    which is used via `ContentLayerClientImpl::GetCanvasChildPaintRecord`. This
-    also ensures the content does not create additional layers which could
-    render.
+    disabled for all content *below* the direct children of the canvas (with the
+    exception of direct children of nested `layoutsubtree` canvases; see below).
+    This ensures the full content is available in the canvas child's
+    `cc::Layer`, which is used via
+    `ContentLayerClientImpl::GetCanvasChildPaintRecord`. This also ensures the
+    content does not create additional layers which could render.
+
+### Nested HTML-in-Canvas
+HTML-in-Canvas supports nesting `layoutsubtree` canvases within other
+`layoutsubtree` canvases. This requires coordination across compositing,
+painting, and event dispatch:
+*   **Compositing for nested children**: While compositing is generally
+    suppressed for descendants of a canvas child, direct children of a *nested*
+    `layoutsubtree` canvas are still given the `CompositingReason::kCanvasChild`
+    direct compositing reason, while compositing for the nested canvas element
+    itself is suppressed.
+*   **Paint event ordering**: To ensure nested canvases are updated before their
+    parent canvases draw them, `RunCanvasOnpaintSteps` sorts canvases needing
+    `onpaint` by DOM tree depth in descending order. Deeper canvases fire their
+    `onpaint` events first.
+*   **Placeholder recording**: When `HTMLCanvasPainter::PaintReplaced` paints a
+    nested `layoutsubtree` canvas, it records a `cc::CustomDataOp` containing
+    the nested canvas's `DOMNodeId` as a placeholder.
+*   **Snapshot placeholder swapping**: During layerization,
+    `PaintArtifactCompositor::GetCanvasChildPaintRecord` uses a callback
+    (`GetCanvasSnapshotCallback`, initialized in
+    `LocalFrameView::PushPaintArtifactToCompositor`) to retrieve the
+    unaccelerated snapshot of each nested canvas. It then calls
+    `cc::PaintRecord::ReplaceCustomData` to cleanly swap all `CustomDataOp`
+    placeholders with their actual rendered `cc::PaintRecord` snapshots.
 
 ## Pixel snapping and bluriness
 

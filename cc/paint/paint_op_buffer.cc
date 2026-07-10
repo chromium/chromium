@@ -85,9 +85,29 @@ PaintRecord PaintOpBuffer::DeepCopyAsRecord() const {
   return PaintRecord(std::move(result));
 }
 
+PaintRecord PaintOpBuffer::ReplaceCustomData(
+    const base::flat_map<uint32_t, PaintRecord>& replacements) const {
+  if (replacements.empty()) {
+    return DeepCopyAsRecord();
+  }
+  auto result = sk_make_sp<PaintOpBuffer>();
+  result->Append(*this, &replacements);
+  return result->ReleaseAsRecord();
+}
+
 PaintOpBuffer& PaintOpBuffer::operator+=(const PaintOpBuffer& other) {
+  Append(other, nullptr);
+  return *this;
+}
+
+void PaintOpBuffer::Append(
+    const PaintOpBuffer& other,
+    const base::flat_map<uint32_t, PaintRecord>* replacements) {
   CHECK_NE(this, &other);
   if (other.used_) {
+    // Note: If `replacements` is provided, replacing CustomDataOp with
+    // DrawRecordOp may exceed this initial reservation. `push()` will
+    // reallocate if needed.
     ReallocBuffer(used_ + other.used_);
   }
   for (const PaintOp& op : other) {
@@ -114,6 +134,13 @@ PaintOpBuffer& PaintOpBuffer::operator+=(const PaintOpBuffer& other) {
       } break;
       case PaintOpType::kCustomData: {
         const auto& o = static_cast<const CustomDataOp&>(op);
+        if (replacements) {
+          auto it = replacements->find(o.id);
+          if (it != replacements->end()) {
+            push<DrawRecordOp>(it->second);
+            break;
+          }
+        }
         push<CustomDataOp>(o.id);
       } break;
       case PaintOpType::kDrawArc: {
@@ -165,7 +192,12 @@ PaintOpBuffer& PaintOpBuffer::operator+=(const PaintOpBuffer& other) {
       } break;
       case PaintOpType::kDrawRecord: {
         const auto& o = static_cast<const DrawRecordOp&>(op);
-        push<DrawRecordOp>(o.record.buffer().DeepCopyAsRecord(), o.local_ctm);
+        if (replacements) {
+          push<DrawRecordOp>(o.record.ReplaceCustomData(*replacements),
+                             o.local_ctm);
+        } else {
+          push<DrawRecordOp>(o.record.buffer().DeepCopyAsRecord(), o.local_ctm);
+        }
       } break;
       case PaintOpType::kDrawRect: {
         const auto& o = static_cast<const DrawRectOp&>(op);
@@ -242,7 +274,6 @@ PaintOpBuffer& PaintOpBuffer::operator+=(const PaintOpBuffer& other) {
       } break;
     }
   }
-  return *this;
 }
 
 PaintOpBuffer::~PaintOpBuffer() {

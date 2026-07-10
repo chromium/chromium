@@ -14,6 +14,7 @@
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/aligned_memory.h"
@@ -252,8 +253,12 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   // retains the original data buffer for future use.
   PaintRecord ReleaseAsRecord();
   PaintRecord DeepCopyAsRecord() const;
+  PaintRecord ReplaceCustomData(
+      const base::flat_map<uint32_t, PaintRecord>& replacements) const;
 
   PaintOpBuffer& operator+=(const PaintOpBuffer& other);
+  void Append(const PaintOpBuffer& other,
+              const base::flat_map<uint32_t, PaintRecord>* replacements);
 
   bool EqualsForTesting(const PaintOpBuffer& other) const;
 

@@ -921,11 +921,6 @@ bool HTMLCanvasElement::VerifyDrawElementImageEligibility(
     Element* element,
     const String& func_name,
     ExceptionState& exception_state) const {
-  if (IsInCanvasSubtree()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Nested canvases are not supported.");
-    return false;
-  }
   if (element->parentElement() != this) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
