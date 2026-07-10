@@ -563,6 +563,17 @@ BASE_EXPORT FilePath MakeLongFilePath(const FilePath& input);
 // Returns true if the hard link is created, false if it fails.
 BASE_EXPORT bool CreateWinHardLink(const FilePath& to_file,
                                    const FilePath& from_file);
+
+// Like GetFileInfo(), but for cloud-backed placeholder files (e.g., OneDrive
+// Files On-Demand), opens the file to force the cloud provider to hydrate (and,
+// for files protected with a sensitivity label, decrypt) it before reading the
+// size, so the returned info reflects the full logical content rather than a
+// stub/placeholder size. For non-placeholder files, this behaves like
+// GetFileInfo(). May open the file and therefore block or trigger a network
+// download; only call from a context that allows blocking. Returns false on
+// failure.
+BASE_EXPORT bool GetHydratedFileInfo(const FilePath& file_path,
+                                     File::Info* info);
 #endif
 
 // This function will return if the given file is a symlink or not.

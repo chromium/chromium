@@ -28,6 +28,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/features.h"
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
@@ -1227,6 +1228,48 @@ bool GetFileInfo(const FilePath& file_path, File::Info* results) {
   results->last_accessed = Time::FromFileTime(attr.ftLastAccessTime);
   results->creation_time = Time::FromFileTime(attr.ftCreationTime);
 
+  return true;
+}
+
+bool GetHydratedFileInfo(const FilePath& file_path, File::Info* results) {
+  // Start with the cheap attribute-based query. This populates `results`, which
+  // is also used as the fallback value if hydration below is not possible.
+  if (!GetFileInfo(file_path, results)) {
+    return false;
+  }
+
+  if (results->is_directory) {
+    return true;
+  }
+
+  constexpr DWORD kPlaceholderMask = FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS |
+                                     FILE_ATTRIBUTE_RECALL_ON_OPEN |
+                                     FILE_ATTRIBUTE_OFFLINE;
+  const DWORD attributes = ::GetFileAttributes(file_path.value().c_str());
+
+  // Ordinary (non-placeholder) files already report their true size via
+  // `attributes`, so no open/hydration is needed for them.
+  if (attributes == INVALID_FILE_ATTRIBUTES ||
+      (attributes & kPlaceholderMask) == 0) {
+    return true;
+  }
+
+  // Opening the file with read access forces the cloud provider to hydrate
+  // (download) it, and lets the sensitivity-label minifilter decrypt it. If the
+  // open fails (e.g., offline and the data cannot be recalled), the function
+  // keeps the attribute-based info populated in `results` above.
+  File file(file_path,
+            File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WIN_SHARE_DELETE);
+  if (!file.IsValid()) {
+    return true;
+  }
+
+  // Query the size from the open handle. Unlike the attribute-based query, this
+  // reflects the full logical (hydrated and decrypted) size rather than a stub.
+  File::Info handle_info;
+  if (file.GetInfo(&handle_info)) {
+    *results = handle_info;
+  }
   return true;
 }
 
