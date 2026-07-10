@@ -1022,7 +1022,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             controlContainer.setIsVerticalTabsActiveSupplier(mIsVerticalTabsActiveSupplier);
         }
 
-        if (AndroidSidePanelEnabledFn.isEnabled()) {
+        if (AndroidSidePanelEnabledFn.isEnabled()
+                || VerticalTabUtils.isVerticalTabsEligible(mActivity)) {
             mToolbarManager.setSideUiStateProviderSupplier(mSideUiStateProviderSupplier);
         }
     }
@@ -1121,7 +1122,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mActivityTabProvider.asObservable(), omniboxChipManager, mActivity);
         }
 
-        if (AndroidSidePanelEnabledFn.isEnabled()) {
+        if (AndroidSidePanelEnabledFn.isEnabled()
+                || VerticalTabUtils.isVerticalTabsEligible(mActivity)) {
             mCompositorViewHolderSupplier
                     .asNonNull()
                     .get()
