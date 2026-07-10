@@ -18,6 +18,7 @@
 #include "chrome/browser/dictation/session_ui_delegate.h"
 #include "chrome/browser/dictation/stream_provider_delegate.h"
 #include "content/public/browser/global_dom_node_id.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace dictation {
@@ -30,7 +31,8 @@ class StreamProvider;
 // the UI. It manages Profile-level state and transitions and synchronizes the
 // dictation system.
 class SessionController : public SessionUiDelegate,
-                          public StreamProviderDelegate {
+                          public StreamProviderDelegate,
+                          public content::WebContentsObserver {
  public:
   explicit SessionController(SessionControllerDelegate& delegate);
   ~SessionController() override;
@@ -54,6 +56,10 @@ class SessionController : public SessionUiDelegate,
   void DidUpdateStreamProviderState(
       StreamProvider& stream_provider,
       StreamProvider::StreamState old_state) override;
+
+  // content::WebContentsObserver:
+  void OnFocusChangedInPage(
+      const content::FocusedNodeDetails& details) override;
 
   // Starts a new dictation stream by creating and attaching a new stream
   // provider. An existing stream must have been detached before calling this
