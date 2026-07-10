@@ -70,6 +70,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
@@ -830,6 +831,8 @@ void ProfilePickerView::Layout(PassKey) {
   LayoutSuperclass<views::WidgetDelegateView>(this);
   CHECK(toolbar_);
   toolbar_->SetBounds(0, 0, width(), toolbar_->GetPreferredSize().height());
+  CHECK(web_view_);
+  web_view_->holder()->SetHitTestTopInset(toolbar_->bounds().height());
 }
 
 void ProfilePickerView::BuildLayout() {
