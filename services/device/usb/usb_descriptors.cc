@@ -14,9 +14,11 @@
 
 #include "base/barrier_closure.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/numerics/byte_conversions.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/usb/usb_device_handle.h"
 
@@ -268,37 +270,40 @@ bool UsbDeviceDescriptor::Parse(base::span<const uint8_t> buffer) {
   mojom::UsbInterfaceInfo* last_interface = nullptr;
   mojom::UsbEndpointInfo* last_endpoint = nullptr;
 
-  for (auto it = buffer.begin(); it != buffer.end();
-       /* incremented internally */) {
-    const uint8_t* data = &it[0];
-    uint8_t length = data[0];
-    if (length < 2 || length > std::distance(it, buffer.end()))
+  while (!buffer.empty()) {
+    if (buffer.size() < 2) {
       return false;
-    it += length;
+    }
+    uint8_t length = buffer[0];
+    if (length < 2 || length > buffer.size()) {
+      return false;
+    }
+    base::span<const uint8_t> data = buffer.first(length);
+    buffer = buffer.subspan(length);
 
-    switch (UNSAFE_TODO(data[1]) /* bDescriptorType */) {
+    switch (data[1] /* bDescriptorType */) {
       case kDeviceDescriptorType:
         if (device_info->configurations.size() > 0 ||
             length < kDeviceDescriptorLength) {
           return false;
         }
-        device_info->usb_version_minor = UNSAFE_TODO(data[2]) >> 4 & 0xf;
-        device_info->usb_version_subminor = UNSAFE_TODO(data[2]) & 0xf;
-        device_info->usb_version_major = UNSAFE_TODO(data[3]);
-        device_info->class_code = UNSAFE_TODO(data[4]);
-        device_info->subclass_code = UNSAFE_TODO(data[5]);
-        device_info->protocol_code = UNSAFE_TODO(data[6]);
-        device_info->vendor_id = UNSAFE_TODO(data[8]) | UNSAFE_TODO(data[9])
-                                                            << 8;
-        device_info->product_id = UNSAFE_TODO(data[10]) | UNSAFE_TODO(data[11])
-                                                              << 8;
-        device_info->device_version_minor = UNSAFE_TODO(data[12]) >> 4 & 0xf;
-        device_info->device_version_subminor = UNSAFE_TODO(data[12]) & 0xf;
-        device_info->device_version_major = UNSAFE_TODO(data[13]);
-        i_manufacturer = UNSAFE_TODO(data[14]);
-        i_product = UNSAFE_TODO(data[15]);
-        i_serial_number = UNSAFE_TODO(data[16]);
-        num_configurations = UNSAFE_TODO(data[17]);
+        device_info->usb_version_minor = data[2] >> 4 & 0xf;
+        device_info->usb_version_subminor = data[2] & 0xf;
+        device_info->usb_version_major = data[3];
+        device_info->class_code = data[4];
+        device_info->subclass_code = data[5];
+        device_info->protocol_code = data[6];
+        device_info->vendor_id =
+            base::U16FromLittleEndian(data.subspan<8, 2>());
+        device_info->product_id =
+            base::U16FromLittleEndian(data.subspan<10, 2>());
+        device_info->device_version_minor = data[12] >> 4 & 0xf;
+        device_info->device_version_subminor = data[12] & 0xf;
+        device_info->device_version_major = data[13];
+        i_manufacturer = data[14];
+        i_product = data[15];
+        i_serial_number = data[16];
+        num_configurations = data[17];
         break;
       case kConfigurationDescriptorType:
         if (length < kConfigurationDescriptorLength)
@@ -332,15 +337,15 @@ bool UsbDeviceDescriptor::Parse(base::span<const uint8_t> buffer) {
         // descriptor.
         if (last_endpoint) {
           last_endpoint->extra_data.insert(last_endpoint->extra_data.end(),
-                                           data, UNSAFE_TODO(data + length));
+                                           data.begin(), data.end());
         } else if (last_interface) {
           DCHECK_EQ(1u, last_interface->alternates.size());
           last_interface->alternates[0]->extra_data.insert(
-              last_interface->alternates[0]->extra_data.end(), data,
-              UNSAFE_TODO(data + length));
+              last_interface->alternates[0]->extra_data.end(), data.begin(),
+              data.end());
         } else if (last_config) {
-          last_config->extra_data.insert(last_config->extra_data.end(), data,
-                                         UNSAFE_TODO(data + length));
+          last_config->extra_data.insert(last_config->extra_data.end(),
+                                         data.begin(), data.end());
         }
     }
   }
@@ -411,15 +416,15 @@ void ReadUsbStringDescriptors(scoped_refptr<UsbDeviceHandle> device_handle,
                      std::move(callback)));
 }
 
-UsbEndpointInfoPtr BuildUsbEndpointInfoPtr(const uint8_t* data) {
+UsbEndpointInfoPtr BuildUsbEndpointInfoPtr(base::span<const uint8_t> data) {
+  DCHECK_GE(data.size(), kEndpointDescriptorLength);
   DCHECK_GE(data[0], kEndpointDescriptorLength);
-  UNSAFE_TODO(DCHECK_EQ(data[1], kEndpointDescriptorType));
+  DCHECK_EQ(data[1], kEndpointDescriptorType);
 
   return BuildUsbEndpointInfoPtr(
-      UNSAFE_TODO(data[2]) /* bEndpointAddress */,
-      UNSAFE_TODO(data[3]) /* bmAttributes */,
-      UNSAFE_TODO(data[4]) + (UNSAFE_TODO(data[5]) << 8) /* wMaxPacketSize */,
-      UNSAFE_TODO(data[6]) /* bInterval */);
+      data[2] /* bEndpointAddress */, data[3] /* bmAttributes */,
+      base::U16FromLittleEndian(data.subspan<4, 2>()) /* wMaxPacketSize */,
+      data[6] /* bInterval */);
 }
 
 UsbEndpointInfoPtr BuildUsbEndpointInfoPtr(uint8_t address,
@@ -497,15 +502,14 @@ UsbEndpointInfoPtr BuildUsbEndpointInfoPtr(uint8_t address,
   return endpoint;
 }
 
-UsbInterfaceInfoPtr BuildUsbInterfaceInfoPtr(const uint8_t* data) {
+UsbInterfaceInfoPtr BuildUsbInterfaceInfoPtr(base::span<const uint8_t> data) {
+  DCHECK_GE(data.size(), kInterfaceDescriptorLength);
   DCHECK_GE(data[0], kInterfaceDescriptorLength);
-  UNSAFE_TODO(DCHECK_EQ(data[1], kInterfaceDescriptorType));
+  DCHECK_EQ(data[1], kInterfaceDescriptorType);
   return BuildUsbInterfaceInfoPtr(
-      UNSAFE_TODO(data[2]) /* bInterfaceNumber */,
-      UNSAFE_TODO(data[3]) /* bAlternateSetting */,
-      UNSAFE_TODO(data[5]) /* bInterfaceClass */,
-      UNSAFE_TODO(data[6]) /* bInterfaceSubClass */,
-      UNSAFE_TODO(data[7]) /* bInterfaceProtocol */);
+      data[2] /* bInterfaceNumber */, data[3] /* bAlternateSetting */,
+      data[5] /* bInterfaceClass */, data[6] /* bInterfaceSubClass */,
+      data[7] /* bInterfaceProtocol */);
 }
 
 UsbInterfaceInfoPtr BuildUsbInterfaceInfoPtr(uint8_t interface_number,
@@ -580,14 +584,15 @@ CombinedInterfaceInfo FindInterfaceInfoFromConfig(
   return interface_info;
 }
 
-UsbConfigurationInfoPtr BuildUsbConfigurationInfoPtr(const uint8_t* data) {
+UsbConfigurationInfoPtr BuildUsbConfigurationInfoPtr(
+    base::span<const uint8_t> data) {
+  DCHECK_GE(data.size(), kConfigurationDescriptorLength);
   DCHECK_GE(data[0], kConfigurationDescriptorLength);
-  UNSAFE_TODO(DCHECK_EQ(data[1], kConfigurationDescriptorType));
-  return BuildUsbConfigurationInfoPtr(
-      UNSAFE_TODO(data[5]) /* bConfigurationValue */,
-      (UNSAFE_TODO(data[7]) & 0x02) != 0 /* bmAttributes */,
-      (UNSAFE_TODO(data[7]) & 0x04) != 0 /* bmAttributes */,
-      UNSAFE_TODO(data[8]) /* bMaxPower */);
+  DCHECK_EQ(data[1], kConfigurationDescriptorType);
+  return BuildUsbConfigurationInfoPtr(data[5] /* bConfigurationValue */,
+                                      (data[7] & 0x02) != 0 /* bmAttributes */,
+                                      (data[7] & 0x04) != 0 /* bmAttributes */,
+                                      data[8] /* bMaxPower */);
 }
 
 UsbConfigurationInfoPtr BuildUsbConfigurationInfoPtr(
