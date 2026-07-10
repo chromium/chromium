@@ -230,6 +230,9 @@ struct Suggestion {
     // The type of the entry from accessibility annotator.
     accessibility_annotator::MemoryDataType memory_data_type =
         accessibility_annotator::MemoryDataType::kUnknown;
+
+    // Whether the entry is sourced from `PersonalContextService`.
+    bool is_personal_context_sourced = false;
   };
 
   struct OpenGeminiPayload final {

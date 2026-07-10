@@ -77,6 +77,8 @@ using ::testing::Test;
 using ::testing::Values;
 using ::testing::WithParamInterface;
 
+constexpr size_t kVisibleSuffixLength = 4;
+
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() = default;
@@ -356,6 +358,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
     MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport",
                              u"some text");
     entry.identifier = passport.guid().value();
+    entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
     MockQueryResultsAndExpectCallback(u"query",
                                       MemorySearchStatus::kFinalResponseSuccess,
                                       {entry}, final_suggestions);
@@ -425,6 +428,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
     MemorySearchResult entry(MemoryDataType::kPassportFull, u"Passport",
                              u"some text");
     entry.identifier = passport.guid().value();
+    entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
     MockQueryResultsAndExpectCallback(u"query",
                                       MemorySearchStatus::kFinalResponseSuccess,
                                       {entry}, final_suggestions);
@@ -500,6 +504,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
     MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport",
                              u"some text");
     entry.identifier = passport.guid().value();
+    entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
     MockQueryResultsAndExpectCallback(u"query",
                                       MemorySearchStatus::kFinalResponseSuccess,
                                       {entry}, final_suggestions);
@@ -1017,6 +1022,134 @@ TEST_F(AtMemoryManagerTest,
       AtMemoryQueryCompletedStatus::kQueryReturnedData, 1);
 }
 
+// Tests that a remote sensitive main entry value is obfuscated in the
+// suggestions list UI, while keeping the raw value in its payload.
+// Also verifies that previewing the suggestion uses the obfuscated value,
+// while filling uses the raw value directly.
+TEST_F(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
+  manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         FormSignature(0), FieldSignature(0));
+  // Create an entry where the primary value is sensitive and metadata is
+  // non-sensitive.
+  MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport Number",
+                           u"987654321");
+  entry.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
+                                   u"John Doe");
+  std::vector<Suggestion> final_suggestions;
+  MockQueryResultsAndExpectCallback(
+      u"query",
+      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
+      {entry}, final_suggestions);
+  manager().OnSearchSubmitted(u"query");
+  ASSERT_EQ(final_suggestions.size(), 1u);
+
+  // 1. Verify Primary Suggestion obfuscation in the UI list.
+  EXPECT_EQ(final_suggestions[0].main_text.value,
+            GetObfuscatedValue(u"987654321", kVisibleSuffixLength));
+
+  // The label row is formatted as: [type_name, bullet, metadata_value]
+  // Check that the non-sensitive metadata value is NOT obfuscated.
+  ASSERT_EQ(final_suggestions[0].labels.size(), 1u);
+  ASSERT_EQ(final_suggestions[0].labels[0].size(), 3u);
+  EXPECT_EQ(final_suggestions[0].labels[0][2].value, u"John Doe");
+
+  // 2. Verify that the primary payload retains the raw value.
+  const Suggestion::AtMemoryPayload& primary_payload =
+      final_suggestions[0].GetPayload<Suggestion::AtMemoryPayload>();
+  EXPECT_EQ(primary_payload.value, u"987654321");
+
+  // 3. Verify Preview and Fill of the Primary Suggestion.
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kPreview,
+                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                         GetObfuscatedValue(u"987654321", kVisibleSuffixLength),
+                         FillingProduct::kAtMemory, _));
+
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kPreview,
+                                      FormGlobalId(), FieldGlobalId(),
+                                      final_suggestions[0]);
+
+  EXPECT_CALL(autofill_manager(),
+              FillOrPreviewField(
+                  mojom::ActionPersistence::kFill,
+                  mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                  std::u16string(u"987654321"), FillingProduct::kAtMemory, _));
+
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                      FormGlobalId(), FieldGlobalId(),
+                                      final_suggestions[0]);
+}
+
+// Tests that sensitive metadata is obfuscated in the primary suggestion labels
+// and in the child flyout menu, while keeping the raw value in its payload.
+// Also verifies that previewing the child suggestion uses the obfuscated value,
+// while filling uses the raw value directly.
+TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
+  manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         FormSignature(0), FieldSignature(0));
+  // Create an entry where the primary value is non-sensitive and metadata is
+  // sensitive.
+  MemorySearchResult entry(MemoryDataType::kNameFull, u"Name", u"John Doe");
+  entry.metadata_list.emplace_back(MemoryDataType::kPassportNumber,
+                                   u"Passport Number", u"987654321");
+  std::vector<Suggestion> final_suggestions;
+  MockQueryResultsAndExpectCallback(
+      u"query",
+      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
+      {entry}, final_suggestions);
+  manager().OnSearchSubmitted(u"query");
+  ASSERT_EQ(final_suggestions.size(), 1u);
+
+  // 1. Verify Primary Suggestion main text is NOT obfuscated.
+  EXPECT_EQ(final_suggestions[0].main_text.value, u"John Doe");
+
+  // The label row is formatted as: [type_name, bullet, metadata_value]
+  // Check that the sensitive metadata value is obfuscated in the labels.
+  ASSERT_EQ(final_suggestions[0].labels.size(), 1u);
+  ASSERT_EQ(final_suggestions[0].labels[0].size(), 3u);
+  EXPECT_EQ(final_suggestions[0].labels[0][2].value,
+            GetObfuscatedValue(u"987654321", kVisibleSuffixLength));
+
+  // 2. Verify Child Suggestion obfuscation in the flyout menu.
+  ASSERT_EQ(final_suggestions[0].children.size(), 1u);
+  EXPECT_EQ(final_suggestions[0].children[0].main_text.value,
+            GetObfuscatedValue(u"987654321", kVisibleSuffixLength));
+
+  // 3. Verify that the child payload retains the raw value.
+  const Suggestion::AtMemoryPayload& child_payload =
+      final_suggestions[0]
+          .children[0]
+          .GetPayload<Suggestion::AtMemoryPayload>();
+  EXPECT_EQ(child_payload.value, u"987654321");
+
+  // 4. Verify Preview and Fill of the Child Suggestion.
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kPreview,
+                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                         GetObfuscatedValue(u"987654321", kVisibleSuffixLength),
+                         FillingProduct::kAtMemory, _));
+
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kPreview,
+                                      FormGlobalId(), FieldGlobalId(),
+                                      final_suggestions[0].children[0]);
+
+  EXPECT_CALL(autofill_manager(),
+              FillOrPreviewField(
+                  mojom::ActionPersistence::kFill,
+                  mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                  std::u16string(u"987654321"), FillingProduct::kAtMemory, _));
+
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                      FormGlobalId(), FieldGlobalId(),
+                                      final_suggestions[0].children[0]);
+}
+
 TEST_F(AtMemoryManagerTest, OnPopupShown_SubPopup_DoesNotResetRecorder) {
   base::HistogramTester histogram_tester;
 
@@ -1063,7 +1196,7 @@ class AtMemoryManagerIconTest : public AtMemoryManagerTest,
         sources.push_back(MemoryEntrySource(MemoryEntrySourceType::kGmail));
         break;
       case SourceScenario::kMixed:
-        sources.push_back(MemoryEntrySource(MemoryEntrySourceType::kAutofill));
+        sources.push_back(MemoryEntrySource(MemoryEntrySourceType::kPhotos));
         sources.push_back(MemoryEntrySource(MemoryEntrySourceType::kGmail));
         break;
     }

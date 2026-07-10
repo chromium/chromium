@@ -137,6 +137,15 @@ class AtMemoryManager {
                       const Suggestion& suggestion,
                       std::unique_ptr<AtMemoryMetricsRecorder> metrics);
 
+  // Fills sensitive identity data by selecting the appropriate filling path
+  // depending on whether the data is sourced from Autofill AI or Personal
+  // Context.
+  void FillSensitiveAutofillAiOrPersonalContextData(
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
+      const Suggestion& suggestion,
+      std::unique_ptr<AtMemoryMetricsRecorder> metrics);
+
   // Fills the unmasked AutofillAI value after fetching it.
   void FillSensitiveAutofillAiData(
       const EntityInstance::EntityId& entity_id,
