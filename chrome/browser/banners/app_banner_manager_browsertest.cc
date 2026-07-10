@@ -403,6 +403,12 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
   })) << "Timed out waiting for installable result to become kNo";
   // No histogram recorded since state was already COMPLETE.
   histograms.ExpectTotalCount(kInstallableStatusCodeHistogram, 0);
+
+  // Dismiss the banner so it does not stay open during test teardown.
+  base::RunLoop run_loop;
+  observer->PrepareDone(run_loop.QuitClosure());
+  observer->app_banner_manager()->SendBannerDismissed();
+  run_loop.Run();
 }
 
 // Verify that after removing manifest and then re-adding it, the installable
@@ -746,8 +752,9 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
           .Build();
   // Install the extension via ExtensionRegistrar so the full load path runs and
   // notifies RendererStartupHelper. Adding it straight to the ExtensionRegistry
-  // enabled set leaves RendererStartupHelper's bookkeeping out of sync and trips
-  // a DCHECK when a new renderer process initializes (crbug.com/515192463).
+  // enabled set leaves RendererStartupHelper's bookkeeping out of sync and
+  // trips a DCHECK when a new renderer process initializes
+  // (crbug.com/515192463).
   extensions::ExtensionRegistrar::Get(browser()->GetProfile())
       ->AddExtension(extension);
 #endif

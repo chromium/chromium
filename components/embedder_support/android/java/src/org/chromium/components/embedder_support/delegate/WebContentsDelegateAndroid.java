@@ -6,8 +6,6 @@ package org.chromium.components.embedder_support.delegate;
 
 import static android.view.Display.INVALID_DISPLAY;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.view.KeyEvent;
@@ -454,7 +452,6 @@ public class WebContentsDelegateAndroid {
             long nativeWebContentsDelegateAndroid) {
         WeakReference<WebContentsDelegateAndroid> reference =
                 sRefMap.get(nativeWebContentsDelegateAndroid);
-        assumeNonNull(reference);
-        return reference.get();
+        return reference == null ? null : reference.get();
     }
 }
