@@ -261,10 +261,6 @@ BOOL ApplicationIsInBackground() {
   NSSet* connectedScenes = [UIApplication sharedApplication].connectedScenes;
   for (UIWindowScene* scene in connectedScenes) {
     if (![scene.delegate isKindOfClass:[SceneDelegate class]]) {
-      // This might happen in tests.
-      // TODO(crbug.com/40710078): This shouldn't be needed. (It might also
-      // be the cause of crbug.com/1142782).
-      [sceneStates addObject:[[SceneState alloc] initWithAppState:self]];
       continue;
     }
 
