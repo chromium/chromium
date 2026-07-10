@@ -513,6 +513,9 @@ void OmniboxViewViews::SelectAll(bool reversed) {
 
 void OmniboxViewViews::RevertAll() {
   TRACE_EVENT("omnibox", "OmniboxViewViews::RevertAll");
+  base::ScopedUmaHistogramTimer timer(
+      "Omnibox.Views.RevertAll.Time",
+      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
   saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
   OmniboxView::RevertAll();
   // This will stop the `AutocompleteController`. This should happen after
@@ -882,6 +885,17 @@ void OmniboxViewViews::ApplyStyle(gfx::TextStyle style,
 
 void OmniboxViewViews::SetTextAndSelectedRange(const std::u16string& text,
                                                const gfx::Range& selection) {
+  TRACE_EVENT("omnibox", "OmniboxViewViews::SetTextAndSelectedRange");
+  base::ScopedUmaHistogramTimer timer(
+      "Omnibox.Views.SetTextAndSelectedRange.Time",
+      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
+  bool is_idempotent =
+      (GetText() == text && GetSelectedRange() == selection &&
+       (!location_bar_view_ ||
+        location_bar_view_->GetOmniboxAdditionalText().empty()));
+  base::UmaHistogramBoolean(
+      "Omnibox.Views.SetTextAndSelectedRange.IdempotentCall", is_idempotent);
+
   // Will try to fit as much of the text preceding the cursor as possible. If
   // possible, guarantees at least |kPadLeading| chars of the text preceding the
   // the cursor are visible. If possible given the prior guarantee, also

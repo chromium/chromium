@@ -5498,6 +5498,42 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.Views.RevertAll.Time" units="microseconds"
+    expires_after="2026-10-10">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the duration of OmniboxViewViews::RevertAll. Recorded when the
+    omnibox view is reverted (e.g. when the user presses Escape or navigation
+    starts). This metric is only reported for clients with high-resolution
+    clocks.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Views.SetTextAndSelectedRange.IdempotentCall"
+    enum="Boolean" expires_after="2026-10-10">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether a call to OmniboxViewViews::SetTextAndSelectedRange was
+    idempotent (i.e., the text and selection were already set to the target
+    values, and no additional text was present). Recorded when
+    SetTextAndSelectedRange is called. This helps measure the potential savings
+    of adding an idempotency guard.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Views.SetTextAndSelectedRange.Time"
+    units="microseconds" expires_after="2026-10-10">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the duration of OmniboxViewViews::SetTextAndSelectedRange. Recorded
+    when the text and selection in the omnibox view are updated. This metric is
+    only reported for clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.WebUI.AutocompleteResultSequenceIdMatched"
     enum="Boolean" expires_after="2026-11-12">
   <owner>orinj@chromium.org</owner>
