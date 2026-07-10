@@ -1,0 +1,12 @@
+[document web]
+++[section]
+++++[push button] name='dogs' expanded label-for=[menu] details=[menu] details-from:command-for haspopup:menu
+++++[menu bar] horizontal
+++++++[menu item] name='First item' expanded haspopup:menu
+++++++[menu] name='dogs' labelled-by=[push button] details-for=[push button] name-from:related-element
+++++++++[menu item] name='Item 1'
+++++[push button] name='cats' expanded details=[menu] details-from:command-for haspopup:menu
+++++[menu bar] horizontal
+++++++[menu item] name='Second item' expanded label-for=[menu] haspopup:menu
+++++++[menu] name='Second item' labelled-by=[menu item] details-for=[push button] name-from:related-element
+++++++++[menu item] name='Item 2'

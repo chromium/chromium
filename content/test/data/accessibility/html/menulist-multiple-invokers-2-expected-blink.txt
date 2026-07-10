@@ -1,0 +1,21 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++popUpButton expanded name='dogs' haspopup=menu detailsIds=menu
+++++++menuBar horizontal
+++++++++menuItem expanded name='First item' haspopup=menu
+++++++++++staticText name='First item'
+++++++++++++inlineTextBox name='First item'
+++++++++menu name='dogs' nameFrom=relatedElement ispopup=manual
+++++++++++menuItem name='Item 1'
+++++++++++++staticText name='Item 1'
+++++++++++++++inlineTextBox name='Item 1'
+++++++popUpButton expanded name='cats' haspopup=menu detailsIds=menu
+++++++menuBar horizontal
+++++++++menuItem expanded name='Second item' haspopup=menu
+++++++++++staticText name='Second item'
+++++++++++++inlineTextBox name='Second item'
+++++++++menu name='Second item' nameFrom=relatedElement ispopup=manual
+++++++++++menuItem name='Item 2'
+++++++++++++staticText name='Item 2'
+++++++++++++++inlineTextBox name='Item 2'

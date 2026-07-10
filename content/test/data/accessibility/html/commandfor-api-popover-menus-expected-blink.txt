@@ -23,7 +23,7 @@ rootWebArea
 ++++++++menuItem expanded name='First item' haspopup=menu
 ++++++++++staticText name='First item'
 ++++++++++++inlineTextBox name='First item'
-++++++++menu ispopup=auto
+++++++++menu name='First item' nameFrom=relatedElement ispopup=auto
 ++++++++++menuItem name='Submenu1 first item'
 ++++++++++++staticText name='Submenu1 first item'
 ++++++++++++++inlineTextBox name='Submenu1 first item'

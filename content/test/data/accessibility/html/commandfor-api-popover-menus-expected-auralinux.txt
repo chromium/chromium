@@ -9,8 +9,8 @@
 ++++[menu bar] horizontal
 ++++++[menu item] name='First item' haspopup:menu
 ++++[menu bar] horizontal
-++++++[menu item] name='First item' expanded haspopup:menu
-++++++[menu]
+++++++[menu item] name='First item' expanded label-for=[menu] haspopup:menu
+++++++[menu] name='First item' labelled-by=[menu item] name-from:related-element
 ++++++++[menu item] name='Submenu1 first item'
 ++++++++[menu item] name='Submenu1 second item' haspopup:menu
 ++++[menu bar] horizontal

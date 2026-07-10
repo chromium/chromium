@@ -1,0 +1,46 @@
+<!--
+@BLINK-ALLOW:haspopup*
+@BLINK-ALLOW:expanded*
+@BLINK-ALLOW:name=*
+@BLINK-ALLOW:nameFrom=relatedElement
+@AURALINUX-ALLOW:expanded*
+@AURALINUX-ALLOW:haspopup:*
+@AURALINUX-ALLOW:name=*
+@AURALINUX-ALLOW:labelled-by*
+@AURALINUX-ALLOW:name-from:related-element
+-->
+<!DOCTYPE html>
+
+<!-- The structure of these two stanzas are identical, but because the submenus
+  are opened with different JS APIs, their aria names are different! That
+  difference is intentional. -->
+
+<!-- 1. Invoked by button click, gets name from the button. -->
+<button id="btn1" command="toggle-popover" commandfor="menu1" aria-label="dogs"></button>
+<menubar>
+  <submenu>
+    <menuitem>First item</menuitem>
+    <!-- popover="manual" so that opening menu2 doesn't dismiss menu1 before we dump the a11y tree -->
+    <menulist id="menu1" popover="manual">
+      <menuitem>Item 1</menuitem>
+    </menulist>
+  </submenu>
+</menubar>
+
+<!-- 2. Invoked programmatically via showPopover(), gets name from the sibling menu item. -->
+<button id="btn2" command="toggle-popover" commandfor="menu2" aria-label="cats"></button>
+<menubar>
+  <submenu>
+    <menuitem>Second item</menuitem>
+    <menulist id="menu2" popover="manual">
+      <menuitem>Item 2</menuitem>
+    </menulist>
+  </submenu>
+</menubar>
+
+<script>
+  window.addEventListener('load', () => {
+    document.getElementById('btn1').click();
+    document.getElementById('menu2').showPopover();
+  });
+</script>
