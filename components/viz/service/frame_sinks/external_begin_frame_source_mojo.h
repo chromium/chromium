@@ -37,13 +37,17 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
  public:
   // `controller_receiver` must be a valid mojo receiver.
   // `controller_client_remote` is optional and can be an invalid remote.
+  // If `wait_for_all_frame_sinks` is false, the frame callback is dispatched as
+  // soon as the display finishes the frame, without waiting for all frame
+  // sinks to finish.
   ExternalBeginFrameSourceMojo(
       FrameSinkManagerImpl* frame_sink_manager,
       mojo::PendingAssociatedReceiver<mojom::ExternalBeginFrameController>
           controller_receiver,
       mojo::PendingAssociatedRemote<mojom::ExternalBeginFrameControllerClient>
           controller_client_remote,
-      uint32_t restart_id);
+      uint32_t restart_id,
+      bool wait_for_all_frame_sinks = true);
   ~ExternalBeginFrameSourceMojo() override;
 
   // mojom::ExternalBeginFrameController implementation.
@@ -101,6 +105,8 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
   // source id, but this is what will be reported to FrameSinkObserver methods.
   // This is only set after an external begin frame has actually been issued.
   std::optional<uint64_t> original_source_id_;
+
+  const bool wait_for_all_frame_sinks_;
 
   base::flat_set<FrameSinkId> pending_frame_sinks_;
   std::optional<BeginFrameAck> pending_ack_;

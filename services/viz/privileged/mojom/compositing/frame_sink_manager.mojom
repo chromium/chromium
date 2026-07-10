@@ -52,6 +52,10 @@ struct RootCompositorFrameSinkParams {
   [EnableIf=is_android]
   float refresh_rate;
 
+  // Whether Viz should wait for all sinks to finish processing (true, used
+  // by headless/XR clients) or ack as soon as a frame is displayed (false).
+  bool wait_for_all_frame_sinks = true;
+
   pending_associated_receiver<CompositorFrameSink> compositor_frame_sink;
   pending_remote<CompositorFrameSinkClient> compositor_frame_sink_client;
 

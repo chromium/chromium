@@ -38,6 +38,7 @@ class BeginFrameSourceWayland : public BeginFrameSourceExtension,
   BeginFrameSourceWayland& operator=(const BeginFrameSourceWayland&) = delete;
 
   // BeginFrameSourceExtension implementation.
+  void Reset() override;
   void SetDelegate(Delegate* delegate) override;
   void SetNeedsBeginFrame(bool needs) override;
   void SetPreferredInterval(base::TimeDelta interval) override;

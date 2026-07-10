@@ -178,7 +178,7 @@ RootCompositorFrameSinkImpl::Create(
             frame_sink_manager,
             std::move(params->external_begin_frame_controller),
             std::move(params->external_begin_frame_controller_client),
-            restart_id);
+            restart_id, params->wait_for_all_frame_sinks);
     external_begin_frame_source_mojo =
         static_cast<ExternalBeginFrameSourceMojo*>(
             external_begin_frame_source.get());

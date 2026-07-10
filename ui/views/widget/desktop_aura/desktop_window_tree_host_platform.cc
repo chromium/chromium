@@ -314,6 +314,8 @@ void DesktopWindowTreeHostPlatform::Init(const Widget::InitParams& params) {
         compositor(), begin_frame_source);
     compositor()->SetExternalBeginFrameControllerClientFactory(
         begin_frame_adapter_.get());
+    // Prevents deadlocks when sinks join after frames are displayed.
+    compositor()->set_wait_for_all_frame_sinks(false);
   }
 
   WindowTreeHost::OnAcceleratedWidgetAvailable();

@@ -550,6 +550,12 @@ class COMPOSITOR_EXPORT Compositor
     external_begin_frame_controler_client_factory_ = factory;
   }
 
+  // Sets wait_for_all_frame_sinks in RootCompositorFrameSinkParams.
+  void set_wait_for_all_frame_sinks(bool wait) {
+    wait_for_all_frame_sinks_ = wait;
+  }
+  bool wait_for_all_frame_sinks() const { return wait_for_all_frame_sinks_; }
+
   // TODO(crbug.com/389771428) - Right now the local property tree is
   // an incomplete thing that only partially matches the one the LayerTreeHost
   // actually uses. Eventually we want to make it completely match and then
@@ -596,6 +602,7 @@ class COMPOSITOR_EXPORT Compositor
       external_begin_frame_controller_;
   raw_ptr<ExternalBeginFrameControllerClientFactory, DanglingUntriaged>
       external_begin_frame_controler_client_factory_;
+  bool wait_for_all_frame_sinks_ = true;
 
   // Used to hold on to IssueExternalBeginFrame(NoAck) arguments if
   // |external_begin_frame_controller_| isn't ready yet.

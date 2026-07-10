@@ -18,11 +18,13 @@ ExternalBeginFrameSourceMojo::ExternalBeginFrameSourceMojo(
         controller_receiver,
     mojo::PendingAssociatedRemote<mojom::ExternalBeginFrameControllerClient>
         controller_client_remote,
-    uint32_t restart_id)
+    uint32_t restart_id,
+    bool wait_for_all_frame_sinks)
     : ExternalBeginFrameSource(this, restart_id),
       frame_sink_manager_(frame_sink_manager),
       receiver_(this, std::move(controller_receiver)),
-      remote_client_(std::move(controller_client_remote)) {
+      remote_client_(std::move(controller_client_remote)),
+      wait_for_all_frame_sinks_(wait_for_all_frame_sinks) {
   frame_sink_manager_->AddObserver(this);
 }
 
@@ -35,7 +37,8 @@ void ExternalBeginFrameSourceMojo::IssueExternalBeginFrame(
     const BeginFrameArgs& args,
     bool force,
     base::OnceCallback<void(const BeginFrameAck&)> callback) {
-  if (pending_frame_callback_ || !pending_frame_sinks_.empty()) {
+  if (pending_frame_callback_ ||
+      (wait_for_all_frame_sinks_ && !pending_frame_sinks_.empty())) {
     mojo::ReportBadMessage("Got overlapping IssueExternalBeginFrame");
     return;
   }
@@ -150,7 +153,7 @@ void ExternalBeginFrameSourceMojo::OnDisplayDidFinishFrame(
   bool has_damage = (result == DisplaySchedulerDrawResult::kDrawn);
   BeginFrameAck ack(frame_id.source_id, frame_id.sequence_number, has_damage);
 
-  if (!pending_frame_sinks_.empty()) {
+  if (wait_for_all_frame_sinks_ && !pending_frame_sinks_.empty()) {
     CHECK(!pending_ack_);
     pending_ack_ = ack;
     return;

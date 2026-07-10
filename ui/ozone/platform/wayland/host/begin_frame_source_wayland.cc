@@ -26,6 +26,15 @@ BeginFrameSourceWayland::~BeginFrameSourceWayland() {
   SetBeginFrameSourceExtension(window_, nullptr);
 }
 
+void BeginFrameSourceWayland::Reset() {
+  needs_begin_frame_ = false;
+  frame_in_flight_ = false;
+  ready_to_issue_begin_frame_ = false;
+  last_frame_deadline_time_ = base::TimeTicks();
+  frame_callback_timeout_timer_.Stop();
+  deferred_issue_begin_frame_timer_.Stop();
+}
+
 void BeginFrameSourceWayland::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }

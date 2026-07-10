@@ -434,6 +434,8 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
       root_params->external_begin_frame_controller_client =
           factory->CreateExternalBeginFrameControllerClient();
     }
+    root_params->wait_for_all_frame_sinks =
+        compositor->wait_for_all_frame_sinks();
   }
 
   root_params->frame_sink_id = compositor->frame_sink_id();
