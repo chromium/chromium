@@ -157,6 +157,11 @@ SigninViewControllerDelegateViews::CreateHistorySyncOptInWebView(
                           /*dialog_height=*/0, kModalDialogWidth,
                           InitializeSigninWebDialogUI(false));
   CHECK(web_view);
+  auto* helper = ColorProviderBrowserHelper::From(browser);
+  if (helper && helper->color_provider_source()) {
+    web_view->GetWebContents()->SetColorProviderSource(
+        helper->color_provider_source());
+  }
   HistorySyncOptinUI* web_ui = web_view->GetWebContents()
                                    ->GetWebUI()
                                    ->GetController()

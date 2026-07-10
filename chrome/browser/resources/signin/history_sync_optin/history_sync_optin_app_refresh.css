@@ -15,6 +15,10 @@
   color: var(--cr-primary-text-color);
   display: block;
   overflow: hidden;
+  --color-button-background-prominent: var(--color-sys-primary);
+  --color-button-foreground-prominent: var(--color-sys-on-primary);
+  --color-button-foreground: var(--color-sys-primary);
+  --color-button-border: var(--color-sys-tonal-outline);
 }
 
 #contentContainer {
