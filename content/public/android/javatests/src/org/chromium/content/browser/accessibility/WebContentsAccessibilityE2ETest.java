@@ -269,6 +269,7 @@ public class WebContentsAccessibilityE2ETest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/529689125")
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // crbug.com/529881530
     public void testAccessibilityServiceReceivesInitialEvent() throws Throwable {
         // Load a page.
