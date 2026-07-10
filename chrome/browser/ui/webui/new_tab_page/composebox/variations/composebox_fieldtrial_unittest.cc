@@ -67,26 +67,25 @@ class NtpFieldTrialEnabledTest : public testing::Test {
 using IsNtpComposeboxEnabledTest = NtpFieldTrialEnabledTest;
 
 TEST_F(IsNtpComposeboxEnabledTest, ReturnsFalseForNullProfile) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(ntp_composebox::kNtpComposebox);
   EXPECT_FALSE(ntp_composebox::IsNtpComposeboxEnabled(nullptr));
 }
 
-TEST_F(IsNtpComposeboxEnabledTest, ReturnsFalseWhenFeatureDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(ntp_composebox::kNtpComposebox);
+TEST_F(IsNtpComposeboxEnabledTest, ReturnsFalseWhenFeatureDisabledByDefault) {
+  // kNtpComposebox is FEATURE_DISABLED_BY_DEFAULT.
   SetAllEligible(true);
   EXPECT_FALSE(ntp_composebox::IsNtpComposeboxEnabled(profile_.get()));
 }
 
 TEST_F(IsNtpComposeboxEnabledTest, ReturnsFalseWhenNotEligible) {
   base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(ntp_composebox::kNtpComposebox);
   SetAllEligible(false);
   EXPECT_FALSE(ntp_composebox::IsNtpComposeboxEnabled(profile_.get()));
 }
 
-TEST_F(IsNtpComposeboxEnabledTest, ReturnsTrueWhenEligible) {
+TEST_F(IsNtpComposeboxEnabledTest, ReturnsTrueWhenEnabledAndEligible) {
   base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(ntp_composebox::kNtpComposebox);
   SetAllEligible(true);
   EXPECT_TRUE(ntp_composebox::IsNtpComposeboxEnabled(profile_.get()));
 }
@@ -94,6 +93,7 @@ TEST_F(IsNtpComposeboxEnabledTest, ReturnsTrueWhenEligible) {
 TEST_F(IsNtpComposeboxEnabledTest,
        ReturnsFalseWhenAimEligibleButNotFuseboxEligible) {
   base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(ntp_composebox::kNtpComposebox);
   ON_CALL(*mock_service_, IsAimLocallyEligible())
       .WillByDefault(testing::Return(true));
   ON_CALL(*mock_service_, IsAimEligible())
@@ -108,16 +108,11 @@ TEST_F(IsNtpComposeboxEnabledTest,
 using IsNtpRealboxNextEnabledTest = NtpFieldTrialEnabledTest;
 
 TEST_F(IsNtpRealboxNextEnabledTest, ReturnsFalseForNullProfile) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {}, {ntp_composebox::kNtpComposebox, ntp_realbox::kNtpRealboxNext});
   EXPECT_FALSE(ntp_realbox::IsNtpRealboxNextEnabled(nullptr));
 }
 
-TEST_F(IsNtpRealboxNextEnabledTest, ReturnsFalseWhenComposeboxDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {}, {ntp_composebox::kNtpComposebox, ntp_realbox::kNtpRealboxNext});
+TEST_F(IsNtpRealboxNextEnabledTest, ReturnsFalseWhenFeatureDisabledByDefault) {
+  // Both kNtpComposebox and kNtpRealboxNext are FEATURE_DISABLED_BY_DEFAULT.
   SetAllEligible(true);
   EXPECT_FALSE(ntp_realbox::IsNtpRealboxNextEnabled(profile_.get()));
 }
@@ -125,23 +120,33 @@ TEST_F(IsNtpRealboxNextEnabledTest, ReturnsFalseWhenComposeboxDisabled) {
 TEST_F(IsNtpRealboxNextEnabledTest,
        ReturnsFalseWhenOnlyRealboxNextEnabled) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(ntp_composebox::kNtpComposebox);
+  features.InitWithFeatures({ntp_realbox::kNtpRealboxNext}, {});
   SetAllEligible(true);
+  // kNtpComposebox is still disabled by default.
   EXPECT_FALSE(ntp_realbox::IsNtpRealboxNextEnabled(profile_.get()));
 }
 
 TEST_F(IsNtpRealboxNextEnabledTest, ReturnsFalseWhenNotEligible) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {ntp_composebox::kNtpComposebox, ntp_realbox::kNtpRealboxNext}, {});
   SetAllEligible(false);
   EXPECT_FALSE(ntp_realbox::IsNtpRealboxNextEnabled(profile_.get()));
 }
 
-TEST_F(IsNtpRealboxNextEnabledTest, ReturnsTrueWhenEligible) {
+TEST_F(IsNtpRealboxNextEnabledTest, ReturnsTrueWhenEnabledAndEligible) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {ntp_composebox::kNtpComposebox, ntp_realbox::kNtpRealboxNext}, {});
   SetAllEligible(true);
   EXPECT_TRUE(ntp_realbox::IsNtpRealboxNextEnabled(profile_.get()));
 }
 
 TEST_F(IsNtpRealboxNextEnabledTest,
        ReturnsFalseWhenAimEligibleButNotFuseboxEligible) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {ntp_composebox::kNtpComposebox, ntp_realbox::kNtpRealboxNext}, {});
   ON_CALL(*mock_service_, IsAimLocallyEligible())
       .WillByDefault(testing::Return(true));
   ON_CALL(*mock_service_, IsAimEligible())

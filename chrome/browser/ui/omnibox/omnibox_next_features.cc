@@ -31,11 +31,11 @@ namespace omnibox {
 namespace internal {
 
 // If enabled, shows the omnibox suggestions in the popup in WebUI.
-BASE_FEATURE(kWebUIOmniboxPopup, ENABLED);
+BASE_FEATURE(kWebUIOmniboxPopup, DISABLED);
 
 // If enabled, Omnibox popup will transition to AI-Mode with the compose-box
 // panel taking up the whole of the popup, covering the location bar completely.
-BASE_FEATURE(kWebUIOmniboxAimPopup, ENABLED);
+BASE_FEATURE(kWebUIOmniboxAimPopup, DISABLED);
 
 // If enabled, the Omnibox Popup will enable a different UI state when on a
 // webpage.

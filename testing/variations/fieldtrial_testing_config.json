@@ -8851,25 +8851,6 @@
             ]
         }
     ],
-    "DesktopOmniboxPopup": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "WebUIOmniboxAimPopup",
-                        "WebUIOmniboxPopup"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopOmniboxRichAutocompletionMinChar": [
         {
             "platforms": [
@@ -17370,6 +17351,40 @@
                 {
                     "name": "Enabled",
                     "enable_features": []
+                }
+            ]
+        }
+    ],
+    "NtpRealboxNextDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "NtpComposeboxContextMenuEnableMultiTabSelection": "true",
+                        "NtpNextShowStaticRecentTabChipParam": "false",
+                        "NtpNextShowStaticTextParam": "true"
+                    },
+                    "enable_features": [
+                        "NtpNextFeatures",
+                        "NtpRealboxNext"
+                    ]
+                },
+                {
+                    "name": "Enabled_Compact_Multiline",
+                    "params": {
+                        "CyclingPlaceholders": "true",
+                        "MultiLineEnabled": "true"
+                    },
+                    "enable_features": [
+                        "NtpRealboxNext"
+                    ]
                 }
             ]
         }
