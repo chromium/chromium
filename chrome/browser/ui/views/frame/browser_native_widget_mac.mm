@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
-#include "chrome/browser/ui/views/frame/glass_frame_service.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/pref_names.h"
@@ -672,15 +671,14 @@ void BrowserNativeWidgetMac::OnWindowInitialized() {
 
 void BrowserNativeWidgetMac::OnWidgetInitDone() {
   NativeWidgetMac::OnWidgetInitDone();
-  // GlassFrameService is only available if glass frame is enabled.
-  if (auto* const glass_frame_service = GlassFrameService::GetInstance()) {
+  if (features::IsGlassFrameEnabled()) {
     glass_frame_service_subscription_ =
-        glass_frame_service->RegisterGlassFrameEligibilityChangedCallback(
-            browser_view_->browser(),
-            base::BindRepeating(&BrowserNativeWidgetMac::UpdateBackground,
-                                base::Unretained(this)));
-    UpdateBackground(
-        glass_frame_service->IsBrowserWindowEligible(browser_view_->browser()));
+        GlassFrameService::GetInstance()
+            ->RegisterGlassFrameEligibilityChangedCallback(
+                browser_view_->browser(),
+                base::BindRepeating(&BrowserNativeWidgetMac::UpdateBackground,
+                                    base::Unretained(this)));
+    UpdateBackground(IsBrowserWidgetEligible());
   }
 }
 
@@ -807,12 +805,8 @@ void BrowserNativeWidgetMac::OnVerticalTabStripModeChanged(
 }
 
 bool BrowserNativeWidgetMac::IsBrowserWidgetEligible() const {
-  if (auto* const glass_frame_service = GlassFrameService::GetInstance()) {
-    if (auto* const browser = browser_view_->browser()) {
-      return glass_frame_service->IsBrowserWindowEligible(browser);
-    }
-  }
-  return false;
+  Browser* const browser = browser_view_ ? browser_view_->browser() : nullptr;
+  return GlassFrameService::GetInstance()->IsBrowserWindowEligible(browser);
 }
 
 void BrowserNativeWidgetMac::UpdateBackground(bool is_eligible) {

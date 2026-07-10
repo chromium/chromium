@@ -180,10 +180,8 @@ void GlobalFeatures::PostBrowserProcessInit() {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  if (features::IsGlassFrameEnabled()) {
-    glass_frame_service_ =
-        GetUserDataFactory().CreateInstance<GlassFrameService>(
-            *g_browser_process, *g_browser_process);
+  if (base::FeatureList::IsEnabled(features::kGlassFrame)) {
+    glass_frame_service_ = CreateGlassFrameService();
   }
 #endif
 }
@@ -306,6 +304,12 @@ std::unique_ptr<GlobalBrowserCollection>
 GlobalFeatures::CreateGlobalBrowserCollection() {
   return std::make_unique<GlobalBrowserCollection>();
 }
+
+#if BUILDFLAG(IS_MAC)
+std::unique_ptr<GlassFrameService> GlobalFeatures::CreateGlassFrameService() {
+  return std::make_unique<GlassFrameService>();
+}
+#endif
 
 // static
 ui::UserDataFactoryWithOwner<BrowserProcess>&

@@ -13,9 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-class BrowserProcess;
 class BrowserWindowInterface;
 class GlobalBrowserCollection;
 class PrefRegistrySimple;
@@ -24,12 +22,6 @@ class PrefRegistrySimple;
 // a browser window should display the glass frame or not.
 class GlassFrameService : public BrowserCollectionObserver {
  public:
-  DECLARE_USER_DATA(GlassFrameService);
-
-  // Returns non-null if glass frame is enabled for this process (though it may
-  // still be disabled in prefs, or for a particular background window). Call
-  // IsBrowserWindowEligible() to determine if a particular window should get
-  // glass treatment.
   static GlassFrameService* GetInstance();
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -49,7 +41,7 @@ class GlassFrameService : public BrowserCollectionObserver {
 
   bool IsBrowserWindowEligible(BrowserWindowInterface* browser);
 
-  explicit GlassFrameService(BrowserProcess& process);
+  GlassFrameService();
   ~GlassFrameService() override;
 
   // BrowserCollectionObserver:
@@ -78,7 +70,6 @@ class GlassFrameService : public BrowserCollectionObserver {
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
   PrefChangeRegistrar pref_change_registrar_;
-  ::ui::ScopedUnownedUserData<GlassFrameService> scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_FRAME_SERVICE_H_

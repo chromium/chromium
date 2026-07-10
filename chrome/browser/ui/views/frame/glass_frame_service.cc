@@ -23,11 +23,9 @@ namespace {
 constexpr size_t kMaxWindowsTrackedForGlassFrame = 50;
 }  // namespace
 
-DEFINE_USER_DATA(GlassFrameService);
-
 // static
 GlassFrameService* GlassFrameService::GetInstance() {
-  return Get(g_browser_process->GetUnownedUserDataHost());
+  return g_browser_process->GetFeatures()->glass_frame_service();
 }
 
 // static
@@ -35,8 +33,7 @@ void GlassFrameService::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kGlassFrameEnabled, true);
 }
 
-GlassFrameService::GlassFrameService(BrowserProcess& process)
-    : scoped_unowned_user_data_(process.GetUnownedUserDataHost(), *this) {
+GlassFrameService::GlassFrameService() {
   GlobalBrowserCollection* const browser_collection =
       GlobalBrowserCollection::GetInstance();
   CHECK(browser_collection);

@@ -4,18 +4,12 @@
 
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h"
 
-#include "base/functional/bind.h"
-#include "build/build_config.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/view.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/views/frame/glass_frame_service.h"
-#endif
 
 // Proposed layout implementation.
 
@@ -127,18 +121,7 @@ BrowserViewLayoutImpl::BrowserViewLayoutImpl(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
     Browser* browser,
     BrowserViewLayoutViews views)
-    : BrowserViewLayout(std::move(delegate), browser, std::move(views)) {
-#if BUILDFLAG(IS_MAC)
-  if (auto* const glass_frame_service = GlassFrameService::GetInstance()) {
-    in_glass_mode_ = glass_frame_service->IsBrowserWindowEligible(browser);
-    glass_mode_subscription_ =
-        glass_frame_service->RegisterGlassFrameEligibilityChangedCallback(
-            browser, base::BindRepeating(
-                         &BrowserViewLayoutImpl::OnGlassModeChangedCallback,
-                         base::Unretained(this)));
-  }
-#endif
-}
+    : BrowserViewLayout(std::move(delegate), browser, std::move(views)) {}
 
 BrowserViewLayoutImpl::~BrowserViewLayoutImpl() = default;
 
@@ -343,16 +326,6 @@ void BrowserViewLayoutImpl::DoPostLayoutCleanup() {}
 void BrowserViewLayoutImpl::OnLayoutParamsChanged(
     const BrowserLayoutParams& old_params,
     const BrowserLayoutParams& new_params) {}
-
-void BrowserViewLayoutImpl::OnGlassModeChangedCallback(bool in_glass_mode) {
-  if (in_glass_mode == in_glass_mode_) {
-    return;
-  }
-  in_glass_mode_ = in_glass_mode;
-  OnGlassModeChanged();
-}
-
-void BrowserViewLayoutImpl::OnGlassModeChanged() {}
 
 // Dialog positioning.
 
