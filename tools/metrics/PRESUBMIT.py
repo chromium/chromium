@@ -87,9 +87,9 @@ def _ReportMyPyErrors(input_api: Type, output_api: Type) -> Iterable[Any]:
   return [output_api.PresubmitError(i) for i in my_py_issues]
 
 
-def _ReportIssuesWithScripts(input_api: Type, output_api: Type,
-                             affected_files: Iterable[str],
-                             deps_graph: Dict[str, List[str]]) -> Iterable[Any]:
+def _ReportIssuesWithScripts(
+    input_api: Type, output_api: Type, affected_files: Iterable[str],
+    deps_graph: Dict[Path, List[Path]]) -> Iterable[Any]:
   scripts_to_test = tests_helpers.get_affected_testable_scripts(
       set(Path(p) for p in affected_files), deps_graph)
 
@@ -106,7 +106,7 @@ def _ReportIssuesWithScripts(input_api: Type, output_api: Type,
 
 def _ReportIssuesWithTests(input_api: Type, output_api: Type,
                            affected_files: List[str],
-                           deps_graph: Dict[str, List[str]]) -> Iterable[Any]:
+                           deps_graph: Dict[Path, List[Path]]) -> Iterable[Any]:
   tests_to_run = tests_helpers.get_affected_tests(
       set(Path(p) for p in affected_files), deps_graph)
 
@@ -129,8 +129,8 @@ def _ReportPythonIssues(input_api: Type, output_api: Type) -> Iterable[Any]:
     return
 
   deps_graph = dependency_solver.scan_directory_dependencies(
-      str(path_util.METRICS_TOOLS_PATH),
-      report_relative_to=str(path_util.CHROMIUM_SRC_PATH))
+      path_util.METRICS_TOOLS_PATH,
+      report_relative_to=path_util.CHROMIUM_SRC_PATH)
 
   yield from _ReportMissingBuildFileReferences(output_api)
   yield from _ReportMyPyErrors(input_api, output_api)

@@ -15,75 +15,68 @@
 # running presubmits.
 
 import os
-from typing import List, Dict, Set, Optional
+import pathlib
 import re
-from pathlib import Path
+from typing import Any, Dict, List, Optional, Set
 
 _IMPORT_PATTERNS = [
-    (re.compile(r"^import chromium_src\.tools\.metrics\.?(.*) as .*$"), False),
-    (re.compile(r"^import chromium_src\.tools\.metrics\.?([^ ]*)$"), False),
-    (re.compile(r"^from chromium_src\.tools\.metrics\.?(.*) import (.*)$"),
+    (re.compile(r'^import chromium_src\.tools\.metrics\.?(.*) as .*$'), False),
+    (re.compile(r'^import chromium_src\.tools\.metrics\.?([^ ]*)$'), False),
+    (re.compile(r'^from chromium_src\.tools\.metrics\.?(.*) import (.*)$'),
      True)
 ]
 
 
-def _get_py_files_recursive(directory: str):
+def _get_py_files_recursive(directory: pathlib.Path) -> List[pathlib.Path]:
   """Recursively finds all .py files in a given directory."""
-  py_files = []
-  for root, _, files in os.walk(directory):
-    for file in files:
-      if file.endswith(".py"):
-        full_path = os.path.join(root, file)
-        py_files.append(full_path)
-  return py_files
+  return list(directory.rglob('*.py'))
 
 
-def _resolve_fs_path(path_str: str) -> List[str]:
-  """Resolve path to either single .py file or all files in directory
+def _resolve_fs_path(path: pathlib.Path) -> List[pathlib.Path]:
+  """Resolves a path to either a single .py file or all files in a directory.
 
   It checks if the path is a file (by appending .py) - if so, it returns a list
-  containing fully constructed path to that file.
+  containing the Path to that file.
 
-  If it's not a py file, it tries to resolve it as directory - returning paths
-  of all files within that directory.
+  If it's not a py file, it tries to resolve it as a directory - returning paths
+  of all files within that directory recursively.
 
-  If the directory under this path doesn't exist either - throws an exception.
+  If neither exists, throws FileNotFoundError.
   """
-  file_candidate = path_str + ".py"
-  if os.path.isfile(file_candidate):
+  file_candidate = pathlib.Path(str(path) + '.py')
+  if file_candidate.is_file():
     return [file_candidate]
 
-  if os.path.isdir(path_str):
-    return _get_py_files_recursive(path_str)
+  if path.is_dir():
+    return _get_py_files_recursive(path)
 
   raise FileNotFoundError(
-      f"Could not resolve import. Neither '{file_candidate}' exists,"
-      f"nor is '{path_str}' a directory.")
+      f'Could not resolve import. Neither \'{file_candidate}\' exists, '
+      f'nor is \'{path}\' a directory.')
 
 
-def _process_import_match(root_path: str,
+def _process_import_match(root_path: pathlib.Path,
                           path_group: str,
-                          symbol: Optional[str] = None):
-  """Constructs the final path from the parsed import statement.
+                          symbol: Optional[str] = None) -> List[pathlib.Path]:
+  """Constructs the final Path from the parsed import statement.
 
-  If a symbol is present, it tries to append it first.
+  If a symbol is present, it tries to append it first as a file/sub-module.
   If that fails, it falls back to checking the path without the symbol.
   """
-  full_path = os.path.join(root_path, path_group.replace('.', os.sep))
+  full_path = root_path / path_group.replace('.', os.sep)
 
   if not symbol:
     return _resolve_fs_path(full_path)
 
-  path_with_symbol = os.path.join(full_path, symbol)
+  path_with_symbol = full_path / symbol
   try:
     return _resolve_fs_path(path_with_symbol)
   except FileNotFoundError:
-    # Fallback: Ignore the symbol and check if the module itself matches a file
     return _resolve_fs_path(full_path)
 
 
-def _parse_line_dependencies(root_path: str, line: str,
-                             pattern: re.Pattern) -> List[str]:
+def _parse_line_dependencies(root_path: pathlib.Path, line: str,
+                             pattern: re.Pattern) -> List[pathlib.Path]:
   """Returns dependencies for the line (if any) using pattern."""
   match = pattern.match(line)
   if not match:
@@ -92,37 +85,39 @@ def _parse_line_dependencies(root_path: str, line: str,
   path_suffix = match.group(1)
 
   return [
-      str(Path(p).relative_to(root_path))
+      p.relative_to(root_path)
       for p in _process_import_match(root_path, path_suffix, None)
   ]
 
 
-def _parse_line_dependencies_with_symbol(root_path: str, line: str,
-                                         pattern: re.Pattern) -> List[str]:
+def _parse_line_dependencies_with_symbol(
+    root_path: pathlib.Path, line: str,
+    pattern: re.Pattern) -> List[pathlib.Path]:
   """Returns dependencies for the line (if any) using pattern."""
   match = pattern.match(line)
   if not match:
     return []
   path_suffix = match.group(1)
   symbols_str = match.group(2).strip()
-  symbols = [s.strip() for s in symbols_str.split(',')]\
+  symbols = [s.strip() for s in symbols_str.split(',')]
 
-  imports: List[str] = []
+  imports: List[pathlib.Path] = []
   for symbol in symbols:
     imports.extend(
-        str(Path(p).relative_to(root_path))
+        p.relative_to(root_path)
         for p in _process_import_match(root_path, path_suffix, symbol))
   return imports
 
 
-def _dependencies_of(root_path: str, relative_path: str) -> List[str]:
-  """Returns a list of dependencies (as path relative to root_path) for a file
+def _dependencies_of(root_path: pathlib.Path,
+                     relative_path: pathlib.Path) -> List[pathlib.Path]:
+  """Returns a list of dependencies (as Paths relative to root_path) for a file.
 
   The file is identified by relative_path within root_path.
   """
-  full_path = os.path.join(root_path, relative_path)
-  if not os.path.exists(full_path):
-    raise FileNotFoundError(f"Input file not found: {full_path}")
+  full_path = root_path / relative_path
+  if not full_path.exists():
+    raise FileNotFoundError(f'Input file not found: {full_path}')
 
   with open(full_path, 'r', encoding='utf-8') as f:
     lines = f.readlines()
@@ -140,57 +135,65 @@ def _dependencies_of(root_path: str, relative_path: str) -> List[str]:
   return dependencies
 
 
-def _as_path_relative_to(path, root, reporting_root) -> str:
-  return os.path.relpath(os.path.join(root, path), reporting_root)
-
-
 def scan_directory_dependencies(
-    root_path: str,
-    report_relative_to: Optional[str] = None) -> Dict[str, List[str]]:
+    root_path: pathlib.Path,
+    report_relative_to: Optional[pathlib.Path] = None
+) -> Dict[pathlib.Path, List[pathlib.Path]]:
   """Scans the directory for .py files and builds a dependency map.
 
   Returns:
-    Dict[str, List[str]]: Keys are relative file paths, values
-    are lists of dependencies as relative file paths.
+    Dict[pathlib.Path, List[pathlib.Path]]: Keys are relative file Paths,
+    values are lists of dependencies as relative file Paths.
   """
-  reporting_root = report_relative_to if report_relative_to else root_path
+  root_path = pathlib.Path(root_path)
+  reporting_root = pathlib.Path(
+      report_relative_to) if report_relative_to else root_path
+  rel_files = [
+      p.relative_to(root_path) for p in _get_py_files_recursive(root_path)
+  ]
   return {
-      _as_path_relative_to(path, root_path, reporting_root): [
-          _as_path_relative_to(path, root_path, reporting_root)
-          for path in _dependencies_of(root_path, path)
-      ]
-      for path in _get_py_files_recursive(root_path)
+      (root_path / path).relative_to(reporting_root):
+      [(root_path / dep_path).relative_to(reporting_root)
+       for dep_path in _dependencies_of(root_path, path)]
+      for path in rel_files
   }
 
 
-def print_dependency_graph(dependency_graph: Dict[str, List[str]]) -> None:
+def print_dependency_graph(
+    dependency_graph: Dict[pathlib.Path, List[pathlib.Path]]) -> None:
   """Prints a visual representation of direct dependencies for each file."""
-  print(f"{'Script':<50} | {'Dependencies'}")
-  print("-" * 80)
+  header_script = 'Script'
+  print(f'{header_script:<50} | Dependencies')
+  print('-' * 80)
 
+  empty_prefix = ''
   for script_path in dependency_graph:
     deps = dependency_graph[script_path]
 
     if not deps:
-      print(f"{script_path:<50} | (None)")
+      print(f'{script_path:<50} | (None)')
     else:
-      print(f"{script_path:<50} | -> {deps[0]}")
+      print(f'{script_path:<50} | -> {deps[0]}')
       for dep in deps[1:]:
-        print(f"{'':<50} | -> {dep}")
-    print("-" * 80)
+        print(f'{empty_prefix:<50} | -> {dep}')
+    print('-' * 80)
 
 
-def get_all_dependencies(dependency_graph: Dict[str, List[str]],
-                         target_script: str) -> Set[str]:
-  """Returns a list of ALL dependencies (direct and indirect) for a script.
+def get_all_dependencies(dependency_graph: Dict[pathlib.Path,
+                                                List[pathlib.Path]],
+                         target_script: pathlib.Path) -> Set[pathlib.Path]:
+  """Returns a set of ALL dependencies (direct and indirect) for a script.
 
   Detects and handles circular dependencies safely.
   """
+  if not dependency_graph:
+    return set()
+
   if target_script not in dependency_graph:
     raise ValueError(
-        f"Script '{target_script}' not found in the scanned graph.")
+        f'Script \'{target_script}\' not found in the scanned graph.')
 
-  all_dependencies = set()
+  all_dependencies: Set[pathlib.Path] = set()
   queue = [target_script]
   visited = set()
 
@@ -206,4 +209,4 @@ def get_all_dependencies(dependency_graph: Dict[str, List[str]],
       all_dependencies.add(dep)
       queue.append(dep)
 
-  return set(list(all_dependencies))
+  return all_dependencies
