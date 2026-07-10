@@ -7,6 +7,7 @@
 
 #include <concepts>
 #include <cstdint>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -96,7 +97,7 @@ class PendingRemote {
   void reset() { state_.reset(); }
 
   // Like above but provides a reason for the disconnection.
-  void ResetWithReason(uint32_t reason, const std::string& description) {
+  void ResetWithReason(uint32_t reason, std::string_view description) {
     CHECK(is_valid()) << "Cannot send reset reason to an invalid handle.";
 
     Message message =

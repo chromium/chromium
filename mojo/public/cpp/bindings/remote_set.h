@@ -8,6 +8,7 @@
 #include <iterator>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -139,7 +140,7 @@ class RemoteSetImpl {
   // Similar to the method above, but also specifies a disconnect reason.
   void RemoveWithReason(RemoteSetElementId id,
                         uint32_t custom_reason_code,
-                        const std::string& description) {
+                        std::string_view description) {
     auto it = storage_.find(id);
     if (it == storage_.end()) {
       return;
@@ -183,7 +184,7 @@ class RemoteSetImpl {
 
   void Clear() { storage_.clear(); }
   void ClearWithReason(uint32_t custom_reason_code,
-                       const std::string& description) {
+                       std::string_view description) {
     for (auto& [_, remote] : storage_) {
       remote.ResetWithReason(custom_reason_code, description);
     }

@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -37,7 +38,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) AssociatedInterfacePtrStateBase {
   void QueryVersion(base::OnceCallback<void(uint32_t)> callback);
   void RequireVersion(uint32_t version);
   void FlushForTesting();
-  void CloseWithReason(uint32_t custom_reason, const std::string& description);
+  void CloseWithReason(uint32_t custom_reason, std::string_view description);
 
   bool is_bound() const { return !!endpoint_client_; }
 

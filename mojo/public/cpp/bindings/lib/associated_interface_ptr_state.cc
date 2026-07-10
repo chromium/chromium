@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -50,7 +51,7 @@ void AssociatedInterfacePtrStateBase::FlushForTesting() {
 
 void AssociatedInterfacePtrStateBase::CloseWithReason(
     uint32_t custom_reason,
-    const std::string& description) {
+    std::string_view description) {
   endpoint_client_->CloseWithReason(custom_reason, description);
 }
 

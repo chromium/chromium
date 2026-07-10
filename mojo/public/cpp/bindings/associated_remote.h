@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_ASSOCIATED_REMOTE_H_
 
 #include <cstdint>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -178,7 +179,7 @@ class AssociatedRemote {
   }
 
   // Similar to the method above, but also specifies a disconnect reason.
-  void ResetWithReason(uint32_t custom_reason, const std::string& description) {
+  void ResetWithReason(uint32_t custom_reason, std::string_view description) {
     if (internal_state_.is_bound()) {
       internal_state_.CloseWithReason(custom_reason, description);
     }
