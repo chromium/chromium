@@ -1127,7 +1127,10 @@ export const ComposeboxEmbedderMixin =
           // then revokes Drive permissions.
           const {status} =
               await this.getSearchboxHandler().getDriveDisclaimerStatus();
-          if (status !== DriveDisclaimerStatus.kAccepted) {
+          // Abort only if the account is restricted/ineligible. If unconsented
+          // (kNotAccepted), allow the click through so onDriveUploadClicked
+          // can trigger the ConsentKit disclaimer onboarding dialog.
+          if (status === DriveDisclaimerStatus.kRestricted) {
             return;
           }
 
