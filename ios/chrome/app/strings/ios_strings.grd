@@ -4710,6 +4710,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_MANUAL_FALLBACK_MANAGE_ADDRESSES_AND_MORE" desc="The title for the button in the manual fallback UI that takes the user to the addresses and more settings. In this screen they see all the addresses and Autofill AI entities and can erase them. [30em]">
         Manage addresses and more…
       </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_MANAGE_CONTACT_INFO_AND_MORE" desc="The title for the button in the manual fallback UI that takes the user to the contact info and more settings. In this screen they see all the addresses and Autofill AI entities and can erase them. [30em]">
+        Manage contact info and more…
+      </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_MANAGE_CREDIT_CARDS" desc="The title for the button in the manual fallback UI that takes the user to the payments settings. In this screen they see all the credit cards and can erase them. [30em]">
         Manage payment methods…
       </message>

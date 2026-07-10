@@ -95,8 +95,9 @@ NSString* const kAccessoryKeyboardAccessibilityIdentifier =
   switch (fillingProduct) {
     case autofill::FillingProduct::kAutofillAi:
       // For AutofillAi suggestions, the manual fill menu opens to the Address
-      // tab and scrolls to the "Manage Addresses and More..." button, allowing
-      // users to manage AutofillAi related data.
+      // tab and scrolls to the "Manage Addresses and More..." (or "Manage
+      // Contact Info and More..." for YourSavedInfoSettingsPageIos) button,
+      // allowing users to manage AutofillAi related data.
       if (!base::FeatureList::IsEnabled(
               autofill::features::kAutofillAiWithDataSchema)) {
         // Only allow kAutofillAi if the associated feature is enabled.

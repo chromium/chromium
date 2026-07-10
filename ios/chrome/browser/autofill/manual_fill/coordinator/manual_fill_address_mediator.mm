@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_address_cell.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -160,8 +161,10 @@ std::vector<AutofillProfile> FetchAddresses(
     return;
   }
 
-  NSString* manageAddressesTitle =
-      l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_MANAGE_ADDRESSES_AND_MORE);
+  NSString* manageAddressesTitle = l10n_util::GetNSString(
+      IsYourSavedInfoSettingsPageIosEnabled()
+          ? IDS_IOS_MANUAL_FALLBACK_MANAGE_CONTACT_INFO_AND_MORE
+          : IDS_IOS_MANUAL_FALLBACK_MANAGE_ADDRESSES_AND_MORE);
   __weak __typeof(self) weakSelf = self;
   ManualFillActionItem* manageAddressesItem = [[ManualFillActionItem alloc]
       initWithTitle:manageAddressesTitle
