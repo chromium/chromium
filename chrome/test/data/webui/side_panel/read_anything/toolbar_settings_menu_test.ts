@@ -104,6 +104,18 @@ suite('Toolbar Settings Menu', () => {
     assertTrue(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
   });
 
+  test(
+      'settings menu opens appearance submenu on click when flag enabled',
+      async () => {
+        chrome.readingMode.isImprovedReadAloudEnabled = true;
+        toolbar.$.settingsMenu.isImmersiveMode = true;
+        await microtasksFinished();
+        const targetItem = getMenuItem(SettingsOption.APPEARANCE);
+        assertTrue(!!targetItem);
+        targetItem.click();
+        assertTrue(toolbar.$.appearanceMenu.$.menu.$.lazyMenu.get().open);
+      });
+
   test('settings menu opens submenus on hover', () => {
     const targetItem = getMenuItem(SettingsOption.FONT);
     assertTrue(!!targetItem);

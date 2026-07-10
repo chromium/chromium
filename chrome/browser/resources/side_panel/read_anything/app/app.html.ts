@@ -50,6 +50,7 @@ export function getHtml(this: AppElement) {
         @images-toggle="${this.onImagesToggle_}"
         @letter-spacing-change="${this.onLetterSpacingChange_}"
         @theme-change="${this.onThemeChange_}"
+        @presentation-change="${this.onPresentationChange_}"
         @line-spacing-change="${this.onLineSpacingChange_}"
         @highlight-change="${this.onHighlightChange_}"
         @reset-toolbar="${this.onResetToolbar_}"

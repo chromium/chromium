@@ -710,8 +710,21 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.setLineFocusStyle_();
   }
 
-  protected onThemeChange_() {
+  protected onThemeChange_(event: CustomEvent<{data: number}>) {
+    if (chrome.readingMode.isImprovedReadAloudEnabled && event.detail &&
+        event.detail.data !== undefined) {
+      this.settingsPrefs_ = {
+        ...this.settingsPrefs_,
+        theme: event.detail.data,
+      };
+    }
     this.styleUpdater_.setTheme();
+  }
+
+  protected onPresentationChange_(event: CustomEvent<{data: number}>) {
+    if (event.detail && event.detail.data !== undefined) {
+      this.presentationState_ = event.detail.data;
+    }
   }
 
   protected onResetToolbar_() {

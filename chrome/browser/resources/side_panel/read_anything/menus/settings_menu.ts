@@ -225,8 +225,10 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     return this.currentOpenId_ === item.id ? 'true' : 'false';
   }
 
-  private initializeMenuOptions_() {
-    const optionIDs = [
+  // TODO(crbug.com/532659261): Remove initializeMenuOptionsLegacy_() once
+  // the Improved Read Aloud feature flag is defaulted to true and cleaned up.
+  private initializeMenuOptionsLegacy_(): SettingsOption[] {
+    const optionIDs: SettingsOption[] = [
       SettingsOption.COLOR,
       SettingsOption.FONT,
       SettingsOption.LINE_SPACING,
@@ -251,6 +253,48 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
     if (this.isImmersiveMode) {
       optionIDs.push(SettingsOption.PINNED_TO_TOOLBAR);
+    }
+
+    return optionIDs;
+  }
+
+  private initializeMenuOptionsForImprovedReadAloud_(): SettingsOption[] {
+    const optionIDs: SettingsOption[] = [
+      SettingsOption.APPEARANCE,
+      SettingsOption.FONT,
+      SettingsOption.LINE_SPACING,
+      SettingsOption.LETTER_SPACING,
+      SettingsOption.VOICE_SELECTION,
+      SettingsOption.VOICE_HIGHLIGHT,
+    ];
+
+    if (chrome.readingMode.isLineFocusEnabled) {
+      optionIDs.push(SettingsOption.LINE_FOCUS);
+    }
+
+    if (chrome.readingMode.isReadAnythingTranslateEntryPointEnabled) {
+      optionIDs.push(SettingsOption.TRANSLATION_REQUESTED);
+    }
+    optionIDs.push(SettingsOption.LINKS);
+
+    if (chrome.readingMode.imagesFeatureEnabled) {
+      optionIDs.push(SettingsOption.IMAGES);
+    }
+
+    if (this.isImmersiveMode) {
+      optionIDs.push(SettingsOption.PINNED_TO_TOOLBAR);
+    }
+
+    return optionIDs;
+  }
+
+  private initializeMenuOptions_() {
+    let optionIDs: SettingsOption[];
+    if (chrome.readingMode.isImprovedReadAloudEnabled &&
+        chrome.readingMode.isImmersiveEnabled) {
+      optionIDs = this.initializeMenuOptionsForImprovedReadAloud_();
+    } else {
+      optionIDs = this.initializeMenuOptionsLegacy_();
     }
 
     this.options_ = optionIDs.map(id => {
