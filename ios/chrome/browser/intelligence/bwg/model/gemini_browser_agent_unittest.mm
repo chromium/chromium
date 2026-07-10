@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 
+#import <AVFoundation/AVFoundation.h>
+
+#import "base/apple/foundation_util.h"
 #import "base/run_loop.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -1401,4 +1404,109 @@ TEST_F(GeminiBrowserAgentTest, TestClearAttachedTabsOnPageContentPrefDisabled) {
 
   // Verify that `attached_tabs_` was cleared.
   EXPECT_EQ(0u, GetRawAttachedTabs().size());
+}
+
+// Tests that ShowGeminiLiveMicrophoneAlert presents the OS settings alert when
+// OS-level microphone permission is denied.
+TEST_F(GeminiBrowserAgentTest, TestShowGeminiLiveMicrophoneAlertWhenOSDenied) {
+  id mock_device = OCMClassMock([AVCaptureDevice class]);
+  // Disable OS level microphone permission.
+  OCMStub([mock_device authorizationStatusForMediaType:AVMediaTypeAudio])
+      .andReturn(AVAuthorizationStatusDenied);
+
+  // Mock view controller to capture modal presentation calls.
+  id mock_view_controller = OCMClassMock([UIViewController class]);
+  NSString* expected_title =
+      l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_MICROPHONE_ALERT_TITLE);
+
+  // Expect that an alert controller with the OS settings alert title is
+  // presented.
+  OCMExpect([mock_view_controller
+      presentViewController:[OCMArg checkWithBlock:^BOOL(id obj) {
+        UIAlertController* alert =
+            base::apple::ObjCCast<UIAlertController>(obj);
+        return [alert.title isEqualToString:expected_title];
+      }]
+                   animated:YES
+                 completion:nil]);
+
+  // Trigger the microphone permission check.
+  gemini_browser_agent_->ShowGeminiLiveMicrophoneAlert(mock_view_controller,
+                                                       nil);
+
+  // Verify that `presentViewController:` was actually invoked with the expected
+  // alert title.
+  EXPECT_OCMOCK_VERIFY(mock_view_controller);
+  [mock_device stopMocking];
+}
+
+// Tests that ShowGeminiLiveMicrophoneAlert presents the in-app Gemini
+// microphone permission prompt when system authorization is granted but the
+// Chrome-level setting is disabled.
+TEST_F(GeminiBrowserAgentTest,
+       TestShowGeminiLiveMicrophoneAlertWhenChromePrefDisabled) {
+  // Disable Chrome-level Gemini Live microphone setting.
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting,
+                                   false);
+
+  // Enable OS level microphone permission.
+  id mock_device = OCMClassMock([AVCaptureDevice class]);
+  OCMStub([mock_device authorizationStatusForMediaType:AVMediaTypeAudio])
+      .andReturn(AVAuthorizationStatusAuthorized);
+
+  // Mock view controller to capture modal presentation calls.
+  id mock_view_controller = OCMClassMock([UIViewController class]);
+  NSString* expected_title =
+      l10n_util::GetNSString(IDS_IOS_GEMINI_PERMISSION_MICROPHONE_PROMPT_TITLE);
+
+  // Expect that the in-app permission alert is presented.
+  OCMExpect([mock_view_controller
+      presentViewController:[OCMArg checkWithBlock:^BOOL(id obj) {
+        UIAlertController* alert =
+            base::apple::ObjCCast<UIAlertController>(obj);
+        return [alert.title isEqualToString:expected_title];
+      }]
+                   animated:YES
+                 completion:nil]);
+
+  // Trigger the microphone permission check.
+  gemini_browser_agent_->ShowGeminiLiveMicrophoneAlert(mock_view_controller,
+                                                       nil);
+
+  // Verify that `presentViewController:` was actually invoked with the expected
+  // alert title.
+  EXPECT_OCMOCK_VERIFY(mock_view_controller);
+  [mock_device stopMocking];
+}
+
+// Tests that ShowGeminiLiveMicrophoneAlert immediately completes with YES and
+// presents no alert when both OS and Chrome-level permissions are granted.
+TEST_F(GeminiBrowserAgentTest,
+       TestShowGeminiLiveMicrophoneAlertWhenAuthorizedAndEnabled) {
+  // Enable Chrome-level Gemini Live microphone setting.
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting,
+                                   true);
+
+  // Enable OS level microphone permission.
+  id mock_device = OCMClassMock([AVCaptureDevice class]);
+  OCMStub([mock_device authorizationStatusForMediaType:AVMediaTypeAudio])
+      .andReturn(AVAuthorizationStatusAuthorized);
+
+  // Use a strict mock so any unexpected call (like presenting an alert) causes
+  // the test to fail immediately.
+  id mock_view_controller = OCMStrictClassMock([UIViewController class]);
+  __block BOOL completion_called = NO;
+  __block BOOL completion_granted = NO;
+
+  // Trigger the permission check and verify the completion block runs
+  // immediately.
+  gemini_browser_agent_->ShowGeminiLiveMicrophoneAlert(
+      mock_view_controller, ^(BOOL granted) {
+        completion_called = YES;
+        completion_granted = granted;
+      });
+
+  EXPECT_TRUE(completion_called);
+  EXPECT_TRUE(completion_granted);
+  [mock_device stopMocking];
 }

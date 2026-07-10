@@ -11,6 +11,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -202,6 +203,51 @@ void ShowMicrophoneSettingsAlert(UIViewController* base_view_controller,
                                    completion(NO);
                                  }
                                }]];
+  [base_view_controller presentViewController:alert
+                                     animated:YES
+                                   completion:nil];
+}
+
+// Helper function to show the in-app Gemini microphone permission alert.
+void ShowGeminiMicrophonePermissionAlert(UIViewController* base_view_controller,
+                                         base::WeakPtr<ProfileIOS> weak_profile,
+                                         void (^completion)(BOOL granted)) {
+  UIAlertController* alert = [UIAlertController
+      alertControllerWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_GEMINI_PERMISSION_MICROPHONE_PROMPT_TITLE)
+                       message:
+                           l10n_util::GetNSString(
+                               IDS_IOS_GEMINI_PERMISSION_MICROPHONE_PROMPT_BODY)
+                preferredStyle:UIAlertControllerStyleAlert];
+
+  UIAlertAction* acceptAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_GRANT)
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction* action) {
+                if (weak_profile) {
+                  weak_profile->GetPrefs()->SetBoolean(
+                      prefs::kIOSGeminiLiveMicrophoneSetting, true);
+                }
+                if (completion) {
+                  completion(YES);
+                }
+              }];
+
+  UIAlertAction* denyAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_DENY)
+                style:UIAlertActionStyleCancel
+              handler:^(UIAlertAction* action) {
+                if (completion) {
+                  completion(NO);
+                }
+              }];
+
+  [alert addAction:acceptAction];
+  [alert addAction:denyAction];
+
   [base_view_controller presentViewController:alert
                                      animated:YES
                                    completion:nil];
@@ -807,7 +853,9 @@ void GeminiBrowserAgent::ShowGeminiLiveMicrophoneAlert(
     case AVAuthorizationStatusAuthorized:
       if (!browser_->GetProfile()->GetPrefs()->GetBoolean(
               prefs::kIOSGeminiLiveMicrophoneSetting)) {
-        ShowMicrophoneSettingsAlert(base_view_controller, completion);
+        ShowGeminiMicrophonePermissionAlert(base_view_controller,
+                                            browser_->GetProfile()->AsWeakPtr(),
+                                            completion);
         break;
       }
       if (completion) {

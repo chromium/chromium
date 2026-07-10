@@ -3428,6 +3428,12 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_GEMINI_PERMISSION_CAMERA_PROMPT_TITLE" desc="Title of the Gemini-specific camera permission prompt.">
         Allow “Gemini” to use your camera
       </message>
+      <message name="IDS_IOS_GEMINI_PERMISSION_MICROPHONE_PROMPT_BODY" desc="Text body of the Gemini-specific microphone permission prompt.">
+        This lets you search using your voice
+      </message>
+      <message name="IDS_IOS_GEMINI_PERMISSION_MICROPHONE_PROMPT_TITLE" desc="Title of the Gemini-specific microphone permission prompt.">
+        “Chrome” would like to access your microphone
+      </message>
       <message name="IDS_IOS_GEMINI_PROMO_REMIX_IMAGE_BOX_BODY" desc="'Remix an image' body text for the Gemini Promo page.">
         Long press an image on the web to edit with Gemini
       </message>
