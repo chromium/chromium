@@ -4368,56 +4368,18 @@ const FeatureEntry::FeatureVariation kAndroidDesktopZoomScalingVariations[] = {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// LINT.IfChange(ContextualTasksArms)
-const FeatureEntry::FeatureParam kArm1FullBundleWithExpandoButton[] = {
-    {"ContextualTasksExpandButtonOptions", "side-panel-expand-button"}};
-const FeatureEntry::FeatureParam
-    kArm3FullBundleWithoutLensMigrationWithExpandoButton[] = {
-        {"ContextualTasksExpandButtonOptions", "side-panel-expand-button"},
-        {"ContextualTasksEnableLensInContextualTasks", "false"}};
-const FeatureEntry::FeatureParam
-    kArm4FullBundleNoAutoAddedContextInSidePanelWithExpandoButton[] = {
-        {"ContextualTasksExpandButtonOptions", "side-panel-expand-button"},
-        {"ContextualTasksTabAutoSuggestionChipEnabled", "false"}};
-const FeatureEntry::FeatureParam kArm5FullBundleWithCloseToExpandButton[] = {
-    {"ContextualTasksExpandButtonOptions", "toolbar-close-button"}};
-const FeatureEntry::FeatureParam
-    kArm6FullBundleWithoutLensMigrationWithCloseToExpandButton[] = {
-        {"ContextualTasksExpandButtonOptions", "toolbar-close-button"},
-        {"ContextualTasksEnableLensInContextualTasks", "false"}};
-const FeatureEntry::FeatureParam
-    kArm7FullBundleNoAutoAddedContextInSidePanelWithCloseToExpandButton[] = {
-        {"ContextualTasksExpandButtonOptions", "toolbar-close-button"},
-        {"ContextualTasksTabAutoSuggestionChipEnabled", "false"}};
-const FeatureEntry::FeatureParam
-    kArm8FullBundleEphemeralLogoEntrypointCloseToExpandButton[] = {
-        {"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"},
-        {"ContextualTasksExpandButtonOptions", "toolbar-close-button"}};
-
-const FeatureEntry::FeatureVariation kContextualTasksVariations[] = {
-    {"Arm 1: Full bundle with expando button", kArm1FullBundleWithExpandoButton,
-     nullptr},
-    {"Arm 3: Full bundle, without Lens migration, expando button",
-     kArm3FullBundleWithoutLensMigrationWithExpandoButton, nullptr},
-    {"Arm 4: Full bundle, No auto added context in side panel, expando button",
-     kArm4FullBundleNoAutoAddedContextInSidePanelWithExpandoButton, nullptr},
-    {"Arm 5: Full bundle with close to expand button",
-     kArm5FullBundleWithCloseToExpandButton, nullptr},
-    {"Arm 6: Full bundle, without Lens migration, close to expand button",
-     kArm6FullBundleWithoutLensMigrationWithCloseToExpandButton, nullptr},
-    {"Arm 7: Full bundle, No auto added context in side panel, close to expand "
-     "button",
-     kArm7FullBundleNoAutoAddedContextInSidePanelWithCloseToExpandButton,
-     nullptr},
-    {"Arm 8: Full bundle, Ephemeral logo entrypoint, close to expand",
-     kArm8FullBundleEphemeralLogoEntrypointCloseToExpandButton, nullptr}};
-// LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.cc)
-
 const FeatureEntry::FeatureParam kSmartTabSharingEnabled[] = {
     {"ContextualTasksContextSmartTabSharing", "true"}};
 
 const FeatureEntry::FeatureVariation kContextualTaskContextVariations[] = {
     {" - With Smart Tab Sharing", kSmartTabSharingEnabled, nullptr}};
+
+const FeatureEntry::FeatureParam kEphemeralBrandedEntryPointEnabled[] = {
+    {"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}};
+
+const FeatureEntry::FeatureVariation kEphemeralBrandedEntryPointVariations[] = {
+    {"Enabled with branded entry point", kEphemeralBrandedEntryPointEnabled,
+     nullptr}};
 
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kAnimatedProgressBar30FpsCap[] = {
@@ -11968,9 +11930,18 @@ const FeatureEntry kFeatureEntries[] = {
      contextual_tasks::flag_descriptions::kContextualTasksName,
      contextual_tasks::flag_descriptions::kContextualTasksDescription,
      kOsDesktop | kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(contextual_tasks::kContextualTasks,
-                                    kContextualTasksVariations,
-                                    "ContextualTasks")},
+     FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasks)},
+
+    {"contextual-tasks-ephemeral-branded-entry-point",
+     contextual_tasks::flag_descriptions::
+         kContextualTasksEphemeralBrandedEntryPointName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksEphemeralBrandedEntryPointDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
+         kEphemeralBrandedEntryPointVariations,
+         "ContextualTasksEphemeralBrandedEntryPoint")},
 
     {"contextual-tasks-java-fusebox",
      contextual_tasks::flag_descriptions::kContextualTasksJavaFuseboxName,

@@ -13062,6 +13062,8 @@ from previous Chrome versions.
       label="OmniboxGroupSuggestionsBySearchVsUrl:disabled"/>
   <int value="-498883807" label="AutofillParsingPatternProvider:disabled"/>
   <int value="-498740735" label="ArcUsbHost:disabled"/>
+  <int value="-498616640"
+      label="ContextualTasksEphemeralBrandedEntryPoint:disabled"/>
   <int value="-498463128" label="MacSystemShareMenu:enabled"/>
   <int value="-498412005" label="EnableDrDc:disabled"/>
   <int value="-498084007" label="ImprovedSettingsUIOnDesktop:disabled"/>
@@ -17341,6 +17343,8 @@ from previous Chrome versions.
   <int value="874614410" label="CSSOverflowForReplacedElements:enabled"/>
   <int value="875077636" label="OriginAgentClusterDefaultEnable:disabled"/>
   <int value="875092151" label="CctTabResumption:enabled"/>
+  <int value="875388341"
+      label="ContextualTasksEphemeralBrandedEntryPoint:enabled"/>
   <int value="875647914" label="AimServerEligibilityEnabled:disabled"/>
   <int value="876349279" label="WebViewExtraHeadersSameDomainOnly:enabled"/>
   <int value="876507291" label="CollapseTabGroupDuringDrag:enabled"/>

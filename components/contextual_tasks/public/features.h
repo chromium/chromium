@@ -461,6 +461,8 @@ extern const char kContextualTasksEnableSpatialModelToolbarLayoutName[];
 extern const char kContextualTasksEnableSpatialModelToolbarLayoutDescription[];
 extern const char kContextualTasksRearchitectureName[];
 extern const char kContextualTasksRearchitectureDescription[];
+extern const char kContextualTasksEphemeralBrandedEntryPointName[];
+extern const char kContextualTasksEphemeralBrandedEntryPointDescription[];
 
 }  // namespace flag_descriptions
 

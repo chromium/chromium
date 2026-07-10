@@ -834,6 +834,11 @@ const char kContextualTasksRearchitectureDescription[] =
     "Enables composebox embedded in AIM main frame, new auth,"
     " and new side panel and ghost loader for contextual tasks.";
 
+const char kContextualTasksEphemeralBrandedEntryPointName[] =
+    "Contextual Tasks Ephemeral Branded Entry Point";
+const char kContextualTasksEphemeralBrandedEntryPointDescription[] =
+    "Enables the ephemeral branded entry point for contextual tasks.";
+
 }  // namespace flag_descriptions
 
 }  // namespace contextual_tasks

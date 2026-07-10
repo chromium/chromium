@@ -89,7 +89,6 @@
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
-// LINT.IfChange(GetContextualTasksArmShortName)
 std::string GetContextualTasksArmShortName() {
   using contextual_tasks::ExpandButtonOption;
   ExpandButtonOption expand_button = contextual_tasks::GetExpandButtonOption();
@@ -128,7 +127,6 @@ std::string GetContextualTasksArmShortName() {
 
   return "Default";
 }
-// LINT.ThenChange(//chrome/browser/about_flags.cc)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<content::WebContents> CreateWebContents(
