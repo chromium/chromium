@@ -4,8 +4,7 @@
 
 #include "ui/compositor/layer_animator_collection.h"
 
-#include <set>
-
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer_animator.h"
@@ -49,7 +48,7 @@ bool LayerAnimatorCollection::HasActiveAnimators() const {
 
 void LayerAnimatorCollection::OnAnimationStep(base::TimeTicks now) {
   last_tick_time_ = now;
-  std::set<scoped_refptr<LayerAnimator> > list = animators_;
+  base::flat_set<scoped_refptr<LayerAnimator>> list = animators_;
   for (auto iter = list.begin(); iter != list.end(); ++iter) {
     // Make sure the animator is still valid.
     if (animators_.count(*iter) > 0)

@@ -5,8 +5,7 @@
 #ifndef UI_COMPOSITOR_LAYER_ANIMATOR_COLLECTION_H_
 #define UI_COMPOSITOR_LAYER_ANIMATOR_COLLECTION_H_
 
-#include <set>
-
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -44,7 +43,7 @@ class COMPOSITOR_EXPORT LayerAnimatorCollection
  private:
   raw_ptr<Compositor> compositor_;
   base::TimeTicks last_tick_time_;
-  std::set<scoped_refptr<LayerAnimator> > animators_;
+  base::flat_set<scoped_refptr<LayerAnimator>> animators_;
 };
 
 }  // namespace ui
