@@ -2050,6 +2050,12 @@ inline constexpr char kZeroStateSuggestionsDescription[] =
     "Enables fetching zero-state suggestions for the 'Ask Gemini' feature,"
     "based on the current page context.";
 
+inline constexpr char kZeroStateSuggestionsWCGDName[] =
+    "Enable Zero-State Suggestions 'What can Gemini do' static chip";
+inline constexpr char kZeroStateSuggestionsWCGDDescription[] =
+    "Enables showing the 'What can Gemini do' static chip in Zero-State "
+    "Suggestions.";
+
 }  // namespace flag_descriptions
 
 #endif  // IOS_CHROME_BROWSER_FLAGS_IOS_CHROME_FLAG_DESCRIPTIONS_H_

@@ -9084,6 +9084,24 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_YOUTUBE_INCOGNITO_SNACKBAR_BUTTON_TITLE" desc="The title of the button on the right corner of the snackbar">
           LEARN MORE
       </message>
+      <message name="IDS_IOS_ZERO_STATE_SUGGESTIONS_FAQ_QUERY" desc="The query sent when the 'Create FAQ' zero state suggestion chip is tapped.">
+        Create a short FAQ for this topic using information from this page and similar websites
+      </message>
+      <message name="IDS_IOS_ZERO_STATE_SUGGESTIONS_FAQ_TEXT" desc="The text for the 'Create FAQ' zero state suggestion chip.">
+        Create FAQ about this topic
+      </message>
+      <message name="IDS_IOS_ZERO_STATE_SUGGESTIONS_SUMMARIZE_QUERY" desc="The query sent when the 'Summarize' zero state suggestion chip is tapped.">
+        Give me a short summary of this page
+      </message>
+      <message name="IDS_IOS_ZERO_STATE_SUGGESTIONS_SUMMARIZE_TEXT" desc="The text for the 'Summarize' zero state suggestion chip.">
+        Summarize page
+      </message>
+      <message name="IDS_IOS_ZERO_STATE_SUGGESTIONS_WHAT_CAN_GEMINI_DO_QUERY" desc="The query sent when the 'What can Gemini do' zero state suggestion chip is tapped.">
+        What can I do with Gemini in Chrome?
+      </message>
+      <message name="IDS_IOS_ZERO_STATE_SUGGESTIONS_WHAT_CAN_GEMINI_DO_TEXT" desc="The text for the 'What can Gemini do' zero state suggestion chip.">
+        What can Gemini do in Chrome?
+      </message>
       <message name="IDS_SAVE_PASSWORD_FOOTER" desc="The footer text of the infobar that offers user to save/update a password to Chrome.">
         Passwords are saved in your Google Account so you can use them on any device.
       </message>

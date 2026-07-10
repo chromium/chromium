@@ -10,10 +10,16 @@ source_set("zero_state_suggestions") {
 
   deps = [
     "//base",
+    "//components/feature_engagement/public",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/zero_state_suggestions/model",
     "//ios/chrome/browser/optimization_guide/mojom",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public",
+    "//ui/base",
   ]
 }
 
@@ -24,8 +30,13 @@ source_set("unit_tests") {
     ":zero_state_suggestions",
     "//base",
     "//base/test:test_support",
+    "//components/feature_engagement/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//ui/base",
   ]
 }
