@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/bluetooth/test/bluetooth_test_win.h"
 
 #include <windows.devices.bluetooth.h>
@@ -19,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -220,12 +216,12 @@ BLUETOOTH_ADDRESS
 CanonicalStringToBLUETOOTH_ADDRESS(std::string device_address) {
   BLUETOOTH_ADDRESS win_addr;
   unsigned int data[6];
-  int result =
+  int result = UNSAFE_TODO(
       sscanf_s(device_address.c_str(), "%02X:%02X:%02X:%02X:%02X:%02X",
-               &data[5], &data[4], &data[3], &data[2], &data[1], &data[0]);
+               &data[5], &data[4], &data[3], &data[2], &data[1], &data[0]));
   CHECK_EQ(6, result);
   for (int i = 0; i < 6; i++) {
-    win_addr.rgBytes[i] = data[i];
+    UNSAFE_TODO(win_addr.rgBytes[i] = data[i]);
   }
   return win_addr;
 }

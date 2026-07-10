@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/win/type_conversions.h"
 
 #include <algorithm>
@@ -48,9 +43,10 @@ std::optional<std::vector<uint8_t>> HMACSecretOutputs(
   }
 
   std::vector<uint8_t> ret;
-  ret.insert(ret.end(), salt.pbFirst, salt.pbFirst + salt.cbFirst);
+  ret.insert(ret.end(), salt.pbFirst, UNSAFE_TODO(salt.pbFirst + salt.cbFirst));
   if (salt.cbSecond == kOutputLength) {
-    ret.insert(ret.end(), salt.pbSecond, salt.pbSecond + salt.cbSecond);
+    ret.insert(ret.end(), salt.pbSecond,
+               UNSAFE_TODO(salt.pbSecond + salt.cbSecond));
   }
   return ret;
 }
@@ -207,17 +203,19 @@ ToAuthenticatorGetAssertionResponse(
           : std::nullopt;
   AuthenticatorGetAssertionResponse response(
       std::move(*authenticator_data),
-      std::vector<uint8_t>(assertion.pbSignature,
-                           assertion.pbSignature + assertion.cbSignature),
+      std::vector<uint8_t>(
+          assertion.pbSignature,
+          UNSAFE_TODO(assertion.pbSignature + assertion.cbSignature)),
       transport_used);
   response.credential = PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey,
       std::vector<uint8_t>(
           assertion.Credential.pbId,
-          assertion.Credential.pbId + assertion.Credential.cbId));
+          UNSAFE_TODO(assertion.Credential.pbId + assertion.Credential.cbId)));
   if (assertion.cbUserId > 0) {
     response.user_entity = PublicKeyCredentialUserEntity(std::vector<uint8_t>(
-        assertion.pbUserId, assertion.pbUserId + assertion.cbUserId));
+        assertion.pbUserId,
+        UNSAFE_TODO(assertion.pbUserId + assertion.cbUserId)));
   }
   if (assertion.dwVersion >= WEBAUTHN_ASSERTION_VERSION_2 &&
       assertion.dwCredLargeBlobStatus ==
@@ -225,7 +223,7 @@ ToAuthenticatorGetAssertionResponse(
     if (request_options.large_blob_read) {
       response.large_blob = std::vector<uint8_t>(
           assertion.pbCredLargeBlob,
-          assertion.pbCredLargeBlob + assertion.cbCredLargeBlob);
+          UNSAFE_TODO(assertion.pbCredLargeBlob + assertion.cbCredLargeBlob));
     } else if (request_options.large_blob_write) {
       response.large_blob_written = true;
     }
@@ -383,16 +381,17 @@ WinCredentialDetailsListToCredentialMetadata(
   std::vector<DiscoverableCredentialMetadata> result;
   for (size_t i = 0; i < credentials.cCredentialDetails; ++i) {
     WEBAUTHN_CREDENTIAL_DETAILS* credential =
-        credentials.ppCredentialDetails[i];
+        UNSAFE_TODO(credentials.ppCredentialDetails[i]);
     WEBAUTHN_USER_ENTITY_INFORMATION* user = credential->pUserInformation;
     WEBAUTHN_RP_ENTITY_INFORMATION* rp = credential->pRpInformation;
     DiscoverableCredentialMetadata metadata(
         AuthenticatorType::kWinNative, base::WideToUTF8(rp->pwszId),
-        std::vector<uint8_t>(
-            credential->pbCredentialID,
-            credential->pbCredentialID + credential->cbCredentialID),
+        std::vector<uint8_t>(credential->pbCredentialID,
+                             UNSAFE_TODO(credential->pbCredentialID +
+                                         credential->cbCredentialID)),
         PublicKeyCredentialUserEntity(
-            std::vector<uint8_t>(user->pbId, user->pbId + user->cbId),
+            std::vector<uint8_t>(user->pbId,
+                                 UNSAFE_TODO(user->pbId + user->cbId)),
             user->pwszName
                 ? std::make_optional(base::WideToUTF8(user->pwszName))
                 : std::nullopt,

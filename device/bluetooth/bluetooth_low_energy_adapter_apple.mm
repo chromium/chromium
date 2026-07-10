@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/bluetooth/bluetooth_low_energy_adapter_apple.h"
 
 #import <CoreBluetooth/CBManager.h>
@@ -444,8 +439,9 @@ void BluetoothLowEnergyAdapterApple::LowEnergyDeviceUpdated(
     NSData* data = service_data[uuid];
     const uint8_t* bytes = static_cast<const uint8_t*>([data bytes]);
     size_t length = [data length];
-    service_data_map.emplace(BluetoothUUIDWithCBUUID(uuid),
-                             std::vector<uint8_t>(bytes, bytes + length));
+    service_data_map.emplace(
+        BluetoothUUIDWithCBUUID(uuid),
+        std::vector<uint8_t>(bytes, UNSAFE_TODO(bytes + length)));
   }
 
   // Get Manufacturer Data.
@@ -461,9 +457,10 @@ void BluetoothLowEnergyAdapterApple::LowEnergyDeviceUpdated(
   const uint8_t* bytes = static_cast<const uint8_t*>([manufacturer_data bytes]);
   size_t length = [manufacturer_data length];
   if (length > 1) {
-    const uint16_t manufacturer_id = bytes[0] | bytes[1] << 8;
+    const uint16_t manufacturer_id = bytes[0] | UNSAFE_TODO(bytes[1]) << 8;
     manufacturer_data_map.emplace(
-        manufacturer_id, std::vector<uint8_t>(bytes + 2, bytes + length));
+        manufacturer_id, std::vector<uint8_t>(UNSAFE_TODO(bytes + 2),
+                                              UNSAFE_TODO(bytes + length)));
   }
 
   // Get Tx Power.

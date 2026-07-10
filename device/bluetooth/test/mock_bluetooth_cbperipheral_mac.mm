@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/bluetooth/test/mock_bluetooth_cbperipheral_mac.h"
 
 #include "base/apple/foundation_util.h"
+#include "base/compiler_specific.h"
 #include "device/bluetooth/test/bluetooth_test_mac.h"
 #include "device/bluetooth/test/mock_bluetooth_cbcharacteristic_mac.h"
 #include "device/bluetooth/test/mock_bluetooth_cbdescriptor_mac.h"
@@ -102,7 +98,7 @@ using base::apple::ObjCCast;
                  type:(CBCharacteristicWriteType)type {
   DCHECK(_bluetoothTestMac);
   const uint8_t* buffer = static_cast<const uint8_t*>(data.bytes);
-  std::vector<uint8_t> value(buffer, buffer + data.length);
+  std::vector<uint8_t> value(buffer, UNSAFE_TODO(buffer + data.length));
   _bluetoothTestMac->OnFakeBluetoothCharacteristicWriteValue(value);
 }
 
@@ -114,7 +110,7 @@ using base::apple::ObjCCast;
 - (void)writeValue:(NSData*)data forDescriptor:(CBDescriptor*)descriptor {
   DCHECK(_bluetoothTestMac);
   const uint8_t* buffer = static_cast<const uint8_t*>(data.bytes);
-  std::vector<uint8_t> value(buffer, buffer + data.length);
+  std::vector<uint8_t> value(buffer, UNSAFE_TODO(buffer + data.length));
   _bluetoothTestMac->OnFakeBluetoothDescriptorWriteValue(value);
 }
 

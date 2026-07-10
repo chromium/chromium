@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/gamepad/game_controller_data_fetcher_mac.h"
 
 #import <GameController/GameController.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -349,7 +345,8 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
   // In the first pass, record which player indices are still in use so unused
   // indices can be assigned to newly connected gamepads.
   bool player_indices[Gamepads::kItemsLengthCap];
-  std::fill(player_indices, player_indices + Gamepads::kItemsLengthCap, false);
+  std::fill(player_indices,
+            UNSAFE_TODO(player_indices + Gamepads::kItemsLengthCap), false);
   for (GCController* controller in controllers) {
     if (GetSupportOutcome(controller) != GameControllerMacOutcome::kSuccess) {
       continue;
@@ -357,12 +354,13 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
 
     int player_index = controller.playerIndex;
     if (player_index != GCControllerPlayerIndexUnset)
-      player_indices[player_index] = true;
+      UNSAFE_TODO(player_indices[player_index]) = true;
   }
 
   for (size_t i = 0; i < Gamepads::kItemsLengthCap; ++i) {
-    if (connected_[i] && !player_indices[i])
-      connected_[i] = false;
+    if (UNSAFE_TODO(connected_[i]) && !UNSAFE_TODO(player_indices[i])) {
+      UNSAFE_TODO(connected_[i]) = false;
+    }
   }
 
   // In the second pass, assign indices to newly connected gamepads and fetch
@@ -400,7 +398,7 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
       pad.axes_length = AXIS_INDEX_COUNT;
       pad.buttons_length = BUTTON_INDEX_COUNT - 1;
       pad.connected = true;
-      connected_[player_index] = true;
+      UNSAFE_TODO(connected_[player_index]) = true;
 
       controller.playerIndex =
           static_cast<GCControllerPlayerIndex>(player_index);
@@ -442,8 +440,9 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
 
 int GameControllerDataFetcherMac::NextUnusedPlayerIndex() {
   for (int i = 0; i < kGCControllerPlayerIndexCount; ++i) {
-    if (!connected_[i])
+    if (!UNSAFE_TODO(connected_[i])) {
       return i;
+    }
   }
   return GCControllerPlayerIndexUnset;
 }

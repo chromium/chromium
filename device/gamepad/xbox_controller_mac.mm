@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/gamepad/xbox_controller_mac.h"
 
 #include <CoreFoundation/CoreFoundation.h>
@@ -23,6 +18,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
@@ -600,8 +596,8 @@ void XboxControllerMac::SetLEDPattern(LEDPattern pattern) {
   // finishes.
   UInt8* buffer = new UInt8[length];
   buffer[0] = static_cast<UInt8>(CONTROL_MESSAGE_SET_LED);
-  buffer[1] = length;
-  buffer[2] = static_cast<UInt8>(pattern);
+  UNSAFE_TODO(buffer[1]) = length;
+  UNSAFE_TODO(buffer[2]) = static_cast<UInt8>(pattern);
   kern_return_t kr =
       (*interface_.get())
           ->WritePipeAsync(interface_.get(), control_endpoint_, buffer,
@@ -671,12 +667,13 @@ void XboxControllerMac::ProcessXbox360Packet(size_t length) {
 
   uint8_t* buffer = read_buffer_.data();
 
-  if (buffer[1] != length)
+  if (UNSAFE_TODO(buffer[1]) != length) {
     // Length in packet doesn't match length reported by USB.
     return;
+  }
 
   uint8_t type = buffer[0];
-  buffer += kXbox360HeaderBytes;
+  UNSAFE_TODO(buffer += kXbox360HeaderBytes);
   length -= kXbox360HeaderBytes;
   switch (type) {
     case STATUS_MESSAGE_BUTTONS: {
@@ -713,10 +710,10 @@ void XboxControllerMac::ProcessXboxOnePacket(size_t length) {
 
   uint8_t* buffer = read_buffer_.data();
   uint8_t type = buffer[0];
-  bool needs_ack = (buffer[1] == 0x30);
-  uint8_t sequence_number = buffer[2];
+  bool needs_ack = (UNSAFE_TODO(buffer[1]) == 0x30);
+  uint8_t sequence_number = UNSAFE_TODO(buffer[2]);
 
-  buffer += kXboxOneHeaderBytes;
+  UNSAFE_TODO(buffer += kXboxOneHeaderBytes);
   length -= kXboxOneHeaderBytes;
   switch (type) {
     case XBOX_ONE_STATUS_MESSAGE_BUTTONS: {
@@ -793,7 +790,7 @@ void XboxControllerMac::WriteXbox360Rumble(uint8_t strong_magnitude,
   UInt8* buffer = new UInt8[length];
 
   Xbox360RumbleData* rumble_data = reinterpret_cast<Xbox360RumbleData*>(buffer);
-  memset(buffer, 0, length);
+  UNSAFE_TODO(memset(buffer, 0, length));
   rumble_data->command = 0x00;  // Rumble
   rumble_data->size = length;
 
@@ -817,11 +814,13 @@ bool XboxControllerMac::WriteXboxOneInit() {
   // This buffer will be released in WriteComplete when WritePipeAsync
   // finishes.
   UInt8* buffer = new UInt8[length];
-  buffer[0] = 0x05;
-  buffer[1] = 0x20;
-  buffer[2] = 0x00;
-  buffer[3] = 0x01;
-  buffer[4] = 0x00;
+  UNSAFE_TODO({
+    buffer[0] = 0x05;
+    buffer[1] = 0x20;
+    buffer[2] = 0x00;
+    buffer[3] = 0x01;
+    buffer[4] = 0x00;
+  });
   kern_return_t kr =
       (*interface_.get())
           ->WritePipeAsync(interface_.get(), control_endpoint_, buffer,
@@ -880,19 +879,21 @@ void XboxControllerMac::WriteXboxOneAckGuide(uint8_t sequence_number) {
   const UInt8 length = 13;
 
   UInt8* buffer = new UInt8[length];
-  buffer[0] = 0x01;
-  buffer[1] = 0x20;
-  buffer[2] = sequence_number;
-  buffer[3] = 0x09;
-  buffer[4] = 0x00;
-  buffer[5] = 0x07;
-  buffer[6] = 0x20;
-  buffer[7] = 0x02;
-  buffer[8] = 0x00;
-  buffer[9] = 0x00;
-  buffer[10] = 0x00;
-  buffer[11] = 0x00;
-  buffer[12] = 0x00;
+  UNSAFE_TODO({
+    buffer[0] = 0x01;
+    buffer[1] = 0x20;
+    buffer[2] = sequence_number;
+    buffer[3] = 0x09;
+    buffer[4] = 0x00;
+    buffer[5] = 0x07;
+    buffer[6] = 0x20;
+    buffer[7] = 0x02;
+    buffer[8] = 0x00;
+    buffer[9] = 0x00;
+    buffer[10] = 0x00;
+    buffer[11] = 0x00;
+    buffer[12] = 0x00;
+  });
   kern_return_t kr =
       (*interface_.get())
           ->WritePipeAsync(interface_.get(), control_endpoint_, buffer,
