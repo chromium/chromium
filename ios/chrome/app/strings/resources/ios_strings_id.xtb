@@ -459,7 +459,7 @@
 <translation id="2529021024822217800">Buka Semua</translation>
 <translation id="2536991091671391962">Anda dapat menggunakan sandi tersimpan di semua perangkat. Sandi disimpan ke Pengelola Sandi Google untuk <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Sandi tersembunyi</translation>
-<translation id="2538705697765638552">Simpan info Anda dan selesaikan berbagai hal lebih cepat, seperti mengisi formulir di seluruh produk Google. Anda dapat mengelola info Anda di Google Wallet untuk <ph name="USER_EMAIL" />.</translation>
+<translation id="2538705697765638552">Simpan info Anda dan lakukan berbagai hal lebih cepat, misalnya mengisi formulir di produk-produk Google. Anda dapat mengelola info Anda di Google Wallet untuk <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Aktifkan Perlindungan yang Ditingkatkan…</translation>
 <translation id="2540111494300686866">Sembunyikan dialog</translation>
 <translation id="2542268842667970959">Sembunyikan "Pemeriksaan Keamanan"</translation>
@@ -2273,7 +2273,7 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="8694281486652655615">Menampilkan item ini</translation>
 <translation id="8696297579102085705">Kirim ke perangkat Anda</translation>
 <translation id="8697136149718343437">Pindahkan kolom URL ke bawah</translation>
-<translation id="869891660844655955">Masa berlaku</translation>
+<translation id="869891660844655955">Berlaku hingga</translation>
 <translation id="8706253136355675497">Suhu</translation>
 <translation id="8706806585855470492">Anda akan dapat berbagi, bergabung, dan berkolaborasi dalam grup tab</translation>
 <translation id="8709409604518538305">Tab ditutup</translation>

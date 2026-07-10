@@ -110,7 +110,7 @@
 <translation id="1069814191880976658">Válasszon másik képernyőt</translation>
 <translation id="1070357312245925724">Navigációs billentyűparancs</translation>
 <translation id="1070705170564860382">Megnyitás másik böngészőben <ph name="COUNTDOWN_SECONDS" /> másodperc múlva</translation>
-<translation id="1071661533099313342">Külön nézetek</translation>
+<translation id="1071661533099313342">Nézetek szétválasztása</translation>
 <translation id="1072700771426194907">USB-eszköz észlelve</translation>
 <translation id="1075920807995555452">Eszközeit, szerkesztőit és IDE-jeit a vállalkozása által kezelt környezetben futtathatja <ph name="DEVICE_TYPE" /> eszközén. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">Az oldalakon szövegkurzorral navigálhat</translation>
@@ -6961,7 +6961,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6066649679804058181">Csoport konvertálása könyvjelzőmappává</translation>
 <translation id="6066794465984119824">A kép kivonata nincs beállítva</translation>
 <translation id="6069464830445383022">A Google-fiókjával jelentkezhet be Chromebookján</translation>
-<translation id="6069799426896362048">Külön nézetek</translation>
+<translation id="6069799426896362048">Nézetek szétválasztása</translation>
 <translation id="6071181508177083058">jelszó megerősítése</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> memória megtakarítva</translation>
 <translation id="6071995715087444295">Az illetéktelen kézbe került jelszavak előfordulásának ellenőrzéséhez jelentkezzen be Google-fiókjába</translation>
