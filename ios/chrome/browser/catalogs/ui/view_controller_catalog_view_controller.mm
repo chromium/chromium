@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/catalogs/ui/demo_button_stack_view_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
 namespace {
 
@@ -21,11 +22,18 @@ enum SectionIdentifier {
 enum ItemType {
   kItemTypeAlertViewController = kItemTypeEnumZero,
   kItemTypeButtonStackViewController,
+  kItemTypeConfirmationAlertViewController,
 };
+
+// Spacing Constant.
+const CGFloat kImageTopSpacing = 20;
 
 }  // namespace
 
-@implementation ViewControllerCatalogViewController
+@implementation ViewControllerCatalogViewController {
+  // Configuration used for all `ButtonStackViewController` subclasses.
+  ButtonStackConfiguration* _configuration;
+}
 
 - (instancetype)init {
   return [super initWithStyle:UITableViewStyleInsetGrouped];
@@ -33,6 +41,11 @@ enum ItemType {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+
+  _configuration = [[ButtonStackConfiguration alloc] init];
+  _configuration.primaryActionString = @"Primary";
+  _configuration.secondaryActionString = @"Secondary";
+  _configuration.tertiaryActionString = @"Tertiary";
 
   self.title = @"ViewController Catalog";
 
@@ -52,6 +65,10 @@ enum ItemType {
       initWithType:kItemTypeButtonStackViewController];
   buttonStackItem.text = @"ButtonStackViewController";
 
+  TableViewTextItem* confirmationAlertItem = [[TableViewTextItem alloc]
+      initWithType:kItemTypeConfirmationAlertViewController];
+  confirmationAlertItem.text = @"ConfirmationAlertViewController";
+
   // Add sections.
   [model addSectionWithIdentifier:kSectionIdentifierViewController];
 
@@ -59,6 +76,8 @@ enum ItemType {
   [model addItem:alertItem
       toSectionWithIdentifier:kSectionIdentifierViewController];
   [model addItem:buttonStackItem
+      toSectionWithIdentifier:kSectionIdentifierViewController];
+  [model addItem:confirmationAlertItem
       toSectionWithIdentifier:kSectionIdentifierViewController];
 }
 
@@ -79,12 +98,19 @@ enum ItemType {
                        completion:nil];
       break;
     }
+    case kItemTypeConfirmationAlertViewController: {
+      [self
+          presentViewController:[self configuredConfirmationAlertViewController]
+                       animated:YES
+                     completion:nil];
+      break;
+    }
   }
 }
 
 #pragma mark - Private
 
-// Initializes and configures the AlertViewController.
+// Initializes and configures the `AlertViewController`.
 - (AlertViewController*)configuredAlertViewController {
   AlertViewController* alertViewController = [[AlertViewController alloc] init];
 
@@ -124,18 +150,44 @@ enum ItemType {
 
 // Initializes and configures the `ButtonStackViewController`.
 - (DemoButtonStackViewController*)configuredButtonStackViewController {
-  ButtonStackConfiguration* configuration =
-      [[ButtonStackConfiguration alloc] init];
-  configuration.primaryActionString = @"Primary";
-  configuration.secondaryActionString = @"Secondary";
-  configuration.tertiaryActionString = @"Tertiary";
-
   // The `ButtonStackViewController` should always be subclassed.
   DemoButtonStackViewController* buttonStackViewController =
       [[DemoButtonStackViewController alloc]
-          initWithConfiguration:configuration];
+          initWithConfiguration:_configuration];
 
   return buttonStackViewController;
+}
+
+// Initializes and configures the `ConfirmationAlertViewController`.
+- (ConfirmationAlertViewController*)configuredConfirmationAlertViewController {
+  ConfirmationAlertViewController* confirmationAlertViewController =
+      [[ConfirmationAlertViewController alloc]
+          initWithConfiguration:_configuration];
+
+  confirmationAlertViewController.titleString = @"This is the Title string";
+  confirmationAlertViewController.subtitleString =
+      @"This is the subtitle string";
+
+  confirmationAlertViewController.aboveTitleView =
+      [self configuredLabelWithString:@"This is the aboveTitleView"];
+  confirmationAlertViewController.underTitleView =
+      [self configuredLabelWithString:@"This is the underTitleView"];
+
+  confirmationAlertViewController.image =
+      [UIImage imageNamed:@"collaboration_signin_background"];
+  confirmationAlertViewController.customSpacingBeforeImage = kImageTopSpacing;
+
+  return confirmationAlertViewController;
+}
+
+#pragma mark - Private Helpers
+
+// Returns a `UILabel` with the desired string.
+- (UILabel*)configuredLabelWithString:(NSString*)string {
+  UILabel* label = [[UILabel alloc] init];
+  label.text = string;
+  label.translatesAutoresizingMaskIntoConstraints = NO;
+  return label;
 }
 
 @end
