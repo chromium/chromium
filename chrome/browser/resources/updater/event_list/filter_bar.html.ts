@@ -12,7 +12,10 @@ export function getHtml(this: FilterBarElement) {
   return html`
 <!--_html_template_start_-->
 <div class="filter-bar">
-  <cr-icon icon="updater:filter"></cr-icon>
+  <cr-icon
+      icon="${this.webuiRoundedIconsEnabled_
+          ? 'updater:filter-list'
+          : 'updater:filter-old'}"></cr-icon>
   ${this.filterOrder.map(item => html`
     <div class="chip-wrapper">
       <button class="chip" ?disabled="${this.isEditingViaInput(item)}"

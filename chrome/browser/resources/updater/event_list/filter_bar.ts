@@ -79,6 +79,7 @@ export class FilterBarElement extends CrLitElement {
       filterMenuState: {type: String},
       menuHost: {type: String},
       focusReturnElement: {type: Object},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -88,6 +89,8 @@ export class FilterBarElement extends CrLitElement {
   protected accessor filterOrder: FilterCategory[] = [];
   protected accessor filterMenuState: FilterMenuState = 'closed';
   protected accessor menuHost: 'chip'|'input' = 'input';
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private accessor focusReturnElement: HTMLElement|null = null;
 
