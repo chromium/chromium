@@ -65,3 +65,19 @@ if (!is_android && enable_paint_preview) {
     ]
   }
 }
+
+if (enable_paint_preview) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "services/paint_preview_tab_service_unittest.cc" ]
+    deps = [
+      ":services",
+      "//base",
+      "//chrome/test:test_support",
+      "//components/paint_preview/common",
+      "//components/paint_preview/common:test_utils",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
