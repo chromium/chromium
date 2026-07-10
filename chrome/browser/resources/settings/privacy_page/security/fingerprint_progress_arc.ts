@@ -19,14 +19,14 @@ import {getTemplate} from './fingerprint_progress_arc.html.js';
  * their fingerprint and persistently once the enrollment process is complete.
  */
 export const FINGERPRINT_SCANNED_ICON_DARK: string =
-    'fingerprint-icon:fingerprint-scanned-dark';
+    'fingerprint-icon:fingerprint-scanned-dark-custom';
 
 /**
  * The light-mode fingerprint icon displayed temporarily each time a user scans
  * their fingerprint and persistently once the enrollment process is complete.
  */
 export const FINGERPRINT_SCANNED_ICON_LIGHT: string =
-    'fingerprint-icon:fingerprint-scanned-light';
+    'fingerprint-icon:fingerprint-scanned-light-custom';
 
 export const FINGERPRINT_CHECK_DARK_URL: string =
     'chrome://theme/IDR_FINGERPRINT_COMPLETE_CHECK_DARK';
