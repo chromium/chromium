@@ -18,7 +18,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.autofill.editors.address.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.common.EditorObserverForTest;
-import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;

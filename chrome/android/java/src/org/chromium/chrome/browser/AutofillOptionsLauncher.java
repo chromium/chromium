@@ -11,8 +11,8 @@ import android.os.Bundle;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
-import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.settings.SettingsIntentUtil;
 
 /** A helper activity for launching Chrome settings from intents of other apps. */

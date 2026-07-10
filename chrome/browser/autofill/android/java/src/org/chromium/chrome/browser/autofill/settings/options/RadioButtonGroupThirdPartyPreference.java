@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.options;
+package org.chromium.chrome.browser.autofill.settings.options;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -118,8 +118,7 @@ public final class RadioButtonGroupThirdPartyPreference
      * @return A {@link RadioButtonWithDescription} after layout inflation.
      */
     @VisibleForTesting
-    @Nullable
-    RadioButtonWithDescription getDefaultButton() {
+    @Nullable RadioButtonWithDescription getDefaultButton() {
         return mDefaultOption;
     }
 
@@ -129,8 +128,7 @@ public final class RadioButtonGroupThirdPartyPreference
      * @return A {@link RadioButtonWithDescription} after layout inflation.
      */
     @VisibleForTesting
-    @Nullable
-    RadioButtonWithDescription getOptInButton() {
+    @Nullable RadioButtonWithDescription getOptInButton() {
         return mOptInOption;
     }
 

@@ -81,7 +81,7 @@ import org.chromium.chrome.browser.autofill.GoogleWalletLauncher;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager.EntityDataManagerObserver;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
-import org.chromium.chrome.browser.autofill.personal_context.AutofillPersonalContextFragment;
+import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;

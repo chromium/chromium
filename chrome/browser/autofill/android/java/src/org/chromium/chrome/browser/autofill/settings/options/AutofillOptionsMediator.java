@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.options;
+package org.chromium.chrome.browser.autofill.settings.options;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.FRAGMENT_TITLE;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_AUTOFILL_AI_SETTING_TOGGLED;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_HINT;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.FRAGMENT_TITLE;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.ON_AUTOFILL_AI_SETTING_TOGGLED;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_HINT;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
 
 import android.app.Activity;
 import android.content.Context;
@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
-import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;

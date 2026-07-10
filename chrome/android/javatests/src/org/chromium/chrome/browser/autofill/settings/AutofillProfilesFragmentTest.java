@@ -93,7 +93,7 @@ import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager.Entity
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.editors.address.AddressEditorMediator;
 import org.chromium.chrome.browser.autofill.editors.address.EditorDialogView;
-import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;

@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.autofill.editors.address.AddressEditorCoordin
 import org.chromium.chrome.browser.autofill.editors.address.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.common.EditorObserverForTest;
 import org.chromium.chrome.browser.autofill.editors.common.EditorViewBase;
-import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;

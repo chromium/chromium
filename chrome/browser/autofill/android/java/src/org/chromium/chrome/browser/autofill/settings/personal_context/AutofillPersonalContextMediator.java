@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.personal_context;
+package org.chromium.chrome.browser.autofill.settings.personal_context;
 
-import static org.chromium.chrome.browser.autofill.personal_context.AutofillPersonalContextProperties.ON_MANAGE_CONNECTED_APPS_CLICKED;
-import static org.chromium.chrome.browser.autofill.personal_context.AutofillPersonalContextProperties.ON_PERSONAL_CONTEXT_TOGGLE_CHANGED;
-import static org.chromium.chrome.browser.autofill.personal_context.AutofillPersonalContextProperties.PERSONAL_CONTEXT_ENABLED;
+import static org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextProperties.ON_MANAGE_CONNECTED_APPS_CLICKED;
+import static org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextProperties.ON_PERSONAL_CONTEXT_TOGGLE_CHANGED;
+import static org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextProperties.PERSONAL_CONTEXT_ENABLED;
 
 import android.content.Context;
 

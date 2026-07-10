@@ -80,19 +80,19 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/editors/common/text_field/TextFieldView.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/text_field/TextFieldViewBinder.java",
     "java/src/org/chromium/chrome/browser/autofill/helpers/FaviconHelper.java",
-    "java/src/org/chromium/chrome/browser/autofill/options/AutofillAiPreference.java",
-    "java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsCoordinator.java",
-    "java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsFragment.java",
-    "java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsMediator.java",
-    "java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsProperties.java",
-    "java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsViewBinder.java",
-    "java/src/org/chromium/chrome/browser/autofill/options/RadioButtonGroupThirdPartyPreference.java",
-    "java/src/org/chromium/chrome/browser/autofill/personal_context/AutofillPersonalContextCoordinator.java",
-    "java/src/org/chromium/chrome/browser/autofill/personal_context/AutofillPersonalContextFragment.java",
-    "java/src/org/chromium/chrome/browser/autofill/personal_context/AutofillPersonalContextMediator.java",
-    "java/src/org/chromium/chrome/browser/autofill/personal_context/AutofillPersonalContextNoticePreference.java",
-    "java/src/org/chromium/chrome/browser/autofill/personal_context/AutofillPersonalContextProperties.java",
-    "java/src/org/chromium/chrome/browser/autofill/personal_context/AutofillPersonalContextViewBinder.java",
+    "java/src/org/chromium/chrome/browser/autofill/settings/options/AutofillAiPreference.java",
+    "java/src/org/chromium/chrome/browser/autofill/settings/options/AutofillOptionsCoordinator.java",
+    "java/src/org/chromium/chrome/browser/autofill/settings/options/AutofillOptionsFragment.java",
+    "java/src/org/chromium/chrome/browser/autofill/settings/options/AutofillOptionsMediator.java",
+    "java/src/org/chromium/chrome/browser/autofill/settings/options/AutofillOptionsProperties.java",
+    "java/src/org/chromium/chrome/browser/autofill/settings/options/AutofillOptionsViewBinder.java",
+    "java/src/org/chromium/chrome/browser/autofill/settings/options/RadioButtonGroupThirdPartyPreference.java",
+    "java/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextCoordinator.java",
+    "java/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextFragment.java",
+    "java/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextMediator.java",
+    "java/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextNoticePreference.java",
+    "java/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextProperties.java",
+    "java/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextViewBinder.java",
   ]
 
   resources_package = "org.chromium.chrome.browser.autofill"
@@ -259,7 +259,7 @@ android_library("test_java") {
     "javatest/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSaveUpdateEntityPromptRenderTest.java",
     "javatest/src/org/chromium/chrome/browser/autofill/editors/address/AddressEditorRenderTest.java",
     "javatest/src/org/chromium/chrome/browser/autofill/editors/common/dropdown_field/DropdownFieldViewTest.java",
-    "javatest/src/org/chromium/chrome/browser/autofill/personal_context/AutofillPersonalContextSettingsRenderTest.java",
+    "javatest/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextSettingsRenderTest.java",
   ]
 
   deps = [
@@ -312,8 +312,8 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/autofill/editors/common/dropdown_field/DropdownFieldViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/editors/common/text_field/TextFieldViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/editors/utils/TestUtils.java",
-    "junit/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsTest.java",
-    "junit/src/org/chromium/chrome/browser/autofill/personal_context/AutofillPersonalContextTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/settings/options/AutofillOptionsTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextTest.java",
   ]
 
   deps = [

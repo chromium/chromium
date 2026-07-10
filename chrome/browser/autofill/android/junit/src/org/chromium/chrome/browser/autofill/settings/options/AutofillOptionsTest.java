@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.options;
+package org.chromium.chrome.browser.autofill.settings.options;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -22,9 +22,9 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus.AVAILABLE;
 import static org.chromium.chrome.browser.autofill.AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -72,7 +72,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerJni;
-import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
@@ -926,7 +926,6 @@ public class AutofillOptionsTest {
         assertEquals(
                 View.GONE, thingsToConsider.findViewById(R.id.info_item_summary_2).getVisibility());
     }
-
 
     @Test
     @SmallTest

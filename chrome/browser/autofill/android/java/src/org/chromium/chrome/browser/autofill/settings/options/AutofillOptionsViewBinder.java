@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.options;
+package org.chromium.chrome.browser.autofill.settings.options;
 
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_REAUTH_SETTING_ON;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_REAUTH_TOGGLE_VISIBLE;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_SETTING_ELIGIBLE;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_VISIBLE;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.FRAGMENT_TITLE;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_AUTOFILL_AI_SETTING_TOGGLED;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_HINT;
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.AUTOFILL_AI_REAUTH_SETTING_ON;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.AUTOFILL_AI_REAUTH_TOGGLE_VISIBLE;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.AUTOFILL_AI_SETTING_ELIGIBLE;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.AUTOFILL_AI_VISIBLE;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.FRAGMENT_TITLE;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.ON_AUTOFILL_AI_SETTING_TOGGLED;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_HINT;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
 
 import androidx.preference.Preference;
 
