@@ -1401,8 +1401,6 @@ class CORE_EXPORT ConstraintSpace final {
     struct BlockData {
       bool MaySkipLayout(const BlockData& other) const {
         return line_clamp_data == other.line_clamp_data &&
-               block_start_annotation_space ==
-                   other.block_start_annotation_space &&
                previous_sibling_block_end_annotation_space ==
                    other.previous_sibling_block_end_annotation_space;
       }
