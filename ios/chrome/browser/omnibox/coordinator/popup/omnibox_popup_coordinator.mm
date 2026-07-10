@@ -222,6 +222,7 @@
       initWithURL:URL
             title:title
          scenario:SharingScenario::OmniboxMostVisitedEntry];
+  [self.sharingCoordinator stop];
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.popupViewController
                          browser:self.browser

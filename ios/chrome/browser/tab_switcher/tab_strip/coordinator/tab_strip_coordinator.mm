@@ -229,6 +229,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
       [[SharingParams alloc] initWithURL:item.URL
                                    title:item.title
                                 scenario:SharingScenario::TabStripItem];
+  [_sharingCoordinator stop];
   _sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser

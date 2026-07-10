@@ -295,6 +295,7 @@
   SharingParams* params = [[SharingParams alloc] initWithURL:URL
                                                        title:title
                                                     scenario:scenario];
+  [self.sharingCoordinator stop];
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.recentTabsTableViewController
                          browser:self.browser

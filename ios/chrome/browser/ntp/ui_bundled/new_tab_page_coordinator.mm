@@ -1166,6 +1166,7 @@
                                    title:title
                                 scenario:SharingScenario::MostVisitedEntry];
   UIViewController* baseVC = [self activeViewController];
+  [_sharingCoordinator stop];
   _sharingCoordinator =
       [[SharingCoordinator alloc] initWithBaseViewController:baseVC
                                                      browser:self.browser
