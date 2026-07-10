@@ -80,6 +80,11 @@ struct EpInfo {
   // The minimum driver versions required by the NPU device for this EP to work.
   // Empty value means no version check is needed (default allow).
   std::string_view min_npu_driver_version;
+  // Optional session config key for dumping models. When set,
+  // `SetOptimizedModelFilePath` is not used; instead, the dump path is passed
+  // via this config entry. Empty value means the EP uses the default
+  // `SetOptimizedModelFilePath` approach.
+  base::cstring_view model_dump_config_key;
 };
 
 // The listed EPs must match the names of the histogram variants
@@ -177,6 +182,10 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
                 },
             // The minimum NPU driver version in 4-part dot-separated format.
             .min_npu_driver_version = "32.0.100.4404",
+            // `SetOptimizedModelFilePath` does not work for the OpenVINO EP.
+            // Dump models via its own session config entry.
+            .model_dump_config_key =
+                "ep.openvinoexecutionprovider.dump_subgraphs",
         },
     },
     // Qualcomm

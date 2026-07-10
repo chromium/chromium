@@ -8,13 +8,14 @@
 
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_number_conversions.h"
 #include "services/webnn/ort/environment.h"
 #include "services/webnn/ort/logging.h"
 #include "services/webnn/ort/ort_data_type.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/public/cpp/ep_device_info.h"
+#include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_service_introspection.mojom.h"
@@ -122,22 +123,42 @@ std::optional<uint32_t> GetBatchedMatMulKDimensionLimit(
   return iter->second.workarounds.npu_batched_matmul_k_dimension_limit;
 }
 
-ScopedOrtSessionOptions CreateBaseSessionOptions() {
+ScopedOrtSessionOptions CreateBaseSessionOptions(
+    std::string_view primary_ep_name) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
   ScopedOrtSessionOptions session_options;
   CHECK_STATUS(ort_api->CreateSessionOptions(
       ScopedOrtSessionOptions::Receiver(session_options).get()));
 
+  // TODO(crbug.com/530292678): kWebNNOrtDumpModel is used for dumping either
+  // the optimized ONNX model or the EP-specific IHV model. In the future, an EP
+  // may support dumping both simultaneously. When that happens, we should
+  // introduce a separate switch to allow users to control each dump target
+  // independently.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtDumpModel)) {
-    static uint64_t dump_count = 0;
     base::FilePath dump_directory =
         base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
             switches::kWebNNOrtDumpModel);
-    base::FilePath dump_path = dump_directory.AppendASCII(
-        base::StringPrintf("model%d.onnx", dump_count++));
-    CHECK_STATUS(ort_api->SetOptimizedModelFilePath(session_options.get(),
-                                                    dump_path.value().c_str()));
+    const auto ep_it = kKnownEPs.find(primary_ep_name);
+    if (ep_it != kKnownEPs.end() &&
+        !ep_it->second.model_dump_config_key.empty()) {
+      // Currently, ORT's `SetOptimizedModelFilePath` can only dump the
+      // ORT-optimized ONNX models, not the models that have been taken over
+      // and compiled into an EP-specific format (e.g., OpenVINO). Due to this
+      // limitation, dump such models via the EP's own session config entry
+      // instead.
+      CHECK_STATUS(ort_api->AddSessionConfigEntry(
+          session_options.get(),
+          /*config_key=*/ep_it->second.model_dump_config_key.c_str(),
+          /*config_value=*/dump_directory.AsUTF8Unsafe().c_str()));
+    } else {
+      static uint64_t dump_count = 0;
+      base::FilePath dump_path = dump_directory.AppendASCII(
+          base::StrCat({"model", base::NumberToString(dump_count++), ".onnx"}));
+      CHECK_STATUS(ort_api->SetOptimizedModelFilePath(
+          session_options.get(), dump_path.value().c_str()));
+    }
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -187,10 +208,19 @@ SessionOptions::Create(OrtHardwareDeviceType device_type,
                        scoped_refptr<Environment> env) {
   ScopedTrace scoped_trace("SessionOptions::Create");
 
-  scoped_trace.AddStep("Create session options");
-  ScopedOrtSessionOptions session_options = CreateBaseSessionOptions();
+  base::span<const OrtEpDevice* const> registered_ep_devices =
+      env->GetRegisteredEpDevices();
+  std::vector<const OrtEpDevice*> selected_ep_devices =
+      Environment::SelectEpDevices(registered_ep_devices, device_type);
+  if (selected_ep_devices.empty()) {
+    return base::unexpected("No execution provider device available.");
+  }
+  const OrtEpDevice* first_selected_device = selected_ep_devices.front();
 
+  scoped_trace.AddStep("Create session options");
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+  ScopedOrtSessionOptions session_options =
+      CreateBaseSessionOptions(ort_api->EpDevice_EpName(first_selected_device));
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtDisableCpuFallback)) {
@@ -207,41 +237,16 @@ SessionOptions::Create(OrtHardwareDeviceType device_type,
         /*config_value=*/config_entry.value.c_str()));
   }
 
-  base::span<const OrtEpDevice* const> registered_ep_devices =
-      env->GetRegisteredEpDevices();
-  std::vector<const OrtEpDevice*> selected_ep_devices =
-      Environment::SelectEpDevices(registered_ep_devices, device_type);
-  if (selected_ep_devices.empty()) {
-    return base::unexpected("No execution provider device available.");
-  }
-
   return base::MakeRefCounted<SessionOptions>(
       base::PassKey<SessionOptions>(), std::move(session_options), device_type,
-      std::move(env), selected_ep_devices.front());
+      std::move(env), first_selected_device);
 }
 
 // static
 scoped_refptr<SessionOptions> SessionOptions::Create(
     const EpDeviceInfo& target_device,
     scoped_refptr<Environment> env) {
-  ScopedOrtSessionOptions session_options = CreateBaseSessionOptions();
-
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-
-  // Disable CPU EP fallback to ensure the session will be created on the
-  // expected EP device.
-  CHECK_STATUS(ort_api->AddSessionConfigEntry(
-      session_options.get(), kOrtSessionOptionsDisableCPUEPFallback, "1"));
-
-  const auto ep_it = kKnownEPs.find(target_device.ep_name);
-  if (ep_it != kKnownEPs.end()) {
-    for (const auto& config_entry : ep_it->second.config_entries) {
-      CHECK_STATUS(ort_api->AddSessionConfigEntry(
-          session_options.get(),
-          /*config_key=*/config_entry.key.c_str(),
-          /*config_value=*/config_entry.value.c_str()));
-    }
-  }
 
   // Ensure the specified EP device is registered in the environment.
   const OrtEpDevice* target_ort_device = nullptr;
@@ -268,6 +273,24 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
                            << " with device type: " << target_device.device_type
                            << " and ID: 0x" << std::hex
                            << target_device.device_id;
+
+  ScopedOrtSessionOptions session_options =
+      CreateBaseSessionOptions(target_device.ep_name);
+
+  // Disable CPU EP fallback to ensure the session will be created on the
+  // expected EP device.
+  CHECK_STATUS(ort_api->AddSessionConfigEntry(
+      session_options.get(), kOrtSessionOptionsDisableCPUEPFallback, "1"));
+
+  const auto ep_it = kKnownEPs.find(target_device.ep_name);
+  if (ep_it != kKnownEPs.end()) {
+    for (const auto& config_entry : ep_it->second.config_entries) {
+      CHECK_STATUS(ort_api->AddSessionConfigEntry(
+          session_options.get(),
+          /*config_key=*/config_entry.key.c_str(),
+          /*config_value=*/config_entry.value.c_str()));
+    }
+  }
 
   // Directly bind the target device to the session options, bypassing the
   // auto EP selection policy.
