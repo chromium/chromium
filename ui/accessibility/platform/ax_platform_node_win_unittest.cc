@@ -8434,6 +8434,51 @@ TEST_F(AXPlatformNodeWinTest, DormantLiveGhostDestroyed) {
             (AXPlatformNodeWin::Counts{0U, 0U, 0U, 0U}));
 }
 
+// Regression test for crbug.com/532828233.
+TEST_F(AXPlatformNodeWinTest, OwnedNodeSurvivesUnexpectedReleases) {
+  AXPlatformNodeDelegate test_delegate;
+
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{0U, 0U, 0U, 0U}));
+
+  AXPlatformNode::Pointer node = AXPlatformNode::Create(test_delegate);
+  auto* win_node = static_cast<AXPlatformNodeWin*>(node.get());
+
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{1U, 1U, 0U, 0U}));
+  ASSERT_EQ(win_node->ref_count_for_testing(), 1U);
+
+  ASSERT_EQ(win_node->AddRef(), 2U);
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{1U, 0U, 1U, 0U}));
+  ASSERT_EQ(win_node->Release(), 1U);
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{1U, 1U, 0U, 0U}));
+
+  // Avoid retaining a dangling owner if the regression reappears.
+  node.release();
+  for (int i = 0; i < 2; ++i) {
+    const ULONG ref_count = win_node->Release();
+    if (ref_count != 1U) {
+      EXPECT_EQ(ref_count, 1U);
+      return;
+    }
+  }
+  EXPECT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{1U, 1U, 0U, 0U}));
+  EXPECT_EQ(win_node->ref_count_for_testing(), 1U);
+
+  Microsoft::WRL::ComPtr<IAccessible> reacquired;
+  EXPECT_HRESULT_SUCCEEDED(win_node->QueryInterface(IID_PPV_ARGS(&reacquired)));
+  EXPECT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{1U, 0U, 1U, 0U}));
+  reacquired.Reset();
+
+  win_node->Destroy();
+  EXPECT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{0U, 0U, 0U, 0U}));
+}
+
 // Test for UIA's MathML Implementation.
 TEST_F(AXPlatformNodeWinTest, UiaMathMlFeatureFlag) {
   // Verify flag is disabled by default.
