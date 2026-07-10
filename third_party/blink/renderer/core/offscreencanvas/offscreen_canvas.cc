@@ -689,6 +689,12 @@ bool OffscreenCanvas::PushFrame(
   canvas_resource->SetOriginClean(OriginClean());
   current_frame_damage_rect_.Intersect(gfx::Rect(Size()));
 
+  // We can't submit empty CompositorFrames, but contexts not always obeys it
+  // (e.g webgl clamps it's size to 1x1) and can still produce the resource.
+  if (Size().IsEmpty()) {
+    return false;
+  }
+
   auto exported_resource =
       base::MakeRefCounted<ExportedCanvasResource>(std::move(canvas_resource));
 
