@@ -1335,8 +1335,12 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
                 [](base::WeakPtr<content::WebContents> web_contents,
                    bool is_aim_popup_open,
                    searchbox::mojom::DriveDisclaimerStatus status) {
-                  if (status !=
-                      searchbox::mojom::DriveDisclaimerStatus::kAccepted) {
+                  // Abort only if the account is restricted/ineligible. If
+                  // unconsented (kNotAccepted), allow the click through so
+                  // OnDriveUploadClicked can trigger the ConsentKit disclaimer
+                  // onboarding dialog.
+                  if (status ==
+                      searchbox::mojom::DriveDisclaimerStatus::kRestricted) {
                     return;
                   }
                   auto* omnibox_popup_ui =
