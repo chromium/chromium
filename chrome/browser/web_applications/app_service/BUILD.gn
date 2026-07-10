@@ -31,6 +31,7 @@ source_set("app_service") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:features",
     "//chrome/common",
     "//components/content_settings/core/browser",
     "//components/services/app_service",
