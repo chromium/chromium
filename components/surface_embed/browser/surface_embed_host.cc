@@ -5,6 +5,7 @@
 #include "components/surface_embed/browser/surface_embed_host.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -17,6 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
+#include "ui/accessibility/ax_tree_id.h"
 
 namespace surface_embed {
 
@@ -147,8 +149,11 @@ void SurfaceEmbedHost::AttachConnector(
   content::SurfaceEmbedConnector::Attach(
       web_contents_to_attach, &collection_->render_frame_host(), this);
 
-  // TODO(surface-embed): If accessibility info was received before the
-  // connector was attached, pass it to the connector now.
+  // If accessibility info was received before the connector was attached,
+  // pass it to the connector now.
+  if (container_accessibility_node_id_ != ui::kInvalidAXNodeID) {
+    ForwardParentAccessibilityInfo();
+  }
 }
 
 void SurfaceEmbedHost::DetachConnector() {
@@ -169,6 +174,25 @@ void SurfaceEmbedHost::SynchronizeVisualProperties(
                    : blink::mojom::FrameVisibility::kNotRendered);
     connector->OnSynchronizeVisualProperties(visual_properties);
   }
+}
+
+void SurfaceEmbedHost::SetParentAccessibilityInfo(ui::AXNodeID ax_node_id) {
+  container_accessibility_node_id_ = ax_node_id;
+
+  ForwardParentAccessibilityInfo();
+}
+
+void SurfaceEmbedHost::ForwardParentAccessibilityInfo() {
+  content::SurfaceEmbedConnector* connector = GetConnector();
+  if (!connector) {
+    return;
+  }
+  ui::AXTreeID ax_tree_id = collection_->render_frame_host().GetAXTreeID();
+  if (ax_tree_id == ui::AXTreeIDUnknown()) {
+    return;
+  }
+  connector->SetParentAccessibilityInfo(container_accessibility_node_id_,
+                                        ax_tree_id);
 }
 
 void SurfaceEmbedHost::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id,

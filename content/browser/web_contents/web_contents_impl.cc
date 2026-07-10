@@ -3602,7 +3602,19 @@ void WebContentsImpl::ClearSurfaceEmbedConnector() {
     view_ = nullptr;
   }
 
+  // The child main frame derives its embed-parent AX tree id from the
+  // connector. Note whether it had one before the connector is freed, then
+  // refresh the child's AX data so its BrowserAccessibilityManager drops the
+  // now-stale id. Skip the refresh when this WebContents is being destroyed, as
+  // there is no live accessibility tree left to update.
+  const bool had_embed_parent_ax_tree_id =
+      surface_embed_connector_->GetParentAXTreeID() != ui::AXTreeIDUnknown();
+
   surface_embed_connector_.reset();
+
+  if (had_embed_parent_ax_tree_id && !IsBeingDestroyed()) {
+    GetPrimaryMainFrame()->UpdateAXTreeData();
+  }
 
   // Recreate and register RenderWidgetHostView.
   if (!IsBeingDestroyed()) {

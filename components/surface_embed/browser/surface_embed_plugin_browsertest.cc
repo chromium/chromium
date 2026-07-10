@@ -32,6 +32,8 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/accessibility_switches.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace surface_embed {
@@ -1016,6 +1018,38 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
 #if !BUILDFLAG(IS_ANDROID)
   waiter.Wait();
 #endif
+}
+
+// Runs the browser with renderer accessibility forced on so the plugin sends
+// real parent-accessibility info over mojo to the SurfaceEmbedHost.
+class SurfaceEmbedAccessibilityBrowserTest : public SurfaceEmbedBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SurfaceEmbedBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(::switches::kForceRendererAccessibility);
+  }
+};
+
+// Verifies the renderer->browser accessibility path. With accessibility
+// enabled, the renderer plugin sends SetParentAccessibilityInfo over mojo and
+// the host receives it.
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedAccessibilityBrowserTest,
+                       PluginSendsParentAccessibilityInfoToHost) {
+  auto child_contents = SetupHarnessAndChild();
+  AttachChildToEmbed(child_contents.get());
+
+  WaitForHostCount(kSingleEmbedCount);
+  ASSERT_EQ(kSingleEmbedCount, GetHostCount());
+  SurfaceEmbedHost* host = GetHost(0);
+  ASSERT_NE(nullptr, host);
+
+  EXPECT_NE(web_contents()->GetPrimaryMainFrame()->GetAXTreeID(),
+            ui::AXTreeIDUnknown());
+
+  // The renderer plugin sends SetParentAccessibilityInfo over mojo; wait until
+  // the host receives it.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return host->HasReceivedParentAccessibilityInfoForTesting(); }));
 }
 
 }  // namespace surface_embed

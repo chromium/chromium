@@ -12,9 +12,11 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -28,6 +30,28 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace surface_embed {
+
+class SurfaceEmbedWebPlugin::AccessibilityObserver
+    : public content::RenderFrameObserver {
+ public:
+  AccessibilityObserver(content::RenderFrame* render_frame,
+                        SurfaceEmbedWebPlugin* plugin)
+      : content::RenderFrameObserver(render_frame), plugin_(plugin) {}
+  AccessibilityObserver(const AccessibilityObserver&) = delete;
+  AccessibilityObserver& operator=(const AccessibilityObserver&) = delete;
+  ~AccessibilityObserver() override = default;
+
+  void AccessibilityModeChanged(const ui::AXMode& mode) override {
+    if (mode.has_mode(ui::AXMode::kWebContents)) {
+      plugin_->OnAccessibilityModeEnabled();
+    }
+  }
+
+  void OnDestruct() override {}
+
+ private:
+  raw_ptr<SurfaceEmbedWebPlugin> plugin_;
+};
 
 namespace {
 
@@ -65,6 +89,8 @@ SurfaceEmbedWebPlugin::SurfaceEmbedWebPlugin(
     : contents_id_(contents_id) {
   render_frame->GetBrowserInterfaceBroker().GetInterface(
       host_.BindNewPipeAndPassReceiver());
+  accessibility_observer_ =
+      std::make_unique<AccessibilityObserver>(render_frame, this);
 }
 
 SurfaceEmbedWebPlugin::~SurfaceEmbedWebPlugin() = default;
@@ -89,7 +115,35 @@ bool SurfaceEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
     host_->AttachConnector(contents_id_);
   }
 
+  // If accessibility was already enabled before the plugin was created,
+  // send the info now. AccessibilityModeChanged only fires on transitions.
+  SendAccessibilityInfo();
+
   return true;
+}
+
+void SurfaceEmbedWebPlugin::OnAccessibilityModeEnabled() {
+  SendAccessibilityInfo();
+}
+
+void SurfaceEmbedWebPlugin::SendAccessibilityInfo() {
+  if (!container_ || !host_) {
+    return;
+  }
+
+  auto element_ax_object =
+      blink::WebAXObject::FromWebNode(container_->GetElement());
+  if (element_ax_object.IsNull() ||
+      element_ax_object.AxID() == ui::kInvalidAXNodeID) {
+    return;
+  }
+
+  blink::WebLocalFrame* frame = container_->GetDocument().GetFrame();
+  if (!frame) {
+    return;
+  }
+
+  host_->SetParentAccessibilityInfo(element_ax_object.AxID());
 }
 
 void SurfaceEmbedWebPlugin::Destroy() {

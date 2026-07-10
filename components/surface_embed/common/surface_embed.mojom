@@ -55,4 +55,10 @@ interface SurfaceEmbedHost {
   SynchronizeVisualProperties(
       blink.mojom.FrameVisualProperties visual_properties,
       bool is_visible);
+
+  // Send the parent HTML element accessibility node ID from the render process
+  // to the browser process to stitch together accessibility trees in the
+  // browser process. This may happen during creation or later
+  // if accessibility is not yet enabled.
+  SetParentAccessibilityInfo(int32 ax_node_id);
 };

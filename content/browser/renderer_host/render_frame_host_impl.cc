@@ -227,6 +227,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/surface_embed_connector.h"
 #include "content/public/browser/tracing_support.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
@@ -2006,6 +2007,12 @@ constexpr base::MemoryConsumerTraits kRenderFrameHostTraits(
     // Frames are in an out-of-process renderer.
     base::MemoryConsumerTraits::InProcess::kNo);
 
+ui::AXTreeID GetEmbedParentAXTreeID(RenderFrameHostDelegate* delegate) {
+  if (SurfaceEmbedConnector* connector = delegate->GetSurfaceEmbedConnector()) {
+    return connector->GetParentAXTreeID();
+  }
+  return ui::AXTreeIDUnknown();
+}
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -4169,6 +4176,12 @@ bool RenderFrameHostImpl::ShouldSuppressAXLoadComplete() {
 }
 
 bool RenderFrameHostImpl::AccessibilityIsRootFrame() const {
+  // A surface-embedded frame has an AX parent in another tree, so it is not
+  // the AX root even though it is the root of its own frame tree.
+  if (SurfaceEmbedConnector* connector =
+          delegate_->GetSurfaceEmbedConnector()) {
+    return connector->GetParentAXTreeID() == ui::AXTreeIDUnknown();
+  }
   // Do not use is_main_frame() or IsOutermostMainFrame().
   // Frame trees may be nested so it can be the case that is_main_frame() is
   // true, but is not the outermost RenderFrameHost (it only checks for nullity
@@ -14232,6 +14245,13 @@ RenderFrameHost* RenderFrameHost::FromPlaceholderToken(
 ui::AXTreeID RenderFrameHostImpl::GetParentAXTreeID() {
   auto* parent = GetParentOrOuterDocumentOrEmbedderExcludingProspectiveOwners();
   if (!parent) {
+    // A surface-embedded frame has no frame-tree parent but may still have an
+    // AX parent in another tree. Return it directly without requiring
+    // AccessibilityIsRootFrame() (which returns false for embedded guests).
+    ui::AXTreeID embed_parent_ax_tree_id = GetEmbedParentAXTreeID(delegate_);
+    if (embed_parent_ax_tree_id != ui::AXTreeIDUnknown()) {
+      return embed_parent_ax_tree_id;
+    }
     CHECK(AccessibilityIsRootFrame())
         << "Child frame requires a parent, root=" << GetLastCommittedURL();
     return ui::AXTreeIDUnknown();
