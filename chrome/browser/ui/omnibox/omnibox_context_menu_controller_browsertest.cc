@@ -1628,8 +1628,16 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   EXPECT_FALSE(controller.IsCommandIdEnabled(33001));
 }
 
+// TODO(https://crbug.com/530351886): Times out too often on Linux ASAN bots.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_VerifyTabEnablementWhenMaxInputsReached \
+  DISABLED_VerifyTabEnablementWhenMaxInputsReached
+#else
+#define MAYBE_VerifyTabEnablementWhenMaxInputsReached \
+  VerifyTabEnablementWhenMaxInputsReached
+#endif
 IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
-                       VerifyTabEnablementWhenMaxInputsReached) {
+                       MAYBE_VerifyTabEnablementWhenMaxInputsReached) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
   auto* popup_web_contents = GetWebContents();
