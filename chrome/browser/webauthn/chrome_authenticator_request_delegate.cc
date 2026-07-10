@@ -524,7 +524,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
       // PasskeyUpgradeRequestController will handle enclave transactions in
       // place of the "regular" GPMEnclaveController.
       CHECK(!enclave_controller_);
-      dialog_controller_->InitializeEnclaveRequestCallback(discovery_factory);
+      dialog_controller_->ConfigureEnclaveForUpgrade(discovery_factory,
+                                                     cmtg_key_requested);
       discovery_factory->set_network_context_factory(base::BindRepeating([]() {
         return SystemNetworkContextManager::GetInstance()->GetContext();
       }));

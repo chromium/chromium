@@ -48,8 +48,6 @@ class AuthenticatorRequestDialogController
   using RequestCallback = device::FidoRequestHandlerBase::RequestCallback;
   using BlePermissionCallback = base::RepeatingCallback<void(
       device::FidoRequestHandlerBase::BlePermissionCallback)>;
-  using EnclaveRequestCallback = base::RepeatingCallback<void(
-      std::unique_ptr<device::enclave::CredentialRequest>)>;
 
   AuthenticatorRequestDialogController(
       AuthenticatorRequestDialogModel* model,
@@ -336,8 +334,9 @@ class AuthenticatorRequestDialogController
   void SetUIPresentation(
       content::AuthenticatorRequestClientDelegate::UIPresentation modality);
 
-  void InitializeEnclaveRequestCallback(
-      device::FidoDiscoveryFactory* discovery_factory);
+  void ConfigureEnclaveForUpgrade(
+      device::FidoDiscoveryFactory* discovery_factory,
+      bool cmtg_key_requested);
 
   base::WeakPtr<AuthenticatorRequestDialogController> GetWeakPtr();
 
@@ -540,7 +539,6 @@ class AuthenticatorRequestDialogController
                           webauthn::PasskeyModel::Observer>
       passkey_model_observation_{this};
 
-  EnclaveRequestCallback enclave_request_callback_;
   std::unique_ptr<PasskeyUpgradeRequestController>
       passkey_upgrade_request_controller_;
 

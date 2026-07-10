@@ -1707,15 +1707,23 @@ void AuthenticatorRequestDialogController::SetUIPresentation(
   model_->set_ui_presentation(modality);
 }
 
-void AuthenticatorRequestDialogController::InitializeEnclaveRequestCallback(
-    device::FidoDiscoveryFactory* discovery_factory) {
-  CHECK(!enclave_request_callback_);
+void AuthenticatorRequestDialogController::ConfigureEnclaveForUpgrade(
+    device::FidoDiscoveryFactory* discovery_factory,
+    bool cmtg_key_requested) {
+  CHECK(!passkey_upgrade_request_controller_);
 
   using EnclaveEventStream = device::FidoDiscoveryBase::EventStream<
       std::unique_ptr<device::enclave::CredentialRequest>>;
   std::unique_ptr<EnclaveEventStream> event_stream;
-  std::tie(enclave_request_callback_, event_stream) = EnclaveEventStream::New();
+  PasskeyUpgradeRequestController::EnclaveRequestCallback
+      enclave_request_callback;
+  std::tie(enclave_request_callback, event_stream) = EnclaveEventStream::New();
   discovery_factory->set_enclave_ui_request_stream(std::move(event_stream));
+
+  passkey_upgrade_request_controller_ =
+      std::make_unique<PasskeyUpgradeRequestController>(
+          GetRenderFrameHost(), std::move(enclave_request_callback),
+          cmtg_key_requested);
 }
 
 base::WeakPtr<AuthenticatorRequestDialogController>
@@ -2343,17 +2351,13 @@ AuthenticatorRequestDialogController::GetRenderFrameHost() const {
 void AuthenticatorRequestDialogController::StartPasskeyUpgradeRequest() {
   SetCurrentStep(Step::kPasskeyUpgrade);
 
-  if (!enclave_request_callback_) {
+  if (!passkey_upgrade_request_controller_) {
     RecordPasskeyUpgradeResultHistogram(PasskeyUpgradeResult::kGpmDisabled);
     FIDO_LOG(ERROR)
         << "Passkey upgrade request failed because GPM is disabled by policy.";
     PasskeyUpgradeFailed();
     return;
   }
-
-  passkey_upgrade_request_controller_ =
-      std::make_unique<PasskeyUpgradeRequestController>(
-          GetRenderFrameHost(), std::move(enclave_request_callback_));
   passkey_upgrade_request_controller_->TryUpgradePasswordToPasskey(
       model_->relying_party_id, model_->user_entity.name.value_or(""),
       /*delegate=*/this);

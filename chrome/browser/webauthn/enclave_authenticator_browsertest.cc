@@ -594,6 +594,41 @@ static constexpr char kMakeCredentialConditionalCreate[] = R"((() => {
           e => window.domAutomationController.send('error ' + e));
 })())";
 
+static constexpr char kMakeCredentialConditionalCreateWithCmtg[] = R"(
+  window.cmtgPromise = new Promise(async (resolve) => {
+    try {
+      let c = await navigator.credentials.create({
+        mediation: "conditional",
+        publicKey: {
+          rp: { name: "www.example.com" },
+          user: {
+            id: new Uint8Array([1]),
+            name: "user1@gmail.com",
+            displayName: "Foo Bar"
+          },
+          pubKeyCredParams: [{type: "public-key", alg: -7}],
+          challenge: new Uint8Array([0]),
+          extensions: {
+            cmtgKey: true,
+          },
+        }
+      });
+      const ext = c.getClientExtensionResults();
+      if (ext?.cmtgKey?.cmtgKey) {
+        const hex = Array.from(new Uint8Array(ext.cmtgKey.cmtgKey))
+                        .map(b => b.toString(16).padStart(2, '0'))
+                        .join('');
+        resolve('cmtg OK: ' + hex);
+      } else {
+        resolve('cmtg NONE');
+      }
+    } catch (e) {
+      resolve('error ' + e.toString());
+    }
+  });
+  "this string avoids having the expression evaluate into a promise";
+)";
+
 static constexpr char kMakeCredentialConditionalCreateWithExcludeList[] =
     R"((() => {
   const base64ToArrayBuffer = (base64) => {
@@ -4467,6 +4502,32 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
   ASSERT_TRUE(
       delegate_observer()->on_transport_availability_enumerated_called());
   EXPECT_TRUE(delegate_observer()->transports_observed()->empty());
+}
+
+IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
+                       ConditionalCreateWithCmtg) {
+  BootstrapEnclave();
+  InjectPassword(base::Time::Now());
+
+  fake_cmtg_provider_->SetNextKeys(
+      {std::vector<uint8_t>(kTestCmtgKey.begin(), kTestCmtgKey.end())});
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, kMakeCredentialConditionalCreateWithCmtg));
+  delegate_observer()->WaitForUI();
+
+  std::string script_result =
+      content::EvalJs(web_contents, "window.cmtgPromise").ExtractString();
+  EXPECT_TRUE(base::StartsWith(script_result, "cmtg OK:"));
+
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.AutomaticPasskeyUpgrade.Result",
+      /*sample=*/PasskeyUpgradeResult::kSuccess,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,

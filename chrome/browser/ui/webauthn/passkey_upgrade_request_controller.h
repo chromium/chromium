@@ -24,6 +24,7 @@ struct CredentialRequest;
 enum class PINValidationResult;
 }  // namespace device::enclave
 
+class CmtgKeyFetcher;
 class EnclaveManager;
 class GPMEnclaveTransaction;
 class Profile;
@@ -67,9 +68,10 @@ class PasskeyUpgradeRequestController
     virtual void PasskeyUpgradeFailed() = 0;
   };
 
-  explicit PasskeyUpgradeRequestController(
+  PasskeyUpgradeRequestController(
       content::RenderFrameHost* rfh,
-      EnclaveRequestCallback enclave_request_callback);
+      EnclaveRequestCallback enclave_request_callback,
+      bool cmtg_key_requested);
 
   ~PasskeyUpgradeRequestController() override;
 
@@ -91,6 +93,8 @@ class PasskeyUpgradeRequestController
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,
       password_manager::LoginsResultOrError results_or_error) override;
+
+  void StartEnclaveTransaction();
 
   // GPMEnclaveTransaction::Delegate:
   void HandleEnclaveTransactionError() override;
@@ -128,6 +132,7 @@ class PasskeyUpgradeRequestController
   EnclaveRequestCallback enclave_request_callback_;
 
   std::unique_ptr<GPMEnclaveTransaction> enclave_transaction_;
+  std::unique_ptr<CmtgKeyFetcher> cmtg_key_fetcher_;
 
   base::WeakPtrFactory<PasskeyUpgradeRequestController> weak_factory_{this};
 };

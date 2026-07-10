@@ -25,6 +25,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
+#include "chrome/browser/webauthn/cmtg_device_key_provider_factory.h"
+#include "chrome/browser/webauthn/cmtg_key_fetcher.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "chrome/browser/webauthn/gpm_enclave_transaction.h"
@@ -61,11 +63,17 @@ void RecordPasskeyUpgradeResultHistogram(PasskeyUpgradeResult result) {
 
 PasskeyUpgradeRequestController::PasskeyUpgradeRequestController(
     RenderFrameHost* rfh,
-    EnclaveRequestCallback enclave_request_callback)
+    EnclaveRequestCallback enclave_request_callback,
+    bool cmtg_key_requested)
     : frame_host_id_(rfh->GetGlobalId()),
       enclave_manager_(
           EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile())),
       enclave_request_callback_(enclave_request_callback) {
+  if (cmtg_key_requested) {
+    cmtg_key_fetcher_ = std::make_unique<CmtgKeyFetcher>(
+        CmtgDeviceKeyProviderFactory::GetForProfile(profile()),
+        GpmTickAndTaskRunnerProvider::GetTickClock(rfh));
+  }
   if (enclave_manager_->IsLoaded()) {
     OnEnclaveLoaded();
     return;
@@ -188,13 +196,31 @@ void PasskeyUpgradeRequestController::OnGetPasswordStoreResultsOrErrorFrom(
   }
 
   CHECK(enclave_request_callback_);
-  // TODO(crbug.com/485888879): add support for CMTG keys.
+  if (cmtg_key_fetcher_) {
+    FIDO_LOG(EVENT)
+        << "Deferring upgrade transaction start until CMTG keys are ready";
+    if (cmtg_key_fetcher_->is_waiting_for_keys()) {
+      // If the controller is already waiting for CMTG keys, we don't need to
+      // start the request again.
+      return;
+    }
+    cmtg_key_fetcher_->Start();
+    cmtg_key_fetcher_->WaitForKeys(base::BindOnce(
+        &PasskeyUpgradeRequestController::StartEnclaveTransaction,
+        weak_factory_.GetWeakPtr()));
+    return;
+  }
+  StartEnclaveTransaction();
+}
+
+void PasskeyUpgradeRequestController::StartEnclaveTransaction() {
   enclave_transaction_ = std::make_unique<GPMEnclaveTransaction>(
       /*delegate=*/this, PasskeyModelFactory::GetForProfile(profile()),
       device::FidoRequestType::kMakeCredential, rp_id_,
       EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile()),
       /*pin=*/std::nullopt, /*selected_credential_id=*/std::nullopt,
-      enclave_request_callback_, /*cmtg_device_keys=*/std::nullopt);
+      enclave_request_callback_,
+      cmtg_key_fetcher_ ? cmtg_key_fetcher_->keys() : std::nullopt);
   enclave_transaction_->Start();
 }
 
