@@ -3402,28 +3402,13 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the message identifier when an enqueued message is not immediately
     displayed either because there is another message on the secreen or because
-    message scope (e.g. tab) is not active. This metric is recorded along with
-    Android.Messages.Enqueued.Hiding, which records identifier of currently
-    visible message.
-  </summary>
-</histogram>
-
-<histogram name="Android.Messages.Enqueued.Hiding" enum="MessageIdentifier"
-    expires_after="2026-01-21">
-  <owner>lazzzis@chromium.org</owner>
-  <owner>src/components/messages/OWNERS</owner>
-  <summary>
-    Recorded when an enqueued message is not immediately displayed. This metric
-    records message identifier of a message currently displayed on the screen
-    (that prevented the enqueued message from getting displayed immediately).
-    INVALID_MESSAGE is recorded when the message isn't displayed because message
-    scope (e.g. tab) isn't active or when message queue is suspended.
+    message scope (e.g. tab) is not active.
   </summary>
 </histogram>
 
 <histogram name="Android.Messages.Enqueued.Visible" enum="MessageIdentifier"
     expires_after="2026-12-20">
-  <owner>lazzzis@chromium.org</owner>
+  <owner>aishwaryarj@google.com</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
     Records the message identifier when a message is displayed immediately when
@@ -3431,34 +3416,6 @@ chromium-metrics-reviews@google.com.
     screen as well as cases when the new message is high priority and causes
     some other message to hide.
   </summary>
-</histogram>
-
-<histogram name="Android.Messages.Enqueued.{QueueState}"
-    enum="MessageIdentifier" expires_after="2025-02-10">
-  <owner>lazzzis@chromium.org</owner>
-  <owner>src/components/messages/OWNERS</owner>
-  <summary>
-    Records the message identifier when it is enqueued while the queue is
-    {QueueState}.
-  </summary>
-  <token key="QueueState">
-    <variant name="Resumed" summary="resumed"/>
-    <variant name="Suspended" summary="suspended"/>
-  </token>
-</histogram>
-
-<histogram name="Android.Messages.Enqueued.{ScopeState}"
-    enum="MessageIdentifier" expires_after="2025-02-10">
-  <owner>lazzzis@chromium.org</owner>
-  <owner>src/components/messages/OWNERS</owner>
-  <summary>
-    Records the message identifier when it is enqueued while its associated
-    scope is {ScopeState}.
-  </summary>
-  <token key="ScopeState">
-    <variant name="ScopeActive" summary="active"/>
-    <variant name="ScopeInactive" summary="inactive"/>
-  </token>
 </histogram>
 
 <histogram name="Android.Messages.FullyVisible" enum="MessageIdentifier"
@@ -3469,65 +3426,6 @@ chromium-metrics-reviews@google.com.
     Records the message identifier every time it becomes fully visible to users.
     Can be recorded multiple times during its lifetime.
   </summary>
-</histogram>
-
-<histogram name="Android.Messages.Stacking" enum="StackingAnimationType"
-    expires_after="2024-12-08">
-  <owner>lazzzis@chromium.org</owner>
-  <owner>src/components/messages/OWNERS</owner>
-  <summary>
-    Records the type of stacking animation when it is triggered. The type
-    indicates the relation between current displayed messages and incoming
-    messages.
-  </summary>
-</histogram>
-
-<histogram name="Android.Messages.Stacking.Hidden" enum="MessageIdentifier"
-    expires_after="2026-01-04">
-  <owner>lazzzis@chromium.org</owner>
-  <owner>src/components/messages/OWNERS</owner>
-  <summary>
-    Records the message identifier of the back message which is hidden by the
-    foreground message. Emits when the stacking animation is about to start.
-  </summary>
-</histogram>
-
-<histogram name="Android.Messages.Stacking.Hiding" enum="MessageIdentifier"
-    expires_after="2024-12-08">
-  <owner>lazzzis@chromium.org</owner>
-  <owner>src/components/messages/OWNERS</owner>
-  <summary>
-    Records the message identifier of the front message which is hiding the
-    background message. Emits when the stacking animation is about to start.
-  </summary>
-</histogram>
-
-<histogram name="Android.Messages.Stacking.RequestToFullyShow"
-    enum="MessageIdentifier" expires_after="2025-02-10">
-  <owner>lazzzis@chromium.org</owner>
-  <owner>src/components/messages/OWNERS</owner>
-  <summary>
-    Records the id of front message when the candidate requests to show. The
-    recorded message is not guranteed to be displayed: it might be blocked by
-    unready browser control or unintialized container.
-  </summary>
-</histogram>
-
-<histogram name="Android.Messages.Stacking.{Action}" enum="MessageIdentifier"
-    expires_after="2026-01-13">
-  <owner>lazzzis@chromium.org</owner>
-  <owner>src/components/messages/OWNERS</owner>
-  <summary>
-    Records the message identifier when {Action} during a stacking animation.
-  </summary>
-  <token key="Action">
-    <variant name="InsertAtBack" summary="a message is inserted at back."/>
-    <variant name="InsertAtFront" summary="a message is inserted at front."/>
-    <variant name="PushToBack" summary="a front message is pushed to back."/>
-    <variant name="PushToFront" summary="a back message is pushed to front."/>
-    <variant name="RemoveBack" summary="a back message is removed."/>
-    <variant name="RemoveFront" summary="a front message is removed."/>
-  </token>
 </histogram>
 
 <histogram name="Android.Messages.TimeToAction{MessageIdentifier}" units="ms"

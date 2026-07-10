@@ -187,7 +187,6 @@ public class MessageQueueManagerTest {
                         .expectIntRecord("Android.Messages.Enqueued", m1.getMessageIdentifier())
                         .expectIntRecord(
                                 "Android.Messages.Enqueued.Visible", m1.getMessageIdentifier())
-                        .expectNoRecords("Android.Messages.Enqueued.Hiding")
                         .expectNoRecords("Android.Messages.Enqueued.Hidden")
                         .build();
         var dismissed =
@@ -240,8 +239,6 @@ public class MessageQueueManagerTest {
                         .expectIntRecord(
                                 "Android.Messages.Enqueued.Visible", m1.getMessageIdentifier())
                         .expectIntRecord(
-                                "Android.Messages.Enqueued.Hiding", m1.getMessageIdentifier())
-                        .expectIntRecord(
                                 "Android.Messages.Enqueued.Hidden", m2.getMessageIdentifier())
                         .build();
         var dismissed =
@@ -287,11 +284,6 @@ public class MessageQueueManagerTest {
                                 "Android.Messages.Enqueued",
                                 m1.getMessageIdentifier(),
                                 m2.getMessageIdentifier())
-                        .expectIntRecords(
-                                "Android.Messages.Enqueued.Suspended",
-                                m1.getMessageIdentifier(),
-                                m2.getMessageIdentifier())
-                        .expectNoRecords("Android.Messages.Enqueued.Resumed")
                         .build();
 
         queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
@@ -308,11 +300,6 @@ public class MessageQueueManagerTest {
                                 "Android.Messages.Enqueued",
                                 m3.getMessageIdentifier(),
                                 m4.getMessageIdentifier())
-                        .expectIntRecords(
-                                "Android.Messages.Enqueued.Resumed",
-                                m3.getMessageIdentifier(),
-                                m4.getMessageIdentifier())
-                        .expectNoRecords("Android.Messages.Enqueued.Suspended")
                         .build();
         queueManager.resume(token);
 
@@ -342,13 +329,6 @@ public class MessageQueueManagerTest {
                                 m1.getMessageIdentifier(),
                                 m2.getMessageIdentifier(),
                                 m3.getMessageIdentifier())
-                        .expectIntRecords(
-                                "Android.Messages.Enqueued.ScopeInactive",
-                                m2.getMessageIdentifier())
-                        .expectIntRecords(
-                                "Android.Messages.Enqueued.ScopeActive",
-                                m1.getMessageIdentifier(),
-                                m3.getMessageIdentifier())
                         .build();
 
         final ScopeKey inactiveScopeKey = new ScopeKey(SCOPE_TYPE, new InactiveMockWebContents());
@@ -360,18 +340,12 @@ public class MessageQueueManagerTest {
         enqueued.assertExpected();
 
         // Do not record again when there scopes are updated
-        enqueued =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("Android.Messages.Enqueued.ScopeInactive")
-                        .expectNoRecords("Android.Messages.Enqueued.ScopeActive")
-                        .build();
         queueManager.onScopeChange(
                 new MessageScopeChange(
                         MessageScopeType.NAVIGATION, SCOPE_INSTANCE_ID, ChangeType.INACTIVE));
         queueManager.onScopeChange(
                 new MessageScopeChange(
                         MessageScopeType.NAVIGATION, inactiveScopeKey, ChangeType.ACTIVE));
-        enqueued.assertExpected();
     }
 
     /** Test method {@link MessageQueueManager#dismissAllMessages(int)}. */

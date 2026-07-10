@@ -40,7 +40,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.messages.MessageQueueManager.MessageState;
 import org.chromium.components.messages.MessageStateHandler.Position;
 
@@ -148,20 +147,7 @@ public class MessageAnimationCoordinatorUnitTest {
         // Initial values should be null.
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {null, null}, currentMessages.toArray());
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.Messages.Stacking",
-                                MessagesMetrics.StackingAnimationType.SHOW_ALL)
-                        .expectIntRecord("Android.Messages.Stacking.RequestToFullyShow", 1)
-                        .expectIntRecord("Android.Messages.Stacking.InsertAtFront", 1)
-                        .expectIntRecord("Android.Messages.Stacking.Hiding", 1)
-                        .expectIntRecord(
-                                "Android.Messages.Stacking.InsertAtBack",
-                                MessageIdentifier.COUNT - 1)
-                        .expectIntRecord(
-                                "Android.Messages.Stacking.Hidden", MessageIdentifier.COUNT - 1)
-                        .build();
+
         MessageState m1 = buildMessageState();
         setMessageIdentifier(m1, 1);
         MessageState m2 = buildMessageState();
@@ -175,7 +161,6 @@ public class MessageAnimationCoordinatorUnitTest {
 
         currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m1, m2}, currentMessages.toArray());
-        histogramWatcher.assertExpected();
     }
 
     // Test only front message becomes hidden.
@@ -188,28 +173,12 @@ public class MessageAnimationCoordinatorUnitTest {
         MessageState m2 = buildMessageState();
         setMessageIdentifier(m2, 2);
 
-        var requestToFullyShow =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.Messages.Stacking.RequestToFullyShow", 1);
-
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
-        requestToFullyShow.assertExpected("M1 is not fully shown.");
 
         InOrder inOrder = Mockito.inOrder(m1.handler, m2.handler);
         inOrder.verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         inOrder.verify(m2.handler).show(Position.FRONT, Position.BACK);
 
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.Messages.Stacking",
-                                MessagesMetrics.StackingAnimationType.REMOVE_FRONT_AND_SHOW_BACK)
-                        .expectIntRecord("Android.Messages.Stacking.RequestToFullyShow", 2)
-                        .expectIntRecord("Android.Messages.Stacking.RemoveFront", 1)
-                        .expectIntRecord("Android.Messages.Stacking.PushToFront", 2)
-                        .expectNoRecords("Android.Messages.Stacking.Hidden")
-                        .expectNoRecords("Android.Messages.Stacking.Hiding")
-                        .build();
         // Hide the front one so that the back one is brought to front.
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m2, null), false, () -> {});
         inOrder.verify(m1.handler).hide(Position.FRONT, Position.INVISIBLE, true);
@@ -217,7 +186,6 @@ public class MessageAnimationCoordinatorUnitTest {
 
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m2, null}, currentMessages.toArray());
-        histogramWatcher.assertExpected();
     }
 
     // Test hiding front one and then showing a new one.
@@ -230,12 +198,9 @@ public class MessageAnimationCoordinatorUnitTest {
         setMessageIdentifier(m1, 1);
         MessageState m2 = buildMessageState();
         setMessageIdentifier(m2, 2);
-        var requestToFullyShow =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.Messages.Stacking.RequestToFullyShow", 1);
+
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
 
-        requestToFullyShow.assertExpected("M1 is not fully shown");
         InOrder inOrder = Mockito.inOrder(m1.handler, m2.handler);
         inOrder.verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         inOrder.verify(m2.handler).show(Position.FRONT, Position.BACK);
@@ -243,9 +208,6 @@ public class MessageAnimationCoordinatorUnitTest {
         MessageState m3 = buildMessageState();
         setMessageIdentifier(m3, 3);
 
-        requestToFullyShow =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.Messages.Stacking.RequestToFullyShow", 2);
         // Hide the front one so that the back one is brought to front.
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m2, m3), false, () -> {});
         inOrder.verify(m1.handler).hide(Position.FRONT, Position.INVISIBLE, true);
@@ -253,22 +215,11 @@ public class MessageAnimationCoordinatorUnitTest {
 
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m2, null}, currentMessages.toArray());
-        requestToFullyShow.assertExpected("M2 is not fully shown");
 
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.Messages.Stacking",
-                                MessagesMetrics.StackingAnimationType.SHOW_BACK_ONLY)
-                        .expectIntRecord("Android.Messages.Stacking.InsertAtBack", 3)
-                        .expectIntRecord("Android.Messages.Stacking.Hiding", 2)
-                        .expectIntRecord("Android.Messages.Stacking.Hidden", 3)
-                        .build();
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m2, m3), false, () -> {});
         verify(m3.handler).show(Position.FRONT, Position.BACK);
         currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m2, m3}, currentMessages.toArray());
-        histogramWatcher.assertExpected();
     }
 
     // Test only back message becomes hidden.
@@ -280,34 +231,19 @@ public class MessageAnimationCoordinatorUnitTest {
         setMessageIdentifier(m1, 1);
         MessageState m2 = buildMessageState();
         setMessageIdentifier(m2, 2);
-        var requestToFullyShow =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.Messages.Stacking.RequestToFullyShow", 1);
+
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
 
-        requestToFullyShow.assertExpected("M1 is not fully shown");
         InOrder inOrder = Mockito.inOrder(m1.handler, m2.handler);
         inOrder.verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         inOrder.verify(m2.handler).show(Position.FRONT, Position.BACK);
 
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.Messages.Stacking",
-                                MessagesMetrics.StackingAnimationType.REMOVE_BACK_ONLY)
-                        .expectIntRecord("Android.Messages.Stacking.RemoveBack", 2)
-                        .expectNoRecords("Android.Messages.Stacking.Hidden")
-                        .expectNoRecords("Android.Messages.Stacking.Hiding")
-                        // do not trigger again as m1 stays in the foreground
-                        .expectNoRecords("Android.Messages.Stacking.RequestToFullyShow")
-                        .build();
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, null), false, () -> {});
         inOrder.verify(m1.handler, never()).hide(anyInt(), anyInt(), anyBoolean());
         inOrder.verify(m2.handler).hide(Position.BACK, Position.FRONT, true);
 
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m1, null}, currentMessages.toArray());
-        histogramWatcher.assertExpected();
     }
 
     /** Test replacing back message. [m1, m2] -> [m1, m3] */
@@ -355,22 +291,12 @@ public class MessageAnimationCoordinatorUnitTest {
         inOrder.verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         inOrder.verify(m2.handler, never()).show(Position.FRONT, Position.BACK);
 
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Android.Messages.Stacking.Hiding", 2)
-                        .expectIntRecord("Android.Messages.Stacking.Hidden", 1)
-                        .expectIntRecord(
-                                "Android.Messages.Stacking",
-                                MessagesMetrics.StackingAnimationType.INSERT_AT_FRONT)
-                        .expectIntRecord("Android.Messages.Stacking.PushToBack", 1)
-                        .build();
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m2, m1), false, () -> {});
         inOrder.verify(m2.handler).show(Position.INVISIBLE, Position.FRONT);
         inOrder.verify(m1.handler).show(Position.FRONT, Position.BACK);
 
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m2, m1}, currentMessages.toArray());
-        histogramWatcher.assertExpected();
     }
 
     // Test pushing front message to back.
@@ -445,23 +371,13 @@ public class MessageAnimationCoordinatorUnitTest {
                 });
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {null, null}, currentMessages.toArray());
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.Messages.Stacking",
-                                MessagesMetrics.StackingAnimationType.SHOW_ALL)
-                        .expectIntRecord("Android.Messages.Stacking.InsertAtFront", 1)
-                        .expectIntRecord("Android.Messages.Stacking.InsertAtBack", 2)
-                        .expectIntRecord("Android.Messages.Stacking.Hiding", 1)
-                        .expectIntRecord("Android.Messages.Stacking.Hidden", 2)
-                        .build();
+
         MessageState m1 = buildMessageState();
         setMessageIdentifier(m1, 1);
         MessageState m2 = buildMessageState();
         setMessageIdentifier(m2, 2);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
 
-        histogramWatcher.assertExpected();
         verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         verify(m2.handler).show(Position.FRONT, Position.BACK);
         currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
@@ -480,16 +396,7 @@ public class MessageAnimationCoordinatorUnitTest {
         mAnimationCoordinator.setMessageQueueDelegate(mQueueDelegate);
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {null, null}, currentMessages.toArray());
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.Messages.Stacking",
-                                MessagesMetrics.StackingAnimationType.SHOW_ALL)
-                        .expectIntRecord("Android.Messages.Stacking.Hiding", 1)
-                        .expectIntRecord("Android.Messages.Stacking.Hidden", 2)
-                        .expectIntRecord("Android.Messages.Stacking.InsertAtFront", 1)
-                        .expectIntRecord("Android.Messages.Stacking.InsertAtBack", 2)
-                        .build();
+
         MessageState m1 = buildMessageState();
         setMessageIdentifier(m1, 1);
         MessageState m2 = buildMessageState();
@@ -497,7 +404,7 @@ public class MessageAnimationCoordinatorUnitTest {
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
         verify(mContainer).runAfterInitialMessageLayout(captor.capture());
-        histogramWatcher.assertExpected();
+
         verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         verify(m2.handler).show(Position.FRONT, Position.BACK);
         currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
@@ -526,14 +433,7 @@ public class MessageAnimationCoordinatorUnitTest {
         mAnimationCoordinator.setMessageQueueDelegate(queueDelegate);
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {null, null}, currentMessages.toArray());
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.Messages.Stacking",
-                                MessagesMetrics.StackingAnimationType.SHOW_ALL)
-                        .expectIntRecord("Android.Messages.Stacking.InsertAtFront", 1)
-                        .expectIntRecord("Android.Messages.Stacking.InsertAtBack", 2)
-                        .build();
+
         MessageState m1 = buildMessageState();
         setMessageIdentifier(m1, 1);
         MessageState m2 = buildMessageState();
@@ -552,7 +452,7 @@ public class MessageAnimationCoordinatorUnitTest {
                 });
         verify(queueDelegate).onRequestShowing(captor.capture());
         captor.getValue().run();
-        histogramWatcher.assertExpected();
+
         verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         verify(m2.handler).show(Position.FRONT, Position.BACK);
         currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
@@ -619,14 +519,6 @@ public class MessageAnimationCoordinatorUnitTest {
         currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {null, null}, currentMessages.toArray());
 
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.Messages.Stacking",
-                                MessagesMetrics.StackingAnimationType.SHOW_ALL)
-                        .expectIntRecord("Android.Messages.Stacking.InsertAtFront", 1)
-                        .expectIntRecord("Android.Messages.Stacking.InsertAtBack", 2)
-                        .build();
         // onStartShowing is finished. Showing two messages at the same time.
         captor.getValue().run();
 
@@ -636,22 +528,11 @@ public class MessageAnimationCoordinatorUnitTest {
         Assert.assertArrayEquals(new MessageState[] {m1, m2}, currentMessages.toArray());
         verify(mAnimatorStartCallback).onResult(any());
 
-        histogramWatcher.assertExpected("Stacking histogram not correctly recorded during showing");
-
-        histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.Messages.Stacking",
-                                MessagesMetrics.StackingAnimationType.REMOVE_ALL)
-                        .expectIntRecord("Android.Messages.Stacking.RemoveFront", 1)
-                        .expectIntRecord("Android.Messages.Stacking.RemoveBack", 2)
-                        .build();
         mAnimationCoordinator.updateWithStacking(Arrays.asList(null, null), false, () -> {});
         verify(m1.handler).hide(anyInt(), anyInt(), anyBoolean());
         verify(m2.handler).hide(anyInt(), anyInt(), anyBoolean());
         verify(queueDelegate, times(2)).onAnimationStart();
         verify(mAnimatorStartCallback, times(2)).onResult(any());
-        histogramWatcher.assertExpected("Stacking histogram not correctly recorded during hiding");
     }
 
     // Test when suspension cancels a hiding animation.
