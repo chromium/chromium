@@ -108,7 +108,7 @@
 
 #bottomAnimation {
   aspect-ratio: 700 / 400;
-  bottom: 0;
+  bottom: -5px;
   height: auto;
   left: 70%;
   /* 50vh - 200px (arbitrary value, around half of the screen height we cut
