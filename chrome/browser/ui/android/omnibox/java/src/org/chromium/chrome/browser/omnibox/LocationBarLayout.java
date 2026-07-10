@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import androidx.annotation.CallSuper;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.ImageViewCompat;
 
@@ -279,6 +280,12 @@ public class LocationBarLayout extends ConstraintLayout {
     /* package */ void setDeleteButtonVisibility(boolean shouldShow) {
         mShowDeleteButton = shouldShow;
         setButtonVisibility(mDeleteButton, shouldShow);
+    }
+
+    /** Sets the tooltip text of the delete URL content button. */
+    /* package */ void setDeleteButtonTooltip(@Nullable String tooltipText) {
+        if (mDeleteButton == null) return;
+        TooltipCompat.setTooltipText(mDeleteButton, tooltipText);
     }
 
     protected boolean isBackButtonVisible() {

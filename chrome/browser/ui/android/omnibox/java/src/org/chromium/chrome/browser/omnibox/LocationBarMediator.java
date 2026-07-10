@@ -2123,6 +2123,20 @@ class LocationBarMediator
         mPreviousDeleteButtonVisible = showDeleteButton;
 
         mLocationBarLayout.setDeleteButtonVisibility(showDeleteButton);
+
+        if (showDeleteButton) {
+            if (mCurrentInput != null
+                    && ToolModeUtils.isAimRequest(mCurrentInput.getRequestType())) {
+                int tooltipRes =
+                        TextUtils.isEmpty(mUrlCoordinator.getTextWithoutAutocomplete())
+                                ? R.string.ntp_compose_cancel_button_a11y_label
+                                : R.string.ntp_compose_cancel_button_a11y_label_input;
+                mLocationBarLayout.setDeleteButtonTooltip(mContext.getString(tooltipRes));
+            } else {
+                mLocationBarLayout.setDeleteButtonTooltip(
+                        mContext.getString(R.string.accessibility_toolbar_btn_delete_url));
+            }
+        }
     }
 
     /* package */ void updateBackButtonVisibility() {
