@@ -3222,6 +3222,36 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testReparentToToolbar_preservesFocusInStandby() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+
+        doReturn(mLocationBarParent).when(mLocationBarLayout).getParent();
+        doReturn(mSuggestionsContainer).when(mAutocompleteCoordinator).getSuggestionsContainer();
+        doReturn(mDropdown).when(mSuggestionsContainer).takeDropdownView();
+        MarginLayoutParams layoutParams = new MarginLayoutParams(-2, -2);
+        doReturn(layoutParams).when(mLocationBarLayout).getLayoutParams();
+        View placeholder = Mockito.mock(View.class);
+        doReturn(placeholder)
+                .when(mLocationBarLayout)
+                .findViewById(R.id.suggestions_container_placeholder);
+        int placeholderIndex = 2;
+        doReturn(placeholderIndex).when(mLocationBarLayout).indexOfChild(placeholder);
+
+        mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
+        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        mMediator.beginInput(mSessionState.getAutocompleteInput());
+        assertTrue(mMediator.isParentedToSuggestionsContainer());
+        verify(mUrlCoordinator).finishReparenting(true);
+
+        clearInvocations(mUrlCoordinator);
+        mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.STANDBY);
+        assertFalse(mMediator.isParentedToSuggestionsContainer());
+        verify(mUrlCoordinator).finishReparenting(true);
+    }
+
+    @Test
     public void testDesktopDeleteButton() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
@@ -3658,5 +3688,127 @@ public class LocationBarMediatorTest {
                 AutocompleteState.STANDBY,
                 mSessionState.getAutocompleteInput().getAutocompleteState());
         assertTrue(mMediator.isUrlBarFocusedWithoutAnimation());
+    }
+
+    @Test
+    public void testTabSwitch_previouslyDeactivated_remainsDisabled() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+
+        mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
+        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        mMediator.beginInput(mSessionState.getAutocompleteInput());
+        assertTrue(mSessionState.isSessionActive());
+
+        mMediator.onUrlFocusChange(false);
+        assertFalse(mSessionState.isSessionActive());
+        assertEquals(
+                AutocompleteState.DISABLED,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+
+        // Simulate switching to another tab and back. We always return the same input anyway.
+        mMediator.onTabChanged(null);
+        mMediator.onTabChanged(null);
+        assertFalse(mSessionState.isSessionActive());
+
+        mMediator.onUrlChanged(/* isTabChanging= */ true);
+        assertFalse(mSessionState.isSessionActive());
+        assertEquals(
+                AutocompleteState.DISABLED,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+    }
+
+    @Test
+    public void testEscPress_transitionsStates() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+
+        mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
+        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        mMediator.beginInput(mSessionState.getAutocompleteInput());
+        assertTrue(mSessionState.isSessionActive());
+        assertEquals(
+                AutocompleteState.ENABLED,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+
+        doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
+
+        assertTrue(mMediator.handleEscPress());
+        verify(mAutocompleteCoordinator).stopAutocomplete();
+        assertEquals(
+                AutocompleteState.ENABLED,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+
+        doReturn(false).when(mAutocompleteCoordinator).isServingSuggestions();
+        mSessionState.getAutocompleteInput().setUserText("query");
+        mSessionState.getAutocompleteInput().setInitialUserText("example.com");
+
+        clearInvocations(mUrlCoordinator);
+        assertTrue(mMediator.handleEscPress());
+        assertEquals(
+                AutocompleteState.STANDBY,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+        assertEquals("example.com", mSessionState.getAutocompleteInput().getUserText());
+        verify(mUrlCoordinator)
+                .setUrlBarData(
+                        any(), eq(UrlBar.ScrollType.NO_SCROLL), eq(TextSelection.SELECT_ALL));
+
+        assertTrue(mMediator.handleEscPress());
+        assertFalse(mSessionState.isSessionActive());
+        assertEquals(
+                AutocompleteState.DISABLED,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+    }
+
+    @Test
+    public void testEscPress_transitionsStates_withRealTextChange() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        doAnswer(
+                        invocation -> {
+                            UrlBarData data = invocation.getArgument(0);
+                            mMediator.onUrlTextChanged(data.displayText.toString());
+                            return true;
+                        })
+                .when(mUrlCoordinator)
+                .setUrlBarData(any(), anyInt(), any());
+
+        mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
+        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        mMediator.beginInput(mSessionState.getAutocompleteInput());
+        assertTrue(mSessionState.isSessionActive());
+        assertEquals(
+                AutocompleteState.ENABLED,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+
+        doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
+
+        assertTrue(mMediator.handleEscPress());
+        verify(mAutocompleteCoordinator).stopAutocomplete();
+        assertEquals(
+                AutocompleteState.ENABLED,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+
+        doReturn(false).when(mAutocompleteCoordinator).isServingSuggestions();
+        mSessionState.getAutocompleteInput().setUserText("query");
+        mSessionState.getAutocompleteInput().setInitialUserText("example.com");
+
+        assertTrue(mMediator.handleEscPress());
+        assertEquals(
+                AutocompleteState.STANDBY,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+        assertEquals("example.com", mSessionState.getAutocompleteInput().getUserText());
+
+        assertTrue(mMediator.handleEscPress());
+        assertFalse(mSessionState.isSessionActive());
+        assertEquals(
+                AutocompleteState.DISABLED,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
     }
 }

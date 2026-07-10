@@ -438,17 +438,11 @@ public class AutocompleteInputUnitTest {
         mInput.setAutocompleteState(AutocompleteState.STANDBY);
 
         boolean[] observerCalled = new boolean[1];
-        mInput.getUserTextSupplier()
-                .addSyncObserver(
-                        text -> {
-                            // if (text.equals("ab")) {
-                            assertEquals(AutocompleteState.ENABLED, mInput.getAutocompleteState());
-                            observerCalled[0] = true;
-                            // }
-                        });
+        mInput.getUserTextSupplier().addSyncObserver(text -> observerCalled[0] = true);
 
         mInput.setUserText("ab");
         assertTrue(observerCalled[0]);
+        assertEquals(AutocompleteState.ENABLED, mInput.getAutocompleteState());
     }
 
     @Test
@@ -599,5 +593,26 @@ public class AutocompleteInputUnitTest {
 
         // Should return original value if cursor position < 0.
         assertEquals(-1, mInput.getCursorPositionForAutocomplete(-1));
+    }
+
+    @Test
+    public void testSetUserText_withSelection_notifiesStateObserverWithCorrectSelection() {
+        mInput.setAutocompleteState(AutocompleteState.STANDBY);
+        mInput.setInitialUserText("initial");
+        mInput.getAutocompleteStateSupplier()
+                .addSyncObserver(
+                        (state) -> {
+                            if (state == AutocompleteState.ENABLED) {
+                                assertEquals(2, mInput.getSelection().from);
+                                assertEquals(2, mInput.getSelection().to);
+                                assertEquals("new_text", mInput.getUserText());
+                            }
+                        });
+
+        mInput.setUserText("new_text", new TextSelection(2, 2));
+
+        assertEquals(AutocompleteState.ENABLED, mInput.getAutocompleteState());
+        assertEquals("new_text", mInput.getUserText());
+        assertEquals(2, mInput.getSelection().from);
     }
 }

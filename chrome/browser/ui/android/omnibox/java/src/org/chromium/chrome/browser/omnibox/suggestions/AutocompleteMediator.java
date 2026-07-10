@@ -171,6 +171,8 @@ class AutocompleteMediator
     private final Callback<Integer> mOnFuseboxStateChanged = this::onFuseboxStateChanged;
     private final Callback<String> mOnUserTextChanged = text -> onInputChanged();
     private final Callback<Boolean> mOnShouldAutocompleteChanged = state -> onInputChanged();
+    private final Callback<@AutocompleteState Integer> mOnAutocompleteStateChanged =
+            this::onAutocompleteStateChanged;
 
     private @Nullable AutocompleteController mAutocomplete;
     private @Nullable AutocompleteResult mAutocompleteResult;
@@ -637,6 +639,9 @@ class AutocompleteMediator
             mAutocompleteInput
                     .getShouldAllowUserTextAutocompletionSupplier()
                     .removeObserver(mOnShouldAutocompleteChanged);
+            mAutocompleteInput
+                    .getAutocompleteStateSupplier()
+                    .removeObserver(mOnAutocompleteStateChanged);
         }
         mAutocompleteInput = input;
         if (mAutocompleteInput != null) {
@@ -651,6 +656,9 @@ class AutocompleteMediator
                     .getShouldAllowUserTextAutocompletionSupplier()
                     .addSyncObserver(mOnShouldAutocompleteChanged);
             mAutocompleteInput.getUserTextSupplier().addSyncObserver(mOnUserTextChanged);
+            mAutocompleteInput
+                    .getAutocompleteStateSupplier()
+                    .addSyncObserver(mOnAutocompleteStateChanged);
         }
     }
 
@@ -1067,8 +1075,6 @@ class AutocompleteMediator
      * retrieved even if the Omnibox content is not empty. This is relevant to Desktop mode Chrome,
      * where, if both physical keyboard and pointer device is attached, the Page URL should not be
      * cleared.
-     *
-     * @param isOnFocusContext whether Omnibox is currently gaining focus
      */
     public void onInputChanged() {
         if (!isInInputSession()) return;
@@ -1318,6 +1324,12 @@ class AutocompleteMediator
             if (!wasPreview) {
                 onInputChanged();
             }
+        }
+    }
+
+    private void onAutocompleteStateChanged(@AutocompleteState int state) {
+        if (state == AutocompleteState.ENABLED) {
+            onInputChanged();
         }
     }
 

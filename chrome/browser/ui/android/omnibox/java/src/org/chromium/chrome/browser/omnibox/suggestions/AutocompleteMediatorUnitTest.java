@@ -91,6 +91,7 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -2717,5 +2718,32 @@ public class AutocompleteMediatorUnitTest {
         mMediator.beginInput(createEmptySession());
         mMediator.propagateOmniboxSessionStateChange(true);
         assertEquals(true, mListModel.get(SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR));
+    }
+
+    @Test
+    @SmallTest
+    public void testStateTransitionToEnabled_triggersSuggestions() {
+        GURL url = JUnitTestGURLs.BLUE_1;
+        String title = "Title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        FuseboxSessionState session = createSession(url, title, pageClassification);
+
+        session.getAutocompleteInput()
+                .setAutocompleteState(AutocompleteState.STANDBY)
+                .setUserText("query")
+                .setInitialUserText("example.com");
+
+        mMediator.beginInput(session);
+
+        verify(mAutocompleteController, never()).start(any(), any(), anyInt(), anyBoolean());
+        verify(mAutocompleteController, never()).startZeroSuggest(any(), any());
+
+        session.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        verify(mAutocompleteController).start(any(), captor.capture(), anyInt(), anyBoolean());
+        assertEquals("query", captor.getValue().getUserText());
     }
 }

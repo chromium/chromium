@@ -250,6 +250,8 @@ class LocationBarMediator
     private final FuseboxCoordinator mFuseboxCoordinator;
     private final Callback<@AutocompleteRequestType Integer> mAutocompleteRequestTypeObserver =
             this::onAutocompleteRequestTypeChanged;
+    private final Callback<@AutocompleteState Integer> mAutocompleteStateObserver =
+            this::onAutocompleteStateChanged;
     private final SettableMonotonicObservableSupplier<SearchEngineService>
             mSearchEngineServiceSupplier = ObservableSuppliers.createMonotonic();
     private final ButtonToolbarWidthConsumer mBookmarkButtonToolbarWidthConsumer;
@@ -841,10 +843,8 @@ class LocationBarMediator
                 new TextSelection(
                         mUrlCoordinator.getSelectionStart(), mUrlCoordinator.getSelectionEnd());
         mCurrentInput
-                .setUserText(text)
-                .setSelection(selection)
+                .setUserText(text, selection)
                 .setAllowUserTextAutocompletion(mUrlCoordinator.shouldAutocomplete());
-        updateShowStandbyRing();
     }
 
     /**
@@ -1350,6 +1350,7 @@ class LocationBarMediator
         // If we're switching tab (active -> active), just reanchor observer.
         if (mCurrentInput != null) {
             mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
+            mCurrentInput.getAutocompleteStateSupplier().removeObserver(mAutocompleteStateObserver);
         }
         // To avoid the async gap between now and on activate, null out here as well.
         setAttachmentModelList(null);
@@ -1407,6 +1408,9 @@ class LocationBarMediator
         mCurrentInput
                 .getRequestTypeSupplier()
                 .addSyncObserverAndCallIfNonNull(mAutocompleteRequestTypeObserver);
+        mCurrentInput
+                .getAutocompleteStateSupplier()
+                .addSyncObserverAndCallIfNonNull(mAutocompleteStateObserver);
 
         UrlBarData data = getUrlBarDataForCurrentInput(mCurrentInput);
         mUrlCoordinator.setUrlBarData(
@@ -1417,8 +1421,6 @@ class LocationBarMediator
         if (mCurrentInput.isInCacheableContext() && mAutocompleteCoordinator != null) {
             mAutocompleteCoordinator.serveCachedZeroSuggest(mCurrentInput);
         }
-        mLocationBarLayout.setShowStandbyRing(
-                mCurrentInput.getAutocompleteState() == AutocompleteState.STANDBY);
     }
 
     /**
@@ -1606,7 +1608,7 @@ class LocationBarMediator
         }
         mToolbarParent = null;
         mLocationBarLayout.setReparentedToPopover(false);
-        mUrlCoordinator.finishReparenting(false);
+        mUrlCoordinator.finishReparenting(mCurrentInput != null);
         mIsReparenting = false;
     }
 
@@ -1641,11 +1643,6 @@ class LocationBarMediator
         @FuseboxLayoutMode
         int layoutMode = mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get();
         mLocationBarLayout.setFuseboxLayoutMode(layoutMode);
-        if (layoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER
-                && hasFocus
-                && !isParentedToSuggestionsContainer()) {
-            reparentToSuggestionsContainer();
-        }
 
         if (hasFocus) {
             mUrlFocusedWithoutAnimations = false;
@@ -2438,10 +2435,30 @@ class LocationBarMediator
         }
         updateButtonVisibility();
         mLocationBarLayout.onSpecializedFuseboxModeActivated(isSpecializedRequestType);
-        // TODO(https://crbug.com/522911537): Move to an AutocompleteState observer.
-        updateShowStandbyRing();
         updateAlwaysShowAiModeCallback();
         mSelectionController.reset();
+    }
+
+    private void onAutocompleteStateChanged(@AutocompleteState int state) {
+        updateShowStandbyRing();
+        updateReparentingState();
+    }
+
+    private void updateReparentingState() {
+        @FuseboxLayoutMode
+        int layoutMode = mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get();
+        boolean isPopover = layoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER;
+
+        boolean shouldBeInPopover =
+                mCurrentInput != null
+                        && mCurrentInput.getAutocompleteState() == AutocompleteState.ENABLED
+                        && isPopover;
+
+        if (shouldBeInPopover && !isParentedToSuggestionsContainer()) {
+            reparentToSuggestionsContainer();
+        } else if (!shouldBeInPopover && isParentedToSuggestionsContainer()) {
+            reparentToToolbar();
+        }
     }
 
     private boolean isLensOnOmniboxEnabled() {
@@ -2821,11 +2838,7 @@ class LocationBarMediator
                 new TextSelection(
                         mUrlCoordinator.getSelectionStart(), mUrlCoordinator.getSelectionEnd()));
 
-        if (mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get()
-                        == FuseboxLayoutMode.SUGGESTIONS_POPOVER
-                && isParentedToSuggestionsContainer()) {
-            reparentToToolbar();
-        }
+        updateReparentingState();
 
         mAutocompleteCoordinator.endInput();
         mStatusCoordinator.endInput();

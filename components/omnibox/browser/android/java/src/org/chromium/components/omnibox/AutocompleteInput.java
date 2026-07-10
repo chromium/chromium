@@ -358,12 +358,21 @@ public class AutocompleteInput implements UserData {
      * @return The AutocompleteInput object.
      */
     public AutocompleteInput setUserText(@Nullable String text) {
+        return setUserText(text, TextSelection.SELECT_END);
+    }
+
+    public AutocompleteInput setUserText(@Nullable String text, TextSelection selection) {
         if (text == null) text = "";
 
         mPreviewText = null;
 
         String oldText = mUserText.get();
-        if (TextUtils.equals(text, oldText)) return this;
+        if (TextUtils.equals(text, oldText)) {
+            mSelection = selection;
+            return this;
+        }
+
+        mSelection = selection;
 
         boolean oldTextUsesKeywordActivator = allowExactKeywordTrigger(oldText);
         boolean newTextUsesKeywordActivator = allowExactKeywordTrigger(text);
@@ -373,16 +382,13 @@ public class AutocompleteInput implements UserData {
         // Suppress Keyword mode when reverting back to the url.
         mAllowExactKeywordMatch &= !(oldTextUsesKeywordActivator && !newTextUsesKeywordActivator);
 
-        // Update autocomplete state to ENABLED before notifying observers via mUserText.set().
-        // Otherwise, synchronous observers (e.g. AutocompleteMediator.onInputChanged) will run
-        // while the state is still in STANDBY, causing them to ignore the first keystroke.
+        // Notify text change FIRST to ensure new text is available during reparenting.
+        mUserText.set(text);
+
+        // Then notify state change (which triggers reparenting).
         if (isStandby() && !TextUtils.equals(text, mInitialUserText)) {
             setAutocompleteState(AutocompleteState.ENABLED);
         }
-
-        mUserText.set(text);
-        // Place cursor at the end of text.
-        mSelection = TextSelection.SELECT_END;
 
         return this;
     }
