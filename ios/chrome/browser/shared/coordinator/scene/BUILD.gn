@@ -278,19 +278,6 @@ source_set("tab_activity_utils") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("scene_util_test_support") {
-  testonly = true
-  sources = [
-    "scene_util_test_support.h",
-    "scene_util_test_support.mm",
-  ]
-  frameworks = [ "UIKit.framework" ]
-  deps = [
-    ":scene_state_header",
-    "//ios/chrome/app/application_delegate:app_state",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -306,7 +293,6 @@ source_set("unit_tests") {
     ":scene_state_header",
     ":scene_testing",
     ":scene_util",
-    ":scene_util_test_support",
     ":task_updater_scene_agent",
     "//base/test:test_support",
     "//components/signin/public/identity_manager:test_support",
