@@ -4,14 +4,11 @@
 
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 
-#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"

@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <utility>
-#include <vector>
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
@@ -17,16 +16,11 @@
 #include "chrome/browser/ui/views/infobars/confirm_infobar_with_normal_label.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar_with_styled_label.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
-#include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ConfirmInfoBar, kOkButtonElementId);

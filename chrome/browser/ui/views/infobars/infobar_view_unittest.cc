@@ -10,8 +10,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -22,7 +20,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"

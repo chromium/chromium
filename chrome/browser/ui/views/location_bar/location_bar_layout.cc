@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_layout.h"
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/themes/theme_properties.h"
-#include "components/lens/lens_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 

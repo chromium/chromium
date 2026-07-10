@@ -4,10 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/intent_chip_button_test_base.h"
 
-#include "base/run_loop.h"
 #include "base/test/run_until.h"
-#include "base/test/test_timeouts.h"
-#include "base/time/time.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

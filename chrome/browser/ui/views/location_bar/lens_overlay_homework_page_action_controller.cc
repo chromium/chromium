@@ -25,7 +25,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/focus/focus_manager.h"
 
 DEFINE_USER_DATA(LensOverlayHomeworkPageActionController);

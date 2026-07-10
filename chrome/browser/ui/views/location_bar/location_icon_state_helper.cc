@@ -18,13 +18,12 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/vector_icon_types.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)              // nocheck
 #include "chrome/grit/theme_resources.h"
 #include "components/vector_icons/vector_icons.h"  // nogncheck
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image_skia.h"
 #endif
 
 namespace location_bar {

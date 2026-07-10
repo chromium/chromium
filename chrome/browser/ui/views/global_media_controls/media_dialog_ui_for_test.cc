@@ -18,7 +18,6 @@
 #include "components/global_media_controls/public/media_item_manager_observer.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/test/ui_controls.h"
 
 namespace {
 

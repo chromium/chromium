@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
 
 #include "base/check.h"
-#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -20,7 +19,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
-#include "components/content_settings/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "ui/base/l10n/l10n_util.h"

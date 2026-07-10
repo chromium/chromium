@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/views/indigo/indigo_toolbar.h"
 
 #include <memory>
-#include <set>
-#include <vector>
 
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -18,8 +16,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/button/image_button.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/views_test_utils.h"

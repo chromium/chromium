@@ -12,9 +12,7 @@
 #include "chrome/browser/ui/views/global_media_controls/cast_device_footer_view.h"
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
-#include "chrome/browser/ui/views/global_media_controls/media_item_ui_cast_footer_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h"
-#include "chrome/browser/ui/views/global_media_controls/media_item_ui_legacy_cast_footer_view.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_session_notification_item.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom.h"
@@ -26,6 +24,11 @@
 #include "media/base/media_switches.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/views/global_media_controls/media_item_ui_cast_footer_view.h"
+#include "chrome/browser/ui/views/global_media_controls/media_item_ui_legacy_cast_footer_view.h"
+#endif
 
 namespace {
 

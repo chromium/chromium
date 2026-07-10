@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -27,7 +26,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"

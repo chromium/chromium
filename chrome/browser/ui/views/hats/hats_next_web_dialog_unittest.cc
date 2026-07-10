@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/hats/hats_next_web_dialog.h"
 
-#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class HatsNextWebDialogTest : public testing::Test {

@@ -19,14 +19,10 @@
 #include "components/infobars/core/infobar_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/events/event.h"
-#include "ui/gfx/range/range.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/views_test_base.h"
-#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 namespace {
 

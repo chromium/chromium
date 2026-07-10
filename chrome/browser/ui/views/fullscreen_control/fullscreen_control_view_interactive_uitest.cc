@@ -18,13 +18,11 @@
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/fullscreen_control/fullscreen_control_view.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_permission_controller.h"
@@ -37,8 +35,6 @@
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/test/button_test_api.h"
-#include "ui/views/view.h"
-#include "url/gurl.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/test/test_cursor_client.h"

@@ -11,10 +11,8 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/time/time.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_device_selector_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
@@ -23,15 +21,12 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/global_media_controls/public/test/mock_device_service.h"
 #include "components/media_message_center/notification_theme.h"
-#include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/views/test/button_test_api.h"
 
 #include "ui/views/accessibility/ax_update_notifier.h"

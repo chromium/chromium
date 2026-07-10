@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/strings/strcat.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,8 +13,7 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/media_router/common/pref_names.h"
