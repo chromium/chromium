@@ -114,7 +114,7 @@ bool CanWithholdPermissionsFromExtension(
     const mojom::ManifestLocation location);
 
 // Returns a unique int id for each context. Prefer using
-// `BrowserContext::UniqueId()` directly.
+// `BrowserContext::UniqueToken()` directly.
 // TODO(crbug.com/40267637):  Migrate callers to use the `context` unique id
 // directly. For that we need to update all data keyed by integer context ids to
 // be keyed by strings instead.

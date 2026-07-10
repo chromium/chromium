@@ -227,7 +227,7 @@ class ServiceWorkerTrackingBrowserTest : public ExtensionBrowserTest {
     if (!activation_token) {
       return nullptr;
     }
-    SequencedContextId context_id{extension_->id(), profile()->UniqueId(),
+    SequencedContextId context_id{extension_->id(), profile()->UniqueToken(),
                                   activation_token.value()};
     return task_queue->GetWorkerStateForTesting(context_id);
   }
@@ -1079,7 +1079,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTrackingBrowserTest,
   // It should be dropped, because the worker is already stopped
   // (and `IsLiveServiceWorkerWithToken` returns false).
   SequencedContextId context_id{
-      extension->id(), profile()->UniqueId(),
+      extension->id(), profile()->UniqueToken(),
       *task_queue->GetCurrentActivationToken(extension->id())};
   worker_state->RendererDidStartServiceWorkerContext(context_id, worker_id);
 
@@ -1151,7 +1151,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTrackingBrowserTest,
   // It should be dropped, because the worker is already stopping
   // (and `IsLiveServiceWorkerWithToken` returns false).
   SequencedContextId context_id{
-      extension->id(), profile()->UniqueId(),
+      extension->id(), profile()->UniqueToken(),
       *task_queue->GetCurrentActivationToken(extension->id())};
   task_queue->RendererDidInitializeServiceWorkerContext(
       worker_id.render_process_id, extension_->id(), context_id.token,
@@ -1231,7 +1231,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTrackingBrowserTest,
   // It should be dropped, because the worker is already stopped
   // (and `IsLiveServiceWorkerWithToken` returns false).
   SequencedContextId context_id{
-      extension->id(), profile()->UniqueId(),
+      extension->id(), profile()->UniqueToken(),
       *task_queue->GetCurrentActivationToken(extension->id())};
   worker_state->RendererDidInitializeServiceWorkerContext(context_id,
                                                           worker_id);
@@ -1259,7 +1259,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTrackingBrowserTest,
 
   ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
   SequencedContextId context_id{
-      extension_id, profile()->UniqueId(),
+      extension_id, profile()->UniqueToken(),
       *task_queue->GetCurrentActivationToken(extension_id)};
 
   // Stop the worker asynchronously. We don't wait for it to complete.

@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_SERVICE_WORKER_SEQUENCED_CONTEXT_ID_H_
 #define EXTENSIONS_BROWSER_SERVICE_WORKER_SEQUENCED_CONTEXT_ID_H_
 
-#include <string>
-
 #include "base/unguessable_token.h"
 #include "extensions/common/extension_id.h"
 
@@ -16,7 +14,7 @@ namespace extensions {
 // extension within a browser context.
 struct SequencedContextId {
   ExtensionId extension_id;
-  std::string browser_context_id;
+  base::UnguessableToken browser_context_id;
   base::UnguessableToken token;
 
   auto operator<=>(const SequencedContextId& rhs) const = default;
