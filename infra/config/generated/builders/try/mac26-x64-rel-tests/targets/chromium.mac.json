@@ -1,0 +1,75 @@
+{
+  "Mac Builder": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "scripts": [
+      {
+        "module_name": "blink_lint",
+        "module_scheme": "single",
+        "name": "blink_lint",
+        "script": "blink_lint_expectations.py"
+      },
+      {
+        "args": [
+          "--allow-coverage-initializer"
+        ],
+        "module_name": "check_static_initializers",
+        "module_scheme": "single",
+        "name": "check_static_initializers",
+        "script": "check_static_initializers.py"
+      },
+      {
+        "module_name": "metrics_python_tests",
+        "module_scheme": "pyunit",
+        "name": "metrics_python_tests",
+        "script": "metrics_python_tests.py"
+      }
+    ]
+  },
+  "mac26-x64-rel-tests": {
+    "gtest_tests": [
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//gpu:gpu_unittests",
+        "module_scheme": "gtest",
+        "name": "gpu_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-26"
+          },
+          "expiration": 21600,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gpu_unittests",
+        "test_id_prefix": "ninja://gpu:gpu_unittests/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//chrome/test:telemetry_gpu_unittests",
+        "module_scheme": "flat",
+        "name": "telemetry_gpu_unittests",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-26"
+          },
+          "expiration": 21600,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_unittests",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_unittests/"
+      }
+    ]
+  }
+}
