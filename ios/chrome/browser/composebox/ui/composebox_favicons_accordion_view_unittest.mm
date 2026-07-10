@@ -98,4 +98,26 @@ TEST_F(ComposeboxFaviconsAccordionViewTest, TestUpdateClearsPreviousSubviews) {
   EXPECT_EQ(view.arrangedSubviews.count, 1u);
 }
 
+TEST_F(ComposeboxFaviconsAccordionViewTest, TestLoadingState) {
+  ComposeboxFaviconsAccordionView* view =
+      [[ComposeboxFaviconsAccordionView alloc] initWithFrame:CGRectZero];
+  UIImage* image1 = CreateTestImage();
+  [view updateWithImages:@[ image1 ]];
+  EXPECT_EQ(view.arrangedSubviews.count, 1u);
+
+  view.isLoading = YES;
+  EXPECT_EQ(view.arrangedSubviews.count, 1u);
+  EXPECT_TRUE(
+      [view.arrangedSubviews[0] isKindOfClass:[UIActivityIndicatorView class]]);
+
+  // Updating with images while loading should be ignored.
+  [view updateWithImages:@[ image1, image1 ]];
+  EXPECT_EQ(view.arrangedSubviews.count, 1u);
+  EXPECT_TRUE(
+      [view.arrangedSubviews[0] isKindOfClass:[UIActivityIndicatorView class]]);
+
+  view.isLoading = NO;
+  EXPECT_EQ(view.arrangedSubviews.count, 0u);
+}
+
 }  // namespace

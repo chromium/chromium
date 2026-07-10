@@ -10,6 +10,9 @@
 // A custom stack view that displays a list of images as overlapping icons.
 @interface ComposeboxFaviconsAccordionView : UIStackView
 
+// Whether the accordion view is currently loading.
+@property(nonatomic, assign) BOOL isLoading;
+
 // Updates the accordion view with the list of images.
 - (void)updateWithImages:(NSArray<UIImage*>*)images;
 

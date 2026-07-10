@@ -31,7 +31,9 @@ const CGFloat kBadgeFontSize = 10.0;
 
 }  // namespace
 
-@implementation ComposeboxFaviconsAccordionView
+@implementation ComposeboxFaviconsAccordionView {
+  UIActivityIndicatorView* _activityIndicator;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
@@ -40,11 +42,37 @@ const CGFloat kBadgeFontSize = 10.0;
     self.alignment = UIStackViewAlignmentCenter;
     self.spacing = kFaviconStackSpacing;
     self.translatesAutoresizingMaskIntoConstraints = NO;
+
+    _activityIndicator = [[UIActivityIndicatorView alloc]
+        initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+    _activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+    _activityIndicator.hidesWhenStopped = YES;
   }
   return self;
 }
 
+- (void)setIsLoading:(BOOL)isLoading {
+  if (_isLoading == isLoading) {
+    return;
+  }
+  _isLoading = isLoading;
+  if (_isLoading) {
+    for (UIView* view in self.arrangedSubviews) {
+      [view removeFromSuperview];
+    }
+    [self addArrangedSubview:_activityIndicator];
+    [_activityIndicator startAnimating];
+  } else {
+    [_activityIndicator stopAnimating];
+    [_activityIndicator removeFromSuperview];
+  }
+}
+
 - (void)updateWithImages:(NSArray<UIImage*>*)images {
+  if (self.isLoading) {
+    return;
+  }
+
   for (UIView* view in self.arrangedSubviews) {
     [view removeFromSuperview];
   }
