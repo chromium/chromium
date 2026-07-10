@@ -73,6 +73,25 @@ public class PdfUtils {
         int NUM_ENTRIES = 3;
     }
 
+    // LINT.IfChange(PdfToolbarAction)
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        PdfToolbarAction.OTHER,
+        PdfToolbarAction.ZOOM_IN,
+        PdfToolbarAction.ZOOM_OUT,
+        PdfToolbarAction.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PdfToolbarAction {
+        int OTHER = 0;
+        int ZOOM_IN = 1;
+        int ZOOM_OUT = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidPdfToolbarAction)
+
     private static final String TAG = "PdfUtils";
     private static final Set<String> TRANSIENT_PDF_SCHEMES =
             Set.of(
@@ -397,6 +416,11 @@ public class PdfUtils {
 
     public static void recordPdfLoad() {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.DocumentLoad", true);
+    }
+
+    public static void recordToolbarAction(@PdfToolbarAction int action) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Pdf.ToolbarAction", action, PdfToolbarAction.NUM_ENTRIES);
     }
 
     public static void recordPdfLoadResultDetail(@PdfLoadResult int loadResult) {

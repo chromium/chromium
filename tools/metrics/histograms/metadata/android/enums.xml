@@ -292,6 +292,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Abort"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidPdfToolbarAction) -->
+
+<enum name="AndroidPdfToolbarAction">
+  <int value="0" label="Other"/>
+  <int value="1" label="Zoom In"/>
+  <int value="2" label="Zoom Out"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/pdf/java/src/org/chromium/chrome/browser/pdf/PdfUtils.java:PdfToolbarAction) -->
+
 <!-- LINT.IfChange(AndroidRestoreResult) -->
 
 <enum name="AndroidRestoreResult">

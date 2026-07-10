@@ -5288,6 +5288,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Pdf.ToolbarAction" enum="AndroidPdfToolbarAction"
+    expires_after="2027-01-10">
+  <owner>rathomas@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records user interactions with the PDF viewer toolbar and overflow (3-dot)
+    menu. Recorded when a toolbar button is clicked or a menu action is
+    triggered.
+  </summary>
+</histogram>
+
 <histogram name="Android.Pdf.UriIsNull" enum="Boolean"
     expires_after="2026-11-22">
   <owner>shuyng@google.com</owner>

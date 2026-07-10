@@ -38,7 +38,9 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.pdf.PdfUtils.PdfToolbarAction;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.widget.ChromePopupWindow;
 import org.chromium.ui.widget.UiWidgetFactory;
@@ -186,6 +188,24 @@ public class PdfToolbarCoordinatorUnitTest {
         // Should not throw and should clamp to the maximum zoom level (5.0f).
         zoomIncreaseButton.performClick();
         verify(mDelegate).changeZoomLevel(5.0f);
+    }
+
+    @Test
+    public void testZoomInClick_recordsMetric() {
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Android.Pdf.ToolbarAction", PdfToolbarAction.ZOOM_IN);
+        View zoomIncreaseButton = mPdfPageView.findViewById(R.id.zoom_increase_button);
+        zoomIncreaseButton.performClick();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testZoomOutClick_recordsMetric() {
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Android.Pdf.ToolbarAction", PdfToolbarAction.ZOOM_OUT);
+        View zoomDecreaseButton = mPdfPageView.findViewById(R.id.zoom_decrease_button);
+        zoomDecreaseButton.performClick();
+        histogramWatcher.assertExpected();
     }
 
     @Test
