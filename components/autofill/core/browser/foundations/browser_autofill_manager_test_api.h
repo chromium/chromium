@@ -93,7 +93,7 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   std::vector<Suggestion> GetProfileSuggestions(const FormData& form,
                                                 const FormFieldData& field) {
     auto [form_structure, autofill_field] =
-        manager_->GetCachedFormAndField(form.global_id(), field.global_id());
+        manager_->FindMutableFormAndField(form.global_id(), field.global_id());
     return manager_->GetProfileSuggestions(
         form, CHECK_DEREF(form_structure), field, CHECK_DEREF(autofill_field),
         mojom::AutofillSuggestionTriggerSource::kFormControlElementClicked);

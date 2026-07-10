@@ -1108,7 +1108,7 @@ void BrowserAutofillManager::OnTextFieldValueChangedImpl(
     const FieldGlobalId& field_id,
     const base::TimeTicks timestamp) {
   auto [form_structure, autofill_field] =
-      GetCachedFormAndField(form.global_id(), field_id);
+      FindMutableFormAndField(form.global_id(), field_id);
   if (!form_structure || !autofill_field) {
     return;
   }
@@ -1166,7 +1166,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   // TODO(crbug.com/433224307): Consider early returning here when the cache
   // starts storing all forms and fields.
   auto [form_structure, autofill_field] =
-      GetCachedFormAndField(form.global_id(), field_id);
+      FindMutableFormAndField(form.global_id(), field_id);
 
   if (password_request.has_value()) {
     if (PasswordManagerDelegate* password_delegate =
@@ -1303,7 +1303,8 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
   // TODO(crbug.com/433224307): Consider early returning here when the cache
   // starts storing all forms and fields.
   AutofillField* autofill_field =
-      GetCachedFormAndField(form.global_id(), field.global_id()).autofill_field;
+      FindMutableFormAndField(form.global_id(), field.global_id())
+          .autofill_field;
 
   base::flat_map<SuggestionDataSource, std::vector<Suggestion>> all_suggestions(
       std::move(returned_suggestions));
@@ -1492,7 +1493,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
   // TODO(crbug.com/433224307): Consider early returning here when the cache
   // starts storing all forms and fields.
   AutofillField* autofill_field =
-      GetCachedFormAndField(form.global_id(), field.global_id()).autofill_field;
+      FindMutableFormAndField(form.global_id(), field.global_id())
+          .autofill_field;
 
   auto generate_suggestions_and_maybe_show_ui_phase2 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2,
@@ -1524,7 +1526,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   // TODO(crbug.com/433224307): Consider early returning here when the cache
   // starts storing all forms and fields.
   auto [form_structure, autofill_field] =
-      GetCachedFormAndField(form.global_id(), field.global_id());
+      FindMutableFormAndField(form.global_id(), field.global_id());
   SuggestionsContext context = BuildSuggestionsContext(
       form, form_structure, field, autofill_field, trigger_source,
       GetAcUnrecognizedBehavior(client()));
@@ -1746,7 +1748,7 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
   // When focusing on a field, log whether there is a suggestion for the user
   // and whether the suggestion is shown.
   auto [form_structure, autofill_field] =
-      GetCachedFormAndField(form_id, trigger_field.global_id());
+      FindMutableFormAndField(form_id, trigger_field.global_id());
   if (form_structure &&
       context.filling_product == FillingProduct::kCreditCard) {
     AutofillMetrics::LogIsQueriedCreditCardFormSecure(
@@ -1820,7 +1822,8 @@ void BrowserAutofillManager::FillOrPreviewForm(
     const FillingPayload& filling_payload,
     AutofillTriggerSource trigger_source,
     const base::flat_set<FieldGlobalId>& blocked_fields) {
-  auto [form, trigger_field] = GetCachedFormAndField(form_id, trigger_field_id);
+  auto [form, trigger_field] =
+      FindMutableFormAndField(form_id, trigger_field_id);
   if (!form || !trigger_field) {
     return;
   }
@@ -1881,7 +1884,7 @@ void BrowserAutofillManager::FillOrPreviewField(
   // called functions, must handle null `form` and `field`.
   // TODO(crbug.com/433224307): Consider early returning here when the cache
   // starts storing all forms and fields.
-  auto [form, field] = GetCachedFormAndField(form_id, field_id);
+  auto [form, field] = FindMutableFormAndField(form_id, field_id);
   form_filler_->FillOrPreviewField(action_persistence, action_type, field_id,
                                    field, value, filling_product,
                                    field_type_used);
@@ -1912,7 +1915,7 @@ void BrowserAutofillManager::OnDidFillAddressFormFillingSuggestion(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
     AutofillTriggerSource trigger_source) {
-  auto [form, field] = GetCachedFormAndField(form_id, field_id);
+  auto [form, field] = FindMutableFormAndField(form_id, field_id);
   if (!form || !field) {
     return;
   }
@@ -1933,7 +1936,8 @@ void BrowserAutofillManager::UndoAutofill(
     mojom::ActionPersistence action_persistence,
     const FormGlobalId& form_id,
     const FieldGlobalId& trigger_field_id) {
-  auto [form, trigger_field] = GetCachedFormAndField(form_id, trigger_field_id);
+  auto [form, trigger_field] =
+      FindMutableFormAndField(form_id, trigger_field_id);
   if (!form || !trigger_field) {
     return;
   }
@@ -2015,7 +2019,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
          const CreditCard& credit_card, AutofillTriggerSource trigger_source,
          const base::flat_set<FieldGlobalId>& blocked_fields) {
         auto [cached_form, cached_trigger_field] =
-            self.GetCachedFormAndField(form_id, field_id);
+            self.FindMutableFormAndField(form_id, field_id);
         if (!cached_form || !cached_trigger_field) {
           return;
         }
@@ -2140,7 +2144,7 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   }
 
   auto [form_structure, autofill_field] =
-      GetCachedFormAndField(form.global_id(), field_id);
+      FindMutableFormAndField(form.global_id(), field_id);
   if (!form_structure || !autofill_field) {
     return;
   }
@@ -2194,7 +2198,7 @@ void BrowserAutofillManager::OnSelectControlSelectionChangedImpl(
     const FormData& form,
     const FieldGlobalId& field_id) {
   auto [form_structure, autofill_field] =
-      GetCachedFormAndField(form.global_id(), field_id);
+      FindMutableFormAndField(form.global_id(), field_id);
   if (!form_structure || !autofill_field) {
     return;
   }
@@ -2261,7 +2265,7 @@ void BrowserAutofillManager::DidShowSuggestions(
   }
 
   auto [form_structure, autofill_field] =
-      GetCachedFormAndField(form_id, field_id);
+      FindMutableFormAndField(form_id, field_id);
 
   FormSignature form_signature =
       form_structure ? form_structure->form_signature() : FormSignature(0);
@@ -2494,7 +2498,7 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
                         << std::move(change);
 
   auto [form_structure, autofill_field] =
-      GetCachedFormAndField(form.global_id(), field_id);
+      FindMutableFormAndField(form.global_id(), field_id);
   if (!form_structure || !autofill_field) {
     return;
   }
@@ -2510,7 +2514,7 @@ void BrowserAutofillManager::OnDidDetectJavaScriptAutofillImpl(
     const FieldGlobalId& trigger_field_id,
     const std::vector<FieldGlobalId>& field_ids) {
   auto [form_structure, trigger_field] =
-      GetCachedFormAndField(form.global_id(), trigger_field_id);
+      FindMutableFormAndField(form.global_id(), trigger_field_id);
   if (!form_structure || !trigger_field ||
       !trigger_field->Type().GetGroups().contains(FieldTypeGroup::kAddress)) {
     return;
@@ -2935,7 +2939,7 @@ void BrowserAutofillManager::LogAndRecordLoyaltyCardFill(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id) {
   auto [form_structure, autofill_field] =
-      GetCachedFormAndField(form_id, field_id);
+      FindMutableFormAndField(form_id, field_id);
   if (!form_structure || !autofill_field) {
     return;
   }
@@ -2973,14 +2977,14 @@ std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
   return submitted_form;
 }
 
-BrowserAutofillManager::FormAndField
-BrowserAutofillManager::GetCachedFormAndField(const FormGlobalId& form_id,
-                                              const FieldGlobalId& field_id) {
+AutofillManager::MutableFormAndField
+BrowserAutofillManager::FindMutableFormAndField(const FormGlobalId& form_id,
+                                                const FieldGlobalId& field_id) {
   FormStructure* cached_form = FindCachedFormById(form_id, /*pass_key=*/{});
   if (!cached_form) {
     return {};
   }
-  return FormAndField{cached_form, cached_form->GetFieldById(field_id)};
+  return {cached_form, cached_form->GetFieldById(field_id)};
 }
 
 autofill_metrics::CreditCardFormEventLogger&

@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <type_traits>
 #include <variant>
 #include <vector>
 
@@ -275,6 +276,19 @@ class AutofillManager
         const FieldGlobalId& field) {}
   };
 
+  template <bool IsConst>
+  struct FormAndFieldT {
+    STACK_ALLOCATED();
+
+   public:
+    std::conditional_t<IsConst, const FormStructure*, FormStructure*>
+        form_structure = nullptr;
+    std::conditional_t<IsConst, const AutofillField*, AutofillField*>
+        autofill_field = nullptr;
+  };
+  using FormAndField = FormAndFieldT<true>;
+  using MutableFormAndField = FormAndFieldT<false>;
+
   AutofillManager(const AutofillManager&) = delete;
   AutofillManager& operator=(const AutofillManager&) = delete;
 
@@ -389,6 +403,12 @@ class AutofillManager
   // Searches for any cached form that contains a field with `field_id`.
   // Runs in linear time.
   const FormStructure* FindCachedFormById(const FieldGlobalId& field_id) const;
+
+  // Returns the form and field corresponding to `form_id` and `field_id`. The
+  // returned `FormAndField` may not contain the form or field if the form is
+  // not autofillable or if either the form or the field cannot be found.
+  FormAndField FindFormAndField(const FormGlobalId& form_id,
+                                const FieldGlobalId& field_id) const;
 
   // Calls `fun` for each cached FormStructure.
   void ForEachCachedForm(

@@ -406,20 +406,9 @@ class BrowserAutofillManager : public AutofillManager {
  private:
   friend class BrowserAutofillManagerTestApi;
 
-  struct FormAndField {
-    STACK_ALLOCATED();
-
-   public:
-    FormStructure* form_structure = nullptr;
-    AutofillField* autofill_field = nullptr;
-  };
-
-  // Returns the cached form and field corresponding to `form_id` and
-  // `field_id`. This might have the side-effect of updating the cache. The
-  // returned `FormAndField` may not contain form or field, if the form is not
-  // autofillable, or if either the form or the field cannot be found.
-  FormAndField GetCachedFormAndField(const FormGlobalId& form_id,
-                                     const FieldGlobalId& field_id);
+  // Mutable version of `FindFormAndField`.
+  MutableFormAndField FindMutableFormAndField(const FormGlobalId& form_id,
+                                              const FieldGlobalId& field_id);
 
   // Emits all metrics that should be recorded at submission time.
   void LogSubmissionMetrics(const FormStructure* submitted_form,

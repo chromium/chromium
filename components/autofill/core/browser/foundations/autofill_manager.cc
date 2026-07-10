@@ -594,6 +594,16 @@ FormStructure* AutofillManager::FindCachedFormById(
       std::as_const(*this).FindCachedFormById(form_id));
 }
 
+AutofillManager::FormAndField AutofillManager::FindFormAndField(
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id) const {
+  const FormStructure* cached_form = FindCachedFormById(form_id);
+  if (!cached_form) {
+    return {};
+  }
+  return {cached_form, cached_form->GetFieldById(field_id)};
+}
+
 void AutofillManager::ForEachCachedForm(
     base::FunctionRef<void(const FormStructure&)> fun) const {
   for (const auto& [form_id, form_structure] : form_structures_) {
