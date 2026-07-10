@@ -95,11 +95,8 @@ TabModel* TabModelList::GetTabModelForTabAndroid(TabAndroid* tab_android) {
   }
 
   for (TabModel* model : models()) {
-    const size_t tab_count = model->GetTabCount();
-    for (size_t index = 0; index < tab_count; index++) {
-      if (tab_android == model->GetTabAt(index)) {
-        return model;
-      }
+    if (model->HasTab(tab_android)) {
+      return model;
     }
   }
 

@@ -113,6 +113,10 @@ TabAndroid* TestTabModel::GetTabAt(int index) const {
   return nullptr;
 }
 
+bool TestTabModel::HasTab(TabAndroid* tab) const {
+  return false;
+}
+
 std::vector<tabs::TabHandle> TestTabModel::GetOrderedMultiSelectedTabs() const {
   NOTIMPLEMENTED();
   return {};
@@ -384,6 +388,16 @@ content::WebContents* OwningTestTabModel::GetWebContentsAt(int index) const {
 TabAndroid* OwningTestTabModel::GetTabAt(int index) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return owned_tabs_.at(index).get();
+}
+
+bool OwningTestTabModel::HasTab(TabAndroid* tab) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& owned_tab : owned_tabs_) {
+    if (owned_tab.get() == tab) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void OwningTestTabModel::SetActiveIndex(int index) {

@@ -75,6 +75,7 @@ class TabModelJniBridge : public TabModel {
   std::vector<tabs::TabHandle> GetOrderedMultiSelectedTabs() const override;
   content::WebContents* GetWebContentsAt(int index) const override;
   TabAndroid* GetTabAt(int index) const override;
+  bool HasTab(TabAndroid* tab) const override;
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override;
 
   void SetActiveIndex(int index) override;
