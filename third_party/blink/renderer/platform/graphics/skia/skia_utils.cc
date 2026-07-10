@@ -52,8 +52,8 @@ bool ApproximatelyEqualSkColorSpaces(sk_sp<SkColorSpace> src_color_space,
 sk_sp<SkData> TryAllocateSkData(size_t size) {
   void* buffer =
       Partitions::BufferPartition()
-          ->AllocInline<partition_alloc::AllocFlags::kReturnNull |
-                        partition_alloc::AllocFlags::kZeroFill>(size, "SkData");
+          ->Alloc<partition_alloc::AllocFlags::kReturnNull |
+                  partition_alloc::AllocFlags::kZeroFill>(size, "SkData");
   if (!buffer)
     return nullptr;
   return SkData::MakeWithProc(

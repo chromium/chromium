@@ -149,7 +149,7 @@ class NullableCharBuffer final {
   explicit NullableCharBuffer(size_t size) {
     data_ = reinterpret_cast<char*>(
         Partitions::BufferPartition()
-            ->AllocInline<partition_alloc::AllocFlags::kReturnNull>(
+            ->Alloc<partition_alloc::AllocFlags::kReturnNull>(
                 size, "NullableCharBuffer"));
     size_ = size;
   }
