@@ -4,14 +4,13 @@
 
 #import "ui/menus/cocoa/menu_controller.h"
 
-#include <AppKit/AppKit.h>
-#include <Foundation/Foundation.h>
-#include <objc/runtime.h>
+#import <AppKit/AppKit.h>
+#include <CoreFoundation/CoreFoundation.h>
+#import <Foundation/Foundation.h>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/owned_objc.h"
-#include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
@@ -33,12 +32,6 @@
 #include "ui/strings/grit/ui_strings.h"
 
 namespace {
-
-// The pointer to the swizzler of the "should menu items share the image width"
-// method, as well as key used for the associated object used to tag the images
-// to be treated as symbols.
-base::apple::ScopedObjCClassSwizzler* g_image_width_sharing_swizzler = nullptr;
-static const char kTreatAsSymbolKey = 0;
 
 // Whether MenuControllerCocoa uses the new menu icon scheme. See the method
 // comment on +initializeWithNewMenuIconScheme: for more details.
@@ -125,11 +118,103 @@ void SetMenuItemIcon(NSMenuItem* menu_item,
     NOTREACHED();
   }
 
-  if (menu_item_image) {
-    objc_setAssociatedObject(menu_item_image, &kTreatAsSymbolKey, @YES,
-                             OBJC_ASSOCIATION_RETAIN);
-  }
   menu_item.image = menu_item_image;
+}
+
+NSImage* CreatePaddedImage(CGFloat width, NSImage* image) {
+  NSImage* result = [NSImage
+       imageWithSize:NSMakeSize(width, image.size.height)
+             flipped:NO
+      drawingHandler:^BOOL(NSRect dest_rect) {
+        if (image) {
+          // Draw the image centered in the given space.
+          CGFloat extra_width = dest_rect.size.width - image.size.width;
+          CGFloat extra_height = dest_rect.size.height - image.size.height;
+          dest_rect =
+              NSIntegralRect(NSInsetRect(dest_rect, /*dX=*/extra_width / 2,
+                                         /*dY=*/extra_height / 2));
+          [image drawInRect:dest_rect];
+        }
+        return YES;
+      }];
+  [result setTemplate:[image isTemplate]];
+  return result;
+}
+
+void CreateSharedIndentsForMenu(NSMenu* menu) {
+  if (!g_use_new_menu_icon_scheme || base::mac::MacOSMajorVersion() < 26) {
+    return;
+  }
+
+  // For the new menu icon scheme, on macOS 26+, what is wanted is for menu
+  // items to be indented within a section if any item in that section has an
+  // image set. For example:
+  //
+  // ┌───────────────┐
+  // │ [img] Item 1  │
+  // │       Item 2  │ ← This is indented due to items 1 and 3.
+  // │ [img] Item 3  │
+  // │       Item 4  │ ← This is indented due to items 1 and 3.
+  // ├───────────────┤
+  // │ Item 5        │
+  // │ Item 6        │
+  // └───────────────┘
+  //
+  // macOS 26+ has this style as well, but with a huge caveat. Only symbol
+  // images will cause this shared indentation. If a non-symbol image is set,
+  // then no shared indentation will happen.
+  //
+  // Earlier versions of this code (see the commit history) resolved this issue
+  // by overriding +[NSContextMenuItemView _imageWidthSharingForItem:], and
+  // having it return "true" for any image, not just symbol images.
+  //
+  // However, things changed in macOS 27. That release requires more than half
+  // of the items in a section to have an icon for the remaining items in the
+  // section to share the indent. In the example above, because only 50% of the
+  // items have an image, the other items would not share the indent.
+  //
+  // The machinery within AppKit's NSContextMenuImpl that manages sharing the
+  // indent is complicated. While overriding a function to return "true" to
+  // share the indent was simple enough, overriding the "more than 50%" code is
+  // too intricate and prone to change to make it worth trying to hack. Instead,
+  // do it manually.
+
+  // Make a copy of the menu items for two reasons. First, this makes walking
+  // the item array easier, both in terms of syntax as well as not hammering the
+  // NSMenu. Second, this allows the appending of a separator item locally, to
+  // allow the code below to assume that every section is ended by a separator
+  // item, and as a result be simpler.
+  NSMutableArray<NSMenuItem*>* items = [menu.itemArray mutableCopy];
+  [items addObject:[NSMenuItem separatorItem]];
+
+  CGFloat largest_image_width = 0;
+  for (NSMenuItem* item in items) {
+    largest_image_width = std::max(largest_image_width, item.image.size.width);
+  }
+
+  NSUInteger start_of_section = 0;
+  bool section_has_image = false;
+  for (NSUInteger i = 0; i < items.count; ++i) {
+    NSMenuItem* item = items[i];
+    if (!item.separatorItem) {
+      section_has_image |= (item.image != nil);
+      continue;
+    }
+
+    // End of section. Did any item in that section have an image? If so,
+    // pad all the images (and create empty pads for those items with no image).
+    if (section_has_image) {
+      for (NSUInteger j = start_of_section; j < i; ++j) {
+        NSMenuItem* section_item = items[j];
+        section_item.image =
+            CreatePaddedImage(largest_image_width, section_item.image);
+      }
+    }
+
+    // Reset tracking variables and move on to the next section (if any).
+    section_has_image = false;
+    start_of_section = i + 1;
+  }
 }
 
 }  // namespace
@@ -204,68 +289,8 @@ void SetMenuItemIcon(NSMenuItem* menu_item,
   id<MenuControllerCocoaDelegate> __weak _delegate;
 }
 
-+ (unsigned char)_imageWidthSharingForItem:(NSMenuItem*)item {
-  // The implementation of +[NSContextMenuItemView _imageWidthSharingForItem:]
-  // is effectively:
-  //
-  // + (unsigned char)_imageWidthSharingForItem:(NSMenuItem*)item {
-  //   return [[item applicableImage] _isSymbolImage] ? 3 : 1;
-  // }
-  //
-  // The significance of 3 and 1 is unclear, but if 3 means "share the width"
-  // then so be it.
-
-  NSImage* image = item.image;
-  if (image && objc_getAssociatedObject(image, &kTreatAsSymbolKey)) {
-    return 3;
-  }
-
-  return g_image_width_sharing_swizzler
-      ->InvokeOriginal<unsigned char, NSMenuItem*>(self, _cmd, item);
-}
-
 + (void)initializeWithNewMenuIconScheme:(BOOL)newScheme {
   g_use_new_menu_icon_scheme = newScheme;
-
-  // If the new scheme is not set, then there is no need to adjust the menu
-  // indentation. On macOS releases earlier than 26, also don't adjust the
-  // menus; -_imageWidthSharingForItem: is present in earlier versions, so the
-  // -respondsToSelector: won't help.
-  if (!newScheme || base::mac::MacOSMajorVersion() < 26) {
-    return;
-  }
-
-  // In macOS 26+ menus, if a symbol icon is set as the image for a menu item,
-  // then all menu items in that section will be indented to match.
-  //
-  // However, this only happens when the image is a symbol. If a non-symbol
-  // NSImage is set as the image, then the shared indentation doesn't happen.
-  // See +[NSContextMenuItemView _imageWidthSharingForItem:].
-  //
-  // This indentation behavior is desired for icons set by this code, even
-  // though they are not actually symbols.
-  //
-  // An approach that doesn't work is to wrap the image in a class that returns
-  // YES from -_isSymbolImage but otherwise behaves as the image. If indentation
-  // is attempted in that manner, then other symbol machinery gets activated,
-  // and things get crashy when various parts of AppKit believe they're dealing
-  // with a symbol and send messages like -_symbolName to the image that isn't a
-  // symbol yet pretends to be one.
-  //
-  // The most targeted fix, therefore, is to swizzle the class method in
-  // question.
-
-  Class menuItemViewClass = NSClassFromString(@"NSContextMenuItemView");
-  SEL imageWidthSharingSelector = @selector(_imageWidthSharingForItem:);
-  if ([menuItemViewClass respondsToSelector:imageWidthSharingSelector]) {
-    // Metaclasses because this is a class method being swizzled.
-    Class targetMetaclass = object_getClass(menuItemViewClass);
-    Class donorMetaclass = object_getClass([MenuControllerCocoa class]);
-    static base::NoDestructor<base::apple::ScopedObjCClassSwizzler>
-        widthSharingSwizzler(targetMetaclass, donorMetaclass,
-                             imageWidthSharingSelector);
-    g_image_width_sharing_swizzler = widthSharingSwizzler.get();
-  }
 }
 
 - (ui::MenuModel*)model {
@@ -319,6 +344,7 @@ void SetMenuItemIcon(NSMenuItem* menu_item,
     }
   }
 
+  CreateSharedIndentsForMenu(menu);
   return menu;
 }
 
