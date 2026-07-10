@@ -173,20 +173,6 @@ public class BottomSheetTest {
 
     @Test
     @MediumTest
-    public void testFlingDownFromHalfToPeek_swipeToDismissDisabled() {
-        showContent(mLowPriorityContent, SheetState.HALF);
-        assertEquals(SheetState.HALF, mSheetController.getSheetState());
-
-        // Fling down to 150px (slightly above PEEK of 100px) with a large negative velocity.
-        // This should settle at PEEK (1) and not bounce back to HALF (2).
-        assertEquals(
-                "Sheet should settle at PEEK state after downward fling.",
-                SheetState.PEEK,
-                simulateScrollTo(150f, -1000f));
-    }
-
-    @Test
-    @MediumTest
     public void testMovingUpFromHalfClearsThresholdToReachFullState() {
         showContent(mHighPriorityContent, SheetState.HALF);
 

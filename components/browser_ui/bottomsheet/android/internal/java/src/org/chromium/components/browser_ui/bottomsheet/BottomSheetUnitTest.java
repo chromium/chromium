@@ -38,7 +38,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -117,7 +116,7 @@ public class BottomSheetUnitTest {
                 /* alwaysFullWidth= */ false,
                 /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
                 /* appHeaderHeight= */ 0,
-                /* bottomControlsOffset= */ 0,
+                /* bottomMargin= */ 0,
                 mInsetObserver);
 
         mBottomSheet.setSheetBackgroundForTesting(mSheetBackground);
@@ -675,52 +674,6 @@ public class BottomSheetUnitTest {
                 "State before keyboard shown should be reset to NONE.",
                 SheetState.NONE,
                 mBottomSheet.getStateBeforeKeyboardShownForTesting());
-    }
-
-    @Test
-    public void testSetBottomMargin_CompensatesCurrentOffset() {
-        doReturn(SHEET_PEEK_HEIGHT).when(mSheetContent).getPeekHeight();
-        doReturn((float) HeightMode.DISABLED).when(mSheetContent).getHalfHeightRatio();
-        mBottomSheet.showContent(mSheetContent);
-        mBottomSheet.setSheetState(SheetState.PEEK, false);
-
-        assertEquals(SHEET_PEEK_HEIGHT, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
-
-        mBottomSheet.setBottomMargin(100);
-
-        assertEquals(SHEET_PEEK_HEIGHT - 100, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
-    }
-
-    @Test
-    public void testSetBottomMargin_duringHideFromHalf_stuckInScrolling() {
-        BottomSheet.setSmallScreenForTesting(false);
-        // 1. Set up sheet content with HALF state enabled.
-        doReturn(SHEET_PEEK_HEIGHT).when(mSheetContent).getPeekHeight();
-        doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
-        doReturn((float) HeightMode.DEFAULT).when(mSheetContent).getFullHeightRatio();
-        doReturn(new View(mActivity)).when(mSheetContent).getContentView();
-
-        doReturn(android.R.string.ok).when(mSheetContent).getSheetHalfHeightAccessibilityStringId();
-        doReturn(android.R.string.ok).when(mSheetContent).getSheetFullHeightAccessibilityStringId();
-        doReturn(android.R.string.ok).when(mSheetContent).getSheetClosedAccessibilityStringId();
-        mBottomSheet.showContent(mSheetContent);
-
-        // 2. Transition to HALF state (unanimated).
-        mBottomSheet.setSheetState(SheetState.HALF, false);
-        assertEquals(SheetState.HALF, mBottomSheet.getSheetState());
-
-        // 3. Start animation to HIDDEN.
-        mBottomSheet.setSheetState(SheetState.HIDDEN, true);
-
-        // If animations run instantly in Robolectric, we might already be HIDDEN here.
-        // Let's see what happens.
-        assertEquals(SheetState.SCROLLING, mBottomSheet.getSheetState());
-
-        // 4. Change bottom margin.
-        mBottomSheet.setBottomMargin(100);
-
-        // 5. Assert we are NOT stuck in SCROLLING and settled to HIDDEN.
-        assertEquals(SheetState.HIDDEN, mBottomSheet.getSheetState());
     }
 
     @Test

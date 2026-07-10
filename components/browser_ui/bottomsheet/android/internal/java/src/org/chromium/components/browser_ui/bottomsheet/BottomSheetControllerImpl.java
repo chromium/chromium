@@ -361,7 +361,6 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     public void setBottomControlsOffset(int bottomControlsOffset) {
         if (mBottomControlsOffset == bottomControlsOffset) return;
         mBottomControlsOffset = bottomControlsOffset;
-        if (mBottomSheet != null) mBottomSheet.setBottomControlsOffset(bottomControlsOffset);
         adjustBottomSheetZAxis(mScrimVisible);
     }
 
