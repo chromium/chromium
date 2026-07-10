@@ -11,6 +11,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/android/modal_dialog_wrapper.h"
+#include "ui/base/models/dialog_model_host.h"
 
 namespace data_controls {
 
@@ -20,6 +21,13 @@ class AndroidDataControlsDialogUiTest : public AndroidBrowserTest {
   ~AndroidDataControlsDialogUiTest() override = default;
 
   void SetUp() override { AndroidBrowserTest::SetUp(); }
+
+  void TearDownOnMainThread() override {
+    if (auto* dialog = ui::ModalDialogWrapper::GetDialogForTesting()) {
+      static_cast<ui::DialogModelHost*>(dialog)->Close();
+    }
+    AndroidBrowserTest::TearDownOnMainThread();
+  }
 
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
@@ -99,6 +107,15 @@ IN_PROC_BROWSER_TEST_F(AndroidDataControlsDialogUiTest,
   AndroidDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
       web_contents(),
       data_controls::DataControlsDialog::Type::kClipboardActionBlock);
+  EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidDataControlsDialogUiTest,
+                       SmokeTest_ClipboardDragBlock) {
+  EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
+  AndroidDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
+      web_contents(),
+      data_controls::DataControlsDialog::Type::kClipboardDragBlock);
   EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
 }
 
