@@ -149,9 +149,7 @@ WebGPUImplementation::WebGPUImplementation(
     bool support_locking)
     : ImplementationBase(helper, transfer_buffer, gpu_control),
       helper_(helper),
-      main_task_runner_(support_locking
-                            ? base::SequencedTaskRunner::GetCurrentDefault()
-                            : nullptr) {}
+      main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 WebGPUImplementation::~WebGPUImplementation() {
   LoseContext();
@@ -340,15 +338,13 @@ void WebGPUImplementation::OnGpuControlReturnData(
           data.size() -
               offsetof(cmds::DawnReturnCommandsInfo, deserialized_buffer));
 
-      // Call ProcessEvents now, potentially posting the task to do so to the
-      // runner if necessary.
-      if (main_task_runner_) {
-        main_task_runner_->PostTask(
-            FROM_HERE, base::BindOnce(&DawnWireServices::ProcessEvents,
-                                      dawn_wire_->AsWeakPtr()));
-      } else {
-        dawn_wire_->ProcessEvents();
-      }
+      // Call ProcessEvents now, always posting the task to do so to the
+      // runner to handle the callbacks in a fresh call stack to avoid
+      // re-entrancy.
+      CHECK(main_task_runner_);
+      main_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&DawnWireServices::ProcessEvents,
+                                    dawn_wire_->AsWeakPtr()));
     } break;
 
     default:

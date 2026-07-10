@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/modules/webgpu/string_utils.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -823,31 +824,22 @@ void GPUDevice::SetDescriptorCallbacks(wgpu::DeviceDescriptor& dawn_desc) {
   // passed to the device lost callback immediately after.
   std::unique_ptr<WGPURepeatingCallback<wgpu::UncapturedErrorCallback<void>>>
       error_callback;
-  if (IsWebGPUMultithreadedWorker(execution_context)) {
-    // When the IO thread processes GPU process responses, the uncaptured error
-    // callback is called on the IO thread. This initialization, however,
-    // happens on the main thread, hence the need for the initial CrossThread
-    // wrapping. The internal call to the *Impl function, however, is proxied
-    // back to the main thread, so we need to create it here on the main thread
-    // via BindRepeating and pass it in.
-    error_callback.reset(MakeWGPURepeatingCallback(
-        ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-            [](scoped_refptr<base::SingleThreadTaskRunner> main_runner,
-               base::RepeatingCallback<void(wgpu::ErrorType, const String&)> cb,
-               const wgpu::Device& device, wgpu::ErrorType errorType,
-               wgpu::StringView message) {
-              String messageStr = StringFromASCIIAndUTF8(message);
-              main_runner->PostTask(
-                  FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce(
-                                 cb, errorType, std::move(messageStr))));
-            },
-            execution_context->GetTaskRunner(TaskType::kWebGPU),
-            BindRepeating(&GPUDevice::OnUncapturedErrorImpl,
-                          WrapWeakPersistent(this))))));
-  } else {
-    error_callback.reset(MakeWGPURepeatingCallback(blink::BindRepeating(
-        &GPUDevice::OnUncapturedError, WrapWeakPersistent(this))));
-  }
+  // Always post the uncaptured error callback to the WebGPU task runner to
+  // prevent synchronous re-entrancy deadlocks.
+  error_callback.reset(MakeWGPURepeatingCallback(
+      ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+          [](scoped_refptr<base::SingleThreadTaskRunner> main_runner,
+             base::RepeatingCallback<void(wgpu::ErrorType, const String&)> cb,
+             const wgpu::Device& device, wgpu::ErrorType errorType,
+             wgpu::StringView message) {
+            String messageStr = StringFromASCIIAndUTF8(message);
+            main_runner->PostTask(FROM_HERE,
+                                  ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                                      cb, errorType, std::move(messageStr))));
+          },
+          execution_context->GetTaskRunner(TaskType::kWebGPU),
+          BindRepeating(&GPUDevice::OnUncapturedErrorImpl,
+                        WrapWeakPersistent(this))))));
   dawn_desc.SetUncapturedErrorCallback(error_callback->UnboundCallback(),
                                        error_callback->AsUserdata());
 

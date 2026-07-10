@@ -299,7 +299,7 @@ ContextResult CommandBufferProxyImpl::Initialize(
 
 void CommandBufferProxyImpl::OnDisconnect() {
   base::AutoLockMaybe lock(lock_.get());
-  base::AutoLock last_state_lock(last_state_lock_);
+  base::AutoLock shared_state_lock(shared_state_lock_);
 
   gpu::error::ContextLostReason context_lost_reason =
       gpu::error::kGpuChannelLost;
@@ -323,16 +323,18 @@ void CommandBufferProxyImpl::ShutdownClientMessageFilter() {
 void CommandBufferProxyImpl::OnDestroyed(gpu::error::ContextLostReason reason,
                                          gpu::error::Error error) {
   base::AutoLockMaybe lock(lock_.get());
-  base::AutoLock last_state_lock(last_state_lock_);
+  base::AutoLock shared_state_lock(shared_state_lock_);
   OnGpuAsyncMessageError(reason, error);
 }
 
 void CommandBufferProxyImpl::OnConsoleMessage(const std::string& message) {
+  base::AutoLock shared_state_lock(shared_state_lock_);
   if (gpu_control_client_)
     gpu_control_client_->OnGpuControlErrorMessage(message.c_str(), /*id=*/0);
 }
 
 void CommandBufferProxyImpl::OnGpuSwitched() {
+  base::AutoLock shared_state_lock(shared_state_lock_);
   if (gpu_control_client_)
     gpu_control_client_->OnGpuSwitched();
 }
@@ -359,7 +361,7 @@ void CommandBufferProxyImpl::OnSignalAck(uint32_t id,
                                          const CommandBuffer::State& state) {
   base::AutoLockMaybe lock(lock_.get());
   {
-    base::AutoLock last_state_lock(last_state_lock_);
+    base::AutoLock shared_state_lock(shared_state_lock_);
     SetStateFromMessageReply(state);
     if (last_state_.error != gpu::error::kNoError)
       return;
@@ -367,7 +369,7 @@ void CommandBufferProxyImpl::OnSignalAck(uint32_t id,
   SignalTaskMap::iterator it = signal_tasks_.find(id);
   if (it == signal_tasks_.end()) {
     LOG(ERROR) << "Gpu process sent invalid SignalAck.";
-    base::AutoLock last_state_lock(last_state_lock_);
+    base::AutoLock shared_state_lock(shared_state_lock_);
     OnGpuAsyncMessageError(gpu::error::kInvalidGpuMessage,
                            gpu::error::kLostContext);
     return;
@@ -378,14 +380,14 @@ void CommandBufferProxyImpl::OnSignalAck(uint32_t id,
 }
 
 CommandBuffer::State CommandBufferProxyImpl::GetLastState() {
-  base::AutoLock lock(last_state_lock_);
+  base::AutoLock lock(shared_state_lock_);
   TryUpdateState();
   return last_state_;
 }
 
 void CommandBufferProxyImpl::Flush(int32_t put_offset) {
   CheckLock();
-  base::AutoLock lock(last_state_lock_);
+  base::AutoLock lock(shared_state_lock_);
   if (last_state_.error != gpu::error::kNoError)
     return;
 
@@ -401,7 +403,7 @@ void CommandBufferProxyImpl::Flush(int32_t put_offset) {
 
 void CommandBufferProxyImpl::OrderingBarrier(int32_t put_offset) {
   CheckLock();
-  base::AutoLock lock(last_state_lock_);
+  base::AutoLock lock(shared_state_lock_);
   if (last_state_.error != gpu::error::kNoError)
     return;
 
@@ -426,7 +428,7 @@ gpu::CommandBuffer::State CommandBufferProxyImpl::WaitForTokenInRange(
     int32_t start,
     int32_t end) {
   CheckLock();
-  base::AutoLock lock(last_state_lock_);
+  base::AutoLock lock(shared_state_lock_);
   TRACE_EVENT2("gpu", "CommandBufferProxyImpl::WaitForToken", "start", start,
                "end", end);
   // Error needs to be checked in case the state was updated on another thread.
@@ -460,7 +462,7 @@ gpu::CommandBuffer::State CommandBufferProxyImpl::WaitForGetOffsetInRange(
     int32_t start,
     int32_t end) {
   CheckLock();
-  base::AutoLock lock(last_state_lock_);
+  base::AutoLock lock(shared_state_lock_);
   TRACE_EVENT2("gpu", "CommandBufferProxyImpl::WaitForGetOffset", "start",
                start, "end", end);
   // Error needs to be checked in case the state was updated on another thread.
@@ -493,7 +495,7 @@ gpu::CommandBuffer::State CommandBufferProxyImpl::WaitForGetOffsetInRange(
 
 void CommandBufferProxyImpl::SetGetBuffer(int32_t shm_id) {
   CheckLock();
-  base::AutoLock lock(last_state_lock_);
+  base::AutoLock lock(shared_state_lock_);
   if (last_state_.error != gpu::error::kNoError)
     return;
 
@@ -508,7 +510,7 @@ scoped_refptr<gpu::Buffer> CommandBufferProxyImpl::CreateTransferBuffer(
     uint32_t alignment,
     TransferBufferAllocationOption option) {
   CheckLock();
-  base::AutoLock lock(last_state_lock_);
+  base::AutoLock lock(shared_state_lock_);
   *id = -1;
 
   int32_t new_id = GetNextBufferId();
@@ -543,7 +545,7 @@ scoped_refptr<gpu::Buffer> CommandBufferProxyImpl::CreateTransferBuffer(
 
 void CommandBufferProxyImpl::DestroyTransferBuffer(int32_t id) {
   CheckLock();
-  base::AutoLock lock(last_state_lock_);
+  base::AutoLock lock(shared_state_lock_);
   if (last_state_.error != gpu::error::kNoError)
     return;
 
@@ -557,7 +559,7 @@ void CommandBufferProxyImpl::DestroyTransferBuffer(int32_t id) {
 
 void CommandBufferProxyImpl::ForceLostContext(error::ContextLostReason reason) {
   CheckLock();
-  base::AutoLock lock(last_state_lock_);
+  base::AutoLock lock(shared_state_lock_);
   if (last_state_.error == gpu::error::kLostContext) {
     // Per specification, do nothing if the context is already lost.
     return;
@@ -573,6 +575,7 @@ void CommandBufferProxyImpl::ForceLostContext(error::ContextLostReason reason) {
 
 void CommandBufferProxyImpl::SetGpuControlClient(GpuControlClient* client) {
   CheckLock();
+  base::AutoLock shared_state_lock(shared_state_lock_);
   gpu_control_client_ = client;
 }
 
@@ -637,7 +640,7 @@ uint64_t CommandBufferProxyImpl::GenerateFenceSyncRelease() {
 // This can be called from any thread without holding |lock_|. Use a thread-safe
 // non-error throwing variant of TryUpdateState for this.
 bool CommandBufferProxyImpl::IsFenceSyncReleased(uint64_t release) {
-  base::AutoLock lock(last_state_lock_);
+  base::AutoLock lock(shared_state_lock_);
   TryUpdateStateThreadSafe();
   return release <= last_state_.release_count;
 }
@@ -645,7 +648,7 @@ bool CommandBufferProxyImpl::IsFenceSyncReleased(uint64_t release) {
 void CommandBufferProxyImpl::SignalSyncToken(const gpu::SyncToken& sync_token,
                                              base::OnceClosure callback) {
   CheckLock();
-  base::AutoLock lock(last_state_lock_);
+  base::AutoLock lock(shared_state_lock_);
   if (last_state_.error != gpu::error::kNoError)
     return;
 
@@ -656,7 +659,7 @@ void CommandBufferProxyImpl::SignalSyncToken(const gpu::SyncToken& sync_token,
 
 void CommandBufferProxyImpl::WaitSyncToken(const gpu::SyncToken& sync_token) {
   CheckLock();
-  base::AutoLock lock(last_state_lock_);
+  base::AutoLock lock(shared_state_lock_);
   if (last_state_.error != gpu::error::kNoError)
     return;
 
@@ -678,7 +681,7 @@ bool CommandBufferProxyImpl::CanWaitUnverifiedSyncToken(
 void CommandBufferProxyImpl::SignalQuery(uint32_t query,
                                          base::OnceClosure callback) {
   CheckLock();
-  base::AutoLock lock(last_state_lock_);
+  base::AutoLock lock(shared_state_lock_);
   if (last_state_.error != gpu::error::kNoError)
     return;
 
@@ -703,7 +706,7 @@ void CommandBufferProxyImpl::CancelAllQueries() {
 void CommandBufferProxyImpl::CreateGpuFence(uint32_t gpu_fence_id,
                                             ClientGpuFence source) {
   CheckLock();
-  base::AutoLock lock(last_state_lock_);
+  base::AutoLock lock(shared_state_lock_);
   if (last_state_.error != gpu::error::kNoError) {
     DLOG(ERROR) << "got error=" << last_state_.error;
     return;
@@ -718,7 +721,7 @@ void CommandBufferProxyImpl::GetGpuFence(
     uint32_t gpu_fence_id,
     base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) {
   CheckLock();
-  base::AutoLock lock(last_state_lock_);
+  base::AutoLock lock(shared_state_lock_);
   if (last_state_.error != gpu::error::kNoError) {
     DLOG(ERROR) << "got error=" << last_state_.error;
     return;
@@ -741,6 +744,7 @@ void CommandBufferProxyImpl::OnGetGpuFenceHandleComplete(
 }
 
 void CommandBufferProxyImpl::OnReturnData(const std::vector<uint8_t>& data) {
+  base::AutoLock shared_state_lock(shared_state_lock_);
   if (gpu_control_client_) {
     gpu_control_client_->OnGpuControlReturnData(data);
   }
@@ -890,7 +894,7 @@ void CommandBufferProxyImpl::OnGpuAsyncMessageError(
   // This method only occurs when receiving IPC messages, so we know it's not in
   // a callstack from the GpuControlClient. Unlock the state lock to prevent
   // a deadlock when calling the context loss callback.
-  base::AutoUnlock unlock(last_state_lock_);
+  base::AutoUnlock unlock(shared_state_lock_);
   DisconnectChannel();
 }
 
@@ -945,8 +949,30 @@ void CommandBufferProxyImpl::DisconnectChannel() {
   mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync;
   channel_->GetGpuChannel().DestroyCommandBuffer(route_id_);
 
-  if (gpu_control_client_)
-    gpu_control_client_->OnGpuControlLostContext();
+  // Copy the client pointer under the lock and invoke the callback outside the
+  // lock to avoid deadlocks.
+  //
+  // Why: Holding `shared_state_lock_` during `OnGpuControlLostContext` causes
+  // deadlocks in WebGPU/Dawn context loss teardown. In WebGPU, the context loss
+  // callback synchronously calls `Finish()` on the helper to flush pending
+  // commands before teardown. This helper calls `WaitForGetOffsetInRange()`
+  // which attempts to re-acquire `shared_state_lock_` on the same thread. Since
+  // `base::Lock` is non-recursive in Chromium, this results in a deadlock.
+  //
+  // Safety: Releasing the lock before calling `OnGpuControlLostContext` is safe
+  // from because Blink (via `DawnControlClientHolder::Destroy`) explicitly
+  // defers the destruction of the context provider and its command buffer proxy
+  // by posting a no-op task to the task runner. This guarantees that the client
+  // pointer and the command buffer proxy will remain alive and valid until this
+  // entire call stack has fully unwound.
+  gpu::GpuControlClient* client = nullptr;
+  {
+    base::AutoLock shared_state_lock(shared_state_lock_);
+    client = gpu_control_client_;
+  }
+  if (client) {
+    client->OnGpuControlLostContext();
+  }
 }
 
 }  // namespace gpu

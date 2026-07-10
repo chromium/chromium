@@ -27,6 +27,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/command_buffer/client/gpu_control.h"
 #include "gpu/command_buffer/common/command_buffer.h"
@@ -98,38 +99,48 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
                            const GURL& active_url = GURL(),
                            const std::string_view label = "");
 
-  void OnDisconnect();
+  void OnDisconnect() LOCKS_EXCLUDED(shared_state_lock_);
 
   void ShutdownClientMessageFilter();
 
   // CommandBuffer implementation:
-  State GetLastState() override;
-  void Flush(int32_t put_offset) override;
-  void OrderingBarrier(int32_t put_offset) override;
-  State WaitForTokenInRange(int32_t start, int32_t end) override;
+  State GetLastState() LOCKS_EXCLUDED(shared_state_lock_) override;
+  void Flush(int32_t put_offset) LOCKS_EXCLUDED(shared_state_lock_) override;
+  void OrderingBarrier(int32_t put_offset)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
+  State WaitForTokenInRange(int32_t start, int32_t end)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
   State WaitForGetOffsetInRange(uint32_t set_get_buffer_count,
                                 int32_t start,
-                                int32_t end) override;
-  void SetGetBuffer(int32_t shm_id) override;
+                                int32_t end)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
+  void SetGetBuffer(int32_t shm_id) LOCKS_EXCLUDED(shared_state_lock_) override;
   scoped_refptr<gpu::Buffer> CreateTransferBuffer(
       uint32_t size,
       int32_t* id,
       uint32_t alignment = 0,
       TransferBufferAllocationOption option =
-          TransferBufferAllocationOption::kLoseContextOnOOM) override;
-  void DestroyTransferBuffer(int32_t id) override;
-  void ForceLostContext(error::ContextLostReason reason) override;
+          TransferBufferAllocationOption::kLoseContextOnOOM)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
+  void DestroyTransferBuffer(int32_t id)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
+  void ForceLostContext(error::ContextLostReason reason)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
 
   // gpu::GpuControl implementation:
-  void SetGpuControlClient(GpuControlClient* client) override;
+  void SetGpuControlClient(GpuControlClient* client)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
   const gpu::Capabilities& GetCapabilities() const override;
   const gpu::GLCapabilities& GetGLCapabilities() const override;
-  void SignalQuery(uint32_t query, base::OnceClosure callback) override;
+  void SignalQuery(uint32_t query, base::OnceClosure callback)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
   void CancelAllQueries() override;
-  void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) override;
-  void GetGpuFence(uint32_t gpu_fence_id,
-                   base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>
-                       callback) override;
+  void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
+  void GetGpuFence(
+      uint32_t gpu_fence_id,
+      base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
 
   void SetLock(base::Lock* lock) override;
   void EnsureWorkVisible() override;
@@ -137,10 +148,13 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
   gpu::CommandBufferId GetCommandBufferID() const override;
   void FlushPendingWork() override;
   uint64_t GenerateFenceSyncRelease() override;
-  bool IsFenceSyncReleased(uint64_t release) override;
+  bool IsFenceSyncReleased(uint64_t release)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
   void SignalSyncToken(const gpu::SyncToken& sync_token,
-                       base::OnceClosure callback) override;
-  void WaitSyncToken(const gpu::SyncToken& sync_token) override;
+                       base::OnceClosure callback)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
+  void WaitSyncToken(const gpu::SyncToken& sync_token)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
   bool CanWaitUnverifiedSyncToken(const gpu::SyncToken& sync_token) override;
   void AddDeletionObserver(DeletionObserver* observer);
   void RemoveDeletionObserver(DeletionObserver* observer);
@@ -180,12 +194,16 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
                              base::SharedMemoryMapper* mapper = nullptr);
 
   // mojom::CommandBufferClient:
-  void OnConsoleMessage(const std::string& message) override;
-  void OnGpuSwitched() override;
+  void OnConsoleMessage(const std::string& message)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
+  void OnGpuSwitched() LOCKS_EXCLUDED(shared_state_lock_) override;
   void OnDestroyed(gpu::error::ContextLostReason reason,
-                   gpu::error::Error error) override;
-  void OnReturnData(const std::vector<uint8_t>& data) override;
-  void OnSignalAck(uint32_t id, const CommandBuffer::State& state) override;
+                   gpu::error::Error error)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
+  void OnReturnData(const std::vector<uint8_t>& data)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
+  void OnSignalAck(uint32_t id, const CommandBuffer::State& state)
+      LOCKS_EXCLUDED(shared_state_lock_) override;
 
   void OnGetGpuFenceHandleComplete(
       uint32_t gpu_fence_id,
@@ -194,38 +212,38 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
 
   // Try to read an updated copy of the state from shared memory, and calls
   // OnGpuStateError() if the new state has an error.
-  void TryUpdateState() EXCLUSIVE_LOCKS_REQUIRED(last_state_lock_);
+  void TryUpdateState() EXCLUSIVE_LOCKS_REQUIRED(shared_state_lock_);
   // Like above but calls the error handler and disconnects channel by posting
   // a task.
-  void TryUpdateStateThreadSafe() EXCLUSIVE_LOCKS_REQUIRED(last_state_lock_);
+  void TryUpdateStateThreadSafe() EXCLUSIVE_LOCKS_REQUIRED(shared_state_lock_);
   // Like the above but does not call the error event handler if the new state
   // has an error.
   void TryUpdateStateDontReportError()
-      EXCLUSIVE_LOCKS_REQUIRED(last_state_lock_);
+      EXCLUSIVE_LOCKS_REQUIRED(shared_state_lock_);
   // Sets the state, and calls OnGpuStateError() if the new state has an error.
   void SetStateFromMessageReply(const CommandBuffer::State& state)
-      EXCLUSIVE_LOCKS_REQUIRED(last_state_lock_);
+      EXCLUSIVE_LOCKS_REQUIRED(shared_state_lock_);
 
   // Loses the context after we received an invalid reply from the GPU
   // process.
-  void OnGpuSyncReplyError() EXCLUSIVE_LOCKS_REQUIRED(last_state_lock_);
+  void OnGpuSyncReplyError() EXCLUSIVE_LOCKS_REQUIRED(shared_state_lock_);
 
   // Loses the context when receiving a message from the GPU process.
   void OnGpuAsyncMessageError(gpu::error::ContextLostReason reason,
                               gpu::error::Error error)
-      EXCLUSIVE_LOCKS_REQUIRED(last_state_lock_);
+      EXCLUSIVE_LOCKS_REQUIRED(shared_state_lock_);
 
   // Loses the context after we receive an error state from the GPU process.
-  void OnGpuStateError() EXCLUSIVE_LOCKS_REQUIRED(last_state_lock_);
+  void OnGpuStateError() EXCLUSIVE_LOCKS_REQUIRED(shared_state_lock_);
 
   // Sets an error on the last_state_ and loses the context due to client-side
   // errors.
   void OnClientError(gpu::error::Error error)
-      EXCLUSIVE_LOCKS_REQUIRED(last_state_lock_);
+      EXCLUSIVE_LOCKS_REQUIRED(shared_state_lock_);
 
   // Helper methods, don't call these directly.
   void DisconnectChannelInFreshCallStack()
-      EXCLUSIVE_LOCKS_REQUIRED(last_state_lock_);
+      EXCLUSIVE_LOCKS_REQUIRED(shared_state_lock_);
   void LockAndDisconnectChannel();
   void DisconnectChannel();
 
@@ -242,12 +260,12 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
   base::UnsafeSharedMemoryRegion shared_state_shm_;
   base::WritableSharedMemoryMapping shared_state_mapping_;
 
-  // The last cached state received from the service.
-  State last_state_;
+  // Lock to access shared state that may be used across multiple threads. This
+  // includes state such as sync token release count, and the GpuControlClient.
+  base::Lock shared_state_lock_;
 
-  // Lock to access shared state e.g. sync token release count across multiple
-  // threads. This allows tracking command buffer progress from another thread.
-  base::Lock last_state_lock_;
+  // The last cached state received from the service.
+  State last_state_ GUARDED_BY(shared_state_lock_);
 
   // There should be a lock_ if this is going to be used across multiple
   // threads, or we guarantee it is used by a single thread by using a thread
@@ -256,7 +274,8 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
   SEQUENCE_CHECKER(lockless_sequence_checker_);
 
   // Client that wants to listen for important events on the GpuControl.
-  raw_ptr<gpu::GpuControlClient> gpu_control_client_ = nullptr;
+  raw_ptr<gpu::GpuControlClient> gpu_control_client_
+      GUARDED_BY(shared_state_lock_) = nullptr;
 
   // Unowned list of DeletionObservers.
   base::ObserverList<DeletionObserver>::Unchecked deletion_observers_;
