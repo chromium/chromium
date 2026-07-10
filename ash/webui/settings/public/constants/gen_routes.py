@@ -18,9 +18,15 @@ import sys
 
 # Path of the <chromium>/src directory.
 CHROMIUM_SRC_PATH = pathlib.Path(__file__).parents[5].resolve(strict=True)
-if CHROMIUM_SRC_PATH.name != 'src':
-    raise AssertionError(
-        f'CHROMIUM_SRC_PATH "{CHROMIUM_SRC_PATH}" should end in "src".')
+
+# CoG workspaces have a .citc directory in the parent of the repository root,
+# and the repository root itself is named 'chromium' instead of 'src'.
+is_cog = (CHROMIUM_SRC_PATH.parent / '.citc').is_dir()
+if CHROMIUM_SRC_PATH.name != 'src' and not (
+    is_cog and CHROMIUM_SRC_PATH.name == 'chromium'):
+  raise AssertionError(
+      f'CHROMIUM_SRC_PATH "{CHROMIUM_SRC_PATH}" should end in "src" (or '
+      f'"chromium" in CoG).')
 
 # Insert chromium mojom path to beginning to make sure we prefer this one.
 # https://crbug.com/1422422
