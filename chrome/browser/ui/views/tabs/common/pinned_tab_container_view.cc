@@ -56,115 +56,11 @@ PinnedTabContainerView::~PinnedTabContainerView() = default;
 
 views::ProposedLayout PinnedTabContainerView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
-  views::ProposedLayout layouts;
-  int total_width = 0;
-  int total_height = 0;
-
-  const std::vector<views::View*> children =
-      collection_node_ ? collection_node_->GetDirectChildren()
-                       : std::vector<views::View*>();
-
-  int x = 0;
-  int y = 0;
-  int children_on_row = children.size();
-
-  if (children_on_row == 0) {
-    layouts.host_size = gfx::Size(0, 0);
-    return layouts;
+  if (collection_node_ &&
+      collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+    return CalculateHorizontalLayout(size_bounds);
   }
-
-  // Child width will be uniform and match the largest child's width.
-  bool contains_split = false;
-  for (const auto& i : collection_node_->children()) {
-    if (i->type() == TabCollectionNode::Type::SPLIT) {
-      contains_split = true;
-    }
-  }
-  int child_width = GetLayoutConstant(LayoutConstant::kVerticalTabMinWidth) *
-                    (contains_split ? 2 : 1);
-
-  // If the width is bounded, calculate how many children can fit on a row.
-  // Since all children are allocated the same width this will be the same for
-  // every row.
-  if (size_bounds.width().is_bounded() && size_bounds.width().value() > 0) {
-    auto collapse_state = GetTabStripCollapseState();
-
-    // Apply horizontal padding immediately at start of collapse animation by
-    // including collapsing state.
-    int available_width =
-        size_bounds.width().value() -
-        GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
-
-    // When we are in collapsed state, only one child should be shown per row.
-    // During collapse animation and other cases, fit as many as possible.
-    children_on_row =
-        tabs::IsVerticalTabsExpandOnHoverFeatureEnabled() &&
-                collapse_state ==
-                    tabs::VerticalTabStripCollapseState::kCollapsed
-            ? 1
-            : std::min(
-                  children_on_row,
-                  static_cast<int>(std::floor((available_width - child_width) /
-                                              (child_width + kTabPadding)) +
-                                   1));
-
-    // Allocate extra space to the tabs.
-    available_width -=
-        (children_on_row * child_width) + (kTabPadding * (children_on_row - 1));
-    child_width += std::floor(available_width / children_on_row);
-  }
-
-  int row_index = 0;
-  for (auto* child : children) {
-    gfx::Rect bounds =
-        gfx::Rect(child->GetPreferredSize(views::SizeBounds(child_width, {})));
-    bounds.set_width(child_width);
-
-    auto drag_data = GetVisualDataForDraggedView(*child);
-    const bool should_show_child = !(drag_data && drag_data->should_hide);
-    if (!should_show_child) {
-      layouts.child_layouts.emplace_back(child, false, bounds);
-      continue;
-    }
-
-    bounds.set_y(drag_data ? drag_data->offset.y() : y);
-    int child_x = drag_data ? drag_data->offset.x() : x;
-    if (drag_data && base::i18n::IsRTL()) {
-      child_x = size_bounds.width().value() - child_x - child_width;
-    }
-    bounds.set_x(child_x);
-
-    if (row_index != 0) {
-      bounds.set_x(bounds.x() + kTabPadding);
-    }
-
-    if (!drag_data || !drag_data->should_float) {
-      if (row_index != 0) {
-        x += kTabPadding;
-      }
-      x += bounds.width();
-      total_width = std::max(total_width, x);
-      total_height = std::max(total_height, (y + bounds.height()));
-
-      row_index++;
-      if (row_index >= children_on_row) {
-        y = total_height + kTabPadding;
-        row_index = 0;
-        x = 0;
-      }
-    }
-
-    layouts.child_layouts.emplace_back(child, true, bounds);
-  }
-
-  // Make sure we snap to bounded width if defined. This is necessary as the
-  // `child_width` calculation above rounds width down and this can result in
-  // off-by-one width calculations when the number of children on a row changes.
-  // Changes in host width can be interpreted as a resize and animations may
-  // otherwise snap to target.
-  layouts.host_size =
-      gfx::Size(size_bounds.width().value_or(total_width), total_height);
-  return layouts;
+  return CalculateVerticalLayout(size_bounds);
 }
 
 gfx::Size PinnedTabContainerView::GetMinimumSize() const {
@@ -351,6 +247,146 @@ const TabCollectionNode* PinnedTabContainerView::GetCollectionNodeFromView(
     return split_tab_view->collection_node();
   }
   return nullptr;
+}
+
+views::ProposedLayout PinnedTabContainerView::CalculateHorizontalLayout(
+    const views::SizeBounds& size_bounds) const {
+  views::ProposedLayout layouts;
+  const std::vector<views::View*> children =
+      collection_node_ ? collection_node_->GetDirectChildren()
+                       : std::vector<views::View*>();
+
+  int x = 0;
+  const int container_height = size_bounds.height().value_or(
+      GetLayoutConstant(LayoutConstant::kTabHeight));
+  for (auto* child : children) {
+    views::SizeBounds child_size_bounds =
+        views::SizeBounds({}, size_bounds.height());
+    gfx::Rect bounds = gfx::Rect(child->GetPreferredSize(child_size_bounds));
+    bounds.set_y(0);
+    bounds.set_height(container_height);
+
+    auto drag_data = GetVisualDataForDraggedView(*child);
+    bounds.set_x(drag_data ? drag_data->offset.x() : x);
+
+    layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
+    x += bounds.width();
+  }
+  layouts.host_size = gfx::Size(x, container_height);
+  return layouts;
+}
+
+views::ProposedLayout PinnedTabContainerView::CalculateVerticalLayout(
+    const views::SizeBounds& size_bounds) const {
+  views::ProposedLayout layouts;
+  const std::vector<views::View*> children =
+      collection_node_ ? collection_node_->GetDirectChildren()
+                       : std::vector<views::View*>();
+
+  int total_width = 0;
+  int total_height = 0;
+
+  int x = 0;
+  int y = 0;
+  int children_on_row = children.size();
+
+  if (children_on_row == 0) {
+    layouts.host_size = gfx::Size(0, 0);
+    return layouts;
+  }
+
+  // Child width will be uniform and match the largest child's width.
+  bool contains_split = false;
+  for (const auto& i : collection_node_->children()) {
+    if (i->type() == TabCollectionNode::Type::SPLIT) {
+      contains_split = true;
+    }
+  }
+  int child_width = GetLayoutConstant(LayoutConstant::kVerticalTabMinWidth) *
+                    (contains_split ? 2 : 1);
+
+  // If the width is bounded, calculate how many children can fit on a row.
+  // Since all children are allocated the same width this will be the same for
+  // every row.
+  if (size_bounds.width().is_bounded() && size_bounds.width().value() > 0) {
+    auto collapse_state = GetTabStripCollapseState();
+
+    // Apply horizontal padding immediately at start of collapse animation by
+    // including collapsing state.
+    int available_width =
+        size_bounds.width().value() -
+        GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
+
+    // When we are in collapsed state, only one child should be shown per row.
+    // During collapse animation and other cases, fit as many as possible.
+    children_on_row =
+        tabs::IsVerticalTabsExpandOnHoverFeatureEnabled() &&
+                collapse_state ==
+                    tabs::VerticalTabStripCollapseState::kCollapsed
+            ? 1
+            : std::min(
+                  children_on_row,
+                  static_cast<int>(std::floor((available_width - child_width) /
+                                              (child_width + kTabPadding)) +
+                                   1));
+
+    // Allocate extra space to the tabs.
+    available_width -=
+        (children_on_row * child_width) + (kTabPadding * (children_on_row - 1));
+    child_width += std::floor(available_width / children_on_row);
+  }
+
+  int row_index = 0;
+  for (auto* child : children) {
+    gfx::Rect bounds =
+        gfx::Rect(child->GetPreferredSize(views::SizeBounds(child_width, {})));
+    bounds.set_width(child_width);
+
+    auto drag_data = GetVisualDataForDraggedView(*child);
+    const bool should_show_child = !(drag_data && drag_data->should_hide);
+    if (!should_show_child) {
+      layouts.child_layouts.emplace_back(child, false, bounds);
+      continue;
+    }
+
+    bounds.set_y(drag_data ? drag_data->offset.y() : y);
+    int child_x = drag_data ? drag_data->offset.x() : x;
+    if (drag_data && base::i18n::IsRTL()) {
+      child_x = size_bounds.width().value() - child_x - child_width;
+    }
+    bounds.set_x(child_x);
+
+    if (row_index != 0) {
+      bounds.set_x(bounds.x() + kTabPadding);
+    }
+
+    if (!drag_data || !drag_data->should_float) {
+      if (row_index != 0) {
+        x += kTabPadding;
+      }
+      x += bounds.width();
+      total_width = std::max(total_width, x);
+      total_height = std::max(total_height, (y + bounds.height()));
+
+      row_index++;
+      if (row_index >= children_on_row) {
+        y = total_height + kTabPadding;
+        row_index = 0;
+        x = 0;
+      }
+    }
+
+    layouts.child_layouts.emplace_back(child, true, bounds);
+  }
+
+  // Make sure we snap to bounded width if defined. This is necessary as the
+  // `child_width` calculation above rounds width down and this can result in
+  // off-by-one width calculations when the number of children on a row changes.
+  // Changes in host width can be interpreted as a resize and animations may
+  // otherwise snap to target.
+  layouts.host_size =
+      gfx::Size(size_bounds.width().value_or(total_width), total_height);
+  return layouts;
 }
 
 BEGIN_METADATA(PinnedTabContainerView)

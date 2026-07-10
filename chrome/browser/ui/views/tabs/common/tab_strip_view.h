@@ -9,7 +9,6 @@
 #include "base/scoped_observation.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -25,8 +24,8 @@ class Separator;
 // The view class for tab strip which holds the pinned and unpinned
 // regions and associates them to their scroll views. It also is responsible for
 // scrolling to the active tab view when the active tab changes.
+// Layout is managed by `TabStripViewLayout`.
 class TabStripView final : public views::View,
-                           public views::LayoutDelegate,
                            public views::WidgetObserver {
   METADATA_HEADER(TabStripView, views::View)
 
@@ -36,15 +35,15 @@ class TabStripView final : public views::View,
   TabStripView& operator=(const TabStripView&) = delete;
   ~TabStripView() override;
 
-  views::Separator* GetTabsSeparator() { return tabs_separator_; }
+  views::Separator* GetTabsSeparator() const { return tabs_separator_; }
 
-  PinnedTabContainerView* GetPinnedTabsContainer();
-  UnpinnedTabContainerView* GetUnpinnedTabsContainer();
+  PinnedTabContainerView* GetPinnedTabsContainer() const;
+  UnpinnedTabContainerView* GetUnpinnedTabsContainer() const;
 
-  views::ScrollView* pinned_tabs_scroll_view() {
+  views::ScrollView* pinned_tabs_scroll_view() const {
     return pinned_tabs_scroll_view_;
   }
-  views::ScrollView* unpinned_tabs_scroll_view() {
+  views::ScrollView* unpinned_tabs_scroll_view() const {
     return unpinned_tabs_scroll_view_;
   }
 
@@ -52,10 +51,6 @@ class TabStripView final : public views::View,
   void SetIsAnimatingSize(bool is_animating);
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
-
-  // LayoutDelegate:
-  views::ProposedLayout CalculateProposedLayout(
-      const views::SizeBounds& size_bounds) const override;
 
   // views::View:
   void AddedToWidget() override;
@@ -97,6 +92,8 @@ class TabStripView final : public views::View,
   bool IsFrameActive() const;
 
   void HideHoverCardOnScroll();
+
+  friend class TabStripViewLayout;
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
   raw_ptr<views::ScrollView> pinned_tabs_scroll_view_ = nullptr;

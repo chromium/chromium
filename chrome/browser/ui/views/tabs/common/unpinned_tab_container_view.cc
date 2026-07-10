@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/common/dragged_tabs_container.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
@@ -13,10 +14,10 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
+#include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view_layout.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
@@ -26,7 +27,6 @@
 #include "ui/views/view_utils.h"
 
 namespace {
-constexpr int kTabVerticalPadding = 2;
 
 // The following are percentages used to determine the amount that dragged
 // tabs must be peeking into/out of a tab group view in order for the handling
@@ -71,18 +71,28 @@ class UnpinnedTabContainerViewTargeter : public views::ViewTargeterDelegate {
 
 UnpinnedTabContainerView::UnpinnedTabContainerView(
     TabCollectionNode* collection_node)
-    : DraggedTabsContainer(static_cast<views::View&>(*this),
-                           collection_node,
-                           DragAxes::kVerticalOnly,
-                           DragLayout::kVertical),
+    : DraggedTabsContainer(
+          static_cast<views::View&>(*this),
+          collection_node,
+          collection_node->orientation() == TabStripOrientation::kHorizontal
+              ? DragAxes::kBoth
+              : DragAxes::kVerticalOnly,
+          collection_node->orientation() == TabStripOrientation::kHorizontal
+              // TODO(crbug.com/523327760): Update to DragLayout::kHorizontal
+              // once created.
+              ? DragLayout::kSquash
+              : DragLayout::kVertical),
       collection_node_(collection_node),
-      layout_manager_(*SetLayoutManager(
-          std::make_unique<TabCollectionAnimatingLayoutManager>(
-              std::make_unique<views::DelegatingLayoutManager>(this),
-              /*delegate=*/*this,
-              /*animation_axis=*/
-              TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical,
-              /*animate_host_size=*/true))) {
+      layout_manager_(*SetLayoutManager(std::make_unique<
+                                        TabCollectionAnimatingLayoutManager>(
+          std::make_unique<UnpinnedTabContainerViewLayout>(
+              collection_node->orientation()),
+          /*delegate=*/*this,
+          /*animation_axis=*/
+          collection_node->orientation() == TabStripOrientation::kHorizontal
+              ? TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal
+              : TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical,
+          /*animate_host_size=*/true))) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(
       std::make_unique<UnpinnedTabContainerViewTargeter>(this)));
 
@@ -100,89 +110,6 @@ UnpinnedTabContainerView::UnpinnedTabContainerView(
 
 UnpinnedTabContainerView::~UnpinnedTabContainerView() = default;
 
-views::ProposedLayout UnpinnedTabContainerView::CalculateProposedLayout(
-    const views::SizeBounds& size_bounds) const {
-  views::ProposedLayout layouts;
-  int width = 0;
-  int height = 0;
-  int dragged_view_bottom = 0;
-  auto collapse_state = GetTabStripCollapseState();
-
-  // Apply horizontal padding immediately at start of collapse animation by
-  // including collapsing state.
-  const int horizontal_padding =
-      GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
-  const std::vector<views::View*> children =
-      collection_node_ ? collection_node_->GetDirectChildren()
-                       : std::vector<views::View*>();
-
-  // Layout children in order. Children will have their preferred height and
-  // fill available width.
-  for (auto* child : children) {
-    // The leading inset should not be applied for tab groups when the tab strip
-    // is collapsed since the group color line is drawn in that space.
-    int x =
-        views::AsViewClass<TabGroupView>(child) &&
-                collapse_state != tabs::VerticalTabStripCollapseState::kExpanded
-            ? 0
-            : horizontal_padding;
-    views::SizeBounds child_size_bounds =
-        views::SizeBounds(size_bounds.width().is_bounded()
-                              ? (size_bounds.width() - (x + horizontal_padding))
-                              : size_bounds.width(),
-                          {});
-    gfx::Rect bounds = gfx::Rect(child->GetPreferredSize(child_size_bounds));
-    bounds.set_x(x);
-
-    auto drag_data = GetVisualDataForDraggedView(*child);
-    CHECK(!drag_data || !drag_data->should_hide);
-    bounds.set_y(drag_data ? drag_data->offset.y() : height);
-
-    // If width is bounded, child views should respect the width constraints and
-    // take up the available width excluding trailing horizontal padding.
-    if (size_bounds.width().is_bounded()) {
-      bounds.set_width(size_bounds.width().value() - bounds.x() -
-                       horizontal_padding);
-    }
-    layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
-    height += bounds.height() + kTabVerticalPadding;
-    width = std::max(width, bounds.width() + bounds.x());
-  }
-  // Remove excess padding if needed.
-  if (!children.empty()) {
-    height -= kTabVerticalPadding;
-  }
-
-  if (IsHandlingDrag()) {
-    dragged_view_bottom = GetDraggingViewsBounds().bottom();
-    if (size_bounds.height().is_bounded()) {
-      // When the host view has a bounded height, the dragged view's offset
-      // from its original position should not cause it to be laid out outside
-      // of the container's bounds. This ensures that the dragged view is at
-      // the bottom of the container we will not cause a scroll.
-      // dragged_view_bottom = GetDraggingViewsBounds().bottom();
-      dragged_view_bottom =
-          std::min(dragged_view_bottom, size_bounds.height().value());
-    }
-  }
-  layouts.host_size = gfx::Size(width, std::max(height, dragged_view_bottom));
-  return layouts;
-}
-
-gfx::Size UnpinnedTabContainerView::GetMinimumSize() const {
-  if (!collection_node_) {
-    return gfx::Size();
-  }
-
-  // The minimum size should be enough to show a tab and a half, if needed.
-  const int num_children = collection_node_->GetDirectChildren().size();
-  const int min_height =
-      base::ClampCeil(GetLayoutConstant(LayoutConstant::kVerticalTabHeight) *
-                      std::min(1.5f, static_cast<float>(num_children))) +
-      (num_children > 1 ? kTabVerticalPadding : 0);
-  return gfx::Size(GetLayoutConstant(LayoutConstant::kVerticalTabMinWidth),
-                   min_height);
-}
 
 std::optional<BrowserRootView::DropIndex>
 UnpinnedTabContainerView::GetLinkDropIndex(const gfx::Point& loc_in_container) {

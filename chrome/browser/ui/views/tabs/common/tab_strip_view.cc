@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_view_layout.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_scroll_bar.h"
@@ -28,7 +29,6 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
-#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
@@ -107,7 +107,8 @@ TabStripView::TabStripView(TabCollectionNode* collection_node)
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(true);
 
-  SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
+  SetLayoutManager(
+      std::make_unique<TabStripViewLayout>(collection_node->orientation()));
   SetProperty(views::kElementIdentifierKey, kTabStripElementId);
 
   pinned_tabs_scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
@@ -137,116 +138,7 @@ TabStripView::TabStripView(TabCollectionNode* collection_node)
 
 TabStripView::~TabStripView() = default;
 
-views::ProposedLayout TabStripView::CalculateProposedLayout(
-    const views::SizeBounds& size_bounds) const {
-  views::ProposedLayout layouts;
-  if (!size_bounds.width().is_bounded()) {
-    return layouts;
-  }
 
-  const int region_horizontal_padding =
-      GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
-
-  const int region_vertical_padding = GetLayoutConstant(
-      LayoutConstant::kVerticalTabStripCollapsedVerticalPadding);
-
-  int y = 0;
-
-  // Determine container preferred heights.
-  views::SizeBounds pinned_tab_container_size_bounds =
-      size_bounds.Inset(gfx::Insets::TLBR(0, region_horizontal_padding, 0, 0));
-  const int pinned_preferred_height =
-      pinned_tabs_scroll_view_
-          ->GetPreferredSize(pinned_tab_container_size_bounds)
-          .height();
-  const int unpinned_preferred_height =
-      unpinned_tabs_scroll_view_->GetPreferredSize(size_bounds).height();
-
-  const bool should_show_separator = pinned_preferred_height != 0 &&
-                                     unpinned_preferred_height != 0 &&
-                                     is_collapsed_;
-
-  // If the height is bounded, calculate the available space for laying out the
-  // pinned and unpinned containers.
-  int remaining_height = 0;
-  if (size_bounds.height().is_bounded()) {
-    remaining_height = size_bounds.height().value();
-    if (pinned_preferred_height != 0 && unpinned_preferred_height != 0) {
-      remaining_height -= region_vertical_padding;
-    }
-    if (should_show_separator) {
-      remaining_height -= tabs_separator_->GetPreferredSize().height() +
-                          region_vertical_padding;
-    }
-    // Clamp the remaining height to 0 if we have less space.
-    remaining_height = std::max(remaining_height, 0);
-  }
-
-  // Place the pinned container.
-  int pinned_container_height = pinned_preferred_height;
-  if (size_bounds.height().is_bounded()) {
-    // The pinned container height should not be larger than half the available
-    // space unless the unpinned container will not fill that space. Also make
-    // sure the height is at least the minimum.
-    pinned_container_height = std::max(
-        std::min(pinned_preferred_height,
-                 std::max(remaining_height / 2,
-                          remaining_height - unpinned_preferred_height)),
-        pinned_tabs_container_view_->GetMinimumSize().height());
-    remaining_height -= pinned_container_height;
-  }
-  gfx::Rect pinned_container_bounds(
-      region_horizontal_padding, y,
-      pinned_tab_container_size_bounds.width().value(),
-      pinned_container_height);
-  layouts.child_layouts.emplace_back(pinned_tabs_scroll_view_.get(),
-                                     pinned_tabs_scroll_view_->GetVisible(),
-                                     pinned_container_bounds);
-
-  if (pinned_container_bounds.height()) {
-    y += pinned_container_bounds.height();
-    // Add padding only if there are pinned and unpinned tabs.
-    if (unpinned_preferred_height != 0) {
-      y += region_vertical_padding;
-    }
-  }
-
-  // Place the tabs separator if visible.
-  if (should_show_separator) {
-    int separator_width =
-        size_bounds.width().value() - 2 * region_horizontal_padding;
-    int separator_x = region_horizontal_padding;
-    gfx::Rect tabs_separator_bounds(
-        separator_x, y, separator_width,
-        tabs_separator_->GetPreferredSize().height());
-    layouts.child_layouts.emplace_back(tabs_separator_.get(), true,
-                                       tabs_separator_bounds);
-
-    y += tabs_separator_bounds.height() + region_vertical_padding;
-  } else {
-    layouts.child_layouts.emplace_back(tabs_separator_.get(), false,
-                                       gfx::Rect());
-  }
-
-  // Place the unpinned container using the entire available width, we do not
-  // inset the x value by |region_horizontal_padding| here because, when the tab
-  // strip is collapsed, tab groups need to draw the group colored line in this
-  // space.
-  gfx::Rect unpinned_container_bounds(0, y, size_bounds.width().value(),
-                                      unpinned_preferred_height);
-  if (size_bounds.height().is_bounded()) {
-    unpinned_container_bounds.set_height(
-        std::max(std::min(unpinned_container_bounds.height(), remaining_height),
-                 unpinned_tabs_container_view_->GetMinimumSize().height()));
-  }
-  layouts.child_layouts.emplace_back(unpinned_tabs_scroll_view_.get(),
-                                     unpinned_tabs_scroll_view_->GetVisible(),
-                                     unpinned_container_bounds);
-
-  layouts.host_size = gfx::Size(size_bounds.width().value(),
-                                unpinned_container_bounds.bottom());
-  return layouts;
-}
 
 void TabStripView::AddedToWidget() {
   views::Widget* const widget = GetWidget();
@@ -403,11 +295,11 @@ bool TabStripView::IsFocusInTabStrip() {
   return GetFocusManager() && Contains(GetFocusManager()->GetFocusedView());
 }
 
-PinnedTabContainerView* TabStripView::GetPinnedTabsContainer() {
+PinnedTabContainerView* TabStripView::GetPinnedTabsContainer() const {
   return pinned_tabs_container_view_;
 }
 
-UnpinnedTabContainerView* TabStripView::GetUnpinnedTabsContainer() {
+UnpinnedTabContainerView* TabStripView::GetUnpinnedTabsContainer() const {
   return unpinned_tabs_container_view_;
 }
 
@@ -503,13 +395,21 @@ void TabStripView::RemoveScrollViewContents(views::View* view) {
 void TabStripView::SetScrollViewProperties(views::ScrollView* scroll_view) {
   scroll_view->SetUseContentsPreferredSize(true);
   scroll_view->SetBackgroundColor(std::nullopt);
-  scroll_view->SetHorizontalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kDisabled);
-  scroll_view->SetOverflowGradientMask(
-      views::ScrollView::GradientDirection::kVertical);
   CHECK(collection_node_);
-  scroll_view->SetVerticalScrollBar(std::make_unique<VerticalTabStripScrollBar>(
-      collection_node_->GetController()->GetStateController()));
+  if (collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+    scroll_view->SetHorizontalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+    scroll_view->SetVerticalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
+  } else {
+    scroll_view->SetHorizontalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
+    scroll_view->SetOverflowGradientMask(
+        views::ScrollView::GradientDirection::kVertical);
+    scroll_view->SetVerticalScrollBar(
+        std::make_unique<VerticalTabStripScrollBar>(
+            collection_node_->GetController()->GetStateController()));
+  }
   callback_subscriptions_.emplace_back(
       scroll_view->AddContentsScrolledCallback(base::BindRepeating(
           &TabStripView::HideHoverCardOnScroll, base::Unretained(this))));
@@ -638,8 +538,11 @@ void TabStripView::DisableOverflowVisuals(views::ScrollView* scroll_view) {
 }
 
 void TabStripView::UpdateColors() {
-  tabs_separator_->SetColorId(IsFrameActive() ? kColorTabDividerFrameActive
-                                              : kColorTabDividerFrameInactive);
+  if (tabs_separator_) {
+    tabs_separator_->SetColorId(IsFrameActive()
+                                    ? kColorTabDividerFrameActive
+                                    : kColorTabDividerFrameInactive);
+  }
 }
 
 bool TabStripView::IsFrameActive() const {

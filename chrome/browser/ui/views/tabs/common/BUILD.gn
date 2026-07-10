@@ -16,7 +16,9 @@ source_set("common") {
     "tab_drag_scroll_handler.h",
     "tab_strip_utils.h",
     "tab_strip_view.h",
+    "tab_strip_view_layout.h",
     "unpinned_tab_container_view.h",
+    "unpinned_tab_container_view_layout.h",
   ]
 
   deps = [
@@ -58,9 +60,11 @@ source_set("impl") {
     "tab_strip_collection_controller.h",
     "tab_strip_utils.cc",
     "tab_strip_view.cc",
+    "tab_strip_view_layout.cc",
     "tab_view.cc",
     "tab_view.h",
     "unpinned_tab_container_view.cc",
+    "unpinned_tab_container_view_layout.cc",
   ]
 
   deps = [

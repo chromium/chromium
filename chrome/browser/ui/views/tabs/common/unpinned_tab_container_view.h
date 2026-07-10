@@ -11,34 +11,28 @@
 #include "chrome/browser/ui/views/tabs/common/dragged_tabs_container.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
 
 class TabCollectionNode;
 class TabGroupView;
+class UnpinnedTabContainerViewLayout;
 
 // The view class that represents the unpinned tab region for the
-// tab strip. It manages the layout of the all the unpinned tabs and
-// serves as the drag target for unpinned tabs which aren't grouped.
+// tab strip. It hosts all the unpinned tabs and serves as the drag target
+// for unpinned tabs which aren't grouped. Layout is managed by
+// UnpinnedTabContainerViewLayout.
 class UnpinnedTabContainerView
     : public views::View,
-      public views::LayoutDelegate,
       public DraggedTabsContainer,
       public TabCollectionAnimatingLayoutManager::Delegate {
   METADATA_HEADER(UnpinnedTabContainerView, views::View)
+  friend class UnpinnedTabContainerViewLayout;
 
  public:
   explicit UnpinnedTabContainerView(TabCollectionNode* collection_node);
   UnpinnedTabContainerView(const UnpinnedTabContainerView&) = delete;
   UnpinnedTabContainerView& operator=(const UnpinnedTabContainerView&) = delete;
   ~UnpinnedTabContainerView() override;
-
-  // LayoutDelegate:
-  views::ProposedLayout CalculateProposedLayout(
-      const views::SizeBounds& size_bounds) const override;
-
-  // views::View:
-  gfx::Size GetMinimumSize() const override;
 
   // TabCollectionAnimatingLayoutManager::Delegate:
   bool IsDragging() const override;

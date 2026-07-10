@@ -57,6 +57,11 @@ class PinnedTabContainerView
   const TabCollectionNode* GetCollectionNodeFromView(
       const views::View& view) const override;
 
+  views::ProposedLayout CalculateHorizontalLayout(
+      const views::SizeBounds& size_bounds) const;
+  views::ProposedLayout CalculateVerticalLayout(
+      const views::SizeBounds& size_bounds) const;
+
   // While collapsed, only the y-coordinate is used to determine the drop
   // index, similar to the unpinned container.
   std::optional<BrowserRootView::DropIndex> GetLinkDropIndexForCollapsed(
