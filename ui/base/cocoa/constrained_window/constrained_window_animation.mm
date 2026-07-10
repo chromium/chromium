@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ui/base/cocoa/constrained_window/constrained_window_animation.h"
 
 #include <stdint.h>
 #include <stdlib.h>
 
 #import "base/apple/foundation_util.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/native_library.h"
@@ -353,11 +349,13 @@ bool AreWindowServerEffectsDisabled() {
 
   CGFloat scale = 1;
   for (int i = std::size(frames) - 1; i >= 0; --i) {
-    if (value >= frames[i].value) {
-      CGFloat delta = frames[i + 1].value - frames[i].value;
-      CGFloat frame_progress = (value - frames[i].value) / delta;
-      scale = gfx::Tween::FloatValueBetween(frame_progress, frames[i].scale,
-                                            frames[i + 1].scale);
+    if (value >= UNSAFE_TODO(frames[i]).value) {
+      CGFloat delta =
+          UNSAFE_TODO(frames[i + 1]).value - UNSAFE_TODO(frames[i]).value;
+      CGFloat frame_progress = (value - UNSAFE_TODO(frames[i]).value) / delta;
+      scale = gfx::Tween::FloatValueBetween(frame_progress,
+                                            UNSAFE_TODO(frames[i]).scale,
+                                            UNSAFE_TODO(frames[i + 1]).scale);
       break;
     }
   }

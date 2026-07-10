@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/test/ui_controls_internal_win.h"
 
 #include <windows.h>
@@ -859,8 +854,8 @@ bool SendTouchEventsImpl(int action, int num, int x, int y) {
 
   POINTER_TOUCH_INFO pointer_touch_info[kTouchesLengthCap];
   for (int i = 0; i < num; i++) {
-    POINTER_TOUCH_INFO& contact = pointer_touch_info[i];
-    memset(&contact, 0, sizeof(POINTER_TOUCH_INFO));
+    POINTER_TOUCH_INFO& contact = UNSAFE_TODO(pointer_touch_info[i]);
+    UNSAFE_TODO(memset(&contact, 0, sizeof(POINTER_TOUCH_INFO)));
     contact.pointerInfo.pointerType = PT_TOUCH;
     contact.pointerInfo.pointerId = i;
     contact.pointerInfo.ptPixelLocation.y = y;
@@ -888,7 +883,7 @@ bool SendTouchEventsImpl(int action, int num, int x, int y) {
   // Injecting the touch move on screen
   if (action & kTouchMove) {
     for (int i = 0; i < num; i++) {
-      POINTER_TOUCH_INFO& contact = pointer_touch_info[i];
+      POINTER_TOUCH_INFO& contact = UNSAFE_TODO(pointer_touch_info[i]);
       contact.pointerInfo.ptPixelLocation.y = y + 10;
       contact.pointerInfo.ptPixelLocation.x = x + 10 * i + 30;
       contact.pointerInfo.pointerFlags =
@@ -901,7 +896,7 @@ bool SendTouchEventsImpl(int action, int num, int x, int y) {
   // Injecting the touch up on screen
   if (action & kTouchRelease) {
     for (int i = 0; i < num; i++) {
-      POINTER_TOUCH_INFO& contact = pointer_touch_info[i];
+      POINTER_TOUCH_INFO& contact = UNSAFE_TODO(pointer_touch_info[i]);
       contact.pointerInfo.ptPixelLocation.y = y + 10;
       contact.pointerInfo.ptPixelLocation.x = x + 10 * i + 30;
       contact.pointerInfo.pointerFlags = POINTER_FLAG_UP | POINTER_FLAG_INRANGE;

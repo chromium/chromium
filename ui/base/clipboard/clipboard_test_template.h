@@ -12,11 +12,6 @@
 // TODO(dcheng): This is really horrible. In general, all tests should run on
 // all platforms, to avoid this mess.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef UI_BASE_CLIPBOARD_CLIPBOARD_TEST_TEMPLATE_H_
 #define UI_BASE_CLIPBOARD_CLIPBOARD_TEST_TEMPLATE_H_
 
@@ -28,6 +23,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -645,9 +641,10 @@ void AssertBitmapMatchesExpected(const SkBitmap& image,
             gfx::Size(image.width(), image.height()));
   for (int y = 0; y < image.height(); ++y) {
     const uint32_t* actual_row = image.getAddr32(0, y);
-    const uint32_t* expect_row = &expect_data[y * info.width()];
+    const uint32_t* expect_row = UNSAFE_TODO(&expect_data[y * info.width()]);
     for (int x = 0; x < image.width(); ++x) {
-      EXPECT_EQ(expect_row[x], actual_row[x]) << "x = " << x << ", y = " << y;
+      EXPECT_EQ(UNSAFE_TODO(expect_row[x]), UNSAFE_TODO(actual_row[x]))
+          << "x = " << x << ", y = " << y;
     }
   }
 }
@@ -799,8 +796,9 @@ TYPED_TEST(ClipboardTest, DataTest) {
   const std::string kFormatString = "web chromium/x-test-format";
   const std::u16string kFormatString16 = u"chromium/x-test-format";
   const std::string payload = "test string";
-  base::span<const uint8_t> payload_span(
-      reinterpret_cast<const uint8_t*>(payload.data()), payload.size());
+  base::span<const uint8_t> payload_span =
+      UNSAFE_TODO(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(payload.data()), payload.size()));
 
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
@@ -828,14 +826,16 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
   const std::string kFormatString1 = "web chromium/x-test-format1";
   const std::u16string kFormatString116 = u"chromium/x-test-format1";
   const std::string payload1("test string1");
-  base::span<const uint8_t> payload_span1(
-      reinterpret_cast<const uint8_t*>(payload1.data()), payload1.size());
+  base::span<const uint8_t> payload_span1 =
+      UNSAFE_TODO(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(payload1.data()), payload1.size()));
 
   const std::string kFormatString2 = "web chromium/x-test-format2";
   const std::u16string kFormatString216 = u"chromium/x-test-format2";
   const std::string payload2("test string2");
-  base::span<const uint8_t> payload_span2(
-      reinterpret_cast<const uint8_t*>(payload2.data()), payload2.size());
+  base::span<const uint8_t> payload_span2 =
+      UNSAFE_TODO(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(payload2.data()), payload2.size()));
 
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
@@ -889,14 +889,16 @@ TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
   const std::string kFormatString1 = "web chromium/x-test-format1";
   const std::u16string kFormatString116 = u"chromium/x-test-format1";
   const std::string payload1("test string1");
-  base::span<const uint8_t> payload_span1(
-      reinterpret_cast<const uint8_t*>(payload1.data()), payload1.size());
+  base::span<const uint8_t> payload_span1 =
+      UNSAFE_TODO(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(payload1.data()), payload1.size()));
 
   const std::string kFormatString2 = "web text/plain";
   const std::u16string kFormatString216 = u"text/plain";
   const std::string payload2("test string2");
-  base::span<const uint8_t> payload_span2(
-      reinterpret_cast<const uint8_t*>(payload2.data()), payload2.size());
+  base::span<const uint8_t> payload_span2 =
+      UNSAFE_TODO(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(payload2.data()), payload2.size()));
 
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
@@ -970,9 +972,9 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
 #else
   const std::string kPlatformSpecificText = text;
 #endif
-  base::span<const uint8_t> text_span(
+  base::span<const uint8_t> text_span = UNSAFE_TODO(base::span<const uint8_t>(
       reinterpret_cast<const uint8_t*>(kPlatformSpecificText.data()),
-      kPlatformSpecificText.size());
+      kPlatformSpecificText.size()));
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteData(kFormatString16,
@@ -1132,12 +1134,12 @@ TYPED_TEST(ClipboardTest, PrivacyMetadataTest) {
   std::string result = clipboard_test_util::ReadData(
       &this->clipboard(), ClipboardFormatType::ClipboardHistoryType(),
       /* data_dst = */ nullptr);
-  DWORD history_data = std::strtoul(result.c_str(), nullptr, 16);
+  DWORD history_data = UNSAFE_TODO(std::strtoul(result.c_str(), nullptr, 16));
   EXPECT_EQ(0ul, history_data);
   result = clipboard_test_util::ReadData(
       &this->clipboard(), ClipboardFormatType::UploadCloudClipboardType(),
       /* data_dst = */ nullptr);
-  DWORD cloud_data = std::strtoul(result.c_str(), nullptr, 16);
+  DWORD cloud_data = UNSAFE_TODO(std::strtoul(result.c_str(), nullptr, 16));
   EXPECT_EQ(0ul, cloud_data);
 }
 #endif  // BUILDFLAG(IS_WIN)

@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/test/ui_controls.h"
 
 #import <Cocoa/Cocoa.h>
 
+#include <array>
 #include <vector>
 
 #import "base/apple/foundation_util.h"
 #import "base/apple/scoped_objc_class_swizzler.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/current_thread.h"
@@ -69,7 +66,7 @@ __weak NSWindow* g_last_window_weak = nullptr;
 
 // Stores the current pressed mouse buttons. Indexed by
 // ui_controls::MouseButton.
-bool g_mouse_button_down[3] = {false, false, false};
+std::array<bool, 3> g_mouse_button_down = {false, false, false};
 
 bool g_ui_controls_enabled = false;
 
@@ -249,11 +246,17 @@ NSEvent* MakeMouseEvent(NSEventType event_type, NSWindow* window) {
 
 + (NSUInteger)pressedMouseButtons {
   NSUInteger result = 0;
-  const int buttons[3] = {
-      ui_controls::LEFT, ui_controls::RIGHT, ui_controls::MIDDLE};
-  for (size_t i = 0; i < std::size(buttons); ++i) {
-    if (g_mouse_button_down[buttons[i]])
+  const std::array buttons = {
+      ui_controls::LEFT,
+      ui_controls::RIGHT,
+      ui_controls::MIDDLE,
+  };
+  int i = 0;
+  for (int button : buttons) {
+    if (g_mouse_button_down[button]) {
       result |= (1 << i);
+    }
+    i++;
   }
   return result;
 }
