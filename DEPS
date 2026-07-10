@@ -2063,7 +2063,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/chromium/content_analysis_sdk.git' + '@' + '2a8191af30a4d1f591e2f758e595bdeea139e93a',
 
   'src/third_party/dav1d/libdav1d':
-    Var('chromium_git') + '/external/github.com/videolan/dav1d.git' + '@' + 'c150ba6c9b9be0956330a9ddfee33ad88f2b1bc5',
+    Var('chromium_git') + '/external/github.com/videolan/dav1d.git' + '@' + '07f1214d0e688d199f6176108d5247cb74171236',
 
   'src/third_party/dawn':
     Var('dawn_git') + '/dawn.git' + '@' +  Var('dawn_revision'),
