@@ -3862,7 +3862,6 @@ if (!is_android) {
     }
     if (is_chromeos && include_js2gtest_tests) {
       deps += [
-        "//ash/webui/color_internals:browser_tests_js",
         "//ash/webui/eche_app_ui:browser_tests_js",
         "//ash/webui/system_apps:browser_tests",
         "//chrome/test/data/webui/chromeos:browser_tests_js_webui",

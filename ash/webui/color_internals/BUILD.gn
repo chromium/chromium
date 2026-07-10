@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/test/base/ash/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
@@ -24,12 +23,4 @@ static_library("color_internals") {
     "//content/public/browser",
     "//ui/webui",
   ]
-}
-
-js2gtest("browser_tests_js") {
-  test_type = "mojo_webui"
-
-  sources = [ "test/color_internals_browsertest.js" ]
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }

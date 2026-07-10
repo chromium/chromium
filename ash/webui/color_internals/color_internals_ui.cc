@@ -13,6 +13,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash {
 
@@ -22,15 +23,12 @@ ColorInternalsUI::ColorInternalsUI(content::WebUI* web_ui)
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),
           kChromeUIColorInternalsHost);
-  data_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://webui-test 'self';");
 
-  data_source->SetDefaultResource(IDR_ASH_COLOR_INTERNALS_INDEX_HTML);
+  webui::SetupWebUIDataSource(data_source, kAshColorInternalsResources,
+                              IDR_ASH_COLOR_INTERNALS_INDEX_HTML);
   data_source->AddResourcePath(
       "color_internals_tokens.json",
       IDR_WEBUI_UI_CHROMEOS_STYLES_COLOR_INTERNALS_TOKENS_JSON);
-  data_source->AddResourcePaths(kAshColorInternalsResources);
 }
 
 void ColorInternalsUI::BindInterface(
