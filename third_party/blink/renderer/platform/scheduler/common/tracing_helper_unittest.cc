@@ -83,5 +83,10 @@ TEST(TracingHelperTest, TraceableStateOperators) {
   EXPECT_EQ(2, z);
 }
 
+TEST(TracingHelperTest, YesNoStateToString) {
+  EXPECT_STREQ(YesNoStateToString(true).value, "yes");
+  EXPECT_EQ(YesNoStateToString(false).value, nullptr);
+}
+
 }  // namespace scheduler
 }  // namespace blink

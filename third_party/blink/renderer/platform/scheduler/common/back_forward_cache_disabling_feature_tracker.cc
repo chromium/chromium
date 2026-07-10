@@ -25,6 +25,11 @@ BackForwardCacheDisablingFeatureTracker::
           tracing_controller, YesNoStateToString},
       scheduler_{scheduler} {}
 
+BackForwardCacheDisablingFeatureTracker::
+    ~BackForwardCacheDisablingFeatureTracker() {
+  Reset();
+}
+
 void BackForwardCacheDisablingFeatureTracker::SetDelegate(
     FrameOrWorkerScheduler::Delegate* delegate) {
   // This function is only called when initializing. `delegate_` should be

@@ -54,7 +54,7 @@ perfetto::StaticString VisibilityStateToString(bool is_visible) {
   if (is_visible) {
     return "visible";
   } else {
-    return "hidden";
+    return nullptr;
   }
 }
 
@@ -62,7 +62,7 @@ perfetto::StaticString IsVisibleAreaLargeStateToString(bool is_large) {
   if (is_large) {
     return "large";
   } else {
-    return "small";
+    return nullptr;
   }
 }
 
@@ -70,7 +70,7 @@ perfetto::StaticString UserActivationStateToString(bool had_user_activation) {
   if (had_user_activation) {
     return "had user activation";
   } else {
-    return "no user activation";
+    return nullptr;
   }
 }
 
@@ -78,7 +78,7 @@ perfetto::StaticString PausedStateToString(bool is_paused) {
   if (is_paused) {
     return "paused";
   } else {
-    return "running";
+    return nullptr;
   }
 }
 
@@ -86,7 +86,7 @@ perfetto::StaticString FrozenStateToString(bool is_frozen) {
   if (is_frozen) {
     return "frozen";
   } else {
-    return "running";
+    return nullptr;
   }
 }
 

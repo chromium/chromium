@@ -13,7 +13,7 @@ perfetto::StaticString PageVisibilityStateToString(
     case PageVisibilityState::kVisible:
       return "visible";
     case PageVisibilityState::kHidden:
-      return "hidden";
+      return nullptr;
   }
   // Keep MSVC happy.
   return nullptr;

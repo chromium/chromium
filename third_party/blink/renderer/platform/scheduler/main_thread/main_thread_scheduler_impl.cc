@@ -171,7 +171,7 @@ perfetto::StaticString AudioPlayingStateToString(bool is_audio_playing) {
   if (is_audio_playing) {
     return "playing";
   } else {
-    return "silent";
+    return nullptr;
   }
 }
 
@@ -195,7 +195,7 @@ perfetto::StaticString TaskPriorityToStaticString(TaskPriority priority) {
 perfetto::StaticString OptionalTaskPriorityToString(
     std::optional<TaskPriority> priority) {
   if (!priority)
-    return "Unknown";
+    return nullptr;
   return TaskPriorityToStaticString(*priority);
 }
 
@@ -235,7 +235,7 @@ perfetto::StaticString RenderingPrioritizationStateToString(
       MainThreadSchedulerImpl::RenderingPrioritizationState;
   switch (state) {
     case RenderingPrioritizationState::kNone:
-      return "none";
+      return nullptr;
     case RenderingPrioritizationState::kRenderingStarved:
       return "rendering_starved";
     case RenderingPrioritizationState::kRenderingStarvedByRenderBlocking:
