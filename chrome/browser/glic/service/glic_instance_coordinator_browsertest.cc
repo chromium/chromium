@@ -7,6 +7,7 @@
 // and debug. When waiting is required, `base::test::RunUntil` is usually
 // sufficient and simpler than a full `RunTestSequence`.
 
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -1305,6 +1306,205 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_FALSE(instance2->IsHibernated());
 }
+
+class GlicInstanceStatefulMemoryPressureTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  GlicInstanceStatefulMemoryPressureTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{base::kStatefulMemoryPressure, {}},
+         {kGlicMaxAwakeInstances,
+          {{"limit", "4"}, {"moderate_pressure_limit", "2"}}}},
+        /*disabled_features=*/{});
+  }
+
+  void TearDownOnMainThread() override {
+    base::MemoryPressureListener::SimulatePressureNotification(
+        base::MEMORY_PRESSURE_LEVEL_NONE);
+    GlicInstanceCoordinatorBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceStatefulMemoryPressureTest,
+                       UnhibernateEnforcesScaledLimitDuringModeratePressure) {
+  // With limit = 4, moderate pressure scales the limit down to 2.
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  ASSERT_OK_AND_ASSIGN(auto* instance1, OpenGlicForActiveTab());
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(auto* instance2, OpenGlicForActiveTab());
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(auto* instance3, OpenGlicForActiveTab());
+
+  // Opening the 3rd instance under moderate pressure (limit 2) should cause the
+  // oldest background instance (instance1) to be hibernated.
+  EXPECT_TRUE(instance1->IsHibernated());
+  EXPECT_FALSE(instance2->IsHibernated());
+  EXPECT_FALSE(instance3->IsHibernated());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceStatefulMemoryPressureTest,
+                       ModeratePressureRecoveryWhenPressureRelieved) {
+  // With limit = 4, moderate pressure scales the limit down to 2.
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  ASSERT_OK_AND_ASSIGN(auto* instance1, OpenGlicForActiveTab());
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(auto* instance2, OpenGlicForActiveTab());
+
+  EXPECT_FALSE(instance1->IsHibernated());
+  EXPECT_FALSE(instance2->IsHibernated());
+
+  // Relieve memory pressure back to NONE. The limit should recover to 4.
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_NONE);
+
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(auto* instance3, OpenGlicForActiveTab());
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(auto* instance4, OpenGlicForActiveTab());
+
+  // All 4 instances should remain awake without trimming.
+  EXPECT_FALSE(instance1->IsHibernated());
+  EXPECT_FALSE(instance2->IsHibernated());
+  EXPECT_FALSE(instance3->IsHibernated());
+  EXPECT_FALSE(instance4->IsHibernated());
+}
+
+class GlicInstanceStatefulMemoryPressureDisabledTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  GlicInstanceStatefulMemoryPressureDisabledTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{kGlicMaxAwakeInstances,
+          {{"limit", "4"}, {"moderate_pressure_limit", "2"}}}},
+        /*disabled_features=*/
+        {base::kStatefulMemoryPressure});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceStatefulMemoryPressureDisabledTest,
+                       ModeratePressureDoesNotScaleAwakeLimit) {
+  ASSERT_OK_AND_ASSIGN(auto* instance1, OpenGlicForActiveTab());
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(auto* instance2, OpenGlicForActiveTab());
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(auto* instance3, OpenGlicForActiveTab());
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(auto* instance4, OpenGlicForActiveTab());
+
+  // Under normal pressure (limit 4), all 4 instances are awake.
+  EXPECT_FALSE(instance1->IsHibernated());
+  EXPECT_FALSE(instance2->IsHibernated());
+  EXPECT_FALSE(instance3->IsHibernated());
+  EXPECT_FALSE(instance4->IsHibernated());
+
+  // Simulate moderate memory pressure when the feature is disabled.
+  // The limit should remain 4, so no instances are hibernated.
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  EXPECT_FALSE(instance1->IsHibernated());
+  EXPECT_FALSE(instance2->IsHibernated());
+  EXPECT_FALSE(instance3->IsHibernated());
+  EXPECT_FALSE(instance4->IsHibernated());
+
+  // Opening a 5th instance should enforce the unscaled limit of 4,
+  // hibernating only the oldest instance (instance1).
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(auto* instance5, OpenGlicForActiveTab());
+
+  EXPECT_TRUE(instance1->IsHibernated());
+  EXPECT_FALSE(instance2->IsHibernated());
+  EXPECT_FALSE(instance3->IsHibernated());
+  EXPECT_FALSE(instance4->IsHibernated());
+  EXPECT_FALSE(instance5->IsHibernated());
+}
+
+struct PressureLimitTestCase {
+  std::string test_name;
+  std::string moderate_limit_param;
+  std::string critical_limit_param;
+  base::MemoryPressureLevel simulated_level;
+  size_t expected_awake_count;
+};
+
+class GlicInstanceStatefulMemoryPressureParamTest
+    : public GlicInstanceCoordinatorBrowserTest,
+      public testing::WithParamInterface<PressureLimitTestCase> {
+ public:
+  GlicInstanceStatefulMemoryPressureParamTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{base::kStatefulMemoryPressure, {}},
+         {kGlicMaxAwakeInstances,
+          {{"limit", "4"},
+           {"moderate_pressure_limit", GetParam().moderate_limit_param},
+           {"critical_pressure_limit", GetParam().critical_limit_param}}}},
+        /*disabled_features=*/{});
+  }
+
+  void TearDownOnMainThread() override {
+    base::MemoryPressureListener::SimulatePressureNotification(
+        base::MEMORY_PRESSURE_LEVEL_NONE);
+    GlicInstanceCoordinatorBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicInstanceStatefulMemoryPressureParamTest,
+                       TrimsToExpectedLimit) {
+  // Create 4 awake background instances (baseline limit = 4).
+  ASSERT_OK_AND_ASSIGN(auto* instance1, OpenGlicForActiveTab());
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(auto* instance2, OpenGlicForActiveTab());
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(auto* instance3, OpenGlicForActiveTab());
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(auto* instance4, OpenGlicForActiveTab());
+
+  base::MemoryPressureListener::SimulatePressureNotification(
+      GetParam().simulated_level);
+
+  size_t awake_count = 0;
+  for (GlicInstanceImpl* instance :
+       {instance1, instance2, instance3, instance4}) {
+    if (!instance->IsHibernated()) {
+      awake_count++;
+    }
+  }
+  EXPECT_EQ(awake_count, GetParam().expected_awake_count);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GlicInstanceStatefulMemoryPressureParamTest,
+    testing::Values(
+        PressureLimitTestCase{"ModerateDefaultLimit", "2", "0",
+                              base::MEMORY_PRESSURE_LEVEL_MODERATE, 2},
+        PressureLimitTestCase{"CriticalDefaultLimit", "2", "0",
+                              base::MEMORY_PRESSURE_LEVEL_CRITICAL, 1},
+        PressureLimitTestCase{"ModerateCustomLimit", "3", "0",
+                              base::MEMORY_PRESSURE_LEVEL_MODERATE, 3},
+        PressureLimitTestCase{"CriticalCustomLimit", "2", "1",
+                              base::MEMORY_PRESSURE_LEVEL_CRITICAL, 1},
+        PressureLimitTestCase{"MonotonicClamping", "2", "5",
+                              base::MEMORY_PRESSURE_LEVEL_CRITICAL, 2}),
+    [](const testing::TestParamInfo<PressureLimitTestCase>& info) {
+      return info.param.test_name;
+    });
 
 class GlicInstanceCoordinatorNoWarmingTest
     : public GlicInstanceCoordinatorBrowserTest {

@@ -6,12 +6,14 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <functional>
 
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -88,6 +90,12 @@ bool IsEligibleForHibernation(const GlicInstanceImpl* instance) {
 BASE_FEATURE(kGlicMaxAwakeInstances, base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int> kGlicMaxAwakeInstancesLimit{
     &kGlicMaxAwakeInstances, "limit", 15};
+constexpr base::FeatureParam<size_t>
+    kGlicMaxAwakeInstancesModeratePressureLimit{&kGlicMaxAwakeInstances,
+                                                "moderate_pressure_limit", 8};
+constexpr base::FeatureParam<size_t>
+    kGlicMaxAwakeInstancesCriticalPressureLimit{&kGlicMaxAwakeInstances,
+                                                "critical_pressure_limit", 0};
 
 GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
     Profile* profile, signin::IdentityManager* identity_manager,
@@ -107,7 +115,7 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
           std::make_unique<GlicActiveInstanceSharingManager>(profile,
                                                              enabling)) {
   if (memory_pressure_level() != base::MEMORY_PRESSURE_LEVEL_NONE) {
-    web_contents_warming_pool_->OnMemoryPressure(memory_pressure_level());
+    OnMemoryPressure(memory_pressure_level());
   }
   if (identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
@@ -775,45 +783,80 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplFor(
   return nullptr;
 }
 
-void GlicInstanceCoordinatorImpl::ApplyMaxAwakeInstancesLimit() {
-  if (base::FeatureList::IsEnabled(kGlicMaxAwakeInstances)) {
-    size_t awake_count = 0;
-    for (const auto& [id, instance] : instances_) {
-      if (!instance->IsHibernated()) {
-        awake_count++;
-      }
-    }
+size_t GlicInstanceCoordinatorImpl::GetCurrentMaxAwakeInstancesLimit() const {
+  CHECK(base::FeatureList::IsEnabled(kGlicMaxAwakeInstances));
+  const size_t baseline_limit =
+      static_cast<size_t>(std::max(1, kGlicMaxAwakeInstancesLimit.Get()));
+  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    return baseline_limit;
+  }
 
-    // A valid limit must be greater than zero.
-    const size_t limit =
-        static_cast<size_t>(std::max(1, kGlicMaxAwakeInstancesLimit.Get()));
-    if (awake_count < limit) {
-      return;
-    }
+  const size_t moderate_limit = std::min(
+      baseline_limit, kGlicMaxAwakeInstancesModeratePressureLimit.Get());
+  const size_t critical_limit = std::min(
+      moderate_limit, kGlicMaxAwakeInstancesCriticalPressureLimit.Get());
 
-    std::vector<GlicInstanceImpl*> hibernatable_instances;
-    for (auto& [id, instance] : instances_) {
+  switch (memory_pressure_level()) {
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
+      return baseline_limit;
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
+      return moderate_limit;
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      return critical_limit;
+  }
+}
+
+void GlicInstanceCoordinatorImpl::TrimAwakeInstancesTo(
+    size_t target_total_awake_count) {
+  size_t total_awake_count = 0;
+  std::vector<GlicInstanceImpl*> hibernatable_instances;
+  for (const auto& [id, instance] : instances_) {
+    if (!instance->IsHibernated()) {
+      total_awake_count++;
       if (IsEligibleForHibernation(instance.get())) {
         hibernatable_instances.push_back(instance.get());
       }
     }
-
-    // Sort candidates by time since last active (descending = oldest first).
-    std::sort(hibernatable_instances.begin(), hibernatable_instances.end(),
-              [](const GlicInstanceImpl* a, const GlicInstanceImpl* b) {
-                return a->GetTimeSinceLastActive() >
-                       b->GetTimeSinceLastActive();
-              });
-
-    // Hibernate until we reach `limit - 1`.
-    size_t target_count = limit - 1;
-    size_t excess_count = awake_count - target_count;
-
-    for (size_t i = 0; i < excess_count && i < hibernatable_instances.size();
-         ++i) {
-      hibernatable_instances[i]->Hibernate();
-    }
   }
+
+  // If we are already within our total awake budget, or if there are no
+  // eligible background instances we can safely hibernate, do nothing.
+  if (total_awake_count <= target_total_awake_count ||
+      hibernatable_instances.empty()) {
+    return;
+  }
+
+  const size_t excess_count =
+      std::min(total_awake_count - target_total_awake_count,
+               hibernatable_instances.size());
+
+  // Partition candidates by time since last active (descending = oldest first)
+  // so that the `excess_count` oldest instances are placed at the front of the
+  // vector.
+  if (excess_count < hibernatable_instances.size()) {
+    std::nth_element(hibernatable_instances.begin(),
+                     hibernatable_instances.begin() + excess_count,
+                     hibernatable_instances.end(),
+                     [](const GlicInstanceImpl* a, const GlicInstanceImpl* b) {
+                       return a->GetTimeSinceLastActive() >
+                              b->GetTimeSinceLastActive();
+                     });
+  }
+
+  for (size_t i = 0; i < excess_count; ++i) {
+    hibernatable_instances[i]->Hibernate();
+  }
+}
+
+void GlicInstanceCoordinatorImpl::ApplyMaxAwakeInstancesLimit() {
+  if (!base::FeatureList::IsEnabled(kGlicMaxAwakeInstances)) {
+    return;
+  }
+
+  // Subtract 1 from the limit to make room for the instance that is about to
+  // awaken. The limit must be at least 1 to avoid an underflow.
+  const size_t limit = std::max<size_t>(1, GetCurrentMaxAwakeInstancesLimit());
+  TrimAwakeInstancesTo(limit - 1);
 }
 
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::CreateGlicInstance(
@@ -1225,16 +1268,21 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
 
   web_contents_warming_pool_->OnMemoryPressure(level);
 
-  if (level < base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+  if (level == base::MEMORY_PRESSURE_LEVEL_NONE) {
     return;
   }
 
-  for (auto& [_, instance] : instances_) {
-    if (!IsEligibleForHibernation(instance.get())) {
-      continue;
+  if (!base::FeatureList::IsEnabled(kGlicMaxAwakeInstances) ||
+      !base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    if (level >= base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+      TrimAwakeInstancesTo(0u);
     }
-    instance->Hibernate();
+    return;
   }
+
+  // Both features are enabled; dynamically trim awake instances to the limit
+  // configured for the current memory pressure level.
+  TrimAwakeInstancesTo(GetCurrentMaxAwakeInstancesLimit());
 }
 
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetOrRestoreInstanceImpl(
