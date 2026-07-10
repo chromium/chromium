@@ -94,9 +94,11 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
     active_fetchers_.erase(gaia_id);
   }
 
-  // TODO(crbug.com/532419984): Restrict this computation if the removed account
-  // is the current preferred account.
-  EnsureAllAccountsFetched(/*is_periodic_refresh=*/false);
+  // Only trigger a new fetch if the removed account is the current preferred
+  // account.
+  if (GetPreferredAccountForPromo().gaia_id == gaia_id) {
+    EnsureAllAccountsFetched(/*is_periodic_refresh=*/false);
+  }
 }
 
 void AccountPreviewDataServiceImpl::SetFetchCompleteCallbackForTesting(

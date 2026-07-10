@@ -293,6 +293,11 @@ TEST_F(AccountPreviewDataServiceTest,
   EXPECT_FALSE(service_->GetAccountPreviewData(account2.gaia).has_value());
   EXPECT_FALSE(service_->HasActiveFetcherForTesting(account2.gaia));
 
+  // Manually set account1 as the preferred account in prefs.
+  base::DictValue dict;
+  dict.Set("gaia_id", account1.gaia.ToString());
+  prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
+
   // 3. Remove account1. This triggers EnsureAllAccountsFetched().
   identity_test_env_.RemoveRefreshTokenForAccount(account1.account_id);
 
@@ -637,6 +642,50 @@ TEST_F(AccountPreviewDataServiceTest,
   base::Time current_time =
       prefs_.GetTime(prefs::kAccountPreviewDataLastUpdatePref);
   EXPECT_EQ(current_time, past_time);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       RemovingNonPreferredAccountDoesNotTriggerRefresh) {
+  // 1. Make account2 available and cache it successfully.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  base::RunLoop run_loop2;
+  service_->SetFetchCompleteCallbackForTesting(run_loop2.QuitClosure());
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+  run_loop2.Run();
+
+  ASSERT_TRUE(service_->GetAccountPreviewData(account2.gaia).has_value());
+
+  // 2. Make account1 available, and fail its fetch (so it remains uncached).
+  MockFailedStatsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  MockFailedPreviewsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  base::RunLoop run_loop1;
+  service_->SetFetchCompleteCallbackForTesting(run_loop1.QuitClosure());
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  run_loop1.Run();
+
+  ASSERT_FALSE(service_->GetAccountPreviewData(account1.gaia).has_value());
+
+  // Manually set account1 as the preferred account in prefs.
+  base::DictValue dict;
+  dict.Set("gaia_id", account1.gaia.ToString());
+  prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
+
+  // Verify that account1 is indeed preferred.
+  ASSERT_EQ(service_->GetPreferredAccountForPromo().gaia_id, account1.gaia);
+
+  // Now remove account2 (which is NOT the preferred account).
+  // Because it is not the preferred account, OnRefreshTokenRemovedForAccount
+  // should NOT trigger a new fetch cycle (i.e. it should NOT call
+  // EnsureAllAccountsFetched()).
+  // We verify this by asserting that no active fetcher is started for the
+  // uncached account1.
+  identity_test_env_.RemoveRefreshTokenForAccount(account2.account_id);
+
+  EXPECT_FALSE(service_->GetAccountPreviewData(account2.gaia).has_value());
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account1.gaia));
+  EXPECT_FALSE(service_->GetAccountPreviewData(account1.gaia).has_value());
 }
 
 }  // namespace signin
