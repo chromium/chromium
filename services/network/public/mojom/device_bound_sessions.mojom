@@ -220,7 +220,7 @@ enum DeviceBoundSessionRefreshResult {
   kInitializedService = 1,
   kUnreachable = 2,
   kServerError = 3,
-  kRefreshQuotaExceeded = 4,
+  // kRefreshQuotaExceeded = 4,  // Replaced by `kSigningQuotaExceeded`.
   kFatalError = 5,
   kSigningQuotaExceeded = 6,
   kRefreshedAsWaiter = 7,

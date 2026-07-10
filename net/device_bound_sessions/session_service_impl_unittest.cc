@@ -1818,53 +1818,7 @@ TEST_F(SessionServiceImplTest, RefreshUpdatesConfig) {
             GURL("https://example.com/migrated-refresh"));
 }
 
-TEST_F(SessionServiceImplTest, SessionRefreshQuota) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kDeviceBoundSessionSigningQuotaAndCaching);
-  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
-  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
-      kSessionId, kRefreshUrlString, kOrigin);
-
-  net::TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
-  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
-
-  // The first 6 refreshes succeed.
-  DbscRequest dbsc_request(request.get());
-  for (size_t i = 0; i < 6; i++) {
-    base::test::TestFuture<RefreshResult> future;
-    service().DeferRequestForRefresh(
-        dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
-        future.GetCallback());
-    EXPECT_EQ(future.Take(), RefreshResult::kRefreshed);
-  }
-
-  // The next refresh is throttled.
-  {
-    base::test::TestFuture<RefreshResult> future;
-    service().DeferRequestForRefresh(
-        dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
-        future.GetCallback());
-    EXPECT_EQ(future.Take(), RefreshResult::kRefreshQuotaExceeded);
-  }
-
-  // After 9 minutes, the quota is restored and the next refresh succeeds.
-  FastForwardBy(base::Minutes(9));
-  {
-    base::test::TestFuture<RefreshResult> future;
-    service().DeferRequestForRefresh(
-        dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
-        future.GetCallback());
-    EXPECT_EQ(future.Take(), RefreshResult::kRefreshed);
-  }
-}
-
 TEST_F(SessionServiceImplTest, SessionSigningQuota) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kDeviceBoundSessionSigningQuotaAndCaching);
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
       kSessionId, kRefreshUrlString, kOrigin);
@@ -1918,8 +1872,6 @@ class SessionServiceImplSystemTimeTest : public SessionServiceImplTest {
 };
 
 TEST_F(SessionServiceImplSystemTimeTest, PrunesFutureSignings) {
-  base::test::ScopedFeatureList feature_list(
-      features::kDeviceBoundSessionSigningQuotaAndCaching);
   SessionKey session_key{SchemefulSite(GURL(kTestUrl)),
                          Session::Id(kSessionId)};
 
@@ -2044,7 +1996,6 @@ TEST_F(SessionServiceImplTest, RepeatedDeferral) {
 TEST_F(SessionServiceImplTest, AddsDebugHeader) {
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
   AddSessionsForTesting({{kSessionId2, kRefreshUrlString, kOrigin}});
-  AddSessionsForTesting({{kSessionId3, kRefreshUrlString, kOrigin}});
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -2060,9 +2011,6 @@ TEST_F(SessionServiceImplTest, AddsDebugHeader) {
       RefreshResult::kUnreachable);
   request->AddDeviceBoundSessionDeferral(
       SessionKey{SchemefulSite(kTestUrl), Session::Id(kSessionId2)},
-      RefreshResult::kRefreshQuotaExceeded);
-  request->AddDeviceBoundSessionDeferral(
-      SessionKey{SchemefulSite(kTestUrl), Session::Id(kSessionId3)},
       RefreshResult::kSigningQuotaExceeded);
 
   HttpRequestHeaders extra_headers;
@@ -2077,8 +2025,7 @@ TEST_F(SessionServiceImplTest, AddsDebugHeader) {
   EXPECT_TRUE(debug_header.has_value());
   EXPECT_EQ(*debug_header,
             "unreachable;session_identifier=\"SessionId\", "
-            "quota_exceeded;session_identifier=\"SessionId2\", "
-            "quota_exceeded;session_identifier=\"SessionId3\"");
+            "quota_exceeded;session_identifier=\"SessionId2\"");
 }
 
 TEST_F(SessionServiceImplTest, NoDebugHeaderOnSuccess) {

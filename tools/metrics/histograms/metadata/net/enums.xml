@@ -643,7 +643,7 @@ historical analysis. -->
   <int value="2" label="Session key not restored"/>
   <int value="3" label="Attempted"/>
   <int value="4" label="Previous failed proactive refresh"/>
-  <int value="5" label="Signing quota exceeded"/>
+  <int value="5" label="(Obsolete) Signing quota exceeded"/>
   <int value="6" label="Session in backoff"/>
 </enum>
 
@@ -656,7 +656,7 @@ historical analysis. -->
   <int value="1" label="Service initialized"/>
   <int value="2" label="Endpoint unreachable"/>
   <int value="3" label="Endpoint transient error"/>
-  <int value="4" label="Refresh quota exceeded"/>
+  <int value="4" label="(Obsolete) Refresh quota exceeded"/>
   <int value="5" label="Fatal error"/>
   <int value="6" label="Signing exceeded"/>
   <int value="7" label="Refreshed as waiter"/>

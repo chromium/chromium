@@ -2212,9 +2212,6 @@ String BuildProtocolDeviceBoundSessionRefreshResult(
     case net::device_bound_sessions::RefreshResult::kServerError:
       return protocol::Network::RefreshEventDetails::RefreshResultEnum::
           ServerError;
-    case net::device_bound_sessions::RefreshResult::kRefreshQuotaExceeded:
-      return protocol::Network::RefreshEventDetails::RefreshResultEnum::
-          RefreshQuotaExceeded;
     case net::device_bound_sessions::RefreshResult::kFatalError:
       return protocol::Network::RefreshEventDetails::RefreshResultEnum::
           FatalError;

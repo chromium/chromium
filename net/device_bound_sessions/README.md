@@ -63,8 +63,8 @@ Chrome makes two decisions for the overall stability of the system:
   legitimate use cases. Because we cache signed challenges, this only
   applies to refreshes with fresh challenges or new session
   registration. Signing operations are tracked by
-  `SessionServiceImpl::refresh_times_`, and quota is checked by
-  `SessionServiceImpl::RefreshQuotaExceeded`.
+  `SessionServiceImpl::signing_times_`, and quota is checked by
+  `SessionServiceImpl::SigningQuotaExceeded`.
 - Chrome attempts to proactively refresh a session if a request is made
   where a bound cookie would expire within 2 minutes. This is identical
   to a blocking refresh, but without deferring the triggering

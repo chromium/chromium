@@ -519,38 +519,35 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
             base::BindOnce(&RegistrationFetcherImpl::OnRegistrationTokenCreated,
                            GetWeakPtr(), current_challenge_, *key_id_);
 
-    if (base::FeatureList::IsEnabled(
-            features::kDeviceBoundSessionSigningQuotaAndCaching)) {
-      SchemefulSite site = SchemefulSite(fetcher_endpoint_);
-      if (IsForRefreshRequest()) {
-        SessionKey session_key{site, Session::Id(*session_identifier_)};
-        const SessionService::SignedRefreshChallenge* signed_refresh_challenge =
-            session_service_->GetLatestSignedRefreshChallenge(session_key);
-        // If we already have a matching signed refresh challenge, we
-        // can skip past the signing. We know we have a
-        // `current_challenge_` here because this block is behind
-        // `IsForRefreshRequest()`.
-        if (signed_refresh_challenge &&
-            signed_refresh_challenge->challenge == *current_challenge_ &&
-            signed_refresh_challenge->key_id == *key_id_) {
-          std::move(callback).Run(signed_refresh_challenge->signed_challenge);
-          // `this` may be deleted.
-          return;
-        }
-      }
-
-      // Now, right before signing, we check whether the signing quota is
-      // exceeded. Note this callback is intentionally different from the one
-      // defined above.
-      if (session_service_->SigningQuotaExceeded(site)) {
-        RunCallback(CreateErrorRegistrationResult(
-            SessionError(SessionError::kSigningQuotaExceeded)));
+    SchemefulSite site(fetcher_endpoint_);
+    if (IsForRefreshRequest()) {
+      SessionKey session_key{site, Session::Id(*session_identifier_)};
+      const SessionService::SignedRefreshChallenge* signed_refresh_challenge =
+          session_service_->GetLatestSignedRefreshChallenge(session_key);
+      // If we already have a matching signed refresh challenge, we
+      // can skip past the signing. We know we have a
+      // `current_challenge_` here because this block is behind
+      // `IsForRefreshRequest()`.
+      if (signed_refresh_challenge &&
+          signed_refresh_challenge->challenge == *current_challenge_ &&
+          signed_refresh_challenge->key_id == *key_id_) {
+        std::move(callback).Run(signed_refresh_challenge->signed_challenge);
         // `this` may be deleted.
         return;
       }
-      // Track a new signing attempt.
-      session_service_->AddSigningOccurrence(site);
     }
+
+    // Now, right before signing, we check whether the signing quota is
+    // exceeded. Note this callback is intentionally different from the one
+    // defined above.
+    if (session_service_->SigningQuotaExceeded(site)) {
+      RunCallback(CreateErrorRegistrationResult(
+          SessionError(SessionError::kSigningQuotaExceeded)));
+      // `this` may be deleted.
+      return;
+    }
+    // Track a new signing attempt.
+    session_service_->AddSigningOccurrence(site);
 
     SignChallengeWithKey(IsForRefreshRequest(), *key_service_, *key_id_,
                          priority_, fetcher_endpoint_, current_challenge_,
@@ -580,9 +577,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
     // Cache the signed refresh challenge in case the same challenge is
     // attempted next time (e.g. if refresh transiently fails).
-    if (base::FeatureList::IsEnabled(
-            features::kDeviceBoundSessionSigningQuotaAndCaching) &&
-        IsForRefreshRequest() && challenge.has_value()) {
+    if (IsForRefreshRequest() && challenge.has_value()) {
       SessionKey session_key{SchemefulSite(fetcher_endpoint_),
                              Session::Id(*session_identifier_)};
       SessionService::SignedRefreshChallenge signed_refresh_challenge = {

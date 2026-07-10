@@ -2263,7 +2263,6 @@ domain Network
         InitializedService
         Unreachable
         ServerError
-        RefreshQuotaExceeded
         FatalError
         SigningQuotaExceeded
         RefreshedAsWaiter

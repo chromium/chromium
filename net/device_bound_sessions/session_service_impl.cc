@@ -101,7 +101,6 @@ class DebugHeaderBuilder {
         item = structured_headers::Item("server_error",
                                         structured_headers::Item::kTokenType);
         break;
-      case RefreshResult::kRefreshQuotaExceeded:
       case RefreshResult::kSigningQuotaExceeded:
         item = structured_headers::Item("quota_exceeded",
                                         structured_headers::Item::kTokenType);
@@ -184,7 +183,7 @@ SessionServiceImpl::SessionServiceImpl(
       restricted_sites_(restricted_sites),
       client_cert_handler_(std::move(client_cert_handler)),
       has_cookie_access_cb_(std::move(has_cookie_access_cb)) {
-  ignore_refresh_quota_ = !features::kDeviceBoundSessionsRefreshQuota.Get();
+  ignore_signing_quota_ = !features::kDeviceBoundSessionsSigningQuota.Get();
   CHECK(context_);
   CHECK(client_cert_handler_);
 }
@@ -570,11 +569,6 @@ void SessionServiceImpl::DeferRequestForRefresh(
       "Net.DeviceBoundSessions.ProactiveRefreshAlreadyInProgressOnDeferAttempt",
       proactive_refresh_in_progress);
   if (proactive_refresh_in_progress) {
-    return;
-  }
-
-  if (RefreshQuotaExceeded(session_key.site)) {
-    UnblockDeferredRequests(session_key, RefreshResult::kRefreshQuotaExceeded);
     return;
   }
 
@@ -1325,11 +1319,6 @@ void SessionServiceImpl::RefreshSessionInternal(
   request.net_log().AddEventReferencingSource(
       net::NetLogEventType::DBSC_REFRESH_REQUEST, net_log_source_for_refresh);
 
-  if (!base::FeatureList::IsEnabled(
-          features::kDeviceBoundSessionSigningQuotaAndCaching)) {
-    refresh_times_[session_key.site].push_back(base::Time::Now());
-  }
-
   Session* session = GetSession(session_key);
   if (!session) {
     return;
@@ -1359,49 +1348,8 @@ void SessionServiceImpl::RefreshSessionInternal(
   // `fetcher_raw` may be deleted.
 }
 
-bool SessionServiceImpl::RefreshQuotaExceeded(const SchemefulSite& site) {
-  if (base::FeatureList::IsEnabled(
-          features::kDeviceBoundSessionSigningQuotaAndCaching)) {
-    return false;
-  }
-
-  if (ignore_refresh_quota_) {
-    return false;
-  }
-
-  auto it = refresh_times_.find(site);
-  if (it == refresh_times_.end()) {
-    return false;
-  }
-
-  std::erase_if(it->second, [](base::Time time) {
-    return base::Time::Now() - time >= kSigningQuotaInterval;
-  });
-
-  size_t refresh_count = it->second.size();
-  if (refresh_count == 0) {
-    refresh_times_.erase(it);
-  }
-
-  if (auto result_it = refresh_last_result_.find(site);
-      refresh_count >= kSigningQuota &&
-      result_it != refresh_last_result_.end()) {
-    base::UmaHistogramEnumeration(
-        "Net.DeviceBoundSessions.RefreshQuotaExceededLastResult",
-        result_it->second.type);
-  }
-
-  return refresh_count >= kSigningQuota;
-}
-
 bool SessionServiceImpl::SigningQuotaExceeded(const SchemefulSite& site) {
-  if (!base::FeatureList::IsEnabled(
-          features::kDeviceBoundSessionSigningQuotaAndCaching)) {
-    return false;
-  }
-
-  // TODO(crbug.com/457803903): Rename refresh quota feature to signing quota.
-  if (ignore_refresh_quota_) {
+  if (ignore_signing_quota_) {
     return false;
   }
 
@@ -1474,11 +1422,6 @@ void SessionServiceImpl::MaybeStartProactiveRefresh(
 
   auto* session = GetSession(session_key);
   CHECK(session);
-
-  if (RefreshQuotaExceeded(session_key.site)) {
-    LogProactiveRefreshAttempt(ProactiveRefreshAttempt::kSigningQuota);
-    return;
-  }
 
   if (session->ShouldBackoff()) {
     LogProactiveRefreshAttempt(ProactiveRefreshAttempt::kBackoff);

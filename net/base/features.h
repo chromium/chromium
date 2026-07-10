@@ -488,10 +488,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessions);
 // requests.
 NET_EXPORT BASE_DECLARE_FEATURE(
     kDeviceBoundSessionsBypassDeferralsForRefreshRequests);
-// This feature enables the Device Bound Session Credentials refresh quota.
+// This feature enables the Device Bound Session Credentials signing quota.
 // This behavior is expected by default; disabling it should only be for
 // testing purposes.
-NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kDeviceBoundSessionsRefreshQuota);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kDeviceBoundSessionsSigningQuota);
 // This feature controls whether DBSC checks the .well-known for subdomain
 // registration.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
@@ -515,10 +515,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionProactiveRefresh);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kDeviceBoundSessionProactiveRefreshThreshold);
-
-// This feature controls whether DBSC has a signing quota instead of a refresh
-// quota, and has associated signing caching for refreshes.
-NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionSigningQuotaAndCaching);
 
 // This feature controls whether DBSC is allowed to register sessions on
 // a certain list of sites, as specified in

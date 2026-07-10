@@ -21,7 +21,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
@@ -2223,10 +2222,6 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedChallenge) {
 }
 
 TEST_F(RegistrationTest, RefreshCachesSignedChallenge) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kDeviceBoundSessionSigningQuotaAndCaching);
-
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
@@ -2276,10 +2271,6 @@ TEST_F(RegistrationTest, RefreshCachesSignedChallenge) {
 }
 
 TEST_F(RegistrationTest, RefreshCachedSignedChallengeUsed) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kDeviceBoundSessionSigningQuotaAndCaching);
-
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
@@ -2323,10 +2314,6 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeUsed) {
 }
 
 TEST_F(RegistrationTest, RefreshCachedSignedChallengeDoesNotMatch) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kDeviceBoundSessionSigningQuotaAndCaching);
-
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
@@ -2378,10 +2365,6 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeDoesNotMatch) {
 }
 
 TEST_F(RegistrationTest, RegistrationTriggersSigningOccurrence) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kDeviceBoundSessionSigningQuotaAndCaching);
-
   // Expect the signing checks are done only when the feature is enabled.
   EXPECT_CALL(session_service(), AddSigningOccurrence(_)).Times(1);
   EXPECT_CALL(session_service(), SigningQuotaExceeded(_))

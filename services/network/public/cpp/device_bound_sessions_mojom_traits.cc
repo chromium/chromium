@@ -384,8 +384,6 @@ EnumTraits<network::mojom::DeviceBoundSessionRefreshResult,
       return MojomRefreshResult::kUnreachable;
     case RefreshResult::kServerError:
       return MojomRefreshResult::kServerError;
-    case RefreshResult::kRefreshQuotaExceeded:
-      return MojomRefreshResult::kRefreshQuotaExceeded;
     case RefreshResult::kFatalError:
       return MojomRefreshResult::kFatalError;
     case RefreshResult::kSigningQuotaExceeded:
@@ -414,8 +412,6 @@ EnumTraits<network::mojom::DeviceBoundSessionRefreshResult,
       return RefreshResult::kUnreachable;
     case MojomRefreshResult::kServerError:
       return RefreshResult::kServerError;
-    case MojomRefreshResult::kRefreshQuotaExceeded:
-      return RefreshResult::kRefreshQuotaExceeded;
     case MojomRefreshResult::kFatalError:
       return RefreshResult::kFatalError;
     case MojomRefreshResult::kSigningQuotaExceeded:

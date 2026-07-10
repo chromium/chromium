@@ -418,7 +418,7 @@ BASE_FEATURE(kDeviceBoundSessions, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDeviceBoundSessionsBypassDeferralsForRefreshRequests,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
-                   kDeviceBoundSessionsRefreshQuota,
+                   kDeviceBoundSessionsSigningQuota,
                    &kDeviceBoundSessions,
                    "RefreshQuota",
                    true);
@@ -448,9 +448,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kDeviceBoundSessionProactiveRefresh,
                    "Threshold",
                    base::Seconds(120));
-
-BASE_FEATURE(kDeviceBoundSessionSigningQuotaAndCaching,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeviceBoundSessionsForRestrictedSites,
              base::FEATURE_DISABLED_BY_DEFAULT);

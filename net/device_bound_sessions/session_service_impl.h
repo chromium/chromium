@@ -64,7 +64,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
     kMissingKey = 2,
     kAttempted = 3,
     kPreviousFailedProactiveRefresh = 4,
-    kSigningQuota = 5,
+    // kSigningQuota = 5,  // no longer used
     kBackoff = 6,
     kMaxValue = kBackoff,
   };
@@ -287,9 +287,6 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       const SessionKey& session_key,
       std::optional<unexportable_keys::UnexportableSigningKeyId> key_id);
 
-  // Whether the site has exceeded its refresh quota.
-  bool RefreshQuotaExceeded(const SchemefulSite& site);
-
   // Add a header to `request` indicating which sessions should have
   // applied, but did not due to error conditions.
   void AddDebugHeader(const DbscRequest& request);
@@ -375,9 +372,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   std::vector<SchemefulSite> restricted_sites_;
   const SelectClientCertificateHandler client_cert_handler_;
 
-  // When true, the refresh quota is not enforced. This is only ever set to
+  // When true, the signing quota is not enforced. This is only ever set to
   // true for testing purposes.
-  bool ignore_refresh_quota_ = false;
+  bool ignore_signing_quota_ = false;
 
   // Deferred requests are stored by session key.
   DeferredRequestsMap deferred_requests_;
@@ -393,12 +390,6 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   // Observers for DBSC events. Used for DevTools.
   base::RepeatingCallbackList<void(const SessionEvent&)> event_callbacks_;
-
-  // Per-site session refresh quota. In order to be robust across
-  // session parameter changes, we enforce refresh quota for a site.
-  // This functionality is being replaced with `signing_times_`.
-  absl::flat_hash_map<net::SchemefulSite, std::vector<base::Time>>
-      refresh_times_;
 
   // Per-site record of the most recent refresh result. This is used
   // for histograms.
