@@ -546,8 +546,10 @@ class ContextualTasksComposeboxHandlerTestWithContextManagementEnabled
     : public ContextualTasksComposeboxHandlerTest {
  public:
   ContextualTasksComposeboxHandlerTestWithContextManagementEnabled() {
-    feature_list_context_management_.InitAndEnableFeature(
-        omnibox::kContextManagementInComposebox);
+    feature_list_context_management_.InitWithFeatures(
+        {omnibox::kContextManagementInComposebox,
+         omnibox::kContextManagementInOmnibox},
+        {});
   }
   ~ContextualTasksComposeboxHandlerTestWithContextManagementEnabled() override =
       default;
@@ -3760,10 +3762,20 @@ IN_PROC_BROWSER_TEST_F(
     }
   };
 
-  TestSupportsTabHandles tab1;
-  tab1.SetSessionId(42);
-  TestSupportsTabHandles tab2;
-  tab2.SetSessionId(43);
+  // Use the default tab created in SetUpOnMainThread.
+  tabs::TabInterface* tab1 =
+      tabs::TabLookupFromWebContents::FromWebContents(web_contents_)->model();
+  ASSERT_NE(tab1, nullptr);
+  SessionID session_id1 =
+      sessions::SessionTabHelper::FromWebContents(tab1->GetContents())
+          ->session_id();
+
+  // Add a second tab.
+  tabs::TabInterface* tab2 = AddTab(GURL("about:blank#2"));
+  ASSERT_NE(tab2, nullptr);
+  SessionID session_id2 =
+      sessions::SessionTabHelper::FromWebContents(tab2->GetContents())
+          ->session_id();
 
   auto mock_session = std::make_unique<testing::NiceMock<
       contextual_search::MockContextualSearchSessionHandle>>();
@@ -3773,7 +3785,7 @@ IN_PROC_BROWSER_TEST_F(
   contextual_search::FileInfo tab_info1;
   tab_info1.tab_url = GURL("about:blank#1");
   tab_info1.tab_title = "About Blank 1";
-  tab_info1.tab_session_id = SessionID::FromSerializedValue(42);
+  tab_info1.tab_session_id = session_id1;
   tab_info1.mime_type = lens::MimeType::kHtml;
   tab_info1.selection_time = now;
   submitted_file_infos.push_back(tab_info1);
@@ -3781,7 +3793,7 @@ IN_PROC_BROWSER_TEST_F(
   contextual_search::FileInfo tab_info2;
   tab_info2.tab_url = GURL("about:blank#2");
   tab_info2.tab_title = "About Blank 2";
-  tab_info2.tab_session_id = SessionID::FromSerializedValue(43);
+  tab_info2.tab_session_id = session_id2;
   tab_info2.mime_type = lens::MimeType::kHtml;
   tab_info2.selection_time = now + base::Seconds(1);
   submitted_file_infos.push_back(tab_info2);
@@ -3801,10 +3813,10 @@ IN_PROC_BROWSER_TEST_F(
         EXPECT_EQ(tabs.size(), 2u);
         EXPECT_EQ(tabs[0]->url, GURL("about:blank#1"));
         EXPECT_EQ(tabs[0]->title, "About Blank 1");
-        EXPECT_EQ(tabs[0]->tab_id, 3);
+        EXPECT_EQ(tabs[0]->tab_id, 2);
         EXPECT_EQ(tabs[1]->url, GURL("about:blank#2"));
         EXPECT_EQ(tabs[1]->title, "About Blank 2");
-        EXPECT_EQ(tabs[1]->tab_id, 4);
+        EXPECT_EQ(tabs[1]->tab_id, 3);
       });
 
   SetUpHandler();

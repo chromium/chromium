@@ -175,7 +175,12 @@ suite('ComposeboxMixinTest', () => {
   });
 
   test(
-      'refreshTabSuggestions() dedupes restored and current tabs', async () => {
+      'refreshTabSuggestions() dedupes restored tabs with same tabId',
+      async () => {
+        loadTimeData.overrideValues({
+          contextManagementInComposeboxEnabled: true,
+          contextManagementInOmniboxEnabled: true,
+        });
         const tab1 = {
           tabId: 0,
           title: 'Tab 1',
@@ -185,7 +190,7 @@ suite('ComposeboxMixinTest', () => {
           lastActive: {internalValue: 0n},
         };
         const tab2Restored = {
-          tabId: 0,
+          tabId: 2,  // Same ID as recent tab
           title: 'Tab 2',
           url: 'about:blank?2',
           showInCurrentTabChip: false,
@@ -219,15 +224,78 @@ suite('ComposeboxMixinTest', () => {
         await element.refreshTabSuggestions();
 
         // Expected tabSuggestions: [tab1, tab2Restored, tab3]
-        // (tab2Recent from recent tabs should be filtered out because its URL
+        // (tab2Recent from recent tabs should be filtered out because its tabId
         // matches tab2Restored)
         assertEquals(3, element.tabSuggestions.length);
         assertEquals(0, element.tabSuggestions[0]!.tabId);
         assertEquals('about:blank?1', element.tabSuggestions[0]!.url);
-        assertEquals(0, element.tabSuggestions[1]!.tabId);
+        assertEquals(2, element.tabSuggestions[1]!.tabId);
         assertEquals('about:blank?2', element.tabSuggestions[1]!.url);
         assertEquals(3, element.tabSuggestions[2]!.tabId);
         assertEquals('about:blank?3', element.tabSuggestions[2]!.url);
+      });
+
+  test(
+      'refreshTabSuggestions() keeps tabs with diff tabId and same URL',
+      async () => {
+        loadTimeData.overrideValues({
+          contextManagementInComposeboxEnabled: true,
+          contextManagementInOmniboxEnabled: true,
+        });
+        const tab1 = {
+          tabId: 0,
+          title: 'Tab 1',
+          url: 'about:blank?1',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+        const tab2Restored = {
+          tabId: 1,  // Different ID than recent tab, e.g. it was closed (or 0)
+          title: 'Tab 2',
+          url: 'about:blank?2',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+        const tab2Recent = {
+          tabId: 2,
+          title: 'Tab 2',
+          url: 'about:blank?2',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+        const tab3 = {
+          tabId: 3,
+          title: 'Tab 3',
+          url: 'about:blank?3',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+
+        // Mock searchboxHandler.getRecentTabs to return tab2Recent and tab3.
+        searchboxHandler.setResultFor(
+            'getRecentTabs', Promise.resolve({tabs: [tab2Recent, tab3]}));
+
+        // Set aimThreadRestoredTabs to contain tab1 and tab2Restored.
+        element.aimThreadRestoredTabs = [tab1, tab2Restored];
+
+        await element.refreshTabSuggestions();
+
+        // Expected tabSuggestions: [tab1, tab2Restored, tab2Recent, tab3]
+        // (tab2Recent from recent tabs should NOT be filtered out because its
+        // tabId differs from tab2Restored, even though they share the same URL)
+        assertEquals(4, element.tabSuggestions.length);
+        assertEquals(0, element.tabSuggestions[0]!.tabId);
+        assertEquals('about:blank?1', element.tabSuggestions[0]!.url);
+        assertEquals(1, element.tabSuggestions[1]!.tabId);
+        assertEquals('about:blank?2', element.tabSuggestions[1]!.url);
+        assertEquals(2, element.tabSuggestions[2]!.tabId);
+        assertEquals('about:blank?2', element.tabSuggestions[2]!.url);
+        assertEquals(3, element.tabSuggestions[3]!.tabId);
+        assertEquals('about:blank?3', element.tabSuggestions[3]!.url);
       });
 
   test('submitCleanup() clears active tab selections', async () => {
