@@ -4,7 +4,7 @@ desc: |-
   Setting this policy allows you to specify which Autofill data types are blocked on specific URL patterns.
 
   The policy is structured as a list of dictionaries. Each dictionary must contain:
-  * "url_pattern": A content setting URL pattern (e.g., "https://[*.]example.com").
+  * "url_pattern": A content setting URL pattern for the main frame (e.g., "https://[*.]example.com").
   * "blocked_types": A list of strings representing the categories of Autofill data to block.
 
   The supported values for "blocked_types" are:
