@@ -180,6 +180,7 @@ void CheckUnifiedEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
   DCHECK_LE(0, event.collection_rate_in_percent);
   DCHECK_LE(0, event.collection_weight_in_percent);
   DCHECK_LE(0, event.main_thread_collection_weight_in_percent);
+  DCHECK_LE(0, event.found_js_global_proxies);
 }
 
 constexpr size_t kMinSize = 1;
@@ -316,6 +317,10 @@ void ReportV8FullHistograms(
       base::StrCat({"V8.GC.Cycle", priority, ".ExternalMemory.Full"}),
       CappedSizeInKB(event.external_memory_bytes), kMinSize, kMaxSizeLarge,
       kNumBuckets);
+  base::UmaHistogramCounts10000(
+      base::StrCat({"V8.GC.Cycle", priority, ".FoundJSGlobalProxies.Full"}),
+      base::saturated_cast<base::Histogram::Sample32>(
+          event.found_js_global_proxies));
 
   /* Report efficacy metrics: */
   base::UmaHistogramCustomCounts(
