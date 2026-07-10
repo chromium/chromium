@@ -37,7 +37,6 @@ component("private_insights") {
 
 source_set("private_insights_logger") {
   public = [ "contextual_cue_log_event_helpers.h" ]
-  sources = [ "contextual_cue_log_event_helpers.cc" ]
   public_deps = [ "//components/metrics/private_metrics/private_insights/events:contextual_cue_log_event_proto" ]
   deps = [ "//base" ]
 }

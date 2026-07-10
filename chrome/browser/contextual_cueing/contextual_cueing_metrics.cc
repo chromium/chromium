@@ -61,7 +61,69 @@ void PopulateSystemProfile(
   }
 }
 
+std::optional<std::pair<std::string, std::string>> ExtractFromProtoTab(
+    const optimization_guide::proto::Tab& tab) {
+  return std::make_pair(tab.url(), tab.title());
+}
+
+std::optional<std::pair<std::string, std::string>> ExtractFromTabHandle(
+    const tabs::TabHandle& handle) {
+  if (auto* tab = handle.Get()) {
+    return std::make_pair(tab->GetURL().spec(),
+                          base::UTF16ToUTF8(tab->GetTitle()));
+  }
+  return std::nullopt;
+}
+
 }  // namespace
+
+namespace internal {
+
+private_insights::events::ContextualCueLogEvent CreateContextualCueShownEvent(
+    const std::string& cue_id,
+    CueTargetType cue_type,
+    const optimization_guide::proto::ContextualCue& cue,
+    tabs::TabInterface* active_tab,
+    const std::vector<tabs::TabHandle>& tabs_to_show,
+    const std::vector<optimization_guide::proto::Tab>& background_tabs) {
+  private_insights::events::ContextualCueLogEvent event;
+  event.set_cue_id(cue_id);
+  event.set_event_type(private_insights::events::ContextualCueLogEvent::SHOWN);
+  event.set_event_timestamp_ms(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
+
+  PopulateSystemProfile(event.mutable_system_profile());
+
+  if (active_tab) {
+    event.mutable_cue_context()->mutable_active_page()->set_url(
+        active_tab->GetURL().spec());
+    event.mutable_cue_context()->mutable_active_page()->set_title(
+        base::UTF16ToUTF8(active_tab->GetTitle()));
+  }
+
+  event.mutable_cue_context()->set_recent_pages(
+      private_insights::SerializeCollectionToPageInfoJson(background_tabs,
+                                                          ExtractFromProtoTab));
+
+  event.mutable_cue_context()->set_tabs_shown(
+      private_insights::SerializeCollectionToPageInfoJson(
+          tabs_to_show, ExtractFromTabHandle));
+
+  event.mutable_cue_details()->set_cuj_type(cue.suggested_cuj());
+  event.mutable_cue_details()->set_suggestion_text(
+      cue.anchored_message_cue().anchored_message_text());
+  event.mutable_cue_details()->set_promoted_feature(GetName(cue_type));
+  event.mutable_cue_details()->set_button_text(
+      cue.anchored_message_cue().action_text());
+  if (cue.has_gemini_in_chrome_surface()) {
+    event.mutable_cue_details()->set_prompt(
+        cue.gemini_in_chrome_surface().prompt());
+  }
+
+  return event;
+}
+
+}  // namespace internal
 
 void RecordCueShownMetrics(ukm::SourceId source_id,
                            std::string_view cuj,
@@ -155,42 +217,8 @@ void RecordCueShownToPrivateInsights(
     return;
   }
 
-  private_insights::events::ContextualCueLogEvent event;
-  event.set_cue_id(cue_id);
-  event.set_event_type(private_insights::events::ContextualCueLogEvent::SHOWN);
-  event.set_event_timestamp_ms(
-      base::Time::Now().InMillisecondsSinceUnixEpoch());
-
-  PopulateSystemProfile(event.mutable_system_profile());
-
-  if (active_tab->GetContents()) {
-    event.mutable_cue_context()->mutable_active_page()->set_url(
-        active_tab->GetContents()->GetLastCommittedURL().spec());
-    event.mutable_cue_context()->mutable_active_page()->set_title(
-        base::UTF16ToUTF8(active_tab->GetContents()->GetTitle()));
-  }
-
-  std::vector<private_insights::events::ContextualCueLogEvent::PageInfo>
-      recent_pages;
-  for (const auto& tab : background_tabs) {
-    private_insights::events::ContextualCueLogEvent::PageInfo page_info;
-    page_info.set_url(tab.url());
-    page_info.set_title(tab.title());
-    recent_pages.push_back(std::move(page_info));
-  }
-  event.mutable_cue_context()->set_recent_pages(
-      private_insights::SerializePageInfoListToJson(recent_pages));
-
-  event.mutable_cue_details()->set_cuj_type(cue.suggested_cuj());
-  event.mutable_cue_details()->set_suggestion_text(
-      cue.anchored_message_cue().anchored_message_text());
-  event.mutable_cue_details()->set_promoted_feature(GetName(cue_type));
-  event.mutable_cue_details()->set_button_text(
-      cue.anchored_message_cue().action_text());
-  if (cue.has_gemini_in_chrome_surface()) {
-    event.mutable_cue_details()->set_prompt(
-        cue.gemini_in_chrome_surface().prompt());
-  }
+  auto event = internal::CreateContextualCueShownEvent(
+      cue_id, cue_type, cue, active_tab, tabs_to_show, background_tabs);
 
   private_insights_service->LogContextualCueEvent(std::move(event));
 }
