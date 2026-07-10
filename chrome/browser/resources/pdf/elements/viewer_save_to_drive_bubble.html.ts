@@ -8,7 +8,6 @@ import {SaveToDriveState} from '../constants.js';
 
 import type {ViewerSaveToDriveBubbleElement} from './viewer_save_to_drive_bubble.js';
 
-// TODO(crbug.com/427451594): Hook up the buttons to fire events.
 export function getHtml(this: ViewerSaveToDriveBubbleElement) {
   // clang-format off
   return html`<!--_html_template_start_-->

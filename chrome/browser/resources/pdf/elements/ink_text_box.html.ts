@@ -8,7 +8,6 @@ import type {InkTextBoxElement} from './ink_text_box.js';
 
 export function getHtml(this: InkTextBoxElement) {
   return html`<!--_html_template_start_-->
-    <!-- TODO(crbug.com/414858397): Add labels for screenreaders -->
     <div class="textbox-wrapper">
       <textarea id="textbox" .value="${this.textValue_}" rows="1"
           @input="${this.onTextValueInput_}">
