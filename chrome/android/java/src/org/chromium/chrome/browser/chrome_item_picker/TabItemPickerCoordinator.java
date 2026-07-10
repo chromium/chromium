@@ -225,7 +225,7 @@ public class TabItemPickerCoordinator {
                 new TabModelSelectorObserver() {
                     @Override
                     public void onDestroyed() {
-                        cancelPicker(mActivity);
+                        cancelPicker();
                         tabModelSelector.removeObserver(this);
                     }
                 };
@@ -237,7 +237,7 @@ public class TabItemPickerCoordinator {
                     new IncognitoTabModelObserver() {
                         @Override
                         public void didBecomeEmpty() {
-                            cancelPicker(mActivity);
+                            cancelPicker();
                             incognitoTabModel.removeIncognitoObserver(this);
                         }
                     };
@@ -359,11 +359,17 @@ public class TabItemPickerCoordinator {
         controller.selectTabs(selectionSet);
     }
 
-    private static void cancelPicker(Activity activity) {
-        if (activity instanceof ChromeItemPickerActivity cipa) {
+    /** Cancels the item picker activity. */
+    void cancelPicker() {
+        int selectedCount =
+                mNavigationProvider != null ? mNavigationProvider.getSelectedItemsCount() : 0;
+        RecordHistogram.recordCount100Histogram(
+                "Android.TabItemPicker.Cancel.SelectedTabs.Count", selectedCount);
+
+        if (mActivity instanceof ChromeItemPickerActivity cipa) {
             cipa.finishWithCancel();
         } else {
-            activity.finish();
+            mActivity.finish();
         }
     }
 
@@ -378,10 +384,12 @@ public class TabItemPickerCoordinator {
         private final TabContentManager mTabContentManager;
         private final Set<Integer> mCachedTabIds;
         private final Set<TabListEditorItemSelectionId> mInitialSelectedTabIds;
+        private final Runnable mCancelRunnable;
         private final Map<Tab, Long> mLoadingTabsToStartTimes = new HashMap<>();
         private final LoadIfNeededCallback mLoadIfNeededCallback = this::onTabLoadFinished;
 
         private boolean mIsDestroyed;
+        private int mSelectedItemsCount;
 
         public ItemPickerNavigationProvider(
                 Activity activity,
@@ -389,17 +397,26 @@ public class TabItemPickerCoordinator {
                 TabModelSelector tabModelSelector,
                 TabContentManager tabContentManager,
                 Set<Integer> cachedTabIds,
-                Set<TabListEditorItemSelectionId> initialSelectedTabIds) {
+                Set<TabListEditorItemSelectionId> initialSelectedTabIds,
+                Runnable cancelRunnable) {
             mActivity = activity;
             mControllerSupplier = controllerSupplier;
             mTabModelSelector = tabModelSelector;
             mTabContentManager = tabContentManager;
             mCachedTabIds = cachedTabIds;
             mInitialSelectedTabIds = initialSelectedTabIds;
+            mCancelRunnable = cancelRunnable;
+            mSelectedItemsCount = initialSelectedTabIds.size();
+        }
+
+        /** Returns the number of currently selected items in the picker. */
+        public int getSelectedItemsCount() {
+            return mSelectedItemsCount;
         }
 
         @Override
         public void onSelectionStateChange(Set<TabListEditorItemSelectionId> selectedItems) {
+            mSelectedItemsCount = selectedItems.size();
             boolean hasSelectionChanged = !Objects.equals(mInitialSelectedTabIds, selectedItems);
             mEnableDoneButtonSupplier.set(hasSelectionChanged);
 
@@ -536,8 +553,7 @@ public class TabItemPickerCoordinator {
                 controller.hide();
             }
 
-            // Route back press to the Activity's cancel handler.
-            cancelPicker(mActivity);
+            mCancelRunnable.run();
         }
 
         @Override
@@ -646,7 +662,8 @@ public class TabItemPickerCoordinator {
                         assumeNonNull(mTabModelSelector),
                         tabContentManager,
                         mCachedTabIdsSet,
-                        mInitialSelectedTabIds);
+                        mInitialSelectedTabIds,
+                        this::cancelPicker);
 
         TabListEditorCoordinator coordinator =
                 new TabListEditorCoordinator(
@@ -681,5 +698,9 @@ public class TabItemPickerCoordinator {
 
     public @Nullable ItemPickerNavigationProvider getItemPickerNavigationProviderForTesting() {
         return mNavigationProvider;
+    }
+
+    public void setNavigationProviderForTesting(ItemPickerNavigationProvider navigationProvider) {
+        mNavigationProvider = navigationProvider;
     }
 }

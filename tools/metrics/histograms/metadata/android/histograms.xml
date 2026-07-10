@@ -6396,6 +6396,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabItemPicker.Cancel.SelectedTabs.Count" units="count"
+    expires_after="2027-07-07">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the number of tabs selected when the user exits the Tab Picker by
+    cancelling (e.g. back press).
+  </summary>
+</histogram>
+
 <histogram name="Android.TabItemPicker.OnDemandLoadDuration.{Result}"
     units="ms" expires_after="2026-09-20">
   <owner>ckitagawa@chromium.org</owner>

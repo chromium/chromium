@@ -133,11 +133,9 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
                         mTabModelSelector,
                         mTabContentManager,
                         mCachedTabIds,
-                        mInitialSelectedTabIds);
-
-        doReturn(mNavigationProvider)
-                .when(mItemPickerCoordinator)
-                .getItemPickerNavigationProviderForTesting();
+                        mInitialSelectedTabIds,
+                        mItemPickerCoordinator::cancelPicker);
+        mItemPickerCoordinator.setNavigationProviderForTesting(mNavigationProvider);
 
         doReturn(mTabListEditorCoordinator)
                 .when(mItemPickerCoordinator)
@@ -151,7 +149,14 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         captureAndSpyNavigationProvider();
         when(mTabListEditorController.isVisible()).thenReturn(true);
 
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.TabItemPicker.Cancel.SelectedTabs.Count", 0)
+                        .build();
+
         mNavigationProvider.goBack();
+
+        watcher.assertExpected();
 
         InOrder inOrder = inOrder(mTabListEditorController, mActivity);
 
@@ -159,6 +164,27 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         inOrder.verify(mActivity).finishWithCancel();
 
         verify(mActivity, never()).finish();
+    }
+
+    @Test
+    public void testGoBackRecordsCancelSelectedTabsCountHistogram_NonEmptySelection() {
+        captureAndSpyNavigationProvider();
+        when(mTabListEditorController.isVisible()).thenReturn(true);
+
+        TabListEditorItemSelectionId id1 = TabListEditorItemSelectionId.createTabId(101);
+        TabListEditorItemSelectionId id2 = TabListEditorItemSelectionId.createTabId(102);
+        Set<TabListEditorItemSelectionId> selection = new HashSet<>(Arrays.asList(id1, id2));
+        mNavigationProvider.onSelectionStateChange(selection);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.TabItemPicker.Cancel.SelectedTabs.Count", 2)
+                        .build();
+
+        mNavigationProvider.goBack();
+
+        watcher.assertExpected();
+        verify(mActivity).finishWithCancel();
     }
 
     @Test
