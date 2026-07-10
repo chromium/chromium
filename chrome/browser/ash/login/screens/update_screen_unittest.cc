@@ -7,15 +7,19 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
+#include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/screens/mock_error_screen.h"
 #include "chrome/browser/ash/login/screens/mock_update_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -32,7 +36,9 @@ using ::testing::Return;
 
 class UpdateScreenUnitTest : public testing::Test {
  public:
-  UpdateScreenUnitTest() = default;
+  UpdateScreenUnitTest() {
+    feature_list_.InitAndEnableFeature(ash::features::kDeviceMoveConfigSave);
+  }
 
   UpdateScreenUnitTest(const UpdateScreenUnitTest&) = delete;
   UpdateScreenUnitTest& operator=(const UpdateScreenUnitTest&) = delete;
@@ -70,6 +76,7 @@ class UpdateScreenUnitTest : public testing::Test {
     // Initialize objects needed by UpdateScreen.
     wizard_context_ = std::make_unique<WizardContext>();
     chromeos::PowerManagerClient::InitializeFake();
+    OobeConfigurationClient::InitializeFake();
     fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     mock_error_screen_ = std::make_unique<MockErrorScreen>(
@@ -90,6 +97,7 @@ class UpdateScreenUnitTest : public testing::Test {
     update_screen_.reset();
     mock_error_screen_.reset();
     network_handler_test_helper_.reset();
+    OobeConfigurationClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     UpdateEngineClient::Shutdown();
   }
@@ -109,6 +117,7 @@ class UpdateScreenUnitTest : public testing::Test {
   std::unique_ptr<MockErrorScreen> mock_error_screen_;
   raw_ptr<FakeUpdateEngineClient, DanglingUntriaged> fake_update_engine_client_;
   std::unique_ptr<WizardContext> wizard_context_;
+  OobeConfiguration oobe_configuration_;
 
   std::optional<UpdateScreen::Result> last_screen_result_;
 
@@ -119,6 +128,7 @@ class UpdateScreenUnitTest : public testing::Test {
   }
 
   // Test versions of core browser infrastructure.
+  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;

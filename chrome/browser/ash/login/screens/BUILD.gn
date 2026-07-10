@@ -643,6 +643,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/arc",
     "//chromeos/ash/components/dbus/arc:arcvm_data_migrator_proto_lib",
     "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/oobe_config",
     "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/dbus/upstart",
