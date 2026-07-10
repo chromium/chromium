@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/browsing_data/browsing_data_api.h"
+#include "chrome/browser/extensions/browsing_data_test_utils.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
@@ -57,6 +58,7 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 using extensions::api_test_utils::RunFunctionAndReturnSingleResult;
 
 namespace {
+namespace utils = extensions::browsing_data_test_utils;
 
 class ExtensionBrowsingDataTest : public PlatformBrowserTest {
  public:
@@ -206,60 +208,26 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, NotSyncing) {
 }
 #endif
 
-void CreateLocalStorageForKey(Profile* profile, const blink::StorageKey& key) {
-  auto* local_storage_control =
-      profile->GetDefaultStoragePartition()->GetLocalStorageControl();
-  mojo::Remote<blink::mojom::StorageArea> area;
-  local_storage_control->BindStorageArea(key,
-                                         area.BindNewPipeAndPassReceiver());
-  {
-    base::test::TestFuture<bool> put_future;
-    area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, std::nullopt,
-              /*source=*/nullptr, put_future.GetCallback());
-    ASSERT_TRUE(put_future.Get());
-  }
-}
-
-std::vector<storage::mojom::StorageUsageInfoPtr> GetLocalStorage(
-    Profile* profile) {
-  auto* local_storage_control =
-      profile->GetDefaultStoragePartition()->GetLocalStorageControl();
-  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoPtr>>
-      get_usage_future;
-  local_storage_control->GetUsage(get_usage_future.GetCallback());
-  return get_usage_future.Take();
-}
-
-bool UsageInfosHasStorageKey(
-    const std::vector<storage::mojom::StorageUsageInfoPtr>& usage_infos,
-    const blink::StorageKey& key) {
-  auto it = std::ranges::find_if(
-      usage_infos, [&key](const storage::mojom::StorageUsageInfoPtr& info) {
-        return info->storage_key == key;
-      });
-  return it != usage_infos.end();
-}
-
 IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, DeleteLocalStorageAll) {
   const blink::StorageKey key1 =
       blink::StorageKey::CreateFromStringForTesting("https://example.com");
   const blink::StorageKey key2 =
       blink::StorageKey::CreateFromStringForTesting("https://other.com");
   // Create some local storage for each of the origins.
-  CreateLocalStorageForKey(GetProfile(), key1);
-  CreateLocalStorageForKey(GetProfile(), key2);
+  utils::CreateLocalStorageForKey(GetProfile(), key1);
+  utils::CreateLocalStorageForKey(GetProfile(), key2);
   // Verify that the data is actually stored.
-  auto usage_infos = GetLocalStorage(GetProfile());
+  auto usage_infos = utils::GetLocalStorageInfo(GetProfile());
   EXPECT_EQ(2U, usage_infos.size());
-  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key1));
-  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key2));
+  EXPECT_TRUE(utils::UsageInfosHasStorageKey(usage_infos, key1));
+  EXPECT_TRUE(utils::UsageInfosHasStorageKey(usage_infos, key2));
 
   // Clear the data for everything.
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
   EXPECT_FALSE(RunFunctionAndReturnSingleResult(
       function.get(), kRemoveEverythingArguments, GetProfile()));
 
-  usage_infos = GetLocalStorage(GetProfile());
+  usage_infos = utils::GetLocalStorageInfo(GetProfile());
   EXPECT_EQ(0U, usage_infos.size());
 }
 
@@ -270,20 +238,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, DeleteLocalStorageIncognito) {
       blink::StorageKey::CreateFromStringForTesting("https://other.com");
   // Create some local storage for each of the origins.
   auto* incognito_profile = GetProfile()->GetPrimaryOTRProfile(true);
-  CreateLocalStorageForKey(incognito_profile, key1);
-  CreateLocalStorageForKey(incognito_profile, key2);
+  utils::CreateLocalStorageForKey(incognito_profile, key1);
+  utils::CreateLocalStorageForKey(incognito_profile, key2);
   // Verify that the data is actually stored.
-  auto usage_infos = GetLocalStorage(incognito_profile);
+  auto usage_infos = utils::GetLocalStorageInfo(incognito_profile);
   EXPECT_EQ(2U, usage_infos.size());
-  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key1));
-  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key2));
+  EXPECT_TRUE(utils::UsageInfosHasStorageKey(usage_infos, key1));
+  EXPECT_TRUE(utils::UsageInfosHasStorageKey(usage_infos, key2));
 
   // Clear the data for everything.
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
   EXPECT_FALSE(RunFunctionAndReturnSingleResult(
       function.get(), kRemoveEverythingArguments, incognito_profile));
 
-  usage_infos = GetLocalStorage(incognito_profile);
+  usage_infos = utils::GetLocalStorageInfo(incognito_profile);
   EXPECT_EQ(0U, usage_infos.size());
 }
 
@@ -293,13 +261,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, DeleteLocalStorageOrigin) {
   const blink::StorageKey key2 =
       blink::StorageKey::CreateFromStringForTesting("https://other.com");
   // Create some local storage for each of the origins.
-  CreateLocalStorageForKey(GetProfile(), key1);
-  CreateLocalStorageForKey(GetProfile(), key2);
+  utils::CreateLocalStorageForKey(GetProfile(), key1);
+  utils::CreateLocalStorageForKey(GetProfile(), key2);
   // Verify that the data is actually stored.
-  auto usage_infos = GetLocalStorage(GetProfile());
+  auto usage_infos = utils::GetLocalStorageInfo(GetProfile());
   EXPECT_EQ(2U, usage_infos.size());
-  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key1));
-  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key2));
+  EXPECT_TRUE(utils::UsageInfosHasStorageKey(usage_infos, key1));
+  EXPECT_TRUE(utils::UsageInfosHasStorageKey(usage_infos, key2));
 
   // Clear the data only for example.com.
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
@@ -312,10 +280,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, DeleteLocalStorageOrigin) {
   EXPECT_FALSE(RunFunctionAndReturnSingleResult(function.get(), removeArgs,
                                                 GetProfile()));
 
-  usage_infos = GetLocalStorage(GetProfile());
+  usage_infos = utils::GetLocalStorageInfo(GetProfile());
   EXPECT_EQ(1U, usage_infos.size());
-  EXPECT_FALSE(UsageInfosHasStorageKey(usage_infos, key1));
-  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key2));
+  EXPECT_FALSE(utils::UsageInfosHasStorageKey(usage_infos, key1));
+  EXPECT_TRUE(utils::UsageInfosHasStorageKey(usage_infos, key2));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTestWithStoragePartitioning,
@@ -367,14 +335,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTestWithStoragePartitioning,
                                          key5, key6, key7, key8};
   // Create some local storage for each of the keys.
   for (const auto& key : keys) {
-    CreateLocalStorageForKey(GetProfile(), key);
+    utils::CreateLocalStorageForKey(GetProfile(), key);
   }
 
   // Verify that the data is actually stored.
-  auto usage_infos = GetLocalStorage(GetProfile());
+  auto usage_infos = utils::GetLocalStorageInfo(GetProfile());
   EXPECT_EQ(keys.size(), usage_infos.size());
   for (const auto& key : keys) {
-    EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key));
+    EXPECT_TRUE(utils::UsageInfosHasStorageKey(usage_infos, key));
   }
 
   // Clear the data for example.com.
@@ -388,16 +356,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTestWithStoragePartitioning,
   EXPECT_FALSE(RunFunctionAndReturnSingleResult(function.get(), removeArgs,
                                                 GetProfile()));
 
-  usage_infos = GetLocalStorage(GetProfile());
+  usage_infos = utils::GetLocalStorageInfo(GetProfile());
   EXPECT_EQ(3U, usage_infos.size());
-  EXPECT_FALSE(UsageInfosHasStorageKey(usage_infos, key1));
-  EXPECT_FALSE(UsageInfosHasStorageKey(usage_infos, key2));
-  EXPECT_FALSE(UsageInfosHasStorageKey(usage_infos, key3));
-  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key4));
-  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key5));
-  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key6));
-  EXPECT_FALSE(UsageInfosHasStorageKey(usage_infos, key7));
-  EXPECT_FALSE(UsageInfosHasStorageKey(usage_infos, key8));
+  EXPECT_FALSE(utils::UsageInfosHasStorageKey(usage_infos, key1));
+  EXPECT_FALSE(utils::UsageInfosHasStorageKey(usage_infos, key2));
+  EXPECT_FALSE(utils::UsageInfosHasStorageKey(usage_infos, key3));
+  EXPECT_TRUE(utils::UsageInfosHasStorageKey(usage_infos, key4));
+  EXPECT_TRUE(utils::UsageInfosHasStorageKey(usage_infos, key5));
+  EXPECT_TRUE(utils::UsageInfosHasStorageKey(usage_infos, key6));
+  EXPECT_FALSE(utils::UsageInfosHasStorageKey(usage_infos, key7));
+  EXPECT_FALSE(utils::UsageInfosHasStorageKey(usage_infos, key8));
 }
 
 using BrowsingDataApiTest = extensions::ExtensionApiTest;
