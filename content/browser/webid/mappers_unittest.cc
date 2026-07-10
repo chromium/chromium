@@ -13,14 +13,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 
-using ::testing::ElementsAre;
-using Field = content::IdentityRequestDialogDisclosureField;
-using LoginState = content::IdentityRequestAccount::LoginState;
-
 namespace content {
 namespace webid {
 
+using ::testing::ElementsAre;
+using Field = IdentityRequestDialogDisclosureField;
 using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
+using LoginState = IdentityRequestAccount::LoginState;
 
 namespace {
 IdentityRequestAccountPtr CreateEmptyAccount() {

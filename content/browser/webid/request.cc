@@ -61,21 +61,12 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
-using base::Value;
-using blink::mojom::FederatedRequestResult;
-using blink::mojom::IdentityProviderConfig;
-using blink::mojom::IdentityProviderGetParametersPtr;
-using blink::mojom::IdentityProviderRequestOptionsPtr;
-using blink::mojom::RegisterIdpStatus;
-using blink::mojom::RequestTokenStatus;
-using blink::mojom::RequestUserInfoStatus;
-using CompleteRequestWithErrorCallback =
-    base::OnceCallback<void(blink::mojom::FederatedRequestResult,
-                            std::optional<content::webid::RequestIdTokenStatus>,
-                            bool)>;
-
 namespace content::webid {
 
+using CompleteRequestWithErrorCallback =
+    base::OnceCallback<void(blink::mojom::FederatedRequestResult,
+                            std::optional<RequestIdTokenStatus>,
+                            bool)>;
 using ErrorDialogType = IdpNetworkRequestManager::FedCmErrorDialogType;
 using ErrorUrlType = IdpNetworkRequestManager::FedCmErrorUrlType;
 using FederatedApiPermissionStatus =
@@ -88,8 +79,16 @@ using MediationRequirement = ::password_manager::CredentialMediationRequirement;
 using RpMode = blink::mojom::RpMode;
 using SignInMode = IdentityRequestAccount::SignInMode;
 using TokenError = IdentityCredentialTokenError;
-using TokenStatus = RequestIdTokenStatus;
 using TokenResponseType = IdpNetworkRequestManager::FedCmTokenResponseType;
+using TokenStatus = RequestIdTokenStatus;
+using base::Value;
+using blink::mojom::FederatedRequestResult;
+using blink::mojom::IdentityProviderConfig;
+using blink::mojom::IdentityProviderGetParametersPtr;
+using blink::mojom::IdentityProviderRequestOptionsPtr;
+using blink::mojom::RegisterIdpStatus;
+using blink::mojom::RequestTokenStatus;
+using blink::mojom::RequestUserInfoStatus;
 
 namespace {
 static constexpr base::TimeDelta kTokenRequestDelay = base::Seconds(3);

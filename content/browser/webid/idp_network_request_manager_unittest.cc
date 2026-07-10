@@ -50,24 +50,23 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
+namespace content::webid {
+
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::NiceMock;
 using ::testing::Return;
-using LoginState = content::IdentityRequestAccount::LoginState;
-
-namespace content::webid {
-
-using IdpClientMetadata = IdpNetworkRequestManager::ClientMetadata;
-using TokenResult = IdpNetworkRequestManager::TokenResult;
-using Endpoints = IdpNetworkRequestManager::Endpoints;
 using AccountsRequestCallback =
     IdpNetworkRequestManager::AccountsRequestCallback;
 using AccountsResponseInvalidReason =
     IdpNetworkRequestManager::AccountsResponseInvalidReason;
+using Endpoints = IdpNetworkRequestManager::Endpoints;
 using ErrorDialogType = IdpNetworkRequestManager::FedCmErrorDialogType;
 using ErrorUrlType = IdpNetworkRequestManager::FedCmErrorUrlType;
+using IdpClientMetadata = IdpNetworkRequestManager::ClientMetadata;
+using LoginState = IdentityRequestAccount::LoginState;
 using TokenResponseType = IdpNetworkRequestManager::FedCmTokenResponseType;
+using TokenResult = IdpNetworkRequestManager::TokenResult;
 
 namespace {
 

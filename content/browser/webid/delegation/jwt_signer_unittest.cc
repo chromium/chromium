@@ -29,9 +29,9 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using ::testing::NiceMock;
-
 namespace content::sdjwt {
+
+using ::testing::NiceMock;
 
 namespace {
 std::vector<uint8_t> TestSha256(std::string_view data) {

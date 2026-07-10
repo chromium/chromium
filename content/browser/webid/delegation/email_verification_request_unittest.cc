@@ -34,16 +34,15 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace content::webid {
+
+using ParseJsonCallback = EmailVerifierNetworkRequestManager::ParseJsonCallback;
+using blink::mojom::EmailVerificationRequestResult;
 using testing::_;
 using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 using testing::WithArgs;
-
-namespace content::webid {
-
-using ParseJsonCallback = EmailVerifierNetworkRequestManager::ParseJsonCallback;
-using blink::mojom::EmailVerificationRequestResult;
 
 // Mock DnsRequest for testing
 class MockDnsRequest : public DnsRequest {

@@ -20,9 +20,9 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using ::testing::NiceMock;
-
 namespace content::sdjwt {
+
+using ::testing::NiceMock;
 
 class SdJwtTest : public testing::Test {
  protected:

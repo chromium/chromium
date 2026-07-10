@@ -36,12 +36,11 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace content::webid {
+
 using ::testing::_;
 using ::testing::Return;
 using ::testing::WithArgs;
-
-namespace content::webid {
-
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
 using RequestTokenCallback = Request::RequestTokenCallback;
 

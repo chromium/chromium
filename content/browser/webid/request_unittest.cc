@@ -66,20 +66,8 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using blink::mojom::FederatedRequest;
-using blink::mojom::FederatedRequestResult;
-using blink::mojom::FederatedRequestService;
-using blink::mojom::RequestTokenStatus;
-using blink::mojom::TokenRequestFailurePtr;
-using blink::mojom::TokenRequestSuccessPtr;
-using ApiPermissionStatus =
-    content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
-using RequestCallbackHelper = content::FederatedRequestTokenCallbackHelper;
-using DismissReason = content::IdentityRequestDialogController::DismissReason;
-using FedCmEntry = ukm::builders::Blink_FedCm;
-using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
-using LoginState = content::IdentityRequestAccount::LoginState;
-using SignInMode = content::IdentityRequestAccount::SignInMode;
+namespace content::webid {
+
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
@@ -87,18 +75,29 @@ using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::Return;
 using ::testing::StrictMock;
-
-namespace content::webid {
-
+using ApiPermissionStatus =
+    FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
+using DismissReason = IdentityRequestDialogController::DismissReason;
 using ErrorDialogType = IdpNetworkRequestManager::FedCmErrorDialogType;
 using ErrorUrlType = IdpNetworkRequestManager::FedCmErrorUrlType;
+using FedCmEntry = ukm::builders::Blink_FedCm;
+using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
 using IdentityProviderDataPtr = scoped_refptr<IdentityProviderData>;
 using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
+using LoginState = IdentityRequestAccount::LoginState;
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
+using RequestCallbackHelper = FederatedRequestTokenCallbackHelper;
 using RpMode = blink::mojom::RpMode;
+using SignInMode = IdentityRequestAccount::SignInMode;
 using TokenError = IdentityCredentialTokenError;
 using TokenResponseType = IdpNetworkRequestManager::FedCmTokenResponseType;
 using TokenStatus = RequestIdTokenStatus;
+using blink::mojom::FederatedRequest;
+using blink::mojom::FederatedRequestResult;
+using blink::mojom::FederatedRequestService;
+using blink::mojom::RequestTokenStatus;
+using blink::mojom::TokenRequestFailurePtr;
+using blink::mojom::TokenRequestSuccessPtr;
 
 namespace {
 

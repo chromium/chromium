@@ -63,9 +63,6 @@
 
 namespace content {
 
-using LoginState = IdentityRequestAccount::LoginState;
-using TokenError = IdentityCredentialTokenError;
-
 namespace webid {
 
 using AccountsResponseInvalidReason =
@@ -75,6 +72,8 @@ using Endpoints = IdpNetworkRequestManager::Endpoints;
 using ErrorDialogType = IdpNetworkRequestManager::FedCmErrorDialogType;
 using ErrorUrlType = IdpNetworkRequestManager::FedCmErrorUrlType;
 using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
+using LoginState = IdentityRequestAccount::LoginState;
+using TokenError = IdentityCredentialTokenError;
 using TokenResponseType = IdpNetworkRequestManager::FedCmTokenResponseType;
 using TokenResult = IdpNetworkRequestManager::TokenResult;
 

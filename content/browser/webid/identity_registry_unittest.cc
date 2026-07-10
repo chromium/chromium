@@ -12,9 +12,9 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using ::testing::NiceMock;
-
 namespace content::webid {
+
+using ::testing::NiceMock;
 
 namespace {
 

@@ -17,10 +17,9 @@
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
-using ::blink::mojom::FederatedRequestResult;
-
 namespace content::webid {
 
+using ::blink::mojom::FederatedRequestResult;
 using LoginState = IdentityRequestAccount::LoginState;
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
 using RpMode = blink::mojom::RpMode;

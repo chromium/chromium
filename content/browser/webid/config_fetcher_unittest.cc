@@ -16,11 +16,11 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace content::webid {
+
 using ::testing::_;
 using ::testing::StrictMock;
 using ::testing::WithArg;
-
-namespace content::webid {
 
 class ConfigFetcherTest : public RenderViewHostImplTestHarness {
  protected:

@@ -31,14 +31,13 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace content::webid {
+
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::WithArg;
-
-namespace content::webid {
-
 using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
 
 class TestIdentityCredentialSourceImpl : public IdentityCredentialSourceImpl {

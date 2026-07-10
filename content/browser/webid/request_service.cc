@@ -32,10 +32,6 @@
 
 namespace content::webid {
 
-DOCUMENT_USER_DATA_KEY_IMPL(RequestService);
-
-using blink::mojom::RegisterIdpStatus;
-
 using DisconnectCallback =
     blink::mojom::FederatedRequestService::DisconnectCallback;
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
@@ -55,6 +51,9 @@ using StartTokenRequestCallback =
 using TokenStatus = RequestIdTokenStatus;
 using UnregisterIdPCallback =
     blink::mojom::FederatedRequestService::UnregisterIdPCallback;
+using blink::mojom::RegisterIdpStatus;
+
+DOCUMENT_USER_DATA_KEY_IMPL(RequestService);
 
 RequestService::RequestService(RenderFrameHost* rfh)
     : DocumentUserData<RequestService>(rfh),

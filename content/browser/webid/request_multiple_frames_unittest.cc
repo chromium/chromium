@@ -54,10 +54,10 @@ namespace content::webid {
 using ::testing::NiceMock;
 using ApiPermissionStatus =
     FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
-using RequestCallbackHelper = FederatedRequestTokenCallbackHelper;
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
+using RequestCallbackHelper = FederatedRequestTokenCallbackHelper;
 using StartTokenRequestCallback =
     blink::mojom::FederatedRequestService::StartTokenRequestCallback;
 using blink::mojom::FederatedRequest;
