@@ -2001,9 +2001,9 @@ BASE_FEATURE(kDeviceActiveClientChurnObservationCheckMembership,
 BASE_FEATURE(kDeviceActiveClientChurnObservationNewDeviceMetadata,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables persisting device config (networks, EULA acceptance...)
-// over a powerwash that happens as part of a device move to a new domain
-BASE_FEATURE(kDeviceMoveConfigSave, base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables or disables certain OOBE config options, set before a powerwash that
+// happens as part of a device move to a new domain.
+BASE_FEATURE(kDeviceMoveConfigSave, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the DeviceWeeklyScheduledSuspend policy for Managed Guest Sessions.
 BASE_FEATURE(kDeviceWeeklyScheduledSuspendMgs,
