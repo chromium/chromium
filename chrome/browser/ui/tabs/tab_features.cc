@@ -130,6 +130,7 @@
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
+#include "chrome/browser/skills/skills_update_observer.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_attachment_tracker.h"
@@ -150,11 +151,6 @@
 #include "net/base/features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/skills/skills_update_observer.h"
-#include "components/skills/features.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"  // nogncheck
@@ -289,7 +285,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
               tab, tab, profile->GetPrefs(), *page_action_controller_);
     }
 
-#if !BUILDFLAG(IS_ANDROID)
     if (base::FeatureList::IsEnabled(
             record_replay::features::kRecordReplayBase) &&
         page_action_controller_->ActionExists(kActionRecordReplay)) {
@@ -297,7 +292,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           GetUserDataFactory().CreateInstance<RecordReplayPageActionController>(
               tab, tab, *page_action_controller_);
     }
-#endif
 
     if (page_action_controller_->ActionExists(kActionShowJsOptimizationsIcon)) {
       js_optimizations_page_action_controller_ =
@@ -609,13 +603,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   tab_alert_controller_ =
       GetUserDataFactory().CreateInstance<TabAlertController>(tab, tab);
 
-#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           record_replay::features::kRecordReplayBase)) {
     record_replay_client_ =
         GetUserDataFactory().CreateInstance<ChromeRecordReplayClient>(tab, tab);
   }
-#endif
 
   tab_contextualization_controller_ =
       GetUserDataFactory().CreateInstance<lens::TabContextualizationController>(
@@ -663,7 +655,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
     skills_update_observer_ =
         std::make_unique<skills::SkillsUpdateObserver>(tab);
@@ -674,7 +665,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             tab, *page_action_controller_);
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
     std::unique_ptr<TabUIHelper> tab_ui_helper) {
