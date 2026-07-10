@@ -45,7 +45,14 @@ message IwaSpecialAppPermissions {
       // for multi-screen capture.
       bool skip_capture_started_notification = 2;
     }
+    message ChromeOsPermissions {
+      // Allows the IWA to use the `setShape` Blink extension API.
+      bool allow_set_shape = 1;
+    }
+    // Special permissions for multi-screen capture.
     MultiScreenCapturePermissions multi_screen_capture = 1;
+    // Special permissions specific to ChromeOS.
+    ChromeOsPermissions chrome_os_permissions = 2;
   }
 
   // A list of special app permissions mapping web bundle IDs to additional

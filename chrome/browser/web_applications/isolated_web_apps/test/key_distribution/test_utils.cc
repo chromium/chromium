@@ -18,6 +18,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
@@ -38,20 +39,21 @@ using ComponentUpdateFuture = base::test::TestFuture<ComponentMetadataOrError>;
 base::expected<void, IwaComponentUpdateError>
 KeyDistributionComponent::UploadFromComponentFolder() {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  return UpdateKeyDistributionInfo(version, component_data);
+  return UpdateKeyDistributionInfo(metadata.version, component_data);
 }
 
 void KeyDistributionComponent::InjectComponentDataDirectly() {
   IwaKeyDistributionInfoProvider::GetInstanceForTesting()
-      .SetComponentDataForTesting(version, is_preloaded, component_data);
+      .SetComponentDataForTesting(metadata.version, metadata.is_preloaded,
+                                  component_data);
 }
 
 KeyDistributionComponentBuilder::KeyDistributionComponentBuilder(
     const base::Version& component_version,
     bool is_preloaded)
-    : component_(/*version=*/component_version,
-                 /*is_preloaded=*/is_preloaded,
-                 /*data=*/IwaKeyDistribution{}) {}
+    : component_(
+          /*metadata=*/IwaComponentMetadata{component_version, is_preloaded},
+          /*component_data=*/IwaKeyDistribution{}) {}
 
 KeyDistributionComponentBuilder::~KeyDistributionComponentBuilder() = default;
 
@@ -79,9 +81,14 @@ KeyDistributionComponentBuilder::AddToSpecialAppPermissions(
     const web_package::SignedWebBundleId& web_bundle_id,
     SpecialAppPermissions special_app_permissions) & {
   IwaSpecialAppPermissions_SpecialAppPermissions special_app_permissions_proto;
-  special_app_permissions_proto.mutable_multi_screen_capture()
-      ->set_skip_capture_started_notification(
-          special_app_permissions.skip_capture_started_notification);
+  if (special_app_permissions.skip_capture_started_notification) {
+    special_app_permissions_proto.mutable_multi_screen_capture()
+        ->set_skip_capture_started_notification(true);
+  }
+  if (special_app_permissions.allow_set_shape) {
+    special_app_permissions_proto.mutable_chrome_os_permissions()
+        ->set_allow_set_shape(true);
+  }
   (*component_.component_data.mutable_special_app_permissions_data()
         ->mutable_special_app_permissions())[web_bundle_id.id()] =
       std::move(special_app_permissions_proto);

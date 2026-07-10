@@ -48,7 +48,8 @@ class IwaRuntimeDataProvider {
 
   struct SpecialAppPermissionsInfo {
     base::Value AsDebugValue() const;
-    bool skip_capture_started_notification;
+    bool skip_capture_started_notification = false;
+    bool allow_set_shape = false;
   };
 
   struct UserInstallAllowlistItemData {

@@ -28,6 +28,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_iwa_client.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
@@ -68,6 +69,7 @@ using testing::IsEmpty;
 using testing::IsFalse;
 using testing::IsNull;
 using testing::IsTrue;
+using testing::Pointee;
 using testing::Property;
 using testing::Return;
 using testing::ReturnRef;
@@ -205,8 +207,28 @@ struct DebugInfoTestParam {
   bool in_managed_allowlist = false;
   bool in_blocklist = false;
   bool has_special_app_permissions = false;
+  bool has_multi_screen_capture_permissions = false;
+  bool has_set_shape_permissions = false;
   bool is_key_rotated = false;
 };
+
+bool HasSetShapePermission(const DebugInfoTestParam& param) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return param.has_set_shape_permissions;
+#else
+  return false;
+#endif
+}
+
+auto MatchesSpecialPermissionsFor(const DebugInfoTestParam& param) {
+  return AllOf(
+      Field(&IwaKeyDistributionInfoProvider::SpecialAppPermissionsInfo::
+                skip_capture_started_notification,
+            Eq(param.has_multi_screen_capture_permissions)),
+      Field(&IwaKeyDistributionInfoProvider::SpecialAppPermissionsInfo::
+                allow_set_shape,
+            Eq(HasSetShapePermission(param))));
+}
 
 }  // namespace
 
@@ -231,7 +253,10 @@ class IwaKeyDistributionInfoProviderDataAccessTest
       builder.AddToSpecialAppPermissions(
           bundle_id,
           test::KeyDistributionComponentBuilder::SpecialAppPermissions{
-              .skip_capture_started_notification = true});
+              .skip_capture_started_notification =
+                  param.has_multi_screen_capture_permissions,
+              .allow_set_shape = param.has_set_shape_permissions,
+          });
     }
     if (param.is_key_rotated) {
       builder.AddToKeyRotations(bundle_id, kExpectedKey);
@@ -263,15 +288,15 @@ TEST_P(IwaKeyDistributionInfoProviderDataAccessTest,
   EXPECT_EQ(kd_data_provider.IsBundleBlocklisted(kWebBundleId),
             param.in_blocklist);
 
-  // SpecialAppPermissions test (param.has_special_app_permissions)
+  // SpecialAppPermissions test
   if (param.has_special_app_permissions) {
+    using MultiCaptureMatcher = testing::Matcher<std::vector<std::string>>;
     EXPECT_THAT(kd_data_provider.GetSkipMultiCaptureNotificationBundleIds(),
-                ElementsAre(kWebBundleId));
+                param.has_multi_screen_capture_permissions
+                    ? MultiCaptureMatcher(ElementsAre(kWebBundleId))
+                    : MultiCaptureMatcher(IsEmpty()));
     EXPECT_THAT(kd_data_provider.GetSpecialAppPermissionsInfo(kWebBundleId),
-                testing::Pointee(Field(
-                    &IwaKeyDistributionInfoProvider::SpecialAppPermissionsInfo::
-                        skip_capture_started_notification,
-                    IsTrue())));
+                Pointee(MatchesSpecialPermissionsFor(param)));
   } else {
     EXPECT_THAT(kd_data_provider.GetSkipMultiCaptureNotificationBundleIds(),
                 IsEmpty());
@@ -328,17 +353,20 @@ TEST_P(IwaKeyDistributionInfoProviderDataAccessTest,
                           ? base::ListValue().Append(base::Value(kWebBundleId))
                           : base::ListValue())));
 
-  // SpecialAppPermissions test (param.has_special_app_permissions)
+  // SpecialAppPermissions test
+  base::DictValue expected_special_permissions;
+  if (param.has_special_app_permissions) {
+    expected_special_permissions.Set(
+        kWebBundleId,
+        base::DictValue()
+            .Set("skip_capture_started_notification",
+                 param.has_multi_screen_capture_permissions)
+            .Set("allow_set_shape", HasSetShapePermission(param)));
+  }
   EXPECT_THAT(
       kd_data_provider.AsDebugValue(),
-      DictionaryHasValue(
-          "special_app_permissions",
-          base::Value(param.has_special_app_permissions
-                          ? base::DictValue().Set(
-                                kWebBundleId,
-                                base::DictValue().Set(
-                                    "skip_capture_started_notification", true))
-                          : base::DictValue())));
+      DictionaryHasValue("special_app_permissions",
+                         base::Value(std::move(expected_special_permissions))));
 
   // KeyRotations test (param.is_key_rotated)
   EXPECT_THAT(
@@ -363,8 +391,12 @@ INSTANTIATE_TEST_SUITE_P(
         DebugInfoTestParam{.test_name = "ManagedAllowlist",
                            .in_managed_allowlist = true},
         DebugInfoTestParam{.test_name = "Blocklist", .in_blocklist = true},
-        DebugInfoTestParam{.test_name = "SpecialAppPermissions",
-                           .has_special_app_permissions = true},
+        DebugInfoTestParam{.test_name = "MultiScreenCapturePermissions",
+                           .has_special_app_permissions = true,
+                           .has_multi_screen_capture_permissions = true},
+        DebugInfoTestParam{.test_name = "SetShapePermissions",
+                           .has_special_app_permissions = true,
+                           .has_set_shape_permissions = true},
         DebugInfoTestParam{.test_name = "KeyRotations",
                            .is_key_rotated = true}),
     [](const auto& info) { return info.param.test_name; });

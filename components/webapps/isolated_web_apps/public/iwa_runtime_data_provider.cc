@@ -39,8 +39,10 @@ base::Value IwaRuntimeDataProvider::KeyRotationInfo::AsDebugValue() const {
 
 base::Value IwaRuntimeDataProvider::SpecialAppPermissionsInfo::AsDebugValue()
     const {
-  return base::Value(base::DictValue().Set("skip_capture_started_notification",
-                                           skip_capture_started_notification));
+  return base::Value(base::DictValue()
+                         .Set("skip_capture_started_notification",
+                              skip_capture_started_notification)
+                         .Set("allow_set_shape", allow_set_shape));
 }
 
 IwaRuntimeDataProvider::UserInstallAllowlistItemData::

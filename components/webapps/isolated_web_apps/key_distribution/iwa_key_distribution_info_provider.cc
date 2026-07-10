@@ -22,6 +22,8 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/optional_ref.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
 #include "components/webapps/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 #include "components/webapps/isolated_web_apps/public/iwa_entitlements.h"
@@ -46,6 +48,15 @@ bool GetSkipCaptureStartedNotification(
     return false;
   }
   return multi_screen_capture.skip_capture_started_notification();
+}
+
+bool GetAllowSetShape(
+    const IwaSpecialAppPermissions::SpecialAppPermissions& special_permission) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return special_permission.chrome_os_permissions().allow_set_shape();
+#else
+  return false;
+#endif
 }
 
 base::expected<IwaKeyDistribution, IwaComponentUpdateError>
@@ -320,7 +331,11 @@ IwaKeyDistributionInfoProvider::ParseKeyDistributionData(
       special_app_permissions.emplace(
           web_bundle_id,
           IwaKeyDistributionInfoProvider::SpecialAppPermissionsInfo{
-              GetSkipCaptureStartedNotification(special_app_permission_data)});
+              .skip_capture_started_notification =
+                  GetSkipCaptureStartedNotification(
+                      special_app_permission_data),
+              .allow_set_shape = GetAllowSetShape(special_app_permission_data),
+          });
     }
   }
 
