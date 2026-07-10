@@ -75,6 +75,12 @@ class ClipboardAndroid : public Clipboard {
       const std::optional<DataTransferEndpoint>& data_dst,
       base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
       const override;
+  void GetAvailableFormats(
+      ClipboardBuffer buffer,
+      std::vector<ClipboardFormatType> formats,
+      const std::optional<DataTransferEndpoint>& data_dst,
+      base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
+      const override;
   void Clear(ClipboardBuffer buffer) override;
   void ReadAvailableTypes(ClipboardBuffer buffer,
                           const std::optional<DataTransferEndpoint>& data_dst,

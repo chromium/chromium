@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 namespace ui {
 
@@ -64,6 +65,38 @@ TEST_F(ClipboardAndroidTest, EraseCustomDataTest) {
              base::flat_set<ClipboardFormatType> f) { *out = std::move(f); },
           &formats));
   EXPECT_FALSE(formats.contains(ClipboardFormatType::DataTransferCustomType()));
+}
+
+TEST_F(ClipboardAndroidTest, GetAvailableFormats) {
+  // Clear the clipboard to ensure a clean state.
+  clipboard_->Clear(ClipboardBuffer::kCopyPaste);
+
+  // Write some text to the clipboard.
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"test text");
+  }
+
+  std::vector<ClipboardFormatType> requested_formats = {
+      ClipboardFormatType::PlainTextType(),
+      ClipboardFormatType::UrlType(),
+      ClipboardFormatType::HtmlType(),
+  };
+
+  base::flat_set<ClipboardFormatType> formats;
+  clipboard_->GetAvailableFormats(
+      ClipboardBuffer::kCopyPaste, requested_formats, /*data_dst=*/std::nullopt,
+      base::BindOnce(
+          [](base::flat_set<ClipboardFormatType>* out,
+             base::flat_set<ClipboardFormatType> f) { *out = std::move(f); },
+          &formats));
+
+  // Verify that GetAvailableFormats correctly filters down to just the
+  // requested formats that are actually present.
+  EXPECT_TRUE(formats.contains(ClipboardFormatType::PlainTextType()));
+  EXPECT_FALSE(formats.contains(ClipboardFormatType::UrlType()));
+  EXPECT_FALSE(formats.contains(ClipboardFormatType::HtmlType()));
+  EXPECT_FALSE(formats.contains(ClipboardFormatType::FilenamesType()));
 }
 
 }  // namespace ui

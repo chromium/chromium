@@ -442,4 +442,25 @@ bool Clipboard::IsMarkedByOriginatorAsConfidential() const {
   return false;
 }
 
+void Clipboard::GetAvailableFormats(
+    ClipboardBuffer buffer,
+    std::vector<ClipboardFormatType> formats,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
+    const {
+  GetAllAvailableFormats(
+      buffer, data_dst,
+      base::BindOnce(
+          [](std::vector<ClipboardFormatType> requested,
+             base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> cb,
+             base::flat_set<ClipboardFormatType> all) {
+            base::flat_set<ClipboardFormatType> result;
+            std::ranges::copy_if(
+                requested, std::inserter(result, result.end()),
+                [&all](const auto& format) { return all.contains(format); });
+            std::move(cb).Run(std::move(result));
+          },
+          std::move(formats), std::move(callback)));
+}
+
 }  // namespace ui

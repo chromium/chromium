@@ -38,6 +38,19 @@ void OnGetRecentImageFromClipboard(
   std::move(callback).Run(gfx::Image::CreateFrom1xPNGBytes(png_data));
 }
 
+std::vector<ui::ClipboardFormatType> RecentContentTypeToFormats(
+    ClipboardContentType type) {
+  switch (type) {
+    case ClipboardContentType::URL:
+      return {ui::ClipboardFormatType::UrlType()};
+    case ClipboardContentType::Text:
+      return {ui::ClipboardFormatType::PlainTextType()};
+    case ClipboardContentType::Image:
+      return {ui::ClipboardFormatType::PngType(),
+              ui::ClipboardFormatType::BitmapType()};
+  }
+}
+
 }  // namespace
 
 ClipboardRecentContentGeneric::ClipboardRecentContentGeneric() = default;
@@ -148,8 +161,9 @@ void ClipboardRecentContentGeneric::HasRecentImageFromClipboard(
 
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, {.notify_if_restricted = false});
-  ui::Clipboard::GetForCurrentThread()->GetAllAvailableFormats(
-      ui::ClipboardBuffer::kCopyPaste, data_dst,
+  ui::Clipboard::GetForCurrentThread()->GetAvailableFormats(
+      ui::ClipboardBuffer::kCopyPaste, {ui::ClipboardFormatType::PngType()},
+      data_dst,
       base::BindOnce(
           [](base::OnceCallback<void(bool)> callback,
              base::flat_set<ui::ClipboardFormatType> formats) {
@@ -167,34 +181,28 @@ void ClipboardRecentContentGeneric::HasRecentContentFromClipboard(
     return;
   }
 
-  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  // Ask only for the formats these content types map to.
+  std::vector<ui::ClipboardFormatType> requested_formats;
+  for (ClipboardContentType type : types) {
+    for (const auto& format : RecentContentTypeToFormats(type)) {
+      requested_formats.push_back(format);
+    }
+  }
+
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, {.notify_if_restricted = false});
-  clipboard->GetAllAvailableFormats(
-      ui::ClipboardBuffer::kCopyPaste, data_dst,
+  ui::Clipboard::GetForCurrentThread()->GetAvailableFormats(
+      ui::ClipboardBuffer::kCopyPaste, std::move(requested_formats), data_dst,
       base::BindOnce(
           [](std::set<ClipboardContentType> types, HasDataCallback callback,
              base::flat_set<ui::ClipboardFormatType> formats) {
             std::set<ClipboardContentType> matching_types;
             for (ClipboardContentType type : types) {
-              switch (type) {
-                case ClipboardContentType::URL:
-                  if (formats.contains(ui::ClipboardFormatType::UrlType())) {
-                    matching_types.insert(ClipboardContentType::URL);
-                  }
+              for (const auto& format : RecentContentTypeToFormats(type)) {
+                if (formats.contains(format)) {
+                  matching_types.insert(type);
                   break;
-                case ClipboardContentType::Text:
-                  if (formats.contains(
-                          ui::ClipboardFormatType::PlainTextType())) {
-                    matching_types.insert(ClipboardContentType::Text);
-                  }
-                  break;
-                case ClipboardContentType::Image:
-                  if (formats.contains(ui::ClipboardFormatType::PngType()) ||
-                      formats.contains(ui::ClipboardFormatType::BitmapType())) {
-                    matching_types.insert(ClipboardContentType::Image);
-                  }
-                  break;
+                }
               }
             }
             std::move(callback).Run(matching_types);

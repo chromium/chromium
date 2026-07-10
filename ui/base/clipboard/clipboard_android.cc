@@ -657,6 +657,24 @@ void ClipboardAndroid::GetAllAvailableFormats(
   std::move(callback).Run(GetClipboardMap().GetAllAvailableFormats(buffer));
 }
 
+void ClipboardAndroid::GetAvailableFormats(
+    ClipboardBuffer buffer,
+    std::vector<ClipboardFormatType> formats,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
+    const {
+  DCHECK(CalledOnValidThread());
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  // Probe only the requested formats.
+  base::flat_set<ClipboardFormatType> result;
+  auto& clipboard_map = GetClipboardMap();
+  std::ranges::copy_if(formats, std::inserter(result, result.end()),
+                       [&clipboard_map](const auto& format) {
+                         return clipboard_map.HasFormat(format);
+                       });
+  std::move(callback).Run(std::move(result));
+}
+
 void ClipboardAndroid::Clear(ClipboardBuffer buffer) {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);

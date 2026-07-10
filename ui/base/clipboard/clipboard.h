@@ -185,6 +185,17 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
       base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
       const = 0;
 
+  // Returns the subset of `formats` that are currently present on the
+  // clipboard. Unlike GetAllAvailableFormats(), this allows implementations to
+  // optimize by only probing for the requested formats. The default falls back
+  // to GetAllAvailableFormats() and filters the result.
+  virtual void GetAvailableFormats(
+      ClipboardBuffer buffer,
+      std::vector<ClipboardFormatType> formats,
+      const std::optional<DataTransferEndpoint>& data_dst,
+      base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
+      const;
+
   // Returns whether the clipboard has data that is marked by its originator as
   // confidential. This is available for opt-in checking by the user of this API
   // as confidential information, like passwords, might legitimately need to be
