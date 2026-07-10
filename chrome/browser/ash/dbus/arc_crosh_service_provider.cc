@@ -15,6 +15,8 @@
 #include "chromeos/ash/experiences/arc/mojom/crosh.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
@@ -90,9 +92,13 @@ void ArcCroshServiceProvider::Request(
     return;
   }
 
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  const user_manager::User* primary_user =
+      user_manager::UserManager::Get()->FindUser(
+          session_manager::SessionManager::Get()
+              ->GetPrimarySession()
+              ->account_id());
   std::string requesting_user = request.user_id();
-  if (requesting_user != user_manager->GetPrimaryUser()->username_hash()) {
+  if (requesting_user != primary_user->username_hash()) {
     LOG(WARNING) << "Requesting user is not primary user";
     std::move(response_sender)
         .Run(dbus::ErrorResponse::FromMethodCall(

@@ -24,7 +24,8 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/vm_permission_service/vm_permission_service.pb.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "dbus/message.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -389,8 +390,10 @@ void VmPermissionServiceProvider::UpdateBorealisPermissions(VmInfo* vm) {
 
 void VmPermissionServiceProvider::UpdateBruschettaPermissions(VmInfo* vm) {
   Profile* profile = Profile::FromBrowserContext(
-      BrowserContextHelper::Get()->GetBrowserContextByUser(
-          user_manager::UserManager::Get()->GetPrimaryUser()));
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          session_manager::SessionManager::Get()
+              ->GetPrimarySession()
+              ->account_id()));
 
   if (!profile ||
       ProfileHelper::GetUserIdHashFromProfile(profile) != vm->owner_id) {

@@ -92,10 +92,8 @@ class ArcVmDataMigrationNotifierTest : public ChromeAshTestBase {
     arc_vm_data_migration_notifier_.reset();
 
     arc_session_manager_.reset();
-    // Clear the raw_ptr BEFORE specifically deleting the profile it points to.
+    // Clear the raw_ptr before resetting the profile manager.
     testing_profile_ = nullptr;
-    profile_manager_->DeleteTestingProfile(kProfileName);
-
     profile_manager_.reset();
     fake_user_manager_.Reset();
     arc_dlc_installer_.reset();
