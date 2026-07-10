@@ -235,13 +235,7 @@ class WebAppInstallDialogBrowserTest
   base::WeakPtrFactory<WebAppInstallDialogBrowserTest> weak_ptr_factory_{this};
 };
 
-// TODO(crbug.com/510455863): Re-enable the test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_Intro DISABLED_InvokeUi_Intro
-#else
-#define MAYBE_InvokeUi_Intro InvokeUi_Intro
-#endif
-IN_PROC_BROWSER_TEST_P(WebAppInstallDialogBrowserTest, MAYBE_InvokeUi_Intro) {
+IN_PROC_BROWSER_TEST_P(WebAppInstallDialogBrowserTest, InvokeUi_Intro) {
   ShowAndVerifyUi();
 }
 

@@ -49,6 +49,10 @@ constexpr int kSpacingBetweenImages = 8;
 constexpr int kThrobberDiameterValue = 50;
 constexpr int kThrobberVerticalSpacing = 65;
 
+// Spacing and radius for the detailed manifest view.
+constexpr int kManifestDetailsPadding = 16;
+constexpr int kManifestDetailsCornerRadius = 8;
+
 // Custom layout that sets host_size to be same as the child view's size.
 class ImageCarouselLayoutManager : public views::LayoutManagerBase {
  public:
@@ -148,6 +152,8 @@ class ImageCarouselView : public views::View {
         std::make_unique<views::BoxLayoutView>());
     image_inner_container_->SetCrossAxisAlignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
+    image_inner_container_->SetInsideBorderInsets(
+        gfx::Insets::VH(0, kManifestDetailsPadding));
     image_inner_container_->SetProperty(
         views::kElementIdentifierKey,
         web_app::kDetailedInstallDialogImageContainer);
@@ -380,14 +386,43 @@ WebAppInstallIntroView::WebAppInstallIntroView(
     }
     case InstallDialogType::kDetailed: {
       CHECK(fetcher);
-      AddChildView(WebAppIconNameAndOriginView::Create(icon_image, app_name,
-                                                       start_url, is_maskable));
-      auto description_label = std::make_unique<views::Label>(description);
-      description_label->SetMultiLine(true);
-      description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-      description_label->SetTextStyle(views::style::STYLE_SECONDARY);
-      AddChildView(std::move(description_label));
-      AddChildView(std::make_unique<ImageCarouselView>(fetcher));
+
+      // Highlighted box containing developer-provided metadata from the
+      // manifest.
+      auto manifest_details_container =
+          std::make_unique<views::BoxLayoutView>();
+      manifest_details_container->SetOrientation(
+          views::BoxLayout::Orientation::kVertical);
+      manifest_details_container->SetInsideBorderInsets(gfx::Insets::TLBR(
+          kManifestDetailsPadding, 0, kManifestDetailsPadding, 0));
+      manifest_details_container->SetBetweenChildSpacing(vertical_spacing);
+      manifest_details_container->SetBackground(
+          views::CreateRoundedRectBackground(ui::kColorSysNeutralContainer,
+                                             kManifestDetailsCornerRadius));
+
+      // Inner container for elements that need horizontal padding.
+      auto padded_content = std::make_unique<views::BoxLayoutView>();
+      padded_content->SetOrientation(views::BoxLayout::Orientation::kVertical);
+      padded_content->SetInsideBorderInsets(
+          gfx::Insets::VH(0, kManifestDetailsPadding));
+      padded_content->SetBetweenChildSpacing(vertical_spacing);
+
+      padded_content->AddChildView(WebAppIconNameAndOriginView::Create(
+          icon_image, app_name, start_url, is_maskable));
+
+      if (!description.empty()) {
+        auto description_label = std::make_unique<views::Label>(description);
+        description_label->SetMultiLine(true);
+        description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+        description_label->SetTextStyle(views::style::STYLE_SECONDARY);
+        padded_content->AddChildView(std::move(description_label));
+      }
+      manifest_details_container->AddChildView(std::move(padded_content));
+
+      // Carousel is added directly to main container to span full width.
+      manifest_details_container->AddChildView(
+          std::make_unique<ImageCarouselView>(fetcher));
+      AddChildView(std::move(manifest_details_container));
       break;
     }
     case InstallDialogType::kSimple:
