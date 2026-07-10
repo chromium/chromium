@@ -118,6 +118,8 @@ dependencies {
 
     // Must be updated in lockstep with native code in //third_party/android/third_party/ink.
     String inkVersion = '1.1.0-alpha03'
+    compile "androidx.ink:ink-authoring:${inkVersion}"
+    compile "androidx.ink:ink-authoring-android:${inkVersion}"
     compile "androidx.ink:ink-brush-android:${inkVersion}"
     compile "androidx.ink:ink-geometry-android:${inkVersion}"
     compile "androidx.ink:ink-nativeloader-android:${inkVersion}"
