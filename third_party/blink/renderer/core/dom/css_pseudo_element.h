@@ -109,6 +109,7 @@ class CSSPseudoElement final : public ScriptWrappable {
   const AtomicString& GetPseudoArgument() const { return pseudo_argument_; }
 
   LayoutObject* GetLayoutObject() const;
+  PseudoElement* GetPseudoElement() const;
 
   void Trace(Visitor* v) const final;
 

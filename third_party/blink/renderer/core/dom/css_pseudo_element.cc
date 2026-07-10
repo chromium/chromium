@@ -279,6 +279,11 @@ LayoutObject* CSSPseudoElement::GetLayoutObject() const {
   return pseudo_element->GetLayoutObject();
 }
 
+PseudoElement* CSSPseudoElement::GetPseudoElement() const {
+  return GetPseudoElementForCSSPseudoElement(parent_, pseudo_id_,
+                                              pseudo_argument_);
+}
+
 HeapVector<Member<DOMQuad>> CSSPseudoElement::getBoxQuads(
     const BoxQuadOptions* options) const {
   CHECK(RuntimeEnabledFeatures::GeometryUtilsForCSSPseudoElementEnabled());

@@ -1,0 +1,5 @@
+Tests that DOM.setInspectedNode works for before, after, and marker pseudo elements.
+Inspected ::after: {"isCSSPseudoElement":true,"type":"::after","originatingTagName":"DIV"}
+Inspected ::before: {"isCSSPseudoElement":true,"type":"::before","originatingTagName":"DIV"}
+Inspected ::marker: {"isCSSPseudoElement":true,"type":"::marker","originatingTagName":"DIV"}
+

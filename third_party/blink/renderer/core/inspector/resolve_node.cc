@@ -7,8 +7,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/dom/css_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
@@ -22,7 +24,14 @@ v8::Local<v8::Value> NodeV8Value(v8::Local<v8::Context> context, Node* node) {
       !BindingSecurity::ShouldAllowAccessTo(CurrentDOMWindow(isolate), node)) {
     return v8::Null(isolate);
   }
-  return ToV8Traits<Node>::ToV8(ScriptState::From(isolate, context), node);
+  ScriptState* script_state = ScriptState::From(isolate, context);
+  if (auto* pseudo_element = DynamicTo<PseudoElement>(node)) {
+    CSSPseudoElement* css_pseudo = CSSPseudoElement::From(pseudo_element);
+    if (css_pseudo) {
+      return ToV8Traits<CSSPseudoElement>::ToV8(script_state, css_pseudo);
+    }
+  }
+  return ToV8Traits<Node>::ToV8(script_state, node);
 }
 
 std::unique_ptr<v8_inspector::protocol::Runtime::API::RemoteObject> ResolveNode(

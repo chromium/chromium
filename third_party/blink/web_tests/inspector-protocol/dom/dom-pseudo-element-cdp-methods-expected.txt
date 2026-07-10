@@ -1,0 +1,6 @@
+Tests that DOM.resolveNode and objectId-based CDP commands work correctly with CSSPseudoElement.
+DOM.resolveNode className: CSSPseudoElement
+$0 is CSSPseudoElement ::before: true
+DOM.requestNode nodeId matches: true
+DOM.getBoxModel success: true
+

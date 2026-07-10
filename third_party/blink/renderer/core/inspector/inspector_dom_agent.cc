@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_pseudo_element.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
@@ -62,6 +63,7 @@
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/css_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -1657,6 +1659,12 @@ protocol::Response InspectorDOMAgent::NodeForRemoteObjectId(
         ToCoreString(std::move(error)).Utf8());
   }
   node = V8Node::ToWrappable(isolate_, value);
+  if (!node) {
+    if (CSSPseudoElement* css_pseudo =
+            V8CSSPseudoElement::ToWrappable(isolate_, value)) {
+      node = css_pseudo->GetPseudoElement();
+    }
+  }
   if (!node) {
     return protocol::Response::ServerError(
         "Object id doesn't reference a Node");

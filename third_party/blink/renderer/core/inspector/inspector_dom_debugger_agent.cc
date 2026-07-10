@@ -31,8 +31,10 @@
 #include "third_party/blink/renderer/core/inspector/inspector_dom_debugger_agent.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_pseudo_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_target.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
+#include "third_party/blink/renderer/core/dom/css_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -170,8 +172,13 @@ void InspectorDOMDebuggerAgent::EventListenersInfoForTarget(
     bool pierce,
     InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace,
     V8EventListenerInfoList* event_information) {
-  // Special-case nodes, respect depth and pierce parameters in case of nodes.
   Node* node = V8Node::ToWrappable(isolate, value);
+  if (!node) {
+    if (CSSPseudoElement* css_pseudo =
+            V8CSSPseudoElement::ToWrappable(isolate, value)) {
+      node = css_pseudo->GetPseudoElement();
+    }
+  }
   if (node) {
     if (depth < 0)
       depth = INT_MAX;
