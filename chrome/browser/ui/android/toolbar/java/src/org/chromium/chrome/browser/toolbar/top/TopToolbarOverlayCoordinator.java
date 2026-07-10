@@ -106,7 +106,14 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
         mMediator.setIsAndroidViewVisible(isVisible);
     }
 
-    /** @param visible Whether the overlay and shadow should be visible despite other signals. */
+    /** Sets whether the toolbar hairline should be suppressed. */
+    public void onToolbarHairlineSuppressedChanged(boolean suppressed) {
+        if (mMediator != null) mMediator.onToolbarHairlineSuppressedChanged(suppressed);
+    }
+
+    /**
+     * @param visible Whether the overlay and shadow should be visible despite other signals.
+     */
     public void setManualVisibility(boolean visible) {
         mMediator.setManualVisibility(visible);
     }

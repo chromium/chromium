@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -102,6 +103,7 @@ public class TopToolbarCoordinatorUnitTest {
     @Mock private ForwardButtonCoordinator mForwardButtonCoordinator;
     @Mock private HomeButtonCoordinator mHomeButtonCoordinator;
     @Mock private TopControlsStacker mTopControlsStacker;
+    @Mock private TopToolbarOverlayCoordinator mOverlayCoordinator;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     @Mock private OneshotSupplier<OmniboxStub> mOmniboxStubSupplier;
     @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
@@ -269,5 +271,13 @@ public class TopToolbarCoordinatorUnitTest {
         assertEquals(0, isVerticalTabActiveSupplier.getObserverCount());
         assertEquals(0, isGlicPinnedSupplier.getObserverCount());
         assertEquals(0, incognitoStateProvider.getObserverCountForTesting());
+    }
+
+    @Test
+    public void testOnToolbarHairlineSuppressedChanged() {
+        mCoordinator.setOverlayCoordinatorForTesting(mOverlayCoordinator);
+        mCoordinator.onToolbarHairlineSuppressedChanged(true);
+        verify(mToolbarLayout).onToolbarHairlineSuppressedChanged(true);
+        verify(mOverlayCoordinator).onToolbarHairlineSuppressedChanged(true);
     }
 }
