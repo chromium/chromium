@@ -352,6 +352,15 @@ void PageHandler::OnLogMessageAdded(
 }
 
 void PageHandler::GetPageData(PageHandler::GetPageDataCallback callback) {
+  // Guarantee the callback runs even if the page handler is destroyed
+  // while the request is in flight.
+  auto default_page_data = mojom::PageData::New();
+  default_page_data->base_model = mojom::BaseModelState::New();
+  default_page_data->performance_info =
+      on_device_model::mojom::DevicePerformanceInfo::New();
+  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), std::move(default_page_data));
+
   auto data = mojom::PageData::New();
   data->base_model = mojom::BaseModelState::New();
 
