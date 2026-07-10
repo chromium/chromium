@@ -842,12 +842,10 @@
     "contexts": ["privileged_extension"]
   },
   "permissions.addHostAccessRequest": {
-    "min_manifest_version": 3,
-    "feature_flag": "ApiPermissionsHostAccessRequests"
+    "min_manifest_version": 3
   },
   "permissions.removeHostAccessRequest": {
-    "min_manifest_version": 3,
-    "feature_flag": "ApiPermissionsHostAccessRequests"
+    "min_manifest_version": 3
   },
   "platformKeys": {
     "dependencies": ["permission:platformKeys"],

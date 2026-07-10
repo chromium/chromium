@@ -4,7 +4,6 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
@@ -20,7 +19,6 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -283,32 +281,14 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsUpdatesBindings) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-class PermissionsApiHostAccessRequestsTest : public PermissionsApiTest {
- public:
-  PermissionsApiHostAccessRequestsTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kApiPermissionsHostAccessRequests);
-  }
-  ~PermissionsApiHostAccessRequestsTest() override = default;
-  PermissionsApiHostAccessRequestsTest(
-      const PermissionsApiHostAccessRequestsTest&) = delete;
-  PermissionsApiHostAccessRequestsTest& operator=(
-      const PermissionsApiHostAccessRequestsTest&) = delete;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PermissionsApiHostAccessRequestsTest,
-                       InvalidAddHostAccessRequests) {
+IN_PROC_BROWSER_TEST_F(PermissionsApiTest, InvalidAddHostAccessRequests) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   ASSERT_TRUE(RunExtensionTest("permissions/add_host_access_request"))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(PermissionsApiHostAccessRequestsTest,
-                       InvalidRemoveHostAccessRequests) {
+IN_PROC_BROWSER_TEST_F(PermissionsApiTest, InvalidRemoveHostAccessRequests) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   ASSERT_TRUE(RunExtensionTest("permissions/remove_host_access_request"))

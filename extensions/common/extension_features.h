@@ -57,10 +57,6 @@ BASE_DECLARE_FEATURE(kApiMimeHandler);
 // TODO(crbug.com/376354347): Remove this when the experiment is finished.
 BASE_DECLARE_FEATURE(kApiRuntimeActionData);
 
-// Controls the availability of adding and removing site access requests with
-// the permissions API.
-BASE_DECLARE_FEATURE(kApiPermissionsHostAccessRequests);
-
 // Controls the availability of the odfsConfigPrivate API.
 BASE_DECLARE_FEATURE(kApiOdfsConfigPrivate);
 
