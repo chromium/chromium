@@ -614,7 +614,6 @@ static_library("ui") {
     "//chrome/browser/subresource_filter",
     "//chrome/browser/supervised_user:impl",
     "//chrome/browser/sync",
-    "//chrome/browser/task_manager:impl",
     "//chrome/browser/task_manager/common",
     "//chrome/browser/task_manager/common:impl",
     "//chrome/browser/translate:impl",
@@ -1100,11 +1099,6 @@ static_library("ui") {
       # browser_window.h) that can't be split out yet.
       "//chrome/browser/ui/webui/downloads",
 
-      # chrome_pages.h moved to its own target
-      # (//chrome/browser/ui:chrome_pages), which was the only header behind
-      # this circular include; this entry can now be removed.
-      "//chrome/browser/ui/webui/feedback:impl",
-
       # history_clusters includes headers from //chrome/browser/ui (e.g.
       # browser_commands.h) that can't be split out yet.
       "//chrome/browser/ui/webui/history_clusters",
@@ -1193,8 +1187,9 @@ static_library("ui") {
     # split out yet (e.g. browser_window.h).
     "//chrome/browser/lifetime:impl",
 
-    # notifications:impl's browser.h include was replaced by
-    # BrowserWindowInterface, so this entry can now be removed.
+    # notifications:impl includes headers from //chrome/browser/ui that can't
+    # be split out yet (e.g. browser.h, browser_window.h,
+    # scoped_tabbed_browser_displayer.h, settings_window_manager_chromeos.h).
     "//chrome/browser/notifications:impl",
 
     # TODO(crbug.com/353332589): Remove this circular dependency when the
@@ -1333,11 +1328,6 @@ static_library("ui") {
     # c/b/ui/webui/settings/reset_settings_handler.h, settings_ui.h
     "//chrome/browser/prefs:impl",
 
-    # chrome_pages.h moved to its own target
-    # (//chrome/browser/ui:chrome_pages), which was the only header behind this
-    # circular include; this entry can now be removed.
-    "//chrome/browser/task_manager:impl",
-
     # TODO(crbug.com/364667551): includes //c/b/about_flags.h and other sources
     # from //chrome/browser/ui/webui, which are not modularized yet.
     "//chrome/browser/ui/webui/about:impl",
@@ -1361,11 +1351,6 @@ static_library("ui") {
 
     # vr_tab_helper.cc includes //c/b/ui/browser.h.
     "//chrome/browser/vr:impl",
-
-    # chrome_pages.h moved to its own target
-    # (//chrome/browser/ui:chrome_pages), which was the only header behind this
-    # circular include; this entry can now be removed.
-    "//chrome/browser/supervised_user:impl",
 
     # webauthn:impl includes headers from //chrome/browser/ui that can't be
     # split out yet.
