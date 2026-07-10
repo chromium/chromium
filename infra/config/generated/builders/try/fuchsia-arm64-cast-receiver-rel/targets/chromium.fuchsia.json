@@ -1618,6 +1618,31 @@
       },
       {
         "args": [
+          "--platform=fuchsia"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//third_party/flatbuffers:flatbuffers_unittests",
+        "module_scheme": "single",
+        "name": "flatbuffers_unittests",
+        "resultdb": {
+          "enable": true,
+          "result_format": "single"
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "flatbuffers_unittests",
+        "test_id_prefix": "ninja://third_party/flatbuffers:flatbuffers_unittests/"
+      },
+      {
+        "args": [
           "--sizes-path",
           "tools/fuchsia/size_tests/fyi_sizes_smoketest.json"
         ],

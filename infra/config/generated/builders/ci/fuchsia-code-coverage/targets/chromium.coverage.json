@@ -1517,6 +1517,32 @@
         },
         "test": "angle_unittests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
+      },
+      {
+        "args": [
+          "--platform=fuchsia",
+          "--code-coverage-dir=${ISOLATED_OUTDIR}",
+          "--device-spec=x64-emu-large"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//third_party/flatbuffers:flatbuffers_unittests",
+        "module_scheme": "single",
+        "name": "flatbuffers_unittests",
+        "resultdb": {
+          "enable": true,
+          "result_format": "single"
+        },
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "flatbuffers_unittests",
+        "test_id_prefix": "ninja://third_party/flatbuffers:flatbuffers_unittests/"
       }
     ]
   }

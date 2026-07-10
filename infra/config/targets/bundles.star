@@ -2782,8 +2782,7 @@ targets.bundle(
         "display_unittests",
         "events_unittests",
         "filesystem_service_unittests",
-        # TODO(crbug.com/40821369): Enable this suite.
-        # "flatbuffers_unittests",
+        "flatbuffers_unittests",
         "gcm_unit_tests",
         "gfx_unittests",
         "gin_unittests",
@@ -2845,6 +2844,14 @@ targets.bundle(
             swarming = targets.swarming(
                 shards = 14,
             ),
+        ),
+        "flatbuffers_unittests": targets.per_test_modification(
+            mixins = targets.mixin(
+                args = [
+                    "--platform=fuchsia",
+                ],
+            ),
+            remove_mixins = ["upload_inv_extended_properties"],
         ),
         "net_unittests": targets.mixin(
             args = [
