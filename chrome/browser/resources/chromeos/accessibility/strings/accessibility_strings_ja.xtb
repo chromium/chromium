@@ -100,7 +100,7 @@
 <translation id="1502086903961450562">前の図</translation>
 <translation id="1506187449813838456">ピッチを上げる</translation>
 <translation id="151784044608172266">次の文</translation>
-<translation id="1524531499102321782">ブライユ点字の次の行</translation>
+<translation id="1524531499102321782">点字の次の行</translation>
 <translation id="1534255288158532891">.input {$$COUNT :number} .match $$COUNT 1{{個のチルダ}} *{{{$$COUNT} 個のチルダ}}</translation>
 <translation id="1542513807034338907">前のページにスクロールします</translation>
 <translation id="1546370775711804143">スクロールバー</translation>
@@ -642,7 +642,7 @@
 <translation id="5012724933919010465"><ph name="NAME" />、選択されたメニュー項目のラジオボタン</translation>
 <translation id="5014131807708055994"><ph name="REASON" />　のため、<ph name="COMMAND" /> できません</translation>
 <translation id="5020651427400641814">読み上げのログを有効にする</translation>
-<translation id="5041394372352067729">ブライユ点字表示をページ上部に移動</translation>
+<translation id="5041394372352067729">点字表示をページ上部に移動</translation>
 <translation id="5042770794184672516">読み上げの音量を上げる</translation>
 <translation id="5042992464904238023">ウェブ コンテンツ</translation>
 <translation id="5045870649377683106">次は左 Shift キーです。このキーは Ctrl キーのすぐ上にあります。次へ進むには、左 Shift キーを押してください。</translation>
@@ -664,7 +664,7 @@
 <translation id="5158275234811857234">表紙</translation>
 <translation id="516076699907426116">次に進むには、タッチガイドで [次のレッスン] ボタンを探して、ダブルタップしてください。</translation>
 <translation id="5170206230005240598">点字表示が有効になっています</translation>
-<translation id="5183440668879371625">ブライユ点字の前の行</translation>
+<translation id="5183440668879371625">点字の前の行</translation>
 <translation id="5189244881767082992">行</translation>
 <translation id="5263034204789987535">コーンシルク</translation>
 <translation id="5263344797180442561">見出し 2</translation>
@@ -852,7 +852,7 @@
 <translation id="646954774886932461">索引</translation>
 <translation id="6493991254603208962">明るさを下げる</translation>
 <translation id="6501595918865591267">ターコイズ</translation>
-<translation id="6508059270146105198">ブライユ点字表示をページ下部に移動</translation>
+<translation id="6508059270146105198">点字表示をページ下部に移動</translation>
 <translation id="6511611327412641506">.input {$$COUNT :number} .match $$COUNT 1{{個の左丸かっこ}} *{{{$$COUNT} 個の左丸かっこ}}</translation>
 <translation id="6521550811716689390">ダーク バイオレット</translation>
 <translation id="6536157907112457272">リネン</translation>
@@ -1008,7 +1008,7 @@
 <translation id="7604026522577407655">現在の列の先頭に移動</translation>
 <translation id="7604451927827590395">見出し</translation>
 <translation id="7609342235116740824">現在のページの URL を読み上げる</translation>
-<translation id="7609363189280667021">ブライユ点字キャプションを切り替える</translation>
+<translation id="7609363189280667021">点字キャプションを切り替える</translation>
 <translation id="761303759119251275">クレジット</translation>
 <translation id="762020119231868829">現在再生中のメディア ウィジェットをすべて一時停止します</translation>
 <translation id="7625690649919402823">次の表</translation>

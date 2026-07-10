@@ -943,7 +943,7 @@
 <translation id="4232376164796433044">Senhas e preenchimento automático</translation>
 <translation id="4232817129213135694">Configurar chaves de acesso para este dispositivo</translation>
 <translation id="4237377247299956313">Toque em <ph name="BEGIN_BOLD" />App de navegação padrão<ph name="END_BOLD" />.</translation>
-<translation id="424063167283213501">Salvar o número de passageiro conhecido</translation>
+<translation id="424063167283213501">Salvar número de identificação do passageiro (KTN)</translation>
 <translation id="4241893428331130998">Nenhuma senha ou chave de acesso salva</translation>
 <translation id="4242533952199664413">Abrir configurações.</translation>
 <translation id="4250432749243022864">{count,plural, =0{Abrir {count} guia}=1{Abrir {count} guia}one{Abrir {count} guia}other{Abrir {count} guias}}</translation>
@@ -2359,7 +2359,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="8813277370772331957">Lembrar mais tarde</translation>
 <translation id="8814308045751067027">Para usar o Live, permita que o Chrome acesse o microfone nas configurações</translation>
 <translation id="8814719628147284151">Continuar</translation>
-<translation id="881559332211266856">Atualizar número de reparação</translation>
+<translation id="881559332211266856">Atualizar número de retificação</translation>
 <translation id="8817524703470045896">Monitore os preços e receba alertas quando houver redução em algum site</translation>
 <translation id="8819155700324279105">Mais proteção contra ameaças on-line.</translation>
 <translation id="8820817407110198400">Favoritos</translation>

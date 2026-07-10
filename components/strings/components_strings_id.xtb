@@ -611,7 +611,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1953729392594614704">Memblokir <ph name="TOPIC" /> juga akan memblokir topik terkait, meskipun topik tersebut aktif</translation>
 <translation id="1954847915560574887">A3x3</translation>
 <translation id="1955773397805078763">Tambahkan metode pembayaran</translation>
-<translation id="1956486093533522234">Temukan, amankan, atau hapus perangkat Anda</translation>
+<translation id="1956486093533522234">Temukan dan amankan perangkat, atau hapus datanya</translation>
 <translation id="1957274554973357626">Komedi Live</translation>
 <translation id="1958218078413065209">Skor tertinggi Anda adalah <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Bantu sempurnakan keamanan di web untuk semua orang dengan mengirimkan <ph name="BEGIN_WHITEPAPER_LINK" />URL beberapa halaman yang Anda kunjungi, informasi sistem terbatas, dan beberapa konten halaman<ph name="END_WHITEPAPER_LINK" /> ke Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Kebijakan privasi<ph name="END_PRIVACY_PAGE_LINK" /></translation>
@@ -1317,7 +1317,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3041584414879052436">Daftar penerbit Beli Sekarang Bayar Nanti ditutup.</translation>
 <translation id="3041612393474885105">Informasi Sertifikat</translation>
 <translation id="3045769629416806687">Olahraga Ekstrem</translation>
-<translation id="3047054686095898948">Simpan info Anda di <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> dan selesaikan berbagai aktivitas lebih cepat, seperti mengisi formulir di berbagai produk Google. Anda dapat <ph name="BEGIN_LINK" />mengelola info Anda<ph name="END_LINK" /> di <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> untuk <ph name="ACCOUNT" /></translation>
+<translation id="3047054686095898948">Simpan info Anda di <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> dan lakukan berbagai hal lebih cepat, misalnya mengisi formulir di produk-produk Google. Anda dapat <ph name="BEGIN_LINK" />mengelola info Anda<ph name="END_LINK" /> di <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> untuk <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Histori Chrome Desktop Jarak Jauh, termasuk stempel waktu, host, dan ID sesi klien</translation>
 <translation id="3052868890529250114">Anda biasanya terhubung ke situs dengan aman, tetapi Chrome tidak dapat menggunakan koneksi yang aman untuk saat ini. Penyerang mungkin mencoba menyadap atau mengubah koneksi jaringan Anda. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut peringatan ini<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Diskon <ph name="PRICE_DROP" /> untuk <ph name="PRODUCT_NAME" /></translation>
@@ -4793,7 +4793,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8414322570408428950">Terjadi peristiwa ekstensi</translation>
 <translation id="8416694386774425977">Konfigurasi jaringan tidak valid dan tidak dapat diimpor. Detail tambahan: <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofon diizinkan kali ini</translation>
-<translation id="8421746712901926961">Simpan info Anda di <ph name="GOOGLE_WALLET_TITLE_1" /> dan selesaikan berbagai hal lebih cepat, seperti mengisi formulir di seluruh produk Google. Anda dapat <ph name="MANAGE_INFO_LINK" /> di <ph name="GOOGLE_WALLET_TITLE_2" /> untuk <ph name="ACCOUNT" />.</translation>
+<translation id="8421746712901926961">Simpan info Anda di <ph name="GOOGLE_WALLET_TITLE_1" /> dan lakukan berbagai hal lebih cepat, misalnya mengisi formulir di produk-produk Google. Anda dapat <ph name="MANAGE_INFO_LINK" /> di <ph name="GOOGLE_WALLET_TITLE_2" /> untuk <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Ubah</translation>
 <translation id="8426945547715537628">Izinkan penggantian keyboard?</translation>
@@ -4947,7 +4947,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="868922510921656628">Halaman per set</translation>
 <translation id="8694684557210599098">Tambahkan kendaraan</translation>
 <translation id="8698428283892912525">Chrome memiliki fitur keamanan bawaan untuk melindungi Anda saat menjelajah — seperti Google Safe Browsing, yang baru-baru ini <ph name="BEGIN_LINK" />menemukan software berbahaya<ph name="END_LINK" /> di situs yang Anda coba kunjungi.</translation>
-<translation id="869891660844655955">Masa berlaku</translation>
+<translation id="869891660844655955">Berlaku hingga</translation>
 <translation id="8699041776323235191">Perangkat HID</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">Plester Pemasangan</translation>

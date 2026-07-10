@@ -600,7 +600,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1938812296371201896">Spremanje videozapisa nije uspjelo</translation>
 <translation id="1939059826036755332">Automatska slika u slici</translation>
 <translation id="1939175642807587452">Može tražiti dopuštenje za slanje obavijesti</translation>
-<translation id="1940441167050915935">Izbriši spremljene sigurnosne kodove</translation>
+<translation id="1940441167050915935">Izbrišite spremljene sigurnosne kodove</translation>
 <translation id="194174710521904357">Privremeno ste dopustili ovoj web-lokaciji upotrebu kolačića trećih strana, što znači da će biti manje zaštite pregledavanja, ali će značajke web-lokacije vjerojatnije funkcionirati u skladu s očekivanjima.</translation>
 <translation id="1942498996464084801">Knjige i književnost</translation>
 <translation id="1943994668912612445">Dizajn</translation>
@@ -2259,7 +2259,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4480760608050410381">MP4 videozapis</translation>
 <translation id="448363931695049633">Pizzerije</translation>
 <translation id="4489023393592172404">Omotnica Kaku 4</translation>
-<translation id="4489977488133295402">Potvrdite svoj identitet da biste mogli automatski popunjavati načine plaćanja</translation>
+<translation id="4489977488133295402">Traži potvrdu mojeg identiteta radi automatskog popunjavanja načina plaćanja</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Šifriranje sinkroniziranih zaporki s Google računom</translation>
 <translation id="4493480324863638523">URL nije važeći. URL mora imati standardnu shemu, na primjer http://example.com ili https://example.com.</translation>

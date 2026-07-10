@@ -1208,7 +1208,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1897120393475391208">Koristite jaku lozinku</translation>
 <translation id="1897860317037652061">Skeniranje nije uspelo</translation>
 <translation id="1898804291554630487">Postavite pitanje o ovoj stranici</translation>
-<translation id="1899172684246105747">Prilagodite pregledač uz opcije poput teme i tamnog režima.</translation>
+<translation id="1899172684246105747">Prilagodite pregledač pomoću opcija poput tema i tamnog režima.</translation>
 <translation id="1900305421498694955">Aplikacijama sa Google Play-a će možda trebati potpuni pristup sistemu datoteka da bi čitale i upisivale datoteke na spoljnim memorijskim uređajima. Datoteke i direktorijumi napravljeni na uređaju su vidljivi svima koji koriste spoljni disk. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">Zatražite od administratora da ažurira ovu aplikaciju</translation>
 <translation id="1901303067676059328">Izaberi &amp;sve</translation>
@@ -4449,6 +4449,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4281789858103154731">Napravi</translation>
 <translation id="4281844954008187215">Uslovi korišćenja usluge</translation>
 <translation id="4281849573951338030">Prilagodite dugmad olovke</translation>
+<translation id="4283635301190260296">Skupi vertikalne kartice</translation>
 <translation id="4284903252249997120">ChromeVox čitač ekrana i Izaberite za govor</translation>
 <translation id="4285418559658561636">Ažuriraj lozinku</translation>
 <translation id="4285498937028063278">Otkači</translation>

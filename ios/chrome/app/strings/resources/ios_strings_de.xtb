@@ -1134,7 +1134,7 @@
 <translation id="4854068532375923088">Gemini die Verwendung deiner Kamera erlauben</translation>
 <translation id="4860895144060829044">Anrufen</translation>
 <translation id="4861953997778766866">Jeder kann Änderungen an deinen freigegebenen Tabgruppen vornehmen</translation>
-<translation id="4865063548323785458">Du kannst deine Passwörter speichern und automatisch ausfüllen lassen, um dich einfacher auf Websites und in Apps anzumelden</translation>
+<translation id="4865063548323785458">Du kannst deine Passwörter speichern und automatisch eintragen lassen, um dich einfacher auf Websites und in Apps anzumelden</translation>
 <translation id="4867608294647017606">Bild aus Suche entfernen</translation>
 <translation id="4869146460927742717">Position der Adressleiste</translation>
 <translation id="4870911314065352661">Alle Tabs schließen?</translation>
@@ -1882,7 +1882,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7280980607183752256">Datei kann nicht importiert werden</translation>
 <translation id="7282197670900591579">Zitronengelbes Design</translation>
 <translation id="7293429513719260019">Sprache auswählen</translation>
-<translation id="7300448350764260141">Du kannst dich noch besser vor Onlinebedrohungen schützen lassen.</translation>
+<translation id="7300448350764260141">Schütze dich noch besser vor Onlinebedrohungen.</translation>
 <translation id="7311244614769792472">Keine Ergebnisse gefunden</translation>
 <translation id="7312823817809783355">Meine Aufgaben</translation>
 <translation id="7313347584264171202">Hier werden deine Inkognitotabs angezeigt</translation>
@@ -2299,7 +2299,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8637431369725868556">Schütze dich bestmöglich vor gefährlichen Websites.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Keine kompromittierten Passwörter}=1{{COUNT} kompromittiertes Passwort}other{{COUNT} kompromittierte Passwörter}}</translation>
 <translation id="8639963783467694461">AutoFill-Einstellungen</translation>
-<translation id="8642417828095157370">Tabs werden für relevantere Antworten geteilt</translation>
+<translation id="8642417828095157370">Damit du relevantere Antworten erhältst, werden Tabs mit Gemini geteilt</translation>
 <translation id="8643403533759285912">Gruppe löschen</translation>
 <translation id="8647280737650867362">Tracking des Preises konnte nicht beendet werden.</translation>
 <translation id="8654802032646794042">Abbrechen</translation>

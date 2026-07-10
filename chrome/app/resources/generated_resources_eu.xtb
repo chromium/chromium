@@ -4447,6 +4447,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4281789858103154731">Sortu</translation>
 <translation id="4281844954008187215">Zerbitzu-baldintzak</translation>
 <translation id="4281849573951338030">Pertsonalizatu arkatzaren botoiak</translation>
+<translation id="4283635301190260296">Tolestu fitxa bertikalak</translation>
 <translation id="4284903252249997120">ChromeVox pantaila-irakurgailua eta Hautatu ozen irakurtzeko</translation>
 <translation id="4285418559658561636">Eguneratu pasahitza</translation>
 <translation id="4285498937028063278">Desainguratu</translation>
@@ -9739,7 +9740,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8275038454117074363">Inportatu</translation>
 <translation id="8275080796245127762">Deitu zure gailutik</translation>
 <translation id="8276560076771292512">Hustu cachea eta kargatu berriro cachea erabili gabe</translation>
-<translation id="8277907305629781277"><ph name="DATE" /> datan sortu zenuen sarbide-gako hau</translation>
+<translation id="8277907305629781277">Data honetan sortu zenuen sarbide-gako hau: <ph name="DATE" /></translation>
 <translation id="8278702675516957539">JavaScript-en optimizazioa erabiltzeko baimenik ez dutenak</translation>
 <translation id="827966378414194229">Erabili buruaren mugimenduak eta aurpegierak Chromebook-a kontrolatzeko. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Webguneak zure hizkuntzetan</translation>

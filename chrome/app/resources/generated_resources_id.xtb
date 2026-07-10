@@ -4462,6 +4462,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4281789858103154731">Buat</translation>
 <translation id="4281844954008187215">Persyaratan Layanan</translation>
 <translation id="4281849573951338030">Sesuaikan tombol pena</translation>
+<translation id="4283635301190260296">Ciutkan Tab Vertikal</translation>
 <translation id="4284903252249997120">Pembaca layar ChromeVox dan fitur Klik untuk Diucapkan</translation>
 <translation id="4285418559658561636">Perbarui Kata sandi</translation>
 <translation id="4285498937028063278">Lepaskan</translation>
@@ -8196,7 +8197,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7109543803214225826">Pintasan dihapus</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Tambahkan Tab ke Grup}other{Tambahkan Tab ke Grup}}</translation>
 <translation id="7111822978084196600">Namai jendela ini</translation>
-<translation id="7113314569799918830">Gemini di Chrome terus diperluas ke berbagai lokasi, tetapi belum tersedia di semua wilayah</translation>
+<translation id="7113314569799918830">Gemini di Chrome terus diperluas ke berbagai lokasi, tetapi hanya baru tersedia di lokasi tertentu.</translation>
 <translation id="7113502843173351041">Mengetahui alamat email Anda</translation>
 <translation id="7115361495406486998">Tidak ada kontak yang dapat dihubungi</translation>
 <translation id="7117228822971127758">Coba lagi nanti</translation>
@@ -10324,7 +10325,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8695825812785969222">Buka &amp;Lokasi...</translation>
 <translation id="8698269656364382265">Untuk kembali ke layar sebelumnya, geser dari bagian samping kiri.</translation>
 <translation id="869884720829132584">Menu aplikasi</translation>
-<translation id="869891660844655955">Masa berlaku</translation>
+<translation id="869891660844655955">Berlaku hingga</translation>
 <translation id="8699296325072357994">Konten dari halaman sandi dan info terkait dikirim ke Google dan ditinjau secara manual. Sandi Anda dienkripsi dan tidak akan dilihat oleh siapa pun. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700066369485012242">Beri tahu kami alasan Anda mengizinkan cookie pihak ketiga di situs ini</translation>
 <translation id="8700416429250425628">peluncur + backspace</translation>

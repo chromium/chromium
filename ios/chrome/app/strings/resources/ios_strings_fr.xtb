@@ -229,7 +229,7 @@
 <translation id="1718835860248848330">Dernière heure</translation>
 <translation id="1728549374069268714">Coller et rechercher</translation>
 <translation id="1732468323901456775">Activer les notifications "<ph name="MODULE_NAME" />"</translation>
-<translation id="1739364174357629566">Mettez à jour le Known Traveler Number</translation>
+<translation id="1739364174357629566">Mettre à jour le Known Traveler Number</translation>
 <translation id="1740468249224277719">Appuyez deux fois pour installer.</translation>
 <translation id="1740650426894359238">Changer de profil</translation>
 <translation id="1741219894094057085">Montre connectée</translation>
@@ -472,7 +472,7 @@
 <translation id="2529021024822217800">Tout ouvrir</translation>
 <translation id="2536991091671391962">Vous pouvez utiliser les mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le Gestionnaire de mots de passe de Google pour <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Masqué, mot de passe</translation>
-<translation id="2538705697765638552">Enregistrez vos informations pour gagner du temps, par exemple lorsque vous remplissez des formulaires dans les produits Google. Vous pouvez gérer vos informations dans Google Wallet pour <ph name="USER_EMAIL" />.</translation>
+<translation id="2538705697765638552">Enregistrez vos informations pour gagner du temps, par exemple pour remplir des formulaires dans les produits Google. Vous pouvez gérer vos informations dans Google Wallet pour <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Activer la protection renforcée…</translation>
 <translation id="2540111494300686866">Supprimer boîtes de dial.</translation>
 <translation id="2542268842667970959">Masquer "Contrôle de sécurité"</translation>
@@ -1082,7 +1082,7 @@
 <translation id="4682496302933121474">Traduire la page ?</translation>
 <translation id="4682686630151240767">1. Ouvrez les réglages de l'iPhone</translation>
 <translation id="4697240968720007067">Obtenez les meilleures applis de Google, en un geste</translation>
-<translation id="4698308118265482293">Mettez à jour le passeport</translation>
+<translation id="4698308118265482293">Mettre à jour le passeport</translation>
 <translation id="4699172675775169585">Images et fichiers en cache</translation>
 <translation id="4709570498586527752">Fonctionnalités les plus pertinentes pour vous selon le moment</translation>
 <translation id="4717844083556844785">La page Web actuelle est en mode navigation privée</translation>
@@ -1369,7 +1369,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="562753339521713441">Lancez le contrôle de sécurité</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} page sur votre liste de lecture}one{{count} page sur votre liste de lecture}other{{count} pages sur votre liste de lecture}}</translation>
 <translation id="5632194969640946913">Découvrez plus d'informations lorsque vous parcourez et recherchez ce que vous voyez sur n'importe quelle page pour explorer des produits, des lieux et du texte.</translation>
-<translation id="5632485077360054581">Démonstration</translation>
+<translation id="5632485077360054581">Voir comment faire</translation>
 <translation id="5633237939819267663">{count,plural, =1{Favori enregistré dans "{title}"}one{{count} favori enregistré dans "{title}"}other{{count} favoris enregistrés dans "{title}"}}</translation>
 <translation id="564170563478022912">Se déconnecter ? Les données non enregistrées du compte seront supprimées.</translation>
 <translation id="5642707040609478753">Marquer comme non lu</translation>
@@ -1558,7 +1558,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6232329973559504466">Recherche en navigation privée</translation>
 <translation id="6234310016144827337">Vérifiez la connexion, puis réessayez</translation>
 <translation id="6236952928980352967">Restaurer l'avertissement</translation>
-<translation id="6240553182907836376">Mettez à jour la carte d'identité</translation>
+<translation id="6240553182907836376">Mettre à jour la carte d'identité</translation>
 <translation id="6240601837375010619">Enregistrer le passeport</translation>
 <translation id="6241132809279377987">Profitez de plus de fonctionnalités sur votre iPhone avec les applis Google</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
@@ -1845,7 +1845,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="7138678301420049075">Autre</translation>
 <translation id="7141960840225504692">Vos onglets seront fermés et les données de navigation seront supprimées</translation>
 <translation id="714291438898585119">Suivis</translation>
-<translation id="7145337554745942724">Mettez à jour le permis de conduire</translation>
+<translation id="7145337554745942724">Mettre à jour le permis de conduire</translation>
 <translation id="7146301801400584641">Fichier d'agenda disponible</translation>
 <translation id="7149893636342594995">Dernières 24 heures</translation>
 <translation id="7154417656353909837">Supprimer les adresses</translation>
@@ -1921,7 +1921,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="7437712592381799950">Vous pouvez balayer l'écran vers le haut pour voir plus de contenus personnalisés.</translation>
 <translation id="7438473148803748807">Tout le monde perdra immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />", et tous les liens d'invitation seront désactivés</translation>
 <translation id="7445682342344043969">Pop-up bloqués</translation>
-<translation id="7450486349221991286">Mettez à jour le véhicule</translation>
+<translation id="7450486349221991286">Mettre à jour le véhicule</translation>
 <translation id="7451023311965289370">{count,plural, =1{Favori enregistré dans "{title}"}one{Favori enregistré dans "{title}"}other{Favoris enregistrés dans "{title}"}}</translation>
 <translation id="7451404862887877229">Appuyez sur "Confidentialité et sécurité", puis sur "Navigation sécurisée"</translation>
 <translation id="7452393099119876789">Vous n'aurez à effectuer cette opération qu'une seule fois.</translation>
@@ -2359,7 +2359,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="8813277370772331957">Plus tard</translation>
 <translation id="8814308045751067027">Pour utiliser Live, autorisez Chrome à accéder à votre micro dans les paramètres</translation>
 <translation id="8814719628147284151">Continuer</translation>
-<translation id="881559332211266856">Mettez à jour le numéro de recours</translation>
+<translation id="881559332211266856">Mettre à jour le numéro de recours</translation>
 <translation id="8817524703470045896">Suivez des prix et recevez des alertes en cas de baisse de prix sur un site</translation>
 <translation id="8819155700324279105">Ajoutez un niveau de sécurité accru contre les menaces en ligne.</translation>
 <translation id="8820817407110198400">Favoris</translation>

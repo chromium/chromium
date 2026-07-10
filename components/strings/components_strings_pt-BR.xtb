@@ -751,7 +751,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2166049586286450108">Acesso completo de administrador</translation>
 <translation id="2166378884831602661">Não foi possível estabelecer uma conexão segura com este site</translation>
 <translation id="2168151236314517198">A impressão desse conteúdo está bloqueada pela política do administrador</translation>
-<translation id="2171244127100824330">Em <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" /></translation>
+<translation id="2171244127100824330">Na <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">Reparo e manutenção de veículos</translation>
 <translation id="217231402430591139">Vincular sua conta</translation>
 <translation id="2173302385160625112">Verifique sua conexão com a Internet</translation>
@@ -787,7 +787,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2213612003795704869">A página foi impressa</translation>
 <translation id="2214086901479959524">Atualize o Chrome para continuar usando seus grupos de guias compartilhados</translation>
 <translation id="2214453882118345682">Compre, traduza e identifique o que você quiser usando a câmera.</translation>
-<translation id="2215368073167343359">Preenchimento automático do Google</translation>
+<translation id="2215368073167343359">Preench. auto. do Google</translation>
 <translation id="2215539479425228550">Escalada e montanhismo</translation>
 <translation id="2215727959747642672">Edição de arquivos</translation>
 <translation id="2215963164070968490">Cães</translation>
@@ -1316,7 +1316,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3041584414879052436">A lista de emissores da opção "Compre agora, pague depois" está fechada.</translation>
 <translation id="3041612393474885105">Informações do certificado</translation>
 <translation id="3045769629416806687">Esportes radicais</translation>
-<translation id="3047054686095898948">Salve suas informações na <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> e agilize ações como o preenchimento de formulários em produtos do Google. Você pode <ph name="BEGIN_LINK" />gerenciar suas informações<ph name="END_LINK" /> no <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> para <ph name="ACCOUNT" /></translation>
+<translation id="3047054686095898948">Salve suas informações na <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> e agilize ações como o preenchimento de formulários em produtos do Google. Você pode <ph name="BEGIN_LINK" />gerenciar suas informações<ph name="END_LINK" /> na <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> para <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">o histórico da Área de trabalho remota do Google Chrome, incluindo carimbos de data/hora, hosts e IDs de sessões de clientes.</translation>
 <translation id="3052868890529250114">A conexão com estes sites costuma ser segura, mas o Chrome não conseguiu garantir isso desta vez. Um invasor pode estar tentando espionar ou modificar sua conexão de rede. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais sobre este aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Redução de <ph name="PRICE_DROP" /> no preço deste produto: <ph name="PRODUCT_NAME" /></translation>
@@ -2100,7 +2100,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4231448684371260244">20 x 33 cm</translation>
 <translation id="4234996384188431444">Pague com Pix no Google Chrome sem trocar de app</translation>
 <translation id="4239799716689808527">Rótulos</translation>
-<translation id="424063167283213501">Salvar o número de passageiro conhecido</translation>
+<translation id="424063167283213501">Salvar número de identificação do passageiro (KTN)</translation>
 <translation id="4241830393007970744">Invasores no site que você tentou acessar podem induzir você a instalar um software ou compartilhar dados como senhas, telefone ou números de cartões de crédito.</translation>
 <translation id="4242380780309416996">Envelope (grosso)</translation>
 <translation id="4242981939686657948">Para pesquisar seu histórico de navegação com mais eficiência, ative o</translation>
@@ -3806,7 +3806,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6900702165119149418">Você não fez login</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="691024665142758461">Fazer o download de vários arquivos</translation>
-<translation id="691046363691324218">Número de reparação</translation>
+<translation id="691046363691324218">Número de retificação</translation>
 <translation id="6915804003454593391">Usuário:</translation>
 <translation id="6916193791494646625">Informe o motivo do download (obrigatório)</translation>
 <translation id="6917795328362592458">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas recomenda que você revise as senhas salvas.</translation>
@@ -5027,7 +5027,7 @@ Mais detalhes:
 <translation id="8811725516933141693">Digite @gemini para conversar com o Gemini</translation>
 <translation id="8813277370772331957">Lembrar mais tarde</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
-<translation id="881559332211266856">Atualizar número de reparação</translation>
+<translation id="881559332211266856">Atualizar número de retificação</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para atualizar o Chrome pelas configurações dele</translation>
 <translation id="8819155700324279105">Mais proteção contra ameaças on-line.</translation>
 <translation id="8819855907485254989">Salvar bilhete de transporte na Carteira</translation>

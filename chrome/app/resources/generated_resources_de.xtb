@@ -1208,7 +1208,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1897120393475391208">Starkes Passwort verwenden</translation>
 <translation id="1897860317037652061">Fehler beim Scannen</translation>
 <translation id="1898804291554630487">Fragen zu dieser Seite stellen</translation>
-<translation id="1899172684246105747">Du kannst deinen Browser mit Optionen wie Designs und dem dunklen Modus anpassen.</translation>
+<translation id="1899172684246105747">Du kannst deinen Browser mit verschiedenen Optionen wie Designs und dem dunklen Modus anpassen.</translation>
 <translation id="1900305421498694955">Google Play-Apps benötigen möglicherweise vollständigen Zugriff auf dein Dateisystem, um auf externen Speichergeräten Dateien lesen und schreiben zu können. Dateien und Ordner, die auf dem Gerät erstellt werden, sind für alle Nutzer des externen Speichergeräts sichtbar. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">Administrator um Aktualisierung dieser App bitten</translation>
 <translation id="1901303067676059328">&amp;Alles auswählen</translation>
@@ -4448,6 +4448,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4281789858103154731">Erstellen</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
 <translation id="4281849573951338030">Stifttasten anpassen</translation>
+<translation id="4283635301190260296">Vertikale Tabs minimieren</translation>
 <translation id="4284903252249997120">Screenreader „ChromeVox“ und Bedienungshilfe „Vorlesen“</translation>
 <translation id="4285418559658561636">Passwort aktualisieren</translation>
 <translation id="4285498937028063278">Loslösen</translation>
