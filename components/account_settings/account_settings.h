@@ -31,23 +31,23 @@ inline constexpr AccountSetting kWalletPrivacyContextualSurfacing{
     "WALLET_PRIVACY_CONTEXTUAL_SURFACING", base::Value::Type::BOOLEAN};
 
 inline constexpr AccountSetting kAccountSettingContext{
-    "GEMINI_PERSONAL_CONTEXT_GEMINI", base::Value::Type::BOOLEAN,
+    "143", base::Value::Type::BOOLEAN,
     &features::kAccountSettingContextKillSwitch};
 
 inline constexpr AccountSetting kAccountSettingContextWorkspace{
-    "PERSONAL_CONTEXT_GEMINI_USING_WORKSPACE", base::Value::Type::BOOLEAN,
+    "185", base::Value::Type::BOOLEAN,
     &features::kAccountSettingContextKillSwitch};
 
 inline constexpr AccountSetting kAccountSettingContextPhotos{
-    "PERSONAL_CONTEXT_GEMINI_USING_PHOTOS", base::Value::Type::BOOLEAN,
+    "186", base::Value::Type::BOOLEAN,
     &features::kAccountSettingContextKillSwitch};
 
 inline constexpr AccountSetting kAccountSettingContextSearch{
-    "GEMINI_PERSONAL_CONTEXT_SEARCH", base::Value::Type::BOOLEAN,
+    "144", base::Value::Type::BOOLEAN,
     &features::kAccountSettingContextKillSwitch};
 
 inline constexpr AccountSetting kAccountSettingContextYoutube{
-    "GEMINI_PERSONAL_CONTEXT_YOUTUBE", base::Value::Type::BOOLEAN,
+    "161", base::Value::Type::BOOLEAN,
     &features::kAccountSettingContextKillSwitch};
 
 }  // namespace account_settings
