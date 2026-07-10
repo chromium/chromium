@@ -229,7 +229,7 @@ inline constexpr char kGeminiAppStorePromoURL[] =
     "https://www.google.com/chrome/mobile/#scrollable-gemini-in-chrome-slide-1";
 
 // Gets the hosts/domains that are shown in chrome://chrome-urls.
-inline constexpr std::array<std::string_view, 23> kChromeHostURLs = {
+inline constexpr auto kChromeHostURLs = std::to_array<std::string_view>({
     commerce::kChromeUICommerceInternalsHost,
     kChromeUIChromeURLsHost,
     kChromeUICreditsHost,
@@ -253,6 +253,6 @@ inline constexpr std::array<std::string_view, 23> kChromeHostURLs = {
     kChromeUIVersionHost,
     optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost,
     regional_capabilities::kChromeUIRegionalCapabilitiesInternalsHost,
-};
+});
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_URL_CHROME_URL_CONSTANTS_H_
