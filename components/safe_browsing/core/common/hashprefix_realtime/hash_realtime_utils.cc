@@ -72,10 +72,6 @@ bool IsHashDetailRelevant(const V5::FullHash::FullHashDetail& detail) {
       return false;
   }
 }
-std::string GetHashPrefix(const std::string& full_hash) {
-  DCHECK(full_hash.length() == kFullHashLength);
-  return full_hash.substr(0, kHashPrefixLength);
-}
 bool IsHashRealTimeLookupEligibleInSession() {
   return HasGoogleChromeBranding() &&
          base::FeatureList::IsEnabled(kHashPrefixRealTimeLookups);

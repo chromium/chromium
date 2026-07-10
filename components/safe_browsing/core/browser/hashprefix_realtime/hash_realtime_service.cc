@@ -233,7 +233,7 @@ std::set<std::string> HashRealTimeService::GetHashPrefixesSet(
   SBProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
   std::set<std::string> hash_prefixes;
   for (const auto& full_hash : full_hashes) {
-    auto hash_prefix = hash_realtime_utils::GetHashPrefix(full_hash);
+    auto hash_prefix = SBProtocolManagerUtil::GetHashPrefix(full_hash);
     hash_prefixes.insert(hash_prefix);
   }
   return hash_prefixes;
@@ -525,7 +525,7 @@ void HashRealTimeService::RemoveUnmatchedFullHashes(
           mutable_full_hashes->begin(), mutable_full_hashes->end(),
           [requested_hash_prefixes_set](const V5::FullHash& full_hash) {
             return !requested_hash_prefixes_set.contains(
-                hash_realtime_utils::GetHashPrefix(full_hash.full_hash()));
+                SBProtocolManagerUtil::GetHashPrefix(full_hash.full_hash()));
           }),
       mutable_full_hashes->end());
   size_t final_full_hashes_count = response->full_hashes_size();

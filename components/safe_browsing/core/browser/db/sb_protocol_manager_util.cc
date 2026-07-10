@@ -483,6 +483,13 @@ void SBProtocolManagerUtil::UrlToFullHashes(
 }
 
 // static
+HashPrefixStr SBProtocolManagerUtil::GetHashPrefix(
+    const FullHashStr& full_hash) {
+  CHECK_EQ(full_hash.length(), kMaxHashPrefixLength);
+  return full_hash.substr(0, kMinHashPrefixLength);
+}
+
+// static
 bool SBProtocolManagerUtil::FullHashToHashPrefix(const FullHashStr& full_hash,
                                                  PrefixSize prefix_size,
                                                  HashPrefixStr* hash_prefix) {

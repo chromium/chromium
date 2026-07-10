@@ -16,15 +16,6 @@
 
 namespace safe_browsing {
 
-TEST(HashRealTimeUtilsTest, TestGetHashPrefix) {
-  EXPECT_EQ(
-      hash_realtime_utils::GetHashPrefix("abcd1111111111111111111111111111"),
-      "abcd");
-  EXPECT_EQ(
-      hash_realtime_utils::GetHashPrefix("dcba1111111111111111111111111111"),
-      "dcba");
-}
-
 TEST(HashRealTimeUtilsTest, TestCanCheckUrl) {
   auto can_check_url = [](std::string url) {
     EXPECT_TRUE(GURL(url).is_valid());

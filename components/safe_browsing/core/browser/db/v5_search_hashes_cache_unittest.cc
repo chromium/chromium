@@ -18,7 +18,6 @@
 #include "components/history/core/test/test_history_database.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "crypto/sha2.h"
@@ -900,7 +899,7 @@ TEST_P(ArtificialV5SearchHashesCacheTest, TestCachePopulated) {
   ASSERT_EQ(full_hashes.size(), 1u);
   FullHashStr full_hash = full_hashes[0];
 
-  std::string hash_prefix = hash_realtime_utils::GetHashPrefix(full_hash);
+  std::string hash_prefix = SBProtocolManagerUtil::GetHashPrefix(full_hash);
   auto cache_results = cache->SearchCache({hash_prefix});
   EXPECT_FALSE(cache_results.empty());
   EXPECT_TRUE(cache_results.contains(hash_prefix));

@@ -260,7 +260,7 @@ class HashRealTimeServiceTest : public PlatformTest {
   std::vector<HashPrefixStr> UrlToHashPrefixes(const GURL& url) {
     std::vector<HashPrefixStr> hash_prefixes;
     for (const auto& full_hash : UrlToFullHashes(url)) {
-      hash_prefixes.push_back(hash_realtime_utils::GetHashPrefix(full_hash));
+      hash_prefixes.push_back(SBProtocolManagerUtil::GetHashPrefix(full_hash));
     }
     return hash_prefixes;
   }

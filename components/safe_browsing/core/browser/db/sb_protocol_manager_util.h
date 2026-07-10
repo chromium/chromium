@@ -464,6 +464,9 @@ class SBProtocolManagerUtil {
   static void UrlToFullHashes(const GURL& url,
                               std::vector<FullHashStr>* full_hashes);
 
+  // Returns the 4-byte prefix of the requested 32-byte `full_hash`.
+  static HashPrefixStr GetHashPrefix(const FullHashStr& full_hash);
+
   static bool FullHashToHashPrefix(const FullHashStr& full_hash,
                                    PrefixSize prefix_size,
                                    HashPrefixStr* hash_prefix);

@@ -258,4 +258,13 @@ TEST_F(SBProtocolManagerUtilTest, TestFullHashToHashPrefix) {
   }
 }
 
+TEST_F(SBProtocolManagerUtilTest, TestGetHashPrefix) {
+  EXPECT_EQ(
+      SBProtocolManagerUtil::GetHashPrefix("abcd1111111111111111111111111111"),
+      "abcd");
+  EXPECT_EQ(
+      SBProtocolManagerUtil::GetHashPrefix("dcba1111111111111111111111111111"),
+      "dcba");
+}
+
 }  // namespace safe_browsing

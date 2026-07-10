@@ -139,7 +139,7 @@ void V5SearchHashesCache::CacheSearchHashesResponse(
     }
     // Update the cache with the remaining results for the associated hash
     // prefix.
-    auto hash_prefix = hash_realtime_utils::GetHashPrefix(fh.full_hash());
+    auto hash_prefix = SBProtocolManagerUtil::GetHashPrefix(fh.full_hash());
     auto cached_result_it = cache_.find(hash_prefix);
     if (cached_result_it != cache_.end()) {
       cached_result_it->second.full_hash_and_details.push_back(
@@ -177,7 +177,7 @@ void V5SearchHashesCache::OnHistoryDeletions(
     std::vector<FullHashStr> full_hashes;
     SBProtocolManagerUtil::UrlToFullHashes(row.url(), &full_hashes);
     for (const auto& full_hash : full_hashes) {
-      std::string hash_prefix = hash_realtime_utils::GetHashPrefix(full_hash);
+      std::string hash_prefix = SBProtocolManagerUtil::GetHashPrefix(full_hash);
       cache_.erase(hash_prefix);
     }
   }
@@ -243,7 +243,7 @@ void V5SearchHashesCache::CacheArtificialV5SearchHashesLookupVerdict(
   SBProtocolManagerUtil::UrlToFullHashes(artificial_unsafe_url, &full_hashes);
   std::vector<std::string> hash_prefixes;
   for (const auto& full_hash : full_hashes) {
-    auto hash_prefix = hash_realtime_utils::GetHashPrefix(full_hash);
+    auto hash_prefix = SBProtocolManagerUtil::GetHashPrefix(full_hash);
     hash_prefixes.emplace_back(hash_prefix);
   }
   FullHashStr sample_full_hash = full_hashes[0];
