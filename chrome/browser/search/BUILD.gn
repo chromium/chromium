@@ -101,18 +101,21 @@ source_set("search") {
   }
 }
 
-if (!is_android) {
-  source_set("unit_tests") {
-    testonly = true
+source_set("unit_tests") {
+  testonly = true
 
-    sources = [
+  sources = []
+  deps = []
+
+  if (!is_android) {
+    sources += [
       "background/ntp_custom_background_service_unittest.cc",
       "background/wallpaper_search/wallpaper_search_background_manager_unittest.cc",
       "most_visited_iframe_source_unittest.cc",
       "ntp_features_unittest.cc",
     ]
 
-    deps = [
+    deps += [
       ":search",
       "//base",
       "//base/test:test_support",
@@ -130,6 +133,21 @@ if (!is_android) {
     ]
   }
 
+  if (is_android) {
+    sources += [ "contextual_search_policy_handler_android_unittest.cc" ]
+    deps += [
+      ":search",
+      "//base",
+      "//chrome/common",
+      "//components/policy/core/browser",
+      "//components/policy/core/common",
+      "//components/prefs",
+      "//testing/gtest",
+    ]
+  }
+}
+
+if (!is_android) {
   source_set("test_support") {
     testonly = true
 
