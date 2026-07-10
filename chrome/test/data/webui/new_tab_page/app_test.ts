@@ -2940,7 +2940,9 @@ suite('NewTabPageAppTest', () => {
           assertFalse(scrim.hidden);
 
           // Click scrim to close voice search.
+          const whenClosed = eventToPromise('close', dialog);
           scrim.click();
+          await whenClosed;
           await microtasksFinished();
 
           assertFalse(!!app.shadowRoot.querySelector('#voiceSearchDialog'));
