@@ -99,6 +99,7 @@ export class ExtensionsReviewPanelElement extends
        * Indicates if the list of unsafe extensions is expanded or collapsed.
        */
       unsafeExtensionsReviewListExpanded_: {type: Boolean},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -110,6 +111,8 @@ export class ExtensionsReviewPanelElement extends
   protected accessor completionMessage_: string = '';
   protected accessor shouldShowCompletionInfo_: boolean = false;
   protected accessor shouldShowUnsafeExtensions_: boolean = false;
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   /**
    * Tracks if the last action that led to the number of extensions

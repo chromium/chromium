@@ -21,7 +21,10 @@ export function getHtml(this: ExtensionsReviewPanelElement) {
       @expanded-changed="${this.onUnsafeExtensionsReviewListExpandedChanged_}"
       ?hidden="${!this.shouldShowUnsafeExtensions_}">
     <div class="panel-header" id="reviewPanelContainer">
-      <cr-icon aria-hidden="true" icon="extensions-icons:my_extensions"
+      <cr-icon aria-hidden="true"
+          icon="${this.webuiRoundedIconsEnabled_
+              ? 'extensions-icons:chrome-extension'
+              : 'extensions-icons:my_extensions-old'}"
           class="panel-header-icon">
       </cr-icon>
       <div class="panel-header-text">

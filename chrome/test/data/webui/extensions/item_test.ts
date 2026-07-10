@@ -6,6 +6,7 @@
 
 import type {CrIconElement, ExtensionsItemElement} from 'chrome://extensions/extensions.js';
 import {navigation, Page} from 'chrome://extensions/extensions.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -454,21 +455,29 @@ suite('ExtensionItemTest', function() {
     let icon = item.shadowRoot.querySelector<CrIconElement>(
         '#source-indicator cr-icon');
     assertTrue(!!icon);
-    assertEquals('extensions-icons:unpacked', icon.icon);
+    assertEquals('extensions-icons:unpacked-custom', icon.icon);
 
     data = createExtensionInfo(item.data);
     data.location = chrome.developerPrivate.Location.THIRD_PARTY;
     item.data = data;
     await microtasksFinished();
     assertTrue(isChildVisible(item, '#source-indicator'));
-    assertEquals('extensions-icons:input', icon.icon);
+    assertEquals(
+        loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'extensions-icons:input' :
+            'extensions-icons:input-old',
+        icon.icon);
 
     data = createExtensionInfo(item.data);
     data.location = chrome.developerPrivate.Location.UNKNOWN;
     item.data = data;
     await microtasksFinished();
     assertTrue(isChildVisible(item, '#source-indicator'));
-    assertEquals('extensions-icons:input', icon.icon);
+    assertEquals(
+        loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'extensions-icons:input' :
+            'extensions-icons:input-old',
+        icon.icon);
 
     data = createExtensionInfo(item.data);
     data.location = chrome.developerPrivate.Location.INSTALLED_BY_DEFAULT;
@@ -487,7 +496,11 @@ suite('ExtensionItemTest', function() {
     icon = item.shadowRoot.querySelector<CrIconElement>(
         '#source-indicator cr-icon');
     assertTrue(!!icon);
-    assertEquals('extensions-icons:business', icon.icon);
+    assertEquals(
+        loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'extensions-icons:domain' :
+            'extensions-icons:business-old',
+        icon.icon);
 
     data = createExtensionInfo(item.data);
     data.controlledInfo = undefined;

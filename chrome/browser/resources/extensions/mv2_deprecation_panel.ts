@@ -11,6 +11,7 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -74,6 +75,7 @@ export class ExtensionsMv2DeprecationPanelElement extends
        * Extension which has its action menu opened.
        */
       extensionWithActionMenuOpened_: {type: Object},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -81,6 +83,8 @@ export class ExtensionsMv2DeprecationPanelElement extends
   accessor delegate: ItemDelegate&Mv2DeprecationDelegate|undefined;
   accessor showTitle: boolean = false;
   protected accessor headerString_: string = '';
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private accessor subtitleString_: string = '';
   private accessor extensionWithActionMenuOpened_:
       chrome.developerPrivate.ExtensionInfo|undefined;

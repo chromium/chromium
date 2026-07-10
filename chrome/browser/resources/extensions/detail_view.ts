@@ -110,7 +110,7 @@ export class ExtensionsDetailViewElement extends
 
       /** Whether the extensions safety check warning is shown. */
       showSafetyCheck_: {type: Boolean},
-
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -126,6 +126,8 @@ export class ExtensionsDetailViewElement extends
   protected accessor showSafetyCheck_: boolean = false;
   protected accessor size_: string = '';
   protected accessor sortedViews_: chrome.developerPrivate.ExtensionView[] = [];
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -611,7 +613,10 @@ export class ExtensionsDetailViewElement extends
    * Returns the Manifest V2 deprecation message icon.
    */
   protected getMv2DeprecationMessageIcon_(): string {
-    return 'extensions-icons:extension_off';
+    return (
+        loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'extensions-icons:chrome-extension-off' :
+            'extensions-icons:extension_off-old');
   }
 
   /** Returns the accessible label for the action menu button */
