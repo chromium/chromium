@@ -214,6 +214,9 @@ void HTMLCanvasAccessibilityManager::SetHeuristicResult(
   if (heuristic_result_ == HeuristicResult::kNeedsA11ySupport &&
       base::FeatureList::IsEnabled(::features::kAccessibilityCanvas)) {
     options_ |= kCollectTextRuns;
+    // Schedule OCR to ensure static canvases are annotated if conditions
+    // change later.
+    ScheduleOCRIfNeeded();
   } else if (options_ & kCollectTextRuns) {
     ClearRenderedText();
     options_ &= ~kCollectTextRuns;
@@ -324,21 +327,7 @@ void HTMLCanvasAccessibilityManager::UpdateAnnotation() {
     cache->MarkElementDirty(canvas_element_);
   }
 
-  if (NeedsOCR()) {
-    if (!ocr_timer_.IsActive()) {
-      SetOCRDeadline();
-      ocr_timer_.StartOneShot(HTMLCanvasAccessibilityManager::kOCRDelay,
-                              FROM_HERE);
-    } else {
-      if (base::TimeTicks::Now() < ocr_deadline_) {
-        ocr_timer_.StartOneShot(HTMLCanvasAccessibilityManager::kOCRDelay,
-                                FROM_HERE);
-      }
-    }
-  } else {
-    ocr_timer_.Stop();
-    ClearOCRDeadline();
-  }
+  ScheduleOCRIfNeeded();
 }
 
 void HTMLCanvasAccessibilityManager::ClearOCRDeadline() {
@@ -353,7 +342,7 @@ void HTMLCanvasAccessibilityManager::SetOCRDeadline() {
       base::TimeTicks::Now() + HTMLCanvasAccessibilityManager::kMaxOCRDelay;
 }
 
-bool HTMLCanvasAccessibilityManager::NeedsOCR() const {
+bool HTMLCanvasAccessibilityManager::ShouldRunOCR() const {
   if (features::GetCanvasAccessibilityMode() !=
       features::CanvasAccessibilityMode::kAdvanced) {
     return false;
@@ -375,7 +364,32 @@ bool HTMLCanvasAccessibilityManager::NeedsOCR() const {
 
 void HTMLCanvasAccessibilityManager::TriggerOCR(TimerBase*) {
   ClearOCRDeadline();
-  // TODO(crbug.com/498093320): Implement OCR.
+  has_requested_ocr_ = true;
+  if (AXObjectCache* cache =
+          canvas_element_->GetDocument().ExistingAXObjectCache()) {
+    // Marking the element dirty forces an accessibility tree serialization
+    // update, during which AXCanvasAnnotator will see the dirty state and
+    // invoke the Screen AI OCR service.
+    cache->MarkElementDirty(canvas_element_);
+  }
+}
+
+void HTMLCanvasAccessibilityManager::ScheduleOCRIfNeeded() {
+  if (ShouldRunOCR()) {
+    if (!ocr_timer_.IsActive()) {
+      SetOCRDeadline();
+      ocr_timer_.StartOneShot(HTMLCanvasAccessibilityManager::kOCRDelay,
+                              FROM_HERE);
+    } else {
+      if (base::TimeTicks::Now() < ocr_deadline_) {
+        ocr_timer_.StartOneShot(HTMLCanvasAccessibilityManager::kOCRDelay,
+                                FROM_HERE);
+      }
+    }
+  } else {
+    ocr_timer_.Stop();
+    ClearOCRDeadline();
+  }
 }
 
 void HTMLCanvasAccessibilityManager::Trace(Visitor* visitor) const {

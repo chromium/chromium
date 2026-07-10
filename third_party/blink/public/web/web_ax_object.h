@@ -131,6 +131,8 @@ class BLINK_EXPORT WebAXObject {
   bool IsEditable() const;
   bool AriaOwns(std::vector<WebAXObject>& owns_elements) const;
   bool CanvasHasFallbackContent() const;
+  bool HasRequestedOCR() const;
+  void ClearHasRequestedOCR() const;
   ax::mojom::InvalidState InvalidState() const;
   int HeadingLevel() const;
   int HierarchicalLevel() const;

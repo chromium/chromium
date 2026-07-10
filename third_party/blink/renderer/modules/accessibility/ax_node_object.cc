@@ -3547,6 +3547,25 @@ String AXNodeObject::CanvasAnnotation() const {
   return String();
 }
 
+bool AXNodeObject::HasRequestedOCR() const {
+  if (IsDetached()) {
+    return false;
+  }
+  if (auto* canvas = DynamicTo<HTMLCanvasElement>(GetNode())) {
+    return canvas->HasRequestedOCR();
+  }
+  return false;
+}
+
+void AXNodeObject::ClearHasRequestedOCR() {
+  if (IsDetached()) {
+    return;
+  }
+  if (auto* canvas = DynamicTo<HTMLCanvasElement>(GetNode())) {
+    canvas->ClearHasRequestedOCR();
+  }
+}
+
 int AXNodeObject::HeadingLevel() const {
   // headings can be in block flow and non-block flow
   Node* node = GetNode();

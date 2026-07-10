@@ -2123,6 +2123,16 @@ String HTMLCanvasElement::CanvasAnnotation() const {
   return String();
 }
 
+bool HTMLCanvasElement::HasRequestedOCR() const {
+  return accessibility_manager_ && accessibility_manager_->HasRequestedOCR();
+}
+
+void HTMLCanvasElement::ClearHasRequestedOCR() {
+  if (accessibility_manager_) {
+    accessibility_manager_->ClearHasRequestedOCR();
+  }
+}
+
 void HTMLCanvasElement::EnsureAccessibilityManager() {
   if (accessibility_manager_) {
     return;

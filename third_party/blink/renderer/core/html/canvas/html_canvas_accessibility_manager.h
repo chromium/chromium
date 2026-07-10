@@ -121,6 +121,9 @@ class CORE_EXPORT HTMLCanvasAccessibilityManager
   const String& CanvasAnnotation() const { return canvas_annotation_; }
   void UpdateAnnotation();
 
+  bool HasRequestedOCR() const { return has_requested_ocr_; }
+  void ClearHasRequestedOCR() { has_requested_ocr_ = false; }
+
   // Records the heuristic result to UMA if it hasn't been recorded yet. UMA is
   // recorded as a best effort in a timer to let the canvas element update its
   // accessibility related information. If it is not recorder by the time the
@@ -137,7 +140,8 @@ class CORE_EXPORT HTMLCanvasAccessibilityManager
   void SetHeuristicResult(HeuristicResult result);
   void RecordUma(TimerBase*);
   bool IsTooSmall() const;
-  bool NeedsOCR() const;
+  bool ShouldRunOCR() const;
+  void ScheduleOCRIfNeeded();
   void TriggerOCR(TimerBase*);
   void SetOCRDeadline();
   void ClearOCRDeadline();
@@ -179,6 +183,7 @@ class CORE_EXPORT HTMLCanvasAccessibilityManager
 
   Vector<RenderedTextRun> text_runs_;
   String canvas_annotation_;
+  bool has_requested_ocr_ = false;
 };
 
 }  // namespace blink

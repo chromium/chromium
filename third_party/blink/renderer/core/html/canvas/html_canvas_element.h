@@ -284,6 +284,8 @@ class CORE_EXPORT HTMLCanvasElement final
   void UpdateCaptureRenderedText(bool capture);
   bool ShouldCaptureRenderedText() override;
   String CanvasAnnotation() const;
+  bool HasRequestedOCR() const;
+  void ClearHasRequestedOCR();
 
   void Trace(Visitor*) const override;
 

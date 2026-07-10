@@ -9,6 +9,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/web/web_ax_object.h"
+#include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -408,14 +410,15 @@ class HTMLCanvasAccessibilityManagerOCRTest
 
 TEST_F(HTMLCanvasAccessibilityManagerOCRTest, OCRTriggerFromEmptyTextRuns) {
   // Initially, canvas_annotation_ is empty, which meets the "no text extracted"
-  // criteria for NeedsOCR(). So UpdateAnnotation() should start the OCR timer.
+  // criteria for ShouldRunOCR(). So UpdateAnnotation() should start the OCR
+  // timer.
   manager_->UpdateAnnotation();
   EXPECT_TRUE(manager_->IsOCRTimerActiveForTesting());
 }
 
 TEST_F(HTMLCanvasAccessibilityManagerOCRTest, OCRNoTriggerWithValidTextRuns) {
   // If we record some text runs that are valid and non-empty (so
-  // canvas_annotation_ is neither empty nor too long), NeedsOCR() should be
+  // canvas_annotation_ is neither empty nor too long), ShouldRunOCR() should be
   // false, and the timer should stop.
   manager_->RecordRenderedText("Hello", gfx::RectF(0, 0, 100, 20), 12.0f);
   manager_->UpdateAnnotation();
@@ -435,7 +438,14 @@ TEST_F(HTMLCanvasAccessibilityManagerOCRTest, OCRTriggerWithTooManyTextRuns) {
 }
 
 TEST_F(HTMLCanvasAccessibilityManagerOCRTest, OCRTriggerOnFirstCanvasDrawing) {
-  EXPECT_FALSE(manager_->IsOCRTimerActiveForTesting());
+  // OCR timer is active from initialization. Stop it by recording a valid text
+  // run.
+  manager_->RecordRenderedText("Hello", gfx::RectF(0, 0, 100, 20), 12.0f);
+  manager_->UpdateAnnotation();
+  ASSERT_FALSE(manager_->IsOCRTimerActiveForTesting());
+
+  // Clear text runs (simulating canvas reset or redrawing).
+  manager_->ClearRenderedText();
 
   // First draw / frame finalization: triggers the OCR timer.
   canvas_element_->PostFinalizeFrame(FlushReason::kOther);
@@ -520,5 +530,65 @@ TEST_F(HTMLCanvasAccessibilityManagerOCRTest,
   FastForwardBy(kDrawInterval * 2);
   EXPECT_FALSE(manager_->IsOCRTimerActiveForTesting());
 }
+
+TEST_F(HTMLCanvasAccessibilityManagerOCRTest, OCRNeededSignalPropagation) {
+  // Verify that canvas_element_->HasRequestedOCR() is initially false.
+  EXPECT_FALSE(canvas_element_->HasRequestedOCR());
+
+  // Call PostFinalizeFrame to trigger ocr_timer_ scheduling (since text_runs_
+  // is empty).
+  canvas_element_->PostFinalizeFrame(FlushReason::kOther);
+  EXPECT_TRUE(manager_->IsOCRTimerActiveForTesting());
+  EXPECT_FALSE(canvas_element_->HasRequestedOCR());
+
+  // Fast forward by the OCR delay to let the timer fire.
+  FastForwardBy(HTMLCanvasAccessibilityManager::kOCRDelay);
+  EXPECT_FALSE(manager_->IsOCRTimerActiveForTesting());
+
+  // Verify that canvas_element_->HasRequestedOCR() becomes true.
+  EXPECT_TRUE(canvas_element_->HasRequestedOCR());
+
+  // Access the WebAXObject for the canvas element.
+  WebAXObject web_ax_object = WebAXObject::FromWebNode(canvas_element_.Get());
+  ASSERT_FALSE(web_ax_object.IsNull());
+
+  // Verify web_ax_object.HasRequestedOCR() is true.
+  EXPECT_TRUE(web_ax_object.HasRequestedOCR());
+
+  // Reset it back to false by calling web_ax_object.ClearHasRequestedOCR().
+  web_ax_object.ClearHasRequestedOCR();
+  EXPECT_FALSE(web_ax_object.HasRequestedOCR());
+  EXPECT_FALSE(canvas_element_->HasRequestedOCR());
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerTest,
+       OCRTriggeredOnAccessibilityEnabledLater) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ::features::kAccessibilityCanvas,
+      {{"CanvasAccessibilityMode", "Advanced"}});
+
+  // Set up canvas without accessibility active initially.
+  SetUpCanvas("<body><canvas id='c' width=300 height=200></canvas></body>");
+
+  // No active AXContext, no manager yet.
+  EXPECT_FALSE(canvas_element_->GetAccessibilityManagerForTesting());
+
+  // Now, enable accessibility.
+  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
+  canvas_element_->OnAxObjectIgnoredStateChanged(/*is_ignored=*/false);
+  WaitForAccessibilityManagerUpdate();
+
+  HTMLCanvasAccessibilityManager* manager =
+      canvas_element_->GetAccessibilityManagerForTesting();
+  ASSERT_TRUE(manager);
+  EXPECT_TRUE(manager->NeedsA11ySupport());
+
+  // Since accessibility was enabled later, the manager should schedule OCR
+  // immediately.
+  EXPECT_TRUE(manager->IsOCRTimerActiveForTesting());
+}
+
+// TODO(crbug.com/498093320): Add a browser test that uses OCR service.
 
 }  // namespace blink

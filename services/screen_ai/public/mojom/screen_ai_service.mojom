@@ -34,6 +34,8 @@ enum OcrClientType {
   // Used by the ChromeOS screenshot tool to detect text in a user selected
   // region.
   kScreenshotTextDetection,
+  // Used in accessibility to convert canvas to text.
+  kCanvas,
 };
 
 // Clients of the Main Content Extraction service.

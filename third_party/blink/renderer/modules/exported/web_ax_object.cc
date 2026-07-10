@@ -359,6 +359,20 @@ bool WebAXObject::CanvasHasFallbackContent() const {
   return private_->CanvasHasFallbackContent();
 }
 
+bool WebAXObject::HasRequestedOCR() const {
+  if (IsDetached()) {
+    return false;
+  }
+  return private_->HasRequestedOCR();
+}
+
+void WebAXObject::ClearHasRequestedOCR() const {
+  if (IsDetached()) {
+    return;
+  }
+  private_->ClearHasRequestedOCR();
+}
+
 ax::mojom::InvalidState WebAXObject::InvalidState() const {
   if (IsDetached())
     return ax::mojom::InvalidState::kNone;
