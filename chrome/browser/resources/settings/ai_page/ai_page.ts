@@ -61,6 +61,12 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showIndigoControl'),
       },
+
+      showGoogleSearchAiModeWorkspaceControl_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('showGoogleSearchAiModeWorkspaceControl'),
+      },
     };
   }
 
@@ -70,6 +76,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   declare private showAiSuggestionsControl_: boolean;
   declare private showSkillsSettingPage_: boolean;
   declare private showIndigoControl_: boolean;
+  declare private showGoogleSearchAiModeWorkspaceControl_: boolean;
 
   private shouldRecordMetrics_: boolean = true;
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -155,6 +162,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('indigoSavedUrl'));
+  }
+
+  private onGoogleSearchAiModeWorkspaceRowClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('googleSearchAiModeWorkspaceUrl'));
   }
 
 

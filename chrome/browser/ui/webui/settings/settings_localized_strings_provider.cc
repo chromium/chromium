@@ -543,6 +543,9 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
   html_source->AddString("passwordChangeSettingsUrl",
                          chrome::kChromeUiPasswordChangeUrl);
   html_source->AddString("indigoSavedUrl", features::kIndigoSavedUrl.Get());
+
+  html_source->AddString("googleSearchAiModeWorkspaceUrl",
+                         chrome::kMyActivitySearchServicesAppsUrl);
 }
 
 void AddAppearanceStrings(content::WebUIDataSource* html_source,

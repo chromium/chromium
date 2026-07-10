@@ -119,3 +119,24 @@ IN_PROC_BROWSER_TEST_F(
             BatchUploadServiceFactory::GetForProfile(browser()->profile(),
                                                      /*create=*/false));
 }
+
+IN_PROC_BROWSER_TEST_F(SettingsUITest, GoogleSearchAiModeWorkspaceUrl) {
+  ASSERT_TRUE(NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL)));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Wait for settings UI to be loaded.
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "customElements.whenDefined('settings-ui');"));
+
+  // Evaluate the loadTimeData string in settings page using dynamic import.
+  std::string url_val =
+      content::EvalJs(
+          web_contents,
+          "import('chrome://resources/js/load_time_data.js').then(m => "
+          "m.loadTimeData.getString('googleSearchAiModeWorkspaceUrl'))")
+          .ExtractString();
+
+  EXPECT_EQ(url_val, "https://myactivity.google.com/search-services/apps");
+}

@@ -635,6 +635,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       {"showSkillsSettingPage",
        base::FeatureList::IsEnabled(features::kSkillsEnabled)},
       {"showIndigoControl", base::FeatureList::IsEnabled(features::kIndigo)},
+      {"showGoogleSearchAiModeWorkspaceControl",
+       base::FeatureList::IsEnabled(features::kGoogleSearchAiModeWorkspace)},
   };
 
   html_source->AddString("aiSuggestionsHelpCenterArticleLink",

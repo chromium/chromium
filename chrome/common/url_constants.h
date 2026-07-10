@@ -352,9 +352,11 @@ inline constexpr char16_t kMyActivityGeminiAppsUrl[] =
 inline constexpr char kGlicActivityUrl[] =
     "https://myactivity.google.com/product/gemini?utm_source=gemini";
 
-// The URL for the AI Mode activity page.
 inline constexpr char16_t kMyActivityAiModeUrl[] =
     u"https://myactivity.google.com/myactivity?product=83";
+
+inline constexpr char16_t kMyActivitySearchServicesAppsUrl[] =
+    u"https://myactivity.google.com/search-services/apps";
 
 #if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // "Learn more" URL for On-Device AI.
