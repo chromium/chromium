@@ -794,6 +794,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // module in the Home Surface since a shop card freshness signal.
   registry->RegisterIntegerPref(
       prefs::kIosMagicStackSegmentationShopCardImpressionsSinceFreshness, -1);
+  registry->RegisterIntegerPref(
+      prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness, -1);
 
   // Registers a preference to store the count of displayed Safety Check issues.
   // This count determines if the Safety Check module remains in the Magic

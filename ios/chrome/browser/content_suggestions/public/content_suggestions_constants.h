@@ -45,7 +45,8 @@ enum class ContentSuggestionsModuleType {
   kShopCard = 21,
   kAppBundlePromo = 22,
   kDefaultBrowser = 23,
-  kMaxValue = kDefaultBrowser,
+  kLevelUp = 24,
+  kMaxValue = kLevelUp,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 

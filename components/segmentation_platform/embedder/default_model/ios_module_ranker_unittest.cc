@@ -40,9 +40,11 @@ TEST_F(IosModuleRankerTest, ExecuteModelWithInputForDefaultOrder) {
   input[Feature::kFeatureTabResumptionFreshness] = -1;
   input[Feature::kFeatureParcelTrackingFreshness] = -1;
   input[Feature::kFeatureShopCardFreshness] = -1;
+  input[Feature::kFeatureLevelUpFreshness] = -1;
 
-  ExpectClassifierResults(input, {kMostVisitedTiles, kShortcuts, kSafetyCheck,
-                                  kTabResumption, kParcelTracking, kShopCard});
+  ExpectClassifierResults(
+      input, {kMostVisitedTiles, kShortcuts, kSafetyCheck, kTabResumption,
+              kParcelTracking, kShopCard, kLevelUp});
 }
 
 TEST_F(IosModuleRankerTest, ExecuteModelWithInputForAllModules) {
@@ -64,6 +66,8 @@ TEST_F(IosModuleRankerTest, ExecuteModelWithInputForAllModules) {
   input[Feature::kFeatureParcelTrackingImpression28Days] = 11.0;
   input[Feature::kFeatureShopCardClick28Days] = 3.0;
   input[Feature::kFeatureShopCardImpression28Days] = 11.0;
+  input[Feature::kFeatureLevelUpClick28Days] = 3.0;
+  input[Feature::kFeatureLevelUpImpression28Days] = 11.0;
 
   input[Feature::kFeatureMostVisitedTilesFreshness] = -1;
   input[Feature::kFeatureShortcutsFreshness] = -1;
@@ -71,9 +75,11 @@ TEST_F(IosModuleRankerTest, ExecuteModelWithInputForAllModules) {
   input[Feature::kFeatureTabResumptionFreshness] = -1;
   input[Feature::kFeatureParcelTrackingFreshness] = -1;
   input[Feature::kFeatureShopCardFreshness] = -1;
+  input[Feature::kFeatureLevelUpFreshness] = -1;
 
-  ExpectClassifierResults(input, {kMostVisitedTiles, kShortcuts, kTabResumption,
-                                  kSafetyCheck, kShopCard, kParcelTracking});
+  ExpectClassifierResults(
+      input, {kMostVisitedTiles, kShortcuts, kTabResumption, kLevelUp,
+              kSafetyCheck, kShopCard, kParcelTracking});
 }
 
 TEST_F(IosModuleRankerTest, ExecuteModelWithFreshnessInputOnly) {
@@ -89,10 +95,11 @@ TEST_F(IosModuleRankerTest, ExecuteModelWithFreshnessInputOnly) {
   input[Feature::kFeatureTabResumptionFreshness] = 0;
   input[Feature::kFeatureParcelTrackingFreshness] = 0;
   input[Feature::kFeatureShopCardFreshness] = 0;
+  input[Feature::kFeatureLevelUpFreshness] = 0;
 
-  ExpectClassifierResults(input,
-                          {kParcelTracking, kSafetyCheck, kShopCard, kShortcuts,
-                           kMostVisitedTiles, kTabResumption});
+  ExpectClassifierResults(
+      input, {kParcelTracking, kSafetyCheck, kShopCard, kShortcuts, kLevelUp,
+              kMostVisitedTiles, kTabResumption});
 
   input[Feature::kFeatureMostVisitedTilesFreshness] = 1;
   input[Feature::kFeatureShortcutsFreshness] = 1;
@@ -100,10 +107,11 @@ TEST_F(IosModuleRankerTest, ExecuteModelWithFreshnessInputOnly) {
   input[Feature::kFeatureTabResumptionFreshness] = 2;
   input[Feature::kFeatureParcelTrackingFreshness] = 1;
   input[Feature::kFeatureShopCardFreshness] = 1;
+  input[Feature::kFeatureLevelUpFreshness] = 1;
 
-  ExpectClassifierResults(input,
-                          {kParcelTracking, kSafetyCheck, kShopCard, kShortcuts,
-                           kMostVisitedTiles, kTabResumption});
+  ExpectClassifierResults(
+      input, {kParcelTracking, kSafetyCheck, kShopCard, kShortcuts, kLevelUp,
+              kMostVisitedTiles, kTabResumption});
 }
 
 }  // namespace segmentation_platform

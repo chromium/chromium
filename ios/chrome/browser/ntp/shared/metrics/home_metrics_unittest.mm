@@ -141,3 +141,31 @@ TEST_F(HomeMetricsTest, TestTabResumptionFreshnessSignalPresent) {
           prefs::
               kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness));
 }
+
+// Verifies Level Up module doesn't update impression count when no freshness
+// signal exists.
+TEST_F(HomeMetricsTest, TestLevelUpNoFreshnessSignal) {
+  EXPECT_EQ(
+      -1,
+      pref_service_.GetInteger(
+          prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness));
+  LogTopModuleImpressionForType(ContentSuggestionsModuleType::kLevelUp,
+                                &pref_service_);
+  EXPECT_EQ(
+      -1,
+      pref_service_.GetInteger(
+          prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness));
+}
+
+// Verifies Level Up module increments impression count when freshness signal
+// exists.
+TEST_F(HomeMetricsTest, TestLevelUpFreshnessSignalPresent) {
+  pref_service_.SetInteger(
+      prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness, 7);
+  LogTopModuleImpressionForType(ContentSuggestionsModuleType::kLevelUp,
+                                &pref_service_);
+  EXPECT_EQ(
+      8,
+      pref_service_.GetInteger(
+          prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness));
+}

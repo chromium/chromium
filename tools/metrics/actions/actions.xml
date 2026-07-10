@@ -20224,6 +20224,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOSMagicStackLevelUpFreshSignal" not_user_triggered="true">
+  <owner>thegreenfrog@google.com</owner>
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Recorded when a Level Up milestone task has been completed and a new task is
+    shown.
+  </description>
+</action>
+
 <action name="IOSMagicStackParcelTrackingFreshSignal" not_user_triggered="true">
   <obsolete>
     Unused as of 08/2025, as ParcelTracking code has been turned down and

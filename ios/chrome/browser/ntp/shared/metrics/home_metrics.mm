@@ -96,6 +96,13 @@ void RecordModuleFreshnessSignal(ContentSuggestionsModuleType module_type,
           base::UserMetricsAction("IOSMagicStackTabResumptionFreshSignal"));
       break;
     }
+    case ContentSuggestionsModuleType::kLevelUp: {
+      profile_pref_service->SetInteger(
+          prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness, 0);
+      base::RecordAction(
+          base::UserMetricsAction("IOSMagicStackLevelUpFreshSignal"));
+      break;
+    }
     default:
       break;
   }
@@ -156,6 +163,16 @@ void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type,
         profile_pref_service->SetInteger(
             prefs::
                 kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
+            freshness_impression_count + 1);
+      }
+      break;
+    }
+    case ContentSuggestionsModuleType::kLevelUp: {
+      int freshness_impression_count = profile_pref_service->GetInteger(
+          prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness);
+      if (freshness_impression_count >= 0) {
+        profile_pref_service->SetInteger(
+            prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness,
             freshness_impression_count + 1);
       }
       break;

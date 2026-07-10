@@ -114,4 +114,20 @@ TEST_F(LevelUpServiceTest, TestLevelMonotonicity) {
   EXPECT_EQ(new_service->GetCurrentLevel(), 3);
 }
 
+TEST_F(LevelUpServiceTest, TestTaskCompletionResetsFreshness) {
+  PrefService* prefs = profile_->GetPrefs();
+  prefs->SetInteger(
+      prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness, 5);
+  EXPECT_EQ(
+      5,
+      prefs->GetInteger(
+          prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness));
+
+  service_->MarkTaskCompleted(TaskType::kTabGroups);
+  EXPECT_EQ(
+      0,
+      prefs->GetInteger(
+          prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness));
+}
+
 }  // namespace

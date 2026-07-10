@@ -399,6 +399,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestIosModuleRankerModel) {
   int tab_resumption_freshness_impression_count = -1;
   int parcel_tracking_freshness_impression_count = -1;
   int shop_card_freshness_impression_count = -1;
+  int level_up_freshness_impression_count = -1;
 
   input_context->metadata_args.emplace(
       segmentation_platform::kMostVisitedTilesFreshness,
@@ -424,12 +425,17 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestIosModuleRankerModel) {
       segmentation_platform::kShopCardFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           shop_card_freshness_impression_count));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kLevelUpFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          level_up_freshness_impression_count));
 
   ExpectGetClassificationResult(
       segmentation_platform::kIosModuleRankerKey, prediction_options,
       input_context, PredictionStatus::kSucceeded,
       std::vector<std::string>{"MostVisitedTiles", "Shortcuts", "SafetyCheck",
-                               "TabResumption", "ParcelTracking", "ShopCard"});
+                               "TabResumption", "ParcelTracking", "ShopCard",
+                               "LevelUp"});
 }
 
 // Tests that the EphemeralHomeModuleBackend returns the PriceTracking module

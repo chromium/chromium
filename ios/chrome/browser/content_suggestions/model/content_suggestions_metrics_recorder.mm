@@ -106,6 +106,7 @@ const float kMaxModuleEngagementIndex = 50;
       break;
     case ContentSuggestionsModuleType::kPlaceholder:
     case ContentSuggestionsModuleType::kInvalid:
+    case ContentSuggestionsModuleType::kLevelUp:
       break;
   }
 }

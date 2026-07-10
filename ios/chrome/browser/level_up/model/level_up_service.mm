@@ -77,6 +77,8 @@ void LevelUpService::MarkTaskCompleted(TaskType task_type) {
     update->Append(storage_id);
 
     UpdateLevelAndPref();
+    pref_service_->SetInteger(
+        prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness, 0);
   }
 }
 

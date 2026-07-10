@@ -22,6 +22,7 @@ class IosModuleRanker : public DefaultModelProvider {
     kLabelTabResumption,
     kLabelParcelTracking,
     kLabelShopCard,
+    kLabelLevelUp,
     kLabelCount
   };
   enum Feature {
@@ -60,6 +61,10 @@ class IosModuleRanker : public DefaultModelProvider {
     kFeatureShopCardImpression7Days,
     kFeatureShopCardClick28Days,
     kFeatureShopCardImpression28Days,
+    kFeatureLevelUpClick7Days,
+    kFeatureLevelUpImpression7Days,
+    kFeatureLevelUpClick28Days,
+    kFeatureLevelUpImpression28Days,
 
     // Custom inputs
     kFeatureMostVisitedTilesFreshness,
@@ -68,6 +73,7 @@ class IosModuleRanker : public DefaultModelProvider {
     kFeatureTabResumptionFreshness,
     kFeatureParcelTrackingFreshness,
     kFeatureShopCardFreshness,
+    kFeatureLevelUpFreshness,
     kFeatureCount
   };
 

@@ -229,6 +229,7 @@ const char kSafetyCheck[] = "SafetyCheck";
 const char kTabResumption[] = "TabResumption";
 const char kParcelTracking[] = "ParcelTracking";
 const char kShopCard[] = "ShopCard";
+const char kLevelUp[] = "LevelUp";
 
 // Input Context keys for freshness for IOS modules.
 const char kMostVisitedTilesFreshness[] = "most_visited_tiles_freshness";
@@ -238,6 +239,7 @@ const char kTabResumptionFreshness[] = "tab_resumption_freshness";
 const char kParcelTrackingFreshness[] = "parcel_tracking_freshness";
 const char kIsShowingStartSurface[] = "is_showing_start_surface";
 const char kShopCardFreshness[] = "shop_card_freshness";
+const char kLevelUpFreshness[] = "level_up_freshness";
 
 // Input Context keys for inputs for IOS default browser model.
 const char kClientAgeWeeks[] = "client_age_weeks";

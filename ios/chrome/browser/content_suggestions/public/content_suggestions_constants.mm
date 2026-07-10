@@ -75,6 +75,7 @@ bool IsTipsModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
     case ContentSuggestionsModuleType::kSendTabPromo:
     case ContentSuggestionsModuleType::kShopCard:
+    case ContentSuggestionsModuleType::kLevelUp:
       return false;
   }
 }

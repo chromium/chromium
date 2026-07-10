@@ -775,6 +775,12 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       segmentation_platform::kShopCardFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           shopCardFreshnessImpressionCount));
+  int levelUpFreshnessImpressionCount = _prefService->GetInteger(
+      prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness);
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kLevelUpFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          levelUpFreshnessImpressionCount));
   segmentation_platform::PredictionOptions options;
 
   if (base::FeatureList::IsEnabled(
@@ -782,7 +788,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     // Ignores tab resumption freshness since local tab always logs a freshness
     // signal for Start.
     BOOL hasNoFreshnessSignal = shortcutsFreshnessImpressionCount != 0 &&
-                                parcelTrackingFreshnessImpressionCount != 0;
+                                parcelTrackingFreshnessImpressionCount != 0 &&
+                                levelUpFreshnessImpressionCount != 0;
     hasNoFreshnessSignal =
         hasNoFreshnessSignal && safetyCheckFreshnessImpressionCount != 0;
     if (hasNoFreshnessSignal && [self.homeStartDataSource isStartSurface]) {

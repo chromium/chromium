@@ -41,7 +41,8 @@ constexpr LabelPair<IosModuleRanker::Label> kIosModuleLabels[] = {
     {IosModuleRanker::kLabelSafetyCheck, kSafetyCheck},
     {IosModuleRanker::kLabelTabResumption, kTabResumption},
     {IosModuleRanker::kLabelParcelTracking, kParcelTracking},
-    {IosModuleRanker::kLabelShopCard, kShopCard}};
+    {IosModuleRanker::kLabelShopCard, kShopCard},
+    {IosModuleRanker::kLabelLevelUp, kLevelUp}};
 
 // Output features:
 
@@ -69,6 +70,7 @@ constexpr std::array<int32_t, 1> kEnumValueForTabResumption{
 constexpr std::array<int32_t, 1> kEnumValueForParcelTracking{
     /*ParcelTracking=*/11};
 constexpr std::array<int32_t, 1> kEnumValueForShopCard{/*ShopCard=*/21};
+constexpr std::array<int32_t, 1> kEnumValueForLevelUp{/*LevelUp=*/12};
 
 // TODO(ritikagup) : Loop through all the modules for these features for better
 // readability. Set UMA metrics to use as input.
@@ -203,6 +205,22 @@ constexpr FeaturePair<IosModuleRanker::Feature> kIosModuleRankerFeatures[] = {
      features::UMAEnum("IOS.MagicStack.Module.TopImpression",
                        28,
                        kEnumValueForShopCard)},
+
+    // Level Up
+    {IosModuleRanker::kFeatureLevelUpClick7Days,
+     features::UMAEnum("IOS.MagicStack.Module.Click", 7, kEnumValueForLevelUp)},
+    {IosModuleRanker::kFeatureLevelUpImpression7Days,
+     features::UMAEnum("IOS.MagicStack.Module.TopImpression",
+                       7,
+                       kEnumValueForLevelUp)},
+    {IosModuleRanker::kFeatureLevelUpClick28Days,
+     features::UMAEnum("IOS.MagicStack.Module.Click",
+                       28,
+                       kEnumValueForLevelUp)},
+    {IosModuleRanker::kFeatureLevelUpImpression28Days,
+     features::UMAEnum("IOS.MagicStack.Module.TopImpression",
+                       28,
+                       kEnumValueForLevelUp)},
     {IosModuleRanker::kFeatureMostVisitedTilesFreshness,
      features::InputContext(kMostVisitedTilesFreshness)},
     {IosModuleRanker::kFeatureShortcutsFreshness,
@@ -215,6 +233,8 @@ constexpr FeaturePair<IosModuleRanker::Feature> kIosModuleRankerFeatures[] = {
      features::InputContext(kParcelTrackingFreshness)},
     {IosModuleRanker::kFeatureShopCardFreshness,
      features::InputContext(kShopCardFreshness)},
+    {IosModuleRanker::kFeatureLevelUpFreshness,
+     features::InputContext(kLevelUpFreshness)},
 };
 
 float TransformFreshness(float freshness_score, float freshness_threshold) {
@@ -358,6 +378,16 @@ void IosModuleRanker::ExecuteModelWithInput(
                           shop_card_weights[1] * shop_card_impression +
                           shop_card_weights[2] * shop_card_freshness;
 
+  // Level Up score calculation.
+  float level_up_weights[3] = {1.5, -0.5, 2.0};
+  float level_up_engagement = inputs[kFeatureLevelUpClick28Days];
+  float level_up_impression = inputs[kFeatureLevelUpImpression28Days];
+  float level_up_freshness =
+      TransformFreshness(inputs[kFeatureLevelUpFreshness], 1.0);
+  float level_up_score = level_up_weights[0] * level_up_engagement +
+                         level_up_weights[1] * level_up_impression +
+                         level_up_weights[2] * level_up_freshness;
+
   ModelProvider::Response response(kLabelCount, 0);
   // Default ranking
   response[kLabelMostVisitedTiles] = mvt_score;
@@ -366,6 +396,7 @@ void IosModuleRanker::ExecuteModelWithInput(
   response[kLabelTabResumption] = tab_resumption_score;
   response[kLabelParcelTracking] = parcel_tracking_score;
   response[kLabelShopCard] = shop_card_score;
+  response[kLabelLevelUp] = level_up_score;
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response));
@@ -432,6 +463,8 @@ void TestIosModuleRanker::ExecuteModelWithInput(
     response[IosModuleRanker::kLabelTabResumption] = 6;
   } else if (card_type == "parcel_tracking") {
     response[IosModuleRanker::kLabelParcelTracking] = 6;
+  } else if (card_type == "level_up") {
+    response[IosModuleRanker::kLabelLevelUp] = 6;
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
