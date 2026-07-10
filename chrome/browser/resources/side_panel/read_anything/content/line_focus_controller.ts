@@ -97,7 +97,11 @@ export class LineFocusController implements MoveModeDelegate {
   }
 
   onAllMenusClose() {
-    this.notifyMove();
+    // TODO(b/533169480): When line focus is enabled, ensure voice playback
+    // works seamlessly after onAllMenusClose is called.
+    if (this.isEnabled()) {
+      this.notifyMove();
+    }
   }
 
   onWordBoundary(segments: Segment[]) {
