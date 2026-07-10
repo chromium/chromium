@@ -11,8 +11,7 @@ export function getHtml(this: FeatureShowcasePasswordManagerStepElement) {
   return html`<!--_html_template_start_-->
 <feature-showcase-step>
   <slot name="stepper" slot="stepper"></slot>
-  <img slot="illustration" id="illustration"
-      alt="$i18n{passwordManagerIllustrationA11yLabel}">
+  <img slot="illustration" id="illustration" alt="">
   <span slot="title">$i18n{passwordManagerTitle}</span>
   <span slot="description">$i18n{passwordManagerSubtitle}</span>
   <if expr="is_win">

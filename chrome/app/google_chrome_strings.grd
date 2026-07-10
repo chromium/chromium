@@ -2721,9 +2721,6 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_FEATURE_SHOWCASE_PASSWORD_MANAGER_SUBTITLE" desc="Description for the Password Manager page in the Feature Showcase.">
           Built into Chrome to help you create, save, and autofill strong passwords. Add the shortcut for easy access
         </message>
-        <message name="IDS_FEATURE_SHOWCASE_PASSWORD_MANAGER_ILLUSTRATION_A11Y_LABEL" desc="Accessibility label for the illustration on the Password Manager page in the Feature Showcase.">
-          A simplified image showing the Google Password Manager entry point in Chrome
-        </message>
 
         <!-- Feature Showcase - Lens Overlay -->
         <message name="IDS_FEATURE_SHOWCASE_LENS_OVERLAY_TITLE" desc="This is the headline for the Lens Overlay opt-in screen. It introduces the visual search feature. (CHAR LIMIT = 40).">
@@ -2731,9 +2728,6 @@ Google Chrome is unable to recover your settings.
         </message>
         <message name="IDS_FEATURE_SHOWCASE_LENS_OVERLAY_DISCLOSURE" desc="This is a technical disclosure for Google Lens. It specifies that PDFs are also part of the shared data. The tone should be informative.">
           When you use Google Lens on desktop, the page title, URL, and content, including PDFs, are sent to Google
-        </message>
-        <message name="IDS_FEATURE_SHOWCASE_LENS_OVERLAY_ILLUSTRATION_A11Y_LABEL" desc="Accessibility label for the illustration on the Lens Overlay page in the Feature Showcase.">
-          An illustration showing how you can use Google Lens to look up a product
         </message>
       </if>
 

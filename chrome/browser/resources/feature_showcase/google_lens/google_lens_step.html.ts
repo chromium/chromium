@@ -11,8 +11,7 @@ export function getHtml(this: FeatureShowcaseGoogleLensStepElement) {
   return html`<!--_html_template_start_-->
 <feature-showcase-step>
   <slot name="stepper" slot="stepper"></slot>
-  <img slot="illustration" id="illustration"
-      aria-label="$i18n{lensIllustrationA11yLabel}" alt="">
+  <img slot="illustration" id="illustration" alt="">
   <span slot="title">$i18n{lensTitle}</span>
   <span slot="description">$i18n{lensSubtitle}</span>
   <span slot="disclosure">$i18n{lensDisclosure}</span>
