@@ -525,6 +525,10 @@ inline constexpr char kDefaultSearchEnginePrewarmDescription[] =
     "Performance optimization to prewarm the default search engine used in the "
     "Omnibox";
 
+inline constexpr char kDictationName[] = "Dictation";
+inline constexpr char kDictationDescription[] =
+    "Enables the Dictation feature.";
+
 inline constexpr char kDisableAutofillStrikeSystemName[] =
     "Disable the Autofill strike system";
 inline constexpr char kDisableAutofillStrikeSystemDescription[] =

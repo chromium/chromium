@@ -1267,6 +1267,7 @@ source_set("core") {
       "//chrome/browser/badging",
       "//chrome/browser/device_api",
       "//chrome/browser/device_api:impl",
+      "//chrome/browser/dictation",
       "//chrome/browser/direct_sockets",
       "//chrome/browser/ui:browser_actions_impl",
       "//chrome/browser/ui/lens",

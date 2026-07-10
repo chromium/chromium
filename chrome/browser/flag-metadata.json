@@ -2479,6 +2479,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "dictation",
+    "owners": [ "bokan@chromium.org", "mcnee@chromium.org" ],
+    "expiry_milestone": 156
+  },
+  {
     "name": "direct-sockets-in-service-workers",
     "owners": [ "//content/browser/direct_sockets/OWNERS" ],
     "expiry_milestone": 170
