@@ -20,7 +20,7 @@ namespace {
 
 using TestNode = ui::TreeNodeWithValue<int>;
 
-class TreeViewDumpAccessibilityEventsTest
+class TreeViewDumpAccessibilityEventsTestBase
     : public DumpAccessibilityEventsViewsTestBase {
  public:
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
@@ -80,13 +80,22 @@ class TreeViewDumpAccessibilityEventsTest
   std::unique_ptr<ui::TreeNodeModel<TestNode>> model_;
 };
 
-// TODO(crbug.com/468203351): Re-enable when no longer flaky on Windows.
+class TreeViewDumpAccessibilityEventsTest
+    : public TreeViewDumpAccessibilityEventsTestBase {};
+
+class TreeViewSelectDumpAccessibilityEventsTest
+    : public TreeViewDumpAccessibilityEventsTestBase {};
+
+std::vector<ViewsEventTestParams> ExpandCollapseEventTestPasses() {
 #if BUILDFLAG(IS_WIN)
-#define MAYBE_ExpandNode DISABLED_ExpandNode
+  return {{ui::AXApiType::kWinUIA, false},
+          {ui::AXApiType::kWinUIA, true}};
 #else
-#define MAYBE_ExpandNode ExpandNode
+  return DumpAccessibilityEventsViewsTestBase::EventTestPasses();
 #endif
-IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, MAYBE_ExpandNode) {
+}
+
+IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, ExpandNode) {
 #if BUILDFLAG(IS_LINUX)
   if (IsViewsAXEnabled()) {
     GTEST_SKIP() << "crbug.com/40672441";
@@ -100,14 +109,7 @@ IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, MAYBE_ExpandNode) {
   WaitForPendingSerialization();
 }
 
-// TODO(crbug.com/468203351): Re-enable when no longer flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CollapseNode DISABLED_CollapseNode
-#else
-#define MAYBE_CollapseNode CollapseNode
-#endif
-IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest,
-                       MAYBE_CollapseNode) {
+IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, CollapseNode) {
   AddAllowFilter("STATE-CHANGE:EXPANDED:FALSE*");
   ui::TreeModelNode* child1 = model_->GetRoot()->children()[0].get();
   tree_view_->Expand(child1);
@@ -120,7 +122,7 @@ IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest,
 // Verifies that selecting a tree node fires the appropriate platform selection
 // events. TreeView::SetSelectedNode() calls SetIsSelected(true) on the node's
 // AXVirtualView, which fires Event::kSelection through ViewAccessibility.
-IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, SelectNode) {
+IN_PROC_BROWSER_TEST_P(TreeViewSelectDumpAccessibilityEventsTest, SelectNode) {
   SetFilters(R"(
 @WIN-ALLOW:EVENT_OBJECT_SELECTION on*
 @UIA-WIN-ALLOW:SelectionItem_ElementSelected*
@@ -138,6 +140,12 @@ IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, SelectNode) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     TreeViewDumpAccessibilityEventsTest,
+    ::testing::ValuesIn(ExpandCollapseEventTestPasses()),
+    EventTestPassToString());
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TreeViewSelectDumpAccessibilityEventsTest,
     ::testing::ValuesIn(
         DumpAccessibilityEventsViewsTestBase::EventTestPasses()),
     EventTestPassToString());
