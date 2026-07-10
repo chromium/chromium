@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview
  * To have the IDE support for types when writing inspector-protocol tests:
  *
  * - `npm i devtools-protocol -g`
@@ -10,11 +11,21 @@
  *
  * Note that `devtools-protocol` package won't include your local changes
  * to the protocol and might be slightly out-of-date. Update it from time to time.
+ */
+
+/**
+ * Typedefs short names.
  *
  * @typedef {import("devtools-protocol/types/protocol").Protocol} Protocol
  * @typedef {import("devtools-protocol/types/protocol-tests-proxy-api").ProtocolTestsProxyApi} ProtocolTestsProxyApi
  */
-var TestRunner = class {
+
+
+class TestRunner {
+  static get Page() { return Page; }
+  static get Session() { return Session; }
+  static get ChildTargetManager() { return ChildTargetManager; }
+
   _dumpInspectorProtocolMessages = false;
   _protocolTimeout = 0;
   _stableValues = new Map();
@@ -381,7 +392,7 @@ var TestRunner = class {
   }
 };
 
-TestRunner.Page = class {
+class Page {
   constructor(testRunner, targetId) {
     this._testRunner = testRunner;
     this._targetId = targetId;
@@ -433,7 +444,7 @@ TestRunner.Page = class {
   }
 };
 
-TestRunner.Session = class {
+class Session {
   _requestId = 0;
   _eventHandlers = new Map();
   _parentSessionId = null;
@@ -585,7 +596,7 @@ TestRunner.Session = class {
  * Helper class to collect information of auto attached targets and
  * create `TestRunner.Session` from them.
  */
-TestRunner.ChildTargetManager = class {
+class ChildTargetManager {
   /**
    * @param {TestRunner} testRunner
    * @param {TestRunner.Session} session
