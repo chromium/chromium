@@ -63,8 +63,6 @@ component("crypto") {
     "features.h",
     "hash.cc",
     "hash.h",
-    "hkdf.cc",
-    "hkdf.h",
     "hmac.cc",
     "hmac.h",
     "hpke.cc",
