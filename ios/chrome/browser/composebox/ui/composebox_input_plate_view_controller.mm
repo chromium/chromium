@@ -1479,6 +1479,7 @@ UIImage* SendButtonImage(BOOL highlighted,
   ]];
   buttonsStackView.layoutMarginsRelativeArrangement = YES;
   buttonsStackView.layoutMargins = kToolbarPadding;
+
   return buttonsStackView;
 }
 
@@ -1922,6 +1923,11 @@ UIImage* SendButtonImage(BOOL highlighted,
             : kInputPlateCornerRadius;
     _inputPlateContainerView.layer.cornerRadius = cornerRadius;
     _inputPlateInternalContainerView.layer.cornerRadius = cornerRadius;
+
+    // Preset the toolbar frame so that during appearance animation elements
+    // have correct horizontal positions.
+    _toolbarView.frame = _inputPlateStackView.frame;
+    [_toolbarView layoutIfNeeded];
   }
 
   [self updateInputPlateStackViewPadding];
@@ -1964,7 +1970,6 @@ UIImage* SendButtonImage(BOOL highlighted,
 /// Updates and re-layouts the input plate stack view content within an
 /// animation block.
 - (void)updateInputPlateStackViewLayout {
-  [self updateInputPlateStackViewContent];
   [self.inputPlateStackView layoutIfNeeded];
   [self.view layoutIfNeeded];
 }
@@ -1978,6 +1983,7 @@ UIImage* SendButtonImage(BOOL highlighted,
 // Animates the transition of the input plate stack view between compact and
 // expanded states.
 - (void)updateInputPlateStackViewAnimated:(BOOL)animated {
+  [self updateInputPlateStackViewContent];
   if (!animated) {
     [self updateInputPlateStackViewContent];
     [self updatePreferredContentSize];
