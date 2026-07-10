@@ -11598,4 +11598,38 @@ TEST_F(SnapGroupMetricsTest, GroupContainerCycleViewAccessibleProperties) {
   EXPECT_TRUE(data.HasState(ax::mojom::State::kIgnored));
 }
 
+// Tests that dragging a window of a snap group that no longer fits does not
+// crash the shell.
+TEST_F(SnapGroupTest, DragSnappedWindowWhenNotFittingWorkAreaNoCrash) {
+  std::unique_ptr<aura::Window> w1(
+      CreateAppWindowWithMinSize(gfx::Size(300, 200)));
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindowWithMinSize(gfx::Size(300, 200)));
+
+  // Snap them and form a group.
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true,
+                     GetEventGenerator());
+
+  auto* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Dynamically grow minimum sizes so they no longer fit.
+  auto* custom_frame1 =
+      static_cast<TestFrameViewAsh*>(FrameViewAsh::Get(w1.get()));
+  custom_frame1->SetMinimumSize(gfx::Size(500, 200));
+  auto* custom_frame2 =
+      static_cast<TestFrameViewAsh*>(FrameViewAsh::Get(w2.get()));
+  custom_frame2->SetMinimumSize(gfx::Size(500, 200));
+
+  // Drag the right window (w2) to the right edge to re-snap.
+  // This triggers drag and snap events. Since they no longer fit,
+  // before the fix it should crash on CHECK in ApplyPrimarySnapRatio.
+  const gfx::Rect work_area(GetWorkAreaBounds());
+  DragWindowTo(GetEventGenerator(), w2.get(), work_area.right_center(),
+               /*release=*/true);
+
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+}
+
 }  // namespace ash

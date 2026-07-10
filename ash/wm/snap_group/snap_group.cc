@@ -595,7 +595,11 @@ void SnapGroup::UpdateSnappedWindowBounds(aura::Window* window,
 }
 
 void SnapGroup::ApplyPrimarySnapRatio(float primary_snap_ratio) {
-  CHECK(CanWindowsFitInWorkArea(window1_, window2_));
+  if (!CanWindowsFitInWorkArea(window1_, window2_)) {
+    SnapGroupController::Get()->RemoveSnapGroup(
+        this, SnapGroupExitPoint::kCanNotFitInWorkArea);
+    return;
+  }
   // TODO(b/331304137): Remove the cyclic dependencies between snapped window
   // bounds calculation and divider position calculation.
   // `SplitViewDivider::SetDividerPosition()` will account for the windows'

@@ -155,26 +155,32 @@ SnapGroup* SnapGroupController::AddSnapGroup(
     aura::Window* window2,
     bool replace,
     std::optional<base::TimeTicks> carry_over_creation_time) {
-  // The windows may already be in a snap group, if for example a snap group is
-  // formed, then a window is re-snapped via the window layout menu.
-  if (AreWindowsInSnapGroup(window1, window2)) {
-    return GetSnapGroupForGivenWindow(window1);
-  }
-
   // We should only allow snap group to be created for windows that have the
   // same parent.
   if (window1->parent() != window2->parent()) {
     return nullptr;
   }
 
-  // Disallow snap group creation for unresizable windows.
-  if (!WindowState::Get(window1)->CanResize() ||
-      !WindowState::Get(window2)->CanResize()) {
-    return nullptr;
-  }
+  const bool in_snap_group = AreWindowsInSnapGroup(window1, window2);
 
   // We only allow snap group to be created if the windows fit the work area.
   if (!CanWindowsFitInWorkArea(window1, window2)) {
+    if (in_snap_group) {
+      RemoveSnapGroupContainingWindow(window1,
+                                      SnapGroupExitPoint::kCanNotFitInWorkArea);
+    }
+    return nullptr;
+  }
+
+  // The windows may already be in a snap group, if for example a snap group is
+  // formed, then a window is re-snapped via the window layout menu.
+  if (in_snap_group) {
+    return GetSnapGroupForGivenWindow(window1);
+  }
+
+  // Disallow snap group creation for unresizable windows.
+  if (!WindowState::Get(window1)->CanResize() ||
+      !WindowState::Get(window2)->CanResize()) {
     return nullptr;
   }
 
