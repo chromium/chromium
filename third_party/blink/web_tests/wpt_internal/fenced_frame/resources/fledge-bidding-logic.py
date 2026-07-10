@@ -59,12 +59,7 @@ def main(request, response):
         'click':
         browserSignals.interestGroupOwner +
         '/wpt_internal/fenced_frame/resources/beacon-store.py?type=click',
-        'aggregate':
-        browserSignals.interestGroupOwner +
-        '/fenced-frame/resources/beacon-store.py?type=aggregate',
       });
-      privateAggregation.contributeToHistogramOnEvent(
-        'aggregate', {bucket: 3n, value: 5});
     ''')
 
     # Generate Javascript.

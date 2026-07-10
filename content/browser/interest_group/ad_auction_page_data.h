@@ -43,9 +43,7 @@ struct CONTENT_EXPORT AdAuctionRequestContext {
       url::Origin seller,
       base::flat_map<url::Origin, std::vector<std::string>> group_names,
       quiche::ObliviousHttpRequest::Context context,
-      base::TimeTicks start_time,
-      base::flat_map<blink::InterestGroupKey, url::Origin>
-          group_pagg_coordinators);
+      base::TimeTicks start_time);
   AdAuctionRequestContext(AdAuctionRequestContext&& other);
   ~AdAuctionRequestContext();
 
@@ -53,7 +51,6 @@ struct CONTENT_EXPORT AdAuctionRequestContext {
   base::flat_map<url::Origin, std::vector<std::string>> group_names;
   quiche::ObliviousHttpRequest::Context context;
   base::TimeTicks start_time;
-  base::flat_map<blink::InterestGroupKey, url::Origin> group_pagg_coordinators;
 };
 
 struct CONTENT_EXPORT SignedAdditionalBidWithMetadata {

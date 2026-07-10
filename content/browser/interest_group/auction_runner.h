@@ -19,7 +19,6 @@
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/common/content_export.h"
-#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
@@ -38,7 +37,6 @@ class AdAuctionPageData;
 class InterestGroupAuctionReporter;
 class BrowserContext;
 class InterestGroupManagerImpl;
-class PrivateAggregationManager;
 struct DebugReportLockoutAndCooldowns;
 
 // An AuctionRunner loads and runs the bidder and seller worklets, along with
@@ -57,9 +55,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       base::Seconds(3);
   // Max reporting timeout for seller's reportResult() and buyer's reportWin().
   static constexpr base::TimeDelta kMaxReportingTimeout = base::Seconds(5);
-
-  using PrivateAggregationRequests =
-      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
   // Invoked when a FLEDGE auction is complete.
   //
@@ -167,10 +162,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       AuctionNonceManager* auction_nonce_manager,
       InterestGroupManagerImpl* interest_group_manager,
       BrowserContext* browser_context,
-      PrivateAggregationManager* private_aggregation_manager,
       AdAuctionPageDataCallback ad_auction_page_data_callback,
-      InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
-          log_private_aggregation_requests_callback,
       const blink::AuctionConfig& auction_config,
       const url::Origin& main_frame_origin,
       const url::Origin& frame_origin,
@@ -260,10 +252,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       AuctionNonceManager* auction_nonce_manager,
       InterestGroupManagerImpl* interest_group_manager,
       BrowserContext* browser_context,
-      PrivateAggregationManager* private_aggregation_manager,
       AdAuctionPageDataCallback ad_auction_page_data_callback,
-      InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
-          log_private_aggregation_requests_callback,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode,
       const blink::AuctionConfig& auction_config,
       const url::Origin& main_frame_origin,
@@ -329,8 +318,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
 
   // Needed to create `FencedFrameReporter`.
   const raw_ptr<BrowserContext> browser_context_;
-
-  const raw_ptr<PrivateAggregationManager> private_aggregation_manager_;
 
   const url::Origin main_frame_origin_;
   const url::Origin frame_origin_;

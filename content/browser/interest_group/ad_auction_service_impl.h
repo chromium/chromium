@@ -28,7 +28,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/document_service.h"
-#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -45,7 +44,6 @@
 namespace content {
 
 class InterestGroupManagerImpl;
-class PrivateAggregationManager;
 class ReconnectableURLLoaderFactory;
 class RenderFrameHost;
 class RenderFrameHostImpl;
@@ -188,10 +186,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
   void OnReporterComplete(ReporterList::iterator reporter_it);
 
-  void MaybeLogPrivateAggregationFeatures(
-      const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
-          private_aggregation_requests);
-
   // On failing to fetch ad auction data, set `seller`'s request to an empty
   // request with error `msg`.
   void AddEmptyGetInterestGroupAdAuctionDataRequest(const url::Origin& seller,
@@ -261,19 +255,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // TODO(mmenke): Switch to std::set() and use extract() once that's allowed.
   std::map<AuctionRunner*, std::unique_ptr<AuctionRunner>> auctions_;
   ReporterList reporters_;
-
-  // Safe to keep as it will outlive the associated `RenderFrameHost` and
-  // therefore `this`, being tied to the lifetime of the `StoragePartition`.
-  const raw_ptr<PrivateAggregationManager> private_aggregation_manager_;
-
-  // Whether a UseCounter has already been logged for usage of the Private
-  // Aggregation API in general, the extended Private Aggregation API and the
-  // Private Aggregation API's enableDebugMode(), respectively.
-  bool has_logged_private_aggregation_web_features_ = false;
-  bool has_logged_extended_private_aggregation_web_feature_ = false;
-  bool has_logged_private_aggregation_enable_debug_mode_web_feature_ = false;
-  bool has_logged_private_aggregation_filtering_id_web_feature_ = false;
-  bool has_logged_private_aggregation_error_reporting_web_feature_ = false;
 
   // Track the state of GetInterestGroupAdAuctionData calls. One request will be
   // handled at a time (the first in the queue). The first

@@ -26,10 +26,8 @@
 #include "content/browser/interest_group/bidding_and_auction_response.h"
 #include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
-#include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
-#include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -51,7 +49,6 @@ namespace content {
 class AuctionWorkletManager;
 class BrowserContext;
 class InterestGroupManagerImpl;
-class PrivateAggregationManager;
 
 // Handles the reporting phase of FLEDGE auctions with a winner. Loads the
 // bidder, seller, and (if present) component seller worklets and invokes
@@ -90,18 +87,6 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
-
-  using FinalizedPrivateAggregationRequests = std::vector<
-      auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>;
-
-  using PrivateAggregationAllParticipantsData =
-      std::array<PrivateAggregationParticipantData,
-                 base::checked_cast<size_t>(
-                     PrivateAggregationPhase::kNumPhases)>;
-
-  // Invoked when private aggregation requests are received from the worklet.
-  using LogPrivateAggregationRequestsCallback = base::RepeatingCallback<void(
-      const PrivateAggregationRequests& private_aggregation_requests)>;
 
   using RealTimeReportingContributions =
       std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>;
@@ -241,9 +226,6 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       InterestGroupManagerImpl* interest_group_manager,
       AuctionWorkletManager* auction_worklet_manager,
       BrowserContext* browser_context,
-      PrivateAggregationManager* private_aggregation_manager,
-      LogPrivateAggregationRequestsCallback
-          log_private_aggregation_requests_callback,
       AdAuctionPageDataCallback ad_auction_page_data_callback,
       std::unique_ptr<blink::AuctionConfig> auction_config,
       const std::string& devtools_auction_id,
@@ -259,11 +241,6 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       std::vector<GURL> debug_win_report_urls,
       std::vector<GURL> debug_loss_report_urls,
       base::flat_set<std::string> k_anon_keys_to_join,
-      std::map<PrivateAggregationKey, FinalizedPrivateAggregationRequests>
-          private_aggregation_requests_reserved,
-      std::map<std::string, FinalizedPrivateAggregationRequests>
-          private_aggregation_requests_non_reserved,
-      PrivateAggregationAllParticipantsData all_participants_data,
       std::map<url::Origin, RealTimeReportingContributions>
           real_time_contributions);
 
@@ -315,25 +292,6 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   scoped_refptr<FencedFrameReporter> fenced_frame_reporter() {
     return fenced_frame_reporter_.get();
   }
-
-  // Sends requests for the Private Aggregation API to
-  // private_aggregation_manager. This does not handle requests conditional on
-  // non-reserved events, but does handle requests conditional on reserved
-  // events (and requests that aren't conditional on an event). The map should
-  // be keyed by reporting origin of the corresponding requests. Does nothing if
-  // `private_aggregation_requests` is empty. This should only be called once
-  // per auction.
-  //
-  // Static so that this can be invoked when there's no winner, and a reporter
-  // isn't needed.
-  static void OnFledgePrivateAggregationRequests(
-      PrivateAggregationManager* private_aggregation_manager,
-      const url::Origin& main_frame_origin,
-      std::map<
-          PrivateAggregationKey,
-          std::vector<
-              auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>>
-          private_aggregation_requests);
 
   static double RoundBidStochastically(double bid);
 
@@ -475,7 +433,6 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // This checks if the winning ad has been navigated to and if reporting is
   // complete and sends all pending private aggregation requests if both are
   // true. It should be called when either of these conditions becomes true.
-  void MaybeSendPrivateAggregationReports();
 
   // Checks that `url` is attested for reporting. On success, returns true. On
   // failure, return false, and appends an error to `errors_`. The `url` passed
@@ -489,10 +446,6 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
   const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
-  const raw_ptr<PrivateAggregationManager> private_aggregation_manager_;
-
-  const LogPrivateAggregationRequestsCallback
-      log_private_aggregation_requests_callback_;
 
   const AdAuctionPageDataCallback ad_auction_page_data_callback_;
 
@@ -533,17 +486,6 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   std::vector<GURL> debug_loss_report_urls_;
 
   base::flat_set<std::string> k_anon_keys_to_join_;
-
-  // Stores all pending Private Aggregation API report requests until they have
-  // been flushed. Keyed by the origin of the script that issued the request
-  // (i.e. the reporting origin).
-  std::map<PrivateAggregationKey, FinalizedPrivateAggregationRequests>
-      private_aggregation_requests_reserved_;
-  std::map<std::string, FinalizedPrivateAggregationRequests>
-      private_aggregation_requests_non_reserved_;
-  // Metrics from the parties that took part in winning, in case they want to
-  // request them from the reporting scripts.
-  PrivateAggregationAllParticipantsData all_participants_data_;
 
   // Stores all received pending Real Time Reporting contributions. until their
   // converted histograms flushed. Keyed by the origin of the script that issued

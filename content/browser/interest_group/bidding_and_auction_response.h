@@ -14,7 +14,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/values.h"
-#include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/auction_result.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -24,12 +23,6 @@
 #include "url/origin.h"
 
 namespace content {
-
-using PrivateAggregationRequests =
-    std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
-
-using FinalizedPrivateAggregationRequests =
-    std::vector<auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>;
 
 std::optional<base::span<const uint8_t>> CONTENT_EXPORT
 ExtractCompressedBiddingAndAuctionResponse(
@@ -73,9 +66,6 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
 
     KAnonJoinCandidate candidate;
     blink::InterestGroupKey interest_group;
-    // `non_kanon_private_aggregation_requests` will only have reject reason
-    // contributions, which the server will guarantee.
-    PrivateAggregationRequests non_kanon_private_aggregation_requests;
     std::optional<GhostWinnerForTopLevelAuction> ghost_winner;
   };
 
@@ -87,9 +77,7 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
 
   static std::optional<BiddingAndAuctionResponse> TryParse(
       base::Value input,
-      const base::flat_map<url::Origin, std::vector<std::string>>& group_names,
-      const base::flat_map<blink::InterestGroupKey, url::Origin>&
-          group_pagg_coordinators);
+      const base::flat_map<url::Origin, std::vector<std::string>>& group_names);
 
   static std::optional<KAnonJoinCandidate> TryParseKAnonWinnerJoinCandidate(
       base::DictValue& k_anon_join_candidate);
@@ -101,36 +89,6 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   static std::optional<GhostWinnerForTopLevelAuction>
   TryParseGhostWinnerForTopLevelAuction(
       base::DictValue& ghost_winner_for_top_level_auction);
-
-  static void TryParsePAggResponse(
-      const base::ListValue& pagg_response,
-      const base::flat_map<url::Origin, std::vector<std::string>>& group_names,
-      const base::flat_map<blink::InterestGroupKey, url::Origin>&
-          group_pagg_coordinators,
-      BiddingAndAuctionResponse& output);
-
-  static void TryParsePAggIgContributions(
-      const base::ListValue& ig_contributions,
-      const url::Origin& reporting_origin,
-      const base::flat_map<blink::InterestGroupKey, url::Origin>&
-          group_pagg_coordinators,
-      const base::flat_map<url::Origin, std::vector<std::string>>& group_names,
-      BiddingAndAuctionResponse& output);
-
-  static void TryParsePAggEventContributions(
-      const base::ListValue& event_contributions,
-      const url::Origin& reporting_origin,
-      const std::optional<url::Origin>& aggregation_coordinator_origin,
-      bool component_win,
-      BiddingAndAuctionResponse& output);
-
-  static void TryParsePAggContributions(
-      const base::ListValue& contributions,
-      bool component_win,
-      const std::string& event,
-      const PrivateAggregationPhaseKey& agg_phase_key,
-      const PrivateAggregationKey& agg_key,
-      BiddingAndAuctionResponse& output);
 
   static void TryParseForDebuggingOnlyReports(
       const base::ListValue& for_debugging_only_reporting,
@@ -199,21 +157,6 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   // for single-level auctions.
   std::optional<ReportingURLs> buyer_reporting, top_level_seller_reporting,
       component_seller_reporting;
-
-  // Private aggregation requests from component winning buyer/seller. These
-  // need to be further filtered based on the final auction result.
-  std::map<PrivateAggregationPhaseKey, PrivateAggregationRequests>
-      component_win_pagg_requests;
-
-  // Private aggregation contributions that has been filtered by the server,
-  // which can all be sent without further filtering on auction result. These
-  // include component losing buyers/sellers PAgg contributions, or
-  // contributions from single level auctions or server orchestrated multi-level
-  // auctions.
-  std::map<PrivateAggregationKey, FinalizedPrivateAggregationRequests>
-      server_filtered_pagg_requests_reserved;
-  std::map<std::string, FinalizedPrivateAggregationRequests>
-      server_filtered_pagg_requests_non_reserved;
 
   // forDebuggingOnly reports from component winning buyer/seller. These need to
   // be further filtered based on the final auction result.

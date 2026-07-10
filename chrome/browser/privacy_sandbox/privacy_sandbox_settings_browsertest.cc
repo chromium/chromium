@@ -60,9 +60,6 @@ constexpr char kBidderReportURL[] = "/bidder_report";
 // Used for reportResult() destination.
 constexpr char kSellerReportURL[] = "/seller_report";
 
-constexpr char kPrivateAggregationHostPipeResultHistogram[] =
-    "PrivacySandbox.PrivateAggregation.Host.PipeResult";
-
 // Used to pattern match console error message emitted from
 // `FencedFrameReporter::SendReportInternal()`. This error applies to
 // `reportEvent()` and automatic beacons.
@@ -254,7 +251,6 @@ namespace {
 enum class AttestedApiStatus {
   kSharedStorage,
   kProtectedAudience,
-  kProtectedAudienceAndPrivateAggregation,
   kAttributionReporting,
   kNone,
 };
@@ -266,8 +262,6 @@ std::string ConvertAttestedApiStatusToString(
       return "SharedStorage";
     case AttestedApiStatus::kProtectedAudience:
       return "ProtectedAudience";
-    case AttestedApiStatus::kProtectedAudienceAndPrivateAggregation:
-      return "ProtectedAudience_and_PrivateAggregation";
     case AttestedApiStatus::kAttributionReporting:
       return "AttributionReporting";
     case AttestedApiStatus::kNone:
@@ -302,11 +296,6 @@ class PrivacySandboxSettingsAttestationsBrowserTestBase
       case AttestedApiStatus::kProtectedAudience:
         return {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
                     kProtectedAudience};
-      case AttestedApiStatus::kProtectedAudienceAndPrivateAggregation:
-        return {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                    kProtectedAudience,
-                privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                    kPrivateAggregation};
       case AttestedApiStatus::kAttributionReporting:
         return {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
                     kAttributionReporting};
@@ -364,22 +353,6 @@ class PrivacySandboxSettingsAttestationsBrowserTestBase
     // to retrieve it.
     return fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(
         web_contents()->GetPrimaryMainFrame());
-  }
-
-  content::RenderFrameHost*
-  LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionWithPrivateAggregation(
-      const std::string& primary_main_frame_hostname,
-      const std::string& fenced_frame_hostname) {
-    GURL initial_url(https_server_.GetURL(
-        primary_main_frame_hostname,
-        "/allow-all-join-ad-interest-group-run-ad-auction.html"));
-    GURL fenced_frame_url(https_server_.GetURL(
-        fenced_frame_hostname,
-        "/fenced_frames/"
-        "ad_with_fenced_frame_private_aggregation_reporting.html"));
-
-    return LoadPageThenLoadAndNavigateFencedFrameViaAdAuction(initial_url,
-                                                              fenced_frame_url);
   }
 
   content::RenderFrameHost*
@@ -921,93 +894,6 @@ class PrivacySandboxSettingsAttestProtectedAudienceBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-class
-    PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest
-    : public PrivacySandboxSettingsAttestProtectedAudienceBrowserTest {
- public:
-  PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {blink::features::kPrivateAggregationApi},
-        /*disabled_features=*/{});
-  }
-
-  size_t GetTotalSampleCount(std::string_view histogram_name) {
-    auto buckets = histogram_tester_.GetAllSamples(histogram_name);
-    size_t count = 0;
-    for (const auto& bucket : buckets) {
-      count += bucket.count;
-    }
-    return count;
-  }
-
-  void WaitForHistogram(const std::string& histogram_name,
-                        size_t expected_sample_count) {
-    // Continue if histogram was already recorded and has at least the expected
-    // number of samples.
-    if (base::StatisticsRecorder::FindHistogram(histogram_name) &&
-        GetTotalSampleCount(histogram_name) >= expected_sample_count) {
-      return;
-    }
-
-    // Else, wait until the histogram is recorded with enough samples.
-    base::RunLoop run_loop;
-    auto histogram_observer = std::make_unique<
-        base::StatisticsRecorder::ScopedHistogramSampleObserver>(
-        histogram_name,
-        base::BindLambdaForTesting([&](std::string_view histogram_name,
-                                       uint64_t name_hash,
-                                       base::HistogramBase::Sample32 sample) {
-          if (GetTotalSampleCount(histogram_name) >= expected_sample_count) {
-            run_loop.Quit();
-          }
-        }));
-    run_loop.Run();
-  }
-
- protected:
-  base::HistogramTester histogram_tester_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest,
-    SameOrigin_Enrolled_Success) {
-  SetAttestations({std::make_pair(
-      "a.test", AttestedApiStatus::kProtectedAudienceAndPrivateAggregation)});
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionWithPrivateAggregation(
-          /*primary_main_frame_hostname=*/"a.test",
-          /*fenced_frame_hostname=*/"a.test");
-  ASSERT_NE(fenced_frame_rfh, nullptr);
-
-  WaitForHistogram(kPrivateAggregationHostPipeResultHistogram, 2);
-  histogram_tester_.ExpectUniqueSample(
-      kPrivateAggregationHostPipeResultHistogram,
-      content::GetPrivateAggregationHostPipeReportSuccessValue(), 2);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest,
-    SameOrigin_NotEnrolled_Failure) {
-  SetAttestations(
-      {std::make_pair("a.test", AttestedApiStatus::kProtectedAudience)});
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionWithPrivateAggregation(
-          /*primary_main_frame_hostname=*/"a.test",
-          /*fenced_frame_hostname=*/"a.test");
-  ASSERT_NE(fenced_frame_rfh, nullptr);
-
-  WaitForHistogram(kPrivateAggregationHostPipeResultHistogram, 2);
-  histogram_tester_.ExpectUniqueSample(
-      kPrivateAggregationHostPipeResultHistogram,
-      content::GetPrivateAggregationHostPipeApiDisabledValue(), 2);
-}
-
 // Verifies that joining interest groups and running auctions in the Protected
 // Audience API are subject to attestation checks.
 //
@@ -1095,48 +981,4 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsAttestProtectedAudienceBrowserTest,
       EXPECT_EQ(base::Value(), result);
     }
   }
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest,
-    CrossOrigin_Enrolled_Success) {
-  SetAttestations(
-      {std::make_pair(
-           "a.test",
-           AttestedApiStatus::kProtectedAudienceAndPrivateAggregation),
-       std::make_pair(
-           "b.test",
-           AttestedApiStatus::kProtectedAudienceAndPrivateAggregation)});
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionWithPrivateAggregation(
-          /*primary_main_frame_hostname=*/"a.test",
-          /*fenced_frame_hostname=*/"b.test");
-  ASSERT_NE(fenced_frame_rfh, nullptr);
-
-  WaitForHistogram(kPrivateAggregationHostPipeResultHistogram, 2);
-  histogram_tester_.ExpectUniqueSample(
-      kPrivateAggregationHostPipeResultHistogram,
-      content::GetPrivateAggregationHostPipeReportSuccessValue(), 2);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PrivacySandboxSettingsAttestPrivateAggregationInProtectedAudienceBrowserTest,
-    CrossOrigin_NotEnrolled_Failure) {
-  SetAttestations(
-      {std::make_pair(
-           "a.test",
-           AttestedApiStatus::kProtectedAudienceAndPrivateAggregation),
-       std::make_pair("b.test", AttestedApiStatus::kProtectedAudience)});
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      LoadPageThenLoadAndNavigateFencedFrameViaAdAuctionWithPrivateAggregation(
-          /*primary_main_frame_hostname=*/"a.test",
-          /*fenced_frame_hostname=*/"b.test");
-  ASSERT_NE(fenced_frame_rfh, nullptr);
-
-  WaitForHistogram(kPrivateAggregationHostPipeResultHistogram, 2);
-  histogram_tester_.ExpectUniqueSample(
-      kPrivateAggregationHostPipeResultHistogram,
-      content::GetPrivateAggregationHostPipeApiDisabledValue(), 2);
 }

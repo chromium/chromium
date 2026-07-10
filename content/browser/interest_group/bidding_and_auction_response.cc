@@ -15,13 +15,10 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "content/browser/interest_group/interest_group_features.h"
-#include "content/browser/interest_group/interest_group_pa_report_util.h"
-#include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
-#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -29,16 +26,6 @@ namespace content {
 namespace {
 const size_t kFramingHeaderSize = 5;  // bytes
 const uint8_t kExpectedHeaderVersionInfo = 0x02;
-
-// TODO(crbug.com/40215445): Replace with `base/numerics/byte_conversions.h` if
-// available.
-absl::uint128 U128FromBigEndian(std::vector<uint8_t> bytes) {
-  absl::uint128 result = 0;
-  for (unsigned char byte : bytes) {
-    result = (result << 8) | byte;
-  }
-  return result;
-}
 
 }  // namespace
 
@@ -101,9 +88,7 @@ BiddingAndAuctionResponse::~BiddingAndAuctionResponse() = default;
 // static
 std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     base::Value input,
-    const base::flat_map<url::Origin, std::vector<std::string>>& group_names,
-    const base::flat_map<blink::InterestGroupKey, url::Origin>&
-        group_pagg_coordinators) {
+    const base::flat_map<url::Origin, std::vector<std::string>>& group_names) {
   BiddingAndAuctionResponse output;
   base::DictValue* input_dict = input.GetIfDict();
   if (!input_dict) {
@@ -327,16 +312,6 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     }
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) &&
-      blink::features::kPrivateAggregationApiEnabledInProtectedAudience.Get() &&
-      base::FeatureList::IsEnabled(features::kEnableBandAPrivateAggregation)) {
-    const base::ListValue* pagg_response = input_dict->FindList("paggResponse");
-    if (pagg_response) {
-      TryParsePAggResponse(*pagg_response, group_names, group_pagg_coordinators,
-                           output);
-    }
-  }
-
   if (base::FeatureList::IsEnabled(features::kEnableBandASampleDebugReports)) {
     base::ListValue* for_debugging_only_reports =
         input_dict->FindList("debugReports");
@@ -479,45 +454,6 @@ BiddingAndAuctionResponse::TryParseKAnonGhostWinner(
   result.interest_group =
       blink::InterestGroupKey(owner, names[*maybe_group_idx]);
 
-  base::Value* ghost_winner_private_aggregation_signals_value =
-      k_anon_ghost_winner->Find("ghostWinnerPrivateAggregationSignals");
-  if (ghost_winner_private_aggregation_signals_value) {
-    base::ListValue* ghost_winner_private_aggregation_signals_list =
-        ghost_winner_private_aggregation_signals_value->GetIfList();
-    if (!ghost_winner_private_aggregation_signals_list) {
-      return std::nullopt;
-    }
-    for (const auto& ghost_winner_private_aggregation_signals :
-         *ghost_winner_private_aggregation_signals_list) {
-      const base::DictValue* ghost_winner_private_aggregation_signals_dict =
-          ghost_winner_private_aggregation_signals.GetIfDict();
-      if (!ghost_winner_private_aggregation_signals_dict) {
-        return std::nullopt;
-      }
-      // `ghostWinnerPrivateAggregationSignals` will only have reject reason
-      // contributions, which the server will guarantee.
-      const std::vector<uint8_t>* bucket =
-          ghost_winner_private_aggregation_signals_dict->FindBlob("bucket");
-      std::optional<int> value =
-          ghost_winner_private_aggregation_signals_dict->FindInt("value");
-      if (!bucket || bucket->size() > 16 || !value.has_value()) {
-        return std::nullopt;
-      }
-      // Server already filtered out not needed contributions based on final
-      // auction result.
-      result.non_kanon_private_aggregation_requests.emplace_back(
-          auction_worklet::mojom::PrivateAggregationRequest::New(
-              auction_worklet::mojom::AggregatableReportContribution::
-                  NewHistogramContribution(
-                      blink::mojom::AggregatableReportHistogramContribution::
-                          New(
-                              /*bucket=*/U128FromBigEndian(*bucket),
-                              /*value=*/*value,
-                              /*filtering_id=*/std::nullopt)),
-              blink::mojom::DebugModeDetails::New()));
-    }
-  }
-
   base::Value* ghost_winner_for_top_level_auction_value =
       k_anon_ghost_winner->Find("ghostWinnerForTopLevelAuction");
   if (ghost_winner_for_top_level_auction_value) {
@@ -637,212 +573,6 @@ BiddingAndAuctionResponse::TryParseGhostWinnerForTopLevelAuction(
         std::move(*selected_buyer_and_seller_reporting_id);
   }
   return result;
-}
-
-// static
-void BiddingAndAuctionResponse::TryParsePAggResponse(
-    const base::ListValue& pagg_response,
-    const base::flat_map<url::Origin, std::vector<std::string>>& group_names,
-    const base::flat_map<blink::InterestGroupKey, url::Origin>&
-        group_pagg_coordinators,
-    BiddingAndAuctionResponse& output) {
-  for (const auto& per_origin_response : pagg_response) {
-    const base::DictValue* per_origin_response_dict =
-        per_origin_response.GetIfDict();
-    if (!per_origin_response_dict) {
-      continue;
-    }
-
-    const std::string* maybe_reporting_origin =
-        per_origin_response_dict->FindString("reportingOrigin");
-    if (!maybe_reporting_origin) {
-      continue;
-    }
-    url::Origin reporting_origin =
-        url::Origin::Create(GURL(*maybe_reporting_origin));
-    if (!network::IsOriginPotentiallyTrustworthy(reporting_origin)) {
-      continue;
-    }
-
-    const base::ListValue* ig_contributions =
-        per_origin_response_dict->FindList("igContributions");
-    if (ig_contributions) {
-      TryParsePAggIgContributions(*ig_contributions, reporting_origin,
-                                  group_pagg_coordinators, group_names, output);
-    }
-  }
-}
-
-// static
-void BiddingAndAuctionResponse::TryParsePAggIgContributions(
-    const base::ListValue& ig_contributions,
-    const url::Origin& reporting_origin,
-    const base::flat_map<blink::InterestGroupKey, url::Origin>&
-        group_pagg_coordinators,
-    const base::flat_map<url::Origin, std::vector<std::string>>& group_names,
-    BiddingAndAuctionResponse& output) {
-  auto single_origin_group_names_it = group_names.find(reporting_origin);
-  for (const auto& ig_contribution : ig_contributions) {
-    const base::DictValue* ig_contribution_dict = ig_contribution.GetIfDict();
-    if (!ig_contribution_dict) {
-      continue;
-    }
-    std::optional<int> maybe_ig_index =
-        ig_contribution_dict->FindInt("igIndex");
-    const std::string* maybe_coordinator =
-        ig_contribution_dict->FindString("coordinator");
-    std::optional<url::Origin> aggregation_coordinator_origin;
-    if (maybe_coordinator) {
-      aggregation_coordinator_origin =
-          url::Origin::Create(GURL(*maybe_coordinator));
-      if (!network::IsOriginPotentiallyTrustworthy(
-              *aggregation_coordinator_origin)) {
-        continue;
-      }
-    } else if (maybe_ig_index.has_value()) {
-      if (single_origin_group_names_it == group_names.end()) {
-        continue;
-      }
-      const std::vector<std::string>& names =
-          single_origin_group_names_it->second;
-      if (*maybe_ig_index < 0 ||
-          static_cast<size_t>(*maybe_ig_index) >= names.size()) {
-        continue;
-      }
-      auto it = group_pagg_coordinators.find(
-          blink::InterestGroupKey(reporting_origin, names[*maybe_ig_index]));
-      if (it != group_pagg_coordinators.end()) {
-        aggregation_coordinator_origin = it->second;
-      }
-    }
-    std::optional<bool> maybe_component_win =
-        ig_contribution_dict->FindBool("componentWin");
-    const base::ListValue* event_contributions =
-        ig_contribution_dict->FindList("eventContributions");
-    if (event_contributions) {
-      TryParsePAggEventContributions(
-          *event_contributions, reporting_origin,
-          aggregation_coordinator_origin,
-          maybe_component_win.has_value() && *maybe_component_win, output);
-    }
-  }
-}
-
-// static
-void BiddingAndAuctionResponse::TryParsePAggEventContributions(
-    const base::ListValue& event_contributions,
-    const url::Origin& reporting_origin,
-    const std::optional<url::Origin>& aggregation_coordinator_origin,
-    bool component_win,
-    BiddingAndAuctionResponse& output) {
-  // Used as key in `server_filtered_pagg_requests_reserved`.
-  PrivateAggregationKey agg_key = {reporting_origin,
-                                   aggregation_coordinator_origin};
-  // Used as key in `component_win_pagg_requests`.
-  PrivateAggregationPhaseKey agg_phase_key = {
-      reporting_origin, PrivateAggregationPhase::kNonTopLevelSeller,
-      aggregation_coordinator_origin};
-  for (const auto& event_contribution : event_contributions) {
-    const base::DictValue* event_contribution_dict =
-        event_contribution.GetIfDict();
-    if (!event_contribution_dict) {
-      continue;
-    }
-    const std::string* event_type_str =
-        event_contribution_dict->FindString("event");
-    if (!event_type_str) {
-      continue;
-    }
-
-    const base::ListValue* contributions =
-        event_contribution_dict->FindList("contributions");
-    if (contributions) {
-      TryParsePAggContributions(*contributions, component_win, *event_type_str,
-                                agg_phase_key, agg_key, output);
-    }
-  }
-}
-
-// static
-void BiddingAndAuctionResponse::TryParsePAggContributions(
-    const base::ListValue& contributions,
-    bool component_win,
-    const std::string& event_type_str,
-    const PrivateAggregationPhaseKey& agg_phase_key,
-    const PrivateAggregationKey& agg_key,
-    BiddingAndAuctionResponse& output) {
-  auction_worklet::mojom::EventTypePtr event_type =
-      auction_worklet::ParsePrivateAggregationEventType(
-          event_type_str,
-          base::FeatureList::IsEnabled(
-              blink::features::
-                  kPrivateAggregationApiProtectedAudienceAdditionalExtensions),
-          base::FeatureList::IsEnabled(
-              blink::features::kPrivateAggregationApiErrorReporting));
-  if (!event_type) {
-    // Don't throw an error if an invalid reserved event type is provided, to
-    // provide forward compatibility with new reserved event types added
-    // later.
-    return;
-  }
-  for (const auto& contribution : contributions) {
-    const base::DictValue* contribution_dict = contribution.GetIfDict();
-    if (!contribution_dict) {
-      continue;
-    }
-    const std::vector<uint8_t>* bucket = contribution_dict->FindBlob("bucket");
-    std::optional<int> value = contribution_dict->FindInt("value");
-    std::optional<uint64_t> filtering_id =
-        contribution_dict->FindInt("filteringId");
-    if (!bucket || bucket->size() > 16 || !value.has_value() ||
-        (filtering_id.has_value() && !IsValidFilteringId(filtering_id))) {
-      continue;
-    }
-    if (component_win) {
-      // Response contains all event types for a component winner, since it may
-      // win or lose the top-level auction. `request` needs to contain any
-      // non-error event type because it's needed to decide whether it needs to
-      // be filtered out based on the top-level auction result.
-      auction_worklet::mojom::PrivateAggregationRequestPtr request =
-          auction_worklet::mojom::PrivateAggregationRequest::New(
-              auction_worklet::mojom::AggregatableReportContribution::
-                  NewForEventContribution(
-                      auction_worklet::mojom::
-                          AggregatableReportForEventContribution::New(
-                              auction_worklet::mojom::ForEventSignalBucket::
-                                  NewIdBucket(U128FromBigEndian(*bucket)),
-                              auction_worklet::mojom::ForEventSignalValue::
-                                  NewIntValue(*value),
-                              filtering_id, event_type->Clone())),
-              blink::mojom::DebugModeDetails::New());
-      output.component_win_pagg_requests[agg_phase_key].emplace_back(
-          std::move(request));
-    } else {
-      std::optional<blink::mojom::PrivateAggregationErrorEvent> error_event;
-      if (event_type->is_reserved_error()) {
-        error_event =
-            ConvertErrorEventToPAggType(event_type->get_reserved_error());
-      }
-
-      // Server already filtered out not needed contributions based on final
-      // auction result.
-      auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr request =
-          auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
-              blink::mojom::AggregatableReportHistogramContribution::New(
-                  /*bucket=*/U128FromBigEndian(*bucket),
-                  /*value=*/*value,
-                  /*filtering_id=*/filtering_id),
-              blink::mojom::DebugModeDetails::New(), error_event);
-
-      if (event_type->is_non_reserved()) {
-        output.server_filtered_pagg_requests_non_reserved[event_type_str]
-            .emplace_back(std::move(request));
-      } else {
-        output.server_filtered_pagg_requests_reserved[agg_key].emplace_back(
-            std::move(request));
-      }
-    }
-  }
 }
 
 // static

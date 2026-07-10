@@ -134,10 +134,7 @@ class FencedFrameURLMappingTest : public RenderViewHostTestHarness {
             nullptr),
         /*browser_context=*/browser_context(),
         /*direct_seller_is_seller=*/false,
-        /*private_aggregation_manager=*/nullptr,
-        /*main_frame_origin=*/url::Origin(),
-        /*winner_origin=*/url::Origin(),
-        /*winner_aggregation_coordinator_origin=*/std::nullopt);
+        /*main_frame_origin=*/url::Origin());
   }
 
   const base::HistogramTester& histogram_tester() const {

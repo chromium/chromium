@@ -1572,12 +1572,8 @@ class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
             ->GetURLLoaderFactoryForBrowserProcess(),
         web_contents()->GetBrowserContext(),
         /*direct_seller_is_seller=*/false,
-        PrivateAggregationManager::GetManager(
-            *web_contents()->GetBrowserContext()),
         /*main_frame_origin=*/
-        web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-        /*winner_origin=*/url::Origin::Create(GURL("https://a.test")),
-        /*winner_aggregation_coordinator_origin=*/std::nullopt);
+        web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   }
 
  private:

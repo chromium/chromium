@@ -5873,12 +5873,8 @@ class FencedFrameReportEventBrowserTest
             ->GetURLLoaderFactoryForBrowserProcess(),
         web_contents()->GetBrowserContext(),
         /*direct_seller_is_seller=*/false,
-        PrivateAggregationManager::GetManager(
-            *web_contents()->GetBrowserContext()),
         /*main_frame_origin=*/
         web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-        /*winner_origin=*/url::Origin::Create(GURL("https://a.test")),
-        /*winner_aggregation_coordinator_origin=*/std::nullopt,
         /*allowed_reporting_origins=*/
         {{url::Origin::Create(https_server()->GetURL("a.test", "/")),
           url::Origin::Create(https_server()->GetURL("b.test", "/")),
@@ -7889,13 +7885,8 @@ class FencedFrameAutomaticBeaconBrowserTest
             ->GetURLLoaderFactoryForBrowserProcess(),
         web_contents()->GetBrowserContext(),
         /*direct_seller_is_seller=*/false,
-        static_cast<StoragePartitionImpl*>(
-            web_contents()->GetPrimaryMainFrame()->GetStoragePartition())
-            ->GetPrivateAggregationManager(),
         /*main_frame_origin=*/
-        web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-        /*winner_origin=*/url::Origin::Create(GURL("https://a.test")),
-        /*winner_aggregation_coordinator_origin=*/std::nullopt);
+        web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   }
 
   // A helper function for specifying automatic beacon tests.

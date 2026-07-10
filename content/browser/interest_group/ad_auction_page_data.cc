@@ -190,14 +190,11 @@ AdAuctionRequestContext::AdAuctionRequestContext(
     url::Origin seller,
     base::flat_map<url::Origin, std::vector<std::string>> group_names,
     quiche::ObliviousHttpRequest::Context context,
-    base::TimeTicks start_time,
-    base::flat_map<blink::InterestGroupKey, url::Origin>
-        group_pagg_coordinators)
+    base::TimeTicks start_time)
     : seller(std::move(seller)),
       group_names(std::move(group_names)),
       context(std::move(context)),
-      start_time(start_time),
-      group_pagg_coordinators(std::move(group_pagg_coordinators)) {}
+      start_time(start_time) {}
 AdAuctionRequestContext::AdAuctionRequestContext(
     AdAuctionRequestContext&& other) = default;
 AdAuctionRequestContext::~AdAuctionRequestContext() = default;

@@ -36,7 +36,6 @@ namespace content {
 
 class AttributionManager;
 class BrowserContext;
-class PrivateAggregationManager;
 class RenderFrameHostImpl;
 
 // An event to be sent to a preregistered url.
@@ -87,9 +86,6 @@ class CONTENT_EXPORT FencedFrameReporter
 
   using ReportingMacros = std::vector<std::pair<std::string, std::string>>;
 
-  using FinalizedPrivateAggregationRequests = std::vector<
-      auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>;
-
   using DestinationVariant = std::
       variant<DestinationEnumEvent, DestinationURLEvent, AutomaticBeaconEvent>;
 
@@ -136,20 +132,8 @@ class CONTENT_EXPORT FencedFrameReporter
   // `browser_context` is used to help notify Attribution Reporting API
   // for the beacons, and to check attestations before sending out the beacons.
   //
-  // `private_aggregation_manager` is used to send private aggregation requests
-  // for fenced frame events. See comment above declaration of
-  // `private_aggregation_manager_` for more details.
-  //
   // `main_frame_origin` is the main frame of the page where the auction is
-  // running. Can be an opaque origin in test iff the test does not have for
-  // event private aggregation requests.
-  //
-  // `winner_origin` is the winning buyer's origin. Can be an opaque origin in
-  // test iff the test does not have for event private aggregation requests.
-  //
-  // `winner_aggregation_coordinator_origin` is the origin of the aggregation
-  // coordinator for the winning buyer. Set to std::nullopt if the default
-  // coordinator should be used.
+  // running.
   //
   // `allowed_reporting_origins` is the winning ad's allowedReportingOrigins. If
   //  any macro report is attempted to an unlisted origin, all further reports
@@ -158,10 +142,7 @@ class CONTENT_EXPORT FencedFrameReporter
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       BrowserContext* browser_context,
       bool direct_seller_is_seller,
-      PrivateAggregationManager* private_aggregation_manager,
       const url::Origin& main_frame_origin,
-      const url::Origin& winner_origin,
-      const std::optional<url::Origin>& winner_aggregation_coordinator_origin,
       const std::optional<std::vector<url::Origin>>& allowed_reporting_origins =
           std::nullopt);
 
@@ -173,10 +154,6 @@ class CONTENT_EXPORT FencedFrameReporter
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       BrowserContext* browser_context,
       const url::Origin& main_frame_origin,
-      PrivateAggregationManager* private_aggregation_manager = nullptr,
-      const std::optional<url::Origin>& winner_origin = std::nullopt,
-      const std::optional<url::Origin>& winner_aggregation_coordinator_origin =
-          std::nullopt,
       const std::optional<std::vector<url::Origin>>& allowed_reporting_origins =
           std::nullopt);
 
@@ -262,28 +239,6 @@ class CONTENT_EXPORT FencedFrameReporter
       FrameTreeNodeId initiator_frame_tree_node_id = FrameTreeNodeId(),
       std::optional<int64_t> navigation_id = std::nullopt);
 
-  // Called when a mapping for private aggregation requests of non-reserved
-  // event types is received. Currently it is only called inside
-  // `InterestGroupAuctionReporter::SendPendingReportsIfNavigated()`, which is
-  // called after any of the following:
-  // * the winning ad has been navigated to.
-  // * reportWin() completes.
-  // * reportResult() completes.
-  // The first two cases can have non-empty `private_aggregation_event_map`.
-  // When invoked, any pending non-reserved event type will trigger sending
-  // corresponding private aggregation request in
-  // `private_aggregation_event_map` if it has a matching key. Any future
-  // reports of that type will be immediately sent using the provided map.
-  void OnForEventPrivateAggregationRequestsReceived(
-      std::map<std::string, FinalizedPrivateAggregationRequests>
-          private_aggregation_event_map);
-
-  // Uses `pa_event_type` to send a private aggregation request. The
-  // non-reserved PA event type is added to `received_pa_events_` because more
-  // private aggregation requests associated with this event may be received and
-  // need to be sent after this is called.
-  void SendPrivateAggregationRequestsForEvent(const std::string& pa_event_type);
-
   // Returns a list of reporting destinations that have at least 1 URL
   // registered with them.
   const std::vector<blink::FencedFrame::ReportingDestination>
@@ -311,15 +266,6 @@ class CONTENT_EXPORT FencedFrameReporter
   // included in the returned map.
   base::flat_map<blink::FencedFrame::ReportingDestination, ReportingMacros>
   GetAdMacrosForTesting();
-
-  // Returns `received_pa_events_`, so that it can be validated in tests. Should
-  // only be called from tests.
-  std::set<std::string> GetReceivedPaEventsForTesting() const;
-
-  // Returns a copy of `private_aggregation_event_map_`, so that it can be
-  // validated in tests. Should only be called from tests.
-  std::map<std::string, FinalizedPrivateAggregationRequests>
-  GetPrivateAggregationEventMapForTesting();
 
  private:
   friend class base::RefCounted<FencedFrameReporter>;
@@ -397,11 +343,6 @@ class CONTENT_EXPORT FencedFrameReporter
       blink::mojom::ConsoleMessageLevel& console_message_level,
       const std::string& devtools_request_id);
 
-  // Helper to send private aggregation requests in
-  // `private_aggregation_event_map_` with key `pa_event_type`.
-  void SendPrivateAggregationRequestsForEventInternal(
-      const std::string& pa_event_type);
-
   // Used by FencedFrameURLMappingTestPeer.
   const base::flat_map<blink::FencedFrame::ReportingDestination,
                        ReportingDestinationInfo>&
@@ -436,24 +377,9 @@ class CONTENT_EXPORT FencedFrameReporter
   // it maps to the "ComponentSeller" destination.
   bool direct_seller_is_seller_ = false;
 
-  // The origin of the page's main frame. Used for:
-  // * Private aggregation (Protected Audience only)
-  // * 3rd party cookie permission check for credentialed automatic beacons
+  // The origin of the page's main frame. Used for 3rd party cookie permission
+  // check for credentialed automatic beacons.
   const url::Origin main_frame_origin_;
-
-  // Bound to the lifetime of the browser context. Can be nullptr if:
-  // * It's for non-FLEDGE reporter.
-  // * In tests that does not trigger private aggregation reports.
-  // * When feature `kPrivateAggregationApi` is not enabled.
-  const raw_ptr<PrivateAggregationManager> private_aggregation_manager_;
-
-  // The winning buyer's origin. Set to std::nullopt for non-FLEDGE reporter.
-  const std::optional<url::Origin> winner_origin_;
-
-  // The aggregation coordinator origin for the winning buyer. Set to
-  // std::nullopt for non-FLEDGE reporter or if the default coordinator should
-  // be used.
-  const std::optional<url::Origin> winner_aggregation_coordinator_origin_;
 
   // Origins allowed to receive macro expanded reports.
   const std::optional<std::vector<url::Origin>> allowed_reporting_origins_;
@@ -465,18 +391,6 @@ class CONTENT_EXPORT FencedFrameReporter
   // lifetime. This prevents an interest group from encoding cross-site data
   // about a user in binary with its choices of allowed/disallowed origins.
   bool attempted_custom_url_report_to_disallowed_origin_ = false;
-
-  // Private aggregation requests for non-reserved event types registered in
-  // bidder worklets, keyed by event type.
-  // OnForEventPrivateAggregationRequestsReceived() builds this map up.
-  std::map<std::string, FinalizedPrivateAggregationRequests>
-      private_aggregation_event_map_;
-
-  // Fenced frame events for private aggregation API. An event is not removed
-  // from the set even after corresponding non-reserved private aggregation
-  // requests are sent, because more requests associated with this event might
-  // be received and need to be sent later.
-  std::set<std::string> received_pa_events_;
 
   // Which API created this fenced frame reporter instance.
   PrivacySandboxInvokingAPI invoking_api_;
