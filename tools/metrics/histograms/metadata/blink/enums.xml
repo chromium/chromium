@@ -6692,6 +6692,26 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5941" label="V8RTC_StartDiagnosticLogging_Method"/>
   <int value="5942" label="SpeculationRulesModerateViewportHeuristicsControl"/>
   <int value="5943" label="ModelContextExecuteTool"/>
+  <int value="5944" label="WebAuthnAppidExtension"/>
+  <int value="5945" label="WebAuthnAppidExcludeExtension"/>
+  <int value="5946" label="WebAuthnHmacCreateSecretExtension"/>
+  <int value="5947" label="WebAuthnCredentialProtectionPolicyExtension"/>
+  <int value="5948" label="WebAuthnEnforceCredentialProtectionPolicyExtension"/>
+  <int value="5949" label="WebAuthnCredPropsExtension"/>
+  <int value="5950" label="WebAuthnLargeBlobRegisterExtension"/>
+  <int value="5951" label="WebAuthnLargeBlobReadExtension"/>
+  <int value="5952" label="WebAuthnLargeBlobWriteExtension"/>
+  <int value="5953" label="WebAuthnCredBlobRegisterExtension"/>
+  <int value="5954" label="WebAuthnCredBlobGetExtension"/>
+  <int value="5955" label="WebAuthnPaymentRegisterExtension"/>
+  <int value="5956" label="WebAuthnMinPinLengthExtension"/>
+  <int value="5957" label="WebAuthnPrfRegisterExtension"/>
+  <int value="5958" label="WebAuthnPrfGetExtension"/>
+  <int value="5959" label="WebAuthnCmtgKeyRegisterExtension"/>
+  <int value="5960" label="WebAuthnCmtgKeyGetExtension"/>
+  <int value="5961" label="WebAuthnCrossDeviceFallbackUrlExtension"/>
+  <int value="5962" label="WebAuthnRemoteDesktopClientOverrideExtension"/>
+  <int value="5963" label="WebAuthnUvmRegisterExtension"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

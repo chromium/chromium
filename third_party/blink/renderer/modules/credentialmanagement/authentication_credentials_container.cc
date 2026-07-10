@@ -1202,6 +1202,93 @@ void OnStartTokenRequestComplete(
                  /*error=*/nullptr, success->is_auto_selected);
 }
 
+// Record usage of WebAuthn extensions during registration.
+void RecordCreateExtensionsUseCounters(
+    ExecutionContext* context,
+    const AuthenticationExtensionsClientInputs& extensions) {
+  if (extensions.hasAppidExclude()) {
+    UseCounter::Count(context, WebFeature::kWebAuthnAppidExcludeExtension);
+  }
+  if (extensions.hasHmacCreateSecret()) {
+    UseCounter::Count(context, WebFeature::kWebAuthnHmacCreateSecretExtension);
+  }
+  if (extensions.hasCredentialProtectionPolicy()) {
+    UseCounter::Count(context,
+                      WebFeature::kWebAuthnCredentialProtectionPolicyExtension);
+  }
+  if (extensions.hasEnforceCredentialProtectionPolicy() &&
+      extensions.enforceCredentialProtectionPolicy()) {
+    UseCounter::Count(
+        context,
+        WebFeature::kWebAuthnEnforceCredentialProtectionPolicyExtension);
+  }
+  if (extensions.credProps()) {
+    UseCounter::Count(context, WebFeature::kWebAuthnCredPropsExtension);
+  }
+  if (extensions.hasLargeBlob()) {
+    UseCounter::Count(context, WebFeature::kWebAuthnLargeBlobRegisterExtension);
+  }
+  if (extensions.hasCredBlob()) {
+    UseCounter::Count(context, WebFeature::kWebAuthnCredBlobRegisterExtension);
+  }
+  if (extensions.hasPayment()) {
+    UseCounter::Count(context, WebFeature::kWebAuthnPaymentRegisterExtension);
+  }
+  if (extensions.hasMinPinLength() && extensions.minPinLength()) {
+    UseCounter::Count(context, WebFeature::kWebAuthnMinPinLengthExtension);
+  }
+  if (extensions.hasPrf()) {
+    UseCounter::Count(context, WebFeature::kWebAuthnPrfRegisterExtension);
+  }
+  if (extensions.hasCmtgKey()) {
+    UseCounter::Count(context, WebFeature::kWebAuthnCmtgKeyRegisterExtension);
+  }
+  if (extensions.hasRemoteDesktopClientOverride()) {
+    UseCounter::Count(
+        context, WebFeature::kWebAuthnRemoteDesktopClientOverrideExtension);
+  }
+  if (extensions.hasUvm()) {
+    UseCounter::Count(context, WebFeature::kWebAuthnUvmRegisterExtension);
+  }
+}
+
+// Record usage of WebAuthn extensions during assertion.
+void RecordGetExtensionsUseCounters(
+    ExecutionContext* context,
+    const AuthenticationExtensionsClientInputs& extensions) {
+  if (extensions.hasAppid()) {
+    UseCounter::Count(context, WebFeature::kWebAuthnAppidExtension);
+  }
+  if (extensions.hasLargeBlob()) {
+    if (extensions.largeBlob()->hasRead() && extensions.largeBlob()->read()) {
+      UseCounter::Count(context, WebFeature::kWebAuthnLargeBlobReadExtension);
+    }
+    if (extensions.largeBlob()->hasWrite()) {
+      UseCounter::Count(context, WebFeature::kWebAuthnLargeBlobWriteExtension);
+    }
+  }
+  if (extensions.hasGetCredBlob() && extensions.getCredBlob()) {
+    UseCounter::Count(context, WebFeature::kWebAuthnCredBlobGetExtension);
+  }
+  if (extensions.hasPrf()) {
+    UseCounter::Count(context, WebFeature::kWebAuthnPrfGetExtension);
+  }
+  if (extensions.hasCmtgKey() && extensions.cmtgKey()) {
+    UseCounter::Count(context, WebFeature::kWebAuthnCmtgKeyGetExtension);
+  }
+  if (extensions.hasRemoteDesktopClientOverride()) {
+    UseCounter::Count(
+        context, WebFeature::kWebAuthnRemoteDesktopClientOverrideExtension);
+  }
+  if (extensions.hasCrossDeviceFallbackUrl()) {
+    UseCounter::Count(context,
+                      WebFeature::kWebAuthnCrossDeviceFallbackUrlExtension);
+  }
+  if (extensions.hasUvm()) {
+    UseCounter::Count(context, WebFeature::kCredentialManagerGetWithUVM);
+  }
+}
+
 }  // namespace
 
 const char AuthenticationCredentialsContainer::kSupplementName[] =
@@ -1797,7 +1884,8 @@ AuthenticationCredentialsContainer::create(
   }
 
   if (options->publicKey()->hasExtensions()) {
-    if (options->publicKey()->extensions()->hasAppid()) {
+    const auto* extensions = options->publicKey()->extensions();
+    if (extensions->hasAppid()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
           "The 'appid' extension is only valid when requesting an assertion "
@@ -1805,9 +1893,8 @@ AuthenticationCredentialsContainer::create(
           "legacy FIDO U2F API."));
       return promise;
     }
-    if (options->publicKey()->extensions()->hasAppidExclude()) {
-      const auto& appid_exclude =
-          options->publicKey()->extensions()->appidExclude();
+    if (extensions->hasAppidExclude()) {
+      const auto& appid_exclude = extensions->appidExclude();
       if (!appid_exclude.empty()) {
         KURL appid_exclude_url(appid_exclude);
         if (!appid_exclude_url.IsValid()) {
@@ -1819,15 +1906,15 @@ AuthenticationCredentialsContainer::create(
         }
       }
     }
-    if (options->publicKey()->extensions()->hasLargeBlob()) {
-      if (options->publicKey()->extensions()->largeBlob()->hasRead()) {
+    if (extensions->hasLargeBlob()) {
+      if (extensions->largeBlob()->hasRead()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotSupportedError,
             "The 'largeBlob' extension's 'read' parameter is only valid when "
             "requesting an assertion"));
         return promise;
       }
-      if (options->publicKey()->extensions()->largeBlob()->hasWrite()) {
+      if (extensions->largeBlob()->hasWrite()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotSupportedError,
             "The 'largeBlob' extension's 'write' parameter is only valid "
@@ -1835,19 +1922,21 @@ AuthenticationCredentialsContainer::create(
         return promise;
       }
     }
-    if (options->publicKey()->extensions()->hasPayment() &&
+    if (extensions->hasPayment() &&
         !IsPaymentExtensionValid(options, resolver)) {
       return promise;
     }
-    if (options->publicKey()->extensions()->hasPrf()) {
-      const char* error = validateCreatePublicKeyCredentialPRFExtension(
-          *options->publicKey()->extensions()->prf());
+    if (extensions->hasPrf()) {
+      const char* error =
+          validateCreatePublicKeyCredentialPRFExtension(*extensions->prf());
       if (error != nullptr) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotSupportedError, error));
         return promise;
       }
     }
+
+    RecordCreateExtensionsUseCounters(context, *extensions);
   }
 
   // In the case of create() in a cross-origin iframe, the spec requires that
@@ -2138,13 +2227,6 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
     UseCounter::Count(context,
                       WebFeature::kCredentialManagerGetPublicKeyCredential);
 
-#if BUILDFLAG(IS_ANDROID)
-    if (options->publicKey()->hasExtensions() &&
-        options->publicKey()->extensions()->hasUvm()) {
-      UseCounter::Count(context, WebFeature::kCredentialManagerGetWithUVM);
-    }
-#endif
-
     if (options->publicKey()->hasChallenge() &&
         !IsArrayBufferOrViewBelowSizeLimit(options->publicKey()->challenge())) {
       resolver->Reject(DOMException::Create(
@@ -2163,8 +2245,9 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
     }
 
     if (options->publicKey()->hasExtensions()) {
-      if (options->publicKey()->extensions()->hasAppid()) {
-        const auto& appid = options->publicKey()->extensions()->appid();
+      const auto* extensions = options->publicKey()->extensions();
+      if (extensions->hasAppid()) {
+        const auto& appid = extensions->appid();
         if (!appid.empty()) {
           KURL appid_url(appid);
           if (!appid_url.IsValid()) {
@@ -2176,26 +2259,24 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
           }
         }
       }
-      if (options->publicKey()->extensions()->credProps()) {
+      if (extensions->credProps()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotSupportedError,
             "The 'credProps' extension is only valid when creating "
             "a credential"));
         return;
       }
-      if (options->publicKey()->extensions()->hasLargeBlob()) {
-        if (options->publicKey()->extensions()->largeBlob()->hasSupport()) {
+      if (extensions->hasLargeBlob()) {
+        if (extensions->largeBlob()->hasSupport()) {
           resolver->Reject(MakeGarbageCollected<DOMException>(
               DOMExceptionCode::kNotSupportedError,
               "The 'largeBlob' extension's 'support' parameter is only valid "
               "when creating a credential"));
           return;
         }
-        if (options->publicKey()->extensions()->largeBlob()->hasWrite()) {
+        if (extensions->largeBlob()->hasWrite()) {
           const size_t write_size =
-              DOMArrayPiece(
-                  options->publicKey()->extensions()->largeBlob()->write())
-                  .ByteLength();
+              DOMArrayPiece(extensions->largeBlob()->write()).ByteLength();
           if (write_size > kMaxLargeBlobSize) {
             resolver->Reject(MakeGarbageCollected<DOMException>(
                 DOMExceptionCode::kNotSupportedError,
@@ -2205,8 +2286,8 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
           }
         }
       }
-      if (options->publicKey()->extensions()->hasPrf()) {
-        if (options->publicKey()->extensions()->prf()->hasEvalByCredential() &&
+      if (extensions->hasPrf()) {
+        if (extensions->prf()->hasEvalByCredential() &&
             options->publicKey()->allowCredentials().empty()) {
           resolver->Reject(MakeGarbageCollected<DOMException>(
               DOMExceptionCode::kNotSupportedError,
@@ -2216,8 +2297,7 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
         }
 
         const char* error = validateGetPublicKeyCredentialPRFExtension(
-            *options->publicKey()->extensions()->prf(),
-            options->publicKey()->allowCredentials());
+            *extensions->prf(), options->publicKey()->allowCredentials());
         if (error != nullptr) {
           resolver->Reject(MakeGarbageCollected<DOMException>(
               DOMExceptionCode::kSyntaxError, error));
@@ -2228,13 +2308,15 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
         // https://github.com/w3c/webauthn/pull/1836.
       }
       if (RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(context) &&
-          options->publicKey()->extensions()->hasPayment()) {
+          extensions->hasPayment()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
             "The 'payment' extension is only valid when creating a "
             "credential"));
         return;
       }
+
+      RecordGetExtensionsUseCounters(context, *extensions);
     }
 
     if (options->publicKey()->hasUserVerification() &&
