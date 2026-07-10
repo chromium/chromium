@@ -128,12 +128,19 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
     public PreferenceFragmentCompat onCreatePreferenceHeader() {
         // Main menu, which is the first page in one column mode (i.e. window is
         // small enough), or shown at left side pane in two column mode.
+        // Note that this method (and onCreateInitialDetailFragment) is not invoked when
+        // SettingsActivity restarts, since this method is typically used to define or
+        // inflate the initial hierarchy of headers (the left pane). During restoration,
+        // the FragmentManager automatically restores the existing child fragments (the
+        // left list pane and the right detail pane) from the saved state. Rerunning this
+        // method would overwrite or duplicate the restored fragment state.
         mMainSettings = new MainSettings();
+
         return mMainSettings;
     }
 
     public MainSettings getMainSettings() {
-        assertNonNull(mMainSettings);
+        if (mMainSettings == null) mMainSettings = new MainSettings();
         return mMainSettings;
     }
 
@@ -559,13 +566,14 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
         void updateEnabledState() {
             // Trigger closePane() when
-            // - the first page was the main menu
+            // - the first page was the main menu, or main menu is not yet created
+            //   after activity restart.
             // - in one-column mode
             // - the detailed pane is open (i.e., not on the main menu)
             // - the fragment back stack is empty (i.e., with the above condition
             //   this means the subpage directly under the main menu).
             boolean enabled =
-                    mCanBeBackToMain
+                    (mCanBeBackToMain || mMainSettings == null)
                             && getSlidingPaneLayout().isSlideable()
                             && getSlidingPaneLayout().isOpen()
                             && (getChildFragmentManager().getBackStackEntryCount() == 0);
