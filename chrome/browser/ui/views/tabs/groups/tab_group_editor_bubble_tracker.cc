@@ -5,8 +5,13 @@
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/widget/widget.h"
+
+namespace {
+constexpr base::TimeDelta kIgnoreScrollDuration = base::Milliseconds(250);
+}  // namespace
 
 TabGroupEditorBubbleTracker::TabGroupEditorBubbleTracker(
     tabs::VerticalTabStripStateController* state_controller) {
@@ -43,6 +48,16 @@ void TabGroupEditorBubbleTracker::Opened(
   widget_->MakeCloseSynchronous(
       base::BindOnce(&TabGroupEditorBubbleTracker::CloseWidget,
                      weak_ptr_factory_.GetWeakPtr()));
+  // Ignore scroll events for a short duration after the bubble is opened.
+  // This prevents the bubble from closing prematurely when it is opened
+  // during group creation and the group is automatically scrolled into view,
+  // which triggers a scroll event.
+  ignore_scroll_ = true;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&TabGroupEditorBubbleTracker::StopIgnoringScroll,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kIgnoreScrollDuration);
   on_bubble_opened_callback_list_.Notify();
 }
 
@@ -85,5 +100,12 @@ void TabGroupEditorBubbleTracker::OnVerticalTabStripModeWillChange(
 }
 
 void TabGroupEditorBubbleTracker::OnContentsScrolled() {
+  if (ignore_scroll_) {
+    return;
+  }
   CloseWidget(views::Widget::ClosedReason::kUnspecified);
+}
+
+void TabGroupEditorBubbleTracker::StopIgnoringScroll() {
+  ignore_scroll_ = false;
 }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -568,6 +570,16 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
       }),
       WaitForShow(kTabGroupHeaderElementId),
       WaitForShow(kTabGroupEditorBubbleId), Do([this]() {
+        // We need to wait for the ignore-scroll timer in
+        // TabGroupEditorBubbleTracker to expire. The tracker ignores scroll
+        // events for a short duration after opening because layout/positioning
+        // transitions during the opening animation could scroll the container
+        // and cause the bubble to close prematurely.
+        base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(300));
+        run_loop.Run();
+
         views::View* tab_strip_view =
             BrowserView::GetBrowserViewForBrowser(browser())
                 ->vertical_tab_strip_region_view_for_testing()
