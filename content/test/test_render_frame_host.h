@@ -159,11 +159,11 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   void DidEnforceInsecureRequestPolicy(
       blink::mojom::InsecureRequestPolicy policy);
 
-  // Returns the number of FedCM issues of FederatedAuthRequestResult type
+  // Returns the number of FedCM issues of FederatedRequestResult type
   // `status_type` sent to DevTools. If `status_type` is std::nullopt, returns
   // the total number of FedCM issues of any type sent to DevTools.
-  int GetFederatedAuthRequestIssueCount(
-      std::optional<blink::mojom::FederatedAuthRequestResult> status_type);
+  int GetFederatedRequestIssueCount(
+      std::optional<blink::mojom::FederatedRequestResult> status_type);
 
   // Returns the number of FedCM issues of FederatedAuthUserInfoRequestResult
   // type `status_type` sent to DevTools. If `status_type` is std::nullopt,
@@ -337,7 +337,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
 
   // Keeps a count of federated authentication request issues sent to
   // ReportInspectorIssue.
-  std::unordered_map<blink::mojom::FederatedAuthRequestResult, int>
+  std::unordered_map<blink::mojom::FederatedRequestResult, int>
       federated_auth_counts_;
 
   // Keeps a count of getUserInfo() issues sent to ReportInspectorIssue.

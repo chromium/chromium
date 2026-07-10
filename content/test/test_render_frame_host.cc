@@ -302,8 +302,8 @@ int TestRenderFrameHost::GetHeavyAdIssueCount(
   }
 }
 
-int TestRenderFrameHost::GetFederatedAuthRequestIssueCount(
-    std::optional<blink::mojom::FederatedAuthRequestResult> status_type) {
+int TestRenderFrameHost::GetFederatedRequestIssueCount(
+    std::optional<blink::mojom::FederatedRequestResult> status_type) {
   if (!status_type) {
     int total = 0;
     for (const auto& [result, count] : federated_auth_counts_)

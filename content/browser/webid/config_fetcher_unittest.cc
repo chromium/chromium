@@ -73,9 +73,8 @@ TEST_F(ConfigFetcherTest, FailedToFetchWellKnown) {
                                              result) {
         EXPECT_EQ(result.size(), 1ul);
         EXPECT_TRUE(result[0].error);
-        EXPECT_EQ(
-            result[0].error->result,
-            blink::mojom::FederatedAuthRequestResult::kWellKnownHttpNotFound);
+        EXPECT_EQ(result[0].error->result,
+                  blink::mojom::FederatedRequestResult::kWellKnownHttpNotFound);
         loop.Quit();
       }));
 
@@ -171,7 +170,7 @@ TEST_F(ConfigFetcherTest, FailedToFetchConfig) {
             EXPECT_TRUE(result[0].error);
             EXPECT_EQ(
                 result[0].error->result,
-                blink::mojom::FederatedAuthRequestResult::kConfigHttpNotFound);
+                blink::mojom::FederatedRequestResult::kConfigHttpNotFound);
             loop.Quit();
           }));
 
@@ -212,9 +211,8 @@ TEST_F(ConfigFetcherTest, SucceedsToFetchConfigButInvalidResponse) {
                                              result) {
         EXPECT_EQ(result.size(), 1ul);
         EXPECT_TRUE(result[0].error);
-        EXPECT_EQ(
-            result[0].error->result,
-            blink::mojom::FederatedAuthRequestResult::kConfigInvalidResponse);
+        EXPECT_EQ(result[0].error->result,
+                  blink::mojom::FederatedRequestResult::kConfigInvalidResponse);
         loop.Quit();
       }));
 
@@ -311,9 +309,8 @@ TEST_F(ConfigFetcherTest,
           [&loop](std::vector<ConfigFetcher::FetchResult> result) {
             EXPECT_EQ(result.size(), 1ul);
             EXPECT_TRUE(result[0].error);
-            EXPECT_EQ(
-                result[0].error->result,
-                blink::mojom::FederatedAuthRequestResult::kWellKnownTooBig);
+            EXPECT_EQ(result[0].error->result,
+                      blink::mojom::FederatedRequestResult::kWellKnownTooBig);
             loop.Quit();
           }));
 
@@ -453,7 +450,7 @@ TEST_F(ConfigFetcherTest, InvalidMissingAcccountsEndpoint) {
   fetcher.ValidateAndMaybeSetError(result);
   EXPECT_TRUE(result.error);
   EXPECT_EQ(result.error->result,
-            blink::mojom::FederatedAuthRequestResult::kConfigInvalidResponse);
+            blink::mojom::FederatedRequestResult::kConfigInvalidResponse);
 }
 
 TEST_F(ConfigFetcherTest, InvalidCrossOriginAcccountsEndpoint) {
@@ -470,7 +467,7 @@ TEST_F(ConfigFetcherTest, InvalidCrossOriginAcccountsEndpoint) {
   fetcher.ValidateAndMaybeSetError(result);
   EXPECT_TRUE(result.error);
   EXPECT_EQ(result.error->result,
-            blink::mojom::FederatedAuthRequestResult::kConfigInvalidResponse);
+            blink::mojom::FederatedRequestResult::kConfigInvalidResponse);
 }
 
 TEST_F(ConfigFetcherTest, InvalidMissingTokenEndpoint) {
@@ -486,7 +483,7 @@ TEST_F(ConfigFetcherTest, InvalidMissingTokenEndpoint) {
   fetcher.ValidateAndMaybeSetError(result);
   EXPECT_TRUE(result.error);
   EXPECT_EQ(result.error->result,
-            blink::mojom::FederatedAuthRequestResult::kConfigInvalidResponse);
+            blink::mojom::FederatedRequestResult::kConfigInvalidResponse);
 }
 
 TEST_F(ConfigFetcherTest, InvalidCrossOriginTokenEndpoint) {
@@ -504,7 +501,7 @@ TEST_F(ConfigFetcherTest, InvalidCrossOriginTokenEndpoint) {
 
   EXPECT_TRUE(result.error);
   EXPECT_EQ(result.error->result,
-            blink::mojom::FederatedAuthRequestResult::kConfigInvalidResponse);
+            blink::mojom::FederatedRequestResult::kConfigInvalidResponse);
 }
 
 TEST_F(ConfigFetcherTest, InvalidCrossOriginSigninUrl) {
@@ -525,7 +522,7 @@ TEST_F(ConfigFetcherTest, InvalidCrossOriginSigninUrl) {
 
   EXPECT_TRUE(result.error);
   EXPECT_EQ(result.error->result,
-            blink::mojom::FederatedAuthRequestResult::kConfigInvalidResponse);
+            blink::mojom::FederatedRequestResult::kConfigInvalidResponse);
 }
 
 TEST_F(ConfigFetcherTest, InvalidConfigUrlNotInProviders) {
@@ -548,7 +545,7 @@ TEST_F(ConfigFetcherTest, InvalidConfigUrlNotInProviders) {
 
   EXPECT_TRUE(result.error);
   EXPECT_EQ(result.error->result,
-            blink::mojom::FederatedAuthRequestResult::kConfigNotInWellKnown);
+            blink::mojom::FederatedRequestResult::kConfigNotInWellKnown);
 }
 
 TEST_F(ConfigFetcherTest, InvalidConfigUrlNotInWellKnown) {
@@ -571,7 +568,7 @@ TEST_F(ConfigFetcherTest, InvalidConfigUrlNotInWellKnown) {
 
   EXPECT_TRUE(result.error);
   EXPECT_EQ(result.error->result,
-            blink::mojom::FederatedAuthRequestResult::kConfigNotInWellKnown);
+            blink::mojom::FederatedRequestResult::kConfigNotInWellKnown);
 }
 
 TEST_F(ConfigFetcherTest, InvalidWellKnownTooManyProviders) {
@@ -595,7 +592,7 @@ TEST_F(ConfigFetcherTest, InvalidWellKnownTooManyProviders) {
 
   EXPECT_TRUE(result.error);
   EXPECT_EQ(result.error->result,
-            blink::mojom::FederatedAuthRequestResult::kWellKnownTooBig);
+            blink::mojom::FederatedRequestResult::kWellKnownTooBig);
 }
 
 TEST_F(ConfigFetcherTest, SkippingTheChecksWithTheWellKnownFlag) {
@@ -707,7 +704,7 @@ TEST_F(ConfigFetcherTest,
   fetcher.ValidateAndMaybeSetError(result);
 
   EXPECT_TRUE(result.error);
-  // EXPECT_EQ(result.error->result, blink::mojom::FederatedAuthRequestResult::
+  // EXPECT_EQ(result.error->result, blink::mojom::FederatedRequestResult::
   //                                     kConfigInvalidResponse);
 }
 
@@ -822,13 +819,13 @@ TEST_F(ConfigFetcherTest, InvalidEmptyConfig) {
 
   EXPECT_TRUE(result.error);
   EXPECT_EQ(result.error->result,
-            blink::mojom::FederatedAuthRequestResult::kConfigInvalidResponse);
+            blink::mojom::FederatedRequestResult::kConfigInvalidResponse);
 }
 
 TEST_F(ConfigFetcherTest, InvalidNetworkError) {
   ConfigFetcher::FetchResult result;
   result.error = ConfigFetcher::FetchError(
-      blink::mojom::FederatedAuthRequestResult::kConfigHttpNotFound,
+      blink::mojom::FederatedRequestResult::kConfigHttpNotFound,
       RequestIdTokenStatus::kConfigHttpNotFound,
       /*additional_console_error_message=*/std::nullopt);
 
@@ -840,7 +837,7 @@ TEST_F(ConfigFetcherTest, InvalidNetworkError) {
 
   EXPECT_TRUE(result.error);
   EXPECT_EQ(result.error->result,
-            blink::mojom::FederatedAuthRequestResult::kConfigHttpNotFound);
+            blink::mojom::FederatedRequestResult::kConfigHttpNotFound);
 }
 
 TEST_F(ConfigFetcherTest, RegisteredIdpSkipsWellKnownCheck) {

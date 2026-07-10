@@ -17,7 +17,7 @@
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
-using ::blink::mojom::FederatedAuthRequestResult;
+using ::blink::mojom::FederatedRequestResult;
 
 namespace content::webid {
 
@@ -131,7 +131,7 @@ void AccountsFetcher::FetchEndpointsForIdps(
 }
 
 void AccountsFetcher::SendAllFailedTokenRequestMetrics(
-    blink::mojom::FederatedAuthRequestResult result,
+    blink::mojom::FederatedRequestResult result,
     bool did_show_ui) {
   DCHECK(IsMetricsEndpointEnabled());
   for (const auto& metrics_endpoint_kv : metrics_endpoints_) {
@@ -237,7 +237,7 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
 
       if (IsWellKnownEndpointValidationEnabled()) {
         result.idp_info = std::move(idp_info);
-        result.error = FederatedAuthRequestResult::kWellKnownInvalidResponse;
+        result.error = FederatedRequestResult::kWellKnownInvalidResponse;
         result.token_status = TokenStatus::kWellKnownInvalidResponse;
         result.should_delay_callback = false;
         AddResult(std::move(result));
@@ -251,7 +251,7 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
                 fetch_result.metadata->types,
                 get_info_it->second.provider->config->type)) {
           result.idp_info = std::move(idp_info);
-          result.error = FederatedAuthRequestResult::kTypeNotMatching;
+          result.error = FederatedRequestResult::kTypeNotMatching;
           result.token_status = TokenStatus::kConfigNotMatchingType;
           result.should_delay_callback = false;
           AddResult(std::move(result));
@@ -266,7 +266,7 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
       if (!IsDelegationEnabled() ||
           !std::ranges::contains(fetch_result.metadata->formats, kVcSdJwt)) {
         result.idp_info = std::move(idp_info);
-        result.error = FederatedAuthRequestResult::kConfigInvalidResponse;
+        result.error = FederatedRequestResult::kConfigInvalidResponse;
         result.token_status = TokenStatus::kConfigInvalidResponse;
         result.should_delay_callback = false;
         AddResult(std::move(result));
@@ -297,7 +297,7 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
       idp_info->endpoints.metrics = GURL();
 
       result.idp_info = std::move(idp_info);
-      result.error = FederatedAuthRequestResult::kNotSignedInWithIdp;
+      result.error = FederatedRequestResult::kNotSignedInWithIdp;
       result.token_status = TokenStatus::kNotSignedInWithIdp;
       result.should_delay_callback = true;
       AddResult(std::move(result));
@@ -336,7 +336,7 @@ void AccountsFetcher::OnAccountsResponseReceived(
       permission_delegate_);
 
   if (status.parse_status != ParseStatus::kSuccess) {
-    std::pair<FederatedAuthRequestResult, TokenStatus> resultAndTokenStatus =
+    std::pair<FederatedRequestResult, TokenStatus> resultAndTokenStatus =
         AccountParseStatusToRequestResultAndTokenStatus(status.parse_status);
     HandleAccountsFetchFailure(
         std::move(idp_info), old_idp_signin_status, resultAndTokenStatus.first,
@@ -372,7 +372,7 @@ void AccountsFetcher::OnAccountsResponseReceived(
     // as if we had received an empty accounts list, i.e.
     // ParseStatus::kEmptyListError.
     HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
-                               FederatedAuthRequestResult::kAccountsListEmpty,
+                               FederatedRequestResult::kAccountsListEmpty,
                                TokenStatus::kAccountsListEmpty, status,
                                std::move(filtered_accounts),
                                accounts_fetched_time);
@@ -621,7 +621,7 @@ void AccountsFetcher::ComputeLoginStates(
 void AccountsFetcher::HandleAccountsFetchFailure(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     std::optional<bool> old_idp_signin_status,
-    blink::mojom::FederatedAuthRequestResult result,
+    blink::mojom::FederatedRequestResult result,
     std::optional<TokenStatus> token_status,
     const FetchStatus& status,
     std::vector<IdentityRequestAccountPtr> filtered_accounts,
@@ -657,7 +657,7 @@ void AccountsFetcher::HandleAccountsFetchFailure(
     Result res;
     res.idp_config_url = idp_info->provider->config->config_url;
     res.idp_info = std::move(idp_info);
-    res.error = FederatedAuthRequestResult::kRpPageNotVisible;
+    res.error = FederatedRequestResult::kRpPageNotVisible;
     res.token_status = TokenStatus::kRpPageNotVisible;
     res.should_delay_callback = true;
     res.filtered_accounts = std::move(filtered_accounts);
@@ -674,7 +674,7 @@ void AccountsFetcher::HandleAccountsFetchFailure(
     Result res;
     res.idp_config_url = idp_info->provider->config->config_url;
     res.idp_info = std::move(idp_info);
-    res.error = FederatedAuthRequestResult::kSilentMediationFailure;
+    res.error = FederatedRequestResult::kSilentMediationFailure;
     res.token_status = TokenStatus::kSilentMediationFailure;
     res.should_delay_callback = true;
     res.filtered_accounts = std::move(filtered_accounts);
@@ -714,7 +714,7 @@ void AccountsFetcher::OnIdpMismatch(
 
 void AccountsFetcher::SendFailedTokenRequestMetrics(
     const GURL& metrics_endpoint,
-    blink::mojom::FederatedAuthRequestResult result,
+    blink::mojom::FederatedRequestResult result,
     bool did_show_ui) {
   DCHECK(IsMetricsEndpointEnabled());
   if (!metrics_endpoint.is_valid()) {
@@ -723,7 +723,7 @@ void AccountsFetcher::SendFailedTokenRequestMetrics(
 
   network_manager_->SendFailedTokenRequestMetrics(
       metrics_endpoint, did_show_ui,
-      FederatedAuthRequestResultToMetricsEndpointErrorCode(result));
+      FederatedRequestResultToMetricsEndpointErrorCode(result));
 }
 
 void AccountsFetcher::AddResult(Result&& result) {

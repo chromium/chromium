@@ -266,132 +266,131 @@ BuildAttributionReportingIssue(
 }
 
 protocol::Audits::FederatedAuthRequestIssueReason
-FederatedAuthRequestResultToProtocol(
-    blink::mojom::FederatedAuthRequestResult result) {
-  using blink::mojom::FederatedAuthRequestResult;
+FederatedRequestResultToProtocol(blink::mojom::FederatedRequestResult result) {
+  using blink::mojom::FederatedRequestResult;
   namespace FederatedAuthRequestIssueReasonEnum =
       protocol::Audits::FederatedAuthRequestIssueReasonEnum;
   switch (result) {
-    case FederatedAuthRequestResult::kShouldEmbargo: {
+    case FederatedRequestResult::kShouldEmbargo: {
       return FederatedAuthRequestIssueReasonEnum::ShouldEmbargo;
     }
-    case FederatedAuthRequestResult::kDisabledInSettings: {
+    case FederatedRequestResult::kDisabledInSettings: {
       return FederatedAuthRequestIssueReasonEnum::DisabledInSettings;
     }
-    case FederatedAuthRequestResult::kDisabledInFlags: {
+    case FederatedRequestResult::kDisabledInFlags: {
       return FederatedAuthRequestIssueReasonEnum::DisabledInFlags;
     }
-    case FederatedAuthRequestResult::kIdpNotPotentiallyTrustworthy: {
+    case FederatedRequestResult::kIdpNotPotentiallyTrustworthy: {
       return FederatedAuthRequestIssueReasonEnum::IdpNotPotentiallyTrustworthy;
     }
-    case FederatedAuthRequestResult::kTooManyRequests: {
+    case FederatedRequestResult::kTooManyRequests: {
       return FederatedAuthRequestIssueReasonEnum::TooManyRequests;
     }
-    case FederatedAuthRequestResult::kWellKnownHttpNotFound: {
+    case FederatedRequestResult::kWellKnownHttpNotFound: {
       return FederatedAuthRequestIssueReasonEnum::WellKnownHttpNotFound;
     }
-    case FederatedAuthRequestResult::kWellKnownNoResponse: {
+    case FederatedRequestResult::kWellKnownNoResponse: {
       return FederatedAuthRequestIssueReasonEnum::WellKnownNoResponse;
     }
-    case FederatedAuthRequestResult::kWellKnownInvalidResponse: {
+    case FederatedRequestResult::kWellKnownInvalidResponse: {
       return FederatedAuthRequestIssueReasonEnum::WellKnownInvalidResponse;
     }
-    case FederatedAuthRequestResult::kWellKnownListEmpty: {
+    case FederatedRequestResult::kWellKnownListEmpty: {
       return FederatedAuthRequestIssueReasonEnum::WellKnownListEmpty;
     }
-    case FederatedAuthRequestResult::kWellKnownInvalidContentType: {
+    case FederatedRequestResult::kWellKnownInvalidContentType: {
       return FederatedAuthRequestIssueReasonEnum::WellKnownInvalidContentType;
     }
-    case FederatedAuthRequestResult::kConfigNotInWellKnown: {
+    case FederatedRequestResult::kConfigNotInWellKnown: {
       return FederatedAuthRequestIssueReasonEnum::ConfigNotInWellKnown;
     }
-    case FederatedAuthRequestResult::kWellKnownTooBig: {
+    case FederatedRequestResult::kWellKnownTooBig: {
       return FederatedAuthRequestIssueReasonEnum::WellKnownTooBig;
     }
-    case FederatedAuthRequestResult::kConfigHttpNotFound: {
+    case FederatedRequestResult::kConfigHttpNotFound: {
       return FederatedAuthRequestIssueReasonEnum::ConfigHttpNotFound;
     }
-    case FederatedAuthRequestResult::kConfigNoResponse: {
+    case FederatedRequestResult::kConfigNoResponse: {
       return FederatedAuthRequestIssueReasonEnum::ConfigNoResponse;
     }
-    case FederatedAuthRequestResult::kConfigInvalidResponse: {
+    case FederatedRequestResult::kConfigInvalidResponse: {
       return FederatedAuthRequestIssueReasonEnum::ConfigInvalidResponse;
     }
-    case FederatedAuthRequestResult::kConfigInvalidContentType: {
+    case FederatedRequestResult::kConfigInvalidContentType: {
       return FederatedAuthRequestIssueReasonEnum::ConfigInvalidContentType;
     }
-    case FederatedAuthRequestResult::kAccountsHttpNotFound: {
+    case FederatedRequestResult::kAccountsHttpNotFound: {
       return FederatedAuthRequestIssueReasonEnum::AccountsHttpNotFound;
     }
-    case FederatedAuthRequestResult::kAccountsNoResponse: {
+    case FederatedRequestResult::kAccountsNoResponse: {
       return FederatedAuthRequestIssueReasonEnum::AccountsNoResponse;
     }
-    case FederatedAuthRequestResult::kAccountsInvalidResponse: {
+    case FederatedRequestResult::kAccountsInvalidResponse: {
       return FederatedAuthRequestIssueReasonEnum::AccountsInvalidResponse;
     }
-    case FederatedAuthRequestResult::kAccountsListEmpty: {
+    case FederatedRequestResult::kAccountsListEmpty: {
       return FederatedAuthRequestIssueReasonEnum::AccountsListEmpty;
     }
-    case FederatedAuthRequestResult::kAccountsInvalidContentType: {
+    case FederatedRequestResult::kAccountsInvalidContentType: {
       return FederatedAuthRequestIssueReasonEnum::AccountsInvalidContentType;
     }
-    case FederatedAuthRequestResult::kIdTokenHttpNotFound: {
+    case FederatedRequestResult::kIdTokenHttpNotFound: {
       return FederatedAuthRequestIssueReasonEnum::IdTokenHttpNotFound;
     }
-    case FederatedAuthRequestResult::kIdTokenNoResponse: {
+    case FederatedRequestResult::kIdTokenNoResponse: {
       return FederatedAuthRequestIssueReasonEnum::IdTokenNoResponse;
     }
-    case FederatedAuthRequestResult::kIdTokenInvalidResponse: {
+    case FederatedRequestResult::kIdTokenInvalidResponse: {
       return FederatedAuthRequestIssueReasonEnum::IdTokenInvalidResponse;
     }
-    case FederatedAuthRequestResult::kIdTokenIdpErrorResponse: {
+    case FederatedRequestResult::kIdTokenIdpErrorResponse: {
       return FederatedAuthRequestIssueReasonEnum::IdTokenIdpErrorResponse;
     }
-    case FederatedAuthRequestResult::kIdTokenCrossSiteIdpErrorResponse: {
+    case FederatedRequestResult::kIdTokenCrossSiteIdpErrorResponse: {
       return FederatedAuthRequestIssueReasonEnum::
           IdTokenCrossSiteIdpErrorResponse;
     }
-    case FederatedAuthRequestResult::kIdTokenInvalidContentType: {
+    case FederatedRequestResult::kIdTokenInvalidContentType: {
       return FederatedAuthRequestIssueReasonEnum::IdTokenInvalidContentType;
     }
-    case FederatedAuthRequestResult::kCanceled: {
+    case FederatedRequestResult::kCanceled: {
       return FederatedAuthRequestIssueReasonEnum::Canceled;
     }
-    case FederatedAuthRequestResult::kRpPageNotVisible:
+    case FederatedRequestResult::kRpPageNotVisible:
       return FederatedAuthRequestIssueReasonEnum::RpPageNotVisible;
-    case FederatedAuthRequestResult::kError: {
+    case FederatedRequestResult::kError: {
       return FederatedAuthRequestIssueReasonEnum::ErrorIdToken;
     }
-    case FederatedAuthRequestResult::kSilentMediationFailure: {
+    case FederatedRequestResult::kSilentMediationFailure: {
       return FederatedAuthRequestIssueReasonEnum::SilentMediationFailure;
     }
-    case FederatedAuthRequestResult::kNotSignedInWithIdp: {
+    case FederatedRequestResult::kNotSignedInWithIdp: {
       return FederatedAuthRequestIssueReasonEnum::NotSignedInWithIdp;
     }
-    case FederatedAuthRequestResult::kMissingTransientUserActivation: {
+    case FederatedRequestResult::kMissingTransientUserActivation: {
       return FederatedAuthRequestIssueReasonEnum::
           MissingTransientUserActivation;
     }
-    case FederatedAuthRequestResult::kReplacedByActiveMode: {
+    case FederatedRequestResult::kReplacedByActiveMode: {
       return FederatedAuthRequestIssueReasonEnum::ReplacedByActiveMode;
     }
-    case FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque: {
+    case FederatedRequestResult::kRelyingPartyOriginIsOpaque: {
       return FederatedAuthRequestIssueReasonEnum::RelyingPartyOriginIsOpaque;
     }
-    case FederatedAuthRequestResult::kTypeNotMatching: {
+    case FederatedRequestResult::kTypeNotMatching: {
       return FederatedAuthRequestIssueReasonEnum::TypeNotMatching;
     }
-    case FederatedAuthRequestResult::kUiDismissedNoEmbargo: {
+    case FederatedRequestResult::kUiDismissedNoEmbargo: {
       return FederatedAuthRequestIssueReasonEnum::UiDismissedNoEmbargo;
     }
-    case FederatedAuthRequestResult::kCorsError: {
+    case FederatedRequestResult::kCorsError: {
       return FederatedAuthRequestIssueReasonEnum::CorsError;
     }
-    case FederatedAuthRequestResult::kSuppressedBySegmentationPlatform: {
+    case FederatedRequestResult::kSuppressedBySegmentationPlatform: {
       return FederatedAuthRequestIssueReasonEnum::
           SuppressedBySegmentationPlatform;
     }
-    case FederatedAuthRequestResult::kSuccess: {
+    case FederatedRequestResult::kSuccess: {
       NOTREACHED();
     }
   }
@@ -403,7 +402,7 @@ BuildFederatedAuthRequestIssue(
   auto federated_auth_request_details =
       protocol::Audits::FederatedAuthRequestIssueDetails::Create()
           .SetFederatedAuthRequestIssueReason(
-              FederatedAuthRequestResultToProtocol(issue_details->status))
+              FederatedRequestResultToProtocol(issue_details->status))
           .Build();
 
   auto protocol_issue_details =

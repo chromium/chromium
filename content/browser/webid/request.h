@@ -197,7 +197,7 @@ class CONTENT_EXPORT Request
   }
 
   UseOtherAccountResult ComputeUseOtherAccountResult(
-      blink::mojom::FederatedAuthRequestResult result,
+      blink::mojom::FederatedRequestResult result,
       const std::optional<GURL>& selected_idp_config_url);
 
   void FilterAccounts(
@@ -218,7 +218,7 @@ class CONTENT_EXPORT Request
       std::vector<AccountsFetcher::Result> results);
 
   void OnFetchDataForIdpFailed(std::unique_ptr<IdentityProviderInfo> idp_info,
-                               blink::mojom::FederatedAuthRequestResult result,
+                               blink::mojom::FederatedRequestResult result,
                                std::optional<RequestIdTokenStatus> token_status,
                                bool should_delay_callback);
 
@@ -253,13 +253,13 @@ class CONTENT_EXPORT Request
   void OnIdpMismatch(std::unique_ptr<IdentityProviderInfo> idp_info);
 
   void CompleteRequestWithError(
-      blink::mojom::FederatedAuthRequestResult result,
+      blink::mojom::FederatedRequestResult result,
       std::optional<RequestIdTokenStatus> token_status,
       bool should_delay_callback);
 
   // Completes request. Displays a dialog if there is an error and the error is
   // during a fetch triggered by an IdP sign-in status change.
-  void CompleteRequest(blink::mojom::FederatedAuthRequestResult result,
+  void CompleteRequest(blink::mojom::FederatedRequestResult result,
                        std::optional<RequestIdTokenStatus> token_status,
                        std::optional<IdentityCredentialTokenError> token_error,
                        const std::optional<GURL>& selected_idp_config_url,
@@ -372,12 +372,12 @@ class CONTENT_EXPORT Request
 
   // Records metrics and console errors.
   void RecordMetricsAndConsoleError(
-      blink::mojom::FederatedAuthRequestResult result,
+      blink::mojom::FederatedRequestResult result,
       std::optional<RequestIdTokenStatus> token_status,
       const std::optional<GURL>& selected_idp_config_url);
 
   void CompleteRequestInternal(
-      blink::mojom::FederatedAuthRequestResult result,
+      blink::mojom::FederatedRequestResult result,
       std::optional<IdentityCredentialTokenError> token_error,
       const std::optional<GURL>& selected_idp_config_url,
       std::optional<base::Value> token_data,
@@ -385,12 +385,12 @@ class CONTENT_EXPORT Request
 
   // Creates an inspector issue related to a federated authentication request to
   // the Issues panel in DevTools.
-  void AddDevToolsIssue(blink::mojom::FederatedAuthRequestResult result);
+  void AddDevToolsIssue(blink::mojom::FederatedRequestResult result);
 
   // Adds a console error message related to a federated authentication request
   // issue. The Issues panel is preferred, but for now we also surface console
   // error messages since it is much simpler to add.
-  void AddConsoleErrorMessage(blink::mojom::FederatedAuthRequestResult result);
+  void AddConsoleErrorMessage(blink::mojom::FederatedRequestResult result);
 
   // Returns true and the `IdentityProviderData` + `IdentityRequestAccount` for
   // the only returning account. Returns false if there are multiple returning

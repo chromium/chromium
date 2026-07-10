@@ -22,7 +22,7 @@ using FederatedApiPermissionStatus =
     FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
 using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 using blink::mojom::EmailVerificationRequestResult;
-using blink::mojom::FederatedAuthRequestResult;
+using blink::mojom::FederatedRequestResult;
 using blink::mojom::RequestTokenStatus;
 
 std::vector<std::string> DisclosureFieldsToStringList(
@@ -50,143 +50,143 @@ std::vector<std::string> DisclosureFieldsToStringList(
   return list;
 }
 
-RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
-    FederatedAuthRequestResult result) {
+RequestTokenStatus FederatedRequestResultToRequestTokenStatus(
+    FederatedRequestResult result) {
   // Avoids exposing to renderer detailed error messages which may leak cross
   // site information to the API call site.
   switch (result) {
-    case FederatedAuthRequestResult::kSuccess: {
+    case FederatedRequestResult::kSuccess: {
       return RequestTokenStatus::kSuccess;
     }
-    case FederatedAuthRequestResult::kTooManyRequests: {
+    case FederatedRequestResult::kTooManyRequests: {
       return RequestTokenStatus::kErrorTooManyRequests;
     }
-    case FederatedAuthRequestResult::kCanceled: {
+    case FederatedRequestResult::kCanceled: {
       return RequestTokenStatus::kErrorCanceled;
     }
-    case FederatedAuthRequestResult::kShouldEmbargo:
-    case FederatedAuthRequestResult::kIdpNotPotentiallyTrustworthy:
-    case FederatedAuthRequestResult::kDisabledInSettings:
-    case FederatedAuthRequestResult::kDisabledInFlags:
-    case FederatedAuthRequestResult::kWellKnownHttpNotFound:
-    case FederatedAuthRequestResult::kWellKnownNoResponse:
-    case FederatedAuthRequestResult::kWellKnownInvalidResponse:
-    case FederatedAuthRequestResult::kWellKnownListEmpty:
-    case FederatedAuthRequestResult::kWellKnownInvalidContentType:
-    case FederatedAuthRequestResult::kConfigNotInWellKnown:
-    case FederatedAuthRequestResult::kWellKnownTooBig:
-    case FederatedAuthRequestResult::kConfigHttpNotFound:
-    case FederatedAuthRequestResult::kConfigNoResponse:
-    case FederatedAuthRequestResult::kConfigInvalidResponse:
-    case FederatedAuthRequestResult::kConfigInvalidContentType:
-    case FederatedAuthRequestResult::kAccountsHttpNotFound:
-    case FederatedAuthRequestResult::kAccountsNoResponse:
-    case FederatedAuthRequestResult::kAccountsInvalidResponse:
-    case FederatedAuthRequestResult::kAccountsListEmpty:
-    case FederatedAuthRequestResult::kAccountsInvalidContentType:
-    case FederatedAuthRequestResult::kIdTokenHttpNotFound:
-    case FederatedAuthRequestResult::kIdTokenNoResponse:
-    case FederatedAuthRequestResult::kIdTokenInvalidResponse:
-    case FederatedAuthRequestResult::kIdTokenIdpErrorResponse:
-    case FederatedAuthRequestResult::kIdTokenCrossSiteIdpErrorResponse:
-    case FederatedAuthRequestResult::kIdTokenInvalidContentType:
-    case FederatedAuthRequestResult::kRpPageNotVisible:
-    case FederatedAuthRequestResult::kSilentMediationFailure:
-    case FederatedAuthRequestResult::kNotSignedInWithIdp:
-    case FederatedAuthRequestResult::kMissingTransientUserActivation:
-    case FederatedAuthRequestResult::kReplacedByActiveMode:
-    case FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque:
-    case FederatedAuthRequestResult::kTypeNotMatching:
-    case FederatedAuthRequestResult::kUiDismissedNoEmbargo:
-    case FederatedAuthRequestResult::kCorsError:
-    case FederatedAuthRequestResult::kSuppressedBySegmentationPlatform:
-    case FederatedAuthRequestResult::kError: {
+    case FederatedRequestResult::kShouldEmbargo:
+    case FederatedRequestResult::kIdpNotPotentiallyTrustworthy:
+    case FederatedRequestResult::kDisabledInSettings:
+    case FederatedRequestResult::kDisabledInFlags:
+    case FederatedRequestResult::kWellKnownHttpNotFound:
+    case FederatedRequestResult::kWellKnownNoResponse:
+    case FederatedRequestResult::kWellKnownInvalidResponse:
+    case FederatedRequestResult::kWellKnownListEmpty:
+    case FederatedRequestResult::kWellKnownInvalidContentType:
+    case FederatedRequestResult::kConfigNotInWellKnown:
+    case FederatedRequestResult::kWellKnownTooBig:
+    case FederatedRequestResult::kConfigHttpNotFound:
+    case FederatedRequestResult::kConfigNoResponse:
+    case FederatedRequestResult::kConfigInvalidResponse:
+    case FederatedRequestResult::kConfigInvalidContentType:
+    case FederatedRequestResult::kAccountsHttpNotFound:
+    case FederatedRequestResult::kAccountsNoResponse:
+    case FederatedRequestResult::kAccountsInvalidResponse:
+    case FederatedRequestResult::kAccountsListEmpty:
+    case FederatedRequestResult::kAccountsInvalidContentType:
+    case FederatedRequestResult::kIdTokenHttpNotFound:
+    case FederatedRequestResult::kIdTokenNoResponse:
+    case FederatedRequestResult::kIdTokenInvalidResponse:
+    case FederatedRequestResult::kIdTokenIdpErrorResponse:
+    case FederatedRequestResult::kIdTokenCrossSiteIdpErrorResponse:
+    case FederatedRequestResult::kIdTokenInvalidContentType:
+    case FederatedRequestResult::kRpPageNotVisible:
+    case FederatedRequestResult::kSilentMediationFailure:
+    case FederatedRequestResult::kNotSignedInWithIdp:
+    case FederatedRequestResult::kMissingTransientUserActivation:
+    case FederatedRequestResult::kReplacedByActiveMode:
+    case FederatedRequestResult::kRelyingPartyOriginIsOpaque:
+    case FederatedRequestResult::kTypeNotMatching:
+    case FederatedRequestResult::kUiDismissedNoEmbargo:
+    case FederatedRequestResult::kCorsError:
+    case FederatedRequestResult::kSuppressedBySegmentationPlatform:
+    case FederatedRequestResult::kError: {
       return RequestTokenStatus::kError;
     }
   }
 }
 
-MetricsEndpointErrorCode FederatedAuthRequestResultToMetricsEndpointErrorCode(
-    blink::mojom::FederatedAuthRequestResult result) {
+MetricsEndpointErrorCode FederatedRequestResultToMetricsEndpointErrorCode(
+    blink::mojom::FederatedRequestResult result) {
   switch (result) {
-    case FederatedAuthRequestResult::kSuccess: {
+    case FederatedRequestResult::kSuccess: {
       return MetricsEndpointErrorCode::kNone;
     }
-    case FederatedAuthRequestResult::kTooManyRequests:
-    case FederatedAuthRequestResult::kMissingTransientUserActivation:
-    case FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque:
-    case FederatedAuthRequestResult::kCanceled: {
+    case FederatedRequestResult::kTooManyRequests:
+    case FederatedRequestResult::kMissingTransientUserActivation:
+    case FederatedRequestResult::kRelyingPartyOriginIsOpaque:
+    case FederatedRequestResult::kCanceled: {
       return MetricsEndpointErrorCode::kRpFailure;
     }
-    case FederatedAuthRequestResult::kAccountsInvalidResponse:
-    case FederatedAuthRequestResult::kAccountsListEmpty:
-    case FederatedAuthRequestResult::kAccountsInvalidContentType: {
+    case FederatedRequestResult::kAccountsInvalidResponse:
+    case FederatedRequestResult::kAccountsListEmpty:
+    case FederatedRequestResult::kAccountsInvalidContentType: {
       return MetricsEndpointErrorCode::kAccountsEndpointInvalidResponse;
     }
-    case FederatedAuthRequestResult::kIdTokenInvalidResponse:
-    case FederatedAuthRequestResult::kIdTokenIdpErrorResponse:
-    case FederatedAuthRequestResult::kIdTokenCrossSiteIdpErrorResponse:
-    case FederatedAuthRequestResult::kIdTokenInvalidContentType:
-    case FederatedAuthRequestResult::kCorsError: {
+    case FederatedRequestResult::kIdTokenInvalidResponse:
+    case FederatedRequestResult::kIdTokenIdpErrorResponse:
+    case FederatedRequestResult::kIdTokenCrossSiteIdpErrorResponse:
+    case FederatedRequestResult::kIdTokenInvalidContentType:
+    case FederatedRequestResult::kCorsError: {
       return MetricsEndpointErrorCode::kTokenEndpointInvalidResponse;
     }
-    case FederatedAuthRequestResult::kShouldEmbargo:
-    case FederatedAuthRequestResult::kUiDismissedNoEmbargo:
-    case FederatedAuthRequestResult::kDisabledInFlags:
-    case FederatedAuthRequestResult::kDisabledInSettings:
-    case FederatedAuthRequestResult::kRpPageNotVisible:
-    case FederatedAuthRequestResult::kReplacedByActiveMode:
-    case FederatedAuthRequestResult::kNotSignedInWithIdp: {
+    case FederatedRequestResult::kShouldEmbargo:
+    case FederatedRequestResult::kUiDismissedNoEmbargo:
+    case FederatedRequestResult::kDisabledInFlags:
+    case FederatedRequestResult::kDisabledInSettings:
+    case FederatedRequestResult::kRpPageNotVisible:
+    case FederatedRequestResult::kReplacedByActiveMode:
+    case FederatedRequestResult::kNotSignedInWithIdp: {
       return MetricsEndpointErrorCode::kUserFailure;
     }
-    case FederatedAuthRequestResult::kWellKnownHttpNotFound:
-    case FederatedAuthRequestResult::kWellKnownNoResponse:
-    case FederatedAuthRequestResult::kConfigHttpNotFound:
-    case FederatedAuthRequestResult::kConfigNoResponse:
-    case FederatedAuthRequestResult::kAccountsHttpNotFound:
-    case FederatedAuthRequestResult::kAccountsNoResponse:
-    case FederatedAuthRequestResult::kIdTokenHttpNotFound:
-    case FederatedAuthRequestResult::kIdTokenNoResponse: {
+    case FederatedRequestResult::kWellKnownHttpNotFound:
+    case FederatedRequestResult::kWellKnownNoResponse:
+    case FederatedRequestResult::kConfigHttpNotFound:
+    case FederatedRequestResult::kConfigNoResponse:
+    case FederatedRequestResult::kAccountsHttpNotFound:
+    case FederatedRequestResult::kAccountsNoResponse:
+    case FederatedRequestResult::kIdTokenHttpNotFound:
+    case FederatedRequestResult::kIdTokenNoResponse: {
       return MetricsEndpointErrorCode::kIdpServerUnavailable;
     }
-    case FederatedAuthRequestResult::kConfigNotInWellKnown:
-    case FederatedAuthRequestResult::kWellKnownTooBig: {
+    case FederatedRequestResult::kConfigNotInWellKnown:
+    case FederatedRequestResult::kWellKnownTooBig: {
       return MetricsEndpointErrorCode::kManifestError;
     }
-    case FederatedAuthRequestResult::kWellKnownListEmpty:
-    case FederatedAuthRequestResult::kWellKnownInvalidResponse:
-    case FederatedAuthRequestResult::kConfigInvalidResponse:
-    case FederatedAuthRequestResult::kWellKnownInvalidContentType:
-    case FederatedAuthRequestResult::kConfigInvalidContentType: {
+    case FederatedRequestResult::kWellKnownListEmpty:
+    case FederatedRequestResult::kWellKnownInvalidResponse:
+    case FederatedRequestResult::kConfigInvalidResponse:
+    case FederatedRequestResult::kWellKnownInvalidContentType:
+    case FederatedRequestResult::kConfigInvalidContentType: {
       return MetricsEndpointErrorCode::kIdpServerInvalidResponse;
     }
-    case FederatedAuthRequestResult::kIdpNotPotentiallyTrustworthy:
-    case FederatedAuthRequestResult::kError:
-    case FederatedAuthRequestResult::kSilentMediationFailure:
-    case FederatedAuthRequestResult::kTypeNotMatching:
-    case FederatedAuthRequestResult::kSuppressedBySegmentationPlatform: {
+    case FederatedRequestResult::kIdpNotPotentiallyTrustworthy:
+    case FederatedRequestResult::kError:
+    case FederatedRequestResult::kSilentMediationFailure:
+    case FederatedRequestResult::kTypeNotMatching:
+    case FederatedRequestResult::kSuppressedBySegmentationPlatform: {
       return MetricsEndpointErrorCode::kOther;
     }
   }
 }
 
-std::pair<FederatedAuthRequestResult, RequestIdTokenStatus>
+std::pair<FederatedRequestResult, RequestIdTokenStatus>
 AccountParseStatusToRequestResultAndTokenStatus(ParseStatus parse_status) {
   switch (parse_status) {
     case ParseStatus::kHttpNotFoundError:
-      return {FederatedAuthRequestResult::kAccountsHttpNotFound,
+      return {FederatedRequestResult::kAccountsHttpNotFound,
               RequestIdTokenStatus::kAccountsHttpNotFound};
     case ParseStatus::kNoResponseError:
-      return {FederatedAuthRequestResult::kAccountsNoResponse,
+      return {FederatedRequestResult::kAccountsNoResponse,
               RequestIdTokenStatus::kAccountsNoResponse};
     case ParseStatus::kInvalidResponseError:
-      return {FederatedAuthRequestResult::kAccountsInvalidResponse,
+      return {FederatedRequestResult::kAccountsInvalidResponse,
               RequestIdTokenStatus::kAccountsInvalidResponse};
     case ParseStatus::kEmptyListError:
-      return {FederatedAuthRequestResult::kAccountsListEmpty,
+      return {FederatedRequestResult::kAccountsListEmpty,
               RequestIdTokenStatus::kAccountsListEmpty};
     case ParseStatus::kInvalidContentTypeError:
-      return {FederatedAuthRequestResult::kAccountsInvalidContentType,
+      return {FederatedRequestResult::kAccountsInvalidContentType,
               RequestIdTokenStatus::kAccountsInvalidContentType};
     case ParseStatus::kSuccess:
       NOTREACHED() << "Should not be invoked on success";
@@ -214,19 +214,19 @@ LifecycleStateImplLifecycleStateImplToFedCmLifecycleStateFailureReason(
   }
 }
 
-std::pair<FederatedAuthRequestResult, RequestIdTokenStatus>
+std::pair<FederatedRequestResult, RequestIdTokenStatus>
 PermissionStatusToRequestResultAndTokenStatus(
     FederatedIdentityApiPermissionContextDelegate::PermissionStatus
         permission_status) {
   switch (permission_status) {
     case FederatedApiPermissionStatus::BLOCKED_VARIATIONS:
-      return {FederatedAuthRequestResult::kDisabledInFlags,
+      return {FederatedRequestResult::kDisabledInFlags,
               RequestIdTokenStatus::kDisabledInFlags};
     case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
-      return {FederatedAuthRequestResult::kDisabledInSettings,
+      return {FederatedRequestResult::kDisabledInSettings,
               RequestIdTokenStatus::kDisabledInSettings};
     case FederatedApiPermissionStatus::BLOCKED_EMBARGO:
-      return {FederatedAuthRequestResult::kDisabledInSettings,
+      return {FederatedRequestResult::kDisabledInSettings,
               RequestIdTokenStatus::kDisabledEmbargo};
     case FederatedApiPermissionStatus::GRANTED:
       NOTREACHED() << "Should not be invoked with GRANTED";
@@ -254,25 +254,25 @@ ErrorDialogResult DismissReasonToErrorDialogResult(
   }
 }
 
-std::pair<FederatedAuthRequestResult, RequestIdTokenStatus>
+std::pair<FederatedRequestResult, RequestIdTokenStatus>
 IdAssertionFetchStatusToRequestResultAndTokenStatus(FetchStatus status) {
   switch (status.parse_status) {
     case ParseStatus::kHttpNotFoundError:
-      return {FederatedAuthRequestResult::kIdTokenHttpNotFound,
+      return {FederatedRequestResult::kIdTokenHttpNotFound,
               RequestIdTokenStatus::kIdTokenHttpNotFound};
     case ParseStatus::kNoResponseError: {
       if (status.cors_error) {
-        return {FederatedAuthRequestResult::kCorsError,
+        return {FederatedRequestResult::kCorsError,
                 RequestIdTokenStatus::kIdTokenNoResponse};
       }
-      return {FederatedAuthRequestResult::kIdTokenNoResponse,
+      return {FederatedRequestResult::kIdTokenNoResponse,
               RequestIdTokenStatus::kIdTokenNoResponse};
     }
     case ParseStatus::kInvalidResponseError:
-      return {FederatedAuthRequestResult::kIdTokenInvalidResponse,
+      return {FederatedRequestResult::kIdTokenInvalidResponse,
               RequestIdTokenStatus::kIdTokenInvalidResponse};
     case ParseStatus::kInvalidContentTypeError:
-      return {FederatedAuthRequestResult::kIdTokenInvalidContentType,
+      return {FederatedRequestResult::kIdTokenInvalidContentType,
               RequestIdTokenStatus::kIdTokenInvalidContentType};
     case ParseStatus::kEmptyListError:
       NOTREACHED() << "EmptyListError is not an option for this fetch";
@@ -505,69 +505,67 @@ void ComputeAccountFields(
   }
 }
 
-FederatedLoginResult FederatedAuthRequestResultToFederatedLoginResult(
-    FederatedAuthRequestResult result) {
+FederatedLoginResult FederatedRequestResultToFederatedLoginResult(
+    FederatedRequestResult result) {
   FederatedLoginResult federated_login_result;
   switch (result) {
-    case blink::mojom::FederatedAuthRequestResult::kSuccess:
+    case blink::mojom::FederatedRequestResult::kSuccess:
       federated_login_result = FederatedLoginResult::kSuccess;
       break;
-    case blink::mojom::FederatedAuthRequestResult::
-        kIdpNotPotentiallyTrustworthy:
-    case blink::mojom::FederatedAuthRequestResult::kWellKnownHttpNotFound:
-    case blink::mojom::FederatedAuthRequestResult::kWellKnownNoResponse:
-    case blink::mojom::FederatedAuthRequestResult::kWellKnownInvalidResponse:
-    case blink::mojom::FederatedAuthRequestResult::kWellKnownListEmpty:
-    case blink::mojom::FederatedAuthRequestResult::kWellKnownInvalidContentType:
-    case blink::mojom::FederatedAuthRequestResult::kConfigNotInWellKnown:
-    case blink::mojom::FederatedAuthRequestResult::kWellKnownTooBig:
-    case blink::mojom::FederatedAuthRequestResult::kConfigHttpNotFound:
-    case blink::mojom::FederatedAuthRequestResult::kConfigNoResponse:
-    case blink::mojom::FederatedAuthRequestResult::kConfigInvalidResponse:
-    case blink::mojom::FederatedAuthRequestResult::kConfigInvalidContentType:
-    case blink::mojom::FederatedAuthRequestResult::kAccountsHttpNotFound:
-    case blink::mojom::FederatedAuthRequestResult::kAccountsNoResponse:
-    case blink::mojom::FederatedAuthRequestResult::kAccountsInvalidResponse:
-    case blink::mojom::FederatedAuthRequestResult::kAccountsListEmpty:
-    case blink::mojom::FederatedAuthRequestResult::kAccountsInvalidContentType:
-    case blink::mojom::FederatedAuthRequestResult::kIdTokenHttpNotFound:
-    case blink::mojom::FederatedAuthRequestResult::kIdTokenNoResponse:
-    case blink::mojom::FederatedAuthRequestResult::kIdTokenInvalidResponse:
-    case blink::mojom::FederatedAuthRequestResult::kIdTokenInvalidContentType:
-    case blink::mojom::FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque:
-    case blink::mojom::FederatedAuthRequestResult::kTypeNotMatching:
-    case blink::mojom::FederatedAuthRequestResult::kError:
-    case blink::mojom::FederatedAuthRequestResult::kCorsError:
+    case blink::mojom::FederatedRequestResult::kIdpNotPotentiallyTrustworthy:
+    case blink::mojom::FederatedRequestResult::kWellKnownHttpNotFound:
+    case blink::mojom::FederatedRequestResult::kWellKnownNoResponse:
+    case blink::mojom::FederatedRequestResult::kWellKnownInvalidResponse:
+    case blink::mojom::FederatedRequestResult::kWellKnownListEmpty:
+    case blink::mojom::FederatedRequestResult::kWellKnownInvalidContentType:
+    case blink::mojom::FederatedRequestResult::kConfigNotInWellKnown:
+    case blink::mojom::FederatedRequestResult::kWellKnownTooBig:
+    case blink::mojom::FederatedRequestResult::kConfigHttpNotFound:
+    case blink::mojom::FederatedRequestResult::kConfigNoResponse:
+    case blink::mojom::FederatedRequestResult::kConfigInvalidResponse:
+    case blink::mojom::FederatedRequestResult::kConfigInvalidContentType:
+    case blink::mojom::FederatedRequestResult::kAccountsHttpNotFound:
+    case blink::mojom::FederatedRequestResult::kAccountsNoResponse:
+    case blink::mojom::FederatedRequestResult::kAccountsInvalidResponse:
+    case blink::mojom::FederatedRequestResult::kAccountsListEmpty:
+    case blink::mojom::FederatedRequestResult::kAccountsInvalidContentType:
+    case blink::mojom::FederatedRequestResult::kIdTokenHttpNotFound:
+    case blink::mojom::FederatedRequestResult::kIdTokenNoResponse:
+    case blink::mojom::FederatedRequestResult::kIdTokenInvalidResponse:
+    case blink::mojom::FederatedRequestResult::kIdTokenInvalidContentType:
+    case blink::mojom::FederatedRequestResult::kRelyingPartyOriginIsOpaque:
+    case blink::mojom::FederatedRequestResult::kTypeNotMatching:
+    case blink::mojom::FederatedRequestResult::kError:
+    case blink::mojom::FederatedRequestResult::kCorsError:
       federated_login_result = FederatedLoginResult::kIdpNetworkError;
       break;
-    case blink::mojom::FederatedAuthRequestResult::kIdTokenIdpErrorResponse:
-    case blink::mojom::FederatedAuthRequestResult::
+    case blink::mojom::FederatedRequestResult::kIdTokenIdpErrorResponse:
+    case blink::mojom::FederatedRequestResult::
         kIdTokenCrossSiteIdpErrorResponse:
       federated_login_result = FederatedLoginResult::kIdpReturnedError;
       break;
-    case blink::mojom::FederatedAuthRequestResult::kCanceled:
+    case blink::mojom::FederatedRequestResult::kCanceled:
       federated_login_result = FederatedLoginResult::kTokenRequestAborted;
       break;
-    case blink::mojom::FederatedAuthRequestResult::kRpPageNotVisible:
+    case blink::mojom::FederatedRequestResult::kRpPageNotVisible:
       federated_login_result = FederatedLoginResult::kFrameNotActive;
       break;
-    case blink::mojom::FederatedAuthRequestResult::kSilentMediationFailure:
+    case blink::mojom::FederatedRequestResult::kSilentMediationFailure:
       federated_login_result = FederatedLoginResult::kExpectedAccountNotPresent;
       break;
-    case blink::mojom::FederatedAuthRequestResult::kNotSignedInWithIdp:
+    case blink::mojom::FederatedRequestResult::kNotSignedInWithIdp:
       federated_login_result = FederatedLoginResult::kAccountNotLoggedIn;
       break;
     // These should not happen during actor login flow, but this conversion
     // method is invoked regardless, so just return some default error.
-    case blink::mojom::FederatedAuthRequestResult::kShouldEmbargo:
-    case blink::mojom::FederatedAuthRequestResult::kUiDismissedNoEmbargo:
-    case blink::mojom::FederatedAuthRequestResult::kDisabledInSettings:
-    case blink::mojom::FederatedAuthRequestResult::kDisabledInFlags:
-    case blink::mojom::FederatedAuthRequestResult::kTooManyRequests:
-    case blink::mojom::FederatedAuthRequestResult::
-        kMissingTransientUserActivation:
-    case blink::mojom::FederatedAuthRequestResult::kReplacedByActiveMode:
-    case blink::mojom::FederatedAuthRequestResult::
+    case blink::mojom::FederatedRequestResult::kShouldEmbargo:
+    case blink::mojom::FederatedRequestResult::kUiDismissedNoEmbargo:
+    case blink::mojom::FederatedRequestResult::kDisabledInSettings:
+    case blink::mojom::FederatedRequestResult::kDisabledInFlags:
+    case blink::mojom::FederatedRequestResult::kTooManyRequests:
+    case blink::mojom::FederatedRequestResult::kMissingTransientUserActivation:
+    case blink::mojom::FederatedRequestResult::kReplacedByActiveMode:
+    case blink::mojom::FederatedRequestResult::
         kSuppressedBySegmentationPlatform:
       federated_login_result = FederatedLoginResult::kIdpNetworkError;
       break;

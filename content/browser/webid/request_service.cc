@@ -379,7 +379,7 @@ bool RequestService::ShouldCancelNewRequest(
     auto details = blink::mojom::InspectorIssueDetails::New();
     details->federated_auth_request_details =
         blink::mojom::FederatedAuthRequestIssueDetails::New(
-            blink::mojom::FederatedAuthRequestResult::kTooManyRequests);
+            blink::mojom::FederatedRequestResult::kTooManyRequests);
     render_frame_host().ReportInspectorIssue(
         blink::mojom::InspectorIssueInfo::New(
             blink::mojom::InspectorIssueCode::kFederatedAuthRequestIssue,
@@ -388,7 +388,7 @@ bool RequestService::ShouldCancelNewRequest(
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         GetConsoleErrorMessageFromResult(
-            blink::mojom::FederatedAuthRequestResult::kTooManyRequests));
+            blink::mojom::FederatedRequestResult::kTooManyRequests));
 
     new_request_metrics->RecordMultipleRequestsFromDifferentIdPs(
         new_idp_order != pending_request->idp_order());
@@ -399,7 +399,7 @@ bool RequestService::ShouldCancelNewRequest(
   new_request->fedcm_metrics_ = std::move(new_request_metrics);
 
   pending_request->CompleteRequestWithError(
-      blink::mojom::FederatedAuthRequestResult::kReplacedByActiveMode,
+      blink::mojom::FederatedRequestResult::kReplacedByActiveMode,
       TokenStatus::kReplacedByActiveMode,
       /*should_delay_callback=*/false);
 

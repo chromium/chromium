@@ -14,7 +14,7 @@
 #include "url/origin.h"
 
 namespace blink::mojom {
-enum class FederatedAuthRequestResult;
+enum class FederatedRequestResult;
 enum class IdpSigninStatus;
 }  // namespace blink::mojom
 
@@ -85,9 +85,9 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
     FederatedIdentityPermissionContextDelegate* permission_delegate);
 
 // Returns a string to be used as the console error message from a
-// FederatedAuthRequestResult.
+// FederatedRequestResult.
 CONTENT_EXPORT std::string GetConsoleErrorMessageFromResult(
-    blink::mojom::FederatedAuthRequestResult result);
+    blink::mojom::FederatedRequestResult result);
 
 // Returns a string to be used as the console error message for a disconnect()
 // call.

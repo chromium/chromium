@@ -28,7 +28,7 @@
 
 namespace content {
 
-using blink::mojom::FederatedAuthRequestResult;
+using blink::mojom::FederatedRequestResult;
 
 namespace {
 std::vector<uint8_t> Sha256(std::string_view data) {
@@ -76,7 +76,7 @@ void FederatedSdJwtHandler::ProcessSdJwt(const std::string& token) {
   auto value = sdjwt::SdJwt::Parse(token);
   if (!value) {
     federated_auth_request_impl_->CompleteRequestWithError(
-        FederatedAuthRequestResult::kError,
+        FederatedRequestResult::kError,
         /*token_status=*/std::nullopt,
         /*should_delay_callback=*/false);
     return;
@@ -85,7 +85,7 @@ void FederatedSdJwtHandler::ProcessSdJwt(const std::string& token) {
   auto sd_jwt = sdjwt::SdJwt::From(*value);
   if (!sd_jwt) {
     federated_auth_request_impl_->CompleteRequestWithError(
-        FederatedAuthRequestResult::kError,
+        FederatedRequestResult::kError,
         /*token_status=*/std::nullopt,
         /*should_delay_callback=*/false);
     return;
@@ -127,7 +127,7 @@ void FederatedSdJwtHandler::OnSdJwtParsed(const sdjwt::Jwt& jwt) {
 
   if (!selected) {
     federated_auth_request_impl_->CompleteRequestWithError(
-        FederatedAuthRequestResult::kError,
+        FederatedRequestResult::kError,
         /*token_status=*/std::nullopt,
         /*should_delay_callback=*/false);
     return;
@@ -144,7 +144,7 @@ void FederatedSdJwtHandler::OnSdJwtParsed(const sdjwt::Jwt& jwt) {
 
   if (!sdjwtkb) {
     federated_auth_request_impl_->CompleteRequestWithError(
-        FederatedAuthRequestResult::kError,
+        FederatedRequestResult::kError,
         /*token_status=*/std::nullopt,
         /*should_delay_callback=*/false);
     return;
@@ -154,7 +154,7 @@ void FederatedSdJwtHandler::OnSdJwtParsed(const sdjwt::Jwt& jwt) {
   // TODO(crbug.com/380367784): introduce and use a more specific
   // TokenStatus type for SD-JWTs.
   federated_auth_request_impl_->CompleteRequest(
-      FederatedAuthRequestResult::kSuccess,
+      FederatedRequestResult::kSuccess,
       webid::RequestIdTokenStatus::kSuccessUsingTokenInHttpResponse,
       /*token_error=*/std::nullopt, config_url_, base::Value(token),
       /*should_delay_callback=*/false);

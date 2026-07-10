@@ -29,12 +29,12 @@ class CONTENT_EXPORT ConfigFetcher {
  public:
   struct CONTENT_EXPORT FetchError {
     FetchError(const FetchError& info);
-    FetchError(blink::mojom::FederatedAuthRequestResult result,
+    FetchError(blink::mojom::FederatedRequestResult result,
                RequestIdTokenStatus token_status,
                std::optional<std::string> additional_console_error_message);
     ~FetchError();
 
-    blink::mojom::FederatedAuthRequestResult result;
+    blink::mojom::FederatedRequestResult result;
     RequestIdTokenStatus token_status;
     std::optional<std::string> additional_console_error_message;
   };
@@ -96,7 +96,7 @@ class CONTENT_EXPORT ConfigFetcher {
   // Called when fetching either the config endpoint or the well-known
   // endpoint fails.
   void OnError(FetchResult& fetch_result,
-               blink::mojom::FederatedAuthRequestResult result,
+               blink::mojom::FederatedRequestResult result,
                RequestIdTokenStatus token_status,
                std::optional<std::string> additional_console_error_message);
 

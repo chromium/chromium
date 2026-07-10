@@ -30,7 +30,7 @@
 
 namespace content::webid {
 
-using blink::mojom::FederatedAuthRequestResult;
+using blink::mojom::FederatedRequestResult;
 
 namespace {
 constexpr net::registry_controlled_domains::PrivateRegistryFilter
@@ -191,150 +191,149 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
   }
 }
 
-std::string GetConsoleErrorMessageFromResult(
-    FederatedAuthRequestResult status) {
+std::string GetConsoleErrorMessageFromResult(FederatedRequestResult status) {
   switch (status) {
-    case FederatedAuthRequestResult::kShouldEmbargo: {
+    case FederatedRequestResult::kShouldEmbargo: {
       return "User declined or dismissed prompt. API exponential cool down "
              "triggered.";
     }
-    case FederatedAuthRequestResult::kIdpNotPotentiallyTrustworthy: {
+    case FederatedRequestResult::kIdpNotPotentiallyTrustworthy: {
       return "The IdP is not potentially trustworthy (are you using HTTP?)";
     }
-    case FederatedAuthRequestResult::kDisabledInSettings: {
+    case FederatedRequestResult::kDisabledInSettings: {
       return "FedCM was disabled either temporarily based on previous user "
              "action or permanently via site settings. Try manage third-party "
              "sign-in via the icon to the left of the URL bar or via site "
              "settings.";
     }
-    case FederatedAuthRequestResult::kDisabledInFlags: {
+    case FederatedRequestResult::kDisabledInFlags: {
       return "FedCM was disabled in flags.";
     }
-    case FederatedAuthRequestResult::kTooManyRequests: {
+    case FederatedRequestResult::kTooManyRequests: {
       return "Only one navigator.credentials.get request may be outstanding at "
              "one time.";
     }
-    case FederatedAuthRequestResult::kWellKnownHttpNotFound: {
+    case FederatedRequestResult::kWellKnownHttpNotFound: {
       return "The provider's FedCM well-known file cannot be found.";
     }
-    case FederatedAuthRequestResult::kWellKnownNoResponse: {
+    case FederatedRequestResult::kWellKnownNoResponse: {
       return "The provider's FedCM well-known file fetch resulted in an "
              "error response code.";
     }
-    case FederatedAuthRequestResult::kWellKnownInvalidResponse: {
+    case FederatedRequestResult::kWellKnownInvalidResponse: {
       return "Provider's FedCM well-known file is invalid.";
     }
-    case FederatedAuthRequestResult::kWellKnownListEmpty: {
+    case FederatedRequestResult::kWellKnownListEmpty: {
       return "Provider's FedCM well-known file has no config URLs.";
     }
-    case FederatedAuthRequestResult::kWellKnownInvalidContentType: {
+    case FederatedRequestResult::kWellKnownInvalidContentType: {
       return "Provider's FedCM well-known content type must be a JSON content "
              "type.";
     }
-    case FederatedAuthRequestResult::kConfigNotInWellKnown: {
+    case FederatedRequestResult::kConfigNotInWellKnown: {
       return "Provider's FedCM config file not listed in its well-known file.";
     }
-    case FederatedAuthRequestResult::kWellKnownTooBig: {
+    case FederatedRequestResult::kWellKnownTooBig: {
       return "Provider's FedCM well-known file contains too many config URLs.";
     }
-    case FederatedAuthRequestResult::kConfigHttpNotFound: {
+    case FederatedRequestResult::kConfigHttpNotFound: {
       return "The provider's FedCM config file cannot be found.";
     }
-    case FederatedAuthRequestResult::kConfigNoResponse: {
+    case FederatedRequestResult::kConfigNoResponse: {
       return "The provider's FedCM config file fetch resulted in an "
              "error response code.";
     }
-    case FederatedAuthRequestResult::kConfigInvalidResponse: {
+    case FederatedRequestResult::kConfigInvalidResponse: {
       return "Provider's FedCM config file is invalid.";
     }
-    case FederatedAuthRequestResult::kConfigInvalidContentType: {
+    case FederatedRequestResult::kConfigInvalidContentType: {
       return "Provider's FedCM config file content type must be a JSON content "
              "type.";
     }
-    case FederatedAuthRequestResult::kAccountsHttpNotFound: {
+    case FederatedRequestResult::kAccountsHttpNotFound: {
       return "The provider's accounts list endpoint cannot be found.";
     }
-    case FederatedAuthRequestResult::kAccountsNoResponse: {
+    case FederatedRequestResult::kAccountsNoResponse: {
       return "The provider's accounts list fetch resulted in an error response "
              "code.";
     }
-    case FederatedAuthRequestResult::kAccountsInvalidResponse: {
+    case FederatedRequestResult::kAccountsInvalidResponse: {
       return "Provider's accounts list is invalid. Should have received an "
              "\"accounts\" list, where each account must have at least \"id\", "
              "\"name\", and \"email\".";
     }
-    case FederatedAuthRequestResult::kAccountsListEmpty: {
+    case FederatedRequestResult::kAccountsListEmpty: {
       return "Provider's accounts list is empty.";
     }
-    case FederatedAuthRequestResult::kAccountsInvalidContentType: {
+    case FederatedRequestResult::kAccountsInvalidContentType: {
       return "Provider's accounts list endpoint content type must be a JSON "
              "content type.";
     }
-    case FederatedAuthRequestResult::kIdTokenHttpNotFound: {
+    case FederatedRequestResult::kIdTokenHttpNotFound: {
       return "The provider's id token endpoint cannot be found.";
     }
-    case FederatedAuthRequestResult::kIdTokenNoResponse: {
+    case FederatedRequestResult::kIdTokenNoResponse: {
       return "The provider's token fetch resulted in an error response "
              "code.";
     }
-    case FederatedAuthRequestResult::kIdTokenInvalidResponse: {
+    case FederatedRequestResult::kIdTokenInvalidResponse: {
       return "Provider's token is invalid.";
     }
-    case FederatedAuthRequestResult::kIdTokenIdpErrorResponse: {
+    case FederatedRequestResult::kIdTokenIdpErrorResponse: {
       return "Provider is unable to issue a token, but provided details on the "
              "error that occurred.";
     }
-    case FederatedAuthRequestResult::kIdTokenCrossSiteIdpErrorResponse: {
+    case FederatedRequestResult::kIdTokenCrossSiteIdpErrorResponse: {
       return "Provider is unable to issue a token, but provided details on the "
              "error that occurred. The error URL must be same-site with the "
              "config URL.";
     }
-    case FederatedAuthRequestResult::kIdTokenInvalidContentType: {
+    case FederatedRequestResult::kIdTokenInvalidContentType: {
       return "Provider's token endpoint content type must be a JSON content "
              "type.";
     }
-    case FederatedAuthRequestResult::kCanceled: {
+    case FederatedRequestResult::kCanceled: {
       return "The request has been aborted.";
     }
-    case FederatedAuthRequestResult::kRpPageNotVisible: {
+    case FederatedRequestResult::kRpPageNotVisible: {
       return "RP page is not visible.";
     }
-    case FederatedAuthRequestResult::kSilentMediationFailure: {
+    case FederatedRequestResult::kSilentMediationFailure: {
       return "Silent mediation was requested, but the conditions to achieve it "
              "were not met.";
     }
-    case FederatedAuthRequestResult::kMissingTransientUserActivation: {
+    case FederatedRequestResult::kMissingTransientUserActivation: {
       return "FedCM active mode requires transient user activation.";
     }
-    case FederatedAuthRequestResult::kReplacedByActiveMode: {
+    case FederatedRequestResult::kReplacedByActiveMode: {
       return "The request is replaced by a new one with active mode.";
     }
-    case FederatedAuthRequestResult::kNotSignedInWithIdp: {
+    case FederatedRequestResult::kNotSignedInWithIdp: {
       return "Not signed in with the identity provider.";
     }
-    case FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque: {
+    case FederatedRequestResult::kRelyingPartyOriginIsOpaque: {
       return "FedCM is not supported on an opaque origin.";
     }
-    case FederatedAuthRequestResult::kTypeNotMatching: {
+    case FederatedRequestResult::kTypeNotMatching: {
       return "The requested IdP type did not match the registered IdP.";
     }
-    case FederatedAuthRequestResult::kUiDismissedNoEmbargo: {
+    case FederatedRequestResult::kUiDismissedNoEmbargo: {
       return "Prompt dismissed. API exponential cool down not "
              "triggered.";
     }
-    case FederatedAuthRequestResult::kError: {
+    case FederatedRequestResult::kError: {
       return "Error retrieving a token.";
     }
-    case FederatedAuthRequestResult::kCorsError: {
+    case FederatedRequestResult::kCorsError: {
       return "Server did not send the correct CORS headers.";
     }
-    case FederatedAuthRequestResult::kSuppressedBySegmentationPlatform: {
+    case FederatedRequestResult::kSuppressedBySegmentationPlatform: {
       return "UI is suppressed because historical data shows that the user "
              "is less likely to login via FedCM passive mode on this website. "
              "For testing purposes, disable the #fedcm-segmentation-platform "
              "flag.";
     }
-    case FederatedAuthRequestResult::kSuccess: {
+    case FederatedRequestResult::kSuccess: {
       // Should not be called with success, as we should not add a console
       // message for success.
       NOTREACHED();
