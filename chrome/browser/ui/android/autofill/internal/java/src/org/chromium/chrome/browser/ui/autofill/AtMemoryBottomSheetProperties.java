@@ -138,9 +138,12 @@ class AtMemoryBottomSheetProperties {
         // Invoked when the flyout button is clicked on the suggestion item.
         static final ReadableObjectPropertyKey<Runnable> ON_FLYOUT_CLICKED =
                 new ReadableObjectPropertyKey<>();
+        // Indicates whether the flyout arrow and divider should be visible.
+        static final WritableBooleanPropertyKey IS_FLYOUT_VISIBLE =
+                new WritableBooleanPropertyKey();
 
         static final PropertyKey[] ALL_KEYS = {
-            ICON, TITLE, DETAILS, ON_SUGGESTION_CLICKED, ON_FLYOUT_CLICKED,
+            ICON, TITLE, DETAILS, ON_SUGGESTION_CLICKED, ON_FLYOUT_CLICKED, IS_FLYOUT_VISIBLE
         };
 
         private SuggestionItemProperties() {}

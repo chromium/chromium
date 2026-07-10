@@ -50,11 +50,13 @@ found in the LICENSE file.
     </LinearLayout>
 
     <View
+        android:id="@+id/divider_view"
         android:layout_width="@dimen/at_memory_suggestion_divider_width"
         android:layout_height="@dimen/at_memory_suggestion_divider_height"
         android:layout_marginStart=
                 "@dimen/at_memory_suggestion_default_margin"
-        android:layout_marginEnd="@dimen/at_memory_suggestion_default_margin"
+        android:layout_marginEnd=
+                "@dimen/at_memory_suggestion_default_margin"
         android:background="?android:attr/listDivider"
         android:importantForAccessibility="no" />
 

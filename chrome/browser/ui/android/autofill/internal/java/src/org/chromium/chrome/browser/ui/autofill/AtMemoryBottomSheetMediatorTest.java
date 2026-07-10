@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SearchItemProperties.ON_TILE_CLICKED;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SearchItemProperties.TILE_TITLE;
+import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.IS_FLYOUT_VISIBLE;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.ON_FLYOUT_CLICKED;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.ON_SUGGESTION_CLICKED;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.TITLE;
@@ -137,6 +138,34 @@ public class AtMemoryBottomSheetMediatorTest {
         PropertyModel flyoutModel = mMediator.getFlyoutModel();
         assertEquals("Hotel Booking", flyoutModel.get(FlyoutProperties.TITLE));
         assertEquals(List.of(childSuggestion), flyoutModel.get(FlyoutProperties.SUGGESTIONS));
+    }
+
+    @Test
+    public void testFlyoutVisible() {
+        AutofillSuggestion suggestion =
+                new AutofillSuggestion.Builder()
+                        .setIconId(R.drawable.flight)
+                        .setLabel("KLM204")
+                        .setSubLabel("Flight ⋅ 15 May ⋅ SEA - MUC")
+                        .setSuggestionType(SuggestionType.AT_MEMORY_SEARCH_RESULT)
+                        .build();
+        List<AutofillSuggestion> suggestions = List.of(suggestion);
+        mMediator.show(suggestions);
+        assertTrue(mModelList.get(0).model.get(IS_FLYOUT_VISIBLE));
+    }
+
+    @Test
+    public void testFlyoutNotVisible() {
+        AutofillSuggestion suggestion =
+                new AutofillSuggestion.Builder()
+                        .setIconId(R.drawable.sad_tab)
+                        .setLabel("Recent")
+                        .setSubLabel("No connection")
+                        .setSuggestionType(SuggestionType.AT_MEMORY_NO_CONNECTION)
+                        .build();
+        List<AutofillSuggestion> suggestions = List.of(suggestion);
+        mMediator.show(suggestions);
+        assertFalse(mModelList.get(0).model.get(IS_FLYOUT_VISIBLE));
     }
 
     @Test

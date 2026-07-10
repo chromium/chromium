@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetPropert
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SearchItemProperties.TILE_TITLE;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.DETAILS;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.ICON;
+import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.IS_FLYOUT_VISIBLE;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.TITLE;
 
 import android.app.Activity;
@@ -165,18 +166,27 @@ public class AtMemoryBottomSheetViewRenderTest {
                     ModelList modelList = new ModelList();
                     PropertyModel itemModel1 =
                             createSuggestionModel(
-                                    "KLM204", "Flight ⋅ 15 May ⋅ SEA - MUC", R.drawable.flight);
+                                    "KLM204",
+                                    "Flight ⋅ 15 May ⋅ SEA - MUC",
+                                    R.drawable.flight,
+                                    /* isFlyoutVisible= */ true);
                     modelList.add(new ListItem(HomeProperties.ItemType.SUGGESTION, itemModel1));
 
                     PropertyModel itemModel2 =
                             createSuggestionModel(
-                                    "Hotel Booking", "Hilton ⋅ 16 May", R.drawable.travel_trip);
+                                    "Hotel Booking",
+                                    "Hilton ⋅ 16 May",
+                                    R.drawable.travel_trip,
+                                    /* isFlyoutVisible= */ true);
 
                     modelList.add(new ListItem(HomeProperties.ItemType.SUGGESTION, itemModel2));
 
                     PropertyModel itemModel3 =
                             createSuggestionModel(
-                                    "Driving license", null, R.drawable.directions_car);
+                                    "Driving license",
+                                    null,
+                                    R.drawable.directions_car,
+                                    /* isFlyoutVisible= */ false);
 
                     modelList.add(new ListItem(HomeProperties.ItemType.SUGGESTION, itemModel3));
 
@@ -216,7 +226,8 @@ public class AtMemoryBottomSheetViewRenderTest {
                                     "Lufthansa Flight Reservation Details confirmation code"
                                             + " ABC123XYZ",
                                     "Flight ⋅ 15 May ⋅ SEA - MUC",
-                                    R.drawable.flight);
+                                    R.drawable.flight,
+                                    /* isFlyoutVisible= */ true);
                     modelList.add(new ListItem(HomeProperties.ItemType.SUGGESTION, itemModel));
 
                     mView.getHomeView().setUpSheetItems(modelList);
@@ -316,11 +327,12 @@ public class AtMemoryBottomSheetViewRenderTest {
     }
 
     private static PropertyModel createSuggestionModel(
-            String title, String details, int iconResId) {
+            String title, String details, int iconResId, boolean isFlyoutVisible) {
         return new PropertyModel.Builder(SuggestionItemProperties.ALL_KEYS)
                 .with(TITLE, title)
                 .with(DETAILS, details)
                 .with(ICON, iconResId)
+                .with(IS_FLYOUT_VISIBLE, isFlyoutVisible)
                 .build();
     }
 

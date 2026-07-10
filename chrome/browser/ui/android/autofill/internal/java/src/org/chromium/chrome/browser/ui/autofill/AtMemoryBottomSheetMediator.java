@@ -198,6 +198,10 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
                             .with(SuggestionItemProperties.TITLE, suggestion.getLabel())
                             .with(SuggestionItemProperties.DETAILS, suggestion.getSublabel())
                             .with(
+                                    SuggestionItemProperties.IS_FLYOUT_VISIBLE,
+                                    suggestion.getSuggestionType()
+                                            == SuggestionType.AT_MEMORY_SEARCH_RESULT)
+                            .with(
                                     SuggestionItemProperties.ON_SUGGESTION_CLICKED,
                                     () -> onSuggestionClicked(position))
                             .with(

@@ -23,6 +23,7 @@ public class AtMemoryBottomSheetSuggestionView extends LinearLayout {
     private TextView mTitleView;
     private TextView mDetailsView;
     private View mArrowView;
+    private View mDividerView;
 
     public AtMemoryBottomSheetSuggestionView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -35,6 +36,7 @@ public class AtMemoryBottomSheetSuggestionView extends LinearLayout {
         mTitleView = findViewById(R.id.title_text);
         mDetailsView = findViewById(R.id.details_text);
         mArrowView = findViewById(R.id.arrow_view);
+        mDividerView = findViewById(R.id.divider_view);
     }
 
     public void setIcon(int resId) {
@@ -56,5 +58,10 @@ public class AtMemoryBottomSheetSuggestionView extends LinearLayout {
 
     public void setFlyoutClickListener(Runnable callback) {
         mArrowView.setOnClickListener(v -> callback.run());
+    }
+
+    public void setFlyoutVisible(boolean visible) {
+        mArrowView.setVisibility(visible ? View.VISIBLE : View.GONE);
+        mDividerView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 }
