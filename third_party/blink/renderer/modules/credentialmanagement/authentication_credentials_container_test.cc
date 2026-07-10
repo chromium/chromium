@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_cmtg_key_outputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_ui_mode_requirement.h"
@@ -1546,6 +1547,76 @@ TEST(AuthenticationCredentialsContainerTest,
       context.GetScriptState()->GetIsolate(), active_error);
   ASSERT_TRUE(active_exception);
   EXPECT_EQ(active_exception->name(), "NetworkError");
+}
+
+TEST(AuthenticationCredentialsContainerTest,
+     WebAuthnAttachmentAndHintsUseCounters) {
+  test::TaskEnvironment task_environment;
+  MockAuthenticatorInterface mock_authenticator;
+  CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
+                                          &mock_authenticator);
+  struct TestCase {
+    std::optional<String> attachment;
+    Vector<String> hints;
+    bool expect_attachment_counted;
+    bool expect_no_hints_counted;
+  } test_cases[] = {
+      {std::nullopt, {}, false, false},
+      {"invalid", {}, false, false},
+      {"platform", {"security-key"}, true, false},
+      {"platform", {"invalid-hint"}, true, false},
+      {"platform", {}, true, true},
+      {"cross-platform", {"hybrid"}, true, false},
+      {"cross-platform", {}, true, true},
+  };
+  for (const auto& test_case : test_cases) {
+    context.DomWindow().document()->ClearUseCounterForTesting(
+        WebFeature::kWebAuthnCreatePublicKeyCredentialWithAttachment);
+    context.DomWindow().document()->ClearUseCounterForTesting(
+        WebFeature::kWebAuthnCreatePublicKeyCredentialWithAttachmentAndNoHints);
+    auto* creation_options = CredentialCreationOptions::Create();
+    auto* public_key_creation_options =
+        PublicKeyCredentialCreationOptions::Create();
+    auto* rp = PublicKeyCredentialRpEntity::Create();
+    rp->setId("example.test");
+    rp->setName("Example");
+    public_key_creation_options->setRp(rp);
+    auto* user = PublicKeyCredentialUserEntity::Create();
+    user->setId(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+        DOMArrayBuffer::Create(Vector<uint8_t>{1, 2, 3, 4})));
+    user->setName("user");
+    user->setDisplayName("User");
+    public_key_creation_options->setUser(user);
+    auto* param = PublicKeyCredentialParameters::Create();
+    param->setAlg(-7);
+    param->setType("public-key");
+    public_key_creation_options->setPubKeyCredParams({param});
+    const Vector<uint8_t> challenge = {1, 2, 3, 4};
+    public_key_creation_options->setChallenge(
+        MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+            DOMArrayBuffer::Create(challenge)));
+    if (test_case.attachment) {
+      auto* selection = AuthenticatorSelectionCriteria::Create();
+      selection->setAuthenticatorAttachment(*test_case.attachment);
+      public_key_creation_options->setAuthenticatorSelection(selection);
+    }
+    public_key_creation_options->setHints(test_case.hints);
+    creation_options->setPublicKey(public_key_creation_options);
+
+    AuthenticationCredentialsContainer::credentials(
+        *context.DomWindow().navigator())
+        ->create(context.GetScriptState(), creation_options,
+                 IGNORE_EXCEPTION_FOR_TESTING);
+    EXPECT_EQ(
+        test_case.expect_attachment_counted,
+        context.DomWindow().document()->IsUseCounted(
+            WebFeature::kWebAuthnCreatePublicKeyCredentialWithAttachment));
+    EXPECT_EQ(
+        test_case.expect_no_hints_counted,
+        context.DomWindow().document()->IsUseCounted(
+            WebFeature::
+                kWebAuthnCreatePublicKeyCredentialWithAttachmentAndNoHints));
+  }
 }
 
 }  // namespace blink

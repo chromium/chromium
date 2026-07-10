@@ -1850,6 +1850,23 @@ AuthenticationCredentialsContainer::create(
   UseCounter::Count(context,
                     WebFeature::kCredentialManagerCreatePublicKeyCredential);
 
+  if (options->publicKey()->hasAuthenticatorSelection()) {
+    const auto* selection = options->publicKey()->authenticatorSelection();
+    if (selection->hasAuthenticatorAttachment() &&
+        (selection->authenticatorAttachment() == "platform" ||
+         selection->authenticatorAttachment() == "cross-platform")) {
+      UseCounter::Count(
+          context,
+          WebFeature::kWebAuthnCreatePublicKeyCredentialWithAttachment);
+      if (options->publicKey()->hints().empty()) {
+        UseCounter::Count(
+            context,
+            WebFeature::
+                kWebAuthnCreatePublicKeyCredentialWithAttachmentAndNoHints);
+      }
+    }
+  }
+
   if (!IsArrayBufferOrViewBelowSizeLimit(options->publicKey()->challenge())) {
     resolver->Reject(DOMException::Create(
         "The `challenge` attribute exceeds the maximum allowed size.",

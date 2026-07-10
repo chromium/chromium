@@ -6712,6 +6712,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5961" label="WebAuthnCrossDeviceFallbackUrlExtension"/>
   <int value="5962" label="WebAuthnRemoteDesktopClientOverrideExtension"/>
   <int value="5963" label="WebAuthnUvmRegisterExtension"/>
+  <int value="5964" label="WebAuthnCreatePublicKeyCredentialWithAttachment"/>
+  <int value="5965"
+      label="WebAuthnCreatePublicKeyCredentialWithAttachmentAndNoHints"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
