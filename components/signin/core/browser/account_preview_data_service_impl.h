@@ -74,12 +74,14 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
 
  private:
   void RefreshAllAccountPreviewData();
-  void EnsureAllAccountsFetched();
+  void EnsureAllAccountsFetched(bool is_periodic_refresh);
   void FetchAccountPreviewData(const GaiaId& gaia_id);
   void StartFetch(const GaiaId& gaia_id);
   void OnSingleFetchCompleted(const GaiaId& gaia_id,
                               std::optional<AccountPreviewData> data);
-  void OnAllFetchesCompleted();
+  void OnAllFetchesCompleted(bool should_reset_periodic_timer);
+  void CreateAndStartRepeatingTimer();
+  void ResetTimer();
   AccountPreviewPreference ComputePreferredAccount() const;
 
   AccountPreviewPreference ReadPreviewPreferenceFromPrefs() const;
@@ -94,7 +96,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   AccountPreviewMetricsRecorder metrics_recorder_;
 
   std::unique_ptr<PersistentRepeatingTimer> repeating_timer_;
-  bool deferred_refresh_pending_ = false;
+  base::OnceClosure deferred_fetch_on_loaded_tokens_callback_;
 
   base::OnceClosure fetch_complete_callback_for_testing_;
   base::OnceClosure all_data_available_callback_for_testing_;

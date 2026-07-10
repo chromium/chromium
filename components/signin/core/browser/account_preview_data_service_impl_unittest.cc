@@ -579,4 +579,64 @@ TEST_F(AccountPreviewDataServiceTest,
   EXPECT_FALSE(service_->HasActiveFetcherForTesting(account2.gaia));
 }
 
+TEST_F(AccountPreviewDataServiceTest, RegularFetchOfAllAccountsResetsTimer) {
+  // Pre-set the timer last update pref to a past time (e.g. 5 hours ago).
+  base::Time past_time = base::Time::Now() - base::Hours(5);
+  prefs_.SetTime(prefs::kAccountPreviewDataLastUpdatePref, past_time);
+
+  // Trigger a fetch for the only available account.
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+  service_->OnRefreshTokenUpdatedForAccount(account_info);
+  run_loop.Run();
+
+  // Verify that the last update pref has been updated to the current time
+  // because we fetched 1/1 accounts (all accounts).
+  base::Time current_time =
+      prefs_.GetTime(prefs::kAccountPreviewDataLastUpdatePref);
+  EXPECT_GT(current_time, past_time);
+  EXPECT_EQ(current_time, base::Time::Now());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       RegularFetchOfSubsetOfAccountsDoesNotResetTimer) {
+  // Make account1 available and cached first, so it won't be refetched.
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  {
+    base::RunLoop run_loop;
+    service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+    service_->OnRefreshTokenUpdatedForAccount(account1);
+    run_loop.Run();
+  }
+
+  // Pre-set the timer last update pref to a past time (e.g. 5 hours ago).
+  base::Time past_time = base::Time::Now() - base::Hours(5);
+  prefs_.SetTime(prefs::kAccountPreviewDataLastUpdatePref, past_time);
+
+  // Trigger a fetch for account2.
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  {
+    base::RunLoop run_loop;
+    service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+    service_->OnRefreshTokenUpdatedForAccount(account2);
+    run_loop.Run();
+  }
+
+  // Verify that the last update pref was NOT updated because we only fetched
+  // 1/2 accounts (subset of accounts).
+  base::Time current_time =
+      prefs_.GetTime(prefs::kAccountPreviewDataLastUpdatePref);
+  EXPECT_EQ(current_time, past_time);
+}
+
 }  // namespace signin

@@ -44,12 +44,7 @@ AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
   CHECK(network_delay_helper_);
   identity_manager_observation_.Observe(identity_manager_);
 
-  repeating_timer_ = std::make_unique<PersistentRepeatingTimer>(
-      pref_service, prefs::kAccountPreviewDataLastUpdatePref, base::Hours(24),
-      base::BindRepeating(
-          &AccountPreviewDataServiceImpl::RefreshAllAccountPreviewData,
-          weak_ptr_factory_.GetWeakPtr()));
-  repeating_timer_->Start();
+  CreateAndStartRepeatingTimer();
 }
 
 AccountPreviewDataServiceImpl::~AccountPreviewDataServiceImpl() = default;
@@ -76,7 +71,7 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenUpdatedForAccount(
   // fetching requests. Startup should only rely on the repeating timer and
   // refresh all accounts preview data.
   if (identity_manager_->AreRefreshTokensLoaded()) {
-    EnsureAllAccountsFetched();
+    EnsureAllAccountsFetched(/*is_periodic_refresh=*/false);
   }
 }
 
@@ -101,7 +96,7 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
 
   // TODO(crbug.com/532419984): Restrict this computation if the removed account
   // is the current preferred account.
-  EnsureAllAccountsFetched();
+  EnsureAllAccountsFetched(/*is_periodic_refresh=*/false);
 }
 
 void AccountPreviewDataServiceImpl::SetFetchCompleteCallbackForTesting(
@@ -135,8 +130,8 @@ void AccountPreviewDataServiceImpl::OnSingleFetchCompleted(
 }
 
 void AccountPreviewDataServiceImpl::OnRefreshTokensLoaded() {
-  if (deferred_refresh_pending_) {
-    EnsureAllAccountsFetched();
+  if (deferred_fetch_on_loaded_tokens_callback_) {
+    std::move(deferred_fetch_on_loaded_tokens_callback_).Run();
   }
 }
 
@@ -149,21 +144,22 @@ void AccountPreviewDataServiceImpl::OnIdentityManagerShutdown(
 
 void AccountPreviewDataServiceImpl::RefreshAllAccountPreviewData() {
   cached_data_.clear();
-  EnsureAllAccountsFetched();
+  EnsureAllAccountsFetched(/*is_periodic_refresh=*/true);
 }
 
-void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched() {
+void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
+    bool is_periodic_refresh) {
   CHECK(identity_manager_);
   if (!identity_manager_->AreRefreshTokensLoaded()) {
-    deferred_refresh_pending_ = true;
+    deferred_fetch_on_loaded_tokens_callback_ =
+        base::BindOnce(&AccountPreviewDataServiceImpl::EnsureAllAccountsFetched,
+                       weak_ptr_factory_.GetWeakPtr(), is_periodic_refresh);
     return;
   }
 
-  deferred_refresh_pending_ = false;
-
   std::vector<GaiaId> gaia_ids_to_fetch;
-  for (const auto& account :
-       identity_manager_->GetAccountsWithRefreshTokens()) {
+  auto accounts = identity_manager_->GetAccountsWithRefreshTokens();
+  for (const auto& account : accounts) {
     account_id_to_gaia_id_[account.account_id] = account.gaia;
     if (!cached_data_.contains(account.gaia)) {
       gaia_ids_to_fetch.push_back(account.gaia);
@@ -172,14 +168,20 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched() {
 
   if (gaia_ids_to_fetch.empty()) {
     all_accounts_fetched_barrier_.Reset();
-    OnAllFetchesCompleted();
+    OnAllFetchesCompleted(/*should_reset_periodic_timer=*/false);
     return;
   }
+
+  // Reset the periodic timer if all data was fetched and this refresh was not
+  // triggered by the periodic timer.
+  bool should_reset_periodic_timer =
+      !is_periodic_refresh && (gaia_ids_to_fetch.size() == accounts.size());
 
   all_accounts_fetched_barrier_ = base::BarrierClosure(
       gaia_ids_to_fetch.size(),
       base::BindOnce(&AccountPreviewDataServiceImpl::OnAllFetchesCompleted,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     should_reset_periodic_timer));
 
   for (const auto& gaia_id : gaia_ids_to_fetch) {
     FetchAccountPreviewData(gaia_id);
@@ -226,10 +228,15 @@ AccountPreviewDataServiceImpl::ComputePreferredAccount() const {
   return AccountPreviewPreference();
 }
 
-void AccountPreviewDataServiceImpl::OnAllFetchesCompleted() {
+void AccountPreviewDataServiceImpl::OnAllFetchesCompleted(
+    bool should_reset_periodic_timer) {
   all_accounts_fetched_barrier_.Reset();
 
   WritePreviewPreferenceToPrefs(ComputePreferredAccount());
+
+  if (should_reset_periodic_timer) {
+    ResetTimer();
+  }
 
   if (all_data_available_callback_for_testing_) {
     std::move(all_data_available_callback_for_testing_).Run();
@@ -276,6 +283,21 @@ void AccountPreviewDataServiceImpl::WritePreviewPreferenceToPrefs(
   }
   dict.Set(kPreferredAccountDictDataTypesKey, std::move(data_types_list));
   pref_service_->SetDict(prefs::kAccountPreviewPreference, std::move(dict));
+}
+
+void AccountPreviewDataServiceImpl::ResetTimer() {
+  pref_service_->SetTime(prefs::kAccountPreviewDataLastUpdatePref,
+                         base::Time::Now());
+  CreateAndStartRepeatingTimer();
+}
+
+void AccountPreviewDataServiceImpl::CreateAndStartRepeatingTimer() {
+  repeating_timer_ = std::make_unique<PersistentRepeatingTimer>(
+      pref_service_, prefs::kAccountPreviewDataLastUpdatePref, base::Hours(24),
+      base::BindRepeating(
+          &AccountPreviewDataServiceImpl::RefreshAllAccountPreviewData,
+          weak_ptr_factory_.GetWeakPtr()));
+  repeating_timer_->Start();
 }
 
 }  // namespace signin
