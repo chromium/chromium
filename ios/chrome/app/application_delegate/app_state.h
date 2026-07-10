@@ -103,9 +103,14 @@ enum class PostCrashAction {
 // transition, if any such transitions happened (didTransitionFromInitStage),
 // before this method returns.
 - (void)addObserver:(id<AppStateObserver>)observer;
+
 // Removes the observer. It's safe to call this at any time, including from
 // AppStateObserver callbacks.
 - (void)removeObserver:(id<AppStateObserver>)observer;
+
+// Informs the AppState of the connection/disconnection of a SceneState.
+- (void)sceneStateConnected:(SceneState*)sceneState;
+- (void)sceneStateDisconnected:(SceneState*)sceneState;
 
 // Informs the AppState of the creation/destruction of a ProfileState.
 - (void)profileStateCreated:(ProfileState*)profileState;

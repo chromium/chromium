@@ -120,10 +120,17 @@ void SyncBreadcrumbsLog() {
       connectionOptions.userActivities.count != 0) {
     _sceneState.startupHadExternalIntent = YES;
   }
+
+  [appDelegate.appState sceneStateConnected:_sceneState];
 }
 
 - (void)sceneDidDisconnect:(UIScene*)scene {
   CHECK(_sceneState);
+  MainApplicationDelegate* appDelegate =
+      base::apple::ObjCCastStrict<MainApplicationDelegate>(
+          UIApplication.sharedApplication.delegate);
+  [appDelegate.appState sceneStateDisconnected:_sceneState];
+
   _sceneState.window.rootViewController = nil;
   _sceneState.activationLevel = SceneActivationLevelDisconnected;
   _sceneState = nil;

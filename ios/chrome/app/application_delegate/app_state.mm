@@ -73,7 +73,10 @@ BOOL ApplicationIsInBackground() {
   // Container for observers.
   UIBlockerManagerObserverList* _uiBlockerManagerObservers;
 
-  // List of connected profileStates.
+  // List of connected SceneStates.
+  NSMutableArray<SceneState*>* _sceneStates;
+
+  // List of connected ProfileStates.
   NSMutableArray<ProfileState*>* _profileStates;
 
   // Agents attached to this app state.
@@ -112,6 +115,7 @@ BOOL ApplicationIsInBackground() {
   if (self) {
     _observers = [AppStateObserverList list];
     _uiBlockerManagerObservers = [UIBlockerManagerObserverList list];
+    _sceneStates = [[NSMutableArray alloc] init];
     _profileStates = [[NSMutableArray alloc] init];
     _agents = [[NSMutableArray alloc] init];
     _startupInformation = startupInformation;
@@ -121,13 +125,6 @@ BOOL ApplicationIsInBackground() {
     if (IsEnableNewStartupFlowEnabled()) {
       _taskOrchestrator = [[TaskOrchestrator alloc] init];
     }
-
-    // Subscribe to scene connection notifications.
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(sceneWillConnect:)
-               name:UISceneWillConnectNotification
-             object:nil];
 
     // Observe the status of VoiceOver for crash logging.
     [[NSNotificationCenter defaultCenter]
@@ -144,7 +141,7 @@ BOOL ApplicationIsInBackground() {
 
 - (void)setUiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget {
   _uiBlockerTarget = uiBlockerTarget;
-  for (SceneState* scene in self.connectedScenes) {
+  for (SceneState* scene in _sceneStates) {
     // When there's a scene with blocking UI, all other scenes should show the
     // overlay.
     BOOL shouldPresentOverlay =
@@ -211,6 +208,19 @@ BOOL ApplicationIsInBackground() {
   [_observers removeObserver:observer];
 }
 
+- (void)sceneStateConnected:(SceneState*)sceneState {
+  [_sceneStates addObject:sceneState];
+
+  [sceneState addObserver:self];
+  [_observers appState:self sceneConnected:sceneState];
+  crash_keys::SetConnectedScenesCount(_sceneStates.count);
+}
+
+- (void)sceneStateDisconnected:(SceneState*)sceneState {
+  [_sceneStates removeObject:sceneState];
+  crash_keys::SetConnectedScenesCount(_sceneStates.count);
+}
+
 - (void)profileStateCreated:(ProfileState*)profileState {
   [_profileStates addObject:profileState];
   [_observers appState:self profileStateConnected:profileState];
@@ -247,7 +257,7 @@ BOOL ApplicationIsInBackground() {
 #pragma mark - Multiwindow-related
 
 - (SceneState*)foregroundActiveScene {
-  for (SceneState* sceneState in self.connectedScenes) {
+  for (SceneState* sceneState in _sceneStates) {
     if (sceneState.activationLevel == SceneActivationLevelForegroundActive) {
       return sceneState;
     }
@@ -257,22 +267,11 @@ BOOL ApplicationIsInBackground() {
 }
 
 - (NSArray<SceneState*>*)connectedScenes {
-  NSMutableArray* sceneStates = [[NSMutableArray alloc] init];
-  NSSet* connectedScenes = [UIApplication sharedApplication].connectedScenes;
-  for (UIWindowScene* scene in connectedScenes) {
-    if (![scene.delegate isKindOfClass:[SceneDelegate class]]) {
-      continue;
-    }
-
-    SceneDelegate* sceneDelegate =
-        base::apple::ObjCCastStrict<SceneDelegate>(scene.delegate);
-    [sceneStates addObject:sceneDelegate.sceneState];
-  }
-  return sceneStates;
+  return [_sceneStates copy];
 }
 
 - (NSArray<SceneState*>*)foregroundScenes {
-  return [self.connectedScenes
+  return [_sceneStates
       filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
                                                    SceneState* scene,
                                                    NSDictionary* bindings) {
@@ -356,7 +355,7 @@ BOOL ApplicationIsInBackground() {
 }
 
 - (void)updateSupportedInterfaceOrientationForAllScenes {
-  for (SceneState* sceneState in self.connectedScenes) {
+  for (SceneState* sceneState in _sceneStates) {
     UIViewController* viewController = sceneState.window.rootViewController;
     [viewController setNeedsUpdateOfSupportedInterfaceOrientations];
   }
@@ -397,29 +396,6 @@ BOOL ApplicationIsInBackground() {
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   crash_keys::SetForegroundScenesCount([self foregroundScenes].count);
-}
-
-#pragma mark - Scenes lifecycle
-
-- (void)sceneWillConnect:(NSNotification*)notification {
-  UIWindowScene* scene =
-      base::apple::ObjCCastStrict<UIWindowScene>(notification.object);
-  SceneDelegate* sceneDelegate =
-      base::apple::ObjCCastStrict<SceneDelegate>(scene.delegate);
-
-  // Under some iOS 15 betas, Chrome gets scene connection events for some
-  // system scene connections. To handle this, early return if the connecting
-  // scene doesn't have a valid delegate. (See crbug.com/1217461)
-  if (!sceneDelegate) {
-    return;
-  }
-
-  SceneState* sceneState = sceneDelegate.sceneState;
-  DCHECK(sceneState);
-
-  [sceneState addObserver:self];
-  [_observers appState:self sceneConnected:sceneState];
-  crash_keys::SetConnectedScenesCount([self connectedScenes].count);
 }
 
 #pragma mark - Voice Over lifecycle
