@@ -99,11 +99,11 @@ NOINLINE void* HandleMemorySafetyCheckedOperatorNew(std::size_t count) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if constexpr (IsLeakedSanitizedObject(checks)) {
     return GetPartitionRootForLeakedSecurityObjectAllocation()
-        ->AllocInline<GetAllocFlags(checks)>(count);
+        ->Alloc<GetAllocFlags(checks)>(count);
   }
   if constexpr (ShouldUsePartitionAlloc(checks)) {
     return GetPartitionRootForMemorySafetyCheckedAllocation()
-        ->AllocInline<GetAllocFlags(checks)>(count);
+        ->Alloc<GetAllocFlags(checks)>(count);
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return ::operator new(count);
