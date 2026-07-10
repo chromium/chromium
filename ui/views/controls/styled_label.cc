@@ -39,18 +39,6 @@ namespace views {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kStyledLabelCustomViewKey, false)
 
-namespace {
-
-// Returns true when text_style is one of the link styles for which
-// CreateLabel() builds a LinkFragment rather than a plain Label.
-bool IsLinkTextStyle(const std::optional<int>& text_style) {
-  return text_style == style::STYLE_LINK || text_style == style::STYLE_LINK_2 ||
-         text_style == style::STYLE_LINK_3 ||
-         text_style == style::STYLE_LINK_4 || text_style == style::STYLE_LINK_5;
-}
-
-}  // namespace
-
 StyledLabel::RangeStyleInfo::RangeStyleInfo() = default;
 StyledLabel::RangeStyleInfo::RangeStyleInfo(const RangeStyleInfo&) = default;
 StyledLabel::RangeStyleInfo& StyledLabel::RangeStyleInfo::operator=(
@@ -96,7 +84,9 @@ struct StyledLabel::LayoutViews {
 };
 
 StyledLabel::StyledLabel() {
-  UpdateAccessibleRole();
+  GetViewAccessibility().SetRole(text_context_ == style::CONTEXT_DIALOG_TITLE
+                                     ? ax::mojom::Role::kTitleBar
+                                     : ax::mojom::Role::kStaticText);
 }
 
 StyledLabel::~StyledLabel() = default;
@@ -117,7 +107,6 @@ void StyledLabel::SetText(std::u16string text) {
   text_ = text;
   GetViewAccessibility().SetName(text_);
   style_ranges_.clear();
-  UpdateAccessibleRole();
   RemoveOrDeleteAllChildViews();
   OnPropertyChanged(&text_, PropertyEffects::kPreferredSizeChanged);
 }
@@ -137,7 +126,6 @@ void StyledLabel::AddStyleRange(const gfx::Range& range,
   StyleRanges new_range;
   new_range.emplace_front(range, style_info);
   style_ranges_.merge(new_range);
-  UpdateAccessibleRole();
 
   PreferredSizeChanged();
 }
@@ -158,7 +146,9 @@ void StyledLabel::SetTextContext(int text_context) {
   }
 
   text_context_ = text_context;
-  UpdateAccessibleRole();
+  GetViewAccessibility().SetRole(text_context_ == style::CONTEXT_DIALOG_TITLE
+                                     ? ax::mojom::Role::kTitleBar
+                                     : ax::mojom::Role::kStaticText);
   OnPropertyChanged(&text_context_, PropertyEffects::kPreferredSizeChanged);
 }
 
@@ -334,7 +324,6 @@ void StyledLabel::SetHorizontalAlignment(gfx::HorizontalAlignment alignment) {
 
 void StyledLabel::ClearStyleRanges() {
   style_ranges_.clear();
-  UpdateAccessibleRole();
   PreferredSizeChanged();
 }
 
@@ -573,7 +562,11 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
     const gfx::Range& range,
     LinkFragment** previous_link_fragment) const {
   std::unique_ptr<Label> result;
-  if (IsLinkTextStyle(style_info.text_style)) {
+  if (style_info.text_style == style::STYLE_LINK ||
+      style_info.text_style == style::STYLE_LINK_2 ||
+      style_info.text_style == style::STYLE_LINK_3 ||
+      style_info.text_style == style::STYLE_LINK_4 ||
+      style_info.text_style == style::STYLE_LINK_5) {
     // Nothing should (and nothing does) use a custom font for links.
     DCHECK(!style_info.custom_font);
 
@@ -655,27 +648,6 @@ void StyledLabel::RemoveOrDeleteAllChildViews() {
       pending_delete_views_.push_back(std::move(view));
     }
   }
-}
-
-void StyledLabel::UpdateAccessibleRole() {
-  if (text_context_ == style::CONTEXT_DIALOG_TITLE) {
-    GetViewAccessibility().SetRole(ax::mojom::Role::kTitleBar);
-    return;
-  }
-
-  // Plain text collapses to a kStaticText leaf. An inline link or custom view,
-  // though, is a non-text child that platform accessibility would prune under
-  // kStaticText; expose the label as a paragraph so those children stay
-  // reachable. Deriving this from the style ranges rather than the child views
-  // keeps the role correct before layout builds them.
-  const bool has_non_text_range =
-      std::ranges::any_of(style_ranges_, [](const StyleRange& style_range) {
-        return style_range.style_info.custom_view ||
-               IsLinkTextStyle(style_range.style_info.text_style);
-      });
-  GetViewAccessibility().SetRole(has_non_text_range
-                                     ? ax::mojom::Role::kParagraph
-                                     : ax::mojom::Role::kStaticText);
 }
 
 void StyledLabel::RecreateChildViews() {

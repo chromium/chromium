@@ -245,10 +245,6 @@ class VIEWS_EXPORT StyledLabel : public View {
 
   void RecreateChildViews();
 
-  // Sets the accessibility role from the current text context and whether any
-  // style range adds a non-text child (an inline link or a custom view).
-  void UpdateAccessibleRole();
-
   // The text to display.
   std::u16string text_;
 
