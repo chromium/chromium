@@ -66,8 +66,10 @@ import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.function.Supplier;
 
@@ -79,6 +81,7 @@ public class SearchBoxMediatorUnitTest {
 
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private OnClickListener mLensClickListener;
+    @Mock private OnClickListener mAiChipClickListener;
     @Mock private OnClickListener mVoiceSearchClickListener;
     @Mock private OnClickListener mSearchBoxClickListener;
     @Mock private View.OnDragListener mSearchBoxDragListener;
@@ -93,6 +96,7 @@ public class SearchBoxMediatorUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private ComposeboxQueryControllerBridge.Natives mComposeboxBridgeJni;
     @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
+    @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
     private Context mContext;
     private SearchBoxContainerView mView;
@@ -139,6 +143,7 @@ public class SearchBoxMediatorUnitTest {
         TemplateUrlServiceObserver observer = mTemplateUrlServiceObserverCaptor.getValue();
 
         mPropertyModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, mLensClickListener);
+        mPropertyModel.set(SearchBoxProperties.AI_CHIP_CLICK_CALLBACK, mAiChipClickListener);
         mPropertyModel.set(
                 SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK, mVoiceSearchClickListener);
         mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK, mSearchBoxClickListener);
@@ -147,6 +152,7 @@ public class SearchBoxMediatorUnitTest {
         mPropertyModel.set(SearchBoxProperties.DSE_ICON_DRAWABLE, new ColorDrawable(Color.RED));
 
         assertNotNull(mPropertyModel.get(SearchBoxProperties.LENS_CLICK_CALLBACK));
+        assertNotNull(mPropertyModel.get(SearchBoxProperties.AI_CHIP_CLICK_CALLBACK));
         assertNotNull(mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK));
         assertNotNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK));
         assertNotNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK));
@@ -158,6 +164,7 @@ public class SearchBoxMediatorUnitTest {
         verify(mActivityLifecycleDispatcher).unregister(mMediator);
         verify(mTemplateUrlService).removeObserver(observer);
         assertNull(mPropertyModel.get(SearchBoxProperties.LENS_CLICK_CALLBACK));
+        assertNull(mPropertyModel.get(SearchBoxProperties.AI_CHIP_CLICK_CALLBACK));
         assertNull(mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK));
         assertNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK));
         assertNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK));
@@ -639,6 +646,20 @@ public class SearchBoxMediatorUnitTest {
         observer.onTemplateURLServiceChanged();
 
         assertFalse(mPropertyModel.get(SearchBoxProperties.AI_CHIP_VISIBILITY));
+    }
+
+    @Test
+    public void testOnAiChipClick() {
+        GURL mockUrl = new GURL("https://google.com/ai");
+        when(mTemplateUrlService.getComposeplateUrl()).thenReturn(mockUrl);
+
+        OnClickListener listener = mPropertyModel.get(SearchBoxProperties.AI_CHIP_CLICK_CALLBACK);
+        assertNotNull(listener);
+
+        listener.onClick(mView);
+
+        verify(mNewTabPageManager).loadUrl(mLoadUrlParamsCaptor.capture(), eq(false));
+        assertEquals(mockUrl.getSpec(), mLoadUrlParamsCaptor.getValue().getUrl());
     }
 
     private void verifyApplyBackground(View view) {

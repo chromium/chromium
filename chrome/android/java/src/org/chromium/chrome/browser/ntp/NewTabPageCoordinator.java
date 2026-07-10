@@ -553,15 +553,14 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         GURL composeplateUrl = assumeNonNull(mComposeplateUrlSupplier).get();
         if (composeplateUrl == null) return;
 
-        mManager.getNativePageHost()
-                .loadUrl(new LoadUrlParams(composeplateUrl), /* incognito= */ false);
+        mManager.loadUrl(new LoadUrlParams(composeplateUrl), /* incognito= */ false);
     }
 
     private void onIncognitoButtonClicked(View view) {
         if (!IncognitoUtils.isIncognitoModeEnabled(mProfile)) return;
 
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
-        mManager.getNativePageHost().loadUrl(new LoadUrlParams(resolver.getNtpUrl()), true);
+        mManager.loadUrl(new LoadUrlParams(resolver.getNtpUrl()), /* incognito= */ true);
     }
 
     @VisibleForTesting
@@ -604,7 +603,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         Callback<LoadUrlParams> logoClickedCallback =
                 mCallbackController.makeCancelable(
                         (urlParams) -> {
-                            mManager.getNativePageHost().loadUrl(urlParams, /* incognito= */ false);
+                            mManager.loadUrl(urlParams, /* incognito= */ false);
                             BrowserUiUtils.recordModuleClickHistogram(
                                     ModuleTypeOnStartAndNtp.DOODLE);
                         });

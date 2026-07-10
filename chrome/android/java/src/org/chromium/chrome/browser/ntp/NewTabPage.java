@@ -112,6 +112,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -339,6 +340,12 @@ public class NewTabPage
 
             // If not visible when loading completes, wait until onShown is received.
             if (!mTab.isHidden()) recordNtpShown();
+        }
+
+        @Override
+        public void loadUrl(LoadUrlParams urlParams, boolean incognito) {
+            if (mIsDestroyed) return;
+            getNativePageHost().loadUrl(urlParams, incognito);
         }
     }
 

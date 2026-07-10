@@ -8,6 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 /** Manages the view interaction with the rest of the system. */
 @NullMarked
@@ -43,4 +44,13 @@ public interface NewTabPageManager extends SuggestionsUiDelegate {
      * and any dependent resources will have been loaded).
      */
     void onLoadingComplete();
+
+    /**
+     * Loads the URL with the given parameters.
+     *
+     * @param urlParams Parameters describing the URL to load.
+     * @param incognito Whether to load the URL in incognito mode.
+     */
+    void loadUrl(LoadUrlParams urlParams, boolean incognito);
 }
+

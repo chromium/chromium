@@ -27,7 +27,9 @@ class SearchBoxViewBinder
     @Override
     public final void bind(
             PropertyModel model, SearchBoxContainerView view, PropertyKey propertyKey) {
-        if (SearchBoxProperties.AI_CHIP_VISIBILITY == propertyKey) {
+        if (SearchBoxProperties.AI_CHIP_CLICK_CALLBACK == propertyKey) {
+            view.mAiChip.setOnClickListener(model.get(SearchBoxProperties.AI_CHIP_CLICK_CALLBACK));
+        } else if (SearchBoxProperties.AI_CHIP_VISIBILITY == propertyKey) {
             view.mAiChip.setVisibility(
                     model.get(SearchBoxProperties.AI_CHIP_VISIBILITY) ? View.VISIBLE : View.GONE);
         } else if (SearchBoxProperties.ALPHA == propertyKey) {

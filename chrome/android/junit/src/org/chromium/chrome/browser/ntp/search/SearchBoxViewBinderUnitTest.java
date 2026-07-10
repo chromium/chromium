@@ -169,4 +169,11 @@ public class SearchBoxViewBinderUnitTest {
         mPropertyModel.set(SearchBoxProperties.AI_CHIP_VISIBILITY, false);
         assertEquals(View.GONE, mSearchBoxLayout.mAiChip.getVisibility());
     }
+
+    @Test
+    public void testSetAiChipClickListener() {
+        mPropertyModel.set(SearchBoxProperties.AI_CHIP_CLICK_CALLBACK, mOnClickListener);
+        mSearchBoxLayout.mAiChip.performClick();
+        verify(mOnClickListener).onClick(mSearchBoxLayout.mAiChip);
+    }
 }
