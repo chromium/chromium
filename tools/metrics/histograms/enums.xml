@@ -8315,6 +8315,7 @@ from previous Chrome versions.
   <int value="-1920004248" label="FeedBackToTop:disabled"/>
   <int value="-1919988535" label="PrinterSettingsPrinterStatus:disabled"/>
   <int value="-1919683750" label="EnableOopPrintDrivers:disabled"/>
+  <int value="-1919405102" label="NtpStarterChip:enabled"/>
   <int value="-1919199528"
       label="AlwaysShowServerCardsInSyncTransport:disabled"/>
   <int value="-1918375566" label="AutofillVirtualViewStructureAndroid:enabled"/>
@@ -18686,6 +18687,7 @@ from previous Chrome versions.
   <int value="1453393588" label="DiscoverFeedMultiColumn:disabled"/>
   <int value="1453448177"
       label="ExposeOutOfProcessVideoDecodingToLacros:disabled"/>
+  <int value="1453503903" label="NtpStarterChip:disabled"/>
   <int value="1453903487" label="ReaderModeBlurTransitionAnimation:disabled"/>
   <int value="1454006695" label="BlinkHeapUnifiedGarbageCollection:disabled"/>
   <int value="1454028829" label="EnhancedProtectionPromoCard:disabled"/>
