@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
         RepeatingConnectionErrorWithReasonCallback disconnect_handler) = 0;
     virtual void FlushForTesting() = 0;
     virtual void ResetWithReason(uint32_t custom_reason_code,
-                                 const std::string& description) = 0;
+                                 std::string_view description) = 0;
   };
 
   class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Entry {
@@ -138,7 +138,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
   bool Remove(ReceiverId id);
   bool RemoveWithReason(ReceiverId id,
                         uint32_t custom_reason_code,
-                        const std::string& description);
+                        std::string_view description);
   void FlushForTesting();
   void SetDispatchContext(void* context, ReceiverId receiver_id);
   void OnDisconnect(ReceiverId id,
@@ -324,7 +324,7 @@ class ReceiverSetBase {
   // Similar to the method above, but also specifies a disconnect reason.
   bool RemoveWithReason(ReceiverId id,
                         uint32_t custom_reason_code,
-                        const std::string& description) {
+                        std::string_view description) {
     return state_.RemoveWithReason(id, custom_reason_code, description);
   }
 
@@ -365,7 +365,7 @@ class ReceiverSetBase {
   void Clear() { state_.entries().clear(); }
   // Similar to the method above, but also specifies a disconnect reason.
   void ClearWithReason(uint32_t custom_reason_code,
-                       const std::string& description) {
+                       std::string_view description) {
     for (auto& entry : state_.entries()) {
       entry.second->receiver().ResetWithReason(custom_reason_code, description);
     }
@@ -521,7 +521,7 @@ class ReceiverSetBase {
     void FlushForTesting() override { receiver_.FlushForTesting(); }
 
     void ResetWithReason(uint32_t custom_reason_code,
-                         const std::string& description) override {
+                         std::string_view description) override {
       receiver_.ResetWithReason(custom_reason_code, description);
     }
 

@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_SELF_OWNED_RECEIVER_H_
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"

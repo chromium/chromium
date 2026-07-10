@@ -125,7 +125,7 @@ bool ReceiverSetState::Remove(ReceiverId id) {
 
 bool ReceiverSetState::RemoveWithReason(ReceiverId id,
                                         uint32_t custom_reason_code,
-                                        const std::string& description) {
+                                        std::string_view description) {
   auto it = entries_.find(id);
   if (it == entries_.end()) {
     return false;

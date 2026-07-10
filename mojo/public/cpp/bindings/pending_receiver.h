@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_PENDING_RECEIVER_H_
 
 #include <concepts>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -95,7 +96,7 @@ class PendingReceiver {
   void reset() { state_.reset(); }
 
   // Like above but provides a reason for the disconnection.
-  void ResetWithReason(uint32_t reason, const std::string& description) {
+  void ResetWithReason(uint32_t reason, std::string_view description) {
     CHECK(is_valid()) << "Cannot send reset reason to an invalid handle.";
 
     Message message =

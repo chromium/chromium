@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <concepts>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -78,7 +79,7 @@ class PendingAssociatedReceiver {
 
   // Similar to above but provides additional metadata in case the remote
   // endpoint wants details about why this endpoint hung up.
-  void ResetWithReason(uint32_t custom_reason, const std::string& description) {
+  void ResetWithReason(uint32_t custom_reason, std::string_view description) {
     handle_.ResetWithReason(custom_reason, description);
   }
 

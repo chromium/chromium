@@ -8,12 +8,13 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 namespace mojo {
 
 struct DisconnectReason {
  public:
-  DisconnectReason(uint32_t in_custom_reason, const std::string& in_description)
+  DisconnectReason(uint32_t in_custom_reason, std::string_view in_description)
       : custom_reason(in_custom_reason), description(in_description) {}
 
   uint32_t custom_reason;
