@@ -34,20 +34,20 @@ inline constexpr AccountSetting kAccountSettingContext{
     "143", base::Value::Type::BOOLEAN,
     &features::kAccountSettingContextKillSwitch};
 
-inline constexpr AccountSetting kAccountSettingContextWorkspace{
-    "185", base::Value::Type::BOOLEAN,
-    &features::kAccountSettingContextKillSwitch};
-
-inline constexpr AccountSetting kAccountSettingContextPhotos{
-    "186", base::Value::Type::BOOLEAN,
-    &features::kAccountSettingContextKillSwitch};
-
 inline constexpr AccountSetting kAccountSettingContextSearch{
     "144", base::Value::Type::BOOLEAN,
     &features::kAccountSettingContextKillSwitch};
 
 inline constexpr AccountSetting kAccountSettingContextYoutube{
     "161", base::Value::Type::BOOLEAN,
+    &features::kAccountSettingContextKillSwitch};
+
+inline constexpr AccountSetting kAccountSettingContextWorkspace{
+    "185", base::Value::Type::BOOLEAN,
+    &features::kAccountSettingContextKillSwitch};
+
+inline constexpr AccountSetting kAccountSettingContextPhotos{
+    "186", base::Value::Type::BOOLEAN,
     &features::kAccountSettingContextKillSwitch};
 
 }  // namespace account_settings
