@@ -20,11 +20,14 @@ class V5SearchHashesCacheFactoryTest : public PlatformTest {
   std::unique_ptr<ProfileIOS> profile_;
 };
 
-// Checks that V5SearchHashesCacheFactory returns null for an
-// off-the-record profile.
-TEST_F(V5SearchHashesCacheFactoryTest, DisabledForIncognitoMode) {
-  EXPECT_FALSE(V5SearchHashesCacheFactory::GetForProfile(
+// Checks that V5SearchHashesCacheFactory returns a non-null and distinct
+// instance for an off-the-record profile.
+TEST_F(V5SearchHashesCacheFactoryTest, EnabledForIncognitoMode) {
+  EXPECT_TRUE(V5SearchHashesCacheFactory::GetForProfile(
       profile_->GetOffTheRecordProfile()));
+  EXPECT_NE(V5SearchHashesCacheFactory::GetForProfile(profile_.get()),
+            V5SearchHashesCacheFactory::GetForProfile(
+                profile_->GetOffTheRecordProfile()));
 }
 
 // Checks that V5SearchHashesCacheFactory returns a non-null instance for a

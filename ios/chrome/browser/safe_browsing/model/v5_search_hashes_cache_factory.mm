@@ -23,7 +23,9 @@ V5SearchHashesCacheFactory* V5SearchHashesCacheFactory::GetInstance() {
 }
 
 V5SearchHashesCacheFactory::V5SearchHashesCacheFactory()
-    : ProfileKeyedServiceFactoryIOS("V5SearchHashesCache") {}
+    : ProfileKeyedServiceFactoryIOS("V5SearchHashesCache",
+                                    ProfileSelection::kOwnInstanceInIncognito) {
+}
 
 std::unique_ptr<KeyedService>
 V5SearchHashesCacheFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {

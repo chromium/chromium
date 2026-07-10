@@ -20,7 +20,7 @@ namespace safe_browsing {
 class V5SearchHashesCache;
 
 // Singleton that owns V5SearchHashesCache objects, one for each active Profile
-// (original profile only).
+// (including off-the-record profiles).
 class V5SearchHashesCacheFactory : public ProfileKeyedServiceFactory {
  public:
   // Creates the service if it doesn't exist already for the given `profile`.

@@ -31,14 +31,24 @@ TEST_F(V5SearchHashesCacheFactoryTest, EnabledForRegularProfiles) {
   EXPECT_NE(nullptr, V5SearchHashesCacheFactory::GetForProfile(profile));
 }
 
-TEST_F(V5SearchHashesCacheFactoryTest, DisabledForIncognitoMode) {
+TEST_F(V5SearchHashesCacheFactoryTest, EnabledForIncognitoMode) {
   TestingProfile* profile =
       profile_manager_->CreateTestingProfile("testing_profile");
   Profile* incognito_profile =
       profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
-  EXPECT_EQ(nullptr,
+  EXPECT_NE(nullptr,
             V5SearchHashesCacheFactory::GetForProfile(incognito_profile));
+  EXPECT_NE(V5SearchHashesCacheFactory::GetForProfile(profile),
+            V5SearchHashesCacheFactory::GetForProfile(incognito_profile));
+}
+
+TEST_F(V5SearchHashesCacheFactoryTest, EnabledForGuestMode) {
+  Profile* profile =
+      profile_manager_->CreateGuestProfile()->GetPrimaryOTRProfile(
+          /*create_if_needed=*/true);
+
+  EXPECT_NE(nullptr, V5SearchHashesCacheFactory::GetForProfile(profile));
 }
 
 }  // namespace safe_browsing

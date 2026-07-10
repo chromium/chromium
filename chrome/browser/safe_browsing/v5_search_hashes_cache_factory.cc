@@ -27,8 +27,9 @@ V5SearchHashesCacheFactory::V5SearchHashesCacheFactory()
     : ProfileKeyedServiceFactory(
           "V5SearchHashesCache",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              .WithAshInternals(ProfileSelection::kOriginalOnly)
+              .WithRegular(ProfileSelection::kOwnInstance)
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {}
 
 std::unique_ptr<KeyedService>
