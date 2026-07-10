@@ -1681,6 +1681,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "cct-tab-resumption",
+    "owners": ["tivi@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "cellular-bypass-esim-installation-connectivity-check",
     "owners": [ "khorimoto@chromium.org", "jiajunz@google.com", "cros-device-enablement@google.com" ],
     // This flag does not expire because it allows some test cases that host a local SM-DP+ server

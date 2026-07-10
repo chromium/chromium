@@ -13400,6 +13400,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTextHighlightFullLinkDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTextHighlightFullLink)},
 #endif
+#if BUILDFLAG(IS_ANDROID)
+    {"cct-tab-resumption",
+     flag_descriptions::kCctTabResumptionName,
+     flag_descriptions::kCctTabResumptionDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCctTabResumption)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

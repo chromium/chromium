@@ -132,6 +132,7 @@ BASE_DECLARE_FEATURE(kCacheDeprecatedSystemLocationSetting);
 BASE_DECLARE_FEATURE(kCacheIsGoogleSigned);
 BASE_DECLARE_FEATURE(kCacheIsMultiInstanceApi31Enabled);
 BASE_DECLARE_FEATURE(kCastDeviceFilter);
+BASE_DECLARE_FEATURE(kCctTabResumption);
 BASE_DECLARE_FEATURE(kChangeUnfocusedPriority);
 BASE_DECLARE_FEATURE(kChromeItemPickerUi);
 BASE_DECLARE_FEATURE(kChromeShareScreenshot);

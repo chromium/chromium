@@ -14292,6 +14292,7 @@ from previous Chrome versions.
       label="ExperimentalAccessibilitySelectToSpeakVoiceSwitching:enabled"/>
   <int value="-96752091"
       label="InitializePoliciesForSignedInUserInNewEntryPoints:disabled"/>
+  <int value="-95704655" label="CctTabResumption:disabled"/>
   <int value="-95160434" label="AdvancedPeripheralsSupport:disabled"/>
   <int value="-95018838" label="BuiltInHlsPlayer:enabled"/>
   <int value="-94535722" label="TimeOfDayWallpaper:enabled"/>
@@ -17325,6 +17326,7 @@ from previous Chrome versions.
   <int value="873323760" label="MediaFoundationClearPlayback:disabled"/>
   <int value="874614410" label="CSSOverflowForReplacedElements:enabled"/>
   <int value="875077636" label="OriginAgentClusterDefaultEnable:disabled"/>
+  <int value="875092151" label="CctTabResumption:enabled"/>
   <int value="875647914" label="AimServerEligibilityEnabled:disabled"/>
   <int value="876349279" label="WebViewExtraHeadersSameDomainOnly:enabled"/>
   <int value="876507291" label="CollapseTabGroupDuringDrag:enabled"/>

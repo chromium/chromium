@@ -5507,6 +5507,10 @@ inline constexpr char kAndroidWindowOcclusionDescription[] =
     "Enables occlusion tracking on Android, which can save CPU and memory in "
     "multi-window environments.";
 
+inline constexpr char kCctTabResumptionName[] = "Custom Tabs Tab Resumption";
+inline constexpr char kCctTabResumptionDescription[] =
+    "Enables showing tab resumption suggestions within Custom Tabs.";
+
 inline constexpr char kHomeButtonRemovalName[] = "Home Button Removal";
 inline constexpr char kHomeButtonRemovalDescription[] =
     "Enables the Home Button Removal feature.";
