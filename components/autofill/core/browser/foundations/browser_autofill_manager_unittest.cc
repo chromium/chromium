@@ -1376,8 +1376,6 @@ class BrowserAutofillManagerAtMemoryTest : public BrowserAutofillManagerTest {
                               features::kShowAutocompleteAtMemoryButton},
         /*disabled_features=*/{});
 
-    personal_context::prefs::RegisterProfilePrefs(
-        autofill_client().GetPrefs()->registry());
     autofill_client().GetPrefs()->SetBoolean(
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         true);
