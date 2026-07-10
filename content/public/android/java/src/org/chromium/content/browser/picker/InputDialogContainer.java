@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TimePicker;
 
 import org.chromium.base.Log;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -28,6 +29,7 @@ import org.chromium.content.R;
 import org.chromium.content.browser.picker.DateTimePickerDialog.OnDateTimeSetListener;
 import org.chromium.content.browser.picker.MultiFieldTimePickerDialog.OnMultiFieldTimeSetListener;
 import org.chromium.content_public.browser.util.DialogTypeRecorder;
+import org.chromium.ui.base.MaterialDatePickerProvider;
 import org.chromium.ui.base.ime.TextInputType;
 
 import java.util.Arrays;
@@ -271,6 +273,32 @@ public class InputDialogContainer {
 
         AlertDialog dialog;
         if (dialogType == TextInputType.DATE) {
+            // The MaterialDatePickerProvider service can be null if the service was not
+            // registered by the embedder (e.g., in WebView). If null, we fall back to the legacy
+            // DatePickerDialogCompat below.
+            MaterialDatePickerProvider datePickerProvider =
+                    ServiceLoaderUtil.maybeCreate(MaterialDatePickerProvider.class);
+            if (datePickerProvider != null) {
+                mDialogAlreadyDismissed = false;
+                boolean status;
+                status =
+                        datePickerProvider.showDatePicker(
+                                mContext,
+                                (long) min,
+                                (long) max,
+                                (selection) -> {
+                                    if (mDialogAlreadyDismissed) return;
+                                    mDialogAlreadyDismissed = true;
+                                    mInputActionDelegate.replaceDateTime((double) selection);
+                                },
+                                () -> {
+                                    if (!mDialogAlreadyDismissed) {
+                                        mDialogAlreadyDismissed = true;
+                                        mInputActionDelegate.cancelDateTimeDialog();
+                                    }
+                                });
+                if (status) return;
+            }
             DatePickerDialogCompat dateDialog =
                     new DatePickerDialogCompat(
                             mContext, new DateListener(dialogType), year, month, monthDay);
