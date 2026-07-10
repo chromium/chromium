@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/ime/ash/input_method_util.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -371,31 +368,36 @@ TEST_F(InputMethodUtilTest, TestGetLanguageCodesFromInputMethodIds) {
 
 // Test the input method ID migration.
 TEST_F(InputMethodUtilTest, TestInputMethodIDMigration) {
-  const char* const migration_cases[][2] = {
-      {"ime:zh:pinyin", "zh-t-i0-pinyin"},
-      {"ime:zh-t:zhuyin", "zh-hant-t-i0-und"},
-      {"ime:zh-t:quick", "zh-hant-t-i0-cangjie-1987-x-m0-simplified"},
-      {"ime:jp:mozc_us", "nacl_mozc_us"},
-      {"ime:ko:hangul", "ko-t-i0-und"},
-      {"m17n:deva_phone", "vkd_deva_phone"},
-      {"m17n:ar", "vkd_ar"},
-      {"t13n:hi", "hi-t-i0-und"},
-      {"unknown", "unknown"},
+  struct MigrationCase {
+    const char* old_id;
+    const char* new_id;
+  };
+  const std::array migration_cases = {
+      MigrationCase{"ime:zh:pinyin", "zh-t-i0-pinyin"},
+      MigrationCase{"ime:zh-t:zhuyin", "zh-hant-t-i0-und"},
+      MigrationCase{"ime:zh-t:quick",
+                    "zh-hant-t-i0-cangjie-1987-x-m0-simplified"},
+      MigrationCase{"ime:jp:mozc_us", "nacl_mozc_us"},
+      MigrationCase{"ime:ko:hangul", "ko-t-i0-und"},
+      MigrationCase{"m17n:deva_phone", "vkd_deva_phone"},
+      MigrationCase{"m17n:ar", "vkd_ar"},
+      MigrationCase{"t13n:hi", "hi-t-i0-und"},
+      MigrationCase{"unknown", "unknown"},
   };
   std::vector<std::string> input_method_ids;
   for (const auto& migration_case : migration_cases) {
-    input_method_ids.emplace_back(migration_case[0]);
+    input_method_ids.emplace_back(migration_case.old_id);
   }
   // Duplicated hangul_2set.
   input_method_ids.emplace_back("ime:ko:hangul_2set");
 
   util_.GetMigratedInputMethodIDs(&input_method_ids);
 
-  EXPECT_EQ(std::size(migration_cases), input_method_ids.size());
-  for (size_t i = 0; i < std::size(migration_cases); ++i) {
-    EXPECT_EQ(
-        extension_ime_util::GetInputMethodIDByEngineID(migration_cases[i][1]),
-        input_method_ids[i]);
+  EXPECT_EQ(migration_cases.size(), input_method_ids.size());
+  for (size_t i = 0; i < migration_cases.size(); ++i) {
+    EXPECT_EQ(extension_ime_util::GetInputMethodIDByEngineID(
+                  migration_cases[i].new_id),
+              input_method_ids[i]);
   }
 }
 

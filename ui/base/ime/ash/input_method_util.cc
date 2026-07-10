@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/ime/ash/input_method_util.h"
 
 #include <stddef.h>
@@ -19,6 +14,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -208,7 +204,7 @@ const struct InputMethodNameMap {
   const char* message_name;
   int resource_id;
   bool operator<(const InputMethodNameMap& other) const {
-    return strcmp(message_name, other.message_name) < 0;
+    return UNSAFE_TODO(strcmp(message_name, other.message_name)) < 0;
   }
 } kInputMethodNameMap[] = {
     {"__MSG_INPUTMETHOD_ARRAY__", IDS_IME_NAME_INPUTMETHOD_ARRAY},
@@ -545,8 +541,8 @@ std::string InputMethodUtil::GetLocalizedDisplayName(
     std::string name = base::ToUpperASCII(disp);
     const InputMethodNameMap map_key = {name.c_str(), 0};
     const InputMethodNameMap* p =
-        std::lower_bound(map, map + map_size, map_key);
-    if (p != map + map_size && name == p->message_name) {
+        std::lower_bound(map, UNSAFE_TODO(map + map_size), map_key);
+    if (p != UNSAFE_TODO(map + map_size) && name == p->message_name) {
       return l10n_util::GetStringUTF8(p->resource_id);
     }
   }

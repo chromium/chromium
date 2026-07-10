@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/ime/win/tsf_input_scope.h"
 
 #include <windows.h>
@@ -85,7 +80,7 @@ class TSFInputScope final : public ITfInputScope {
     }
 
     for (size_t i = 0; i < input_scopes_.size(); ++i)
-      (*input_scopes)[i] = input_scopes_[i];
+      UNSAFE_TODO((*input_scopes)[i]) = input_scopes_[i];
     *count = input_scopes_.size();
     return S_OK;
   }

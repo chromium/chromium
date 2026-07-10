@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/ime/win/input_method_win_base.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -120,14 +116,15 @@ bool IsCtrlShiftPressed(base::i18n::TextDirection* direction) {
   //    To ignore the keys checked in 1, we set their status to 0 before
   //    checking the key status.
   const int kKeyDownMask = 0x80;
-  if ((keystate[VK_CONTROL] & kKeyDownMask) == 0)
+  if ((UNSAFE_TODO(keystate[VK_CONTROL]) & kKeyDownMask) == 0) {
     return false;
+  }
 
-  if (keystate[VK_RSHIFT] & kKeyDownMask) {
-    keystate[VK_RSHIFT] = 0;
+  if (UNSAFE_TODO(keystate[VK_RSHIFT]) & kKeyDownMask) {
+    UNSAFE_TODO(keystate[VK_RSHIFT]) = 0;
     *direction = base::i18n::RIGHT_TO_LEFT;
-  } else if (keystate[VK_LSHIFT] & kKeyDownMask) {
-    keystate[VK_LSHIFT] = 0;
+  } else if (UNSAFE_TODO(keystate[VK_LSHIFT]) & kKeyDownMask) {
+    UNSAFE_TODO(keystate[VK_LSHIFT]) = 0;
     *direction = base::i18n::LEFT_TO_RIGHT;
   } else {
     return false;
@@ -139,17 +136,18 @@ bool IsCtrlShiftPressed(base::i18n::TextDirection* direction) {
   // right-shift key (or a left-shift key), i.e. we should ignore the status of
   // the keys: VK_SHIFT, VK_CONTROL, VK_RCONTROL, and VK_LCONTROL.
   // So, we reset their status to 0 and ignore them.
-  keystate[VK_SHIFT] = 0;
-  keystate[VK_CONTROL] = 0;
-  keystate[VK_RCONTROL] = 0;
-  keystate[VK_LCONTROL] = 0;
+  UNSAFE_TODO(keystate[VK_SHIFT]) = 0;
+  UNSAFE_TODO(keystate[VK_CONTROL]) = 0;
+  UNSAFE_TODO(keystate[VK_RCONTROL]) = 0;
+  UNSAFE_TODO(keystate[VK_LCONTROL]) = 0;
   // Oddly, pressing F10 in another application seemingly breaks all subsequent
   // calls to GetKeyboardState regarding the state of the F22 key. Perhaps this
   // defect is limited to my keyboard driver, but ignoring F22 should be okay.
-  keystate[VK_F22] = 0;
+  UNSAFE_TODO(keystate[VK_F22]) = 0;
   for (int i = 0; i <= VK_PACKET; ++i) {
-    if (keystate[i] & kKeyDownMask)
+    if (UNSAFE_TODO(keystate[i]) & kKeyDownMask) {
       return false;
+    }
   }
   return true;
 }
@@ -391,8 +389,8 @@ LRESULT InputMethodWinBase::OnDocumentFeed(RECONVERTSTRING* reconv) {
   reconv->dwTargetStrLen = target_range.length();
   reconv->dwTargetStrOffset = reconv->dwCompStrOffset;
 
-  memcpy((char*)reconv + sizeof(RECONVERTSTRING), text.c_str(),
-         len * sizeof(WCHAR));
+  UNSAFE_TODO(memcpy((char*)reconv + sizeof(RECONVERTSTRING), text.c_str(),
+                     len * sizeof(WCHAR)));
 
   // According to Microsoft API document, IMR_RECONVERTSTRING and
   // IMR_DOCUMENTFEED should return reconv, but some applications return
@@ -445,8 +443,8 @@ LRESULT InputMethodWinBase::OnReconvertString(RECONVERTSTRING* reconv) {
   reconv->dwTargetStrLen = len;
   reconv->dwTargetStrOffset = 0;
 
-  memcpy(reinterpret_cast<char*>(reconv) + sizeof(RECONVERTSTRING),
-         text.c_str(), len * sizeof(WCHAR));
+  UNSAFE_TODO(memcpy(reinterpret_cast<char*>(reconv) + sizeof(RECONVERTSTRING),
+                     text.c_str(), len * sizeof(WCHAR)));
 
   // According to Microsoft API document, IMR_RECONVERTSTRING and
   // IMR_DOCUMENTFEED should return reconv, but some applications return

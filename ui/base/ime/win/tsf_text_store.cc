@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "base/compiler_specific.h"
 
 #define INITGUID  // required for GUID_PROP_INPUTSCOPE
 #include "ui/base/ime/win/tsf_text_store.h"
@@ -345,7 +342,7 @@ HRESULT TSFTextStore::GetText(LONG acp_start,
   std::u16string_view result = std::u16string_view(string_buffer_document_)
                                    .substr(acp_start, *text_buffer_copied);
   for (size_t i = 0; i < result.size(); ++i) {
-    text_buffer[i] = result[i];
+    UNSAFE_TODO(text_buffer[i]) = result[i];
   }
 
   if (*text_buffer_copied > 0 && run_info_buffer_size) {
@@ -551,7 +548,7 @@ HRESULT TSFTextStore::InsertTextAtSelection(DWORD flags,
   DCHECK_LE(start_pos, end_pos);
   string_buffer_document_ =
       string_buffer_document_.substr(0, start_pos) +
-      std::u16string(text_buffer, text_buffer + text_buffer_size) +
+      std::u16string(text_buffer, UNSAFE_TODO(text_buffer + text_buffer_size)) +
       string_buffer_document_.substr(end_pos);
 
   // reconstruct string that needs to be inserted.
@@ -884,8 +881,9 @@ HRESULT TSFTextStore::RequestSupportedAttrs(
     return E_FAIL;
 
   supported_attrs_.clear();
-  for (size_t i = 0; i < attribute_buffer_size; ++i) {
-    const auto& attribute = attribute_buffer[i];
+  auto attributes =
+      UNSAFE_TODO(base::span(attribute_buffer, attribute_buffer_size));
+  for (const auto& attribute : attributes) {
     if (IsEqualGUID(GUID_PROP_INPUTSCOPE, attribute) ||
         IsEqualGUID(GUID_PROP_URL, attribute) ||
         IsEqualGUID(TSATTRID_Text_VerticalWriting, attribute)) {
@@ -912,24 +910,26 @@ HRESULT TSFTextStore::RetrieveRequestedAttrs(ULONG attribute_buffer_size,
   *attribute_buffer_copied = std::min(
       attribute_buffer_size, static_cast<ULONG>(supported_attrs_.size()));
 
+  auto attributes =
+      UNSAFE_TODO(base::span(attribute_buffer, *attribute_buffer_copied));
   for (size_t i = 0; i < *attribute_buffer_copied; ++i) {
-    attribute_buffer[i].idAttr = supported_attrs_[i];
+    attributes[i].idAttr = supported_attrs_[i];
     // In TSF, this parameter value is zero.
     // https://docs.microsoft.com/en-us/windows/win32/api/textstor/ns-textstor-ts_attrval
-    attribute_buffer[i].dwOverlapId = 0;
+    attributes[i].dwOverlapId = 0;
     // If the caller is asking for the input scope, then create one based on
     // the input client and return the COM object for it.
     if (IsEqualGUID(GUID_PROP_INPUTSCOPE, supported_attrs_[i])) {
-      attribute_buffer[i].varValue.vt = VT_UNKNOWN;
-      attribute_buffer[i].varValue.punkVal = tsf_inputscope::CreateInputScope(
+      attributes[i].varValue.vt = VT_UNKNOWN;
+      attributes[i].varValue.punkVal = tsf_inputscope::CreateInputScope(
           text_input_client_->GetTextInputType(),
           text_input_client_->GetTextInputMode(),
           text_input_client_->ShouldDoLearning());
-      attribute_buffer[i].varValue.punkVal->AddRef();
+      attributes[i].varValue.punkVal->AddRef();
     } else if (IsEqualGUID(GUID_PROP_URL, supported_attrs_[i])) {
       const ui::TextInputClient::EditingContext editing_context =
           text_input_client_->GetTextEditingContext();
-      attribute_buffer[i].varValue.vt = VT_BSTR;
+      attributes[i].varValue.vt = VT_BSTR;
       std::wstring wide_url;
       // If the caller is asking for the URL, get the URL from the
       // the text input client (if there is one).
@@ -937,12 +937,12 @@ HRESULT TSFTextStore::RetrieveRequestedAttrs(ULONG attribute_buffer_size,
         const std::string& url_string = editing_context.page_url.spec();
         wide_url = base::UTF8ToWide(url_string);
       }
-      attribute_buffer[i].varValue.bstrVal =
+      attributes[i].varValue.bstrVal =
           SysAllocStringLen(wide_url.c_str(), wide_url.length());
     } else if (IsEqualGUID(TSATTRID_Text_VerticalWriting,
                            supported_attrs_[i])) {
-      attribute_buffer[i].varValue.vt = VT_BOOL;
-      attribute_buffer[i].varValue.boolVal =
+      attributes[i].varValue.vt = VT_BOOL;
+      attributes[i].varValue.boolVal =
           !!(text_input_client_->GetTextInputFlags() &
              ui::TEXT_INPUT_FLAG_VERTICAL);
     }
@@ -1778,9 +1778,8 @@ bool TSFTextStore::MaybeSendOnUrlChanged() {
   if (!is_empty_text_store_ || (text_store_acp_sink_ == nullptr)) {
     return false;
   }
-  TS_ATTRID attrs[1];
-  attrs[0] = GUID_PROP_URL;
-  text_store_acp_sink_->OnAttrsChange(NULL, NULL, 1, attrs);
+  TS_ATTRID attr = GUID_PROP_URL;
+  text_store_acp_sink_->OnAttrsChange(NULL, NULL, 1, &attr);
   return true;
 }
 

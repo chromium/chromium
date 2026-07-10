@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/ime/win/tsf_text_store.h"
 
 #include <initguid.h>  // for GUID_NULL and GUID_PROP_INPUTSCOPE
@@ -16,8 +11,10 @@
 #include <tsattrs.h>
 #include <wrl/client.h>
 
+#include <array>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -318,8 +315,7 @@ class TSFTextStoreTestCallback {
                                          &text_buffer_copied, &run_info, 1,
                                          &run_info_buffer_copied, &next_acp));
     ASSERT_EQ(expected_string.size(), text_buffer_copied);
-    EXPECT_EQ(expected_string,
-              std::wstring(buffer, buffer + text_buffer_copied));
+    EXPECT_EQ(expected_string, std::wstring(buffer, text_buffer_copied));
     if (text_buffer_copied > 0) {
       EXPECT_EQ(1u, run_info_buffer_copied);
       EXPECT_EQ(expected_string.size(), run_info.uCount);
@@ -1589,13 +1585,13 @@ TEST_F(TSFTextStoreTest, RetrieveRequestedAttrs) {
 
   {
     SCOPED_TRACE("Make sure that InputScope is supported");
-    TS_ATTRVAL buffer[2] = {};
+    std::array<TS_ATTRVAL, 2> buffer = {};
     num_copied = 0xfffffff;
     const TS_ATTRID kAttributes[] = {GUID_PROP_INPUTSCOPE};
     ASSERT_EQ(S_OK, text_store_->RequestSupportedAttrs(
                         0, std::size(kAttributes), kAttributes));
-    ASSERT_EQ(S_OK, text_store_->RetrieveRequestedAttrs(std::size(buffer),
-                                                        buffer, &num_copied));
+    ASSERT_EQ(S_OK, text_store_->RetrieveRequestedAttrs(
+                        buffer.size(), buffer.data(), &num_copied));
     bool input_scope_found = false;
     for (size_t i = 0; i < num_copied; ++i) {
       base::win::ScopedVariant variant;
@@ -1614,7 +1610,7 @@ TEST_F(TSFTextStoreTest, RetrieveRequestedAttrs) {
   }
   {
     SCOPED_TRACE("Verify URL support");
-    TS_ATTRVAL buffer[2] = {};
+    std::array<TS_ATTRVAL, 2> buffer = {};
     num_copied = 0xfffffff;
     base::win::ScopedVariant variant;
     const TS_ATTRID urlAttributes[] = {GUID_PROP_URL};
@@ -1623,8 +1619,8 @@ TEST_F(TSFTextStoreTest, RetrieveRequestedAttrs) {
     // and is expected to match the test_url value set above.
     ASSERT_EQ(S_OK, text_store_->RequestSupportedAttrs(
                         0, std::size(urlAttributes), urlAttributes));
-    ASSERT_EQ(S_OK, text_store_->RetrieveRequestedAttrs(std::size(buffer),
-                                                        buffer, &num_copied));
+    ASSERT_EQ(S_OK, text_store_->RetrieveRequestedAttrs(
+                        buffer.size(), buffer.data(), &num_copied));
     EXPECT_EQ(num_copied, 1U) << "Expect only URL property to be supported";
     EXPECT_TRUE(IsEqualGUID(buffer[0].idAttr, GUID_PROP_URL));
     std::swap(*variant.Receive(), buffer[0].varValue);
@@ -1636,7 +1632,7 @@ TEST_F(TSFTextStoreTest, RetrieveRequestedAttrs) {
   }
   {
     SCOPED_TRACE("Verify URL and InputScope support");
-    TS_ATTRVAL buffer[2] = {};
+    std::array<TS_ATTRVAL, 2> buffer = {};
     num_copied = 0xfffffff;
     const TS_ATTRID inputScopeAndUrlAttributes[] = {GUID_PROP_INPUTSCOPE,
                                                     GUID_PROP_URL};
@@ -1646,8 +1642,8 @@ TEST_F(TSFTextStoreTest, RetrieveRequestedAttrs) {
     ASSERT_EQ(S_OK, text_store_->RequestSupportedAttrs(
                         0, std::size(inputScopeAndUrlAttributes),
                         inputScopeAndUrlAttributes));
-    ASSERT_EQ(S_OK, text_store_->RetrieveRequestedAttrs(std::size(buffer),
-                                                        buffer, &num_copied));
+    ASSERT_EQ(S_OK, text_store_->RetrieveRequestedAttrs(
+                        buffer.size(), buffer.data(), &num_copied));
     EXPECT_EQ(num_copied, 2U)
         << "Expect both URL & InputScope properties to be supported";
     for (size_t i = 0; i < num_copied; ++i) {
