@@ -5,7 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_SCOPED_MESSAGE_ERROR_CRASH_KEY_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_SCOPED_MESSAGE_ERROR_CRASH_KEY_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/debug/crash_logging.h"
@@ -19,7 +19,7 @@ namespace debug {
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ScopedMessageErrorCrashKey
     : public base::debug::ScopedCrashKeyString {
  public:
-  explicit ScopedMessageErrorCrashKey(const std::string& mojo_message_error);
+  explicit ScopedMessageErrorCrashKey(std::string_view mojo_message_error);
   ~ScopedMessageErrorCrashKey();
 
   ScopedMessageErrorCrashKey(const ScopedMessageErrorCrashKey&) = delete;
