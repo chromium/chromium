@@ -41,6 +41,7 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
                                         bool needs_exclusion) const override;
   void OnLayoutParamsChanged(const BrowserLayoutParams& old_params,
                              const BrowserLayoutParams& new_params) override;
+  void OnGlassModeChanged() override;
   void ConfigureTopContainerBackground(
       const BrowserLayoutParams& params,
       CustomCornersBackground* background) override;

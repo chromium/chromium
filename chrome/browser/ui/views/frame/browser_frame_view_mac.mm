@@ -84,11 +84,21 @@ FullscreenToolbarStyle GetUserPreferredToolbarStyle(bool always_show) {
 BrowserFrameViewMac::BrowserFrameViewMac(BrowserWidget* frame,
                                          BrowserView* browser_view)
     : BrowserFrameView(frame, browser_view),
-      fullscreen_session_timer_(std::make_unique<base::OneShotTimer>()),
-      is_glass_frame_eligible_(
-          features::IsGlassFrameEnabled() &&
-          GlassFrameService::GetInstance()->IsBrowserWindowEligible(
-              browser_view->browser())) {
+      fullscreen_session_timer_(std::make_unique<base::OneShotTimer>()) {
+  // GlassFrameService is only available if glass frame is enabled.
+  if (auto* const glass_service = GlassFrameService::GetInstance()) {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+    is_glass_frame_eligible_ =
+        glass_service->IsBrowserWindowEligible(browser_view->browser());
+    glass_frame_service_subscription_ =
+        glass_service->RegisterGlassFrameEligibilityChangedCallback(
+            browser_view->browser(),
+            base::BindRepeating(
+                &BrowserFrameViewMac::OnGlassFrameEligibilityChanged,
+                base::Unretained(this)));
+  }
+
   if (web_app::AppBrowserController::IsWebApp(browser_view->browser())) {
     auto* provider =
         web_app::WebAppProvider::GetForWebApps(browser_view->GetProfile());
@@ -115,18 +125,6 @@ BrowserFrameViewMac::BrowserFrameViewMac(BrowserWidget* frame,
       caption_button_placeholder_container_ =
           AddChildView(std::make_unique<CaptionButtonPlaceholderContainer>());
     }
-  }
-
-  if (features::IsGlassFrameEnabled()) {
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-    glass_frame_service_subscription_ =
-        GlassFrameService::GetInstance()
-            ->RegisterGlassFrameEligibilityChangedCallback(
-                browser_view->browser(),
-                base::BindRepeating(
-                    &BrowserFrameViewMac::OnGlassFrameEligibilityChanged,
-                    base::Unretained(this)));
   }
 }
 
@@ -593,6 +591,9 @@ void BrowserFrameViewMac::EmitFullscreenSessionHistograms() {
 }
 
 void BrowserFrameViewMac::OnGlassFrameEligibilityChanged(bool is_eligible) {
+  if (is_eligible == is_glass_frame_eligible_) {
+    return;
+  }
   is_glass_frame_eligible_ = is_eligible;
   SchedulePaint();
 }
