@@ -2634,6 +2634,17 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.LocationIconView.Update.Time" units="microseconds"
+    expires_after="2026-10-10">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the duration of LocationIconView::Update calls. Recorded when the
+    location icon view is updated (e.g. during navigation or state changes).
+    This metric is only reported for clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram
     name="Omnibox.MatchStability2.MatchChangeInAnyPosition{OmniboxAutocompleteUpdateSlice}"
     enum="BooleanChanged" expires_after="2026-11-12">
