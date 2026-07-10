@@ -836,10 +836,14 @@ void BrowserActions::InitializePageActionIconActions() {
               features::IsRoundedIconsEnabled() ? kZoomInIcon : kZoomInOldIcon))
           .Build());
 
-  // The action does nothing, but is used to configure the page action, which
-  // acts as an anchor for the find bar.
   root_action_item_->AddChild(
-      actions::ActionItem::Builder(base::DoNothing())
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::Find(bwi);
+              },
+              bwi))
           .SetActionId(kActionFind)
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND))
           .SetImage(ui::ImageModel::FromVectorIcon(
@@ -2605,7 +2609,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                chrome::ToggleFullscreenMode(bwi);
+                chrome::ToggleFullscreenMode(bwi, /*user_initiated=*/true);
               },
               bwi))
           .SetActionId(kActionFullscreen)
@@ -3172,6 +3176,9 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                if (!BrowserWindow::FromBrowser(bwi)->IsLocationBarVisible()) {
+                  return;
+                }
                 chrome::FocusLocationBar(bwi);
               },
               bwi))
@@ -3502,7 +3509,9 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                         features::kDevToolsShowPolicyDialog) &&
                     !DevToolsWindow::AllowDevToolsFor(bwi->GetProfile(),
                                                       web_contents)) {
+#if !BUILDFLAG(IS_ANDROID)
                   DevToolsPolicyDialog::Show(web_contents);
+#endif  // !BUILDFLAG(IS_ANDROID)
                 } else {
                   web_contents->GetPrimaryMainFrame()->ViewSource();
                 }
