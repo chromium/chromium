@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/multistep_filter/core/logging/filter_acceptance_metrics_logger.h"
+#include "components/multistep_filter/core/logging/multistep_filter_metrics_tracker.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
@@ -12,12 +12,19 @@
 namespace multistep_filter {
 namespace {
 
-// Verifies that destroying a logger when suggestion cue was not shown emits
-// zero samples to any acceptance histograms.
-TEST(FilterAcceptanceMetricsLoggerTest, NoSuggestionShownRecordsNoSamples) {
+UrlFilterSuggestion CreateSuggestion(std::string task_type) {
+  UrlFilterSuggestion::Params params;
+  params.navigation_url = GURL("https://example.com");
+  params.task_type = std::move(task_type);
+  return UrlFilterSuggestion(std::move(params));
+}
+
+// Verifies that destroying a tracker when no suggestion was shown records
+// no samples.
+TEST(MultistepFilterMetricsTrackerTest, NoSuggestionShownRecordsNoSamples) {
   base::HistogramTester histogram_tester;
   {
-    FilterAcceptanceMetricsLogger logger("SEARCH_ACCOMMODATIONS");
+    MultistepFilterMetricsTracker tracker;
   }
   histogram_tester.ExpectTotalCount(
       kMultistepFilterAcceptanceInitialCueHistogram, 0);
@@ -29,12 +36,13 @@ TEST(FilterAcceptanceMetricsLoggerTest, NoSuggestionShownRecordsNoSamples) {
 // Verifies that showing the initial cue without explicit user interaction
 // defaults both initial cue and overall acceptance metrics to kIgnored upon
 // destruction.
-TEST(FilterAcceptanceMetricsLoggerTest,
+TEST(MultistepFilterMetricsTrackerTest,
      InitialCueShownAndIgnoredRecordsSample) {
   base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
   {
-    FilterAcceptanceMetricsLogger logger("SEARCH_ACCOMMODATIONS");
-    logger.RecordInitialCueShown();
+    MultistepFilterMetricsTracker tracker;
+    tracker.OnSuggestionShown(suggestion);
   }
   histogram_tester.ExpectUniqueSample(
       kMultistepFilterAcceptanceInitialCueHistogram,
@@ -53,14 +61,14 @@ TEST(FilterAcceptanceMetricsLoggerTest,
 
 // Verifies that interacting with the initial cue (e.g., dismissing it) records
 // the explicit decision to both the initial cue and overall histograms.
-TEST(FilterAcceptanceMetricsLoggerTest,
+TEST(MultistepFilterMetricsTrackerTest,
      InitialCueExplicitDecisionRecordsSample) {
   base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
   {
-    FilterAcceptanceMetricsLogger logger("SEARCH_ACCOMMODATIONS");
-    logger.RecordInitialCueShown();
-    logger.RecordInitialCueAndOverallDecision(
-        SuggestionUserDecision::kDismissed);
+    MultistepFilterMetricsTracker tracker;
+    tracker.OnSuggestionShown(suggestion);
+    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kDismissed);
   }
   histogram_tester.ExpectUniqueSample(
       kMultistepFilterAcceptanceInitialCueHistogram,
@@ -72,16 +80,20 @@ TEST(FilterAcceptanceMetricsLoggerTest,
 }
 
 // Verifies that displaying and accepting the reopened cue records kAccepted to
-// the reopened cue and overall histograms without touching initial cue metrics.
-TEST(FilterAcceptanceMetricsLoggerTest,
+// the reopened cue and overall histograms, and records kIgnored to initial cue.
+TEST(MultistepFilterMetricsTrackerTest,
      ReopenedCueExplicitDecisionRecordsSample) {
   base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_FLIGHTS");
   {
-    FilterAcceptanceMetricsLogger logger("SEARCH_FLIGHTS");
-    logger.RecordReopenedCueShown();
-    logger.RecordReopenedCueAndOverallDecision(
-        SuggestionUserDecision::kAccepted);
+    MultistepFilterMetricsTracker tracker;
+    tracker.OnSuggestionShown(suggestion);
+    tracker.OnSuggestionReopened();
+    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
   }
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterAcceptanceInitialCueHistogram,
+      SuggestionUserDecision::kIgnored, 1);
   histogram_tester.ExpectUniqueSample(
       kMultistepFilterAcceptanceReopenedCueHistogram,
       SuggestionUserDecision::kAccepted, 1);
@@ -90,26 +102,22 @@ TEST(FilterAcceptanceMetricsLoggerTest,
       SuggestionUserDecision::kAccepted, 1);
   histogram_tester.ExpectUniqueSample(kMultistepFilterAcceptanceHistogram,
                                       SuggestionUserDecision::kAccepted, 1);
-  histogram_tester.ExpectTotalCount(
-      kMultistepFilterAcceptanceInitialCueHistogram, 0);
 }
 
 // Verifies that opening multiple surfaces and toggling the reopened cue
 // multiple times deduplicates samples and records exactly one UMA entry per
-// engaged surface upon destruction.
-TEST(FilterAcceptanceMetricsLoggerTest,
+// engaged surface.
+TEST(MultistepFilterMetricsTrackerTest,
      ReopenedCueMultipleTimesRecordsSingleSample) {
   base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_FLIGHTS");
   {
-    FilterAcceptanceMetricsLogger logger("SEARCH_FLIGHTS");
-    logger.RecordInitialCueShown();
-    // Default ignored on initial cue
-    logger.RecordReopenedCueShown();
-    // Reopened cue multiple times
-    logger.RecordReopenedCueShown();
-    logger.RecordReopenedCueShown();
-    logger.RecordReopenedCueAndOverallDecision(
-        SuggestionUserDecision::kDismissed);
+    MultistepFilterMetricsTracker tracker;
+    tracker.OnSuggestionShown(suggestion);
+    tracker.OnSuggestionReopened();
+    tracker.OnSuggestionReopened();
+    tracker.OnSuggestionReopened();
+    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kDismissed);
   }
   histogram_tester.ExpectUniqueSample(
       kMultistepFilterAcceptanceInitialCueHistogram,
@@ -122,15 +130,16 @@ TEST(FilterAcceptanceMetricsLoggerTest,
 }
 
 // Verifies that showing both initial and reopened cues without invoking
-// any decision methods defaults all surface and overall metrics to kIgnored
+// any decision methods defaults all surfaces and overall metrics to kIgnored
 // upon destruction.
-TEST(FilterAcceptanceMetricsLoggerTest,
+TEST(MultistepFilterMetricsTrackerTest,
      BothCueSurfacesShownWithoutActionRecordsAllIgnored) {
   base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
   {
-    FilterAcceptanceMetricsLogger logger("SEARCH_ACCOMMODATIONS");
-    logger.RecordInitialCueShown();
-    logger.RecordReopenedCueShown();
+    MultistepFilterMetricsTracker tracker;
+    tracker.OnSuggestionShown(suggestion);
+    tracker.OnSuggestionReopened();
   }
   histogram_tester.ExpectUniqueSample(
       kMultistepFilterAcceptanceInitialCueHistogram,

@@ -87,9 +87,6 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
     // The current tracking state of the suggestion's presentation lifecycle.
     SuggestionViewState view_state;
 
-    // Tracks metrics across view states and flushes upon destruction.
-    std::unique_ptr<FilterAcceptanceMetricsLogger> metrics_logger;
-
     // Cached favicon image for the source host.
     std::optional<ui::ImageModel> favicon;
 

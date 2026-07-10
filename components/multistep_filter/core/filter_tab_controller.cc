@@ -165,6 +165,7 @@ base::WeakPtr<FilterTabController> FilterTabController::GetWeakPtr() {
 
 void FilterTabController::OnNavigationFinished(
     const FilterNavigationMetadata& metadata) {
+  metrics_tracker_.OnNavigationFinished(metadata);
   weak_ptr_factory_.InvalidateWeakPtrs();
   // Set up ScopedClosureRunners to ensure that the test observer is always
   // notified of pipeline completion (with std::nullopt results) even if the
@@ -238,14 +239,16 @@ void FilterTabController::OnSuggestionShown(
   service_->DeleteAnnotationsForTask(suggestion.task_type,
                                      suggestion.triggering_navigation_id,
                                      suggestion.triggering_host);
+  metrics_tracker_.OnSuggestionShown(suggestion);
 }
 
 void FilterTabController::OnSuggestionReopened() {
-  // TODO (https://crbug.com/531724639) - Implement this.
+  metrics_tracker_.OnSuggestionReopened();
 }
 
 void FilterTabController::OnUserDecision(SuggestionUserDecision decision) {
   service_->RecordUserInteractionWithSuggestion(decision);
+  metrics_tracker_.OnSuggestionUserInteraction(decision);
 }
 
 void FilterTabController::OnSupportedTasksFetched(

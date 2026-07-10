@@ -90,6 +90,7 @@ source_set("unit_tests") {
     "//components/multistep_filter/core/data_models:unit_tests",
     "//components/multistep_filter/core/extraction",
     "//components/multistep_filter/core/extraction:unit_tests",
+    "//components/multistep_filter/core/logging",
     "//components/multistep_filter/core/logging:unit_tests",
     "//components/multistep_filter/core/prefs",
     "//components/multistep_filter/core/prefs:unit_tests",

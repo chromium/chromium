@@ -18,6 +18,7 @@
 #include "components/multistep_filter/core/data_models/filter_navigation_metadata.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
+#include "components/multistep_filter/core/logging/multistep_filter_metrics_tracker.h"
 
 namespace multistep_filter {
 
@@ -131,6 +132,7 @@ class FilterTabController {
   // Tab-scoped dependencies. Owned by this controller.
   std::unique_ptr<FilterExtractor> filter_extractor_;
   std::unique_ptr<FilterSuggestionGenerator> filter_suggestion_generator_;
+  MultistepFilterMetricsTracker metrics_tracker_;
 
   // This should be kept at the end so that it is the first member to be
   // destroyed. This factory is also invalidated on every new navigation to
