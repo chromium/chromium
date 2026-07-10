@@ -15,6 +15,6 @@ export function getHtml(this: ExtensionElement) {
       @click="${this.onClick_}"
       @contextmenu="${this.onContextmenu_}">
       <icon-from-table .iconHandle="${this.state.icon}"></icon-from-table>
-  </cr-icon-button>
+  </cr-button>
 <!--_html_template_end_-->`;
 }
