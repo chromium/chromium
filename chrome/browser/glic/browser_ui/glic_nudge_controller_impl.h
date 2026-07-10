@@ -1,8 +1,8 @@
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_NUDGE_CONTROLLER_DESKTOP_H_
-#define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_NUDGE_CONTROLLER_DESKTOP_H_
+#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_NUDGE_CONTROLLER_IMPL_H_
+#define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_NUDGE_CONTROLLER_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -20,15 +20,14 @@ namespace glic {
 
 class GlicSplitButtonDelegate;
 
-class GlicNudgeControllerDesktop : public GlicNudgeController,
-                                   public TabListInterfaceObserver {
+class GlicNudgeControllerImpl : public GlicNudgeController,
+                                public TabListInterfaceObserver {
  public:
-  GlicNudgeControllerDesktop(BrowserWindowInterface* browser_window_interface,
-                             TabListInterface* tab_list);
-  GlicNudgeControllerDesktop(const GlicNudgeControllerDesktop&) = delete;
-  GlicNudgeControllerDesktop& operator=(const GlicNudgeControllerDesktop&) =
-      delete;
-  ~GlicNudgeControllerDesktop() override;
+  explicit GlicNudgeControllerImpl(
+      BrowserWindowInterface* browser_window_interface);
+  GlicNudgeControllerImpl(const GlicNudgeControllerImpl&) = delete;
+  GlicNudgeControllerImpl& operator=(const GlicNudgeControllerImpl&) = delete;
+  ~GlicNudgeControllerImpl() override;
 
   // GlicNudgeController:
   void UpdateNudgeLabel(content::WebContents* web_contents,
@@ -43,8 +42,8 @@ class GlicNudgeControllerDesktop : public GlicNudgeController,
                           tabs::TabInterface* tab) override;
   void OnTabListDestroyed(TabListInterface& tab_list) override;
 
-  void SetTabStripDelegate(GlicSplitButtonDelegate* delegate) override;
-  void SetToolbarDelegate(GlicSplitButtonDelegate* delegate) override;
+  void SetHorizontalTabsDelegate(GlicSplitButtonDelegate* delegate) override;
+  void SetVerticalTabsDelegate(GlicSplitButtonDelegate* delegate) override;
 
   void SetNudgeActivityCallbackForTesting();
 
@@ -53,13 +52,17 @@ class GlicNudgeControllerDesktop : public GlicNudgeController,
 
  private:
   GlicSplitButtonDelegate* GetActiveDelegate();
+  TabListInterface* GetTabList();
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
-  const raw_ptr<TabListInterface> tab_list_;
+
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<GlicSplitButtonDelegate> android_delegate_;
+#endif
 
   tabs::TabHandle nudged_tab_handle_;
-  raw_ptr<GlicSplitButtonDelegate> tab_strip_delegate_ = nullptr;
-  raw_ptr<GlicSplitButtonDelegate> toolbar_delegate_ = nullptr;
+  raw_ptr<GlicSplitButtonDelegate> horizontal_tabs_delegate_ = nullptr;
+  raw_ptr<GlicSplitButtonDelegate> vertical_tabs_delegate_ = nullptr;
 
   std::optional<std::string> prompt_suggestion_;
   GlicNudgeActivityCallback nudge_activity_callback_;
@@ -73,4 +76,4 @@ class GlicNudgeControllerDesktop : public GlicNudgeController,
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_NUDGE_CONTROLLER_DESKTOP_H_
+#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_NUDGE_CONTROLLER_IMPL_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/browser_ui/glic_nudge_controller_desktop.h"
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller_impl.h"
 
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
@@ -18,54 +18,64 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/browser_ui/glic_nudge_delegate_android.h"
+#endif
+
 namespace glic {
 
-GlicNudgeControllerDesktop::GlicNudgeControllerDesktop(
-    BrowserWindowInterface* browser_window_interface,
-    TabListInterface* tab_list)
+GlicNudgeControllerImpl::GlicNudgeControllerImpl(
+    BrowserWindowInterface* browser_window_interface)
     : browser_window_interface_(browser_window_interface),
-      tab_list_(tab_list),
       scoped_unowned_user_data_(
           browser_window_interface->GetUnownedUserDataHost(),
           *this) {
-  CHECK(tab_list_);
-  tab_list_observation_.Observe(tab_list);
+  if (TabListInterface* tab_list = GetTabList()) {
+    tab_list_observation_.Observe(tab_list);
+  }
 
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/511309088): Have the Android UI create and own the delegate
+  // instead.
+  android_delegate_ = std::make_unique<GlicNudgeDelegateAndroid>(
+      this, browser_window_interface);
+  SetHorizontalTabsDelegate(android_delegate_.get());
+#else
   const bool cue_v2_enabled =
       base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2);
   if (cue_v2_enabled) {
     glic::GlicCueTarget::Register(*browser_window_interface);
   }
-
+#endif
 }
 
-GlicNudgeControllerDesktop::~GlicNudgeControllerDesktop() = default;
+GlicNudgeControllerImpl::~GlicNudgeControllerImpl() = default;
 
-void GlicNudgeControllerDesktop::SetTabStripDelegate(
+void GlicNudgeControllerImpl::SetHorizontalTabsDelegate(
     GlicSplitButtonDelegate* delegate) {
-  tab_strip_delegate_ = delegate;
+  horizontal_tabs_delegate_ = delegate;
 }
 
-void GlicNudgeControllerDesktop::SetToolbarDelegate(
+void GlicNudgeControllerImpl::SetVerticalTabsDelegate(
     GlicSplitButtonDelegate* delegate) {
-  toolbar_delegate_ = delegate;
+  vertical_tabs_delegate_ = delegate;
 }
 
-std::optional<std::string> GlicNudgeControllerDesktop::GetPromptSuggestion() {
+std::optional<std::string> GlicNudgeControllerImpl::GetPromptSuggestion() {
   return prompt_suggestion_;
 }
 
-void GlicNudgeControllerDesktop::ClearPromptSuggestion() {
+void GlicNudgeControllerImpl::ClearPromptSuggestion() {
   prompt_suggestion_.reset();
 }
 
-void GlicNudgeControllerDesktop::UpdateNudgeLabel(
+void GlicNudgeControllerImpl::UpdateNudgeLabel(
     content::WebContents* web_contents,
     const std::string& nudge_label,
     std::optional<std::string> prompt_suggestion,
     std::optional<GlicNudgeActivity> activity,
     GlicNudgeActivityCallback callback) {
-  tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
+  tabs::TabInterface* active_tab = GetTabList()->GetActiveTab();
   if (!active_tab || active_tab->GetContents() != web_contents) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -76,8 +86,12 @@ void GlicNudgeControllerDesktop::UpdateNudgeLabel(
 
   // Empty nudge labels close the nudge, allow those to bypass the
   // CanAcquireLock check.
+  // TODO(crbug.com/484037810): Once Android has BrowserWindowFeatures, this
+  // shouldn't be nullable.
+  CallToActionLock* call_to_action_lock =
+      CallToActionLock::From(browser_window_interface_);
   if (!nudge_label.empty() && !scoped_call_to_action_lock_ &&
-      !CallToActionLock::From(browser_window_interface_)->CanAcquireLock()) {
+      call_to_action_lock && !call_to_action_lock->CanAcquireLock()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -110,11 +124,8 @@ void GlicNudgeControllerDesktop::UpdateNudgeLabel(
   PrefService* const pref_service =
       browser_window_interface_->GetProfile()->GetPrefs();
   if (pref_service->GetBoolean(glic::prefs::kGlicPinnedToTabstrip)) {
-    // TODO: The delegate is currently TabStripActionContainer, which is a view
-    // and shouldn't contain browser business logic. Refactor to use a proper
-    // BrowserDelegate instead.
     if (delegate) {
-      if (nudge_label.empty() && delegate->GetIsShowingGlicNudge()) {
+      if (nudge_label.empty()) {
         delegate->OnHideGlicNudgeUI();
       } else {
         delegate->OnTriggerGlicNudgeUI(NudgeParams(nudge_label));
@@ -130,7 +141,7 @@ void GlicNudgeControllerDesktop::UpdateNudgeLabel(
   }
 }
 
-void GlicNudgeControllerDesktop::OnNudgeActivity(GlicNudgeActivity activity) {
+void GlicNudgeControllerImpl::OnNudgeActivity(GlicNudgeActivity activity) {
   if (!nudge_activity_callback_) {
     return;
   }
@@ -138,8 +149,12 @@ void GlicNudgeControllerDesktop::OnNudgeActivity(GlicNudgeActivity activity) {
     case GlicNudgeActivity::kNudgeShown: {
       nudge_activity_callback_.Run(GlicNudgeActivity::kNudgeShown);
       if (!scoped_call_to_action_lock_) {
-        scoped_call_to_action_lock_ =
-            CallToActionLock::From(browser_window_interface_)->AcquireLock();
+        // TODO(crbug.com/484037810): Once Android has BrowserWindowFeatures,
+        // this shouldn't be nullable.
+        if (CallToActionLock* lock =
+                CallToActionLock::From(browser_window_interface_)) {
+          scoped_call_to_action_lock_ = lock->AcquireLock();
+        }
       }
       break;
     }
@@ -163,12 +178,12 @@ void GlicNudgeControllerDesktop::OnNudgeActivity(GlicNudgeActivity activity) {
   }
 }
 
-void GlicNudgeControllerDesktop::SetNudgeActivityCallbackForTesting() {
+void GlicNudgeControllerImpl::SetNudgeActivityCallbackForTesting() {
   nudge_activity_callback_ = base::DoNothing();
 }
 
-void GlicNudgeControllerDesktop::OnActiveTabChanged(TabListInterface& tab_list,
-                                                    tabs::TabInterface* tab) {
+void GlicNudgeControllerImpl::OnActiveTabChanged(TabListInterface& tab_list,
+                                                 tabs::TabInterface* tab) {
   // Ignore active tab changes that correspond to the tab currently showing the
   // nudge. This avoids race conditions where the JNI or asynchronous tab
   // activation event is processed after the nudge was shown.
@@ -182,20 +197,27 @@ void GlicNudgeControllerDesktop::OnActiveTabChanged(TabListInterface& tab_list,
   }
 }
 
-void GlicNudgeControllerDesktop::OnTabListDestroyed(
-    TabListInterface& tab_list) {
+void GlicNudgeControllerImpl::OnTabListDestroyed(TabListInterface& tab_list) {
   tab_list_observation_.Reset();
 }
 
-GlicSplitButtonDelegate* GlicNudgeControllerDesktop::GetActiveDelegate() {
+GlicSplitButtonDelegate* GlicNudgeControllerImpl::GetActiveDelegate() {
+#if BUILDFLAG(IS_ANDROID)
+  return horizontal_tabs_delegate_;
+#else
   auto* vertical_tab_strip_state_controller =
       tabs::VerticalTabStripStateController::From(browser_window_interface_);
 
   return vertical_tab_strip_state_controller &&
                  vertical_tab_strip_state_controller
                      ->ShouldDisplayVerticalTabs()
-             ? toolbar_delegate_
-             : tab_strip_delegate_;
+             ? vertical_tabs_delegate_
+             : horizontal_tabs_delegate_;
+#endif
+}
+
+TabListInterface* GlicNudgeControllerImpl::GetTabList() {
+  return TabListInterface::From(browser_window_interface_);
 }
 
 }  // namespace glic

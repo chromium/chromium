@@ -237,7 +237,7 @@ TabStripActionContainer::TabStripActionContainer(
 
   // `glic_nudge_controller_` will be null if feature is not enabled.
   if (glic_nudge_controller_) {
-    glic_nudge_controller_->SetTabStripDelegate(this);
+    glic_nudge_controller_->SetHorizontalTabsDelegate(this);
   }
 
   if (glic::GlicEnabling::IsProfileEligible(
@@ -289,7 +289,7 @@ TabStripActionContainer::~TabStripActionContainer() {
     scoped_tab_strip_modal_ui_.reset();
   }
   if (glic_nudge_controller_) {
-    glic_nudge_controller_->SetTabStripDelegate(nullptr);
+    glic_nudge_controller_->SetHorizontalTabsDelegate(nullptr);
   }
 }
 

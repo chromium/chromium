@@ -8,7 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/glic/browser_ui/glic_nudge_controller_desktop.h"
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -185,8 +185,8 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
     tab_strip_model_->AppendWebContents(std::move(web_contents_),
                                         /*foreground=*/true);
 
-    glic_nudge_controller_ = std::make_unique<glic::GlicNudgeControllerDesktop>(
-        browser_window_interface_.get(), tab_list_bridge_.get());
+    glic_nudge_controller_ =
+        glic::GlicNudgeController::CreateFor(browser_window_interface_.get());
 
     tab_strip_action_container_ = std::make_unique<TabStripActionContainer>(
         tab_strip_->GetBrowserWindowInterface(), glic_nudge_controller_.get());
@@ -307,7 +307,7 @@ TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonUpdateLabel)) {
 
 TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonHideNudgeOnTabChange)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
-  glic_nudge_controller_->SetTabStripDelegate(
+  glic_nudge_controller_->SetHorizontalTabsDelegate(
       tab_strip_action_container_.get());
 
   ASSERT_FALSE(tab_strip_action_container_->GetIsShowingGlicNudge());

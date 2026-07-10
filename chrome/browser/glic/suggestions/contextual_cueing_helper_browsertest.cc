@@ -113,7 +113,7 @@ class ContextualCueingHelperBaseBrowserTest : public glic::GlicBrowserTest {
   }
 
   void SwapToFakeDelegate(FakeGlicNudgeDelegate& nudge_delegate) {
-    glic_nudge_controller()->SetTabStripDelegate(&nudge_delegate);
+    glic_nudge_controller()->SetHorizontalTabsDelegate(&nudge_delegate);
   }
 
 #if !BUILDFLAG(IS_ANDROID)

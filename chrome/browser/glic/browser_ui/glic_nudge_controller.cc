@@ -5,10 +5,10 @@
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller_impl.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/glic/browser_ui/glic_nudge_controller_android.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #endif
 
@@ -17,6 +17,12 @@ namespace glic {
 DEFINE_USER_DATA(GlicNudgeController);
 
 GlicNudgeController::~GlicNudgeController() = default;
+
+// static
+std::unique_ptr<GlicNudgeController> GlicNudgeController::CreateFor(
+    BrowserWindowInterface* browser) {
+  return std::make_unique<GlicNudgeControllerImpl>(browser);
+}
 
 // static
 GlicNudgeController* GlicNudgeController::From(

@@ -289,7 +289,7 @@ ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
 
   // `glic_nudge_controller` will be null if feature is not enabled.
   if (glic_nudge_controller) {
-    glic_nudge_controller->SetToolbarDelegate(this);
+    glic_nudge_controller->SetVerticalTabsDelegate(this);
   }
 }
 
@@ -307,7 +307,7 @@ ToolbarView::~ToolbarView() {
   glic::GlicNudgeController* glic_nudge_controller =
       browser_->browser_window_features()->glic_nudge_controller();
   if (glic_nudge_controller) {
-    glic_nudge_controller->SetToolbarDelegate(/*delegate=*/nullptr);
+    glic_nudge_controller->SetVerticalTabsDelegate(/*delegate=*/nullptr);
   }
 }
 

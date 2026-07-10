@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/browser_ui/glic_nudge_controller_android.h"
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -49,15 +49,15 @@ class GlicNudgeControllerAndroidBrowserTest : public GlicBrowserTest {
 
   void SetUpOnMainThread() override {
     GlicBrowserTest::SetUpOnMainThread();
-    nudge_controller_ = static_cast<GlicNudgeControllerAndroid*>(
+    nudge_controller_ = static_cast<GlicNudgeController*>(
         GlicNudgeController::From(GetBrowser()));
     ASSERT_TRUE(nudge_controller_);
-    nudge_controller_->SetTabStripDelegate(&mock_delegate_);
+    nudge_controller_->SetHorizontalTabsDelegate(&mock_delegate_);
   }
 
   void TearDownOnMainThread() override {
     if (nudge_controller_) {
-      nudge_controller_->SetTabStripDelegate(nullptr);
+      nudge_controller_->SetHorizontalTabsDelegate(nullptr);
     }
     nudge_controller_ = nullptr;
     GlicBrowserTest::TearDownOnMainThread();
@@ -65,7 +65,7 @@ class GlicNudgeControllerAndroidBrowserTest : public GlicBrowserTest {
 
  protected:
   MockGlicNudgeDelegate mock_delegate_;
-  raw_ptr<GlicNudgeControllerAndroid> nudge_controller_ = nullptr;
+  raw_ptr<GlicNudgeController> nudge_controller_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicNudgeControllerAndroidBrowserTest, ShowsNudge) {

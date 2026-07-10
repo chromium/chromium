@@ -32,7 +32,6 @@ source_set("browser_ui") {
       "glic_actor_task_icon_manager_factory.h",
       "glic_button_controller.h",
       "glic_iph_controller.h",
-      "glic_nudge_controller_desktop.h",
       "glic_selection_widget.h",
       "glic_tab_indicator_helper.h",
       "glic_vector_icon_manager.h",
@@ -47,7 +46,6 @@ source_set("browser_ui") {
     ]
   } else {
     sources += [
-      "glic_nudge_controller_android.h",
       "glic_nudge_delegate_android.h",
       "glic_toast.h",
     ]
@@ -58,6 +56,8 @@ source_set("browser_ui") {
 source_set("impl") {
   sources = [
     "glic_nudge_controller.cc",
+    "glic_nudge_controller_impl.cc",
+    "glic_nudge_controller_impl.h",
     "glic_split_button_delegate.cc",
   ]
   if (!is_android) {
@@ -67,14 +67,12 @@ source_set("impl") {
       "glic_actor_task_icon_manager_factory.cc",
       "glic_button_controller.cc",
       "glic_iph_controller.cc",
-      "glic_nudge_controller_desktop.cc",
       "glic_selection_widget.cc",
       "glic_tab_indicator_helper.cc",
       "glic_vector_icon_manager.cc",
     ]
   } else {
     sources += [
-      "glic_nudge_controller_android.cc",
       "glic_nudge_delegate_android.cc",
       "glic_toast.cc",
     ]

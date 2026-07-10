@@ -39,6 +39,8 @@ class GlicNudgeController {
  public:
   DECLARE_USER_DATA(GlicNudgeController);
 
+  static std::unique_ptr<GlicNudgeController> CreateFor(
+      BrowserWindowInterface* browser);
   static GlicNudgeController* From(BrowserWindowInterface* browser);
 
   using GlicNudgeActivityCallback =
@@ -46,8 +48,8 @@ class GlicNudgeController {
 
   virtual ~GlicNudgeController();
 
-  virtual void SetTabStripDelegate(GlicSplitButtonDelegate* delegate) = 0;
-  virtual void SetToolbarDelegate(GlicSplitButtonDelegate* delegate) = 0;
+  virtual void SetHorizontalTabsDelegate(GlicSplitButtonDelegate* delegate) = 0;
+  virtual void SetVerticalTabsDelegate(GlicSplitButtonDelegate* delegate) = 0;
 
   // Updates the `nudge_label` for `web_contents`, if the WebContents is active.
   // The nudge will be removed from `web_contents` if `nudge_label` is empty.
