@@ -13,11 +13,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/one_time_tokens/core/browser/fetch_email_one_time_token_error_details.pb.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_request.pb.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_response.pb.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -27,6 +27,13 @@
 
 namespace one_time_tokens {
 
+using ::google::internal::chrome::passwords::onetimetoken::v1::
+    FetchEmailOneTimeTokenErrorDetails;
+using ::google::internal::chrome::passwords::onetimetoken::v1::
+    FetchEmailOneTimeTokenResponse;
+using ::google::internal::chrome::passwords::onetimetoken::v1::Proto3Any;
+using ::google::internal::chrome::passwords::onetimetoken::v1::RpcStatus;
+
 namespace {
 constexpr char kTestEmail[] = "test@example.com";
 constexpr char kTestAccessToken[] = "access_token";
@@ -35,6 +42,10 @@ constexpr char kSenderAddress[] = "sender@example.com";
 constexpr char kEncryptedMessageReference[] = "encrypted_reference";
 constexpr char kServiceUrl[] =
     "https://onetimetoken.pa.googleapis.com/v1/onetimetokens:fetchEmail";
+constexpr char kErrorDetailsTypeUrl[] =
+    "type.googleapis.com/"
+    "google.internal.chrome.passwords.onetimetoken.v1."
+    "FetchEmailOneTimeTokenErrorDetails";
 }  // namespace
 
 class EmailOneTimeTokenFetcherTest : public testing::Test {
@@ -69,23 +80,20 @@ class EmailOneTimeTokenFetcherTest : public testing::Test {
   }
 
   std::string CreateValidResponseString() {
-    ::google::internal::chrome::passwords::onetimetoken::v1::
-        FetchEmailOneTimeTokenResponse response;
+    FetchEmailOneTimeTokenResponse response;
     response.mutable_one_time_password()->set_one_time_password(kOneTimeToken);
     response.set_sender_address(kSenderAddress);
     return response.SerializeAsString();
   }
 
   std::string CreateResponseWithoutToken() {
-    ::google::internal::chrome::passwords::onetimetoken::v1::
-        FetchEmailOneTimeTokenResponse response;
+    FetchEmailOneTimeTokenResponse response;
     response.set_sender_address(kSenderAddress);
     return response.SerializeAsString();
   }
 
   std::string CreateResponseWithoutSenderAddress() {
-    ::google::internal::chrome::passwords::onetimetoken::v1::
-        FetchEmailOneTimeTokenResponse response;
+    FetchEmailOneTimeTokenResponse response;
     response.mutable_one_time_password()->set_one_time_password(kOneTimeToken);
     return response.SerializeAsString();
   }
@@ -176,7 +184,7 @@ TEST_F(EmailOneTimeTokenFetcherTest, AccessTokenError) {
 }
 
 // Tests that an error is returned when the network request to the Gmail OTP
-// endpoint fails.
+// endpoint fails with an HTTP error and empty body.
 TEST_F(EmailOneTimeTokenFetcherTest, NetworkError) {
   std::unique_ptr<EmailOneTimeTokenFetcher> fetcher = CreateFetcher();
   base::test::TestFuture<
@@ -189,6 +197,31 @@ TEST_F(EmailOneTimeTokenFetcherTest, NetworkError) {
   ASSERT_TRUE(test_url_loader_factory_->IsPending(GetExpectedUrl()));
   test_url_loader_factory_->AddResponse(GetExpectedUrl(), "",
                                         net::HTTP_NOT_FOUND);
+
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
+      future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.OneTimeTokens.Backend.Gmail.NetworkLatency", 1);
+}
+
+// Tests that an error is returned when the network request fails entirely
+// (nullopt body).
+TEST_F(EmailOneTimeTokenFetcherTest, NetworkDisconnected) {
+  std::unique_ptr<EmailOneTimeTokenFetcher> fetcher = CreateFetcher();
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+
+  fetcher->Start(future.GetCallback());
+  WaitForAccessTokenRequestAndRespondWithSuccess();
+
+  ASSERT_TRUE(test_url_loader_factory_->IsPending(GetExpectedUrl()));
+  test_url_loader_factory_->AddResponse(
+      GURL(GetExpectedUrl()), network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_FAILED));
 
   const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
       future.Get();
@@ -294,6 +327,167 @@ TEST_F(EmailOneTimeTokenFetcherTest, RetriesOnTransientError) {
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->value(), kOneTimeToken);
   EXPECT_EQ(test_url_loader_factory_->total_requests(), 2u);
+}
+
+// Tests that a backend error mapped to a granular user consent error is
+// properly converted.
+TEST_F(EmailOneTimeTokenFetcherTest, BackendErrorConsentRequired) {
+  std::unique_ptr<EmailOneTimeTokenFetcher> fetcher = CreateFetcher();
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+
+  fetcher->Start(future.GetCallback());
+  WaitForAccessTokenRequestAndRespondWithSuccess();
+
+  ASSERT_TRUE(test_url_loader_factory_->IsPending(GetExpectedUrl()));
+
+  RpcStatus rpc_status;
+  rpc_status.set_code(403);
+  rpc_status.set_message("Consent required");
+
+  FetchEmailOneTimeTokenErrorDetails error_details;
+  error_details.add_reason_code(
+      FetchEmailOneTimeTokenErrorDetails::
+          SMART_FEATURES_IN_GMAIL_CONSENT_IS_REQUIRED);
+
+  Proto3Any* detail = rpc_status.add_details();
+  detail->set_type_url(kErrorDetailsTypeUrl);
+  detail->set_value(error_details.SerializeAsString());
+
+  test_url_loader_factory_->AddResponse(
+      GetExpectedUrl(), rpc_status.SerializeAsString(), net::HTTP_FORBIDDEN);
+
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
+      future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            OneTimeTokenRetrievalError::
+                kGmailOtpBackendSmartFeaturesInGmailConsentRequired);
+}
+
+// Tests that an error is returned when the response is a backend HTTP error but
+// the RpcStatus proto is unparsable.
+TEST_F(EmailOneTimeTokenFetcherTest, BackendErrorUnparsable) {
+  std::unique_ptr<EmailOneTimeTokenFetcher> fetcher = CreateFetcher();
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+
+  fetcher->Start(future.GetCallback());
+  WaitForAccessTokenRequestAndRespondWithSuccess();
+
+  ASSERT_TRUE(test_url_loader_factory_->IsPending(GetExpectedUrl()));
+
+  test_url_loader_factory_->AddResponse(GetExpectedUrl(), "unparsable_payload",
+                                        net::HTTP_INTERNAL_SERVER_ERROR);
+
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
+      future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
+}
+
+// Tests that an error is returned when the response is a backend HTTP error,
+// RpcStatus parses, but it does not contain the required type_url.
+TEST_F(EmailOneTimeTokenFetcherTest, BackendErrorWithoutErrorDetails) {
+  std::unique_ptr<EmailOneTimeTokenFetcher> fetcher = CreateFetcher();
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+
+  fetcher->Start(future.GetCallback());
+  WaitForAccessTokenRequestAndRespondWithSuccess();
+
+  ASSERT_TRUE(test_url_loader_factory_->IsPending(GetExpectedUrl()));
+
+  RpcStatus rpc_status;
+  rpc_status.set_code(403);
+  rpc_status.set_message("Consent required");
+  // Missing details.
+
+  test_url_loader_factory_->AddResponse(
+      GetExpectedUrl(), rpc_status.SerializeAsString(), net::HTTP_FORBIDDEN);
+
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
+      future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
+}
+
+// Tests that an error is returned when the response is a backend HTTP error,
+// OneTimeTokenErrorDetails parses, but it has no reason codes.
+TEST_F(EmailOneTimeTokenFetcherTest, BackendErrorWithEmptyReasonCodes) {
+  std::unique_ptr<EmailOneTimeTokenFetcher> fetcher = CreateFetcher();
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+
+  fetcher->Start(future.GetCallback());
+  WaitForAccessTokenRequestAndRespondWithSuccess();
+
+  ASSERT_TRUE(test_url_loader_factory_->IsPending(GetExpectedUrl()));
+
+  RpcStatus rpc_status;
+  rpc_status.set_code(403);
+  rpc_status.set_message("Consent required");
+
+  FetchEmailOneTimeTokenErrorDetails error_details;
+  // Intentionally leaving reason_codes empty.
+
+  Proto3Any* detail = rpc_status.add_details();
+  detail->set_type_url(kErrorDetailsTypeUrl);
+  detail->set_value(error_details.SerializeAsString());
+
+  test_url_loader_factory_->AddResponse(
+      GetExpectedUrl(), rpc_status.SerializeAsString(), net::HTTP_FORBIDDEN);
+
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
+      future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
+}
+
+// Tests that an error is returned when the response has no HTTP response code,
+// but has an RpcStatus body.
+TEST_F(EmailOneTimeTokenFetcherTest, NoResponseCodeWithValidBody) {
+  std::unique_ptr<EmailOneTimeTokenFetcher> fetcher = CreateFetcher();
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+
+  fetcher->Start(future.GetCallback());
+  WaitForAccessTokenRequestAndRespondWithSuccess();
+
+  ASSERT_TRUE(test_url_loader_factory_->IsPending(GetExpectedUrl()));
+
+  RpcStatus rpc_status;
+  rpc_status.set_code(403);
+  rpc_status.set_message("Consent required");
+
+  FetchEmailOneTimeTokenErrorDetails error_details;
+  error_details.add_reason_code(
+      FetchEmailOneTimeTokenErrorDetails::
+          SMART_FEATURES_IN_GMAIL_CONSENT_IS_REQUIRED);
+
+  Proto3Any* detail = rpc_status.add_details();
+  detail->set_type_url(kErrorDetailsTypeUrl);
+  detail->set_value(error_details.SerializeAsString());
+
+  test_url_loader_factory_->AddResponse(
+      GURL(GetExpectedUrl()), network::mojom::URLResponseHead::New(),
+      rpc_status.SerializeAsString(),
+      network::URLLoaderCompletionStatus(net::OK));
+
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
+      future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            OneTimeTokenRetrievalError::
+                kGmailOtpBackendSmartFeaturesInGmailConsentRequired);
 }
 
 }  // namespace one_time_tokens

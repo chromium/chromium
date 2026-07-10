@@ -71,9 +71,10 @@ class EmailOneTimeTokenFetcher {
       base::TimeTicks network_request_start_time,
       std::optional<std::string> response_body);
 
-  // Parses the response proto and extracts the OneTimeToken value from it.
-  base::expected<OneTimeToken, OneTimeTokenRetrievalError>
-  ExtractOneTimeTokenValueFromResponse(const std::string& response_body);
+
+  // Helper to extract the HTTP status code from the URL loader.
+  std::optional<int> GetHttpResponseCode() const;
+
 
   // Shared URL loader factory for the network request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

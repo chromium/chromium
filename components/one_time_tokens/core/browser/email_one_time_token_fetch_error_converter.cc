@@ -58,10 +58,6 @@ OneTimeTokenRetrievalError ConvertEmailOneTimeTokenFetchErrorDetails(
     return OneTimeTokenRetrievalError::kGmailOtpBackendServerError;
   }
 
-  for (int r : error_details.reason_code()) {
-    VLOG(1) << "Raw Reason: " << r;
-  }
-
   // Iterate and find the first error that is not the fallback ServerError.
   // If all are ServerError, return ServerError.
   for (int i = 0; i < error_details.reason_code_size(); ++i) {
@@ -69,7 +65,8 @@ OneTimeTokenRetrievalError ConvertEmailOneTimeTokenFetchErrorDetails(
         error_details.reason_code(i);
     OneTimeTokenRetrievalError error =
         ConvertEmailOneTimeTokenFetchErrorReason(reason);
-    VLOG(1) << "Mapped Reason[" << i << "] to " << static_cast<int>(error);
+    VLOG(1) << "Raw Reason[" << i << "]: " << reason << " mapped to "
+            << static_cast<int>(error);
 
     if (error != OneTimeTokenRetrievalError::kGmailOtpBackendServerError) {
       VLOG(1) << "Selected granular error: " << static_cast<int>(error);
