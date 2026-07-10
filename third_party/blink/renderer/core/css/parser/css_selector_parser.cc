@@ -253,8 +253,7 @@ bool CSSSelectorParser::SupportsComplexSelector(
   parser.SetInSupportsParsing();
   ResultFlags result_flags = 0;
   base::span<CSSSelector> selectors = parser.ConsumeComplexSelector(
-      stream, CSSNestingType::kNone,
-      /*first_in_complex_selector_list=*/true, result_flags);
+      stream, CSSNestingType::kNone, result_flags);
   if (parser.failed_parsing_ || !stream.AtEnd() || selectors.empty()) {
     return false;
   }
@@ -280,18 +279,12 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
     CSSNestingType nesting_type,
     ResultFlags& result_flags) {
   ResetVectorAfterScope reset_vector(output_);
-  if (ConsumeComplexSelector(stream, nesting_type,
-                             /*first_in_complex_selector_list=*/true,
-                             result_flags)
-          .empty()) {
+  if (ConsumeComplexSelector(stream, nesting_type, result_flags).empty()) {
     return {};
   }
   while (!stream.AtEnd() && stream.Peek().GetType() == kCommaToken) {
     stream.ConsumeIncludingWhitespace();
-    if (ConsumeComplexSelector(stream, nesting_type,
-                               /*first_in_complex_selector_list=*/false,
-                               result_flags)
-            .empty()) {
+    if (ConsumeComplexSelector(stream, nesting_type, result_flags).empty()) {
       return {};
     }
   }
@@ -316,13 +309,10 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
     ResultFlags& result_flags) {
   ResetVectorAfterScope reset_vector(output_);
 
-  bool first_in_complex_selector_list = true;
   while (true) {
     const wtf_size_t selector_offset_start = stream.LookAheadOffset();
 
-    if (ConsumeComplexSelector(stream, nesting_type,
-                               first_in_complex_selector_list, result_flags)
-            .empty() ||
+    if (ConsumeComplexSelector(stream, nesting_type, result_flags).empty() ||
         failed_parsing_ || !AtEndOfComplexSelector(stream)) {
       if (AbortsNestedSelectorParsing(kSemicolonToken,
                                       semicolon_aborts_nested_selector_,
@@ -335,7 +325,6 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
       return {};
     }
     const wtf_size_t selector_offset_end = stream.LookAheadOffset();
-    first_in_complex_selector_list = false;
 
     if (observer) {
       observer->ObserveSelector(selector_offset_start, selector_offset_end);
@@ -441,13 +430,12 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
 
   ResetVectorAfterScope reset_vector(output_);
 
-  bool first_in_complex_selector_list = true;
   while (!stream.AtEnd()) {
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
     CSSParserTokenStream::State state = stream.Save();
     wtf_size_t subpos = output_.size();
-    base::span<CSSSelector> selector = ConsumeComplexSelector(
-        stream, nesting_type, first_in_complex_selector_list, result_flags);
+    base::span<CSSSelector> selector =
+        ConsumeComplexSelector(stream, nesting_type, result_flags);
     if (selector.empty() || failed_parsing_ ||
         !AtEndOfComplexSelector(stream)) {
       output_.resize(subpos);  // Drop what we parsed so far.
@@ -461,7 +449,6 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
       break;
     }
     stream.ConsumeIncludingWhitespace();
-    first_in_complex_selector_list = false;
   }
 
   if (reset_vector.AddedElements().empty()) {
@@ -859,7 +846,6 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeNestedRelativeSelector(
 base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,
-    bool first_in_complex_selector_list,
     ResultFlags& result_flags) {
   if (nesting_type != CSSNestingType::kNone && PeekIsCombinator(stream)) {
     // Nested selectors that start with a combinator are to be

@@ -183,7 +183,6 @@ class CORE_EXPORT CSSSelectorParser {
   base::span<CSSSelector> ConsumeComplexSelector(
       CSSParserTokenStream& stream,
       CSSNestingType,
-      bool first_in_complex_selector_list,
       ResultFlags&);
 
   // ConsumePartialComplexSelector() method provides the common logic of
