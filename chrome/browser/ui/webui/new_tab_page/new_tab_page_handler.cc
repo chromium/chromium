@@ -1392,18 +1392,12 @@ void NewTabPageHandler::MaybeTriggerAutomaticCustomizeChromePromo() {
 }
 
 void NewTabPageHandler::LogEvent(NTPLoggingEventType event) {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   logger_.LogEvent(event, base::TimeDelta() /* unused */);
-#endif
 }
 
 void NewTabPageHandler::LogEvent(NTPLoggingEventType event,
                                  base::TimeDelta delta) {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   logger_.LogEvent(event, delta);
-#endif
 }
 
 void NewTabPageHandler::Fetch(const GURL& url,
