@@ -209,25 +209,55 @@ TEST_P(V5SearchHashesCacheTest, TestCacheMatching_BasicFunctionality) {
   // corresponding full hashes.
   EXPECT_TRUE(cache_results["bbbb"].empty());
   EXPECT_TRUE(cache_results["dddd"].empty());
-  // cccc should also have empty results, because the threat types returned by
-  // the server for that full hash were not relevant for hash-prefix real-time
-  // lookups.
-  EXPECT_TRUE(cache_results["cccc"].empty());
+  if (GetParam()) {
+    // All results are included for cccc when the kLocalListsUseSBv5 feature is
+    // enabled.
+    EXPECT_EQ(cache_results["cccc"].size(), 1u);
+    auto cccc1_results = cache_results["cccc"][0];
+    EXPECT_EQ(cccc1_results.full_hash(), "cccc1111111111111111111111111111");
+    auto cccc1_details = cccc1_results.full_hash_details();
+    EXPECT_EQ(cccc1_details.size(), 5);
+    EXPECT_EQ(cccc1_details[0].threat_type(),
+              V5::ThreatType::NOTIFICATION_ABUSE);
+    EXPECT_EQ(cccc1_details[1].threat_type(),
+              V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION);
+    EXPECT_EQ(cccc1_details[2].threat_type(),
+              V5::ThreatType::BETTER_ADS_VIOLATION);
+    EXPECT_EQ(cccc1_details[3].threat_type(),
+              V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION);
+    EXPECT_EQ(cccc1_details[4].threat_type(),
+              V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION);
+  } else {
+    // cccc should also have empty results, because the threat types returned by
+    // the server for that full hash were not relevant for hash-prefix real-time
+    // lookups.
+    EXPECT_TRUE(cache_results["cccc"].empty());
+  }
 
-  // aaaa should match both aaaa...1 and aaaa...2, but not aaaa....3 due to
-  // irrelevant threat types.
-  EXPECT_EQ(cache_results["aaaa"].size(), 2u);
-  // aaaa...1 should only contain relevant threat types.
+  // When kLocalListsUseSBv5 is enabled, aaaa should match aaaa...1, aaaa...2,
+  // and aaaa...3. When disabled, aaaa should match both aaaa...1 and aaaa...2,
+  // but not aaaa...3 due to HPRT-irrelevant threat types.
+  EXPECT_EQ(cache_results["aaaa"].size(), GetParam() ? 3u : 2u);
+
+  // aaaa...1
   auto aaaa1_results = cache_results["aaaa"][0];
   EXPECT_EQ(aaaa1_results.full_hash(), "aaaa1111111111111111111111111111");
   auto aaaa1_details = aaaa1_results.full_hash_details();
-  EXPECT_EQ(aaaa1_details.size(), 3);
+  // When kLocalListsUseSBv5 is disabled, only contains HPRT-relevant threat
+  // types.
+  EXPECT_EQ(aaaa1_details.size(), GetParam() ? 4 : 3);
   EXPECT_EQ(aaaa1_details[0].threat_type(), V5::ThreatType::SOCIAL_ENGINEERING);
   EXPECT_TRUE(aaaa1_details[0].attributes().empty());
   EXPECT_EQ(aaaa1_details[1].threat_type(), V5::ThreatType::MALWARE);
   EXPECT_TRUE(aaaa1_details[1].attributes().empty());
   EXPECT_EQ(aaaa1_details[2].threat_type(), V5::ThreatType::UNWANTED_SOFTWARE);
   EXPECT_TRUE(aaaa1_details[2].attributes().empty());
+  if (GetParam()) {
+    EXPECT_EQ(aaaa1_details[3].threat_type(),
+              V5::ThreatType::NOTIFICATION_ABUSE);
+    EXPECT_TRUE(aaaa1_details[3].attributes().empty());
+  }
+
   // aaaa...2 should have one threat type (malware).
   auto aaaa2_results = cache_results["aaaa"][1];
   EXPECT_EQ(aaaa2_results.full_hash(), "aaaa2222222222222222222222222222");
@@ -235,6 +265,17 @@ TEST_P(V5SearchHashesCacheTest, TestCacheMatching_BasicFunctionality) {
   EXPECT_EQ(aaaa2_details.size(), 1);
   EXPECT_EQ(aaaa2_details[0].threat_type(), V5::ThreatType::MALWARE);
   EXPECT_TRUE(aaaa2_details[0].attributes().empty());
+
+  // aaaa...3 is present when kLocalListsUseSBv5 is enabled
+  if (GetParam()) {
+    auto aaaa3_results = cache_results["aaaa"][2];
+    EXPECT_EQ(aaaa3_results.full_hash(), "aaaa3333333333333333333333333333");
+    auto aaaa3_details = aaaa3_results.full_hash_details();
+    EXPECT_EQ(aaaa3_details.size(), 1);
+    EXPECT_EQ(aaaa3_details[0].threat_type(),
+              V5::ThreatType::NOTIFICATION_ABUSE);
+    EXPECT_TRUE(aaaa3_details[0].attributes().empty());
+  }
 }
 
 TEST_P(V5SearchHashesCacheTest, TestCacheMatching_Expiration) {
@@ -365,21 +406,35 @@ TEST_P(V5SearchHashesCacheTest, TestCacheMatching_Attributes) {
 
   // We expect aaaa...1 and aaaa...2 both to be in the cache.
   EXPECT_EQ(cache_results["aaaa"].size(), 2u);
-  // aaaa...1 should be filtered down to relevant threat types, meaning some
-  // attributes get filtered out too since they are associated with a specific
-  // threat type.
+  // When kLocalListsUseSBv5 is enabled, all threat types and attributes are
+  // kept. When disabled, aaaa...1 should be filtered down to HPRT-relevant
+  // threat types, meaning some attributes get filtered out too since they are
+  // associated with a specific threat type.
   auto aaaa1_results = cache_results["aaaa"][0];
   EXPECT_EQ(aaaa1_results.full_hash(), "aaaa1111111111111111111111111111");
   auto aaaa1_details = aaaa1_results.full_hash_details();
-  EXPECT_EQ(aaaa1_details.size(), 3);
+  EXPECT_EQ(aaaa1_details.size(), GetParam() ? 4 : 3);
   EXPECT_EQ(aaaa1_details[0].threat_type(), V5::ThreatType::SOCIAL_ENGINEERING);
   EXPECT_EQ(aaaa1_details[0].attributes().size(), 1);
   EXPECT_EQ(aaaa1_details[0].attributes()[0], V5::ThreatAttribute::FRAME_ONLY);
   EXPECT_EQ(aaaa1_details[1].threat_type(), V5::ThreatType::MALWARE);
   EXPECT_EQ(aaaa1_details[1].attributes().size(), 1);
   EXPECT_EQ(aaaa1_details[1].attributes()[0], V5::ThreatAttribute::FRAME_ONLY);
-  EXPECT_EQ(aaaa1_details[2].threat_type(), V5::ThreatType::UNWANTED_SOFTWARE);
-  EXPECT_TRUE(aaaa1_details[2].attributes().empty());
+  if (GetParam()) {
+    EXPECT_EQ(aaaa1_details[2].threat_type(),
+              V5::ThreatType::NOTIFICATION_ABUSE);
+    EXPECT_EQ(aaaa1_details[2].attributes().size(), 2);
+    EXPECT_EQ(aaaa1_details[2].attributes()[0], V5::ThreatAttribute::CANARY);
+    EXPECT_EQ(aaaa1_details[2].attributes()[1],
+              V5::ThreatAttribute::FRAME_ONLY);
+    EXPECT_EQ(aaaa1_details[3].threat_type(),
+              V5::ThreatType::UNWANTED_SOFTWARE);
+    EXPECT_TRUE(aaaa1_details[3].attributes().empty());
+  } else {
+    EXPECT_EQ(aaaa1_details[2].threat_type(),
+              V5::ThreatType::UNWANTED_SOFTWARE);
+    EXPECT_TRUE(aaaa1_details[2].attributes().empty());
+  }
   // Sanity check that aaaa...2 has no attributes in spite of aaaa...1 having
   // attributes.
   auto aaaa2_results = cache_results["aaaa"][1];
@@ -415,7 +470,8 @@ TEST_P(V5SearchHashesCacheTest, TestCacheMatching_OverwrittenEntry) {
   EXPECT_EQ(cache_results_1["aaaa"].size(), 1u);
   EXPECT_EQ(cache_results_1["aaaa"][0].full_hash(),
             "aaaa1111111111111111111111111111");
-  EXPECT_EQ(cache_results_1["aaaa"][0].full_hash_details_size(), 3);
+  EXPECT_EQ(cache_results_1["aaaa"][0].full_hash_details_size(),
+            GetParam() ? 4 : 3);
 
   {
     // Set up the cache for Request #2, overwriting the results of Request #1.
