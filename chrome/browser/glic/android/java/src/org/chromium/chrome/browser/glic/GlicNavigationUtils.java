@@ -19,6 +19,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
@@ -26,6 +27,9 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLaunche
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.WebContents;
 
@@ -84,13 +88,24 @@ public class GlicNavigationUtils {
     @CalledByNative
     public static void showSignIn(Profile profile, WebContents webContents) {
         Activity activity = null;
-        if (webContents.getTopLevelNativeWindow() != null) {
+        if (webContents != null && webContents.getTopLevelNativeWindow() != null) {
             activity = webContents.getTopLevelNativeWindow().getActivity().get();
         }
         if (activity == null) {
             activity = ApplicationStatus.getLastTrackedFocusedActivity();
         }
         if (activity == null) {
+            return;
+        }
+
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        AccountInfo primaryAccount =
+                identityManager != null ? identityManager.getPrimaryAccountInfo() : null;
+
+        if (primaryAccount != null) {
+            AccountManagerFacadeProvider.getInstance()
+                    .updateCredentials(primaryAccount.getId(), activity, null);
             return;
         }
 
