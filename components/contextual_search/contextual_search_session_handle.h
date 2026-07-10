@@ -214,6 +214,11 @@ class ContextualSearchSessionHandle {
     return uploaded_context_tokens_;
   }
 
+  // Returns true if the token corresponds to a tab context, for testing.
+  bool IsTabTokenForTesting(const base::UnguessableToken& token) const {
+    return IsTabToken(token);
+  }
+
   // Returns the list of submitted context tokens for this particular instance
   // of the session. These are uploaded and submitted, but we have not received
   // confirmation that they are available on the server.

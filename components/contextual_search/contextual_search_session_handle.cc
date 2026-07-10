@@ -668,9 +668,8 @@ bool ContextualSearchSessionHandle::IsTabToken(
     return false;
   }
   const auto* file_info = controller->GetFileInfo(token);
-  return file_info &&
-         (file_info->tab_url.has_value() || file_info->tab_title.has_value() ||
-          file_info->tab_session_id.has_value());
+  return file_info && file_info->tab_session_id.has_value() &&
+         file_info->tab_session_id->is_valid();
 }
 
 base::UnguessableToken ContextualSearchSessionHandle::GetActiveTokenForTab(

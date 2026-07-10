@@ -773,4 +773,51 @@ TEST_F(ContextualSearchSessionHandleTest,
   EXPECT_EQ(it->second.second.sequence_id(), 1);
 }
 
+TEST_F(ContextualSearchSessionHandleTest, IsTabToken_ValidatesTabSessionId) {
+  auto local_mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  auto* local_mock_controller_ptr = local_mock_controller.get();
+
+  auto local_handle = service_->CreateSessionForTesting(
+      std::move(local_mock_controller), nullptr);
+  local_handle->CheckSearchContentSharingSettings(&prefs_);
+
+  // Token for a real browser tab (has valid `tab_session_id`).
+  base::UnguessableToken tab_token = local_handle->CreateContextToken();
+  FileInfo tab_file_info;
+  tab_file_info.file_token = tab_token;
+  tab_file_info.tab_session_id = SessionID::FromSerializedValue(1);
+
+  // Token for a manual file (`tab_title` = "document.pdf", but no
+  // `tab_session_id`).
+  base::UnguessableToken file_token = local_handle->CreateContextToken();
+  FileInfo file_info;
+  file_info.file_token = file_token;
+  file_info.tab_title = "document.pdf";
+
+  // Token with invalid `tab_session_id`.
+  base::UnguessableToken invalid_tab_token = local_handle->CreateContextToken();
+  FileInfo invalid_tab_info;
+  invalid_tab_info.file_token = invalid_tab_token;
+  invalid_tab_info.tab_session_id = SessionID::InvalidValue();
+
+  // Unknown token (not in controller).
+  base::UnguessableToken unknown_token = base::UnguessableToken::Create();
+
+  EXPECT_CALL(*local_mock_controller_ptr, GetFileInfo(tab_token))
+      .WillRepeatedly(testing::Return(&tab_file_info));
+  EXPECT_CALL(*local_mock_controller_ptr, GetFileInfo(file_token))
+      .WillRepeatedly(testing::Return(&file_info));
+  EXPECT_CALL(*local_mock_controller_ptr, GetFileInfo(invalid_tab_token))
+      .WillRepeatedly(testing::Return(&invalid_tab_info));
+  EXPECT_CALL(*local_mock_controller_ptr, GetFileInfo(unknown_token))
+      .WillRepeatedly(testing::Return(nullptr));
+
+  // Verify `IsTabToken` results.
+  EXPECT_TRUE(local_handle->IsTabTokenForTesting(tab_token));
+  EXPECT_FALSE(local_handle->IsTabTokenForTesting(file_token));
+  EXPECT_FALSE(local_handle->IsTabTokenForTesting(invalid_tab_token));
+  EXPECT_FALSE(local_handle->IsTabTokenForTesting(unknown_token));
+}
+
 }  // namespace contextual_search

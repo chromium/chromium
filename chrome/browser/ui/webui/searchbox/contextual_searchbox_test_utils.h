@@ -98,13 +98,17 @@ class MockQueryController
     files_[file_token] = std::move(file_info);
   }
 
-  void AddTabFileInfoForTesting(const base::UnguessableToken& file_token,
-                                GURL tab_url,
-                                lens::MimeType mime_type = lens::MimeType::kAnnotatedPageContent) {
+  void AddTabFileInfoForTesting(
+      const base::UnguessableToken& file_token,
+      GURL tab_url,
+      lens::MimeType mime_type = lens::MimeType::kAnnotatedPageContent,
+      std::optional<SessionID> tab_session_id = std::nullopt) {
     auto file_info = std::make_unique<contextual_search::FileInfo>();
     file_info->file_token = file_token;
     file_info->mime_type = mime_type;
     file_info->tab_url = tab_url;
+    file_info->tab_session_id =
+        tab_session_id.value_or(SessionID::FromSerializedValue(1));
     files_[file_token] = std::move(file_info);
   }
 
