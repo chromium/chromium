@@ -28,6 +28,10 @@ class CONTENT_EXPORT RenderWidgetHostViewTVOS : public RenderWidgetHostViewIOS {
   // ui::CALayerFrameSink overrides:
   void UpdateCALayerTree(gfx::CALayerParams ca_layer_params) override;
 
+  // ui::GestureProviderClient implementation.
+  void OnGestureEvent(const ui::GestureEventData& gesture) override;
+  bool RequiresDoubleTapGestureEvents() const override;
+
  private:
   std::unique_ptr<ui::DisplayCALayerTree> display_tree_;
 };

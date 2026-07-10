@@ -102,33 +102,7 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
     // tvOS supports multiple types of input events from the Remote, including
     // the clickpad (touch surface), the clickpad ring (directional control),
     // and various physical buttons.
-
-    // Create and add swipe gesture recognizers for all directions originating
-    // from the clickpad buttons.
-    [self addSwipeGestureRecognizerWithDirection:
-              UISwipeGestureRecognizerDirectionUp];
-    [self addSwipeGestureRecognizerWithDirection:
-              UISwipeGestureRecognizerDirectionLeft];
-    [self addSwipeGestureRecognizerWithDirection:
-              UISwipeGestureRecognizerDirectionRight];
-    [self addSwipeGestureRecognizerWithDirection:
-              UISwipeGestureRecognizerDirectionDown];
-
-    // Add a pan gesture recognizer to capture input from the clickpad ring,
-    // which allows for continuous movement to the left or right.
-    UIPanGestureRecognizer* panGesture =
-        [[UIPanGestureRecognizer alloc] initWithTarget:self
-                                                action:@selector(handlePan:)];
-    panGesture.delegate = self;
-    [self addGestureRecognizer:panGesture];
-
-    // Only allow the pan gesture to activate if the swipe gesture fails to
-    // recognize.
-    for (UIGestureRecognizer* swipeGesture in self.gestureRecognizers) {
-      if ([swipeGesture isKindOfClass:[UISwipeGestureRecognizer class]]) {
-        [panGesture requireGestureRecognizerToFail:swipeGesture];
-      }
-    }
+    [self addSwipeAndPanGestureRecognizers];
   }
   return self;
 }
@@ -181,6 +155,35 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
 }
 
 #pragma mark - Private
+
+- (void)addSwipeAndPanGestureRecognizers {
+  // Create and add swipe gesture recognizers for all directions originating
+  // from the clickpad buttons.
+  [self addSwipeGestureRecognizerWithDirection:
+            UISwipeGestureRecognizerDirectionUp];
+  [self addSwipeGestureRecognizerWithDirection:
+            UISwipeGestureRecognizerDirectionLeft];
+  [self addSwipeGestureRecognizerWithDirection:
+            UISwipeGestureRecognizerDirectionRight];
+  [self addSwipeGestureRecognizerWithDirection:
+            UISwipeGestureRecognizerDirectionDown];
+
+  // Add a pan gesture recognizer to capture input from the clickpad ring,
+  // which allows for continuous movement to the left or right.
+  UIPanGestureRecognizer* panGesture =
+      [[UIPanGestureRecognizer alloc] initWithTarget:self
+                                              action:@selector(handlePan:)];
+  panGesture.delegate = self;
+  [self addGestureRecognizer:panGesture];
+
+  // Only allow the pan gesture to activate if the swipe gesture fails to
+  // recognize.
+  for (UIGestureRecognizer* swipeGesture in self.gestureRecognizers) {
+    if ([swipeGesture isKindOfClass:[UISwipeGestureRecognizer class]]) {
+      [panGesture requireGestureRecognizerToFail:swipeGesture];
+    }
+  }
+}
 
 // Helper method to add swipe gestures for `direction`.
 - (void)addSwipeGestureRecognizerWithDirection:
