@@ -56,7 +56,7 @@ struct Accelerator {
 
 // Container for information about entries in an HTML select popup menu and
 // custom entries of the context menu.
-// TODO(crbug.com/1093904): Consider merging the MenuItem struct in
+// TODO(https://crbug.com/40699157): Consider merging the MenuItem struct in
 // popup_menu.mojom.
 struct CustomContextMenuItem {
   mojo_base.mojom.String16 label;
@@ -94,7 +94,7 @@ struct UntrustworthyContextMenuParams {
   // The text associated with the link. May be an empty string if the contents
   // of the link are an image.
   // Will be empty if |link_url| is empty.
-  mojo_base.mojom.String16 link_text;
+  mojo_base.mojom.BigString16 link_text;
 
   // The impression declared by the link. May be std::nullopt even if
   // |link_url| is non-empty.
@@ -123,15 +123,15 @@ struct UntrustworthyContextMenuParams {
   int32 media_flags;
 
   // This is the text of the selection that the context menu was invoked on.
-  mojo_base.mojom.String16 selection_text;
+  mojo_base.mojom.BigString16 selection_text;
 
   // This is the title text of the selection that the context menu was
   // invoked on.
-  mojo_base.mojom.String16 title_text;
+  mojo_base.mojom.BigString16 title_text;
 
   // This is the alt text of the selection that the context menu was
   // invoked on.
-  mojo_base.mojom.String16 alt_text;
+  mojo_base.mojom.BigString16 alt_text;
 
   // This is the suggested filename to be used when saving file through "Save
   // Link As" option of context menu.
@@ -217,7 +217,7 @@ struct UntrustworthyContextMenuParams {
   blink.mojom.DOMNodeId form_renderer_id;
 };
 
-// Defines methods for Context menu to commnicate from the browser to the
+// Defines methods for Context menu to communicate from the browser to the
 // renderer.
 interface ContextMenuClient {
   // Executes custom context menu action that was provided from Blink.
