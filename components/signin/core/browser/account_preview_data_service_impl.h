@@ -96,6 +96,10 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
                       GaiaId::Hash>
       active_fetchers_;
 
+  // Mapping used to look up gaia_id based on account_id, used when an account
+  // is removed.
+  absl::flat_hash_map<CoreAccountId, GaiaId> account_id_to_gaia_id_;
+
   base::ScopedObservation<IdentityManager, IdentityManager::Observer>
       identity_manager_observation_{this};
 

@@ -123,6 +123,29 @@ TEST_F(AccountPreviewDataServiceTest, RemovesCachedData) {
 }
 
 TEST_F(AccountPreviewDataServiceTest,
+       RemovesCachedDataAfterRefreshTokenRemoved) {
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
+
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+  run_loop.Run();
+  ASSERT_TRUE(service_->GetAccountPreviewData(account_info.gaia).has_value());
+
+  // Simulate IdentityManager completely forgetting about the account.
+  // We can do this by removing it from IdentityTestEnv (which normally triggers
+  // OnRefreshTokenRemovedForAccount automatically, but we can also check that
+  // when the callback runs, the cache gets cleared).
+  identity_test_env_.RemoveRefreshTokenForAccount(account_info.account_id);
+
+  // Since RemoveRefreshTokenForAccount triggers the callback automatically,
+  // the cache should have been cleared.
+  EXPECT_FALSE(service_->GetAccountPreviewData(account_info.gaia).has_value());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
        AddingAccountDoesNotTriggerRefreshForCachedAccount) {
   // Mock response and set callback for account1 fetch.
   MockSuccessfulFetch(&test_url_loader_factory_);

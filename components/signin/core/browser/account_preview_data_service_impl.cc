@@ -79,6 +79,7 @@ AccountPreviewDataServiceImpl::GetAccountPreviewData(
 
 void AccountPreviewDataServiceImpl::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
+  account_id_to_gaia_id_[account_info.account_id] = account_info.gaia;
   // This prevents startup refresh token updates from triggering unexpected
   // fetching requests. Startup should only rely on the repeating timer and
   // refresh all accounts preview data.
@@ -89,13 +90,14 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenUpdatedForAccount(
 
 void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
     const CoreAccountId& account_id) {
-  AccountInfo info =
-      identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
-  if (info.IsEmpty()) {
+  auto it = account_id_to_gaia_id_.find(account_id);
+  if (it == account_id_to_gaia_id_.end()) {
     return;
   }
 
-  GaiaId gaia_id = info.gaia;
+  GaiaId gaia_id = it->second;
+  account_id_to_gaia_id_.erase(it);
+
   cached_data_.erase(gaia_id);
   active_fetchers_.erase(gaia_id);
 
@@ -156,6 +158,7 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched() {
   deferred_refresh_pending_ = false;
   for (const auto& account :
        identity_manager_->GetAccountsWithRefreshTokens()) {
+    account_id_to_gaia_id_[account.account_id] = account.gaia;
     if (!cached_data_.contains(account.gaia)) {
       FetchAccountPreviewData(account.gaia);
     }
