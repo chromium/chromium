@@ -5547,6 +5547,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ozone.Drm.GbmDeviceCount" units="devices"
+    expires_after="2027-07-02">
+  <owner>hitawala@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    The number of successfully created and cached Gbm Device contexts in
+    GbmSurfaceFactory. Recorded once during the first format texturing support
+    check (lazy initialization).
+  </summary>
+</histogram>
+
 <histogram name="Ozone.NeuralStylusReport.ActivePalmTouchCount"
     units="touch event count" expires_after="2023-06-30">
   <owner>napper@chromium.org</owner>
