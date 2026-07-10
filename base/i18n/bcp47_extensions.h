@@ -198,19 +198,25 @@ struct Traits<'x'> {
   static constexpr char key = 'x';
 };
 
-namespace internal {
+}  // namespace bcp47_extensions
+}  // namespace base::i18n
+
+namespace base::i18n_internal {
 
 template <typename T>
 struct IsTraits : std::false_type {};
 
 template <char extid>
-struct IsTraits<Traits<extid>> : std::true_type {};
+struct IsTraits<base::i18n::bcp47_extensions::Traits<extid>> : std::true_type {
+};
 
-}  // namespace internal
+}  // namespace base::i18n_internal
+
+namespace base::i18n::bcp47_extensions {
 
 // Concept to ensure T is an instance of Traits<extid>.
 template <typename T>
-concept ExtensionTrait = internal::IsTraits<std::remove_cvref_t<T>>::value;
+concept ExtensionTrait = i18n_internal::IsTraits<std::remove_cvref_t<T>>::value;
 
 // Helper functions to create traits for GetExtension().
 
@@ -233,7 +239,6 @@ inline constexpr auto priv() {
   return ext<'x'>();
 }
 
-}  // namespace bcp47_extensions
-}  // namespace base::i18n
+}  // namespace base::i18n::bcp47_extensions
 
 #endif  // BASE_I18N_BCP47_EXTENSIONS_H_

@@ -12,7 +12,7 @@
 
 #include "base/containers/span.h"
 
-namespace base::i18n::internal {
+namespace base::i18n_internal {
 
 // Converts a legacy ICU locale code (e.g., "en_US@currency=USD") to a BCP47
 // language tag (e.g., "en-US-u-cu-usd").
@@ -42,6 +42,6 @@ std::optional<std::string> ConvertLegacyCodeToBcp47IfNecessary(
 std::string ConvertBcp47UnicodeKeywordsToLegacyCode(
     base::span<const std::pair<std::string, std::string>> keywords);
 
-}  // namespace base::i18n::internal
+}  // namespace base::i18n_internal
 
 #endif  // BASE_I18N_INTERNAL_LEGACY_ICU_CONVERTER_H_

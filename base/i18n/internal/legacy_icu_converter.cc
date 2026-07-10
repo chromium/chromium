@@ -14,7 +14,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
-namespace base::i18n::internal {
+namespace base::i18n_internal {
 
 namespace {
 
@@ -345,4 +345,4 @@ std::string ConvertBcp47UnicodeKeywordsToLegacyCode(
   return legacy_code;
 }
 
-}  // namespace base::i18n::internal
+}  // namespace base::i18n_internal

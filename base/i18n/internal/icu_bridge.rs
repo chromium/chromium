@@ -7,7 +7,7 @@ use icu_locale::LocaleCanonicalizer;
 use icu_locale_core::Locale;
 use std::fmt;
 
-#[cxx::bridge(namespace = "base::i18n::internal")]
+#[cxx::bridge(namespace = "base::i18n_internal")]
 pub mod ffi {
     pub struct OptionalIcu4xLocale {
         pub value: Box<Icu4xLocale>,

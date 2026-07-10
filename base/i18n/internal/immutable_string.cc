@@ -18,7 +18,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 
-namespace base::i18n::internal {
+namespace base::i18n_internal {
 
 ImmutableString::HeapString::HeapString(const HeapString& other)
     : storage_(base::HeapArray<char>::CopiedFrom(other.storage_.as_span())) {}
@@ -46,4 +46,4 @@ ImmutableString::ImmutableString(base::span<const std::string_view> parts)
                    ? StorageVariantType(StackString(parts))
                    : StorageVariantType(HeapString(parts))) {}
 
-}  // namespace base::i18n::internal
+}  // namespace base::i18n_internal

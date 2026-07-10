@@ -14,11 +14,11 @@
 #include "base/i18n/tags.h"
 #include "third_party/rust/cxx/v1/cxx.h"
 
-namespace base::i18n {
-
-namespace internal {
+namespace base::i18n_internal {
 struct IcuFallbacker;
 }
+
+namespace base::i18n {
 
 // A class that matches a preferred language tag against a set of supported
 // language tags using ICU fallback rules and precomputed distances.
@@ -83,10 +83,10 @@ class BASE_I18N_EXPORT LanguageTagMatcher {
  private:
   explicit LanguageTagMatcher(
       base::flat_map<LanguageTag, LanguageTag> closest_supported_tag,
-      rust::Box<internal::IcuFallbacker> icu_fallbacker);
+      rust::Box<i18n_internal::IcuFallbacker> icu_fallbacker);
 
   base::flat_map<LanguageTag, LanguageTag> closest_supported_tag_;
-  rust::Box<internal::IcuFallbacker> icu_fallbacker_;
+  rust::Box<i18n_internal::IcuFallbacker> icu_fallbacker_;
 };
 
 }  // namespace base::i18n

@@ -9,7 +9,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base::i18n::internal {
+namespace base::i18n_internal {
 
 TEST(ImmutableStringTest, EmptyStringConstructor) {
   constexpr ImmutableString str;
@@ -72,4 +72,4 @@ TEST(ImmutableStringTest, CopyAndMove) {
   EXPECT_EQ(str3.AsString(), "test");
 }
 
-}  // namespace base::i18n::internal
+}  // namespace base::i18n_internal

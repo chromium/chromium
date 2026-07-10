@@ -18,7 +18,7 @@
 #include "base/i18n/base_i18n_export.h"
 #include "base/numerics/safe_conversions.h"
 
-namespace base::i18n::internal {
+namespace base::i18n_internal {
 
 constexpr size_t TotalSize(base::span<const std::string_view> parts) {
   return std::ranges::fold_left(
@@ -138,6 +138,6 @@ constexpr ImmutableString::ImmutableString(const ImmutableString& other) =
 inline constexpr ImmutableString& ImmutableString::operator=(
     const ImmutableString& other) = default;
 
-}  // namespace base::i18n::internal
+}  // namespace base::i18n_internal
 
 #endif  // BASE_I18N_INTERNAL_IMMUTABLE_STRING_H_

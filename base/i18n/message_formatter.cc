@@ -18,15 +18,13 @@
 
 using icu::UnicodeString;
 
-namespace base::i18n {
-namespace {
-UnicodeString UnicodeStringFromStringView(std::string_view str) {
-  return UnicodeString::fromUTF8(
+namespace base::i18n_internal {
+
+icu::UnicodeString UnicodeStringFromStringView(std::string_view str) {
+  return icu::UnicodeString::fromUTF8(
       std::string_view(str.data(), base::checked_cast<int32_t>(str.size())));
 }
-}  // anonymous namespace
 
-namespace internal {
 MessageArg::MessageArg() : formattable(nullptr) {}
 
 MessageArg::MessageArg(const char* s)
@@ -36,10 +34,11 @@ MessageArg::MessageArg(std::string_view s)
     : formattable(new icu::Formattable(UnicodeStringFromStringView(s))) {}
 
 MessageArg::MessageArg(const std::string& s)
-    : formattable(new icu::Formattable(UnicodeString::fromUTF8(s))) {}
+    : formattable(new icu::Formattable(icu::UnicodeString::fromUTF8(s))) {}
 
 MessageArg::MessageArg(const std::u16string& s)
-    : formattable(new icu::Formattable(UnicodeString(s.data(), s.size()))) {}
+    : formattable(
+          new icu::Formattable(icu::UnicodeString(s.data(), s.size()))) {}
 
 MessageArg::MessageArg(int i) : formattable(new icu::Formattable(i)) {}
 
@@ -63,17 +62,19 @@ bool MessageArg::has_value(int* count) const {
   return true;
 }
 
-}  // namespace internal
+}  // namespace base::i18n_internal
+
+namespace base::i18n {
 
 std::u16string MessageFormatter::FormatWithNumberedArgs(
     std::u16string_view msg,
-    const internal::MessageArg& arg0,
-    const internal::MessageArg& arg1,
-    const internal::MessageArg& arg2,
-    const internal::MessageArg& arg3,
-    const internal::MessageArg& arg4,
-    const internal::MessageArg& arg5,
-    const internal::MessageArg& arg6) {
+    const i18n_internal::MessageArg& arg0,
+    const i18n_internal::MessageArg& arg1,
+    const i18n_internal::MessageArg& arg2,
+    const i18n_internal::MessageArg& arg3,
+    const i18n_internal::MessageArg& arg4,
+    const i18n_internal::MessageArg& arg5,
+    const i18n_internal::MessageArg& arg6) {
   int32_t args_count = 0;
   icu::Formattable args[] = {
       arg0.has_value(&args_count) ? *arg0.formattable : icu::Formattable(),
@@ -102,24 +103,27 @@ std::u16string MessageFormatter::FormatWithNumberedArgs(
 std::u16string MessageFormatter::FormatWithNamedArgs(
     std::u16string_view msg,
     std::string_view name0,
-    const internal::MessageArg& arg0,
+    const i18n_internal::MessageArg& arg0,
     std::string_view name1,
-    const internal::MessageArg& arg1,
+    const i18n_internal::MessageArg& arg1,
     std::string_view name2,
-    const internal::MessageArg& arg2,
+    const i18n_internal::MessageArg& arg2,
     std::string_view name3,
-    const internal::MessageArg& arg3,
+    const i18n_internal::MessageArg& arg3,
     std::string_view name4,
-    const internal::MessageArg& arg4,
+    const i18n_internal::MessageArg& arg4,
     std::string_view name5,
-    const internal::MessageArg& arg5,
+    const i18n_internal::MessageArg& arg5,
     std::string_view name6,
-    const internal::MessageArg& arg6) {
+    const i18n_internal::MessageArg& arg6) {
   icu::UnicodeString names[] = {
-      UnicodeStringFromStringView(name0), UnicodeStringFromStringView(name1),
-      UnicodeStringFromStringView(name2), UnicodeStringFromStringView(name3),
-      UnicodeStringFromStringView(name4), UnicodeStringFromStringView(name5),
-      UnicodeStringFromStringView(name6),
+      i18n_internal::UnicodeStringFromStringView(name0),
+      i18n_internal::UnicodeStringFromStringView(name1),
+      i18n_internal::UnicodeStringFromStringView(name2),
+      i18n_internal::UnicodeStringFromStringView(name3),
+      i18n_internal::UnicodeStringFromStringView(name4),
+      i18n_internal::UnicodeStringFromStringView(name5),
+      i18n_internal::UnicodeStringFromStringView(name6),
   };
   int32_t args_count = 0;
   icu::Formattable args[] = {

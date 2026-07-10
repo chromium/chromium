@@ -42,9 +42,9 @@
 namespace base::i18n {
 namespace {
 
-using internal::create_icu_fallbacker;
-using internal::Icu4xLocale;
-using internal::IcuFallbacker;
+using ::base::i18n_internal::create_icu_fallbacker;
+using ::base::i18n_internal::Icu4xLocale;
+using ::base::i18n_internal::IcuFallbacker;
 
 // Returns the sequence of fallback locales using ICU4X logic, excluding the
 // original locale and the root locale ("und").
@@ -272,7 +272,7 @@ std::optional<LanguageTag> LanguageTagMatcher::Match(
 
 LanguageTagMatcher::LanguageTagMatcher(
     base::flat_map<LanguageTag, LanguageTag> closest_supported_tag,
-    rust::Box<internal::IcuFallbacker> icu_fallbacker)
+    rust::Box<i18n_internal::IcuFallbacker> icu_fallbacker)
     : closest_supported_tag_(std::move(closest_supported_tag)),
       icu_fallbacker_(std::move(icu_fallbacker)) {}
 

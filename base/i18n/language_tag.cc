@@ -86,7 +86,7 @@ std::string LanguageTag::ToLegacyICUFormat() const {
   }
 
   base::StrAppend(&legacy_code,
-                  {"@", internal::ConvertBcp47UnicodeKeywordsToLegacyCode(
+                  {"@", i18n_internal::ConvertBcp47UnicodeKeywordsToLegacyCode(
                             unicode_extension->keywords())});
   return legacy_code;
 }

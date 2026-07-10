@@ -60,7 +60,7 @@ consteval LanguageTag GetKnownLanguageTag(std::string_view tag) {
 
   // It is only possible to construct `LanguageTag`s at compile-time if they
   // are small.
-  if (tag.size() > internal::ImmutableString::kSmallBufferSize) {
+  if (tag.size() > i18n_internal::ImmutableString::kSmallBufferSize) {
     void ERROR_TagIsTooLarge();
     ERROR_TagIsTooLarge();
   }

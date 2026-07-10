@@ -50,7 +50,7 @@ class LanguageTagDataView;
 //   - Private use: Optional (e.g., "x-privatestuff")
 class BASE_I18N_EXPORT LanguageTag {
  public:
-  using ImmutableStringType = internal::ImmutableString;
+  using ImmutableStringType = i18n_internal::ImmutableString;
 
   constexpr LanguageTag(const LanguageTag&) noexcept = default;
   constexpr LanguageTag(LanguageTag&& other) noexcept = default;
@@ -155,14 +155,16 @@ class BASE_I18N_EXPORT LanguageTag {
   // Constexpr Constructor that expects the span of string-views and constructs
   // tha ImmutableString on its own.
   constexpr explicit LanguageTag(base::span<const std::string_view> parts)
-      : tag_(internal::ImmutableString::ForceStackString{}, parts) {}
+      : tag_(i18n_internal::ImmutableString::ForceStackString{}, parts) {}
 
   // The BCP47 language tag, e.g. "pt-BR".
   // Supports language, script, region, variants and extensions.
   ImmutableStringType tag_;
 };
 
-namespace internal {
+}  // namespace base::i18n
+
+namespace base::i18n_internal {
 
 // General representation of a BCP47 subtag
 // (https://www.rfc-editor.org/info/rfc5646/#section-2.1)
@@ -204,7 +206,9 @@ class BASE_I18N_EXPORT Bcp47Subtag {
   uint8_t size_;
 };
 
-}  // namespace internal
+}  // namespace base::i18n_internal
+
+namespace base::i18n {
 
 // Represents the language subtag extracted from a LanguageTag.
 // The spec definition can be found here:
@@ -215,9 +219,9 @@ class BASE_I18N_EXPORT Bcp47Subtag {
 //                                     ; extended language subtags
 //               / 4ALPHA              ; or reserved for future use
 //               / 5*8ALPHA            ; or registered language subtag
-class LanguageSubtag : public internal::Bcp47Subtag<2, 3> {
+class LanguageSubtag : public i18n_internal::Bcp47Subtag<2, 3> {
  public:
-  using base_type = internal::Bcp47Subtag<2, 3>;
+  using base_type = i18n_internal::Bcp47Subtag<2, 3>;
   using base_type::base_type;
 };
 
@@ -227,9 +231,9 @@ class LanguageSubtag : public internal::Bcp47Subtag<2, 3> {
 // They are defined as:
 // region        = 2ALPHA
 //              / 3DIGIT
-class RegionSubtag : public internal::Bcp47Subtag<2, 3> {
+class RegionSubtag : public i18n_internal::Bcp47Subtag<2, 3> {
  public:
-  using base_type = internal::Bcp47Subtag<2, 3>;
+  using base_type = i18n_internal::Bcp47Subtag<2, 3>;
   using base_type::base_type;
 };
 

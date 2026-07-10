@@ -21,11 +21,11 @@ namespace base {
 class Value;
 }
 
-namespace base::i18n {
-
-namespace internal {
+namespace base::i18n_internal {
 struct Icu4xLocale;
 }
+
+namespace base::i18n {
 
 // Helper class for parsing and validating language tags.
 //
@@ -61,7 +61,8 @@ class BASE_I18N_EXPORT LanguageTagConverter {
   //  - Normalize separator (e.g. "en_US" -> "en-US").
   std::optional<LanguageTag> FromString(std::string_view tag) const;
   // Internal usage.
-  LanguageTag FromIcu4xLocale(const internal::Icu4xLocale& icu_locale) const;
+  LanguageTag FromIcu4xLocale(
+      const i18n_internal::Icu4xLocale& icu_locale) const;
 
  private:
   class Impl;
