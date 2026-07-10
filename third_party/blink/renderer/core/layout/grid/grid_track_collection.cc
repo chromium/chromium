@@ -133,7 +133,13 @@ GridRangeVector GridRangeBuilder::FinalizeRanges(
     must_sort_grid_lines_ = false;
   }
 
-  const wtf_size_t explicit_repeater_count = explicit_tracks_.RepeaterCount();
+  // For a subgridded axis that is not subgridded onto a parent grid (a
+  // standalone axis), https://drafts.csswg.org/css-grid-2/#subgrid-listing
+  // gives a used value of "none". The subgrid line-name repeaters contribute no
+  // explicit tracks.
+  const wtf_size_t explicit_repeater_count =
+      explicit_tracks_.IsSubgriddedAxis() ? 0u
+                                          : explicit_tracks_.RepeaterCount();
   const wtf_size_t grid_line_count = start_lines_.size();
 
   GridRangeVector ranges;
@@ -355,7 +361,13 @@ GridRangeBuilder::GridRangeBuilder(const GridTrackList& explicit_tracks,
   DCHECK_LE(implicit_tracks_.RepeaterCount(), 1u);
   DCHECK_NE(auto_repetitions_, kNotFound);
 
-  const wtf_size_t repeater_count = explicit_tracks_.RepeaterCount();
+  // For a subgridded axis that is not subgridded onto a parent grid (a
+  // standalone axis), https://drafts.csswg.org/css-grid-2/#subgrid-listing
+  // gives a used value of "none". The subgrid line-name repeaters contribute no
+  // explicit tracks.
+  const wtf_size_t repeater_count = explicit_tracks_.IsSubgriddedAxis()
+                                        ? 0u
+                                        : explicit_tracks_.RepeaterCount();
 
   // Add extra capacity for the extra lines needed for named grids.
   start_lines_.ReserveInitialCapacity(repeater_count + 1);
