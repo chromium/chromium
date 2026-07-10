@@ -791,6 +791,17 @@ TEST_F(ContextualTasksUiServiceTest, IsAiUrl_NoAimUrlParams) {
   EXPECT_FALSE(service_for_nav_->IsAiUrl(ai_url));
 }
 
+TEST_F(ContextualTasksUiServiceTest, IsGoogleCaptchaUrl) {
+  EXPECT_TRUE(service_for_nav_->IsGoogleCaptchaUrl(
+      GURL("https://www.google.com/sorry/index?continue=foo")));
+  EXPECT_TRUE(service_for_nav_->IsGoogleCaptchaUrl(
+      GURL("https://ipv4.google.com/sorry/index?continue=foo")));
+  EXPECT_FALSE(service_for_nav_->IsGoogleCaptchaUrl(
+      GURL("https://www.google.com/search?q=test")));
+  EXPECT_FALSE(service_for_nav_->IsGoogleCaptchaUrl(
+      GURL("https://example.com/sorry/index")));
+}
+
 TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_ChecksCobrowse) {
   GURL ai_url(kAiPageUrl);
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
@@ -1729,6 +1740,27 @@ TEST_F(ContextualTasksUiServiceTest,
       /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
       std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
   run_loop.Run();
+}
+
+TEST_F(ContextualTasksUiServiceTest, CaptchaNavigation_ViewedInSidePanel) {
+  GURL navigated_url("https://www.google.com/sorry/index?continue=foo");
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnSearchResultsNavigationInSidePanel(_, _))
+      .Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_FALSE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
+      /*is_from_embedded_page=*/true,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
+      std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
 }
 
 // If the navigating to the Search Labs page, the navigation should be

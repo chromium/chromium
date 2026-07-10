@@ -1727,8 +1727,10 @@ bool ContextualTasksUiService::HandleNavigationImpl(
           // Allow any navigations to an AI page from embedded page.
           return false;
         }
-      } else if (IsValidSearchResultsPage(url_params.url) || is_nav_to_ai) {
-        if (!lens::HasCommonSearchQueryParameters(url_params.url)) {
+      } else if (IsValidSearchResultsPage(url_params.url) || is_nav_to_ai ||
+                 IsGoogleCaptchaUrl(url_params.url)) {
+        if (!lens::HasCommonSearchQueryParameters(url_params.url) &&
+            !IsGoogleCaptchaUrl(url_params.url)) {
           OMNIBOX_LOG("nav_trace")
               << "ContextualTasks navigation trace: HandleNavigationImpl "
                  "posting OnSearchResultsNavigationInSidePanel";
@@ -1745,10 +1747,11 @@ bool ContextualTasksUiService::HandleNavigationImpl(
         }
 
         // If the params are present and the page is "valid" (e.g. not
-        // shopping and has a query), allow the navigation.
+        // shopping and has a query), or it is a CAPTCHA challenge page, allow
+        // the navigation.
         OMNIBOX_LOG("nav_trace")
             << "ContextualTasks navigation trace: HandleNavigationImpl "
-               "returning false, valid SRP with params";
+               "returning false, valid SRP with params or CAPTCHA URL";
         return false;
       }
     }
@@ -2770,6 +2773,14 @@ bool ContextualTasksUiService::IsValidSearchResultsPage(const GURL& url) {
           !value.empty()) ||
          (net::GetValueForKeyInQuery(url, kLensModeKey, &value) &&
           !value.empty());
+}
+
+bool ContextualTasksUiService::IsGoogleCaptchaUrl(const GURL& url) {
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() || !IsAllowedHost(url)) {
+    return false;
+  }
+
+  return base::StartsWith(url.path(), "/sorry/");
 }
 
 GURL ContextualTasksUiService::CopyParamsFromWebUIUrl(const GURL& base_url,

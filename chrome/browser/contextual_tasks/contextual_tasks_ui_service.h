@@ -335,6 +335,9 @@ class ContextualTasksUiService : public KeyedService {
   // correct params and isn't a shopping query.
   bool IsValidSearchResultsPage(const GURL& url);
 
+  // Returns whether the provided URL is a Google CAPTCHA ("sorry") page.
+  virtual bool IsGoogleCaptchaUrl(const GURL& url);
+
   // Returns a copy of base_url with the URL params from webui_url applied to
   // it. This will exclude chrome webui-specific params, specifically "task".
   static GURL CopyParamsFromWebUIUrl(const GURL& base_url,
