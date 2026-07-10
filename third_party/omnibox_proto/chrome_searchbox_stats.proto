@@ -56,6 +56,16 @@ message ChromeSearchboxStats {
   repeated GroupInfo group_infos = 103;
   repeated fixed64 gws_event_id_hash = 94;
   optional SmartComposeStats smart_compose_stats = 125;
+
+  enum InputMethod {
+    KEYBOARD = 1;
+    PASTE = 2;
+    SPEECH = 6;
+    TAB = 8;
+    LENS_CAMERA = 10;
+    SMART_COMPOSE = 11;
+  }
+  repeated InputMethod input_methods = 31;
 }
 
 message ActionInfo {
