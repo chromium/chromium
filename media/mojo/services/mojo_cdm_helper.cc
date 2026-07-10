@@ -204,6 +204,11 @@ void MojoCdmHelper::RecordUkm(const CdmMetricsData& cdm_metrics_data) {
         cdm_metrics_data.key_system_data_bool1.value());
   }
 
+  if (cdm_metrics_data.session_init_data_type.has_value()) {
+    ukm_builder.SetSessionInitDataType(
+        cdm_metrics_data.session_init_data_type.value());
+  }
+
   ukm_builder.SetNumberOfVideoFrames(cdm_metrics_data.video_frames_processed);
 
   ukm_builder.Record(ukm_recorder_.get());

@@ -13293,6 +13293,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Media.EME.CdmMetrics">
+  <owner>frs@chromium.org</owner>
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -13467,6 +13468,18 @@ be describing additional metrics about the same event.
       <history>
         <statistics>
           <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SessionInitDataType">
+    <summary>
+      The type of initialization data used in the CDM session.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
         </statistics>
       </history>
     </aggregation>

@@ -50,6 +50,8 @@ struct MEDIA_EXPORT CdmMetricsData {
   std::optional<uint64_t> key_system_data_time3;
   std::optional<bool> key_system_data_bool1;
 
+  std::optional<uint64_t> session_init_data_type;
+
   uint64_t video_frames_processed = 0;
 
   url::Origin cdm_origin;

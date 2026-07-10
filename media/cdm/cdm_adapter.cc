@@ -1164,6 +1164,9 @@ void CdmAdapter::ReportMetrics(cdm::MetricName metric_name, uint64_t value) {
     case cdm::kKeySystemDataBool1:
       cdm_metrics_data_.key_system_data_bool1 = value != 0;
       return;
+    case cdm::kSessionInitDataType:
+      cdm_metrics_data_.session_init_data_type = value;
+      return;
   }
 }
 

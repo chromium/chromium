@@ -99,6 +99,10 @@ MATCHER_P(HasKeySystemDataBool1, expected_value, "") {
   return arg.key_system_data_bool1 == expected_value;
 }
 
+MATCHER_P(HasSessionInitDataType, expected_value, "") {
+  return arg.session_init_data_type == expected_value;
+}
+
 // TODO(jrummell): These tests are a subset of those in aes_decryptor_unittest.
 // Refactor aes_decryptor_unittest.cc to handle AesDecryptor directly and
 // via CdmAdapter once CdmAdapter supports decrypting functionality. There
@@ -726,6 +730,11 @@ TEST_P(CdmAdapterTestWithMockCdm, RecordUMA) {
     cdm_host_proxy_->ReportMetrics(cdm::kKeySystemDataBool1, 1);
   }
 
+  // Key system session metrics
+  {
+    cdm_host_proxy_->ReportMetrics(cdm::kSessionInitDataType, 4);
+  }
+
   // On destruction UKM should be logged containing the sum of all the reported
   // kDecoderBypassBlockCount values (and no license SDK version as one is not
   // set).
@@ -736,7 +745,7 @@ TEST_P(CdmAdapterTestWithMockCdm, RecordUMA) {
                 HasDecoderCheck1WarningCount(2), HasDecoderCheck1ErrorCount(3),
                 HasKeySystemDataTime1(1000), HasKeySystemDataTime2(2000),
                 HasKeySystemDataTime3(3000), HasKeySystemDataBool1(true),
-                HasNoLicenseSdkVersion())));
+                HasSessionInitDataType(4), HasNoLicenseSdkVersion())));
 }
 
 // When CDM reports an unexpected value (e.g. new value added in the future),
