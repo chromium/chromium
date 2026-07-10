@@ -398,8 +398,8 @@ FederatedRequestResultToProtocol(blink::mojom::FederatedRequestResult result) {
 
 std::unique_ptr<protocol::Audits::InspectorIssue>
 BuildFederatedAuthRequestIssue(
-    const blink::mojom::FederatedAuthRequestIssueDetailsPtr& issue_details) {
-  auto federated_auth_request_details =
+    const blink::mojom::FederatedRequestIssueDetailsPtr& issue_details) {
+  auto federated_request_details =
       protocol::Audits::FederatedAuthRequestIssueDetails::Create()
           .SetFederatedAuthRequestIssueReason(
               FederatedRequestResultToProtocol(issue_details->status))
@@ -408,7 +408,7 @@ BuildFederatedAuthRequestIssue(
   auto protocol_issue_details =
       protocol::Audits::InspectorIssueDetails::Create()
           .SetFederatedAuthRequestIssueDetails(
-              std::move(federated_auth_request_details))
+              std::move(federated_request_details))
           .Build();
 
   auto issue = protocol::Audits::InspectorIssue::Create()
@@ -2556,7 +2556,7 @@ void BuildAndReportBrowserInitiatedIssue(
   } else if (info->code ==
              blink::mojom::InspectorIssueCode::kFederatedAuthRequestIssue) {
     issue = BuildFederatedAuthRequestIssue(
-        info->details->federated_auth_request_details);
+        info->details->federated_request_details);
   } else if (info->code ==
              blink::mojom::InspectorIssueCode::kDeprecationIssue) {
     issue = BuildDeprecationIssue(info->details->deprecation_issue_details);

@@ -54,7 +54,7 @@ namespace content::webid {
 using ::testing::NiceMock;
 using ApiPermissionStatus =
     FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
-using AuthRequestCallbackHelper = FederatedRequestTokenCallbackHelper;
+using RequestCallbackHelper = FederatedRequestTokenCallbackHelper;
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
@@ -289,7 +289,7 @@ class RequestMultipleFramesTest : public RenderViewHostImplTestHarness {
   void DoRequestTokenAndWait(
       mojo::Remote<FederatedRequestService>& service_remote,
       mojo::Remote<FederatedRequest>& request_remote,
-      AuthRequestCallbackHelper& callback_helper) {
+      RequestCallbackHelper& callback_helper) {
     DoRequestToken(service_remote, request_remote, callback_helper.callback());
     request_remote.set_disconnect_handler(callback_helper.quit_closure());
 
@@ -411,7 +411,7 @@ TEST_F(RequestMultipleFramesTest, TestHarness) {
                 TestDialogController::AccountsDialogAction::kSelectAccount,
                 &iframe_dialog_state);
 
-  AuthRequestCallbackHelper iframe_callback_helper;
+  RequestCallbackHelper iframe_callback_helper;
   DoRequestTokenAndWait(iframe_service_remote, iframe_request_remote,
                         iframe_callback_helper);
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
@@ -442,7 +442,7 @@ TEST_F(RequestMultipleFramesTest, IframeTooManyRequests) {
                 TestDialogController::AccountsDialogAction::kSelectAccount,
                 &iframe_dialog_state);
 
-  AuthRequestCallbackHelper iframe_callback_helper;
+  RequestCallbackHelper iframe_callback_helper;
   DoRequestTokenAndWait(iframe_service_remote, iframe_request_remote,
                         iframe_callback_helper);
   EXPECT_EQ(RequestTokenStatus::kErrorTooManyRequests,
@@ -507,7 +507,7 @@ TEST_F(RequestMultipleFramesTest, SameOriginIframe) {
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
 
-  AuthRequestCallbackHelper iframe_callback_helper;
+  RequestCallbackHelper iframe_callback_helper;
   DoRequestTokenAndWait(iframe_service_remote, iframe_request_remote,
                         iframe_callback_helper);
 
@@ -553,7 +553,7 @@ TEST_F(RequestMultipleFramesTest, SameSiteIframe) {
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
 
-  AuthRequestCallbackHelper iframe_callback_helper;
+  RequestCallbackHelper iframe_callback_helper;
   DoRequestTokenAndWait(iframe_service_remote, iframe_request_remote,
                         iframe_callback_helper);
 
@@ -595,7 +595,7 @@ TEST_F(RequestMultipleFramesTest, CrossSiteIframe) {
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
 
-  AuthRequestCallbackHelper iframe_callback_helper;
+  RequestCallbackHelper iframe_callback_helper;
   DoRequestTokenAndWait(iframe_service_remote, iframe_request_remote,
                         iframe_callback_helper);
 
@@ -646,7 +646,7 @@ TEST_F(RequestMultipleFramesTest,
 
   // Perform an actual FedCM request to log some metrics and flush the ukm
   // recorder.
-  AuthRequestCallbackHelper iframe_callback_helper;
+  RequestCallbackHelper iframe_callback_helper;
   DoRequestTokenAndWait(iframe_service_remote, iframe_request_remote,
                         iframe_callback_helper);
 
@@ -809,7 +809,7 @@ TEST_F(RequestMultipleFramesTest, CrossSiteIframeSendClientMetadata) {
                 &iframe_dialog_state, &network_manager);
   network_manager->SetSendClientIsThirdPartyToTopFrameOrigin(true);
 
-  AuthRequestCallbackHelper iframe_callback_helper;
+  RequestCallbackHelper iframe_callback_helper;
   DoRequestTokenAndWait(iframe_service_remote, iframe_request_remote,
                         iframe_callback_helper);
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());

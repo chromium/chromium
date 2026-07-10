@@ -377,8 +377,8 @@ bool RequestService::ShouldCancelNewRequest(
         /*has_signin_account=*/std::nullopt, /*did_show_ui=*/false);
 
     auto details = blink::mojom::InspectorIssueDetails::New();
-    details->federated_auth_request_details =
-        blink::mojom::FederatedAuthRequestIssueDetails::New(
+    details->federated_request_details =
+        blink::mojom::FederatedRequestIssueDetails::New(
             blink::mojom::FederatedRequestResult::kTooManyRequests);
     render_frame_host().ReportInspectorIssue(
         blink::mojom::InspectorIssueInfo::New(

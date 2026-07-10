@@ -184,13 +184,12 @@ class TestPermissionDelegate : public MockPermissionDelegate {
 
 }  // namespace
 
-class FederatedAuthDisconnectRequestTest
-    : public RenderViewHostImplTestHarness {
+class DisconnectRequestTest : public RenderViewHostImplTestHarness {
  public:
-  FederatedAuthDisconnectRequestTest() {
+  DisconnectRequestTest() {
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
-  ~FederatedAuthDisconnectRequestTest() override = default;
+  ~DisconnectRequestTest() override = default;
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
@@ -344,7 +343,7 @@ class FederatedAuthDisconnectRequestTest
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
-TEST_F(FederatedAuthDisconnectRequestTest, Success) {
+TEST_F(DisconnectRequestTest, Success) {
   Config config = kValidConfig;
   EXPECT_CALL(
       *permission_delegate_,
@@ -367,7 +366,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, Success) {
                                          /*should_record_duration=*/true);
 }
 
-TEST_F(FederatedAuthDisconnectRequestTest, NotTrustworthyIdP) {
+TEST_F(DisconnectRequestTest, NotTrustworthyIdP) {
   Config config = kValidConfig;
   config.config_url = "http://idp.example/fedcm.json";
   RunDisconnectTest(config, blink::mojom::DisconnectStatus::kError);
@@ -379,7 +378,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, NotTrustworthyIdP) {
       /*should_record_duration=*/false);
 }
 
-TEST_F(FederatedAuthDisconnectRequestTest,
+TEST_F(DisconnectRequestTest,
        NoSharingPermissionButIdpHasThirdPartyCookiesAccessAndClaimsSignin) {
   const char kAccountId[] = "account";
 
@@ -409,7 +408,7 @@ TEST_F(FederatedAuthDisconnectRequestTest,
                                          /*should_record_duration=*/true);
 }
 
-TEST_F(FederatedAuthDisconnectRequestTest, SameSiteIframe) {
+TEST_F(DisconnectRequestTest, SameSiteIframe) {
   const char kSameSiteIframeUrl[] = "https://rp.example/iframe.html";
   RenderFrameHost* same_site_iframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
@@ -439,7 +438,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, SameSiteIframe) {
                                          /*should_record_duration=*/true);
 }
 
-TEST_F(FederatedAuthDisconnectRequestTest, CrossSiteIframe) {
+TEST_F(DisconnectRequestTest, CrossSiteIframe) {
   // FedCM works due to third party cookies since sharing permission is not set
   // for the cross-site RP.
   const char kCrossSiteIframeUrl[] = "https://otherrp.com";
@@ -471,7 +470,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, CrossSiteIframe) {
                                          /*should_record_duration=*/true);
 }
 
-TEST_F(FederatedAuthDisconnectRequestTest, NoAccountToDisconnect) {
+TEST_F(DisconnectRequestTest, NoAccountToDisconnect) {
   Config config = kValidConfig;
   EXPECT_CALL(*api_permission_delegate_,
               GetApiPermissionStatus(OriginFromString(kRpUrl)))
@@ -490,7 +489,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, NoAccountToDisconnect) {
       /*should_record_duration=*/false);
 }
 
-TEST_F(FederatedAuthDisconnectRequestTest, DisabledInSettings) {
+TEST_F(DisconnectRequestTest, DisabledInSettings) {
   Config config = kValidConfig;
   EXPECT_CALL(*api_permission_delegate_,
               GetApiPermissionStatus(OriginFromString(kRpUrl)))
@@ -504,7 +503,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, DisabledInSettings) {
                                          /*should_record_duration=*/false);
 }
 
-TEST_F(FederatedAuthDisconnectRequestTest, DisabledInFlags) {
+TEST_F(DisconnectRequestTest, DisabledInFlags) {
   Config config = kValidConfig;
   EXPECT_CALL(*api_permission_delegate_,
               GetApiPermissionStatus(OriginFromString(kRpUrl)))
@@ -520,7 +519,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, DisabledInFlags) {
 
 // Tests that disconnect() succeeds even if FedCM is under embargo (e.g.
 // cooldown).
-TEST_F(FederatedAuthDisconnectRequestTest, SuccessDespiteEmbargo) {
+TEST_F(DisconnectRequestTest, SuccessDespiteEmbargo) {
   Config config = kValidConfig;
   EXPECT_CALL(*api_permission_delegate_,
               GetApiPermissionStatus(OriginFromString(kRpUrl)))

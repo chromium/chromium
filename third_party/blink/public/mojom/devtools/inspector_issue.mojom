@@ -258,7 +258,7 @@ enum FederatedRequestResult {
   kSuppressedBySegmentationPlatform,
 };
 
-struct FederatedAuthRequestIssueDetails {
+struct FederatedRequestIssueDetails {
   FederatedRequestResult status;
 };
 
@@ -381,7 +381,7 @@ struct InspectorIssueDetails {
   SharedArrayBufferIssueDetails? sab_issue_details;
   HeavyAdIssueDetails? heavy_ad_issue_details;
   AttributionReportingIssueDetails? attribution_reporting_issue_details;
-  FederatedAuthRequestIssueDetails? federated_auth_request_details;
+  FederatedRequestIssueDetails? federated_request_details;
   BounceTrackingIssueDetails? bounce_tracking_issue_details;
   PartitioningBlobURLIssueDetails? partitioning_blob_url_issue_details;
   CookieDeprecationMetadataIssueDetails?

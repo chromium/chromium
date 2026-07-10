@@ -74,7 +74,7 @@ using blink::mojom::TokenRequestFailurePtr;
 using blink::mojom::TokenRequestSuccessPtr;
 using ApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
-using AuthRequestCallbackHelper = content::FederatedRequestTokenCallbackHelper;
+using RequestCallbackHelper = content::FederatedRequestTokenCallbackHelper;
 using DismissReason = content::IdentityRequestDialogController::DismissReason;
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
@@ -1263,7 +1263,7 @@ class RequestTest : public RenderViewHostImplTestHarness {
     test_identity_registry_ = test_identity_registry->GetWeakPtr();
     web_contents()->SetUserData(IdentityRegistry::UserDataKey(),
                                 std::move(test_identity_registry));
-    auth_helper_ = std::make_unique<AuthRequestCallbackHelper>();
+    auth_helper_ = std::make_unique<RequestCallbackHelper>();
 
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(rp_url_), ui::PAGE_TRANSITION_LINK);
@@ -1334,9 +1334,9 @@ class RequestTest : public RenderViewHostImplTestHarness {
   void RunAuthTest(const RequestParameters& request_parameters,
                    const RequestExpectations& expectations,
                    const MockConfiguration& configuration,
-                   AuthRequestCallbackHelper* concurrent_auth_helper = nullptr,
+                   RequestCallbackHelper* concurrent_auth_helper = nullptr,
                    mojo::Remote<FederatedRequest>* request_remote = nullptr) {
-    AuthRequestCallbackHelper* auth_helper =
+    RequestCallbackHelper* auth_helper =
         concurrent_auth_helper ?: auth_helper_.get();
 
     RunAuthDontWaitForCallback(request_parameters, configuration, auth_helper,
@@ -1349,7 +1349,7 @@ class RequestTest : public RenderViewHostImplTestHarness {
   void RunAuthDontWaitForCallback(
       const RequestParameters& request_parameters,
       const MockConfiguration& configuration,
-      AuthRequestCallbackHelper* auth_helper = nullptr,
+      RequestCallbackHelper* auth_helper = nullptr,
       mojo::Remote<FederatedRequest>* request_remote = nullptr) {
     if (custom_dialog_controller_) {
       active_mock_dialog_controller_ = custom_dialog_controller_->AsWeakPtr();
@@ -1408,7 +1408,7 @@ class RequestTest : public RenderViewHostImplTestHarness {
 
   void CheckAuthExpectations(const MockConfiguration& configuration,
                              const RequestExpectations& expectation,
-                             AuthRequestCallbackHelper* auth_helper = nullptr) {
+                             RequestCallbackHelper* auth_helper = nullptr) {
     auth_helper = auth_helper ?: auth_helper_.get();
     ASSERT_EQ(expectation.return_status, auth_helper->status());
     if (expectation.return_status == RequestTokenStatus::kSuccess) {
@@ -1500,7 +1500,7 @@ class RequestTest : public RenderViewHostImplTestHarness {
       std::vector<blink::mojom::IdentityProviderGetParametersPtr>
           idp_get_params,
       MediationRequirement mediation_requirement,
-      AuthRequestCallbackHelper* auth_helper = nullptr,
+      RequestCallbackHelper* auth_helper = nullptr,
       mojo::Remote<FederatedRequest>* request_remote = nullptr) {
     auth_helper = auth_helper ?: auth_helper_.get();
     mojo::Remote<FederatedRequest>& remote =
@@ -1528,7 +1528,7 @@ class RequestTest : public RenderViewHostImplTestHarness {
 
   void WaitForCurrentAuthRequest(
       bool should_fast_forward = true,
-      AuthRequestCallbackHelper* auth_helper = nullptr,
+      RequestCallbackHelper* auth_helper = nullptr,
       mojo::Remote<FederatedRequest>* request_remote = nullptr) {
     auth_helper = auth_helper ?: auth_helper_.get();
     mojo::Remote<FederatedRequest>& remote =
@@ -2066,7 +2066,7 @@ class RequestTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<TestAutoReauthnPermissionDelegate>
       test_auto_reauthn_permission_delegate_;
   base::WeakPtr<TestIdentityRegistry> test_identity_registry_ = nullptr;
-  std::unique_ptr<AuthRequestCallbackHelper> auth_helper_;
+  std::unique_ptr<RequestCallbackHelper> auth_helper_;
 
   // Enables test to inspect TestDialogController state after
   // Request destroys TestDialogController. Recreated during
@@ -5511,7 +5511,7 @@ TEST_F(RequestTest, TooManyRequests) {
       FederatedRequestResult::kTooManyRequests,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
-  auto concurrent_helper = std::make_unique<AuthRequestCallbackHelper>();
+  auto concurrent_helper = std::make_unique<RequestCallbackHelper>();
   mojo::Remote<FederatedRequest> concurrent_remote;
   RunAuthTest(kDefaultRequestParameters, expectations, configuration,
               concurrent_helper.get(), &concurrent_remote);
@@ -5572,7 +5572,7 @@ TEST_F(RequestTest, TooManyRequestsDifferentIdP) {
   // Initiates a new API call with a different IdP.
   RequestParameters request{kDefaultRequestParameters};
   request.identity_providers[0].provider = kProviderTwoUrlFull;
-  auto concurrent_helper = std::make_unique<AuthRequestCallbackHelper>();
+  auto concurrent_helper = std::make_unique<RequestCallbackHelper>();
   mojo::Remote<FederatedRequest> concurrent_remote;
   RunAuthTest(request, expectations, configuration, concurrent_helper.get(),
               &concurrent_remote);
@@ -5620,7 +5620,7 @@ TEST_F(RequestTest, ActiveModeTooManyRequestsWithNewPassiveFlow) {
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
-  auto concurrent_helper = std::make_unique<AuthRequestCallbackHelper>();
+  auto concurrent_helper = std::make_unique<RequestCallbackHelper>();
   mojo::Remote<FederatedRequest> concurrent_remote;
   RunAuthTest(kDefaultRequestParameters, expectations, configuration,
               concurrent_helper.get(), &concurrent_remote);
@@ -5679,7 +5679,7 @@ TEST_F(RequestTest, ActiveModeTooManyRequestsWithNewActiveFlow) {
   static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
       ->SimulateUserActivation();
 
-  auto concurrent_helper = std::make_unique<AuthRequestCallbackHelper>();
+  auto concurrent_helper = std::make_unique<RequestCallbackHelper>();
   mojo::Remote<FederatedRequest> concurrent_remote;
   RunAuthTest(parameters, expectations, configuration, concurrent_helper.get(),
               &concurrent_remote);
@@ -5728,8 +5728,8 @@ TEST_F(RequestTest, PassiveReplacedByActiveFlow) {
 
   // Create new test helpers so that we can send the second request.
   SetNetworkRequestManager(std::make_unique<TestIdpNetworkRequestManager>());
-  std::unique_ptr<AuthRequestCallbackHelper> active_flow_auth_helper =
-      std::make_unique<AuthRequestCallbackHelper>();
+  std::unique_ptr<RequestCallbackHelper> active_flow_auth_helper =
+      std::make_unique<RequestCallbackHelper>();
   mojo::Remote<FederatedRequest> concurrent_remote;
   RunAuthTest(parameters, active_flow_expectations, kConfigurationValid,
               active_flow_auth_helper.get(), &concurrent_remote);
@@ -5789,8 +5789,8 @@ TEST_F(RequestTest, ControllerDestroyedOnReplacedByActiveFlow) {
 
   // Create new test helpers so that we can send the second request.
   SetNetworkRequestManager(std::make_unique<TestIdpNetworkRequestManager>());
-  std::unique_ptr<AuthRequestCallbackHelper> active_flow_auth_helper =
-      std::make_unique<AuthRequestCallbackHelper>();
+  std::unique_ptr<RequestCallbackHelper> active_flow_auth_helper =
+      std::make_unique<RequestCallbackHelper>();
   mojo::Remote<FederatedRequest> concurrent_remote;
 
   // Run the active flow. This will replace the passive flow.
@@ -6931,7 +6931,7 @@ class RequestNewTabTest : public RequestTest {
     test_identity_registry_ = test_identity_registry->GetWeakPtr();
     web_contents()->SetUserData(IdentityRegistry::UserDataKey(),
                                 std::move(test_identity_registry));
-    auth_helper_ = std::make_unique<AuthRequestCallbackHelper>();
+    auth_helper_ = std::make_unique<RequestCallbackHelper>();
 
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL("chrome://newtab/"), ui::PAGE_TRANSITION_LINK);
@@ -7214,7 +7214,7 @@ TEST_F(RequestTest, RecordNumRequestsPerDocumentMetric) {
 
   // Reset test classes for second auth request.
   SetNetworkRequestManager(std::make_unique<TestIdpNetworkRequestManager>());
-  auth_helper_ = std::make_unique<AuthRequestCallbackHelper>();
+  auth_helper_ = std::make_unique<RequestCallbackHelper>();
 
   // Second auth request.
   configuration.accounts_dialog_action = AccountsDialogAction::kClose;
@@ -8684,7 +8684,7 @@ TEST_F(RequestTest, MetricsForConsecutiveSuccessfulRequests) {
   std::unique_ptr<TestIdpNetworkRequestManager> network_request_manager =
       std::make_unique<TestIdpNetworkRequestManager>();
   SetNetworkRequestManager(std::move(network_request_manager));
-  auth_helper_ = std::make_unique<AuthRequestCallbackHelper>();
+  auth_helper_ = std::make_unique<RequestCallbackHelper>();
 
   // Second successful auth request.
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,

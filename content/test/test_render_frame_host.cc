@@ -160,8 +160,7 @@ void TestRenderFrameHost::ReportInspectorIssue(
     }
   } else if (issue->code ==
              blink::mojom::InspectorIssueCode::kFederatedAuthRequestIssue) {
-    ++federated_auth_counts_[issue->details->federated_auth_request_details
-                                 ->status];
+    ++federated_auth_counts_[issue->details->federated_request_details->status];
   } else if (issue->code == blink::mojom::InspectorIssueCode::
                                 kFederatedAuthUserInfoRequestIssue) {
     ++federated_auth_user_info_counts_

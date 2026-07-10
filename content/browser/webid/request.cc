@@ -2064,10 +2064,9 @@ void Request::AddDevToolsIssue(FederatedRequestResult result) {
   // an error, so it would be cleaner to do this by reporting the inspector
   // issue from the browser.
   auto details = blink::mojom::InspectorIssueDetails::New();
-  auto federated_auth_request_details =
-      blink::mojom::FederatedAuthRequestIssueDetails::New(result);
-  details->federated_auth_request_details =
-      std::move(federated_auth_request_details);
+  auto federated_request_details =
+      blink::mojom::FederatedRequestIssueDetails::New(result);
+  details->federated_request_details = std::move(federated_request_details);
   render_frame_host().ReportInspectorIssue(
       blink::mojom::InspectorIssueInfo::New(
           blink::mojom::InspectorIssueCode::kFederatedAuthRequestIssue,
