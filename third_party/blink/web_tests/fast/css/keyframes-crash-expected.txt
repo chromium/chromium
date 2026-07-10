@@ -1,5 +1,0 @@
-Test for bug 62384: WebCore::WebKitCSSKeyframesRuleInternal::nameAttrSetter() - crash
-
-This test passed if it did not crash
-
-PASSED
