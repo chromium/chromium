@@ -3925,14 +3925,33 @@ TEST_F(AutofillExternalDelegateTest, RemoveSuggestion_ServerCard) {
       pdm().payments_data_manager().GetCreditCardByGUID(server_card.guid()));
 }
 
-// Tests that the personal context notice is removed and the pref is updated.
-TEST_F(AutofillExternalDelegateTest, RemoveSuggestion_PersonalContextNotice) {
+// Tests that the personal context notice is removed and the pref is updated for
+// ambient autofill.
+TEST_F(AutofillExternalDelegateTest,
+       RemoveSuggestion_PersonalContextNotice_AmbientAutofill) {
   EXPECT_FALSE(autofill_client()
                    .is_personal_context_ambient_autofill_notice_acknowledged());
   EXPECT_TRUE(external_delegate().RemoveSuggestion(
       Suggestion(SuggestionType::kPersonalContextNotice)));
   EXPECT_TRUE(autofill_client()
                   .is_personal_context_ambient_autofill_notice_acknowledged());
+  EXPECT_FALSE(
+      autofill_client().is_personal_context_at_memory_notice_acknowledged());
+}
+
+// Tests that the personal context notice is removed and the pref is updated for
+// AtMemory.
+TEST_F(AutofillExternalDelegateTest,
+       RemoveSuggestion_PersonalContextNotice_AtMemory) {
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+  EXPECT_FALSE(
+      autofill_client().is_personal_context_at_memory_notice_acknowledged());
+  EXPECT_TRUE(external_delegate().RemoveSuggestion(
+      Suggestion(SuggestionType::kPersonalContextNotice)));
+  EXPECT_TRUE(
+      autofill_client().is_personal_context_at_memory_notice_acknowledged());
+  EXPECT_FALSE(autofill_client()
+                   .is_personal_context_ambient_autofill_notice_acknowledged());
 }
 
 TEST_F(AutofillExternalDelegateTest, RecordSuggestionTypeOnSuggestionAccepted) {
