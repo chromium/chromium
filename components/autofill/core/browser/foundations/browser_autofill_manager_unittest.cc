@@ -95,6 +95,7 @@
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/integrators/password_manager/mock_password_manager_delegate.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
+#include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_autofill_delegate.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
@@ -716,6 +717,39 @@ class MockTouchToFillPaymentMethodDelegate
               (override));
 };
 
+class MockTouchToFillAutofillDelegate : public TouchToFillAutofillDelegate {
+ public:
+  static std::unique_ptr<MockTouchToFillAutofillDelegate> Create(
+      BrowserAutofillManager* manager) {
+    auto delegate =
+        std::make_unique<testing::NiceMock<MockTouchToFillAutofillDelegate>>();
+    ON_CALL(*delegate, IsShowingTouchToFill())
+        .WillByDefault(testing::Return(false));
+    return delegate;
+  }
+
+  MockTouchToFillAutofillDelegate() = default;
+  MockTouchToFillAutofillDelegate(const MockTouchToFillAutofillDelegate&) =
+      delete;
+  MockTouchToFillAutofillDelegate& operator=(
+      const MockTouchToFillAutofillDelegate&) = delete;
+  ~MockTouchToFillAutofillDelegate() override = default;
+
+  MOCK_METHOD(bool,
+              IntendsToShowTouchToFill,
+              (FormGlobalId, FieldGlobalId),
+              (override));
+  MOCK_METHOD(bool,
+              TryToShowTouchToFill,
+              (const FormData&, const FormFieldData&),
+              (override));
+  MOCK_METHOD(bool, IsShowingTouchToFill, (), (override));
+  MOCK_METHOD(void, HideTouchToFill, (), (override));
+  MOCK_METHOD(void, OnShow, (), (override));
+  MOCK_METHOD(void, OnNoticeAcknowledged, (), (override));
+  MOCK_METHOD(void, OnDismissed, (), (override));
+};
+
 class MockAutofillDriver : public TestAutofillDriver {
  public:
   using TestAutofillDriver::TestAutofillDriver;
@@ -774,6 +808,8 @@ class TestBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
       : autofill::TestBrowserAutofillManager(driver) {
     set_touch_to_fill_payment_method_delegate(
         MockTouchToFillPaymentMethodDelegate::Create(this));
+    set_touch_to_fill_autofill_delegate(
+        MockTouchToFillAutofillDelegate::Create(this));
     test_api(*this).SetExternalDelegate(
         std::make_unique<TestAutofillExternalDelegate>(this));
     test_api(*this).set_credit_card_access_manager(
@@ -1215,6 +1251,11 @@ class BrowserAutofillManagerTest
   MockTouchToFillPaymentMethodDelegate& touch_to_fill_delegate() {
     return *static_cast<MockTouchToFillPaymentMethodDelegate*>(
         autofill_manager().touch_to_fill_payment_method_delegate());
+  }
+
+  MockTouchToFillAutofillDelegate& touch_to_fill_autofill_delegate() {
+    return *static_cast<MockTouchToFillAutofillDelegate*>(
+        autofill_manager().touch_to_fill_autofill_delegate());
   }
 
   MockCreditCardAccessManager& cc_access_manager() {
@@ -7196,6 +7237,34 @@ TEST_F(BrowserAutofillManagerTest,
       form, form.fields()[0].global_id(), field_ids);
 
   EXPECT_FALSE(form_structure->field(0)->did_trigger_javascript_autofill());
+}
+
+// Tests that Autofill suggestions are not shown if TouchToFillAutofill is
+// eligible.
+TEST_F(BrowserAutofillManagerTest,
+       TouchToFillAutofillSuggestion_ShowsIfEligible) {
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  EXPECT_CALL(touch_to_fill_autofill_delegate(), TryToShowTouchToFill)
+      .WillOnce(testing::Return(true));
+  TryToShowTouchToFill(form, form.fields()[0],
+                       /*form_element_was_clicked=*/true);
+  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+}
+
+// Tests that Autofill suggestions are shown if TouchToFillAutofill is not
+// eligible.
+TEST_F(BrowserAutofillManagerTest,
+       TouchToFillAutofillSuggestion_DoesNotShowIfNotEligible) {
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  EXPECT_CALL(touch_to_fill_autofill_delegate(), TryToShowTouchToFill)
+      .WillOnce(testing::Return(false));
+  TryToShowTouchToFill(form, form.fields()[0],
+                       /*form_element_was_clicked=*/true);
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 }
 
 }  // namespace

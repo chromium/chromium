@@ -1412,6 +1412,18 @@ bool BrowserAutofillManager::TryToShowTouchToFillSuggestions(
     const AutofillField* trigger_autofill_field,
     const std::vector<Suggestion>& suggestions,
     AutofillSuggestionTriggerSource trigger_source) {
+  if (touch_to_fill_autofill_delegate_) {
+    if (touch_to_fill_autofill_delegate_->IsShowingTouchToFill()) {
+      return true;
+    }
+    if (trigger_source ==
+            AutofillSuggestionTriggerSource::kFormControlElementClicked &&
+        touch_to_fill_autofill_delegate_->TryToShowTouchToFill(form,
+                                                               trigger_field)) {
+      return true;
+    }
+  }
+
   if (!touch_to_fill_payment_method_delegate_) {
     return false;
   }
@@ -2390,6 +2402,9 @@ void BrowserAutofillManager::OnHidePopupImpl() {
   client().HideAutofillFieldIph();
   if (touch_to_fill_payment_method_delegate_) {
     touch_to_fill_payment_method_delegate_->HideTouchToFill();
+  }
+  if (touch_to_fill_autofill_delegate_) {
+    touch_to_fill_autofill_delegate_->HideTouchToFill();
   }
 }
 

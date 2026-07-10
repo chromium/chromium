@@ -35,6 +35,10 @@ class TouchToFillAutofillControllerImpl
       const TouchToFillAutofillControllerImpl&) = delete;
   ~TouchToFillAutofillControllerImpl() override;
 
+  // ContentAutofillDriverFactory::Observer:
+  void OnContentAutofillDriverCreated(ContentAutofillDriverFactory& factory,
+                                      ContentAutofillDriver& driver) override;
+
   // TouchToFillControllerBase:
   void Hide() override;
   content::WebContents* GetWebContents() override;
@@ -43,6 +47,10 @@ class TouchToFillAutofillControllerImpl
   bool ShowPersonalContextNotice(
       std::unique_ptr<TouchToFillAutofillView> view,
       base::WeakPtr<TouchToFillAutofillDelegate> delegate) override;
+
+  TouchToFillKeyboardSuppressor& keyboard_suppressor_for_test() {
+    return keyboard_suppressor_;
+  }
 
  private:
   base::ScopedObservation<ContentAutofillDriverFactory,

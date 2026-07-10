@@ -47,6 +47,8 @@ source_set("impl") {
   sources = [
     "touch_to_fill_autofill_controller_impl.cc",
     "touch_to_fill_autofill_controller_impl.h",
+    "touch_to_fill_autofill_delegate_android_impl.cc",
+    "touch_to_fill_autofill_delegate_android_impl.h",
     "touch_to_fill_controller_base.cc",
     "touch_to_fill_payment_method_controller_impl.cc",
     "touch_to_fill_payment_method_controller_impl.h",
@@ -81,6 +83,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "touch_to_fill_autofill_controller_impl_unittest.cc",
     "touch_to_fill_payment_method_controller_impl_unittest.cc",
     "touch_to_fill_payment_method_delegate_android_impl_unittest.cc",
     "touch_to_fill_payment_method_quality_metrics_unittest.cc",

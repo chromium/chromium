@@ -8,9 +8,11 @@
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_autofill_delegate_android_impl.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_autofill_view.h"
 #include "components/autofill/android/touch_to_fill_keyboard_suppressor.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_autofill_delegate.h"
@@ -20,9 +22,8 @@ namespace autofill {
 
 namespace {
 TouchToFillAutofillDelegate* GetDelegate(AutofillManager& manager) {
-  // TODO(crbug.com/527817991): Implement creating the delegate when connecting
-  // the trigger point.
-  return nullptr;
+  auto* bam = static_cast<BrowserAutofillManager*>(&manager);
+  return bam->touch_to_fill_autofill_delegate();
 }
 }  // namespace
 
@@ -48,6 +49,15 @@ TouchToFillAutofillControllerImpl::TouchToFillAutofillControllerImpl(
 
 TouchToFillAutofillControllerImpl::~TouchToFillAutofillControllerImpl() =
     default;
+
+void TouchToFillAutofillControllerImpl::OnContentAutofillDriverCreated(
+    ContentAutofillDriverFactory& factory,
+    ContentAutofillDriver& driver) {
+  auto& manager =
+      static_cast<BrowserAutofillManager&>(driver.GetAutofillManager());
+  manager.set_touch_to_fill_autofill_delegate(
+      std::make_unique<TouchToFillAutofillDelegateAndroidImpl>(&manager));
+}
 
 void TouchToFillAutofillControllerImpl::Hide() {
   if (view_) {
