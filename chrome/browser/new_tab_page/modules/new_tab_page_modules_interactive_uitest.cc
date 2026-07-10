@@ -558,13 +558,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
 #endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
                        MAYBE_ResumeTabGroupInAnotherWindow) {
-#if defined(MEMORY_SANITIZER)
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
-                    "See crbug.com/477426026.";
-  }
-#endif
-
   ASSERT_TRUE(
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   const tab_groups::TabGroupId group_id =
