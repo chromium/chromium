@@ -32,7 +32,7 @@ per-file storage_partition*=file://storage/OWNERS
 per-file storage_service*=file://storage/OWNERS
 
 # Variations.
-per-file field_trial_synchronizer.*=file://base/metrics/OWNERS
+per-file field_trial_synchronizer*=file://base/metrics/OWNERS
 
 # Cross origin opener policy.
 per-file cross_origin_opener_policy*=pmeuleman@chromium.org
