@@ -263,6 +263,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // document with that origin to be hosted in this process. This is
     // specifically about whether a particular new origin may be introduced
     // into a given process.
+    //
+    // This access type can only be used on the UI thread, because it involves
+    // jail and citadel checks which require UI thread data structures.
     kCanCommitNewOrigin,
     // Whether the process has previously committed a document or instantiated a
     // worker with the particular origin. This can be used to verify whether a
@@ -273,6 +276,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // processing legitimate IPCs on behalf of `origin`, this check also allows
     // the case where an origin has been hosted by the process in the past, but
     // not necessarily now.
+    //
+    // This access type can be used on any thread.
     kHostsOrigin,
     // Whether the process can access data belonging to an origin already
     // committed in the process, such as passwords, localStorage, or cookies.
@@ -282,6 +287,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // processes that aren't supposed to access any data. For example, sandboxed
     // frame processes (which contain only opaque origins) or PDF processes
     // cannot access data for any origin.
+    //
+    // This access type can be used on any thread.
     kCanAccessDataForCommittedOrigin,
   };
   bool CanAccessOrigin(int child_id,
@@ -1147,12 +1154,12 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // about the cause of the failure, as well as `out_expected_process_lock` with
   // what the process lock was expected to be (e.g., to be used in crash keys).
   //
-  // This function must be called while already holding `lock_`.
+  // This function must be called on the UI thread while already holding
+  // `lock_`, and it is only valid to use for AccessType::kCanCommitNewOrigin.
   bool PerformJailAndCitadelChecks(ChildProcessId child_id,
                                    const ProcessState& process_state,
                                    const GURL& url,
                                    bool url_is_precursor_of_opaque_origin,
-                                   AccessType access_type,
                                    ProcessLock& out_expected_process_lock,
                                    std::string& out_failure_reason)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);

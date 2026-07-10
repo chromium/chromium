@@ -2325,10 +2325,6 @@ bool ChildProcessSecurityPolicyImpl::HostsOrigin(int child_id,
 bool ChildProcessSecurityPolicyImpl::CanAccessOrigin(int child_id,
                                                      const url::Origin& origin,
                                                      AccessType access_type) {
-  // Ensure this is only called on the UI thread, which is the only thread
-  // with sufficient information to do the full set of checks.
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-
   GURL url_to_check;
   if (origin.opaque()) {
     auto precursor_tuple = origin.GetTupleOrPrecursorTupleIfOpaque();
@@ -2415,9 +2411,10 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
     const ProcessState& process_state,
     const GURL& url,
     bool url_is_precursor_of_opaque_origin,
-    AccessType access_type,
     ProcessLock& out_expected_process_lock,
     std::string& out_failure_reason) {
+  // Ensure this is only called on the UI thread, which is the only thread
+  // with sufficient information to do the full set of checks.
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   ProcessLock actual_process_lock = process_state.process_lock();
@@ -2711,14 +2708,6 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
     const GURL& url,
     bool url_is_precursor_of_opaque_origin,
     AccessType access_type) {
-  // Ensure this is only called on the UI thread, which is the only thread with
-  // sufficient information to do the full set of checks.
-  //
-  // TODO(alexmos): Previously, this code could run on both UI and IO threads.
-  // Go through and clean up code paths that are no longer reachable on the IO
-  // thread.
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-
   base::AutoLock lock(lock_);
 
   const ProcessState* process_state =
@@ -2745,38 +2734,40 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
                !IsAccessAllowedForPdfProcess(access_type)) {
       failure_reason = "pdf_restrictions";
     } else {
-      // For checking kHostsOrigin or kCanAccessDataForOrigin access types, we
-      // can use a simpler check based on tracking the list of committed
-      // origins.
-      //
-      // Note that it's important to perform this check *after* the PDF and
-      // sandboxing restrictions above, since those checks may deny access even
-      // for origins that have previously committed in a process. In other
-      // words, PDF and sandboxed processes should never be allowed to access
-      // data, even to their own committed origins.
-      bool can_use_committed_origin_checks =
-          access_type == AccessType::kHostsOrigin ||
-          access_type == AccessType::kCanAccessDataForCommittedOrigin;
-      if (can_use_committed_origin_checks) {
-        if (process_state->MatchesCommittedOrigin(
-                url, url_is_precursor_of_opaque_origin)) {
-          return true;
-        }
-        failure_reason = "no_matching_committed_origin";
-      } else {
-        // If we couldn't use committed origin enforcements (i.e., for
-        // kCanCommitNewOrigin checks), Jail and Citadel checks are the source
-        // of truth. If they don't pass, collect crash keys below before
-        // returning false. Unlike committed origin enforcements, these checks
-        // require BrowserContext to still exist in the ProcessState.
-        if (!process_state->browser_context()) {
-          failure_reason = "no_browser_context";
-        } else if (PerformJailAndCitadelChecks(
-                       child_id, *process_state, url,
-                       url_is_precursor_of_opaque_origin, access_type,
-                       expected_process_lock, failure_reason)) {
-          return true;
-        }
+      switch (access_type) {
+        case AccessType::kHostsOrigin:
+        case AccessType::kCanAccessDataForCommittedOrigin:
+          // For checking kHostsOrigin or kCanAccessDataForOrigin access types,
+          // we can use a simpler check based on tracking the list of committed
+          // origins.
+          //
+          // Note that it's important to perform this check *after* the PDF and
+          // sandboxing restrictions above, since those checks may deny access
+          // even for origins that have previously committed in a process. In
+          // other words, PDF and sandboxed processes should never be allowed to
+          // access data, even to their own committed origins.
+          if (process_state->MatchesCommittedOrigin(
+                  url, url_is_precursor_of_opaque_origin)) {
+            return true;
+          }
+          failure_reason = "no_matching_committed_origin";
+          break;
+        case AccessType::kCanCommitNewOrigin:
+          // If we couldn't use committed origin enforcements (i.e., for
+          // kCanCommitNewOrigin checks), Jail and Citadel checks are the source
+          // of truth. If they don't pass, collect crash keys below before
+          // returning false. Unlike committed origin enforcements, these checks
+          // require BrowserContext to still exist in the ProcessState, and can
+          // only run on the UI thread.
+          if (!process_state->browser_context()) {
+            failure_reason = "no_browser_context";
+          } else if (PerformJailAndCitadelChecks(
+                         child_id, *process_state, url,
+                         url_is_precursor_of_opaque_origin,
+                         expected_process_lock, failure_reason)) {
+            return true;
+          }
+          break;
       }
     }
   }
