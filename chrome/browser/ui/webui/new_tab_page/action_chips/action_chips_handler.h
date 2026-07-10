@@ -82,6 +82,7 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler
   PrefChangeRegistrar pref_change_registrar_;
 
   std::optional<GURL> last_processed_url_;
+  bool has_recorded_any_shown_ = false;
 
   base::WeakPtrFactory<ActionChipsHandler> weak_factory_{this};
 };
