@@ -40,13 +40,6 @@ BASE_FEATURE(kGroupingFrameworkForNonZPS,
              "OmniboxGroupingFrameworkForNonZPS",
              enable_if(IS_ANDROID));
 
-// Feature used to cap max zero suggestions shown according to the param
-// OmniboxMaxZeroSuggestMatches. If omitted,
-// OmniboxUIExperimentMaxAutocompleteMatches will be used instead. If present,
-// OmniboxMaxZeroSuggestMatches will override
-// OmniboxUIExperimentMaxAutocompleteMatches when |from_omnibox_focus| is true.
-BASE_FEATURE(kMaxZeroSuggestMatches, "OmniboxMaxZeroSuggestMatches", DISABLED);
-
 // Feature used to cap max suggestions shown according to the params
 // UIMaxAutocompleteMatches and UIMaxAutocompleteMatchesByProvider.
 BASE_FEATURE(kUIExperimentMaxAutocompleteMatches,

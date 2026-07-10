@@ -24,7 +24,7 @@ BASE_DECLARE_FEATURE(kGroupingFrameworkForNonZPS);
 
 // Num suggestions - these affect how many suggestions are shown based on e.g.
 // focus, page context, provider, or URL v non-URL.
-BASE_DECLARE_FEATURE(kMaxZeroSuggestMatches);
+
 BASE_DECLARE_FEATURE(kUIExperimentMaxAutocompleteMatches);
 BASE_DECLARE_FEATURE(kDynamicMaxAutocomplete);
 
@@ -46,7 +46,6 @@ BASE_DECLARE_FEATURE(kZeroSuggestPrefetchDebouncing);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingForComposebox);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnSRP);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnWeb);
-// Related, kMaxZeroSuggestMatches.
 
 // On Device Suggest.
 BASE_DECLARE_FEATURE(kOnDeviceHeadProviderIncognito);

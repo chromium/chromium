@@ -2014,42 +2014,6 @@ const FeatureEntry::FeatureVariation kOmniboxMultilineEditFieldVariants[] = {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kMaxZeroSuggestMatches5[] = {
-    {"MaxZeroSuggestMatches", "5"}};
-const FeatureEntry::FeatureParam kMaxZeroSuggestMatches6[] = {
-    {"MaxZeroSuggestMatches", "6"}};
-const FeatureEntry::FeatureParam kMaxZeroSuggestMatches7[] = {
-    {"MaxZeroSuggestMatches", "7"}};
-const FeatureEntry::FeatureParam kMaxZeroSuggestMatches8[] = {
-    {"MaxZeroSuggestMatches", "8"}};
-const FeatureEntry::FeatureParam kMaxZeroSuggestMatches9[] = {
-    {"MaxZeroSuggestMatches", "9"}};
-const FeatureEntry::FeatureParam kMaxZeroSuggestMatches10[] = {
-    {"MaxZeroSuggestMatches", "10"}};
-const FeatureEntry::FeatureParam kMaxZeroSuggestMatches11[] = {
-    {"MaxZeroSuggestMatches", "11"}};
-const FeatureEntry::FeatureParam kMaxZeroSuggestMatches12[] = {
-    {"MaxZeroSuggestMatches", "12"}};
-const FeatureEntry::FeatureParam kMaxZeroSuggestMatches13[] = {
-    {"MaxZeroSuggestMatches", "13"}};
-const FeatureEntry::FeatureParam kMaxZeroSuggestMatches14[] = {
-    {"MaxZeroSuggestMatches", "14"}};
-const FeatureEntry::FeatureParam kMaxZeroSuggestMatches15[] = {
-    {"MaxZeroSuggestMatches", "15"}};
-
-const FeatureEntry::FeatureVariation kMaxZeroSuggestMatchesVariations[] = {
-    {"5", kMaxZeroSuggestMatches5, nullptr},
-    {"6", kMaxZeroSuggestMatches6, nullptr},
-    {"7", kMaxZeroSuggestMatches7, nullptr},
-    {"8", kMaxZeroSuggestMatches8, nullptr},
-    {"9", kMaxZeroSuggestMatches9, nullptr},
-    {"10", kMaxZeroSuggestMatches10, nullptr},
-    {"11", kMaxZeroSuggestMatches11, nullptr},
-    {"12", kMaxZeroSuggestMatches12, nullptr},
-    {"13", kMaxZeroSuggestMatches13, nullptr},
-    {"14", kMaxZeroSuggestMatches14, nullptr},
-    {"15", kMaxZeroSuggestMatches15, nullptr}};
-
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches4[] = {
@@ -6861,14 +6825,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kVoiceSearchCoherenceSearchbox,
                                     kVoiceSearchCoherenceSearchboxVariations,
                                     "VoiceSearchCoherenceSearchboxVariations")},
-
-    {"omnibox-max-zero-suggest-matches",
-     flag_descriptions::kOmniboxMaxZeroSuggestMatchesName,
-     flag_descriptions::kOmniboxMaxZeroSuggestMatchesDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kMaxZeroSuggestMatches,
-                                    kMaxZeroSuggestMatchesVariations,
-                                    "OmniboxBundledExperimentV1")},
 
     {"omnibox-ui-max-autocomplete-matches",
      flag_descriptions::kOmniboxUIMaxAutocompleteMatchesName,
