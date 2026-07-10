@@ -315,7 +315,7 @@ action("deb_repo_package") {
     package = "chromium-browser-repo"
   }
 
-  outputs = [ "$root_out_dir/${package}_${deb_arch}.deb" ]
+  outputs = [ "$root_out_dir/${package}_${chrome_version_full}_${deb_arch}.deb" ]
 
   args = [
     "-a",
