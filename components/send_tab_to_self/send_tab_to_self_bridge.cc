@@ -928,7 +928,15 @@ std::string SendTabToSelfBridge::GetLocalDeviceName() const {
   if (local_device_name_for_testing_.has_value()) {
     return *local_device_name_for_testing_;
   }
+  // `local_device` may be null during early startup before DeviceInfoTracker is
+  // initialized.
   const syncer::DeviceInfo* local_device = GetLocalDeviceInfo();
+  if (!local_device) {
+    return std::string();
+    // TODO(crbug.com/532954900): Add a metric to track the number of times the
+    // local device is null if and only if kSyncSimplifyDeviceNaming is
+    // enabled.
+  }
 
   // TODO(crbug.com/531649027): Remove fallback_full_name logic once
   // kSyncSimplifyDeviceNaming launches. It is only needed for legacy name
