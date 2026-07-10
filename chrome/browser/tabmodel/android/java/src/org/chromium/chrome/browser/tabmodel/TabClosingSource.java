@@ -16,7 +16,8 @@ import java.lang.annotation.RetentionPolicy;
     TabClosingSource.UNKNOWN,
     TabClosingSource.TABLET_TAB_STRIP,
     TabClosingSource.KEYBOARD_SHORTCUT,
-    TabClosingSource.VERTICAL_TAB_STRIP
+    TabClosingSource.VERTICAL_TAB_STRIP,
+    TabClosingSource.OPEN_IN_APP
 })
 @Retention(RetentionPolicy.SOURCE)
 @NullMarked
@@ -32,4 +33,7 @@ public @interface TabClosingSource {
 
     /** Tab closing is from vertical tab strip. */
     int VERTICAL_TAB_STRIP = 3;
+
+    /** Tab closing is from Open in app. */
+    int OPEN_IN_APP = 4;
 }

@@ -23,6 +23,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -248,6 +249,8 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
                                         tabModelSelector.tryCloseTab(
                                                 TabClosureParams.closeTab(tab)
                                                         .allowUndo(false)
+                                                        .tabClosingSource(
+                                                                TabClosingSource.OPEN_IN_APP)
                                                         .build(),
                                                 /* allowDialog= */ false);
                                     };

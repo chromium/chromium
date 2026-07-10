@@ -48,6 +48,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.external_intents.ExternalNavigationHelper;
@@ -160,7 +162,10 @@ public class TabbedOpenInAppEntryPointUnitTest {
 
         verify(mExternalNavigationHelper).launchExternalApp(eq(mIntent), eq(mContext));
         ShadowLooper.idleMainLooper();
-        verify(mTabModelSelector).tryCloseTab(any(), eq(false));
+        ArgumentCaptor<TabClosureParams> closureParamsCaptor =
+                ArgumentCaptor.forClass(TabClosureParams.class);
+        verify(mTabModelSelector).tryCloseTab(closureParamsCaptor.capture(), eq(false));
+        assertEquals(TabClosingSource.OPEN_IN_APP, closureParamsCaptor.getValue().tabClosingSource);
 
         when(mOmniboxChipManager.isChipPlaced()).thenReturn(true);
 
@@ -223,6 +228,9 @@ public class TabbedOpenInAppEntryPointUnitTest {
         // Simulate user confirmation in the dialog.
         confirmationCaptor.getValue().run();
         ShadowLooper.idleMainLooper();
-        verify(mTabModelSelector).tryCloseTab(any(), eq(false));
+        ArgumentCaptor<TabClosureParams> closureParamsCaptor =
+                ArgumentCaptor.forClass(TabClosureParams.class);
+        verify(mTabModelSelector).tryCloseTab(closureParamsCaptor.capture(), eq(false));
+        assertEquals(TabClosingSource.OPEN_IN_APP, closureParamsCaptor.getValue().tabClosingSource);
     }
 }
