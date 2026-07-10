@@ -13,10 +13,9 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/services/network_config/cros_network_config.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,11 +45,10 @@ class NetworkDiagnosticsTestHelper : public ::testing::Test {
   // Member order declaration done in a way so that members outlive those that
   // are dependent on them.
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  sync_preferences::TestingPrefServiceSyncable user_prefs_;
   std::unique_ptr<NetworkHandlerTestHelper> helper_;
   std::unique_ptr<network_config::CrosNetworkConfig> cros_network_config_;
-  sync_preferences::TestingPrefServiceSyncable user_prefs_;
-  TestingPrefServiceSimple local_state_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::string wifi_path_;
   std::string wifi_guid_;
   system::ScopedFakeStatisticsProvider statistics_provider_;

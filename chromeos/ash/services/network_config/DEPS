@@ -1,6 +1,7 @@
 include_rules = [
   "+components/captive_portal",
   "+components/onc",
+  "+components/session_manager/core",
   "+components/user_manager",
 ]
 
@@ -8,6 +9,7 @@ specific_include_rules = {
  "cros_network_config_unittest.cc": [
     "+chromeos/ash/experiences/arc/arc_prefs.h",
     "+components/proxy_config",
+    "+components/session_manager/test",
     "+components/sync_preferences/testing_pref_service_syncable.h",
     "+third_party/re2"
   ],

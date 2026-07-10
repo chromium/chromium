@@ -24,7 +24,6 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/device_state.h"
@@ -56,6 +55,8 @@
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/onc/onc_constants.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -105,6 +106,17 @@ const char kModifyCustomApnPolicyHistogram[] =
     "Network.Ash.Cellular.Apn.ModifyCustomApn.AllowApnModification";
 const char kRemoveCustomApnPolicyHistogram[] =
     "Network.Ash.Cellular.Apn.RemoveCustomApn.AllowApnModification";
+
+std::string GetPrimaryUserHash() {
+  const auto* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (!primary_session) {
+    return std::string();
+  }
+  return UserManager::Get()
+      ->FindUser(primary_session->account_id())
+      ->username_hash();
+}
 
 std::string ShillToOnc(const std::string& shill_string,
                        const onc::StringTranslationEntry table[]) {
@@ -2540,7 +2552,7 @@ void CrosNetworkConfig::GetManagedProperties(
   }
 
   network_configuration_handler_->GetManagedProperties(
-      LoginState::Get()->primary_user_hash(), network->path(),
+      GetPrimaryUserHash(), network->path(),
       base::BindOnce(&CrosNetworkConfig::OnGetManagedProperties,
                      weak_factory_.GetWeakPtr(), std::move(callback), guid));
 }
@@ -2601,7 +2613,7 @@ void CrosNetworkConfig::OnGetManagedProperties(
   NET_LOG(DEBUG) << "Requesting EAP state for: " + service_path
                  << " from: " << eap_state->path();
   network_configuration_handler_->GetManagedProperties(
-      LoginState::Get()->primary_user_hash(), eap_state->path(),
+      GetPrimaryUserHash(), eap_state->path(),
       base::BindOnce(&CrosNetworkConfig::OnGetManagedPropertiesEap,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      std::move(managed_properties)));
@@ -2728,10 +2740,8 @@ void CrosNetworkConfig::SetPropertiesInternal(const std::string& guid,
   if (network.profile_path().empty()) {
     NET_LOG(USER) << "Configuring properties for " << guid
                   << " (no profile entry set)";
-    std::string user_id_hash = LoginState::Get()->primary_user_hash();
-
     network_configuration_handler_->CreateConfiguration(
-        user_id_hash, onc,
+        GetPrimaryUserHash(), onc,
         base::BindOnce(&CrosNetworkConfig::SetPropertiesConfigureSuccess,
                        weak_factory_.GetWeakPtr(), callback_id),
         base::BindOnce(&CrosNetworkConfig::SetPropertiesFailure,
@@ -2784,8 +2794,9 @@ void CrosNetworkConfig::ConfigureNetwork(mojom::ConfigPropertiesPtr properties,
     return;
   }
 
-  if (!shared && UserManager::Get()->GetPrimaryUser() !=
-                     UserManager::Get()->GetActiveUser()) {
+  if (!shared &&
+      session_manager::SessionManager::Get()->GetPrimarySession() !=
+          session_manager::SessionManager::Get()->GetActiveSession()) {
     NET_LOG(ERROR)
         << "Attempt to set unshared configuration from non primary user";
     std::move(callback).Run(/*guid=*/std::nullopt, kErrorAccessToSharedConfig);
@@ -2807,14 +2818,11 @@ void CrosNetworkConfig::ConfigureNetwork(mojom::ConfigPropertiesPtr properties,
     return;
   }
 
-  std::string user_id_hash =
-      shared ? "" : LoginState::Get()->primary_user_hash();
-
   int callback_id = callback_id_++;
   configure_network_callbacks_[callback_id] = std::move(callback);
 
   network_configuration_handler_->CreateConfiguration(
-      user_id_hash, onc.value(),
+      shared ? "" : GetPrimaryUserHash(), onc.value(),
       base::BindOnce(&CrosNetworkConfig::ConfigureNetworkSuccess,
                      weak_factory_.GetWeakPtr(), callback_id),
       base::BindOnce(&CrosNetworkConfig::ConfigureNetworkFailure,
@@ -2858,9 +2866,8 @@ void CrosNetworkConfig::ForgetNetwork(const std::string& guid,
 
   bool allow_forget_shared_config = true;
   ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_UNKNOWN;
-  std::string user_id_hash = LoginState::Get()->primary_user_hash();
-  if (network_configuration_handler_->FindPolicyByGUID(user_id_hash, guid,
-                                                       &onc_source)) {
+  if (network_configuration_handler_->FindPolicyByGUID(GetPrimaryUserHash(),
+                                                       guid, &onc_source)) {
     if (onc_source == ::onc::ONC_SOURCE_USER_POLICY) {
       // Prevent a policy controlled configuration removal.
       std::move(callback).Run(/*success=*/false);

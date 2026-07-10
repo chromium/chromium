@@ -30,17 +30,18 @@ NetworkHandlerTestHelper::~NetworkHandlerTestHelper() {
 void NetworkHandlerTestHelper::RegisterPrefs(
     PrefRegistrySimple* user_registry,
     PrefRegistrySimple* device_registry) {
-  DCHECK(device_registry);
-  ::onc::RegisterPrefs(device_registry);
-  NetworkMetadataStore::RegisterPrefs(device_registry);
-  ManagedCellularPrefHandler::RegisterLocalStatePrefs(device_registry);
-  CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(device_registry);
+  if (device_registry) {
+    ::onc::RegisterPrefs(device_registry);
+    NetworkMetadataStore::RegisterPrefs(device_registry);
+    ManagedCellularPrefHandler::RegisterLocalStatePrefs(device_registry);
+    CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(device_registry);
+    device_registry->RegisterBooleanPref(
+        prefs::kDeviceEphemeralNetworkPoliciesEnabled, false);
+  }
   if (user_registry) {
     NetworkMetadataStore::RegisterPrefs(user_registry);
     ::onc::RegisterProfilePrefs(user_registry);
   }
-  device_registry->RegisterBooleanPref(
-      prefs::kDeviceEphemeralNetworkPoliciesEnabled, false);
 }
 
 void NetworkHandlerTestHelper::InitializePrefs(PrefService* user_prefs,
