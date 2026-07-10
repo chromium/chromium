@@ -441,14 +441,17 @@ icu::UnicodeString GetBestPattern(const icu::Locale& locale,
         icu_pattern.indexOf('E') != -1 || icu_pattern.indexOf('c') != -1;
     // There could happen that the default pattern for a date might have a 'G'
     // (Era) field.
-    if (icu_pattern.indexOf('G') != -1 &&
-        options.year_style != DateTimeFormatterOptions::YearStyle::kWithEra) {
+    if (options.year_style != DateTimeFormatterOptions::YearStyle::kWithEra) {
       icu_pattern.findAndReplace("G", "");
       // Trims extra spaces that could happen after removing "G".
       icu_pattern.findAndReplace("  ", " ");
     }
 
-    if (skeleton_options.has_weekday == has_weekday_in_icu_pattern) {
+    const bool has_era = icu_pattern.indexOf('G') != -1;
+    const bool has_era_in_options =
+        options.year_style == DateTimeFormatterOptions::YearStyle::kWithEra;
+    if (skeleton_options.has_weekday == has_weekday_in_icu_pattern &&
+        has_era == has_era_in_options) {
       return icu_pattern;
     }
   }
@@ -470,6 +473,13 @@ icu::UnicodeString GetBestPattern(const icu::Locale& locale,
       icu_pattern, complete_skeleton, skeleton_options, options);
   icu::UnicodeString best_pattern =
       generator->getBestPattern(formatted_skeleton, status);
+
+  // Workaround for the "bg" locale because ICU removes the 'ч' from its end
+  // when the timezone (zzzz) is not asked for.
+  if (skeleton_options.has_time && icu_pattern.endsWith(u"'ч'. zzzz") &&
+      best_pattern.indexOf(u"'ч'") == -1) {
+    best_pattern.append(u" ч.");
+  }
 
   return best_pattern;
 }
