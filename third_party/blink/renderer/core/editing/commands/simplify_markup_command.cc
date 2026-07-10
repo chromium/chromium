@@ -118,7 +118,7 @@ void SimplifyMarkupCommand::DoApply(EditingState* editing_state) {
 }
 
 int SimplifyMarkupCommand::PruneSubsequentAncestorsToRemove(
-    HeapVector<Member<ContainerNode>>& nodes_to_remove,
+    const HeapVector<Member<ContainerNode>>& nodes_to_remove,
     wtf_size_t start_node_index,
     EditingState* editing_state) {
   wtf_size_t past_last_node_to_remove = start_node_index + 1;
