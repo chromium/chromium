@@ -10,6 +10,5 @@
 # crbug.com/468408601
 -CaptureScreenshotTest.SetDefaultBackgroundColorOverride
 
-# TODO(crbug.com/531626377)
--All/NavigationEntryScreenshotBrowserTest.MultipleProfiles/SameOrigin_BFCacheDisabled
--All/NavigationEntryScreenshotBrowserTest.PrimaryMainFrameNav/CrossOrigin_BFCacheEnabled
+# TODO(crbug.com/529326479): Temporarily disabled due to DrDc race condition.
+-All/NavigationEntryScreenshotBrowserTest*
