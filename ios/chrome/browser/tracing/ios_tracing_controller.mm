@@ -110,13 +110,17 @@ perfetto::TraceConfig IOSTracingController::CreateDeveloperTraceConfig() {
   base::trace_event::TraceConfig trace_config(
       "*,disabled-by-default-cpu_profiler,disabled-by-default-system_metrics,"
       "disabled-by-default-histogram_samples",
-      base::trace_event::RECORD_UNTIL_FULL);
+      base::trace_event::RECORD_CONTINUOUSLY);
   trace_config.SetTraceBufferSizeInBytes(base::ByteSize(50 * 1024 * 1024));
 
-  return tracing::GetDefaultPerfettoConfig(trace_config,
-                                           /*privacy_filtering_enabled=*/false,
-                                           /*convert_to_legacy_json=*/false,
-                                           /*json_agent_label_filter=*/"");
+  perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
+      trace_config, /*privacy_filtering_enabled=*/false,
+      /*convert_to_legacy_json=*/false, /*json_agent_label_filter=*/"");
+  perfetto_config.set_flush_period_ms(30000);
+  for (auto& buffer : *perfetto_config.mutable_buffers()) {
+    buffer.set_fill_policy(perfetto::TraceConfig::BufferConfig::RING_BUFFER);
+  }
+  return perfetto_config;
 }
 
 void IOSTracingController::ResetForTesting() {

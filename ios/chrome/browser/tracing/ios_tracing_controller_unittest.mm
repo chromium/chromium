@@ -78,9 +78,15 @@ TEST_F(IOSTracingControllerTest, CreatesValidDeveloperConfig) {
   perfetto::TraceConfig config =
       IOSTracingController::GetInstance().CreateDeveloperTraceConfig();
 
-  // Validate the buffer size is set to the 50MB default.
+  // Validate the buffer size is set to the 50MB default and RING_BUFFER is
+  // used.
   ASSERT_GT(config.buffers_size(), 0);
   EXPECT_EQ(config.buffers()[0].size_kb(), 1024u * 50u);
+  EXPECT_EQ(config.flush_period_ms(), 30000u);
+  for (const auto& buffer : config.buffers()) {
+    EXPECT_EQ(buffer.fill_policy(),
+              perfetto::TraceConfig::BufferConfig::RING_BUFFER);
+  }
 
   // Validate that the data sources are enabled.
   bool found_track_event = false;
