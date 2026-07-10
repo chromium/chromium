@@ -305,6 +305,27 @@ public class SnackbarTest {
 
     @Test
     @SmallTest
+    public void testNullTextSnackbar() {
+        final Snackbar snackbar =
+                Snackbar.make(
+                        null, mDismissController, Snackbar.TYPE_ACTION, Snackbar.UMA_TEST_SNACKBAR);
+        mDismissed = false;
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> mManager.showSnackbar(snackbar));
+        pollSnackbarCondition(
+                "Snackbar with null text was not shown.",
+                () -> mManager.isShowing() && mManager.getCurrentSnackbarForTesting() == snackbar);
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mManager.dismissSnackbars(mDismissController);
+                    assertTrue("onDismissNoAction not called", mDismissed);
+                });
+        pollSnackbarCondition(
+                "Null-text snackbar did not dismiss.", () -> !mManager.isShowing() && mDismissed);
+    }
+
+    @Test
+    @SmallTest
     public void testPersistentSnackbar() throws InterruptedException {
         int timeout = 100;
         SnackbarManager.setDurationForTesting(timeout);
@@ -863,21 +884,22 @@ public class SnackbarTest {
                     View containerView = view.getContainerViewForTesting();
                     if (containerView == null) return false;
 
+                    int maxSnackbarWidth =
+                            sActivity
+                                    .getResources()
+                                    .getDimensionPixelSize(
+                                            org.chromium.chrome.ui.messages.R.dimen
+                                                    .snackbar_width_max);
+                    int floatingMargin =
+                            sActivity
+                                    .getResources()
+                                    .getDimensionPixelSize(
+                                            org.chromium.chrome.ui.messages.R.dimen
+                                                    .snackbar_floating_margin);
                     int expectedWidth =
                             Math.min(
-                                    sActivity
-                                            .getResources()
-                                            .getDimensionPixelSize(
-                                                    org.chromium.chrome.ui.messages.R.dimen
-                                                            .snackbar_width_max),
-                                    sAlternateParent1.getWidth()
-                                            - 2
-                                                    * sActivity
-                                                            .getResources()
-                                                            .getDimensionPixelSize(
-                                                                    org.chromium.chrome.ui.messages
-                                                                            .R.dimen
-                                                                            .snackbar_floating_margin));
+                                    maxSnackbarWidth,
+                                    sAlternateParent1.getWidth() - 2 * floatingMargin);
                     return containerView.getWidth() == expectedWidth;
                 });
 

@@ -11,6 +11,7 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -487,8 +488,8 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         return (FrameLayout.LayoutParams) mContainerView.getLayoutParams();
     }
 
-    private void setViewText(TextView view, CharSequence text, boolean animate) {
-        if (view.getText().toString().equals(text.toString())) return;
+    private void setViewText(TextView view, @Nullable CharSequence text, boolean animate) {
+        if (TextUtils.equals(view.getText(), text)) return;
         view.animate().cancel();
         if (animate && view.getAlpha() < 1.0f) {
             view.setAlpha(0.0f);
