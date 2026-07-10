@@ -2854,7 +2854,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Copy link
       </message>
       <message name="IDS_MENU_SEND_TO_DEVICES" desc="Menu item for sending the page to another device. [CHAR_LIMIT=27]">
-        Send to devices
+        Send to your device
       </message>
       <message name="IDS_MENU_QR_CODE" desc="Menu item for generating a QR Code for the current page. [CHAR_LIMIT=27]">
         QR code
@@ -6516,10 +6516,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
 
       <message name="IDS_SHARING_LONG_SCREENSHOT_UNKNOWN_ERROR" desc="Text shown in the toast notification when screenshot data cannot be captured due to a general or unknown error, in the long screenshots feature.">
         Something went wrong. Try again.
-      </message>
-
-      <message name="IDS_SHARING_SEND_TAB_TO_SELF" desc="Label for the button in sharing hub for sending the current tab to other devices if user signed in (Send Tab to Self feature).">
-        Send to devices
       </message>
 
       <message name="IDS_SHARING_INCLUDING_LINK_TITLE_TEMPLATE" desc="Title used in share sheet when sharing the highlighted text with a generated link.">

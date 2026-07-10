@@ -262,7 +262,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
         }
         itemList.add(
                 new ListItemBuilder()
-                        .withTitleRes(R.string.sharing_send_tab_to_self)
+                        .withTitleRes(R.string.menu_send_to_devices)
                         .withMenuId(MenuItemType.SEND_TAB_TO_SELF)
                         .build());
     }

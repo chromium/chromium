@@ -441,7 +441,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                         ContentType.LINK_PAGE_NOT_VISIBLE,
                         ContentType.IMAGE)
                 .setDetailedContentTypesToDisableFor(DetailedContentType.SCREENSHOT)
-                .setIcon(R.drawable.send_tab, R.string.sharing_send_tab_to_self)
+                .setIcon(R.drawable.send_tab, R.string.menu_send_to_devices)
                 .setShareActionType(ShareCustomAction.SEND_TAB_TO_SELF)
                 .setFeatureNameForMetrics(USER_ACTION_SEND_TAB_TO_SELF_SELECTED)
                 .setOnClickCallback(

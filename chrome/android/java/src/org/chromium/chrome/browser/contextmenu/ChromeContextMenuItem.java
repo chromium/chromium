@@ -270,7 +270,7 @@ class ChromeContextMenuItem {
         R.string.contextmenu_copy_video_frame, // Item.COPY_VIDEO_FRAME
         R.string.contextmenu_download_video_frame, // Item.DOWNLOAD_VIDEO_FRAME
         R.string.contextmenu_open_in_reading_mode, // Item.READING_MODE
-        R.string.sharing_send_tab_to_self, // Item.SEND_TAB_TO_SELF
+        R.string.menu_send_to_devices, // Item.SEND_TAB_TO_SELF
         R.string.contextmenu_translate, // Item.TRANSLATE
         R.string.contextmenu_create_qr_code, // Item.CREATE_QR_CODE
     };
