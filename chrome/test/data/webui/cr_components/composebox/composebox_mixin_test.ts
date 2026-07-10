@@ -483,6 +483,42 @@ suite('ComposeboxMixinTest', () => {
     assertEquals('', element.lastQueriedInput);
   });
 
+  test('activeQueryId is not reset to -1 when selection cleared and input is empty', async () => {
+    element.input = '';
+    element.activeQueryId = 0;
+    element.lastQueriedInput = '';
+
+    const matches = [
+      {fillIntoEdit: 'match1', supportsDeletion: false} as AutocompleteMatch,
+    ];
+    element.result = {input: '', matches} as AutocompleteResult;
+    element.selectedMatchIndex = 0;
+    await element.updateComplete;
+
+    element.selectedMatchIndex = -1;
+    await element.updateComplete;
+
+    assertEquals(0, element.activeQueryId);
+  });
+
+  test('activeQueryId is reset to -1 when selection cleared and input is not empty', async () => {
+    element.input = 'Some text';
+    element.activeQueryId = 0;
+    element.lastQueriedInput = '';
+
+    const matches = [
+      {fillIntoEdit: 'match1', supportsDeletion: false} as AutocompleteMatch,
+    ];
+    element.result = {input: '', matches} as AutocompleteResult;
+    element.selectedMatchIndex = 0;
+    await element.updateComplete;
+
+    element.selectedMatchIndex = -1;
+    await element.updateComplete;
+
+    assertEquals(-1, element.activeQueryId);
+  });
+
   test('smartComposeInlineHint is sliced on sequential typing', async () => {
     element.smartComposeEnabled = true;
     element.input = 'hello';

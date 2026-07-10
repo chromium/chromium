@@ -519,7 +519,11 @@ export const ComposeboxEmbedderMixin =
             } else if (!this.lastQueriedInput) {
               // This is for cases when focus leaves the matches/input.
               // If there was already text in the input do not clear it.
-              this.clearInput();
+              // Only clear input when not empty, otherwise this impacts
+              // suggestions getting fetched for zero state.
+              if (this.input) {
+                this.clearInput();
+              }
             } else {
               // For typed queries reset the input back to typed value when
               // focus leaves the match.
