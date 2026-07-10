@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager_impl.h"
+#include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager_impl.h"
 
 #include <algorithm>
 #include <optional>
@@ -78,11 +78,12 @@ bool IsPersonalContextSpiiType(EntityType type) {
 
 }  // namespace
 
-PersonalContextAccessManagerImpl::PersonalContextAccessManagerImpl(
-    personal_context::PersonalContextService* personal_context_service,
-    personal_context::PersonalContextEligibilityService*
-        personal_context_eligibility_service,
-    PrefService* pref_service)
+AutofillAiPersonalContextAccessManagerImpl::
+    AutofillAiPersonalContextAccessManagerImpl(
+        personal_context::PersonalContextService* personal_context_service,
+        personal_context::PersonalContextEligibilityService*
+            personal_context_eligibility_service,
+        PrefService* pref_service)
     : personal_context_service_(CHECK_DEREF(personal_context_service)),
       personal_context_eligibility_service_(
           CHECK_DEREF(personal_context_eligibility_service)),
@@ -93,15 +94,16 @@ PersonalContextAccessManagerImpl::PersonalContextAccessManagerImpl(
     pref_registrar_.Init(pref_service_);
     pref_registrar_.Add(
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
-        base::BindRepeating(&PersonalContextAccessManagerImpl::
+        base::BindRepeating(&AutofillAiPersonalContextAccessManagerImpl::
                                 OnPersonalContextSettingsToggleChanged,
                             base::Unretained(this)));
   }
 }
 
-PersonalContextAccessManagerImpl::~PersonalContextAccessManagerImpl() = default;
+AutofillAiPersonalContextAccessManagerImpl::
+    ~AutofillAiPersonalContextAccessManagerImpl() = default;
 
-void PersonalContextAccessManagerImpl::PrefetchContext(
+void AutofillAiPersonalContextAccessManagerImpl::PrefetchContext(
     base::span<const EntityType> requested_types) {
   // Types to request in Request 1 (which includes all non-SPII types and any
   // SPII types for which we want to check presence signals).
@@ -138,11 +140,11 @@ void PersonalContextAccessManagerImpl::PrefetchContext(
         personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL,
         request,
         /*options=*/{},
-        base::BindOnce(
-            &PersonalContextAccessManagerImpl::OnPrefetchContextRequestComplete,
-            weak_factory_.GetWeakPtr(),
-            std::move(non_spii_and_presence_to_request),
-            /*requested_spii_presence=*/has_spii_types));
+        base::BindOnce(&AutofillAiPersonalContextAccessManagerImpl::
+                           OnPrefetchContextRequestComplete,
+                       weak_factory_.GetWeakPtr(),
+                       std::move(non_spii_and_presence_to_request),
+                       /*requested_spii_presence=*/has_spii_types));
   }
 
   // Request 2: collects spii entities without asking for spii presence.
@@ -153,17 +155,18 @@ void PersonalContextAccessManagerImpl::PrefetchContext(
         personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL,
         request,
         /*options=*/{},
-        base::BindOnce(
-            &PersonalContextAccessManagerImpl::OnPrefetchContextRequestComplete,
-            weak_factory_.GetWeakPtr(), std::move(spii_to_request),
-            /*requested_spii_presence=*/false));
+        base::BindOnce(&AutofillAiPersonalContextAccessManagerImpl::
+                           OnPrefetchContextRequestComplete,
+                       weak_factory_.GetWeakPtr(), std::move(spii_to_request),
+                       /*requested_spii_presence=*/false));
   }
 }
 
-void PersonalContextAccessManagerImpl::OnPrefetchContextRequestComplete(
-    std::vector<EntityType> requested_types,
-    bool requested_spii_presence,
-    personal_context::FetchContextResult result) {
+void AutofillAiPersonalContextAccessManagerImpl::
+    OnPrefetchContextRequestComplete(
+        std::vector<EntityType> requested_types,
+        bool requested_spii_presence,
+        personal_context::FetchContextResult result) {
   if (!result.response.has_value()) {
     HandleFailedResponse(requested_types, requested_spii_presence);
     return;
@@ -199,9 +202,10 @@ void PersonalContextAccessManagerImpl::OnPrefetchContextRequestComplete(
                             std::move(*parsed_entities));
 }
 
-base::expected<std::vector<PersonalContextAccessManagerImpl::ParsedEntity>,
-               personal_context::ContextMemoryError>
-PersonalContextAccessManagerImpl::ExtractEntitiesFromResponse(
+base::expected<
+    std::vector<AutofillAiPersonalContextAccessManagerImpl::ParsedEntity>,
+    personal_context::ContextMemoryError>
+AutofillAiPersonalContextAccessManagerImpl::ExtractEntitiesFromResponse(
     std::string_view serialized_response) {
   personal_context::proto::ContextMemoryAmbientAutofillResponse response;
   if (!response.ParseFromString(serialized_response)) {
@@ -230,7 +234,7 @@ PersonalContextAccessManagerImpl::ExtractEntitiesFromResponse(
   return entities;
 }
 
-void PersonalContextAccessManagerImpl::GetUnmaskedSpiiEntity(
+void AutofillAiPersonalContextAccessManagerImpl::GetUnmaskedSpiiEntity(
     const EntityInstance::EntityId& id,
     GetUnmaskedSpiiEntityCallback callback) {
   if (auto it = unmasked_spii_cache_.find(id);
@@ -253,12 +257,12 @@ void PersonalContextAccessManagerImpl::GetUnmaskedSpiiEntity(
 
   personal_context_service_->FetchPiiEntities(
       request, /*options=*/{},
-      base::BindOnce(
-          &PersonalContextAccessManagerImpl::OnFetchPiiEntitiesComplete,
-          weak_factory_.GetWeakPtr(), id, std::move(callback)));
+      base::BindOnce(&AutofillAiPersonalContextAccessManagerImpl::
+                         OnFetchPiiEntitiesComplete,
+                     weak_factory_.GetWeakPtr(), id, std::move(callback)));
 }
 
-void PersonalContextAccessManagerImpl::OnFetchPiiEntitiesComplete(
+void AutofillAiPersonalContextAccessManagerImpl::OnFetchPiiEntitiesComplete(
     const EntityInstance::EntityId& id,
     GetUnmaskedSpiiEntityCallback callback,
     personal_context::FetchPiiEntitiesResult result) {
@@ -287,23 +291,24 @@ void PersonalContextAccessManagerImpl::OnFetchPiiEntitiesComplete(
   std::move(callback).Run(std::move(final_entity));
 }
 
-bool PersonalContextAccessManagerImpl::IsTypePrefetched(EntityType type) const {
+bool AutofillAiPersonalContextAccessManagerImpl::IsTypePrefetched(
+    EntityType type) const {
   const RequestState* request_state = base::FindOrNull(prefetch_state_, type);
   return request_state && request_state->status == RequestStatus::kSuccess;
 }
 
-void PersonalContextAccessManagerImpl::AddObserver(
-    PersonalContextAccessManager::Observer* observer) {
+void AutofillAiPersonalContextAccessManagerImpl::AddObserver(
+    AutofillAiPersonalContextAccessManager::Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void PersonalContextAccessManagerImpl::RemoveObserver(
-    PersonalContextAccessManager::Observer* observer) {
+void AutofillAiPersonalContextAccessManagerImpl::RemoveObserver(
+    AutofillAiPersonalContextAccessManager::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-PersonalContextAccessManager::RequestStatus
-PersonalContextAccessManagerImpl::GetPrefetchStatusByEntityType(
+AutofillAiPersonalContextAccessManager::RequestStatus
+AutofillAiPersonalContextAccessManagerImpl::GetPrefetchStatusByEntityType(
     EntityType type) const {
   if (const RequestState* state = base::FindOrNull(prefetch_state_, type)) {
     return state->status;
@@ -311,12 +316,13 @@ PersonalContextAccessManagerImpl::GetPrefetchStatusByEntityType(
   return RequestStatus::kNotStarted;
 }
 
-bool PersonalContextAccessManagerImpl::ServerHasDataAvailable(
+bool AutofillAiPersonalContextAccessManagerImpl::ServerHasDataAvailable(
     EntityType type) const {
   return spii_presence_signal_cache_.contains(type);
 }
 
-void PersonalContextAccessManagerImpl::ResetStateForType(EntityType type) {
+void AutofillAiPersonalContextAccessManagerImpl::ResetStateForType(
+    EntityType type) {
   // Clear existing proto entities of this type.
   absl::erase_if(prefetched_proto_cache_, [type](const auto& entry) {
     return ToEntityType(entry.second.entity_case()) == type;
@@ -327,12 +333,12 @@ void PersonalContextAccessManagerImpl::ResetStateForType(EntityType type) {
   });
 
   prefetch_state_.erase(type);
-  observers_.Notify(
-      &PersonalContextAccessManager::Observer::OnMaskedEntityTypeEvicted, *this,
-      type);
+  observers_.Notify(&AutofillAiPersonalContextAccessManager::Observer::
+                        OnMaskedEntityTypeEvicted,
+                    *this, type);
 }
 
-void PersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
+void AutofillAiPersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
     std::vector<EntityType> requested_types,
     std::vector<ParsedEntity> parsed_entities) {
   // Evict existing entities for the `requested_types`.
@@ -341,8 +347,9 @@ void PersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
     SetTypeStatus(type, RequestStatus::kSuccess);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&PersonalContextAccessManagerImpl::ResetStateForType,
-                       weak_factory_.GetWeakPtr(), type),
+        base::BindOnce(
+            &AutofillAiPersonalContextAccessManagerImpl::ResetStateForType,
+            weak_factory_.GetWeakPtr(), type),
         kPrefetchedEntitiesAndSignalsCacheTTL);
   }
   // Populates the proto cache and notify observers about the fetched entities.
@@ -363,7 +370,7 @@ void PersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
   NotifyPrefetchStatusObservers(entities);
 }
 
-void PersonalContextAccessManagerImpl::CacheUnmaskedSpiiEntity(
+void AutofillAiPersonalContextAccessManagerImpl::CacheUnmaskedSpiiEntity(
     EntityInstance entity) {
   EntityInstance::EntityId id = entity.guid();
   auto [it, inserted] = unmasked_spii_cache_.insert(std::move(entity));
@@ -374,7 +381,8 @@ void PersonalContextAccessManagerImpl::CacheUnmaskedSpiiEntity(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::WeakPtr<PersonalContextAccessManagerImpl> access_manager,
+          [](base::WeakPtr<AutofillAiPersonalContextAccessManagerImpl>
+                 access_manager,
              const EntityInstance::EntityId& id) {
             if (!access_manager) {
               return;
@@ -386,7 +394,7 @@ void PersonalContextAccessManagerImpl::CacheUnmaskedSpiiEntity(
       kUnmaskedSpiiCacheTTL);
 }
 
-void PersonalContextAccessManagerImpl::CachePresenceSignal(
+void AutofillAiPersonalContextAccessManagerImpl::CachePresenceSignal(
     SpiiEntityPresenceSignal signal) {
   auto [it, inserted] = spii_presence_signal_cache_.insert(signal);
   if (!inserted) {
@@ -396,7 +404,8 @@ void PersonalContextAccessManagerImpl::CachePresenceSignal(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::WeakPtr<PersonalContextAccessManagerImpl> access_manager,
+          [](base::WeakPtr<AutofillAiPersonalContextAccessManagerImpl>
+                 access_manager,
              const SpiiEntityPresenceSignal signal_to_remove) {
             if (!access_manager) {
               return;
@@ -408,7 +417,7 @@ void PersonalContextAccessManagerImpl::CachePresenceSignal(
       kPrefetchedEntitiesAndSignalsCacheTTL);
 }
 
-void PersonalContextAccessManagerImpl::WipeCache() {
+void AutofillAiPersonalContextAccessManagerImpl::WipeCache() {
   // Invalidate weak pointers to cancel any pending fetches.
   weak_factory_.InvalidateWeakPtrs();
   // Copy the keys since `ResetStateForType()` invalidates iterators to
@@ -421,14 +430,14 @@ void PersonalContextAccessManagerImpl::WipeCache() {
   spii_presence_signal_cache_.clear();
 }
 
-void PersonalContextAccessManagerImpl::OnEligibilityStateChanged(
+void AutofillAiPersonalContextAccessManagerImpl::OnEligibilityStateChanged(
     personal_context::PersonalContextEligibilityState new_state) {
   if (!IsPersonalContextEligible(new_state)) {
     WipeCache();
   }
 }
 
-void PersonalContextAccessManagerImpl::
+void AutofillAiPersonalContextAccessManagerImpl::
     OnPersonalContextSettingsToggleChanged() {
   if (pref_service_ &&
       !pref_service_->GetBoolean(
@@ -438,7 +447,7 @@ void PersonalContextAccessManagerImpl::
   }
 }
 
-bool PersonalContextAccessManagerImpl::ShouldRequestType(
+bool AutofillAiPersonalContextAccessManagerImpl::ShouldRequestType(
     EntityType type) const {
   const RequestState* request_state = base::FindOrNull(prefetch_state_, type);
   if (!request_state) {
@@ -461,13 +470,14 @@ bool PersonalContextAccessManagerImpl::ShouldRequestType(
   }
 }
 
-bool PersonalContextAccessManagerImpl::ShouldRetryAfterFailure(
+bool AutofillAiPersonalContextAccessManagerImpl::ShouldRetryAfterFailure(
     const RequestState& state) const {
   return state.backoff_entry && !state.backoff_entry->ShouldRejectRequest();
 }
 
-void PersonalContextAccessManagerImpl::SetTypeStatus(EntityType type,
-                                                     RequestStatus status) {
+void AutofillAiPersonalContextAccessManagerImpl::SetTypeStatus(
+    EntityType type,
+    RequestStatus status) {
   RequestState& state = prefetch_state_[type];
   state.status = status;
   state.last_update_time = base::TimeTicks::Now();
@@ -490,7 +500,7 @@ void PersonalContextAccessManagerImpl::SetTypeStatus(EntityType type,
   }
 }
 
-void PersonalContextAccessManagerImpl::HandleFailedResponse(
+void AutofillAiPersonalContextAccessManagerImpl::HandleFailedResponse(
     base::span<const EntityType> requested_types,
     bool requested_spii_presence) {
   for (const EntityType& type : requested_types) {
@@ -502,11 +512,11 @@ void PersonalContextAccessManagerImpl::HandleFailedResponse(
   NotifyPrefetchStatusObservers({});
 }
 
-void PersonalContextAccessManagerImpl::NotifyPrefetchStatusObservers(
+void AutofillAiPersonalContextAccessManagerImpl::NotifyPrefetchStatusObservers(
     std::optional<base::span<const EntityInstance>> entities) {
-  observers_.Notify(
-      &PersonalContextAccessManager::Observer::OnPrefetchContextComplete, *this,
-      entities);
+  observers_.Notify(&AutofillAiPersonalContextAccessManager::Observer::
+                        OnPrefetchContextComplete,
+                    *this, entities);
 }
 
 }  // namespace autofill

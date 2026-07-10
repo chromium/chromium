@@ -60,7 +60,7 @@
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
-#include "components/autofill/core/browser/network/autofill_ai/mock_personal_context_access_manager.h"
+#include "components/autofill/core/browser/network/autofill_ai/mock_autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/network/autofill_ai/mock_wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -3167,8 +3167,8 @@ class AutofillExternalDelegateWithAmbientAutofillTest
 
   void SetUp() override {
     AutofillExternalDelegateTest::SetUp();
-    personal_context_manager_ =
-        std::make_unique<NiceMock<MockPersonalContextAccessManager>>();
+    personal_context_manager_ = std::make_unique<
+        NiceMock<MockAutofillAiPersonalContextAccessManager>>();
     autofill_client().set_personal_context_access_manager(
         personal_context_manager_.get());
   }
@@ -3178,13 +3178,14 @@ class AutofillExternalDelegateWithAmbientAutofillTest
     AutofillExternalDelegateTest::TearDown();
   }
 
-  MockPersonalContextAccessManager& personal_context_manager() {
+  MockAutofillAiPersonalContextAccessManager& personal_context_manager() {
     return *personal_context_manager_;
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<MockPersonalContextAccessManager> personal_context_manager_;
+  std::unique_ptr<MockAutofillAiPersonalContextAccessManager>
+      personal_context_manager_;
 };
 
 // Tests that when accepting a `kFillAutofillAi` suggestion for a masked
@@ -3226,7 +3227,8 @@ TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
                   FillingProduct::kAutofillAi, kDefaultSuggestionTriggerSource,
                   AutofillSuggestionsIgnoreFocusLoss(true)));
 
-  PersonalContextAccessManager::GetUnmaskedSpiiEntityCallback callback;
+  AutofillAiPersonalContextAccessManager::GetUnmaskedSpiiEntityCallback
+      callback;
   EXPECT_CALL(personal_context_manager(),
               GetUnmaskedSpiiEntity(masked_passport.guid(), _))
       .WillOnce(MoveArg<1>(&callback));

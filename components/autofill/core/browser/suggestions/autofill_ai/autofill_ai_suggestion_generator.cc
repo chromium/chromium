@@ -49,7 +49,7 @@
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
-#include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager.h"
+#include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -662,12 +662,12 @@ std::vector<const EntityInstance*> GetEntitiesForSuggestion(
 // shown for a specific field.
 bool IsFetchingFillableEntity(const AutofillField& field,
                               AutofillClient& client) {
-  PersonalContextAccessManager* access_manager =
-      client.GetPersonalContextAccessManager();
+  AutofillAiPersonalContextAccessManager* access_manager =
+      client.GetAutofillAiPersonalContextAccessManager();
   if (!access_manager) {
     return false;
   }
-  using RequestStatus = PersonalContextAccessManager::RequestStatus;
+  using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
   for (EntityType entity_type : DenseSet<EntityType>::all()) {
     if (field.Type().GetAutofillAiType(entity_type) != UNKNOWN_TYPE) {
       if (access_manager->ServerHasDataAvailable(entity_type) &&

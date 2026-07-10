@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/personal_context_access_manager_factory.h"
+#include "chrome/browser/autofill/autofill_ai_personal_context_access_manager_factory.h"
 
 #include "base/feature_list.h"
 #include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager_impl.h"
+#include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager_impl.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_service.h"
@@ -16,22 +16,24 @@
 namespace autofill {
 
 // static
-PersonalContextAccessManager*
-PersonalContextAccessManagerFactory::GetForProfile(Profile* profile) {
-  return static_cast<PersonalContextAccessManager*>(
+AutofillAiPersonalContextAccessManager*
+AutofillAiPersonalContextAccessManagerFactory::GetForProfile(Profile* profile) {
+  return static_cast<AutofillAiPersonalContextAccessManager*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
 // static
-PersonalContextAccessManagerFactory*
-PersonalContextAccessManagerFactory::GetInstance() {
-  static base::NoDestructor<PersonalContextAccessManagerFactory> instance;
+AutofillAiPersonalContextAccessManagerFactory*
+AutofillAiPersonalContextAccessManagerFactory::GetInstance() {
+  static base::NoDestructor<AutofillAiPersonalContextAccessManagerFactory>
+      instance;
   return instance.get();
 }
 
-PersonalContextAccessManagerFactory::PersonalContextAccessManagerFactory()
+AutofillAiPersonalContextAccessManagerFactory::
+    AutofillAiPersonalContextAccessManagerFactory()
     : ProfileKeyedServiceFactory(
-          "PersonalContextAccessManager",
+          "AutofillAiPersonalContextAccessManager",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               // Off-the-record profiles will default to
@@ -41,12 +43,12 @@ PersonalContextAccessManagerFactory::PersonalContextAccessManagerFactory()
   DependsOn(PersonalContextServiceFactory::GetInstance());
 }
 
-PersonalContextAccessManagerFactory::~PersonalContextAccessManagerFactory() =
-    default;
+AutofillAiPersonalContextAccessManagerFactory::
+    ~AutofillAiPersonalContextAccessManagerFactory() = default;
 
-std::unique_ptr<KeyedService>
-PersonalContextAccessManagerFactory::BuildServiceInstanceForBrowserContext(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService> AutofillAiPersonalContextAccessManagerFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(features::kAutofillAmbientAutofill)) {
     return nullptr;
   }
@@ -62,7 +64,7 @@ PersonalContextAccessManagerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  return std::make_unique<PersonalContextAccessManagerImpl>(
+  return std::make_unique<AutofillAiPersonalContextAccessManagerImpl>(
       personal_context_service, personal_context_eligibility_service,
       profile->GetPrefs());
 }

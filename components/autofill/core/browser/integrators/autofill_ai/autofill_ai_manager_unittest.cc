@@ -36,8 +36,8 @@
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager_test_api.h"
-#include "components/autofill/core/browser/network/autofill_ai/mock_personal_context_access_manager.h"
-#include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager.h"
+#include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
+#include "components/autofill/core/browser/network/autofill_ai/mock_autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -294,7 +294,7 @@ class AutofillAiManagerTest
   EntityDataManager& edm() { return *autofill_client().GetEntityDataManager(); }
   AutofillAiManager& manager() { return *manager_; }
   TestStrikeDatabase& strike_database() { return strike_database_; }
-  MockPersonalContextAccessManager& pcontext_manager() {
+  MockAutofillAiPersonalContextAccessManager& pcontext_manager() {
     return pcontext_manager_;
   }
 
@@ -305,7 +305,7 @@ class AutofillAiManagerTest
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
   syncer::TestSyncService sync_service_;
-  NiceMock<MockPersonalContextAccessManager> pcontext_manager_;
+  NiceMock<MockAutofillAiPersonalContextAccessManager> pcontext_manager_;
   TestStrikeDatabase strike_database_;
   std::unique_ptr<AutofillAiManager> manager_;
 };

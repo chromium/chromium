@@ -18,7 +18,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
-#include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager.h"
+#include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/device_authenticator.h"
@@ -206,12 +206,12 @@ void AutofillAiAccessManager::MaybeUnmaskServerEntity(
       break;
     }
     case EntityInstance::RecordType::kPersonalContext: {
-      if (!manager_->client().GetPersonalContextAccessManager()) {
+      if (!manager_->client().GetAutofillAiPersonalContextAccessManager()) {
         std::move(on_unmasked_entity_fetched).Run(std::nullopt);
         return;
       }
       manager_->client()
-          .GetPersonalContextAccessManager()
+          .GetAutofillAiPersonalContextAccessManager()
           ->GetUnmaskedSpiiEntity(entity.guid(),
                                   std::move(on_unmasked_entity_fetched));
       break;

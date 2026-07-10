@@ -50,7 +50,7 @@ EntityDataManager::EntityDataManager(
     syncer::SyncService* sync_service,
     scoped_refptr<AutofillWebDataService> webdata_service,
     history::HistoryService* history_service,
-    PersonalContextAccessManager* pcontext_manager,
+    AutofillAiPersonalContextAccessManager* pcontext_manager,
     strike_database::StrikeDatabaseBase* strike_database,
     GeoIpCountryCode variation_country_code)
     : webdata_service_(std::move(webdata_service)),
@@ -268,7 +268,7 @@ void EntityDataManager::OnHistoryDeletions(
 }
 
 void EntityDataManager::OnPrefetchContextComplete(
-    const PersonalContextAccessManager& manager,
+    const AutofillAiPersonalContextAccessManager& manager,
     std::optional<base::span<const EntityInstance>> entities) {
   if (!entities.has_value() || entities->empty()) {
     return;
@@ -277,7 +277,7 @@ void EntityDataManager::OnPrefetchContextComplete(
 }
 
 void EntityDataManager::OnMaskedEntityTypeEvicted(
-    const PersonalContextAccessManager& manager,
+    const AutofillAiPersonalContextAccessManager& manager,
     EntityType type) {
   base::EraseIf(entities_, [&](const EntityInstance& entity) {
     return entity.record_type() ==

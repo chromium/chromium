@@ -76,7 +76,7 @@ class AtMemoryBottomSheetBridge;
 #endif
 
 class ActorKeyMetricsRecorder;
-class PersonalContextAccessManager;
+class AutofillAiPersonalContextAccessManager;
 class AutofillOptimizationGuideDecider;
 class EmailVerificationPopupController;
 class EmailVerifierDelegate;
@@ -166,7 +166,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
       const FieldGlobalId& field_id) final;
   void GetAiPageContent(GetAiPageContentCallback callback) final;
   AutofillAiManager* GetAutofillAiManager() final;
-  PersonalContextAccessManager* GetPersonalContextAccessManager() final;
+  AutofillAiPersonalContextAccessManager*
+  GetAutofillAiPersonalContextAccessManager() final;
   AutofillAiModelCache* GetAutofillAiModelCache() final;
   AutofillAiModelExecutor* GetAutofillAiModelExecutor() final;
   consent_auditor::ConsentAuditor* GetConsentAuditor() final;

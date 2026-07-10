@@ -52,7 +52,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
-#include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager.h"
+#include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_attribute.h"
@@ -197,8 +197,8 @@ void PrefetchAmbientAutofillContext(AutofillClient& client,
     return;
   }
 
-  if (PersonalContextAccessManager* access_manager =
-          client.GetPersonalContextAccessManager()) {
+  if (AutofillAiPersonalContextAccessManager* access_manager =
+          client.GetAutofillAiPersonalContextAccessManager()) {
     base::flat_set<EntityType> requested_types(std::from_range, relevant_types);
     base::EraseIf(requested_types, [&](const EntityType& type) {
       return !MayPerformAutofillAiAction(
@@ -253,9 +253,10 @@ AutofillAiManager::AutofillAiManager(
         client, ScopedAutofillManagersObservation::InitializationPolicy::
                     kObservePreexistingManagers);
   }
-  if (PersonalContextAccessManager* access_manager =
-          client_->GetPersonalContextAccessManager()) {
-    personal_context_access_manager_observation_.Observe(access_manager);
+  if (AutofillAiPersonalContextAccessManager* access_manager =
+          client_->GetAutofillAiPersonalContextAccessManager()) {
+    autofill_ai_personal_context_access_manager_observation_.Observe(
+        access_manager);
   }
 }
 
@@ -373,7 +374,7 @@ void AutofillAiManager::OnAfterLoadedServerPredictions(
 }
 
 void AutofillAiManager::OnPrefetchContextComplete(
-    const PersonalContextAccessManager& manager,
+    const AutofillAiPersonalContextAccessManager& manager,
     std::optional<base::span<const EntityInstance>> entities) {
   if (!std::ranges::contains(client_->GetAutofillSuggestions(),
                              SuggestionType::kFetchingAmbientData,

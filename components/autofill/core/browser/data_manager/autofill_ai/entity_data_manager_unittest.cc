@@ -18,7 +18,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
-#include "components/autofill/core/browser/network/autofill_ai/mock_personal_context_access_manager.h"
+#include "components/autofill/core/browser/network/autofill_ai/mock_autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
@@ -93,7 +93,7 @@ class EntityDataManagerTestBase : public testing::Test {
     return *client().GetEntityDataManager();
   }
 
-  MockPersonalContextAccessManager& pcontext_manager() {
+  MockAutofillAiPersonalContextAccessManager& pcontext_manager() {
     return pcontext_manager_;
   }
 
@@ -135,7 +135,8 @@ class EntityDataManagerTestBase : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   AutofillWebDataServiceTestHelper helper_{std::make_unique<EntityTable>()};
-  testing::NiceMock<MockPersonalContextAccessManager> pcontext_manager_;
+  testing::NiceMock<MockAutofillAiPersonalContextAccessManager>
+      pcontext_manager_;
   syncer::TestSyncService sync_service_;
   std::unique_ptr<TestAutofillClient> client_;
 };

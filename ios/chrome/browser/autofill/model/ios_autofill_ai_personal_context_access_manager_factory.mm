@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/personal_context/model/ios_personal_context_access_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_ai_personal_context_access_manager_factory.h"
 
 #import "base/feature_list.h"
-#import "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager_impl.h"
+#import "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager_impl.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/personal_context/core/personal_context_eligibility_service.h"
 #import "components/personal_context/core/personal_context_service.h"
@@ -14,32 +14,35 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-autofill::PersonalContextAccessManager*
-IOSPersonalContextAccessManagerFactory::GetForProfile(ProfileIOS* profile) {
+autofill::AutofillAiPersonalContextAccessManager*
+IOSAutofillAiPersonalContextAccessManagerFactory::GetForProfile(
+    ProfileIOS* profile) {
   return GetInstance()
-      ->GetServiceForProfileAs<autofill::PersonalContextAccessManager>(profile,
-                                                                       true);
+      ->GetServiceForProfileAs<
+          autofill::AutofillAiPersonalContextAccessManager>(profile, true);
 }
 
 // static
-IOSPersonalContextAccessManagerFactory*
-IOSPersonalContextAccessManagerFactory::GetInstance() {
-  static base::NoDestructor<IOSPersonalContextAccessManagerFactory> instance;
+IOSAutofillAiPersonalContextAccessManagerFactory*
+IOSAutofillAiPersonalContextAccessManagerFactory::GetInstance() {
+  static base::NoDestructor<IOSAutofillAiPersonalContextAccessManagerFactory>
+      instance;
   return instance.get();
 }
 
-IOSPersonalContextAccessManagerFactory::IOSPersonalContextAccessManagerFactory()
-    : ProfileKeyedServiceFactoryIOS("PersonalContextAccessManager",
+IOSAutofillAiPersonalContextAccessManagerFactory::
+    IOSAutofillAiPersonalContextAccessManagerFactory()
+    : ProfileKeyedServiceFactoryIOS("AutofillAiPersonalContextAccessManager",
                                     ProfileSelection::kNoInstanceInIncognito) {
   DependsOn(IOSPersonalContextEligibilityServiceFactory::GetInstance());
   DependsOn(IOSPersonalContextServiceFactory::GetInstance());
 }
 
-IOSPersonalContextAccessManagerFactory::
-    ~IOSPersonalContextAccessManagerFactory() = default;
+IOSAutofillAiPersonalContextAccessManagerFactory::
+    ~IOSAutofillAiPersonalContextAccessManagerFactory() = default;
 
 std::unique_ptr<KeyedService>
-IOSPersonalContextAccessManagerFactory::BuildServiceInstanceFor(
+IOSAutofillAiPersonalContextAccessManagerFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillAmbientAutofill)) {
@@ -56,7 +59,7 @@ IOSPersonalContextAccessManagerFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return std::make_unique<autofill::PersonalContextAccessManagerImpl>(
+  return std::make_unique<autofill::AutofillAiPersonalContextAccessManagerImpl>(
       personal_context_service, personal_context_eligibility_service,
       profile->GetPrefs());
 }

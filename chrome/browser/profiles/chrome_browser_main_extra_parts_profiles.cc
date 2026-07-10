@@ -31,6 +31,7 @@
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
 #include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
 #include "chrome/browser/autofill/autofill_ai_model_executor_factory.h"
+#include "chrome/browser/autofill/autofill_ai_personal_context_access_manager_factory.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/autofill_field_classification_model_service_factory.h"
 #include "chrome/browser/autofill/autofill_image_fetcher_factory.h"
@@ -40,7 +41,6 @@
 #include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
 #include "chrome/browser/autofill/ml_log_router_factory.h"
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
-#include "chrome/browser/autofill/personal_context_access_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/valuables_data_manager_factory.h"
 #include "chrome/browser/autofill/wallet_pass_access_manager_factory.h"
@@ -797,6 +797,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   autofill::AutocompleteHistoryManagerFactory::GetInstance();
   autofill::AutofillAiModelCacheFactory::GetInstance();
   autofill::AutofillAiModelExecutorFactory::GetInstance();
+  autofill::AutofillAiPersonalContextAccessManagerFactory::GetInstance();
   autofill::AutofillClientProviderFactory::GetInstance();
   autofill::AutofillEntityDataManagerFactory::GetInstance();
   autofill::AutofillImageFetcherFactory::GetInstance();
@@ -808,7 +809,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   autofill::MerchantPromoCodeManagerFactory::GetInstance();
   autofill::MlLogRouterFactory::GetInstance();
   autofill::OneTimeTokenServiceFactory::GetInstance();
-  autofill::PersonalContextAccessManagerFactory::GetInstance();
   autofill::PersonalDataManagerFactory::GetInstance();
   autofill::ValuablesDataManagerFactory::GetInstance();
   autofill::WalletPassAccessManagerFactory::GetInstance();

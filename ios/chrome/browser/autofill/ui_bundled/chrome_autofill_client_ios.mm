@@ -63,6 +63,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_ai_model_cache_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_ai_model_executor_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_ai_personal_context_access_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_field_classification_model_handler_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
@@ -82,7 +83,6 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_password_field_classification_model_handler_factory.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
-#import "ios/chrome/browser/personal_context/model/ios_personal_context_access_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -286,12 +286,13 @@ AutofillAiManager* ChromeAutofillClientIOS::GetAutofillAiManager() {
   return autofill_ai_manager_.get();
 }
 
-PersonalContextAccessManager*
-ChromeAutofillClientIOS::GetPersonalContextAccessManager() {
+AutofillAiPersonalContextAccessManager*
+ChromeAutofillClientIOS::GetAutofillAiPersonalContextAccessManager() {
   if (!base::FeatureList::IsEnabled(features::kAutofillAmbientAutofill)) {
     return nullptr;
   }
-  return IOSPersonalContextAccessManagerFactory::GetForProfile(profile_);
+  return IOSAutofillAiPersonalContextAccessManagerFactory::GetForProfile(
+      profile_);
 }
 
 AutofillAiModelCache* ChromeAutofillClientIOS::GetAutofillAiModelCache() {

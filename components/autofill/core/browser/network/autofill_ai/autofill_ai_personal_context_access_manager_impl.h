@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_IMPL_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_IMPL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_IMPL_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_IMPL_H_
 
 #include <memory>
 #include <string_view>
@@ -21,7 +21,7 @@
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
-#include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager.h"
+#include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
@@ -45,8 +45,8 @@ namespace autofill {
 // - Schedules eviction of masked and unmasked entities:
 //   - For masked entities, eviction notices are broadcast through the observer.
 //   - For unmasked entities, the class handles the cache changes internally.
-class PersonalContextAccessManagerImpl
-    : public PersonalContextAccessManager,
+class AutofillAiPersonalContextAccessManagerImpl
+    : public AutofillAiPersonalContextAccessManager,
       public personal_context::PersonalContextEligibilityService::Observer {
  public:
   // The TTL for prefetched (masked/non-SPII) entities and presence signals.
@@ -55,36 +55,37 @@ class PersonalContextAccessManagerImpl
   // The TTL for unmasked sensitive PII (SPII) entities.
   static constexpr base::TimeDelta kUnmaskedSpiiCacheTTL = base::Minutes(1);
 
-  PersonalContextAccessManagerImpl(
+  AutofillAiPersonalContextAccessManagerImpl(
       personal_context::PersonalContextService* personal_context_service,
       personal_context::PersonalContextEligibilityService*
           personal_context_eligibility_service,
       PrefService* pref_service);
 
-  PersonalContextAccessManagerImpl(const PersonalContextAccessManagerImpl&) =
-      delete;
-  PersonalContextAccessManagerImpl& operator=(
-      const PersonalContextAccessManagerImpl&) = delete;
+  AutofillAiPersonalContextAccessManagerImpl(
+      const AutofillAiPersonalContextAccessManagerImpl&) = delete;
+  AutofillAiPersonalContextAccessManagerImpl& operator=(
+      const AutofillAiPersonalContextAccessManagerImpl&) = delete;
 
-  ~PersonalContextAccessManagerImpl() override;
+  ~AutofillAiPersonalContextAccessManagerImpl() override;
 
-  // PersonalContextAccessManager:
+  // AutofillAiPersonalContextAccessManager:
   void PrefetchContext(base::span<const EntityType> requested_types) override;
   RequestStatus GetPrefetchStatusByEntityType(EntityType type) const override;
   void GetUnmaskedSpiiEntity(const EntityInstance::EntityId& id,
                              GetUnmaskedSpiiEntityCallback callback) override;
   bool IsTypePrefetched(EntityType type) const override;
   bool ServerHasDataAvailable(EntityType type) const override;
-  void AddObserver(PersonalContextAccessManager::Observer* observer) override;
+  void AddObserver(
+      AutofillAiPersonalContextAccessManager::Observer* observer) override;
   void RemoveObserver(
-      PersonalContextAccessManager::Observer* observer) override;
+      AutofillAiPersonalContextAccessManager::Observer* observer) override;
 
   // personal_context::PersonalContextEligibilityService::Observer:
   void OnEligibilityStateChanged(
       personal_context::PersonalContextEligibilityState new_state) override;
 
  private:
-  friend class PersonalContextAccessManagerImplTestApi;
+  friend class AutofillAiPersonalContextAccessManagerImplTestApi;
   using SpiiEntityPresenceSignal = EntityType;
 
   // Results of parsing the server response during prefetch requests. It bundles
@@ -206,7 +207,8 @@ class PersonalContextAccessManagerImpl
   // this signal after `kPrefetchedEntitiesAndSignalsCacheTTL`.
   base::flat_set<SpiiEntityPresenceSignal> spii_presence_signal_cache_;
 
-  base::ObserverList<PersonalContextAccessManager::Observer> observers_;
+  base::ObserverList<AutofillAiPersonalContextAccessManager::Observer>
+      observers_;
 
   base::ScopedObservation<
       personal_context::PersonalContextEligibilityService,
@@ -215,9 +217,10 @@ class PersonalContextAccessManagerImpl
 
   PrefChangeRegistrar pref_registrar_;
 
-  base::WeakPtrFactory<PersonalContextAccessManagerImpl> weak_factory_{this};
+  base::WeakPtrFactory<AutofillAiPersonalContextAccessManagerImpl>
+      weak_factory_{this};
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_IMPL_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_IMPL_H_

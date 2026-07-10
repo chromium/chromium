@@ -33,7 +33,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager_test_api.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h"
-#include "components/autofill/core/browser/network/autofill_ai/mock_personal_context_access_manager.h"
+#include "components/autofill/core/browser/network/autofill_ai/mock_autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
@@ -330,7 +330,7 @@ class BaseAutofillAiTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   test::AutofillUnitTestEnvironment autofill_test_env_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  NiceMock<MockPersonalContextAccessManager> pcontext_manager_;
+  NiceMock<MockAutofillAiPersonalContextAccessManager> pcontext_manager_;
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<AutofillAiManager> manager_;
   TestStrikeDatabase strike_database_;

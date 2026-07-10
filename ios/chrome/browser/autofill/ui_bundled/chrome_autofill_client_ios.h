@@ -50,7 +50,7 @@ namespace autofill {
 class AutofillAiSaveEntityInfoBarDelegateIOS;
 class AutofillSuggestionDelegate;
 class LogRouter;
-class PersonalContextAccessManager;
+class AutofillAiPersonalContextAccessManager;
 
 enum class SuggestionType;
 
@@ -104,7 +104,8 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   void GetAiPageContent(GetAiPageContentCallback callback) override;
   AutofillAiManager* GetAutofillAiManager() override;
-  PersonalContextAccessManager* GetPersonalContextAccessManager() override;
+  AutofillAiPersonalContextAccessManager*
+  GetAutofillAiPersonalContextAccessManager() override;
   AutofillAiModelCache* GetAutofillAiModelCache() override;
   AutofillAiModelExecutor* GetAutofillAiModelExecutor() override;
   optimization_guide::RemoteModelExecutor* GetRemoteModelExecutor() override;

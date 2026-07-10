@@ -35,12 +35,12 @@
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
 #include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
 #include "chrome/browser/autofill/autofill_ai_model_executor_factory.h"
+#include "chrome/browser/autofill/autofill_ai_personal_context_access_manager_factory.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/autofill_field_classification_model_service_factory.h"
 #include "chrome/browser/autofill/autofill_optimization_guide_decider_factory.h"
 #include "chrome/browser/autofill/autofill_policy_service_factory.h"
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
-#include "chrome/browser/autofill/personal_context_access_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/autofill/valuables_data_manager_factory.h"
@@ -584,12 +584,13 @@ AutofillAiManager* ChromeAutofillClient::GetAutofillAiManager() {
   return autofill_ai_manager_.get();
 }
 
-PersonalContextAccessManager*
-ChromeAutofillClient::GetPersonalContextAccessManager() {
+AutofillAiPersonalContextAccessManager*
+ChromeAutofillClient::GetAutofillAiPersonalContextAccessManager() {
   if (!base::FeatureList::IsEnabled(features::kAutofillAmbientAutofill)) {
     return nullptr;
   }
-  return PersonalContextAccessManagerFactory::GetForProfile(GetProfile());
+  return AutofillAiPersonalContextAccessManagerFactory::GetForProfile(
+      GetProfile());
 }
 
 AutofillAiModelCache* ChromeAutofillClient::GetAutofillAiModelCache() {

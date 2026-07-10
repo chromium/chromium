@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/autofill/model/autofill_policy_service_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_ai_model_cache_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_ai_model_executor_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_ai_personal_context_access_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_field_classification_model_handler_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
@@ -130,7 +131,6 @@
 #import "ios/chrome/browser/passwords/model/ios_password_manager_settings_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_password_requirements_service_factory.h"
 #import "ios/chrome/browser/passwords/model/password_manager_log_router_factory.h"
-#import "ios/chrome/browser/personal_context/model/ios_personal_context_access_manager_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_service_factory.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
@@ -343,6 +343,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   IOSAccountSettingServiceFactory::GetInstance();
   IOSAutofillAiModelCacheFactory::GetInstance();
   IOSAutofillAiModelExecutorFactory::GetInstance();
+  IOSAutofillAiPersonalContextAccessManagerFactory::GetInstance();
   IOSAutofillEntityDataManagerFactory::GetInstance();
   IOSAutofillFieldClassificationModelHandlerFactory::GetInstance();
   IOSChromeAccountPasswordStoreFactory::GetInstance();
@@ -367,7 +368,6 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   IOSPasskeyModelFactory::GetInstance();
   IOSPasswordManagerSettingsServiceFactory::GetInstance();
   IOSPasswordRequirementsServiceFactory::GetInstance();
-  IOSPersonalContextAccessManagerFactory::GetInstance();
   IOSPersonalContextEligibilityServiceFactory::GetInstance();
   IOSPersonalContextServiceFactory::GetInstance();
   IOSProfileMetricsServiceFactory::GetInstance();

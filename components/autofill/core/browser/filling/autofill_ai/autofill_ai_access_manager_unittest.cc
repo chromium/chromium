@@ -23,7 +23,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/network/autofill_ai/mock_personal_context_access_manager.h"
+#include "components/autofill/core/browser/network/autofill_ai/mock_autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
@@ -68,8 +68,8 @@ class TestAutofillClientForAccessManager : public TestAutofillClient {
 class AutofillAiAccessManagerTest : public testing::Test {
  public:
   AutofillAiAccessManagerTest() : client_(&mock_authenticator_) {
-    personal_context_manager_ =
-        std::make_unique<NiceMock<MockPersonalContextAccessManager>>();
+    personal_context_manager_ = std::make_unique<
+        NiceMock<MockAutofillAiPersonalContextAccessManager>>();
     client_.set_personal_context_access_manager(
         personal_context_manager_.get());
     client_.set_entity_data_manager(std::make_unique<EntityDataManager>(
@@ -113,7 +113,7 @@ class AutofillAiAccessManagerTest : public testing::Test {
     return static_cast<MockWalletPassAccessManager&>(
         *client_.GetWalletPassAccessManager());
   }
-  MockPersonalContextAccessManager& personal_context_manager() {
+  MockAutofillAiPersonalContextAccessManager& personal_context_manager() {
     return *personal_context_manager_;
   }
   AutofillAiAccessManager& access_manager() {
@@ -129,7 +129,8 @@ class AutofillAiAccessManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_environment_;
-  std::unique_ptr<MockPersonalContextAccessManager> personal_context_manager_;
+  std::unique_ptr<MockAutofillAiPersonalContextAccessManager>
+      personal_context_manager_;
   TestAutofillClientForAccessManager client_;
   AutofillWebDataServiceTestHelper helper_{std::make_unique<EntityTable>()};
   std::unique_ptr<TestAutofillDriver> driver_;
@@ -511,8 +512,8 @@ TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_Failure) {
       masked_passport, /*will_fill_sensitive_info=*/true, callback.Get()));
 }
 
-// Tests that when PersonalContextAccessManager is not available, unmasking
-// fails with FailureReason::kFetchFailed.
+// Tests that when AutofillAiPersonalContextAccessManager is not available,
+// unmasking fails with FailureReason::kFetchFailed.
 TEST_F(AutofillAiAccessManagerTest, PersonalContextFetch_NoManager) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kAutofillAiReauthRequired);

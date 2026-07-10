@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/personal_context_access_manager_factory.h"
+#include "chrome/browser/autofill/autofill_ai_personal_context_access_manager_factory.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager.h"
+#include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/personal_context/core/personal_context_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -15,15 +15,15 @@
 
 namespace autofill {
 
-class PersonalContextAccessManagerFactoryTest : public testing::Test {
+class AutofillAiPersonalContextAccessManagerFactoryTest : public testing::Test {
  public:
-  PersonalContextAccessManagerFactoryTest() {
+  AutofillAiPersonalContextAccessManagerFactoryTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kAutofillAmbientAutofill,
          personal_context::features::kPersonalContext},
         {});
   }
-  ~PersonalContextAccessManagerFactoryTest() override = default;
+  ~AutofillAiPersonalContextAccessManagerFactoryTest() override = default;
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -31,21 +31,25 @@ class PersonalContextAccessManagerFactoryTest : public testing::Test {
 };
 
 // Test that the factory successfully instantiates a
-// PersonalContextAccessManager when the ambient autofill feature is enabled.
-TEST_F(PersonalContextAccessManagerFactoryTest, CreatesService) {
+// AutofillAiPersonalContextAccessManager when the ambient autofill feature is
+// enabled.
+TEST_F(AutofillAiPersonalContextAccessManagerFactoryTest, CreatesService) {
   TestingProfile profile;
-  EXPECT_NE(nullptr,
-            PersonalContextAccessManagerFactory::GetForProfile(&profile));
+  EXPECT_NE(
+      nullptr,
+      AutofillAiPersonalContextAccessManagerFactory::GetForProfile(&profile));
 }
 
 // Test that the factory returns nullptr (does not instantiate the service)
 // when using an Incognito / Off-the-record profile.
-TEST_F(PersonalContextAccessManagerFactoryTest, CreatesNoServiceForIncognito) {
+TEST_F(AutofillAiPersonalContextAccessManagerFactoryTest,
+       CreatesNoServiceForIncognito) {
   TestingProfile profile;
   Profile* otr_profile = profile.GetOffTheRecordProfile(
       Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
   EXPECT_EQ(nullptr,
-            PersonalContextAccessManagerFactory::GetForProfile(otr_profile));
+            AutofillAiPersonalContextAccessManagerFactory::GetForProfile(
+                otr_profile));
 }
 
 }  // namespace autofill

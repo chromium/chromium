@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_H_
 
 #include <optional>
 #include <string>
@@ -16,9 +16,10 @@ namespace autofill {
 
 class EntityType;
 
-// Manages access to personal context data for autofill.
+// Manages access to personal context data for autofill ai, including caching
+// and ttl management.
 // Instantiated once per profile/context.
-class PersonalContextAccessManager : public KeyedService {
+class AutofillAiPersonalContextAccessManager : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -27,12 +28,12 @@ class PersonalContextAccessManager : public KeyedService {
     // contains the result. In case it failed or the response was empty,
     // `entities` is empty.
     virtual void OnPrefetchContextComplete(
-        const PersonalContextAccessManager& manager,
+        const AutofillAiPersonalContextAccessManager& manager,
         std::optional<base::span<const EntityInstance>> entities) {}
     // Called whenever a prefetched entity reaches its TTL or expires for
     // another reason (eligibility to pContext changed, etc).
     virtual void OnMaskedEntityTypeEvicted(
-        const PersonalContextAccessManager& manager,
+        const AutofillAiPersonalContextAccessManager& manager,
         EntityType type) {}
   };
 
@@ -53,7 +54,7 @@ class PersonalContextAccessManager : public KeyedService {
   using GetUnmaskedSpiiEntityCallback =
       base::OnceCallback<void(std::optional<EntityInstance>)>;
 
-  ~PersonalContextAccessManager() override = default;
+  ~AutofillAiPersonalContextAccessManager() override = default;
 
   // Fetches personal context from the personal context service.
   virtual void PrefetchContext(
@@ -82,4 +83,4 @@ class PersonalContextAccessManager : public KeyedService {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_H_
