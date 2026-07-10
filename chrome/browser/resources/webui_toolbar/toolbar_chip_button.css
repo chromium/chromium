@@ -165,13 +165,13 @@
 
 /* If we have a prefix icon then we don't need padding to push the text start
  * away from the rounded corners */
-:host([has-label]:has([slot='prefix-icon'])) #button {
+:host([has-label][has-prefix-icon]) #button {
   padding-inline-start: var(--toolbar-chip-padding-start);
 }
 
 /* If we have a suffix icon then we don't need padding to push the text end
  * away from the rounded corners */
-:host([has-label]:has([slot='suffix-icon'])) #button {
+:host([has-label][has-suffix-icon]) #button {
   padding-inline-end: var(--toolbar-chip-padding-end);
 }
 

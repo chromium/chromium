@@ -54,6 +54,16 @@ export class ToolbarChipButtonElement extends CrLitElement {
   override focus() {
     this.shadowRoot?.querySelector<HTMLElement>('#button')?.focus();
   }
+
+  protected onPrefixIconSlotchange_(e: Event) {
+    const slot = e.target as HTMLSlotElement;
+    this.toggleAttribute('has-prefix-icon', slot.assignedElements().length > 0);
+  }
+
+  protected onSuffixIconSlotchange_(e: Event) {
+    const slot = e.target as HTMLSlotElement;
+    this.toggleAttribute('has-suffix-icon', slot.assignedElements().length > 0);
+  }
 }
 
 customElements.define(ToolbarChipButtonElement.is, ToolbarChipButtonElement);

@@ -161,11 +161,14 @@ function createMockNavigationState() {
       },
     },
     avatarControlState: {
+      state: AvatarToolbarButtonState.kNormal,
       icon: {handleId: 0n},
       text: '',
       tooltip: '',
       accessibilityName: '',
       accessibilityDescription: '',
+      enabled: true,
+      hasAiRing: false,
     },
     layoutConstantsVersion: 0,
     pinnedToolbarActionsState: [],
@@ -578,5 +581,56 @@ suite('ToolbarAppTest', () => {
           accessibilityDescription: '',
         },
         'highlight-incognito');
+  });
+
+  test('AvatarButtonAiRing', async () => {
+    loadTimeData.overrideValues({
+      initialWebUISurfaceSyncEnabled: false,
+    });
+
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+
+    const avatarButton = app.shadowRoot.querySelector('avatar-button')!;
+    const innerButton = avatarButton.shadowRoot.querySelector('#button')!;
+
+    // Helper to update state and check attribute
+    const checkAiRing = async (hasAiRing: boolean) => {
+      const navigationState = createMockNavigationState();
+      navigationState.avatarControlState = {
+        state: AvatarToolbarButtonState.kNormal,
+        text: 'Profile',
+        icon: {handleId: 0n},
+        tooltip: '',
+        accessibilityName: '',
+        accessibilityDescription: '',
+        enabled: true,
+        hasAiRing: hasAiRing,
+      };
+      browserProxy.fireNavigationStateListener([], navigationState);
+      await microtasksFinished();
+      const icon = avatarButton.shadowRoot.querySelector('#icon')!;
+      const iconStyle = window.getComputedStyle(icon);
+      const actualButton = innerButton.shadowRoot!.querySelector('#button')!;
+      const buttonStyle = window.getComputedStyle(actualButton);
+
+      if (hasAiRing) {
+        assertTrue(innerButton.hasAttribute('has-ai-ring'));
+        assertEquals('30px', iconStyle.width);
+        assertEquals('30px', iconStyle.height);
+        assertEquals('5px', buttonStyle.paddingLeft);
+        assertEquals('7px', buttonStyle.paddingRight);
+      } else {
+        assertFalse(innerButton.hasAttribute('has-ai-ring'));
+        assertEquals('20px', iconStyle.width);
+        assertEquals('20px', iconStyle.height);
+        assertEquals('10px', buttonStyle.paddingLeft);
+        assertEquals('12px', buttonStyle.paddingRight);
+      }
+    };
+
+    await checkAiRing(false);
+    await checkAiRing(true);
   });
 });

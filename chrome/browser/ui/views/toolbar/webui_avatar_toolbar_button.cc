@@ -317,6 +317,7 @@ void WebUIAvatarToolbarButton::UpdateState() {
 
   state->text = state_provider->GetText();
   state->tooltip = state_provider->GetAvatarTooltipText();
+  state->has_ai_ring = state_provider->ShouldShowAiAvatarRing();
 
   auto [name, description] =
       state_manager_->GetAccessibilityLabels(state_provider->GetText());

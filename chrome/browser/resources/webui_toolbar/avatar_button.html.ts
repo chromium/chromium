@@ -15,6 +15,7 @@ export function getHtml(this: AvatarButtonElement) {
     ?has-label="${!!this.state.text}"
     ?disabled="${!this.state.enabled}"
     ?has-border="${this.shouldPaintBorder()}"
+    ?has-ai-ring="${this.state.hasAiRing}"
     .tooltip="${this.getTooltip_() || ''}"
     .ariaLabel="${this.state.accessibilityName || ''}"
     .ariaHasPopup="menu"

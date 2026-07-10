@@ -280,6 +280,7 @@ export class ToolbarAppElement extends AppElementBase {
       accessibilityName: '',
       accessibilityDescription: '',
       enabled: true,
+      hasAiRing: false,
     },
     layoutConstantsVersion: 0,
     touchUi: false,

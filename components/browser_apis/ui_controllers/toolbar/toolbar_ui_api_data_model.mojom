@@ -256,6 +256,7 @@ struct AvatarControlState {
   mojo_base.mojom.String16 accessibility_name;
   mojo_base.mojom.String16 accessibility_description;
   bool enabled = true;
+  bool has_ai_ring = false;
 };
 
 // The type of the content setting image model.
