@@ -224,6 +224,7 @@ UIColor* AssistantHighlightBackgroundColor() {
   [_layoutState removeObserver:self];
   _layoutState = layoutState;
   [_layoutState addObserver:self];
+  _geminiFloatyInvoked = layoutState ? layoutState.geminiFloatyInvoked : NO;
 }
 
 #pragma mark - LayoutStateObserver
@@ -245,6 +246,38 @@ UIColor* AssistantHighlightBackgroundColor() {
     didChangeAppBarLockedInFullscreen:(BOOL)appBarLockedInFullscreen {
   CGFloat targetAlpha = appBarLockedInFullscreen ? 0.0 : _fullscreenProgress;
   [self setButtonsTitleAlpha:targetAlpha animationDuration:0];
+}
+
+- (void)layoutState:(LayoutState*)layoutState
+    didChangeGeminiFloatyInvoked:(BOOL)geminiFloatyInvoked {
+  if (_geminiFloatyInvoked == geminiFloatyInvoked) {
+    return;
+  }
+  _geminiFloatyInvoked = geminiFloatyInvoked;
+
+  // Trigger configurations update for all buttons.
+  [_assistantButton setNeedsUpdateConfiguration];
+  [_openNewTabButton setNeedsUpdateConfiguration];
+  [_tabGridButton setNeedsUpdateConfiguration];
+
+  // Update button titles if they need to be restored.
+  [self updateAssistantButtonTitleIfNeeded];
+  [self updateTabGridButtonTitleIfNeeded];
+  [self updateOpenNewTabButtonTitleIfNeeded];
+
+  // Update buttons title alpha and configuration.
+  [self setButtonsTitleAlpha:_buttonsTitleAlpha
+           animationDuration:kAppBarAnimationDuration];
+
+  // Update height constraint smoothly.
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kAppBarAnimationDuration
+                   animations:^{
+                     [weakSelf updateHeightConstraintForCurrentOrientation];
+                   }];
+
+  [self.view setNeedsLayout];
+  [self.view layoutIfNeeded];
 }
 
 #pragma mark - Accessors & Mutators
@@ -529,41 +562,11 @@ UIColor* AssistantHighlightBackgroundColor() {
   BOOL imageChanged =
       (_assistantButtonState != state || _assistantButtonAvatar != avatar);
 
-  BOOL geminiFloatyInvoked =
-      IsAppBarHiddenInFullscreen() &&
-      (state == AppBarAssistantButtonState::kAsk && highlighted);
-  BOOL geminiFloatyInvokedChanged =
-      (_geminiFloatyInvoked != geminiFloatyInvoked);
-
   _assistantButtonState = state;
   _assistantButtonHighlighted = highlighted;
   _assistantButtonEnabled = enabled;
   _assistantButtonAvatar = avatar;
   _signedIn = signedIn;
-  _geminiFloatyInvoked = geminiFloatyInvoked;
-
-  if (geminiFloatyInvokedChanged) {
-    // Trigger configurations update for all buttons.
-    [_assistantButton setNeedsUpdateConfiguration];
-    [_openNewTabButton setNeedsUpdateConfiguration];
-    [_tabGridButton setNeedsUpdateConfiguration];
-
-    // Update button titles if they need to be restored.
-    [self updateAssistantButtonTitleIfNeeded];
-    [self updateTabGridButtonTitleIfNeeded];
-    [self updateOpenNewTabButtonTitleIfNeeded];
-
-    // Update buttons title alpha and configuration.
-    [self setButtonsTitleAlpha:_buttonsTitleAlpha
-             animationDuration:kAppBarAnimationDuration];
-
-    // Update height constraint smoothly.
-    __weak __typeof(self) weakSelf = self;
-    [UIView animateWithDuration:kAppBarAnimationDuration
-                     animations:^{
-                       [weakSelf updateHeightConstraintForCurrentOrientation];
-                     }];
-  }
 
   if (imageChanged && self.view.window) {
     [UIView transitionWithView:_assistantButton
@@ -575,11 +578,6 @@ UIColor* AssistantHighlightBackgroundColor() {
                     completion:nil];
   } else {
     [self updateAssistantButton];
-  }
-
-  if (geminiFloatyInvokedChanged) {
-    [self.view setNeedsLayout];
-    [self.view layoutIfNeeded];
   }
 }
 
