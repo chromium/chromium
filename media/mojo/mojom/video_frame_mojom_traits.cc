@@ -230,50 +230,50 @@ bool StructTraits<media::mojom::VideoFrameDataView,
   if (data.is_eos_data()) {
     *output = media::VideoFrame::CreateEOSFrame();
     if (!*output) {
-      LOG(ERROR) << "Failed to create EOS frame";
+      DLOG(ERROR) << "Failed to create EOS frame";
     }
     return !!*output;
   }
 
   media::VideoPixelFormat format;
   if (!input.ReadFormat(&format)) {
-    LOG(ERROR) << "Failed to read VideoPixelFormat";
+    DLOG(ERROR) << "Failed to read VideoPixelFormat";
     return false;
   }
 
   gfx::Size coded_size;
   if (!input.ReadCodedSize(&coded_size)) {
-    LOG(ERROR) << "Failed to read coded_size";
+    DLOG(ERROR) << "Failed to read coded_size";
     return false;
   }
 
   gfx::Rect visible_rect;
   if (!input.ReadVisibleRect(&visible_rect)) {
-    LOG(ERROR) << "Failed to read visible_rect";
+    DLOG(ERROR) << "Failed to read visible_rect";
     return false;
   }
 
   if (!gfx::Rect(coded_size).Contains(visible_rect)) {
-    LOG(ERROR) << "coded_size " << coded_size.ToString()
-               << " does not contain visible_rect " << visible_rect.ToString();
+    DLOG(ERROR) << "coded_size " << coded_size.ToString()
+                << " does not contain visible_rect " << visible_rect.ToString();
     return false;
   }
 
   gfx::Size natural_size;
   if (!input.ReadNaturalSize(&natural_size)) {
-    LOG(ERROR) << "Failed to read natural_size";
+    DLOG(ERROR) << "Failed to read natural_size";
     return false;
   }
 
   base::TimeDelta timestamp;
   if (!input.ReadTimestamp(&timestamp)) {
-    LOG(ERROR) << "Failed to read timestamp";
+    DLOG(ERROR) << "Failed to read timestamp";
     return false;
   }
 
   media::VideoFrameMetadata metadata;
   if (!input.ReadMetadata(&metadata)) {
-    LOG(ERROR) << "Failed to read metadata";
+    DLOG(ERROR) << "Failed to read metadata";
     return false;
   }
 
@@ -284,7 +284,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
 
     base::ReadOnlySharedMemoryRegion region;
     if (!shared_memory_data.ReadFrameData(&region)) {
-      LOG(ERROR) << "Failed to read shared memory frame data";
+      DLOG(ERROR) << "Failed to read shared memory frame data";
       return false;
     }
 
@@ -296,16 +296,16 @@ bool StructTraits<media::mojom::VideoFrameDataView,
 
     base::ReadOnlySharedMemoryMapping mapping = region.Map();
     if (!mapping.IsValid()) {
-      LOG(ERROR) << "Failed to map ReadOnlySharedMemoryRegion";
+      DLOG(ERROR) << "Failed to map ReadOnlySharedMemoryRegion";
       return false;
     }
 
     const size_t num_planes = offsets.size();
     if (num_planes != strides.size() ||
         num_planes != media::VideoFrame::NumPlanes(format)) {
-      LOG(ERROR) << "Invalid number of planes: offsets=" << num_planes
-                 << ", strides=" << strides.size()
-                 << ", format=" << VideoPixelFormatToString(format);
+      DLOG(ERROR) << "Invalid number of planes: offsets=" << num_planes
+                  << ", strides=" << strides.size()
+                  << ", format=" << VideoPixelFormatToString(format);
       return false;
     }
 
@@ -314,9 +314,9 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     if (format == media::PIXEL_FORMAT_MJPEG) {
 #if BUILDFLAG(IS_CHROMEOS)
       if (offsets[0] >= mapped_region.size()) {
-        LOG(ERROR) << "Plane's offset is out of bounds for MJPEG. "
-                   << " offset: " << offsets[0]
-                   << " size: " << mapped_region.size();
+        DLOG(ERROR) << "Plane's offset is out of bounds for MJPEG. "
+                    << " offset: " << offsets[0]
+                    << " size: " << mapped_region.size();
         return false;
       }
 
@@ -330,14 +330,14 @@ bool StructTraits<media::mojom::VideoFrameDataView,
           media::VideoFrameLayout::CreateWithPlanes(format, coded_size, planes);
       if (!layout || !layout->FitsInContiguousBufferOfSize(mapping.size())) {
         if (!layout) {
-          LOG(ERROR)
+          DLOG(ERROR)
               << "Invalid layout for MJPEG: CreateWithPlanes failed for format "
               << VideoPixelFormatToString(format) << ", coded_size "
               << coded_size.ToString() << ", planes=" << PlanesToString(planes);
         } else {
-          LOG(ERROR) << "Invalid layout for MJPEG: " << *layout
-                     << " does not fit in contiguous buffer of size "
-                     << mapping.size();
+          DLOG(ERROR) << "Invalid layout for MJPEG: " << *layout
+                      << " does not fit in contiguous buffer of size "
+                      << mapping.size();
         }
         return false;
       }
@@ -345,16 +345,16 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       frame = media::VideoFrame::WrapExternalDataWithLayout(
           *layout, visible_rect, natural_size, mapped_region, timestamp);
 #else
-      LOG(ERROR) << "PIXEL_FORMAT_MJPEG is only supported on ChromeOS";
+      DLOG(ERROR) << "PIXEL_FORMAT_MJPEG is only supported on ChromeOS";
       return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
     } else {
       std::vector<media::ColorPlaneLayout> planes(num_planes);
       for (size_t i = 0; i < num_planes; i++) {
         if (offsets[i] > mapped_region.size()) {
-          LOG(ERROR) << "Plane's offset is out of bounds. "
-                     << " offset: " << offsets[i]
-                     << " size: " << mapped_region.size();
+          DLOG(ERROR) << "Plane's offset is out of bounds. "
+                      << " offset: " << offsets[i]
+                      << " size: " << mapped_region.size();
           return false;
         }
 
@@ -364,9 +364,9 @@ bool StructTraits<media::mojom::VideoFrameDataView,
         size_t row_bytes =
             media::VideoFrame::RowBytes(i, format, coded_size.width());
         if (strides[i] < row_bytes) {
-          LOG(ERROR) << "Stride is smaller than row bytes for plane " << i
-                     << ": stride=" << strides[i]
-                     << ", row bytes=" << row_bytes;
+          DLOG(ERROR) << "Stride is smaller than row bytes for plane " << i
+                      << ": stride=" << strides[i]
+                      << ", row bytes=" << row_bytes;
           return false;
         }
         planes[i].size = rows > 0 ? (rows - 1) * strides[i] + row_bytes : 0;
@@ -376,14 +376,14 @@ bool StructTraits<media::mojom::VideoFrameDataView,
           media::VideoFrameLayout::CreateWithPlanes(format, coded_size, planes);
       if (!layout || !layout->FitsInContiguousBufferOfSize(mapping.size())) {
         if (!layout) {
-          LOG(ERROR) << "Invalid layout: CreateWithPlanes failed for format "
-                     << VideoPixelFormatToString(format) << ", coded_size "
-                     << coded_size.ToString()
-                     << ", planes=" << PlanesToString(planes);
+          DLOG(ERROR) << "Invalid layout: CreateWithPlanes failed for format "
+                      << VideoPixelFormatToString(format) << ", coded_size "
+                      << coded_size.ToString()
+                      << ", planes=" << PlanesToString(planes);
         } else {
-          LOG(ERROR) << "Invalid layout: " << *layout
-                     << " does not fit in contiguous buffer of size "
-                     << mapping.size();
+          DLOG(ERROR) << "Invalid layout: " << *layout
+                      << " does not fit in contiguous buffer of size "
+                      << mapping.size();
         }
         return false;
       }
@@ -402,8 +402,8 @@ bool StructTraits<media::mojom::VideoFrameDataView,
         frame = media::VideoFrame::WrapExternalDataWithLayout(
             *layout, visible_rect, natural_size, mapped_region, timestamp);
       } else {
-        LOG(ERROR) << "Format is not opaque YUV or RGB: "
-                   << VideoPixelFormatToString(format);
+        DLOG(ERROR) << "Format is not opaque YUV or RGB: "
+                    << VideoPixelFormatToString(format);
         return false;
       }
     }
@@ -417,7 +417,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
 
     gpu::ExportedSharedImage exported_shared_image;
     if (!shared_image_data.ReadSharedImage(&exported_shared_image)) {
-      LOG(ERROR) << "Failed to read SharedImage";
+      DLOG(ERROR) << "Failed to read SharedImage";
       return false;
     }
     scoped_refptr<gpu::ClientSharedImage> shared_image =
@@ -425,14 +425,14 @@ bool StructTraits<media::mojom::VideoFrameDataView,
 
     gpu::SyncToken sync_token;
     if (!shared_image_data.ReadSyncToken(&sync_token)) {
-      LOG(ERROR) << "Failed to read SyncToken";
+      DLOG(ERROR) << "Failed to read SyncToken";
       return false;
     }
 
     if (coded_size != shared_image->size()) {
-      LOG(ERROR) << "coded_size (" << coded_size.ToString()
-                 << ") does not match shared_image size ("
-                 << shared_image->size().ToString() << ")";
+      DLOG(ERROR) << "coded_size (" << coded_size.ToString()
+                  << ") does not match shared_image size ("
+                  << shared_image->size().ToString() << ")";
       return false;
     }
 
@@ -448,7 +448,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
         if (!gmb_handle.is_null() && gmb_handle.type == gfx::NATIVE_PIXMAP) {
           if (!media::VerifyGpuMemoryBufferHandle(*video_pixel_format,
                                                   coded_size, gmb_handle)) {
-            LOG(ERROR)
+            DLOG(ERROR)
                 << "Invalid GpuMemoryBufferHandle for mappable SharedImage";
             return false;
           }
@@ -460,7 +460,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       // mappable but do not have buffer usage. But since, such software
       // SharedImages are not used with VideoFrames this should work.
       if (!shared_image->buffer_usage().has_value()) {
-        LOG(ERROR) << "Mappable SharedImage has no buffer usage";
+        DLOG(ERROR) << "Mappable SharedImage has no buffer usage";
         return false;
       }
       frame = media::VideoFrame::WrapMappableSharedImage(
@@ -483,8 +483,8 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     data.GetDmabufDataDataView(&dmabuf_data);
 
     if (!media::VideoFrame::IsValidCodedSize(coded_size)) {
-      LOG(ERROR) << "Coded size is beyond allowed dimensions: "
-                 << coded_size.ToString();
+      DLOG(ERROR) << "Coded size is beyond allowed dimensions: "
+                  << coded_size.ToString();
       return false;
     }
 
@@ -495,8 +495,8 @@ bool StructTraits<media::mojom::VideoFrameDataView,
         format != media::PIXEL_FORMAT_NV12 &&
         format != media::PIXEL_FORMAT_P010LE &&
         format != media::PIXEL_FORMAT_ARGB) {
-      LOG(ERROR) << "Unsupported VideoPixelFormat for DMABUF: "
-                 << VideoPixelFormatToString(format);
+      DLOG(ERROR) << "Unsupported VideoPixelFormat for DMABUF: "
+                  << VideoPixelFormatToString(format);
       return false;
     }
 
@@ -507,9 +507,9 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     // planes. This happens when the data multiple planes are stored in a single
     // continuous DMA buffer.
     if (fds.size() == 0 || fds.size() > media::VideoFrame::NumPlanes(format)) {
-      LOG(ERROR) << "Frame has invalid number of FDs: " << fds.size()
-                 << " (expected 1 to " << media::VideoFrame::NumPlanes(format)
-                 << ")";
+      DLOG(ERROR) << "Frame has invalid number of FDs: " << fds.size()
+                  << " (expected 1 to " << media::VideoFrame::NumPlanes(format)
+                  << ")";
       return false;
     }
 
@@ -523,29 +523,29 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     // VideoFrameLayout and a vector of base::ScopedFDs.
     std::vector<media::ColorPlaneLayout> planes;
     if (!dmabuf_data.ReadPlanes(&planes)) {
-      LOG(ERROR) << "Failed to read planes for DMABUF";
+      DLOG(ERROR) << "Failed to read planes for DMABUF";
       return false;
     }
 
     const size_t num_planes = planes.size();
     if (num_planes != media::VideoFrame::NumPlanes(format)) {
-      LOG(ERROR) << "Invalid number of planes (" << num_planes
-                 << ") for format " << VideoPixelFormatToString(format);
+      DLOG(ERROR) << "Invalid number of planes (" << num_planes
+                  << ") for format " << VideoPixelFormatToString(format);
       return false;
     }
 
     if (scoped_fds.size() > num_planes) {
-      LOG(ERROR) << "Unexpected number of FDs: " << scoped_fds.size()
-                 << " > planes size: " << num_planes;
+      DLOG(ERROR) << "Unexpected number of FDs: " << scoped_fds.size()
+                  << " > planes size: " << num_planes;
       return false;
     }
 
     // Checks that strides monotonically decrease.
     for (size_t i = 1; i < num_planes; i++) {
       if (planes[i - 1].stride < planes[i].stride) {
-        LOG(ERROR) << "Strides do not monotonically decrease: plane " << (i - 1)
-                   << " stride " << planes[i - 1].stride << " vs plane " << i
-                   << " stride " << planes[i].stride;
+        DLOG(ERROR) << "Strides do not monotonically decrease: plane "
+                    << (i - 1) << " stride " << planes[i - 1].stride
+                    << " vs plane " << i << " stride " << planes[i].stride;
         return false;
       }
     }
@@ -560,7 +560,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       // This checks the validity of the FD.
       if (!media::GetFileSize(scoped_fds[scoped_fds_index].get(),
                               &dmabuf_size)) {
-        LOG(ERROR) << "Failed to get the FD size for plane " << i;
+        DLOG(ERROR) << "Failed to get the FD size for plane " << i;
         return false;
       }
 
@@ -577,12 +577,12 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       }
       if (!min_plane_size.IsValid<uint64_t>() ||
           min_plane_size.ValueOrDie<uint64_t>() > planes[i].size) {
-        LOG(ERROR) << "Invalid plane size at index " << i
-                   << ": stride=" << planes[i].stride
-                   << ", height=" << plane_height
-                   << ", plane size=" << planes[i].size
-                   << ", minimum plane size="
-                   << static_cast<size_t>(min_plane_size.ValueOrDefault(0));
+        DLOG(ERROR) << "Invalid plane size at index " << i
+                    << ": stride=" << planes[i].stride
+                    << ", height=" << plane_height
+                    << ", plane size=" << planes[i].size
+                    << ", minimum plane size="
+                    << static_cast<size_t>(min_plane_size.ValueOrDefault(0));
         return false;
       }
 
@@ -599,17 +599,17 @@ bool StructTraits<media::mojom::VideoFrameDataView,
         stride *= kMT2TBppNumerator;
         stride /= kMT2TBppDenominator;
         if (!stride.IsValid()) {
-          LOG(ERROR) << "Failed to compute MT2T stride at index " << i
-                     << ", coded_width=" << coded_size.width();
+          DLOG(ERROR) << "Failed to compute MT2T stride at index " << i
+                      << ", coded_width=" << coded_size.width();
           return false;
         }
         plane_pixel_width = stride.ValueOrDie<size_t>();
       }
 
       if (base::strict_cast<size_t>(planes[i].stride) < plane_pixel_width) {
-        LOG(ERROR) << "Invalid plane stride at index " << i
-                   << ": plane stride=" << planes[i].stride
-                   << " is less than plane pixel width=" << plane_pixel_width;
+        DLOG(ERROR) << "Invalid plane stride at index " << i
+                    << ": plane stride=" << planes[i].stride
+                    << " is less than plane pixel width=" << plane_pixel_width;
         return false;
       }
 
@@ -618,24 +618,24 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       size_t min_dmabuf_size;
       if (!base::CheckAdd(planes[i].offset, planes[i].size)
                .AssignIfValid(&min_dmabuf_size)) {
-        LOG(ERROR) << "Invalid plane offset and size at index " << i
-                   << ": offset=" << planes[i].offset
-                   << ", size=" << planes[i].size;
+        DLOG(ERROR) << "Invalid plane offset and size at index " << i
+                    << ": offset=" << planes[i].offset
+                    << ", size=" << planes[i].size;
         return false;
       }
       if (min_dmabuf_size > dmabuf_size) {
-        LOG(ERROR) << "Plane at index " << i
-                   << " would reference out of bounds data in the DMA Buffer: "
-                   << "min_dmabuf_size=" << min_dmabuf_size
-                   << ", dmabuf_size=" << dmabuf_size;
+        DLOG(ERROR) << "Plane at index " << i
+                    << " would reference out of bounds data in the DMA Buffer: "
+                    << "min_dmabuf_size=" << min_dmabuf_size
+                    << ", dmabuf_size=" << dmabuf_size;
         return false;
       }
     }
 
     if (!base::IsValueInRangeForNumericType<size_t>(
             dmabuf_data.buffer_addr_align())) {
-      LOG(ERROR) << "Invalid buffer_addr_align: "
-                 << dmabuf_data.buffer_addr_align();
+      DLOG(ERROR) << "Invalid buffer_addr_align: "
+                  << dmabuf_data.buffer_addr_align();
       return false;
     }
     const size_t buffer_addr_align =
@@ -652,12 +652,12 @@ bool StructTraits<media::mojom::VideoFrameDataView,
           dmabuf_data.modifier());
     }
     if (!layout) {
-      LOG(ERROR) << "Invalid layout for DMABUF: format="
-                 << VideoPixelFormatToString(format)
-                 << ", coded_size=" << coded_size.ToString()
-                 << ", buffer_addr_align=" << buffer_addr_align
-                 << ", modifier=" << dmabuf_data.modifier()
-                 << ", planes=" << PlanesToString(planes);
+      DLOG(ERROR) << "Invalid layout for DMABUF: format="
+                  << VideoPixelFormatToString(format)
+                  << ", coded_size=" << coded_size.ToString()
+                  << ", buffer_addr_align=" << buffer_addr_align
+                  << ", modifier=" << dmabuf_data.modifier()
+                  << ", planes=" << PlanesToString(planes);
       return false;
     }
 
@@ -670,7 +670,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
   }
 
   if (!frame) {
-    LOG(ERROR) << "Failed to create VideoFrame wrapper";
+    DLOG(ERROR) << "Failed to create VideoFrame wrapper";
     return false;
   }
 
@@ -678,14 +678,14 @@ bool StructTraits<media::mojom::VideoFrameDataView,
 
   gfx::ColorSpace color_space;
   if (!input.ReadColorSpace(&color_space)) {
-    LOG(ERROR) << "Failed to read color_space";
+    DLOG(ERROR) << "Failed to read color_space";
     return false;
   }
   frame->set_color_space(color_space);
 
   gfx::HDRMetadata hdr_metadata;
   if (!input.ReadHdrMetadata(&hdr_metadata)) {
-    LOG(ERROR) << "Failed to read hdr_metadata";
+    DLOG(ERROR) << "Failed to read hdr_metadata";
     return false;
   }
   frame->set_hdr_metadata(hdr_metadata);
