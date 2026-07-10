@@ -124,6 +124,9 @@ BASE_DECLARE_FEATURE(kContextualTasksUploadChunking);
 // new side panel and ghost loader for contextual tasks.
 BASE_DECLARE_FEATURE(kContextualTasksRearchitecture);
 
+// Enables the side panel changes as part of the rearchitecture.
+BASE_DECLARE_FEATURE(kContextualTasksSidePanelRearchitecture);
+
 // Enables sticky conversation UI that follows the user around.
 BASE_DECLARE_FEATURE(kContextualTasksEnableStickyConversation);
 
@@ -463,6 +466,8 @@ extern const char kContextualTasksRearchitectureName[];
 extern const char kContextualTasksRearchitectureDescription[];
 extern const char kContextualTasksEphemeralBrandedEntryPointName[];
 extern const char kContextualTasksEphemeralBrandedEntryPointDescription[];
+extern const char kContextualTasksSidePanelRearchitectureName[];
+extern const char kContextualTasksSidePanelRearchitectureDescription[];
 
 }  // namespace flag_descriptions
 

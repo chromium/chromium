@@ -8361,6 +8361,8 @@ from previous Chrome versions.
       label="OmniboxGroupSuggestionsBySearchVsUrl:enabled"/>
   <int value="-1996087238" label="kAutofillEnableOffersInDownstream:enabled"/>
   <int value="-1995534832" label="DownloadProgressMessage:disabled"/>
+  <int value="-1995434464"
+      label="ContextualTasksSidePanelRearchitecture:disabled"/>
   <int value="-1993967111" label="EnableRuntimeCountersTelemetry:enabled"/>
   <int value="-1993745822" label="PrivacyIndicators:disabled"/>
   <int value="-1993739187"
@@ -17477,6 +17479,8 @@ from previous Chrome versions.
   <int value="920072586" label="SubApps:disabled"/>
   <int value="920563204" label="AndroidHatsRefactor:enabled"/>
   <int value="921561616" label="WebAssemblyTiering:disabled"/>
+  <int value="922863657"
+      label="ContextualTasksSidePanelRearchitecture:enabled"/>
   <int value="923752712" label="WelcomeTour:enabled"/>
   <int value="923923308" label="WifiSyncAllowDeletes:enabled"/>
   <int value="923947923" label="ReadPrinterCapabilitiesWithXps:disabled"/>

@@ -11967,6 +11967,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksRearchitecture)},
 
+    {"contextual-tasks-side-panel-rearchitecture",
+     contextual_tasks::flag_descriptions::
+         kContextualTasksSidePanelRearchitectureName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksSidePanelRearchitectureDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         contextual_tasks::kContextualTasksSidePanelRearchitecture)},
+
     {"omnibox-debug-logs", omnibox::flag_descriptions::kOmniboxDebugLogsName,
      omnibox::flag_descriptions::kOmniboxDebugLogsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxDebugLogs)},
