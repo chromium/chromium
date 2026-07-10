@@ -97,6 +97,11 @@ public class WebContentsDelegateAndroid {
     }
 
     @CalledByNative
+    public boolean canDownload(GURL url, String requestMethod) {
+        return true;
+    }
+
+    @CalledByNative
     public void onUpdateTargetUrl(GURL url) {}
 
     @CalledByNative

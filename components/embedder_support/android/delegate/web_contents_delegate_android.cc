@@ -232,6 +232,25 @@ bool WebContentsDelegateAndroid::IsWebContentsCreationOverridden(
                                                                   java_gurl);
 }
 
+void WebContentsDelegateAndroid::CanDownload(
+    const GURL& url,
+    const std::string& request_method,
+    base::OnceCallback<void(bool)> callback) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    std::move(callback).Run(true);
+    return;
+  }
+  ScopedJavaLocalRef<jobject> j_gurl =
+      url::GURLAndroid::FromNativeGURL(env, url);
+  ScopedJavaLocalRef<jstring> j_method =
+      base::android::ConvertUTF8ToJavaString(env, request_method);
+  bool allowed =
+      Java_WebContentsDelegateAndroid_canDownload(env, obj, j_gurl, j_method);
+  std::move(callback).Run(allowed);
+}
+
 void WebContentsDelegateAndroid::CloseContents(WebContents* source) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);

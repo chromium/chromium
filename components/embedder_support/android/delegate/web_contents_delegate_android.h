@@ -86,6 +86,9 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url) override;
+  void CanDownload(const GURL& url,
+                   const std::string& request_method,
+                   base::OnceCallback<void(bool)> callback) override;
   void CloseContents(content::WebContents* source) override;
   bool DidAddMessageToConsole(content::WebContents* source,
                               blink::mojom::ConsoleMessageLevel log_level,

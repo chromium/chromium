@@ -263,6 +263,11 @@ public class EphemeralTabMediator {
                     }
 
                     @Override
+                    public boolean canDownload(GURL url, String requestMethod) {
+                        return false;
+                    }
+
+                    @Override
                     public void openNewTab(
                             GURL url,
                             String extraHeaders,
