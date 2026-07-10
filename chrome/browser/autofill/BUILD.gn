@@ -409,14 +409,18 @@ source_set("unit_tests") {
   ]
 
   if (!is_android) {
-    sources +=
-        [ "autofill_ai_personal_context_access_manager_factory_unittest.cc" ]
+    sources += [
+      "autofill_ai_personal_context_access_manager_factory_unittest.cc",
+      "ui/autofill_image_fetcher_impl_unittest.cc",
+    ]
     deps += [
       ":autofill",
       "//chrome/browser/personal_context",
       "//components/autofill/core/browser",
       "//components/autofill/core/common",
       "//components/personal_context/core",
+      "//ui/base",
+      "//ui/gfx:test_support",
     ]
   }
 }
