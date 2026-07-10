@@ -68,13 +68,18 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "push_notification_service_desktop_impl_unittest.cc" ]
+  sources = [
+    "push_notification_service_desktop_impl_unittest.cc",
+    "server_client/push_notification_desktop_api_call_flow_impl_unittest.cc",
+    "server_client/push_notification_server_client_desktop_impl_unittest.cc",
+  ]
 
   deps = [
     ":push_notification",
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/push_notification/protos:proto",
     "//chrome/test:test_support",
     "//chromeos/ash/components/nearby/common/scheduling:test_support",
     "//components/gcm_driver:test_support",
@@ -84,6 +89,7 @@ source_set("unit_tests") {
     "//components/push_notification",
     "//components/push_notification:test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//components/sync/base",
     "//content/test:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",

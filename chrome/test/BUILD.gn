@@ -7286,8 +7286,6 @@ test("unit_tests") {
       "../browser/enterprise/connectors/analysis/source_destination_matcher_ash_unittest.cc",
       "../browser/media/webrtc/chrome_screen_enumerator_ash_unittest.cc",
       "../browser/media/webrtc/desktop_media_list_ash_unittest.cc",
-      "../browser/push_notification/server_client/push_notification_desktop_api_call_flow_impl_unittest.cc",
-      "../browser/push_notification/server_client/push_notification_server_client_desktop_impl_unittest.cc",
       "../browser/shell_integration_chromeos_unittest.cc",
       "../browser/ui/ash/editor_menu/editor_menu_card_context_unittest.cc",
       "../browser/ui/ash/editor_menu/editor_menu_view_unittest.cc",
