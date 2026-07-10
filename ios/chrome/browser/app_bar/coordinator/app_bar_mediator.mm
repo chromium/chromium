@@ -602,7 +602,8 @@ inline LayoutStateAssistantPassKey PassKey() {
       break;
     }
     case AppBarAssistantButtonState::kAIM: {
-      [self.sceneHandler showAssistant];
+      // TODO(crbug.com/532071605): Route to AIM SRP in current tab instead of
+      // calling showAssistant.
       break;
     }
     case AppBarAssistantButtonState::kLens: {
@@ -942,9 +943,9 @@ inline LayoutStateAssistantPassKey PassKey() {
   AppBarAssistantButtonState state = AppBarAssistantButtonState::kAccount;
   if ([self isGeminiEligible]) {
     state = AppBarAssistantButtonState::kAsk;
-  } else if ([self isAimEligible]) {
-    state = AppBarAssistantButtonState::kAIM;
   } else if ([self isLensEligible]) {
+    // TODO(crbug.com/532071605): Re-enable AIM check to show the AIM button
+    // once AIM SRP routing is implemented.
     state = AppBarAssistantButtonState::kLens;
   }
 
