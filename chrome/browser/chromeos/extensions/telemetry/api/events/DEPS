@@ -22,6 +22,8 @@ include_rules = [
   "+chrome/browser/ui/web_applications/test",
   "+chrome/common",
   "+chrome/test",
+
+  "+ash/system/diagnostics/mojom/input.mojom.h",
 ]
 
 specific_include_rules = {

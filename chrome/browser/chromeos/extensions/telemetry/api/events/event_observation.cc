@@ -31,14 +31,11 @@ class DefaultEventDelegate : public EventObservation::Delegate {
 
   void OnEvent(const extensions::ExtensionId& extension_id,
                EventRouter* event_router,
-               ash::cros_healthd::mojom::EventInfoPtr healthd_info) override {
+               ash::cros_healthd::mojom::EventInfoPtr info) override {
     if (!event_router->IsExtensionAllowedForCategory(extension_id, category_)) {
       return;
     }
 
-    // TODO(crbug.com/508411965): Remove the use of crosapi struct.
-    auto info =
-        ash::converters::events::ConvertStructPtr(std::move(healthd_info));
     std::unique_ptr<extensions::Event> event;
     switch (category_) {
       case api::os_events::EventCategory::kNone: {
@@ -139,7 +136,8 @@ class DefaultEventDelegate : public EventObservation::Delegate {
         break;
       }
       case api::os_events::EventCategory::kTouchpadButton: {
-        if (!info->is_touchpad_button_event_info()) {
+        if (!info->is_touchpad_event_info() ||
+            !info->get_touchpad_event_info()->is_button_event()) {
           return;
         }
         event = std::make_unique<extensions::Event>(
@@ -147,13 +145,15 @@ class DefaultEventDelegate : public EventObservation::Delegate {
             api::os_events::OnTouchpadButtonEvent::kEventName,
             base::ListValue().Append(
                 converters::events::ConvertStructPtr(
-                    std::move(info->get_touchpad_button_event_info()))
+                    std::move(
+                        info->get_touchpad_event_info()->get_button_event()))
                     .ToValue()),
             browser_context_);
         break;
       }
       case api::os_events::EventCategory::kTouchpadTouch: {
-        if (!info->is_touchpad_touch_event_info()) {
+        if (!info->is_touchpad_event_info() ||
+            !info->get_touchpad_event_info()->is_touch_event()) {
           return;
         }
         event = std::make_unique<extensions::Event>(
@@ -161,13 +161,15 @@ class DefaultEventDelegate : public EventObservation::Delegate {
             api::os_events::OnTouchpadTouchEvent::kEventName,
             base::ListValue().Append(
                 converters::events::ConvertStructPtr(
-                    std::move(info->get_touchpad_touch_event_info()))
+                    std::move(
+                        info->get_touchpad_event_info()->get_touch_event()))
                     .ToValue()),
             browser_context_);
         break;
       }
       case api::os_events::EventCategory::kTouchpadConnected: {
-        if (!info->is_touchpad_connected_event_info()) {
+        if (!info->is_touchpad_event_info() ||
+            !info->get_touchpad_event_info()->is_connected_event()) {
           return;
         }
         event = std::make_unique<extensions::Event>(
@@ -175,13 +177,15 @@ class DefaultEventDelegate : public EventObservation::Delegate {
             api::os_events::OnTouchpadConnectedEvent::kEventName,
             base::ListValue().Append(
                 converters::events::ConvertStructPtr(
-                    std::move(info->get_touchpad_connected_event_info()))
+                    std::move(
+                        info->get_touchpad_event_info()->get_connected_event()))
                     .ToValue()),
             browser_context_);
         break;
       }
       case api::os_events::EventCategory::kTouchscreenTouch: {
-        if (!info->is_touchscreen_touch_event_info()) {
+        if (!info->is_touchscreen_event_info() ||
+            !info->get_touchscreen_event_info()->is_touch_event()) {
           return;
         }
         event = std::make_unique<extensions::Event>(
@@ -189,13 +193,15 @@ class DefaultEventDelegate : public EventObservation::Delegate {
             api::os_events::OnTouchscreenTouchEvent::kEventName,
             base::ListValue().Append(
                 converters::events::ConvertStructPtr(
-                    std::move(info->get_touchscreen_touch_event_info()))
+                    std::move(
+                        info->get_touchscreen_event_info()->get_touch_event()))
                     .ToValue()),
             browser_context_);
         break;
       }
       case api::os_events::EventCategory::kTouchscreenConnected: {
-        if (!info->is_touchscreen_connected_event_info()) {
+        if (!info->is_touchscreen_event_info() ||
+            !info->get_touchscreen_event_info()->is_connected_event()) {
           return;
         }
         event = std::make_unique<extensions::Event>(
@@ -203,13 +209,15 @@ class DefaultEventDelegate : public EventObservation::Delegate {
             api::os_events::OnTouchscreenConnectedEvent::kEventName,
             base::ListValue().Append(
                 converters::events::ConvertStructPtr(
-                    std::move(info->get_touchscreen_connected_event_info()))
+                    std::move(info->get_touchscreen_event_info()
+                                  ->get_connected_event()))
                     .ToValue()),
             browser_context_);
         break;
       }
       case api::os_events::EventCategory::kStylusTouch: {
-        if (!info->is_stylus_touch_event_info()) {
+        if (!info->is_stylus_event_info() ||
+            !info->get_stylus_event_info()->is_touch_event()) {
           return;
         }
         event = std::make_unique<extensions::Event>(
@@ -217,13 +225,14 @@ class DefaultEventDelegate : public EventObservation::Delegate {
             api::os_events::OnStylusTouchEvent::kEventName,
             base::ListValue().Append(
                 converters::events::ConvertStructPtr(
-                    std::move(info->get_stylus_touch_event_info()))
+                    std::move(info->get_stylus_event_info()->get_touch_event()))
                     .ToValue()),
             browser_context_);
         break;
       }
       case api::os_events::EventCategory::kStylusConnected: {
-        if (!info->is_stylus_connected_event_info()) {
+        if (!info->is_stylus_event_info() ||
+            !info->get_stylus_event_info()->is_connected_event()) {
           return;
         }
         event = std::make_unique<extensions::Event>(
@@ -231,7 +240,8 @@ class DefaultEventDelegate : public EventObservation::Delegate {
             api::os_events::OnStylusConnectedEvent::kEventName,
             base::ListValue().Append(
                 converters::events::ConvertStructPtr(
-                    std::move(info->get_stylus_connected_event_info()))
+                    std::move(
+                        info->get_stylus_event_info()->get_connected_event()))
                     .ToValue()),
             browser_context_);
         break;

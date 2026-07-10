@@ -10,133 +10,125 @@
 #include <type_traits>
 #include <utility>
 
+#include "ash/system/diagnostics/mojom/input.mojom.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
-#include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
-#include "chromeos/crosapi/mojom/probe_service.mojom.h"
-#include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
-#include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
 
 namespace chromeos::converters::events {
 
 namespace unchecked {
 
 api::os_events::AudioJackEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryAudioJackEventInfoPtr ptr);
+    ash::cros_healthd::mojom::AudioJackEventInfoPtr ptr);
 
 api::os_events::KeyboardInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryKeyboardInfoPtr ptr);
+    ash::diagnostics::mojom::KeyboardInfoPtr ptr);
 
 api::os_events::KeyboardDiagnosticEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryKeyboardDiagnosticEventInfoPtr ptr);
+    ash::diagnostics::mojom::KeyboardDiagnosticEventInfoPtr ptr);
 
 api::os_events::LidEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryLidEventInfoPtr ptr);
+    ash::cros_healthd::mojom::LidEventInfoPtr ptr);
 
 api::os_events::UsbEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryUsbEventInfoPtr ptr);
+    ash::cros_healthd::mojom::UsbEventInfoPtr ptr);
 
 api::os_events::ExternalDisplayEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryExternalDisplayEventInfoPtr ptr);
+    ash::cros_healthd::mojom::ExternalDisplayEventInfoPtr ptr);
 
 api::os_events::ExternalDisplayInfo UncheckedConvertPtr(
-    crosapi::mojom::ProbeExternalDisplayInfoPtr input);
+    ash::cros_healthd::mojom::ExternalDisplayInfoPtr input);
 
 api::os_events::SdCardEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetrySdCardEventInfoPtr ptr);
+    ash::cros_healthd::mojom::SdCardEventInfoPtr ptr);
 
 api::os_events::PowerEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryPowerEventInfoPtr ptr);
+    ash::cros_healthd::mojom::PowerEventInfoPtr ptr);
 
 api::os_events::StylusGarageEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryStylusGarageEventInfoPtr ptr);
+    ash::cros_healthd::mojom::StylusGarageEventInfoPtr ptr);
 
-std::optional<uint32_t> UncheckedConvertPtr(crosapi::mojom::UInt32ValuePtr ptr);
+std::optional<uint32_t> UncheckedConvertPtr(
+    ash::cros_healthd::mojom::NullableUint32Ptr ptr);
 
 api::os_events::TouchpadButtonEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryTouchpadButtonEventInfoPtr ptr);
+    ash::cros_healthd::mojom::TouchpadButtonEventPtr ptr);
 
 api::os_events::TouchpadTouchEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryTouchpadTouchEventInfoPtr ptr);
+    ash::cros_healthd::mojom::TouchpadTouchEventPtr ptr);
 
 api::os_events::TouchpadConnectedEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryTouchpadConnectedEventInfoPtr ptr);
+    ash::cros_healthd::mojom::TouchpadConnectedEventPtr ptr);
 
 api::os_events::TouchscreenTouchEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryTouchscreenTouchEventInfoPtr ptr);
+    ash::cros_healthd::mojom::TouchscreenTouchEventPtr ptr);
 
 api::os_events::TouchscreenConnectedEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryTouchscreenConnectedEventInfoPtr ptr);
+    ash::cros_healthd::mojom::TouchscreenConnectedEventPtr ptr);
 
 api::os_events::TouchPointInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryTouchPointInfoPtr ptr);
+    ash::cros_healthd::mojom::TouchPointInfoPtr ptr);
 
 api::os_events::StylusTouchPointInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryStylusTouchPointInfoPtr ptr);
+    ash::cros_healthd::mojom::StylusTouchPointInfoPtr ptr);
 
 api::os_events::StylusTouchEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryStylusTouchEventInfoPtr ptr);
+    ash::cros_healthd::mojom::StylusTouchEventPtr ptr);
 
 api::os_events::StylusConnectedEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryStylusConnectedEventInfoPtr ptr);
+    ash::cros_healthd::mojom::StylusConnectedEventPtr ptr);
 
 }  // namespace unchecked
 
 api::os_events::AudioJackEvent Convert(
-    crosapi::mojom::TelemetryAudioJackEventInfo::State state);
+    ash::cros_healthd::mojom::AudioJackEventInfo::State state);
 
 api::os_events::AudioJackDeviceType Convert(
-    crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType device_type);
+    ash::cros_healthd::mojom::AudioJackEventInfo::DeviceType device_type);
 
 api::os_events::KeyboardConnectionType Convert(
-    crosapi::mojom::TelemetryKeyboardConnectionType input);
+    ash::diagnostics::mojom::ConnectionType input);
 
 api::os_events::PhysicalKeyboardLayout Convert(
-    crosapi::mojom::TelemetryKeyboardPhysicalLayout input);
+    ash::diagnostics::mojom::PhysicalLayout input);
 
 api::os_events::MechanicalKeyboardLayout Convert(
-    crosapi::mojom::TelemetryKeyboardMechanicalLayout input);
+    ash::diagnostics::mojom::MechanicalLayout input);
 
 api::os_events::KeyboardNumberPadPresence Convert(
-    crosapi::mojom::TelemetryKeyboardNumberPadPresence input);
+    ash::diagnostics::mojom::NumberPadPresence input);
 
 api::os_events::KeyboardTopRowKey Convert(
-    crosapi::mojom::TelemetryKeyboardTopRowKey input);
+    ash::diagnostics::mojom::TopRowKey input);
 
 api::os_events::KeyboardTopRightKey Convert(
-    crosapi::mojom::TelemetryKeyboardTopRightKey input);
+    ash::diagnostics::mojom::TopRightKey input);
 
 api::os_events::LidEvent Convert(
-    crosapi::mojom::TelemetryLidEventInfo::State state);
+    ash::cros_healthd::mojom::LidEventInfo::State state);
 
 api::os_events::UsbEvent Convert(
-    crosapi::mojom::TelemetryUsbEventInfo::State state);
+    ash::cros_healthd::mojom::UsbEventInfo::State state);
 
 api::os_events::ExternalDisplayEvent Convert(
-    crosapi::mojom::TelemetryExternalDisplayEventInfo::State state);
+    ash::cros_healthd::mojom::ExternalDisplayEventInfo::State state);
 
 api::os_events::SdCardEvent Convert(
-    crosapi::mojom::TelemetrySdCardEventInfo::State state);
+    ash::cros_healthd::mojom::SdCardEventInfo::State state);
 
 api::os_events::PowerEvent Convert(
-    crosapi::mojom::TelemetryPowerEventInfo::State state);
+    ash::cros_healthd::mojom::PowerEventInfo::State state);
 
 api::os_events::StylusGarageEvent Convert(
-    crosapi::mojom::TelemetryStylusGarageEventInfo::State state);
+    ash::cros_healthd::mojom::StylusGarageEventInfo::State state);
 
 api::os_events::InputTouchButton Convert(
-    crosapi::mojom::TelemetryInputTouchButton button);
-
-api::os_events::InputTouchButtonState Convert(
-    crosapi::mojom::TelemetryTouchpadButtonEventInfo::State state);
+    ash::cros_healthd::mojom::InputTouchButton button);
 
 api::os_events::DisplayInputType Convert(
-    crosapi::mojom::ProbeDisplayInputType input);
+    ash::cros_healthd::mojom::DisplayInputType input);
 
 ash::cros_healthd::mojom::EventCategoryEnum Convert(
-    api::os_events::EventCategory input);
-
-crosapi::mojom::TelemetryEventCategoryEnum ConvertCrosapi(
     api::os_events::EventCategory input);
 
 int Convert(uint32_t input);

@@ -9,24 +9,19 @@
 
 #include "base/notreached.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
-#include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
-#include "chromeos/crosapi/mojom/probe_service.mojom.h"
-#include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
-#include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
 
 namespace chromeos::converters::events {
 
 namespace {
 
 namespace cx_events = ::chromeos::api::os_events;
-namespace crosapi = ::crosapi::mojom;
 
 }  // namespace
 
 namespace unchecked {
 
 cx_events::AudioJackEventInfo UncheckedConvertPtr(
-    crosapi::TelemetryAudioJackEventInfoPtr ptr) {
+    ash::cros_healthd::mojom::AudioJackEventInfoPtr ptr) {
   cx_events::AudioJackEventInfo result;
 
   result.event = Convert(ptr->state);
@@ -36,47 +31,36 @@ cx_events::AudioJackEventInfo UncheckedConvertPtr(
 }
 
 cx_events::KeyboardInfo UncheckedConvertPtr(
-    crosapi::TelemetryKeyboardInfoPtr ptr) {
+    ash::diagnostics::mojom::KeyboardInfoPtr ptr) {
   cx_events::KeyboardInfo result;
 
-  result.id = ConvertStructPtr(std::move(ptr->id));
+  result.id = ptr->id;
   result.connection_type = Convert(ptr->connection_type);
   result.name = std::move(ptr->name);
   result.physical_layout = Convert(ptr->physical_layout);
   result.mechanical_layout = Convert(ptr->mechanical_layout);
   result.region_code = std::move(ptr->region_code);
   result.number_pad_present = Convert(ptr->number_pad_present);
-  if (ptr->top_row_keys) {
-    result.top_row_keys = ConvertVector(ptr->top_row_keys.value());
-  }
+  result.top_row_keys = ConvertVector(ptr->top_row_keys);
   result.top_right_key = Convert(ptr->top_right_key);
-  if (ptr->has_assistant_key) {
-    result.has_assistant_key = ptr->has_assistant_key->value;
-  }
+  result.has_assistant_key = ptr->has_assistant_key;
 
   return result;
 }
 
 cx_events::KeyboardDiagnosticEventInfo UncheckedConvertPtr(
-    crosapi::TelemetryKeyboardDiagnosticEventInfoPtr ptr) {
+    ash::diagnostics::mojom::KeyboardDiagnosticEventInfoPtr ptr) {
   cx_events::KeyboardDiagnosticEventInfo result;
 
   result.keyboard_info = ConvertStructPtr(std::move(ptr->keyboard_info));
-
-  if (ptr->tested_keys) {
-    result.tested_keys = ConvertVector(ptr->tested_keys.value());
-  }
-
-  if (ptr->tested_top_row_keys) {
-    result.tested_top_row_keys =
-        ConvertVector(ptr->tested_top_row_keys.value());
-  }
+  result.tested_keys = ConvertVector(ptr->tested_keys);
+  result.tested_top_row_keys = ConvertVector(ptr->tested_top_row_keys);
 
   return result;
 }
 
 cx_events::LidEventInfo UncheckedConvertPtr(
-    crosapi::TelemetryLidEventInfoPtr ptr) {
+    ash::cros_healthd::mojom::LidEventInfoPtr ptr) {
   cx_events::LidEventInfo result;
 
   result.event = Convert(ptr->state);
@@ -85,7 +69,7 @@ cx_events::LidEventInfo UncheckedConvertPtr(
 }
 
 cx_events::UsbEventInfo UncheckedConvertPtr(
-    crosapi::TelemetryUsbEventInfoPtr ptr) {
+    ash::cros_healthd::mojom::UsbEventInfoPtr ptr) {
   cx_events::UsbEventInfo result;
 
   result.event = Convert(ptr->state);
@@ -99,7 +83,7 @@ cx_events::UsbEventInfo UncheckedConvertPtr(
 }
 
 cx_events::ExternalDisplayEventInfo UncheckedConvertPtr(
-    crosapi::TelemetryExternalDisplayEventInfoPtr ptr) {
+    ash::cros_healthd::mojom::ExternalDisplayEventInfoPtr ptr) {
   cx_events::ExternalDisplayEventInfo result;
 
   result.event = Convert(ptr->state);
@@ -109,29 +93,51 @@ cx_events::ExternalDisplayEventInfo UncheckedConvertPtr(
 }
 
 cx_events::ExternalDisplayInfo UncheckedConvertPtr(
-    crosapi::ProbeExternalDisplayInfoPtr input) {
+    ash::cros_healthd::mojom::ExternalDisplayInfoPtr input) {
   cx_events::ExternalDisplayInfo result;
 
-  result.display_width = std::move(input->display_width);
-  result.display_height = std::move(input->display_height);
-  result.resolution_horizontal = std::move(input->resolution_horizontal);
-  result.resolution_vertical = std::move(input->resolution_vertical);
-  result.refresh_rate = std::move(input->refresh_rate);
-  result.manufacturer = std::move(input->manufacturer);
-  result.model_id = std::move(input->model_id);
+  if (input->display_width) {
+    result.display_width = input->display_width->value;
+  }
+  if (input->display_height) {
+    result.display_height = input->display_height->value;
+  }
+  if (input->resolution_horizontal) {
+    result.resolution_horizontal = input->resolution_horizontal->value;
+  }
+  if (input->resolution_vertical) {
+    result.resolution_vertical = input->resolution_vertical->value;
+  }
+  if (input->refresh_rate) {
+    result.refresh_rate = input->refresh_rate->value;
+  }
+  if (input->manufacturer) {
+    result.manufacturer = std::move(*input->manufacturer);
+  }
+  if (input->model_id) {
+    result.model_id = input->model_id->value;
+  }
   // Not reporting serial_number for now until we get Privacy's approval.
   // result.serial_number = std::move(input->serial_number);
-  result.manufacture_week = std::move(input->manufacture_week);
-  result.manufacture_year = std::move(input->manufacture_year);
-  result.edid_version = std::move(input->edid_version);
+  if (input->manufacture_week) {
+    result.manufacture_week = input->manufacture_week->value;
+  }
+  if (input->manufacture_year) {
+    result.manufacture_year = input->manufacture_year->value;
+  }
+  if (input->edid_version) {
+    result.edid_version = std::move(*input->edid_version);
+  }
   result.input_type = Convert(input->input_type);
-  result.display_name = (input->display_name);
+  if (input->display_name) {
+    result.display_name = std::move(*input->display_name);
+  }
 
   return result;
 }
 
 cx_events::SdCardEventInfo UncheckedConvertPtr(
-    crosapi::TelemetrySdCardEventInfoPtr ptr) {
+    ash::cros_healthd::mojom::SdCardEventInfoPtr ptr) {
   cx_events::SdCardEventInfo result;
 
   result.event = Convert(ptr->state);
@@ -140,7 +146,7 @@ cx_events::SdCardEventInfo UncheckedConvertPtr(
 }
 
 cx_events::PowerEventInfo UncheckedConvertPtr(
-    crosapi::TelemetryPowerEventInfoPtr ptr) {
+    ash::cros_healthd::mojom::PowerEventInfoPtr ptr) {
   cx_events::PowerEventInfo result;
 
   result.event = Convert(ptr->state);
@@ -149,7 +155,7 @@ cx_events::PowerEventInfo UncheckedConvertPtr(
 }
 
 cx_events::StylusGarageEventInfo UncheckedConvertPtr(
-    crosapi::TelemetryStylusGarageEventInfoPtr ptr) {
+    ash::cros_healthd::mojom::StylusGarageEventInfoPtr ptr) {
   cx_events::StylusGarageEventInfo result;
 
   result.event = Convert(ptr->state);
@@ -157,20 +163,22 @@ cx_events::StylusGarageEventInfo UncheckedConvertPtr(
   return result;
 }
 
-std::optional<uint32_t> UncheckedConvertPtr(crosapi::UInt32ValuePtr ptr) {
+std::optional<uint32_t> UncheckedConvertPtr(
+    ash::cros_healthd::mojom::NullableUint32Ptr ptr) {
   return ptr->value;
 }
 
 cx_events::TouchpadButtonEventInfo UncheckedConvertPtr(
-    crosapi::TelemetryTouchpadButtonEventInfoPtr ptr) {
+    ash::cros_healthd::mojom::TouchpadButtonEventPtr ptr) {
   cx_events::TouchpadButtonEventInfo result;
   result.button = Convert(ptr->button);
-  result.state = Convert(ptr->state);
+  result.state = ptr->pressed ? cx_events::InputTouchButtonState::kPressed
+                              : cx_events::InputTouchButtonState::kReleased;
   return result;
 }
 
 cx_events::TouchpadTouchEventInfo UncheckedConvertPtr(
-    crosapi::TelemetryTouchpadTouchEventInfoPtr ptr) {
+    ash::cros_healthd::mojom::TouchpadTouchEventPtr ptr) {
   cx_events::TouchpadTouchEventInfo result;
   std::vector<cx_events::TouchPointInfo> converted_touch_points =
       ConvertStructPtrVector<cx_events::TouchPointInfo>(
@@ -180,7 +188,7 @@ cx_events::TouchpadTouchEventInfo UncheckedConvertPtr(
 }
 
 cx_events::TouchpadConnectedEventInfo UncheckedConvertPtr(
-    crosapi::TelemetryTouchpadConnectedEventInfoPtr ptr) {
+    ash::cros_healthd::mojom::TouchpadConnectedEventPtr ptr) {
   cx_events::TouchpadConnectedEventInfo result;
   std::vector<cx_events::InputTouchButton> converted_buttons =
       ConvertVector(std::move(ptr->buttons));
@@ -192,7 +200,7 @@ cx_events::TouchpadConnectedEventInfo UncheckedConvertPtr(
 }
 
 cx_events::TouchscreenTouchEventInfo UncheckedConvertPtr(
-    crosapi::TelemetryTouchscreenTouchEventInfoPtr ptr) {
+    ash::cros_healthd::mojom::TouchscreenTouchEventPtr ptr) {
   cx_events::TouchscreenTouchEventInfo result;
   std::vector<cx_events::TouchPointInfo> converted_touch_points =
       ConvertStructPtrVector<cx_events::TouchPointInfo>(
@@ -202,7 +210,7 @@ cx_events::TouchscreenTouchEventInfo UncheckedConvertPtr(
 }
 
 cx_events::TouchscreenConnectedEventInfo UncheckedConvertPtr(
-    crosapi::TelemetryTouchscreenConnectedEventInfoPtr ptr) {
+    ash::cros_healthd::mojom::TouchscreenConnectedEventPtr ptr) {
   cx_events::TouchscreenConnectedEventInfo result;
   result.max_x = ptr->max_x;
   result.max_y = ptr->max_y;
@@ -211,7 +219,7 @@ cx_events::TouchscreenConnectedEventInfo UncheckedConvertPtr(
 }
 
 cx_events::TouchPointInfo UncheckedConvertPtr(
-    crosapi::TelemetryTouchPointInfoPtr ptr) {
+    ash::cros_healthd::mojom::TouchPointInfoPtr ptr) {
   cx_events::TouchPointInfo result;
   result.tracking_id = ptr->tracking_id;
   result.x = ptr->x;
@@ -223,26 +231,26 @@ cx_events::TouchPointInfo UncheckedConvertPtr(
 }
 
 cx_events::StylusTouchPointInfo UncheckedConvertPtr(
-    crosapi::TelemetryStylusTouchPointInfoPtr ptr) {
+    ash::cros_healthd::mojom::StylusTouchPointInfoPtr ptr) {
   cx_events::StylusTouchPointInfo result;
   if (ptr.is_null()) {
     return result;
   }
   result.x = ptr->x;
   result.y = ptr->y;
-  result.pressure = ptr->pressure;
+  result.pressure = ConvertStructPtr(std::move(ptr->pressure));
   return result;
 }
 
 cx_events::StylusTouchEventInfo UncheckedConvertPtr(
-    crosapi::TelemetryStylusTouchEventInfoPtr ptr) {
+    ash::cros_healthd::mojom::StylusTouchEventPtr ptr) {
   cx_events::StylusTouchEventInfo result;
   result.touch_point = ConvertStructPtr(std::move(ptr->touch_point));
   return result;
 }
 
 cx_events::StylusConnectedEventInfo UncheckedConvertPtr(
-    crosapi::TelemetryStylusConnectedEventInfoPtr ptr) {
+    ash::cros_healthd::mojom::StylusConnectedEventPtr ptr) {
   cx_events::StylusConnectedEventInfo result;
   result.max_x = ptr->max_x;
   result.max_y = ptr->max_y;
@@ -253,252 +261,264 @@ cx_events::StylusConnectedEventInfo UncheckedConvertPtr(
 }  // namespace unchecked
 
 cx_events::AudioJackEvent Convert(
-    crosapi::TelemetryAudioJackEventInfo::State state) {
+    ash::cros_healthd::mojom::AudioJackEventInfo::State state) {
   switch (state) {
-    case crosapi::TelemetryAudioJackEventInfo_State::kUnmappedEnumField:
+    case ash::cros_healthd::mojom::AudioJackEventInfo_State::kUnmappedEnumField:
       return cx_events::AudioJackEvent::kNone;
-    case crosapi::TelemetryAudioJackEventInfo_State::kAdd:
+    case ash::cros_healthd::mojom::AudioJackEventInfo_State::kAdd:
       return cx_events::AudioJackEvent::kConnected;
-    case crosapi::TelemetryAudioJackEventInfo_State::kRemove:
+    case ash::cros_healthd::mojom::AudioJackEventInfo_State::kRemove:
       return cx_events::AudioJackEvent::kDisconnected;
   }
   NOTREACHED();
 }
 
 cx_events::AudioJackDeviceType Convert(
-    crosapi::TelemetryAudioJackEventInfo::DeviceType device_type) {
+    ash::cros_healthd::mojom::AudioJackEventInfo::DeviceType device_type) {
   switch (device_type) {
-    case crosapi::TelemetryAudioJackEventInfo_DeviceType::kUnmappedEnumField:
+    case ash::cros_healthd::mojom::AudioJackEventInfo_DeviceType::
+        kUnmappedEnumField:
       return cx_events::AudioJackDeviceType::kNone;
-    case crosapi::TelemetryAudioJackEventInfo_DeviceType::kHeadphone:
+    case ash::cros_healthd::mojom::AudioJackEventInfo_DeviceType::kHeadphone:
       return cx_events::AudioJackDeviceType::kHeadphone;
-    case crosapi::TelemetryAudioJackEventInfo_DeviceType::kMicrophone:
+    case ash::cros_healthd::mojom::AudioJackEventInfo_DeviceType::kMicrophone:
       return cx_events::AudioJackDeviceType::kMicrophone;
   }
   NOTREACHED();
 }
 
 cx_events::KeyboardConnectionType Convert(
-    crosapi::TelemetryKeyboardConnectionType input) {
+    ash::diagnostics::mojom::ConnectionType input) {
   switch (input) {
-    case crosapi::TelemetryKeyboardConnectionType::kUnmappedEnumField:
+    case ash::diagnostics::mojom::ConnectionType::kUnmappedEnumField:
       return cx_events::KeyboardConnectionType::kNone;
-    case crosapi::TelemetryKeyboardConnectionType::kInternal:
+    case ash::diagnostics::mojom::ConnectionType::kInternal:
       return cx_events::KeyboardConnectionType::kInternal;
-    case crosapi::TelemetryKeyboardConnectionType::kUsb:
+    case ash::diagnostics::mojom::ConnectionType::kUsb:
       return cx_events::KeyboardConnectionType::kUsb;
-    case crosapi::TelemetryKeyboardConnectionType::kBluetooth:
+    case ash::diagnostics::mojom::ConnectionType::kBluetooth:
       return cx_events::KeyboardConnectionType::kBluetooth;
-    case crosapi::TelemetryKeyboardConnectionType::kUnknown:
+    case ash::diagnostics::mojom::ConnectionType::kUnknown:
       return cx_events::KeyboardConnectionType::kUnknown;
   }
   NOTREACHED();
 }
 
 cx_events::PhysicalKeyboardLayout Convert(
-    crosapi::TelemetryKeyboardPhysicalLayout input) {
+    ash::diagnostics::mojom::PhysicalLayout input) {
   switch (input) {
-    case crosapi::TelemetryKeyboardPhysicalLayout::kUnmappedEnumField:
+    case ash::diagnostics::mojom::PhysicalLayout::kUnmappedEnumField:
       return cx_events::PhysicalKeyboardLayout::kNone;
-    case crosapi::TelemetryKeyboardPhysicalLayout::kUnknown:
+    case ash::diagnostics::mojom::PhysicalLayout::kUnknown:
+    case ash::diagnostics::mojom::PhysicalLayout::kChromeOSDellEnterpriseWilco:
+    case ash::diagnostics::mojom::PhysicalLayout::
+        kChromeOSDellEnterpriseDrallion:
       return cx_events::PhysicalKeyboardLayout::kUnknown;
-    case crosapi::TelemetryKeyboardPhysicalLayout::kChromeOS:
+    case ash::diagnostics::mojom::PhysicalLayout::kChromeOS:
       return cx_events::PhysicalKeyboardLayout::kChromeOs;
   }
   NOTREACHED();
 }
 
 cx_events::MechanicalKeyboardLayout Convert(
-    crosapi::TelemetryKeyboardMechanicalLayout input) {
+    ash::diagnostics::mojom::MechanicalLayout input) {
   switch (input) {
-    case crosapi::TelemetryKeyboardMechanicalLayout::kUnmappedEnumField:
+    case ash::diagnostics::mojom::MechanicalLayout::kUnmappedEnumField:
       return cx_events::MechanicalKeyboardLayout::kNone;
-    case crosapi::TelemetryKeyboardMechanicalLayout::kUnknown:
+    case ash::diagnostics::mojom::MechanicalLayout::kUnknown:
       return cx_events::MechanicalKeyboardLayout::kUnknown;
-    case crosapi::TelemetryKeyboardMechanicalLayout::kAnsi:
+    case ash::diagnostics::mojom::MechanicalLayout::kAnsi:
       return cx_events::MechanicalKeyboardLayout::kAnsi;
-    case crosapi::TelemetryKeyboardMechanicalLayout::kIso:
+    case ash::diagnostics::mojom::MechanicalLayout::kIso:
       return cx_events::MechanicalKeyboardLayout::kIso;
-    case crosapi::TelemetryKeyboardMechanicalLayout::kJis:
+    case ash::diagnostics::mojom::MechanicalLayout::kJis:
       return cx_events::MechanicalKeyboardLayout::kJis;
   }
   NOTREACHED();
 }
 
 cx_events::KeyboardNumberPadPresence Convert(
-    crosapi::TelemetryKeyboardNumberPadPresence input) {
+    ash::diagnostics::mojom::NumberPadPresence input) {
   switch (input) {
-    case crosapi::TelemetryKeyboardNumberPadPresence::kUnmappedEnumField:
+    case ash::diagnostics::mojom::NumberPadPresence::kUnmappedEnumField:
       return cx_events::KeyboardNumberPadPresence::kNone;
-    case crosapi::TelemetryKeyboardNumberPadPresence::kUnknown:
+    case ash::diagnostics::mojom::NumberPadPresence::kUnknown:
       return cx_events::KeyboardNumberPadPresence::kUnknown;
-    case crosapi::TelemetryKeyboardNumberPadPresence::kPresent:
+    case ash::diagnostics::mojom::NumberPadPresence::kPresent:
       return cx_events::KeyboardNumberPadPresence::kPresent;
-    case crosapi::TelemetryKeyboardNumberPadPresence::kNotPresent:
+    case ash::diagnostics::mojom::NumberPadPresence::kNotPresent:
       return cx_events::KeyboardNumberPadPresence::kNotPresent;
   }
   NOTREACHED();
 }
 
-cx_events::KeyboardTopRowKey Convert(
-    crosapi::TelemetryKeyboardTopRowKey input) {
+cx_events::KeyboardTopRowKey Convert(ash::diagnostics::mojom::TopRowKey input) {
   switch (input) {
-    case crosapi::TelemetryKeyboardTopRowKey::kUnmappedEnumField:
+    case ash::diagnostics::mojom::TopRowKey::kUnmappedEnumField:
       return cx_events::KeyboardTopRowKey::kNone;
-    case crosapi::TelemetryKeyboardTopRowKey::kNone:
+    case ash::diagnostics::mojom::TopRowKey::kNone:
       return cx_events::KeyboardTopRowKey::kNoKey;
-    case crosapi::TelemetryKeyboardTopRowKey::kUnknown:
+    case ash::diagnostics::mojom::TopRowKey::kUnknown:
+    case ash::diagnostics::mojom::TopRowKey::kAccessibility:
+    case ash::diagnostics::mojom::TopRowKey::kDictation:
       return cx_events::KeyboardTopRowKey::kUnknown;
-    case crosapi::TelemetryKeyboardTopRowKey::kBack:
+    case ash::diagnostics::mojom::TopRowKey::kBack:
       return cx_events::KeyboardTopRowKey::kBack;
-    case crosapi::TelemetryKeyboardTopRowKey::kForward:
+    case ash::diagnostics::mojom::TopRowKey::kForward:
       return cx_events::KeyboardTopRowKey::kForward;
-    case crosapi::TelemetryKeyboardTopRowKey::kRefresh:
+    case ash::diagnostics::mojom::TopRowKey::kRefresh:
       return cx_events::KeyboardTopRowKey::kRefresh;
-    case crosapi::TelemetryKeyboardTopRowKey::kFullscreen:
+    case ash::diagnostics::mojom::TopRowKey::kFullscreen:
       return cx_events::KeyboardTopRowKey::kFullscreen;
-    case crosapi::TelemetryKeyboardTopRowKey::kOverview:
+    case ash::diagnostics::mojom::TopRowKey::kOverview:
       return cx_events::KeyboardTopRowKey::kOverview;
-    case crosapi::TelemetryKeyboardTopRowKey::kScreenshot:
+    case ash::diagnostics::mojom::TopRowKey::kScreenshot:
       return cx_events::KeyboardTopRowKey::kScreenshot;
-    case crosapi::TelemetryKeyboardTopRowKey::kScreenBrightnessDown:
+    case ash::diagnostics::mojom::TopRowKey::kScreenBrightnessDown:
       return cx_events::KeyboardTopRowKey::kScreenBrightnessDown;
-    case crosapi::TelemetryKeyboardTopRowKey::kScreenBrightnessUp:
+    case ash::diagnostics::mojom::TopRowKey::kScreenBrightnessUp:
       return cx_events::KeyboardTopRowKey::kScreenBrightnessUp;
-    case crosapi::TelemetryKeyboardTopRowKey::kPrivacyScreenToggle:
+    case ash::diagnostics::mojom::TopRowKey::kPrivacyScreenToggle:
       return cx_events::KeyboardTopRowKey::kPrivacyScreenToggle;
-    case crosapi::TelemetryKeyboardTopRowKey::kMicrophoneMute:
+    case ash::diagnostics::mojom::TopRowKey::kMicrophoneMute:
       return cx_events::KeyboardTopRowKey::kMicrophoneMute;
-    case crosapi::TelemetryKeyboardTopRowKey::kVolumeMute:
+    case ash::diagnostics::mojom::TopRowKey::kVolumeMute:
       return cx_events::KeyboardTopRowKey::kVolumeMute;
-    case crosapi::TelemetryKeyboardTopRowKey::kVolumeDown:
+    case ash::diagnostics::mojom::TopRowKey::kVolumeDown:
       return cx_events::KeyboardTopRowKey::kVolumeDown;
-    case crosapi::TelemetryKeyboardTopRowKey::kVolumeUp:
+    case ash::diagnostics::mojom::TopRowKey::kVolumeUp:
       return cx_events::KeyboardTopRowKey::kVolumeUp;
-    case crosapi::TelemetryKeyboardTopRowKey::kKeyboardBacklightToggle:
+    case ash::diagnostics::mojom::TopRowKey::kKeyboardBacklightToggle:
       return cx_events::KeyboardTopRowKey::kKeyboardBacklightToggle;
-    case crosapi::TelemetryKeyboardTopRowKey::kKeyboardBacklightDown:
+    case ash::diagnostics::mojom::TopRowKey::kKeyboardBacklightDown:
       return cx_events::KeyboardTopRowKey::kKeyboardBacklightDown;
-    case crosapi::TelemetryKeyboardTopRowKey::kKeyboardBacklightUp:
+    case ash::diagnostics::mojom::TopRowKey::kKeyboardBacklightUp:
       return cx_events::KeyboardTopRowKey::kKeyboardBacklightUp;
-    case crosapi::TelemetryKeyboardTopRowKey::kNextTrack:
+    case ash::diagnostics::mojom::TopRowKey::kNextTrack:
       return cx_events::KeyboardTopRowKey::kNextTrack;
-    case crosapi::TelemetryKeyboardTopRowKey::kPreviousTrack:
+    case ash::diagnostics::mojom::TopRowKey::kPreviousTrack:
       return cx_events::KeyboardTopRowKey::kPreviousTrack;
-    case crosapi::TelemetryKeyboardTopRowKey::kPlayPause:
+    case ash::diagnostics::mojom::TopRowKey::kPlayPause:
       return cx_events::KeyboardTopRowKey::kPlayPause;
-    case crosapi::TelemetryKeyboardTopRowKey::kScreenMirror:
+    case ash::diagnostics::mojom::TopRowKey::kScreenMirror:
       return cx_events::KeyboardTopRowKey::kScreenMirror;
-    case crosapi::TelemetryKeyboardTopRowKey::kDelete:
+    case ash::diagnostics::mojom::TopRowKey::kDelete:
       return cx_events::KeyboardTopRowKey::kDelete;
   }
   NOTREACHED();
 }
 
 cx_events::KeyboardTopRightKey Convert(
-    crosapi::TelemetryKeyboardTopRightKey input) {
+    ash::diagnostics::mojom::TopRightKey input) {
   switch (input) {
-    case crosapi::TelemetryKeyboardTopRightKey::kUnmappedEnumField:
+    case ash::diagnostics::mojom::TopRightKey::kUnmappedEnumField:
       return cx_events::KeyboardTopRightKey::kNone;
-    case crosapi::TelemetryKeyboardTopRightKey::kUnknown:
+    case ash::diagnostics::mojom::TopRightKey::kUnknown:
       return cx_events::KeyboardTopRightKey::kUnknown;
-    case crosapi::TelemetryKeyboardTopRightKey::kPower:
+    case ash::diagnostics::mojom::TopRightKey::kPower:
       return cx_events::KeyboardTopRightKey::kPower;
-    case crosapi::TelemetryKeyboardTopRightKey::kLock:
+    case ash::diagnostics::mojom::TopRightKey::kLock:
       return cx_events::KeyboardTopRightKey::kLock;
-    case crosapi::TelemetryKeyboardTopRightKey::kControlPanel:
+    case ash::diagnostics::mojom::TopRightKey::kControlPanel:
       return cx_events::KeyboardTopRightKey::kControlPanel;
   }
   NOTREACHED();
 }
 
-cx_events::LidEvent Convert(crosapi::TelemetryLidEventInfo::State state) {
+cx_events::LidEvent Convert(
+    ash::cros_healthd::mojom::LidEventInfo::State state) {
   switch (state) {
-    case crosapi::TelemetryLidEventInfo_State::kUnmappedEnumField:
+    case ash::cros_healthd::mojom::LidEventInfo_State::kUnmappedEnumField:
       return cx_events::LidEvent::kNone;
-    case crosapi::TelemetryLidEventInfo_State::kClosed:
+    case ash::cros_healthd::mojom::LidEventInfo_State::kClosed:
       return cx_events::LidEvent::kClosed;
-    case crosapi::TelemetryLidEventInfo_State::kOpened:
+    case ash::cros_healthd::mojom::LidEventInfo_State::kOpened:
       return cx_events::LidEvent::kOpened;
   }
   NOTREACHED();
 }
 
-cx_events::UsbEvent Convert(crosapi::TelemetryUsbEventInfo::State state) {
+cx_events::UsbEvent Convert(
+    ash::cros_healthd::mojom::UsbEventInfo::State state) {
   switch (state) {
-    case crosapi::TelemetryUsbEventInfo_State::kUnmappedEnumField:
+    case ash::cros_healthd::mojom::UsbEventInfo_State::kUnmappedEnumField:
       return cx_events::UsbEvent::kNone;
-    case crosapi::TelemetryUsbEventInfo_State::kAdd:
+    case ash::cros_healthd::mojom::UsbEventInfo_State::kAdd:
       return cx_events::UsbEvent::kConnected;
-    case crosapi::TelemetryUsbEventInfo_State::kRemove:
+    case ash::cros_healthd::mojom::UsbEventInfo_State::kRemove:
       return cx_events::UsbEvent::kDisconnected;
   }
   NOTREACHED();
 }
 
 cx_events::ExternalDisplayEvent Convert(
-    crosapi::TelemetryExternalDisplayEventInfo::State state) {
+    ash::cros_healthd::mojom::ExternalDisplayEventInfo::State state) {
   switch (state) {
-    case crosapi::TelemetryExternalDisplayEventInfo_State::kUnmappedEnumField:
+    case ash::cros_healthd::mojom::ExternalDisplayEventInfo_State::
+        kUnmappedEnumField:
       return cx_events::ExternalDisplayEvent::kNone;
-    case crosapi::TelemetryExternalDisplayEventInfo_State::kAdd:
+    case ash::cros_healthd::mojom::ExternalDisplayEventInfo_State::kAdd:
       return cx_events::ExternalDisplayEvent::kConnected;
-    case crosapi::TelemetryExternalDisplayEventInfo_State::kRemove:
+    case ash::cros_healthd::mojom::ExternalDisplayEventInfo_State::kRemove:
       return cx_events::ExternalDisplayEvent::kDisconnected;
   }
   NOTREACHED();
 }
 
-cx_events::SdCardEvent Convert(crosapi::TelemetrySdCardEventInfo::State state) {
+cx_events::SdCardEvent Convert(
+    ash::cros_healthd::mojom::SdCardEventInfo::State state) {
   switch (state) {
-    case crosapi::TelemetrySdCardEventInfo_State::kUnmappedEnumField:
+    case ash::cros_healthd::mojom::SdCardEventInfo_State::kUnmappedEnumField:
       return cx_events::SdCardEvent::kNone;
-    case crosapi::TelemetrySdCardEventInfo_State::kAdd:
+    case ash::cros_healthd::mojom::SdCardEventInfo_State::kAdd:
       return cx_events::SdCardEvent::kConnected;
-    case crosapi::TelemetrySdCardEventInfo_State::kRemove:
+    case ash::cros_healthd::mojom::SdCardEventInfo_State::kRemove:
       return cx_events::SdCardEvent::kDisconnected;
   }
   NOTREACHED();
 }
 
-cx_events::PowerEvent Convert(crosapi::TelemetryPowerEventInfo::State state) {
+cx_events::PowerEvent Convert(
+    ash::cros_healthd::mojom::PowerEventInfo::State state) {
   switch (state) {
-    case crosapi::TelemetryPowerEventInfo_State::kUnmappedEnumField:
+    case ash::cros_healthd::mojom::PowerEventInfo_State::kUnmappedEnumField:
       return cx_events::PowerEvent::kNone;
-    case crosapi::TelemetryPowerEventInfo_State::kAcInserted:
+    case ash::cros_healthd::mojom::PowerEventInfo_State::kAcInserted:
       return cx_events::PowerEvent::kAcInserted;
-    case crosapi::TelemetryPowerEventInfo_State::kAcRemoved:
+    case ash::cros_healthd::mojom::PowerEventInfo_State::kAcRemoved:
       return cx_events::PowerEvent::kAcRemoved;
-    case crosapi::TelemetryPowerEventInfo_State::kOsSuspend:
+    case ash::cros_healthd::mojom::PowerEventInfo_State::kOsSuspend:
       return cx_events::PowerEvent::kOsSuspend;
-    case crosapi::TelemetryPowerEventInfo_State::kOsResume:
+    case ash::cros_healthd::mojom::PowerEventInfo_State::kOsResume:
       return cx_events::PowerEvent::kOsResume;
   }
   NOTREACHED();
 }
 
 cx_events::StylusGarageEvent Convert(
-    crosapi::TelemetryStylusGarageEventInfo::State state) {
+    ash::cros_healthd::mojom::StylusGarageEventInfo::State state) {
   switch (state) {
-    case crosapi::TelemetryStylusGarageEventInfo_State::kUnmappedEnumField:
+    case ash::cros_healthd::mojom::StylusGarageEventInfo_State::
+        kUnmappedEnumField:
       return cx_events::StylusGarageEvent::kNone;
-    case crosapi::TelemetryStylusGarageEventInfo_State::kInserted:
+    case ash::cros_healthd::mojom::StylusGarageEventInfo_State::kInserted:
       return cx_events::StylusGarageEvent::kInserted;
-    case crosapi::TelemetryStylusGarageEventInfo_State::kRemoved:
+    case ash::cros_healthd::mojom::StylusGarageEventInfo_State::kRemoved:
       return cx_events::StylusGarageEvent::kRemoved;
   }
   NOTREACHED();
 }
 
-cx_events::InputTouchButton Convert(crosapi::TelemetryInputTouchButton button) {
+cx_events::InputTouchButton Convert(
+    ash::cros_healthd::mojom::InputTouchButton button) {
   switch (button) {
-    case crosapi::TelemetryInputTouchButton::kUnmappedEnumField:
+    case ash::cros_healthd::mojom::InputTouchButton::kUnmappedEnumField:
       return cx_events::InputTouchButton::kNone;
-    case crosapi::TelemetryInputTouchButton::kLeft:
+    case ash::cros_healthd::mojom::InputTouchButton::kLeft:
       return cx_events::InputTouchButton::kLeft;
-    case crosapi::TelemetryInputTouchButton::kMiddle:
+    case ash::cros_healthd::mojom::InputTouchButton::kMiddle:
       return cx_events::InputTouchButton::kMiddle;
-    case crosapi::TelemetryInputTouchButton::kRight:
+    case ash::cros_healthd::mojom::InputTouchButton::kRight:
       return cx_events::InputTouchButton::kRight;
   }
   NOTREACHED();
@@ -543,65 +563,14 @@ ash::cros_healthd::mojom::EventCategoryEnum Convert(
   NOTREACHED();
 }
 
-crosapi::TelemetryEventCategoryEnum ConvertCrosapi(
-    cx_events::EventCategory input) {
+cx_events::DisplayInputType Convert(
+    ash::cros_healthd::mojom::DisplayInputType input) {
   switch (input) {
-    case cx_events::EventCategory::kNone:
-      return crosapi::TelemetryEventCategoryEnum::kUnmappedEnumField;
-    case cx_events::EventCategory::kAudioJack:
-      return crosapi::TelemetryEventCategoryEnum::kAudioJack;
-    case cx_events::EventCategory::kLid:
-      return crosapi::TelemetryEventCategoryEnum::kLid;
-    case cx_events::EventCategory::kUsb:
-      return crosapi::TelemetryEventCategoryEnum::kUsb;
-    case cx_events::EventCategory::kExternalDisplay:
-      return crosapi::TelemetryEventCategoryEnum::kExternalDisplay;
-    case cx_events::EventCategory::kSdCard:
-      return crosapi::TelemetryEventCategoryEnum::kSdCard;
-    case cx_events::EventCategory::kPower:
-      return crosapi::TelemetryEventCategoryEnum::kPower;
-    case cx_events::EventCategory::kKeyboardDiagnostic:
-      return crosapi::TelemetryEventCategoryEnum::kKeyboardDiagnostic;
-    case cx_events::EventCategory::kStylusGarage:
-      return crosapi::TelemetryEventCategoryEnum::kStylusGarage;
-    case cx_events::EventCategory::kTouchpadButton:
-      return crosapi::TelemetryEventCategoryEnum::kTouchpadButton;
-    case cx_events::EventCategory::kTouchpadTouch:
-      return crosapi::TelemetryEventCategoryEnum::kTouchpadTouch;
-    case cx_events::EventCategory::kTouchpadConnected:
-      return crosapi::TelemetryEventCategoryEnum::kTouchpadConnected;
-    case cx_events::EventCategory::kTouchscreenTouch:
-      return crosapi::TelemetryEventCategoryEnum::kTouchscreenTouch;
-    case cx_events::EventCategory::kTouchscreenConnected:
-      return crosapi::TelemetryEventCategoryEnum::kTouchscreenConnected;
-    case cx_events::EventCategory::kStylusTouch:
-      return crosapi::TelemetryEventCategoryEnum::kStylusTouch;
-    case cx_events::EventCategory::kStylusConnected:
-      return crosapi::TelemetryEventCategoryEnum::kStylusConnected;
-  }
-  NOTREACHED();
-}
-
-cx_events::InputTouchButtonState Convert(
-    crosapi::TelemetryTouchpadButtonEventInfo::State state) {
-  switch (state) {
-    case crosapi::TelemetryTouchpadButtonEventInfo_State::kUnmappedEnumField:
-      return cx_events::InputTouchButtonState::kNone;
-    case crosapi::TelemetryTouchpadButtonEventInfo_State::kPressed:
-      return cx_events::InputTouchButtonState::kPressed;
-    case crosapi::TelemetryTouchpadButtonEventInfo_State::kReleased:
-      return cx_events::InputTouchButtonState::kReleased;
-  }
-  NOTREACHED();
-}
-
-cx_events::DisplayInputType Convert(crosapi::ProbeDisplayInputType input) {
-  switch (input) {
-    case crosapi::ProbeDisplayInputType::kUnmappedEnumField:
+    case ash::cros_healthd::mojom::DisplayInputType::kUnmappedEnumField:
       return cx_events::DisplayInputType::kUnknown;
-    case crosapi::ProbeDisplayInputType::kDigital:
+    case ash::cros_healthd::mojom::DisplayInputType::kDigital:
       return cx_events::DisplayInputType::kDigital;
-    case crosapi::ProbeDisplayInputType::kAnalog:
+    case ash::cros_healthd::mojom::DisplayInputType::kAnalog:
       return cx_events::DisplayInputType::kAnalog;
   }
   NOTREACHED();
