@@ -27,10 +27,6 @@ WebGLShaderPixelLocalStorage::WebGLShaderPixelLocalStorage(
     : WebGLExtension(context) {
   context->EnableExtensionIfSupported("OES_draw_buffers_indexed",
                                       execution_context);
-  context->EnableExtensionIfSupported("EXT_color_buffer_float",
-                                      execution_context);
-  context->EnableExtensionIfSupported("EXT_color_buffer_half_float",
-                                      execution_context);
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_ANGLE_shader_pixel_local_storage");
   context->EnableExtensionIfSupported(

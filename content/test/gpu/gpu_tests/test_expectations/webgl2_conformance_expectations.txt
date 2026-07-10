@@ -293,9 +293,6 @@ crbug.com/1421437 [ mac passthrough angle-opengl ] WebglExtension_WEBGL_shader_p
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
-# Skipping while validation tightening will break this test
-crbug.com/529454067 conformance2/extensions/webgl-render-shared-exponent.html [ Skip ]
-
 # Skipped because EXT_disjoint_timer_query was disabled due to security concerns.
 crbug.com/808744 [ android ] WebglExtension_EXT_disjoint_timer_query_webgl2 [ Skip ]
 
