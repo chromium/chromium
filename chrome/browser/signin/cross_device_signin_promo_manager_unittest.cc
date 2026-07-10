@@ -89,8 +89,11 @@ class CrossDeviceSigninPromoManagerTest : public testing::Test {
                                    /*is_type_on=*/enable_sync);
   }
 
-  void AddDevice(const std::string& guid, bool is_local) {
-    syncer::TestDeviceInfoBuilder builder(syncer::DeviceInfo::OsType::kLinux);
+  void AddDevice(
+      const std::string& guid,
+      bool is_local,
+      syncer::DeviceInfo::OsType os_type = syncer::DeviceInfo::OsType::kLinux) {
+    syncer::TestDeviceInfoBuilder builder(os_type);
     builder.WithGuid(guid).WithLastUpdatedTimestamp(base::Time::Now());
     auto device = builder.Build();
     device_info_tracker()->Add(std::move(device));
@@ -153,20 +156,39 @@ TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_AuthError) {
       CrossDeviceSigninPromoShouldShowResult::kNotSignedIn, 1);
 }
 
-TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_HasOtherDevices) {
+TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_HasMobileDevice) {
   base::HistogramTester histogram_tester;
   // Setup: Signed in, local device added, remote device added.
   identity_test_env()->MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
   AddDevice("local_device_guid", /*is_local=*/true);
-  AddDevice("remote_device_guid", /*is_local=*/false);
+  AddDevice("remote_device_guid", /*is_local=*/false,
+            syncer::DeviceInfo::OsType::kAndroid);
   SetHistoryAndTabsSyncingPreference(true);
 
   EXPECT_FALSE(ShouldShowCrossDeviceSigninPromo(
       CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile()));
   histogram_tester.ExpectUniqueSample(
       "Signin.CrossDeviceSigninPromo.ShouldShowResult.HistoryPage",
-      CrossDeviceSigninPromoShouldShowResult::kHasOtherDevices, 1);
+      CrossDeviceSigninPromoShouldShowResult::kHasMobileDevice, 1);
+}
+
+TEST_F(CrossDeviceSigninPromoManagerTest,
+       ShouldShowPromo_HasOtherDesktopDevices) {
+  base::HistogramTester histogram_tester;
+  // Setup: Signed in, local device added, remote desktop device added.
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  AddDevice("local_device_guid", /*is_local=*/true);
+  AddDevice("remote_desktop_guid", /*is_local=*/false,
+            syncer::DeviceInfo::OsType::kWindows);
+  SetHistoryAndTabsSyncingPreference(true);
+
+  EXPECT_TRUE(ShouldShowCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile()));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.HistoryPage",
+      CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
 }
 
 TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromo_HistorySyncDisabled) {

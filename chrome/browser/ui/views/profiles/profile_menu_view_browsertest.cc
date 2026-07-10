@@ -294,6 +294,7 @@ class ProfileMenuViewTestBase {
   void SetTestingFactories(content::BrowserContext* context) {
     batch_upload_test_helper_.SetupBatchUploadTestingFactoryInProfile(
         Profile::FromBrowserContext(context));
+
   }
 
   base::CallbackListSubscription dependency_manager_subscription_;

@@ -428,6 +428,7 @@ class ProfileMenuViewPixelTest
                                          -> std::unique_ptr<KeyedService> {
           return std::make_unique<syncer::TestSyncService>();
         }));
+
   }
 
   void TearDownOnMainThread() override {

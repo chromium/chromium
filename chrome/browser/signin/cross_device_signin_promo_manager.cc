@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/cross_device_signin_promo_manager.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
@@ -186,7 +187,7 @@ bool IsUserSignedInWithNoError(Profile* profile) {
          state == signin_util::SignedInState::kSyncing;
 }
 
-bool HasOtherSignedInDevices(Profile* profile) {
+bool HasMobileDevice(Profile* profile) {
   syncer::DeviceInfoSyncService* device_info_sync_service =
       DeviceInfoSyncServiceFactory::GetForProfile(profile);
   CHECK(device_info_sync_service);
@@ -194,13 +195,15 @@ bool HasOtherSignedInDevices(Profile* profile) {
       device_info_sync_service->GetDeviceInfoTracker();
   CHECK(device_info_tracker);
 
-  for (const syncer::DeviceInfo* device_info :
-       device_info_tracker->GetAllDeviceInfo()) {
-    if (!device_info_tracker->IsRecentLocalCacheGuid(device_info->guid())) {
-      return true;
-    }
-  }
-  return false;
+  return std::ranges::any_of(
+      device_info_tracker->GetAllDeviceInfo(),
+      [device_info_tracker](const syncer::DeviceInfo* device_info) {
+        if (device_info_tracker->IsRecentLocalCacheGuid(device_info->guid())) {
+          return false;
+        }
+        return device_info->form_factor() ==
+               syncer::DeviceInfo::FormFactor::kPhone;
+      });
 }
 
 bool IsHistorySyncEnabled(Profile* profile) {
@@ -228,9 +231,9 @@ bool ShouldShowCrossDeviceSigninPromo(
         entry_point, CrossDeviceSigninPromoShouldShowResult::kNotSignedIn);
     return false;
   }
-  if (HasOtherSignedInDevices(profile)) {
+  if (HasMobileDevice(profile)) {
     RecordShouldShowResult(
-        entry_point, CrossDeviceSigninPromoShouldShowResult::kHasOtherDevices);
+        entry_point, CrossDeviceSigninPromoShouldShowResult::kHasMobileDevice);
     return false;
   }
 
