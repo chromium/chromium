@@ -35,7 +35,6 @@
 #include "cc/layers/picture_layer.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/layers/texture_layer.h"
-#include "cc/layers/video_layer.h"
 #include "cc/layers/view_transition_content_layer.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/events_metrics_manager.h"
@@ -52,7 +51,6 @@
 #include "cc/test/fake_recording_source.h"
 #include "cc/test/fake_scoped_ui_resource.h"
 #include "cc/test/fake_scrollbar_layer.h"
-#include "cc/test/fake_video_frame_provider.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/test/mock_latency_info_swap_promise_monitor.h"
@@ -5762,28 +5760,6 @@ class LayerInvalidateCausesDraw : public LayerTreeHostTest {
   int num_commits_;
   int num_draws_;
 };
-
-// VideoLayer must support being invalidated and then passing that along
-// to the compositor thread, even though no resources are updated in
-// response to that invalidation.
-class LayerTreeHostTestVideoLayerInvalidate : public LayerInvalidateCausesDraw {
- public:
-  void SetupTree() override {
-    LayerTreeHostTest::SetupTree();
-    scoped_refptr<VideoLayer> video_layer =
-        VideoLayer::Create(&provider_, media::VIDEO_ROTATION_0);
-    video_layer->SetBounds(gfx::Size(10, 10));
-    video_layer->SetIsDrawable(true);
-    layer_tree_host()->root_layer()->AddChild(video_layer);
-
-    invalidate_layer_ = video_layer;
-  }
-
- private:
-  FakeVideoFrameProvider provider_;
-};
-
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestVideoLayerInvalidate);
 
 class LayerTreeHostTestPushHiddenLayer : public LayerTreeHostTest {
  protected:

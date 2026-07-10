@@ -16,8 +16,6 @@
 #include "cc/layers/picture_layer.h"
 #include "cc/layers/texture_layer.h"
 #include "cc/layers/texture_layer_impl.h"
-#include "cc/layers/video_layer.h"
-#include "cc/layers/video_layer_impl.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/resources/ui_resource_manager.h"
@@ -28,7 +26,6 @@
 #include "cc/test/fake_scoped_ui_resource.h"
 #include "cc/test/fake_scrollbar.h"
 #include "cc/test/fake_scrollbar_layer.h"
-#include "cc/test/fake_video_frame_provider.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/test/render_pass_test_utils.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
@@ -916,42 +913,6 @@ class LayerTreeHostContextTestDontUseLostResources
     layer_with_mask->SetMaskLayer(mask);
     root->AddChild(layer_with_mask);
 
-    scoped_refptr<VideoLayer> video_color =
-        VideoLayer::Create(&color_frame_provider_, media::VIDEO_ROTATION_0);
-    video_color->SetBounds(gfx::Size(10, 10));
-    video_color->SetIsDrawable(true);
-    root->AddChild(video_color);
-
-    scoped_refptr<VideoLayer> video_hw =
-        VideoLayer::Create(&hw_frame_provider_, media::VIDEO_ROTATION_0);
-    video_hw->SetBounds(gfx::Size(10, 10));
-    video_hw->SetIsDrawable(true);
-    root->AddChild(video_hw);
-
-    scoped_refptr<VideoLayer> video_scaled_hw =
-        VideoLayer::Create(&scaled_hw_frame_provider_, media::VIDEO_ROTATION_0);
-    video_scaled_hw->SetBounds(gfx::Size(10, 10));
-    video_scaled_hw->SetIsDrawable(true);
-    root->AddChild(video_scaled_hw);
-
-    color_video_frame_ = VideoFrame::CreateColorFrame(si_size, 0x80, 0x80, 0x80,
-                                                      base::TimeDelta());
-    ASSERT_TRUE(color_video_frame_);
-    hw_video_frame_ = VideoFrame::WrapSharedImage(
-        media::PIXEL_FORMAT_ARGB, shared_image, sync_token,
-        media::VideoFrame::ReleaseMailboxCB(), gfx::Rect(si_size), si_size,
-        base::TimeDelta());
-    ASSERT_TRUE(hw_video_frame_);
-    scaled_hw_video_frame_ = VideoFrame::WrapSharedImage(
-        media::PIXEL_FORMAT_ARGB, shared_image, sync_token,
-        media::VideoFrame::ReleaseMailboxCB(), gfx::Rect(0, 0, 3, 2), si_size,
-        base::TimeDelta());
-    ASSERT_TRUE(scaled_hw_video_frame_);
-
-    color_frame_provider_.set_frame(color_video_frame_);
-    hw_frame_provider_.set_frame(hw_video_frame_);
-    scaled_hw_frame_provider_.set_frame(scaled_hw_video_frame_);
-
     // Enable the hud.
     LayerTreeDebugState debug_state;
     debug_state.show_property_changed_rects = true;
@@ -969,18 +930,6 @@ class LayerTreeHostContextTestDontUseLostResources
   }
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
-
-  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
-    LayerTreeHostContextTest::CommitCompleteOnThread(host_impl);
-
-    if (host_impl->active_tree()->source_frame_number() == 3) {
-      // On the third commit we're recovering from context loss. Hardware
-      // video frames should not be reused by the VideoFrameProvider, but
-      // software frames can be.
-      hw_frame_provider_.set_frame(nullptr);
-      scaled_hw_frame_provider_.set_frame(nullptr);
-    }
-  }
 
   void DrawLayersOnThread(LayerTreeHostImpl* host_impl) override {
     if (host_impl->active_tree()->source_frame_number() == 2) {
@@ -1022,14 +971,6 @@ class LayerTreeHostContextTestDontUseLostResources
 
   scoped_refptr<viz::TestContextProvider> child_context_provider_;
   std::unique_ptr<viz::ClientResourceProvider> child_resource_provider_;
-
-  scoped_refptr<VideoFrame> color_video_frame_;
-  scoped_refptr<VideoFrame> hw_video_frame_;
-  scoped_refptr<VideoFrame> scaled_hw_video_frame_;
-
-  FakeVideoFrameProvider color_frame_provider_;
-  FakeVideoFrameProvider hw_frame_provider_;
-  FakeVideoFrameProvider scaled_hw_frame_provider_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostContextTestDontUseLostResources);

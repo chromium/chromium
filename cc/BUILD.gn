@@ -948,7 +948,6 @@ cc_test("cc_unittests") {
     "trees/layer_tree_host_unittest_proxy.cc",
     "trees/layer_tree_host_unittest_record_gpu_histogram.cc",
     "trees/layer_tree_host_unittest_scroll.cc",
-    "trees/layer_tree_host_unittest_video.cc",
     "trees/layer_tree_impl_unittest.cc",
     "trees/occlusion_tracker_unittest.cc",
     "trees/occlusion_unittest.cc",
