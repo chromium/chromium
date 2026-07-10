@@ -121,11 +121,6 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
     return graph_compilation_task_runner_;
   }
 
-  // Get all EP-specific session configuration entries for the EPs that will be
-  // selected according to the given device type.
-  std::vector<SessionConfigEntry> GetEpConfigEntries(
-      OrtHardwareDeviceType device_type) const;
-
  private:
   static base::expected<scoped_refptr<Environment>, std::string> Create(
       const base::flat_map<std::string, mojom::EpPackageInfoPtr>&

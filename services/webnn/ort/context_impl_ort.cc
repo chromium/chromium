@@ -690,7 +690,7 @@ std::string_view ContextImplOrt::GetBackendName() const {
 
 std::vector<mojom::WebNNExecutionProviderDetailsPtr>
 ContextImplOrt::GetExecutionProvidersInfo() const {
-  return session_options_->GetExecutionProvidersInfo();
+  return env_->GetSelectedEpDetails(WebnnToOrtDeviceType(options_->device));
 }
 
 }  // namespace webnn::ort

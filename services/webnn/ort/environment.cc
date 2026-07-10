@@ -5,7 +5,6 @@
 #include "services/webnn/ort/environment.h"
 
 #include <ranges>
-#include <set>
 #include <utility>
 
 #include "base/command_line.h"
@@ -961,40 +960,6 @@ EpWorkarounds Environment::GetEpWorkarounds(
     }
   }
   return workarounds;
-}
-
-std::vector<SessionConfigEntry> Environment::GetEpConfigEntries(
-    OrtHardwareDeviceType device_type) const {
-  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-  base::span<const OrtEpDevice* const> registered_ep_devices =
-      GetRegisteredEpDevicesImpl(ort_api, this->get());
-  std::vector<const OrtEpDevice*> selected_ep_devices =
-      SelectEpDevices(registered_ep_devices, device_type);
-  std::vector<SessionConfigEntry> ep_config_entries;
-  // Track processed EP names to avoid duplicates.
-  std::set<std::string_view> processed_ep_names;
-
-  for (const auto* ep_device : selected_ep_devices) {
-    CHECK(ep_device);
-
-    std::string_view ep_name = ort_api->EpDevice_EpName(ep_device);
-    // Skip if we've already processed this EP
-    if (processed_ep_names.contains(ep_name)) {
-      continue;
-    }
-    processed_ep_names.insert(ep_name);
-
-    const auto& ep_it = kKnownEPs.find(ep_name);
-    if (ep_it == kKnownEPs.end()) {
-      continue;
-    }
-
-    for (const auto& config_entry : ep_it->second.config_entries) {
-      ep_config_entries.push_back(config_entry);
-    }
-  }
-
-  return ep_config_entries;
 }
 
 // static

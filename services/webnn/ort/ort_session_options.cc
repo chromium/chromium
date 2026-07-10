@@ -4,6 +4,7 @@
 
 #include "services/webnn/ort/ort_session_options.h"
 
+#include <set>
 #include <string_view>
 
 #include "base/command_line.h"
@@ -27,8 +28,7 @@ namespace webnn::ort {
 namespace {
 
 // Execution Provider selection delegate function that selects EPs based on
-// device type.
-// TODO(crbug.com/425487285): Select EPs based on WebNN power preference.
+// the WebNN context options.
 OrtStatus* ORT_API_CALL
 EpSelectionPolicyDelegate(const OrtEpDevice** ep_devices,
                           size_t num_devices,
@@ -44,10 +44,13 @@ EpSelectionPolicyDelegate(const OrtEpDevice** ep_devices,
     return nullptr;
   }
 
-  OrtHardwareDeviceType* device_type_ptr =
-      static_cast<OrtHardwareDeviceType*>(state);
-  CHECK(device_type_ptr) << "Device type must be provided in state parameter";
-  OrtHardwareDeviceType device_type = *device_type_ptr;
+  // TODO(crbug.com/425487285): Select EPs based on WebNN power preference.
+  const auto* context_options =
+      static_cast<const mojom::CreateContextOptions*>(state);
+  CHECK(context_options)
+      << "CreateContextOptions must be provided in state parameter";
+  OrtHardwareDeviceType device_type =
+      ort::WebnnToOrtDeviceType(context_options->device);
 
   // SAFETY: ORT guarantees that `ep_devices` is valid and contains
   // `num_devices` elements.
@@ -204,14 +207,16 @@ ScopedOrtSessionOptions CreateBaseSessionOptions(
 
 // static
 base::expected<scoped_refptr<SessionOptions>, std::string>
-SessionOptions::Create(OrtHardwareDeviceType device_type,
+SessionOptions::Create(mojom::CreateContextOptionsPtr context_options,
                        scoped_refptr<Environment> env) {
   ScopedTrace scoped_trace("SessionOptions::Create");
 
   base::span<const OrtEpDevice* const> registered_ep_devices =
       env->GetRegisteredEpDevices();
   std::vector<const OrtEpDevice*> selected_ep_devices =
-      Environment::SelectEpDevices(registered_ep_devices, device_type);
+      Environment::SelectEpDevices(
+          registered_ep_devices,
+          ort::WebnnToOrtDeviceType(context_options->device));
   if (selected_ep_devices.empty()) {
     return base::unexpected("No execution provider device available.");
   }
@@ -222,24 +227,36 @@ SessionOptions::Create(OrtHardwareDeviceType device_type,
   ScopedOrtSessionOptions session_options =
       CreateBaseSessionOptions(ort_api->EpDevice_EpName(first_selected_device));
 
+  // Apply required session configs for selected EPs.
+  std::set<std::string_view> processed_ep_names;
+  for (const auto* ep_device : selected_ep_devices) {
+    CHECK(ep_device);
+    std::string_view ep_name = ort_api->EpDevice_EpName(ep_device);
+    // Skip if we've already processed this EP.
+    if (processed_ep_names.contains(ep_name)) {
+      continue;
+    }
+    processed_ep_names.insert(ep_name);
+
+    const auto ep_it = kKnownEPs.find(ep_name);
+    if (ep_it == kKnownEPs.end()) {
+      continue;
+    }
+    for (const auto& [key, value] : ep_it->second.config_entries) {
+      CHECK_STATUS(ort_api->AddSessionConfigEntry(session_options.get(),
+                                                  key.c_str(), value.c_str()));
+    }
+  }
+
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtDisableCpuFallback)) {
     CHECK_STATUS(ort_api->AddSessionConfigEntry(
         session_options.get(), kOrtSessionOptionsDisableCPUEPFallback, "1"));
   }
 
-  std::vector<SessionConfigEntry> ep_config_entries =
-      env->GetEpConfigEntries(device_type);
-  for (const auto& config_entry : ep_config_entries) {
-    CHECK_STATUS(ort_api->AddSessionConfigEntry(
-        session_options.get(),
-        /*config_key=*/config_entry.key.c_str(),
-        /*config_value=*/config_entry.value.c_str()));
-  }
-
   return base::MakeRefCounted<SessionOptions>(
-      base::PassKey<SessionOptions>(), std::move(session_options), device_type,
-      std::move(env), first_selected_device);
+      base::PassKey<SessionOptions>(), std::move(session_options),
+      std::move(env), selected_ep_devices.front(), std::move(context_options));
 }
 
 // static
@@ -284,11 +301,9 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
 
   const auto ep_it = kKnownEPs.find(target_device.ep_name);
   if (ep_it != kKnownEPs.end()) {
-    for (const auto& config_entry : ep_it->second.config_entries) {
-      CHECK_STATUS(ort_api->AddSessionConfigEntry(
-          session_options.get(),
-          /*config_key=*/config_entry.key.c_str(),
-          /*config_value=*/config_entry.value.c_str()));
+    for (const auto& [key, value] : ep_it->second.config_entries) {
+      CHECK_STATUS(ort_api->AddSessionConfigEntry(session_options.get(),
+                                                  key.c_str(), value.c_str()));
     }
   }
 
@@ -302,39 +317,34 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
 
   return base::MakeRefCounted<SessionOptions>(
       base::PassKey<SessionOptions>(), std::move(session_options),
-      WebnnToOrtDeviceType(target_device.device_type), std::move(env),
-      target_ort_device);
+      std::move(env), target_ort_device, /*context_options=*/nullptr);
 }
 
 SessionOptions::SessionOptions(base::PassKey<SessionOptions>,
                                ScopedOrtSessionOptions session_options,
-                               OrtHardwareDeviceType device_type,
                                scoped_refptr<Environment> env,
-                               const OrtEpDevice* first_selected_device)
+                               const OrtEpDevice* first_selected_device,
+                               mojom::CreateContextOptionsPtr context_options)
     : session_options_(std::move(session_options)),
-      device_type_(device_type),
       env_(std::move(env)),
       first_selected_device_(first_selected_device),
       batched_matmul_k_dimension_limit_(
-          GetBatchedMatMulKDimensionLimit(first_selected_device)) {
-  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-  // SAFETY: Passing `&device_type_` is safe because the delegate is only
-  // called synchronously during session creation, and `device_type_` is a
-  // member variable of this SessionOptions object which outlives the session
-  // creation process.
-  // NOTE: `const_cast` is safe here because `EpSelectionPolicyDelegate` only
-  // reads the `device_type_` value and never modifies it. The `void*`
-  // parameter is a C API limitation that doesn't preserve const-correctness.
-  CHECK_STATUS(ort_api->SessionOptionsSetEpSelectionPolicyDelegate(
-      session_options_.get(), EpSelectionPolicyDelegate,
-      const_cast<OrtHardwareDeviceType*>(&device_type_)));
+          GetBatchedMatMulKDimensionLimit(first_selected_device)),
+      context_options_(std::move(context_options)) {
+  // Set the EP selection policy delegate if `context_options_` is provided.
+  if (context_options_) {
+    const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+    // SAFETY: Passing `session_options_.get()` and `context_options_.get()` is
+    // safe because the delegate is only called synchronously during session
+    // creation, and `session_options_` and `context_options_` are member
+    // variables of this SessionOptions object which outlives the session
+    // creation process.
+    CHECK_STATUS(ort_api->SessionOptionsSetEpSelectionPolicyDelegate(
+        session_options_.get(), EpSelectionPolicyDelegate,
+        context_options_.get()));
+  }
 }
 
 SessionOptions::~SessionOptions() = default;
-
-std::vector<mojom::WebNNExecutionProviderDetailsPtr>
-SessionOptions::GetExecutionProvidersInfo() const {
-  return env_->GetSelectedEpDetails(device_type_);
-}
 
 }  // namespace webnn::ort

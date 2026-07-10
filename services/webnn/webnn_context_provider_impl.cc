@@ -802,9 +802,8 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
 
     // Create session options before posting context creation, so that
     // if no EP device is available we can fall back to TFLite/LiteRT.
-    OrtHardwareDeviceType device_type =
-        ort::WebnnToOrtDeviceType(options->device);
-    auto session_options_result = ort::SessionOptions::Create(device_type, env);
+    auto session_options_result =
+        ort::SessionOptions::Create(options.Clone(), env);
 
     if (!session_options_result.has_value()) {
       LOG(ERROR) << "[WebNN] Failed to create ONNX Runtime session options: "
@@ -815,6 +814,8 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
       // that delegates graph building/compilation to a per-EP-device Compiler
       // process. Fall back to another backend if no compatible EP device is
       // found.
+      OrtHardwareDeviceType device_type =
+          ort::WebnnToOrtDeviceType(options->device);
       std::optional<EpDeviceInfo> selected_device =
           env->SelectEpDeviceForCompiler(device_type);
       if (selected_device.has_value()) {
