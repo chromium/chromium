@@ -29,6 +29,9 @@ class VIEWS_EXPORT InputProtectorDelegate {
   // If `target_view` is provided, the delegate can use it to perform security
   // checks on the view that is the target for the event. The `protector`
   // provides access to the calling protector's state.
+  //
+  // TODO(crbug.com/467460499): Once all legacy callers are migrated to pass
+  // `target_view`, change it to `const View&` to enforce non-nullness.
   virtual bool IsPossiblyUnintendedInteraction(
       const ui::Event& event,
       const View* target_view,

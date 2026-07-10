@@ -209,4 +209,10 @@ bool OccludedWidgetInputProtector::IsRecordExpired(
   return record.timestamp <= base::TimeTicks::Now() - GetDoubleClickInterval();
 }
 
+void OccludedWidgetInputProtector::ClearForTesting() {
+  always_on_top_widgets_.clear();
+  occlusion_history_.clear();
+  resizing_widgets_.clear();
+}
+
 }  // namespace views

@@ -111,10 +111,7 @@ class OccludedWidgetInputProtectorTestBase : public WidgetTest {
   }
 
   void TearDown() override {
-    // Ensure all occlusion records expire and are purged before the next test
-    // to maintain isolation.
-    FastForwardBy(GetDoubleClickInterval() + base::Milliseconds(1));
-    PruneCachedOcclusionHistory();
+    OccludedWidgetInputProtector::GetInstance()->ClearForTesting();
     WidgetTest::TearDown();
   }
 

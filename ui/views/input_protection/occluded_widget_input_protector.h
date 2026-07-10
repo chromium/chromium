@@ -72,6 +72,9 @@ class VIEWS_EXPORT OccludedWidgetInputProtector : public views::WidgetObserver {
   void OnWidgetUserResizeStarted(views::Widget* widget) override;
   void OnWidgetUserResizeEnded(views::Widget* widget) override;
 
+  // Clears all tracked widgets and historical occlusion records.
+  void ClearForTesting();
+
  private:
   friend struct base::DefaultSingletonTraits<OccludedWidgetInputProtector>;
   friend class test::OccludedWidgetInputProtectorTestBase;
