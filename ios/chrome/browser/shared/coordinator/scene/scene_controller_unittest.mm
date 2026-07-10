@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller_testing.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_util_test_support.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -104,11 +103,8 @@ class SceneControllerTest : public PlatformTest {
 
     base_view_controller_ = [[UIViewController alloc] init];
 
-    fake_scene_ = FakeSceneWithIdentifier([[NSUUID UUID] UUIDString]);
-    scene_state_ = [[SceneStateWithFakeScene alloc] initWithScene:fake_scene_
-                                                         appState:nil];
-
     profile_state_ = CreateProfileState(ProfileInitStage::kFinal);
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
     [scene_state_ connectWithOptions:{.profile_state = profile_state_,
                                       .identifier = "scene-id"}];
 
@@ -255,7 +251,6 @@ class SceneControllerTest : public PlatformTest {
   id mock_gemini_handler_;
   SceneState* scene_state_;
   ProfileState* profile_state_;
-  id fake_scene_;
   id<ConnectionInformation> connection_information_;
   UIViewController* base_view_controller_;
   network::TestURLLoaderFactory test_loader_factory_;
