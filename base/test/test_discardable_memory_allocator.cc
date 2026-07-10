@@ -4,14 +4,13 @@
 
 #include "base/test/test_discardable_memory_allocator.h"
 
+#include <algorithm>
 #include <cstdint>
-#include <cstring>
+#include <memory>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/memory/discardable_memory.h"
-#include "base/memory/ptr_util.h"
 
 namespace base {
 namespace {
@@ -33,7 +32,7 @@ class DiscardableMemoryImpl : public DiscardableMemory {
     is_locked_ = false;
     // Force eviction to catch clients not correctly checking the return value
     // of Lock().
-    UNSAFE_TODO(memset(data_.data(), 0, data_.size()));
+    std::ranges::fill(data_, 0u);
   }
 
   void* data() const override {
