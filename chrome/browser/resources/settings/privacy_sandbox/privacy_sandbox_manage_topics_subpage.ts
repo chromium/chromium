@@ -37,30 +37,163 @@ const SettingsPrivacySandboxManageTopicsSubpageElementBase = SettingsViewMixin(
 // First Level Topics for Taxonomy v2
 // This list comes from here:
 // https://github.com/patcg-individual-drafts/topics/blob/main/taxonomy_v2.md
-const topicIdToIconName: Map<number, string> = new Map<number, string>([
-  [1, 'firstLevelTopics20:artist'],
-  [57, 'firstLevelTopics20:directions-car'],
-  [86, 'firstLevelTopics20:health-and-beauty'],
-  [100, 'firstLevelTopics20:menu-book'],
-  [103, 'firstLevelTopics20:business-center'],
-  [126, 'firstLevelTopics20:keyboard'],
-  [149, 'firstLevelTopics20:finance-mode'],
-  [172, 'firstLevelTopics20:fastfood'],
-  [180, 'firstLevelTopics20:videogame-asset'],
-  [196, 'firstLevelTopics20:sailing'],
-  [207, 'firstLevelTopics20:home-and-garden'],
-  [215, 'firstLevelTopics20:bigtop-updates'],
-  [226, 'firstLevelTopics20:school'],
-  [239, 'firstLevelTopics20:gavel'],
-  [243, 'firstLevelTopics20:newsmode'],
-  [250, 'firstLevelTopics20:communities'],
-  [254, 'firstLevelTopics20:crowdsource'],
-  [263, 'firstLevelTopics20:pets'],
-  [272, 'firstLevelTopics20:real-estate-agent'],
-  [289, 'firstLevelTopics20:shopping-bag'],
-  [299, 'firstLevelTopics20:sports-and-outdoors'],
-  [332, 'firstLevelTopics20:travel'],
-]);
+const topicIdToIconName: Map<number, {newIcon: string, oldIcon: string}> =
+    new Map<number, {newIcon: string, oldIcon: string}>([
+      [
+        1,
+        {
+          newIcon: 'firstLevelTopics20:artist',
+          oldIcon: 'firstLevelTopics20:artist-old',
+        },
+      ],
+      [
+        57,
+        {
+          newIcon: 'firstLevelTopics20:directions-car',
+          oldIcon: 'firstLevelTopics20:directions-car-old',
+        },
+      ],
+      [
+        86,
+        {
+          newIcon: 'firstLevelTopics20:health-and-beauty',
+          oldIcon: 'firstLevelTopics20:health-and-beauty-old',
+        },
+      ],
+      [
+        100,
+        {
+          newIcon: 'firstLevelTopics20:menu-book',
+          oldIcon: 'firstLevelTopics20:menu-book-old',
+        },
+      ],
+      [
+        103,
+        {
+          newIcon: 'firstLevelTopics20:business-center',
+          oldIcon: 'firstLevelTopics20:business-center-old',
+        },
+      ],
+      [
+        126,
+        {
+          newIcon: 'firstLevelTopics20:keyboard',
+          oldIcon: 'firstLevelTopics20:keyboard-old',
+        },
+      ],
+      [
+        149,
+        {
+          newIcon: 'firstLevelTopics20:finance-mode',
+          oldIcon: 'firstLevelTopics20:finance-mode-old',
+        },
+      ],
+      [
+        172,
+        {
+          newIcon: 'firstLevelTopics20:fastfood',
+          oldIcon: 'firstLevelTopics20:fastfood-old',
+        },
+      ],
+      [
+        180,
+        {
+          newIcon: 'firstLevelTopics20:videogame-asset',
+          oldIcon: 'firstLevelTopics20:videogame-asset-old',
+        },
+      ],
+      [
+        196,
+        {
+          newIcon: 'firstLevelTopics20:sailing',
+          oldIcon: 'firstLevelTopics20:sailing-old',
+        },
+      ],
+      [
+        207,
+        {
+          newIcon: 'firstLevelTopics20:home-and-garden',
+          oldIcon: 'firstLevelTopics20:home-and-garden-old',
+        },
+      ],
+      [
+        215,
+        {
+          newIcon: 'firstLevelTopics20:bigtop-updates',
+          oldIcon: 'firstLevelTopics20:bigtop-updates-old',
+        },
+      ],
+      [
+        226,
+        {
+          newIcon: 'firstLevelTopics20:school',
+          oldIcon: 'firstLevelTopics20:school-old',
+        },
+      ],
+      [
+        239,
+        {
+          newIcon: 'firstLevelTopics20:gavel',
+          oldIcon: 'firstLevelTopics20:gavel-old',
+        },
+      ],
+      [
+        243,
+        {
+          newIcon: 'firstLevelTopics20:newsmode',
+          oldIcon: 'firstLevelTopics20:newsmode-old',
+        },
+      ],
+      [
+        250,
+        {
+          newIcon: 'firstLevelTopics20:communities',
+          oldIcon: 'firstLevelTopics20:communities-old',
+        },
+      ],
+      [
+        254,
+        {
+          newIcon: 'firstLevelTopics20:crowdsource',
+          oldIcon: 'firstLevelTopics20:crowdsource-old',
+        },
+      ],
+      [
+        263,
+        {
+          newIcon: 'firstLevelTopics20:pets',
+          oldIcon: 'firstLevelTopics20:pets-old',
+        },
+      ],
+      [
+        272,
+        {
+          newIcon: 'firstLevelTopics20:real-estate-agent',
+          oldIcon: 'firstLevelTopics20:real-estate-agent-old',
+        },
+      ],
+      [
+        289,
+        {
+          newIcon: 'firstLevelTopics20:shopping-bag',
+          oldIcon: 'firstLevelTopics20:shopping-bag-old',
+        },
+      ],
+      [
+        299,
+        {
+          newIcon: 'firstLevelTopics20:sports-and-outdoors',
+          oldIcon: 'firstLevelTopics20:sports-and-outdoors-old',
+        },
+      ],
+      [
+        332,
+        {
+          newIcon: 'firstLevelTopics20:travel',
+          oldIcon: 'firstLevelTopics20:travel-old',
+        },
+      ],
+    ]);
 
 export class SettingsPrivacySandboxManageTopicsSubpageElement extends
     SettingsPrivacySandboxManageTopicsSubpageElementBase {
@@ -254,8 +387,14 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
         'Settings.PrivacySandbox.Topics.Manage.LearnMoreClicked');
   }
 
-  private computeTopicIcon_(topicId: number) {
-    return topicIdToIconName.get(topicId) || 'firstLevelTopics20:category';
+  private computeTopicIcon_(topicId: number): string {
+    const isRounded = loadTimeData.getBoolean('webuiRoundedIconsEnabled');
+    const entry = topicIdToIconName.get(topicId);
+    if (entry) {
+      return isRounded ? entry.newIcon : entry.oldIcon;
+    }
+    return isRounded ? 'firstLevelTopics20:category' :
+                       'firstLevelTopics20:category-old';
   }
 
   // SettingsViewMixin implementation.

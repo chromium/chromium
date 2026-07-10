@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,6 +17,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -232,6 +234,15 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
 // check all icons to make sure default one is not used.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
                        ConfirmDefaultIconIsNotUsed) {
+  const std::string expected_artist_icon =
+      base::FeatureList::IsEnabled(features::kWebUIRoundedIcons)
+          ? "firstLevelTopics20:artist"
+          : "firstLevelTopics20:artist-old";
+  const std::string expected_category_icon =
+      base::FeatureList::IsEnabled(features::kWebUIRoundedIcons)
+          ? "firstLevelTopics20:category"
+          : "firstLevelTopics20:category-old";
+
   RunTestSequence(
       InstrumentTab(kPrivacySandboxTopicsElementId),
       NavigateWebContents(kPrivacySandboxTopicsElementId,
@@ -242,16 +253,18 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
                              GetManageTopicsPageQuery() + "settings-subpage")),
       CheckJsResultAt(kPrivacySandboxTopicsElementId,
                       GetManageTopicsPageQuery(),
-                      R"(
+                      base::StringPrintf(R"(
         (el) => Array.from(el.shadowRoot.querySelectorAll('cr-icon')).some(
-                    el => el.icon === 'firstLevelTopics20:artist')
-        )"),
+                    el => el.icon === '%s')
+        )",
+                                         expected_artist_icon.c_str())),
       CheckJsResultAt(kPrivacySandboxTopicsElementId,
                       GetManageTopicsPageQuery(),
-                      R"(
+                      base::StringPrintf(R"(
         (el) => Array.from(el.shadowRoot.querySelectorAll('cr-icon')).some(
-                el => el.icon === 'firstLevelTopics20:category')
+                el => el.icon === '%s')
         )",
+                                         expected_category_icon.c_str()),
                       false));
 }
 
