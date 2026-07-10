@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -42,8 +43,11 @@ import org.robolectric.shadows.ShadowPackageManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.WindowAndroid;
@@ -74,6 +78,7 @@ public class NativeAppContinueOnTest {
     private PackageManager mSpyPackageManager;
     private ShadowActivity mShadowActivity;
     private ShadowPackageManager mShadowPackageManager;
+    private ChromeOriginVerifier mMockOriginVerifier;
 
     @Before
     public void setUp() {
@@ -89,6 +94,20 @@ public class NativeAppContinueOnTest {
         when(mWindowAndroid.getContext()).thenReturn(contextRef);
         WeakReference<Activity> activityRef = new WeakReference<>((Activity) mSpyContext);
         when(mWindowAndroid.getActivity()).thenReturn(activityRef);
+
+        mMockOriginVerifier = mock(ChromeOriginVerifier.class);
+        ChromeOriginVerifierFactory.setInstanceForTesting(mMockOriginVerifier);
+
+        // Default stubbing: verification succeeds
+        doAnswer(
+                        invocation -> {
+                            OriginVerificationListener listener = invocation.getArgument(0);
+                            Origin origin = invocation.getArgument(1);
+                            listener.onOriginVerified(IDP_PACKAGE, origin, true, true);
+                            return null;
+                        })
+                .when(mMockOriginVerifier)
+                .start(any(OriginVerificationListener.class), any(Origin.class));
 
         mCoordinator =
                 new AccountSelectionCoordinator(
@@ -243,5 +262,78 @@ public class NativeAppContinueOnTest {
         assertNotNull(intent);
         assertEquals(mActivity.getPackageName(), intent.getPackage());
         assertEquals(CONTINUE_URL.getSpec(), intent.getDataString());
+    }
+
+    @Test
+    public void testFallbackToCctWhenVerificationFails() {
+        // Register app with MIME type to pass MIME type check
+        registerFakeApp(IDP_PACKAGE, "application/web-identity+json");
+
+        // Mock verification failure
+        doAnswer(
+                        invocation -> {
+                            OriginVerificationListener listener = invocation.getArgument(0);
+                            Origin origin = invocation.getArgument(1);
+                            listener.onOriginVerified(IDP_PACKAGE, origin, false, true);
+                            return null;
+                        })
+                .when(mMockOriginVerifier)
+                .start(any(OriginVerificationListener.class), any(Origin.class));
+
+        mCoordinator.showModalDialog(CONTINUE_URL);
+
+        // Verify native app was NOT launched
+        verify(mWindowAndroid, never())
+                .showIntent(any(Intent.class), any(IntentCallback.class), any());
+
+        // Verify CCT launch fallback
+        Intent intent = mShadowActivity.getNextStartedActivity();
+        assertNotNull(intent);
+        assertEquals(mActivity.getPackageName(), intent.getPackage());
+        assertEquals(CONTINUE_URL.getSpec(), intent.getDataString());
+    }
+
+    @Test
+    public void testNativeFlowTriesNextAppWhenFirstFailsVerification() {
+        String pkg1 = "org.test.app1";
+        String pkg2 = "org.test.app2";
+        registerFakeApp(pkg1, "application/web-identity+json");
+        registerFakeApp(pkg2, "application/web-identity+json");
+
+        // Mock verification: 1st call fails, 2nd call succeeds
+        doAnswer(
+                        invocation -> {
+                            OriginVerificationListener listener = invocation.getArgument(0);
+                            Origin origin = invocation.getArgument(1);
+                            listener.onOriginVerified(pkg1, origin, false, true);
+                            return null;
+                        })
+                .doAnswer(
+                        invocation -> {
+                            OriginVerificationListener listener = invocation.getArgument(0);
+                            Origin origin = invocation.getArgument(1);
+                            listener.onOriginVerified(pkg2, origin, true, true);
+                            return null;
+                        })
+                .when(mMockOriginVerifier)
+                .start(any(OriginVerificationListener.class), any(Origin.class));
+
+        // Mock showIntent to succeed
+        when(mWindowAndroid.showIntent(any(Intent.class), any(IntentCallback.class), any()))
+                .thenReturn(true);
+
+        mCoordinator.showModalDialog(CONTINUE_URL);
+
+        // Verify native app 2 was launched (since 1 failed verification)
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mWindowAndroid).showIntent(intentCaptor.capture(), any(IntentCallback.class), any());
+
+        Intent intent = intentCaptor.getValue();
+        assertNotNull(intent);
+        assertEquals(pkg2, intent.getPackage());
+
+        // Verify CCT was NOT launched
+        Intent cctIntent = mShadowActivity.getNextStartedActivity();
+        assertNull(cctIntent);
     }
 }

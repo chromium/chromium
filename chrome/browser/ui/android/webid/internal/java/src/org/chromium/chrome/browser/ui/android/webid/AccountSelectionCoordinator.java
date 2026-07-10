@@ -22,9 +22,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsService;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -33,6 +35,8 @@ import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
@@ -41,6 +45,8 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadat
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerItemDecoration;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.content.webid.IdentityRequestDialogLinkType;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -284,15 +290,29 @@ public class AccountSelectionCoordinator
     @Override
     public WebContents showModalDialog(GURL url) {
         if (ContentFeatureMap.isEnabled(ContentFeatures.FED_CM_NATIVE_ID_PS)) {
-            List<String> nativeAppPackages = getNativeAppPackages(url);
-            for (String nativeAppPackage : nativeAppPackages) {
-                if (launchNativeApp(nativeAppPackage, url)) {
-                    return null;
-                }
-            }
+            findVerifiedApp(
+                    url,
+                    appPackage -> {
+                        if (appPackage == null) {
+                            launchCct(url);
+                            return;
+                        }
+                        launchNativeApp(appPackage, url);
+                    });
+            return null;
         }
 
+        launchCct(url);
+        // CCT is opened asynchronously, and we do not have the WebContents for it yet.
+        return null;
+    }
+
+    private void launchCct(GURL url) {
         Context context = mWindowAndroid.getContext().get();
+        if (context == null) {
+            return;
+        }
+
         CustomTabsIntent customTabIntent =
                 new CustomTabsIntent.Builder()
                         .setShowTitle(true)
@@ -319,8 +339,51 @@ public class AccountSelectionCoordinator
         mWindowAndroid.addActivityStateObserver(this);
         context.startActivity(intent);
         mMediator.onModalDialogOpened();
-        // CCT is opened asynchronously, and we do not have the WebContents for it yet.
-        return null;
+    }
+
+    private void findVerifiedApp(GURL url, Callback<String> callback) {
+        findVerifiedApp(url, getNativeAppPackages(url), 0, callback);
+    }
+
+    private void findVerifiedApp(
+            GURL url, List<String> packages, int index, Callback<String> callback) {
+        if (index >= packages.size()) {
+            callback.onResult(null);
+            return;
+        }
+
+        String packageName = packages.get(index);
+        verifyRelation(
+                url,
+                packageName,
+                CustomTabsService.RELATION_USE_AS_ORIGIN,
+                verified -> {
+                    if (verified) {
+                        callback.onResult(packageName);
+                    } else {
+                        findVerifiedApp(url, packages, index + 1, callback);
+                    }
+                });
+    }
+
+    private void verifyRelation(
+            GURL url, String packageName, int relation, Callback<Boolean> callback) {
+        Origin origin = Origin.create(url.getSpec());
+        ChromeOriginVerifier verifier =
+                ChromeOriginVerifierFactory.create(packageName, relation, null);
+
+        verifier.start(
+                new OriginVerificationListener() {
+                    @Override
+                    public void onOriginVerified(
+                            String packageName,
+                            Origin verifiedOrigin,
+                            boolean verified,
+                            Boolean online) {
+                        callback.onResult(verified);
+                    }
+                },
+                origin);
     }
 
     @Override
@@ -401,15 +464,11 @@ public class AccountSelectionCoordinator
         // Query with MIME type
         intent.setDataAndType(Uri.parse(url.getSpec()), "application/web-identity+json");
         List<ResolveInfo> resolveInfos = pm.queryIntentActivities(intent, 0);
-
         if (resolveInfos == null || resolveInfos.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<String> targetPackages = new ArrayList<>();
-        // TODO(crbug.com/521864267): Add support for checking for the
-        // Digital Asset Links validation rather than simply by the ability
-        // to handle links.
         for (ResolveInfo info : resolveInfos) {
             targetPackages.add(info.activityInfo.packageName);
         }
@@ -417,7 +476,7 @@ public class AccountSelectionCoordinator
         return targetPackages;
     }
 
-    private boolean launchNativeApp(String packageName, GURL url) {
+    private void launchNativeApp(String packageName, GURL url) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
         intent.setDataAndType(Uri.parse(url.getSpec()), "application/web-identity+json");
@@ -426,7 +485,6 @@ public class AccountSelectionCoordinator
         if (launched) {
             mMediator.onModalDialogOpened();
         }
-        return launched;
     }
 
     private class NativeAppIntentCallback implements WindowAndroid.IntentCallback {
