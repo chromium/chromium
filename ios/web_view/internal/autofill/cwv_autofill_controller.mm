@@ -908,9 +908,9 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   // Not supported.
 }
 
-- (void)notifyFormsSeen:(const std::vector<autofill::FormData>&)updatedForms
+- (void)notifyFormsSeen:(std::vector<autofill::FormData>)updatedForms
                 inFrame:(web::WebFrame*)frame {
-  [_autofillAgent notifyFormsSeen:updatedForms inFrame:frame];
+  [_autofillAgent notifyFormsSeen:std::move(updatedForms) inFrame:frame];
 }
 
 - (void)fetchFormsFiltered:(std::optional<std::u16string>)formNameFilter

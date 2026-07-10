@@ -65,7 +65,7 @@ using FormFetchCompletion =
          completionHandler:(FormFetchCompletion)completionHandler;
 
 // Notifies about the forms that were seen on the page when fetching.
-- (void)notifyFormsSeen:(const std::vector<autofill::FormData>&)updatedForms
+- (void)notifyFormsSeen:(std::vector<autofill::FormData>)updatedForms
                 inFrame:(web::WebFrame*)frame;
 
 @end

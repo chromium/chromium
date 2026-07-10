@@ -1296,7 +1296,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
 }
 
 // Notifies the autofill manager when forms are detected on a page.
-- (void)notifyFormsSeen:(const FormDataVector&)updatedForms
+- (void)notifyFormsSeen:(FormDataVector)updatedForms
                 inFrame:(web::WebFrame*)frame {
   auto* driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_webState, frame);
@@ -1306,7 +1306,8 @@ bool HasGuid(const Suggestion::Payload& payload) {
 
   DCHECK(!updatedForms.empty());
 
-  driver->FormsSeen(/*updated_forms=*/updatedForms, /*removed_forms=*/{});
+  driver->FormsSeen(/*updated_forms=*/std::move(updatedForms),
+                    /*removed_forms=*/{});
 }
 
 // Invokes the form extraction script in |frame| and loads the output into the

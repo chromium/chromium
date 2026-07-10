@@ -548,7 +548,7 @@ void AutofillDriverIOS::DidAutofillForm(const FormData& form) {
 }
 
 void AutofillDriverIOS::FormsSeen(
-    const std::vector<FormData>& updated_forms,
+    std::vector<FormData> updated_forms,
     const std::vector<FormGlobalId>& removed_forms) {
   auto callback = [](AutofillDriver& driver,
                      std::vector<FormData> updated_forms,
@@ -576,7 +576,8 @@ void AutofillDriverIOS::FormsSeen(
         }
       }
     }
-    router_->FormsSeen(callback, *this, updated_forms, removed_forms);
+    router_->FormsSeen(callback, *this, std::move(updated_forms),
+                       removed_forms);
   } else {
     callback(*this, std::move(updated_forms), std::move(removed_forms));
   }
