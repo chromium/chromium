@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.util.SparseIntArray;
+
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -38,26 +40,11 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
      */
     @Override
     public int getInsertionIndexOfTab(Tab tab) {
-        // TODO(crbug.com/509226293): Refactor to simplify.
         if (tab == null) return TabList.INVALID_TAB_INDEX;
 
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
-
-        // Pre-compute the backend index lookup map for O(1) lookups.
-        Map<Integer, Integer> tabIdToBackendIndexMap = new HashMap<>();
-        for (int i = 0; i < tabModel.getCount(); i++) {
-            Tab t = tabModel.getTabAt(i);
-            if (t != null) {
-                tabIdToBackendIndexMap.put(t.getId(), i);
-            }
-        }
-
-        Integer targetTabModelIndex = tabIdToBackendIndexMap.get(tab.getId());
-        if (targetTabModelIndex == null) {
-            return TabList.INVALID_TAB_INDEX;
-        }
-
         Token targetTabGroupId = tab.getTabGroupId();
+
         if (targetTabGroupId != null
                 && tabModel.getTabGroupCollapsed(targetTabGroupId)
                 && mModelList.indexFromTabGroupId(targetTabGroupId) != TabModel.INVALID_TAB_INDEX) {
@@ -65,69 +52,55 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
             return TabList.INVALID_TAB_INDEX;
         }
 
-        int targetTabCurrentIndex = mModelList.indexFromTabId(tab.getId());
-        int targetInsertionUiIndex = TabModel.INVALID_TAB_INDEX;
-        boolean isScanningTargetGroup = false;
+        // Pre-compute backend index maps for O(1) lookups.
+        SparseIntArray tabIdToBackendIndexMap = new SparseIntArray(tabModel.getCount());
+        Map<Token, Integer> groupIdToFirstBackendIndexMap = new HashMap<>();
 
-        for (int currentIndex = 0; currentIndex < mModelList.size(); currentIndex++) {
-            if (currentIndex == targetTabCurrentIndex) {
-                continue;
-            }
-
-            PropertyModel currentModel = mModelList.get(currentIndex).model;
-            if (!TabProperties.isTabOrTabGroup(currentModel)) {
-                continue;
-            }
-            int currentTabId = currentModel.get(TabProperties.TAB_ID);
-            Tab currentTab = tabModel.getTabById(currentTabId);
-            if (currentTab == null) {
-                continue;
-            }
-            Integer currentTabModelIndex = tabIdToBackendIndexMap.get(currentTabId);
-            if (currentTabModelIndex == null) {
-                continue;
-            }
-
-            // Target tab matches the current top-level card's group id, insert it within that
-            // group's bounds.
-            if (targetTabGroupId != null && targetTabGroupId.equals(currentTab.getTabGroupId())) {
-                isScanningTargetGroup = true;
-
-                // Default the insertion point to immediately after the header.
-                if (TabProperties.isTabGroupHeader(currentModel)) {
-                    targetInsertionUiIndex =
-                            adjustIndexForTabMovement(currentIndex + 1, targetTabCurrentIndex);
-                    continue;
-                }
-
-                // Find the first sibling that comes after the target in the backend, and insert
-                // immediately before it.
-                if (hasHigherBackendIndex(currentTabModelIndex, targetTabModelIndex)) {
-                    return adjustIndexForTabMovement(currentIndex, targetTabCurrentIndex);
-                }
-                targetInsertionUiIndex =
-                        adjustIndexForTabMovement(currentIndex + 1, targetTabCurrentIndex);
-
-            } else if (isScanningTargetGroup) {
-                // Insert at end of group.
-                return targetInsertionUiIndex;
-            } else {
-                // Only compare top-level items, skip nested child rows.
-                if (TabProperties.isTabInGroup(currentModel)) {
-                    continue;
-                }
-
-                // Insert immediately before the first top-level item (pinned, regular, or group
-                // header) whose backend index is greater than the target tab's backend index.
-                if (hasHigherBackendIndex(currentTabModelIndex, targetTabModelIndex)) {
-                    return adjustIndexForTabMovement(currentIndex, targetTabCurrentIndex);
+        for (int i = 0; i < tabModel.getCount(); i++) {
+            Tab t = tabModel.getTabAt(i);
+            if (t != null) {
+                tabIdToBackendIndexMap.put(t.getId(), i);
+                Token groupId = t.getTabGroupId();
+                // Store the first occurrence (lowest index) for each group.
+                if (groupId != null) {
+                    groupIdToFirstBackendIndexMap.putIfAbsent(groupId, i);
                 }
             }
         }
 
-        return targetInsertionUiIndex != TabModel.INVALID_TAB_INDEX
-                ? targetInsertionUiIndex
-                : adjustIndexForTabMovement(mModelList.size(), targetTabCurrentIndex);
+        int targetTabModelIndex =
+                tabIdToBackendIndexMap.get(tab.getId(), TabModel.INVALID_TAB_INDEX);
+        if (targetTabModelIndex == TabModel.INVALID_TAB_INDEX) return TabList.INVALID_TAB_INDEX;
+
+        int targetTabCurrentIndex = mModelList.indexFromTabId(tab.getId());
+
+        // Find the first UI card that logically comes AFTER the target tab.
+        for (int currentIndex = 0; currentIndex < mModelList.size(); currentIndex++) {
+            if (currentIndex == targetTabCurrentIndex) continue;
+
+            PropertyModel currentModel = mModelList.get(currentIndex).model;
+            assert TabProperties.isTabOrTabGroup(currentModel);
+
+            int effectiveBackendIndex = TabModel.INVALID_TAB_INDEX;
+            if (TabProperties.isTabGroupHeader(currentModel)) {
+                Token groupId = currentModel.get(TabProperties.TAB_GROUP_HEADER_ID);
+                Integer index = groupIdToFirstBackendIndexMap.get(groupId);
+                if (index != null) effectiveBackendIndex = index;
+            } else {
+                int currentTabId = currentModel.get(TabProperties.TAB_ID);
+                int index = tabIdToBackendIndexMap.get(currentTabId, TabModel.INVALID_TAB_INDEX);
+                if (index != TabModel.INVALID_TAB_INDEX) effectiveBackendIndex = index;
+            }
+
+            // If the UI card comes strictly after our target tab, insert right before it.
+            if (effectiveBackendIndex != TabModel.INVALID_TAB_INDEX
+                    && effectiveBackendIndex > targetTabModelIndex) {
+                return adjustIndexForTabMovement(currentIndex, targetTabCurrentIndex);
+            }
+        }
+
+        // Fallback to the end of the list if no cards come after it.
+        return adjustIndexForTabMovement(mModelList.size(), targetTabCurrentIndex);
     }
 
     @Override
