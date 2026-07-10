@@ -188,6 +188,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, GroupedActionMenu) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppearanceMenu) {
+  RunSidePanelTest("side_panel/read_anything/appearance_menu_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ColorMenu) {
   RunSidePanelTest("side_panel/read_anything/color_menu_test.js",
                    "mocha.run()");

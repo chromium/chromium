@@ -141,6 +141,7 @@ export enum ToolbarEvent {
 
 // The available menu items in Reading mode
 export enum SettingsOption {
+  APPEARANCE = 'appearance',
   COLOR = 'color',
   FONT = 'font',
   FONT_SIZE = 'font-size',

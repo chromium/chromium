@@ -54,6 +54,12 @@ interface SettingsItem {
 }
 
 const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
+  [SettingsOption.APPEARANCE]: {
+    id: SettingsOption.APPEARANCE,
+    icon: 'read-anything:appearance',
+    title: 'appearanceTitle',
+    itemType: SettingsItemType.MENU,
+  },
   [SettingsOption.COLOR]: {
     id: SettingsOption.COLOR,
     icon: 'read-anything:color',

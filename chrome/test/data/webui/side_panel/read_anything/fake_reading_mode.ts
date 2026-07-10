@@ -108,6 +108,9 @@ export class FakeReadingMode {
   // Whether the line focus feature flag is enabled.
   isLineFocusEnabled: boolean = false;
 
+  // Whether the Improved Read Aloud feature flag is enabled.
+  isImprovedReadAloudEnabled: boolean = false;
+
   // Whether the readability feature flag is enabled.
   isReadabilityEnabled: boolean = false;
 

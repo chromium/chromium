@@ -40,6 +40,10 @@ export function getHtml(this: GroupedActionMenuElement) {
               class="button-image check-mark check-mark-showing-${item.selected}"
               icon="read-anything-20:check-mark">
           </cr-icon>
+          <cr-icon
+              class="button-image has-icon-${!!item.icon}"
+              icon="${item.icon || ''}">
+          </cr-icon>
           ${item.title}
         </button>
       `)}

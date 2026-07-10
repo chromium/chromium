@@ -30,6 +30,8 @@ build_webui("build") {
     "content/node_store.ts",
     "content/read_anything_types.ts",
     "content/selection_controller.ts",
+    "menus/appearance_menu.html.ts",
+    "menus/appearance_menu.ts",
     "menus/color_menu.html.ts",
     "menus/color_menu.ts",
     "menus/font_menu.html.ts",
