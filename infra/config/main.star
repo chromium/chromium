@@ -248,7 +248,6 @@ chromium_luci.configure_targets(
             "gpu_force_command_decoder_validating": True,
             "gpu_force_high_performance_gpu": True,
             "gpu_force_high_performance_gpu_for_webgl_metal": True,
-            "gpu_force_skia_ganesh": True,
             "gpu_force_skia_graphite": True,
             "gpu_gtest_common_args": True,
             "gpu_integration_test_common_args": True,

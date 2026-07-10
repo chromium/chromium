@@ -1972,23 +1972,10 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_fyi_mac_debug_gtests",
-            "gpu_common_gl_passthrough_ganesh_telemetry_tests",
         ],
         mixins = [
             "mac_mini_intel_gpu_stable",
         ],
-        per_test_modifications = {
-            "pixel_skia_gold_gl_passthrough_ganesh_test": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 2,
-                ),
-            ),
-            "trace_test": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 2,
-                ),
-            ),
-        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.DEBUG,
@@ -2196,7 +2183,7 @@ ci.thin_tester(
         # M2)'.
         targets = [
             "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_graphite_telemetry_tests",
+            "gpu_fyi_only_mac_release_telemetry_tests",
         ],
         mixins = [
             "mac_arm64_apple_m2_retina_gpu_experimental",
@@ -2238,7 +2225,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_graphite_telemetry_tests",
+            "gpu_fyi_only_mac_release_telemetry_tests",
         ],
         mixins = [
             "mac_arm64_apple_m1_gpu_stable",
@@ -2355,7 +2342,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_graphite_telemetry_tests",
+            "gpu_fyi_only_mac_release_telemetry_tests",
         ],
         mixins = [
             "mac_arm64_apple_m2_retina_gpu_stable",
@@ -2395,7 +2382,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_graphite_telemetry_tests",
+            "gpu_fyi_only_mac_release_telemetry_tests",
         ],
         mixins = [
             "mac_arm64_apple_m3_retina_gpu_stable",
@@ -2435,7 +2422,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_graphite_telemetry_tests",
+            "gpu_fyi_only_mac_release_telemetry_tests",
         ],
         mixins = [
             "mac_arm64_apple_m2_retina_gpu_stable",
@@ -2511,20 +2498,6 @@ ci.thin_tester(
             "mac_mini_intel_gpu_stable",
         ],
         per_test_modifications = {
-            "pixel_skia_gold_gl_passthrough_ganesh_test": targets.per_test_modification(
-                mixins = targets.mixin(
-                    swarming = targets.swarming(
-                        shards = 2,
-                    ),
-                ),
-            ),
-            "pixel_skia_gold_metal_passthrough_ganesh_test": targets.per_test_modification(
-                mixins = targets.mixin(
-                    swarming = targets.swarming(
-                        shards = 2,
-                    ),
-                ),
-            ),
             "pixel_skia_gold_metal_passthrough_graphite_test": targets.per_test_modification(
                 mixins = targets.mixin(
                     swarming = targets.swarming(
@@ -2559,9 +2532,6 @@ ci.thin_tester(
             #         "--extra-browser-args=--disable-metal-shader-cache",
             #     ],
             # ),
-            "webgl_conformance_metal_passthrough_ganesh_tests": targets.remove(
-                reason = "crbug.com/1270755",
-            ),
             "webgl_conformance_metal_passthrough_graphite_tests": targets.remove(
                 reason = "crbug.com/1270755",
             ),
@@ -2650,13 +2620,7 @@ ci.thin_tester(
             "mac_retina_amd_gpu_stable",
         ],
         per_test_modifications = {
-            "context_lost_metal_passthrough_ganesh_tests": targets.remove(
-                reason = "crbug.com/1458020 for Mac Retina ASAN removal",
-            ),
             "context_lost_metal_passthrough_graphite_tests": targets.remove(
-                reason = "crbug.com/1458020 for Mac Retina ASAN removal",
-            ),
-            "expected_color_pixel_metal_passthrough_ganesh_test": targets.remove(
                 reason = "crbug.com/1458020 for Mac Retina ASAN removal",
             ),
             "expected_color_pixel_metal_passthrough_graphite_test": targets.remove(
@@ -2671,22 +2635,13 @@ ci.thin_tester(
             "info_collection_tests": targets.remove(
                 reason = "crbug.com/1458020 for Mac Retina ASAN removal",
             ),
-            "pixel_skia_gold_metal_passthrough_ganesh_test": targets.remove(
-                reason = "crbug.com/1458020 for Mac Retina ASAN removal",
-            ),
             "pixel_skia_gold_metal_passthrough_graphite_test": targets.remove(
-                reason = "crbug.com/1458020 for Mac Retina ASAN removal",
-            ),
-            "screenshot_sync_metal_passthrough_ganesh_tests": targets.remove(
                 reason = "crbug.com/1458020 for Mac Retina ASAN removal",
             ),
             "screenshot_sync_metal_passthrough_graphite_tests": targets.remove(
                 reason = "crbug.com/1458020 for Mac Retina ASAN removal",
             ),
             "trace_test": targets.remove(
-                reason = "crbug.com/1458020 for Mac Retina ASAN removal",
-            ),
-            "webcodecs_metal_passthrough_ganesh_tests": targets.remove(
                 reason = "crbug.com/1458020 for Mac Retina ASAN removal",
             ),
             "webcodecs_metal_passthrough_graphite_tests": targets.remove(
@@ -2700,9 +2655,6 @@ ci.thin_tester(
             #         "--extra-browser-args=--disable-metal-shader-cache",
             #     ],
             # ),
-            "webgl_conformance_metal_passthrough_ganesh_tests": targets.remove(
-                reason = "crbug.com/1270755",
-            ),
             "webgl_conformance_metal_passthrough_graphite_tests": targets.remove(
                 reason = "crbug.com/1270755",
             ),
@@ -2746,23 +2698,10 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_fyi_mac_debug_gtests",
-            "gpu_common_gl_passthrough_ganesh_telemetry_tests",
         ],
         mixins = [
             "mac_retina_amd_gpu_stable",
         ],
-        per_test_modifications = {
-            "pixel_skia_gold_gl_passthrough_ganesh_test": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 2,
-                ),
-            ),
-            "trace_test": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 2,
-                ),
-            ),
-        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.DEBUG,

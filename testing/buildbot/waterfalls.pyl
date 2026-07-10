@@ -753,7 +753,7 @@
           'mac_arm64_apple_m2_retina_gpu_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_fyi_only_mac_release_graphite_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_only_mac_release_telemetry_tests',
         },
       },
       'Mac V8 FYI Release (Intel)': {

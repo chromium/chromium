@@ -3170,10 +3170,7 @@ targets.bundle(
     name = "gpu_angle_mac_telemetry_tests",
     targets = [
         "gpu_info_collection_telemetry_tests",
-        "gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests",
         "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
         "gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests",
     ],
@@ -3240,15 +3237,6 @@ targets.bundle(
         "gpu_common_and_optional_telemetry_tests",
         "gpu_validating_telemetry_tests",
         "gpu_webgl_conformance_validating_telemetry_tests",
-    ],
-)
-
-targets.bundle(
-    name = "gpu_common_gl_passthrough_ganesh_telemetry_tests",
-    targets = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
     ],
 )
 
@@ -4174,29 +4162,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_fyi_mac_nvidia_release_telemetry_tests",
-    targets = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_webrtc_gl_passthrough_ganesh_telemetry_test",
-        "gpu_webcodecs_gl_passthrough_ganesh_telemetry_test",
-        "gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests",
-    ],
-)
-
-targets.bundle(
-    name = "gpu_fyi_mac_pro_release_telemetry_tests",
-    targets = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_metal_passthrough_graphite_telemetry_tests",
-        "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests",
-        "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
-    ],
-)
-
-targets.bundle(
     name = "gpu_fyi_mac_release_gtests",
     targets = [
         "gpu_angle_unit_gtests",
@@ -4209,18 +4174,9 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_mac_release_telemetry_tests",
     targets = [
-        "gpu_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_metal_passthrough_ganesh_telemetry_tests",
-        "gpu_webrtc_gl_passthrough_ganesh_telemetry_test",
-        "gpu_webcodecs_gl_passthrough_ganesh_telemetry_test",
-        "gpu_webrtc_metal_passthrough_ganesh_telemetry_test",
-        "gpu_webcodecs_metal_passthrough_ganesh_telemetry_test",
         "gpu_webrtc_metal_passthrough_graphite_telemetry_test",
         "gpu_webcodecs_metal_passthrough_graphite_telemetry_test",
-        "gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests",
         "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests",
     ],
 )
@@ -4339,18 +4295,6 @@ targets.bundle(
             "gpu_integration_test_common_args",
         ],
     },
-)
-
-targets.bundle(
-    name = "gpu_nexus5x_telemetry_tests",
-    targets = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_validating_telemetry_tests",
-        "gpu_webrtc_validating_ganesh_telemetry_test",
-        "gpu_webcodecs_validating_ganesh_telemetry_test",
-        "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_validating_ganesh_telemetry_tests",
-    ],
 )
 
 # Copy of gpu_passthrough_telemetry_tests that forces running with Skia/Ganesh.
@@ -5782,48 +5726,6 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "gpu_gl_passthrough_ganesh_telemetry_tests",
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_metal_passthrough_ganesh_telemetry_tests",
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webcodecs_gl_passthrough_ganesh_telemetry_test",
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webrtc_gl_passthrough_ganesh_telemetry_test",
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webcodecs_metal_passthrough_ganesh_telemetry_test",
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webrtc_metal_passthrough_ganesh_telemetry_test",
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-            ],
-        ),
-        targets.bundle(
             targets = "gpu_webcodecs_metal_passthrough_graphite_telemetry_test",
             variants = [
                 "MAC_MINI_INTEL_GPU_STABLE",
@@ -5839,20 +5741,6 @@ targets.bundle(
         ),
         targets.bundle(
             targets = "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests",
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests",
             variants = [
                 "MAC_MINI_INTEL_GPU_STABLE",
                 "MAC_RETINA_AMD_GPU_STABLE",

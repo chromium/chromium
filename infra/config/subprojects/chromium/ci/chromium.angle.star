@@ -441,23 +441,6 @@ ci.thin_tester(
             "mac_mini_intel_gpu_stable",
         ],
         per_test_modifications = {
-            "webgl2_conformance_gl_passthrough_ganesh_tests": targets.per_test_modification(
-                mixins = targets.mixin(
-                    # TODO(crbug.com/326277739): Remove this once we determine
-                    # if this has an impact on ANGLE test stability.
-                    args = [
-                        "--jobs=2",
-                    ],
-                ),
-                replacements = targets.replacements(
-                    # Magic substitution happens after regular replacement, so
-                    # remove it now since we are manually applying the number of
-                    # jobs above.
-                    args = {
-                        targets.magic_args.GPU_PARALLEL_JOBS: None,
-                    },
-                ),
-            ),
             "webgl2_conformance_metal_passthrough_graphite_tests": targets.per_test_modification(
                 mixins = targets.mixin(
                     # TODO(crbug.com/326277739): Remove this once we determine

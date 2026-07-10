@@ -906,46 +906,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "gpu_gl_passthrough_ganesh_telemetry_tests",
-    tests = {
-        "context_lost_gl_passthrough_ganesh_tests": targets.legacy_test_config(),
-        "expected_color_pixel_gl_passthrough_ganesh_test": targets.legacy_test_config(),
-        "gpu_process_launch_tests": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-        ),
-        "hardware_accelerated_feature_tests": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-        ),
-        "pixel_skia_gold_gl_passthrough_ganesh_test": targets.legacy_test_config(),
-        "screenshot_sync_gl_passthrough_ganesh_tests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_metal_passthrough_ganesh_telemetry_tests",
-    tests = {
-        "context_lost_metal_passthrough_ganesh_tests": targets.legacy_test_config(),
-        "expected_color_pixel_metal_passthrough_ganesh_test": targets.legacy_test_config(),
-        "gpu_process_launch_tests": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-        ),
-        "hardware_accelerated_feature_tests": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-        ),
-        "pixel_skia_gold_metal_passthrough_ganesh_test": targets.legacy_test_config(),
-        "screenshot_sync_metal_passthrough_ganesh_tests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "gpu_metal_passthrough_graphite_telemetry_tests",
     tests = {
         "context_lost_metal_passthrough_graphite_tests": targets.legacy_test_config(),
@@ -1063,20 +1023,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "gpu_webcodecs_gl_passthrough_ganesh_telemetry_test",
-    tests = {
-        "webcodecs_gl_passthrough_ganesh_tests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_webcodecs_metal_passthrough_ganesh_telemetry_test",
-    tests = {
-        "webcodecs_metal_passthrough_ganesh_tests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "gpu_webcodecs_metal_passthrough_graphite_telemetry_test",
     tests = {
         "webcodecs_metal_passthrough_graphite_tests": targets.legacy_test_config(),
@@ -1091,20 +1037,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "gpu_webrtc_gl_passthrough_ganesh_telemetry_test",
-    tests = {
-        "webrtc_gl_passthrough_ganesh_tests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_webrtc_metal_passthrough_ganesh_telemetry_test",
-    tests = {
-        "webrtc_metal_passthrough_ganesh_tests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "gpu_webrtc_metal_passthrough_graphite_telemetry_test",
     tests = {
         "webrtc_metal_passthrough_graphite_tests": targets.legacy_test_config(),
@@ -1115,19 +1047,6 @@ targets.legacy_basic_suite(
     name = "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
     tests = {
         "webgl2_conformance_d3d11_passthrough_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                # These tests currently take about an hour and fifteen minutes
-                # to run. Split them into roughly 5-minute shards.
-                shards = 20,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests",
-    tests = {
-        "webgl2_conformance_gl_passthrough_ganesh_tests": targets.legacy_test_config(
             swarming = targets.swarming(
                 # These tests currently take about an hour and fifteen minutes
                 # to run. Split them into roughly 5-minute shards.
@@ -1187,17 +1106,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
-    tests = {
-        "webgl_conformance_gl_passthrough_ganesh_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
     tests = {
         "webgl_conformance_gl_passthrough_tests": targets.legacy_test_config(
@@ -1219,13 +1127,6 @@ targets.legacy_basic_suite(
                 shards = 6,
             ),
         ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests",
-    tests = {
-        "webgl_conformance_metal_passthrough_ganesh_tests": targets.legacy_test_config(),
     },
 )
 
