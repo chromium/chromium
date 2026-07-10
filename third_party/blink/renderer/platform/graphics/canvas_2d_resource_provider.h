@@ -235,6 +235,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   virtual scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault);
   std::optional<cc::PaintRecord> Flush(FlushReason = FlushReason::kOther);
+  void ReleaseImageProviderImages();
   const std::optional<cc::PaintRecord>& LastRecording();
 
   void SetAnimatedImageFrameIndexes(

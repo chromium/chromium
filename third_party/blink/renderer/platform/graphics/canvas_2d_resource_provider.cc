@@ -543,19 +543,18 @@ std::optional<cc::PaintRecord> Canvas2DResourceProvider::Flush(
   cc::PaintRecord recording;
   recording = Recorder().ReleaseMainRecording();
   RasterRecord(recording);
-  if (canvas_image_provider_) {
-    canvas_image_provider_->ReleaseLockedImages();
-    canvas_image_provider_->UnbindTextureBackedImages();
-  }
 
   last_recording_ =
       preserve_recording ? std::optional(recording) : std::nullopt;
 
-  if (delegate_) {
-    delegate_->DidFlush();
-  }
-
   return recording;
+}
+
+void Canvas2DResourceProvider::ReleaseImageProviderImages() {
+  if (canvas_image_provider_) {
+    canvas_image_provider_->ReleaseLockedImages();
+    canvas_image_provider_->UnbindTextureBackedImages();
+  }
 }
 
 const std::optional<cc::PaintRecord>&

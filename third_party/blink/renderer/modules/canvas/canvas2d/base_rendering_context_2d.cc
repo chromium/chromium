@@ -734,13 +734,22 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
     Canvas2DResourceProvider* shared_image_provider,
     Canvas2DBitmapProvider* bitmap_provider,
     FlushReason reason) {
+  std::optional<cc::PaintRecord> recording;
   if (shared_image_provider) {
-    return shared_image_provider->Flush(reason);
+    recording = shared_image_provider->Flush(reason);
+    if (recording) {
+      shared_image_provider->ReleaseImageProviderImages();
+    }
+  } else if (bitmap_provider) {
+    recording = bitmap_provider->Flush(reason);
+    if (recording) {
+      bitmap_provider->ReleaseImageProviderImages();
+    }
   }
-  if (bitmap_provider) {
-    return bitmap_provider->Flush(reason);
+  if (recording && Host()) {
+    Host()->DidFlush();
   }
-  return std::nullopt;
+  return recording;
 }
 
 void BaseRenderingContext2D::WillUseCurrentFont() const {
