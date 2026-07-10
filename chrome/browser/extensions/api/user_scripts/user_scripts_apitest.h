@@ -58,9 +58,6 @@ class UserScriptsAPITest : public ExtensionApiTest {
   testing::AssertionResult RunUserScriptsExtensionTestImpl(
       const base::FilePath& extension_path,
       bool allow_api);
-
-  // Some userScripts API methods are currently behind a feature restriction.
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace extensions

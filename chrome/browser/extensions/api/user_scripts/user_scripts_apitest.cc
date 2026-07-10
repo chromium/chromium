@@ -4,10 +4,8 @@
 
 #include "chrome/browser/extensions/api/user_scripts/user_scripts_apitest.h"
 
-#include "base/feature_list.h"
 #include "base/one_shot_event.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -27,7 +25,6 @@
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/user_scripts_allowed_state.h"
 #include "extensions/common/utils/content_script_utils.h"
@@ -141,13 +138,7 @@ UserScriptsAPITest::RunUserScriptsExtensionTestNotAllowed(
   return RunUserScriptsExtensionTestImpl(extension_path, /*allow_api=*/false);
 }
 
-UserScriptsAPITest::UserScriptsAPITest() {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/
-      {extensions_features::kApiUserScriptsExecute},
-      /*disabled_features=*/{});
-}
-
+UserScriptsAPITest::UserScriptsAPITest() = default;
 UserScriptsAPITest::~UserScriptsAPITest() = default;
 
 IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, GetUserScripts) {

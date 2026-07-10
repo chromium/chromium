@@ -894,11 +894,6 @@
     "contexts": [ "privileged_extension" ],
     "requires_delegated_availability_check": true
   },
-  "userScripts.execute": {
-    "dependencies": [ "permission:userScripts" ],
-    "contexts": [ "privileged_extension" ],
-    "feature_flag": "ApiUserScriptsExecute"
-  },
   "virtualKeyboard": {
     "dependencies": ["permission:virtualKeyboard"],
     "contexts": ["privileged_extension"]

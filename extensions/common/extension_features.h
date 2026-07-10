@@ -61,10 +61,6 @@ BASE_DECLARE_FEATURE(kApiRuntimeActionData);
 // the permissions API.
 BASE_DECLARE_FEATURE(kApiPermissionsHostAccessRequests);
 
-// Controls the availability of executing user scripts programmatically using
-// the userScripts API.
-BASE_DECLARE_FEATURE(kApiUserScriptsExecute);
-
 // Controls the availability of the odfsConfigPrivate API.
 BASE_DECLARE_FEATURE(kApiOdfsConfigPrivate);
 

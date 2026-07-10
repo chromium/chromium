@@ -24,16 +24,13 @@ namespace extensions::user_scripts_availability {
 namespace {
 
 // The set of features which this delegated availability check should apply to.
-constexpr static std::array<std::string_view, 4>
-    kUserScriptOverrideFeatureList = {
+constexpr static auto kUserScriptOverrideFeatureList =
+    std::to_array<const std::string_view>({
         // LINT.IfChange
 
         "userScripts",
-        // These additional items are necessary because they are listed as
-        // individual api features in _api_features.json.
-        "userScripts.execute",
         // LINT.ThenChange(//chrome/common/extensions/extension_test_util.cc)
-};
+    });
 
 bool AreUserScriptsFeaturesAvailable(
     const std::string& api_full_name,
