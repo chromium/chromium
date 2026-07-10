@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceMetricsTest, SessionEndsWhenHidden) {
       ToggleGlicWindow(GlicWindowMode::kAttached),
       WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
       Wait(START_TIMER_MS + base::Milliseconds(10)), CloseGlic(),
-      WaitForHide(test::kGlicHostElementId));
+      WaitForHide(kGlicHostElementId));
   {
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreMetricsTest, FreShownAndDismissed) {
       WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
       Wait(START_TIMER_MS + base::Milliseconds(10)),
       ToggleGlicWindow(GlicWindowMode::kAttached),
-      WaitForHide(test::kGlicHostElementId));
+      WaitForHide(kGlicHostElementId));
 
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.Shown"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Onboarding.OptInAccept"),

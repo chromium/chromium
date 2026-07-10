@@ -211,9 +211,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
       OpenGlicFloatingWindow(),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kActivateSurfaceIncompatibilityNotice),
-      InAnyContext(ActivateSurface(test::kGlicHostElementId)),
-      SimulateGlicHotkey(), WaitForGlicClose(),
-      CheckControllerHasWidget(false));
+      InAnyContext(ActivateSurface(kGlicHostElementId)), SimulateGlicHotkey(),
+      WaitForGlicClose(), CheckControllerHasWidget(false));
 }
 
 // TODO(393203136): Once tests can observe window controller state rather than
@@ -271,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
       OpenGlicFloatingWindow(),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kActivateSurfaceIncompatibilityNotice),
-      InAnyContext(ActivateSurface(test::kGlicHostElementId)),
+      InAnyContext(ActivateSurface(kGlicHostElementId)),
       SimulateAcceleratorPress(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE)),
       WaitForGlicClose());
 }
@@ -282,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
       OpenGlicFloatingWindow(),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kActivateSurfaceIncompatibilityNotice),
-      InAnyContext(ActivateSurface(test::kGlicHostElementId)),
+      InAnyContext(ActivateSurface(kGlicHostElementId)),
       SimulateAcceleratorPress(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE)),
       WaitForGlicClose());
 }
@@ -319,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest, OsButtonToggles) {
   RunTestSequence(SimulateOsButton(),
                   WaitForAndInstrumentGlic(kHostAndContents),
                   CheckControllerWidgetMode(GlicWindowMode::kDetached),
-                  SimulateOsButton(), WaitForHide(test::kGlicHostElementId));
+                  SimulateOsButton(), WaitForHide(kGlicHostElementId));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -346,8 +345,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
       OpenGlicFloatingWindow(),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kActivateSurfaceIncompatibilityNotice),
-      InAnyContext(ActivateSurface(test::kGlicHostElementId)),
-      SimulateOpenMenuItem(), CheckControllerShowing(true));
+      InAnyContext(ActivateSurface(kGlicHostElementId)), SimulateOpenMenuItem(),
+      CheckControllerShowing(true));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
@@ -472,10 +471,10 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
       SimulateGlicHotkey(), ForceInvalidateAccount(),
       WaitForAndInstrumentGlic(kHostOnly),
       WaitForWebUIState(mojom::WebUiState::kSignIn),
-      InAnyContext(ClickElement(test::kGlicHostElementId, {"#signInButton"},
+      InAnyContext(ClickElement(kGlicHostElementId, {"#signInButton"},
                                 ui_controls::LEFT, ui_controls::kNoAccelerator,
                                 ExecuteJsMode::kFireAndForget)),
-      WaitForHide(test::kGlicHostElementId),
+      WaitForHide(kGlicHostElementId),
       // Without a pause here, we will 'sign-in' before the callback is
       // registered to listen for it. This isn't a bug because it takes real
       // users finite time to actually sign-in.
@@ -631,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorLocationMetricsUiTest,
     RunTestSequence(ActivateSurface(kBrowserViewElementId),
                     SimulateGlicHotkey(), WaitForAndInstrumentGlic(kNone),
                     CheckControllerWidgetMode(GlicWindowMode::kDetached),
-                    SimulateOsButton(), WaitForHide(test::kGlicHostElementId),
+                    SimulateOsButton(), WaitForHide(kGlicHostElementId),
                     CheckControllerHasWidget(false));
 
     tester.ExpectBucketCount("Glic.PositionOnChrome.OnOpen", expected_position,

@@ -8740,7 +8740,7 @@ IN_PROC_BROWSER_TEST_P(GlicChannelWebViewTest, InspectElement) {
       OpenGlic(glic::NonInteractiveGlicTest::kHostAndContents),
       // Verify that the "Inspect" context menu item is enabled.
       InAnyContext(WithElement(
-          glic::test::kGlicContentsElementId,
+          glic::kGlicContentsElementId,
           base::BindLambdaForTesting([](ui::TrackedElement* el) {
             content::WebContents* guest_web_contents =
                 AsInstrumentedWebContents(el)->web_contents();

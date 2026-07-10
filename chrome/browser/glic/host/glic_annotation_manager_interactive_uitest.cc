@@ -469,7 +469,7 @@ class GlicAnnotationManagerUiTestBase : public InteractiveGlicTest {
   auto UserSwitchesConversation() {
     const DeepQuery kOnActiveThreadChanged{{"#dropScrollToHighlightBtn"}};
     static constexpr char kClickFn[] = "el => el.click()";
-    return ExecuteJsAt(test::kGlicContentsElementId, kOnActiveThreadChanged,
+    return ExecuteJsAt(kGlicContentsElementId, kOnActiveThreadChanged,
                        kClickFn);
   }
 

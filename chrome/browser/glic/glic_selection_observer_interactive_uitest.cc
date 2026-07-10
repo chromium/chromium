@@ -60,13 +60,12 @@ IN_PROC_BROWSER_TEST_F(GlicSelectionObserverInteractiveUiTest,
       "body",
   };
 
-  RunTestSequence(
-      InstrumentTab(kActiveTab, std::nullopt, browser(), true),
-      NavigateWebContents(kActiveTab, url), OpenGlic(),
-      WaitForWebContentsPainted(kActiveTab),
-      MoveMouseTo(kActiveTab, kPathToBody), ClickMouse(), ClickMouse(),
-      SelectAll(),
-      WaitForJsResult(test::kGlicContentsElementId, kCheckContextJs));
+  RunTestSequence(InstrumentTab(kActiveTab, std::nullopt, browser(), true),
+                  NavigateWebContents(kActiveTab, url), OpenGlic(),
+                  WaitForWebContentsPainted(kActiveTab),
+                  MoveMouseTo(kActiveTab, kPathToBody), ClickMouse(),
+                  ClickMouse(), SelectAll(),
+                  WaitForJsResult(kGlicContentsElementId, kCheckContextJs));
 }
 
 }  // namespace

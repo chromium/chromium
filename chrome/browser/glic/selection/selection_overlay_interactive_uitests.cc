@@ -485,12 +485,12 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
       // glic-selection-overlay is expected to be displayed.
       WaitForElementVisible(kOverlayWebContentsId, {"selection-overlay-app",
                                                     "glic-selection-overlay"}),
-      FocusElement(test::kGlicContentsElementId),
-      SendKeyPress(test::kGlicContentsElementId, ui::VKEY_ESCAPE),
+      FocusElement(kGlicContentsElementId),
+      SendKeyPress(kGlicContentsElementId, ui::VKEY_ESCAPE),
       WaitForHide(OverlayBaseController::kOverlayId),
-      EnsurePresent(test::kGlicHostElementId),
-      SendKeyPress(test::kGlicContentsElementId, ui::VKEY_ESCAPE),
-      WaitForHide(test::kGlicContentsElementId));
+      EnsurePresent(kGlicHostElementId),
+      SendKeyPress(kGlicContentsElementId, ui::VKEY_ESCAPE),
+      WaitForHide(kGlicContentsElementId));
 }
 
 // When glic is in floating mode and when only the first tab has context shared,
@@ -528,9 +528,9 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
       AddInstrumentedTab(kEmptyTab,
                          embedded_test_server()->GetURL("/empty.html")),
       FocusElement(kEmptyTab),
-      InAnyContext(ActivateSurface(test::kGlicHostElementId)),
-      InAnyContext(SendKeyPress(test::kGlicHostElementId, ui::VKEY_ESCAPE)),
-      InAnyContext(WaitForHide(test::kGlicHostElementId)),
+      InAnyContext(ActivateSurface(kGlicHostElementId)),
+      InAnyContext(SendKeyPress(kGlicHostElementId, ui::VKEY_ESCAPE)),
+      InAnyContext(WaitForHide(kGlicHostElementId)),
       WaitForHide(OverlayBaseController::kOverlayId));
 }
 

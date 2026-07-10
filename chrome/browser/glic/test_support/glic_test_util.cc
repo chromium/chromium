@@ -384,9 +384,7 @@ bool IsSidePanelEnabled() {
 #endif
 }
 
-namespace test {
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicContentsElementId);
-}  // namespace test
 
 }  // namespace glic

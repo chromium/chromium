@@ -237,12 +237,11 @@ void ReauthAccount(Profile* profile);
 
 bool IsSidePanelEnabled();
 
-namespace test {
 // The glic WebUI web contents.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);
+
 // The glic webview contents.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicContentsElementId);
-}  // namespace test
 
 }  // namespace glic
 

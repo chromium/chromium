@@ -328,8 +328,8 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
       actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 
   // Toggle the glic window.
-  RunTestSequence(InAnyContext(WithElement(
-      glic::test::kGlicContentsElementId, [](::ui::TrackedElement* el) {
+  RunTestSequence(InAnyContext(
+      WithElement(glic::kGlicContentsElementId, [](::ui::TrackedElement* el) {
         content::WebContents* glic_contents =
             AsInstrumentedWebContents(el)->web_contents();
         SetCredentialRequestHandler(
@@ -375,8 +375,8 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
                                actor_login::CredentialType::kPassword)));
 
   // Verify the dialog request content.
-  RunTestSequence(InAnyContext(WithElement(
-      glic::test::kGlicContentsElementId, [&](::ui::TrackedElement* el) {
+  RunTestSequence(InAnyContext(
+      WithElement(glic::kGlicContentsElementId, [&](::ui::TrackedElement* el) {
         content::WebContents* glic_contents =
             AsInstrumentedWebContents(el)->web_contents();
         const base::DictValue actual_request =
@@ -495,8 +495,8 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
       actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 
   // Toggle the glic window.
-  RunTestSequence(InAnyContext(WithElement(
-      glic::test::kGlicContentsElementId, [](::ui::TrackedElement* el) {
+  RunTestSequence(InAnyContext(
+      WithElement(glic::kGlicContentsElementId, [](::ui::TrackedElement* el) {
         content::WebContents* glic_contents =
             AsInstrumentedWebContents(el)->web_contents();
         SetCredentialRequestHandler(
@@ -558,8 +558,8 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
                                actor_login::CredentialType::kPassword)));
 
   // Verify the dialog request content.
-  RunTestSequence(InAnyContext(WithElement(
-      glic::test::kGlicContentsElementId, [&](::ui::TrackedElement* el) {
+  RunTestSequence(InAnyContext(
+      WithElement(glic::kGlicContentsElementId, [&](::ui::TrackedElement* el) {
         content::WebContents* glic_contents =
             AsInstrumentedWebContents(el)->web_contents();
         const auto actual_request = ExtractRequestData(glic_contents);
@@ -603,8 +603,8 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
       actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 
   // Toggle the glic window.
-  RunTestSequence(InAnyContext(WithElement(
-      glic::test::kGlicContentsElementId, [](::ui::TrackedElement* el) {
+  RunTestSequence(InAnyContext(
+      WithElement(glic::kGlicContentsElementId, [](::ui::TrackedElement* el) {
         content::WebContents* glic_contents =
             AsInstrumentedWebContents(el)->web_contents();
         SetCredentialRequestHandler(
@@ -650,8 +650,8 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
                                     actor_login::CredentialType::kFederated)));
 
   // Verify the dialog request content.
-  RunTestSequence(InAnyContext(WithElement(
-      glic::test::kGlicContentsElementId, [&](::ui::TrackedElement* el) {
+  RunTestSequence(InAnyContext(
+      WithElement(glic::kGlicContentsElementId, [&](::ui::TrackedElement* el) {
         content::WebContents* glic_contents =
             AsInstrumentedWebContents(el)->web_contents();
         const base::DictValue actual_request =
@@ -687,8 +687,8 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
   mock_login_service().SetLoginStatus(
       actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 
-  RunTestSequence(InAnyContext(WithElement(
-      glic::test::kGlicContentsElementId, [](::ui::TrackedElement* el) {
+  RunTestSequence(InAnyContext(
+      WithElement(glic::kGlicContentsElementId, [](::ui::TrackedElement* el) {
         static constexpr char kHandleDialogRequest[] =
             R"js(
         (() => {
@@ -713,8 +713,8 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
   ActResultFuture dont_care;
   actor_task().Act(ToRequestList(action), dont_care.GetCallback());
 
-  RunTestSequence(InAnyContext(WithElement(
-      glic::test::kGlicContentsElementId, [](::ui::TrackedElement* el) {
+  RunTestSequence(InAnyContext(
+      WithElement(glic::kGlicContentsElementId, [](::ui::TrackedElement* el) {
         content::WebContents* glic_contents =
             AsInstrumentedWebContents(el)->web_contents();
         EXPECT_TRUE(
