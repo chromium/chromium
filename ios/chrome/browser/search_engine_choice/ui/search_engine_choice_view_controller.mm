@@ -166,8 +166,8 @@ CGFloat GetSubtitleMarginDistance() {
 
 }  // namespace
 
-@interface SearchEngineChoiceViewController () <UITextViewDelegate,
-                                                UITextDragDelegate>
+@interface SearchEngineChoiceViewController () <UITextDragDelegate,
+                                                UITextViewDelegate>
 @end
 
 @implementation SearchEngineChoiceViewController {

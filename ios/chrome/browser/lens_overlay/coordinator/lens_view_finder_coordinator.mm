@@ -69,10 +69,10 @@ LensViewFinderTransition TransitionFromPresentationStyle(
 }  // namespace
 
 @interface LensViewFinderCoordinator () <
-    LensCommands,
     ChromeLensViewFinderDelegate,
-    UIViewControllerTransitioningDelegate,
-    UIAdaptivePresentationControllerDelegate>
+    LensCommands,
+    UIAdaptivePresentationControllerDelegate,
+    UIViewControllerTransitioningDelegate>
 
 // Whether post capture view is shown.
 @property(nonatomic, assign) BOOL postCaptureShown;

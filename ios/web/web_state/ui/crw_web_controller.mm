@@ -182,15 +182,15 @@ JavaScriptCompletionBlock WrapCompletionBlock(
 }  // namespace
 
 @interface CRWWebController () <CRWDataControlsDelegate,
-                                CRWWKNavigationHandlerDelegate,
                                 CRWEditMenuBuilder,
                                 CRWInputViewProvider,
                                 CRWSSLStatusUpdaterDataSource,
                                 CRWSSLStatusUpdaterDelegate,
                                 CRWWebControllerContainerViewDelegate,
-                                CRWWebViewNavigationObserverDelegate,
                                 CRWWebRequestControllerDelegate,
+                                CRWWebViewNavigationObserverDelegate,
                                 CRWWebViewScrollViewProxyObserver,
+                                CRWWKNavigationHandlerDelegate,
                                 CRWWKNavigationHandlerDelegate,
                                 CRWWKUIHandlerDelegate,
                                 UIDropInteractionDelegate,

@@ -30,9 +30,9 @@
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 
 @interface ManualFillAllPasswordCoordinator () <
+    LocalReauthenticationCoordinatorDelegate,
     ManualFillCredentialsMediatorDelegate,
     PasswordViewControllerDelegate,
-    LocalReauthenticationCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate>
 
 // Fetches and filters the passwords for the view controller.

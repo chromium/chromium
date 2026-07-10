@@ -13,8 +13,8 @@
 
 // The transition delegate used to present an InfobarBanner.
 @interface InfobarBannerTransitionDriver
-    : NSObject <UIViewControllerTransitioningDelegate,
-                InfobarBannerInteractionDelegate>
+    : NSObject <InfobarBannerInteractionDelegate,
+                UIViewControllerTransitioningDelegate>
 
 // Delegate used to position the InfobarBanner.
 @property(nonatomic, weak) id<InfobarBannerPositioner> bannerPositioner;

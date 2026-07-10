@@ -17,8 +17,8 @@
 // and data source to handle color options.
 @interface HomeCustomizationBackgroundColorPickerViewController
     : UIViewController <HomeCustomizationBackgroundConfigurationConsumer,
-                        UICollectionViewDelegate,
-                        UICollectionViewDataSource>
+                        UICollectionViewDataSource,
+                        UICollectionViewDelegate>
 
 // Mutator to handle customization model updates.
 @property(nonatomic, weak) id<HomeCustomizationBackgroundConfigurationMutator>

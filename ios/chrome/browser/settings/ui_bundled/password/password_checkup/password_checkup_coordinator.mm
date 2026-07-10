@@ -45,11 +45,11 @@
 using password_manager::PasswordCheckReferrer;
 
 @interface PasswordCheckupCoordinator () <
+    LocalReauthenticationCoordinatorDelegate,
+    NotificationsSettingsObserverDelegate,
     PasswordCheckupCommands,
     PasswordCheckupMediatorDelegate,
     PasswordIssuesCoordinatorDelegate,
-    NotificationsSettingsObserverDelegate,
-    LocalReauthenticationCoordinatorDelegate,
     UINavigationControllerDelegate>
 
 @end

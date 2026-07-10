@@ -57,9 +57,9 @@ constexpr NSInteger kExpectedItemsCount = 4;
 }  // namespace
 
 @interface SafariDataImportImportCoordinator () <
-    PromoStyleViewControllerDelegate,
     DataImportCredentialConflictResolutionViewControllerDelegate,
     DataImportImportStageTransitionHandler,
+    PromoStyleViewControllerDelegate,
     UITableViewDelegate>
 
 /// The mediator handling the interaction with the model. Lazily loaded with

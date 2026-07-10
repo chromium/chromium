@@ -30,10 +30,10 @@
 #import "ui/base/l10n/l10n_util.h"
 
 @interface ParentAccessCoordinator () <
-    UIAdaptivePresentationControllerDelegate,
+    ParentAccessBottomSheetViewControllerPresentationDelegate,
     ParentAccessMediatorDelegate,
     ParentAccessTabHelperDelegate,
-    ParentAccessBottomSheetViewControllerPresentationDelegate>
+    UIAdaptivePresentationControllerDelegate>
 @end
 
 @implementation ParentAccessCoordinator {

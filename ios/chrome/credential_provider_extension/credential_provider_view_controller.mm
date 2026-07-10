@@ -83,9 +83,9 @@ enum class PasskeyCreationEligibility {
 @interface CredentialProviderViewController () <
     ConfirmationAlertActionHandler,
     CredentialResponseHandler,
+    MultiProfilePasskeyCreationViewControllerDelegate,
     PasskeyKeychainProviderBridgeDelegate,
     PasskeyWelcomeScreenViewControllerDelegate,
-    MultiProfilePasskeyCreationViewControllerDelegate,
     UIAdaptivePresentationControllerDelegate>
 
 // Interface for the persistent credential store.

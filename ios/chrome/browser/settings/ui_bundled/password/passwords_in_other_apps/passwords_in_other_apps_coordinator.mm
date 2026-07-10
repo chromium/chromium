@@ -11,8 +11,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 
 @interface PasswordsInOtherAppsCoordinator () <
-    PasswordsInOtherAppsPresenter,
-    LocalReauthenticationCoordinatorDelegate>
+    LocalReauthenticationCoordinatorDelegate,
+    PasswordsInOtherAppsPresenter>
 
 // Main mediator for this coordinator.
 @property(nonatomic, strong) PasswordsInOtherAppsMediator* mediator;

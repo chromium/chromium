@@ -51,8 +51,8 @@ class FaviconLoader;
 
 // Mediator for the credential exchange export flow.
 @interface CredentialExportMediator
-    : NSObject <CredentialExportViewControllerPresentationDelegate,
-                CredentialExportFaviconProvider>
+    : NSObject <CredentialExportFaviconProvider,
+                CredentialExportViewControllerPresentationDelegate>
 
 // The consumer that receives updates about the credentials.
 @property(nonatomic, weak) id<CredentialExportConsumer> consumer;

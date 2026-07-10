@@ -21,8 +21,8 @@
 // Testing category that is intended to only be imported in
 // new_tab_page_coordinator.mm and tests.
 @interface NewTabPageCoordinator (Testing) <FeedWrapperViewControllerDelegate,
-                                            NewTabPageHeaderCommands,
-                                            NewTabPageActionsDelegate>
+                                            NewTabPageActionsDelegate,
+                                            NewTabPageHeaderCommands>
 
 @property(nonatomic, strong, readonly) NewTabPageHeaderView* headerView;
 

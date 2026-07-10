@@ -96,8 +96,8 @@ void maybeShowSettingsIPH(Browser* browser) {
     AccountMenuMediatorDelegate,
     SettingsNavigationControllerDelegate,
     SigninReauthCoordinatorDelegate,
-    SyncErrorSettingsCommandHandler,
     SyncEncryptionPassphraseTableViewControllerPresentationDelegate,
+    SyncErrorSettingsCommandHandler,
     TrustedVaultReauthenticationCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate>
 

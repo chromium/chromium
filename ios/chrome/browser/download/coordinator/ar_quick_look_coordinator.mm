@@ -126,8 +126,8 @@ PresentQLPreviewController GetHistogramEnum(
 
 @end
 
-@interface ARQuickLookCoordinator () <TabsDependencyInstalling,
-                                      ARQuickLookTabHelperDelegate>
+@interface ARQuickLookCoordinator () <ARQuickLookTabHelperDelegate,
+                                      TabsDependencyInstalling>
 @end
 
 @implementation ARQuickLookCoordinator {

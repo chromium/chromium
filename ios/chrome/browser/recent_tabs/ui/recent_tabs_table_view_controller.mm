@@ -143,13 +143,12 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 - (instancetype)initWithSession:(UISceneSession*)session;
 @end
 
-@interface RecentTabsTableViewController () <
-    SigninPromoViewConsumer,
-    SigninPromoViewMediatorDelegate,
-    SyncObserverModelBridge,
-    TableViewURLDragDataSource,
-    UIContextMenuInteractionDelegate,
-    UIGestureRecognizerDelegate> {
+@interface RecentTabsTableViewController () <SigninPromoViewConsumer,
+                                             SigninPromoViewMediatorDelegate,
+                                             SyncObserverModelBridge,
+                                             TableViewURLDragDataSource,
+                                             UIContextMenuInteractionDelegate,
+                                             UIGestureRecognizerDelegate> {
   // The displayed recently closed tabs.
   std::vector<RecentlyClosedTableViewItemPair> _recentlyClosedItems;
 

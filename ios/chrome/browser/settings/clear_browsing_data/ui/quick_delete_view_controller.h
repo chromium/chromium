@@ -15,7 +15,7 @@
 // View controller for Quick Delete, the new vesion of Clear/Delete Browsing
 // Data.
 @interface QuickDeleteViewController
-    : BottomSheetViewController <QuickDeleteConsumer, KeyCommandActions>
+    : BottomSheetViewController <KeyCommandActions, QuickDeleteConsumer>
 
 // Local dispatcher for this `QuickDeleteViewController`.
 @property(nonatomic, weak) id<QuickDeletePresentationCommands>

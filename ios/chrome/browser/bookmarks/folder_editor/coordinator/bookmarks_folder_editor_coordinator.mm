@@ -24,8 +24,8 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 @interface BookmarksFolderEditorCoordinator () <
-    BookmarksFolderEditorViewControllerDelegate,
     BookmarksFolderChooserCoordinatorDelegate,
+    BookmarksFolderEditorViewControllerDelegate,
     UIAdaptivePresentationControllerDelegate> {
   // The navigation controller is `nullptr` if the folder chooser view
   // controller is pushed into the base navigation controller.

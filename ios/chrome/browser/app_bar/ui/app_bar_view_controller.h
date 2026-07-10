@@ -20,8 +20,8 @@
 // View controller for the App Bar.
 @interface AppBarViewController
     : UIViewController <AppBarConsumer,
-                        FullscreenUIElement,
-                        FullscreenBrowserAgentObserving>
+                        FullscreenBrowserAgentObserving,
+                        FullscreenUIElement>
 
 // The layout state.
 @property(nonatomic, weak) LayoutState* layoutState;

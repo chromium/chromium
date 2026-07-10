@@ -16,9 +16,9 @@
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 
 @interface ComposeboxPickerPresenter () <PHPickerViewControllerDelegate,
-                                         UINavigationControllerDelegate,
+                                         UIDocumentPickerDelegate,
                                          UIImagePickerControllerDelegate,
-                                         UIDocumentPickerDelegate>
+                                         UINavigationControllerDelegate>
 @end
 
 @implementation ComposeboxPickerPresenter {

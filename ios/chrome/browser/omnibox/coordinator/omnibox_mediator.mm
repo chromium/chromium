@@ -47,8 +47,8 @@
 
 using base::UserMetricsAction;
 
-@interface OmniboxMediator () <SearchEngineObserving,
-                               PlaceholderServiceObserving>
+@interface OmniboxMediator () <PlaceholderServiceObserving,
+                               SearchEngineObserving>
 
 // Is Browser incognito.
 @property(nonatomic, assign, readonly) BOOL isIncognito;

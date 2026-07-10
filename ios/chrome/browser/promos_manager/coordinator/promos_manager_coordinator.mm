@@ -79,8 +79,8 @@
 
 @interface PromosManagerCoordinator () <
     ConfirmationAlertActionHandler,
-    UIAdaptivePresentationControllerDelegate,
-    PromoStyleViewControllerDelegate> {
+    PromoStyleViewControllerDelegate,
+    UIAdaptivePresentationControllerDelegate> {
   // Promos that conform to the StandardPromoDisplayHandler protocol.
   base::small_map<
       std::map<promos_manager::Promo, id<StandardPromoDisplayHandler>>>

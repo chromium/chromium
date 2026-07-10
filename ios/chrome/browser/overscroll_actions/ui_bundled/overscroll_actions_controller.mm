@@ -137,8 +137,8 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 @end
 
 @interface OverscrollActionsController () <CRWWebViewScrollViewProxyObserver,
-                                           UIGestureRecognizerDelegate,
-                                           OverscrollActionsViewDelegate> {
+                                           OverscrollActionsViewDelegate,
+                                           UIGestureRecognizerDelegate> {
   // Display link used to animate the bounce back effect.
   CADisplayLink* _dpLink;
   SpringInsetState _bounceState;

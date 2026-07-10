@@ -31,9 +31,9 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 @interface BrowseDriveFilePickerCoordinator () <
+    BrowseDriveFilePickerCoordinatorDelegate,
     DriveFilePickerMediatorDelegate,
-    DriveFilePickerTableViewControllerDelegate,
-    BrowseDriveFilePickerCoordinatorDelegate>
+    DriveFilePickerTableViewControllerDelegate>
 
 @end
 

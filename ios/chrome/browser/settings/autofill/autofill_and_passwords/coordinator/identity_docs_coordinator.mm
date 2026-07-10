@@ -18,8 +18,8 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 
-@interface IdentityDocsCoordinator () <AutofillAIEntityEditCoordinatorDelegate,
-                                       AutofillAIBaseMediatorDelegate,
+@interface IdentityDocsCoordinator () <AutofillAIBaseMediatorDelegate,
+                                       AutofillAIEntityEditCoordinatorDelegate,
                                        IdentityDocsTableViewControllerDelegate>
 @end
 

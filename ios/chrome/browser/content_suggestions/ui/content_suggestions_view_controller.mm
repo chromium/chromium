@@ -21,9 +21,9 @@
 
 @interface ContentSuggestionsViewController () <
     UIGestureRecognizerDelegate,
-    URLDropDelegate,
+    UIScrollViewAccessibilityDelegate,
     UIScrollViewDelegate,
-    UIScrollViewAccessibilityDelegate>
+    URLDropDelegate>
 
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
 

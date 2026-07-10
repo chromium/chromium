@@ -23,11 +23,11 @@
 
 // View controller for the location bar badge.
 @interface LocationBarBadgeViewController
-    : UIViewController <IncognitoBadgeViewVisibilityDelegate,
-                        LocationBarBadgeConsumer,
-                        ContextualPanelEntrypointConsumer,
+    : UIViewController <ContextualPanelEntrypointConsumer,
                         ContextualPanelEntrypointVisibilityDelegate,
-                        FullscreenUIElement>
+                        FullscreenUIElement,
+                        IncognitoBadgeViewVisibilityDelegate,
+                        LocationBarBadgeConsumer>
 
 // This view controller's LayoutGuideCenter.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;

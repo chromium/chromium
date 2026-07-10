@@ -70,8 +70,8 @@ const int kMinNoteCharAmountForWarning = 901;
 
 }  // namespace
 
-@interface AddPasswordViewController () <TableViewTextEditItemDelegate,
-                                         TableViewMultiLineTextEditItemDelegate>
+@interface AddPasswordViewController () <TableViewMultiLineTextEditItemDelegate,
+                                         TableViewTextEditItemDelegate>
 
 // The text item related to the username value.
 @property(nonatomic, strong) TableViewTextEditItem* usernameTextItem;

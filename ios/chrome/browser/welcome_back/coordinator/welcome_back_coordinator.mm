@@ -29,10 +29,10 @@
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @interface WelcomeBackCoordinator () <ConfirmationAlertActionHandler,
-                                      WelcomeBackActionHandler,
                                       FirstRunScreenDelegate,
+                                      UIAdaptivePresentationControllerDelegate,
                                       UINavigationControllerDelegate,
-                                      UIAdaptivePresentationControllerDelegate>
+                                      WelcomeBackActionHandler>
 @end
 
 @implementation WelcomeBackCoordinator {

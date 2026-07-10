@@ -60,7 +60,7 @@ class WebState;
 
 // Mediator that manages the business logic and data for the AI mode Assistant.
 @interface AssistantAIMMediator
-    : NSObject <ComposeboxURLLoader, AssistantAIMMutator>
+    : NSObject <AssistantAIMMutator, ComposeboxURLLoader>
 
 // The consumer for this mediator.
 @property(nonatomic, weak) id<AssistantAIMConsumer> consumer;

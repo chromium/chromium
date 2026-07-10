@@ -25,8 +25,8 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 
 @interface SaveCardBottomSheetCoordinator () <
-    SaveCardBottomSheetDelegate,
-    CreditCardScannerCoordinatorDelegate>
+    CreditCardScannerCoordinatorDelegate,
+    SaveCardBottomSheetDelegate>
 @end
 
 @implementation SaveCardBottomSheetCoordinator {

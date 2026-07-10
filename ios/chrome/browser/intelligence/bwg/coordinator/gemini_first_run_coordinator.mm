@@ -36,8 +36,8 @@
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@interface GeminiFirstRunCoordinator () <UISheetPresentationControllerDelegate,
-                                         GeminiFirstRunMediatorDelegate>
+@interface GeminiFirstRunCoordinator () <GeminiFirstRunMediatorDelegate,
+                                         UISheetPresentationControllerDelegate>
 
 @end
 

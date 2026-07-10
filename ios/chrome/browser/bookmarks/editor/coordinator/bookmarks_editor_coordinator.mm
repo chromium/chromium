@@ -29,8 +29,8 @@
 #import "url/gurl.h"
 
 @interface BookmarksEditorCoordinator () <
-    BookmarksEditorViewControllerDelegate,
     BookmarksEditorMediatorDelegate,
+    BookmarksEditorViewControllerDelegate,
     BookmarksFolderChooserCoordinatorDelegate> {
   // BookmarkNode to edit.
   raw_ptr<const bookmarks::BookmarkNode> _node;

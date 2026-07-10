@@ -14,8 +14,8 @@
 
 // Mediator that configures the modal UI for a Translate infobar.
 @interface TranslateInfobarModalOverlayMediator
-    : InfobarModalOverlayMediator <InfobarTranslateModalDelegate,
-                                   InfobarTranslateLanguageSelectionDelegate>
+    : InfobarModalOverlayMediator <InfobarTranslateLanguageSelectionDelegate,
+                                   InfobarTranslateModalDelegate>
 
 // The consumer that is configured by this mediator.  Setting to a new value
 // configures the new consumer.

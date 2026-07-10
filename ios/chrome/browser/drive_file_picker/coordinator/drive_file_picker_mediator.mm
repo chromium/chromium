@@ -62,8 +62,8 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
 }  // namespace
 
 @interface DriveFilePickerMediator () <AuthenticationServiceObserving,
-                                       IdentityManagerObserverBridgeDelegate,
-                                       ChooseFileControllerObserving>
+                                       ChooseFileControllerObserving,
+                                       IdentityManagerObserverBridgeDelegate>
 @end
 
 @implementation DriveFilePickerMediator {

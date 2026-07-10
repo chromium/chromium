@@ -23,8 +23,8 @@ class WebState;
 
 // Handles form focus events and presents input suggestions.
 @interface FormSuggestionController : NSObject <CRWWebStateObserver,
-                                                FormSuggestionClient,
-                                                FormInputSuggestionsProvider>
+                                                FormInputSuggestionsProvider,
+                                                FormSuggestionClient>
 
 // Initializes a new FormSuggestionController with the specified WebState and a
 // list of FormSuggestionProviders.

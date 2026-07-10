@@ -35,7 +35,7 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface AutofillAIBaseMediator () <IOSAutofillEntityDataManagerObserver,
-                                     PrefObserverDelegate>
+                                      PrefObserverDelegate>
 @end
 
 @implementation AutofillAIBaseMediator {

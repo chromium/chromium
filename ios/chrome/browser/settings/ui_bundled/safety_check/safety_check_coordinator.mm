@@ -56,8 +56,8 @@ using password_manager::WarningType;
     PasswordCheckupCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,
     PrivacySafeBrowsingCoordinatorDelegate,
-    SafetyCheckNavigationCommands,
     SafetyCheckMediatorDelegate,
+    SafetyCheckNavigationCommands,
     SafetyCheckTableViewControllerPresentationDelegate>
 
 // Safety check mediator.

@@ -89,9 +89,9 @@ typedef struct {
                                           IncognitoReauthConsumer,
                                           LensOverlayPresentationEnvironment,
                                           LensOverlayStateNotifierObserver,
-                                          TabConsumer,
                                           OmniboxFocusDelegate,
                                           OmniboxPopupPresenterDelegate,
+                                          TabConsumer,
                                           ToolbarHeightDelegate,
                                           WebStateContainerViewProvider>
 

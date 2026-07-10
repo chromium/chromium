@@ -54,12 +54,12 @@ BOOL IsChooseFromDriveAvailable(Browser* browser,
 }  // namespace
 
 @interface FileUploadPanelCoordinator () <
-    UIContextMenuInteractionDelegate,
-    UINavigationControllerDelegate,
-    UIDocumentPickerDelegate,
     PHPickerViewControllerDelegate,
+    UIAdaptivePresentationControllerDelegate,
+    UIContextMenuInteractionDelegate,
+    UIDocumentPickerDelegate,
     UIImagePickerControllerDelegate,
-    UIAdaptivePresentationControllerDelegate>
+    UINavigationControllerDelegate>
 
 // Actions to present in the context menu. Will be nil if the action is
 // unavailable in the current context. Lazily created.

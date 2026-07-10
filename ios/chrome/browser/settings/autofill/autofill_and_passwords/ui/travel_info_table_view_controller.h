@@ -23,8 +23,8 @@
 
 // The TableView for Travel Info settings page.
 @interface TravelInfoTableViewController
-    : SettingsRootTableViewController <TravelInfoConsumer,
-                                       SettingsControllerProtocol>
+    : SettingsRootTableViewController <SettingsControllerProtocol,
+                                       TravelInfoConsumer>
 
 // Presentation delegate.
 @property(nonatomic, weak) id<TravelInfoTableViewControllerDelegate> delegate;

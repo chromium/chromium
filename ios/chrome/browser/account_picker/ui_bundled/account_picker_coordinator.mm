@@ -45,8 +45,8 @@
     AccountPickerConfirmationScreenCoordinatorDelegate,
     AccountPickerLayoutDelegate,
     AccountPickerMediatorDelegate,
-    AccountPickerSelectionScreenCoordinatorDelegate,
     AccountPickerScreenPresentationControllerDelegate,
+    AccountPickerSelectionScreenCoordinatorDelegate,
     SigninReauthCoordinatorDelegate,
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>

@@ -52,8 +52,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 using bookmarks::BookmarkNode;
 
-@interface BookmarksFolderChooserViewController () <UISearchResultsUpdating,
-                                                    UISearchControllerDelegate,
+@interface BookmarksFolderChooserViewController () <UISearchControllerDelegate,
+                                                    UISearchResultsUpdating,
                                                     UITableViewDataSource,
                                                     UITableViewDelegate>
 @end

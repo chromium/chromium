@@ -18,8 +18,8 @@
 // View controller shell for the New Tab Page Redesign.
 @interface NewTabPageRedesignViewController
     : UIViewController <NewTabPageConsumer,
-                        SearchEngineLogoConsumer,
-                        NewTabPageHeaderViewDelegate>
+                        NewTabPageHeaderViewDelegate,
+                        SearchEngineLogoConsumer>
 
 // Delegate for actions relating to the NTP content.
 @property(nonatomic, weak) id<NewTabPageContentDelegate> NTPContentDelegate;

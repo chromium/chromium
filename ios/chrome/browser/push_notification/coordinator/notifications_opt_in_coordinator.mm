@@ -32,9 +32,9 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface NotificationsOptInCoordinator () <
-    UIAdaptivePresentationControllerDelegate,
+    NotificationsOptInAlertCoordinatorDelegate,
     NotificationsOptInPresenter,
-    NotificationsOptInAlertCoordinatorDelegate>
+    UIAdaptivePresentationControllerDelegate>
 
 // Mediator for NotificationsOptInViewController.
 @property(nonatomic, strong) NotificationsOptInMediator* mediator;

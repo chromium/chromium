@@ -25,8 +25,8 @@
 #import "ios/chrome/browser/whats_new/public/constants.h"
 #import "ios/chrome/browser/whats_new/ui/whats_new_table_view_controller.h"
 
-@interface WhatsNewCoordinator () <UINavigationControllerDelegate,
-                                   UIAdaptivePresentationControllerDelegate>
+@interface WhatsNewCoordinator () <UIAdaptivePresentationControllerDelegate,
+                                   UINavigationControllerDelegate>
 
 // The mediator to display What's New data.
 @property(nonatomic, strong) WhatsNewMediator* mediator;

@@ -31,8 +31,8 @@
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 
-@interface InfobarCoordinator () <InfobarCoordinatorImplementation,
-                                  InfobarBannerPositioner,
+@interface InfobarCoordinator () <InfobarBannerPositioner,
+                                  InfobarCoordinatorImplementation,
                                   InfobarModalPositioner> {
   // The AnimatedFullscreenDisable disables fullscreen by displaying the
   // Toolbar/s when an Infobar banner is presented.

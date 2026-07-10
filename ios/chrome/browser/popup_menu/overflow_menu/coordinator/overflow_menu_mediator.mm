@@ -276,17 +276,17 @@ UIImage* CreateCustomBackgroundPreviewImage(
 
 }  // namespace
 
-@interface OverflowMenuMediator () <BookmarkModelBridgeObserver,
+@interface OverflowMenuMediator () <AuthenticationServiceObserving,
+                                    BookmarkModelBridgeObserver,
                                     CRWWebStateObserver,
+                                    IdentityManagerObserverBridgeDelegate,
                                     IOSLanguageDetectionTabHelperObserving,
                                     OverflowMenuDestinationProvider,
                                     OverlayPresenterObserving,
                                     PrefObserverDelegate,
                                     ReadingListModelBridgeObserver,
                                     SearchEngineObserving,
-                                    WebStateListObserving,
-                                    AuthenticationServiceObserving,
-                                    IdentityManagerObserverBridgeDelegate> {
+                                    WebStateListObserving> {
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
 

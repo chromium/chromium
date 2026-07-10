@@ -139,11 +139,11 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
     AtMemoryCommands,
     AutofillSuggestionContextMenuHandler,
     CardCoordinatorDelegate,
+    ExpandedManualFillCoordinatorDelegate,
     FormInputAccessoryMediatorHandler,
     FormInputAccessoryViewControllerDelegate,
     ManualFillAllPasswordCoordinatorDelegate,
     PasswordCoordinatorDelegate,
-    ExpandedManualFillCoordinatorDelegate,
     SecurityAlertCommands>
 
 // The object in charge of interacting with the web view. Used to fill the data

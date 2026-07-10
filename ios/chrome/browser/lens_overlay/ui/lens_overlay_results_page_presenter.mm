@@ -43,10 +43,10 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 }  // namespace
 
 @interface LensOverlayResultsPagePresenter () <
-    LensOverlayPanTrackerDelegate,
-    LensOverlayDetentsManagerDelegate,
-    LensResultPageViewControllerDelegate,
     LensOverlayBottomSheetPresenterDelegate,
+    LensOverlayDetentsManagerDelegate,
+    LensOverlayPanTrackerDelegate,
+    LensResultPageViewControllerDelegate,
     UINavigationControllerDelegate>
 @end
 

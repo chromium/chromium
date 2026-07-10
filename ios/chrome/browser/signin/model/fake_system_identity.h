@@ -10,7 +10,7 @@
 #include "ios/chrome/browser/signin/model/system_identity.h"
 
 // A fake SystemIdentity used for testing.
-@interface FakeSystemIdentity : NSObject <SystemIdentity, NSSecureCoding>
+@interface FakeSystemIdentity : NSObject <NSSecureCoding, SystemIdentity>
 
 // Encodes `identities` into a string, using NSKeyedArchiver.
 + (std::string)encodeIdentitiesToBase64:

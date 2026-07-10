@@ -30,8 +30,8 @@ CGFloat const kHalfSheetCornerRadius = 20;
 
 }  // namespace
 
-@interface YoutubeIncognitoCoordinator () <YoutubeIncognitoSheetDelegate,
-                                           NewTabPageURLLoaderDelegate>
+@interface YoutubeIncognitoCoordinator () <NewTabPageURLLoaderDelegate,
+                                           YoutubeIncognitoSheetDelegate>
 @end
 
 @implementation YoutubeIncognitoCoordinator {

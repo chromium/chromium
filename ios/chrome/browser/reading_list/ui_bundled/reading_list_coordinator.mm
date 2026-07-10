@@ -90,10 +90,10 @@
 @interface ReadingListCoordinator () <AccountSettingsPresenter,
                                       AuthenticationServiceObserving,
                                       IdentityManagerObserverBridgeDelegate,
-                                      ReadingListMenuProvider,
                                       ReadingListListItemFactoryDelegate,
                                       ReadingListListViewControllerAudience,
                                       ReadingListListViewControllerDelegate,
+                                      ReadingListMenuProvider,
                                       SigninPromoViewConsumer,
                                       SigninPromoViewMediatorDelegate,
                                       UIAdaptivePresentationControllerDelegate>

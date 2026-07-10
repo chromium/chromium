@@ -16,9 +16,9 @@
 // pressing and choosing to convert a detected unit or tapping on a detected
 // unit.
 @interface UnitConversionViewController
-    : UITableViewController <UnitConversionConsumer,
-                             UIPopoverPresentationControllerDelegate,
-                             UISheetPresentationControllerDelegate>
+    : UITableViewController <UIPopoverPresentationControllerDelegate,
+                             UISheetPresentationControllerDelegate,
+                             UnitConversionConsumer>
 
 @property(nonatomic, weak) id<UnitConversionMutator> mutator;
 

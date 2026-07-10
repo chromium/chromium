@@ -26,8 +26,8 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 
 @interface TabEventsMediator () <CRWWebStateObserver,
-                                 WebStateListObserving,
-                                 URLLoadingObserving>
+                                 URLLoadingObserving,
+                                 WebStateListObserving>
 
 @end
 

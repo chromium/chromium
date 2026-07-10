@@ -54,8 +54,8 @@
 @interface ConsistencyPromoSigninCoordinator () <
     ConsistencyAccountChooserCoordinatorDelegate,
     ConsistencyDefaultAccountCoordinatorDelegate,
-    ConsistencyPromoSigninMediatorDelegate,
     ConsistencyLayoutDelegate,
+    ConsistencyPromoSigninMediatorDelegate,
     SigninReauthCoordinatorDelegate,
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>

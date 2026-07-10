@@ -14,8 +14,8 @@
 // Class that handles the UI for options that require four states:  'Never
 // Move', 'After 7 Days', 'After 14 Days' and 'After 21 Days'.
 @interface InactiveTabsSettingsTableViewController
-    : SettingsRootTableViewController <SettingsControllerProtocol,
-                                       InactiveTabsSettingsConsumer>
+    : SettingsRootTableViewController <InactiveTabsSettingsConsumer,
+                                       SettingsControllerProtocol>
 
 // The delegate receives events related to this view controller.
 @property(nonatomic, weak) id<InactiveTabsSettingsTableViewControllerDelegate>

@@ -23,12 +23,12 @@
 /// and the objects which want to interact with them without having to know to
 /// which one specifically send the call.
 @interface MainToolbarCoordinator
-    : ChromeCoordinator <FakeboxFocuser,
+    : ChromeCoordinator <ComposeboxAnimationBase,
+                         FakeboxFocuser,
                          OmniboxStateProvider,
                          PopupMenuUIUpdating,
                          SideSwipeToolbarSnapshotProviding,
-                         ToolbarCoordinating,
-                         ComposeboxAnimationBase>
+                         ToolbarCoordinating>
 
 // Redefined as readwrite to be able to set it after the BVC is created.
 @property(weak, nonatomic, readwrite) UIViewController* baseViewController;

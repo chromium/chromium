@@ -27,8 +27,8 @@ const char kWalletManagePassesDataURL[] =
 }  // namespace
 
 @interface AutofillSettingsCoordinator () <
-    AutofillSettingsTableViewControllerDelegate,
-    AutofillSettingsMediatorDelegate>
+    AutofillSettingsMediatorDelegate,
+    AutofillSettingsTableViewControllerDelegate>
 @end
 
 @implementation AutofillSettingsCoordinator {

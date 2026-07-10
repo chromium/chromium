@@ -96,10 +96,10 @@ class Tracker;
 // the omnibox textfield is displayed; in the non-editing state, the current
 // location is displayed.
 @interface LocationBarViewController
-    : UIViewController <FullscreenUIElement,
+    : UIViewController <ContextMenuTransitionStateProviding,
+                        FullscreenUIElement,
                         LocationBarAnimatee,
-                        LocationBarConsumer,
-                        ContextMenuTransitionStateProviding>
+                        LocationBarConsumer>
 
 @property(nonatomic, assign) BOOL incognito;
 

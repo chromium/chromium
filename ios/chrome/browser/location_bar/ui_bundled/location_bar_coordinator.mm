@@ -137,8 +137,8 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
     LocationBarModelDelegateWebStateProvider,
     LocationBarSteadyViewConsumer,
     LocationBarViewControllerDelegate,
-    WebLocationBarDelegate,
-    URLDragDataSource> {
+    URLDragDataSource,
+    WebLocationBarDelegate> {
   // API endpoint for omnibox.
   std::unique_ptr<WebLocationBarImpl> _locationBar;
   // Observer that updates `viewController` for fullscreen events.

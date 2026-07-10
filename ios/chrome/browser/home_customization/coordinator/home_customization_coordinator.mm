@@ -54,10 +54,10 @@ CGFloat const kSheetCornerRadius = 30;
 }  // namespace
 
 @interface HomeCustomizationCoordinator () <
-    UISheetPresentationControllerDelegate,
     HomeCustomizationBackgroundPickerPresentationDelegate,
     HomeCustomizationMainViewControllerDelegate,
-    HomeCustomizationSearchEngineLogoMediatorProvider> {
+    HomeCustomizationSearchEngineLogoMediatorProvider,
+    UISheetPresentationControllerDelegate> {
   // Displays the background picker action sheet.
   HomeCustomizationBackgroundPickerActionSheetCoordinator*
       _backgroundPickerActionSheetCoordinator;

@@ -36,7 +36,7 @@
 
 #pragma mark - SceneState
 
-@interface SceneState () <SignInInProgressAudience, ProfileStateObserver>
+@interface SceneState () <ProfileStateObserver, SignInInProgressAudience>
 
 @end
 

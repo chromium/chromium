@@ -20,10 +20,10 @@ class RemoteSuggestionsService;
 
 // The omnibox debugger mediator.
 @interface OmniboxDebuggerMediator
-    : NSObject <OmniboxAutocompleteControllerDebuggerDelegate,
+    : NSObject <AutocompleteControllerObserver,
+                OmniboxAutocompleteControllerDebuggerDelegate,
                 OmniboxDebuggerMutator,
-                RemoteSuggestionsServiceObserver,
-                AutocompleteControllerObserver>
+                RemoteSuggestionsServiceObserver>
 
 - (instancetype)initWithAutocompleteController:
                     (AutocompleteController*)autocompleteController

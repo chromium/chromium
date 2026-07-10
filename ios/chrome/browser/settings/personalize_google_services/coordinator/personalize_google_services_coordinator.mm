@@ -40,8 +40,8 @@ enum class ActionAfterReauth {
 }  // namespace
 
 @interface PersonalizeGoogleServicesCoordinator () <
-    PersonalizeGoogleServicesViewControllerPresentationDelegate,
     PersonalizeGoogleServicesCommandHandler,
+    PersonalizeGoogleServicesViewControllerPresentationDelegate,
     SigninReauthCoordinatorDelegate>
 @end
 

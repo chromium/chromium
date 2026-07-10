@@ -30,8 +30,8 @@
 
 using base::UserMetricsAction;
 
-@interface OmniboxViewController () <OmniboxTextInputDelegate,
-                                     OmniboxKeyboardDelegate,
+@interface OmniboxViewController () <OmniboxKeyboardDelegate,
+                                     OmniboxTextInputDelegate,
                                      UIScribbleInteractionDelegate>
 
 // Override of UIViewController's view with a different type.

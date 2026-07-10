@@ -109,8 +109,8 @@ class WebStateID;
 
 // A view controller that contains a grid of items.
 @interface BaseGridViewController
-    : UIViewController <TabCollectionConsumer,
-                        ContextMenuTransitionStateProviding>
+    : UIViewController <ContextMenuTransitionStateProviding,
+                        TabCollectionConsumer>
 // The remaining distance to scroll to the top, in point.
 @property(nonatomic, readonly) CGFloat remainingScrollDistanceTop;
 // The remaining distance to scroll to the bottom, in point.

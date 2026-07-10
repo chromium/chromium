@@ -57,9 +57,9 @@ constexpr base::TimeDelta kShareSpinnerMinTime = base::Seconds(0.5);
 }  // namespace
 
 @interface PasswordDetailsCoordinator () <
+    LocalReauthenticationCoordinatorDelegate,
     PasswordDetailsHandler,
     PasswordDetailsMediatorDelegate,
-    LocalReauthenticationCoordinatorDelegate,
     PasswordSharingCoordinatorDelegate,
     PasswordSharingFirstRunCoordinatorDelegate>
 

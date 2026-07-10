@@ -113,10 +113,10 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 @interface ComposeboxInputPlateCoordinator () <
     ComposeboxInputPlateMediatorDelegate,
     ComposeboxInputPlateViewControllerDelegate,
-    ComposeboxPickerPresenterDelegate,
-    ComposeboxPickerPresenterDataSource,
     ComposeboxMenuCoordinatorDelegate,
     ComposeboxMenuCoordinatorInputPlateDelegate,
+    ComposeboxPickerPresenterDataSource,
+    ComposeboxPickerPresenterDelegate,
     LocationBarModelDelegateWebStateProvider,
     LocationBarURLLoader,
     OmniboxFocusDelegate,

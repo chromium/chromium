@@ -37,8 +37,8 @@
 
 // View controller for AccountPickerConfirmationScreenCoordinator.
 @interface AccountPickerConfirmationScreenViewController
-    : UIViewController <AccountPickerScreenViewController,
-                        AccountPickerConfirmationScreenConsumer>
+    : UIViewController <AccountPickerConfirmationScreenConsumer,
+                        AccountPickerScreenViewController>
 
 - (instancetype)initWithConfiguration:
     (AccountPickerConfiguration*)configuration;

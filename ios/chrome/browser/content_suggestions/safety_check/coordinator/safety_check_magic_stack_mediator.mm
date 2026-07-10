@@ -33,11 +33,10 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 
-@interface SafetyCheckMagicStackMediator () <
-    ProfileStateObserver,
-    PrefObserverDelegate,
-    SafetyCheckAudience,
-    SafetyCheckManagerObserver>
+@interface SafetyCheckMagicStackMediator () <PrefObserverDelegate,
+                                             ProfileStateObserver,
+                                             SafetyCheckAudience,
+                                             SafetyCheckManagerObserver>
 @end
 
 @implementation SafetyCheckMagicStackMediator {

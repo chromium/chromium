@@ -41,8 +41,8 @@ enum class TransitionState {
 
 }  // namespace
 
-@interface AssistantContainerCoordinator () <FullscreenUIElement,
-                                             FullscreenBrowserAgentObserving,
+@interface AssistantContainerCoordinator () <FullscreenBrowserAgentObserving,
+                                             FullscreenUIElement,
                                              TabGridStateObserving>
 @end
 

@@ -12,8 +12,8 @@
 #import "ui/base/device_form_factor.h"
 
 @interface SearchEngineChoiceLearnMoreCoordinator () <
-    UIAdaptivePresentationControllerDelegate,
-    SearchEngineChoiceLearnMoreDelegate>
+    SearchEngineChoiceLearnMoreDelegate,
+    UIAdaptivePresentationControllerDelegate>
 @end
 
 @implementation SearchEngineChoiceLearnMoreCoordinator {

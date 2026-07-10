@@ -36,8 +36,8 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 @interface SigninPolicySceneAgent () <AuthenticationServiceObserving,
-                                      IdentityManagerObserverBridgeDelegate,
                                       FullscreenSigninCoordinatorDelegate,
+                                      IdentityManagerObserverBridgeDelegate,
                                       ProfileStateObserver,
                                       SceneUIBlockerStateObserver,
                                       UIBlockerManagerObserver> {

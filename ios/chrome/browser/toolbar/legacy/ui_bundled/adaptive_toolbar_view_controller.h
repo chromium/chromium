@@ -33,8 +33,8 @@
 @interface AdaptiveToolbarViewController
     : UIViewController <FullscreenBrowserAgentObserving,
                         FullscreenUIElement,
-                        PopupMenuUIUpdating,
-                        LegacyToolbarConsumer>
+                        LegacyToolbarConsumer,
+                        PopupMenuUIUpdating>
 
 // Button factory.
 @property(nonatomic, strong) LegacyToolbarButtonFactory* buttonFactory;

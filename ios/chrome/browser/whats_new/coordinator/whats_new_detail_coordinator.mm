@@ -18,8 +18,8 @@
 #import "url/gurl.h"
 
 @interface WhatsNewDetailCoordinator () <
-    UIAdaptivePresentationControllerDelegate,
-    ConfirmationAlertActionHandler>
+    ConfirmationAlertActionHandler,
+    UIAdaptivePresentationControllerDelegate>
 
 // The view controller used to display a screenshot of a feature or chrome tip.
 @property(nonatomic, strong)

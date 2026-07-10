@@ -62,12 +62,12 @@
 @interface PasswordsCoordinator () <
     AddPasswordCoordinatorDelegate,
     CredentialImportCoordinatorDelegate,
-    PasswordDetailsCoordinatorDelegate,
+    LocalReauthenticationCoordinatorDelegate,
     PasswordCheckupCoordinatorDelegate,
+    PasswordDetailsCoordinatorDelegate,
+    PasswordManagerViewControllerPresentationDelegate,
     PasswordSettingsCoordinatorDelegate,
     PasswordsSettingsCommands,
-    PasswordManagerViewControllerPresentationDelegate,
-    LocalReauthenticationCoordinatorDelegate,
     TrustedVaultReauthenticationCoordinatorDelegate,
     WidgetPromoInstructionsCoordinatorDelegate>
 

@@ -221,8 +221,8 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 // Expose -hasReceivedMagicStackResponse for waiting for ranking to return.
 @interface MagicStackRankingModel (Testing) <
     SafetyCheckMagicStackMediatorDelegate,
-    TipsMagicStackMediatorDelegate,
-    TabResumptionMediatorDelegate>
+    TabResumptionMediatorDelegate,
+    TipsMagicStackMediatorDelegate>
 @property(nonatomic, assign, readonly) BOOL hasReceivedMagicStackResponse;
 @property(nonatomic, assign, readonly) BOOL hasReceivedEphemericalCardResponse;
 @end

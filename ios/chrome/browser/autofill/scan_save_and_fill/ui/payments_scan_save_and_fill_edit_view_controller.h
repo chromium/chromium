@@ -28,8 +28,8 @@ enum class ScanCardOfferToSaveAction {
 // It allows users to scan a card and then edit/confirm the details before
 // saving.
 @interface PaymentsScanSaveAndFillEditViewController
-    : UIViewController <SaveCardBottomSheetConsumer,
-                        CreditCardScannerConsumer,
+    : UIViewController <CreditCardScannerConsumer,
+                        SaveCardBottomSheetConsumer,
                         UITableViewDelegate>
 
 // The table view containing the card details.

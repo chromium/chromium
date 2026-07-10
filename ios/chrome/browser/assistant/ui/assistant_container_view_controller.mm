@@ -72,9 +72,9 @@ inline LayoutStateAssistantPassKey PassKey() {
 }  // namespace
 
 @interface AssistantContainerViewController () <
+    AssistantContainerAccessibilityManagerDelegate,
     LayoutStateObserver,
-    UIGestureRecognizerDelegate,
-    AssistantContainerAccessibilityManagerDelegate>
+    UIGestureRecognizerDelegate>
 @end
 
 @implementation AssistantContainerViewController {

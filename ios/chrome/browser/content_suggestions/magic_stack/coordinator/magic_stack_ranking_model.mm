@@ -107,8 +107,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                                       PriceTrackingPromoMediatorDelegate,
                                       SafetyCheckMagicStackMediatorDelegate,
                                       SendTabPromoMediatorDelegate,
-                                      ShopCardMediatorDelegate,
                                       SetUpListMediatorAudience,
+                                      ShopCardMediatorDelegate,
                                       ShortcutsMediatorDelegate,
                                       TabResumptionMediatorDelegate,
                                       TipsMagicStackMediatorDelegate>

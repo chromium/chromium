@@ -30,9 +30,9 @@ class LargeIconService;
 /// arrows, so when the omnibox is the first responder, this view controller
 /// cannot receive these events. Hence the delegation.
 @interface OmniboxPopupViewController
-    : UIViewController <OmniboxPopupConsumer,
-                        CarouselItemConsumer,
+    : UIViewController <CarouselItemConsumer,
                         OmniboxKeyboardDelegate,
+                        OmniboxPopupConsumer,
                         UIScrollViewDelegate>
 
 @property(nonatomic, assign) BOOL incognito;

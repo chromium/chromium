@@ -38,8 +38,8 @@
 // refactored.
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_view_controller.h"
 
-@interface IncognitoGridMediator () <IncognitoStateObserver,
-                                     FamilyLinkUserCapabilitiesObserving>
+@interface IncognitoGridMediator () <FamilyLinkUserCapabilitiesObserving,
+                                     IncognitoStateObserver>
 @end
 
 @implementation IncognitoGridMediator {

@@ -38,11 +38,11 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface NotificationsCoordinator () <
-    NotificationsNavigationCommands,
     ContentNotificationsCoordinatorDelegate,
-    TrackingPriceCoordinatorDelegate,
+    NotificationsBannerViewControllerPresentationDelegate,
+    NotificationsNavigationCommands,
     NotificationsOptInAlertCoordinatorDelegate,
-    NotificationsBannerViewControllerPresentationDelegate>
+    TrackingPriceCoordinatorDelegate>
 
 // View controller presented by coordinator.
 @property(nonatomic, strong) NotificationsBannerViewController* viewController;

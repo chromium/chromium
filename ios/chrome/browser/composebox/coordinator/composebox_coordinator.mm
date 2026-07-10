@@ -45,12 +45,12 @@
 #import "ios/web/public/web_state.h"
 #import "ui/base/device_form_factor.h"
 
-@interface ComposeboxCoordinator () <ComposeboxViewControllerDelegate,
-                                     ComposeboxNavigationMediatorDelegate,
-                                     ComposeboxAnimationContext,
+@interface ComposeboxCoordinator () <ComposeboxAnimationContext,
                                      ComposeboxDebuggerCoordinatorDelegate,
-                                     UIViewControllerTransitioningDelegate,
-                                     ComposeboxiPadAnimatorDelegate>
+                                     ComposeboxiPadAnimatorDelegate,
+                                     ComposeboxNavigationMediatorDelegate,
+                                     ComposeboxViewControllerDelegate,
+                                     UIViewControllerTransitioningDelegate>
 
 @end
 

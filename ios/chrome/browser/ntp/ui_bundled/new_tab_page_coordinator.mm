@@ -166,24 +166,24 @@
                                      DiscoverFeedObserverBridgeDelegate,
                                      DiscoverFeedPreviewDelegate,
                                      DiscoverFeedVisibilityObserver,
+                                     FamilyLinkUserCapabilitiesObserving,
                                      FeedControlDelegate,
                                      FeedSignInPromoDelegate,
                                      FeedWrapperViewControllerDelegate,
                                      HomeCustomizationDelegate,
                                      HomeStartDataSource,
                                      IdentityManagerObserverBridgeDelegate,
+                                     NewTabPageActionsDelegate,
                                      NewTabPageContentDelegate,
                                      NewTabPageDelegate,
                                      NewTabPageHeaderCommands,
-                                     NewTabPageActionsDelegate,
+                                     NewTabPageShortcutsHandler,
                                      NewTabPageURLLoaderDelegate,
                                      OverscrollActionsControllerDelegate,
                                      ProfileStateObserver,
+                                     SafariDataImportChildCoordinatorDelegate,
                                      SceneStateObserver,
-                                     TabGridStateObserving,
-                                     FamilyLinkUserCapabilitiesObserving,
-                                     NewTabPageShortcutsHandler,
-                                     SafariDataImportChildCoordinatorDelegate> {
+                                     TabGridStateObserving> {
   // Observes changes in the IdentityManager.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;

@@ -103,14 +103,14 @@ enum class TabGridPageConfiguration {
 // View controller representing a tab switcher. The tab switcher has an
 // incognito tab grid, regular tab grid, and tab groups grid.
 @interface TabGridViewController
-    : UIViewControllerWithDisplayTracing <DisabledGridViewControllerDelegate,
+    : UIViewControllerWithDisplayTracing <ContextMenuTransitionStateProviding,
+                                          DisabledGridViewControllerDelegate,
                                           GridConsumer,
                                           KeyCommandActions,
                                           TabGridConsumer,
                                           TabGridIdleStatusHandler,
                                           TabGridToolbarsMainTabGridDelegate,
-                                          UISearchBarDelegate,
-                                          ContextMenuTransitionStateProviding>
+                                          UISearchBarDelegate>
 
 // Handler for Scene commands.
 @property(nonatomic, weak) id<SceneCommands> handler;

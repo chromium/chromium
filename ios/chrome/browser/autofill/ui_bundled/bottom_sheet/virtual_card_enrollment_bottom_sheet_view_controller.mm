@@ -45,10 +45,10 @@ CGFloat const kCreditCardCellHeight = 64;
 }  // namespace
 
 @interface VirtualCardEnrollmentBottomSheetViewController () <
+    ConfirmationAlertActionHandler,
     UITableViewDataSource,
     UITableViewDelegate,
-    UITextViewDelegate,
-    ConfirmationAlertActionHandler>
+    UITextViewDelegate>
 @end
 
 @implementation VirtualCardEnrollmentBottomSheetViewController {

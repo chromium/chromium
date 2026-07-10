@@ -18,8 +18,8 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 
-@interface TravelInfoCoordinator () <AutofillAIEntityEditCoordinatorDelegate,
-                                     AutofillAIBaseMediatorDelegate,
+@interface TravelInfoCoordinator () <AutofillAIBaseMediatorDelegate,
+                                     AutofillAIEntityEditCoordinatorDelegate,
                                      TravelInfoTableViewControllerDelegate>
 @end
 

@@ -31,8 +31,8 @@ const CGFloat kHeaderIconSizeMultiplier = 0.55;
 
 }  // namespace
 
-@interface GeminiConsentViewController () <UITextViewDelegate,
-                                           GeminiConsentAccordionViewDelegate>
+@interface GeminiConsentViewController () <GeminiConsentAccordionViewDelegate,
+                                           UITextViewDelegate>
 @end
 
 @implementation GeminiConsentViewController {

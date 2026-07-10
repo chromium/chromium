@@ -25,8 +25,8 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 
 @interface FullscreenSigninPromoSceneAgent () <
-    ProfileStateObserver,
-    IdentityManagerObserverBridgeDelegate>
+    IdentityManagerObserverBridgeDelegate,
+    ProfileStateObserver>
 @end
 
 @implementation FullscreenSigninPromoSceneAgent {

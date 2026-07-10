@@ -18,8 +18,8 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_observer_bridge.h"
 
 @interface PanelContentMediator () <ChromeBroadcastObserver,
-                                    ToolbarsSizeObserving,
-                                    FullscreenBrowserAgentObserving>
+                                    FullscreenBrowserAgentObserving,
+                                    ToolbarsSizeObserving>
 
 @end
 

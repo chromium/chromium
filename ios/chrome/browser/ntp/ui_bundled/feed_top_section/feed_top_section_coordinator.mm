@@ -50,8 +50,8 @@ using base::UmaHistogramEnumeration;
 using base::UserMetricsAction;
 
 @interface FeedTopSectionCoordinator () <
-    SigninPromoViewMediatorDelegate,
-    NotificationsOptInAlertCoordinatorDelegate>
+    NotificationsOptInAlertCoordinatorDelegate,
+    SigninPromoViewMediatorDelegate>
 
 @property(nonatomic, strong) FeedTopSectionMediator* feedTopSectionMediator;
 @property(nonatomic, strong)

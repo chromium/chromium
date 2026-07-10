@@ -19,7 +19,7 @@ class TabGroup;
 // Test object that conforms to TabCollectionConsumer and exposes inner state
 // for test verification.
 @interface FakeTabCollectionConsumer
-    : NSObject <TabCollectionConsumer, InactiveTabsInfoConsumer>
+    : NSObject <InactiveTabsInfoConsumer, TabCollectionConsumer>
 
 // The fake consumer only keeps the identifiers of items for simplicity.
 @property(nonatomic, readonly) const std::vector<web::WebStateID>& items;

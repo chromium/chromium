@@ -84,8 +84,8 @@ bool DefaultBrowserPromoCompleted() {
 
 @interface SetUpListMediator () <PrefObserverDelegate,
                                  SceneStateObserver,
-                                 SetUpListDelegate,
-                                 SetUpListConsumerSource>
+                                 SetUpListConsumerSource,
+                                 SetUpListDelegate>
 
 @end
 

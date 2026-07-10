@@ -31,7 +31,7 @@
 
 // A handler with methods that take no arguments.
 @interface CommandDispatcherTestSimpleTarget
-    : NSObject <ShowProtocol, CompositeProtocolWithMethods>
+    : NSObject <CompositeProtocolWithMethods, ShowProtocol>
 
 // Will be set to YES when the `-show` method is called.
 @property(nonatomic, assign) BOOL showCalled;

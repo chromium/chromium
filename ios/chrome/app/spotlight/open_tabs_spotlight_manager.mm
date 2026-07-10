@@ -37,8 +37,8 @@ const int kBatchSize = 100;
 }  // namespace
 
 @interface OpenTabsSpotlightManager () <BrowserListObserver,
-                                        WebStateListObserving,
-                                        CRWWebStateObserver>
+                                        CRWWebStateObserver,
+                                        WebStateListObserving>
 
 /// Tracks if a clear and reindex operation is pending e.g. while the app is
 /// backgrounded.

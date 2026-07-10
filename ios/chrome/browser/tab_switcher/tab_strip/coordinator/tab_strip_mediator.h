@@ -47,9 +47,9 @@ class WebStateID;
 // This mediator used to manage model interaction for its consumer.
 @interface TabStripMediator
     : NSObject <TabCollectionDragDropHandler,
-                TabSwitcherItemSnapShotAndFaviconDataSource,
                 TabStripMutator,
-                TabStripTabGroupCellDataSource>
+                TabStripTabGroupCellDataSource,
+                TabSwitcherItemSnapShotAndFaviconDataSource>
 
 // The ProfileIOS model for the corresponding browser.
 @property(nonatomic, assign) ProfileIOS* profile;

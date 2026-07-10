@@ -92,8 +92,8 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
 
 }  // namespace
 
-@interface UnitConversionViewController () <UITableViewDelegate,
-                                            UITableViewDataSource,
+@interface UnitConversionViewController () <UITableViewDataSource,
+                                            UITableViewDelegate,
                                             UITextFieldDelegate> {
   // The title button to change the unit type.
   UIButton* _unitTypeTitleButton;

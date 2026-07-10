@@ -223,10 +223,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 }  // namespace
 
 @interface ComposeboxInputPlateMediator () <
-    SearchEngineObserving,
     ComposeboxInputItemCollectionDelegate,
-    WebStateDeferredExecutorDelegate,
-    ComposeboxQueryContextualizerDelegate>
+    ComposeboxQueryContextualizerDelegate,
+    SearchEngineObserving,
+    WebStateDeferredExecutorDelegate>
 
 @end
 

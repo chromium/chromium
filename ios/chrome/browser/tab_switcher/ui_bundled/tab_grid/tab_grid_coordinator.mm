@@ -183,7 +183,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                   HistoryCoordinatorDelegate,
                                   HistoryPresentationDelegate,
                                   InactiveTabsCoordinatorDelegate,
-
                                   SceneStateObserver,
                                   SendTabToSelfCoordinatorDelegate,
                                   SigninPresenter,

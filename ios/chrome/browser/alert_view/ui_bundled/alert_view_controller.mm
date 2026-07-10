@@ -326,8 +326,8 @@ UIButton* GetButtonForAction(AlertAction* action) {
 
 }  // namespace
 
-@interface AlertViewController () <UITextFieldDelegate,
-                                   UIGestureRecognizerDelegate>
+@interface AlertViewController () <UIGestureRecognizerDelegate,
+                                   UITextFieldDelegate>
 
 // The actions for to this alert. `copy` for safety against mutable objects.
 @property(nonatomic, copy) NSArray<NSArray<AlertAction*>*>* actions;

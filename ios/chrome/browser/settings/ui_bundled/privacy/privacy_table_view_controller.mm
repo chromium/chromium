@@ -109,8 +109,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
 @interface PrivacyTableViewController () <BooleanObserver,
                                           BrowserObserving,
-                                          PrefObserverDelegate,
                                           PopoverLabelViewControllerDelegate,
+                                          PrefObserverDelegate,
                                           SyncObserverModelBridge> {
   raw_ptr<ProfileIOS> _profile;  // weak
 

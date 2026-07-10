@@ -27,8 +27,8 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 }  // namespace
 
 // Implements BubbleViewDelegate to handle BubbleView's close button tap.
-@interface BubbleViewControllerPresenter () <UIGestureRecognizerDelegate,
-                                             BubbleViewDelegate>
+@interface BubbleViewControllerPresenter () <BubbleViewDelegate,
+                                             UIGestureRecognizerDelegate>
 
 // The underlying BubbleViewController managed by this object.
 // `bubbleViewController` manages the BubbleView instance.

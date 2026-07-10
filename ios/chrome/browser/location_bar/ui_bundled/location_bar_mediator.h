@@ -23,7 +23,7 @@ class WebStateList;
 // LocationBarSteadyView. In practice, this is any state not relating to the
 // WebState.
 @interface LocationBarMediator
-    : NSObject <LocationBarMutator, FullscreenBrowserAgentObserving>
+    : NSObject <FullscreenBrowserAgentObserving, LocationBarMutator>
 
 - (instancetype)initWithURLLoadingBrowsingAgent:
                     (UrlLoadingBrowserAgent*)URLLoadingBrowserAgent

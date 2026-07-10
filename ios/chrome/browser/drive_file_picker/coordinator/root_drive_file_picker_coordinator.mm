@@ -52,9 +52,9 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface RootDriveFilePickerCoordinator () <
-    UIAdaptivePresentationControllerDelegate,
-    DriveFilePickerMediatorDelegate,
     BrowseDriveFilePickerCoordinatorDelegate,
+    DriveFilePickerMediatorDelegate,
+    UIAdaptivePresentationControllerDelegate,
     UIGestureRecognizerDelegate>
 
 - (void)confirmChangeProfileWithCompletion:(void (^)(BOOL))completion;

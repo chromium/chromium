@@ -17,8 +17,8 @@
 // Table view controller for Downloads settings.
 @interface DownloadsSettingsTableViewController
     : SettingsRootTableViewController <
-          SaveToPhotosSettingsAccountConfirmationConsumer,
-          AutoDeletionSettingsConsumer>
+          AutoDeletionSettingsConsumer,
+          SaveToPhotosSettingsAccountConfirmationConsumer>
 
 // Mutator.
 @property(nonatomic, weak) id<SaveToPhotosSettingsMutator>

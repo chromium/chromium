@@ -38,8 +38,8 @@
 
 #pragma mark - IncognitoReauthSceneAgent
 
-@interface IncognitoReauthSceneAgent () <PrefObserverDelegate,
-                                         IncognitoStateObserver>
+@interface IncognitoReauthSceneAgent () <IncognitoStateObserver,
+                                         PrefObserverDelegate>
 
 // Whether the window had incognito content (e.g. at least one open tab) upon
 // backgrounding.

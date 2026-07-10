@@ -18,8 +18,8 @@
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 
 @interface PageInfoLastVisitedCoordinator () <
-    PageInfoLastVisitedViewControllerDelegate,
-    HistoryCoordinatorDelegate> {
+    HistoryCoordinatorDelegate,
+    PageInfoLastVisitedViewControllerDelegate> {
   // Only history entries matching "_hostName" will be displayed.
   NSString* _hostName;
   // View controller.

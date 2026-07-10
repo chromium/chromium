@@ -23,8 +23,8 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                    CWVDownloadTaskDelegate,
                                    CWVLeakCheckServiceObserver,
                                    CWVNavigationDelegate,
-                                   CWVUIDelegate,
                                    CWVSyncControllerDelegate,
+                                   CWVUIDelegate,
                                    UIScrollViewDelegate,
                                    UITextFieldDelegate>
 // Header containing navigation buttons and |field|.

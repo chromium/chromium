@@ -213,12 +213,12 @@ using segmentation_platform::TipIdentifier;
     ContentSuggestionsViewControllerAudience,
     MagicStackCollectionViewControllerAudience,
     MagicStackModuleContainerDelegate,
-    TipsPasswordsCoordinatorDelegate,
     NotificationsOptInAlertCoordinatorDelegate,
     PriceTrackingPromoActionDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
     SetUpListTapDelegate,
-    ShopCardActionDelegate>
+    ShopCardActionDelegate,
+    TipsPasswordsCoordinatorDelegate>
 
 @property(nonatomic, strong)
     ContentSuggestionsViewController* contentSuggestionsViewController;

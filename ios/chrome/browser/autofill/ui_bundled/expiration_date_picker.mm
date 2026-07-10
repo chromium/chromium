@@ -11,8 +11,8 @@ int const kYearSection = 1;
 int const kNumberOfYearsToShow = 20;
 }  // namespace
 
-@interface ExpirationDatePicker () <UIPickerViewDelegate,
-                                    UIPickerViewDataSource>
+@interface ExpirationDatePicker () <UIPickerViewDataSource,
+                                    UIPickerViewDelegate>
 @end
 
 @implementation ExpirationDatePicker {

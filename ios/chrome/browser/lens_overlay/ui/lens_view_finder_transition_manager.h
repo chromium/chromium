@@ -14,8 +14,8 @@ typedef NS_ENUM(NSInteger, LensViewFinderTransition) {
 };
 
 @interface LensViewFinderTransitionManager
-    : NSObject <UIViewControllerTransitioningDelegate,
-                UIViewControllerAnimatedTransitioning>
+    : NSObject <UIViewControllerAnimatedTransitioning,
+                UIViewControllerTransitioningDelegate>
 
 - (instancetype)initWithLVFTransitionType:
     (LensViewFinderTransition)transitionType;

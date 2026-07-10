@@ -55,10 +55,10 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 }  // namespace
 
 @interface PasswordIssuesCoordinator () <
+    LocalReauthenticationCoordinatorDelegate,
     PasswordDetailsCoordinatorDelegate,
     PasswordIssuesCoordinatorDelegate,
-    PasswordIssuesPresenter,
-    LocalReauthenticationCoordinatorDelegate>
+    PasswordIssuesPresenter>
 
 @end
 

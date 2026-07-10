@@ -39,7 +39,7 @@ class WebState;
 }  // namespace web
 
 @interface PriceNotificationsPriceTrackingMediator
-    : NSObject <PriceNotificationsMutator, PriceInsightsMutator>
+    : NSObject <PriceInsightsMutator, PriceNotificationsMutator>
 
 // `WebState`, and `PushNotificationService` must not be nil.
 // The designated initializer. `ShoppingService`, `BookmarkModel`,

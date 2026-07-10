@@ -54,9 +54,9 @@ const CGFloat kIconPointSize = 16.0;
 
 }  // namespace
 
-@interface LocationBarMediator () <SearchEngineObserving,
-                                   WebStateListObserving,
-                                   PlaceholderServiceObserving>
+@interface LocationBarMediator () <PlaceholderServiceObserving,
+                                   SearchEngineObserving,
+                                   WebStateListObserving>
 
 // Whether the current default search engine supports search by image.
 @property(nonatomic, assign) BOOL searchEngineSupportsSearchByImage;

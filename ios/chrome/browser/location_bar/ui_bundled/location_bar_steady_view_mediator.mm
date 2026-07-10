@@ -25,8 +25,8 @@
 #import "ui/base/l10n/l10n_util.h"
 
 @interface LocationBarSteadyViewMediator () <CRWWebStateObserver,
-                                             WebStateListObserving,
-                                             OverlayPresenterObserving>
+                                             OverlayPresenterObserving,
+                                             WebStateListObserving>
 
 // Whether an overlay is currently presented over the web content area.
 @property(nonatomic, assign, getter=isWebContentAreaShowingOverlay)

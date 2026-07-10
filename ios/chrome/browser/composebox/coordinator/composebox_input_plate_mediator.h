@@ -62,11 +62,11 @@ class ContextualSearchSessionHandle;
 
 // Mediator for the composebox composebox.
 @interface ComposeboxInputPlateMediator
-    : NSObject <ComposeboxOmniboxClientDelegate,
+    : NSObject <ComposeboxContextUploadObserver,
                 ComposeboxInputPlateMutator,
-                ComposeboxContextUploadObserver,
-                TextFieldViewContainingHeightDelegate,
                 ComposeboxInputStateManagerDelegate,
+                ComposeboxOmniboxClientDelegate,
+                TextFieldViewContainingHeightDelegate,
                 VoiceSearchDelegate>
 
 // The composebox input plate consumer.

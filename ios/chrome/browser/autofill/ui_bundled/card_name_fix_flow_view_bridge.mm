@@ -91,8 +91,8 @@ void CardNameFixFlowViewBridge::DeleteSelf() {
 
 }  // namespace autofill
 
-@interface CardNameFixFlowViewController () <UITextFieldDelegate,
-                                             UITableViewDelegate> {
+@interface CardNameFixFlowViewController () <UITableViewDelegate,
+                                             UITextFieldDelegate> {
   UIBarButtonItem* _confirmButton;
   NSString* _confirmedName;
   TableViewTextHeaderFooterView* _footerView;

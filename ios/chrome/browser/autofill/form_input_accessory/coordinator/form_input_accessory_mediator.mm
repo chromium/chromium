@@ -110,13 +110,13 @@ bool IsStateless() {
 @interface FormInputAccessoryMediator () <
     AutofillBottomSheetObserving,
     BooleanObserver,
+    CRWWebStateObserver,
     FormActivityObserver,
     FormInputAccessoryViewDelegate,
-    CRWWebStateObserver,
+    KeyboardAccessoryOptionalUpdateSchedulerDelegate,
     PasswordCounterObserver,
     PersonalDataManagerObserver,
-    WebStateListObserving,
-    KeyboardAccessoryOptionalUpdateSchedulerDelegate>
+    WebStateListObserving>
 
 // The main consumer for this mediator.
 @property(nonatomic, weak) id<FormInputAccessoryConsumer> consumer;

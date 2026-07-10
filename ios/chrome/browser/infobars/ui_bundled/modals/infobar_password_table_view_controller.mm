@@ -38,8 +38,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 const CGFloat kSymbolSize = 15;
 }  // namespace
 
-@interface InfobarPasswordTableViewController () <UITextFieldDelegate,
-                                                  TableViewTextEditItemDelegate>
+@interface InfobarPasswordTableViewController () <TableViewTextEditItemDelegate,
+                                                  UITextFieldDelegate>
 // Properties backing InfobarPasswordModalConsumer interface.
 @property(nonatomic, copy) NSString* originalUsername;
 @property(nonatomic, copy) NSString* maskedPassword;

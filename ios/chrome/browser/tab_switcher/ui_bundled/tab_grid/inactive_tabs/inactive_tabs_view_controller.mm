@@ -15,8 +15,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface InactiveTabsViewController () <UINavigationBarDelegate,
-                                          LayoutStateObserver>
+@interface InactiveTabsViewController () <LayoutStateObserver,
+                                          UINavigationBarDelegate>
 
 // The embedded navigation bar.
 @property(nonatomic, readonly) UINavigationBar* navigationBar;

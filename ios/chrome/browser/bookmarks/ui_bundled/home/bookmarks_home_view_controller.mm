@@ -162,11 +162,11 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 }  // namespace
 
 @interface BookmarksHomeViewController () <
-    BookmarksEditorCoordinatorDelegate,
-    BookmarksFolderEditorCoordinatorDelegate,
-    BookmarksFolderChooserCoordinatorDelegate,
-    BookmarksHomeConsumer,
     BookmarkModelBridgeObserver,
+    BookmarksEditorCoordinatorDelegate,
+    BookmarksFolderChooserCoordinatorDelegate,
+    BookmarksFolderEditorCoordinatorDelegate,
+    BookmarksHomeConsumer,
     BookmarkTableCellTitleEditDelegate,
     TableViewURLDragDataSource,
     TableViewURLDropDelegate,

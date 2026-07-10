@@ -17,7 +17,7 @@ class LanguageModelManager;
 }  // namespace language
 
 @interface LanguageSettingsMediator
-    : NSObject <LanguageSettingsDataSource, LanguageSettingsCommands>
+    : NSObject <LanguageSettingsCommands, LanguageSettingsDataSource>
 
 // The designated initializer. `profile` must not be nil.
 - (instancetype)initWithLanguageModelManager:

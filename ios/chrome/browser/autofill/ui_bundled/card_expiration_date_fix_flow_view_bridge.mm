@@ -93,8 +93,8 @@ void CardExpirationDateFixFlowViewBridge::DeleteSelf() {
 
 }  // namespace autofill
 
-@interface CardExpirationDateFixFlowViewController () <UITextFieldDelegate,
-                                                       UITableViewDelegate> {
+@interface CardExpirationDateFixFlowViewController () <UITableViewDelegate,
+                                                       UITextFieldDelegate> {
   UIBarButtonItem* _confirmButton;
   NSString* _expirationDateMonth;
   NSString* _expirationDateYear;

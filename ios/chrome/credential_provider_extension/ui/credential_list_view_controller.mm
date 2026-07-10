@@ -55,8 +55,8 @@ UIColor* BackgroundColor() {
 
 @end
 
-@interface CredentialListViewController () <UITableViewDataSource,
-                                            UISearchResultsUpdating>
+@interface CredentialListViewController () <UISearchResultsUpdating,
+                                            UITableViewDataSource>
 
 // Search controller that contains search bar.
 @property(nonatomic, strong) UISearchController* searchController;

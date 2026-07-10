@@ -14,8 +14,8 @@
 #import "url/gurl.h"
 
 @interface WhatsNewInstructionsCoordinator () <
-    UIAdaptivePresentationControllerDelegate,
-    ConfirmationAlertActionHandler>
+    ConfirmationAlertActionHandler,
+    UIAdaptivePresentationControllerDelegate>
 
 // The view controller.
 @property(nonatomic, strong) WhatsNewInstructionsViewController* viewController;

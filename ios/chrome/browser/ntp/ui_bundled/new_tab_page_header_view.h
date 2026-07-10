@@ -29,10 +29,10 @@ enum class SearchEngineLogoState;
 // Header view for the NTP. The header view contains all views that are
 // displayed above the list of most visited sites, which includes the
 // primary toolbar, doodle, and fake omnibox.
-@interface NewTabPageHeaderView : UIView <UserAccountImageUpdateDelegate,
-                                          SearchEngineLogoConsumer,
+@interface NewTabPageHeaderView : UIView <FakeboxButtonsSnapshotProvider,
                                           NewTabPageHeaderConsumer,
-                                          FakeboxButtonsSnapshotProvider>
+                                          SearchEngineLogoConsumer,
+                                          UserAccountImageUpdateDelegate>
 // Returns the toolbar view.
 @property(nonatomic, readonly) UIView* toolBarView;
 

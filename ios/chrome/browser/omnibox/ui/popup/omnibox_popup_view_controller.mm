@@ -66,9 +66,9 @@ const CGFloat kCloseButtonPadding = 16.0f;
 @interface OmniboxPopupViewController () <OmniboxPopupActionsRowDelegate,
                                           OmniboxPopupCarouselCellDelegate,
                                           OmniboxPopupRowDelegate,
+                                          SelfSizingTableViewDelegate,
                                           UITableViewDataSource,
-                                          UITableViewDelegate,
-                                          SelfSizingTableViewDelegate>
+                                          UITableViewDelegate>
 
 /// Index path of currently highlighted row. The rows can be highlighted by
 /// tapping and holding on them or by using arrow keys on a hardware keyboard.

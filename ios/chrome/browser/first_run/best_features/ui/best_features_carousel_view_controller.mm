@@ -12,9 +12,9 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @interface BestFeaturesCarouselViewController () <
+    PromoStyleViewControllerDelegate,
     UIPageViewControllerDataSource,
-    UIPageViewControllerDelegate,
-    PromoStyleViewControllerDelegate>
+    UIPageViewControllerDelegate>
 @end
 
 @implementation BestFeaturesCarouselViewController {

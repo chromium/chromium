@@ -223,10 +223,10 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
     AutofillAIAddEntitiesMenuDelegate,
     AutofillAIEntityEditCoordinatorDelegate,
     AutofillProfileEditCoordinatorDelegate,
-    PersonalDataManagerObserver,
-    PrefObserverDelegate,
     IOSAutofillEntityDataManagerObserver,
-    PopoverLabelViewControllerDelegate> {
+    PersonalDataManagerObserver,
+    PopoverLabelViewControllerDelegate,
+    PrefObserverDelegate> {
   raw_ptr<autofill::PersonalDataManager> _personalDataManager;
   raw_ptr<autofill::EntityDataManager> _entityDataManager;
 

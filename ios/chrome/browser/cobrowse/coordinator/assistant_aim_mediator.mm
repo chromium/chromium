@@ -51,10 +51,10 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-@interface AssistantAIMMediator () <CRWWebStatePolicyDecider,
-                                    CRWWebFramesManagerObserver,
+@interface AssistantAIMMediator () <CRWWebFramesManagerObserver,
                                     CRWWebStateDelegate,
-                                    CRWWebStateObserver>
+                                    CRWWebStateObserver,
+                                    CRWWebStatePolicyDecider>
 @end
 
 @implementation AssistantAIMMediator {

@@ -104,7 +104,7 @@ class WebViewFromWKWebViewConfigurationTest : public WebViewInttestBase {
 @end
 
 @interface NavigationFinishedObserver
-    : NSObject <WKNavigationDelegate, CWVNavigationDelegate>
+    : NSObject <CWVNavigationDelegate, WKNavigationDelegate>
 @property(nonatomic) BOOL navigationFinished;
 @end
 

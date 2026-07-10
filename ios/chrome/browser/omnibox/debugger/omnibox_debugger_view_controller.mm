@@ -115,9 +115,9 @@ const NSInteger kRemoteSuggestionServiceResponseBodyJsonStartingIndex = 4;
 
 }  // namespace
 
-@interface PopupDebugInfoViewController () <UITextFieldDelegate,
+@interface PopupDebugInfoViewController () <UITableViewDataSource,
                                             UITableViewDelegate,
-                                            UITableViewDataSource,
+                                            UITextFieldDelegate,
                                             UITextViewDelegate>
 
 @property(nonatomic, strong) UITextView* activeVariationIDTextView;

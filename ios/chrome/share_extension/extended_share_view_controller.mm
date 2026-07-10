@@ -35,8 +35,8 @@ const NSUInteger kSearchCharacterLimit = 1000;
 
 }  // namespace
 
-@interface ExtendedShareViewController () <ShareExtensionDelegate,
-                                           NSURLSessionDelegate>
+@interface ExtendedShareViewController () <NSURLSessionDelegate,
+                                           ShareExtensionDelegate>
 
 // The sheet to display when an item is shared.
 @property(nonatomic, strong) ShareExtensionSheet* shareSheet;

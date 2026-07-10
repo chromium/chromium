@@ -15,8 +15,8 @@
 // Controller for the UI that shows the user how to set Chrome as the default
 // browser and provides a button to take the user to the Settings app.
 @interface DefaultBrowserSettingsTableViewController
-    : SettingsRootTableViewController <SettingsControllerProtocol,
-                                       ConfirmationAlertActionHandler>
+    : SettingsRootTableViewController <ConfirmationAlertActionHandler,
+                                       SettingsControllerProtocol>
 
 // The feature that triggered this view controller.
 @property(nonatomic, assign) DefaultBrowserSettingsPageSource source;

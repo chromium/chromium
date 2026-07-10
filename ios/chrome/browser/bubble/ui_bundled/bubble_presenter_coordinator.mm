@@ -38,7 +38,7 @@
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 #import "ui/base/device_form_factor.h"
 
-@interface BubblePresenterCoordinator () <HelpCommands, BooleanObserver>
+@interface BubblePresenterCoordinator () <BooleanObserver, HelpCommands>
 
 @end
 

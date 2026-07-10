@@ -35,10 +35,10 @@
 
 @interface PrivacyCoordinator () <
     IncognitoLockCoordinatorDelegate,
+    LockdownModeCoordinatorDelegate,
     PrivacyNavigationCommands,
     PrivacySafeBrowsingCoordinatorDelegate,
-    PrivacyTableViewControllerPresentationDelegate,
-    LockdownModeCoordinatorDelegate> {
+    PrivacyTableViewControllerPresentationDelegate> {
 }
 
 @property(nonatomic, strong) PrivacyTableViewController* viewController;

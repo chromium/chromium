@@ -142,8 +142,8 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 @interface PasswordDetailsTableViewController () <
     PopoverLabelViewControllerDelegate,
-    TableViewTextEditItemDelegate,
     TableViewMultiLineTextEditItemDelegate,
+    TableViewTextEditItemDelegate,
     UIEditMenuInteractionDelegate> {
   // Index of the password the user wants to reveal.
   NSInteger _passwordIndexToReveal;

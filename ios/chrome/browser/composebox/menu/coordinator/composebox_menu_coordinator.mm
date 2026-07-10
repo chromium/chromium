@@ -62,8 +62,8 @@ CGFloat const kSheetTopPadding = 40.0f;
     ComposeboxMenuMediatorDelegate,
     ComposeboxMenuSharedTabsViewControllerDelegate,
     ComposeboxMenuViewControllerDelegate,
-    ComposeboxPickerPresenterDelegate,
     ComposeboxPickerPresenterDataSource,
+    ComposeboxPickerPresenterDelegate,
     UISheetPresentationControllerDelegate>
 @end
 

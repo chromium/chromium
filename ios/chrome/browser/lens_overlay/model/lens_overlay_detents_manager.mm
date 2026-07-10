@@ -50,8 +50,8 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
 
 }  // namespace
 
-@interface LensOverlayDetentsManager () <UISheetPresentationControllerDelegate,
-                                         LensOverlayBottomSheetDetentsDelegate>
+@interface LensOverlayDetentsManager () <LensOverlayBottomSheetDetentsDelegate,
+                                         UISheetPresentationControllerDelegate>
 
 // The interactor for the detents managed by this instance.
 @property(nonatomic, strong)

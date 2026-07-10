@@ -20,8 +20,8 @@ typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
     GridDiffableDataSource;
 
 @interface BaseGridViewController (Subclassing) <GridCellDelegate,
-                                                 UICollectionViewDragDelegate,
-                                                 UICollectionViewDelegate>
+                                                 UICollectionViewDelegate,
+                                                 UICollectionViewDragDelegate>
 
 // A collection view of items in a grid format.
 @property(nonatomic, weak, readonly) UICollectionView* collectionView;

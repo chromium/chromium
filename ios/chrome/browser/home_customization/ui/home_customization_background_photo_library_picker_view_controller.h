@@ -11,7 +11,7 @@
 // in the Home customization flow. Uses a collection view to display selectable
 // background images.
 @interface HomeCustomizationBackgroundPhotoLibraryPickerViewController
-    : UIViewController <UICollectionViewDelegate, UICollectionViewDataSource>
+    : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate>
 
 @end
 

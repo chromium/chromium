@@ -51,9 +51,9 @@
 @interface PageActionMenuCoordinator () <
     AccountMenuCoordinatorDelegate,
     PageActionMenuViewControllerDelegate,
-    UINavigationControllerDelegate,
+    ReaderModeOptionsCommands,
     UIAdaptivePresentationControllerDelegate,
-    ReaderModeOptionsCommands>
+    UINavigationControllerDelegate>
 @end
 
 namespace {

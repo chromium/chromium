@@ -41,8 +41,8 @@
 // TODO(crbug.com/40286505): Depend on account_picker_consumer.h directly.
 
 @interface SaveToDriveMediator () <AuthenticationServiceObserving,
-                                   CRWWebStateObserver,
                                    CRWDownloadTaskObserver,
+                                   CRWWebStateObserver,
                                    IdentityManagerObserverBridgeDelegate>
 
 // Called when the storage quota has been fetched, with or without any error.

@@ -84,8 +84,8 @@ UIImage* ArrowDownImage() {
 }  // namespace
 
 @interface PromoStyleViewController () <ButtonStackActionDelegate,
-                                        UITextDragDelegate,
-                                        UIScrollViewDelegate>
+                                        UIScrollViewDelegate,
+                                        UITextDragDelegate>
 
 @property(nonatomic, strong) UIImageView* bannerImageView;
 // This view contains only the header image.
