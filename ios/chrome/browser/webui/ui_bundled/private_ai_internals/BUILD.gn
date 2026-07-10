@@ -1,0 +1,41 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("private_ai_internals") {
+  sources = [
+    "private_ai_internals_ui.h",
+    "private_ai_internals_ui.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/private_ai",
+    "//components/private_ai/ios",
+    "//components/private_ai/private_ai_internals/resources",
+    "//components/private_ai/private_ai_internals/webui:mojo_bindings",
+    "//components/private_ai/private_ai_internals/webui:page_handler",
+    "//components/private_ai/private_ai_internals/webui:url_constants",
+    "//ios/chrome/browser/private_ai/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/common",
+    "//ios/web/public",
+    "//ios/web/public/webui",
+    "//ui/base",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  sources = [ "private_ai_internals_egtest.mm" ]
+  testonly = true
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/private_ai:features",
+    "//components/webui/chrome_urls",
+    "//ios/chrome/browser/webui/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}

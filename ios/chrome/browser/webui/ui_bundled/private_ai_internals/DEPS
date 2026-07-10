@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/grit",
+  "+components/private_ai",
+  "+ios/chrome/browser/private_ai/model",
+]

@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+components/account_id",
+  "+components/private_ai/private_ai_internals/webui",
   "+components/regional_capabilities",
   "+components/webui/chrome_urls",
   "+components/webui/regional_capabilities_internals",

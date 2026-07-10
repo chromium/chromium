@@ -76,6 +76,8 @@ inline constexpr char kChromeUIPasswordManagerInternalsHost[] =
     "password-manager-internals";
 inline constexpr char kChromeUIPolicyHost[] = "policy";
 inline constexpr char kChromeUIPrefsInternalsHost[] = "prefs-internals";
+inline constexpr char kChromeUIPrivateAiInternalsHost[] =
+    "private-ai-internals";
 inline constexpr char kChromeUIProfileInternalsHost[] = "profile-internals";
 inline constexpr char kChromeUISafeBrowsingHost[] = "safe-browsing";
 inline constexpr char kChromeUISignInInternalsHost[] = "signin-internals";
@@ -227,7 +229,7 @@ inline constexpr char kGeminiAppStorePromoURL[] =
     "https://www.google.com/chrome/mobile/#scrollable-gemini-in-chrome-slide-1";
 
 // Gets the hosts/domains that are shown in chrome://chrome-urls.
-inline constexpr std::array<std::string_view, 22> kChromeHostURLs = {
+inline constexpr std::array<std::string_view, 23> kChromeHostURLs = {
     commerce::kChromeUICommerceInternalsHost,
     kChromeUIChromeURLsHost,
     kChromeUICreditsHost,
@@ -243,6 +245,7 @@ inline constexpr std::array<std::string_view, 22> kChromeHostURLs = {
     kChromeUINTPTilesInternalsHost,
     kChromeUIPasswordManagerInternalsHost,
     kChromeUIPrefsInternalsHost,
+    kChromeUIPrivateAiInternalsHost,
     kChromeUISignInInternalsHost,
     kChromeUISyncInternalsHost,
     kChromeUITermsHost,

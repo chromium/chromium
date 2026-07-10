@@ -11,6 +11,7 @@
 #import "components/commerce/core/commerce_constants.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #import "components/prefs/pref_service.h"
+#import "components/private_ai/private_ai_internals/webui/url_constants.h"
 #import "components/webui/chrome_urls/pref_names.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -26,6 +27,7 @@ bool IsWebUIInternal(std::string_view host) {
   return host == commerce::kChromeUICommerceInternalsHost ||
          host == optimization_guide_internals::
                      kChromeUIOptimizationGuideInternalsHost ||
+         host == private_ai_internals::kChromeUIPrivateAiInternalsHost ||
          host == kChromeUIDownloadInternalsHost ||
          host == kChromeUIInterstitialsHost ||
          host == kChromeUILocalStateHost || host == kChromeUIActorInternalsHost;

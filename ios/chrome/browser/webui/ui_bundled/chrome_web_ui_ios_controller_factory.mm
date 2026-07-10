@@ -16,6 +16,7 @@
 #import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #import "components/prefs/pref_service.h"
+#import "components/private_ai/private_ai_internals/webui/url_constants.h"
 #import "components/safe_browsing/ios/browser/web_ui/safe_browsing_ui.h"
 #import "components/version_info/channel.h"
 #import "components/webui/chrome_urls/pref_names.h"
@@ -49,6 +50,7 @@
 #import "ios/chrome/browser/webui/ui_bundled/optimization_guide_internals/optimization_guide_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/policy/policy_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/prefs_internals_ui.h"
+#import "ios/chrome/browser/webui/ui_bundled/private_ai_internals/private_ai_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/profile_internals/profile_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/regional_capabilities_internals/regional_capabilities_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/signin_internals_ui_ios.h"
@@ -215,6 +217,11 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
   }
   if (url_host == kChromeUIVersionHost) {
     return &NewWebUIIOS<VersionUI>;
+  }
+  if (url_host == private_ai_internals::kChromeUIPrivateAiInternalsHost) {
+    return InternalDebugPagesEnabled()
+               ? &NewWebUIIOS<PrivateAiInternalsUI>
+               : &NewWebUIIOS<InternalDebugPagesDisabledUI>;
   }
   if (url_host ==
       optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost) {
