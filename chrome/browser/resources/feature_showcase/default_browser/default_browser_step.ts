@@ -8,7 +8,8 @@ import '../feature_showcase_step.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {DefaultBrowserBrowserProxyImpl} from './default_browser_browser_proxy.js';
+import {browserProxyFactory} from '../default_browser.mojom-webui.js';
+
 import {getCss} from './default_browser_step.css.js';
 import {getHtml} from './default_browser_step.html.js';
 
@@ -35,14 +36,13 @@ export class FeatureShowcaseDefaultBrowserStepElement extends CrLitElement {
 
   protected onConfirmButtonClick_() {
     this.buttonsDisabled = true;
-    DefaultBrowserBrowserProxyImpl.getInstance().handler.setAsDefaultBrowser();
+    browserProxyFactory.getInstance().handler.setAsDefaultBrowser();
     this.fire('step-completed');
   }
 
   protected onSkipButtonClick_() {
     this.buttonsDisabled = true;
-    DefaultBrowserBrowserProxyImpl.getInstance()
-        .handler.skipSetAsDefaultBrowser();
+    browserProxyFactory.getInstance().handler.skipSetAsDefaultBrowser();
     this.fire('step-completed');
   }
 }

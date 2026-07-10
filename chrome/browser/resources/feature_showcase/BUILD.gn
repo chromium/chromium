@@ -24,7 +24,6 @@ build_webui("build") {
   ts_files = [
     "app.ts",
     "app.html.ts",
-    "default_browser/default_browser_browser_proxy.ts",
     "default_browser/default_browser_step.ts",
     "default_browser/default_browser_step.html.ts",
     "feature_showcase_browser_proxy.ts",

@@ -12,7 +12,6 @@ build_webui("build") {
   ts_files = [
     "app.ts",
     "app.html.ts",
-    "browser_proxy.ts",
   ]
 
   mojo_files_deps = [ "//chrome/browser/ui/webui/personal_context_internals:mojo_bindings_ts__generator" ]

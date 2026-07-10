@@ -8,8 +8,7 @@ import 'chrome://feature-showcase/password_manager/password_manager_step.js';
 import 'chrome://feature-showcase/themes_and_customization/themes_and_customization_step.js';
 
 import type {FeatureShowcaseAppElement} from 'chrome://feature-showcase/app.js';
-import {DefaultBrowserPageHandlerRemote} from 'chrome://feature-showcase/default_browser.mojom-webui.js';
-import {DefaultBrowserBrowserProxyImpl} from 'chrome://feature-showcase/default_browser/default_browser_browser_proxy.js';
+import {browserProxyFactory as defaultBrowserProxyFactory, DefaultBrowserPageHandlerRemote} from 'chrome://feature-showcase/default_browser.mojom-webui.js';
 import type {FeatureShowcaseDefaultBrowserStepElement} from 'chrome://feature-showcase/default_browser/default_browser_step.js';
 import {FeatureShowcasePageHandlerRemote} from 'chrome://feature-showcase/feature_showcase.mojom-webui.js';
 import {FeatureShowcaseBrowserProxyImpl} from 'chrome://feature-showcase/feature_showcase_browser_proxy.js';
@@ -45,7 +44,7 @@ suite('FeatureShowcaseAppTest', function() {
     const defaultBrowserTestHandler: TestMock<DefaultBrowserPageHandlerRemote>&
         DefaultBrowserPageHandlerRemote =
         TestMock.fromClass(DefaultBrowserPageHandlerRemote);
-    DefaultBrowserBrowserProxyImpl.setInstance(
+    defaultBrowserProxyFactory.setInstance(
         {handler: defaultBrowserTestHandler});
 
     originalMatchMedia = window.matchMedia;
@@ -210,7 +209,7 @@ suite('FeatureShowcaseDefaultBrowserStepTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testHandler = TestMock.fromClass(DefaultBrowserPageHandlerRemote);
-    DefaultBrowserBrowserProxyImpl.setInstance({handler: testHandler});
+    defaultBrowserProxyFactory.setInstance({handler: testHandler});
 
     stepElement =
         document.createElement('feature-showcase-default-browser-step');

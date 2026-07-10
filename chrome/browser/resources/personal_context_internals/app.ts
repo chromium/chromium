@@ -5,8 +5,8 @@
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getHtml} from './app.html.js';
-import {BrowserProxyImpl} from './browser_proxy.js';
-import type {BrowserProxy} from './browser_proxy.js';
+import {browserProxyFactory} from './personal_context_internals.mojom-webui.js';
+import type {BrowserProxy} from './personal_context_internals.mojom-webui.js';
 
 export class PersonalContextInternalsAppElement extends CrLitElement {
   static get is() {
@@ -24,7 +24,7 @@ export class PersonalContextInternalsAppElement extends CrLitElement {
   }
 
   protected accessor message_: string = '';
-  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   protected async onTriggerFirstRunClick_() {
     this.message_ = '';
