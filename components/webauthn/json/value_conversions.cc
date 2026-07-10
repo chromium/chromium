@@ -9,12 +9,14 @@
 #include <optional>
 #include <ranges>
 #include <string_view>
+#include <variant>
 
 #include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "device/fido/attestation_object.h"
 #include "device/fido/fido_user_verification_requirement.h"
@@ -91,6 +93,34 @@ std::tuple<bool, std::optional<std::string>> Base64UrlDecodeOptionalStringKey(
 
 std::vector<uint8_t> ToByteVector(const std::string& in) {
   return base::ToVector(base::as_byte_span(in));
+}
+
+// Parses the CMTG key extension from `client_extension_results`.
+// Returns CmtgKeyResponsePtr if present and valid.
+// Returns nullptr if not present.
+// Returns the name of the field that failed to parse on error.
+base::expected<blink::mojom::CmtgKeyResponsePtr, std::string> ParseCmtgKey(
+    const base::DictValue* client_extension_results) {
+  if (!client_extension_results) {
+    return nullptr;
+  }
+  const base::DictValue* cmtg_key =
+      client_extension_results->FindDict("cmtgKey");
+  if (!cmtg_key) {
+    return nullptr;
+  }
+  std::optional<std::string> cmtg_key_val =
+      Base64UrlDecodeStringKey(*cmtg_key, "cmtgKey");
+  if (!cmtg_key_val) {
+    return base::unexpected("cmtgKey.cmtgKey");
+  }
+  std::optional<std::string> signature_val =
+      Base64UrlDecodeStringKey(*cmtg_key, "signature");
+  if (!signature_val) {
+    return base::unexpected("cmtgKey.signature");
+  }
+  return blink::mojom::CmtgKeyResponse::New(ToByteVector(*cmtg_key_val),
+                                            ToByteVector(*signature_val));
 }
 
 base::Value ToValue(const device::PublicKeyCredentialRpEntity& relying_party) {
@@ -273,13 +303,15 @@ OptionalAuthenticatorAttachmentFromValue(const base::Value* value) {
 }
 
 std::pair<blink::mojom::MakeCredentialAuthenticatorResponsePtr, std::string>
-InvalidMakeCredentialField(const char* field_name) {
-  return {nullptr, std::string("field missing or invalid: ") + field_name};
+InvalidMakeCredentialField(std::string_view field_name) {
+  return {nullptr,
+          std::string("field missing or invalid: ").append(field_name)};
 }
 
 std::pair<blink::mojom::GetAssertionAuthenticatorResponsePtr, std::string>
-InvalidGetAssertionField(const char* field_name) {
-  return {nullptr, std::string("field missing or invalid: ") + field_name};
+InvalidGetAssertionField(std::string_view field_name) {
+  return {nullptr,
+          std::string("field missing or invalid: ").append(field_name)};
 }
 
 base::Value ToValue(const blink::mojom::PRFValuesPtr& prf_input) {
@@ -426,6 +458,10 @@ base::Value ToValue(
     extensions.Set("prf", std::move(prf_value));
   }
 
+  if (options->cmtg_key) {
+    extensions.Set("cmtgKey", true);
+  }
+
   // On Android, requests with the payments extension should not be forwarded to
   // CredMan and so shouldn't need to be serialized to JSON. But we might end
   // up sending such requests to an enclave.
@@ -522,6 +558,10 @@ base::Value ToValue(
   if (options->extensions->cross_device_fallback_url) {
     extensions.Set("crossDeviceFallbackUrl",
                    options->extensions->cross_device_fallback_url->spec());
+  }
+
+  if (options->extensions->cmtg_key) {
+    extensions.Set("cmtgKey", true);
   }
 
   if (!extensions.empty()) {
@@ -749,6 +789,12 @@ MakeCredentialResponseFromValue(const base::Value& value) {
     }
   }
 
+  auto cmtg_key = ParseCmtgKey(client_extension_results);
+  if (!cmtg_key.has_value()) {
+    return InvalidMakeCredentialField(cmtg_key.error());
+  }
+  response->cmtg_key = std::move(cmtg_key.value());
+
   return {std::move(response), ""};
 }
 
@@ -882,6 +928,12 @@ GetAssertionResponseFromValue(const base::Value& value) {
     response->extensions->cross_device_fallback_url =
         *cross_device_fallback_url;
   }
+
+  auto cmtg_key = ParseCmtgKey(client_extension_results);
+  if (!cmtg_key.has_value()) {
+    return InvalidGetAssertionField(cmtg_key.error());
+  }
+  response->extensions->cmtg_key = std::move(cmtg_key.value());
 
   return {std::move(response), ""};
 }
