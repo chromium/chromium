@@ -48,7 +48,6 @@
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/coordinate_converter.h"
 #include "remoting/protocol/data_channel_manager.h"
-#include "remoting/protocol/display_size.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/host_stub.h"
 #include "remoting/protocol/input_event_timestamps.h"
@@ -85,7 +84,6 @@ class VideoLayout;
 // per-client state.
 class ClientSession : public protocol::HostStub,
                       public protocol::ConnectionToClient::EventHandler,
-                      public protocol::VideoStream::Observer,
                       public ClientSessionControl,
                       public ClientSessionDetails,
                       public ClientSessionEvents,
@@ -247,9 +245,6 @@ class ClientSession : public protocol::HostStub,
       scoped_refptr<protocol::InputEventTimestampsSource>
           event_timestamp_source);
 
-  // Public for tests.
-  void UpdateMouseClampingFilterOffset();
-
   const SessionPolicies& effective_policies_for_tests() const {
     return effective_policies_;
   }
@@ -268,13 +263,6 @@ class ClientSession : public protocol::HostStub,
 
   // Creates a proxy for sending clipboard events to the client.
   std::unique_ptr<protocol::ClipboardStub> CreateClipboardProxy();
-
-  void SetMouseClampingFilter(const DisplaySize& size);
-
-  // protocol::VideoStream::Observer implementation.
-  void OnVideoSizeChanged(protocol::VideoStream* stream,
-                          const webrtc::DesktopSize& size,
-                          const webrtc::DesktopVector& dpi) override;
 
   // AudioInjector::Delegate interface.
   void OnAudioInjectorConsumersChanged(bool has_consumers) override;
@@ -312,10 +300,6 @@ class ClientSession : public protocol::HostStub,
 
   void CreatePerMonitorVideoStreams();
 
-  // True if |index| corresponds with an existing display (or the combined
-  // display).
-  bool IsValidDisplayIndex(webrtc::ScreenId index) const;
-
   // Boosts the framerate using |capture_interval| for |boost_duration| based on
   // the type of input |event| received.
   void BoostFramerateOnInput(base::TimeDelta capture_interval,
@@ -326,12 +310,6 @@ class ClientSession : public protocol::HostStub,
   // Sends the new active display to the client. Called by ActiveDisplayMonitor
   // whenever the screen id associated with the active window changes.
   void OnActiveDisplayChanged(webrtc::ScreenId display);
-
-  // Sets the fallback geometry on `coordinate_converter` according to the
-  // current display-layout and selected display index. This is only used for
-  // single-stream mode, when the client provides fractional-coordinates without
-  // any screen_id.
-  void UpdateCoordinateConverterFallback();
 
   // Calls SetComposeEnabled() on all video streams. This controls whether the
   // host's cursor should be composed onto the desktop frame.
@@ -418,28 +396,6 @@ class ClientSession : public protocol::HostStub,
   // Default DPI values to use if a display reports 0 for DPI.
   int default_x_dpi_ = kDefaultDpi;
   int default_y_dpi_ = kDefaultDpi;
-
-  // The index of the desktop display to show to the user.
-  // Default is webrtc::kInvalidScreenScreenId because we need to perform
-  // an initial capture to determine if the current setup support capturing
-  // the entire desktop or if it is restricted to a single display.
-  // This value is either an index into |desktop_display_info_| or one of
-  // the special values webrtc::kInvalidScreenId, webrtc::kFullDesktopScreenId.
-  webrtc::ScreenId selected_display_index_ = webrtc::kInvalidScreenId;
-
-  // The initial video size captured by WebRTC.
-  // This will be the full desktop unless webrtc cannot capture the entire
-  // desktop (e.g., because the DPIs don't match). In that case, it will
-  // be equal to the dimensions of the default display.
-  DisplaySize default_webrtc_desktop_size_;
-
-  // The current size of the area being captured by webrtc. This will be
-  // equal to the size of the entire desktop, or to a single display.
-  DisplaySize webrtc_capture_size_;
-
-  // Set to true if the current display configuration supports capturing the
-  // entire desktop.
-  bool can_capture_full_desktop_ = true;
 
   // The pairing registry for PIN-less authentication.
   scoped_refptr<protocol::PairingRegistry> pairing_registry_;

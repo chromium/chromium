@@ -22,8 +22,7 @@ InputPipeline::InputPipeline(
           base::BindRepeating(&protocol::InputEventTracker::ReleaseAll,
                               base::Unretained(&input_tracker_))),
       fractional_input_filter_(&remote_input_filter_, coordinate_converter),
-      mouse_clamping_filter_(&fractional_input_filter_),
-      observing_input_filter_(&mouse_clamping_filter_),
+      observing_input_filter_(&fractional_input_filter_),
       disable_input_filter_(&observing_input_filter_) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }

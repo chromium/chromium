@@ -111,19 +111,8 @@ TEST_F(CoordinateConverterTest, InvalidScreenId) {
             std::nullopt);
 }
 
-TEST_F(CoordinateConverterTest, FallbackUsedIfNoScreenId) {
+TEST_F(CoordinateConverterTest, NoScreenId) {
   converter_.set_video_layout(BuildLayout(kSimpleLayout));
-  converter_.set_fallback_geometry(
-      webrtc::DesktopRect::MakeXYWH(200, 100, 300, 200));
-
-  EXPECT_THAT(converter_.ToGlobalAbsoluteCoordinate(
-                  BuildFractionalCoordinates(std::nullopt, 0.5, 0.5)),
-              EqualsOptionalDesktopVector(350, 200));
-}
-
-TEST_F(CoordinateConverterTest, NoScreenIdAndNoFallback) {
-  converter_.set_video_layout(BuildLayout(kSimpleLayout));
-  converter_.set_fallback_geometry({});
 
   EXPECT_EQ(converter_.ToGlobalAbsoluteCoordinate(
                 BuildFractionalCoordinates(std::nullopt, 0.5, 0.5)),

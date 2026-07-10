@@ -118,13 +118,6 @@ MATCHER_P(ScreenIdMatches, expected_id, "") {
   return arg.screen_id() == expected_id;
 }
 
-protocol::MouseEvent MakeMouseMoveEvent(int x, int y) {
-  protocol::MouseEvent result;
-  result.set_x(x);
-  result.set_y(y);
-  return result;
-}
-
 protocol::KeyEvent MakeKeyEvent(bool pressed, std::uint32_t keycode) {
   protocol::KeyEvent result;
   result.set_pressed(pressed);
@@ -191,21 +184,15 @@ class ClientSessionTest : public testing::Test {
   // Fakes display select request from user.
   void NotifySelectDesktopDisplay(std::string id);
 
-  // Convenience methods to setup a single- or double-monitor setup.
+  // Convenience methods to setup the display configuration.
   void ResetDisplayInfo();
   void SetupSingleDisplay();
-  void SetupMultiDisplay();
-  void SetupMultiDisplay_SameSize();
-
-  // When using a multi-mon setup, this fakes the user selecting which display
-  // to show.
-  void MultiMon_SelectFirstDisplay();
-  void MultiMon_SelectSecondDisplay();
-  void MultiMon_SelectAllDisplays();
-  void MultiMon_SelectDisplay(std::string display_id);
-
-  // Return the identifier of the display that's currently selected.
-  webrtc::ScreenId GetSelectedSourceDisplayId();
+  protocol::MouseEvent MakeFractionalMouseMoveEvent(
+      int x,
+      int y,
+      int64_t screen_id = kDisplay1Id,
+      int width = kDisplay1Width,
+      int height = kDisplay1Height);
 
   // Geometry info for displays being tested.
   DesktopDisplayInfo displays_;
@@ -372,59 +359,18 @@ void ClientSessionTest::SetupSingleDisplay() {
   NotifyDesktopDisplaySize(std::move(displays));
 }
 
-// Set up multiple displays:
-// +-----------+
-// |  800x600  |---------------+
-// |     0     |   1024x768    |
-// +-----------+       1       |
-//             |               |
-//             +---------------+
-void ClientSessionTest::SetupMultiDisplay() {
-  ResetDisplayInfo();
-  auto displays = std::make_unique<protocol::VideoLayout>();
-  AddDisplayToLayout(displays.get(), 0, 0, kDisplay1Width, kDisplay1Height,
-                     kDefaultDpi, kDefaultDpi, kDisplay1Id);
-  AddDisplayToLayout(displays.get(), kDisplay1Width, kDisplay2YOffset,
-                     kDisplay2Width, kDisplay2Height, kDefaultDpi, kDefaultDpi,
-                     kDisplay2Id);
-  NotifyDesktopDisplaySize(std::move(displays));
-}
-
-// Set up multiple displays that are the same size:
-// +-----------+
-// |  800x600  |-----------+
-// |     0     |  800x600  |
-// +-----------+     1     |
-//             +-----------+
-void ClientSessionTest::SetupMultiDisplay_SameSize() {
-  ResetDisplayInfo();
-  auto displays = std::make_unique<protocol::VideoLayout>();
-  AddDisplayToLayout(displays.get(), 0, 0, kDisplay1Width, kDisplay1Height,
-                     kDefaultDpi, kDefaultDpi, kDisplay1Id);
-  AddDisplayToLayout(displays.get(), kDisplay1Width, kDisplay2YOffset,
-                     kDisplay1Width, kDisplay1Height, kDefaultDpi, kDefaultDpi,
-                     kDisplay2Id);
-  NotifyDesktopDisplaySize(std::move(displays));
-}
-
-void ClientSessionTest::MultiMon_SelectFirstDisplay() {
-  NotifySelectDesktopDisplay("0");
-}
-
-void ClientSessionTest::MultiMon_SelectSecondDisplay() {
-  NotifySelectDesktopDisplay("1");
-}
-
-void ClientSessionTest::MultiMon_SelectAllDisplays() {
-  NotifySelectDesktopDisplay("all");
-}
-
-void ClientSessionTest::MultiMon_SelectDisplay(std::string display_id) {
-  NotifySelectDesktopDisplay(display_id);
-}
-
-webrtc::ScreenId ClientSessionTest::GetSelectedSourceDisplayId() {
-  return connection_->last_video_stream()->selected_source();
+protocol::MouseEvent ClientSessionTest::MakeFractionalMouseMoveEvent(
+    int x,
+    int y,
+    int64_t screen_id,
+    int width,
+    int height) {
+  protocol::MouseEvent result;
+  auto* fractional = result.mutable_fractional_coordinate();
+  fractional->set_screen_id(screen_id);
+  fractional->set_x(static_cast<float>(x) / width);
+  fractional->set_y(static_cast<float>(y) / height);
+  return result;
 }
 
 TEST_F(
@@ -563,7 +509,8 @@ TEST_F(ClientSessionTest, DisableInputs) {
   // Inject test events that are expected to be injected.
   connection_->clipboard_stub()->InjectClipboardEvent(MakeClipboardEvent("a"));
   connection_->input_stub()->InjectKeyEvent(MakeKeyEvent(true, 1));
-  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(100, 101));
+  connection_->input_stub()->InjectMouseEvent(
+      MakeFractionalMouseMoveEvent(100, 101));
 
   // Disable input.
   client_session_->SetDisableInputs(true);
@@ -572,13 +519,15 @@ TEST_F(ClientSessionTest, DisableInputs) {
   connection_->clipboard_stub()->InjectClipboardEvent(MakeClipboardEvent("b"));
   connection_->input_stub()->InjectKeyEvent(MakeKeyEvent(true, 2));
   connection_->input_stub()->InjectKeyEvent(MakeKeyEvent(false, 2));
-  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(200, 201));
+  connection_->input_stub()->InjectMouseEvent(
+      MakeFractionalMouseMoveEvent(200, 201));
 
   // Enable input again.
   client_session_->SetDisableInputs(false);
   connection_->clipboard_stub()->InjectClipboardEvent(MakeClipboardEvent("c"));
   connection_->input_stub()->InjectKeyEvent(MakeKeyEvent(true, 3));
-  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(300, 301));
+  connection_->input_stub()->InjectMouseEvent(
+      MakeFractionalMouseMoveEvent(300, 301));
 
   client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
   client_session_.reset();
@@ -617,7 +566,8 @@ TEST_F(ClientSessionTest, InputAllowedFromRemotePolicy) {
 
   connection_->clipboard_stub()->InjectClipboardEvent(MakeClipboardEvent("a"));
   connection_->input_stub()->InjectKeyEvent(MakeKeyEvent(true, 1));
-  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(100, 101));
+  connection_->input_stub()->InjectMouseEvent(
+      MakeFractionalMouseMoveEvent(100, 101));
 
   client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
   client_session_.reset();
@@ -651,7 +601,8 @@ TEST_F(ClientSessionTest, InputDisabledFromRemotePolicy) {
 
   connection_->clipboard_stub()->InjectClipboardEvent(MakeClipboardEvent("a"));
   connection_->input_stub()->InjectKeyEvent(MakeKeyEvent(true, 1));
-  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(100, 101));
+  connection_->input_stub()->InjectMouseEvent(
+      MakeFractionalMouseMoveEvent(100, 101));
 
   client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
   client_session_.reset();
@@ -670,7 +621,8 @@ TEST_F(ClientSessionTest, LocalInputTest) {
       ->last_input_injector()
       ->set_mouse_events(&mouse_events_);
 
-  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(100, 101));
+  connection_->input_stub()->InjectMouseEvent(
+      MakeFractionalMouseMoveEvent(100, 101));
 
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   // The OS echoes the injected event back.
@@ -679,14 +631,16 @@ TEST_F(ClientSessionTest, LocalInputTest) {
 #endif  // !BUILDFLAG(IS_WIN)
 
   // This one should get throught as well.
-  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(200, 201));
+  connection_->input_stub()->InjectMouseEvent(
+      MakeFractionalMouseMoveEvent(200, 201));
 
   // Now this is a genuine local event.
   client_session_->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
                                        ui::EventType::kMouseMoved);
 
   // This one should be blocked because of the previous local input event.
-  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(300, 301));
+  connection_->input_stub()->InjectMouseEvent(
+      MakeFractionalMouseMoveEvent(300, 301));
 
   // Verify that we've received correct set of mouse events.
   ASSERT_EQ(mouse_events_.size(), 2U);
@@ -774,7 +728,7 @@ TEST_F(ClientSessionTest, ClampMouseEvents) {
     for (int i = 0; i < 3; i++) {
       mouse_events_.clear();
       connection_->input_stub()->InjectMouseEvent(
-          MakeMouseMoveEvent(input_x[i], input_y[j]));
+          MakeFractionalMouseMoveEvent(input_x[i], input_y[j]));
 
       EXPECT_EQ(mouse_events_.size(), 1U);
       EXPECT_THAT(mouse_events_[0],

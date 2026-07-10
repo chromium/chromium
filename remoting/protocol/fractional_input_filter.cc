@@ -22,6 +22,13 @@ FractionalInputFilter::~FractionalInputFilter() = default;
 
 void FractionalInputFilter::InjectMouseEvent(const MouseEvent& event) {
   if (!event.has_fractional_coordinate()) {
+    if (event.has_x() || event.has_y()) {
+      // Drop absolute mouse events that lack fractional coordinates.
+      // In multi-stream mode, absolute positioning requires a screen_id to
+      // scale and clamp to the correct display. Legacy absolute coordinates
+      // lack a screen_id, and there is no fallback geometry to clamp against.
+      return;
+    }
     InputFilter::InjectMouseEvent(event);
     return;
   }
@@ -37,13 +44,22 @@ void FractionalInputFilter::InjectMouseEvent(const MouseEvent& event) {
 }
 
 void FractionalInputFilter::InjectTouchEvent(const TouchEvent& event) {
+  for (const TouchEventPoint& touch_point : event.touch_points()) {
+    if (!touch_point.has_fractional_coordinate()) {
+      if (touch_point.has_x() || touch_point.has_y()) {
+        // Drop absolute touch events that lack fractional coordinates, as
+        // they lack a screen_id and cannot be safely scaled or clamped.
+        return;
+      }
+    }
+  }
+
   // Copy the event, so it can be mutated. This could be optimized for cases
   // where mutation is not needed. But in the longer term, the TouchEvents will
   // all have fractional coordinates, and then a copy is needed anyway.
   TouchEvent new_event(event);
 
   for (TouchEventPoint& touch_point : *(new_event.mutable_touch_points())) {
-    // Events with no fractional-coordinates should be passed through unchanged.
     if (touch_point.has_fractional_coordinate()) {
       auto result = converter_->ToGlobalAbsoluteCoordinate(
           touch_point.fractional_coordinate());

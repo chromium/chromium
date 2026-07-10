@@ -29,25 +29,13 @@ class CoordinateConverter {
   // injection.
   void set_video_layout(const VideoLayout& layout);
 
-  // Sets the fallback geometry to be used for fractional coordinates which
-  // don't have `screen_id`. If no fallback is set (or has empty size), no
-  // fallback will be used.
-  // TODO: yuweih - The fallback geometry can be removed once multi-stream is
-  // fully rolled out.
-  void set_fallback_geometry(const webrtc::DesktopRect& geometry);
-
   // Converts the fractional coordinate to a global absolute coordinate. Returns
-  // nullopt if conversion fails, usually because the screen ID is not found or
-  // a fallback geometry is not provided.
+  // nullopt if conversion fails, usually because the screen ID is not found.
   std::optional<webrtc::DesktopVector> ToGlobalAbsoluteCoordinate(
       const FractionalCoordinate& fractional) const;
 
  private:
   VideoLayout video_layout_;
-
-  // webrtc::DesktopRect is a convenient choice because it uses 32-bit values
-  // which match the proto definitions for VideoTrackLayout fields.
-  webrtc::DesktopRect fallback_geometry_;
 };
 
 }  // namespace remoting::protocol

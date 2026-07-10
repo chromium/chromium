@@ -12,7 +12,6 @@
 #include "remoting/protocol/input_event_tracker.h"
 #include "remoting/protocol/input_filter.h"
 #include "remoting/protocol/input_stub.h"
-#include "remoting/protocol/mouse_input_filter.h"
 #include "remoting/protocol/observing_input_filter.h"
 
 namespace remoting {
@@ -51,9 +50,6 @@ class InputPipeline : public protocol::InputStub {
   protocol::ObservingInputFilter* observing_input_filter() {
     return &observing_input_filter_;
   }
-  protocol::MouseInputFilter* mouse_clamping_filter() {
-    return &mouse_clamping_filter_;
-  }
   RemoteInputFilter* remote_input_filter() { return &remote_input_filter_; }
   CursorVisibilityNotifier* cursor_visibility_notifier() {
     return &cursor_visibility_notifier_;
@@ -83,9 +79,6 @@ class InputPipeline : public protocol::InputStub {
   // Filter used to convert any fractional coordinates to input-injection
   // coordinates.
   protocol::FractionalInputFilter fractional_input_filter_;
-
-  // Filter used to clamp mouse events to the current display dimensions.
-  protocol::MouseInputFilter mouse_clamping_filter_;
 
   // Filter used to notify listeners when remote input events are received.
   protocol::ObservingInputFilter observing_input_filter_;
