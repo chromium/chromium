@@ -43,12 +43,16 @@ void StructuredMetricsInternalsHandler::ResolvePageCallback(
 void StructuredMetricsInternalsHandler::HandleFetchStructuredMetricsEvents(
     const base::ListValue& args) {
   AllowJavascript();
+  // args[0]: Callback ID.
+  CHECK_EQ(args.size(), 1U);
   base_handler_->HandleFetchStructuredMetricsEvents(args[0]);
 }
 
 void StructuredMetricsInternalsHandler::HandleFetchStructuredMetricsSummary(
     const base::ListValue& args) {
   AllowJavascript();
+  // args[0]: Callback ID.
+  CHECK_EQ(args.size(), 1U);
   base_handler_->HandleFetchStructuredMetricsSummary(args[0]);
 }
 

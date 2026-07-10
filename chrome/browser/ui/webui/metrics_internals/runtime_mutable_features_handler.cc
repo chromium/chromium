@@ -49,6 +49,7 @@ void RuntimeMutableFeaturesHandler::ResolvePageCallback(
 void RuntimeMutableFeaturesHandler::HandleFetchRuntimeMutableFeatures(
     const base::ListValue& args) {
   AllowJavascript();
+  // args[0]: Callback ID.
   CHECK_EQ(args.size(), 1U);
   base_handler_->HandleFetchRuntimeMutableFeatures(args[0]);
 }
@@ -56,6 +57,7 @@ void RuntimeMutableFeaturesHandler::HandleFetchRuntimeMutableFeatures(
 void RuntimeMutableFeaturesHandler::HandleIsSeedFetchingPaused(
     const base::ListValue& args) {
   AllowJavascript();
+  // args[0]: Callback ID.
   CHECK_EQ(args.size(), 1U);
   base_handler_->HandleIsSeedFetchingPaused(args[0]);
 }
@@ -63,6 +65,8 @@ void RuntimeMutableFeaturesHandler::HandleIsSeedFetchingPaused(
 void RuntimeMutableFeaturesHandler::HandleSetSeedFetchingPaused(
     const base::ListValue& args) {
   AllowJavascript();
+  // args[0]: Callback ID.
+  // args[1]: Whether to pause seed fetching (bool).
   CHECK_EQ(args.size(), 2U);
   base_handler_->HandleSetSeedFetchingPaused(args[0], args[1].GetBool());
 }
@@ -70,6 +74,8 @@ void RuntimeMutableFeaturesHandler::HandleSetSeedFetchingPaused(
 void RuntimeMutableFeaturesHandler::HandleUploadSeed(
     const base::ListValue& args) {
   AllowJavascript();
+  // args[0]: Callback ID.
+  // args[1]: The seed bytes (binary blob).
   CHECK_EQ(args.size(), 2U);
   base_handler_->HandleUploadSeed(args[0], args[1]);
 }
