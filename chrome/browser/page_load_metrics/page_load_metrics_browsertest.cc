@@ -3656,7 +3656,9 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestNoRendererCrashedPage,
   destruction_observer.Wait();
   EXPECT_TRUE(web_contents() == contents);
   EXPECT_FALSE(contents->IsCrashed());
-  EXPECT_EQ(GURL(GetParam()), contents->GetLastCommittedURL());
+  // GetWithoutRef() allows chrome://process-internals/ to (sometimes) redirect
+  // to chrome://process-internals/#general. See crbug.com/526654572.
+  EXPECT_EQ(GURL(GetParam()), contents->GetLastCommittedURL().GetWithoutRef());
   EXPECT_FALSE(contents->HasUncommittedNavigationInPrimaryMainFrame());
 
   // Verify page load metric is recorded.
