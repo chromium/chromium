@@ -43,7 +43,6 @@
 #import "ios/chrome/browser/webui/ui_bundled/interstitials/interstitial_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/local_state/local_state_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/management/management_ui.h"
-#import "ios/chrome/browser/webui/ui_bundled/metrics_internals/metrics_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/net_export/net_export_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/ntp_tiles_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/omaha_ui.h"
@@ -164,9 +163,6 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
   }
   if (url_host == kChromeUIManagementHost) {
     return &NewWebUIIOS<ManagementUI>;
-  }
-  if (url_host == kChromeUIMetricsInternalsHost) {
-    return &NewWebUIIOS<MetricsInternalsUI>;
   }
   if (url_host == kChromeUINTPTilesInternalsHost) {
     return &NewWebUIIOS<NTPTilesInternalsUI>;

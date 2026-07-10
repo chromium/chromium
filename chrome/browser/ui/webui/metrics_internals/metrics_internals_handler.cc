@@ -8,8 +8,6 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 
-// LINT.IfChange(metrics_internals_handler)
-
 MetricsInternalsHandler::MetricsInternalsHandler()
     : base_handler_(std::make_unique<metrics::MetricsInternalsHandlerBase>(
           this,
@@ -114,5 +112,3 @@ void MetricsInternalsHandler::HandleIsUsingMetricsServiceObserver(
   AllowJavascript();
   base_handler_->HandleIsUsingMetricsServiceObserver(args[0]);
 }
-
-// LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/metrics_internals/metrics_internals_handler.mm)

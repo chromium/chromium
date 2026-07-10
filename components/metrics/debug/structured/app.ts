@@ -1,10 +1,6 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// <if expr="is_ios">
-import 'chrome://resources/js/ios/web_ui.js';
-
-// </if>
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';

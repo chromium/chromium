@@ -66,7 +66,6 @@ inline constexpr char kChromeUIInspectHost[] = "inspect";
 inline constexpr char kChromeUIInterstitialsHost[] = "interstitials";
 inline constexpr char kChromeUILocalStateHost[] = "local-state";
 inline constexpr char kChromeUIManagementHost[] = "management";
-inline constexpr char kChromeUIMetricsInternalsHost[] = "metrics-internals";
 inline constexpr char kChromeUINetExportHost[] = "net-export";
 inline constexpr char kChromeUINewTabHost[] = "newtab";
 inline constexpr char kChromeUINTPTilesInternalsHost[] = "ntp-tiles-internals";
@@ -241,7 +240,6 @@ inline constexpr std::array<std::string_view, 23> kChromeHostURLs = {
     kChromeUIInterstitialsHost,
     kChromeUILocalStateHost,
     kChromeUIManagementHost,
-    kChromeUIMetricsInternalsHost,
     kChromeUINetExportHost,
     kChromeUINewTabHost,
     kChromeUINTPTilesInternalsHost,

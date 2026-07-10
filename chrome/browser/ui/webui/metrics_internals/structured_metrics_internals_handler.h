@@ -12,8 +12,6 @@
 #include "components/metrics/structured/buildflags/buildflags.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-// LINT.IfChange(structured_metrics_internals_handler)
-
 // UI Handler for chrome://metrics-internals/structured
 class StructuredMetricsInternalsHandler
     : public content::WebUIMessageHandler,
@@ -43,7 +41,5 @@ class StructuredMetricsInternalsHandler
   std::unique_ptr<metrics::structured::StructuredMetricsInternalsHandlerBase>
       base_handler_;
 };
-
-// LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/metrics_internals/structured_metrics_internals_handler.h)
 
 #endif  // CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_STRUCTURED_METRICS_INTERNALS_HANDLER_H_

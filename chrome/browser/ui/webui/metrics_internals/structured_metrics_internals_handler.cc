@@ -9,8 +9,6 @@
 #include "chrome/browser/browser_process.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 
-// LINT.IfChange(structured_metrics_internals_handler)
-
 StructuredMetricsInternalsHandler::StructuredMetricsInternalsHandler()
     : base_handler_(std::make_unique<
                     metrics::structured::StructuredMetricsInternalsHandlerBase>(
@@ -51,5 +49,3 @@ void StructuredMetricsInternalsHandler::HandleFetchStructuredMetricsSummary(
   AllowJavascript();
   base_handler_->HandleFetchStructuredMetricsSummary(args[0]);
 }
-
-// LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/metrics_internals/structured_metrics_internals_handler.mm)

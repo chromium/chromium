@@ -10,8 +10,6 @@
 #include "components/metrics/debug/metrics_internals_handler_base.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-// LINT.IfChange(metrics_internals_handler)
-
 // UI Handler for chrome://metrics-internals.
 class MetricsInternalsHandler
     : public content::WebUIMessageHandler,
@@ -48,7 +46,5 @@ class MetricsInternalsHandler
 
   std::unique_ptr<metrics::MetricsInternalsHandlerBase> base_handler_;
 };
-
-// LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/metrics_internals/metrics_internals_handler.h)
 
 #endif  // CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_METRICS_INTERNALS_HANDLER_H_

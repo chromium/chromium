@@ -5,10 +5,9 @@
 #include "chrome/browser/ui/webui/metrics_internals/runtime_mutable_features_handler.h"
 
 #include "base/functional/bind.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/browser_process.h"
 #include "content/public/browser/web_ui.h"
-
-// LINT.IfChange(runtime_mutable_features_handler)
 
 RuntimeMutableFeaturesHandler::RuntimeMutableFeaturesHandler()
     : base_handler_(
@@ -73,5 +72,3 @@ void RuntimeMutableFeaturesHandler::HandleUploadSeed(
   CHECK_EQ(args.size(), 2U);
   base_handler_->HandleUploadSeed(args[0], args[1]);
 }
-
-// LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/metrics_internals/runtime_mutable_features_handler.mm)

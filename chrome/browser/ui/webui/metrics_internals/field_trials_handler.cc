@@ -13,8 +13,6 @@
 #include "components/variations/service/variations_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-// LINT.IfChange(field_trials_handler)
-
 FieldTrialsHandler::FieldTrialsHandler(Profile* profile)
     : profile_(profile),
       base_handler_(std::make_unique<metrics::FieldTrialsHandlerBase>(
@@ -85,5 +83,3 @@ bool FieldTrialsHandler::GetShowNames() {
                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                  .email);
 }
-
-// LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/metrics_internals/field_trials_handler.mm)

@@ -13,7 +13,6 @@
 
 // UI Handler for the Runtime-Mutable-Features tab in
 // chrome://metrics-internals.
-// LINT.IfChange(runtime_mutable_features_handler)
 class RuntimeMutableFeaturesHandler
     : public content::WebUIMessageHandler,
       public metrics::RuntimeMutableFeaturesHandlerBase::Delegate {
@@ -41,6 +40,5 @@ class RuntimeMutableFeaturesHandler
 
   std::unique_ptr<metrics::RuntimeMutableFeaturesHandlerBase> base_handler_;
 };
-// LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/metrics_internals/runtime_mutable_features_handler.h)
 
 #endif  // CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_RUNTIME_MUTABLE_FEATURES_HANDLER_H_
