@@ -62,6 +62,7 @@ source_set("impl") {
     "//chrome/browser/ui:collected_cookies_infobar_delegate",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/page_info",
     "//components/infobars/content",
     "//content/public/browser",
   ]

@@ -20,12 +20,14 @@
 #include "chrome/browser/devtools/devtools_infobar_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/omnibox/alternate_nav_infobar_delegate.h"
+#include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/common/pref_names.h"
@@ -168,6 +170,12 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       "prevents the infobar from being shown, then shows the infobar. "
       "This can only be triggered on Mac."));
 #endif
+
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kPageInfo, /*name=*/"Page Info",
+      /*description=*/
+      "The Page Info infobar is shown when a user changes permissions, "
+      "asking them to reload the page to apply settings."));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   infobar_list.emplace_back(InfoBarEntry::New(
@@ -392,6 +400,33 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
       return false;
     }
 #endif
+    case InfoBarType::kPageInfo: {
+      if (!bwi || !bwi->GetActiveTabInterface()) {
+        return false;
+      }
+      content::WebContents* web_contents =
+          bwi->GetActiveTabInterface()->GetContents();
+
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE)) {
+        auto* browser_infobar_manager =
+            infobars::BrowserInfoBarManager::From(g_browser_process);
+        if (!browser_infobar_manager) {
+          return false;
+        }
+        browser_infobar_manager->Show(
+            web_contents,
+            infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE);
+      } else {
+        infobars::ContentInfoBarManager* infobar_manager =
+            infobars::ContentInfoBarManager::FromWebContents(web_contents);
+        if (!infobar_manager) {
+          return false;
+        }
+        PageInfoInfoBarDelegate::Create(infobar_manager);
+      }
+      return true;
+    }
 #if BUILDFLAG(ENABLE_PLUGINS)
     case InfoBarType::kReloadPlugin: {
       if (!bwi || !bwi->GetActiveTabInterface()) {
