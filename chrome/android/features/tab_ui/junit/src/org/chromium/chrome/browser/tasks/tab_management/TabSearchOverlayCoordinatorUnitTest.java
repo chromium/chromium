@@ -82,10 +82,13 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Mock private UrlBarCoordinator mUrlBarCoordinator;
     @Mock private SearchActivityLocationBarLayout mSearchBox;
     @Mock private Profile mProfile;
+    @Mock private Profile mIncognitoProfile;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private ModalDialogManager mModalDialogManager;
 
+    private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
+            ObservableSuppliers.createMonotonic();
     private final SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
             ObservableSuppliers.createMonotonic();
     @Captor private ArgumentCaptor<OverrideUrlLoadingDelegate> mOverrideUrlLoadingDelegateCaptor;
@@ -101,18 +104,18 @@ public class TabSearchOverlayCoordinatorUnitTest {
         mActivity.setContentView(mParentContainer);
 
         mTabModelSelectorSupplier.set(mTabModelSelector);
+        mProfileSupplier.set(mProfile);
 
         when(mSearchUiCoordinator.getLocationBarCoordinator()).thenReturn(mLocationBarCoordinator);
         when(mLocationBarCoordinator.getUrlBarCoordinator()).thenReturn(mUrlBarCoordinator);
         when(mSearchUiCoordinator.getSearchBox()).thenReturn(mSearchBox);
 
-        var profileSupplier = ObservableSuppliers.createMonotonic(mProfile);
         mCoordinator =
                 new TabSearchOverlayCoordinator(
                         mActivity,
                         mParentContainer,
                         mWindowAndroid,
-                        profileSupplier,
+                        mProfileSupplier,
                         mSnackbarManager,
                         ObservableSuppliers.createNonNull(mModalDialogManager),
                         mActivityLifecycleDispatcher,
@@ -302,5 +305,25 @@ public class TabSearchOverlayCoordinatorUnitTest {
                         any(),
                         any(),
                         any());
+    }
+
+    @Test
+    public void testProfileChanged_updatesColorScheme() {
+        showOverlay();
+        verifySearchUiCoordinatorInitialized();
+
+        // Switch to an incognito profile.
+        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+        mProfileSupplier.set(mIncognitoProfile);
+
+        // Verify that setColorScheme was called with true.
+        verify(mSearchUiCoordinator).setColorScheme(true);
+
+        // Switch back to non-incognito profile.
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        mProfileSupplier.set(mProfile);
+
+        // Verify that setColorScheme was called with false.
+        verify(mSearchUiCoordinator).setColorScheme(false);
     }
 }

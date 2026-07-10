@@ -38,7 +38,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     private boolean mPendingSearchPromoDecision;
     private boolean mPendingBeginQuery;
     private boolean mInteractionFromWidget;
-    private boolean mIsIncognito;
 
     public SearchActivityLocationBarLayout(Context context, AttributeSet attrs) {
         super(context, attrs, R.layout.location_bar);
@@ -57,7 +56,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
                 statusCoordinator,
                 locationBarDataProvider,
                 windowAndroid);
-        mIsIncognito = locationBarDataProvider.isIncognitoBranded();
         mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         mAutocompleteCoordinator.setShouldPreventOmniboxAutocomplete(mPendingSearchPromoDecision);
 
@@ -126,9 +124,10 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         if (origin == IntentOrigin.CUSTOM_TAB) {
             mUrlBar.setHint(R.string.omnibox_on_cct_empty_hint);
         } else if (origin == IntentOrigin.HUB) {
+            boolean isIncognito = mLocationBarDataProvider.isIncognitoBranded();
             @StringRes
             int hintTextRes =
-                    mIsIncognito
+                    isIncognito
                             ? R.string.hub_search_empty_hint_incognito
                             : R.string.hub_search_empty_hint;
             mUrlBar.setHint(hintTextRes);

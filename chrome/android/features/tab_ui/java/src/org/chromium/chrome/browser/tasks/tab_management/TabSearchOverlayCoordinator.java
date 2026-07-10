@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.IdRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -80,6 +81,7 @@ public class TabSearchOverlayCoordinator {
     private @Nullable LinearLayout mPanelContainer;
     private @Nullable SearchUiCoordinator mSearchUiCoordinator;
     private final SearchBoxDataProvider mSearchBoxDataProvider;
+    private final Callback<Profile> mProfileObserver;
 
     /**
      * Constructs a new TabSearchOverlayCoordinator.
@@ -120,10 +122,14 @@ public class TabSearchOverlayCoordinator {
 
         mSearchBoxDataProvider = new SearchBoxDataProvider();
         mSearchBoxDataProvider.setPageClassification(PageClassification.ANDROID_HUB_VALUE);
+
+        mProfileObserver = this::onProfileChanged;
+        mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
     }
 
     /** Destroys the coordinator, cleaning up resources and child coordinators. */
     public void destroy() {
+        mProfileSupplier.removeObserver(mProfileObserver);
         if (mChangeProcessor != null) {
             mChangeProcessor.destroy();
             mChangeProcessor = null;
@@ -168,9 +174,6 @@ public class TabSearchOverlayCoordinator {
         panelView.setOnContextClickListener(this::consumeContextClick);
 
         if (mSearchUiCoordinator == null) {
-            boolean isIncognito =
-                    mProfileSupplier.get() != null && mProfileSupplier.get().isOffTheRecord();
-            mSearchBoxDataProvider.initialize(mActivity, isIncognito);
             mSearchUiCoordinator = new SearchUiCoordinator(mActivity, mSearchBoxDataProvider);
             mSearchUiCoordinator.getLocationBarUiOverrides().setVoiceEntrypointAllowed(false);
             mSearchUiCoordinator.getLocationBarUiOverrides().setEmbedderControlledHint(true);
@@ -338,5 +341,20 @@ public class TabSearchOverlayCoordinator {
 
     void setSearchUiCoordinatorForTesting(SearchUiCoordinator searchUiCoordinator) {
         mSearchUiCoordinator = searchUiCoordinator;
+    }
+
+    /**
+     * Called when the current {@link Profile} changes. Primarily intended to handle switching
+     * between incognito and non-incognito modes for the current profile. Since this coordinator is
+     * not torn down between context switches, any profile-dependent changes must be added here.
+     */
+    private void onProfileChanged(Profile profile) {
+        // If the profile supplier is null (rare), default to the non-incognito state as it is the
+        // safest choice for coloring since some features still do not support incognito colors.
+        boolean isIncognito = profile != null && profile.isOffTheRecord();
+        mSearchBoxDataProvider.initialize(mActivity, isIncognito);
+        if (mSearchUiCoordinator != null) {
+            mSearchUiCoordinator.setColorScheme(isIncognito);
+        }
     }
 }
