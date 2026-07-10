@@ -292,6 +292,8 @@ constexpr AcceleratorMapping kUIDebugAcceleratorMap[] = {
     {ui::VKEY_T, kDebugModifier, IDC_DEBUG_TOGGLE_TABLET_MODE},
     {ui::VKEY_V, kDebugModifier, IDC_DEBUG_PRINT_VIEW_TREE},
     {ui::VKEY_M, kDebugModifier, IDC_DEBUG_PRINT_VIEW_TREE_DETAILS},
+    {ui::VKEY_W, kDebugModifier, IDC_DEBUG_PRINT_WINDOW_HIERARCHY},
+    {ui::VKEY_L, kDebugModifier, IDC_DEBUG_PRINT_LAYER_HIERARCHY},
 };
 
 const int kRepeatableCommandIds[] = {

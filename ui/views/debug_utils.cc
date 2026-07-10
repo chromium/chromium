@@ -6,11 +6,20 @@
 
 #include <ostream>
 
+#include "base/dcheck_is_on.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "ui/compositor/debug_utils.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#include "ui/display/screen.h"
+#include "ui/wm/core/coordinate_conversion.h"
+#endif
 
 #if !defined(NDEBUG)
 #include "base/numerics/angle_conversions.h"
@@ -151,6 +160,55 @@ void PrintFocusHierarchy(const View* view) {
   PrintFocusHierarchyImp(view, 0, &out);
   // Error so users in the field can generate and upload logs.
   LOG(ERROR) << out.str();
+}
+
+void PrintWindowHierarchy(gfx::NativeWindow window, std::ostringstream* out) {
+#if defined(USE_AURA)
+  aura::Window* target_window = window;
+  aura::Window* root_window =
+      target_window ? target_window->GetRootWindow() : nullptr;
+  if (root_window) {
+    *out << "\n--- Window Hierarchy ---\n";
+#if DCHECK_IS_ON()
+    *out << root_window->GetWindowHierarchy(0);
+#else
+    *out << "Window hierarchy is only available in DCHECK builds.\n";
+#endif
+  }
+#endif
+
+  Widget* widget = Widget::GetWidgetForNativeWindow(window);
+  if (widget) {
+    *out << "\n--- Widget Information ---\n";
+    PrintWidgetInformation(*widget, /*detailed=*/true, out);
+  }
+}
+
+void PrintLayerHierarchy(gfx::NativeWindow window, std::ostringstream* out) {
+#if defined(USE_AURA)
+  aura::Window* target_window = window;
+  aura::Window* root_window =
+      target_window ? target_window->GetRootWindow() : nullptr;
+  if (root_window) {
+    *out << "\n--- ui::Layer Tree ---\n";
+    gfx::Point mouse_location;
+    if (display::Screen::Get()) {
+      mouse_location = display::Screen::Get()->GetCursorScreenPoint();
+      wm::ConvertPointFromScreen(root_window, &mouse_location);
+    }
+    ui::PrintLayerHierarchy(root_window->layer(), mouse_location,
+                            /*print_invisible=*/true, out);
+  }
+#else
+  // For non-Aura platforms, we can still print the layer tree of the widget
+  // if it has a layer-backed helper.
+  Widget* widget = Widget::GetWidgetForNativeWindow(window);
+  if (widget && widget->GetLayer()) {
+    *out << "\n--- ui::Layer Tree ---\n";
+    ui::PrintLayerHierarchy(widget->GetLayer(), gfx::Point(),
+                            /*print_invisible=*/true, out);
+  }
+#endif
 }
 
 #if !defined(NDEBUG)

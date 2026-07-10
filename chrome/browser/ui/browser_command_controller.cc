@@ -1440,6 +1440,8 @@ void BrowserCommandController::HandleCommandWithDisposition(
     case IDC_DEBUG_TOGGLE_TABLET_MODE:
     case IDC_DEBUG_PRINT_VIEW_TREE:
     case IDC_DEBUG_PRINT_VIEW_TREE_DETAILS:
+    case IDC_DEBUG_PRINT_WINDOW_HIERARCHY:
+    case IDC_DEBUG_PRINT_LAYER_HIERARCHY:
       ExecuteUIDebugCommand(id, browser_);
       break;
 
@@ -1964,6 +1966,10 @@ void BrowserCommandController::InitCommandState() {
     command_updater_->UpdateCommandEnabled(IDC_DEBUG_TOGGLE_TABLET_MODE, true);
     command_updater_->UpdateCommandEnabled(IDC_DEBUG_PRINT_VIEW_TREE, true);
     command_updater_->UpdateCommandEnabled(IDC_DEBUG_PRINT_VIEW_TREE_DETAILS,
+                                           true);
+    command_updater_->UpdateCommandEnabled(IDC_DEBUG_PRINT_WINDOW_HIERARCHY,
+                                           true);
+    command_updater_->UpdateCommandEnabled(IDC_DEBUG_PRINT_LAYER_HIERARCHY,
                                            true);
   }
 

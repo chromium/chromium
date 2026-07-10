@@ -501,6 +501,8 @@
 #define IDC_DEBUG_TOGGLE_TABLET_MODE 52510
 #define IDC_DEBUG_PRINT_VIEW_TREE 52511
 #define IDC_DEBUG_PRINT_VIEW_TREE_DETAILS 52512
+#define IDC_DEBUG_PRINT_WINDOW_HIERARCHY 52513
+#define IDC_DEBUG_PRINT_LAYER_HIERARCHY 52514
 // Please leave a gap here for new debug commands.
 
 // Autofill feedback.

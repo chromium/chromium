@@ -385,6 +385,8 @@
   E(kActionDebugToggleTabletMode, IDC_DEBUG_TOGGLE_TABLET_MODE) \
   E(kActionDebugPrintViewTree, IDC_DEBUG_PRINT_VIEW_TREE) \
   E(kActionDebugPrintViewTreeDetails, IDC_DEBUG_PRINT_VIEW_TREE_DETAILS) \
+  E(kActionDebugPrintWindowHierarchy, IDC_DEBUG_PRINT_WINDOW_HIERARCHY) \
+  E(kActionDebugPrintLayerHierarchy, IDC_DEBUG_PRINT_LAYER_HIERARCHY) \
   /* Autofill feedback. */ \
   E(kActionContentContextAutofillFeedback, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK) \
