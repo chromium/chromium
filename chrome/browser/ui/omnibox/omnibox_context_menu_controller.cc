@@ -399,14 +399,16 @@ void OmniboxContextMenuController::AddRecentTabItems() {
   for (const auto& tab : tabs) {
     target_menu_model->AddItemWithIcon(next_command_id_, tab.title,
                                        favicon::GetDefaultFaviconModel());
-    if (tab.is_active_tab) {
-      target_menu_model->SetMinorText(
-          target_menu_model->GetItemCount() - 1,
-          l10n_util::GetStringUTF16(IDS_COMPOSE_CURRENT_TAB));
-    } else if (!has_active_tab && tab_index == 0) {
-      target_menu_model->SetMinorText(
-          target_menu_model->GetItemCount() - 1,
-          l10n_util::GetStringUTF16(IDS_NTP_COMPOSEBOX_RECENT_TAB_SUFFIX));
+    if (include_tabs_submenu) {
+      if (tab.is_active_tab) {
+        target_menu_model->SetMinorText(
+            target_menu_model->GetItemCount() - 1,
+            l10n_util::GetStringUTF16(IDS_COMPOSE_CURRENT_TAB));
+      } else if (!has_active_tab && tab_index == 0) {
+        target_menu_model->SetMinorText(
+            target_menu_model->GetItemCount() - 1,
+            l10n_util::GetStringUTF16(IDS_NTP_COMPOSEBOX_RECENT_TAB_SUFFIX));
+      }
     }
     AddTabFavicon(next_command_id_, tab.url, tab.title);
     input_type_for_command_id_[next_command_id_] =
