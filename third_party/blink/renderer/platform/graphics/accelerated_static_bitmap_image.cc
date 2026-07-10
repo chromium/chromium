@@ -66,7 +66,7 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
     const gpu::SyncToken& sync_token,
     SkAlphaType alpha_type,
     const gfx::HDRMetadata& hdr_metadata,
-    base::OnceCallback<void(const gpu::SyncToken&)> external_callback) {
+    base::OnceCallback<void(gpu::SharedImageExportResult)> external_callback) {
   auto shared_gpu_context = blink::SharedGpuContext::ContextProviderWrapper();
   if (!shared_gpu_context) {
     return nullptr;
@@ -78,10 +78,13 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
 
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       sii->ImportSharedImage(std::move(exported_shared_image));
+  if (!shared_image) {
+    return nullptr;
+  }
   auto release_token = sii->GenVerifiedSyncToken();
   // No need to keep the original image after the new reference has been added.
   // Need to update the sync token, however.
-  std::move(external_callback).Run(release_token);
+  std::move(external_callback).Run(shared_image->EndImport(release_token));
 
   auto release_callback = blink::BindOnce(
       [](base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
@@ -334,6 +337,13 @@ void AcceleratedStaticBitmapImage::Transfer() {
 bool AcceleratedStaticBitmapImage::IsOpaque() {
   return SkAlphaTypeIsOpaque(GetAlphaType()) ||
          !GetSharedImageFormat().HasAlpha();
+}
+
+void AcceleratedStaticBitmapImage::UpdateSyncTokenFromExportResult(
+    gpu::SharedImageExportResult export_result) {
+  if (shared_image_) {
+    UpdateSyncToken(shared_image_->EndExport(std::move(export_result)));
+  }
 }
 
 }  // namespace blink

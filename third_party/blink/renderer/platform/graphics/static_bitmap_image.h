@@ -80,6 +80,9 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
     NOTREACHED();
   }
   virtual void UpdateSyncToken(const gpu::SyncToken&) { NOTREACHED(); }
+  virtual void UpdateSyncTokenFromExportResult(gpu::SharedImageExportResult) {
+    NOTREACHED();
+  }
 
   bool IsPremultiplied() const {
     return GetAlphaType() == SkAlphaType::kPremul_SkAlphaType;

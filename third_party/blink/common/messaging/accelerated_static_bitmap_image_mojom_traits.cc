@@ -12,7 +12,7 @@
 
 namespace {
 
-using Callback = base::OnceCallback<void(const gpu::SyncToken&)>;
+using Callback = base::OnceCallback<void(gpu::SharedImageExportResult)>;
 
 // Implements mojom::ImageReleaseCallback.
 // The passed in callback will be destroyed once the mojo pipe
@@ -25,8 +25,8 @@ class ReleaseCallbackImpl : public blink::mojom::ImageReleaseCallback {
   explicit ReleaseCallbackImpl(Callback callback)
       : callback_(std::move(callback)) {}
 
-  void Release(const gpu::SyncToken& sync_token) override {
-    std::move(callback_).Run(sync_token);
+  void Release(gpu::SharedImageExportResult export_result) override {
+    std::move(callback_).Run(std::move(export_result));
   }
 
  private:
@@ -35,10 +35,10 @@ class ReleaseCallbackImpl : public blink::mojom::ImageReleaseCallback {
 
 void Release(
     mojo::PendingRemote<blink::mojom::ImageReleaseCallback> pending_remote,
-    const gpu::SyncToken& sync_token) {
+    gpu::SharedImageExportResult export_result) {
   mojo::Remote<blink::mojom::ImageReleaseCallback> remote(
       std::move(pending_remote));
-  remote->Release(sync_token);
+  remote->Release(std::move(export_result));
 }
 
 }  // namespace

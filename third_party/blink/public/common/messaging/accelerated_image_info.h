@@ -23,7 +23,8 @@ struct BLINK_COMMON_EXPORT AcceleratedImageInfo {
   gpu::ExportedSharedImage shared_image;
   gpu::SyncToken sync_token;
   SkAlphaType alpha_type;
-  base::OnceCallback<void(const gpu::SyncToken& sync_token)> release_callback;
+  base::OnceCallback<void(gpu::SharedImageExportResult export_result)>
+      release_callback;
 };
 
 }  // namespace blink

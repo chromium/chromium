@@ -1208,6 +1208,7 @@ _CONFIG = [
             'gfx::Size',
             'gfx::SizeToSkISize',
             'gpu::ExportedSharedImage',
+            'gpu::SharedImageExportResult',
             'gpu::SHARED_IMAGE_USAGE_DISPLAY_READ',
             'gpu::SHARED_IMAGE_USAGE_SCANOUT',
             'gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE',

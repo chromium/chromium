@@ -22,7 +22,7 @@ import "mojo/public/mojom/base/values.mojom";
 interface ImageReleaseCallback {
   // Updates the sync token on the associated AcceleratedStaticBitmapImage
   // and releases it.
-  Release(gpu.mojom.SyncToken token);
+  Release(gpu.mojom.SharedImageExportResult token);
 };
 
 // Holds all information, necessary to recreate the accelerated image.

@@ -18,6 +18,7 @@
 namespace gpu {
 class ClientSharedImage;
 struct ExportedSharedImage;
+class SharedImageExportResult;
 }  // namespace gpu
 
 namespace blink {
@@ -66,7 +67,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gpu::SyncToken& sync_token,
       SkAlphaType alpha_type,
       const gfx::HDRMetadata&,
-      base::OnceCallback<void(const gpu::SyncToken&)> release_callback);
+      base::OnceCallback<void(gpu::SharedImageExportResult)> release_callback);
 
   bool IsOpaque() override;
   bool IsTextureBacked() const override { return true; }
@@ -105,6 +106,8 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   void UpdateSyncToken(const gpu::SyncToken& sync_token) final {
     mailbox_ref_->set_sync_token(sync_token);
   }
+  void UpdateSyncTokenFromExportResult(
+      gpu::SharedImageExportResult export_result) final;
 
   // Provides the mailbox backing for this image. The caller must wait on the
   // sync token before accessing this mailbox.
