@@ -18,7 +18,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"

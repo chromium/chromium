@@ -9,7 +9,6 @@
 #include <unistd.h>
 
 #include "base/android/child_process_binding_types.h"
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -46,12 +45,12 @@ constexpr base::TimeDelta kDefaultMinimumInterval = base::Minutes(10);
 // The memory threshold: 458 was selected at around the 99th percentile of
 // the Memory.Total.PrivateMemoryFootprint reported by Android devices whose
 // system memory were 4GB.
-constexpr base::ByteCount kMemoryThresholdOf4GbDevices = base::MiB(458);
+constexpr base::ByteSize kMemoryThresholdOf4GbDevices = base::MiBU(458);
 
 // The memory threshold: 494 was selected at around the 99th percentile of
 // the Memory.Total.PrivateMemoryFootprint reported by Android devices whose
 // system memory were 6GB.
-constexpr base::ByteCount kMemoryThresholdOf6GbDevices = base::MiB(494);
+constexpr base::ByteSize kMemoryThresholdOf6GbDevices = base::MiBU(494);
 
 UserLevelMemoryPressureSignalGenerator* g_instance = nullptr;
 
@@ -134,8 +133,7 @@ void UserLevelMemoryPressureSignalGenerator::CollectMemoryMetrics() {
   latest_metrics_ = UserLevelMemoryPressureMetrics{
       .total_private_footprint =
           GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers(),
-      .available_memory =
-          base::ByteCount::FromUnsigned(meminfo.available.InBytes()),
+      .available_memory = meminfo.available,
       .total_process_count = total_process_count,
       .visible_renderer_count = visible_renderer_count,
   };
@@ -158,7 +156,7 @@ void UserLevelMemoryPressureSignalGenerator::StartPeriodicTimer(
 void UserLevelMemoryPressureSignalGenerator::OnTimerFired() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::TimeDelta interval = measure_interval_;
-  base::ByteCount total_pmf =
+  base::ByteSize total_pmf =
       GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
 
   base::MemoryPressureLevel level = base::MEMORY_PRESSURE_LEVEL_NONE;
@@ -189,21 +187,21 @@ void UserLevelMemoryPressureSignalGenerator::StartReportingTimer() {
 
 void UserLevelMemoryPressureSignalGenerator::OnReportingTimerFired() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::ByteCount total_pmf =
+  base::ByteSize total_pmf =
       GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
   ReportBeforeAfterMetrics(total_pmf, "After");
 }
 
 // static
-base::ByteCount UserLevelMemoryPressureSignalGenerator::
+base::ByteSize UserLevelMemoryPressureSignalGenerator::
     GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers() {
-  base::ByteCount total_pmf_visible_or_higher_priority_renderers_bytes =
-      base::ByteCount(0u);
+  base::ByteSize total_pmf_visible_or_higher_priority_renderers_bytes =
+      base::ByteSize(0u);
 
-  auto add_process_private_footprint = [&](base::ByteCount& pmf,
+  auto add_process_private_footprint = [&](base::ByteSize& pmf,
                                            const base::Process& process) {
     if (process.IsValid()) {
-      pmf += GetPrivateFootprint(process).value_or(base::ByteCount(0));
+      pmf += GetPrivateFootprint(process).value_or(base::ByteSize(0));
     }
   };
 
@@ -251,7 +249,7 @@ base::ByteCount UserLevelMemoryPressureSignalGenerator::
     // status, i.e. no such file or directory. So each renderer process
     // provides its private memory footprint for the browser process and
     // the browser process gets the (cached) value via RenderProcessHostImpl.
-    total_pmf_visible_or_higher_priority_renderers_bytes += base::ByteCount(
+    total_pmf_visible_or_higher_priority_renderers_bytes += base::ByteSize(
         static_cast<RenderProcessHostImpl*>(host)->GetPrivateMemoryFootprint());
   }
 
@@ -278,7 +276,7 @@ void UserLevelMemoryPressureSignalGenerator::HandleMemoryPressureLevel(
 
 // static
 void UserLevelMemoryPressureSignalGenerator::ReportBeforeAfterMetrics(
-    base::ByteCount total_pmf_visible_or_higher_priority_renderers,
+    base::ByteSize total_pmf_visible_or_higher_priority_renderers,
     const char* suffix_name) {
   std::string metric_name_total_pmf_visible_or_higher_priority_renderers =
       base::StringPrintf(
@@ -295,7 +293,7 @@ namespace {
 // TODO(crbug.com/40248151): if this feature is approved, refactor the duplicate
 // code under //third_party/blink/renderer/controller. If not approved,
 // remove the code as soon as possible.
-std::optional<base::ByteCount> CalculateProcessMemoryFootprint(
+std::optional<base::ByteSize> CalculateProcessMemoryFootprint(
     base::File& statm_file,
     base::File& status_file) {
   // Get total resident and shared sizes from statm file.
@@ -337,14 +335,14 @@ std::optional<base::ByteCount> CalculateProcessMemoryFootprint(
     return std::nullopt;
 
   swap_footprint *= 1024;
-  return base::ByteCount((resident_pages - shared_pages) * page_size +
-                         swap_footprint);
+  return base::ByteSize((resident_pages - shared_pages) * page_size +
+                        swap_footprint);
 }
 
 }  // namespace
 
 // static
-std::optional<base::ByteCount>
+std::optional<base::ByteSize>
 UserLevelMemoryPressureSignalGenerator::GetPrivateFootprint(
     const base::Process& process) {
   // ScopedAllowBlocking is required to use base::File, but /proc/{pid}/status

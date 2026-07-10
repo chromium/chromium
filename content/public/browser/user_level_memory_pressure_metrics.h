@@ -7,15 +7,15 @@
 
 #include <optional>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "content/common/content_export.h"
 
 namespace content {
 
 // A struct to hold various memory metrics for experimental purposes.
 struct UserLevelMemoryPressureMetrics {
-  base::ByteCount total_private_footprint;
-  base::ByteCount available_memory;
+  base::ByteSize total_private_footprint;
+  base::ByteSize available_memory;
   int total_process_count;
   int visible_renderer_count;
 };

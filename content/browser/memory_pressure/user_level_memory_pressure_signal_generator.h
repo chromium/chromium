@@ -9,7 +9,7 @@
 #include <optional>
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/memory_pressure_level.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
@@ -56,22 +56,22 @@ class UserLevelMemoryPressureSignalGenerator
   void StartReportingTimer();
   void OnReportingTimerFired();
 
-  static base::ByteCount
+  static base::ByteSize
   GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
 
   void HandleMemoryPressureLevel(base::MemoryPressureLevel level);
 
   static void ReportBeforeAfterMetrics(
-      base::ByteCount total_pmf_visible_or_higher_priority_renderers,
+      base::ByteSize total_pmf_visible_or_higher_priority_renderers,
       const char* suffix_name);
 
-  static std::optional<base::ByteCount> GetPrivateFootprint(
+  static std::optional<base::ByteSize> GetPrivateFootprint(
       const base::Process& process);
 
   std::optional<content::UserLevelMemoryPressureMetrics>
   GetLatestMemoryMetricsImpl();
 
-  base::ByteCount memory_threshold_;
+  base::ByteSize memory_threshold_;
   base::TimeDelta measure_interval_;
   base::TimeDelta minimum_interval_;
   base::OneShotTimer periodic_measuring_timer_;
