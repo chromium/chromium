@@ -18,14 +18,20 @@ void TabDragScrollHandler::OnDraggedTabPositionUpdated(
   constexpr float kScrollIncrement = 5;
 
   const auto& visible_bounds = host_view->GetVisibleBounds();
-  if (visible_bounds.bottom() < host_view->height() &&
-      dragged_view_bounds_in_scroll_view.bottom() >= scroll_view.height()) {
+
+  const bool is_dragging_to_bottom =
+      visible_bounds.bottom() < host_view->height() &&
+      dragged_view_bounds_in_scroll_view.bottom() >= scroll_view.height();
+
+  const bool is_dragging_to_top =
+      visible_bounds.y() > 0 && dragged_view_bounds_in_scroll_view.y() <= 0;
+
+  if (is_dragging_to_bottom) {
     StartOrContinueScrolling(scroll_view, kScrollIncrement);
-  } else if (visible_bounds.y() > 0 &&
-             dragged_view_bounds_in_scroll_view.y() <= 0) {
+  } else if (is_dragging_to_top) {
     StartOrContinueScrolling(scroll_view, -1.0 * kScrollIncrement);
   } else {
-    StopScrolling();
+    StopScrolling(scroll_view);
   }
 }
 
@@ -33,6 +39,14 @@ void TabDragScrollHandler::StartOrContinueScrolling(
     views::ScrollView& scroll_view,
     float vertical_increments) {
   vertical_scroll_increment_ = vertical_increments;
+  if (vertical_scroll_increment_ > 0) {
+    scroll_view.SetOverflowGradientMask(
+        views::ScrollView::GradientDirection::kVerticalLeading);
+  } else if (vertical_scroll_increment_ < 0) {
+    scroll_view.SetOverflowGradientMask(
+        views::ScrollView::GradientDirection::kVerticalTrailing);
+  }
+
   if (scroll_timer_.IsRunning()) {
     return;
   }
@@ -44,8 +58,10 @@ void TabDragScrollHandler::StartOrContinueScrolling(
                           base::Unretained(this), std::ref(scroll_view)));
 }
 
-void TabDragScrollHandler::StopScrolling() {
+void TabDragScrollHandler::StopScrolling(views::ScrollView& scroll_view) {
   scroll_timer_.Stop();
+  scroll_view.SetOverflowGradientMask(
+      views::ScrollView::GradientDirection::kVertical);
 }
 
 void TabDragScrollHandler::UpdateScrollOffset(views::ScrollView& scroll_view) {

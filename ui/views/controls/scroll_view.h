@@ -199,7 +199,15 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
                                    bool fills_opaquely);
 
   // Direction of linear opacity gradient applied when overflow content exists.
-  enum class GradientDirection { kNone = 0, kHorizontal = 1, kVertical = 2 };
+  enum class GradientDirection {
+    kNone = 0,
+    kHorizontal = 1,
+    kVertical = 2,
+    kHorizontalLeading = 3,
+    kHorizontalTrailing = 4,
+    kVerticalLeading = 5,
+    kVerticalTrailing = 6,
+  };
 
   // Sets which direction a opacity gradient should be shown when content
   // overflows. Gradient can only be applied to one direction at a time, so in

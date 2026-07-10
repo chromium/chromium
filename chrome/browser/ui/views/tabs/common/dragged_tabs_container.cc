@@ -120,12 +120,16 @@ void DraggedTabsContainer::ApplyUpdatesForDragPositionChange() {
 
 void DraggedTabsContainer::OnTabDragExited(const gfx::Point& point_in_screen) {
   ResetDragState();
-  scroll_handler_.StopScrolling();
+  auto* scroll_view = GetScrollViewForContainer();
+  CHECK(scroll_view);
+  scroll_handler_.StopScrolling(*scroll_view);
 }
 
 void DraggedTabsContainer::OnTabDragEnded() {
   ResetDragState();
-  scroll_handler_.StopScrolling();
+  auto* scroll_view = GetScrollViewForContainer();
+  CHECK(scroll_view);
+  scroll_handler_.StopScrolling(*scroll_view);
 }
 
 bool DraggedTabsContainer::CanDropTab() {

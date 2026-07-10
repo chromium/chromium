@@ -150,6 +150,18 @@ int AdjustPosition(int current_position,
   return (new_position > max_position) ? max_position : new_position;
 }
 
+bool IsVertical(ScrollView::GradientDirection direction) {
+  return direction == ScrollView::GradientDirection::kVertical ||
+         direction == ScrollView::GradientDirection::kVerticalLeading ||
+         direction == ScrollView::GradientDirection::kVerticalTrailing;
+}
+
+bool IsHorizontal(ScrollView::GradientDirection direction) {
+  return direction == ScrollView::GradientDirection::kHorizontal ||
+         direction == ScrollView::GradientDirection::kHorizontalLeading ||
+         direction == ScrollView::GradientDirection::kHorizontalTrailing;
+}
+
 }  // namespace
 
 // Viewport contains the contents View of the ScrollView.
@@ -464,13 +476,12 @@ gfx::Rect ScrollView::GetOpaqueVisibleRect() const {
   if (visible_rect.IsEmpty()) {
     return visible_rect;
   }
-  // Inset the rect if gradient masks are visible to ensure we only
-  // report the fully opaque region as "visible".
-  if (gradient_direction_ == GradientDirection::kVertical) {
+
+  if (IsVertical(gradient_direction_)) {
     int top_inset = is_leading_gradient_visible_ ? kGradientPixelSize : 0;
     int bottom_inset = is_trailing_gradient_visible_ ? kGradientPixelSize : 0;
     visible_rect.Inset(gfx::Insets::TLBR(top_inset, 0, bottom_inset, 0));
-  } else if (gradient_direction_ == GradientDirection::kHorizontal) {
+  } else if (IsHorizontal(gradient_direction_)) {
     int left_inset = is_leading_gradient_visible_ ? kGradientPixelSize : 0;
     int right_inset = is_trailing_gradient_visible_ ? kGradientPixelSize : 0;
     visible_rect.Inset(gfx::Insets::TLBR(0, left_inset, 0, right_inset));
@@ -593,16 +604,13 @@ void ScrollView::SetOverflowGradientMask(GradientDirection direction) {
 }
 
 void ScrollView::UpdateGradientMask() {
-  if (gradient_direction_ == GradientDirection::kNone ||
-      (gradient_direction_ == GradientDirection::kHorizontal &&
-       !horiz_sb_->GetVisible()) ||
-      (gradient_direction_ == GradientDirection::kVertical &&
-       !vert_sb_->GetVisible())) {
-    return;
-  }
+  bool is_horizontal = IsHorizontal(gradient_direction_);
+  bool is_vertical = IsVertical(gradient_direction_);
 
   // Only one direction can be overflowed with a gradient at a time.
-  CHECK(!(horiz_sb_->GetVisible() && vert_sb_->GetVisible()));
+  if (gradient_direction_ != GradientDirection::kNone) {
+    CHECK(!(horiz_sb_->GetVisible() && vert_sb_->GetVisible()));
+  }
 
   if (!layer()) {
     SetPaintToLayer();
@@ -612,12 +620,22 @@ void ScrollView::UpdateGradientMask() {
   bool should_show_leading = false;
   bool should_show_trailing = false;
 
-  if (gradient_direction_ == GradientDirection::kVertical) {
-    should_show_leading = CurrentOffset().y() > vert_sb_->GetMinPosition();
-    should_show_trailing = CurrentOffset().y() < vert_sb_->GetMaxPosition();
-  } else if (gradient_direction_ == GradientDirection::kHorizontal) {
-    should_show_leading = CurrentOffset().x() > horiz_sb_->GetMinPosition();
-    should_show_trailing = CurrentOffset().x() < horiz_sb_->GetMaxPosition();
+  if (is_vertical && contents_ &&
+      (!ScrollsWithLayers() || contents_->layer())) {
+    should_show_leading =
+        (gradient_direction_ != GradientDirection::kVerticalTrailing) &&
+        CurrentOffset().y() > vert_sb_->GetMinPosition();
+    should_show_trailing =
+        (gradient_direction_ != GradientDirection::kVerticalLeading) &&
+        CurrentOffset().y() < vert_sb_->GetMaxPosition();
+  } else if (is_horizontal && contents_ &&
+             (!ScrollsWithLayers() || contents_->layer())) {
+    should_show_leading =
+        (gradient_direction_ != GradientDirection::kHorizontalTrailing) &&
+        CurrentOffset().x() > horiz_sb_->GetMinPosition();
+    should_show_trailing =
+        (gradient_direction_ != GradientDirection::kHorizontalLeading) &&
+        CurrentOffset().x() < horiz_sb_->GetMaxPosition();
   }
 
   // Nothing to do if the state of leading and trailing gradients hasn't
@@ -630,18 +648,24 @@ void ScrollView::UpdateGradientMask() {
   is_leading_gradient_visible_ = should_show_leading;
   is_trailing_gradient_visible_ = should_show_trailing;
 
-  const int total_size = gradient_direction_ == GradientDirection::kHorizontal
-                             ? width()
-                             : height();
+  const int total_size = is_horizontal ? width() : height();
 
   // Skip setting up the gradient mask if there wont be any display of the view.
   if (total_size == 0) {
     return;
   }
 
+  if (gradient_direction_ == GradientDirection::kNone ||
+      (is_horizontal && !horiz_sb_->GetVisible()) ||
+      (is_vertical && !vert_sb_->GetVisible())) {
+    if (layer() && layer()->HasGradientMask()) {
+      layer()->SetGradientMask(gfx::LinearGradient::GetEmpty());
+    }
+    return;
+  }
+
   gfx::LinearGradient gradient_mask;
-  gradient_mask.set_angle(
-      gradient_direction_ == GradientDirection::kVertical ? 270 : 0);
+  gradient_mask.set_angle(is_vertical ? 270 : 0);
   gradient_mask.AddStep(kGradientLeadingFadeStart,
                         should_show_leading ? 0 : 255);
 
@@ -1544,24 +1568,35 @@ void ScrollView::PositionOverflowIndicators() {
 }
 
 void ScrollView::UpdateOverflowIndicatorVisibility(const gfx::PointF& offset) {
-  bool should_draw_vert_top =
-      !draw_border_ && !header_ && IsVerticalScrollEnabled() &&
-      offset.y() > vert_sb_->GetMinPosition() && draw_overflow_indicator_;
+  const bool suppress_leading =
+      gradient_direction_ == GradientDirection::kVerticalTrailing ||
+      gradient_direction_ == GradientDirection::kHorizontalTrailing;
+  const bool suppress_trailing =
+      gradient_direction_ == GradientDirection::kVerticalLeading ||
+      gradient_direction_ == GradientDirection::kHorizontalLeading;
+
+  bool should_draw_vert_top = !draw_border_ && !header_ &&
+                              IsVerticalScrollEnabled() &&
+                              offset.y() > vert_sb_->GetMinPosition() &&
+                              draw_overflow_indicator_ && !suppress_leading;
   SetControlVisibility(more_content_top_.get(), should_draw_vert_top);
 
-  bool should_draw_vert_bottom =
-      !draw_border_ && IsVerticalScrollEnabled() && !horiz_sb_->GetVisible() &&
-      offset.y() < vert_sb_->GetMaxPosition() && draw_overflow_indicator_;
+  bool should_draw_vert_bottom = !draw_border_ && IsVerticalScrollEnabled() &&
+                                 !horiz_sb_->GetVisible() &&
+                                 offset.y() < vert_sb_->GetMaxPosition() &&
+                                 draw_overflow_indicator_ && !suppress_trailing;
   SetControlVisibility(more_content_bottom_.get(), should_draw_vert_bottom);
 
   bool should_draw_horiz_leading =
       !draw_border_ && IsHorizontalScrollEnabled() &&
-      offset.x() > horiz_sb_->GetMinPosition() && draw_overflow_indicator_;
+      offset.x() > horiz_sb_->GetMinPosition() && draw_overflow_indicator_ &&
+      !suppress_leading;
   SetControlVisibility(more_content_left_.get(), should_draw_horiz_leading);
 
   bool should_draw_horiz_trailing =
       !draw_border_ && IsHorizontalScrollEnabled() && !vert_sb_->GetVisible() &&
-      offset.x() < horiz_sb_->GetMaxPosition() && draw_overflow_indicator_;
+      offset.x() < horiz_sb_->GetMaxPosition() && draw_overflow_indicator_ &&
+      !suppress_trailing;
   SetControlVisibility(more_content_right_.get(), should_draw_horiz_trailing);
 
   if (should_draw_vert_top || should_draw_vert_bottom ||

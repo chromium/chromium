@@ -2646,6 +2646,85 @@ TEST_F(ScrollViewTest, TestOpacityGradientVerticalTopAndBottom) {
   EXPECT_EQ(gradient.steps()[3].alpha, 0);
 }
 
+TEST_F(ScrollViewTest, TestOpacityGradientVerticalLeading) {
+  ScrollViewTestApi test_api(scroll_view_.get());
+
+  // Set up with vertical scrollbar.
+  auto contents = std::make_unique<FixedView>();
+  contents->SetPreferredSize(gfx::Size(kWidth, kMaxHeight * 5));
+  scroll_view_->SetOverflowGradientMask(
+      ScrollView::GradientDirection::kVerticalLeading);
+  scroll_view_->SetContents(std::move(contents));
+  scroll_view_->ClipHeightTo(0, kMaxHeight);
+
+  // Make sure the size is set such that no horizontal scrollbar gets shown.
+  scroll_view_->SetSize(gfx::Size(
+      kWidth + test_api.GetScrollBar(VERTICAL)->GetThickness(), kMaxHeight));
+
+  // Scroll to middle so we have both top and bottom overflow.
+  int offset = kMaxHeight * 3;
+  scroll_view_->ScrollToPosition(test_api.GetScrollBar(VERTICAL), offset);
+  views::test::RunScheduledLayout(scroll_view_.get());
+
+  EXPECT_TRUE(scroll_view_->layer() &&
+              scroll_view_->layer()->HasGradientMask());
+
+  const gfx::LinearGradient gradient = scroll_view_->layer()->gradient_mask();
+  EXPECT_EQ(4u, gradient.step_count());
+
+  // Top (leading) should be faded out.
+  EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
+  EXPECT_EQ(gradient.steps()[0].alpha, 0);
+
+  // Bottom (trailing) should NOT be faded out (it is suppressed).
+  EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
+  EXPECT_EQ(gradient.steps()[3].alpha, 255);
+
+  // Scroll to top so only bottom overflow exists.
+  scroll_view_->ScrollToPosition(test_api.GetScrollBar(VERTICAL), 0);
+  views::test::RunScheduledLayout(scroll_view_.get());
+
+  // Since bottom is suppressed and top has no overflow, there should be no
+  // gradient mask.
+  EXPECT_FALSE(scroll_view_->layer() &&
+               scroll_view_->layer()->HasGradientMask());
+}
+
+TEST_F(ScrollViewTest, TestOpacityGradientVerticalTrailing) {
+  ScrollViewTestApi test_api(scroll_view_.get());
+
+  // Set up with vertical scrollbar.
+  auto contents = std::make_unique<FixedView>();
+  contents->SetPreferredSize(gfx::Size(kWidth, kMaxHeight * 5));
+  scroll_view_->SetOverflowGradientMask(
+      ScrollView::GradientDirection::kVerticalTrailing);
+  scroll_view_->SetContents(std::move(contents));
+  scroll_view_->ClipHeightTo(0, kMaxHeight);
+
+  // Make sure the size is set such that no horizontal scrollbar gets shown.
+  scroll_view_->SetSize(gfx::Size(
+      kWidth + test_api.GetScrollBar(VERTICAL)->GetThickness(), kMaxHeight));
+
+  // Scroll to middle so we have both top and bottom overflow.
+  int offset = kMaxHeight * 3;
+  scroll_view_->ScrollToPosition(test_api.GetScrollBar(VERTICAL), offset);
+  views::test::RunScheduledLayout(scroll_view_.get());
+
+  EXPECT_TRUE(scroll_view_->layer() &&
+              scroll_view_->layer()->HasGradientMask());
+
+  const gfx::LinearGradient gradient = scroll_view_->layer()->gradient_mask();
+  EXPECT_EQ(4u, gradient.step_count());
+
+  // Top (leading) should NOT be faded out (it is suppressed).
+  EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
+  EXPECT_EQ(gradient.steps()[0].alpha, 255);
+
+  // Bottom (trailing) should be faded out.
+  EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
+  EXPECT_EQ(gradient.steps()[3].alpha, 0);
+}
+
 TEST_F(ScrollViewTest, TestOpacityGradientVerticalTop) {
   ScrollViewTestApi test_api(scroll_view_.get());
 
