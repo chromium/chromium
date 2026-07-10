@@ -127,7 +127,8 @@ enum class OAuthConsumerId {
   kSyncPreview = 102,
   kFpopService = 103,
   kContextContainersService = 104,
-  kMaxValue = kContextContainersService,
+  kRemoteActorLoginCredentialsService = 105,
+  kMaxValue = kRemoteActorLoginCredentialsService,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

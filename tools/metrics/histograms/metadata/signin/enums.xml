@@ -888,6 +888,7 @@ chromium-metrics-reviews@google.com.
   <int value="102" label="Sync Preview"/>
   <int value="103" label="Fpop Service"/>
   <int value="104" label="Context Containers Service"/>
+  <int value="105" label="Remote Actor Login Credentials Service"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->

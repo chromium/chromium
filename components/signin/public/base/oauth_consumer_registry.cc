@@ -151,6 +151,9 @@ constexpr char kOptimizationGuideServiceModelExecutionOAuth2Scope[] =
 // OAuth2 scope for access to the parent approval widget.
 constexpr char kParentApprovalOAuth2Scope[] =
     "https://www.googleapis.com/auth/kids.parentapproval";
+// OAuth2 scope for Passbox credential sharing.
+constexpr char kPassboxCredentialOAuth2Scope[] =
+    "https://www.googleapis.com/auth/passbox.credential";
 // OAuth 2 scope for Google Password Manager passkey enclaves.
 constexpr char kPasskeysEnclaveOAuth2Scope[] =
     "https://www.googleapis.com/auth/secureidentity.action";
@@ -333,6 +336,8 @@ constexpr char kMultistepFilterName[] = "multistep_filter";
 constexpr char kContextMemoryServiceName[] = "context_memory_service";
 constexpr char kSyncPreviewName[] = "chromesync_preview";
 constexpr char kContextContainersServiceName[] = "context_containers_service";
+constexpr char kRemoteActorLoginCredentialsServiceName[] =
+    "remote_actor_login_credentials_service";
 }  // namespace
 
 namespace signin {
@@ -795,6 +800,10 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kContextContainersServiceName,
           /*scopes=*/{GaiaConstants::kGoogleUserInfoEmail});
+    case OAuthConsumerId::kRemoteActorLoginCredentialsService:
+      return OAuthConsumer(
+          /*name=*/kRemoteActorLoginCredentialsServiceName,
+          /*scopes=*/{kPassboxCredentialOAuth2Scope});
   }
 }
 
