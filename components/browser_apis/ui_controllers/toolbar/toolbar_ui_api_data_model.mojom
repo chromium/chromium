@@ -10,6 +10,7 @@ import "components/browser_apis/ui_controllers/toolbar/icon_handle.mojom";
 import "components/content_settings/core/common/content_settings_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/range/mojom/range.mojom";
 
 // The context menu types that can be opened with ToolbarUIService's
@@ -144,12 +145,37 @@ struct OmniboxActionMouse {
   bool start_zero_suggest = false;
 };
 
+struct OmniboxActionDropText {
+  // The text or URL (e.g. from a link drop) to be dropped into the omnibox.
+  //
+  // String16 is used here instead of url.mojom.Url for two reasons:
+  // 1. Parity with the native Omnibox: The backend classification logic in
+  //    `AutocompleteClassifier::Classify` (and the broader autocomplete
+  //    controller) expects raw user input as a string to distinguish between
+  //    search queries and various URL forms.
+  // 2. Handling sanitization: Blink's renderer-side sanitization (e.g. in
+  //    `RenderProcessHostImpl::FilterURL`) replaces restricted URLs like
+  //    `javascript:` with `about:blank#blocked` in the `text/uri-list` format.
+  //    Using a string allows the WebUI to fall back to `text/plain` to recover
+  //    the raw input for proper processing in the browser process.
+  mojo_base.mojom.String16 text;
+};
+
+struct OmniboxActionDropFile {
+  // The position where the drop occurred, used to retrieve the absolute
+  // file path cached in the browser process. This is guaranteed to result
+  // in a `file:` URL.
+  gfx.mojom.PointF drop_position;
+};
+
 // Sent from the WebUI to the browser to notify of relevant input.
 union OmniboxAction {
   OmniboxActionFocusChange focus_change;
   OmniboxActionTextInput text_input;
   OmniboxActionKey key;
   OmniboxActionMouse mouse;
+  OmniboxActionDropText drop_text;
+  OmniboxActionDropFile drop_file;
 };
 
 struct ReloadControlState {

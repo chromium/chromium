@@ -8,18 +8,22 @@
 #include <memory>
 
 #include "base/notimplemented.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_drag_state.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
+#include "components/omnibox/browser/omnibox_text_util.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cert/cert_status_flags.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
@@ -104,6 +108,12 @@ WebUIReadOnlyOmnibox::OnOmniboxAction(
 
     case toolbar_ui_api::mojom::OmniboxAction::Tag::kMouse:
       return OnMouse(*action->get_mouse());
+
+    case toolbar_ui_api::mojom::OmniboxAction::Tag::kDropText:
+      return OnDropText(*action->get_drop_text());
+
+    case toolbar_ui_api::mojom::OmniboxAction::Tag::kDropFile:
+      return OnDropFile(*action->get_drop_file());
   }
 }
 
@@ -603,7 +613,32 @@ WebUIReadOnlyOmnibox::OnMouse(
       controller()->edit_model()->StartZeroSuggestRequest();
     }
   }
+  return base::ok(std::monostate());
+}
 
+base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
+WebUIReadOnlyOmnibox::OnDropText(
+    const toolbar_ui_api::mojom::OmniboxActionDropText& drop_text) {
+  std::u16string text = omnibox::StripJavascriptSchemas(
+      base::CollapseWhitespace(drop_text.text, true));
+  base::TrimWhitespace(text, base::TRIM_ALL, &text);
+
+  SetUserText(text, /*update_popup=*/false);
+  SelectAll(false);
+  return base::ok(std::monostate());
+}
+
+base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
+WebUIReadOnlyOmnibox::OnDropFile(
+    const toolbar_ui_api::mojom::OmniboxActionDropFile& drop_file) {
+  if (std::optional<GURL> url =
+          update_propagator_->ConsumeDroppedUrl(drop_file.drop_position)) {
+    std::u16string text = base::UTF8ToUTF16(url->spec());
+    if (!text.empty()) {
+      SetUserText(text, /*update_popup=*/false);
+      SelectAll(false);
+    }
+  }
   return base::ok(std::monostate());
 }
 

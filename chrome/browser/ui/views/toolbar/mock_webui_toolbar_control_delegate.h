@@ -107,6 +107,10 @@ class MockWebUIToolbarControlDelegate
               OnFocusRequested,
               (toolbar_ui_api::mojom::FocusRequestTarget target),
               (override));
+  MOCK_METHOD(std::optional<GURL>,
+              ConsumeDroppedUrl,
+              (const gfx::PointF&),
+              (override));
   webui_toolbar::IconTable& GetIconTable() override { return icon_table_; }
 
   // webui_toolbar::IconTable::Delegate:

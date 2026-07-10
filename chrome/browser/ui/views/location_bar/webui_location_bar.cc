@@ -140,6 +140,12 @@ void WebUILocationBar::PropagateFocusRequest(
   toolbar_delegate_->OnFocusRequested(target);
 }
 
+std::optional<GURL> WebUILocationBar::ConsumeDroppedUrl(
+    const gfx::PointF& drop_position) {
+  return toolbar_delegate_ ? toolbar_delegate_->ConsumeDroppedUrl(drop_position)
+                           : std::nullopt;
+}
+
 void WebUILocationBar::OnThemeChanged() {
   if (!is_initialized_) {
     return;

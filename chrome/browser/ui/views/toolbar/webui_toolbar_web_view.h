@@ -111,6 +111,9 @@ class WebUIToolbarControlDelegate {
   virtual void OnFocusRequested(
       toolbar_ui_api::mojom::FocusRequestTarget target) = 0;
 
+  virtual std::optional<GURL> ConsumeDroppedUrl(
+      const gfx::PointF& drop_position) = 0;
+
   // Read the latest state.
   virtual const toolbar_ui_api::mojom::NavigationControlsState& GetState()
       const = 0;
@@ -384,6 +387,8 @@ class WebUIToolbarWebView
       toolbar_ui_api::mojom::AvatarControlStatePtr state) override;
   void OnFocusRequested(
       toolbar_ui_api::mojom::FocusRequestTarget target) override;
+  std::optional<GURL> ConsumeDroppedUrl(
+      const gfx::PointF& drop_position) override;
 
   toolbar_ui_api::mojom::NavigationControlsStatePtr
   GetNavigationControlsState();

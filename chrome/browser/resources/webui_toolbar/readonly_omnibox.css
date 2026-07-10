@@ -112,6 +112,11 @@
   width: 100%;
 }
 
+:host(.dragging-over) #textContainer span {
+  background-color: var(--color-omnibox-selection-background);
+  color: var(--color-omnibox-selection-foreground);
+}
+
 #inlineAutocomplete {
   /* This is only for sizing */
   visibility: hidden;

@@ -562,6 +562,9 @@ export class ToolbarAppElement extends AppElementBase {
          e.dataTransfer.types.includes('text/plain') ||
          e.dataTransfer.types.includes('Files'))) {
       e.preventDefault();
+      // By default, we show an allowed cursor over the general toolbar area.
+      // Individual components (like the Omnibox) that handle their own
+      // drag-and-drop will override this and call stopPropagation().
       e.dataTransfer.dropEffect = 'copy';
     }
   }

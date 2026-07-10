@@ -110,6 +110,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   // handling can tell whether it previously had focus or it was acquired
   // immediately before. `null` if there is no focus.
   private lastFocusAcquisition_: number|null = null;
+  private isDraggingFromSelf_: boolean = false;
 
   // Bitmap of mouse buttons down. This is using `event.button` as bit position,
   // not their position in `event.buttons`, as that's what's most convenient to
@@ -186,6 +187,12 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     textInput.addEventListener('keyup', this.onInputKeyUp.bind(this));
 
     this.addEventListener('contextmenu', this.onContextMenu_.bind(this));
+    this.addEventListener('dragstart', this.onDragStart_.bind(this));
+    this.addEventListener('dragend', this.onDragEnd_.bind(this));
+    this.addEventListener('dragenter', this.onDragEnter_.bind(this));
+    this.addEventListener('dragleave', this.onDragLeave_.bind(this));
+    this.addEventListener('dragover', this.onDragOver_.bind(this));
+    this.addEventListener('drop', this.onDrop_.bind(this));
   }
 
   override updated(changedProperties: PropertyValues<this>): void {
@@ -641,7 +648,104 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     if (this.omniboxViewState.inlineAutocompletion.length !== 0) {
       return {start: this.userText.length, end: this.userText.length};
     }
+    return this.getSelection();
+  }
 
+  private onDragStart_(): void {
+    this.isDraggingFromSelf_ = true;
+  }
+
+  private onDragEnd_(): void {
+    this.isDraggingFromSelf_ = false;
+  }
+
+  private onDragEnter_(e: DragEvent): void {
+    if (this.isDraggingFromSelf_) {
+      return;
+    }
+    const types = e.dataTransfer?.types;
+    if (types &&
+        (types.includes('text/uri-list') || types.includes('text/plain') ||
+         types.includes('Files'))) {
+      e.preventDefault();
+      this.classList.add('dragging-over');
+    }
+  }
+
+  private onDragLeave_(): void {
+    this.classList.remove('dragging-over');
+  }
+
+  private onDragOver_(e: DragEvent): void {
+    if (this.isDraggingFromSelf_) {
+      return;
+    }
+    const types = e.dataTransfer?.types;
+    if (types &&
+        (types.includes('text/uri-list') || types.includes('text/plain') ||
+         types.includes('Files'))) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.dataTransfer.dropEffect = 'copy';
+    }
+  }
+
+  private onDrop_(e: DragEvent): void {
+    if (this.isDraggingFromSelf_) {
+      return;
+    }
+
+    this.classList.remove('dragging-over');
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!e.dataTransfer) {
+      return;
+    }
+
+    const types = e.dataTransfer.types;
+
+    if (types.includes('text/uri-list')) {
+      let url = e.dataTransfer.getData('text/uri-list');
+      // For restricted URLs (e.g. javascript: or chrome:// links), Blink's IPC
+      // sanitization intercepts the drop and overwrites the URL with
+      // about:blank#blocked. We can recover the original string from text/plain
+      // and forward it to C++ where it will be properly sanitized
+      // (e.g. via StripJavascriptSchemas) before being set in the omnibox.
+      if (url.startsWith('about:blank#blocked') &&
+          types.includes('text/plain')) {
+        const plainText = e.dataTransfer.getData('text/plain');
+        if (plainText) {
+          url = plainText;
+        }
+      }
+
+      if (url) {
+        this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+          dropText: {
+            text: url.split('\n')[0]!,
+          },
+        });
+      }
+    } else if (types.includes('Files')) {
+      this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+        dropFile: {
+          dropPosition: {x: e.clientX, y: e.clientY},
+        },
+      });
+    } else if (types.includes('text/plain')) {
+      const text = e.dataTransfer.getData('text/plain');
+      if (text) {
+        this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+          dropText: {
+            text: text,
+          },
+        });
+      }
+    }
+  }
+
+  private getSelection(): MojomRange {
     // selectionStart/End should work since <input> is of appropriate type
     // for them.
     let selection: MojomRange = {

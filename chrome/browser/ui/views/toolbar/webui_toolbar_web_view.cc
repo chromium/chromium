@@ -82,6 +82,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -167,29 +168,28 @@ class WebUIToolbarInternalWebView : public views::WebView {
         web_contents())
         ->set_drag_originated_from_renderer(data.did_originate_from_renderer);
 
-    // For plain text drops, inspect the content during the dragover phase.
-    // Note that we don't inspect or block webpage-initiated link drops (e.g.
-    // chrome:// or javascript: URLs) or OS file drops here. Link drops are
-    // allowed to hover (showing the copy badge) to preserve drag-and-drop
-    // visual feedback, but are securely redirected to about:blank#blocked
-    // on navigation (inside BrowserControlsAdapterImpl::Navigate). File drops
-    // are local and always allowed.
-    if (data.url_infos.empty() && data.text && !data.text->empty()) {
-      GURL url(base::UTF16ToUTF8(*data.text));
-      if (url.is_valid()) {
-        // Block all javascript: text drags to prevent self-XSS.
-        if (url.SchemeIs(url::kJavaScriptScheme)) {
-          return false;
-        }
-        // For web-initiated plain text drags, only allow HTTP and HTTPS
-        // schemes. Block other schemes (like file://, chrome://, data://) from
-        // showing the drop cursor (i.e., hide the green plus sign badge).
-        if (data.did_originate_from_renderer && !url.SchemeIsHTTPOrHTTPS()) {
-          return false;
-        }
-      }
-    }
-
+    // TODO(xtlsheep): We ideally want to block `javascript:` text drags over
+    // the general toolbar area (showing a forbidden cursor) to prevent
+    // self-XSS, while still allowing them to be dropped specifically into the
+    // Omnibox (which securely sanitizes them). However, we cannot do this here
+    // because `CanDragEnter` is evaluated when the cursor crosses the
+    // WebContents boundary (the edge of the toolbar), at which point it is not
+    // yet over the Omnibox. Furthermore, we cannot rely on the WebUI frontend
+    // to selectively reject `javascript:` strings during the `dragover` event,
+    // because HTML5 security prevents reading dataTransfer text content before
+    // the actual `drop` event.
+    //
+    // As a compromise to allow the Omnibox to provide visual feedback
+    // (highlighting) and accept external `javascript:` drops, we let all plain
+    // text drops pass through here. This means dragging plain text over the
+    // empty toolbar space will show an "allowed" cursor unless the WebUI
+    // frontend overrides it (which it currently does for all plain text to show
+    // a forbidden cursor by default).
+    //
+    // Security is still maintained because accidental drops in the empty
+    // toolbar area are intercepted and safely discarded by
+    // `BrowserControlsAdapterImpl::NavigateText`, and drops into the Omnibox
+    // are sanitized by `WebUIReadOnlyOmnibox::OnDropText`.
     return true;
   }
 
@@ -1340,6 +1340,11 @@ void WebUIToolbarWebView::HandleOmniboxContextMenu(
     location_bar_->HandleContextMenu(GetWidget(), point, source_type,
                                      edit_flags);
   }
+}
+
+std::optional<GURL> WebUIToolbarWebView::ConsumeDroppedUrl(
+    const gfx::PointF& drop_position) {
+  return web_view_->ConsumeDroppedUrl(drop_position);
 }
 
 void WebUIToolbarWebView::OnTouchUiChanged() {

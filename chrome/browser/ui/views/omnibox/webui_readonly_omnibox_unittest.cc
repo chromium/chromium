@@ -53,6 +53,11 @@ class TestUpdatePropagator : public WebUIReadOnlyOmnibox::UpdatePropagator {
   void PropagateFocusRequest(
       toolbar_ui_api::mojom::FocusRequestTarget target) override {}
 
+  std::optional<GURL> ConsumeDroppedUrl(
+      const gfx::PointF& drop_position) override {
+    return std::nullopt;
+  }
+
   toolbar_ui_api::mojom::OmniboxViewStatePtr TakeState() {
     return std::move(state_);
   }

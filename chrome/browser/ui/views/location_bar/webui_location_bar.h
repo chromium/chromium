@@ -53,6 +53,8 @@ class WebUILocationBar : public LocationBar,
       toolbar_ui_api::mojom::OmniboxViewStatePtr update) override;
   void PropagateFocusRequest(
       toolbar_ui_api::mojom::FocusRequestTarget target) override;
+  std::optional<GURL> ConsumeDroppedUrl(
+      const gfx::PointF& drop_position) override;
 
   // Called from WebUIToolbarWebView:
   void OnThemeChanged();

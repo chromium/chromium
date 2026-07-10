@@ -60,6 +60,8 @@ class WebUIReadOnlyOmnibox
         toolbar_ui_api::mojom::OmniboxViewStatePtr update) = 0;
     virtual void PropagateFocusRequest(
         toolbar_ui_api::mojom::FocusRequestTarget target) = 0;
+    virtual std::optional<GURL> ConsumeDroppedUrl(
+        const gfx::PointF& drop_position) = 0;
   };
 
   // Parameters must outlive `this`.
@@ -150,6 +152,10 @@ class WebUIReadOnlyOmnibox
       const toolbar_ui_api::mojom::OmniboxActionKey& key);
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnMouse(
       const toolbar_ui_api::mojom::OmniboxActionMouse& mouse);
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnDropText(
+      const toolbar_ui_api::mojom::OmniboxActionDropText& drop_text);
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnDropFile(
+      const toolbar_ui_api::mojom::OmniboxActionDropFile& drop_file);
 
   void OnContextMenuReady(views::Widget* widget,
                           const gfx::Point& point,

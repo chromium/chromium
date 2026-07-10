@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -4202,8 +4203,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
     content::DropData drop_data;
     drop_data.did_originate_from_renderer = true;
     drop_data.text = u"file:///etc/passwd";
-    EXPECT_FALSE(delegate->CanDragEnter(web_contents, drop_data,
-                                        blink::kDragOperationCopy));
+    EXPECT_TRUE(delegate->CanDragEnter(web_contents, drop_data,
+                                       blink::kDragOperationCopy));
   }
 
   // Webpage-initiated file:// link drop.
@@ -4242,8 +4243,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
     content::DropData drop_data;
     drop_data.did_originate_from_renderer = true;
     drop_data.text = u"chrome://accessibility";
-    EXPECT_FALSE(delegate->CanDragEnter(web_contents, drop_data,
-                                        blink::kDragOperationCopy));
+    EXPECT_TRUE(delegate->CanDragEnter(web_contents, drop_data,
+                                       blink::kDragOperationCopy));
   }
 
   // Local-initiated chrome:// text drop.
@@ -4271,8 +4272,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
     content::DropData drop_data;
     drop_data.did_originate_from_renderer = true;
     drop_data.text = u"javascript:alert(1)";
-    EXPECT_FALSE(delegate->CanDragEnter(web_contents, drop_data,
-                                        blink::kDragOperationCopy));
+    EXPECT_TRUE(delegate->CanDragEnter(web_contents, drop_data,
+                                       blink::kDragOperationCopy));
   }
 
   // Local-initiated javascript: text drop.
@@ -4280,9 +4281,165 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
     content::DropData drop_data;
     drop_data.did_originate_from_renderer = false;
     drop_data.text = u"javascript:alert(1)";
-    EXPECT_FALSE(delegate->CanDragEnter(web_contents, drop_data,
-                                        blink::kDragOperationCopy));
+    EXPECT_TRUE(delegate->CanDragEnter(web_contents, drop_data,
+                                       blink::kDragOperationCopy));
   }
+}
+
+class WebUIReadOnlyOmniboxDragDropBrowserTest
+    : public WebUIToolbarWebViewBrowserTest {
+ public:
+  WebUIReadOnlyOmniboxDragDropBrowserTest()
+      : WebUIToolbarWebViewBrowserTest(
+            {features::kInitialWebUI, features::kWebUILocationBar,
+             features::kSkipIPCChannelPausingForNonGuests,
+             features::kWebUIInProcessResourceLoadingV2},
+            {}) {}
+
+ protected:
+  enum class DropType {
+    kText,
+    kUrl,
+    kFile,
+  };
+
+  void SimulateDropOnOmnibox(content::WebContents* web_contents,
+                             const std::string& data,
+                             DropType drop_type) {
+    if (drop_type == DropType::kFile) {
+      // For file drops, the backend caches the path during
+      // `PreHandleDragUpdate` before the actual drop event. We must simulate
+      // this C++ level behavior first.
+      content::DropData drop_data;
+      drop_data.filenames.push_back(
+          ui::FileInfo(base::FilePath::FromUTF8Unsafe(data), base::FilePath()));
+      web_contents->GetDelegate()->PreHandleDragUpdate(drop_data,
+                                                       gfx::PointF(10, 10));
+
+      EXPECT_TRUE(content::ExecJs(web_contents, R"(
+        const omnibox = document.querySelector('toolbar-app').shadowRoot
+                               .querySelector('#location-bar').shadowRoot
+                               .querySelector('#omnibox');
+        const dataTransfer = new DataTransfer();
+        const file = new File([''], 'test_file', {type: 'application/octet-stream'});
+        dataTransfer.items.add(file);
+        const dropEvent = new DragEvent('drop', {
+          bubbles: true,
+          cancelable: true,
+          dataTransfer: dataTransfer,
+          clientX: 10,
+          clientY: 10
+        });
+        omnibox.dispatchEvent(dropEvent);
+      )"));
+    } else {
+      std::string data_type =
+          (drop_type == DropType::kUrl) ? "text/uri-list" : "text/plain";
+      EXPECT_TRUE(content::ExecJs(
+          web_contents, base::StringPrintf(R"(
+        const omnibox = document.querySelector('toolbar-app').shadowRoot
+                               .querySelector('#location-bar').shadowRoot
+                               .querySelector('#omnibox');
+        const dataTransfer = new DataTransfer();
+        dataTransfer.setData(`%s`, `%s`);
+        if (`%s` === 'text/uri-list') {
+          dataTransfer.setData('text/plain', `%s`);
+        }
+        const dropEvent = new DragEvent('drop', {
+          bubbles: true,
+          cancelable: true,
+          dataTransfer: dataTransfer
+        });
+        omnibox.dispatchEvent(dropEvent);
+      )",
+                                           data_type.c_str(), data.c_str(),
+                                           data_type.c_str(), data.c_str())));
+    }
+  }
+
+  std::string GetOmniboxTextEventually(content::WebContents* web_contents) {
+    return content::EvalJs(web_contents, R"(
+      new Promise(resolve => {
+        const check = () => {
+          const omnibox = document.querySelector('toolbar-app').shadowRoot
+                               .querySelector('#location-bar').shadowRoot
+                               .querySelector('#omnibox');
+          if (omnibox && omnibox.omniboxViewState && omnibox.omniboxViewState.textPieces.length > 0) {
+            const text = omnibox.omniboxViewState.textPieces.map(p => p.text).join('');
+            if (text !== 'about:blank' && text !== '') {
+              resolve(text);
+              return;
+            }
+          }
+          setTimeout(check, 100);
+        };
+        check();
+      });
+    )")
+        .ExtractString();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIReadOnlyOmniboxDragDropBrowserTest, DropPlainText) {
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  SimulateDropOnOmnibox(web_contents, "testing omnibox drop", DropType::kText);
+  EXPECT_EQ("testing omnibox drop", GetOmniboxTextEventually(web_contents));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIReadOnlyOmniboxDragDropBrowserTest, DropUrl) {
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  SimulateDropOnOmnibox(web_contents, "https://www.example.test/",
+                        DropType::kUrl);
+  EXPECT_EQ("https://www.example.test/",
+            GetOmniboxTextEventually(web_contents));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIReadOnlyOmniboxDragDropBrowserTest, DropFilePath) {
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  base::FilePath test_path;
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_TEMP, &test_path));
+  test_path = test_path.AppendASCII("test_file.pdf");
+  std::string expected_url = net::FilePathToFileURL(test_path).spec();
+
+  SimulateDropOnOmnibox(web_contents, test_path.AsUTF8Unsafe(),
+                        DropType::kFile);
+  EXPECT_EQ(expected_url, GetOmniboxTextEventually(web_contents));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIReadOnlyOmniboxDragDropBrowserTest,
+                       DropJavascriptUrlStripped) {
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  SimulateDropOnOmnibox(web_contents, "javascript:alert(1)", DropType::kUrl);
+  EXPECT_EQ("alert(1)", GetOmniboxTextEventually(web_contents));
 }
 
 // Tests for the home button. Also serve as the general PressHandler tests.
