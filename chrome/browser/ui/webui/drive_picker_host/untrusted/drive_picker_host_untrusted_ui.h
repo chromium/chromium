@@ -8,9 +8,12 @@
 #include <string_view>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "chrome/browser/ui/webui/drive_picker_host/untrusted/drive_picker_host_untrusted.mojom.h"
 #include "content/public/browser/webui_config.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -39,8 +42,23 @@ class DrivePickerUntrustedHostUI
       public drive_picker_host_untrusted::mojom::PageHandlerFactory,
       public drive_picker_host_untrusted::mojom::PageHandler {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual void OnConsentKitIframeMessage(
+        mojo_base::ProtoWrapper message_wrapper) = 0;
+    virtual void OnConsentKitPrivacyFlowResult(
+        mojo_base::ProtoWrapper result_wrapper) = 0;
+    virtual void OnConsentKitError(const std::string& error_message) = 0;
+    virtual base::WeakPtr<Delegate> GetWeakPtr() = 0;
+  };
+
   explicit DrivePickerUntrustedHostUI(content::WebUI* web_ui);
   ~DrivePickerUntrustedHostUI() override;
+
+  void SetDelegate(base::WeakPtr<Delegate> delegate) {
+    delegate_ = std::move(delegate);
+  }
 
   DrivePickerUntrustedHostUI(const DrivePickerUntrustedHostUI&) = delete;
   DrivePickerUntrustedHostUI& operator=(const DrivePickerUntrustedHostUI&) =
@@ -66,6 +84,13 @@ class DrivePickerUntrustedHostUI
           result_handler,
       drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys) override;
   void LoadConsentKitUrl(const GURL& consent_kit_url) override;
+
+  // drive_picker_host_untrusted::mojom::PageHandler:
+  void OnConsentKitIframeMessage(
+      mojo_base::ProtoWrapper message_wrapper) override;
+  void OnConsentKitPrivacyFlowResult(
+      mojo_base::ProtoWrapper result_wrapper) override;
+  void OnConsentKitError(const std::string& error_message) override;
 
  private:
   void OnPageDisconnected();
@@ -94,6 +119,8 @@ class DrivePickerUntrustedHostUI
     drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys;
   };
   std::unique_ptr<PendingRequest> pending_request_;
+
+  base::WeakPtr<Delegate> delegate_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

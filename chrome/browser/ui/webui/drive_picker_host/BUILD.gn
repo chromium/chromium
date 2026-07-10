@@ -42,15 +42,20 @@ source_set("drive_picker_host") {
     "//chrome/browser/ui/webui/top_chrome",
     "//components/contextual_search/footprints/public",
     "//content/public/browser",
+    "//mojo/public/cpp/base:protobuf_support",
   ]
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/drive_picker_host:resources",
     "//chrome/browser/signin",
     "//chrome/browser/ui/browser_window",
     "//chrome/common",
+    "//components/contextual_search:prefs",
+    "//components/contextual_search:public",
+    "//components/contextual_search/consent_kit",
     "//components/omnibox/common",
     "//ui/webui",
   ]
@@ -69,9 +74,15 @@ source_set("unit_tests") {
     "untrusted:unit_tests",
     "//base/test:test_support",
     "//chrome/test:test_support",
+    "//components/contextual_search:prefs",
+    "//components/contextual_search/consent_kit/proto:privacy_primitive_config_proto",
     "//components/omnibox/common",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/network:test_support" ]
+  }
 }

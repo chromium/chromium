@@ -489,7 +489,7 @@ bool InputStateModel::IsDriveSupported() const {
   bool consented = drive_consent_state_ == DriveConsentState::kConsent ||
                    (base::FeatureList::IsEnabled(
                         omnibox::kComposeboxDriveContextMenuOptionDisclaimer) &&
-                    drive_consent_state_ == DriveConsentState::kNotConsent);
+                    drive_consent_state_ != DriveConsentState::kRestricted);
 
   return identity_matches && !incognito && feature_enabled && consented;
 }

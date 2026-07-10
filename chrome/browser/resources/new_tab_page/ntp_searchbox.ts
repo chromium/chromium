@@ -638,7 +638,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     // the edge case where a user sees the drive option in the menu, but
     // then revokes Drive permissions.
     const {status} = await this.pageHandler().getDriveDisclaimerStatus();
-    if (status !== DriveDisclaimerStatus.kAccepted) {
+    if (status === DriveDisclaimerStatus.kRestricted) {
       return;
     }
 

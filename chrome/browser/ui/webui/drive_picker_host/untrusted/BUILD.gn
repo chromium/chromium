@@ -11,6 +11,7 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
   public_deps = [
     "//chrome/browser/ui/views/drive_picker_host:mojo_bindings",
+    "//mojo/public/mojom/base:protobuf_support",
     "//url/mojom:url_mojom_gurl",
   ]
 }
@@ -24,6 +25,7 @@ source_set("untrusted") {
   public_deps = [
     ":mojo_bindings",
     "//content/public/browser",
+    "//mojo/public/cpp/base:protobuf_support",
     "//ui/webui",
   ]
 

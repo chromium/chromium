@@ -5,11 +5,23 @@
 module drive_picker_host_untrusted.mojom;
 
 import "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom";
+import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "url/mojom/url.mojom";
 
 // Browser-side handler for the untrusted page.
 // Called from TS side of chrome-untrusted://drive-picker (Renderer -> Browser).
 interface PageHandler {
+  // Called when the ConsentKit iframe posts an IframeMessage.
+  // `message_wrapper` is a wrapped identity_consent.IframeMessage protobuf.
+  OnConsentKitIframeMessage(mojo_base.mojom.ProtoWrapper message_wrapper);
+
+  // Called when the ConsentKit iframe posts a PrivacyFlowResult directly.
+  // `result_wrapper` is a wrapped identity_consent.PrivacyFlowResult protobuf.
+  OnConsentKitPrivacyFlowResult(mojo_base.mojom.ProtoWrapper result_wrapper);
+
+  // Called on handshake timeout or if the iframe posts an error.
+  // `error_message` is human-readable and should not be parsed.
+  OnConsentKitError(string error_message);
 };
 
 // WebUI-side page interface for the untrusted page.

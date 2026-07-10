@@ -1309,13 +1309,13 @@ TEST_F(InputStateModelTest, DriveConsentStateWithDisclaimerToggle) {
                   omnibox::INPUT_TYPE_LENS_IMAGE, omnibox::INPUT_TYPE_LENS_FILE,
                   omnibox::INPUT_TYPE_BROWSER_TAB, omnibox::INPUT_TYPE_DRIVE));
 
-  // kNotReady should NOT allow Drive input.
+  // kNotReady should allow Drive input.
   pref_service_.SetInteger(contextual_search::kDriveConsentState,
                            static_cast<int>(DriveConsentState::kNotReady));
   EXPECT_THAT(input_state_model_->get_state_for_testing().allowed_input_types,
-              testing::UnorderedElementsAre(omnibox::INPUT_TYPE_LENS_IMAGE,
-                                            omnibox::INPUT_TYPE_LENS_FILE,
-                                            omnibox::INPUT_TYPE_BROWSER_TAB));
+              testing::UnorderedElementsAre(
+                  omnibox::INPUT_TYPE_LENS_IMAGE, omnibox::INPUT_TYPE_LENS_FILE,
+                  omnibox::INPUT_TYPE_BROWSER_TAB, omnibox::INPUT_TYPE_DRIVE));
 
   // kRestricted should NOT allow Drive input.
   pref_service_.SetInteger(contextual_search::kDriveConsentState,
