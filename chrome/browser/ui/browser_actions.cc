@@ -2593,6 +2593,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(base::UserMetricsAction("CloseWindowByKey"));
                 chrome::CloseWindow(bwi);
               },
               bwi))
@@ -2709,6 +2710,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(base::UserMetricsAction("CloseTabByKey"));
                 chrome::CloseTab(bwi);
               },
               bwi))
@@ -2720,6 +2722,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("Accel_SelectNextTab"));
                 chrome::SelectNextTab(bwi);
               },
               bwi))
@@ -2731,6 +2735,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("Accel_SelectPreviousTab"));
                 chrome::SelectPreviousTab(bwi);
               },
               bwi))
@@ -2742,6 +2748,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("Accel_SelectNumberedTab"));
                 chrome::SelectNumberedTab(bwi, 0);
               },
               bwi))
@@ -2753,6 +2761,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("Accel_SelectNumberedTab"));
                 chrome::SelectNumberedTab(bwi, 1);
               },
               bwi))
@@ -2764,6 +2774,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("Accel_SelectNumberedTab"));
                 chrome::SelectNumberedTab(bwi, 2);
               },
               bwi))
@@ -2775,6 +2787,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("Accel_SelectNumberedTab"));
                 chrome::SelectNumberedTab(bwi, 3);
               },
               bwi))
@@ -2786,6 +2800,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("Accel_SelectNumberedTab"));
                 chrome::SelectNumberedTab(bwi, 4);
               },
               bwi))
@@ -2797,6 +2813,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("Accel_SelectNumberedTab"));
                 chrome::SelectNumberedTab(bwi, 5);
               },
               bwi))
@@ -2808,6 +2826,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("Accel_SelectNumberedTab"));
                 chrome::SelectNumberedTab(bwi, 6);
               },
               bwi))
@@ -2819,6 +2839,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(
+                    base::UserMetricsAction("Accel_SelectNumberedTab"));
                 chrome::SelectNumberedTab(bwi, 7);
               },
               bwi))
