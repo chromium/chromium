@@ -253,13 +253,13 @@ class StatusIconLinuxDbus::Multiplexer {
     icons_[service_name] = icon;
   }
 
-  void Unregister(const std::string& service_name) {
+  void Unregister(const std::string& service_name, dbus::Bus* bus) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     // Unregister may be called for a service name that was never registered
     // if initialization failed before registration.
     icons_.erase(service_name);
     if (icons_.empty()) {
-      UnexportMethods();
+      UnexportMethods(bus);
     }
   }
 
@@ -296,9 +296,9 @@ class StatusIconLinuxDbus::Multiplexer {
                         base::DoNothing());
   }
 
-  void UnexportMethods() {
-    if (item_) {
-      item_->Unregister();
+  void UnexportMethods(dbus::Bus* bus) {
+    if (item_ && bus) {
+      bus->UnregisterExportedObject(dbus::ObjectPath(kPathStatusNotifierItem));
       item_ = nullptr;
     }
   }
@@ -518,7 +518,7 @@ StatusIconLinuxDbus::~StatusIconLinuxDbus() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CleanupIconFile();
 
-  Multiplexer::Get()->Unregister(service_name_);
+  Multiplexer::Get()->Unregister(service_name_, bus_.get());
   if (!service_name_.empty()) {
     bus_->ReleaseOwnership(service_name_);
   }
