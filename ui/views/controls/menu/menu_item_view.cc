@@ -49,6 +49,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/actions/action_view_interface.h"
 #include "ui/views/badge_painter.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/image_view.h"
@@ -1901,6 +1902,23 @@ void MenuItemView::UpdateAccessibleExpandedCollapsedState() {
     GetViewAccessibility().SetIsExpanded();
   } else {
     GetViewAccessibility().SetIsCollapsed();
+  }
+}
+
+std::unique_ptr<ActionViewInterface> MenuItemView::GetActionViewInterface() {
+  return std::make_unique<MenuItemActionViewInterface>(this);
+}
+
+MenuItemActionViewInterface::MenuItemActionViewInterface(
+    MenuItemView* action_view)
+    : BaseActionViewInterface(action_view), action_view_(action_view) {}
+
+void MenuItemActionViewInterface::ActionItemChangedImpl(
+    actions::ActionItem* action_item) {
+  BaseActionViewInterface::ActionItemChangedImpl(action_item);
+  action_view_->SetTitle(std::u16string(action_item->GetText()));
+  if (!action_item->GetImage().IsEmpty()) {
+    action_view_->SetIcon(action_item->GetImage());
   }
 }
 

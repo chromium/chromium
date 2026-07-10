@@ -1083,4 +1083,20 @@ TEST_F(MenuItemViewA11yTest, TooltipTextAccessibility) {
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
             u"Tooltip");
 }
+
+TEST_F(MenuItemViewA11yTest, ActionViewInterfaceTest) {
+  MenuItemView* item = menu_item_view();
+  std::unique_ptr<actions::ActionItem> action_item =
+      actions::ActionItem::Builder()
+          .SetText(u"Test Action Text")
+          .SetEnabled(false)
+          .SetVisible(false)
+          .Build();
+
+  item->GetActionViewInterface()->ActionItemChangedImpl(action_item.get());
+
+  EXPECT_EQ(item->title(), u"Test Action Text");
+  EXPECT_FALSE(item->GetEnabled());
+  EXPECT_FALSE(item->GetVisible());
+}
 }  // namespace views

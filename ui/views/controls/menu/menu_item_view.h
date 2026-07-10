@@ -142,6 +142,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   std::u16string GetRenderedTooltipText(const gfx::Point& p) const override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   FocusBehavior GetFocusBehavior() const override;
+  std::unique_ptr<ActionViewInterface> GetActionViewInterface() override;
 
   // To update the custom tooltip, call this method with the new text.
   void UpdateTooltipText(std::optional<std::u16string> new_text = std::nullopt);
@@ -769,6 +770,19 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 
   base::CallbackListSubscription visible_changed_callback_;
   base::CallbackListSubscription enabled_changed_callback_;
+};
+
+class VIEWS_EXPORT MenuItemActionViewInterface
+    : public BaseActionViewInterface {
+ public:
+  explicit MenuItemActionViewInterface(MenuItemView* action_view);
+  ~MenuItemActionViewInterface() override = default;
+
+  // BaseActionViewInterface:
+  void ActionItemChangedImpl(actions::ActionItem* action_item) override;
+
+ private:
+  raw_ptr<MenuItemView> action_view_;
 };
 
 // EmptyMenuMenuItem ----------------------------------------------------------
