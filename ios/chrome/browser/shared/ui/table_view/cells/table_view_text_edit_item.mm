@@ -13,6 +13,8 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -75,7 +77,13 @@ const CGFloat kSymbolSize = 15;
   }
 
   if (self.fieldNameLabelText.length) {
-    cell.textField.accessibilityLabel = self.fieldNameLabelText;
+    cell.textField.accessibilityLabel =
+        self.required
+            ? [NSString stringWithFormat:
+                            @"%@, %@", self.fieldNameLabelText,
+                            l10n_util::GetNSString(
+                                IDS_IOS_FIELD_REQUIRED_ACCESSIBILITY_LABEL)]
+            : self.fieldNameLabelText;
   }
 
   if (self.textFieldBackgroundColor) {

@@ -64,6 +64,9 @@
 // Computes the fields that were edited in the view.
 - (void)computeFieldWasEdited:(NSString*)editedFieldType value:(NSString*)value;
 
+// Returns YES if the `autofillFieldType` is a required field.
+- (BOOL)isAutofillFieldTypeRequiredField:(NSString*)autofillFieldType;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_ADDRESS_EDITOR_AUTOFILL_PROFILE_EDIT_TABLE_VIEW_HELPER_DELEGATE_H_

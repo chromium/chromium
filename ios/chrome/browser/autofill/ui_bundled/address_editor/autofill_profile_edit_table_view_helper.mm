@@ -578,6 +578,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   item.accessibilityIdentifier = item.fieldNameLabelText;
   item.useCustomSeparator =
       _addressContext != SaveAddressContext::kEditingSavedAddress;
+  item.required = [_delegate isAutofillFieldTypeRequiredField:autofillType];
   return item;
 }
 

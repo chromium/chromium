@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 using TableViewTextEditItemTest = PlatformTest;
 
@@ -36,4 +38,32 @@ TEST_F(TableViewTextEditItemTest, ConfigureCell) {
   EXPECT_NSEQ(value, textEditCell.textField.text);
   EXPECT_FALSE(textEditCell.textField.enabled);
   EXPECT_NSEQ(name, textEditCell.textField.accessibilityLabel);
+}
+
+// Tests that the required property adds "Required" to the accessibilityLabel
+// of the text field.
+TEST_F(TableViewTextEditItemTest, ConfigureCellRequired) {
+  TableViewTextEditItem* item = [[TableViewTextEditItem alloc] initWithType:0];
+  NSString* name = @"Name";
+  NSString* value = @"Value";
+
+  item.fieldNameLabelText = name;
+  item.textFieldValue = value;
+  item.required = YES;
+
+  id cell = [[[item cellClass] alloc] init];
+  ASSERT_TRUE([cell isMemberOfClass:[TableViewTextEditCell class]]);
+
+  [item configureCell:cell];
+
+  TableViewTextEditCell* textEditCell = cell;
+  NSString* expectedLabel = [NSString stringWithFormat:@"%@*", name];
+  EXPECT_NSEQ(expectedLabel, textEditCell.textLabel.text);
+
+  NSString* requiredText =
+      l10n_util::GetNSString(IDS_IOS_FIELD_REQUIRED_ACCESSIBILITY_LABEL);
+  NSString* expectedAccessibilityLabel =
+      [NSString stringWithFormat:@"%@, %@", name, requiredText];
+  EXPECT_NSEQ(expectedAccessibilityLabel,
+              textEditCell.textField.accessibilityLabel);
 }
