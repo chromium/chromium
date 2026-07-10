@@ -3031,6 +3031,38 @@ suite('ContextualActionMenu', () => {
         });
 
     test(
+        'prefers reposition_ over showAt when tabSuggestions updates while flyout is open',
+        async () => {
+          let showAtCalled = false;
+          let repositionCalled = false;
+
+          actionMenu.showAt(actionMenu);
+          await microtasksFinished();
+
+          actionMenu.showAt = () => {
+            showAtCalled = true;
+          };
+          asInternal(actionMenu).reposition_ = () => {
+            repositionCalled = true;
+          };
+
+          actionMenu.shareTabsFlyoutOpen = false;
+          actionMenu.tabSuggestions = [...actionMenu.tabSuggestions];
+          await actionMenu.updateComplete;
+          assertTrue(showAtCalled);
+          assertFalse(repositionCalled);
+
+          showAtCalled = false;
+          repositionCalled = false;
+
+          actionMenu.shareTabsFlyoutOpen = true;
+          actionMenu.tabSuggestions = [...actionMenu.tabSuggestions];
+          await actionMenu.updateComplete;
+          assertFalse(showAtCalled);
+          assertTrue(repositionCalled);
+        });
+
+    test(
         'pointerLeave is ignored for 1 second after 1st tab added',
         async () => {
           loadTimeData.overrideValues({

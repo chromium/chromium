@@ -228,8 +228,10 @@ export class ContextualEntrypointAndMenuElement extends
       entrypointButton.classList.add('menu-open');
       await this.updateComplete;
       await this.$.menu.updateComplete;
-      this.$.menu.showAt(entrypoint);
-      this.fire('context-menu-opened');
+      if (!this.$.menu.open) {
+        this.$.menu.showAt(entrypoint);
+        this.fire('context-menu-opened');
+      }
     }
   }
 }
