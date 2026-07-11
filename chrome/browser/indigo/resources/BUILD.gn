@@ -9,7 +9,7 @@ assert(!is_android)
 
 declare_args() {
   # Set to true to use internal branded strings for Indigo.
-  use_indigo_internal_strings = is_internal_chrome_branded
+  use_indigo_internal_strings = false
 }
 
 grit_strings("indigo_strings") {
