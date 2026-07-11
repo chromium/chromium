@@ -8,12 +8,47 @@
 #import <limits>
 
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "ios/web/common/crw_viewport_controller.h"
 #import "ios/web/common/crw_web_view_resizing_type.h"
 #import "ios/web/public/web_client.h"
 
 namespace {
+
+// Feature flag to enable the strict bounds check for WKWebView viewport insets.
+BASE_FEATURE(kCRWWebViewContentViewLayoutFix, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Helper function to replicate WebKit's validation logic for a single inset.
+// WebKit casts `frame.size` and insets to 32-bit floats and considers the
+// viewport valid if the unobscured size is not empty (> 0), or if the inset
+// itself is empty.
+BOOL IsInsetValidForFrame(UIEdgeInsets inset, CGSize frameSize) {
+  float insetWidth = static_cast<float>(inset.left + inset.right);
+  float insetHeight = static_cast<float>(inset.top + inset.bottom);
+  BOOL insetEmpty = insetWidth <= 0 || insetHeight <= 0;
+  if (insetEmpty) {
+    return YES;
+  }
+
+  float frameWidth = static_cast<float>(frameSize.width);
+  float frameHeight = static_cast<float>(frameSize.height);
+
+  BOOL unobscuredEmpty =
+      (frameWidth - insetWidth) <= 0 || (frameHeight - insetHeight) <= 0;
+  return !unobscuredEmpty;
+}
+
+// Helper function to check if the frame is large enough for both min/max
+// insets.
+BOOL IsFrameLargeEnoughToApplyViewportInsets(CGSize frameSize,
+                                             UIEdgeInsets minInset,
+                                             UIEdgeInsets maxInset) {
+  if (!IsInsetValidForFrame(maxInset, frameSize)) {
+    return NO;
+  }
+  return IsInsetValidForFrame(minInset, frameSize);
+}
 
 // Background color RGB values for the content view which is displayed when the
 // `_webView` is offset from the screen due to user interaction. Displaying this
@@ -224,10 +259,18 @@ NSString* const kPDFMimeType = @"application/pdf";
            maximumViewportInset:(UIEdgeInsets)maxInset {
   switch (self.webViewResizingType) {
     case WebViewResizingType::kContentInset: {
-      CGRect insetRect = UIEdgeInsetsInsetRect(_webView.bounds, maxInset);
+      BOOL isFrameLargeEnough;
+      if (base::FeatureList::IsEnabled(kCRWWebViewContentViewLayoutFix)) {
+        isFrameLargeEnough = IsFrameLargeEnoughToApplyViewportInsets(
+            _webView.frame.size, minInset, maxInset);
+      } else {
+        isFrameLargeEnough =
+            !CGRectIsEmpty(UIEdgeInsetsInsetRect(_webView.bounds, maxInset));
+      }
+
       // Only apply the viewport insets if the web view's frame is large enough
       // to accommodate them.
-      if (_webView.window && !CGRectIsEmpty(insetRect)) {
+      if (_webView.window && isFrameLargeEnough) {
         [_webView setMinimumViewportInset:minInset
                      maximumViewportInset:maxInset];
         [_webView setNeedsLayout];
