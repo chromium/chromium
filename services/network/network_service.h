@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
@@ -495,6 +496,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   std::unique_ptr<NetworkQualityEstimatorManager>
       network_quality_estimator_manager_;
+
+  // Raises the type of the thread the network service runs on (the IO thread
+  // of the network utility process) while there is at least one active
+  // peer-to-peer connection. Only engaged when
+  // webrtc::features::kWebRTCBoostMediaIOThreads is enabled.
+  std::optional<base::PlatformThread::RaiseThreadTypeLease>
+      io_thread_type_lease_;
 
   std::unique_ptr<DnsConfigChangeManager> dns_config_change_manager_;
 

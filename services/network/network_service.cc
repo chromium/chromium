@@ -43,6 +43,7 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "components/vrp_flags/buildflags.h"
+#include "components/webrtc/features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
@@ -397,7 +398,7 @@ NetworkService::NetworkService(
   ContentDecodingInterceptor::SetIsNetworkServiceRunningInTheCurrentProcess(
       true, {});
 
-  // |registry_| is nullptr when a NetworkService is out-of-process.
+  // `registry` holds a valid instance when a NetworkService is out-of-process.
   if (registry_) {
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(&HandleBadMessage));
 #if BUILDFLAG(IS_LINUX)
@@ -923,6 +924,19 @@ void NetworkService::OnClientCertStoreChanged() {
 void NetworkService::OnPeerToPeerConnectionsCountChange(uint32_t count) {
   network_quality_estimator_manager_->GetNetworkQualityEstimator()
       ->OnPeerToPeerConnectionsCountChange(count);
+
+  // Only boost when running out of process (|registry_| is non-null); the
+  // in-process network thread has its own priority handling (see
+  // BoostNetworkThreadPriority in
+  // content/browser/network_service_instance_impl.cc).
+  if (registry_ && base::FeatureList::IsEnabled(
+                       webrtc::features::kWebRTCBoostMediaIOThreads)) {
+    if (count > 0 && !io_thread_type_lease_) {
+      io_thread_type_lease_.emplace(base::ThreadType::kAudioProcessing);
+    } else if (count == 0) {
+      io_thread_type_lease_.reset();
+    }
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)

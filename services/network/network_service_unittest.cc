@@ -27,8 +27,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
+#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/webrtc/features.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -79,6 +81,7 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "services/network/test/test_url_loader_network_observer.h"
 #include "services/network/test/test_utils.h"
+#include "services/service_manager/public/cpp/binder_registry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -165,6 +168,76 @@ TEST_F(NetworkServiceTest, DestroyingServiceDestroysContext) {
   // Destroying the service should destroy the context, causing a connection
   // error.
   run_loop.Run();
+}
+
+class NetworkServiceBoostIOThreadTest : public testing::Test {
+ public:
+  void InitializeService(bool enable_feature) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    (enable_feature ? enabled_features : disabled_features)
+        .push_back(webrtc::features::kWebRTCBoostMediaIOThreads);
+#if BUILDFLAG(IS_LINUX)
+    // Constructing a NetworkService with a registry would otherwise install a
+    // NetworkChangeNotifier factory, which is only allowed once per process.
+    disabled_features.push_back(net::features::kAddressTrackerLinuxIsProxied);
+#endif
+    // The feature list must be initialized before TaskEnvironment starts
+    // ThreadPool threads that may query it.
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    task_environment_.emplace(base::test::TaskEnvironment::MainThreadType::IO);
+    // A non-null registry makes the service consider itself out-of-process,
+    // which is required for the boost to engage.
+    service_ = std::make_unique<NetworkService>(
+        std::make_unique<service_manager::BinderRegistry>(),
+        network_service_.BindNewPipeAndPassReceiver(),
+        /*delay_initialization_until_set_client=*/true);
+    service_->Initialize(mojom::NetworkServiceParams::New(),
+                         /*mock_network_change_notifier=*/true);
+  }
+
+  NetworkService* service() { return service_.get(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::optional<base::test::TaskEnvironment> task_environment_;
+  mojo::Remote<mojom::NetworkService> network_service_;
+  std::unique_ptr<NetworkService> service_;
+};
+
+// The network service should hold a thread type lease on the thread it runs
+// on while there are active peer-to-peer connections, when
+// webrtc::features::kWebRTCBoostMediaIOThreads is enabled.
+TEST_F(NetworkServiceBoostIOThreadTest,
+       BoostsIOThreadWithActiveP2PConnections) {
+  InitializeService(/*enable_feature=*/true);
+  EXPECT_FALSE(base::PlatformThread::CurrentThreadHasLeases());
+
+  service()->OnPeerToPeerConnectionsCountChange(1);
+  EXPECT_TRUE(base::PlatformThread::CurrentThreadHasLeases());
+  EXPECT_EQ(base::PlatformThread::GetCurrentThreadType(),
+            base::ThreadType::kAudioProcessing);
+
+  // The lease persists across non-zero count changes.
+  service()->OnPeerToPeerConnectionsCountChange(2);
+  EXPECT_TRUE(base::PlatformThread::CurrentThreadHasLeases());
+
+  service()->OnPeerToPeerConnectionsCountChange(0);
+  EXPECT_FALSE(base::PlatformThread::CurrentThreadHasLeases());
+  EXPECT_EQ(base::PlatformThread::GetCurrentThreadType(),
+            base::ThreadType::kDefault);
+}
+
+TEST_F(NetworkServiceBoostIOThreadTest, DoesNotBoostIOThreadWhenFeatureIsOff) {
+  InitializeService(/*enable_feature=*/false);
+
+  service()->OnPeerToPeerConnectionsCountChange(1);
+  EXPECT_FALSE(base::PlatformThread::CurrentThreadHasLeases());
+  EXPECT_EQ(base::PlatformThread::GetCurrentThreadType(),
+            base::ThreadType::kDefault);
+
+  service()->OnPeerToPeerConnectionsCountChange(0);
+  EXPECT_FALSE(base::PlatformThread::CurrentThreadHasLeases());
 }
 
 #if BUILDFLAG(IS_ANDROID)
