@@ -57,6 +57,7 @@ class BookmarkEventTranslator : public bookmarks::BookmarkModelObserver {
 
   // bookmarks::BookmarkModelObserver:
   void BookmarkModelLoaded(bool ids_reassigned) override {}
+  void BookmarkModelBeingDeleted() override;
   void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
                          size_t old_index,
                          const bookmarks::BookmarkNode* new_parent,
@@ -72,8 +73,10 @@ class BookmarkEventTranslator : public bookmarks::BookmarkModelObserver {
   void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeFaviconChanged(
       const bookmarks::BookmarkNode* node) override {}
+  void OnWillReorderBookmarkNode(const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeChildrenReordered(
       const bookmarks::BookmarkNode* node) override;
+  void OnWillRemoveAllUserBookmarks(const base::Location& location) override;
   void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
                                    const base::Location& location) override;
   void ExtensiveBookmarkChangesBeginning() override;
@@ -82,17 +85,29 @@ class BookmarkEventTranslator : public bookmarks::BookmarkModelObserver {
  private:
   void RefreshFoldersSnapshot();
   void PopulateFoldersSnapshot(const bookmarks::BookmarkNode* node);
+  // Rebuilds `parent`'s snapshot entry from its current children.
+  void UpdateFolderChildren(const bookmarks::BookmarkNode* parent);
+  // Erases the snapshot entries for `node` and all descendant folders.
+  void RemoveFolderSubtree(const bookmarks::BookmarkNode* node);
   void Notify(std::vector<mojom::BookmarksEventPtr> events);
 
   raw_ptr<bookmarks::BookmarkModel> model_;
   raw_ptr<bookmarks::ManagedBookmarkService> managed_;
   raw_ptr<Subscriber> subscriber_;
-  // A snapshot of the folder structure (mapping folder UUID to its children's
-  // UUIDs) used to detect changes (adds, removes, moves) in the bookmark model.
-  // This is necessary because bookmark model has a "reorder" event type, which
-  // performs several move operations at once. We need to keep an old snapshot
-  // to compute individual move events.
-  std::map<base::Uuid, std::vector<base::Uuid>> folders_snapshot_;
+  // A snapshot of the folder structure (mapping each folder node to its
+  // children's UUIDs) used to detect changes (adds, removes, moves) in the
+  // bookmark model. Keyed by node pointer rather than UUID because permanent
+  // folders are not uniquely identified by UUID: account and local permanent
+  // folders share the same fixed UUIDs. This is necessary because the bookmark
+  // model has a "reorder" event type, which performs several move operations at
+  // once. We need to keep an old snapshot to compute individual move events.
+  // The snapshot is captured on demand in OnWillReorderBookmarkNode() and
+  // OnWillRemoveAllUserBookmarks(), just before the model applies those
+  // changes, so the add/move/remove paths don't have to maintain it. Entries
+  // are cleared in BookmarkModelBeingDeleted() so the raw pointers never
+  // dangle.
+  std::map<const bookmarks::BookmarkNode*, std::vector<base::Uuid>>
+      folders_snapshot_;
 
   std::vector<mojom::BookmarksEventPtr> queued_events_;
 };

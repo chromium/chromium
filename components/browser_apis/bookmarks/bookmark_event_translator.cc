@@ -22,7 +22,6 @@ BookmarkEventTranslator::BookmarkEventTranslator(
   CHECK(subscriber_);
   CHECK(model_->loaded());
   model_->AddObserver(this);
-  RefreshFoldersSnapshot();
 }
 
 BookmarkEventTranslator::~BookmarkEventTranslator() {
@@ -97,6 +96,10 @@ mojom::BookmarkNodePtr BookmarkEventTranslator::ConvertNode(
   }
 }
 
+void BookmarkEventTranslator::BookmarkModelBeingDeleted() {
+  folders_snapshot_.clear();
+}
+
 void BookmarkEventTranslator::BookmarkNodeMoved(
     const bookmarks::BookmarkNode* old_parent,
     size_t old_index,
@@ -108,8 +111,6 @@ void BookmarkEventTranslator::BookmarkNodeMoved(
 
   std::vector<mojom::BookmarksEventPtr> events;
   events.push_back(mojom::BookmarksEvent::NewMoved(std::move(moved_event)));
-
-  RefreshFoldersSnapshot();
 
   Notify(std::move(events));
 }
@@ -126,8 +127,6 @@ void BookmarkEventTranslator::BookmarkNodeAdded(
   std::vector<mojom::BookmarksEventPtr> events;
   events.push_back(mojom::BookmarksEvent::NewAdded(std::move(added_event)));
 
-  RefreshFoldersSnapshot();
-
   Notify(std::move(events));
 }
 
@@ -142,7 +141,9 @@ void BookmarkEventTranslator::BookmarkNodeRemoved(
   std::vector<mojom::BookmarksEventPtr> events;
   events.push_back(mojom::BookmarksEvent::NewRemoved(std::move(removed_event)));
 
-  RefreshFoldersSnapshot();
+  // Drop the removed subtree's entries so the snapshot never holds pointers to
+  // freed nodes.
+  RemoveFolderSubtree(node);
 
   Notify(std::move(events));
 }
@@ -157,6 +158,16 @@ void BookmarkEventTranslator::BookmarkNodeChanged(
   Notify(std::move(events));
 }
 
+void BookmarkEventTranslator::OnWillReorderBookmarkNode(
+    const bookmarks::BookmarkNode* node) {
+  // ReorderChildren() reports only that `node`'s children were reordered, not
+  // how. Capture the pre-reorder order now, while the model still holds it, so
+  // BookmarkNodeChildrenReordered() below can diff against it. Capturing here
+  // on demand is why the add/move/remove paths never have to maintain the
+  // snapshot.
+  UpdateFolderChildren(node);
+}
+
 void BookmarkEventTranslator::BookmarkNodeChildrenReordered(
     const bookmarks::BookmarkNode* node) {
   std::vector<mojom::BookmarksEventPtr> events;
@@ -166,7 +177,7 @@ void BookmarkEventTranslator::BookmarkNodeChildrenReordered(
   // a "shuffle forward" event. This prevents clients from needing to reorder
   // elements that have already been moved.
   const auto& new_ordering = node->children();
-  auto current_view = folders_snapshot_[node->uuid()];
+  auto current_view = folders_snapshot_[node];
   for (size_t i = 0; i < new_ordering.size(); ++i) {
     const auto& target = new_ordering[i];
     auto it =
@@ -190,9 +201,16 @@ void BookmarkEventTranslator::BookmarkNodeChildrenReordered(
     }
   }
 
-  RefreshFoldersSnapshot();
-
   Notify(std::move(events));
+}
+
+void BookmarkEventTranslator::OnWillRemoveAllUserBookmarks(
+    const base::Location& location) {
+  // RemoveAllUserBookmarks() empties every permanent folder and fires only
+  // BookmarkAllUserNodesRemoved() afterward, once the children are already
+  // gone. Snapshot the current tree now so that notification can emit a removed
+  // event for each child.
+  RefreshFoldersSnapshot();
 }
 
 void BookmarkEventTranslator::BookmarkAllUserNodesRemoved(
@@ -200,14 +218,14 @@ void BookmarkEventTranslator::BookmarkAllUserNodesRemoved(
     const base::Location& location) {
   std::vector<mojom::BookmarksEventPtr> events;
 
-  std::vector<const bookmarks::BookmarkNode*> permanent_nodes = {
-      model_->bookmark_bar_node(), model_->other_node(), model_->mobile_node()};
-
-  for (const auto* permanent_node : permanent_nodes) {
-    if (!permanent_node) {
+  // RemoveAllUserBookmarks() removes the children of every permanent folder
+  // except managed ones, across both local and account storage, and fires only
+  // this single notification, so enumerate them all here.
+  for (const auto& permanent_node : model_->root_node()->children()) {
+    if (managed_ && permanent_node.get() == managed_->managed_node()) {
       continue;
     }
-    auto it = folders_snapshot_.find(permanent_node->uuid());
+    auto it = folders_snapshot_.find(permanent_node.get());
     if (it != folders_snapshot_.end()) {
       for (const auto& child_uuid : it->second) {
         auto removed_event = mojom::BookmarkNodeRemoved::New(child_uuid);
@@ -236,7 +254,7 @@ void BookmarkEventTranslator::PopulateFoldersSnapshot(
       children.push_back(child->uuid());
       PopulateFoldersSnapshot(child.get());
     }
-    folders_snapshot_[node->uuid()] = std::move(children);
+    folders_snapshot_[node] = std::move(children);
   }
 }
 
@@ -247,6 +265,30 @@ void BookmarkEventTranslator::ExtensiveBookmarkChangesEnded() {
     subscriber_->OnBookmarkEvents(queued_events_);
     queued_events_.clear();
   }
+}
+
+void BookmarkEventTranslator::UpdateFolderChildren(
+    const bookmarks::BookmarkNode* parent) {
+  // Only OnWillReorderBookmarkNode() calls this, and a node whose children are
+  // being reordered is always a folder.
+  CHECK(parent->is_folder());
+  std::vector<base::Uuid> children;
+  children.reserve(parent->children().size());
+  for (const auto& child : parent->children()) {
+    children.push_back(child->uuid());
+  }
+  folders_snapshot_[parent] = std::move(children);
+}
+
+void BookmarkEventTranslator::RemoveFolderSubtree(
+    const bookmarks::BookmarkNode* node) {
+  if (!node->is_folder()) {
+    return;
+  }
+  for (const auto& child : node->children()) {
+    RemoveFolderSubtree(child.get());
+  }
+  folders_snapshot_.erase(node);
 }
 
 void BookmarkEventTranslator::Notify(
