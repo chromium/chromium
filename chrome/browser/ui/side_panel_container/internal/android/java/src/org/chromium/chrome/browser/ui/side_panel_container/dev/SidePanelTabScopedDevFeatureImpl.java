@@ -77,8 +77,7 @@ public final class SidePanelTabScopedDevFeatureImpl implements SidePanelDevFeatu
                 LayoutInflater.from(tab.getContext())
                         .inflate(R.layout.side_panel_dev_feature, null);
         TextView textView = view.findViewById(R.id.tab_title);
-        String hash = Integer.toHexString(System.identityHashCode(tab));
-        textView.setText("Tab title: " + tab.getTitle() + " " + hash);
+        textView.setText("Tab title: " + tab.getTitle());
 
         TextView linkTextView = view.findViewById(R.id.dev_link);
         linkTextView.setText(DEV_LINK_URL);

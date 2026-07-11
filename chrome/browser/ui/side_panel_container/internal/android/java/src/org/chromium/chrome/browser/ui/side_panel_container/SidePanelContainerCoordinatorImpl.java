@@ -17,7 +17,6 @@ import android.widget.FrameLayout;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
@@ -40,9 +39,6 @@ final class SidePanelContainerCoordinatorImpl
     private static final String TAG = "SidePanelContainerCoordinatorImpl";
 
     private static final @AnchorSide int SIDE_PANEL_DEFAULT_ANCHOR_SIDE = AnchorSide.RIGHT;
-
-    /** Used to override the return value of {@link #hasContentToShow()} for tests. */
-    private static @Nullable Boolean sHasContentToShowForTesting;
 
     private final Activity mParentActivity;
     private final FrameLayout mContainerView;
@@ -341,9 +337,6 @@ final class SidePanelContainerCoordinatorImpl
     @Override
     public boolean hasContentToShow() {
         ThreadUtils.assertOnUiThread();
-        if (sHasContentToShowForTesting != null) {
-            return sHasContentToShowForTesting;
-        }
 
         // The pure-Java dev feature doesn't use SidePanelCoordinatorAndroid since
         // SidePanelCoordinatorAndroid is a bridge to the C++ side panel state management.
@@ -462,11 +455,6 @@ final class SidePanelContainerCoordinatorImpl
 
         // 4. Return 0 if available space can't accommodate the minimum side panel width.
         return 0;
-    }
-
-    static void setHasContentToShowForTesting(boolean hasContentToShow) {
-        sHasContentToShowForTesting = hasContentToShow;
-        ResettersForTesting.register(() -> sHasContentToShowForTesting = null);
     }
 
     private @Nullable ThinWebView findThinWebView(View view) {

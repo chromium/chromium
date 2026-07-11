@@ -5,20 +5,13 @@
 package org.chromium.chrome.browser.ui.side_panel_container;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import android.annotation.SuppressLint;
-import android.graphics.Color;
-import android.graphics.Rect;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -36,7 +29,9 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
+import org.chromium.chrome.browser.ui.side_panel_container.test.SidePanelContainerCoordinatorIntegrationTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -49,15 +44,15 @@ import org.chromium.ui.test.util.RenderTestRule;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+@EnableFeatures({
+    ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
+    ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE + ":scope/tab"
+})
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 @NullMarked
 public class SidePanelContainerCoordinatorIntegrationTest {
     private static final String RESPONSIVE_WEB_PAGE_URL =
             "/chrome/browser/ui/side_panel_container/test/data/responsive_page.html";
-    private static final @ColorInt int SIDE_PANEL_CONTENT_BACKGROUND_COLOR =
-            Color.rgb(204, 85, 0); // Dark Orange
-    private static final Runnable DO_NOTHING_RUNNABLE = () -> {};
 
     private WebPageStation mResponsivePageStation;
 
@@ -73,9 +68,6 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
     @Before
     public void setUp() {
-        SidePanelContainerCoordinatorImpl.setHasContentToShowForTesting(
-                /* hasContentToShow= */ true);
-
         String responsivePageUrl =
                 mFreshCtaTransitTestRule.getTestServer().getURL(RESPONSIVE_WEB_PAGE_URL);
         mResponsivePageStation = mFreshCtaTransitTestRule.startOnUrl(responsivePageUrl);
@@ -84,114 +76,57 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
     @Test
     @MediumTest
-    public void startOpeningPanel_containerHasNoContent_addsContentView() {
+    public void showPanel_addsContentView() {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
-        var sidePanelContent = createSidePanelContent("Side Panel Content");
 
         // Act.
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        coordinator.startOpeningPanel(
-                                sidePanelContent,
-                                DO_NOTHING_RUNNABLE,
-                                /* startingBounds= */ null,
-                                true));
+        showPanel(mResponsivePageStation.getTab());
         FrameLayout containerView = waitForContainerViewOpen(coordinator);
 
         // Assert.
         assertEquals(1, containerView.getChildCount());
-        assertEquals(sidePanelContent.mView, containerView.getChildAt(0));
+        assertNotNull(containerView.getChildAt(0));
     }
 
     @Test
     @MediumTest
-    public void startReplacingPanelContent_replacesContentView() {
-        // Arrange.
+    public void replacePanelContent_replacesContentView() {
+        // Arrange: Show the side panel for the current active tab.
         var coordinator = getSidePanelContainerCoordinator();
-        var sidePanelContent1 = createSidePanelContent("Side Panel Content 1");
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        coordinator.startOpeningPanel(
-                                sidePanelContent1,
-                                DO_NOTHING_RUNNABLE,
-                                /* startingBounds= */ null,
-                                true));
+        var tab1 = mResponsivePageStation.getTab();
+        showPanel(tab1);
+        FrameLayout containerView = waitForContainerViewOpen(coordinator);
+        assertEquals(1, containerView.getChildCount());
+        View contentView1 = containerView.getChildAt(0);
+
+        // Arrange: Show the side panel for a new tab.
+        var newTabPageStation = mResponsivePageStation.openNewTabFast();
+        var tab2 = newTabPageStation.getTab();
+        showPanel(tab2);
+        waitForContainerViewOpen(coordinator);
+        assertEquals(1, containerView.getChildCount());
+        View contentView2 = containerView.getChildAt(0);
+        assertNotEquals(contentView1, contentView2);
+
+        // Act: Switch back to the first tab.
+        mResponsivePageStation = newTabPageStation.selectTabFast(tab1, WebPageStation::newBuilder);
         waitForContainerViewOpen(coordinator);
 
-        // Act.
-        var sidePanelContent2 = createSidePanelContent("Side Panel Content 2");
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        coordinator.startReplacingPanelContent(
-                                sidePanelContent2, DO_NOTHING_RUNNABLE));
-        FrameLayout containerView = waitForContainerViewOpen(coordinator);
-
         // Assert.
         assertEquals(1, containerView.getChildCount());
-        assertEquals(sidePanelContent2.mView, containerView.getChildAt(0));
-    }
-
-    @Test
-    @MediumTest
-    public void startOpeningPanel_withStartingBounds_addsContentView() {
-        // Arrange.
-        var coordinator = getSidePanelContainerCoordinator();
-        var sidePanelContent = createSidePanelContent("Side Panel Content");
-        Rect startingBounds = new Rect(10, 20, 110, 220);
-
-        // Act.
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        coordinator.startOpeningPanel(
-                                sidePanelContent, DO_NOTHING_RUNNABLE, startingBounds, true));
-        FrameLayout containerView = waitForContainerViewOpen(coordinator);
-
-        // Assert.
-        assertEquals(1, containerView.getChildCount());
-        assertEquals(sidePanelContent.mView, containerView.getChildAt(0));
-    }
-
-    @Test
-    @MediumTest
-    public void startOpeningPanel_containerViewHasValidWidth() {
-        // Arrange.
-        var coordinator = getSidePanelContainerCoordinator();
-        var sidePanelContent = createSidePanelContent("Side Panel Content");
-
-        // Act.
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        coordinator.startOpeningPanel(
-                                sidePanelContent,
-                                DO_NOTHING_RUNNABLE,
-                                /* startingBounds= */ null,
-                                true));
-
-        // Assert.
-        //
-        // Note: we choose not to assert the exact width of the side panel container view as the
-        // exact width is hard to obtain due to rounding errors during "dp<->px" conversion on
-        // different bots.
-        waitForContainerViewOpen(coordinator);
+        assertEquals(contentView1, containerView.getChildAt(0));
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void startOpeningPanel_renderContainer() throws Exception {
+    public void showPanel_renderContainer() throws Exception {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
-        var sidePanelContent = createSidePanelContent("Side Panel Content");
 
         // Act.
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        coordinator.startOpeningPanel(
-                                sidePanelContent,
-                                DO_NOTHING_RUNNABLE,
-                                /* startingBounds= */ null,
-                                /* suppressAnimations= */ true));
+        showPanel(mResponsivePageStation.getTab());
         FrameLayout containerView = waitForContainerViewOpen(coordinator);
 
         // Assert.
@@ -200,24 +135,15 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
     @Test
     @MediumTest
-    public void startClosingPanel_removesContentAndCloseView() {
+    public void closePanel_removesContentView() {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
-        var sidePanelContent = createSidePanelContent("Side Panel Content To Remove");
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        coordinator.startOpeningPanel(
-                                sidePanelContent,
-                                DO_NOTHING_RUNNABLE,
-                                /* startingBounds= */ null,
-                                true));
+        var tab = mResponsivePageStation.getTab();
+        showPanel(tab);
         FrameLayout containerView = waitForContainerViewOpen(coordinator);
 
         // Act.
-        SidePanelContainerCoordinatorImpl.setHasContentToShowForTesting(
-                /* hasContentToShow= */ false);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> coordinator.startClosingPanel(DO_NOTHING_RUNNABLE, true));
+        closePanel(tab);
         waitForContainerViewClose(coordinator);
 
         // Assert.
@@ -228,20 +154,14 @@ public class SidePanelContainerCoordinatorIntegrationTest {
     @MediumTest
     public void openAndClosePanel_resizeWebContents() {
         // Arrange: Get WebContents.
-        var webContents = mResponsivePageStation.getTab().getWebContents();
+        var tab = mResponsivePageStation.getTab();
+        var webContents = tab.getWebContents();
         assertNotNull(webContents);
         int originalWebContentsWidth = ThreadUtils.runOnUiThreadBlocking(webContents::getWidth);
 
         // Act: Open the side panel.
         var coordinator = getSidePanelContainerCoordinator();
-        var sidePanelContent = createSidePanelContent("Side Panel Content");
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        coordinator.startOpeningPanel(
-                                sidePanelContent,
-                                DO_NOTHING_RUNNABLE,
-                                /* startingBounds= */ null,
-                                /* suppressAnimations= */ true));
+        showPanel(tab);
         waitForContainerViewOpen(coordinator);
 
         // Assert: The WebContents width should become smaller.
@@ -256,12 +176,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                 ThreadUtils.runOnUiThreadBlocking(webContents::getWidth);
 
         // Act: Close the side panel.
-        SidePanelContainerCoordinatorImpl.setHasContentToShowForTesting(
-                /* hasContentToShow= */ false);
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        coordinator.startClosingPanel(
-                                DO_NOTHING_RUNNABLE, /* suppressAnimations= */ true));
+        closePanel(tab);
         waitForContainerViewClose(coordinator);
 
         // Assert: The WebContents width should become larger.
@@ -282,14 +197,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
         // Arrange: Open the side panel.
         var coordinator = getSidePanelContainerCoordinator();
-        var sidePanelContent = createSidePanelContent("Side Panel Content");
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        coordinator.startOpeningPanel(
-                                sidePanelContent,
-                                DO_NOTHING_RUNNABLE,
-                                /* startingBounds= */ null,
-                                /* suppressAnimations= */ true));
+        showPanel(tab);
         waitForContainerViewOpen(coordinator);
 
         // Act: Open the grid tab switcher.
@@ -306,12 +214,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         waitForContainerViewOpen(coordinator);
 
         // Arrange: Close the side panel.
-        SidePanelContainerCoordinatorImpl.setHasContentToShowForTesting(
-                /* hasContentToShow= */ false);
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        coordinator.startClosingPanel(
-                                DO_NOTHING_RUNNABLE, /* suppressAnimations= */ true));
+        closePanel(tab);
         waitForContainerViewClose(coordinator);
 
         // Act: Open the grid tab switcher again.
@@ -323,99 +226,6 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         mRenderTestRule.render(tabCardView, "tab_card_after_closing_side_panel");
     }
 
-    @Test
-    @MediumTest
-    public void isShowingContent_beforeOpeningPanel_returnsFalse() {
-        // Arrange.
-        var coordinator = getSidePanelContainerCoordinator();
-        var sidePanelContent = createSidePanelContent("Side Panel Content");
-
-        // Assert.
-        assertFalse(
-                ThreadUtils.runOnUiThreadBlocking(() -> coordinator.isShowing(sidePanelContent)));
-    }
-
-    @Test
-    @MediumTest
-    public void isShowing_containerHasContent_returnsTrueForSameContent() {
-        // Arrange.
-        var coordinator = getSidePanelContainerCoordinator();
-        var sidePanelContent = createSidePanelContent("Side Panel Content");
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        coordinator.startOpeningPanel(
-                                sidePanelContent,
-                                DO_NOTHING_RUNNABLE,
-                                /* startingBounds= */ null,
-                                true));
-        waitForContainerViewOpen(coordinator);
-
-        // Assert.
-        assertTrue(
-                ThreadUtils.runOnUiThreadBlocking(() -> coordinator.isShowing(sidePanelContent)));
-    }
-
-    @Test
-    @MediumTest
-    public void isShowing_containerHasContent_returnsFalseForDifferentContent() {
-        // Arrange.
-        var coordinator = getSidePanelContainerCoordinator();
-        var sidePanelContent1 = createSidePanelContent("Side Panel Content 1");
-        var sidePanelContent2 = createSidePanelContent("Side Panel Content 2");
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        coordinator.startOpeningPanel(
-                                sidePanelContent1,
-                                DO_NOTHING_RUNNABLE,
-                                /* startingBounds= */ null,
-                                true));
-        waitForContainerViewOpen(coordinator);
-
-        // Assert.
-        assertFalse(
-                ThreadUtils.runOnUiThreadBlocking(() -> coordinator.isShowing(sidePanelContent2)));
-    }
-
-    @Test
-    @MediumTest
-    public void isShowing_afterClosingPanel_returnsFalse() {
-        // Arrange.
-        var coordinator = getSidePanelContainerCoordinator();
-        var sidePanelContent = createSidePanelContent("Side Panel Content To Remove");
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        coordinator.startOpeningPanel(
-                                sidePanelContent,
-                                DO_NOTHING_RUNNABLE,
-                                /* startingBounds= */ null,
-                                true));
-        FrameLayout containerView = waitForContainerViewOpen(coordinator);
-
-        // Act.
-        SidePanelContainerCoordinatorImpl.setHasContentToShowForTesting(
-                /* hasContentToShow= */ false);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> coordinator.startClosingPanel(DO_NOTHING_RUNNABLE, true));
-        waitForContainerViewClose(coordinator);
-
-        // Assert.
-        assertFalse(
-                ThreadUtils.runOnUiThreadBlocking(() -> coordinator.isShowing(sidePanelContent)));
-    }
-
-    @SuppressLint("SetTextI18n")
-    private SidePanelContent createSidePanelContent(String contentText) {
-        TextView contentView = new TextView(mFreshCtaTransitTestRule.getActivity());
-        contentView.setText(contentText);
-        contentView.setTextAppearance(
-                org.chromium.ui.R.style.TextAppearance_Headline_Primary_Baseline);
-        contentView.setBackgroundColor(SIDE_PANEL_CONTENT_BACKGROUND_COLOR);
-        contentView.setLayoutParams(
-                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        contentView.setGravity(Gravity.CENTER);
-        return new SidePanelContent(contentView);
-    }
-
     private SidePanelContainerCoordinatorImpl getSidePanelContainerCoordinator() {
         var sidePanelContainerCoordinator =
                 ((TabbedRootUiCoordinator)
@@ -425,6 +235,20 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                         .getSidePanelContainerCoordinatorForTesting();
         assertNotNull(sidePanelContainerCoordinator);
         return (SidePanelContainerCoordinatorImpl) sidePanelContainerCoordinator;
+    }
+
+    private static void showPanel(Tab tab) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        SidePanelContainerCoordinatorIntegrationTestSupport.showSidePanel(
+                                tab, /* suppressAnimations= */ true));
+    }
+
+    private static void closePanel(Tab tab) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        SidePanelContainerCoordinatorIntegrationTestSupport.closeSidePanel(
+                                tab, /* suppressAnimations= */ true));
     }
 
     /**
