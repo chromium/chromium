@@ -246,13 +246,20 @@ void HTMLMenuItemElement::ActivateMenuItem() {
     if (LocalFrame* frame = GetDocument().GetFrame()) {
       handling_keyboard_event = frame->GetEventHandler().IsHandlingKeyEvent();
     }
-    if (submenu->popoverOpen() && handling_keyboard_event) {
-      submenu->FocusFirstItem();
+    if (submenu->popoverOpen()) {
+      if (handling_keyboard_event) {
+        submenu->FocusFirstItem();
+      } else {
+        // If this is resulting from a click, this is happening *before* that
+        // click has had a chance to focus this menuitem.  However, we should
+        // behave as though it did.
+        submenu->GetPopoverData()->setPreviouslyFocusedElement(this);
+      }
     }
   }
 }
 
-Element* HTMLMenuItemElement::CloseOutermostContainingMenuList() {
+HTMLMenuListElement* HTMLMenuItemElement::FindOutermostContainingMenuList() {
   HTMLMenuListElement* containing_menulist =
       DynamicTo<HTMLMenuListElement>(owning_menu_element_.Get());
   if (!containing_menulist) {
@@ -267,6 +274,14 @@ Element* HTMLMenuItemElement::CloseOutermostContainingMenuList() {
       break;
     }
     containing_menulist = const_cast<HTMLMenuListElement*>(invoking_menulist);
+  }
+  return containing_menulist;
+}
+
+Element* HTMLMenuItemElement::CloseOutermostContainingMenuList() {
+  HTMLMenuListElement* containing_menulist = FindOutermostContainingMenuList();
+  if (!containing_menulist) {
+    return nullptr;
   }
   Element* upstream_invoker = containing_menulist->GetPopoverData()->invoker();
   containing_menulist->HidePopoverInternal(
@@ -394,26 +409,32 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
           return;
         }
       } else {
-        // Else, this menuitem does not invoke a menulist and we close all
-        // ancestor menulists. Loop to find the invoker of the lowest layer
-        // menulist ancestor.
-        auto* invoker = CloseOutermostContainingMenuList();
-        // If ancestor menulist is invoked from a menubar, focus on next
-        // menuitem within the menubar.
-        if (auto* invoker_menuitem = DynamicTo<HTMLMenuItemElement>(invoker)) {
-          if (auto* ancestor_menubar = invoker_menuitem->OwningMenuElement()) {
-            MenuItemList ancestor_menuitems = ancestor_menubar->ItemList();
-            if (auto* next = ancestor_menuitems.NextFocusableElement(
-                    *invoker_menuitem, /*inclusive=*/false, /*wrap=*/true)) {
-              next->Focus(focus_params);
-              event.SetDefaultHandled();
-              return;
+        // Else, this menuitem does not invoke a menulist.  Find the invoker
+        // of the lowest layer menulist ancestor.  If that ancestor menulist
+        // is invoked from a menubar with multiple items, close all ancestor
+        // menulists, and focus the next menuitem within the menubar, if there
+        // is one.  Otherwise don't do anything.
+        if (HTMLMenuListElement* outermost_menulist =
+                FindOutermostContainingMenuList()) {
+          if (auto* invoker_menuitem = DynamicTo<HTMLMenuItemElement>(
+                  outermost_menulist->GetPopoverData()->invoker())) {
+            if (auto* ancestor_menubar =
+                    invoker_menuitem->OwningMenuElement()) {
+              MenuItemList ancestor_menuitems = ancestor_menubar->ItemList();
+              if (auto* next = ancestor_menuitems.NextFocusableElement(
+                      *invoker_menuitem, /*inclusive=*/false, /*wrap=*/true);
+                  next && next != invoker_menuitem) {
+                outermost_menulist->HidePopoverInternal(
+                    invoker_menuitem, HidePopoverFocusBehavior::kNone,
+                    HidePopoverTransitionBehavior::
+                        kFireEventsAndWaitForTransitions,
+                    /*exception_state=*/nullptr);
+                next->Focus(focus_params);
+                event.SetDefaultHandled();
+                return;
+              }
             }
           }
-          // Else, focus on the invoker (it can be a menuitem or a button).
-          invoker->Focus(focus_params);
-          event.SetDefaultHandled();
-          return;
         }
       }
 
@@ -421,42 +442,50 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
       // If this is itself in a menulist, then arrow left should close the
       // current menulist.
       Element* invoker = owning_menu_element_->GetPopoverData()->invoker();
-      bool can_hide = owning_menu_element_->IsPopoverReady(
-          PopoverTriggerAction::kHide,
-          /*exception_state=*/nullptr,
-          /*include_event_handler_text=*/false, &GetDocument());
-      if (can_hide) {
-        owning_menu_element_->HidePopoverInternal(
-            invoker, HidePopoverFocusBehavior::kNone,
-            HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
-            /*exception_state=*/nullptr);
-      }
       if (auto* invoker_menuitem = DynamicTo<HTMLMenuItemElement>(invoker)) {
+        Element* next_focus = nullptr;
         if (auto* invoker_menubar = DynamicTo<HTMLMenuBarElement>(
                 invoker_menuitem->OwningMenuElement())) {
-          // Focus on previous if it is in menubar.
           MenuItemList invoker_menuitems = invoker_menubar->ItemList();
           if (auto* previous = invoker_menuitems.PreviousFocusableElement(
-                  *invoker_menuitem, /*inclusive=*/false, /*wrap=*/true)) {
-            previous->Focus(focus_params);
-            event.SetDefaultHandled();
-            return;
+                  *invoker_menuitem, /*inclusive=*/false, /*wrap=*/true);
+              previous && previous != invoker_menuitem) {
+            // This menulist was opened from a menuitem in a menubar, and that
+            // menubar has multiple items.  Focus the previous menulist.
+            next_focus = previous;
           }
+        } else if (IsA<HTMLMenuListElement>(
+                       invoker_menuitem->OwningMenuElement())) {
+          // This menulist was opened from a menuitem in a menulist.  Focus
+          // the invoking menuitem next.
+          next_focus = invoker;
         }
-        // Else, focus on invoker (it can be a button, a menuitem in a
-        // menulist or a standalone menuitem).
-        invoker->Focus(focus_params);
-        event.SetDefaultHandled();
-        return;
+        if (next_focus) {
+          bool can_hide = owning_menu_element_->IsPopoverReady(
+              PopoverTriggerAction::kHide,
+              /*exception_state=*/nullptr,
+              /*include_event_handler_text=*/false, &GetDocument());
+          if (can_hide) {
+            owning_menu_element_->HidePopoverInternal(
+                invoker, HidePopoverFocusBehavior::kNone,
+                HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+                /*exception_state=*/nullptr);
+          }
+          next_focus->Focus(focus_params);
+          event.SetDefaultHandled();
+          return;
+        }
       }
     } else if (key == keywords::kPageUp) {
       menuitems.HandlePageUpDown(*this, MenuItemList::PageKey::kUp,
                                  focus_params);
       event.SetDefaultHandled();
+      return;
     } else if (key == keywords::kPageDown) {
       menuitems.HandlePageUpDown(*this, MenuItemList::PageKey::kDown,
                                  focus_params);
       event.SetDefaultHandled();
+      return;
     }
   } else {
     CHECK(IsA<HTMLMenuBarElement>(*owning_menu_element_));

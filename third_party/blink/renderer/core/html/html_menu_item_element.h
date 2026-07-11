@@ -85,6 +85,7 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   // to find any nested containing menulist's. It then closes the outermost
   // such menulist, which (via popover close behavior) closes the tree.
   Element* CloseOutermostContainingMenuList();
+  HTMLMenuListElement* FindOutermostContainingMenuList();
   void ActivateMenuItem();
   void HandleMenuPointerEvents(Event&);
   void HandleMenuKeyboardEvents(Event&);
