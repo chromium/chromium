@@ -4122,7 +4122,7 @@ public class StripLayoutHelper
             Tab selectedTab = getTabById(getSelectedTabId());
             if (selectedTab != null
                     && groupTitle.getTabGroupId().equals(selectedTab.getTabGroupId())) {
-                int nextIndex = getNearbyTabIndex(groupedTabs);
+                int nextIndex = getNearbyExpandedTabIndex(groupedTabs);
                 if (nextIndex != TabModel.INVALID_TAB_INDEX && mModel != null) {
                     TabModelUtils.setIndex(mModel, nextIndex);
                 } else if (mTabCreator != null) {
@@ -4154,14 +4154,15 @@ public class StripLayoutHelper
     public int getNextIndexAfterClose(Collection<StripLayoutTab> closingTabs) {
         // Intentionally kept separate from #getNearbyNotClosingTabIndex, to have more specific
         // javadocs for each method.
-        return getNearbyTabIndex(closingTabs);
+        return getNearbyTabIndex(getAllTabsListForAutoSelect(), closingTabs);
     }
 
     /**
-     * Wrapper for {@link #getNearbyTabIndex(Collection, Collection)}. Prioritizes tabs in a certain
-     * direction based on {@link ChromeFeatureList#TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE}.
+     * Returns a list of all tabs to be used for auto-select on close or tab group collapse.
+     * Prioritizes tabs in a certain direction based on {@link
+     * ChromeFeatureList#TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE}.
      */
-    private int getNearbyTabIndex(Collection<StripLayoutTab> excludedTabs) {
+    private List<StripLayoutTab> getAllTabsListForAutoSelect() {
         // Have to create a copy of the list, so that the reverse doesn't affect the original array.
         List<StripLayoutTab> allTabs = new ArrayList<>(Arrays.asList(mStripTabs));
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE)) {
@@ -4169,7 +4170,7 @@ public class StripLayoutHelper
             // after (as opposed to before) the excluded tabs.
             Collections.reverse(allTabs);
         }
-        return getNearbyTabIndex(allTabs, excludedTabs);
+        return allTabs;
     }
 
     /**
@@ -4218,6 +4219,17 @@ public class StripLayoutHelper
             }
         }
         return TabModel.INVALID_TAB_INDEX;
+    }
+
+    /**
+     * Wrapper for {@link #getNearbyTabIndex(Collection, Collection, boolean)} that ignores
+     * collapsed tabs.
+     *
+     * @see #getAllTabsListForAutoSelect to see the direction tabs are prioritized.
+     */
+    private int getNearbyExpandedTabIndex(Collection<StripLayoutTab> excludedTabs) {
+        return getNearbyTabIndex(
+                getAllTabsListForAutoSelect(), excludedTabs, /* ignoreCollapsedTabs= */ true);
     }
 
     /**
