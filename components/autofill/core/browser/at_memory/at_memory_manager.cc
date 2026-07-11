@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -340,6 +341,102 @@ std::u16string MaybeObfuscateValue(const std::u16string& value,
   return value;
 }
 
+// Metadata are displayed as nested results in the flyout menu.
+Suggestion CreateManageEnhancedAutofillSuggestion() {
+  Suggestion manage_enhanced_autofill(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
+      SuggestionType::kManageEnhancedAutofill);
+  manage_enhanced_autofill.icon = Suggestion::Icon::kSettings;
+  manage_enhanced_autofill.filtration_policy =
+      Suggestion::FiltrationPolicy::kStatic;
+  return manage_enhanced_autofill;
+}
+
+// Creates secondary suggestions representing metadata items for the given
+// AtMemory search result entry.
+std::vector<Suggestion> CreateSecondarySuggestions(
+    const accessibility_annotator::MemorySearchResult& entry,
+    bool is_personal_context_sourced) {
+  std::vector<Suggestion> children;
+  children.reserve(entry.metadata_list.size());
+  for (const accessibility_annotator::EntryMetadata& metadata :
+       entry.metadata_list) {
+    Suggestion child(MaybeObfuscateValue(metadata.value, metadata.type,
+                                         is_personal_context_sourced),
+                     SuggestionType::kAtMemorySearchResult);
+    std::u16string child_type_name =
+        metadata.type_name.empty() ? GetMemoryDataTypeNameForI18n(metadata.type)
+                                   : metadata.type_name;
+    if (!child_type_name.empty()) {
+      child.labels = {{Suggestion::Text(child_type_name)}};
+    }
+    Suggestion::AtMemoryPayload child_at_memory_payload(metadata.value,
+                                                        metadata.type);
+    child_at_memory_payload.identifier =
+        GetPayloadIdentifier(metadata.type, entry.identifier);
+    child_at_memory_payload.is_personal_context_sourced =
+        is_personal_context_sourced;
+    child.payload = std::move(child_at_memory_payload);
+    child.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+    children.push_back(std::move(child));
+  }
+  return children;
+}
+
+Suggestion CreateSourceAttributionSuggestion(
+    accessibility_annotator::MemoryEntrySourceType type) {
+  Suggestion source_info(l10n_util::GetStringUTF16(
+                             IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_TITLE),
+                         SuggestionType::kAtMemorySearchResult);
+  source_info.labels = {{Suggestion::Text(GetSourceDescriptionText(type))}};
+  source_info.acceptability = Suggestion::Acceptability::kUnacceptable;
+  source_info.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  return source_info;
+}
+
+std::vector<Suggestion> CreateFooterSuggestions(
+    const accessibility_annotator::MemorySearchResult& entry) {
+  if (entry.sources.empty()) {
+    // If there's no source, default to "Manage enhanced autofill".
+    std::vector<Suggestion> result;
+    result.emplace_back(CreateManageEnhancedAutofillSuggestion());
+    return result;
+  }
+
+  const accessibility_annotator::MemoryEntrySource& source =
+      entry.sources.front();
+
+  switch (source.type) {
+    case accessibility_annotator::MemoryEntrySourceType::kGmail:
+    case accessibility_annotator::MemoryEntrySourceType::kCalendar:
+    case accessibility_annotator::MemoryEntrySourceType::kPhotos:
+    case accessibility_annotator::MemoryEntrySourceType::kAmbient:
+    case accessibility_annotator::MemoryEntrySourceType::kLiveTabs: {
+      Suggestion separator(SuggestionType::kSeparator);
+      separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+      std::vector<Suggestion> result;
+      result.reserve(3);
+      result.emplace_back(CreateSourceAttributionSuggestion(source.type));
+      result.emplace_back(std::move(separator));
+      result.emplace_back(CreateManageEnhancedAutofillSuggestion());
+      return result;
+    }
+    case accessibility_annotator::MemoryEntrySourceType::kAutofill: {
+      Suggestion manage_information(
+          l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT),
+          GetManageSuggestionType(entry.type));
+      manage_information.icon = Suggestion::Icon::kSettings;
+      manage_information.filtration_policy =
+          Suggestion::FiltrationPolicy::kStatic;
+      std::vector<Suggestion> result;
+      result.emplace_back(std::move(manage_information));
+      return result;
+    }
+  }
+  NOTREACHED();
+}
+
 Suggestion TransformResultIntoSuggestion(
     const accessibility_annotator::MemorySearchResult& entry) {
   const bool is_personal_context_sourced =
@@ -375,67 +472,18 @@ Suggestion TransformResultIntoSuggestion(
   suggestion.payload = std::move(at_memory_payload);
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
 
-  // Metadata are displayed as nested results in the flyout menu.
-  for (const accessibility_annotator::EntryMetadata& metadata :
-       entry.metadata_list) {
-    Suggestion child(MaybeObfuscateValue(metadata.value, metadata.type,
-                                         is_personal_context_sourced),
-                     SuggestionType::kAtMemorySearchResult);
-    std::u16string child_type_name =
-        metadata.type_name.empty() ? GetMemoryDataTypeNameForI18n(metadata.type)
-                                   : metadata.type_name;
-    if (!child_type_name.empty()) {
-      child.labels = {{Suggestion::Text(child_type_name)}};
-    }
-    Suggestion::AtMemoryPayload child_at_memory_payload(metadata.value,
-                                                        metadata.type);
-    child_at_memory_payload.identifier =
-        GetPayloadIdentifier(metadata.type, entry.identifier);
-    child_at_memory_payload.is_personal_context_sourced =
-        is_personal_context_sourced;
-    child.payload = std::move(child_at_memory_payload);
-    suggestion.children.push_back(std::move(child));
-  }
+  suggestion.children =
+      CreateSecondarySuggestions(entry, is_personal_context_sourced);
+  std::vector<Suggestion> footer_children = CreateFooterSuggestions(entry);
 
-  const accessibility_annotator::MemoryEntrySource* source =
-      entry.sources.empty() ? nullptr : &entry.sources.front();
-  if (source) {
-    if (!suggestion.children.empty()) {
-      Suggestion source_child(SuggestionType::kSeparator);
-      source_child.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-      suggestion.children.push_back(std::move(source_child));
-    }
-
-    switch (source->type) {
-      case accessibility_annotator::MemoryEntrySourceType::kGmail:
-      case accessibility_annotator::MemoryEntrySourceType::kCalendar:
-      case accessibility_annotator::MemoryEntrySourceType::kPhotos:
-      case accessibility_annotator::MemoryEntrySourceType::kAmbient:
-      case accessibility_annotator::MemoryEntrySourceType::kLiveTabs: {
-        Suggestion source_info(
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_TITLE),
-            SuggestionType::kAtMemorySearchResult);
-        source_info.labels = {
-            {Suggestion::Text(GetSourceDescriptionText(source->type))}};
-        source_info.acceptability = Suggestion::Acceptability::kUnacceptable;
-        source_info.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-        suggestion.children.push_back(std::move(source_info));
-        break;
-      }
-      case accessibility_annotator::MemoryEntrySourceType::kAutofill: {
-        Suggestion manage_information(
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT),
-            GetManageSuggestionType(entry.type));
-        manage_information.icon = Suggestion::Icon::kSettings;
-        manage_information.filtration_policy =
-            Suggestion::FiltrationPolicy::kStatic;
-        suggestion.children.push_back(std::move(manage_information));
-        break;
-      }
-    }
+  // Add a separator only when there are both secondary suggestions above and
+  // footer links below so they do not visually blend together.
+  if (!suggestion.children.empty() && !footer_children.empty()) {
+    Suggestion separator(SuggestionType::kSeparator);
+    separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+    suggestion.children.emplace_back(std::move(separator));
   }
+  base::Extend(suggestion.children, std::move(footer_children));
 
   return suggestion;
 }

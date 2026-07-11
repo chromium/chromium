@@ -842,7 +842,8 @@ void ChromeAutofillClient::ShowAutofillSettings(
         ShowSingletonTab(browser, GURL(kValuableManagementUrl));
         return;
       case SuggestionType::kManageEnhancedAutofill:
-        chrome::ShowSettingsSubPage(browser, chrome::kAutofillAiSubPage);
+        chrome::ShowSettingsSubPage(browser,
+                                    chrome::kSuggestionsFromGeminiSubPage);
         return;
       default:
         NOTREACHED();

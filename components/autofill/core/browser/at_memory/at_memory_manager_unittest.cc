@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
@@ -209,17 +210,57 @@ class AtMemoryManagerTest : public Test,
       update_callback_;
 };
 
+// Returns a matcher that checks if a suggestion's children correspond to a
+// suggestion with a "Manage enhanced autofill" footer. When child matchers are
+// provided, it expects them followed by a separator and the "Manage enhanced
+// autofill" footer. If no child matchers are provided, it expects only the
+// footer without a separator.
+template <typename... Matchers>
+auto ChildrenWithManageEnhancedAutofillFooterAre(Matchers&&... matchers) {
+  if constexpr (sizeof...(matchers) == 0) {
+    return ElementsAre(
+        EqualsSuggestion(SuggestionType::kManageEnhancedAutofill));
+  } else {
+    return ElementsAre(
+        std::forward<Matchers>(matchers)...,
+        EqualsSuggestion(SuggestionType::kSeparator),
+        EqualsSuggestion(SuggestionType::kManageEnhancedAutofill));
+  }
+}
+
+// Matches a Suggestion of type `kAtMemorySearchResult` with the given
+// `memory_data_type` and matching children suggestions.
 Matcher<Suggestion> EqualsAtMemorySuggestion(
     MemoryDataType memory_data_type,
-    Matcher<std::vector<Suggestion>> children_matcher = IsEmpty()) {
+    Matcher<std::vector<Suggestion>> children_matcher) {
   return AllOf(
-      Field(&Suggestion::type, SuggestionType::kAtMemorySearchResult),
+      EqualsSuggestion(SuggestionType::kAtMemorySearchResult),
       ResultOf(
           [](const Suggestion& s) {
             return s.GetPayload<Suggestion::AtMemoryPayload>().memory_data_type;
           },
           memory_data_type),
       Field(&Suggestion::children, children_matcher));
+}
+
+// Matches a Suggestion with a "Manage enhanced autofill" footer, the given
+// `memory_data_type` and matching children suggestions.
+template <typename... Matchers>
+Matcher<Suggestion> EqualsSuggestionWithManageEnhancedAutofillFooter(
+    MemoryDataType memory_data_type,
+    Matchers&&... matchers) {
+  return EqualsAtMemorySuggestion(memory_data_type,
+                                  ChildrenWithManageEnhancedAutofillFooterAre(
+                                      std::forward<Matchers>(matchers)...));
+}
+
+// Matches a Suggestion with the given `memory_data_type` and a single footer
+// suggestion to manage address settings.
+Matcher<Suggestion> EqualsSuggestionWithManageAddressFooter(
+    MemoryDataType memory_data_type) {
+  return EqualsAtMemorySuggestion(
+      memory_data_type,
+      ElementsAre(EqualsSuggestion(SuggestionType::kManageAddress)));
 }
 
 // Tests that OnFilterChanged with a non-empty filter generates the search
@@ -336,6 +377,90 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_SchemalessResultHasEmptyLabels) {
   EXPECT_EQ(final_suggestions[0].type, SuggestionType::kAtMemorySearchResult);
   EXPECT_EQ(final_suggestions[0].main_text.value, u"Some Value");
   EXPECT_TRUE(final_suggestions[0].labels.empty());
+}
+
+// Tests that Autofill-sourced data displays ONLY the local settings manage link
+// (e.g. kManageAddress) and NOT the "Manage enhanced autofill" footer.
+TEST_F(AtMemoryManagerTest,
+       OnSearchSubmitted_AutofillSource_ShowsLocalManageFooter) {
+  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         /*parent_suggestion_metadata=*/std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  std::vector<MemorySearchResult> entries;
+  MemorySearchResult entry(MemoryDataType::kAddressFull, u"Address",
+                           u"Full Address");
+  entry.sources.emplace_back(MemoryEntrySourceType::kAutofill);
+  entries.push_back(std::move(entry));
+
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    std::move(entries), final_suggestions);
+
+  manager().OnSearchSubmitted(u"query");
+
+  EXPECT_THAT(final_suggestions,
+              ElementsAre(EqualsSuggestionWithManageAddressFooter(
+                  MemoryDataType::kAddressFull)));
+}
+
+// Tests that Personal Context-sourced data (e.g. from Gmail) displays the
+// attribution info, separator, and the "Manage enhanced autofill" footer (but
+// not local settings).
+TEST_F(AtMemoryManagerTest,
+       OnSearchSubmitted_AISource_ShowsManageEnhancedAutofillFooter) {
+  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         /*parent_suggestion_metadata=*/std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  std::vector<MemorySearchResult> entries;
+  MemorySearchResult entry(MemoryDataType::kAddressFull, u"Address",
+                           u"Full Address");
+  entry.sources.emplace_back(MemoryEntrySourceType::kGmail);
+  entries.push_back(std::move(entry));
+
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    std::move(entries), final_suggestions);
+
+  manager().OnSearchSubmitted(u"query");
+
+  EXPECT_THAT(final_suggestions,
+              ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
+                  MemoryDataType::kAddressFull,
+                  EqualsSuggestion(SuggestionType::kAtMemorySearchResult))));
+}
+
+// Tests that data with no source defaults to displaying the "Manage enhanced
+// autofill" footer.
+TEST_F(AtMemoryManagerTest,
+       OnSearchSubmitted_NoSource_ShowsManageEnhancedAutofillFooter) {
+  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         /*parent_suggestion_metadata=*/std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  std::vector<MemorySearchResult> entries;
+  entries.emplace_back(MemoryDataType::kAddressFull, u"Address",
+                       u"Full Address");
+
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    std::move(entries), final_suggestions);
+
+  manager().OnSearchSubmitted(u"query");
+
+  EXPECT_THAT(final_suggestions,
+              ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
+                  MemoryDataType::kAddressFull)));
 }
 
 // Tests that when the user is offline, the manager displays the no connection
@@ -604,12 +729,14 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiInInsecureContext) {
 
   search_callback.Run(std::move(results));
 
-  EXPECT_THAT(
-      resulting_suggestions,
-      ElementsAre(EqualsAtMemorySuggestion(MemoryDataType::kAddressFull),
-                  EqualsAtMemorySuggestion(MemoryDataType::kPhone,
-                                           ElementsAre(EqualsAtMemorySuggestion(
-                                               MemoryDataType::kPhone)))));
+  EXPECT_THAT(resulting_suggestions,
+              ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
+                              MemoryDataType::kAddressFull),
+                          EqualsSuggestionWithManageEnhancedAutofillFooter(
+                              MemoryDataType::kPhone,
+                              EqualsAtMemorySuggestion(
+                                  MemoryDataType::kPhone,
+                                  /*children_matcher=*/IsEmpty()))));
 }
 
 // Tests that SPII entries and metadata are filtered out from the search
@@ -651,14 +778,15 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
   // returning search results.
   EXPECT_CALL(update_callback_,
               Run(IsEmpty(), AutofillSuggestionTriggerSource::kAtMemory));
-  EXPECT_CALL(
-      update_callback_,
-      Run(ElementsAre(EqualsAtMemorySuggestion(MemoryDataType::kAddressFull),
-                      EqualsAtMemorySuggestion(
-                          MemoryDataType::kDriversLicenseName,
-                          ElementsAre(EqualsAtMemorySuggestion(
-                              MemoryDataType::kDriversLicenseState)))),
-          AutofillSuggestionTriggerSource::kAtMemory));
+  EXPECT_CALL(update_callback_,
+              Run(ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
+                                  MemoryDataType::kAddressFull),
+                              EqualsSuggestionWithManageEnhancedAutofillFooter(
+                                  MemoryDataType::kDriversLicenseName,
+                                  EqualsAtMemorySuggestion(
+                                      MemoryDataType::kDriversLicenseState,
+                                      /*children_matcher=*/IsEmpty()))),
+                  AutofillSuggestionTriggerSource::kAtMemory));
 
   manager().OnSearchSubmitted(u"query");
 }
@@ -691,7 +819,8 @@ TEST_F(AtMemoryManagerTest,
   EXPECT_CALL(update_callback_,
               Run(IsEmpty(), AutofillSuggestionTriggerSource::kAtMemory));
   EXPECT_CALL(update_callback_,
-              Run(ElementsAre(EqualsAtMemorySuggestion(MemoryDataType::kIban)),
+              Run(ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
+                      MemoryDataType::kIban)),
                   AutofillSuggestionTriggerSource::kAtMemory));
 
   manager().OnSearchSubmitted(u"query");
@@ -741,13 +870,16 @@ TEST_F(AtMemoryManagerTest, KeepsSpiiInSecureContext) {
   EXPECT_THAT(
       resulting_suggestions,
       ElementsAre(
-          EqualsAtMemorySuggestion(MemoryDataType::kAddressFull),
-          EqualsAtMemorySuggestion(MemoryDataType::kPassportNumber),
-          EqualsAtMemorySuggestion(
+          EqualsSuggestionWithManageEnhancedAutofillFooter(
+              MemoryDataType::kAddressFull),
+          EqualsSuggestionWithManageEnhancedAutofillFooter(
+              MemoryDataType::kPassportNumber),
+          EqualsSuggestionWithManageEnhancedAutofillFooter(
               MemoryDataType::kPhone,
-              ElementsAre(
-                  EqualsAtMemorySuggestion(MemoryDataType::kPhone),
-                  EqualsAtMemorySuggestion(MemoryDataType::kPassportNumber)))));
+              EqualsAtMemorySuggestion(MemoryDataType::kPhone,
+                                       /*children_matcher=*/IsEmpty()),
+              EqualsAtMemorySuggestion(MemoryDataType::kPassportNumber,
+                                       /*children_matcher=*/IsEmpty()))));
 }
 
 // Tests that non-SPII data fills correctly and records the funnel metrics.
@@ -1141,7 +1273,7 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
             GetObfuscatedValue(u"987654321", kVisibleSuffixLength));
 
   // 2. Verify Child Suggestion obfuscation in the flyout menu.
-  ASSERT_EQ(final_suggestions[0].children.size(), 1u);
+  ASSERT_EQ(final_suggestions[0].children.size(), 3u);
   EXPECT_EQ(final_suggestions[0].children[0].main_text.value,
             GetObfuscatedValue(u"987654321", kVisibleSuffixLength));
 

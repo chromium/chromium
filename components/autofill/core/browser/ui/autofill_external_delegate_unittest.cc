@@ -120,6 +120,7 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::InSequence;
+using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::Mock;
 using ::testing::MockFunction;
@@ -902,22 +903,21 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenFirstPartySources) {
       IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_DESCRIPTION,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_SOURCE_GMAIL));
 
-  auto matcher = testing::ElementsAre(testing::AllOf(
+  auto matcher = ElementsAre(AllOf(
       HasMainText(u"42"),
-      testing::Field(
-          &Suggestion::children,
-          testing::ElementsAre(
-              testing::AllOf(HasMainText(u"example.com"), HasLabel(u"Store")),
-              testing::AllOf(HasMainText(u"Marian Paździoch"),
-                             HasLabel(u"Name")),
-              testing::Field(&Suggestion::type, SuggestionType::kSeparator),
-              testing::AllOf(HasMainText(u"About"),
-                             HasLabel(expected_label))))));
+      Field(&Suggestion::children,
+            ElementsAre(
+                AllOf(HasMainText(u"example.com"), HasLabel(u"Store")),
+                AllOf(HasMainText(u"Marian Paździoch"), HasLabel(u"Name")),
+                Field(&Suggestion::type, SuggestionType::kSeparator),
+                AllOf(HasMainText(u"About"), HasLabel(expected_label)),
+                Field(&Suggestion::type, SuggestionType::kSeparator),
+                Field(&Suggestion::type,
+                      SuggestionType::kManageEnhancedAutofill)))));
 
   // The first call notifies the UI that search has started (clearing current
   // suggestions). The second call provides the actual results.
-  EXPECT_CALL(autofill_client(),
-              UpdateAutofillSuggestions(testing::IsEmpty(), _, _, _));
+  EXPECT_CALL(autofill_client(), UpdateAutofillSuggestions(IsEmpty(), _, _, _));
   EXPECT_CALL(autofill_client(), UpdateAutofillSuggestions(matcher, _, _, _));
 
   external_delegate().OnSearchSubmitted(u"shoe size");
