@@ -19,7 +19,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.app.appmenu.AppMenuItemTheme;
 import org.chromium.chrome.browser.app.appmenu.AppMenuItemUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBulkEvent;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
@@ -111,7 +110,7 @@ public class HistoryItemBuilder implements Destroyable {
      * @return true if the history parent item should be shown, false otherwise.
      */
     public boolean shouldShowHistoryParentItem() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
+        if (!TabbedAppMenuPropertiesDelegate.isSubmenusEnabled()) {
             return false;
         }
 

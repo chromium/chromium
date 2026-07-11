@@ -18,7 +18,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.appmenu.AppMenuItemTheme;
 import org.chromium.chrome.browser.app.appmenu.AppMenuItemUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
@@ -91,7 +90,7 @@ import java.util.function.Supplier;
      * @return true if the item should be shown, false otherwise.
      */
     /* package */ boolean shouldShowTabGroupsParentItem(@Nullable Tab currentTab) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
+        if (!TabbedAppMenuPropertiesDelegate.isSubmenusEnabled()) {
             return false;
         }
         return shouldShowAddToGroup() || currentTab != null;

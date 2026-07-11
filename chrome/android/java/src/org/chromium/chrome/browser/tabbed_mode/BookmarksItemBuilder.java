@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -108,7 +107,7 @@ public class BookmarksItemBuilder implements Destroyable {
      * @return true if the bookmarks parent item should be shown, false otherwise.
      */
     public boolean shouldShowBookmarksParentItem() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU);
+        return TabbedAppMenuPropertiesDelegate.isSubmenusEnabled();
     }
 
     /**

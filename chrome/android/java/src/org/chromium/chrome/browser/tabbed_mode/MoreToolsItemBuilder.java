@@ -98,7 +98,7 @@ public class MoreToolsItemBuilder {
      * @param currentTab The current tab.
      */
     public boolean shouldShowMoreToolsItem(@Nullable Tab currentTab) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
+        if (!TabbedAppMenuPropertiesDelegate.isSubmenusEnabled()) {
             return false;
         }
 
