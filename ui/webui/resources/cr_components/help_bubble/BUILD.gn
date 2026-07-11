@@ -31,6 +31,8 @@ build_webui("build") {
     "help_bubble.html.ts",
     "help_bubble.ts",
     "help_bubble_controller.ts",
+    "help_bubble_mixin_common.ts",
+    "help_bubble_mixin_interface.ts",
     "help_bubble_mixin.ts",
     "help_bubble_mixin_lit.ts",
     "new_badge.html.ts",

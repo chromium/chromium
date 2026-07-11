@@ -5,8 +5,8 @@
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
+import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_interface.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
-import type {HelpBubbleMixinLitInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 
 import {EventDispositionFlag} from './browser_proxy.js';
@@ -35,7 +35,7 @@ export interface HelpBubbleAnchor {
  */
 export const HelpBubbleAnchorMixin =
     <T extends Constructor<CrLitElement>>(superClass: T): T&
-    Constructor<HelpBubbleMixinLitInterface>&Constructor<HelpBubbleAnchor> => {
+    Constructor<HelpBubbleMixinInterface>&Constructor<HelpBubbleAnchor> => {
       class HelpBubbleAnchorMixin extends HelpBubbleMixinLit
       (superClass) {
         static get properties() {
@@ -59,8 +59,7 @@ export const HelpBubbleAnchorMixin =
         }
       }
 
-      return HelpBubbleAnchorMixin as T &
-          Constructor<HelpBubbleMixinLitInterface>&
+      return HelpBubbleAnchorMixin as T & Constructor<HelpBubbleMixinInterface>&
           Constructor<HelpBubbleAnchor>;
     };
 
