@@ -179,6 +179,7 @@ source_set("impl") {
     "//components/tabs:public",
     "//components/vector_icons",
     "//extensions/common",
+    "//ui/strings",
   ]
 
   if (is_win || is_mac || is_linux || is_chromeos) {

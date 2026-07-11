@@ -100,8 +100,6 @@ class ExtensionsMenuEntryView
   raw_ptr<views::Label> site_permissions_label_ = nullptr;
   raw_ptr<HoverButton> context_menu_button_ = nullptr;
   raw_ptr<HoverButton> pin_button_ = nullptr;
-
-  std::u16string site_permissions_accessible_name_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

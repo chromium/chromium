@@ -250,12 +250,9 @@ void ExtensionsMenuEntryView::Update(
   if (!is_permissions_visible) {
     site_permissions_button_->SetVisible(false);
     site_permissions_label_->SetVisible(false);
-    site_permissions_accessible_name_.clear();
   } else if (is_permissions_enabled) {
     site_permissions_button_->SetVisible(true);
     site_permissions_label_->SetVisible(false);
-    site_permissions_accessible_name_ =
-        entry_state.site_permissions_button.accessible_name;
 
     site_permissions_button_->SetState(views::Button::STATE_NORMAL);
     site_permissions_button_->SetText(entry_state.site_permissions_button.text);
@@ -271,8 +268,6 @@ void ExtensionsMenuEntryView::Update(
   } else {
     site_permissions_button_->SetVisible(false);
     site_permissions_label_->SetVisible(true);
-    site_permissions_accessible_name_ =
-        entry_state.site_permissions_button.accessible_name;
 
     // Set the label's text to the full accessible name (which includes the
     // enterprise/policy suffix if applicable). This ensures the text and the
@@ -297,15 +292,7 @@ void ExtensionsMenuEntryView::UpdateActionButton(
   action_button_->SetImageModel(views::Button::STATE_NORMAL, button_state.icon);
   action_button_->SetText(button_state.text);
   action_button_->SetTooltipText(button_state.tooltip_text);
-  std::u16string accessible_name = button_state.accessible_name.empty()
-                                       ? button_state.text
-                                       : button_state.accessible_name;
-  if (!site_permissions_accessible_name_.empty()) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_CONCAT_TWO_STRINGS_WITH_COMMA, accessible_name,
-        site_permissions_accessible_name_);
-  }
-  action_button_->SetAccessibleName(accessible_name);
+  action_button_->SetAccessibleName(button_state.accessible_name);
   action_button_->GetViewAccessibility().SetIsLeaf(true);
   bool is_action_enabled =
       button_state.status ==

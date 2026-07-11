@@ -907,6 +907,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   EXPECT_EQ(menu_entry_state.site_permissions_button.accessible_name,
             u"No access needed");
   EXPECT_EQ(menu_entry_state.site_permissions_button.tooltip_text, u"");
+  EXPECT_EQ(menu_entry_state.action_button.accessible_name,
+            u"Extension, No access needed");
 }
 
 // Tests the menu item state for an extension that did not request access to
@@ -931,6 +933,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   EXPECT_EQ(menu_entry_state.site_permissions_button.accessible_name,
             u"No access needed");
   EXPECT_EQ(menu_entry_state.site_permissions_button.tooltip_text, u"");
+  EXPECT_EQ(menu_entry_state.action_button.accessible_name,
+            u"Simple Extension, No access needed");
 
   // When site setting is set to 'block all extensions':
   //   - site access toggle is hidden.
@@ -975,6 +979,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
             u"Ask on every visit. Select to change site permissions");
   EXPECT_EQ(menu_entry_state.site_permissions_button.tooltip_text,
             u"Change site permissions");
+  EXPECT_EQ(
+      menu_entry_state.action_button.accessible_name,
+      u"Extension, Ask on every visit. Select to change site permissions");
 
   // When site setting is set to 'block all extensions':
   //   - site access toggle is hidden.

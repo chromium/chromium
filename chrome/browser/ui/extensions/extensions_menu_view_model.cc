@@ -34,6 +34,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/strings/grit/ui_strings.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -811,6 +812,7 @@ ExtensionsMenuViewModel::GetActionButtonState(
 
   ExtensionsMenuViewModel::ControlState button_state;
   button_state.text = action_model->GetActionName();
+  button_state.accessible_name = button_state.text;
   button_state.tooltip_text = action_model->GetTooltip(web_contents);
   button_state.status =
       action_model->IsEnabled(web_contents)
@@ -969,6 +971,19 @@ ExtensionsMenuViewModel::GetMenuEntryState(
                                   ->HasEnterpriseForcedAccess(*extension);
   entry_state.origin =
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+
+  // If the site permissions button is not hidden, its accessible name is
+  // appended to the action button's accessible name. This ensures that the
+  // action button's accessible name includes the site permissions state, which
+  // is necessary for screen readers.
+  if (entry_state.site_permissions_button.status !=
+          ControlState::Status::kHidden &&
+      !entry_state.site_permissions_button.accessible_name.empty()) {
+    entry_state.action_button.accessible_name = l10n_util::GetStringFUTF16(
+        IDS_CONCAT_TWO_STRINGS_WITH_COMMA,
+        entry_state.action_button.accessible_name,
+        entry_state.site_permissions_button.accessible_name);
+  }
 
   return entry_state;
 }
