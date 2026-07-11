@@ -24,6 +24,7 @@ public interface GlicKeyedService {
     @IntDef({
         GlicInvocationSource.UNSUPPORTED,
         GlicInvocationSource.TOP_CHROME_BUTTON,
+        GlicInvocationSource.NUDGE,
         GlicInvocationSource.THREE_DOTS_MENU,
         GlicInvocationSource.TOOLBAR_BUTTON,
         GlicInvocationSource.MAX_VALUE,
@@ -32,6 +33,7 @@ public interface GlicKeyedService {
     @interface GlicInvocationSource {
         int UNSUPPORTED = 8;
         int TOP_CHROME_BUTTON = 3;
+        int NUDGE = 6;
         int THREE_DOTS_MENU = 7;
         int TOOLBAR_BUTTON = 31;
         int MAX_VALUE = 34;

@@ -1710,13 +1710,14 @@ public class StripLayoutTrailingButtonsCoordinator {
             }
             return;
         }
-        if (mNudgeLabel != null) {
+        @GlicInvocationSource int invocationSource = GlicInvocationSource.TOP_CHROME_BUTTON;
+        if (mGlicNudgeDelegate.getIsShowingGlicNudge()) {
+            invocationSource = GlicInvocationSource.NUDGE;
             GlicNudgeDelegateBridge.onNudgeActivity(
                     mWindowAndroid, GlicNudgeActivity.NUDGE_CLICKED);
             mGlicNudgeDelegate.onHideGlicNudgeUi();
         }
-        mGlicClickHandler.onClick(
-                /* preventClose= */ false, GlicInvocationSource.TOP_CHROME_BUTTON);
+        mGlicClickHandler.onClick(/* preventClose= */ false, invocationSource);
     }
 
     private void handleDismissButtonClick() {
