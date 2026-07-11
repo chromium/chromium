@@ -3043,6 +3043,12 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DCopy(
     D3D11_TEXTURE2D_DESC input_desc;
     input_texture->GetDesc(&input_desc);
 
+    if (input_desc.Format != DXGI_FORMAT_NV12) {
+      LOG(ERROR) << "Format mismatch: source format " << input_desc.Format
+                 << " is not DXGI_FORMAT_NV12";
+      return E_INVALIDARG;
+    }
+
     if (visible_rect.x() < 0 || visible_rect.y() < 0 ||
         visible_rect.right() > static_cast<int>(input_desc.Width) ||
         visible_rect.bottom() > static_cast<int>(input_desc.Height)) {
