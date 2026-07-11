@@ -483,7 +483,7 @@
 <translation id="1734878702283171397">Обратитесь за помощью к системному администратору.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, действительна до <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Компьютер</translation>
-<translation id="1739364174357629566">Обновить номер Known Traveler Number?</translation>
+<translation id="1739364174357629566">Обновить номер известного пассажира (Known Traveler Number)?</translation>
 <translation id="1740404923954980840">Чтобы выйти из полноэкранного режима, проведите по экрану сверху вниз и нажмите кнопку "Назад".</translation>
 <translation id="1741474054575634405">Перейти к картам постоянного клиента</translation>
 <translation id="1741613555002899862">Необходимо указать значение и ввести действительную строку, если для правила DnsOverHttpsMode выбрано значение <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -767,7 +767,7 @@
 <translation id="2191980191135734720">На следующем шаге разблокируйте экран, например с помощью отпечатка пальца. Вы также можете <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Важная информация</translation>
 <translation id="2195729137168608510">Защита электронной почты</translation>
-<translation id="2198183835992354675">Номер Known Traveler Number</translation>
+<translation id="2198183835992354675">Номер известного пассажира (Known Traveler Number)</translation>
 <translation id="2198215508485017216">Возникла непредвиденная проблема. Подробнее <ph name="BEGIN_LINK" />о загрузке файлов на Диск<ph name="END_LINK" />…</translation>
 <translation id="2200678913752027654">Кнопка "Не нравится". Нажмите Ввод, чтобы открыть форму и подробно описать, почему вам не нравится эта подсказка.</translation>
 <translation id="2202627062836089804">с обратной стороны карты</translation>
@@ -1364,7 +1364,7 @@
 <translation id="3121994479408824897">Перейти на страницу <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Показать результаты за последние 30 дней</translation>
 <translation id="3126023634486644099">Этикетки (самоклеящиеся)</translation>
-<translation id="3132345256151444894">Сохранить данные Redress Number?</translation>
+<translation id="3132345256151444894">Сохранить уникальный номер пассажира (Redress Number)?</translation>
 <translation id="3133565499688974786">Теперь поисковая система по умолчанию – <ph name="SEARCH_ENGINE_NAME" />.</translation>
 <translation id="3134859781443140237">Локальная сеть</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Поиск по разделу "<ph name="KEYWORD_SHORT_NAME" />"</translation>
@@ -2082,7 +2082,7 @@
 <translation id="4230204356098880324">Разрешено отправлять запрос на использование камеры и ее перемещение</translation>
 <translation id="4231448684371260244">8 x 13 дюймов</translation>
 <translation id="4239799716689808527">Этикетки</translation>
-<translation id="424063167283213501">Сохранить номер Known Traveler Number?</translation>
+<translation id="424063167283213501">Сохранить номер известного пассажира (Known Traveler Number)?</translation>
 <translation id="4241830393007970744">На этом сайте злоумышленники могут обманом заставить вас установить ПО или раскрыть личную информацию, например пароль, номер телефона или данные кредитной карты.</translation>
 <translation id="4242380780309416996">Конверт (плотный)</translation>
 <translation id="4242981939686657948">Чтобы ещё эффективнее искать информацию в истории браузера, включите параметр</translation>
@@ -3768,7 +3768,7 @@
 <translation id="6900702165119149418">Вход в аккаунт не выполнен</translation>
 <translation id="6907458757809079309">Фитнес</translation>
 <translation id="691024665142758461">скачивание нескольких файлов</translation>
-<translation id="691046363691324218">Данные Redress Number</translation>
+<translation id="691046363691324218">Redress Number</translation>
 <translation id="6915804003454593391">Пользователь:</translation>
 <translation id="6916193791494646625">Укажите, зачем вы хотите скачать файл (обязательно)</translation>
 <translation id="6917795328362592458">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в Менеджере паролей.</translation>

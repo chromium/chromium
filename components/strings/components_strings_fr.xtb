@@ -1568,7 +1568,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3461266716147554923"><ph name="URL" /> souhaite voir le texte et les images copiés dans le presse-papiers</translation>
 <translation id="3461824795358126837">Surligneur</translation>
 <translation id="3462200631372590220">Masquer les paramètres avancés</translation>
-<translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyer sur Entrée pour poser des questions à Google à propos de cette page</translation>
+<translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyer sur Entrée pour poser une question à Google sur cette page</translation>
 <translation id="3465972433695735758">Impossible d'accéder à ce PDF. Texte extrait, optimisé par l'IA de Google.</translation>
 <translation id="346601286295919445">Chimie</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, actuellement ouvert, appuyez sur la touche tabulation, puis sur Entrée pour passer à l'onglet ouvert</translation>
@@ -2965,7 +2965,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5627344039351500898">Passer à la position exacte</translation>
 <translation id="5628060911499153873">Enregistrez vos informations pour gagner du temps dans les produits Google. Elles seront enregistrées dans <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> pour <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Échec du chargement des paramètres de la règle.</translation>
-<translation id="5630981295558454585">Bouton Poser des questions à Google à propos de cette page, activer pour poser des questions à Google concernant cette page</translation>
+<translation id="5630981295558454585">Bouton Poser une question à Google sur cette page, activer pour poser une question à Google sur cette page</translation>
 <translation id="5631439013527180824">Jeton de gestion de l'appareil non valide.</translation>
 <translation id="5632485077360054581">Voir comment faire</translation>
 <translation id="563324245173044180">Contenu trompeur bloqué.</translation>
@@ -4238,7 +4238,7 @@ Informations supplémentaires :
 <translation id="7598391785903975535">Moins de <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Impossible de traiter cette demande via <ph name="HOST_NAME" /> à l'heure actuelle.</translation>
 <translation id="7599089013883397081">Délai de téléchargement dépassé</translation>
-<translation id="7602868996817972616">Poser une question à Google concernant cette page</translation>
+<translation id="7602868996817972616">Poser une question à Google sur cette page</translation>
 <translation id="7606123685356405076">Modèles Gemini 3</translation>
 <translation id="7610193165460212391">La valeur <ph name="VALUE" /> est hors limites.</translation>
 <translation id="761261689936461781">Épais</translation>
