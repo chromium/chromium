@@ -31,6 +31,7 @@
 #include "net/socket/transport_client_socket_pool_test_util.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/ssl/test_ssl_config_service.h"
+#include "net/ssl/test_static_ech_mode_getter.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/static_http_user_agent_settings.h"
@@ -945,6 +946,47 @@ TEST_F(TransportConnectJobTest, SvcbOptionalIfEchDisabledConfig) {
   SSLContextConfig config;
   config.ech_enabled = false;
   ssl_config_service_.UpdateSSLConfigAndNotify(config);
+
+  HostResolverEndpointResult endpoint1, endpoint2, endpoint3;
+  endpoint1.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  endpoint1.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint1.metadata.ech_config_list = {1, 2, 3, 4};
+  endpoint2.ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
+  endpoint2.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint2.metadata.ech_config_list = {1, 2, 3, 4};
+  endpoint3.ip_endpoints = {IPEndPoint(ParseIP("3::"), 443)};
+  // `endpoint3` has no `supported_protocol_alpns` and is thus a fallback route.
+  host_resolver_.rules()->AddRule(
+      kHostName, MockHostResolverBase::RuleResolver::RuleResult(
+                     std::vector{endpoint1, endpoint2, endpoint3}));
+
+  // `TransportConnectJob` should try `endpoint3`.
+  MockTransportClientSocketFactory::Rule rules[] = {
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("1::"), 8441)}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("2::"), 8442)}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kSynchronous,
+          std::vector{IPEndPoint(ParseIP("3::"), 443)}),
+  };
+  client_socket_factory_.SetRules(rules);
+
+  TestConnectJobDelegate test_delegate;
+  TransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      DefaultHttpsParams(), &test_delegate, /*net_log=*/nullptr);
+  test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
+                                        /*expect_sync_result=*/false);
+}
+
+// SVCB-reliant mode should be disabled for ECH servers when EchMode is
+// kDisabled for the specific host.
+TEST_F(TransportConnectJobTest, SvcbOptionalIfEchModeDisabledForHost) {
+  ssl_config_service_.SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kDisabled, kHostName));
 
   HostResolverEndpointResult endpoint1, endpoint2, endpoint3;
   endpoint1.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};

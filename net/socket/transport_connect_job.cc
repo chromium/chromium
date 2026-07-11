@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "net/base/ech_mode.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
@@ -32,6 +33,7 @@
 #include "net/socket/socket_tag.h"
 #include "net/socket/tcp_connect_job.h"
 #include "net/socket/transport_connect_sub_job.h"
+#include "net/ssl/ssl_config_service.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
@@ -546,8 +548,12 @@ bool TransportConnectJob::IsSvcbOptional(
     return true;  // This is not a SVCB-capable request at all.
   }
 
-  if (!common_connect_job_params()->ssl_client_context ||
-      !common_connect_job_params()->ssl_client_context->config().ech_enabled) {
+  SSLClientContext* ssl_client_context =
+      common_connect_job_params()->ssl_client_context;
+  if (!ssl_client_context || !ssl_client_context->config().ech_enabled ||
+      (ssl_client_context->ssl_config_service() &&
+       ssl_client_context->ssl_config_service()->GetEchMode(
+           scheme_host_port->host()) == EchMode::kDisabled)) {
     return true;  // ECH is not supported for this request.
   }
 

@@ -16,6 +16,9 @@ SSLContextConfig TestSSLConfigService::GetSSLContextConfig() {
 }
 
 EchMode TestSSLConfigService::GetEchMode(std::string_view hostname) const {
+  if (ech_mode_getter_) {
+    return ech_mode_getter_->GetEchMode(hostname);
+  }
   return EchMode::kOpportunistic;
 }
 

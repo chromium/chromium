@@ -39,6 +39,7 @@
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/ech_mode.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"
@@ -83,6 +84,7 @@
 #include "net/ssl/ssl_server_config.h"
 #include "net/ssl/test_ssl_config_service.h"
 #include "net/ssl/test_ssl_private_key.h"
+#include "net/ssl/test_static_ech_mode_getter.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -6239,6 +6241,134 @@ TEST_F(SSLClientSocketTest, ECHGreaseDisabled) {
       });
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(ran_callback);
+}
+
+// Test that, if EchMode is kDisabled, no ECH extension is sent.
+TEST_F(SSLClientSocketTest, ECHModeDisabled) {
+  bool ran_callback = false;
+  SSLServerConfig server_config;
+  server_config.client_hello_callback_for_testing =
+      base::BindLambdaForTesting([&](const SSL_CLIENT_HELLO* ch) {
+        const uint8_t* data;
+        size_t len;
+        EXPECT_FALSE(SSL_early_callback_ctx_extension_get(
+            ch, TLSEXT_TYPE_encrypted_client_hello, &data, &len));
+        ran_callback = true;
+        return true;
+      });
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  SSLContextConfig context_config;
+  context_config.ech_enabled = true;
+  ssl_config_service_->UpdateSSLConfigAndNotify(context_config);
+  ssl_config_service_->SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kDisabled,
+                                                host_port_pair().host()));
+
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(ran_callback);
+}
+
+// Test that, if EchMode is kStrict and ECH configs are missing, the connection
+// is aborted without initiating a handshake.
+TEST_F(SSLClientSocketTest, ECHModeStrictMissingConfig) {
+  bool ran_callback = false;
+  SSLServerConfig server_config;
+  server_config.client_hello_callback_for_testing =
+      base::BindLambdaForTesting([&](const SSL_CLIENT_HELLO* ch) {
+        ADD_FAILURE() << "Server callback should not be reached";
+        ran_callback = true;
+        return true;
+      });
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  SSLContextConfig context_config;
+  context_config.ech_enabled = true;
+  ssl_config_service_->UpdateSSLConfigAndNotify(context_config);
+  ssl_config_service_->SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kStrict,
+                                                host_port_pair().host()));
+
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+  EXPECT_THAT(rv, IsError(ERR_STRICT_ECH_REQUIRED));
+  EXPECT_FALSE(ran_callback);
+}
+
+// Test that, if EchMode is kStrict and ECHConfigList is available, the client
+// successfully connects using ECH.
+TEST_F(SSLClientSocketTest, ECHModeStrictHasConfig) {
+  std::vector<uint8_t> ech_config_list;
+  bssl::UniquePtr<SSL_ECH_KEYS> keys =
+      MakeTestEchKeys("public.example", /*max_name_len=*/64, &ech_config_list);
+  ASSERT_TRUE(keys);
+
+  bool ran_callback = false;
+  SSLServerConfig server_config;
+  server_config.ech_keys = std::move(keys);
+  server_config.client_hello_callback_for_testing =
+      base::BindLambdaForTesting([&](const SSL_CLIENT_HELLO* ch) {
+        const uint8_t* data;
+        size_t len;
+        EXPECT_TRUE(SSL_early_callback_ctx_extension_get(
+            ch, TLSEXT_TYPE_encrypted_client_hello, &data, &len));
+        ran_callback = true;
+        return true;
+      });
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  SSLContextConfig context_config;
+  context_config.ech_enabled = true;
+  ssl_config_service_->UpdateSSLConfigAndNotify(context_config);
+  ssl_config_service_->SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kStrict,
+                                                host_port_pair().host()));
+
+  SSLConfig client_config;
+  client_config.ech_config_list = std::move(ech_config_list);
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(ran_callback);
+  SSLInfo ssl_info;
+  EXPECT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_TRUE(ssl_info.encrypted_client_hello);
+}
+
+// Test that, if EchMode is kOpportunistic, the connection succeeds even
+// without ECH configs.
+TEST_F(SSLClientSocketTest, ECHModeOpportunistic) {
+  bool ran_callback = false;
+  SSLServerConfig server_config;
+  server_config.client_hello_callback_for_testing =
+      base::BindLambdaForTesting([&](const SSL_CLIENT_HELLO* ch) {
+        const uint8_t* data;
+        size_t len;
+        // Should send GREASE.
+        EXPECT_TRUE(SSL_early_callback_ctx_extension_get(
+            ch, TLSEXT_TYPE_encrypted_client_hello, &data, &len));
+        ran_callback = true;
+        return true;
+      });
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  SSLContextConfig context_config;
+  context_config.ech_enabled = true;
+  ssl_config_service_->UpdateSSLConfigAndNotify(context_config);
+  ssl_config_service_->SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kOpportunistic,
+                                                host_port_pair().host()));
+
   int rv;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
   EXPECT_THAT(rv, IsOk());

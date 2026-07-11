@@ -37,6 +37,7 @@
 #include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/ssl/test_ssl_config_service.h"
+#include "net/ssl/test_static_ech_mode_getter.h"
 #include "net/test/cert_builder.h"
 #include "net/test/gtest_util.h"
 #include "net/test/ssl_test_util.h"
@@ -49,6 +50,14 @@ using test::IsError;
 using test::IsOk;
 
 namespace {
+
+// Returns the default HostPortPair used for stream attempts in tests.
+// Avoids declaring a static constant because HostPortPair has a non-trivial
+// constructor (allocates a std::string), which is forbidden by the Chromium
+// C++ Style Guide.
+HostPortPair DefaultHostPortPair() {
+  return HostPortPair("a.test", 443);
+}
 
 void ValidateConnectTiming(
     const LoadTimingInfo::ConnectTiming& connect_timing) {
@@ -78,7 +87,7 @@ class TlsStreamAttemptHelper : public TlsStreamAttempt::Delegate {
             IPEndPoint(IPAddress(192, 0, 2, 1), 443),
             handles::kInvalidNetworkHandle,
             perfetto::Track(),
-            HostPortPair("a.test", 443),
+            DefaultHostPortPair(),
             std::move(base_ssl_config),
             this)),
         service_endpoint_result_(std::move(service_endpoint)) {}
@@ -213,6 +222,12 @@ class TlsStreamAttemptTest : public TestWithTaskEnvironment {
     SSLContextConfig config = ssl_config_service_->GetSSLContextConfig();
     config.ech_enabled = ech_enabled;
     ssl_config_service_->UpdateSSLConfigAndNotify(config);
+  }
+
+  void SetEchMode(EchMode ech_mode) {
+    ssl_config_service_->SetEchModeGetter(
+        std::make_unique<TestStaticEchModeGetter>(
+            ech_mode, DefaultHostPortPair().host()));
   }
 
   void SetTrustedTrustAnchorIDs(
@@ -531,13 +546,11 @@ TEST_F(TlsStreamAttemptTest, NegotiatedHttp2) {
 }
 
 TEST_F(TlsStreamAttemptTest, ClientAuthCertNeeded) {
-  const HostPortPair kHostPortPair("a.test", 443);
-
   StaticSocketDataProvider data;
   socket_factory().AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
   ssl.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
-  ssl.cert_request_info->host_and_port = kHostPortPair;
+  ssl.cert_request_info->host_and_port = DefaultHostPortPair();
   socket_factory().AddSSLSocketDataProvider(&ssl);
 
   TlsStreamAttemptHelper helper(params());
@@ -553,7 +566,7 @@ TEST_F(TlsStreamAttemptTest, ClientAuthCertNeeded) {
   scoped_refptr<SSLCertRequestInfo> cert_request_info =
       helper.attempt()->GetCertRequestInfo();
   ASSERT_TRUE(cert_request_info);
-  EXPECT_EQ(cert_request_info->host_and_port, kHostPortPair);
+  EXPECT_EQ(cert_request_info->host_and_port, DefaultHostPortPair());
 }
 
 TEST_F(TlsStreamAttemptTest, EchOk) {
@@ -651,6 +664,42 @@ TEST_F(TlsStreamAttemptTest, EchRetryFail) {
 
   rv = helper.WaitForCompletion();
   EXPECT_THAT(rv, IsError(ERR_ECH_NOT_NEGOTIATED));
+}
+
+// Tests that strict ECH mode triggers error when the server provides
+// an empty retry config.
+TEST_F(TlsStreamAttemptTest, EchStrictRetryEmptyFail) {
+  SetEchEnabled(true);
+  SetEchMode(EchMode::kStrict);
+
+  std::vector<uint8_t> ech_config_list;
+  ASSERT_TRUE(MakeTestEchKeys("public1.example", /*max_name_len=*/128,
+                              &ech_config_list));
+
+  std::vector<uint8_t> ech_retry_config_list;
+
+  StaticSocketDataProvider data;
+  socket_factory().AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, ERR_ECH_NOT_NEGOTIATED);
+  ssl.expected_ech_config_list = ech_config_list;
+  ssl.ech_retry_configs = ech_retry_config_list;
+  socket_factory().AddSSLSocketDataProvider(&ssl);
+
+  StaticSocketDataProvider retry_data;
+  socket_factory().AddSocketDataProvider(&retry_data);
+  SSLSocketDataProvider retry_ssl(ASYNC, ERR_STRICT_ECH_REQUIRED);
+  socket_factory().AddSSLSocketDataProvider(&retry_ssl);
+
+  ServiceEndpoint service_endpoint;
+  service_endpoint.metadata.ech_config_list = ech_config_list;
+
+  TlsStreamAttemptHelper helper(params(), SSLConfig(),
+                                std::move(service_endpoint));
+  int rv = helper.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = helper.WaitForCompletion();
+  EXPECT_THAT(rv, IsError(ERR_STRICT_ECH_REQUIRED));
 }
 
 // Tests that if the Trust Anchor IDs feature is enabled, but no IDs are

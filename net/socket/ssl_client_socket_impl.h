@@ -208,6 +208,10 @@ class NET_EXPORT_PRIVATE SSLClientSocketImpl
                           const crypto::OpenSSLErrStackTracer& tracer,
                           OpenSSLErrorInfo* info);
 
+  // Configures BoringSSL's ECH options based on the EchMode for the current
+  // host. Returns OK on success and a net error code on failure.
+  int ConfigureEch();
+
   // Wraps SSL_get0_ech_name_override. See documentation for that function.
   std::string_view GetECHNameOverride() const;
 

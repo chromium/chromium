@@ -31,6 +31,7 @@
 #include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/connection_migration_information.h"
+#include "net/base/ech_mode.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
@@ -1279,6 +1280,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   std::set<url::SchemeHostPort> received_origins_;
 
   std::vector<uint8_t> ech_config_list_;
+
+  // The EchMode for the session's host.
+  // Must be declared after `session_key_`, as its initialization depends on it.
+  const EchMode ech_mode_;
 
   // The list of TLS Trust Anchor IDs, each in binary representation, advertised
   // by the server in DNS.

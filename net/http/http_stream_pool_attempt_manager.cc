@@ -58,6 +58,7 @@
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "net/ssl/ssl_config_service.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
@@ -2179,10 +2180,16 @@ bool HttpStreamPool::AttemptManager::CanUseExistingQuicSession() const {
 }
 
 bool HttpStreamPool::AttemptManager::IsEchEnabled() const {
-  return pool()
-      ->stream_attempt_params()
-      ->ssl_client_context->config()
-      .ech_enabled;
+  SSLClientContext* ssl_client_context =
+      pool()->stream_attempt_params()->ssl_client_context;
+  if (!ssl_client_context->config().ech_enabled) {
+    return false;
+  }
+  if (!ssl_client_context->ssl_config_service()) {
+    return true;
+  }
+  return ssl_client_context->ssl_config_service()->GetEchMode(
+             stream_key().destination().host()) != EchMode::kDisabled;
 }
 
 void HttpStreamPool::AttemptManager::MaybeMarkQuicBroken() {

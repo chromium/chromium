@@ -36,6 +36,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "crypto/openssl_util.h"
+#include "net/base/ech_mode.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -58,6 +59,7 @@
 #include "net/ssl/openssl_ssl_util.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
+#include "net/ssl/ssl_config_service.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_handshake_details.h"
 #include "net/ssl/ssl_info.h"
@@ -862,21 +864,8 @@ int SSLClientSocketImpl::Init() {
         host_and_port_, &client_cert_, &client_private_key_);
   }
 
-  if (context_->config().ech_enabled) {
-    // TODO(crbug.com/41482204): Enable this unconditionally.
-    SSL_set_enable_ech_grease(ssl_.get(), 1);
-  }
-  if (!ssl_config_.ech_config_list.empty()) {
-    DCHECK(context_->config().ech_enabled);
-    net_log_.AddEvent(NetLogEventType::SSL_ECH_CONFIG_LIST, [&] {
-      return base::DictValue().Set(
-          "bytes", NetLogBinaryValue(ssl_config_.ech_config_list));
-    });
-    if (!SSL_set1_ech_config_list(ssl_.get(),
-                                  ssl_config_.ech_config_list.data(),
-                                  ssl_config_.ech_config_list.size())) {
-      return ERR_INVALID_ECH_CONFIG_LIST;
-    }
+  if (int rv = ConfigureEch(); rv != OK) {
+    return rv;
   }
 
   SSL_set_permute_extensions(ssl_.get(), 1);
@@ -1835,6 +1824,43 @@ int SSLClientSocketImpl::MapLastOpenSSLError(
   }
 
   return net_error;
+}
+
+int SSLClientSocketImpl::ConfigureEch() {
+  EchMode ech_mode = EchMode::kOpportunistic;
+  if (!context_->config().ech_enabled) {
+    DCHECK(ssl_config_.ech_config_list.empty());
+    ech_mode = EchMode::kDisabled;
+  } else if (context_->ssl_config_service()) {
+    ech_mode =
+        context_->ssl_config_service()->GetEchMode(host_and_port_.host());
+  }
+
+  switch (ech_mode) {
+    case EchMode::kDisabled:
+      return OK;
+    case EchMode::kStrict:
+      if (ssl_config_.ech_config_list.empty()) {
+        return ERR_STRICT_ECH_REQUIRED;
+      }
+      [[fallthrough]];
+    case EchMode::kOpportunistic:
+      // TODO(crbug.com/41482204): Enable this unconditionally.
+      SSL_set_enable_ech_grease(ssl_.get(), 1);
+      if (!ssl_config_.ech_config_list.empty()) {
+        net_log_.AddEvent(NetLogEventType::SSL_ECH_CONFIG_LIST, [&] {
+          return base::DictValue().Set(
+              "bytes", NetLogBinaryValue(ssl_config_.ech_config_list));
+        });
+        if (!SSL_set1_ech_config_list(ssl_.get(),
+                                      ssl_config_.ech_config_list.data(),
+                                      ssl_config_.ech_config_list.size())) {
+          return ERR_INVALID_ECH_CONFIG_LIST;
+        }
+      }
+      return OK;
+  }
+  NOTREACHED();
 }
 
 std::string_view SSLClientSocketImpl::GetECHNameOverride() const {

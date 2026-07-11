@@ -35,6 +35,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/values.h"
 #include "net/base/connection_endpoint_metadata.h"
+#include "net/base/ech_mode.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -465,6 +466,15 @@ void LogSessionCreationInitiatorToHistogram(
                     is_used ? ".Used" : ".Unused"});
 
   base::UmaHistogramEnumeration(histogram_name, session_creation);
+}
+
+EchMode GetEchModeForHost(SSLConfigService* ssl_config_service,
+                          std::string_view host) {
+  CHECK(ssl_config_service);
+  if (!ssl_config_service->GetSSLContextConfig().ech_enabled) {
+    return EchMode::kDisabled;
+  }
+  return ssl_config_service->GetEchMode(host);
 }
 
 }  // namespace
@@ -1099,6 +1109,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       http3_logger_(std::make_unique<QuicHttp3Logger>(net_log_)),
       path_validation_writer_delegate_(this, task_runner_),
       ech_config_list_(metadata.ech_config_list),
+      ech_mode_(GetEchModeForHost(ssl_config_service, session_key_.host())),
       trust_anchor_ids_(metadata.trust_anchor_ids),
       allow_server_preferred_address_(allow_server_preferred_address),
       session_creation_initiator_(session_creation_initiator) {
@@ -1554,6 +1565,19 @@ int QuicChromiumClientSession::CryptoConnect(CompletionOnceCallback callback) {
   RecordHandshakeState(STATE_STARTED);
   DCHECK(flow_controller());
 
+  switch (ech_mode_) {
+    case EchMode::kDisabled:
+    case EchMode::kOpportunistic:
+      // Explicitly listed to ensure the switch is exhaustive, forcing compiler
+      // errors if new EchModes are added in the future.
+      break;
+    case EchMode::kStrict:
+      if (ech_config_list_.empty()) {
+        return ERR_STRICT_ECH_REQUIRED;
+      }
+      break;
+  }
+
   if (!crypto_stream_->CryptoConnect()) {
     return ERR_QUIC_HANDSHAKE_FAILED;
   }
@@ -1725,11 +1749,22 @@ quic::QuicSSLConfig QuicChromiumClientSession::GetSSLConfig() const {
   quic::QuicSSLConfig config = quic::QuicSpdyClientSessionBase::GetSSLConfig();
   SSLContextConfig ssl_context_config =
       ssl_config_service_->GetSSLContextConfig();
-  if (ssl_context_config.ech_enabled) {
-    config.ech_grease_enabled = true;
-    config.ech_config_list.assign(ech_config_list_.begin(),
-                                  ech_config_list_.end());
+
+  switch (ech_mode_) {
+    case EchMode::kDisabled:
+      // Explicitly listed to ensure the switch is exhaustive, forcing compiler
+      // errors if new EchModes are added in the future.
+      break;
+    case EchMode::kOpportunistic:
+    case EchMode::kStrict:
+      // kStrict must fail on empty ech_config_list. But GetSSLConfig cannot
+      // propagate errors, so kStrict is enforced in CryptoConnect instead.
+      config.ech_grease_enabled = true;
+      config.ech_config_list.assign(ech_config_list_.begin(),
+                                    ech_config_list_.end());
+      break;
   }
+
   if (ssl_context_config.ShouldAdvertiseTrustAnchorIDs()) {
     config.trust_anchor_ids = base::as_string_view(
         ssl_context_config.SelectTrustAnchorIDs(trust_anchor_ids_));

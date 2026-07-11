@@ -80,4 +80,11 @@ void QuicChromiumClientSessionPeer::OnCryptoHandshakeComplete(
   session->OnCryptoHandshakeComplete();
 }
 
+// static
+void QuicChromiumClientSessionPeer::SetEchConfigList(
+    QuicChromiumClientSession* session,
+    std::vector<uint8_t> ech_config_list) {
+  session->ech_config_list_ = std::move(ech_config_list);
+}
+
 }  // namespace net::test

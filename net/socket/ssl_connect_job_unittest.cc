@@ -53,6 +53,7 @@
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/test_ssl_config_service.h"
+#include "net/ssl/test_static_ech_mode_getter.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
@@ -1982,6 +1983,58 @@ TEST_P(SSLConnectJobTest, ECHRollback) {
 
   histogram_tester.ExpectUniqueSample("Net.SSL.ECHResult",
                                       4 /* kSuccessRollback */, 1);
+}
+
+// Test that `SSLConnectJob` fails the connection under strict ECH mode
+// if the server returns an empty retry config.
+TEST_P(SSLConnectJobTest, ECHStrictRollbackFail) {
+  ssl_config_service_->SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kStrict,
+                                                kHostHttps.host()));
+
+  std::vector<uint8_t> ech_config_list;
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list));
+
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  endpoint.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint.metadata.ech_config_list = ech_config_list;
+  host_resolver_.rules()->AddRule(
+      "host",
+      MockHostResolverBase::RuleResolver::RuleResult(std::vector{endpoint}));
+
+  // The first connection attempt will succeed at the TCP layer.
+  StaticSocketDataProvider data1;
+  data1.set_expected_addresses(AddressList(endpoint.ip_endpoints));
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data1);
+  // The handshake will then fail, and provide an empty retry config.
+  SSLSocketDataProvider ssl1(ASYNC, ERR_ECH_NOT_NEGOTIATED);
+  ssl1.expected_ech_config_list = ech_config_list;
+  ssl1.ech_retry_configs = std::vector<uint8_t>();
+  socket_factory_.AddSSLSocketDataProvider(&ssl1);
+  // The connect job will restart and try the endpoint again.
+  StaticSocketDataProvider data2;
+  data2.set_expected_addresses(AddressList(endpoint.ip_endpoints));
+  data2.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data2);
+  // The handshake should fail because it's strict mode and we got an empty
+  // retry config.
+  SSLSocketDataProvider ssl2(ASYNC, ERR_STRICT_ECH_REQUIRED);
+  socket_factory_.AddSSLSocketDataProvider(&ssl2);
+
+  // The connection should ultimately fail.
+  base::HistogramTester histogram_tester;
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
+  EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(test_delegate.WaitForResult(),
+              test::IsError(ERR_STRICT_ECH_REQUIRED));
+
+  histogram_tester.ExpectUniqueSample("Net.SSL.ECHResult",
+                                      5 /* kErrorRollback */, 1);
 }
 
 // Test that `SSLConnectJob` will not retry more than once.

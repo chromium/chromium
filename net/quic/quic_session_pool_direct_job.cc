@@ -7,6 +7,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/ech_mode.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
@@ -19,6 +20,7 @@
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/spdy/multiplexed_session_creation_initiator.h"
+#include "net/ssl/ssl_config_service.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
@@ -252,7 +254,9 @@ bool QuicSessionPool::DirectJob::IsSvcbOptional(
   // If SVCB/HTTPS resolution succeeded, the client supports ECH, and all
   // alternative endpoints support ECH, disable the A/AAAA fallback. See
   // Section 5.1 of draft-ietf-tls-svcb-ech-08.
-  if (!pool_->ssl_config_service_->GetSSLContextConfig().ech_enabled) {
+  if (!pool_->ssl_config_service_->GetSSLContextConfig().ech_enabled ||
+      pool_->ssl_config_service_->GetEchMode(key().session_key().host()) ==
+          EchMode::kDisabled) {
     return true;  // ECH is not supported for this request.
   }
 

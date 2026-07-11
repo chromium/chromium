@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/connection_migration_information.h"
+#include "net/base/ech_mode.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
@@ -63,6 +64,7 @@
 #include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/ssl/ssl_config_service_defaults.h"
+#include "net/ssl/test_static_ech_mode_getter.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
@@ -140,6 +142,23 @@ class TestingQuicConnection : public quic::QuicConnection {
 
  private:
   base::RepeatingCallback<void()> keep_alive_timeout_callback_;
+};
+
+class TestSSLConfigServiceDefaults : public SSLConfigServiceDefaults {
+ public:
+  EchMode GetEchMode(std::string_view hostname) const override {
+    if (ech_mode_getter_) {
+      return ech_mode_getter_->GetEchMode(hostname);
+    }
+    return EchMode::kOpportunistic;
+  }
+
+  void SetEchModeGetter(std::unique_ptr<EchModeGetter> ech_mode_getter) {
+    ech_mode_getter_ = std::move(ech_mode_getter);
+  }
+
+ private:
+  std::unique_ptr<EchModeGetter> ech_mode_getter_;
 };
 
 // A subclass of QuicChromiumClientSession that allows OnPathDegrading to be
@@ -357,7 +376,7 @@ class QuicChromiumClientSessionTest
   quic::test::MockAlarmFactory alarm_factory_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
   MockCryptoClientStreamFactory crypto_client_stream_factory_;
-  SSLConfigServiceDefaults ssl_config_service_;
+  TestSSLConfigServiceDefaults ssl_config_service_;
   QuicSessionKey session_key_;
   url::SchemeHostPort destination_;
   std::unique_ptr<TestingQuicChromiumClientSession> session_;
@@ -3342,6 +3361,83 @@ TEST_P(QuicChromiumClientSessionTest,
   }));
 
   EXPECT_EQ(session_->connection()->GetStats().packets_received, 2u);
+}
+
+// Test that, if EchMode is kDisabled, ECH GREASE is disabled in QuicSSLConfig.
+TEST_P(QuicChromiumClientSessionTest, ECHModeDisabled) {
+  ssl_config_service_.SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kDisabled,
+                                                kServerHostname));
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+
+  quic::QuicSSLConfig config = session_->GetSSLConfig();
+  EXPECT_FALSE(config.ech_grease_enabled);
+  EXPECT_TRUE(config.ech_config_list.empty());
+
+  CompleteCryptoHandshake();
+}
+
+// Test that, if EchMode is kStrict and ECH configs are missing, CryptoConnect
+// returns ERR_STRICT_ECH_REQUIRED.
+TEST_P(QuicChromiumClientSessionTest, ECHModeStrictMissingConfig) {
+  ssl_config_service_.SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kStrict,
+                                                kServerHostname));
+  Initialize();
+
+  // ech_config_list_ is empty by default in tests.
+  EXPECT_THAT(session_->CryptoConnect(callback_.callback()),
+              IsError(ERR_STRICT_ECH_REQUIRED));
+}
+
+// Test that, if EchMode is kStrict and ECH configs are available,
+// QuicSSLConfig is correctly populated.
+TEST_P(QuicChromiumClientSessionTest, ECHModeStrictWithConfigs) {
+  ssl_config_service_.SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kStrict,
+                                                kServerHostname));
+  std::vector<uint8_t> ech_config_list = {1, 2, 3, 4};
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+
+  test::QuicChromiumClientSessionPeer::SetEchConfigList(session_.get(),
+                                                        ech_config_list);
+
+  quic::QuicSSLConfig config = session_->GetSSLConfig();
+  EXPECT_TRUE(config.ech_grease_enabled);
+  EXPECT_EQ(config.ech_config_list,
+            std::string(ech_config_list.begin(), ech_config_list.end()));
+
+  CompleteCryptoHandshake();
+}
+
+// Test that, if EchMode is kOpportunistic, ECH GREASE is enabled in
+// QuicSSLConfig.
+TEST_P(QuicChromiumClientSessionTest, ECHModeOpportunistic) {
+  ssl_config_service_.SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kOpportunistic,
+                                                kServerHostname));
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+
+  quic::QuicSSLConfig config = session_->GetSSLConfig();
+  EXPECT_TRUE(config.ech_grease_enabled);
+  EXPECT_TRUE(config.ech_config_list.empty());
+
+  CompleteCryptoHandshake();
 }
 
 }  // namespace

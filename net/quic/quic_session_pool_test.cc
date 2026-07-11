@@ -91,6 +91,7 @@
 #include "net/spdy/spdy_session_test_util.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/ssl/test_ssl_config_service.h"
+#include "net/ssl/test_static_ech_mode_getter.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
@@ -15343,6 +15344,78 @@ TEST_P(QuicSessionPoolTest, EchDisabled) {
   EXPECT_FALSE(config.ech_grease_enabled);
 }
 
+// Test that, when EchMode is kDisabled for the host, neither ECH nor ECH GREASE
+// are configured.
+TEST_P(QuicSessionPoolTest, EchModeDisabledForHost) {
+  quic_params_->supported_versions = {version_};
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
+  endpoint.metadata.supported_protocol_alpns = {quic::AlpnForVersion(version_)};
+  endpoint.metadata.ech_config_list = {1, 2, 3, 4};
+
+  host_resolver_ = std::make_unique<MockHostResolver>();
+  host_resolver_->rules()->AddRule(
+      kDefaultServerHostName,
+      MockHostResolverBase::RuleResolver::RuleResult({endpoint}));
+
+  ssl_config_service_.SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kDisabled,
+                                                kDefaultServerHostName));
+
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  builder.quic_version = quic::ParsedQuicVersion::Unsupported();
+  builder.require_dns_https_alpn = true;
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  ASSERT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session = GetActiveSession(
+      kDefaultDestination, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      ProxyChain::Direct(), SessionUsage::kDestination,
+      /*require_dns_https_alpn=*/true);
+  ASSERT_TRUE(session);
+  quic::QuicSSLConfig config = session->GetSSLConfig();
+  EXPECT_TRUE(config.ech_config_list.empty());
+  EXPECT_FALSE(config.ech_grease_enabled);
+}
+
+// Test that EchMode::kStrict prevents connections to endpoints without ECH
+// configs.
+TEST_P(QuicSessionPoolTest, EchModeStrictNoFallback) {
+  ssl_config_service_.SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kStrict,
+                                                kDefaultServerHostName));
+
+  // The A/AAAA is compatible with QUIC, but is ineligible in EchMode::kStrict.
+  std::vector<HostResolverEndpointResult> endpoints(1);
+  endpoints[0].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
+
+  host_resolver_ = std::make_unique<MockHostResolver>();
+  host_resolver_->rules()->AddRule(
+      kDefaultServerHostName,
+      MockHostResolverBase::RuleResolver::RuleResult(std::move(endpoints)));
+
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_STRICT_ECH_REQUIRED));
+}
+
 // Test that, when the server supports ECH, the connection should use
 // SVCB-reliant behavior.
 TEST_P(QuicSessionPoolTest, EchSvcbReliant) {
@@ -15408,6 +15481,52 @@ TEST_P(QuicSessionPoolTest, EchDisabledSvcbOptional) {
   RequestBuilder builder(this);
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
+}
+
+// Test that, when EchMode is kDisabled for the host, SVCB-reliant behavior
+// doesn't trigger.
+TEST_P(QuicSessionPoolTest, EchModeDisabledForHostSvcbOptional) {
+  // The HTTPS-RR route only advertises HTTP/2 and is therefore incompatible
+  // with QUIC. The fallback A/AAAA is compatible, but is ineligible in
+  // ECH-capable clients.
+  std::vector<HostResolverEndpointResult> endpoints(2);
+  endpoints[0].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
+  endpoints[0].metadata.supported_protocol_alpns = {"h2"};
+  endpoints[0].metadata.ech_config_list = {1, 2, 3, 4};
+  endpoints[1].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
+
+  host_resolver_ = std::make_unique<MockHostResolver>();
+  host_resolver_->rules()->AddRule(
+      kDefaultServerHostName,
+      MockHostResolverBase::RuleResolver::RuleResult(std::move(endpoints)));
+
+  // This client explicitly disables ECH via EchMode for the host, so the
+  // connection should succeed using the fallback endpoint.
+  ssl_config_service_.SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kDisabled,
+                                                kDefaultServerHostName));
+
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  ASSERT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session = GetActiveSession(
+      kDefaultDestination, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      ProxyChain::Direct(), SessionUsage::kDestination,
+      /*require_dns_https_alpn=*/false);
+  ASSERT_TRUE(session);
+  quic::QuicSSLConfig config = session->GetSSLConfig();
+  EXPECT_TRUE(config.ech_config_list.empty());
+  EXPECT_FALSE(config.ech_grease_enabled);
 }
 
 // Test that Trust Anchor IDs are not advertised if the feature is enabled but
