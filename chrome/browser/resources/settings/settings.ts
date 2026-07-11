@@ -155,6 +155,7 @@ export type {SearchManager} from './search_settings.js';
 export {SettingsMainElement} from './settings_main/settings_main.js';
 export {SettingsMenuElement} from './settings_menu/settings_menu.js';
 export {SearchableViewContainerMixin} from './settings_page/searchable_view_container_mixin.js';
+export {SearchableViewContainerMixinLit} from './settings_page/searchable_view_container_mixin_lit.js';
 export {SettingsSectionElement} from './settings_page/settings_section.js';
 export {SettingsViewMixin} from './settings_page/settings_view_mixin.js';
 export {SettingsViewMixinLit} from './settings_page/settings_view_mixin_lit.js';

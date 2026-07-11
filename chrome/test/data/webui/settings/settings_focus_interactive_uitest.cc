@@ -31,6 +31,10 @@ IN_PROC_BROWSER_TEST_F(SettingsFocusTest, SettingsViewMixin) {
   RunTest("settings/settings_view_mixin_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsFocusTest, SettingsViewMixinLit) {
+  RunTest("settings/settings_view_mixin_lit_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsFocusTest, SyncPage) {
   RunTest("settings/people_page_sync_page_interactive_test.js", "mocha.run()");
 }
