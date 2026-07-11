@@ -3,6 +3,8 @@
 <head>
 <script>
     function closeThisWindow() {
+        if (window.opener)
+            window.opener.closeWindowOpened = true;
         alert("Close Window Opened");
         self.close();
     }

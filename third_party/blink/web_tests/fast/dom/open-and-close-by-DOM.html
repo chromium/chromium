@@ -15,13 +15,13 @@
     function checkIfDone() {
         var numOpenWindows = testRunner.windowCount();
         var now = new Date();
-        if (numOpenWindows == 1) {
+        if (window.closeWindowOpened && numOpenWindows == 1) {
             var span = document.createElement("span");
             span.innerHTML = 'TEST PASSED <br>';
             document.getElementById("console").appendChild(span);
 
             clearInterval(myInterval);
-            testRunner.notifyDone();            
+            testRunner.notifyDone();
         } else if (now - start > 10000) {
             var span = document.createElement("span");
             span.innerHTML = 'TEST FAILED <br> Number of open windows: ' + numOpenWindows + '<br/>';
@@ -39,7 +39,7 @@
         document.getElementById('anchorLink').dispatchEvent(event);
 
         start = new Date();
-        myInterval = setInterval(checkIfDone, 500);
+        myInterval = setInterval(checkIfDone, 50);
     }
 </script>
 </head>
@@ -51,7 +51,7 @@ To run the test manually click the link below.
 <br/>
 <div id="console" />
 <br/>
-<a href="resources/middle.html" id="anchorLink" target="_blank">Open new window that will close itself</a>
+<a href="resources/middle.html" id="anchorLink" target="_blank" rel="opener">Open new window that will close itself</a>
 <br/><br/>
 
 </body>
