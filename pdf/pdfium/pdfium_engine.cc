@@ -766,13 +766,16 @@ void InitializeSDK(bool enable_v8,
                    bool use_skia,
                    FontMappingMode font_mapping_mode) {
   FPDF_LIBRARY_CONFIG config;
-  config.version = 4;
+  config.version = 6;
   config.m_pUserFontPaths = nullptr;
   config.m_pIsolate = nullptr;
   config.m_pPlatform = nullptr;
   config.m_v8EmbedderSlot = gin::kEmbedderPDFium;
   config.m_RendererType =
       use_skia ? FPDF_RENDERERTYPE_SKIA : FPDF_RENDERERTYPE_AGG;
+  config.m_FontLibraryType = FPDF_FONTBACKENDTYPE_FREETYPE;
+  config.m_BrotliEnabled =
+      base::FeatureList::IsEnabled(features::kPdfBrotliDecode);
 
 #if defined(PDF_ENABLE_V8)
   if (enable_v8) {

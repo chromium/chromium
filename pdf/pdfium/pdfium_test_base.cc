@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "pdf/loader/url_loader.h"
+#include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/test/test_client.h"
@@ -152,13 +153,17 @@ void PDFiumTestBase::InitializePDFiumSDK() {
 #endif
 
   FPDF_LIBRARY_CONFIG config;
-  config.version = 4;
+  config.version = 6;
   config.m_pUserFontPaths = font_paths_.data();
   config.m_pIsolate = nullptr;
   config.m_v8EmbedderSlot = 0;
   config.m_pPlatform = nullptr;
   config.m_RendererType =
       GetParam() ? FPDF_RENDERERTYPE_SKIA : FPDF_RENDERERTYPE_AGG;
+  config.m_FontLibraryType = FPDF_FONTBACKENDTYPE_FREETYPE;
+  config.m_BrotliEnabled =
+      base::FeatureList::IsEnabled(features::kPdfBrotliDecode);
+
   FPDF_InitLibraryWithConfig(&config);
 }
 
