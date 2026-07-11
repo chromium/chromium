@@ -75,25 +75,20 @@ public interface SidePanelContainerCoordinator {
      * panel isn't shown.
      *
      * @param content Wrapper object for the content to show in the side panel.
-     * @param onPanelOpened Runnable to invoke after the panel is fully opened.
      * @param startingBounds Optional bounds for the animation to start from.
      * @param suppressAnimations Whether or not to suppress animations for this populate request.
      */
     void startOpeningPanel(
-            SidePanelContent content,
-            Runnable onPanelOpened,
-            @Nullable Rect startingBounds,
-            boolean suppressAnimations);
+            SidePanelContent content, @Nullable Rect startingBounds, boolean suppressAnimations);
 
     /**
      * Starts closing this side panel container.
      *
      * <p>This method is for a side panel feature.
      *
-     * @param onPanelClosed Runnable to invoke after the panel is closed.
      * @param suppressAnimations Whether or not to suppress animations for this removal.
      */
-    void startClosingPanel(Runnable onPanelClosed, boolean suppressAnimations);
+    void startClosingPanel(boolean suppressAnimations);
 
     /**
      * Starts replacing the {@link SidePanelContent} inside this container.
@@ -106,9 +101,8 @@ public interface SidePanelContainerCoordinator {
      * wait for the first frame of its web contents before removing the old content.
      *
      * @param newContent Wrapper object for the new content to show in the side panel.
-     * @param onPanelContentReplaced Runnable to invoke after the content is replaced.
      */
-    void startReplacingPanelContent(SidePanelContent newContent, Runnable onPanelContentReplaced);
+    void startReplacingPanelContent(SidePanelContent newContent);
 
     /** Immediately ends all ongoing animations. */
     void endAnimations();

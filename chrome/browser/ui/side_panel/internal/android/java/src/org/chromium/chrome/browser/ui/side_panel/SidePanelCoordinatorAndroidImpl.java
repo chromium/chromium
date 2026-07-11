@@ -75,6 +75,33 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
     }
 
     @Override
+    public void onPanelOpened() {
+        log(TAG, "onPanelOpened");
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidImplJni.get()
+                    .onPanelOpened(mNativeSidePanelCoordinatorAndroid);
+        }
+    }
+
+    @Override
+    public void onPanelClosed() {
+        log(TAG, "onPanelClosed");
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidImplJni.get()
+                    .onPanelClosed(mNativeSidePanelCoordinatorAndroid);
+        }
+    }
+
+    @Override
+    public void onPanelContentReplaced() {
+        log(TAG, "onPanelContentReplaced");
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidImplJni.get()
+                    .onPanelContentReplaced(mNativeSidePanelCoordinatorAndroid);
+        }
+    }
+
+    @Override
     public void onWillAutoClose() {
         log(TAG, "onWillAutoClose");
         if (mNativeSidePanelCoordinatorAndroid != 0) {
@@ -139,7 +166,6 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
         log(TAG, "startOpeningPanel", sidePanelNativeView, x, y, width, height);
         mSidePanelContainerCoordinator.startOpeningPanel(
                 new SidePanelContent(sidePanelNativeView),
-                this::onPanelOpened,
                 createRectFromCoordinates(x, y, width, height),
                 suppressAnimations || mDisableAnimationsForTesting);
     }
@@ -148,14 +174,14 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
     private void startClosingPanel(boolean suppressAnimations) {
         log(TAG, "startClosingPanel", suppressAnimations);
         mSidePanelContainerCoordinator.startClosingPanel(
-                this::onPanelClosed, suppressAnimations || mDisableAnimationsForTesting);
+                suppressAnimations || mDisableAnimationsForTesting);
     }
 
     @CalledByNative
     private void startReplacingPanelContent(View sidePanelNativeView) {
         log(TAG, "startReplacingPanelContent", sidePanelNativeView);
         mSidePanelContainerCoordinator.startReplacingPanelContent(
-                new SidePanelContent(sidePanelNativeView), this::onPanelContentReplaced);
+                new SidePanelContent(sidePanelNativeView));
     }
 
     @CalledByNative
@@ -181,30 +207,6 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
             return null;
         }
         return new Rect(x, y, x + width, y + height);
-    }
-
-    private void onPanelOpened() {
-        log(TAG, "onPanelOpened");
-        if (mNativeSidePanelCoordinatorAndroid != 0) {
-            SidePanelCoordinatorAndroidImplJni.get()
-                    .onPanelOpened(mNativeSidePanelCoordinatorAndroid);
-        }
-    }
-
-    private void onPanelClosed() {
-        log(TAG, "onPanelClosed");
-        if (mNativeSidePanelCoordinatorAndroid != 0) {
-            SidePanelCoordinatorAndroidImplJni.get()
-                    .onPanelClosed(mNativeSidePanelCoordinatorAndroid);
-        }
-    }
-
-    private void onPanelContentReplaced() {
-        log(TAG, "onPanelContentReplaced");
-        if (mNativeSidePanelCoordinatorAndroid != 0) {
-            SidePanelCoordinatorAndroidImplJni.get()
-                    .onPanelContentReplaced(mNativeSidePanelCoordinatorAndroid);
-        }
     }
 
     @NativeMethods

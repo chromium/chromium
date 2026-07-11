@@ -21,6 +21,15 @@ public interface SidePanelCoordinatorAndroid extends ChromeAndroidTaskFeature {
      */
     boolean hasContentToShow();
 
+    /** Called when the side panel has finished opening. */
+    void onPanelOpened();
+
+    /** Called when the side panel has finished closing. */
+    void onPanelClosed();
+
+    /** Called when the side panel content has been replaced. */
+    void onPanelContentReplaced();
+
     /**
      * Called when the side panel <i>will</i> be auto-closed due to space constraints.
      *

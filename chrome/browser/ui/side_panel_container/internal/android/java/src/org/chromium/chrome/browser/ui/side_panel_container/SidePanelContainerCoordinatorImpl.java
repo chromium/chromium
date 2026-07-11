@@ -47,26 +47,6 @@ final class SidePanelContainerCoordinatorImpl
     /** JNI bridge to read/write C++ side panel states. */
     private @Nullable SidePanelCoordinatorAndroid mSidePanelCoordinatorAndroid;
 
-    /**
-     * See {@link #startOpeningPanel}.
-     *
-     * <p>TODO(crbug.com/530328329): Use {@link #mSidePanelCoordinatorAndroid} to update C++ side
-     * panel states, then delete this field. The C++ side is the source of truth for all mutable
-     * states, but this state is essentially a duplicate of the C++ {@code
-     * SidePanelCoordinatorAndroid::state_}.
-     */
-    private @Nullable Runnable mOnPanelOpenedRunnable;
-
-    /**
-     * See {@link #startClosingPanel}.
-     *
-     * <p>TODO(crbug.com/530328329): Use {@link #mSidePanelCoordinatorAndroid} to update C++ side
-     * panel states, then delete this field. The C++ side is the source of truth for all mutable
-     * states, but this state is essentially a duplicate of the C++ {@code
-     * SidePanelCoordinatorAndroid::state_}.
-     */
-    private @Nullable Runnable mOnPanelClosedRunnable;
-
     private @Nullable SidePanelDevFeatureImpl mSidePanelPureJavaDevFeature;
 
     private @Nullable SidePanelContent mCurrentContent;
@@ -143,10 +123,7 @@ final class SidePanelContainerCoordinatorImpl
 
     @Override
     public void startOpeningPanel(
-            SidePanelContent content,
-            Runnable onPanelOpened,
-            @Nullable Rect startingBounds,
-            boolean suppressAnimations) {
+            SidePanelContent content, @Nullable Rect startingBounds, boolean suppressAnimations) {
         log(TAG, "startOpeningPanel", content, startingBounds, suppressAnimations);
         ThreadUtils.assertOnUiThread();
 
@@ -156,11 +133,6 @@ final class SidePanelContainerCoordinatorImpl
         mContainerView.removeAllViews();
         mContainerView.addView(content.mView);
 
-        // TODO(crbug.com/530328329): Delete this assert after directly calling into
-        // mSidePanelCoordinatorAndroid. The C++ side already ensures this state consistency.
-        assert mOnPanelClosedRunnable == null : "side panel hasn't finished closing";
-        mOnPanelOpenedRunnable = onPanelOpened;
-
         assert !mIsPreparingForAutoClose;
         if (!mIsPreparingForAutoRestore) {
             mSideUiCoordinator.updateUi(
@@ -169,14 +141,9 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
-    public void startClosingPanel(Runnable onPanelClosed, boolean suppressAnimations) {
+    public void startClosingPanel(boolean suppressAnimations) {
         log(TAG, "startClosingPanel", suppressAnimations);
         ThreadUtils.assertOnUiThread();
-
-        // TODO(crbug.com/530328329): Delete this assert after directly calling into
-        // mSidePanelCoordinatorAndroid. The C++ side already ensures this state consistency.
-        assert mOnPanelOpenedRunnable == null : "side panel hasn't finished opening";
-        mOnPanelClosedRunnable = onPanelClosed;
 
         assert !mIsPreparingForAutoRestore;
         if (!mIsPreparingForAutoClose) {
@@ -186,8 +153,7 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
-    public void startReplacingPanelContent(
-            SidePanelContent newContent, Runnable onPanelContentReplaced) {
+    public void startReplacingPanelContent(SidePanelContent newContent) {
         log(TAG, "startReplacingPanelContent", newContent);
         ThreadUtils.assertOnUiThread();
 
@@ -232,7 +198,9 @@ final class SidePanelContainerCoordinatorImpl
                         mRan = true;
 
                         mContainerView.removeView(oldView);
-                        onPanelContentReplaced.run();
+                        if (mSidePanelCoordinatorAndroid != null) {
+                            mSidePanelCoordinatorAndroid.onPanelContentReplaced();
+                        }
 
                         // If the work is for the current runnable, clear the runnable.
                         if (mPendingReplaceRunnable == this) {
@@ -379,18 +347,14 @@ final class SidePanelContainerCoordinatorImpl
     @Override
     public void onUiUpdateCompleted(@Px int oldWidth, @Px int newWidth) {
         // The side panel is fully opened.
-        if (mOnPanelOpenedRunnable != null) {
-            assert oldWidth == 0 && newWidth > 0;
-            mOnPanelOpenedRunnable.run();
-            mOnPanelOpenedRunnable = null;
+        if (oldWidth == 0 && newWidth > 0 && mSidePanelCoordinatorAndroid != null) {
+            mSidePanelCoordinatorAndroid.onPanelOpened();
             return;
         }
 
         // The side panel is fully closed.
-        if (mOnPanelClosedRunnable != null) {
-            assert oldWidth > 0 && newWidth == 0;
-            mOnPanelClosedRunnable.run();
-            mOnPanelClosedRunnable = null;
+        if (oldWidth > 0 && newWidth == 0 && mSidePanelCoordinatorAndroid != null) {
+            mSidePanelCoordinatorAndroid.onPanelClosed();
         }
     }
 
