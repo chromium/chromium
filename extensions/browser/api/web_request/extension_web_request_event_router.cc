@@ -1948,15 +1948,6 @@ WebRequestEventRouter::RemoveMatchingListeners(
       continue;
     }
 
-    if (id.web_view_instance_id != 0) {
-      // WebView listeners are managed by RemoveWebViewEventListeners, not here.
-      // There is not enough information here to know if the matching listener
-      // is for a WebView that is being destroyed, or an existing WebView that
-      // still needs its listener to be active.
-      ++iter;
-      continue;
-    }
-
     removed_listeners.push_back(std::move(listener));
     iter = listeners.erase(iter);
   }
