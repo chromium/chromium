@@ -7,7 +7,14 @@ import("//build/rust/rust_static_library.gni")
 rust_static_library("cbor") {
   crate_name = "cbor"
   crate_root = "lib.rs"
-  sources = [ crate_root ]
+  sources = [
+    "constants.rs",
+    "float_conversions.rs",
+    "reader.rs",
+    "values.rs",
+    "writer.rs",
+    crate_root,
+  ]
   deps = [ "//base" ]
 }
 
@@ -15,7 +22,11 @@ rust_static_library("cbor_rust_unittests") {
   testonly = true
   is_gtest_unittests = true
   crate_root = "cbor_rust_unittests.rs"
-  sources = [ crate_root ]
+  sources = [
+    "reader_unittest.rs",
+    "writer_unittest.rs",
+    crate_root,
+  ]
   deps = [
     ":cbor",
     "//testing/rust_gtest_interop",
