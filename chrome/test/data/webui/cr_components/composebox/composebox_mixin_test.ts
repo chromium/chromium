@@ -1718,4 +1718,81 @@ suite('ComposeboxMixinTest', () => {
         assertFalse(element.files.has(dummyToken2));
         assertTrue(element.files.has(dummyToken1));
       });
+
+  test(
+      'onVoicePermissionChanged updates isListening and dispatches event',
+      async () => {
+        element.inVoiceSearchMode = true;
+        element.hasVoiceSearchError = false;
+        element.isListening = true;
+        await element.updateComplete;
+
+        let eventFired = false;
+        let eventDetail: any = null;
+        element.addEventListener(
+            'voice-permission-prompt-changed', (e: Event) => {
+              eventFired = true;
+              eventDetail = (e as CustomEvent).detail;
+            });
+
+        element.onVoicePermissionChanged(
+            new CustomEvent('voice-permission-changed', {
+              detail: {
+                isOpened: true,
+                height: 100,
+                width: 100,
+              },
+            }));
+        await element.updateComplete;
+
+        assertTrue(eventFired);
+        assertEquals(100, eventDetail.height);
+        assertEquals(100, eventDetail.width);
+        assertTrue(eventDetail.isOpened);
+        assertFalse(element.isListening);
+
+        // Reset tracker and test closing event:
+        eventFired = false;
+        eventDetail = null;
+
+        element.onVoicePermissionChanged(
+            new CustomEvent('voice-permission-changed', {
+              detail: {
+                isOpened: false,
+                height: 0,
+                width: 0,
+              },
+            }));
+        await element.updateComplete;
+
+        assertTrue(eventFired);
+        assertFalse(eventDetail.isOpened);
+        assertTrue(element.isListening);
+      });
+
+  test('voice permission opened event not fired if size is 0', async () => {
+    element.inVoiceSearchMode = true;
+    element.hasVoiceSearchError = false;
+    element.isListening = true;
+    await element.updateComplete;
+
+    let eventFired = false;
+    element.addEventListener('voice-permission-prompt-changed', () => {
+      eventFired = true;
+    });
+
+    // Directly call mixin event handler with height 0 width 0.
+    element.onVoicePermissionChanged(
+        new CustomEvent('voice-permission-changed', {
+          detail: {
+            isOpened: true,
+            height: 0,
+            width: 0,
+          },
+        }));
+    await element.updateComplete;
+
+    assertFalse(eventFired);
+    assertFalse(element.isListening);
+  });
 });
