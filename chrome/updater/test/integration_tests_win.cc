@@ -2237,8 +2237,8 @@ void SetPlatformPolicies(const base::DictValue& values) {
   for (const auto [app_id, policies] : values) {
     ASSERT_TRUE(policies.is_dict());
     for (const auto [name, value] : policies.GetDict()) {
-      const std::wstring& key = base::UTF8ToWide(
-          absl::StrFormat("%s%s", name.c_str(), app_id.c_str()));
+      const std::wstring& key =
+          base::UTF8ToWide(absl::StrFormat("%s%s", name, app_id));
       if (value.is_string()) {
         policy_key.WriteValue(key.c_str(),
                               base::UTF8ToWide(value.GetString()).c_str());

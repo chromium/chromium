@@ -427,7 +427,7 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
 
   const std::wstring language = base::UTF8ToWide(GetTagLanguage());
   list->AddWorkItem(new installer::InstallServiceWorkItem(
-      GetServiceName(internal_service).c_str(),
+      GetServiceName(internal_service),
       GetLocalizedString(internal_service
                              ? IDS_INTERNAL_UPDATER_SERVICE_DISPLAY_NAME_BASE
                              : IDS_UPDATER_SERVICE_DISPLAY_NAME_BASE,

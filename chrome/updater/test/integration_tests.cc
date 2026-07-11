@@ -5280,16 +5280,15 @@ TEST_F(IntegrationTest, AppLogoUrl) {
       base::Version({0, 0, 0, 0}), v1));
 
   std::string app_logo_bytes;
-  ASSERT_TRUE(base::ReadFileToString(
-      test::GetTestFilePath("app_logos")
-          .AppendUTF8(absl::StrFormat("%s.bmp", kAppId.c_str())),
-      &app_logo_bytes));
+  ASSERT_TRUE(
+      base::ReadFileToString(test::GetTestFilePath("app_logos")
+                                 .AppendUTF8(absl::StrFormat("%s.bmp", kAppId)),
+                             &app_logo_bytes));
   test_logo_server.ExpectOnce(
       {
           request::GetPathMatcher(absl::StrFormat(
-              "%s%s.bmp\\?lang=%s", test_logo_server.app_logo_path().c_str(),
-              kAppId.c_str(),
-              base::WideToUTF8(GetPreferredLanguage()).c_str())),
+              "%s%s.bmp\\?lang=%s", test_logo_server.app_logo_path(), kAppId,
+              base::WideToUTF8(GetPreferredLanguage()))),
       },
       app_logo_bytes);
   ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(

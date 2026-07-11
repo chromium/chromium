@@ -315,7 +315,7 @@ ProcessExitResult BuildInstallerCommandLineArgumentsInternal(
   if (args.GetSwitchValueUTF8(kInstallSwitch).empty()) {
     const std::string tag = ExtractTag();
     if (!tag.empty()) {
-      args.AppendSwitchUTF8(kInstallSwitch, tag.c_str());
+      args.AppendSwitchUTF8(kInstallSwitch, tag);
     }
   }
 

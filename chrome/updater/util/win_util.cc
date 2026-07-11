@@ -53,7 +53,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
@@ -551,20 +550,21 @@ bool IsElevatedWithUACOn() {
 std::string GetUACState() {
   std::string s;
 
-  base::StringAppendF(&s, "IsUserAdmin: %d, ", ::IsUserAnAdmin());
+  absl::StrAppendFormat(&s, "IsUserAdmin: %d, ", ::IsUserAnAdmin());
 
   std::optional<base::win::AccessToken> token =
       base::win::AccessToken::FromCurrentProcess();
   if (token) {
     bool is_non_elevated_admin = token->IsSplitToken() && !token->IsElevated();
-    base::StringAppendF(&s, "IsUserNonElevatedAdmin: %d, ",
-                        is_non_elevated_admin);
+    absl::StrAppendFormat(&s, "IsUserNonElevatedAdmin: %d, ",
+                          is_non_elevated_admin);
   }
 
-  base::StringAppendF(&s, "IsUACOn: %d, IsElevatedWithUACOn: %d, ", IsUACOn(),
-                      IsElevatedWithUACOn());
+  absl::StrAppendFormat(&s, "IsUACOn: %d, IsElevatedWithUACOn: %d, ", IsUACOn(),
+                        IsElevatedWithUACOn());
 
-  base::StringAppendF(&s, "LUA: %d", base::win::UserAccountControlIsEnabled());
+  absl::StrAppendFormat(&s, "LUA: %d",
+                        base::win::UserAccountControlIsEnabled());
   return s;
 }
 

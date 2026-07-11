@@ -69,7 +69,7 @@ bool CopyBundle(UpdaterScope scope) {
 
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(*versioned_install_dir, &error)) {
-    LOG(ERROR) << "Failed to create '" << versioned_install_dir->value().c_str()
+    LOG(ERROR) << "Failed to create '" << versioned_install_dir->value()
                << "' directory: " << base::File::ErrorToString(error);
     return false;
   }
@@ -94,7 +94,7 @@ bool CopyBundle(UpdaterScope scope) {
 
   if (!CopyDir(base::apple::OuterBundlePath(), *versioned_install_dir,
                scope == UpdaterScope::kSystem)) {
-    LOG(ERROR) << "Copying app to '" << versioned_install_dir->value().c_str()
+    LOG(ERROR) << "Copying app to '" << versioned_install_dir->value()
                << "' failed";
     return false;
   }

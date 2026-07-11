@@ -821,7 +821,7 @@ void NetworkFetcher::PostRequest(
     [urlRequest setValue:base::SysUTF8ToNSString(value)
         forHTTPHeaderField:base::SysUTF8ToNSString(name)];
   }
-  VLOG(1) << "Posting data: " << post_data.c_str();
+  VLOG(1) << "Posting data: " << post_data;
 
   NSURLSessionDataTask* dataTask = [session dataTaskWithRequest:urlRequest];
   [dataTask resume];

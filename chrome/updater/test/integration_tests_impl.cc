@@ -325,7 +325,7 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
       {request::GetPathMatcher(test_server.update_path()),
        request::GetUpdaterUserAgentMatcher(updater_version),
        request::GetContentMatcher(
-           {absl::StrFormat(R"(.*"appid":"%s".*)", app_id.c_str())}),
+           {absl::StrFormat(R"(.*"appid":"%s".*)", app_id)}),
        request::GetScopeMatcher(scope),
        request::GetAppPriorityMatcher(app_id, priority),
        request::GetUpdaterEnableUpdatesMatcher()},
@@ -375,13 +375,12 @@ void ExpectUpdateSequence(UpdaterScope scope,
       {request::GetPathMatcher(test_server.update_path()),
        request::GetUpdaterUserAgentMatcher(updater_version),
        request::GetContentMatcher(
-           {absl::StrFormat(R"("appid":"%s")", app_id.c_str()),
+           {absl::StrFormat(R"("appid":"%s")", app_id),
             install_data_index.empty()
                 ? ""
                 : absl::StrFormat(
                       R"("data":\[{"index":"%s","name":"install"}],.*)",
-                      install_data_index.c_str())
-                      .c_str()}),
+                      install_data_index)}),
        request::GetScopeMatcher(scope),
        request::GetAppPriorityMatcher(app_id, priority),
        request::GetUpdaterEnableUpdatesMatcher()},
@@ -779,25 +778,24 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
   // First request: update check.
   std::vector<std::string> attributes;
   for (const auto [key, value] : request_attributes) {
-    attributes.push_back(absl::StrFormat(R"("%s":"%s")", key.c_str(),
-                                         value.GetString().c_str()));
+    attributes.push_back(
+        absl::StrFormat(R"("%s":"%s")", key, value.GetString()));
   }
   std::vector<std::string> app_requests;
   std::vector<base::RepeatingCallback<std::string(bool)>>
       app_response_providers;
   for (const AppUpdateExpectation& app : apps) {
-    app_requests.push_back(
-        absl::StrFormat(R"("appid":"%s")", app.app_id.c_str()));
+    app_requests.push_back(absl::StrFormat(R"("appid":"%s")", app.app_id));
     if (app.allow_rollback) {
       app_requests.push_back(R"("rollback_allowed":true,)");
     }
     if (!app.target_version_prefix.empty()) {
-      app_requests.push_back(absl::StrFormat(
-          R"("targetversionprefix":"%s")", app.target_version_prefix.c_str()));
+      app_requests.push_back(absl::StrFormat(R"("targetversionprefix":"%s")",
+                                             app.target_version_prefix));
     }
     if (!app.target_channel.empty()) {
-      app_requests.push_back(absl::StrFormat(R"("release_channel":"%s",)",
-                                             app.target_channel.c_str()));
+      app_requests.push_back(
+          absl::StrFormat(R"("release_channel":"%s",)", app.target_channel));
     }
     if (!app.custom_app_response.empty()) {
       app_response_providers.push_back(base::BindRepeating(

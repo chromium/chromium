@@ -33,7 +33,7 @@ inline std::string UpdaterScopeToString(UpdaterScope scope) {
 }
 
 inline std::ostream& operator<<(std::ostream& os, UpdaterScope scope) {
-  return os << UpdaterScopeToString(scope).c_str();
+  return os << UpdaterScopeToString(scope);
 }
 
 }  // namespace updater

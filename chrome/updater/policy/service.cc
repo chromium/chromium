@@ -407,26 +407,23 @@ std::string PolicyService::GetAllPoliciesAsString() const {
   std::vector<std::string> policies;
   for (const auto& [policy, value] :
        GetUpdaterPolicies<base::flat_map<std::string, PolicyValue>>()) {
-    policies.push_back(absl::StrFormat("%s = %s (%s)", policy.c_str(),
-                                       value.policy_value.c_str(),
-                                       value.policy_source.c_str()));
+    policies.push_back(absl::StrFormat(
+        "%s = %s (%s)", policy, value.policy_value, value.policy_source));
   }
 
   for (const auto& [app_id, app_policy_values] :
        GetAppPolicies<base::flat_map<std::string, PolicyValue>>()) {
     std::vector<std::string> app_policies;
     for (const auto& [policy, value] : app_policy_values) {
-      app_policies.push_back(absl::StrFormat("%s = %s (%s)", policy.c_str(),
-                                             value.policy_value.c_str(),
-                                             value.policy_source.c_str()));
+      app_policies.push_back(absl::StrFormat(
+          "%s = %s (%s)", policy, value.policy_value, value.policy_source));
     }
     policies.push_back(
-        absl::StrFormat("\"%s\": {\n    %s\n  }", app_id.c_str(),
-                        base::JoinString(app_policies, "\n    ").c_str()));
+        absl::StrFormat("\"%s\": {\n    %s\n  }", app_id,
+                        base::JoinString(app_policies, "\n    ")));
   }
 
-  return absl::StrFormat("{\n  %s\n}\n",
-                         base::JoinString(policies, "\n  ").c_str());
+  return absl::StrFormat("{\n  %s\n}\n", base::JoinString(policies, "\n  "));
 }
 
 bool PolicyService::AreUpdatesSuppressed(base::Time time) const {

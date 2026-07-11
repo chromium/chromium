@@ -835,9 +835,9 @@ void AppInstallControllerImpl::LoadLogo(const std::string& app_id,
                                         HWND progress_hwnd) {
   std::wstring url = base::UTF8ToWide(absl::StrFormat(
       "%s%s.bmp?lang=%s",
-      CreateExternalConstants()->AppLogoURL().possibly_invalid_spec().c_str(),
-      base::EscapeUrlEncodedData(app_id, false).c_str(),
-      base::WideToUTF8(GetPreferredLanguage()).c_str()));
+      CreateExternalConstants()->AppLogoURL().possibly_invalid_spec(),
+      base::EscapeUrlEncodedData(app_id, false),
+      base::WideToUTF8(GetPreferredLanguage())));
   if (url.empty()) {
     VLOG(1) << __func__ << "No url specified";
     return;
@@ -1058,10 +1058,10 @@ std::wstring GetTextForStartupError(int error_code, const std::wstring& lang) {
   ObserverCompletionInfo observer_info;
   observer_info.completion_code = completion_code;
   observer_info.completion_text = base::WideToUTF16(completion_text);
-  observer_info.help_url = GURL(absl::StrFormat(
-      "%s?product=%s&error=%d", HELP_CENTER_URL,
-      base::EscapeUrlEncodedData(update_state.app_id, false).c_str(),
-      update_state.error_code));
+  observer_info.help_url = GURL(
+      absl::StrFormat("%s?product=%s&error=%d", HELP_CENTER_URL,
+                      base::EscapeUrlEncodedData(update_state.app_id, false),
+                      update_state.error_code));
 
   AppCompletionInfo app_info;
   if (update_state.state == UpdateService::UpdateState::State::kNotStarted) {

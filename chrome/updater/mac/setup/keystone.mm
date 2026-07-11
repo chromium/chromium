@@ -220,7 +220,7 @@ bool CreateLegacyPlistFile(UpdaterScope scope,
     base::File::Error error;
     if (!base::CreateDirectoryAndGetError(dir, &error) ||
         !base::SetPosixFilePermissions(dir, dir_permissions)) {
-      LOG(ERROR) << "Failed to create '" << dir.value().c_str()
+      LOG(ERROR) << "Failed to create '" << dir.value()
                  << "': " << base::File::ErrorToString(error);
       return false;
     }
@@ -250,7 +250,7 @@ bool CreateLegacyPlistFile(UpdaterScope scope,
   }
 
   if (!base::SetPosixFilePermissions(file_path, kPermissionsMask)) {
-    LOG(ERROR) << "Failed to set permissions: " << file_path.value().c_str();
+    LOG(ERROR) << "Failed to set permissions: " << file_path.value();
     return false;
   }
 
