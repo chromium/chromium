@@ -13,6 +13,7 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -350,6 +351,15 @@ class PrerenderManagerPrewarmTest : public PrerenderManagerTest {
 };
 
 TEST_F(PrerenderManagerPrewarmTest, StartPrewarmSearchResult) {
+  // Set default search provider to match `features::kPrewarmUrl`.
+  TemplateURLServiceFactoryTestUtil factory_util(profile());
+  TemplateURLService* model = factory_util.model();
+  ASSERT_TRUE(model);
+  TemplateURLData template_url_data;
+  template_url_data.SetURL("https://search.example.com/?q={searchTerms}");
+  model->SetUserSelectedDefaultSearchProvider(
+      model->Add(std::make_unique<TemplateURL>(template_url_data)));
+
   const GURL prewarm_url(features::kPrewarmUrl.Get());
   ASSERT_TRUE(prewarm_url.is_valid());
 
@@ -414,6 +424,7 @@ TEST_F(PrerenderManagerPrewarmTest, StartPrewarmInKioskSessionForKioskMode) {
 
   const GURL prewarm_url(features::kPrewarmUrl.Get());
   ASSERT_TRUE(prewarm_url.is_valid());
+  prerender_manager()->SetPrewarmUrlForTesting(prewarm_url);
 
   // Prerender the prewarm page.
   content::test::PrerenderHostRegistryObserver registry_observer(

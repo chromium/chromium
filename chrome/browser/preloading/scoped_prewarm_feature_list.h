@@ -10,6 +10,9 @@
 
 namespace test {
 
+// TODO(crbug.com/533212496): Rename this file to include a test_ or testing_
+// affix as it is only used for testing.
+//
 // Enables or disables appropriate features for DSE Prewarm.
 class ScopedPrewarmFeatureList {
  public:

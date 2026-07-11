@@ -524,8 +524,7 @@ PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
     // chrome://flags, or arbitrary command line options.
     return PrewarmDecision::kInvalidUrl;
   }
-  if (!prewarm_url_for_testing_.has_value() &&
-      features::kPrewarmZeroSuggestTrigger.Get()) {
+  if (!prewarm_url_for_testing_.has_value()) {
     // Check if the prewarm URL is aligned with the default search provider.
     // This check should be done only when the feature is correctly configured
     // for the production.

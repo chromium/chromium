@@ -48,17 +48,14 @@ public class PreloadingFeatureMap extends FeatureMap {
      * @return Whether prewarming should be triggered on zero-suggest prefetch.
      */
     public boolean shouldPrewarmOnZeroSuggest() {
-        return isEnabled("Prewarm")
-                && getFieldTrialParamByFeatureAsBoolean("Prewarm", "zero_suggest_trigger", false);
+        return isEnabled("Prewarm") && isEnabled("PrewarmZeroSuggestTrigger");
     }
 
     /**
      * @return Whether prewarming should be triggered on autocomplete.
      */
     public boolean shouldPrewarmOnAutocomplete() {
-        return isEnabled("Prewarm")
-                && getFieldTrialParamByFeatureAsBoolean(
-                        "Prewarm", "user_interaction_trigger", false);
+        return isEnabled("Prewarm") && !isEnabled("PrewarmZeroSuggestTrigger");
     }
 
     @Override

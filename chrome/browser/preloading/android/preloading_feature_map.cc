@@ -17,6 +17,7 @@ namespace {
 // Array of features exposed through the Java PreloadingFeatureMap API.
 const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kPrewarm,
+    &features::kPrewarmZeroSuggestTrigger,
 };
 
 // static

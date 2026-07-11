@@ -1011,12 +1011,14 @@ ChromeOmniboxClient::GetLensOverlaySuggestInputs() const {
 
 void ChromeOmniboxClient::MaybePrewarmForDefaultSearchEngine(
     PrewarmTrigger trigger) {
+  CHECK(base::FeatureList::IsEnabled(features::kPrewarm));
   switch (trigger) {
     case PrewarmTrigger::kZeroSuggest:
-      CHECK(features::kPrewarmZeroSuggestTrigger.Get());
+      CHECK(base::FeatureList::IsEnabled(features::kPrewarmZeroSuggestTrigger));
       break;
     case PrewarmTrigger::kUserInteraction:
-      CHECK(features::kPrewarmUserInteractionTrigger.Get());
+      CHECK(
+          !base::FeatureList::IsEnabled(features::kPrewarmZeroSuggestTrigger));
       if (!location_bar_->GetWebContents()) {
         // There seems to be a subtle timing where the active tab does not have
         // a valid WebContents instance on an user interaction trigger.
