@@ -291,4 +291,57 @@ public class TabGroupItemBuilderUnitTest {
         Drawable drawable = iconSupplier.get();
         assertNotNull(drawable);
     }
+
+    @Test
+    public void testBuildTabGroupsParentItem_EmptyGroups() {
+        when(mTabModel.getTabGroupCount()).thenReturn(0);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of());
+
+        ListItem tabGroupsParent = mTabGroupItemBuilder.buildTabGroupsParentItem(mTab);
+        assertNotNull(tabGroupsParent);
+
+        List<ListItem> tabGroupsSubmenuItems =
+                tabGroupsParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+
+        assertEquals(2, tabGroupsSubmenuItems.size());
+    }
+
+    @Test
+    public void testBuildTabGroupsParentItem_NullCurrentTab() {
+        when(mTabModel.getTabGroupCount()).thenReturn(0);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of());
+
+        ListItem tabGroupsParent =
+                mTabGroupItemBuilder.buildTabGroupsParentItem(/* currentTab= */ null);
+        List<ListItem> tabGroupsSubmenuItems =
+                tabGroupsParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+
+        assertEquals(1, tabGroupsSubmenuItems.size());
+        assertEquals(
+                R.id.add_to_group_menu_id,
+                tabGroupsSubmenuItems.get(0).model.get(AppMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    public void testBuildAddToGroupItem_Strings() {
+        Token token1 = new Token(1L, 1L);
+        when(mTab.getTabGroupId()).thenReturn(token1);
+        ListItem item1 = mTabGroupItemBuilder.buildAddToGroupItem(mTab, /* showIcon= */ false);
+        assertEquals(
+                mContext.getString(R.string.menu_move_tab_to_group),
+                item1.model.get(AppMenuItemProperties.TITLE));
+
+        when(mTab.getTabGroupId()).thenReturn(null);
+        when(mTabModel.getTabGroupCount()).thenReturn(1);
+        ListItem item2 = mTabGroupItemBuilder.buildAddToGroupItem(mTab, /* showIcon= */ false);
+        assertEquals(
+                mContext.getString(R.string.menu_add_tab_to_group),
+                item2.model.get(AppMenuItemProperties.TITLE));
+
+        when(mTabModel.getTabGroupCount()).thenReturn(0);
+        ListItem item3 = mTabGroupItemBuilder.buildAddToGroupItem(mTab, /* showIcon= */ false);
+        assertEquals(
+                mContext.getString(R.string.menu_add_tab_to_new_group),
+                item3.model.get(AppMenuItemProperties.TITLE));
+    }
 }
