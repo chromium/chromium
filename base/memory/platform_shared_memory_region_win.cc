@@ -159,8 +159,8 @@ HANDLE CreateFileMappingWithReducedPermissions(SECURITY_ATTRIBUTES* sa,
   HANDLE h2;
   ProcessHandle process = GetCurrentProcess();
   BOOL success = ::DuplicateHandle(
-      process, h, process, &h2, FILE_MAP_READ | FILE_MAP_WRITE | SECTION_QUERY,
-      FALSE, 0);
+      process, h, process, &h2,
+      FILE_MAP_READ | FILE_MAP_WRITE | SECTION_QUERY | READ_CONTROL, FALSE, 0);
   const DWORD last_error = ::GetLastError();
   BOOL rv = ::CloseHandle(h);
   DCHECK(rv);
