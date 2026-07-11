@@ -6,10 +6,8 @@ package org.chromium.chrome.browser.autofill.settings.personal_context;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
+import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -20,6 +18,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
+import org.chromium.chrome.browser.autofill.settings.AutofillHelpMenuProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -62,7 +61,8 @@ public class AutofillPersonalContextFragment extends ChromeBaseSettingsFragment 
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
-        setHasOptionsMenu(true);
+        requireActivity()
+                .addMenuProvider(new AutofillHelpMenuProvider(this), this, Lifecycle.State.RESUMED);
         SettingsUtils.addPreferencesFromResource(this, R.xml.autofill_personal_context_preferences);
         mPageTitle.set(getString(R.string.personal_context_autofill_settings_title_android));
     }
@@ -75,27 +75,6 @@ public class AutofillPersonalContextFragment extends ChromeBaseSettingsFragment 
     @Override
     public @SettingsFragment.AnimationType int getAnimationType() {
         return SettingsFragment.AnimationType.PROPERTY;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
-        MenuItem help =
-                menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
-        help.setIcon(R.drawable.ic_help_24dp);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_id_targeted_help) {
-            getHelpAndFeedbackLauncher()
-                    .show(
-                            getActivity(),
-                            getActivity().getString(R.string.help_context_autofill),
-                            null);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Nullable ChromeSwitchPreference getAutofillPersonalContextSwitch() {

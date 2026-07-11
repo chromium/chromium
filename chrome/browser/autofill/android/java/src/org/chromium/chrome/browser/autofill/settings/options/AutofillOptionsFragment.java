@@ -6,12 +6,10 @@ package org.chromium.chrome.browser.autofill.settings.options;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
 import androidx.annotation.IntDef;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
 
 import org.chromium.base.Callback;
@@ -21,6 +19,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.chrome.browser.autofill.settings.AutofillHelpMenuProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -148,7 +147,8 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
-        setHasOptionsMenu(true);
+        requireActivity()
+                .addMenuProvider(new AutofillHelpMenuProvider(this), this, Lifecycle.State.RESUMED);
         SettingsUtils.addPreferencesFromResource(this, R.xml.autofill_options_preferences);
 
         AutofillAiPreference autofillAiPreference = findPreference(PREF_AUTOFILL_AI_SWITCH);
@@ -173,27 +173,6 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     public static void setObserverForTest(Callback<Fragment> observerForTest) {
         sObserverForTest = observerForTest;
         ResettersForTesting.register(() -> sObserverForTest = null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
-        MenuItem help =
-                menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, getHelpMenuStringRes());
-        help.setIcon(R.drawable.ic_help_24dp);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_id_targeted_help) {
-            getHelpAndFeedbackLauncher()
-                    .show(
-                            getActivity(),
-                            getActivity().getString(R.string.help_context_autofill),
-                            null);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     public static Bundle createRequiredArgs(@AutofillOptionsReferrer int referrer) {

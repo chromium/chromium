@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerJni;
+import org.chromium.chrome.browser.autofill.settings.AutofillHelpMenuProvider;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
@@ -465,6 +466,8 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void injectedHelpTriggersAutofillHelp() {
+        AutofillHelpMenuProvider menuProvider = new AutofillHelpMenuProvider(mFragment);
+
         Menu helpMenu = mock(Menu.class);
         MenuItem helpItem = mock(MenuItem.class);
         doReturn(helpItem)
@@ -473,12 +476,12 @@ public class AutofillOptionsTest {
         doReturn(R.id.menu_id_targeted_help).when(helpItem).getItemId();
 
         // Create completely replaces the menu with only the help icon.
-        mFragment.onCreateOptionsMenu(helpMenu, mock(MenuInflater.class));
+        menuProvider.onCreateMenu(helpMenu, mock(MenuInflater.class));
         verify(helpMenu).clear();
         verify(helpItem).setIcon(R.drawable.ic_help_24dp);
 
         // Trigger the help as it would happen on tap.
-        mFragment.onOptionsItemSelected(helpItem);
+        assertTrue(menuProvider.onMenuItemSelected(helpItem));
         verify(mHelpAndFeedbackLauncher)
                 .show(mFragment.getActivity(), getString(R.string.help_context_autofill), null);
     }
