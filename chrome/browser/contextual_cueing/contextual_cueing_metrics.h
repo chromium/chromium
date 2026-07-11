@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_METRICS_H_
 #define CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_METRICS_H_
 
+#include <optional>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/time/time.h"
+#include "components/metrics/private_metrics/private_insights/events/contextual_cue_log_event.pb.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -62,6 +66,20 @@ void RecordCueingInteractionToPrivateInsights(
     const std::string& cue_id,
     ContextualCueingInteraction interaction_type,
     const std::string& cuj);
+
+namespace internal {
+
+// Builds the event structure without logging it.
+// Exposed here so it can be verified in lightweight unit tests.
+private_insights::events::ContextualCueLogEvent CreateContextualCueShownEvent(
+    const std::string& cue_id,
+    CueTargetType cue_type,
+    const optimization_guide::proto::ContextualCue& cue,
+    tabs::TabInterface* active_tab,
+    const std::vector<tabs::TabHandle>& tabs_to_show,
+    const std::vector<optimization_guide::proto::Tab>& background_tabs);
+
+}  // namespace internal
 
 }  // namespace contextual_cueing
 

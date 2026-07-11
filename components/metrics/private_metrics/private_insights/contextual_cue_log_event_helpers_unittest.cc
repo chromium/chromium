@@ -12,10 +12,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace private_insights {
+namespace {
+
+std::optional<std::pair<std::string, std::string>> ExtractFromPageInfo(
+    const events::ContextualCueLogEvent::PageInfo& page_info) {
+  return std::make_pair(page_info.url(), page_info.title());
+}
+
+}  // namespace
 
 TEST(ContextualCueLogEventHelpersTest, SerializeEmptyList) {
   std::vector<events::ContextualCueLogEvent::PageInfo> empty_list;
-  EXPECT_EQ("[]", SerializePageInfoListToJson(empty_list));
+  EXPECT_EQ("[]",
+            SerializeCollectionToPageInfoJson(empty_list, ExtractFromPageInfo));
 }
 
 TEST(ContextualCueLogEventHelpersTest, SerializeOneItemList) {
@@ -23,7 +32,7 @@ TEST(ContextualCueLogEventHelpersTest, SerializeOneItemList) {
   page_info.set_url("http://url1.com");
   page_info.set_title("Title 1");
   std::vector<events::ContextualCueLogEvent::PageInfo> list = {page_info};
-  EXPECT_THAT(SerializePageInfoListToJson(list),
+  EXPECT_THAT(SerializeCollectionToPageInfoJson(list, ExtractFromPageInfo),
               base::test::IsJson(
                   "[{\"url\":\"http://url1.com\",\"title\":\"Title 1\"}]"));
 }
@@ -41,7 +50,7 @@ TEST(ContextualCueLogEventHelpersTest, SerializeMultipleItemsList) {
 
   std::vector<events::ContextualCueLogEvent::PageInfo> list = {
       page_info1, page_info2, page_info3};
-  EXPECT_THAT(SerializePageInfoListToJson(list),
+  EXPECT_THAT(SerializeCollectionToPageInfoJson(list, ExtractFromPageInfo),
               base::test::IsJson(
                   "[{\"url\":\"http://url1.com\",\"title\":\"Title 1\"},"
                   "{\"url\":\"http://url2.com\",\"title\":\"Title 2\"},"
@@ -61,7 +70,8 @@ TEST(ContextualCueLogEventHelpersTest, SerializeSpecialCharactersList) {
 
   std::vector<events::ContextualCueLogEvent::PageInfo> list = {
       page_info1, page_info2, page_info3};
-  std::string json = SerializePageInfoListToJson(list);
+  std::string json =
+      SerializeCollectionToPageInfoJson(list, ExtractFromPageInfo);
   EXPECT_THAT(json,
               base::test::IsJson(
                   "[{\"url\":\"http://url1.com/a,b\",\"title\":\"Title 1, with "

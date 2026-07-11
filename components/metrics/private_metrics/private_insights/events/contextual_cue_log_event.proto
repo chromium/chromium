@@ -15,13 +15,18 @@ message ContextualCueLogEvent {
   message CueContext {
     PageInfo active_page = 1;
 
-    // Serialized JSON array, containing objects in format:
-    //
+    // Serialized JSON arrays for `recent_pages` and `tabs_shown`, containing
+    // objects in format:
     //     { "url": <string>, "title": <string> }
-    //
     // to work around Federated Compute Platform's limitation in handling
     // repeated fields.
+
+    // Pages that were sent with the ContextualCueingRequest to LLM.
     string recent_pages = 2;
+
+    // Tabs that were marked as relevant for the Cue in the
+    // ContextualCueingResponse.
+    string tabs_shown = 3;
   }
 
   message CueDetails {
