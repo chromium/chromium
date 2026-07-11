@@ -783,6 +783,12 @@ class MODULES_EXPORT WebGLRenderingContextBase
     }
   }
 
+  void MaybeEndPixelLocalStorageImplicit() const {
+    if (has_activated_pixel_local_storage_) {
+      ContextGL()->EndPixelLocalStorageImplicitANGLE();
+    }
+  }
+
   virtual void DestroyContext();
   void MarkContextChanged(ContentChangeType,
                           CanvasPerformanceMonitor::DrawType);

@@ -465,6 +465,7 @@ void WebGL2RenderingContextBase::blitFramebuffer(GLint src_x0,
                                                  GLenum filter) {
   if (isContextLost())
     return;
+  MaybeEndPixelLocalStorageImplicit();
 
   if (base::FeatureList::IsEnabled(features::kWebGLDiscardBackBuffer)) {
     // If the canvas has been created with preserveDrawingBuffer set to false,
@@ -515,6 +516,7 @@ void WebGL2RenderingContextBase::framebufferTextureLayer(GLenum target,
   if (isContextLost()) {
     return;
   }
+  MaybeEndPixelLocalStorageImplicit();
   if (!ValidateFramebufferFuncParameters("framebufferTextureLayer", target,
                                          attachment) ||
       !ValidateNullableWebGLObject("framebufferTextureLayer", texture)) {
@@ -712,6 +714,7 @@ void WebGL2RenderingContextBase::invalidateFramebuffer(
     const Vector<GLenum>& attachments) {
   if (isContextLost())
     return;
+  MaybeEndPixelLocalStorageImplicit();
 
   Vector<GLenum> translated_attachments = attachments;
   if (!CheckAndTranslateAttachments("invalidateFramebuffer", target,
@@ -730,6 +733,7 @@ void WebGL2RenderingContextBase::invalidateSubFramebuffer(
     GLsizei height) {
   if (isContextLost())
     return;
+  MaybeEndPixelLocalStorageImplicit();
 
   Vector<GLenum> translated_attachments = attachments;
   if (!CheckAndTranslateAttachments("invalidateSubFramebuffer", target,
@@ -836,6 +840,7 @@ void WebGL2RenderingContextBase::readPixels(
     MaybeShared<DOMArrayBufferView> pixels) {
   if (isContextLost())
     return;
+  MaybeEndPixelLocalStorageImplicit();
   if (bound_pixel_pack_buffer_.Get()) {
     SynthesizeGLError(GL_INVALID_OPERATION, "readPixels",
                       "PIXEL_PACK buffer should not be bound");
@@ -856,6 +861,7 @@ void WebGL2RenderingContextBase::readPixels(
     int64_t offset) {
   if (isContextLost())
     return;
+  MaybeEndPixelLocalStorageImplicit();
   if (bound_pixel_pack_buffer_.Get()) {
     SynthesizeGLError(GL_INVALID_OPERATION, "readPixels",
                       "PIXEL_PACK buffer should not be bound");
@@ -874,6 +880,7 @@ void WebGL2RenderingContextBase::readPixels(GLint x,
                                             int64_t offset) {
   if (isContextLost())
     return;
+  MaybeEndPixelLocalStorageImplicit();
 
   // Due to WebGL's same-origin restrictions, it is not possible to
   // taint the origin using the WebGL API.
@@ -2388,6 +2395,7 @@ void WebGL2RenderingContextBase::copyTexSubImage3D(GLenum target,
                                                    GLsizei height) {
   if (isContextLost())
     return;
+  MaybeEndPixelLocalStorageImplicit();
   if (!ValidateTexture3DBinding("copyTexSubImage3D", target))
     return;
   WebGLFramebuffer* read_framebuffer_binding = nullptr;
@@ -3322,6 +3330,7 @@ void WebGL2RenderingContextBase::drawRangeElements(GLenum mode,
 void WebGL2RenderingContextBase::drawBuffers(const Vector<GLenum>& buffers) {
   if (isContextLost())
     return;
+  MaybeEndPixelLocalStorageImplicit();
 
   for (const auto& buf : buffers) {
     switch (buf) {
@@ -4157,6 +4166,7 @@ void WebGL2RenderingContextBase::bindTransformFeedback(
 void WebGL2RenderingContextBase::beginTransformFeedback(GLenum primitive_mode) {
   if (isContextLost())
     return;
+  MaybeEndPixelLocalStorageImplicit();
   if (!ValidateTransformFeedbackPrimitiveMode("beginTransformFeedback",
                                               primitive_mode))
     return;
@@ -4775,6 +4785,7 @@ void WebGL2RenderingContextBase::bindFramebuffer(GLenum target,
   if (isContextLost()) {
     return;
   }
+  MaybeEndPixelLocalStorageImplicit();
   if (!ValidateNullableWebGLObject("bindFramebuffer", buffer))
     return;
 

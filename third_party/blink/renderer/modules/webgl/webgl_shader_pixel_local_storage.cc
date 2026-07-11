@@ -111,9 +111,10 @@ void WebGLShaderPixelLocalStorage::framebufferTexturePixelLocalStorageWEBGL(
   if (scoped.IsLost()) {
     return;
   }
+  WebGLRenderingContextBase* context = scoped.Context();
+  context->MaybeEndPixelLocalStorageImplicit();
   constexpr static char function_name[] =
       "framebufferTexturePixelLocalStorageWEBGL";
-  WebGLRenderingContextBase* context = scoped.Context();
   WebGLFramebuffer* framebuffer =
       ValidatePLSFramebuffer(context, function_name);
   if (!framebuffer) {

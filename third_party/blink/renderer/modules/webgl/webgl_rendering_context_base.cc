@@ -3118,6 +3118,7 @@ void WebGLRenderingContextBase::copyTexImage2D(GLenum target,
                                                GLint border) {
   if (isContextLost())
     return;
+  MaybeEndPixelLocalStorageImplicit();
   if (!ValidateTexture2DBinding("copyTexImage2D", target, true))
     return;
   if (!ValidateCopyTexFormat("copyTexImage2D", internalformat))
@@ -3147,6 +3148,7 @@ void WebGLRenderingContextBase::copyTexSubImage2D(GLenum target,
                                                   GLsizei height) {
   if (isContextLost())
     return;
+  MaybeEndPixelLocalStorageImplicit();
   if (!ValidateTexture2DBinding("copyTexSubImage2D", target))
     return;
   WebGLFramebuffer* read_framebuffer_binding = nullptr;
@@ -3575,6 +3577,7 @@ void WebGLRenderingContextBase::framebufferRenderbuffer(
   if (isContextLost()) {
     return;
   }
+  MaybeEndPixelLocalStorageImplicit();
   if (!ValidateFramebufferFuncParameters("framebufferRenderbuffer", target,
                                          attachment)) {
     return;
@@ -3619,6 +3622,7 @@ void WebGLRenderingContextBase::framebufferTexture2D(GLenum target,
   if (isContextLost()) {
     return;
   }
+  MaybeEndPixelLocalStorageImplicit();
   if (!ValidateFramebufferFuncParameters("framebufferTexture2D", target,
                                          attachment)) {
     return;

@@ -30,6 +30,7 @@ void OVRMultiview2::framebufferTextureMultiviewOVR(GLenum target,
   WebGLExtensionScopedContext scoped(this);
   if (scoped.IsLost())
     return;
+  scoped.Context()->MaybeEndPixelLocalStorageImplicit();
   if (!scoped.Context()->ValidateNullableWebGLObject(
           "framebufferTextureMultiviewOVR", texture))
     return;
