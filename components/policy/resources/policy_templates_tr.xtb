@@ -2750,6 +2750,7 @@ Politika, 2 - "Devre Dışı" değerine ayarlanırsa Google Developer Program'ı
 <translation id="2707733461906745082">Profil Ayırma</translation>
 <translation id="2707873794476722903">Güvenli Tarama standart modda etkin.</translation>
 <translation id="2709516037105925701">Otomatik doldurma</translation>
+<translation id="2712089199157322391">Standart web'de gezinme için Geliştirici Araçları'na izin ver ancak kurumsal olarak yüklenen ve yönetilen kullanıcı hesaplarının yerleşik uzantıları için kısıtla (M150 sürümünden itibaren, yerleşik PDF görüntüleyici hariç bu uzantıları yerleştiren sayfalarda engellenir).</translation>
 <translation id="2713913573196284609">Bu değerin desteği, M121 sürümünden itibaren sonlandırılmıştır. Değerler, M121 ve sonraki sürümlerde EnabledBelowThreshold olarak kabul edilir.</translation>
 <translation id="2713977837384407666">Google'a metrikleri her zaman gönderme</translation>
 <translation id="2714359695399346815">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa STUN sunucularının kullanılmasına izin verilir. Uzak istemciler, bir güvenlik duvarıyla ayrılmış olsa bile bu makineyi keşfedip bağlanabilir.
@@ -12718,26 +12719,6 @@ Ayrıntıları https://support.google.com/chrome/a/answer/9301891 adresinde bula
 <translation id="8931555638815157255">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar düzenli olarak işletim sistemi ve donanım yazılımı sürümlerini bildirir.
 
       Politika Devre Dışı değerine ayarlanırsa kayıtlı cihazlar sürüm bilgisi vermez.</translation>
-<translation id="8931984670731745012">Bu politika ayarlandığında belirli URL kalıplarında hangi otomatik doldurma veri türlerinin engelleneceğini belirleyebilirsiniz.
-
-Politika, sözlük listesi olarak yapılandırılmıştır. Her sözlük şu öğeleri içermelidir:
-* "url_pattern": İçerik ayarı URL kalıbı (ör. "https://[*.]example.com").
-* "blocked_types": Engellenecek otomatik doldurma verisi kategorilerini temsil eden dize listesi.
-
-"blocked_types" için desteklenen değerler:
-* "contact_info": İletişim bilgilerinin doldurulmasını ve kaydedilmesini engeller.
-* "payments": Kredi kartlarının ve ödeme yöntemlerinin doldurulmasını ve kaydedilmesini engeller.
-* "identity_docs": Kimlik belgelerinin (ör. pasaport, sürücü belgesi, nüfus cüzdanı) doldurulmasını ve kaydedilmesini engeller.
-* "travel": Seyahat bilgilerinin (ör. uçuş rezervasyonu, araç kaydı) doldurulmasını ve kaydedilmesini engeller.
-* "shopping": Alışveriş bilgilerinin (ör. online siparişler, kargolar) doldurulmasını ve kaydedilmesini engeller.
-
-Bir veri türü belirli bir site için engellenirse bu sitede hem önerilerin oluşturulması hem de bu türdeki yeni verilerin kaydedilmesi/içe aktarılması istemi devre dışı bırakılır.
-
-Bir URL, listedeki birden fazla kalıp girişiyle eşleşirse, eşleşen tüm girişlerdeki engellenen türler birleştirilir (birleştirme-tekilleştirme). Listedeki geçersiz URL kalıpları yoksayılır.
-
-Bu politika ayarlanmazsa hiçbir otomatik doldurma veri türü alan adına göre engellenmez.
-
-Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. Joker karakter * desteklenir. Bu kalıp; şeması, bağlantı noktası ve yolu ne olursa olsun tüm URL'lerle eşleşir.</translation>
 <translation id="8934296213794658971">Gemini entegrasyonu ayarları</translation>
 <translation id="8937282917198525844"> M81'den başlayarak, standart form kontrol öğelerine (ör. &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) iyileştirilmiş erişilebilirlik ve daha iyi platform bütünlüğü ile yenilenmiş bir görünüm ve tarz sağlandı. Bu politika, M84'e kadar "eski" form kontrol öğelerini geri yükler.
 

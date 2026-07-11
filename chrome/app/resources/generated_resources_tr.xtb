@@ -4990,6 +4990,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4849286518551984791">Eşgüdümlü Evrensel Zaman (UTC/GMT)</translation>
 <translation id="4849517651082200438">Yükleme</translation>
 <translation id="4849731766219625109"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hesabınızı kullanın</translation>
+<translation id="4850279708232718725">Bununla ilgili bilgi ver</translation>
 <translation id="485053257961878904">Bildirim senkronizasyonu ayarlanamadı</translation>
 <translation id="4850548109381269495">Her iki cihazda da internet bağlantınızı kontrol edin ve Bluetooth'u açın. Daha sonra tekrar deneyin.</translation>
 <translation id="4850669014075537160">Kaydırma</translation>
@@ -6338,6 +6339,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5922854266885514646">"Chrome'u Özelleştir"i tıklayın</translation>
 <translation id="5924047253200400718">Yardım alın<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft dosyalarını Google Drive'a kopyalamadan veya taşımadan önce sor</translation>
+<translation id="5925057331573749968">QR koduyla daha hızlı oturum açın</translation>
 <translation id="5926936390113611560">Tüm profilleri aç</translation>
 <translation id="592880897588170157">PDF dosyalarını Chrome'da otomatik olarak açmak yerine indir</translation>
 <translation id="5930567261594625340">Gece gökyüzü</translation>
@@ -9485,6 +9487,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8372678064309688510">Adresiniz Kaydedildi</translation>
 <translation id="8373652277231415614">Crostini paylaşılan dizinler</translation>
 <translation id="8374243500935816406">Sitelerin tüm ekranlarımda pencereleri yönetmesine izin verme</translation>
+<translation id="8375703478696038265">Adım <ph name="STEP_NUMBER" />/<ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Google Cast ile yaşadığınız deneyim hakkında bize bilgi verin.</translation>
 <translation id="8376384591331888629">Bu sitedeki üçüncü taraf çerezleri dahil</translation>
 <translation id="8376451933628734023">Farklı bir uygulama olduğunu düşünmeniz için sizi kandırmaya çalışıyorsa bu web uygulamasını kaldırın.</translation>
@@ -10556,6 +10559,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="9188142767272053574">İşlem yalıtımını etkinleştir</translation>
 <translation id="9192019773545828776">Cihazınızı ekrana bakmadan kullanabilmek için sözlü geri bildirimleri dinleyin. Braille geri bildirimi, bağlı bir cihazla kullanılabilir. ChromeVox'u açmak ve kapatmak için Ctrl + Alt + Z tuşlarını kullanın. Gezinmek için Arama + Sol ok veya Sağ ok tuşlarını kullanın. Seçmek (etkinleştirmek) için Arama + Boşluk tuşlarını kullanın.</translation>
 <translation id="9195969368671142407">Kuruluşunuz, Google Hesabınıza kaydetme işlemini kısıtladığında sekme gruplarını paylaşamaz veya bunlara katılamazsınız</translation>
+<translation id="9197456336762295195">Google.com için geçiş anahtarınızın bulunduğu cihazın kamerasıyla bu QR kodunu tarayın</translation>
 <translation id="919840898042157087">Statik hareket</translation>
 <translation id="9199503643457729322">Gizlilik Rehberi'nden ayrılmak için tıklayın.</translation>
 <translation id="9199695835892108985">Tüm seri bağlantı noktası izinleri sıfırlansın mı?</translation>

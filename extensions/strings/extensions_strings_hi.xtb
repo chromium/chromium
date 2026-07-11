@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">संक्षिप्त विवरण पेज '<ph name="ABOUT_PAGE" />' लोड नहीं हो सका.</translation>
 <translation id="424963718355121712">ऐप्लिकेशन को उस होस्ट से पेश किया जाना चाहिए, जिसे वे प्रभावित करते हैं</translation>
 <translation id="4306119971288449206">ऐप्लिकेशन को सामग्री-प्रकार "<ph name="CONTENT_TYPE" />" के साथ दिया जाना चाहिए</translation>
+<translation id="4349181963619779233">इस वेबसाइट से एक्सटेंशन और ऐप्लिकेशन नहीं जोड़े जा सकते</translation>
 <translation id="4625078469366263107">ऐप्लिकेशन चालू करें</translation>
 <translation id="4633003931260532286">एक्‍सटेंशन के लिए "<ph name="IMPORT_NAME" />" को न्‍यूनतम "<ph name="IMPORT_VERSION" />" वर्शन का होना चाहिए, लेकिन केवल "<ph name="INSTALLED_VERSION" />" वर्शन ही इंस्‍टॉल किया गया है</translation>
 <translation id="4660476621274971848">अपेक्षित वर्शन "<ph name="EXPECTED_VERSION" />" है, लेकिन वर्शन "<ph name="NEW_ID" />" था</translation>

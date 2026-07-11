@@ -5001,6 +5001,7 @@
 <translation id="4849286518551984791">世界標準時間 (UTC/GMT)</translation>
 <translation id="4849517651082200438">不要安裝</translation>
 <translation id="4849731766219625109">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶</translation>
+<translation id="4850279708232718725">為我講解</translation>
 <translation id="485053257961878904">無法設定通知同步功能</translation>
 <translation id="4850548109381269495">檢查兩部裝置的互聯網連線並開啟藍牙，然後再試一次。</translation>
 <translation id="4850669014075537160">捲動</translation>
@@ -6346,6 +6347,7 @@
 <translation id="5922854266885514646">按一下 [自訂 Chrome]</translation>
 <translation id="5924047253200400718">查看說明<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">在複製或移動 Microsoft 檔案至「Google 雲端硬碟」前先詢問</translation>
+<translation id="5925057331573749968">使用二維碼更快登入</translation>
 <translation id="5926936390113611560">開啟所有設定檔</translation>
 <translation id="592880897588170157">下載 PDF 檔案，而不是在 Chrome 中自動開啟</translation>
 <translation id="5930567261594625340">夜空</translation>
@@ -9490,6 +9492,7 @@
 <translation id="8372678064309688510">地址已儲存</translation>
 <translation id="8373652277231415614">Crostini 共用目錄</translation>
 <translation id="8374243500935816406">不要允許網站在您所有的顯示屏上管理視窗</translation>
+<translation id="8375703478696038265">第 <ph name="STEP_NUMBER" /> 步，共 <ph name="TOTAL_STEPS" /> 步</translation>
 <translation id="8376137163494131156">將 Google Cast 的問題告訴我們。</translation>
 <translation id="8376384591331888629">包括在此網站上的第三方 Cookie</translation>
 <translation id="8376451933628734023">如果此網絡應用程式試圖讓您誤認為其他應用程式，請解除安裝。</translation>
@@ -10559,6 +10562,7 @@
 <translation id="9188142767272053574">啟用「程序隔離」</translation>
 <translation id="9192019773545828776">使用朗讀功能，讓您無需查看螢幕亦可使用裝置。您可透過已連接裝置使用點字功能。使用 Ctrl + Alt + Z 鍵即可開啟或關閉 ChromeVox。使用搜尋鍵 + 向左箭咀或向右箭咀即可瀏覽。使用搜尋鍵 + 空格鍵即可選取 (亦即啟用)。</translation>
 <translation id="9195969368671142407">如果機構限制你儲存內容至 Google 帳戶，你便無法分享或加入分頁群組</translation>
+<translation id="9197456336762295195">在擁有 google.com 密鑰的裝置上，用鏡頭掃瞄此二維碼</translation>
 <translation id="919840898042157087">靜態動作</translation>
 <translation id="9199503643457729322">㩒一下就可以離開私隱權指南。</translation>
 <translation id="9199695835892108985">要重設所有序列連接埠權限嗎？</translation>

@@ -5004,6 +5004,7 @@
 <translation id="4849286518551984791">협정세계시(UTC/GMT)</translation>
 <translation id="4849517651082200438">설치 안함</translation>
 <translation id="4849731766219625109"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 계정 사용</translation>
+<translation id="4850279708232718725">이 주제에 대해 알려 줘</translation>
 <translation id="485053257961878904">알림 동기화를 설정할 수 없음</translation>
 <translation id="4850548109381269495">두 기기 모두에서 인터넷 연결을 확인하고 블루투스를 사용 설정하세요. 그런 다음 다시 시도해 보세요.</translation>
 <translation id="4850669014075537160">스크롤</translation>
@@ -6352,6 +6353,7 @@
 <translation id="5922854266885514646">'Chrome 맞춤설정'을 클릭합니다</translation>
 <translation id="5924047253200400718">도움말 보기<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft 파일을 Google Drive로 복사하거나 이동하기 전에 확인</translation>
+<translation id="5925057331573749968">QR 코드로 더 빠르게 로그인하세요</translation>
 <translation id="5926936390113611560">모든 프로필 열기</translation>
 <translation id="592880897588170157">Chrome에서 PDF 파일을 자동으로 여는 대신 다운로드</translation>
 <translation id="5930567261594625340">밤하늘</translation>
@@ -9499,6 +9501,7 @@
 <translation id="8372678064309688510">주소가 저장되었습니다</translation>
 <translation id="8373652277231415614">Crostini 공유 디렉터리</translation>
 <translation id="8374243500935816406">사이트에서 모든 디스플레이의 창을 관리하도록 허용 안함</translation>
+<translation id="8375703478696038265">총 <ph name="TOTAL_STEPS" />단계 중 <ph name="STEP_NUMBER" />단계</translation>
 <translation id="8376137163494131156">Google Cast에 대한 의견을 들려주세요</translation>
 <translation id="8376384591331888629">이 사이트의 서드 파티 쿠키 포함</translation>
 <translation id="8376451933628734023">웹 앱이 다른 앱인 것처럼 사용자를 속이려 한다면 앱을 제거하시기 바랍니다.</translation>
@@ -10570,6 +10573,7 @@
 <translation id="9188142767272053574">프로세스 격리 사용 설정</translation>
 <translation id="9192019773545828776">음성 피드백이 제공되어 화면을 보지 않고도 기기를 사용할 수 있습니다. 연결된 기기로 점자 피드백을 사용할 수 있습니다. ChromeVox를 사용 설정 또는 중지하려면 Ctrl + Alt + Z를 사용하세요. 이동하려면 검색 + 왼쪽 화살표 또는 오른쪽 화살표를 사용하세요. 선택(활성화)하려면 검색 + 스페이스 바를 사용하세요.</translation>
 <translation id="9195969368671142407">조직에서 Google 계정에 저장하는 것을 제한하는 경우 탭 그룹을 공유하거나 탭 그룹에 참여할 수 없습니다.</translation>
+<translation id="9197456336762295195">google.com용 패스키가 있는 기기의 카메라로 이 QR 코드를 스캔하세요.</translation>
 <translation id="919840898042157087">정적 이동</translation>
 <translation id="9199503643457729322">개인 정보 보호 가이드에서 나가려면 클릭하세요.</translation>
 <translation id="9199695835892108985">모든 직렬 포트 권한을 재설정하시겠습니까?</translation>

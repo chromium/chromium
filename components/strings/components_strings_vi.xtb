@@ -350,6 +350,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1542105669288201090">Giáo dục kinh doanh</translation>
 <translation id="1542830386724426410">Hiển thị các lợi ích và phần thưởng hiện đang áp dụng cho thẻ khi thanh toán. Có áp dụng các điều khoản của tổ chức phát hành. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Tìm hiểu thêm<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Giá theo thời gian</translation>
+<translation id="1546286808622193216">So sánh các lợi ích của thẻ bằng cách sử dụng Gemini</translation>
 <translation id="1549470594296187301">Bạn phải bật JavaScript để sử dụng tính năng này.</translation>
 <translation id="1553152622374372421">Thể thao mùa đông</translation>
 <translation id="1553358976309200471">Cập nhật Chrome</translation>
@@ -1425,6 +1426,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab, sau đó nhấn Enter để quản lý loại thông tin bạn đồng bộ hóa trong phần Cài đặt của Chrome</translation>
 <translation id="3203025201812691413">Không được để trống URL</translation>
 <translation id="320323717674993345">Hủy thanh toán</translation>
+<translation id="3204534477198689393">Nhằm cải thiện đề xuất và điền biểu mẫu nhanh hơn, nội dung và URL của những trang bạn truy cập có thể được xử lý trong một không gian riêng tư trên đám mây.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> có thể chứa nội dung dành cho người trưởng thành</translation>
 <translation id="3207960819495026254">Đã đánh dấu trang</translation>
 <translation id="3208701679386778924">Vui lòng gửi báo cáo để chúng tôi có thể cải thiện hơn nữa các bản cập nhật ChromeOS.</translation>
@@ -1480,6 +1482,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3272643614306383237">Dưới 1 MB. Một số trang web có thể tải chậm hơn vào lần tới bạn truy cập.</translation>
 <translation id="3273738040255912340">Quản trị viên có thể thay đổi hồ sơ và trình duyệt của bạn từ xa, phân tích thông tin về trình duyệt thông qua báo cáo và thực hiện những nhiệm vụ cần thiết khác. Hoạt động trên thiết bị này cũng có thể được quản lý bên ngoài Chromium. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">Lưu IBAN đã mở trên toàn màn hình.</translation>
+<translation id="327455571215090823">Tính năng tự động điền thông minh hơn, đảm bảo riêng tư</translation>
 <translation id="3281350579597955952">{0,plural, =1{Theo chính sách của quản trị viên, bạn không nên mở tệp này trong <ph name="DESTINATION_NAME" />}other{Theo chính sách của quản trị viên, bạn không nên mở các tệp này trong <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Tổ chức <ph name="ENROLLMENT_DOMAIN" /> của bạn đã gửi một số thông tin (chẳng hạn như chế độ cài đặt hoặc chính sách) đến các trang web sau đây.</translation>
 <translation id="3286372614333682499">dọc</translation>
@@ -2416,6 +2419,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4744603770635761495">Đường dẫn thực thi</translation>
 <translation id="4744816391336495134">Bạn có thể dùng vân tay để xác minh danh tính của mình mỗi khi sử dụng mật khẩu đã lưu</translation>
 <translation id="4749011317274908093">Bạn đã chuyển sang chế độ Ẩn danh</translation>
+<translation id="4749620353539006322">Tối đa hoá phần thưởng</translation>
 <translation id="4749924365937394956">Xác thực máy chủ</translation>
 <translation id="4750671009706599284">điện thoại này</translation>
 <translation id="4750917950439032686">Thông tin của bạn (ví dụ: mật khẩu hoặc số thẻ tín dụng) sẽ được bảo mật khi được gửi tới trang web này.</translation>
@@ -2991,6 +2995,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5611398002774823980">Lưu vào tài khoản</translation>
 <translation id="561165882404867731">Dịch trang này bằng Google Dịch</translation>
 <translation id="5612720917913232150"><ph name="URL" /> muốn sử dụng thông tin vị trí máy tính của bạn</translation>
+<translation id="5613958591683399697">Hỏi <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Thông báo Người dùng</translation>
 <translation id="5614520971155863709">Trò chơi thẻ bài</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> đã chuyển hướng bạn quá nhiều lần.</translation>

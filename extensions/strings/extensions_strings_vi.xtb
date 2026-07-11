@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Không thể tải trang giới thiệu '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="424963718355121712">Ứng dụng phải được cung cấp từ máy chủ lưu trữ mà chúng ảnh hưởng</translation>
 <translation id="4306119971288449206">Ứng dụng phải được cung cấp loại nội dung "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4349181963619779233">Không thể thêm các tiện ích và ứng dụng từ trang web này</translation>
 <translation id="4625078469366263107">Bật ứng dụng</translation>
 <translation id="4633003931260532286">Tiện ích yêu cầu "<ph name="IMPORT_NAME" />" có phiên bản tối thiểu "<ph name="IMPORT_VERSION" />" nhưng mới chỉ cài đặt được phiên bản "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4660476621274971848">Phiên bản mong muốn là "<ph name="EXPECTED_VERSION" />", nhưng phiên bản phát hiện là "<ph name="NEW_ID" />"</translation>

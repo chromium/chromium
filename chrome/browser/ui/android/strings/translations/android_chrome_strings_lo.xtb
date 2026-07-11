@@ -189,6 +189,7 @@
 <translation id="1807709131360304325">ເປີດໜ້າຈໍໃໝ່</translation>
 <translation id="1812027881030482584">ບໍ່ສາມາດດຳເນີນການຕໍ່ໂດຍໃຊ້ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ໃນ <ph name="SITE_ETLD_PLUS_ONE" /> ໄດ້</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, ແຖບການບັນທຶກສຽງ</translation>
+<translation id="1819443852740954262">ເປີດທັງໝົດໃນໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="1820408774134375111">ຊີດລຸ່ມສຸດຂອງການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="1823492026305965829">ເຂົ້າສູ່ລະບົບດ້ວຍ <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">ແຕະລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>
@@ -771,7 +772,6 @@
 <translation id="4256782883801055595">ໃບ​ອະ​ນຸ​ຍາດ Open source</translation>
 <translation id="426652736638196239">IBAN ນີ້ຈະຖືກບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ</translation>
 <translation id="4269820728363426813">ກັອບປີ້ທີ່ຢູ່ລິ້ງ</translation>
-<translation id="4270730597186910506">ຕິດຕາມ ຫຼື ຍົກເລີກການຕິດຕາມຜະລິດຕະພັນ.</translation>
 <translation id="4277529130885813215">ໃຊ້ອຸປະກອນອື່ນ</translation>
 <translation id="427987768447457592">ກຸ່ມແຖບໃໝ່</translation>
 <translation id="4282440837784183472">ອົງກອນ <ph name="MANAGED_DOMAIN" /> ຂອງທ່ານຈະເປັນຜູ້ຈັດການບັນຊີທີ່ທ່ານກຳລັງເຂົ້າສູ່ລະບົບ ແລະ ວິທີໃຊ້ Chrome. ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດຕັ້ງຄ່າ ຫຼື ຈຳກັດຄຸນສົມບັດບາງຢ່າງໄດ້.</translation>
@@ -1476,6 +1476,7 @@
 <translation id="6983306615164277634">ນອກຈາກນັ້ນ, ທ່ານຍັງສາມາດແຕະແຖບທີ່ຢູ່ຄ້າງໄວ້ເພື່ອປ່ຽນຕຳແໜ່ງໄດ້ນຳ.</translation>
 <translation id="6987047470128880212">ບໍ່ສາມາດໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຢູ່ອຸປະກອນນີ້ໄດ້</translation>
 <translation id="6996145122199359148">ດາວໂຫຼດໜ້ານີ້</translation>
+<translation id="7007648447224463482">ເປີດທັງໝົດໃນໜ້າຈໍໃໝ່</translation>
 <translation id="7013762323294215682">ກະແຈຜ່ານນີ້ຈະຖືກບັນທຶກໄວ້ໃນຕົວຈັດການລະຫັດຜ່ານຂອງທ່ານ. ທຸກຄົນທີ່ມີສິດເຂົ້າເຖິງຈະສາມາດໃຊ້ກະແຈຜ່ານນີ້ໄດ້.</translation>
 <translation id="7020741890149022655">ເພີ່ມໃສ່ລາຍຊື່ການອ່ານ <ph name="BEGIN_NEW" />ໃໝ່<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ເປີດໃນໂປຣແກຣມທ່ອງເວັບ</translation>
@@ -1842,6 +1843,7 @@
 <translation id="8445448999790540984">ບໍ່ສາມາດສົ່ງລະຫັດຜ່ານອອກໄດ້</translation>
 <translation id="8446884382197647889">ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{ລຶບການອະນຸຍາດອອກຈາກເວັບໄຊແລ້ວ 1 ລາຍການ}other{ລຶບການອະນຸຍາດອອກຈາກເວັບໄຊແລ້ວ # ລາຍການ}}</translation>
+<translation id="8449836157089738489">ເປີດທັງໝົດໃນກຸ່ມແຖບໃໝ່</translation>
 <translation id="8453310803815879010">ເລີ່ມກມ Dino</translation>
 <translation id="8455675988389029454">ຮັບບຸກມາກ, ລະຫັດຜ່ານ ແລະ ອື່ນໆໃນທຸກອຸປະກອນຂອງທ່ານ</translation>
 <translation id="8458341576712814616">ທາງລັດ</translation>
@@ -1863,6 +1865,7 @@
 <translation id="8506357771923193001">ທ່ານຈະພົບການດາວໂຫຼດຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
 <translation id="8512053371384421952">ທ່ານຈະບໍ່ໄດ້ຮັບການແຈ້ງເຕືອນຈາກ <ph name="DOMAIN" /> ອີກຕໍ່ໄປ.</translation>
 <translation id="8516012719330875537">ໂປຣແກຣມແກ້ໄຂຮູບພາບ</translation>
+<translation id="8517759303731677493">ແກ້ໄຂ…</translation>
 <translation id="8533670235862049797">Safe Browsing ເປີດຢູ່</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, ແຖບການສະແດງຜົນຊ້ອນກັນທີ່ປັກໝຸດ ແລະ ເລືອກໄວ້ຫຼາຍແຖບ</translation>
 <translation id="8540136935098276800">ປ້ອນ URL ທີ່ມີຮູບແບບຖືກຕ້ອງ</translation>

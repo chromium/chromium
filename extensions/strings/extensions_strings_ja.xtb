@@ -69,6 +69,7 @@
 <translation id="4233778200880751280">情報ページ「<ph name="ABOUT_PAGE" />」を読み込めませんでした。</translation>
 <translation id="424963718355121712">アプリは関連付けられたホストから配信される必要があります</translation>
 <translation id="4306119971288449206">アプリはコンテンツタイプ「<ph name="CONTENT_TYPE" />」で配信される必要があります</translation>
+<translation id="4349181963619779233">このウェブサイトから拡張機能やアプリを追加することはできません</translation>
 <translation id="4625078469366263107">アプリを有効にする</translation>
 <translation id="4633003931260532286">拡張機能には「<ph name="IMPORT_NAME" />」のバージョン「<ph name="IMPORT_VERSION" />」以上が必要ですが、インストールされているのはバージョン「<ph name="INSTALLED_VERSION" />」のみです</translation>
 <translation id="4660476621274971848">バージョン「<ph name="EXPECTED_VERSION" />」が必要ですが、バージョン「<ph name="NEW_ID" />」が検出されました</translation>

@@ -189,6 +189,7 @@
 <translation id="1807709131360304325">ახალი ფანჯრის გახსნა</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ვერ აგრძელებს <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ის გამოყენებას</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, ჩანართი კონტენტის ჩასაწერად</translation>
+<translation id="1819443852740954262">ყველას გახსნა ინკოგნიტო ფანჯარაში</translation>
 <translation id="1820408774134375111">სისტემაში შესვლის ქვედა ფურცელი</translation>
 <translation id="1823492026305965829">შედით, როგორც <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">შეეხეთ დათვალიერების მონაცემების წაშლის ვარიანტს</translation>
@@ -771,7 +772,6 @@
 <translation id="4256782883801055595">ღია წყაროს ლიცენზიები</translation>
 <translation id="426652736638196239">ეს IBAN შეინახება მხოლოდ ამ მოწყობილობაზე</translation>
 <translation id="4269820728363426813">ბმულის მისამართის კოპირება</translation>
-<translation id="4270730597186910506">პროდუქტისთვის თვალის დევნება ან თვალის დევნების გაუქმება.</translation>
 <translation id="4277529130885813215">სხვა მოწყობილობის გამოყენება</translation>
 <translation id="427987768447457592">ჩანართების ახალი ჯგუფი</translation>
 <translation id="4282440837784183472">თქვენი ორგანიზაცია, <ph name="MANAGED_DOMAIN" />, მართავს როგორც ანგარიშს, რომელშიც შედიხართ, ისე Chrome-ის გამოყენების პროცესს. თქვენს ადმინისტრატორს შეუძლია კონკრეტული ფუნქციების დაყენება ან შეზღუდვა.</translation>
@@ -1476,6 +1476,7 @@
 <translation id="6983306615164277634">პოზიციის შესაცვლელად შეგიძლიათ მისამართთა ზოლზე ხანგრძლივად შეხებაც.</translation>
 <translation id="6987047470128880212">ინკოგნიტო რეჟიმი ამ მოწყობილობაზე ხელმისაწვდომი არ არის</translation>
 <translation id="6996145122199359148">ამ გვერდის ჩამოტვირთვა</translation>
+<translation id="7007648447224463482">ყველას გახსნა ახალ ფანჯარაში</translation>
 <translation id="7013762323294215682">წვდომის ეს გასაღები შეინახება თქვენს პაროლების მმართველში. მისით სარგებლობას შეძლებს ყველა, ვისთვისაც ხელმისაწვდომია წვდომის ეს გასაღები.</translation>
 <translation id="7020741890149022655">საკითხავ სიაში დამატება <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ბრაუზერში გახსნა</translation>
@@ -1842,6 +1843,7 @@
 <translation id="8445448999790540984">პაროლების ექსპორტი ვერ მოხერხდა</translation>
 <translation id="8446884382197647889">შეიტყვეთ მეტი</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{ნებართვები გაუუქმდა 1 საიტს}other{ნებართვები გაუუქმდა # საიტს}}</translation>
+<translation id="8449836157089738489">ყველას გახსნა ჩანართების ახალ ჯგუფში</translation>
 <translation id="8453310803815879010">დინოზავრთა თამაშის დაწყება</translation>
 <translation id="8455675988389029454">მიიღეთ თქვენი სანიშნეები, პაროლები და სხვა მონაცემები თქვენს ყველა მოწყობილობაზე</translation>
 <translation id="8458341576712814616">მალსახმობი</translation>
@@ -1863,6 +1865,7 @@
 <translation id="8506357771923193001">აქ იპოვით თქვენს ჩამოტვირთვებს</translation>
 <translation id="8512053371384421952"><ph name="DOMAIN" />-ისგან შეტყობინებებს აღარ მიიღებთ.</translation>
 <translation id="8516012719330875537">სურათების რედაქტორი</translation>
+<translation id="8517759303731677493">რედაქტირება…</translation>
 <translation id="8533670235862049797">Safe Browsing ჩართულია</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, არჩეულია რამდენიმე ჩამაგრებული ეკრანი ეკრანში ჩანართი</translation>
 <translation id="8540136935098276800">შეიყვანეთ URL სწორი ფორმატით</translation>

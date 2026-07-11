@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Impossibile caricare la pagina di informazioni "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">Le app devono essere installate dall'host che controllano</translation>
 <translation id="4306119971288449206">Le app devono essere installate con il tipo di contenuto "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4349181963619779233">Non è possibile aggiungere estensioni e app da questo sito web</translation>
 <translation id="4625078469366263107">Attiva app</translation>
 <translation id="4633003931260532286">L'estensione richiede "<ph name="IMPORT_NAME" />" con la versione minima "<ph name="IMPORT_VERSION" />", ma è installata soltanto la versione "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4660476621274971848">Versione prevista: "<ph name="EXPECTED_VERSION" />", versione rilevata: "<ph name="NEW_ID" />"</translation>

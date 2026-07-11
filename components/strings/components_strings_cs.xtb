@@ -350,6 +350,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1542105669288201090">Ekonomické vzdělávání</translation>
 <translation id="1542830386724426410">Při placení zobrazit dostupné výhody a odměny karet. Platí podmínky vydavatele karty. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Další informace<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Historie ceny</translation>
+<translation id="1546286808622193216">Nechte si od Gemini porovnat výhody karet</translation>
 <translation id="1549470594296187301">Chcete-li tuto funkci použít, musí být aktivován JavaScript.</translation>
 <translation id="1553152622374372421">Zimní sporty</translation>
 <translation id="1553358976309200471">Aktualizovat Chrome</translation>
@@ -2412,6 +2413,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4744603770635761495">Spustitelná cesta</translation>
 <translation id="4744816391336495134">Při každém použití uloženého hesla můžete ověřovat svou totožnost otiskem prstu</translation>
 <translation id="4749011317274908093">Jste v anonymním režimu</translation>
+<translation id="4749620353539006322">Získejte maximální odměny</translation>
 <translation id="4749924365937394956">Ověření serveru</translation>
 <translation id="4750671009706599284">tento telefon</translation>
 <translation id="4750917950439032686">Vaše údaje (například hesla nebo čísla platebních karet) jsou při odesílání na tento web soukromé.</translation>
@@ -2987,6 +2989,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5611398002774823980">Uložit do účtu</translation>
 <translation id="561165882404867731">Přeložte tuto stránku pomocí Překladače Google</translation>
 <translation id="5612720917913232150">Web <ph name="URL" /> chce použít polohu vašeho počítače</translation>
+<translation id="5613958591683399697">Zeptejte se vyhledávače <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Sdělení pro uživatele</translation>
 <translation id="5614520971155863709">Karetní hry</translation>
 <translation id="5617949217645503996">Web <ph name="HOST_NAME" /> vás přesměroval příliš mnohokrát.</translation>

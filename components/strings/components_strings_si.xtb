@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">ව්‍යාපාර අධ්‍යාපනය</translation>
 <translation id="1542830386724426410">ගෙවා පිටවීමේ දී ලබා ගත හැකි කාඩ්පත් ප්‍රතිලාභ සහ ත්‍යාග පෙන්වන්න. නිකුත් කරන්නාගේ නියමයන් අදාළ වේ. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />තව දැන ගන්න<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">මිල ඉතිහාසය</translation>
+<translation id="1546286808622193216">Gemini භාවිතයෙන් කාඩ්පත් ප්‍රතිලාභ සංසන්දනය කරන්න</translation>
 <translation id="1549470594296187301">මෙම විශේෂාංගය භාවිත කිරීමට ජාවාස්ක්‍රිප්ට් සබල කළ යුතුය.</translation>
 <translation id="1553152622374372421">ශීත කාල ක්‍රීඩා</translation>
 <translation id="1553358976309200471">Chrome යාවත් කරන්න</translation>
@@ -2416,6 +2417,7 @@
 <translation id="4744603770635761495">විධානගතකළහැකි මඟ</translation>
 <translation id="4744816391336495134">ඔබ සුරකින ලද මුරපදයක් භාවිතා කරන සෑම විට ම ඒ ඔබ බව සත්‍යාපනය කිරීමට ඔබට ඔබේ ඇඟිලි සලකුණ භාවිත කළ හැක</translation>
 <translation id="4749011317274908093">ඔබ අප්‍රසිද්ධව ඇත</translation>
+<translation id="4749620353539006322">ත්‍යාග උපරිම කරන්න</translation>
 <translation id="4749924365937394956">සේවාදායක සත්‍යාපනය</translation>
 <translation id="4750671009706599284">මෙම දුරකථනය</translation>
 <translation id="4750917950439032686">ඔබගේ තොරතුරු (උදාහරණයක් ලෙස, මුරපද හෝ ණය කාඩ්පත් අංක) මෙම අඩවිය වෙත යවන විට රහසිගත වේ.</translation>
@@ -2991,6 +2993,7 @@
 <translation id="5611398002774823980">ගිණුමේ සුරකින්න</translation>
 <translation id="561165882404867731">Google පරිවර්තනය සමඟ මෙම පිටුව පරිවර්තනය කරන්න</translation>
 <translation id="5612720917913232150"><ph name="URL" /> හට ඔබේ පරිගණකයේ පිහිටීම භාවිතා කිරීමට අවශ්‍යයි</translation>
+<translation id="5613958591683399697"><ph name="ENGINE_NAME" /> වෙතින් විමසන්න</translation>
 <translation id="5614190747811328134">පරිශීලක දැන්වීම</translation>
 <translation id="5614520971155863709">කාඩ්පත් ක්‍රීඩා</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> ඔබව බොහෝ වාර ගණනක් හරවා යවන ලදී.</translation>

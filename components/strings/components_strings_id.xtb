@@ -350,6 +350,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1542105669288201090">Pendidikan Bisnis</translation>
 <translation id="1542830386724426410">Tampilkan reward dan manfaat kartu yang tersedia saat checkout. Persyaratan penerbit berlaku. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Pelajari lebih lanjut<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Histori harga</translation>
+<translation id="1546286808622193216">Bandingkan manfaat kartu menggunakan Gemini</translation>
 <translation id="1549470594296187301">JavaScript harus diaktifkan untuk menggunakan fitur ini.</translation>
 <translation id="1553152622374372421">Olahraga Musim Dingin</translation>
 <translation id="1553358976309200471">Perbarui browser Chrome</translation>
@@ -2416,6 +2417,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4744603770635761495">Jalur Yang Dapat Dijalankan</translation>
 <translation id="4744816391336495134">Anda dapat menggunakan sidik jari untuk memverifikasi diri Anda setiap kali Anda menggunakan sandi tersimpan</translation>
 <translation id="4749011317274908093">Anda masuk mode Samaran</translation>
+<translation id="4749620353539006322">Maksimalkan reward</translation>
 <translation id="4749924365937394956">Autentikasi Server</translation>
 <translation id="4750671009706599284">ponsel ini</translation>
 <translation id="4750917950439032686">Informasi Anda (misalnya, sandi atau nomor kartu kredit) bersifat pribadi saat dikirimkan ke situs ini.</translation>
@@ -2991,6 +2993,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5611398002774823980">Simpan di akun</translation>
 <translation id="561165882404867731">Terjemahkan halaman ini dengan Google Terjemahan</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ingin menggunakan lokasi komputer Anda</translation>
+<translation id="5613958591683399697">Tanya <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Notifikasi Pengguna</translation>
 <translation id="5614520971155863709">Game Kartu</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> terlalu sering mengalihkan Anda.</translation>

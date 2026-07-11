@@ -5005,6 +5005,7 @@
 <translation id="4849286518551984791">ਕੁਆਰਡੀਨੇਟਿਡ ਯੂਨੀਵਰਸਲ ਸਮਾਂ (UTC/GMT)</translation>
 <translation id="4849517651082200438">ਸਥਾਪਤ ਨਾ ਕਰੋ</translation>
 <translation id="4849731766219625109">ਆਪਣਾ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਖਾਤਾ ਵਰਤੋ</translation>
+<translation id="4850279708232718725">ਮੈਨੂੰ ਇਸ ਬਾਰੇ ਦੱਸੋ</translation>
 <translation id="485053257961878904">ਸੂਚਨਾਵਾਂ ਦਾ ਸਿੰਕ ਨੂੰ ਸੈੱਟਅੱਪ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="4850548109381269495">ਦੋਵੇਂ ਡੀਵਾਈਸਾਂ 'ਤੇ, ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਬਲੂਟੁੱਥ ਚਾਲੂ ਕਰੋ। ਫਿਰ, ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4850669014075537160">ਸਕ੍ਰੋਲਿੰਗ</translation>
@@ -6353,6 +6354,7 @@
 <translation id="5922854266885514646">"Chrome ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ" 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="5924047253200400718">ਮਦਦ ਪ੍ਰਾਪਤ ਕਰੋ<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft ਫ਼ਾਈਲਾਂ ਨੂੰ Google Drive ਵਿੱਚ ਕਾਪੀ ਕਰਨ ਜਾਂ ਲਿਜਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ</translation>
+<translation id="5925057331573749968">QR ਕੋਡ ਨਾਲ ਛੇਤੀ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="5926936390113611560">ਸਾਰੇ ਪ੍ਰੋਫਾਈਲ ਖੋਲ੍ਹੋ</translation>
 <translation id="592880897588170157">PDF ਫ਼ਾਈਲਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ Chrome ਵਿੱਚ ਖੋਲ੍ਹਣ ਦੀ ਬਜਾਏ ਡਾਊਲੋਡ ਕਰੋ</translation>
 <translation id="5930567261594625340">ਰਾਤ ਦੇ ਸਮੇਂ ਅਸਮਾਨ</translation>
@@ -9502,6 +9504,7 @@
 <translation id="8372678064309688510">ਤੁਹਾਡਾ ਪਤਾ ਰੱਖਿਅਤ ਕਰ ਲਿਆ ਗਿਆ ਹੈ</translation>
 <translation id="8373652277231415614">Crostini ਸਾਂਝੀਆਂ ਕੀਤੀਆਂ ਡਾਇਰੈਕਟਰੀਆਂ</translation>
 <translation id="8374243500935816406">ਤੁਹਾਡੀਆਂ ਸਾਰੀਆਂ ਡਿਸਪਲੇਆਂ 'ਤੇ ਵਿੰਡੋਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਸਾਈਟਾਂ ਨੂੰ ਆਗਿਆ ਨਾ ਦਿਓ</translation>
+<translation id="8375703478696038265"><ph name="TOTAL_STEPS" /> ਵਿੱਚੋਂ <ph name="STEP_NUMBER" /> ਪੜਾਅ</translation>
 <translation id="8376137163494131156">ਸਾਨੂੰ ਦੱਸੋ ਕਿ ਤੁਹਾਡੇ Google Cast ਨੂੰ ਕੀ ਹੋ ਰਿਹਾ ਹੈ।</translation>
 <translation id="8376384591331888629">ਇਸ ਸਾਈਟ 'ਤੇ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਸਮੇਤ</translation>
 <translation id="8376451933628734023">ਜੇ ਇਹ ਵੈੱਬ ਐਪ ਤੁਹਾਨੂੰ ਧੋਖਾ ਦੇਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੀ ਹੈ ਕਿ ਇਹ ਇੱਕ ਵੱਖਰੀ ਐਪ ਹੈ, ਤਾਂ ਇਸ ਨੂੰ ਅਣਸਥਾਪਤ ਕਰੋ।</translation>
@@ -10573,6 +10576,7 @@
 <translation id="9188142767272053574">ਪ੍ਰਕਿਰਿਆ ਵਖਰੇਵਾਂ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="9192019773545828776">ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ ਸੁਣੋ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਬਿਨਾਂ ਸਕ੍ਰੀਨ ਦੇਖੇ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਵਰਤ ਸਕੋ। ਬਰੇਲ ਲਿਪੀ ਸੰਬੰਧੀ ਵਿਚਾਰ ਕਨੈਕਟ ਕੀਤੇ ਡੀਵਾਈਸ ਨਾਲ ਉਪਲਬਧ ਹੈ। ChromeVox ਨੂੰ ਚਾਲੂ ਅਤੇ ਬੰਦ ਕਰਨ ਲਈ Ctrl + Alt + Z ਵਰਤੋ। ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ Search + ਖੱਬਾ ਤੀਰ ਜਾਂ ਸੱਜਾ ਤੀਰ ਵਰਤੋ। ਚੁਣਨ (ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ) ਲਈ Search + Space ਵਰਤੋ।</translation>
 <translation id="9195969368671142407">ਜਦੋਂ ਤੁਹਾਡੀ ਸੰਸਥਾ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਸੀਮਤ ਕਰਦੀ ਹੈ, ਤਾਂ ਤੁਸੀਂ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਸਾਂਝਾ ਨਹੀਂ ਕਰ ਸਕਦੇ ਜਾਂ ਉਨ੍ਹਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋ ਸਕਦੇ</translation>
+<translation id="9197456336762295195">ਇਸ QR ਕੋਡ ਨੂੰ ਉਸ ਡੀਵਾਈਸ 'ਤੇ ਕੈਮਰੇ ਨਾਲ ਸਕੈਨ ਕਰੋ, ਜਿਸ ਵਿੱਚ google.com ਲਈ ਤੁਹਾਡੀ ਪਾਸਕੀ ਹੈ</translation>
 <translation id="919840898042157087">ਸਥਿਰ ਹਲਚਲ</translation>
 <translation id="9199503643457729322">ਪਰਦੇਦਾਰੀ ਗਾਈਡ ਤੋਂ ਦੂਰ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="9199695835892108985">ਕੀ ਸਾਰੀਆਂ ਸੀਰੀਅਲ ਪੋਰਟ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨਾ ਹੈ?</translation>

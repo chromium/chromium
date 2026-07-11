@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Membuat semuanya tetap terang dan nyaman dilihat</translation>
 <translation id="243179355394256322">Organisasi Anda membatasi pendaftaran perangkat hanya untuk pengguna yang diberi otorisasi. Pengguna ini tidak memiliki otorisasi untuk mendaftarkan perangkat. Pastikan pengguna memiliki hak istimewa administrator "Mendaftar Google Meet hardware" di bagian Pengguna pada konsol Admin.</translation>
 <translation id="2439152382014731627">Reset sandi <ph name="DEVICE_TYPE" /></translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Penginstalan <ph name="BEGIN_BOLD" />akan menghapus seluruh data di hard drive<ph name="END_BOLD" />. Pastikan data Anda sudah dicadangkan.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Penginstalan tidak dapat dibatalkan setelah dimulai.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Anda tidak dapat menambahkan pengguna karena kunci API Google tidak ada. Buka <ph name="DETAILS_URL" /> untuk melihat detailnya.</translation>
 <translation id="24786041351753425">Aktifkan layanan pemulihan data.</translation>
 <translation id="2485681265915754872">Persyaratan layanan Google Play</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebook menggunakan aplikasi, bukan software tradisional. Dapatkan aplikasi untuk produktivitas, hiburan, dan masih banyak lagi.</translation>
 <translation id="450867954911715010">Setelan aksesibilitas</translation>
 <translation id="4519605771716872386">Sinkronisasi file diaktifkan</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Coba langkah-langkah pemecahan masalah berikut:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Pastikan perangkat Anda memiliki penyimpanan internal yang berfungsi seperti HDD, SSD, atau eMMC
+        <ph name="LIST_ITEM" />Periksa apakah perangkat penyimpanan internal Anda lebih besar dari 16 GB
+        <ph name="LIST_ITEM" />Periksa koneksi ke penyimpanan internal, jika dapat diakses secara fisik
+        <ph name="LIST_ITEM" />Pastikan Anda menggunakan model bersertifikasi dan periksa catatan penginstalan
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Untuk mendapatkan bantuan lebih lanjut, buka: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Siapa yang ingin Anda tambahkan ke <ph name="DEVICE_TYPE" /> ini?</translation>
 <translation id="4566170377336116390">Jika ingin beralih setelah pendaftaran, Anda perlu mereset perangkat (powerwash) ke setelan pabrik.</translation>
 <translation id="4567512141633030272">Opsi login salah?</translation>
@@ -571,6 +582,8 @@
 <translation id="7189451821249468368">Anda tidak memiliki cukup upgrade untuk mendaftarkan perangkat ini. Hubungi pihak penjualan untuk membeli yang lainnya. Jika Anda yakin Anda tidak seharusnya mendapatkan pesan ini, hubungi dukungan.</translation>
 <translation id="7202337678781136582">Pindai kode QR dengan ponsel Android</translation>
 <translation id="7228854227189381547">Jangan ganti</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Untuk mendapatkan pengalaman terbaik, instal <ph name="DEVICE_OS" /> ke disk internal Anda. Anda juga dapat menginstalnya nanti dari layar login.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Jika belum siap menginstal, Anda dapat menjalankannya dari USB untuk mencobanya. Tindakan ini akan tetap mempertahankan OS dan data yang ada, tetapi Anda mungkin akan mengalami keterbatasan penyimpanan dan performa.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Perubahan akan diterapkan setelah penyiapan</translation>
 <translation id="7260186537988033909">Pendaftaran perangkat kios dan reklame selesai</translation>
 <translation id="7284411326658527427">Setiap pengguna dapat mempersonalisasi akunnya dan menjaga privasi datanya.</translation>
@@ -588,6 +601,8 @@
 <translation id="7416263748877373774">Persyaratan Layanan tidak dapat dimuat. Harap periksa koneksi jaringan Anda, lalu coba lagi.</translation>
 <translation id="7475742997309661417">Pembaca layar di ChromeOS, ChromeVox, terutama digunakan oleh orang yang tunanetra atau mengalami gangguan penglihatan untuk membaca teks yang ditampilkan di layar dengan penyintesis ucapan atau penampil braille. Tekan kedua tombol volume selama lima detik untuk mengaktifkan ChromeVox. Saat ChromeVox diaktifkan, Anda akan melalui tur singkat.</translation>
 <translation id="7476454130948140105">Baterai terlalu lemah untuk mengupdate (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Terjadi error dan <ph name="DEVICE_OS" /> tidak dapat diinstal.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Untuk mendapatkan bantuan lebih lanjut, buka: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Sebelum mendaftar, Anda perlu menghapus TPM agar <ph name="DEVICE_OS" /> dapat mengambil alih kepemilikan perangkat.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Anda juga dapat sepenuhnya menonaktifkan TPM di perangkat. Data Anda akan tetap disimpan secara aman dengan enkripsi software, tetapi fitur keamanan tertentu seperti sertifikat yang didukung hardware akan dinonaktifkan.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Anda dapat mengubah setelan TPM dengan memulai ulang dan masuk ke setelan BIOS/UEFI sistem. Langkah-langkah dapat berbeda bergantung pada model perangkat. Untuk mengetahui info selengkapnya, buka dokumentasi <ph name="DEVICE_OS" /> di perangkat lain sebelum Anda memulai ulang: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

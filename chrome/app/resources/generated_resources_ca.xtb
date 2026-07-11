@@ -4988,6 +4988,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4849286518551984791">Temps universal coordinat (UTC/GMT)</translation>
 <translation id="4849517651082200438">No instal·lis</translation>
 <translation id="4849731766219625109">Utilitza el teu compte de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="4850279708232718725">Parla'm sobre això</translation>
 <translation id="485053257961878904">No s'ha pogut configurar la sincronització de notificacions</translation>
 <translation id="4850548109381269495">Als dos dispositius, comprova la connexió a Internet i activa el Bluetooth. Després, torna-ho a provar.</translation>
 <translation id="4850669014075537160">Desplaçament</translation>
@@ -6335,6 +6336,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5922854266885514646">Fes clic a Personalitza Chrome</translation>
 <translation id="5924047253200400718">Obtén ajuda <ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Pregunta abans de copiar o moure fitxers de Microsoft a Google Drive</translation>
+<translation id="5925057331573749968">Inicia la sessió més ràpidament amb un codi QR</translation>
 <translation id="5926936390113611560">Obre tots els perfils</translation>
 <translation id="592880897588170157">Baixa els fitxers PDF en lloc d'obrir-los automàticament a Chrome</translation>
 <translation id="5930567261594625340">Cel nocturn</translation>
@@ -9482,6 +9484,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8372678064309688510">L'adreça s'ha desat</translation>
 <translation id="8373652277231415614">Directoris compartits de Crostini</translation>
 <translation id="8374243500935816406">No permetis que els llocs web gestionin finestres en totes les pantalles</translation>
+<translation id="8375703478696038265">Pas <ph name="STEP_NUMBER" /> de: <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Explica'ns què passa amb Google Cast.</translation>
 <translation id="8376384591331888629">Incloses les galetes de tercers en aquest lloc web</translation>
 <translation id="8376451933628734023">Si aquesta aplicació web està provant d'enganyar-te perquè pensis que és una altra aplicació, desinstal·la-la.</translation>
@@ -10553,6 +10556,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9188142767272053574">Activa l'aïllament de processos</translation>
 <translation id="9192019773545828776">Escolta avisos de veu per poder utilitzar el dispositiu sense mirar la pantalla. Els avisos en braille estan disponibles amb un dispositiu connectat. Utilitza Ctrl+Alt+Z per activar i desactivar ChromeVox. Fes servir Cerca+fletxa esquerra o dreta per navegar. Utilitza Cerca+barra espaiadora per seleccionar (activar).</translation>
 <translation id="9195969368671142407">Si la teva organització limita el que pots desar al teu Compte de Google, no podràs compartir grups de pestanyes ni unir-t'hi</translation>
+<translation id="9197456336762295195">Escaneja aquest codi QR amb la càmera del dispositiu que té la clau d'accés per a google.com</translation>
 <translation id="919840898042157087">Moviment estàtic</translation>
 <translation id="9199503643457729322">Fes-hi clic per sortir de la Guia de privadesa.</translation>
 <translation id="9199695835892108985">Vols restablir tots els permisos del port en sèrie?</translation>
@@ -10577,7 +10581,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9219103736887031265">Imatges</translation>
 <translation id="9219572436491982747">És possible que revisors humans vegin les dades enviades a Google per millorar la tecnologia de la IA de Chrome</translation>
 <translation id="9219741625496141320">Les dades de navegació s'han suprimit automàticament</translation>
-<translation id="9220484506568374422">Gemini Spark tindrà accés als mateixos llocs web que tu, inclosos els llocs web en què tens la sessió iniciada. Compartirà la informació necessària amb tercers, que podria incloure informació personal que et sembli sensible.</translation>
+<translation id="9220484506568374422">Gemini Spark tindrà accés als mateixos llocs web que tu, inclosos els llocs web en què tinguis la sessió iniciada. Compartirà la informació necessària amb tercers, la qual podria incloure informació personal que podries considerar sensible.</translation>
 <translation id="9220525904950070496">Suprimir el compte</translation>
 <translation id="9220723036554088545">penja un fitxer</translation>
 <translation id="9220820413868316583">Aixeca el dit i torna-ho a provar.</translation>

@@ -2805,6 +2805,7 @@ Jika kebijakan ini disetel ke 2 - 'Nonaktif', integrasi Google Developer Program
 <translation id="2707733461906745082">Pemisahan Profil</translation>
 <translation id="2707873794476722903">Safe Browsing aktif dalam mode standar.</translation>
 <translation id="2709516037105925701">Isi otomatis</translation>
+<translation id="2712089199157322391">Izinkan Alat Developer untuk penjelajahan web standar, tetapi batasi penggunaannya pada ekstensi bawaan pengguna terkelola dan yang diinstal perusahaan (diblokir di halaman yang menyematkan ekstensi ini sejak M150, kecuali untuk penampil PDF bawaan).</translation>
 <translation id="2713913573196284609">Mulai M121, nilai ini tidak digunakan lagi. Pada M121 dan selanjutnya, nilai akan diperlakukan sebagai EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Selalu kirim metrik ke Google</translation>
 <translation id="2714359695399346815">Jika kebijakan disetel ke Aktif atau tidak disetel, penggunaan server STUN akan diizinkan sehingga klien jarak jauh dapat menemukan serta terhubung ke perangkat ini, meskipun dipisahkan oleh firewall.
@@ -13011,27 +13012,6 @@ Lihat https://support.google.com/chrome/a/answer/9301891 untuk mengetahui detail
 <translation id="8931555638815157255">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan versi OS dan firmware-nya secara berkala.
 
       Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan informasi versi.</translation>
-<translation id="8931984670731745012">Jika kebijakan ini disetel, Anda dapat menentukan jenis data Isi Otomatis yang diblokir pada pola URL tertentu.
-
-Kebijakan ini disusun dalam bentuk daftar kamus. Setiap kamus harus berisi:
-* "url_pattern": Pola URL setelan konten (misalnya, "https://[*.]example.com").
-* "blocked_types": Daftar string yang mewakili kategori data Isi Otomatis yang akan diblokir.
-
-Nilai yang didukung untuk "blocked_types" adalah:
-* "contact_info": Memblokir pengisian dan penyimpanan informasi kontak.
-* "payments": Memblokir pengisian dan penyimpanan kartu kredit serta metode pembayaran.
-* "identity_docs": Memblokir pengisian dan penyimpanan dokumen identitas (misalnya, paspor, surat izin mengemudi, kartu identitas nasional).
-* "travel": Memblokir pengisian dan penyimpanan informasi perjalanan (misalnya, reservasi penerbangan, pendaftaran kendaraan).
-* "shopping": Memblokir pengisian dan penyimpanan informasi belanja (misalnya, pesanan online, pengiriman).
-
-Jika jenis data diblokir untuk suatu situs, pembuatan saran maupun perintah untuk menyimpan/mengimpor data baru dari jenis tersebut akan dinonaktifkan di situs tersebut.
-
-Jika URL cocok dengan beberapa entri pola dalam daftar, jenis data yang diblokir dari semua entri yang cocok akan digabungkan (union-merged). Pola URL yang tidak valid dalam daftar akan diabaikan.
-
-Jika kebijakan ini tidak disetel, tidak ada jenis data Isi Otomatis yang diblokir berdasarkan domain.
-
-Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, buka:
-https://chromeenterprise.google/policies/url-patterns. Karakter pengganti * didukung. Pola ini cocok dengan URL apa pun, dengan skema, port, dan jalur apa pun.</translation>
 <translation id="8934296213794658971">Setelan untuk integrasi Gemini</translation>
 <translation id="8937282917198525844"> Mulai M81, elemen kontrol formulir standar (mis. &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) diperbarui dengan tampilan dan nuansa yang lebih segar, dengan peningkatan aksesibilitas dan keseragaman platform yang lebih baik. Kebijakan ini mengembalikan elemen kontrol formulir "lama" hingga M84.
 

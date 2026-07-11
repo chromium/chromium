@@ -329,6 +329,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1486096554574027028">Parollarni qidirish</translation>
 <translation id="1492194039220927094">Push-xabar orqali yuboriladigan siyosatlar:</translation>
 <translation id="1495677929897281669">Varaqqa qaytish</translation>
+<translation id="1496318738909526466">Yaxshilangan avtomatik kiritishni boshqarish</translation>
 <translation id="1500286806237135498">Kameralar (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Gofr</translation>
 <translation id="1507202001669085618">&lt;p&gt;Wi-Fi portaldan foydalanayotganingizda onlayn bo‘lishingiz uchun sizdan kirishni so‘raganda shunday xatolik ko‘rsatiladi.&lt;/p&gt;
@@ -864,6 +865,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2322254345061973671">{COUNT,plural, =1{1 ta oyna}other{# ta oyna}}</translation>
 <translation id="232390861414237658">Bu karta Google Play hisobiga saqlanganidan keyin uning maʼlumotlarini Chrome xaridlarida avtomatik kiritish mumkin</translation>
 <translation id="2326283484705860548">Endi koʻproq Google Wallet maʼlumotlarini avtomatik kiritish mumkin</translation>
+<translation id="2326747055382936979">Yaxshilangan avtomatik kiritishni boshqarish</translation>
 <translation id="2328651992442742497">Ruxsat etilgan (standart)</translation>
 <translation id="2328955282645810595">Qurilish va quvvatlash vositalari</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, muddati: <ph name="EXPIRATION_DATE_ABBR" /></translation>

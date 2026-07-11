@@ -2585,7 +2585,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2989805286512600854">Maak in 'n nuwe oortjie oop</translation>
 <translation id="2990313168615879645">Voeg Google-rekening by</translation>
 <translation id="2990375978470734995">Herkoppel jou eksterne bykomstighede sodat hierdie verandering om in werking te tree.</translation>
-<translation id="2990500505358145117">Wysig Verbeterde outovul-kortpad</translation>
+<translation id="2990500505358145117">Wysig Gevorderde Outovul-kortpad</translation>
 <translation id="2990583317361835189">Moenie werwe toelaat om bewegingsensors te gebruik nie</translation>
 <translation id="2991182900092497283">Voer asseblief ’n rede in hoekom jy hierdie data plak:</translation>
 <translation id="2992754757708650257">Verlaat werf en beëindig taak?</translation>
@@ -2922,7 +2922,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3247649647204519958">Van hier af kan jy uitbreidingtoestemmings sien en bestuur vir die werf waarop jy is</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Netwerkfout</translation>
 <translation id="3248902735035392926">Veiligheid is belangrik. Vat 'n oomblik om <ph name="BEGIN_LINK" />jou uitbreidings nou na te gaan<ph name="END_LINK" /></translation>
-<translation id="3248957351402065497">Gepasmaakte kortpad vir verbeterde outovul</translation>
+<translation id="3248957351402065497">Gepasmaakte kortpad vir Gevorderde Outovul</translation>
 <translation id="3249558306861350254">Klik <ph name="BEGIN_BOLD" />Stel as verstek<ph name="END_BOLD" /> in jou Windows-instellings.</translation>
 <translation id="3250374026663843838">Bestuur jou vaardigheid</translation>
 <translation id="3251119461199395237">Lêersinkronisering</translation>
@@ -3722,7 +3722,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3827548509471720579">Skermhelderheid</translation>
 <translation id="3827774300009121996">Volskerm</translation>
 <translation id="3828029223314399057">Deursoek boekmerke</translation>
-<translation id="3828454092958722155">Vee Verbeterde outovul-kortpad uit</translation>
+<translation id="3828454092958722155">Vee Gevorderde Outovul-kortpad uit</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – hoë geheuegebruik – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB-lêerdeling</translation>
 <translation id="3830470485672984938">Gebruik ’n ander toegangsleutel</translation>
@@ -5005,6 +5005,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4849286518551984791">Gekoördineerde universele tyd (UTC/GMT)</translation>
 <translation id="4849517651082200438">Moenie installeer nie</translation>
 <translation id="4849731766219625109">Gebruik jou <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-rekening</translation>
+<translation id="4850279708232718725">Vertel my hieroor</translation>
 <translation id="485053257961878904">Kon nie kennisgewingsinkronisering opstel nie</translation>
 <translation id="4850548109381269495">Gaan op albei toestelle jou internetverbinding na en skakel Bluetooth aan. Probeer dan weer.</translation>
 <translation id="4850669014075537160">Rollees</translation>
@@ -6354,6 +6355,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5922854266885514646">Klik “Pasmaak Chrome”</translation>
 <translation id="5924047253200400718">Kry hulp<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Vra voordat jy Microsoft-lêers na Google Drive kopieer of skuif</translation>
+<translation id="5925057331573749968">Meld vinniger aan met ’n QR-kode</translation>
 <translation id="5926936390113611560">Maak alle profiele oop</translation>
 <translation id="592880897588170157">Laai PDF-lêers af, pleks daarvan om hulle in Chrome oop te maak</translation>
 <translation id="5930567261594625340">Naglug</translation>
@@ -7124,7 +7126,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6544134392255015460">sleutelbordagterligwisselaar</translation>
 <translation id="6545665334409411530">Herhaalkoers</translation>
 <translation id="6547354035488017500">Maak minstens 512 MB spasie beskikbaar; anders sal jou toestel nie meer reageer nie. Vee lêers van jou toestelberging af uit om spasie beskikbaar te maak.</translation>
-<translation id="6548240707386871455">Verbeterde outovul-kortpad</translation>
+<translation id="6548240707386871455">Gevorderde Outovul-kortpad</translation>
 <translation id="654871471440386944">Skakel karetblaai aan?</translation>
 <translation id="6548945820758901244">Maak Google Search-kantpaneel oop</translation>
 <translation id="6549038875972762904">Herdoen opstelling</translation>
@@ -9501,6 +9503,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8372678064309688510">Jou adres is gestoor</translation>
 <translation id="8373652277231415614">Gedeelde gidse in Crostini</translation>
 <translation id="8374243500935816406">Moenie werwe toelaat om vensters op al jou skerms te bestuur nie</translation>
+<translation id="8375703478696038265">Stap <ph name="STEP_NUMBER" /> van <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Vertel ons wat met Google Cast gebeur.</translation>
 <translation id="8376384591331888629">Insluitend derdeparty-webkoekies op hierdie werf</translation>
 <translation id="8376451933628734023">Deïnstalleer hierdie webapp as dit jou probeer mislei om te dink dat dit 'n ander app is.</translation>
@@ -10572,6 +10575,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="9188142767272053574">Aktiveer prosesisolasie</translation>
 <translation id="9192019773545828776">Hoor gesproke terugvoer sodat jy jou toestel kan gebruik sonder om na die skerm te kyk. Braille-terugvoer is beskikbaar met ’n gekoppelde toestel. Gebruik Ctrl + Alt + Z om ChromeVox aan en af te skakel. Gebruik Soek + linkspyl of regspyl om te navigeer. Gebruik Soek + spasiebalk om te kies (aktiveer).</translation>
 <translation id="9195969368671142407">As jou organisasie jou Google-rekening se storing beperk, kan jy nie oortjiegroepe deel of by hulle aansluit nie</translation>
+<translation id="9197456336762295195">Skandeer hierdie QR-kode met die kamera op die toestel wat jou toegangsleutel vir google.com het</translation>
 <translation id="919840898042157087">Statiese beweging</translation>
 <translation id="9199503643457729322">Klik om weg van Privaatheidgids af te navigeer.</translation>
 <translation id="9199695835892108985">Stel alle reekspoorttoestemmings terug?</translation>

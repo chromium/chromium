@@ -350,6 +350,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1542105669288201090">Wirtschaftspädagogik</translation>
 <translation id="1542830386724426410">Beim Bezahlen verfügbare Vorteile und Prämien der Karte anzeigen. Es gelten die Bedingungen des Ausstellers. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Weitere Informationen<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Preisentwicklung</translation>
+<translation id="1546286808622193216">Kartenvorteile mit Gemini vergleichen</translation>
 <translation id="1549470594296187301">Für diese Funktion muss JavaScript aktiviert sein.</translation>
 <translation id="1553152622374372421">Wintersport</translation>
 <translation id="1553358976309200471">Chrome aktualisieren</translation>
@@ -2414,6 +2415,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4744603770635761495">Programmdateipfad</translation>
 <translation id="4744816391336495134">Du kannst deinen Fingerabdruck verwenden, um deine Identität zu bestätigen, wenn du ein gespeichertes Passwort verwendest</translation>
 <translation id="4749011317274908093">Du befindest dich jetzt im Inkognitomodus</translation>
+<translation id="4749620353539006322">Prämien maximieren</translation>
 <translation id="4749924365937394956">Serverauthentifizierung</translation>
 <translation id="4750671009706599284">diesem Smartphone</translation>
 <translation id="4750917950439032686">Deine Daten wie Passwörter oder Kreditkartennummern sind geschützt, wenn du sie an diese Website sendest.</translation>
@@ -2989,6 +2991,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5611398002774823980">Im Konto speichern</translation>
 <translation id="561165882404867731">Diese Seite mit Google Übersetzer übersetzen</translation>
 <translation id="5612720917913232150"><ph name="URL" /> möchte den Standort deines Computers nutzen</translation>
+<translation id="5613958591683399697"><ph name="ENGINE_NAME" /> fragen</translation>
 <translation id="5614190747811328134">Nutzerhinweis</translation>
 <translation id="5614520971155863709">Kartenspiele</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> hat dich zu oft weitergeleitet.</translation>

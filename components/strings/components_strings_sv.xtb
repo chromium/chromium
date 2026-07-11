@@ -350,6 +350,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1542105669288201090">Företagsekonomi</translation>
 <translation id="1542830386724426410">Visa tillgängliga förmåner och belöningar för kortet i kassan. Utgivarens villkor gäller. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Läs mer<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Prishistorik</translation>
+<translation id="1546286808622193216">Jämför kortförmåner med Gemini</translation>
 <translation id="1549470594296187301">JavaScript måste aktiveras för att du ska kunna använda den här funktionen.</translation>
 <translation id="1553152622374372421">Vintersport</translation>
 <translation id="1553358976309200471">Uppdatera Chrome</translation>
@@ -2416,6 +2417,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4744603770635761495">Sökväg till körbar fil</translation>
 <translation id="4744816391336495134">Du kan använda ditt fingeravtryck för att verifiera din identitet när du använder ett sparat lösenord</translation>
 <translation id="4749011317274908093">Du surfar inkognito</translation>
+<translation id="4749620353539006322">Maximera belöningar</translation>
 <translation id="4749924365937394956">Serverautentisering</translation>
 <translation id="4750671009706599284">den här telefonen</translation>
 <translation id="4750917950439032686">Dina uppgifter (till exempel lösenord eller kreditkortsnummer) är privata när de skickas till den här webbplatsen.</translation>
@@ -2991,6 +2993,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5611398002774823980">Spara i kontot</translation>
 <translation id="561165882404867731">Översätt den här sidan med Google Översätt</translation>
 <translation id="5612720917913232150"><ph name="URL" /> vill använda datorns plats</translation>
+<translation id="5613958591683399697">Fråga <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Meddelande till användaren</translation>
 <translation id="5614520971155863709">Kortspel</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> omdirigerade dig för många gånger.</translation>

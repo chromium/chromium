@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Panatilihing maliwanag at maaliwalas ang mga bagay</translation>
 <translation id="243179355394256322">Nililimitahan lang ng iyong organisasyon ang pag-enroll ng device sa mga pinapahintulutang user. Hindi pinapahintulutan ang user na ito na mag-enroll ng mga device. Pakitiyak na may pribilehiyong pang-administrator na "I-enroll ang hardware ng Google Meet" ang user sa seksyong Mga User ng Admin console.</translation>
 <translation id="2439152382014731627">I-reset ang password ng <ph name="DEVICE_TYPE" /></translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" /><ph name="BEGIN_BOLD" />Mabubura ng pag-install ang iyong buong hard drive<ph name="END_BOLD" />. Tiyaking naka-back up ang iyong data.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Kapag nagsimula na ang pag-install, hindi na ito makakansela.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Hindi mo magagawang magdagdag ng mga user dahil wala ang mga Google API key. Tingnan ang <ph name="DETAILS_URL" /> para sa mga detalye.</translation>
 <translation id="24786041351753425">I-enable ang serbisyong pag-recover ng data.</translation>
 <translation id="2485681265915754872">Mga tuntunin ng serbisyo ng Google Play</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Gumagamit ng mga app ang mga Chromebook sa halip na tradisyonal na software. Kumuha ng mga app para sa pagiging produktibo, entertainment, at higit pa.</translation>
 <translation id="450867954911715010">Mga setting ng pagiging naa-access</translation>
 <translation id="4519605771716872386">Naka-on ang pag-sync ng file</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Subukan ang mga hakbang na ito sa pag-troubleshoot:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Tiyaking may gumaganang internal storage ang iyong device gaya ng HDD, SSD, o eMMC
+        <ph name="LIST_ITEM" />Tingnan kung mas malaki sa 16GB ang internal storage device mo
+        <ph name="LIST_ITEM" />Tingnan ang koneksyon sa internal storage, kung pisikal itong maa-access
+        <ph name="LIST_ITEM" />Tiyaking gumagamit ka ng certified na modelo at tingnan ang mga tala sa pag-install
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Para sa higit pang tulong, bisitahin ang: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Sino ang gusto mong idagdag sa <ph name="DEVICE_TYPE" /> na ito?</translation>
 <translation id="4566170377336116390">Kung gusto mong lumipat pagkatapos ng pag-enroll, kailangan mong i-factory reset (powerwash) ang iyong device.</translation>
 <translation id="4567512141633030272">Maling opsyon sa pag-sign in?</translation>
@@ -572,6 +583,8 @@
 <translation id="7189451821249468368">Wala kang sapat na mga upgrade para i-enroll ang device na ito. Makipag-ugnayan sa sales para bumili ng higit pa. Kung naniniwala kang nakikita mo ang mensaheng ito dahil sa error, makipag-ugnayan sa suporta.</translation>
 <translation id="7202337678781136582">I-scan ang QR code gamit ang iyong Android phone</translation>
 <translation id="7228854227189381547">Huwag magpalit</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Para sa pinakamagandang karanasan, i-install ang <ph name="DEVICE_OS" /> sa iyong internal disk. Puwede mo rin itong i-install sa ibang pagkakataon mula sa screen sa pag-log in.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Kung hindi ka pa handang mag-install, puwede kang magpatakbo mula sa USB para masubukan ito. Papanatilihin nito ang iyong kasalukuyang OS at data, pero puwedeng makakita ka ng mga limitasyon sa storage at performance.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Malalapat ang mga pagbabago pagkatapos ng pag-set up</translation>
 <translation id="7260186537988033909">Tapos na ang pag-enroll ng kiosk at signage device</translation>
 <translation id="7284411326658527427">Magagawa ng bawat taong i-personalize ang kanyang account at panatilihing pribado ang data.</translation>
@@ -589,6 +602,8 @@
 <translation id="7416263748877373774">Hindi ma-load ang Mga Tuntunin ng Serbisyo. Pakisuri ang iyong koneksyon ng network at subukan ulit.</translation>
 <translation id="7475742997309661417">Ang screen reader sa ChromeOS na ChromeVox ay pangunahing ginagamit ng mga taong bulag o malabo ang paningin para magbasa ng text na ipinapakita sa screen na may synthesizer ng speech o braille display. Pindutin nang matagal ang parehong volume key sa loob ng limang segundo para i-on ang ChromeVox. Kapag na-activate na ang ChromeVox, may gagawin kang mabilis na tour.</translation>
 <translation id="7476454130948140105">Masyadong kaunti ang baterya (<ph name="BATTERY_PERCENT" />%) para sa pag-update</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Nagkaproblema at hindi ma-install ang <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Para sa higit pang tulong, bisitahin ang: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Bago mag-enroll, kailangan mong i-clear ang TPM para ang <ph name="DEVICE_OS" /> na ang magmay-ari sa device.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Puwede mo ring tuluyang i-off ang TPM device. Ligtas na maso-store ang iyong data sa tulong ng pag-encrypt ng software, pero madi-disable ang ilang partikular na panseguridad na feature gaya ng mga hardware-backed na certificate.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Puwede mong baguhin ang mga setting ng iyong TPM sa pamamagitan ng pag-reboot at paglalagay ng mga setting ng BIOS/UEFI ng system. Nag-iiba ang mga hakbang batay sa model ng device. Para sa higit pang impormasyon, buksan ang dokumentasyon ng <ph name="DEVICE_OS" /> sa hiwalay na device bago ka mag-reboot: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

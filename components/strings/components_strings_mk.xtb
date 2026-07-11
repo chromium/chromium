@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">Бизнис образование</translation>
 <translation id="1542830386724426410">Прикажувај ги достапните придобивки и награди за картичката при плаќање. Важат условите на издавачот. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Дознајте повеќе<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Историја на цените</translation>
+<translation id="1546286808622193216">Споредете ги придобивките од картичките со Gemini</translation>
 <translation id="1549470594296187301">За да се користи функцијава, мора да биде овозможено JavaScript.</translation>
 <translation id="1553152622374372421">Зимски спортови</translation>
 <translation id="1553358976309200471">Ажурирај го Chrome</translation>
@@ -2416,6 +2417,7 @@
 <translation id="4744603770635761495">Извршна патека</translation>
 <translation id="4744816391336495134">Може да го користите отпечатокот за да потврдите дека сте вие секогаш кога ќе користите зачувана лозинка</translation>
 <translation id="4749011317274908093">Влеговте во режим „Инкогнито“</translation>
+<translation id="4749620353539006322">Максимизирајте ги наградите</translation>
 <translation id="4749924365937394956">Автентикација на серверот</translation>
 <translation id="4750671009706599284">овој телефон</translation>
 <translation id="4750917950439032686">Вашите информации (на пример, лозинките или броевите на кредитните картички) се приватни кога се испраќаат на овој сајт.</translation>
@@ -2991,6 +2993,7 @@
 <translation id="5611398002774823980">Зачувај на сметката</translation>
 <translation id="561165882404867731">Преведете ја страницава со „Преведи на Google“</translation>
 <translation id="5612720917913232150"><ph name="URL" /> сака да ја користи локацијата на вашиот компјутер</translation>
+<translation id="5613958591683399697">Прашајте го <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Известување за корисникот</translation>
 <translation id="5614520971155863709">Игри со карти</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> ве пренасочи премногу пати.</translation>

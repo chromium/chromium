@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">Бизнесийн боловсрол</translation>
 <translation id="1542830386724426410">Тооцоо хийх үед ашиглах боломжтой картын үр өгөөж, урамшууллыг харуулна уу. Олгогчийн нөхцөл хэрэгжинэ. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Үнийн түүх</translation>
+<translation id="1546286808622193216">Gemini-г ашиглан картын үр өгөөжийг харьцуулах</translation>
 <translation id="1549470594296187301">JavaScript энэ онцлогийг ашиглахын тулд идэвхжсэн байх ёстой.</translation>
 <translation id="1553152622374372421">Өвлийн спортууд</translation>
 <translation id="1553358976309200471">Chrome-г шинэчлэх</translation>
@@ -2417,6 +2418,7 @@
 <translation id="4744603770635761495">Гүйцэтгэх боломжтой зам</translation>
 <translation id="4744816391336495134">Та хадгалсан нууц үгийг ашиглах бүрдээ өөрийгөө мөн болохыг баталгаажуулахад хурууны хээгээ ашиглах боломжтой</translation>
 <translation id="4749011317274908093">Та Нууцлалтай горимд шилжлээ</translation>
+<translation id="4749620353539006322">Урамшууллыг нэмэгдүүлэх</translation>
 <translation id="4749924365937394956">Серверийн баталгаажуулалт</translation>
 <translation id="4750671009706599284">энэ утас</translation>
 <translation id="4750917950439032686">Таны мэдээллийг (нууц үг, кредит картын дугаар зэрэг) энэ сайтад нууцлалтайгаар илгээнэ.</translation>
@@ -2992,6 +2994,7 @@
 <translation id="5611398002774823980">Бүртгэлд хадгалах</translation>
 <translation id="561165882404867731">Энэ хуудсыг Google Орчуулагчаар орчуулах</translation>
 <translation id="5612720917913232150"><ph name="URL" /> таны компьютерийн байршлыг ашиглах хүсэлтэй байна</translation>
+<translation id="5613958591683399697"><ph name="ENGINE_NAME" />-с асуух</translation>
 <translation id="5614190747811328134">Хэрэглэгчийн сануулга</translation>
 <translation id="5614520971155863709">Хөзрийн тоглоомууд</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> нь таныг хэтэрхий олон удаа дахин чиглүүлсэн байна.</translation>

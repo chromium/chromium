@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">İşıqlandırın və havalandırın</translation>
 <translation id="243179355394256322">Təşkilatınız cihaz qeydiyyatını yalnız səlahiyyətli istifadəçilərlə məhdudlaşdırır. Bu istifadəçinin cihazları qeydiyyata almasına icazə verilmir. İstifadəçinin Admin konsolunun İstifadəçilər bölməsində "Google Meet avadanlığını qeydiyyatdan keçir" administrator imtiyazına sahib olduğuna əmin olun.</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> parolunu sıfırlayın</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Quraşdırma nəticəsində <ph name="BEGIN_BOLD" />sərt diskdəki bütün data silinəcək<ph name="END_BOLD" />. Datanızın yedəkləndiyinə əmin olun.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Quraşdırma başladıqdan sonra ləğv edilə bilməz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Google API açarları çatışmadığı üçün istifadəçiləri əlavə edə bilməyəcəksiniz. Ətraflı məlumat üçün <ph name="DETAILS_URL" /> baxın.</translation>
 <translation id="24786041351753425">Data bərpa xidmətini aktivləşdirin.</translation>
 <translation id="2485681265915754872">Google Play xidmət şərtləri</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebook'larda ənənəvi proqram əvəzinə tətbiqlər istifadə olunur. Məhsuldarlıq, əyləncə və daha çoxu üçün tətbiqlər əldə edin.</translation>
 <translation id="450867954911715010">Əlçatımlılıq ayarları</translation>
 <translation id="4519605771716872386">Fayl sinxronlaşdırması aktivdir</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Nasazlıqların aradan qaldırılması ilə bağlı bu addımları sınayın:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Cihazınızda HDD, SSD və ya eMMC kimi işlək daxili yaddaş olduğuna əmin olun
+        <ph name="LIST_ITEM" />Daxili yaddaş cihazınızın həcminin 16 GB-dan çox olduğuna əmin olun
+        <ph name="LIST_ITEM" />Mümkünsə, daxili yaddaşla bağlantını yoxlayın
+        <ph name="LIST_ITEM" />Sertifikatlı model istifadə etdiyinizə əmin olun və quraşdırma qeydlərini yoxlayın
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Yardım üçün bu ünvana daxil olun: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Bu <ph name="DEVICE_TYPE" /> cihazına kimi əlavə etmək istərdiniz?</translation>
 <translation id="4566170377336116390">Qeydiyyatdan sonra dəyişmək istəyirsinizsə, cihazınızda zavod sıfırlaması (formatlama) etməlisiniz.</translation>
 <translation id="4567512141633030272">Giriş seçimi yanlışdır?</translation>
@@ -572,6 +583,8 @@
 <translation id="7189451821249468368">Bu cihazı qeydiyyata almaq üçün yetərincə güncəlləməniz yoxdur. Daha çoxunu almaq üçün satış şöbəsi ilə əlaqə saxlayın. Bu mesajın səhvən göndərildiyini düünürsünüzsə, dəstək xidməti ilə əlaqə saxlayın.</translation>
 <translation id="7202337678781136582">QR kodunu Android telefonunuzla skanlayın</translation>
 <translation id="7228854227189381547">Dəyişdirməyin</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Ən yaxşı təcrübə üçün <ph name="DEVICE_OS" /> sistemini daxili diskinizdə quraşdırın. Daha sonra giriş ekranından da quraşdıra bilərsiniz.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Quraşdırmağa hazır deyilsinizsə, sınamaq üçün USB-dən işə sala bilərsiniz. Bununla mövcud ƏS və datanız saxlanılacaq, lakin yaddaş və performans məhdudiyyətləri tətbiq edilə bilər.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Dəyişikliklər ayarlamadan sonra tətbiq ediləcək</translation>
 <translation id="7260186537988033909">Köşk və işarə cihazının qeydiyyatı tamamlanıb</translation>
 <translation id="7284411326658527427">Hər bir şəxs öz hesabını fərdiləşdirə və datanı məxfi saxlaya bilər.</translation>
@@ -589,6 +602,8 @@
 <translation id="7416263748877373774">Xidmət Şərtlərini yükləmək olmur. Şəbəkə bağlantınızı yoxlayıb yenidən cəhd edin.</translation>
 <translation id="7475742997309661417">ChromeOS, ChromeVox-da ekran oxuyucusunu əsasən görmə əngəlli və ya zəif görən insanlar nitq sintezi, yaxud brayl displeyi ilə ekrandakı mətni oxumaq üçün istifadə edir. ChromeVox-u aktiv etmək üçün hər iki səs düyməsini beş saniyə basıb saxlayın. ChromeVox aktivləşdirildikdə qısa nəzər salın.</translation>
 <translation id="7476454130948140105">Güncəlləmə üçün batareya çox azdır (<ph name="BATTERY_PERCENT" />)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Xəta oldu və <ph name="DEVICE_OS" /> quraşdırılmadı.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Yardım üçün g.co/flex/InstallErrors ünvanına daxil olun.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Qeydiyyatdan keçməzdən əvvəl TPM-i silməlisiniz ki, <ph name="DEVICE_OS" /> cihaz üzərində sahibliyi öz üzərinə götürə bilsin.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />TPM cihazını tamamilə deaktiv edə bilərsiniz. Datanız hələ də proqram şifrələməsi ilə etibarlı şəkildə saxlanacaq, ancaq avadanlıq dəstəkli sertifikatlar kimi müəyyən güvənlik funksiyaları deaktiv ediləcək.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Sistemi yenidən başladaraq və BIOS/UEFI ayarlarına daxil olaraq TPM ayarlarını dəyişə bilərsiniz. Addımlar cihaz modelinə əsasən dəyişir. Digər məlumatlar üçün yenidən başlatmazdan əvvəl ayrı cihazda <ph name="DEVICE_OS" /> sənədlərini açın: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

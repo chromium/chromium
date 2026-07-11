@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">让屏幕保持明快轻盈的色调</translation>
 <translation id="243179355394256322">贵单位仅允许已获授权的用户注册设备。此用户无权注册设备。请确保此用户在管理控制台的“用户”部分中拥有“注册 Google Meet 设备”管理员权限。</translation>
 <translation id="2439152382014731627">重置 <ph name="DEVICE_TYPE" /> 密码</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />安装流程<ph name="BEGIN_BOLD" />会清除整个硬盘中的数据<ph name="END_BOLD" />。请确保数据已备份。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />安装流程一旦开始就无法取消。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">您将无法添加用户，因为缺少 Google API 密钥。详情请见 <ph name="DETAILS_URL" />。</translation>
 <translation id="24786041351753425">启用数据恢复服务。</translation>
 <translation id="2485681265915754872">Google Play 服务条款</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebook 使用应用代替传统软件。无论您是想提高办公效率、娱乐身心还是有其他需求，都能在这里找到合适的应用。</translation>
 <translation id="450867954911715010">无障碍设置</translation>
 <translation id="4519605771716872386">已开启文件同步</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />请尝试执行以下问题排查步骤：
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />确保设备包含正常运行的内部存储设备，例如 HDD、SSD 或 eMMC
+        <ph name="LIST_ITEM" />确认内部存储设备容量大于 16GB
+        <ph name="LIST_ITEM" />检查与内部存储设备的连接情况（如果方便检查硬件）
+        <ph name="LIST_ITEM" />确保您使用的是经过认证的型号，并查看安装说明
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />如需更多帮助，请访问：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">您想将谁添加到此 <ph name="DEVICE_TYPE" />？</translation>
 <translation id="4566170377336116390">若想在注册后切换，您需为相应设备恢复出厂设置（对设备执行 Powerwash 操作）。</translation>
 <translation id="4567512141633030272">没选对登录选项?</translation>
@@ -569,6 +580,8 @@
 <translation id="7189451821249468368">您没有足够的升级许可来注册此设备。请与销售代表联系，以购买更多升级许可。如果您认为自己不应看到这条消息，请与支持人员联系。</translation>
 <translation id="7202337678781136582">使用您的 Android 手机扫描二维码</translation>
 <translation id="7228854227189381547">不切换</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />为获得最佳体验，请将 <ph name="DEVICE_OS" /> 安装到内部磁盘。您也可以稍后在登录界面上安装。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />如果您还没准备好安装，可以先通过 USB 运行来体验一下。这样做不会更改您的现有操作系统和数据，但可能会在存储和性能方面受到限制。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">设置完毕后更改便会生效</translation>
 <translation id="7260186537988033909">自助服务终端和数字标牌设备注册已完成</translation>
 <translation id="7284411326658527427">每个人都可对自己的账号进行个性化设置并确保数据的私密性。</translation>
@@ -586,6 +599,8 @@
 <translation id="7416263748877373774">无法加载《服务条款》。请检查您的网络连接状况，然后重试。</translation>
 <translation id="7475742997309661417">ChromeOS 中的屏幕阅读器 (ChromeVox) 主要供盲人或低视力用户使用，以便这些用户通过语音合成器或盲文显示屏获知屏幕上显示的文字。同时按住两个音量键 5 秒钟即可开启 ChromeVox。启用 ChromeVox 后，系统将带您快速了解相关功能。</translation>
 <translation id="7476454130948140105">电量太低 (<ph name="BATTERY_PERCENT" />%)，无法更新</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />出了点问题，无法安装 <ph name="DEVICE_OS" />。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />如需更多帮助，请访问：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />注册之前，您需要清除 TPM，使 <ph name="DEVICE_OS" /> 拥有对设备的所有权。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />您还可彻底关闭 TPM 设备。您的数据仍会通过软件加密技术得到妥善存储，但某些安全功能（例如由硬件支持的证书）将被停用。<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />若要更改您的 TPM 设置，请重启并进入系统 BIOS/UEFI 设置。具体步骤因设备型号而异。如需了解详情，请在重启前使用另一台设备打开 <ph name="DEVICE_OS" /> 文档：g.co/flex/TPMHelp。<ph name="END_PARAGRAPH3" /></translation>

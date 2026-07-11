@@ -189,6 +189,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="1807709131360304325">Ireki beste leiho bat</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> webguneak ezin du egin aurrera <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearekin</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" /> fitxa, grabatzen</translation>
+<translation id="1819443852740954262">Ireki guztiak ezkutuko moduko leiho batean</translation>
 <translation id="1820408774134375111">Pantailaren behealdean ainguratutako orria, saioa hasteko balio duena</translation>
 <translation id="1823492026305965829">Hasi saioa <ph name="USER_FULL_NAME" /> gisa</translation>
 <translation id="1824902652744048041">Sakatu Ezabatu arakatze-datuak</translation>
@@ -771,7 +772,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="4256782883801055595">Kode irekiko lizentziak</translation>
 <translation id="426652736638196239">Gailu honetan soilik gordeko da IBANa</translation>
 <translation id="4269820728363426813">Kopiatu estekaren helbidea</translation>
-<translation id="4270730597186910506">Egin produktu baten jarraipena edo utzi jarraipena egiteari.</translation>
 <translation id="4277529130885813215">Erabili beste gailu bat</translation>
 <translation id="427987768447457592">Fitxa talde berria</translation>
 <translation id="4282440837784183472"><ph name="MANAGED_DOMAIN" /> erakundeak kudeatzen du saioa hasteko erabiltzen ari zaren kontua eta Chrome erabiltzeko modua. Administratzaileak eginbide batzuk konfiguratu edo muga ditzake.</translation>
@@ -1438,6 +1438,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Webgune bateko harpidetza kendu duzu}other{# webgunetako harpidetza kendu duzu}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 pasahitz}other{# pasahitz}}</translation>
 <translation id="688730033107341407">Saioa amaitu ondoren, Google-ko kontuko laster-markak, pasahitzak eta bestelako elementuak kendu egingo dira gailu honetatik.</translation>
+<translation id="6892009074348518725">Luzapen hau erabiltzeko, hasi saioa Chrome-n. Gainera, zure pasahitzak eta bestelako datuak Google-ko kontuan gorde eta erabili ahal izango dituzu.</translation>
 <translation id="6896758677409633944">Kopiatu</translation>
 <translation id="6898797562238201317">Erabili zeure pasaesaldia Google-ko kontuko Chrome-ko datu guztiak enkriptatzeko</translation>
 <translation id="6900532703269623216">Babes hobetua</translation>
@@ -1475,6 +1476,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6983306615164277634">Eduki helbide-barra sakatuta haren kokapena aldatzeko.</translation>
 <translation id="6987047470128880212">Ezkutuko modua ez dago erabilgarri gailu honetan</translation>
 <translation id="6996145122199359148">Deskargatu orri hau</translation>
+<translation id="7007648447224463482">Ireki guztiak beste leiho batean</translation>
 <translation id="7013762323294215682">Sarbide-gakoa Pasahitz-kudeatzailea zerbitzuan gordeko da. Zerbitzu horretarako sarbidea duten guztiek erabili ahal izango dute sarbide-gakoa.</translation>
 <translation id="7020741890149022655">Gehitu irakurketa-zerrendan <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Ireki arakatzailean</translation>
@@ -1841,6 +1843,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8445448999790540984">Ezin dira esportatu pasahitzak</translation>
 <translation id="8446884382197647889">Lortu informazio gehiago</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Webgune baten baimenak kendu dira}other{# webguneren baimenak kendu dira}}</translation>
+<translation id="8449836157089738489">Ireki guztiak beste fitxa talde batean</translation>
 <translation id="8453310803815879010">Abiarazi Dino jokoa</translation>
 <translation id="8455675988389029454">Atzitu laster-markak, pasahitzak eta bestelako datuak gailu guztietan</translation>
 <translation id="8458341576712814616">Lasterbidea</translation>
@@ -1862,6 +1865,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8506357771923193001">Deskargak aurkituko dituzu hemen</translation>
 <translation id="8512053371384421952">Aurrerantzean, ez duzu jasoko <ph name="DOMAIN" /> domeinuaren jakinarazpenik.</translation>
 <translation id="8516012719330875537">Irudi-editorea</translation>
+<translation id="8517759303731677493">Editatu…</translation>
 <translation id="8533670235862049797">Arakatze segurua aktibatuta dago</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, pantaila txiki gainjarrian dauden fitxa ainguratu bat baino gehiago hautatuta</translation>
 <translation id="8540136935098276800">Idatzi formatu egokia duen URL bat</translation>

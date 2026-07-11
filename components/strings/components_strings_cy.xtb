@@ -1426,6 +1426,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i reoli pa wybodaeth rydych yn ei chysoni yng ngosodiadau Chrome</translation>
 <translation id="3203025201812691413">Ni all URL fod yn wag</translation>
 <translation id="320323717674993345">Canslo'r Taliad</translation>
+<translation id="3204534477198689393">Er mwyn gwella awgrymiadau a llenwi ffurflenni yn gyflymach, gellir prosesu cynnwys a chyfeiriadau URL y tudalennau rydych yn ymweld â nhw mewn man preifat yn y cwmwl.</translation>
 <translation id="3207830513221832868">Mae'n bosib bod gan <ph name="BLOCKED_URL" /> gynnwys i oedolion</translation>
 <translation id="3207960819495026254">Wedi rhoi nod tudalen ar gyfer</translation>
 <translation id="3208701679386778924">Anfonwch adroddiad fel y gallwn wella diweddariadau ChromeOS pellach.</translation>
@@ -1481,6 +1482,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3272643614306383237">Llai nag 1 MB. Mae'n bosib y bydd rhai gwefannau yn llwytho'n fwy araf ar eich ymweliad nesaf.</translation>
 <translation id="3273738040255912340">Gall eich gweinyddwr wneud newidiadau i'ch proffil a'ch porwr o bell, dadansoddi gwybodaeth am y porwr trwy adrodd, a chyflawni tasgau angenrheidiol eraill. Gellir rheoli gweithgarwch ar y ddyfais hon y tu allan i Chromium hefyd. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">Cadw IBAN wedi'i agor ar uchder llawn.</translation>
+<translation id="327455571215090823">Awtolenwi clyfrach, wedi'i gadw'n breifat</translation>
 <translation id="3281350579597955952">{0,plural, =1{Nid yw polisi gweinyddwr yn argymell agor y ffeil hon yn <ph name="DESTINATION_NAME" />}zero{Nid yw polisi gweinyddwr yn argymell agor y ffeiliau hyn yn <ph name="DESTINATION_NAME" />}two{Nid yw polisi gweinyddwr yn argymell agor y ffeiliau hyn yn <ph name="DESTINATION_NAME" />}few{Nid yw polisi gweinyddwr yn argymell agor y ffeiliau hyn yn <ph name="DESTINATION_NAME" />}many{Nid yw polisi gweinyddwr yn argymell agor y ffeiliau hyn yn <ph name="DESTINATION_NAME" />}other{Nid yw polisi gweinyddwr yn argymell agor y ffeiliau hyn yn <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Mae eich sefydliad, <ph name="ENROLLMENT_DOMAIN" />, wedi anfon rhywfaint o wybodaeth at y gwefannau canlynol, megis gosodiadau neu bolisïau.</translation>
 <translation id="3286372614333682499">fertigol</translation>

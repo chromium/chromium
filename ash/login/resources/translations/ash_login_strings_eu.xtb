@@ -228,6 +228,9 @@
 <translation id="3547954654003013442">Proxy-ezarpenak</translation>
 <translation id="3550915441744863158">Chrome automatikoki eguneratzen denez, beti izango duzu bertsiorik berriena</translation>
 <translation id="3559533181353831840"><ph name="TIME_LEFT" /> inguru falta dira</translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Idatzi demo-bertsioko gailu honi dagozkion saltzailearen izena eta denda-zenbakia*. <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Denda-zenbakia ezagutzen ez baduzu, idatzi "0000" demo modua instalatzen jarraitzeko. <ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />*Oharra: gailuak demo moduaren zein bertsio jaso behar duen identifikatzeko erabiltzen du Google-k informazio hori, baita demo moduaren erabilera neurtzeko ere.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Arazoren bat izan da. Saiatu berriro.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> sistemaren hardware-datuak biltzea</translation>
 <translation id="3602290021589620013">Aurrebista</translation>
@@ -286,6 +289,8 @@
 <translation id="4250680216510889253">Ez</translation>
 <translation id="4251377547188244181">Gailua kiosko eta seinaleztatze modurako erregistratzea</translation>
 <translation id="4263223596040212967">Egiaztatu teklatuaren diseinua egokia dela eta saiatu berriro.</translation>
+<translation id="4268490040465852105">Gmail, YouTube, Chrome eta Google-ren beste zerbitzuetan erabiltzen duzun kontua da Google-ko kontua.
+        Erabili kontu hori zure laster-marka, fitxategi eta bestelako eduki guztiak erraz asko atzitzeko.</translation>
 <translation id="4278498748067682896">Gailuari kiosko edo seinaleztatzeko moduan soilik funtzionatzeko baimena ematen dion Kiosko- eta seinaleztatze-bertsio berri bat erabiliko duzu. Erabiltzaileek gailuan saioa hastea nahi baduzu, itzuli eta erregistratu Chrome Enterprise Upgrade bidez.</translation>
 <translation id="4287157641315808225">Bai, aktibatu ChromeVox</translation>
 <translation id="4289732974614035569">Aukeratu PIN bat</translation>
@@ -431,6 +436,15 @@
 <translation id="5800703268655655701">Hautatu gai argia edo iluna</translation>
 <translation id="5804259315582798390">Ezin izan da gaitu gailuko datuak berreskuratzeko aukera</translation>
 <translation id="5810809306422959727">Ezin dituzu ezarri guraso-murriztapenak kontu honetan</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Gailuak erakundean erregistratzen badituzu, haiek modu zentralizatuan kudeatzeko moduan konfiguratuko dituzu. Baliteke erakundeak hainbat arrazoirengatik eskatzea gailuak erregistratzeko:<ph name="END_DESCRIPTION" />
+    <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Segurtasuna hobetzeko<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+    <ph name="BEGIN_DESCRIPTION1" />Segurtasun-ezarpen gehigarriak konfiguratuta, erakundeak erabiltzaileen eta gailuen datuak babestuta manten ditzake. Gainera, gailuak urrunetik berrezartzea, galdutako gailuak desgaitzea eta antzeko ekintzak gauza ditzake.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Zerbitzua pertsonalizatzeko<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+    <ph name="BEGIN_DESCRIPTION2" />Abiaraztean, saioa hasteko pantailan eta saioa hasi ondoren gailuak duen portaera erakundearen beharren arabera pertsonaliza daiteke.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Laguntza emateko<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+    <ph name="BEGIN_DESCRIPTION3" />Erakundea urrunetik sar daiteke gailu baten saioan arazoak konpontzeko.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Sarbidea gaitzeko<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+    <ph name="BEGIN_DESCRIPTION4" />Baliteke erakundearen aplikazioak, zerbitzuak eta sareak erregistratutako gailuetan soilik egotea erabilgarri.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053"><ph name="TIME" /> minutu inguru geratzen dira</translation>
 <translation id="5852112051279473187">Arazo larriren bat gertatu da gailua erregistratzean. Saiatu berriro edo jarri harremanetan laguntza-zerbitzuko ordezkariren batekin.</translation>
 <translation id="5852137567692933493">Berrabiarazi eta berrezarri fabrikako ezarpenak Powerwash bidez</translation>
@@ -451,6 +465,8 @@
 <translation id="6016178549409952427">Joan <ph name="CURRENT_ELEMENT" /> elementu gehigarritatik <ph name="TOTAL_ELEMENTS" />garrenera</translation>
 <translation id="6016972670657536680">Hizkuntza eta teklatua hautatzeko botoia. <ph name="LANGUAGE" /> daukazu hautatuta.</translation>
 <translation id="6040143037577758943">Itxi</translation>
+<translation id="6042193169866365541">Gmail, YouTube, Chrome eta Google-ren beste zerbitzuetan erabiltzen duzun kontua da Google-ko kontua.
+        Erabili kontu hori zure laster-marka, fitxategi eta bestelako eduki guztiak erraz asko atzitzeko. Konturik ez baduzu, hurrengo pantailan sor dezakezu bat.</translation>
 <translation id="6051354611314852653">Sistemak ezin izan dio gailu honi APIa atzitzeko baimenik eman.</translation>
 <translation id="6055544610007596637">Instalatu <ph name="DEVICE_TYPE" /> gailurako aplikazioak Google Play Store-tik</translation>
 <translation id="6069464830445383022">Google-ko kontuarekin hasiko duzu saioa Chromebook-en</translation>

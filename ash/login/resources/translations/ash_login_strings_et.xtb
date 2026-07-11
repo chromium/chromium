@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Ere ja selge kasutuskogemus</translation>
 <translation id="243179355394256322">Teie organisatsioon lubab seadmeid registreerida ainult volitatud kasutajatel. See kasutaja pole seadmete registreerimiseks volitatud. Veenduge administraatorikonsooli jaotises Kasutajad, et kasutajal oleks administraatori õigus „Google Meeti riistvara registreerimine“.</translation>
 <translation id="2439152382014731627">Seadme <ph name="DEVICE_TYPE" /> parooli lähtestamine</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Installimisel <ph name="BEGIN_BOLD" />tühjendatakse kogu kõvaketas<ph name="END_BOLD" />. Varundage kindlasti oma andmed.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Pärast installimise alustamist ei saa seda tühistada.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Te ei saa kasutajaid lisada, kuna Google API võtmed puuduvad. Üksikasju vt <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Lubage andmete taastamise teenus.</translation>
 <translation id="2485681265915754872">Google Play teenusetingimused</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebookid kasutavad traditsioonilise tarkvara asemel rakendusi. Hankige rakendusi produktiivsuse, meelelahutuse ja muu jaoks.</translation>
 <translation id="450867954911715010">Juurdepääsetavuse seaded</translation>
 <translation id="4519605771716872386">Failide sünkroonimine lülitati sisse</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Proovige järgmisi veaotsingu toiminguid.
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Veenduge, et teie seadmes oleks toimiv sisemine salvestusruum, nt HDD, SSD või eMMC
+        <ph name="LIST_ITEM" />Kontrollige, kas teie sisemise salvestusruumi seade on suurem kui 16 GB
+        <ph name="LIST_ITEM" />Kontrollige ühendust sisemise salvestusruumiga, kui sellele on füüsiliselt juurdepääs
+        <ph name="LIST_ITEM" />Veenduge, et kasutaksite sertifitseeritud mudelit, ja vaadake installimismärkusi
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Lisateabe saamiseks külastage lehte g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Keda sooviksite lisada selle seadmele (<ph name="DEVICE_TYPE" />)?</translation>
 <translation id="4566170377336116390">Kui soovite pärast registreerimist valikut muuta, peate oma seadme lähtestama tehaseseadetele (Powerwash).</translation>
 <translation id="4567512141633030272">Kas see on vale sisselogimisvalik?</translation>
@@ -569,6 +580,8 @@
 <translation id="7189451821249468368">Teil ei ole piisavalt täiendusi selle seadme registreerimiseks. Täienduste ostmiseks võtke ühendust müügiosakonnaga. Kui arvate, et saite selle sõnumi ekslikult, võtke ühendust toega.</translation>
 <translation id="7202337678781136582">Skannige QR-kood oma Androidi telefoniga</translation>
 <translation id="7228854227189381547">Ära lülita</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Parima kasutuskogemuse saamiseks installige <ph name="DEVICE_OS" /> oma sisemisele kettale. Saate selle hiljem installida ka sisselogimiskuval.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Kui te pole installimiseks valmis, saate rakendust proovida, käitades selle USB-seadmelt. See säilitab teie olemasoleva operatsioonisüsteemi ja andmed, kuid kehtida võivad salvestusruumi- ja jõudluspiirangud.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Muudatused rakendatakse pärast seadistamist</translation>
 <translation id="7260186537988033909">Kioski- ja teabeseadmete registreerimine viidi lõpule</translation>
 <translation id="7284411326658527427">Iga inimene saab oma konto isikupärastada ja andmed privaatsena hoida.</translation>
@@ -586,6 +599,8 @@
 <translation id="7416263748877373774">Teenusetingimusi ei saa laadida. Kontrollige võrguühendust ja proovige uuesti.</translation>
 <translation id="7475742997309661417">ChromeOS-i ekraanilugejat ChromeVox kasutavad peamiselt pimedad või vaegnägemisega inimesed, et lugeda ekraanil kuvatavat teksti kõnesünteesi või Braille’i ekraani abil. ChromeVoxi sisselülitamiseks vajutage 5 sekundit pikalt mõlemat helitugevuse klahvi. Kui ChromeVox aktiveeritakse, tehakse teile kiire tutvustus.</translation>
 <translation id="7476454130948140105">Aku on värskendamiseks liiga tühi (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Midagi läks valesti ja operatsioonisüsteemi <ph name="DEVICE_OS" /> ei saanud installida.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Lisaabi saamiseks külastage saiti g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Enne registreerumist peate TPM-i tühjendama, et <ph name="DEVICE_OS" /> saaks seadme üle võtta.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Võite TPM-i ka täielikult välja lülitada. Teie andmed salvestatakse turvaliselt tarkvaralise krüpteerimisega, kuid teatud turvafunktsioonid (nt riistvaratoega sertifikaadid) keelatakse.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Saate oma TPM-i seadeid muuta, taaskäivitades seadme ja sisenedes süsteemi BIOS-i/UEFI seadetesse. Juhised erinevad olenevalt seadme mudelist. Lisateabe saamiseks avage enne taaskäivitamist OS-i <ph name="DEVICE_OS" /> dokumendid teises seadmes: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

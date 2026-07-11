@@ -349,6 +349,7 @@
 <translation id="1542105669288201090">ವ್ಯವಹಾರ ಶಿಕ್ಷಣ</translation>
 <translation id="1542830386724426410">ಚೆಕ್ಔಟ್‌ನಲ್ಲಿ ಲಭ್ಯವಿರುವ ಕಾರ್ಡ್ ಪ್ರಯೋಜನಗಳು ಮತ್ತು ರಿವಾರ್ಡ್‌ಗಳನ್ನು ತೋರಿಸಿ. ವಿತರಕರ ನಿಯಮಗಳು ಅನ್ವಯಿಸುತ್ತವೆ. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">ದರದ ಇತಿಹಾಸ</translation>
+<translation id="1546286808622193216">Gemini ಅನ್ನು ಬಳಸಿಕೊಂಡು ಕಾರ್ಡ್ ಪ್ರಯೋಜನಗಳನ್ನು ಹೋಲಿಸಿ ನೋಡಿ</translation>
 <translation id="1549470594296187301">ಈ ವೈಶಿಷ್ಟ್ಯವನ್ನು ಬಳಸಲು JavaScript ಸಕ್ರಿಯಗೊಳಿಸಬೇಕು.</translation>
 <translation id="1553152622374372421">ಚಳಿಗಾಲದ ಕ್ರೀಡೆ</translation>
 <translation id="1553358976309200471">Chrome ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ</translation>
@@ -2413,6 +2414,7 @@
 <translation id="4744603770635761495">ಪ್ರದರ್ಶನಗೊಳ್ಳುವಂತಹ ಹಾದಿ</translation>
 <translation id="4744816391336495134">ನೀವು ಸೇವ್‌ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಿದಾಗಲೆಲ್ಲಾ ಅದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಲು ಈಗ ನೀವು ನಿಮ್ಮ ಫಿಂಗರ್‌ ಪ್ರಿಂಟ್ ಅನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="4749011317274908093">ನೀವು ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿರುವಿರಿ</translation>
+<translation id="4749620353539006322">ರಿವಾರ್ಡ್‌ಗಳನ್ನು ಗರಿಷ್ಠಗೊಳಿಸಿ</translation>
 <translation id="4749924365937394956">ಸರ್ವರ್ ದೃಢೀಕರಣ</translation>
 <translation id="4750671009706599284">ಈ ಫೋನ್</translation>
 <translation id="4750917950439032686">ಈ ಸೈಟ್‌ಗೆ ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಕಳುಹಿಸಿದಾಗ ಅದು (ಉದಾಹರಣೆಗೆ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಥವಾ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಗಳು) ಖಾಸಗಿಯಾಗಿರುತ್ತದೆ.</translation>
@@ -2988,6 +2990,7 @@
 <translation id="5611398002774823980">ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="561165882404867731">Google Translate ಮೂಲಕ ಈ ಪುಟವನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನ ಸ್ಥಳವನ್ನು ಬಳಸಲು ಬಯಸುತ್ತದೆ</translation>
+<translation id="5613958591683399697"><ph name="ENGINE_NAME" /> ಅನ್ನು ಕೇಳಿ</translation>
 <translation id="5614190747811328134">ಬಳಕೆದಾರ ಸೂಚನೆ</translation>
 <translation id="5614520971155863709">ಕಾರ್ಡ್ ಗೇಮ್‌ಗಳು</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> ನಿಮ್ಮನ್ನು ತೀರಾ ಹೆಚ್ಚು ಬಾರಿ ಮರುನಿರ್ದೇಶಿಸಿದೆ.</translation>

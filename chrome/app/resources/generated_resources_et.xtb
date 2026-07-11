@@ -4996,6 +4996,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4849286518551984791">Koordineeritud maailmaaeg (UTC/GMT)</translation>
 <translation id="4849517651082200438">Ära installi</translation>
 <translation id="4849731766219625109">Kasutage oma <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kontot</translation>
+<translation id="4850279708232718725">Räägi mulle sellest</translation>
 <translation id="485053257961878904">Märguannete sünkroonimist ei õnnestunud seadistada</translation>
 <translation id="4850548109381269495">Kontrollige mõlemas seadmes internetiühendust ja lülitage sisse Bluetooth. Seejärel proovige uuesti.</translation>
 <translation id="4850669014075537160">Kerimine</translation>
@@ -6344,6 +6345,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5922854266885514646">Klõpsake valikul „Chrome'i kohandamine“</translation>
 <translation id="5924047253200400718">Hankige abi<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Küsi enne Microsofti failide kopeerimist või teisaldamist Google Drive'i</translation>
+<translation id="5925057331573749968">Logige QR-koodi abil kiiremini sisse</translation>
 <translation id="5926936390113611560">Ava kõik profiilid</translation>
 <translation id="592880897588170157">Laadige PDF-failid alla selle asemel, et need Chrome'is automaatselt avada</translation>
 <translation id="5930567261594625340">Öine taevas</translation>
@@ -9492,6 +9494,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8372678064309688510">Teie aadress on salvestatud</translation>
 <translation id="8373652277231415614">Crostini jagatud kataloogid</translation>
 <translation id="8374243500935816406">Saitidel ei ole lubatud aknaid kõikidel teie ekraanidel hallata</translation>
+<translation id="8375703478696038265">Toiming <ph name="STEP_NUMBER" />/<ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Andke meile teada, mis Google Castiga toimub.</translation>
 <translation id="8376384591331888629">Sh sellel saidil olevad kolmanda osapoole küpsisefailid</translation>
 <translation id="8376451933628734023">Kui see veebirakendus üritab jätta muljet, et tegemist on teise rakendusega, desinstallige see.</translation>
@@ -10563,6 +10566,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="9188142767272053574">Luba protsessiisoleerimine</translation>
 <translation id="9192019773545828776">Esitatakse suulist tagasisidet, et saaksite seadet kasutada ilma ekraanikuva vaatamata. Braille'i teel tagasiside on saadaval ühendatud seadme puhul. ChromeVoxi sisse- ja väljalülitamiseks vajutage klahvikombinatsiooni Ctrl + Alt + Z. Navigeerimiseks kasutage klahvikombinatsiooni Otsing + vasaknool või paremnool. Valimiseks (aktiveerimiseks) kasutage klahvikombinatsiooni Otsing + tühik.</translation>
 <translation id="9195969368671142407">Kui teie organisatsiooni piirab Google'i kontole salvestamist, ei saa te vahelehegruppe jagada ega nendega liituda</translation>
+<translation id="9197456336762295195">Skannige see QR-kood selle seadme kaameraga, milles on teie google.com-i pääsuvõti</translation>
 <translation id="919840898042157087">Staatiline liikumine</translation>
 <translation id="9199503643457729322">Klõpsake privaatsusjuhendist väljumiseks.</translation>
 <translation id="9199695835892108985">Kas lähtestada kõik jadapordi õigused?</translation>

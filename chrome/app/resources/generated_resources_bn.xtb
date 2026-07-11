@@ -5005,6 +5005,7 @@
 <translation id="4849286518551984791">সমন্বিত সর্বজনীন সময় (UTC / GMT)</translation>
 <translation id="4849517651082200438">ইনস্টল করবেন না</translation>
 <translation id="4849731766219625109">আপনার <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> অ্যাকাউন্ট ব্যবহার করুন</translation>
+<translation id="4850279708232718725">আমাকে এটি সম্পর্কে বলো</translation>
 <translation id="485053257961878904">বিজ্ঞপ্তি সিঙ্ক করার প্রক্রিয়া সেট আপ করা যায়নি</translation>
 <translation id="4850548109381269495">দুটি ডিভাইসেই আপনার ইন্টারনেট কানেকশন চেক করুন এবং ব্লুটুথ চালু করুন। তারপর, আবার চেষ্টা করুন।</translation>
 <translation id="4850669014075537160">স্ক্রোলিং</translation>
@@ -6354,6 +6355,7 @@
 <translation id="5922854266885514646">"Chrome কাস্টমাইজ করুন" বিকল্পে ক্লিক করুন</translation>
 <translation id="5924047253200400718">সাহায্য পান<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Google Drive-এ Microsoft-এর ফাইল কপি করা বা সরানোর আগে জিজ্ঞেস করুন</translation>
+<translation id="5925057331573749968">QR কোড ব্যবহার করে আরও দ্রুত সাইন-ইন করুন</translation>
 <translation id="5926936390113611560">সব প্রোফাইল খুলুন</translation>
 <translation id="592880897588170157">Chrome-এ PDF ফাইলগুলি অটোমেটিকভাবে খোলার পরিবর্তে সেগুলি ডাউনলোড করুন</translation>
 <translation id="5930567261594625340">নাইট স্কাই</translation>
@@ -9504,6 +9506,7 @@
 <translation id="8372678064309688510">আপনার ঠিকানা সেভ করা হয়েছে</translation>
 <translation id="8373652277231415614">Crostini-এর শেয়ার করা ডিরেক্টরি</translation>
 <translation id="8374243500935816406">সাইটকে আপনার সব ডিসপ্লেতে উইন্ডো ম্যানেজ করার অনুমতি দেবেন না</translation>
+<translation id="8375703478696038265"><ph name="TOTAL_STEPS" />টি ধাপের মধ্যে <ph name="STEP_NUMBER" />টি</translation>
 <translation id="8376137163494131156">Google Cast সম্পর্কে আপনি কী মতামত জানাতে চান।</translation>
 <translation id="8376384591331888629">এই সাইটে থার্ড-পার্টি কুকি সহ</translation>
 <translation id="8376451933628734023">যদি এই ওয়েব অ্যাপ কৌশলে নিজেকে অন্য অ্যাপ হিসেবে দেখিয়ে আপনাকে প্রতারিত করে, তাহলে এটি আনইনস্টল করুন।</translation>
@@ -10575,6 +10578,7 @@
 <translation id="9188142767272053574">প্রসেস আইসোলেশন চালু করুন</translation>
 <translation id="9192019773545828776">পড়ে শোনানোর সুবিধা পান যাতে স্ক্রিনের দিকে না তাকিয়েই ডিভাইস ব্যবহার করতে পারেন। কানেক্ট করা ডিভাইসের সাথে ব্রেইল ফিডব্যাকের সুবিধা উপলভ্য। 'Ctrl + Alt + Z' কী ব্যবহার করে ChromeVox চালু বা বন্ধ করুন। নেভিগেট করতে 'Search + বামদিকের তীরচিহ্ন বা ডানদিকের তীরচিহ্ন' কী ব্যবহার করুন। বেছে নিতে 'Search + Space' কী ব্যবহার করুন (চালু করুন)।</translation>
 <translation id="9195969368671142407">আপনার সংস্থা আপনাকে Google অ্যাকাউন্টে সেভ করতে না দিলে, আপনি ট্যাব গ্রুপে শেয়ার করতে বা যোগ দিতে পারবেন না</translation>
+<translation id="9197456336762295195">যে ডিভাইসে google.com-এর জন্য আপনার পাসকী আছে, তার ক্যামেরা ব্যবহার করে এই QR কোড স্ক্যান করুন</translation>
 <translation id="919840898042157087">স্ট্যাটিক মুভমেন্ট</translation>
 <translation id="9199503643457729322">গোপনীয়তা সংক্রান্ত গাইড থেকে দূরে নেভিগেট করতে ক্লিক করুন।</translation>
 <translation id="9199695835892108985">সব সিরিয়াল পোর্টের অনুমতি রিসেট করবেন?</translation>

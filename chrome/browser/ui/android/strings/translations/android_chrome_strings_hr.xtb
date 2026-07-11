@@ -189,6 +189,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1807709131360304325">Otvaranje novog prozora</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ne može nastaviti s upotrebom usluge <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, kartica koja snima</translation>
+<translation id="1819443852740954262">Otvori sve u anonimnom prozoru</translation>
 <translation id="1820408774134375111">Donja tablica za prijavu</translation>
 <translation id="1823492026305965829">Prijavite se kao <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">Dodirnite Izbriši podatke o pregledavanju</translation>
@@ -771,7 +772,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="4256782883801055595">Licence otvorenog koda</translation>
 <translation id="426652736638196239">Ovaj će se IBAN spremiti samo na ovaj uređaj</translation>
 <translation id="4269820728363426813">Kopiraj adresu veze</translation>
-<translation id="4270730597186910506">Počnite ili prestanite pratiti proizvod.</translation>
 <translation id="4277529130885813215">Upotrijebite neki drugi uređaj</translation>
 <translation id="427987768447457592">Nova grupa kartica</translation>
 <translation id="4282440837784183472">Vaša organizacija, <ph name="MANAGED_DOMAIN" />, upravlja računom na koji se prijavljujete i načinom na koji se Chrome može upotrebljavati. Vaš administrator može postaviti ili ograničiti određene značajke.</translation>
@@ -1476,6 +1476,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6983306615164277634">Možete i dodirnuti i zadržati pritisak na adresnoj traci kako biste promijenili položaj.</translation>
 <translation id="6987047470128880212">Anonimni način nije dostupan na ovom uređaju</translation>
 <translation id="6996145122199359148">Preuzmite ovu stranicu</translation>
+<translation id="7007648447224463482">Otvori sve u novom prozoru</translation>
 <translation id="7013762323294215682">Ovaj će se pristupni ključ spremiti u vaš upravitelj zaporki. Svatko s pristupom upravitelju zaporki moći će upotrebljavati taj pristupni ključ.</translation>
 <translation id="7020741890149022655">Dodaj na popis za čitanje <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Otvori u pregledniku</translation>
@@ -1842,6 +1843,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8445448999790540984">Izvoz zaporki nije moguć</translation>
 <translation id="8446884382197647889">Saznajte više</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Dopuštenja su uklonjena s jedne web-lokacije}one{Dopuštenja su uklonjena s # web-lokacije}few{Dopuštenja su uklonjena s # web-lokacije}other{Dopuštenja su uklonjena s # web-lokacija}}</translation>
+<translation id="8449836157089738489">Otvori sve u novoj grupi kartica</translation>
 <translation id="8453310803815879010">Pokrenite igru s dinosaurom</translation>
 <translation id="8455675988389029454">Pristup oznakama, zaporkama i drugim podacima na svim vašim uređajima</translation>
 <translation id="8458341576712814616">Prečac</translation>
@@ -1863,6 +1865,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8506357771923193001">Preuzimanja ćete pronaći ovdje</translation>
 <translation id="8512053371384421952">Više nećete primati obavijesti s web-lokacije <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Alat za uređivanje slika</translation>
+<translation id="8517759303731677493">Uredi…</translation>
 <translation id="8533670235862049797">Uključeno je Sigurno pregledavanje</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, višestruko odabrana prikvačena kartica sa slikom u slici</translation>
 <translation id="8540136935098276800">Unesite ispravno oblikovan URL</translation>

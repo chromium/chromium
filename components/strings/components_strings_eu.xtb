@@ -2322,6 +2322,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4607608436550361748">Ikusi Chrome-ri buruzko aholkuak</translation>
 <translation id="460848736049414407">Administratzaileak blokeatu du</translation>
 <translation id="4610279718074907952">Egiten dituzun jarduerak ikus ditzakeen talde batean (<ph name="SET_OWNER" /> domeinuak definitutakoa) dago webgunea</translation>
+<translation id="4612631413844865947">Errore bat gertatu da <ph name="MERCHANT_ORIGIN" /> saltzaileari <ph name="PAYMENT_APP_ORIGIN" /> bidez egindako eskaera prozesatzean.</translation>
 <translation id="46128681529823442">Futbol-ekipamendua</translation>
 <translation id="4612904677925722054">Baliteke webgune honek helduentzako edukia izatea. Guraso edo tutore batek webgunea bisitatzeko baimena eman behar dizu.</translation>
 <translation id="4619564267100705184">Egiaztatu zeu zarela</translation>

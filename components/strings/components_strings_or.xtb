@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">ବିଜିନେସ ଶିକ୍ଷା</translation>
 <translation id="1542830386724426410">ଚେକଆଉଟ ସମୟରେ ଉପଲବ୍ଧ କାର୍ଡ ଲାଭ ଏବଂ ପୁରସ୍କାରଗୁଡ଼ିକ ଦେଖାନ୍ତୁ। ପ୍ରଦାନକାରୀ ସର୍ତ୍ତାବଳୀ ଲାଗୁ ହୁଏ। <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">ମୂଲ୍ୟ ଇତିହାସ</translation>
+<translation id="1546286808622193216">Gemini ବ୍ୟବହାର କରି କାର୍ଡ ଲାଭଗୁଡ଼ିକୁ ତୁଳନା କରନ୍ତୁ</translation>
 <translation id="1549470594296187301">ଏହି ବୈଶିଷ୍ଟ୍ୟକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ନିଶ୍ଚିତରୂପେ JavaScriptକୁ ସକ୍ଷମ କରାଯିବା ଉଚିତ।</translation>
 <translation id="1553152622374372421">ଶୀତକାଳୀନ ସ୍ପୋର୍ଟ୍ସ</translation>
 <translation id="1553358976309200471">Chrome ଅପ୍‍‍‍‍‍ଡେଟ୍‌</translation>
@@ -2413,6 +2414,7 @@
 <translation id="4744603770635761495">ଏକ୍‌ଜିକ୍ୟୁଟେବଲ୍ ପାଥ୍</translation>
 <translation id="4744816391336495134">ଆପଣ ଏକ ସେଭ ହୋଇଥିବା ପାସୱାର୍ଡ ବ୍ୟବହାର କଲେ, ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଯାଞ୍ଚ କରିବା ପାଇଁ ଆପଣଙ୍କ ଟିପଚିହ୍ନକୁ ଆପଣ ବ୍ୟବହାର କରିପାରିବେ</translation>
 <translation id="4749011317274908093">ଆପଣ ଇନକଗ୍ନିଟୋ ମୋଡକୁ ଚାଲି ଯାଇଛନ୍ତି</translation>
+<translation id="4749620353539006322">ରିୱାର୍ଡକୁ ସର୍ବାଧିକ କରନ୍ତୁ</translation>
 <translation id="4749924365937394956">ସର୍ଭର ପ୍ରମାଣୀକରଣ</translation>
 <translation id="4750671009706599284">ଏହି ଫୋନ</translation>
 <translation id="4750917950439032686">ଅପଣଙ୍କର ସୂଚନା (ଉଦାହରଣ ସ୍ୱରୂପ, ପାସ୍‍ୱର୍ଡ କିମ୍ବା କ୍ରେଡିଟ୍ କାର୍ଡ ନମ୍ବର) ଏହି ସାଇଟ୍‍କୁ ଯେତେବେଳେ ପଠାଯାଏ, ସେତେବେଳେ ବ୍ୟକ୍ତିଗତ ଥାଏ।</translation>
@@ -2988,6 +2990,7 @@
 <translation id="5611398002774823980">ଆକାଉଣ୍ଟରେ ସେଭ କରନ୍ତୁ</translation>
 <translation id="561165882404867731">Google Translate ସାହାଯ୍ୟରେ ଏହି ପୃଷ୍ଠାକୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ର ଲୋକେସନ୍‌ ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛି</translation>
+<translation id="5613958591683399697"><ph name="ENGINE_NAME" />କୁ ପଚାରନ୍ତୁ</translation>
 <translation id="5614190747811328134">ୟୁଜରଙ୍କ ବିଜ୍ଞପ୍ତି</translation>
 <translation id="5614520971155863709">କାର୍ଡ ଗେମଗୁଡ଼ିକ</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" />, ଆପଣଙ୍କୁ ଅନେକ ଥର ରିଡାଇରେକ୍ଟ କରିଛି।</translation>

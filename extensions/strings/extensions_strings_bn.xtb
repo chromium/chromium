@@ -73,6 +73,7 @@
 <translation id="4233778200880751280"><ph name="ABOUT_PAGE" /> সম্পর্কিত পৃষ্ঠা লোড করা গেল না।</translation>
 <translation id="424963718355121712">তাদের প্রভাবিত করে এরকম হোস্ট থেকে অ্যাপ অবশ্যই হওয়া উচিত</translation>
 <translation id="4306119971288449206">অ্যাপ "<ph name="CONTENT_TYPE" />" কন্টেন্ট-প্রকার সহ হওয়া উচিত</translation>
+<translation id="4349181963619779233">এই ওয়েবসাইট থেকে এক্সটেনশন ও অ্যাপ যোগ করা যাবে না</translation>
 <translation id="4625078469366263107">অ্যাপ্লিকেশান সক্ষম করুন</translation>
 <translation id="4633003931260532286">এক্সটেনশানের ন্যূনতম <ph name="IMPORT_VERSION" /> ভার্সনের <ph name="IMPORT_NAME" /> প্রয়োজন, কিন্তু শুধুমাত্র <ph name="INSTALLED_VERSION" /> ভার্সন ইনস্টল করা আছে</translation>
 <translation id="4660476621274971848">"<ph name="EXPECTED_VERSION" />" ভার্সনটি হওয়া উচিত ছিল, কিন্তু ভার্সনটি হল "<ph name="NEW_ID" />"</translation>

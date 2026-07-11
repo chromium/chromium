@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Giữ cho mọi thứ luôn sáng sủa và thoáng mát</translation>
 <translation id="243179355394256322">Tổ chức của bạn chỉ cho phép những người dùng được ủy quyền đăng ký thiết bị. Người dùng này không được phép đăng ký thiết bị. Hãy kiểm tra trong phần Người dùng của Bảng điều khiển dành cho quản trị viên để đảm bảo rằng người dùng này có đặc quyền của quản trị viên "Đăng ký thiết bị Google Meet".</translation>
 <translation id="2439152382014731627">Đặt lại mật khẩu <ph name="DEVICE_TYPE" /></translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Quá trình cài đặt <ph name="BEGIN_BOLD" />sẽ xoá toàn bộ ổ đĩa cứng của bạn<ph name="END_BOLD" />. Hãy đảm bảo dữ liệu của bạn đã được sao lưu.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Quá trình cài đặt không thể huỷ được một khi đã bắt đầu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Bạn không thể thêm người dùng vì thiếu khóa Google API. Xem <ph name="DETAILS_URL" /> để biết thông tin chi tiết.</translation>
 <translation id="24786041351753425">Bật dịch vụ khôi phục dữ liệu.</translation>
 <translation id="2485681265915754872">Điều khoản dịch vụ của Google Play</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebook dùng ứng dụng thay vì phần mềm truyền thống. Hãy tải các ứng dụng để giải trí, tăng năng suất và phục vụ nhiều mục đích khác.</translation>
 <translation id="450867954911715010">Cài đặt trợ năng</translation>
 <translation id="4519605771716872386">Tính năng đồng bộ hoá tệp đã bật</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Hãy thử các bước khắc phục sự cố sau:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Đảm bảo rằng thiết bị có bộ nhớ trong đang hoạt động, chẳng hạn như ổ đĩa HDD, SSD hoặc eMMC
+        <ph name="LIST_ITEM" />Kiểm tra xem bộ nhớ trong của thiết bị có lớn hơn 16 GB hay không
+        <ph name="LIST_ITEM" />Kiểm tra trạng thái kết nối với bộ nhớ trong, nếu có thể kiểm tra thực tế bên ngoài
+        <ph name="LIST_ITEM" />Đảm bảo rằng bạn đang dùng một kiểu thiết bị được chứng nhận rồi kiểm tra ghi chú về việc cài đặt
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Để được trợ giúp thêm, hãy truy cập: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Bạn muốn thêm ai vào chiếc <ph name="DEVICE_TYPE" /> này?</translation>
 <translation id="4566170377336116390">Nếu muốn chuyển đổi sau khi đăng ký, bạn sẽ phải đặt lại thiết bị về trạng thái ban đầu (powerwash).</translation>
 <translation id="4567512141633030272">Sai phương thức đăng nhập?</translation>
@@ -572,6 +583,8 @@
 <translation id="7189451821249468368">Bạn không có đủ bản nâng cấp để đăng ký thiết bị này. Vui lòng liên hệ với bộ phận bán hàng để mua thêm. Nếu bạn nhận được thư này do nhầm lẫn, vui lòng liên hệ với nhóm hỗ trợ.</translation>
 <translation id="7202337678781136582">Quét mã QR bằng điện thoại Android</translation>
 <translation id="7228854227189381547">Không chuyển</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Để có trải nghiệm tốt nhất, hãy cài đặt <ph name="DEVICE_OS" /> vào ổ đĩa trong của bạn. Bạn cũng có thể cài đặt ứng dụng vào lúc khác trên màn hình đăng nhập.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Nếu chưa sẵn sàng cài đặt, bạn có thể chạy ứng dụng từ USB để dùng thử trước. Thao tác này sẽ giữ lại hệ điều hành và dữ liệu hiện có, nhưng bạn có thể gặp phải các giới hạn về dung lượng lưu trữ và hiệu suất.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Các thay đổi sẽ được áp dụng sau quá trình thiết lập</translation>
 <translation id="7260186537988033909">Đã hoàn tất quá trình đăng ký thiết bị kiosk và bảng hiệu</translation>
 <translation id="7284411326658527427">Mỗi người đều có thể điều chỉnh tài khoản theo cách riêng và bảo mật dữ liệu.</translation>
@@ -589,6 +602,8 @@
 <translation id="7416263748877373774">Không thể tải Điều khoản dịch vụ. Vui lòng kiểm tra kết nối mạng của bạn và thử lại.</translation>
 <translation id="7475742997309661417">Trình đọc màn hình ChromeVox trên ChromeOS chủ yếu dành cho người khiếm thị hoặc có thị lực kém, giúp họ đọc văn bản hiển thị trên màn hình thông qua trình tổng hợp giọng nói hoặc màn hình chữ nổi. Nhấn và giữ cả hai phím âm lượng trong 5 giây để bật ChromeVox. Sau khi kích hoạt ChromeVox, bạn sẽ được hướng dẫn nhanh.</translation>
 <translation id="7476454130948140105">Pin quá yếu để cập nhật (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Đã xảy ra lỗi và không thể cài đặt <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Để được trợ giúp thêm, hãy truy cập: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Trước khi đăng ký, bạn cần xoá TPM để <ph name="DEVICE_OS" /> có thể nắm quyền sở hữu thiết bị này.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Bạn cũng có thể tắt hoàn toàn TPM trên thiết bị. Dữ liệu của bạn vẫn sẽ được lưu trữ an toàn bằng tính năng mã hoá phần mềm, nhưng một số tính năng bảo mật cụ thể (chẳng hạn như chứng chỉ dựa trên phần cứng) sẽ bị vô hiệu hoá.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Bạn có thể thay đổi chế độ cài đặt TPM bằng cách khởi động lại rồi vào phần cài đặt BIOS/UEFI của hệ thống. Các bước thực hiện sẽ khác nhau tuỳ theo kiểu thiết bị. Để biết thêm thông tin, hãy mở tài liệu <ph name="DEVICE_OS" /> trên một thiết bị khác trước khi bạn khởi động lại: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

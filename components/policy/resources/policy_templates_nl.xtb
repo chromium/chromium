@@ -12420,27 +12420,6 @@ Zie https://support.google.com/chrome/a/answer/9301891 voor meer informatie.</tr
 <translation id="8931555638815157255">Als je dit beleid toepast of niet instelt, rapporteren ingeschreven apparaten periodiek hun OS- en firmwareversie.
 
       Als je het beleid niet toepast, rapporteren ingeschreven apparaten de versiegegevens niet.</translation>
-<translation id="8931984670731745012">Als je dit beleid instelt, kun je aangeven welke gegevenstypen voor automatisch invullen worden geblokkeerd voor specifieke URL-patronen.
-
-Het beleid is gestructureerd als een lijst met woordenboeken. Elk woordenboek moet het volgende bevatten:
-* 'url_pattern': Een URL-patroon voor het instellen van content (bijv. 'https://[*.]example.com').
-* 'blocked_types': Een lijst met tekenreeksen die de categorieën van gegevens voor automatisch invullen aangeven die moeten worden geblokkeerd.
-
-De ondersteunde waarden voor 'blocked_types' zijn:
-* 'contact_info': Blokkeert het invullen en opslaan van contactgegevens.
-* 'payments': Blokkeert het invullen en opslaan van creditcards en betaalmethoden.
-* 'identity_docs': Blokkeert het invullen en opslaan van identiteitsdocumenten (bijv. paspoort, rijbewijs, nationale ID).
-* 'travel': Blokkeert het invullen en opslaan van reisinformatie (bijv. vluchtreservering, voertuigregistratie).
-* 'shopping': Blokkeert het invullen en opslaan van winkelinformatie (bijv. online bestellingen, verzendingen).
-
-Als een gegevenstype is geblokkeerd voor een site, wordt zowel het genereren van suggesties als de prompt om nieuwe gegevens van dat type op te slaan/te importeren uitgezet op die site.
-
-Als een URL overeenkomt met meerdere patroonitems in de lijst, worden de geblokkeerde typen van alle overeenkomende items gecombineerd (samengevoegd). Ongeldige URL-patronen in de lijst worden genegeerd.
-
-Als je dit beleid niet instelt, worden er geen gegevenstypen voor automatisch invullen geblokkeerd op domein.
-
-Ga voor gedetailleerde informatie over geldige URL-patronen naar:
-https://chromeenterprise.google/policies/url-patterns. Het jokerteken * wordt ondersteund. Dit patroon komt overeen met elke URL, met elk schema, elke poort en elk pad.</translation>
 <translation id="8934296213794658971">Instellingen voor Gemini-integratie</translation>
 <translation id="8937282917198525844">Vanaf M81 hebben de standaard formulierbesturingselementen (bijv. &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) een nieuw uiterlijk met verbeterde toegankelijkheid en betere platformuniformiteit. Met dit beleid worden de 'verouderde' formulierbesturingselementen hersteld tot M84.
 

@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Mbaji gjërat me tone të ndritshme dhe ngjyra të lehta</translation>
 <translation id="243179355394256322">Organizata jote e kufizon regjistrimin e pajisjes vetëm për përdoruesit e autorizuar. Ky përdorues nuk është i autorizuar për të regjistruar pajisje. Sigurohu që përdoruesi të ketë privilegjin e administratorit "Regjistro harduerin e Google Meet" në seksionin "Përdoruesit" të panelit të administratorit.</translation>
 <translation id="2439152382014731627">Rivendos fjalëkalimin e pajisjes <ph name="DEVICE_TYPE" /></translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Instalimi <ph name="BEGIN_BOLD" />do të fshijë të gjithë diskun tënd të ngurtë<ph name="END_BOLD" />. Sigurohu që të kesh rezervuar të dhënat e tua.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Pasi të fillojë instalimi, nuk mund të anulohet.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Nuk do të jesh në gjendje të shtosh përdorues sepse mungojnë çelësat e API Google. Shiko <ph name="DETAILS_URL" /> për detaje.</translation>
 <translation id="24786041351753425">Aktivizo shërbimin e rikuperimit të të dhënave.</translation>
 <translation id="2485681265915754872">Kushtet e shërbimit të Google Play</translation>
@@ -228,6 +230,9 @@
 <translation id="3547954654003013442">Cilësimet e përfaqësuesit</translation>
 <translation id="3550915441744863158">Chrome përditësohet automatikisht, kështu që gjithmonë ke versionin më të ri</translation>
 <translation id="3559533181353831840">Mbeten rreth <ph name="TIME_LEFT" /></translation>
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />Fut emrin e shitësit me pakicë dhe numrin e dyqanit për të cilin po konfigurohet kjo pajisje demonstrimi*. <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Nëse nuk e di numrin e dyqanit, mund të futësh "0000" për të vazhduar me instalimin e "Modalitetit të demonstrimit". <ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />*Shënim. Google i përdor këto informacione për të identifikuar se cilin version të "Modalitetit të demonstrimit" duhet të marrë pajisja dhe për të matur përdorimin e "Modalitetit të demonstrimit".<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">Ndodhi një gabim. Provo përsëri.</translation>
 <translation id="3577745545227000795">Mbledhja e të dhënave të harduerit të <ph name="DEVICE_OS" /></translation>
 <translation id="3602290021589620013">Pamje paraprake</translation>
@@ -286,6 +291,8 @@
 <translation id="4250680216510889253">Jo</translation>
 <translation id="4251377547188244181">Regjistrimi i kioskës dhe pajisjes sinjalizuese</translation>
 <translation id="4263223596040212967">Kontrollo strukturën e tastierës dhe provo përsëri.</translation>
+<translation id="4268490040465852105">"Llogaria jote e Google" është e njëjta llogari që ti përdor për Gmail, YouTube, Chrome dhe produkte të tjera të Google.
+        Përdor llogarinë tënde për t'u qasur me lehtësi te të gjithë faqeshënuesit, skedarët e tu etj.</translation>
 <translation id="4278498748067682896">Do të përdorësh një përmirësim të kioskës dhe sinjalizimit, i cili e lejon pajisjen të ekzekutohet vetëm në modalitetin e kioskës ose të sinjalizimit. Nëse dëshiron që përdoruesit të identifikohen në këtë pajisje, kthehu dhe regjistrohu duke përdorur përmirësimin e Chrome Enterprise.</translation>
 <translation id="4287157641315808225">Po, aktivizo ChromeVox</translation>
 <translation id="4289732974614035569">Zgjidh një PIN</translation>
@@ -316,6 +323,15 @@
 <translation id="4487489714832036847">Pajisjet Chromebook përdorin aplikacione në vend të softuerëve tradicionalë. Merr aplikacione për produktivitet, zbavitje etj.</translation>
 <translation id="450867954911715010">Cilësimet e qasjes</translation>
 <translation id="4519605771716872386">Sinkronizimi i skedarëve u aktivizua</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Provo këta hapa për zgjidhjen e problemeve:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Sigurohu që pajisja jote të ketë një memorie të brendshme funksionale, si p.sh. HDD, SSD ose eMMC
+        <ph name="LIST_ITEM" />Kontrollo që pajisja e memories së brendshme të jetë më e madhe se 16 GB
+        <ph name="LIST_ITEM" />Kontrollo lidhjen me memorien e brendshme, nëse është fizikisht e arritshme
+        <ph name="LIST_ITEM" />Sigurohu që po përdor një model të certifikuar dhe kontrollo shënimet e instalimit
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Për më shumë ndihmë, vizito: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Kë dëshiron të shtosh te kjo pajisje <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Nëse dëshiron ta ndryshosh pas regjistrimit, do të të duhet ta rivendosësh pajisjen tënde në gjendje fabrike (Powerwash).</translation>
 <translation id="4567512141633030272">Opsioni i gabuar i identifikimit?</translation>
@@ -431,6 +447,15 @@
 <translation id="5800703268655655701">Zgjidh temën e ndriçuar ose të errët</translation>
 <translation id="5804259315582798390">Aktivizimi i rikuperimit të të dhënave lokale dështoi</translation>
 <translation id="5810809306422959727">Kjo llogari nuk është e përshtatshme për kontrollet prindërore</translation>
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />Regjistrimi i pajisjeve të tua në organizatën tënde i konfiguron ato për menaxhim të centralizuar të pajisjeve. Organizata jote mund të kërkojë regjistrimin për disa arsye:<ph name="END_DESCRIPTION" />
+        <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Përmirësimi i sigurisë<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
+        <ph name="BEGIN_DESCRIPTION1" />Duke konfiguruar cilësime shtesë të sigurisë, organizata mund t'i mbajë të sigurta të dhënat e përdoruesit dhe të pajisjes. Ajo mund të kryejë po ashtu veprime si p.sh. rivendosja në distancë ose çaktivizimi i një pajisjeje të humbur.<ph name="END_DESCRIPTION1" />
+        <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Personalizimi i përvojës<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
+        <ph name="BEGIN_DESCRIPTION2" />Sjellja e pajisjes në momentin e ndezjes, në ekranin e identifikimit dhe pas identifikimit mund të personalizohet sipas nevojave të organizatës.<ph name="END_DESCRIPTION2" />
+        <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Ofrimi i mbështetjes<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
+        <ph name="BEGIN_DESCRIPTION3" />Organizata mund të qaset në distancë në një sesion të pajisjes për të ofruar zgjidhje të problemeve.<ph name="END_DESCRIPTION3" />
+        <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Aktivizimi i qasjes<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
+        <ph name="BEGIN_DESCRIPTION4" />Aplikacionet, shërbimet dhe rrjetet e organizatës mund të ofrohen vetëm në pajisjet e regjistruara.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">Rreth <ph name="TIME" /> minuta të mbetura</translation>
 <translation id="5852112051279473187">Gabim! Ndodhi vërtet një gabim i rëndë gjatë regjistrimit të kësaj pajisjeje. Provo përsëri ose kontakto me përfaqësuesin e shërbimit të mbështetjes.</translation>
 <translation id="5852137567692933493">Rifillo dhe zbato Powerwash</translation>
@@ -451,6 +476,8 @@
 <translation id="6016178549409952427">Navigo te përmbajtja shtesë <ph name="CURRENT_ELEMENT" /> nga <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016972670657536680">Zgjidh butonin e gjuhës dhe të tastierës. Gjuha e zgjedhur aktualisht është <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Mbyll</translation>
+<translation id="6042193169866365541">"Llogaria jote e Google" është e njëjta llogari që ti përdor për Gmail, YouTube, Chrome dhe produkte të tjera të Google.
+        Përdor llogarinë tënde për t'u qasur me lehtësi te të gjithë faqeshënuesit, skedarët e tu etj. Nëse nuk ke një llogari , mund të krijosh një të tillë në ekranin tjetër.</translation>
 <translation id="6051354611314852653">Mos! Sistemi nuk arriti të autorizonte qasjen e API-së për këtë pajisje.</translation>
 <translation id="6055544610007596637">Instalo aplikacione për pajisjen tënde <ph name="DEVICE_TYPE" /> nga "Dyqani i Google Play"</translation>
 <translation id="6069464830445383022">Identifikohu në pajisjen Chromebook me "Llogarinë tënde të Google"</translation>
@@ -556,6 +583,8 @@
 <translation id="7189451821249468368">Nuk ke përmirësime të mjaftueshme për të regjistruar këtë pajisje. Kontakto me ekipin e shitjeve për të blerë më shumë. Nëse beson se po e shikon gabimisht këtë mesazh, kontakto me ekipin e mbështetjes.</translation>
 <translation id="7202337678781136582">Skano kodin QR me telefonin tënd Android</translation>
 <translation id="7228854227189381547">Mos ndërro</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Për përvojën më të mirë, instalo <ph name="DEVICE_OS" /> në diskun tënd të brendshëm. Mund ta instalosh më vonë nga ekrani i identifikimit.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Nëse nuk je gati për ta instaluar, mund ta ekzekutosh nga USB-ja për ta provuar. Kjo do të mbajë sistemin operativ dhe të dhënat ekzistuese, por hapësira ruajtëse dhe cilësia e funksionimit mund të kufizohen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Ndryshimet do të zbatohen pas konfigurimit</translation>
 <translation id="7260186537988033909">Regjistrimi i kioskës dhe i pajisjes sinjalizuese përfundoi</translation>
 <translation id="7284411326658527427">Çdo person mund ta personalizojë llogarinë e vet dhe t'i mbajë të dhënat private.</translation>
@@ -573,6 +602,8 @@
 <translation id="7416263748877373774">"Kushtet e shërbimit" nuk mund të ngarkohen. Kontrollo lidhjen me rrjetin dhe provo përsëri.</translation>
 <translation id="7475742997309661417">Lexuesi i ekranit në ChromeOS, ChromeVox, përdoret kryesisht nga personat e verbër ose me shikim të dobët për të lexuar tekstin e shfaqur në ekran me një sintetizues të ligjërimit ose me një ekran breil. Shtyp dhe mbaj shtypur të dyja tastet e volumit për pesë sekonda për të aktivizuar ChromeVox. Kur të aktivizohet ChromeVox, do të kryesh një udhëzues të shpejtë.</translation>
 <translation id="7476454130948140105">Niveli i baterisë është shumë i ulët për përditësimin (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Ndodhi një gabim dhe <ph name="DEVICE_OS" /> nuk mund të instalohej.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Për më shumë ndihmë, vizito: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Përpara se të regjistrohesh, ti duhet të pastrosh TPM-në në mënyrë që <ph name="DEVICE_OS" /> të marrë në zotërim pajisjen.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Gjithashtu, ti mund ta çaktivizosh plotësisht pajisjen TPM. Të dhënat e tua do të ruhen në mënyrë të sigurt me enkriptimin e softuerit, por veçori të caktuara të sigurisë, si p.sh. certifikatat e mbështetura nga hardueri, do të çaktivizohen.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Mund t'i ndryshosh cilësimet e tua të TPM duke rindezur dhe futur cilësimet BIOS/UEFI të sistemit. Hapat ndryshojnë në varësi të modelit të pajisjes. Për më shumë informacion, hap dokumentacionin e <ph name="DEVICE_OS" /> në një pajisje të veçantë përpara se ta rindezësh: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

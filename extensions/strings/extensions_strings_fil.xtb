@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Hindi ma-load ang page na tungkol dito na '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="424963718355121712">Dapat maihatid ang mga app mula sa host na naaapektuhan ng mga ito</translation>
 <translation id="4306119971288449206">Dapat maihatid ang mga app gamit ang uri ng content na "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4349181963619779233">Hindi puwedeng magdagdag ng mga extension at app mula sa website na ito</translation>
 <translation id="4625078469366263107">I-enable ang App</translation>
 <translation id="4633003931260532286">Kinakailangan ng extension ang "<ph name="IMPORT_NAME" />" na may minimum na bersyon na "<ph name="IMPORT_VERSION" />," ngunit ang bersyon na "<ph name="INSTALLED_VERSION" />" lang ang naka-install</translation>
 <translation id="4660476621274971848">"<ph name="EXPECTED_VERSION" />" ang inaasahang bersyon, ngunit "<ph name="NEW_ID" />" ang bersyon</translation>

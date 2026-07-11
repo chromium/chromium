@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">无法加载简介页面“<ph name="ABOUT_PAGE" />”。</translation>
 <translation id="424963718355121712">应用的安装来源必须是其自己发挥作用的主机</translation>
 <translation id="4306119971288449206">应用必须以“<ph name="CONTENT_TYPE" />”这种内容类型提供</translation>
+<translation id="4349181963619779233">无法从此网站添加扩展程序和应用</translation>
 <translation id="4625078469366263107">启用应用</translation>
 <translation id="4633003931260532286">此扩展程序要求“<ph name="IMPORT_NAME" />”的版本不得低于“<ph name="IMPORT_VERSION" />”，但目前安装的版本只是“<ph name="INSTALLED_VERSION" />”</translation>
 <translation id="4660476621274971848">预期版本是“<ph name="EXPECTED_VERSION" />”，但实际版本是“<ph name="NEW_ID" />”</translation>

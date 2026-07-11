@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Ekki var hægt að hlaða upplýsingasíðuna „<ph name="ABOUT_PAGE" />“.</translation>
 <translation id="424963718355121712">Hýsa verður forrit á hýslinum sem þau hafa áhrif á</translation>
 <translation id="4306119971288449206">Forrit verða að vera birt með efnistegundinni „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4349181963619779233">Ekki er hægt að bæta viðbótum og forritum við af þessu vefsvæði</translation>
 <translation id="4625078469366263107">Virkja forrit</translation>
 <translation id="4633003931260532286">Viðbótin krefst „<ph name="IMPORT_NAME" />“ með „<ph name="IMPORT_VERSION" />“ eða nýrri útgáfu en aðeins útgáfa „<ph name="INSTALLED_VERSION" />“ er uppsett</translation>
 <translation id="4660476621274971848">Búist var við útgáfunni „<ph name="EXPECTED_VERSION" />“ en útgáfan er „<ph name="NEW_ID" />“</translation>

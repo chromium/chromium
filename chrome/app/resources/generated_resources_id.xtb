@@ -5004,6 +5004,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4849286518551984791">Waktu Universal Terkoordinasi (UTC/GMT)</translation>
 <translation id="4849517651082200438">Jangan Dipasang</translation>
 <translation id="4849731766219625109">Gunakan akun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> Anda</translation>
+<translation id="4850279708232718725">Jelaskan tentang hal ini</translation>
 <translation id="485053257961878904">Tidak dapat menyiapkan sinkronisasi notifikasi</translation>
 <translation id="4850548109381269495">Di kedua perangkat, periksa koneksi internet Anda dan aktifkan Bluetooth. Lalu, coba lagi.</translation>
 <translation id="4850669014075537160">Scroll</translation>
@@ -6352,6 +6353,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5922854266885514646">Klik "Sesuaikan Chrome"</translation>
 <translation id="5924047253200400718">Dapatkan bantuan<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Tanyakan sebelum menyalin atau memindahkan file Microsoft ke Google Drive</translation>
+<translation id="5925057331573749968">Login lebih cepat dengan kode QR</translation>
 <translation id="5926936390113611560">Buka semua profil</translation>
 <translation id="592880897588170157">Download file PDF tanpa otomatis membukanya di Chrome</translation>
 <translation id="5930567261594625340">Langit malam</translation>
@@ -9499,6 +9501,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8372678064309688510">Alamat Anda Disimpan</translation>
 <translation id="8373652277231415614">Direktori bersama Crostini</translation>
 <translation id="8374243500935816406">Jangan izinkan situs mengelola jendela di semua layar</translation>
+<translation id="8375703478696038265">Langkah <ph name="STEP_NUMBER" /> dari <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Beri tahu kami yang terjadi pada Google Cast.</translation>
 <translation id="8376384591331888629">Menyertakan cookie pihak ketiga di situs ini</translation>
 <translation id="8376451933628734023">Uninstal aplikasi web ini jika mencoba mengelabui Anda agar berpikir bahwa ini adalah aplikasi yang berbeda.</translation>
@@ -10570,6 +10573,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="9188142767272053574">Aktifkan Isolasi Proses</translation>
 <translation id="9192019773545828776">Dengarkan respons lisan agar Anda dapat menggunakan perangkat tanpa melihat layar. Masukan braille tersedia dengan perangkat terhubung. Gunakan Ctrl + Alt + Z untuk mengaktifkan dan menonaktifkan ChromeVox. Gunakan Penelusuran + Panah kiri atau Panah kanan untuk menavigasi. Gunakan Penelusuran + Spasi untuk memilih (mengaktifkan).</translation>
 <translation id="9195969368671142407">Jika organisasi membatasi penyimpanan ke Akun Google, Anda tidak dapat berbagi atau bergabung ke grup tab</translation>
+<translation id="9197456336762295195">Pindai kode QR ini dengan kamera di perangkat yang menyimpan kunci sandi google.com Anda</translation>
 <translation id="919840898042157087">Gerakan statis</translation>
 <translation id="9199503643457729322">Klik untuk keluar dari Panduan Privasi.</translation>
 <translation id="9199695835892108985">Reset semua izin Port serial?</translation>

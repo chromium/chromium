@@ -3524,6 +3524,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="371370241367527062">Mikrofoni i përparmë</translation>
 <translation id="37143699183660101">Qëndrueshmëria e kursorit</translation>
 <translation id="3714610938239537183">Hapi 2 nga 4: Zgjidh të dhënat diagnostikuese për t'i eksportuar</translation>
+<translation id="3715519518311454566">"Fleta e poshtme" e Gemini u palos.</translation>
 <translation id="3717133748480414053">"Aftësitë" mund të të ndihmojnë të përmbledhësh faqet e uebit, të kërkosh për oferta të shkëlqyera e të tjera</translation>
 <translation id="3719245268140483218">Ngjarja e pajisjes</translation>
 <translation id="3719310907809321183">Formulari për <ph name="CARD_IDENTIFIER" /> u plotësua.</translation>
@@ -4990,6 +4991,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4849286518551984791">Ora universale e koordinuar (UTC/GMT)</translation>
 <translation id="4849517651082200438">Mos e instalo</translation>
 <translation id="4849731766219625109">Përdor llogarinë tënde të <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="4850279708232718725">Më trego për këtë</translation>
 <translation id="485053257961878904">Sinkronizimi i njoftimeve nuk mund të konfigurohej</translation>
 <translation id="4850548109381269495">Kontrollo lidhjen e internetit dhe aktivizo Bluetooth-in në të dyja pajisjet. Më pas provo përsëri.</translation>
 <translation id="4850669014075537160">Lëvizja</translation>
@@ -6206,6 +6208,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5828181959764767444">Perëndimi i diellit</translation>
 <translation id="5828545842856466741">Shto profil...</translation>
 <translation id="5828633471261496623">Po printon...</translation>
+<translation id="5829137022934788067">Më trego për këtë zgjedhje</translation>
 <translation id="5829214552954466783">Ndaj <ph name="CREDENTIAL_TYPE" /> për emrin e përdoruesit: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Mënyrat e tua të pagesës në "Portofolin e Google"</translation>
 <translation id="5830512293931520102">Fjalëkalimi yt është i enkriptuar dhe nuk është parë asnjëherë nga askush</translation>
@@ -6336,6 +6339,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5922854266885514646">Kliko te "Personalizo Chrome"</translation>
 <translation id="5924047253200400718">Kërko ndihmë<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Pyet përpara se të kopjosh ose zhvendosësh skedarët e Microsoft te "Disku i Google"</translation>
+<translation id="5925057331573749968">Identifikohu më shpejt me një kod QR</translation>
 <translation id="5926936390113611560">Hap të gjitha profilet</translation>
 <translation id="592880897588170157">Shkarkoji skedarët PDF në vend që t'i hapësh automatikisht në Chrome</translation>
 <translation id="5930567261594625340">Qielli gjatë natës</translation>
@@ -6997,6 +7001,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6455264371803474013">Në sajte të caktuara</translation>
 <translation id="6455521402703088376">Joaktive • Publikimi i kësaj shtese është anuluar nga zhvilluesi i saj</translation>
 <translation id="6455894534188563617">&amp;Dosje e re</translation>
+<translation id="6456162045957729200">Shpjego këtë zgjedhje</translation>
 <translation id="645705751491738698">Vazhdo bllokimin e JavaScript</translation>
 <translation id="6457572529564180082">"<ph name="APP_NAME" />" nuk mund të hapet</translation>
 <translation id="6458701200018867744">Ngarkimi dështoi (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8856,6 +8861,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7903481341948453971">Përdor kyçjen e ekranit kur plotëson fjalëkalimet</translation>
 <translation id="7903925330883316394">Softueri ndihmës: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7904492297081735975">&amp;Hap menaxherin e faqeshënuesve</translation>
 <translation id="7904526211178107182">Ofroji portat e Linux për pajisjet e tjera në rrjetin tënd.</translation>
 <translation id="7907312522152480478">Për të marrë skedat nga pajisjet e tua të tjera, verifiko që je ti dhe sinkronizo historikun dhe skedat e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="7907502219904644296">Ndrysho qasjen</translation>
@@ -9481,6 +9487,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8372678064309688510">Adresa jote u ruajt</translation>
 <translation id="8373652277231415614">Direktoritë e ndara të Crostini</translation>
 <translation id="8374243500935816406">Mos i lejo sajtet të menaxhojnë dritaret në të gjitha ekranet e tua</translation>
+<translation id="8375703478696038265">Hapi <ph name="STEP_NUMBER" /> nga <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Na trego se çfarë po ndodh me Google Cast.</translation>
 <translation id="8376384591331888629">Duke përfshirë kukit e palëve të treta në këtë sajt</translation>
 <translation id="8376451933628734023">Nëse ky aplikacion uebi po përpiqet të ta hedhë që të mendosh se është aplikacion tjetër, çinstaloje.</translation>
@@ -10552,6 +10559,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9188142767272053574">Aktivizo izolimin e procesit</translation>
 <translation id="9192019773545828776">Dëgjo komentet me zë që të mund ta përdorësh pajisjen pa shikuar në ekran. Komentet në breil ofrohen me një pajisje të lidhur. Përdor Ctrl + Alt + Z për të aktivizuar dhe çaktivizuar ChromeVox. Përdor "Kërko" + shigjeta majtas ose shigjeta djathtas për të naviguar. Përdor "Kërko" + "Hapësirë" për të zgjedhur (për të aktivizuar).</translation>
 <translation id="9195969368671142407">Kur organizata jote kufizon ruajtjen në "Llogarinë tënde të Google", nuk mund të ndash apo të bashkohesh në grupet e skedave</translation>
+<translation id="9197456336762295195">Skano këtë kod QR me kamerën në pajisjen që ka çelësin tënd të kalimit për google.com</translation>
 <translation id="919840898042157087">Lëvizja statike</translation>
 <translation id="9199503643457729322">Kliko për të naviguar larg "Udhëzuesit të privatësisë".</translation>
 <translation id="9199695835892108985">Të rivendosen të gjitha lejet për portat seriale?</translation>
@@ -10608,6 +10616,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="942296794412775122">Mikrofoni aktiv/joaktiv</translation>
 <translation id="942488123151518958">Vendos në pauzë (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> po ndan një skedë të Chrome dhe audion.</translation>
+<translation id="943744232549395906">Shkrimi me zë ndaloi</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="947156494302904893">Sajtet që ti viziton mund të verifikojnë që je një person real dhe jo një robot</translation>
 <translation id="947329552760389097">&amp;Inspekto elementet</translation>

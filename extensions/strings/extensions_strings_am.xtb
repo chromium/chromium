@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">የስለ ገጹ «<ph name="ABOUT_PAGE" />» መጫን አልተቻለም።</translation>
 <translation id="424963718355121712">መተግበሪያዎች ተፅዕኖ ከሚያሳርፉበት አስተናጋጅ መቅረብ አለባቸው</translation>
 <translation id="4306119971288449206">መተግበሪያዎች በይዘት ዓይነት «<ph name="CONTENT_TYPE" />» ሊቀርቡ ይገባል</translation>
+<translation id="4349181963619779233">ቅጥያዎች እና መተግበሪያዎች ከዚህ ድር ጣቢያ ሊታከሉ አይችሉም</translation>
 <translation id="4625078469366263107">መተግበሪያን አንቃ</translation>
 <translation id="4633003931260532286">ቅጥያው ቢያንስ የ«<ph name="IMPORT_VERSION" />» ስሪት የሆነ «<ph name="IMPORT_NAME" />» ያስፈልገዋል፣ ነገር ግን «<ph name="INSTALLED_VERSION" />» ስሪት ብቻ ነው የተጫነው</translation>
 <translation id="4660476621274971848">የተጠበቀው ስሪት «<ph name="EXPECTED_VERSION" />» ነበር፣ ግን ስሪቱ «<ph name="NEW_ID" />» ነበር</translation>

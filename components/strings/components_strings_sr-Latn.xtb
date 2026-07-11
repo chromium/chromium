@@ -350,6 +350,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1542105669288201090">Poslovno obrazovanje</translation>
 <translation id="1542830386724426410">Prikaži dostupne prednosti i nagrade za karticu pri plaćanju. Važe uslovi izdavača. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Saznajte više<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Istorija cena</translation>
+<translation id="1546286808622193216">Uporedite prednosti kartica pomoću Gemini-ja</translation>
 <translation id="1549470594296187301">JavaScript mora da bude omogućen da biste koristili ovu funkciju.</translation>
 <translation id="1553152622374372421">Zimski sportovi</translation>
 <translation id="1553358976309200471">Ažuriraj Chrome</translation>
@@ -2416,6 +2417,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4744603770635761495">Putanja izvršne datoteke</translation>
 <translation id="4744816391336495134">Možete da koristite otiske prsta da biste potvrdili da ste to vi kada god koristite sačuvanu lozinku</translation>
 <translation id="4749011317274908093">Prešli ste na režim bez arhiviranja</translation>
+<translation id="4749620353539006322">Maksimalno povećajte nagrade</translation>
 <translation id="4749924365937394956">Potvrda identiteta servera</translation>
 <translation id="4750671009706599284">ovog telefona</translation>
 <translation id="4750917950439032686">Informacije (na primer, lozinke ili brojevi kreditnih kartica) su privatne kada se šalju ovom sajtu.</translation>
@@ -2991,6 +2993,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5611398002774823980">Sačuvaj na nalogu</translation>
 <translation id="561165882404867731">Prevedite ovu stranicu pomoću Google prevodioca</translation>
 <translation id="5612720917913232150"><ph name="URL" /> želi da koristi lokaciju računara</translation>
+<translation id="5613958591683399697">Pitajte <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Obaveštenje o korisniku</translation>
 <translation id="5614520971155863709">Kartaške igre</translation>
 <translation id="5617949217645503996">Host <ph name="HOST_NAME" /> vas je preusmerio preveliki broj puta.</translation>

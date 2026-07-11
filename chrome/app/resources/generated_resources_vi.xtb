@@ -5005,6 +5005,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4849286518551984791">Giờ phối hợp quốc tế (UTC/GMT)</translation>
 <translation id="4849517651082200438">Không cài đặt</translation>
 <translation id="4849731766219625109">Sử dụng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> của bạn</translation>
+<translation id="4850279708232718725">Cho tôi thông tin về lựa chọn này</translation>
 <translation id="485053257961878904">Không thể thiết lập tính năng đồng bộ hóa thông báo</translation>
 <translation id="4850548109381269495">Hãy kiểm tra kết nối Internet và bật Bluetooth trên cả hai thiết bị. Sau đó, hãy thử lại.</translation>
 <translation id="4850669014075537160">Cuộn</translation>
@@ -6353,6 +6354,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5922854266885514646">Nhấp vào "Tuỳ chỉnh Chrome"</translation>
 <translation id="5924047253200400718">Nhận trợ giúp<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Hỏi trước khi sao chép hoặc di chuyển tệp Microsoft sang Google Drive</translation>
+<translation id="5925057331573749968">Đăng nhập nhanh hơn bằng mã QR</translation>
 <translation id="5926936390113611560">Mở tất cả hồ sơ</translation>
 <translation id="592880897588170157">Tải tệp PDF xuống thay vì tự động mở trong Chrome</translation>
 <translation id="5930567261594625340">Trời đêm</translation>
@@ -9503,6 +9505,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8372678064309688510">Địa chỉ của bạn đã được lưu</translation>
 <translation id="8373652277231415614">Thư mục do Crostini chia sẻ</translation>
 <translation id="8374243500935816406">Không cho phép các trang web quản lý các cửa sổ trên tất cả màn hình của bạn</translation>
+<translation id="8375703478696038265">Bước <ph name="STEP_NUMBER" />/<ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Cho chúng tôi biết điều gì đang xảy ra với Google Cast.</translation>
 <translation id="8376384591331888629">Bao gồm cả cookie của bên thứ ba trên trang web này</translation>
 <translation id="8376451933628734023">Nếu ứng dụng web này cố gắng lừa bạn rằng đó là một ứng dụng khác, hãy gỡ cài đặt ứng dụng web đó.</translation>
@@ -10574,6 +10577,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9188142767272053574">Bật tính năng Tách biệt quy trình</translation>
 <translation id="9192019773545828776">Nghe phản hồi bằng giọng nói để sử dụng thiết bị mà không cần nhìn vào màn hình. Bạn có thể xem phản hồi bằng chữ nổi qua thiết bị đã kết nối. Nhấn tổ hợp phím Ctrl + Alt + Z để bật và tắt ChromeVox. Nhấn tổ hợp phím Tìm kiếm + Mũi tên trái hoặc Mũi tên phải để di chuyển. Nhấn tổ hợp phím Tìm kiếm + Phím cách để chọn (kích hoạt).</translation>
 <translation id="9195969368671142407">Khi tổ chức của bạn giới hạn những nội dung bạn được lưu vào Tài khoản Google, bạn sẽ không thể chia sẻ hoặc tham gia nhóm thẻ</translation>
+<translation id="9197456336762295195">Quét mã QR này bằng camera trên thiết bị có khoá truy cập cho google.com</translation>
 <translation id="919840898042157087">Chuyển động tĩnh</translation>
 <translation id="9199503643457729322">Nhấp vào nút này để rời khỏi Hướng dẫn về quyền riêng tư.</translation>
 <translation id="9199695835892108985">Đặt lại tất cả các quyền của cổng nối tiếp?</translation>

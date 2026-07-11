@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">ინფორმაციის გვერდი ვერ ჩაიტვირთა: '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="424963718355121712">აპები მოწოდებული უნდა იყოს იმ საიტის მიერ, რომელზეც ისინი გავლენას ახდენს</translation>
 <translation id="4306119971288449206">მოწოდებული აპების კონტენტის ტიპი უნდა იყოს „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4349181963619779233">გაფართოებებისა და აპების დამატება ამ ვებსაიტიდან შეუძლებელია</translation>
 <translation id="4625078469366263107">აპის ჩართვა</translation>
 <translation id="4633003931260532286">გაფართოებას სჭირდება „<ph name="IMPORT_NAME" />“ მინიმალური ვერსიით „<ph name="IMPORT_VERSION" />“, თუმცა დაინსტალირებულია მხოლოდ ვერსია „<ph name="INSTALLED_VERSION" />“</translation>
 <translation id="4660476621274971848">მოსალოდნელი ვერსია: „<ph name="EXPECTED_VERSION" />“, მიღებული ვერსია: „<ph name="NEW_ID" />“</translation>

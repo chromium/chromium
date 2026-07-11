@@ -350,6 +350,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1542105669288201090">Edukim për biznesin</translation>
 <translation id="1542830386724426410">Shfaq përfitimet dhe shpërblimet e disponueshme të kartës në përfundim të blerjes. Zbatohen kushtet e lëshuesit. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Mëso më shumë<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Historiku i çmimeve</translation>
+<translation id="1546286808622193216">Krahaso përfitimet e kartave duke përdorur Gemini</translation>
 <translation id="1549470594296187301">Duhet të aktivizohet JavaScript për të përdorur këtë funksion.</translation>
 <translation id="1553152622374372421">Sporte dimërore</translation>
 <translation id="1553358976309200471">Përditëso Chrome</translation>
@@ -2326,6 +2327,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4607608436550361748">Shiko këshillat për Chrome</translation>
 <translation id="460848736049414407">Bllokuar nga administratori</translation>
 <translation id="4610279718074907952">Ky sajt është në një grup, i përcaktuar nga <ph name="SET_OWNER" />, që mund ta shikojë aktivitetin tënd</translation>
+<translation id="4612631413844865947">Ndodhi një gabim gjatë përpunimit të porosisë sate në <ph name="MERCHANT_ORIGIN" /> nëpërmjet <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="46128681529823442">Pajisja për futboll</translation>
 <translation id="4612904677925722054">Ky sajt mund të ketë përmbajtje për të rritur. Një prind ose kujdestar duhet të pranojë që ta vizitosh këtë uebsajt.</translation>
 <translation id="4619564267100705184">Verifiko që je ti</translation>
@@ -2415,6 +2417,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4744603770635761495">Shtegu i ekzekutueshëm</translation>
 <translation id="4744816391336495134">Mund të përdorësh gjurmën e gishtit për të verifikuar që je ti sa herë që përdor një fjalëkalim të ruajtur</translation>
 <translation id="4749011317274908093">Ke kaluar në modalitetin "e fshehtë"</translation>
+<translation id="4749620353539006322">Maksimizo shpërblimet</translation>
 <translation id="4749924365937394956">Vërtetim serveri</translation>
 <translation id="4750671009706599284">këtë telefon</translation>
 <translation id="4750917950439032686">Informacionet e tua (p.sh. fjalëkalimet ose numrat e kartave të kreditit) janë private kur dërgohen në këtë sajt.</translation>
@@ -2990,6 +2993,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5611398002774823980">Ruaje te llogaria</translation>
 <translation id="561165882404867731">Përktheje këtë faqe me "Përkthe me Google"</translation>
 <translation id="5612720917913232150"><ph name="URL" /> do të përdorë vendndodhjen e kompjuterit tënd</translation>
+<translation id="5613958591683399697">Pyet <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Njoftimi i përdoruesit</translation>
 <translation id="5614520971155863709">Lojëra me letra</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> të ridrejtoi shumë herë.</translation>

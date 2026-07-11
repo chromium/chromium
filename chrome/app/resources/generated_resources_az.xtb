@@ -4993,6 +4993,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4849286518551984791">Uyğunlaşdırılmış Universal Vaxt (UTC / GMT)</translation>
 <translation id="4849517651082200438">Quraşdırmayın</translation>
 <translation id="4849731766219625109"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hesabınızdan istifadə edin</translation>
+<translation id="4850279708232718725">Bu barədə mənə məlumat ver</translation>
 <translation id="485053257961878904">Bildirişlərin sinxronlaşdırılmasını ayarlamaq mümkün olmadı</translation>
 <translation id="4850548109381269495">Hər iki cihazda internet bağlantısını yoxlayın və Bluetooth-u aktiv edin. Sonra yenidən cəhd edin.</translation>
 <translation id="4850669014075537160">Sürüşmə</translation>
@@ -6341,6 +6342,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5922854266885514646">"Chrome-u fərdiləşdirin" düyməsinə klikləyin</translation>
 <translation id="5924047253200400718">Yardım alın<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft fayllarını Google Diskə kopyalamazdan və ya köçürməzdən əvvəl soruşulsun</translation>
+<translation id="5925057331573749968">QR kodu ilə daha sürətli daxil olun</translation>
 <translation id="5926936390113611560">Bütün profilləri açın</translation>
 <translation id="592880897588170157">PDF faylları Chrome'da avtomatik açmaq əvəzinə onları endirin</translation>
 <translation id="5930567261594625340">Gecə səması</translation>
@@ -9488,6 +9490,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8372678064309688510">Ünvan yadda saxlanıldı</translation>
 <translation id="8373652277231415614">Crostini'nin paylaşılan kataloqları</translation>
 <translation id="8374243500935816406">Saytlara bütün displeylərinizdə pəncərələri idarə etməyə icazə verməyin</translation>
+<translation id="8375703478696038265"><ph name="STEP_NUMBER" />/<ph name="TOTAL_STEPS" /> mərhələ</translation>
 <translation id="8376137163494131156">Google Yayım ilə baş verənləri bizə deyin.</translation>
 <translation id="8376384591331888629">Bu saytdakı üçüncü tərəf kukilər daxil olmaqla</translation>
 <translation id="8376451933628734023">Bu veb tətbiq fərqli bir tətbiq olduğunu düşünmənizə çalışırsa, onu ləğv edin.</translation>
@@ -10557,6 +10560,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="9188142767272053574">Proses İzolasiyasını aktivləşdirin</translation>
 <translation id="9192019773545828776">Səsli rəyi dinləyərək ekrana baxmadan cihazınızdan istifadə edə bilərsiniz. Brayl əlifbası qoşulmuş cihaz ilə əlçatandır. ChromeVox'u aktiv və deaktiv etmək üçün Ctrl + Alt + Z istifadə edin. Naviqasiya etmək üçün Axtarış + Sol ox və ya Sağ oxu istifadə edin. Seçmək (aktiv etmək) üçün Axtarış + Boşluq istifadə edin.</translation>
 <translation id="9195969368671142407">Təşkilatınız Google Hesabınızda yadda saxlaya biləcəklərinizi məhdudlaşdırdıqda tab qruplarını paylaşa və ya onlara qoşula bilməzsiniz</translation>
+<translation id="9197456336762295195">Bu QR kodunu google.com üçün giriş açarınızın olduğu cihazın kamerası ilə skan edin</translation>
 <translation id="919840898042157087">Statik hərəkət</translation>
 <translation id="9199503643457729322">Məxfilik Bələdçisindən uzaqlaşmaq üçün klikləyin.</translation>
 <translation id="9199695835892108985">Seriya port icazələri sıfırlansın?</translation>

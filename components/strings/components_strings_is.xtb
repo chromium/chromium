@@ -350,6 +350,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1542105669288201090">Viðskiptafræðimenntun</translation>
 <translation id="1542830386724426410">Sýna tiltæk fríðindi korts við greiðslu. Skilmálar útgefanda gilda. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Nánar<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Verðferill</translation>
+<translation id="1546286808622193216">Bera saman kortafríðindi með Gemini</translation>
 <translation id="1549470594296187301">JavaScript verður að vera virkt til að hægt sé að nota þennan eiginleika.</translation>
 <translation id="1553152622374372421">Vetraríþróttir</translation>
 <translation id="1553358976309200471">Uppfæra Chrome</translation>
@@ -1425,6 +1426,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo „Enter“ til að opna stillingar Chrome og stjórna því hvaða upplýsingar þú samstillir</translation>
 <translation id="3203025201812691413">Vefslóðin má ekki vera tóm</translation>
 <translation id="320323717674993345">Hætta við greiðslu</translation>
+<translation id="3204534477198689393">Til að bæta tillögur og fylla út eyðublöð hraðar er hægt að vinna úr efninu og vefslóðum síðnanna sem þú heimsækir í lokuðu rými í skýinu.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> gæti innihaldið efni fyrir fullorðna</translation>
 <translation id="3207960819495026254">Í bókamerkjum</translation>
 <translation id="3208701679386778924">Sendu okkur skýrslu svo við getum gert ChromeOS-uppfærslur enn betri.</translation>
@@ -1480,6 +1482,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3272643614306383237">Minna en 1 MB. Sum vefsvæði kunna að hlaðast hægar í næstu heimsókn.</translation>
 <translation id="3273738040255912340">Kerfisstjórinn þinn getur breytt prófíl- og vafrastillingunum þínum með fjaraðgangi, greint upplýsingar um vafrann í gegnum tilkynningar og innt önnur nauðsynleg verkefni af hendi. Einnig er hægt er að hafa umsjón með aðgerðum í þessu tæki utan Chromium. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">„Vista IBAN“, opið til fulls.</translation>
+<translation id="327455571215090823">Snjallari sjálfvirk útfylling, haldið lokuðu</translation>
 <translation id="3281350579597955952">{0,plural, =1{Regla kerfisstjóra mælir ekki með að opna þessa skrá í <ph name="DESTINATION_NAME" />}one{Regla kerfisstjóra mælir ekki með að opna þessar skrár í <ph name="DESTINATION_NAME" />}other{Regla kerfisstjóra mælir ekki með að opna þessar skrár í <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Fyrirtækið þitt, <ph name="ENROLLMENT_DOMAIN" />, hefur sent einhverjar upplýsingar á eftirfarandi vefsvæði, á borð við stillingar og reglur.</translation>
 <translation id="3286372614333682499">skammsnið</translation>
@@ -2416,6 +2419,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4744603770635761495">Keyranleg slóð</translation>
 <translation id="4744816391336495134">Þú getur notað fingrafar til að staðfesta hver þú ert hvenær sem þú notar vistað aðgangsorð</translation>
 <translation id="4749011317274908093">Þú ferð nú huldu höfði</translation>
+<translation id="4749620353539006322">Hámarka fríðindi</translation>
 <translation id="4749924365937394956">Auðkenning þjóns</translation>
 <translation id="4750671009706599284">þessum síma</translation>
 <translation id="4750917950439032686">Upplýsingarnar þínar (t.d. aðgangsorð eða kreditkortanúmer) eru lokaðar þegar þær eru sendar á þetta vefsvæði.</translation>
@@ -2991,6 +2995,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5611398002774823980">Vista á reikningi</translation>
 <translation id="561165882404867731">Þýða þessa síðu með Google Translate</translation>
 <translation id="5612720917913232150"><ph name="URL" /> vill fá að nota staðsetningu tölvunnar</translation>
+<translation id="5613958591683399697">Spyrja <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Notandatilkynning</translation>
 <translation id="5614520971155863709">Spil</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> framsendi þig of oft.</translation>

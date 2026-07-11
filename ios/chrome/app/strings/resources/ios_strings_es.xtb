@@ -458,7 +458,7 @@
 <translation id="2470654816840674524">¿Qué puedo hacer con Gemini en Chrome?</translation>
 <translation id="2473876017985765807">Ya has guardado una contraseña para <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Puedes configurar un recordatorio para volver a visitar esta página más adelante</translation>
-<translation id="2479148705183875116">Ve a Ajustes</translation>
+<translation id="2479148705183875116">Ir a Ajustes</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2484459871750294497">¿Cómo habilito esta función?</translation>
 <translation id="2485534095078940149">Archivo adjunto {title}</translation>
@@ -838,7 +838,7 @@
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="386224966259596343">Tendrás la oportunidad de guardar esta información en Wallet la próxima vez que rellenes un formulario pertinente.</translation>
 <translation id="3868495844258915202">Mostrar URL completa</translation>
-<translation id="3875783148670536197">Muéstrame cómo</translation>
+<translation id="3875783148670536197">Ver cómo</translation>
 <translation id="3878657761594430423">Sujetahojas</translation>
 <translation id="3885587018298784481">Únete a un grupo familiar</translation>
 <translation id="3888230626190453136">Navegar en Incógnito</translation>
@@ -1372,7 +1372,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="562753339521713441">Realiza una comprobación de seguridad</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} página en tu lista de lectura}other{{count} páginas en tu lista de lectura}}</translation>
 <translation id="5632194969640946913">Obtén más información al navegar y busca lo que ves en cualquier página para descubrir productos, lugares y texto.</translation>
-<translation id="5632485077360054581">Muéstrame cómo</translation>
+<translation id="5632485077360054581">Ver cómo</translation>
 <translation id="5633237939819267663">{count,plural, =1{Marcador guardado en {title}}other{{count} marcadores guardados en {title}}}</translation>
 <translation id="564170563478022912">¿Cerrar sesión? Se eliminarán los datos no guardados de la cuenta.</translation>
 <translation id="5642707040609478753">Marcar como no leídas</translation>
@@ -1653,7 +1653,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6507973708545996744">Inicia sesión para consultar tu lista de lectura en todos tus dispositivos.</translation>
 <translation id="6518133107902771759">Verificar</translation>
 <translation id="6518861084553706202">Se cerrarán las pestañas y se eliminarán los datos, que podrían incluir contraseñas, historial de navegación, cookies y más.</translation>
-<translation id="6523575793810663688">Muéstrame cómo</translation>
+<translation id="6523575793810663688">Ver cómo</translation>
 <translation id="6524082013156754186">Guardar en la cuenta</translation>
 <translation id="6524918542306337007">El modo Incógnito no está disponible</translation>
 <translation id="6525550806864373485">Menú Editar</translation>

@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Kunne ikke laste inn info-siden «<ph name="ABOUT_PAGE" />».</translation>
 <translation id="424963718355121712">Apper må leveres fra verten de påvirker</translation>
 <translation id="4306119971288449206">Apper må leveres med innholdstypen «<ph name="CONTENT_TYPE" />»</translation>
+<translation id="4349181963619779233">Utvidelser og apper kan ikke legges til fra dette nettstedet</translation>
 <translation id="4625078469366263107">Slå på appen</translation>
 <translation id="4633003931260532286">Utvidelsen krever «<ph name="IMPORT_NAME" />» med «<ph name="IMPORT_VERSION" />» som minimumsversjon, men bare versjon «<ph name="INSTALLED_VERSION" />» er installert</translation>
 <translation id="4660476621274971848">Den forventede versjonen var «<ph name="EXPECTED_VERSION" />», men den faktiske versjonen var «<ph name="NEW_ID" />»</translation>

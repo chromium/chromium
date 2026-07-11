@@ -4991,6 +4991,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4849286518551984791">Univerzálny koordinovaný čas (UTC/GMT)</translation>
 <translation id="4849517651082200438">Neinštalovať</translation>
 <translation id="4849731766219625109">Použite svoj účet <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="4850279708232718725">Povedz mi o tom</translation>
 <translation id="485053257961878904">Nepodarilo sa nastaviť synchronizáciu upozornení</translation>
 <translation id="4850548109381269495">V oboch zariadeniach skontrolujte internetové pripojenie a zapnite rozhranie Bluetooth. Potom to skúste znova.</translation>
 <translation id="4850669014075537160">Posúvanie</translation>
@@ -6338,6 +6339,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5922854266885514646">Kliknite na Prispôsobiť Chrome.</translation>
 <translation id="5924047253200400718">Získajte pomoc<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Opýtať sa pred kopírovaním alebo presunom súborov Microsoft na Disk Google</translation>
+<translation id="5925057331573749968">Prihlasujte sa rýchlejšie QR kódom</translation>
 <translation id="5926936390113611560">Otvoriť všetky profily</translation>
 <translation id="592880897588170157">Neotvárať súbory PDF automaticky v Chrome, ale radšej ich stiahnuť</translation>
 <translation id="5930567261594625340">Nočná obloha</translation>
@@ -9489,6 +9491,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8372678064309688510">Vaša adresa je uložená</translation>
 <translation id="8373652277231415614">Zdieľané adresáre v systéme Crostini</translation>
 <translation id="8374243500935816406">Nepovoliť webom spravovať okná na všetkých obrazovkách</translation>
+<translation id="8375703478696038265"><ph name="STEP_NUMBER" />. krok z <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Informujte nás, čo sa deje so zariadením Google Cast.</translation>
 <translation id="8376384591331888629">Vrátane súborov cookie tretích strán na tomto webe</translation>
 <translation id="8376451933628734023">Ak sa vás táto webová aplikácia snaží presvedčiť, že nie je tá, za ktorú ju pokladáte, odinštalujte ju.</translation>
@@ -10560,6 +10563,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="9188142767272053574">Povoliť izoláciu procesov</translation>
 <translation id="9192019773545828776">Počúvajte hovorenú spätnú väzbu a používajte zariadenie bez pozerania na obrazovku. Spätná väzba k Braillovmu písmu je k dispozícii pomocou pripojeného zariadenia. ChromeVox zapnete alebo vypnete klávesovou skratkou Ctrl + Alt + Z. Položkami prechádzajte stláčaním klávesov Hľadať + šípka doľava alebo doprava. Položky vyberajte (aktivujte) klávesovou skratkou Hľadať + medzerník.</translation>
 <translation id="9195969368671142407">Keď vaša organizácia obmedzuje ukladanie do vášho účtu Google, nemôžete zdieľať skupiny kariet ani sa k žiadnym z nich pripájať</translation>
+<translation id="9197456336762295195">Naskenujte tento QR kód kamerou zariadenia, v ktorom máte prístupový kľúč pre google.com</translation>
 <translation id="919840898042157087">Pohyb – statický</translation>
 <translation id="9199503643457729322">Kliknutím opustíte sprievodcu ochranou súkromia.</translation>
 <translation id="9199695835892108985">Chcete resetovať všetky povolenia pre sériový port?</translation>

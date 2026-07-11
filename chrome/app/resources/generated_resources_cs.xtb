@@ -4988,6 +4988,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4849286518551984791">Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">Neinstalovat</translation>
 <translation id="4849731766219625109">Použít účet <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="4850279708232718725">Řekni mi o tomhle</translation>
 <translation id="485053257961878904">Nastavení synchronizace oznámení se nezdařilo</translation>
 <translation id="4850548109381269495">Na obou zařízeních zkontrolujte připojení k internetu a zapněte Bluetooth. Poté to zkuste znovu.</translation>
 <translation id="4850669014075537160">Posouvání</translation>
@@ -6333,6 +6334,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5922854266885514646">Klikněte na Přizpůsobit Chrome</translation>
 <translation id="5924047253200400718">Nápověda<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Před zkopírováním nebo přesunutím souborů Microsoft na Disk Google se zeptat</translation>
+<translation id="5925057331573749968">Přihlašujte se rychleji pomocí QR kódu</translation>
 <translation id="5926936390113611560">Otevřít všechny profily</translation>
 <translation id="592880897588170157">Namísto automatického otevírání souborů PDF v Chromu je stahovat</translation>
 <translation id="5930567261594625340">Noční obloha</translation>
@@ -9483,6 +9485,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8372678064309688510">Vaše adresa je uložena</translation>
 <translation id="8373652277231415614">Sdílené adresáře Crostini</translation>
 <translation id="8374243500935816406">Nepovolovat webům spravovat okna na všech obrazovkách</translation>
+<translation id="8375703478696038265">Krok <ph name="STEP_NUMBER" /> z <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Řekněte nám, co se děje s fungováním technologie Google Cast.</translation>
 <translation id="8376384591331888629">Včetně souborů cookie třetích stran na tomto webu</translation>
 <translation id="8376451933628734023">Pokud se vás tato webová aplikace snaží přesvědčit, že se jedná o jinou aplikaci, odinstalujte ji.</translation>
@@ -10553,6 +10556,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9188142767272053574">Povolit izolaci procesů</translation>
 <translation id="9192019773545828776">Poslouchejte hlasovou odezvu, abyste zařízení mohli používat bez sledování obrazovky. U připojeného zařízení je k dispozici braillská odezva. ChromeVox zapnete nebo vypnete stisknutím kláves Ctrl + Alt + Z. K procházení použijte klávesy Hledat + šipka vlevo nebo šipka vpravo. Výběr (aktivaci) provedete stisknutím klávesy Hledat + mezerníku.</translation>
 <translation id="9195969368671142407">Když vaše organizace omezuje ukládání do vašeho účtu Google, nemůžete sdílet skupiny karet ani se k nim připojovat</translation>
+<translation id="9197456336762295195">Naskenujte tenhle QR kód fotoaparátem zařízení, ve kterém máte přístupový klíč pro google.com</translation>
 <translation id="919840898042157087">Statický pohyb</translation>
 <translation id="9199503643457729322">Kliknutím opustíte Průvodce ochranou soukromí.</translation>
 <translation id="9199695835892108985">Resetovat všechna oprávnění k sériovým portům?</translation>

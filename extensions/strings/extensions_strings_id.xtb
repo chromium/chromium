@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Tidak dapat memuat halaman tentang '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="424963718355121712">Aplikasi harus disediakan dari host yang dipengaruhinya</translation>
 <translation id="4306119971288449206">Aplikasi harus disediakan dengan jenis konten "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4349181963619779233">Ekstensi dan aplikasi tidak dapat ditambahkan dari situs ini</translation>
 <translation id="4625078469366263107">Aktifkan Aplikasi</translation>
 <translation id="4633003931260532286">Ekstensi memerlukan "<ph name="IMPORT_NAME" />" dengan versi minimum "<ph name="IMPORT_VERSION" />", namun hanya versi "<ph name="INSTALLED_VERSION" />" yang terinstal</translation>
 <translation id="4660476621274971848">Versi yang diharapkan "<ph name="EXPECTED_VERSION" />", namun versinya adalah "<ph name="NEW_ID" />"</translation>

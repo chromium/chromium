@@ -350,6 +350,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1542105669288201090">Uzņēmējdarbības izglītība</translation>
 <translation id="1542830386724426410">Norēķināšanās laikā rādīt pieejamās kartes priekšrocības un atlīdzības. Ir spēkā kartes izsniedzēja noteikumi. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Uzziniet vairāk<ph name="CARD_BENEFIT_HELP_LINK_END" />.</translation>
 <translation id="1545757265410828525">Cenu vēsture</translation>
+<translation id="1546286808622193216">Karšu priekšrocību salīdzināšana, izmantojot Gemini</translation>
 <translation id="1549470594296187301">Lai izmantotu šo funkciju, ir jābūt iespējotai valodai JavaScript.</translation>
 <translation id="1553152622374372421">Ziemas sporta veidi</translation>
 <translation id="1553358976309200471">Atjaunināt Chrome</translation>
@@ -2414,6 +2415,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4744603770635761495">Izpildāms ceļš</translation>
 <translation id="4744816391336495134">Varat izmantot pirksta nospiedumu, lai apstiprinātu savu identitāti ikreiz, kad izmantojat saglabātu paroli.</translation>
 <translation id="4749011317274908093">Jūs esat atvēris inkognito režīmu</translation>
+<translation id="4749620353539006322">Maksimāli palielināt atlīdzības</translation>
 <translation id="4749924365937394956">Servera autentifikācija</translation>
 <translation id="4750671009706599284">šo tālruni</translation>
 <translation id="4750917950439032686">Jūsu informācija (piemēram, paroles vai kredītkaršu numuri) ir privāta, kad tā tiek nosūtīta uz šo vietni.</translation>
@@ -2989,6 +2991,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5611398002774823980">Saglabāt kontā</translation>
 <translation id="561165882404867731">Tulkojiet šīs lapas saturu, izmantojot Google tulkotāju.</translation>
 <translation id="5612720917913232150">Vietnē <ph name="URL" /> tiek pieprasīta atļauja izmantot jūsu datora atrašanās vietu.</translation>
+<translation id="5613958591683399697">Jautāt <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Paziņojums lietotājam</translation>
 <translation id="5614520971155863709">Kāršu spēles</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> novirzīja pārāk daudz reižu.</translation>

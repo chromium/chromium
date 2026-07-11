@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Det gick inte att ladda informationssidan <ph name="ABOUT_PAGE" />.</translation>
 <translation id="424963718355121712">Appar måste visas från värden de är kopplade till</translation>
 <translation id="4306119971288449206">Apparna måste visas med content-type <ph name="CONTENT_TYPE" /></translation>
+<translation id="4349181963619779233">Det går inte att lägga till tillägg och appar från den här webbplatsen</translation>
 <translation id="4625078469366263107">Aktivera appen</translation>
 <translation id="4633003931260532286">Tillägget kräver <ph name="IMPORT_NAME" /> med minst version <ph name="IMPORT_VERSION" />, men endast version <ph name="INSTALLED_VERSION" /> är installerad</translation>
 <translation id="4660476621274971848">Version <ph name="EXPECTED_VERSION" /> förväntades men versionen är <ph name="NEW_ID" /></translation>

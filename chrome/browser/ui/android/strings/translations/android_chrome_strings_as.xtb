@@ -189,6 +189,7 @@
 <translation id="1807709131360304325">এখন নতুন ৱিণ্ড’ খোলক</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />এ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ব্যৱহাৰ কৰাটো অব্যাহত ৰাখিব নোৱাৰে</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, ৰেকৰ্ডিং টেব</translation>
+<translation id="1819443852740954262">আটাইবোৰ ইনক’গনিট’ ৱিণ্ড’ত খোলক</translation>
 <translation id="1820408774134375111">ছাইন ইন কৰাৰ সুবিধা থকা তলৰ শ্বীট</translation>
 <translation id="1823492026305965829"><ph name="USER_FULL_NAME" /> হিচাপে ছাইন ইন কৰক</translation>
 <translation id="1824902652744048041">ব্ৰাউজিঙৰ ডেটা মচকত টিপক</translation>
@@ -771,7 +772,6 @@
 <translation id="4256782883801055595">মুক্ত উত্‍সৰ অনুজ্ঞাপত্ৰ</translation>
 <translation id="426652736638196239">এই IBANটো কেৱল এই ডিভাইচটোতহে ছেভ কৰা হ’ব</translation>
 <translation id="4269820728363426813">লিংকৰ ঠিকনাটো প্ৰতিলিপি কৰক</translation>
-<translation id="4270730597186910506">কোনো প্ৰ’ডাক্ট ট্ৰেক কৰক বা ট্ৰেক কৰাটো বন্ধ কৰক।</translation>
 <translation id="4277529130885813215">আন এটা ডিভাইচ ব্যৱহাৰ কৰক</translation>
 <translation id="427987768447457592">নতুন টেবৰ গোট</translation>
 <translation id="4282440837784183472">আপোনাৰ প্ৰতিষ্ঠান, <ph name="MANAGED_DOMAIN" />এ আপুনি ছাইন ইন কৰি থকা একাউণ্টটো আৰু Chrome কেনেকৈ ব্যৱহাৰ কৰিব পাৰি সেয়া পৰিচালনা কৰে। আপোনাৰ প্ৰশাসকে নিৰ্দিষ্ট কিছুমান সুবিধা ছেট আপ কৰিব অথবা প্ৰতিবন্ধিত কৰিব পাৰে।</translation>
@@ -1476,6 +1476,7 @@
 <translation id="6983306615164277634">আপুনি অৱস্থান সলনি কৰিবলৈ ঠিকনা বাৰ স্পৰ্শ কৰি ধৰি ৰাখিব পাৰে।</translation>
 <translation id="6987047470128880212">এই ডিভাইচটোত ইনক’গনিট’ উপলব্ধ নহয়</translation>
 <translation id="6996145122199359148">এই পৃষ্ঠাখন ডাউনল’ড কৰক</translation>
+<translation id="7007648447224463482">সকলো নতুন ৱিণ্ড’ত খোলক</translation>
 <translation id="7013762323294215682">এই পাছকীটো আপোনাৰ Password Managerত ছেভ কৰা হ’ব। সেইটো এক্সেছ কৰিব পৰা যিকোনো ব্যক্তিয়ে এই পাছকীটো ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="7020741890149022655">পঢ়াৰ সূচীত <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> যোগ দিয়ক</translation>
 <translation id="7022756207310403729">ব্ৰাউজাৰত খোলক</translation>
@@ -1842,6 +1843,7 @@
 <translation id="8445448999790540984">পাছৱর্ড ৰপ্তানি কৰিব নোৱাৰি</translation>
 <translation id="8446884382197647889">অধিক জানক</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{১ টা ছাইটৰ পৰা অনুমতি আঁতৰোৱা হৈছে}one{# টা ছাইটৰ পৰা অনুমতি আঁতৰোৱা হৈছে}other{# টা ছাইটৰ পৰা অনুমতি আঁতৰোৱা হৈছে}}</translation>
+<translation id="8449836157089738489">নতুন টেবৰ গোটত আটাইবোৰ খোলক</translation>
 <translation id="8453310803815879010">Dino গে’ম আৰম্ভ কৰক</translation>
 <translation id="8455675988389029454">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ বুকমাৰ্ক, পাছৱৰ্ড আৰু বহুতো লাভ কৰক</translation>
 <translation id="8458341576712814616">শ্বৰ্টকাট</translation>
@@ -1863,6 +1865,7 @@
 <translation id="8506357771923193001">আপুনি ইয়াত ডাউনল’ড কৰা অধিক ফাইল পাব</translation>
 <translation id="8512053371384421952">আপুনি আৰু <ph name="DOMAIN" />ৰ পৰা জাননী লাভ নকৰে।</translation>
 <translation id="8516012719330875537">প্ৰতিচ্ছবিৰ সম্পাদক</translation>
+<translation id="8517759303731677493">সম্পাদনা কৰক…</translation>
 <translation id="8533670235862049797">সুৰক্ষিত ব্ৰাউজিং অন আছে</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, বাছনি কৰা একাধিক পিন কৰি থোৱা Picture-in-Picture টেব</translation>
 <translation id="8540136935098276800">এটা সঠিকভাৱে ফর্মেট কৰা URL দিয়ক</translation>

@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">無法載入簡介網頁「<ph name="ABOUT_PAGE" />」。</translation>
 <translation id="424963718355121712">應用程式的安裝來源應與應用程式影響所及的主機相同</translation>
 <translation id="4306119971288449206">應用程式的內容類型應設為「<ph name="CONTENT_TYPE" />」</translation>
+<translation id="4349181963619779233">無法從這個網站新增擴充功能和應用程式</translation>
 <translation id="4625078469366263107">啟用應用程式</translation>
 <translation id="4633003931260532286">擴充功能要求的最低「<ph name="IMPORT_NAME" />」版本是「<ph name="IMPORT_VERSION" />」，但目前只安裝了版本「<ph name="INSTALLED_VERSION" />」</translation>
 <translation id="4660476621274971848">預期的版本為「<ph name="EXPECTED_VERSION" />」，但實際的版本為「<ph name="NEW_ID" />」</translation>

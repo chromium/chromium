@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Naj bo svetlo in zračno.</translation>
 <translation id="243179355394256322">Zaradi omejitev vaše organizacije je včlanitev naprav dovoljena samo pooblaščenim uporabnikom. Ta uporabnik nima dovoljenja za včlanitev naprav. V razdelku Uporabniki v skrbniški konzoli preverite, ali ima uporabnik omogočeno skrbniško dovoljenje »Včlanitev strojne opreme za Google Meet«.</translation>
 <translation id="2439152382014731627">Ponastavitev gesla za napravo <ph name="DEVICE_TYPE" /></translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Z namestitvijo <ph name="BEGIN_BOLD" />bo izbrisan celoten trdi disk<ph name="END_BOLD" />. Poskrbite, da so podatki varnostno kopirani.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ko se namestitev začne, je ni mogoče preklicati.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Uporabnikov ne boste mogli dodati, ker manjkajo ključi Googlovega API-ja. Za podrobnosti obiščite <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Omogočanje storitve za obnovitev podatkov.</translation>
 <translation id="2485681265915754872">Pogoji storitve Google Play</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebooki namesto običajne programske opreme uporabljajo aplikacije. Prenesite aplikacije za storilnost, razvedrilo in drugo.</translation>
 <translation id="450867954911715010">Nastavitve funkcij za ljudi s posebnimi potrebami</translation>
 <translation id="4519605771716872386">Sinhronizacija datotek je vklopljena</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Poskusite te postopke za odpravljanje težav:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Preverite, ali ima naprava delujoč notranji pomnilnik, denimo trdi disk, SSD ali kartico eMMC.
+        <ph name="LIST_ITEM" />Preverite, ali je notranji pomnilnik večji od 16 GB.
+        <ph name="LIST_ITEM" />Preverite povezavo do notranjega pomnilnika, če je fizično dostopna.
+        <ph name="LIST_ITEM" />Prepričajte se, da uporabljate potrjen model in preverite opombe glede namestitve.
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Če potrebujete dodatno pomoč, obiščite g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Koga želite dodati tej napravi <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Če želite po včlanitvi preklopiti, boste morali napravo ponastaviti na tovarniške nastavitve (postopek Powerwash).</translation>
 <translation id="4567512141633030272">Napačna možnost prijave?</translation>
@@ -572,6 +583,8 @@
 <translation id="7189451821249468368">Nimate dovolj nadgradenj za včlanitev te naprave. Obrnite se na prodajni oddelek za nakup dodatnih. Če menite, da ste to sporočilo prejeli pomotoma, se obrnite na podporo.</translation>
 <translation id="7202337678781136582">Optično preberite kodo QR v telefonu Android</translation>
 <translation id="7228854227189381547">Ne preklopi</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Za najboljšo izkušnjo namestite <ph name="DEVICE_OS" /> na notranji disk. Namestite ga lahko tudi pozneje na zaslonu za prijavo.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Če še ne želite namestiti, lahko sistem zaženete s pogona USB in ga najprej preizkusite. Tako boste ohranili trenutni operacijski sistem in podatke, vendar lahko pride do omejitev shrambe in delovanja.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Spremembe bodo uporabljene po nastavitvi</translation>
 <translation id="7260186537988033909">Včlanitev naprave za kiosk ali reklamne napise je dokončana</translation>
 <translation id="7284411326658527427">Vsak lahko individualno prilagodi svoj račun in poskrbi za zasebnost podatkov.</translation>
@@ -589,6 +602,8 @@
 <translation id="7416263748877373774">Pogojev storitve ni mogoče naložiti. Preverite omrežno povezavo in poskusite znova.</translation>
 <translation id="7475742997309661417">Bralnik zaslona v sistemu ChromeOS ali ChromeVox uporabljajo predvsem slepi in slabovidni uporabniki za branje besedila, prikazanega na zaslonu, s sintetizatorjem govora ali na zaslonu braille. Če želite vklopiti ChromeVox, za pet sekund pridržite obe tipki za glasnost. Ko bo ChromeVox aktiviran, bo prikazana kratka predstavitev.</translation>
 <translation id="7476454130948140105">Akumulator ima premalo energije za posodobitev (<ph name="BATTERY_PERCENT" /> %)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Prišlo je do napake. Sistema <ph name="DEVICE_OS" /> ni bilo mogoče namestiti.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Če potrebujete dodatno pomoč, obiščite g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Pred včlanitvijo morate počistiti modul TPM, tako da bo lahko sistem <ph name="DEVICE_OS" /> prevzel lastništvo naprave.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Napravo TPM lahko tudi v celoti izklopite. Vaši podatki bodo še vedno varno shranjeni s šifriranjem programske opreme, vendar bodo onemogočene nekatere varnostne funkcije, kot so potrdila, podprta s strojno opremo.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Nastavitve TPM lahko spremenite tako, da napravo znova zaženete in odprete nastavitve za sistemski BIOS/UEFI. Postopek se razlikuje glede na model naprave. Če želite več informacij, odprite dokumentacijo za <ph name="DEVICE_OS" /> v ločeni napravi, preden znova zaženete: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

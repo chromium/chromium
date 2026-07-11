@@ -5005,6 +5005,7 @@
 <translation id="4849286518551984791">Координирано универзално време (UTC/GMT)</translation>
 <translation id="4849517651082200438">Не инсталирај</translation>
 <translation id="4849731766219625109">Користете ја вашата сметка на <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="4850279708232718725">Кажи ми за ова</translation>
 <translation id="485053257961878904">Не може да се постави синхронизација на известувањата</translation>
 <translation id="4850548109381269495">На двата уреда, проверете ја интернет-врската и вклучете Bluetooth. Потоа обидете се повторно.</translation>
 <translation id="4850669014075537160">Лизгање</translation>
@@ -6353,6 +6354,7 @@
 <translation id="5922854266885514646">Кликнете „Приспособете го Chrome“</translation>
 <translation id="5924047253200400718">Побарајте помош <ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Прашај пред копирање или преместување датотеки на Microsoft во Google Drive</translation>
+<translation id="5925057331573749968">Најавувајте се побрзо со QR-код</translation>
 <translation id="5926936390113611560">Отвори ги сите профили</translation>
 <translation id="592880897588170157">Преземај ги PDF-датотеките наместо автоматски да ги отвораш во Chrome</translation>
 <translation id="5930567261594625340">Ноќно небо</translation>
@@ -9502,6 +9504,7 @@
 <translation id="8372678064309688510">Вашата адреса е зачувана</translation>
 <translation id="8373652277231415614">Споделени директориуми на Crostini</translation>
 <translation id="8374243500935816406">Не дозволувај сајтовите да управуваат со прозорците на сите екрани</translation>
+<translation id="8375703478696038265">Чекор <ph name="STEP_NUMBER" /> од <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Кажете ни што се случува со Google Cast.</translation>
 <translation id="8376384591331888629">Вклучувајќи колачиња од трети страни</translation>
 <translation id="8376451933628734023">Ако веб-апликацијава се обидува да ве измами да мислите дека е друга апликација, деинсталирајте ја.</translation>
@@ -10573,6 +10576,7 @@
 <translation id="9188142767272053574">Овозможи ја Process Isolation</translation>
 <translation id="9192019773545828776">Слушајте говорни повратни информации за да може да го користите уредот без да гледате во екранот. Повратни информации со Брајово писмо се достапни со поврзан уред. Користете Ctrl + Alt + Z за да се вклучи или исклучи ChromeVox. Користете Search + стрелка налево или налево за да се движите. Користете Search + празно место за да изберете (активирате).</translation>
 <translation id="9195969368671142407">Кога вашата организација ќе го ограничи зачувувањето во вашата сметка на Google, нема да може да споделувате или да се придружувате во групи картички</translation>
+<translation id="9197456336762295195">Скенирајте го QR-кодов со камерата на уредот каде што е вашиот криптографски клуч за google.com</translation>
 <translation id="919840898042157087">Статично движење</translation>
 <translation id="9199503643457729322">Кликнете за да заминете од „Водичот за приватност“.</translation>
 <translation id="9199695835892108985">Дали да се ресетираат сите дозволи за сериските порти?</translation>

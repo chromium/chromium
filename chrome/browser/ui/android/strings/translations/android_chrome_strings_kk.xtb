@@ -189,6 +189,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="1807709131360304325">Жаңа терезе ашу</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> сайты <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> провайдерін пайдалануды жалғастыра алмайды.</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, жазу қойындысы</translation>
+<translation id="1819443852740954262">Барлығын инкогнито терезесінде ашу</translation>
 <translation id="1820408774134375111">Аккаунтқа кірудің төменгі парақшасы</translation>
 <translation id="1823492026305965829"><ph name="USER_FULL_NAME" /> ретінде кіру</translation>
 <translation id="1824902652744048041">"Браузерді пайдалану деректерін жою" түймесін түртіңіз.</translation>
@@ -771,7 +772,6 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="4256782883801055595">Ашық кодты бағдарлама лицензиялары</translation>
 <translation id="426652736638196239">Бұл IBAN нөмірі осы құрылғыға ғана сақталады.</translation>
 <translation id="4269820728363426813">Сілтеме мекенжайын көшіру</translation>
-<translation id="4270730597186910506">Өнімді қадағалаңыз немесе қадағалауды тоқтатыңыз.</translation>
 <translation id="4277529130885813215">Басқа құрылғыны пайдалану</translation>
 <translation id="427987768447457592">Жаңа қойындылар тобы</translation>
 <translation id="4282440837784183472">Ұйымыңыз (<ph name="MANAGED_DOMAIN" />) сіз кіріп жатқан аккаунтты және Chrome-ды пайдалану жолын басқарады. Әкімшіңіз белгілі бір функцияларды реттей алады немесе шектей алады.</translation>
@@ -1476,6 +1476,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6983306615164277634">Сондай-ақ орынды өзгерту үшін мекенжай жолағын түртіп, ұстап тұруға болады.</translation>
 <translation id="6987047470128880212">Бұл құрылғыда инкогнито режимі қолжетімді емес.</translation>
 <translation id="6996145122199359148">Бұл бетті жүктеп алу</translation>
+<translation id="7007648447224463482">Барлығын жаңа терезеде ашу</translation>
 <translation id="7013762323294215682">Бұл кіру кілті Password Manager-ге сақталады. Оған кіре алатын кез келген адам осы кіру кілтіне де қол жеткізеді.</translation>
 <translation id="7020741890149022655">Оқу тізіміне қосу <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Браузерден ашу</translation>
@@ -1842,6 +1843,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8445448999790540984">Құпия сөздерді экспорттау мүмкін емес</translation>
 <translation id="8446884382197647889">Толық ақпарат</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Рұқсаттар 1 сайттан өшірілді}other{Рұқсаттар # сайттан өшірілді}}</translation>
+<translation id="8449836157089738489">Барлығын жаңа қойындылар тобында ашу</translation>
 <translation id="8453310803815879010">Динозавр ойынын бастау</translation>
 <translation id="8455675988389029454">Бетбелгілер, құпия сөздер және т.б. ақпарат барлық құрылғыда болады.</translation>
 <translation id="8458341576712814616">Таңбаша</translation>
@@ -1863,6 +1865,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8506357771923193001">Жүктеп алынғандарды осы жерден таба аласыз</translation>
 <translation id="8512053371384421952">Сізге енді <ph name="DOMAIN" /> веб-сайтынан хабарландырулар келмейді.</translation>
 <translation id="8516012719330875537">Сурет редакторы</translation>
+<translation id="8517759303731677493">Өзгерту…</translation>
 <translation id="8533670235862049797">Safe Browsing қосулы</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, бірнеше таңдалған "Cуреттегі сурет" режиміндегі бекітілген қойынды</translation>
 <translation id="8540136935098276800">Дұрыс форматталған URL мекенжайын енгізіңіз.</translation>

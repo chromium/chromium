@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Nije moguće učitati stranicu s informacijama "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">Aplikacije se moraju posluživati s host računara na kojeg utiču</translation>
 <translation id="4306119971288449206">Aplikacije moraju dobiti vrstu sadržaja "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4349181963619779233">Ekstenzije i aplikacije se ne mogu dodati s ove web lokacije</translation>
 <translation id="4625078469366263107">Omogući aplikaciju</translation>
 <translation id="4633003931260532286">Minimalna verzija za "<ph name="IMPORT_NAME" />" koju zahtijeva ekstenzija je "<ph name="IMPORT_VERSION" />", ali je instalirana samo verzija "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4660476621274971848">Očekivana je verzija "<ph name="EXPECTED_VERSION" />", ali je bila verzija "<ph name="NEW_ID" />"</translation>

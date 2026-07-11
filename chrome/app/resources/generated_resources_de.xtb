@@ -4989,6 +4989,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4849286518551984791">Koordinierte Weltzeit (UTC/GMT)</translation>
 <translation id="4849517651082200438">Nicht installieren</translation>
 <translation id="4849731766219625109"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-Konto verwenden</translation>
+<translation id="4850279708232718725">Erzähl mir mehr darüber</translation>
 <translation id="485053257961878904">Benachrichtigungssynchronisierung konnte nicht eingerichtet werden</translation>
 <translation id="4850548109381269495">Prüfe auf beiden Geräten die Internetverbindung und aktiviere Bluetooth. Versuche es dann noch einmal.</translation>
 <translation id="4850669014075537160">Scrollen</translation>
@@ -6334,6 +6335,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5922854266885514646">Klicke auf „Chrome anpassen“</translation>
 <translation id="5924047253200400718">Hilfe aufrufen, <ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Vor dem Kopieren oder Verschieben von Microsoft-Dateien in bzw. nach Google Drive fragen</translation>
+<translation id="5925057331573749968">Per QR-Code schneller anmelden</translation>
 <translation id="5926936390113611560">Alle Profile öffnen</translation>
 <translation id="592880897588170157">PDF-Dateien herunterladen, anstatt sie automatisch in Chrome zu öffnen</translation>
 <translation id="5930567261594625340">Nachthimmel</translation>
@@ -9481,6 +9483,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8372678064309688510">Deine Adresse wurde gespeichert</translation>
 <translation id="8373652277231415614">Freigegebene Crostini-Verzeichnisse</translation>
 <translation id="8374243500935816406">Nicht zulassen, dass Websites Fenster auf allen deinen Bildschirmen verwalten</translation>
+<translation id="8375703478696038265">Schritt <ph name="STEP_NUMBER" /> von <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Sag uns, was das Problem mit Google Cast ist.</translation>
 <translation id="8376384591331888629">Einschließlich Drittanbieter-Cookies auf dieser Website</translation>
 <translation id="8376451933628734023">Wenn diese Web-App vorzutäuschen versucht, eine andere App zu sein, deinstalliere sie.</translation>
@@ -10552,6 +10555,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9188142767272053574">Prozessisolierung aktivieren</translation>
 <translation id="9192019773545828776">Du erhältst gesprochenes Feedback, sodass du dein Gerät nutzen kannst, ohne auf das Display sehen zu müssen. Braille-Feedback ist auf einem verbundenen Gerät verfügbar. Verwende Strg + Alt + Z, um ChromeVox zu aktivieren oder zu deaktivieren. Mit der Suchtaste + Links- oder Rechtspfeil kannst du den Cursor bewegen. Drücke die Suchtaste + Leertaste, um ein Element auszuwählen (zu aktivieren).</translation>
 <translation id="9195969368671142407">Wenn deine Organisation die Speicheroption für dein Google-Konto einschränkt, kannst du Tabgruppen nicht teilen oder ihnen beitreten</translation>
+<translation id="9197456336762295195">Scanne diesen QR-Code mit der Kamera des Geräts, auf dem sich dein Passkey für google.com befindet</translation>
 <translation id="919840898042157087">Bewegung „Statisch“</translation>
 <translation id="9199503643457729322">Klicke hier, um den Datenschutz-Leitfaden zu verlassen.</translation>
 <translation id="9199695835892108985">Alle Berechtigungen für serielle Ports zurücksetzen?</translation>

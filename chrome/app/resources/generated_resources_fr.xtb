@@ -4989,6 +4989,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4849286518551984791">Temps universel coordonné (UTC/GMT)</translation>
 <translation id="4849517651082200438">Ne pas installer</translation>
 <translation id="4849731766219625109">Utiliser votre compte <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="4850279708232718725">M'en dire plus</translation>
 <translation id="485053257961878904">Impossible de configurer la synchronisation des notifications</translation>
 <translation id="4850548109381269495">Vérifiez votre connexion Internet et activez le Bluetooth sur les deux appareils, puis réessayez.</translation>
 <translation id="4850669014075537160">Défilement</translation>
@@ -6337,6 +6338,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5922854266885514646">Cliquez sur "Personnaliser Chrome"</translation>
 <translation id="5924047253200400718">Obtenir de l'aide<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Demander avant de copier ou de déplacer des fichiers Microsoft vers Google Drive</translation>
+<translation id="5925057331573749968">Connectez-vous plus vite avec un QR code</translation>
 <translation id="5926936390113611560">Ouvrir tous les profils</translation>
 <translation id="592880897588170157">Télécharger les fichiers PDF au lieu de les ouvrir automatiquement dans Chrome</translation>
 <translation id="5930567261594625340">Ciel nocturne</translation>
@@ -7826,7 +7828,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> est géré par votre administrateur</translation>
 <translation id="7082850163410901674">Les notifications sont désactivées dans les réglages système Mac</translation>
 <translation id="7083729794572207131">Les sites demandent généralement à installer des applis Web pour améliorer votre expérience</translation>
-<translation id="7084095352418993433">Poser une question à Google concernant cette page : <ph name="PAGE_TITLE" /></translation>
+<translation id="7084095352418993433">Poser une question à Google sur cette page : <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(non configuré)</translation>
 <translation id="7086377898680121060">Augmenter la luminosité</translation>
 <translation id="7086672505018440886">Ajouter des fichiers journaux Chrome dans l'archive.</translation>
@@ -8477,7 +8479,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7602079150116086782">Aucun onglet issu d'autres appareils</translation>
 <translation id="7602173054665172958">Gestion de l'impression</translation>
 <translation id="7602805861133750578">Vous pouvez désormais gérer vos groupes d'onglets, vos discussions Gemini et vos fils de discussion en Mode IA au même endroit. Vous pouvez retirer cet élément à tout moment.</translation>
-<translation id="7602868996817972616">Poser une question à Google concernant cette page</translation>
+<translation id="7602868996817972616">Poser une question à Google sur cette page</translation>
 <translation id="7603785829538808504">Les sites listés ci-dessous appliquent un paramètre personnalisé</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 mot de passe non importé}one{{NUM_PASSWORDS} mot de passe non importé}other{{NUM_PASSWORDS} mots de passe non importés}}</translation>
 <translation id="7605163396341021431">Autoriser les applis Android à contrôler les périphériques USB sur ce Chromebook</translation>
@@ -9487,6 +9489,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8372678064309688510">Votre adresse est enregistrée</translation>
 <translation id="8373652277231415614">Répertoires partagés par Crostini</translation>
 <translation id="8374243500935816406">Ne pas autoriser les sites à gérer les fenêtres sur tous vos écrans</translation>
+<translation id="8375703478696038265">Étape <ph name="STEP_NUMBER" /> sur <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Décrivez-nous le problème lié à Google Cast.</translation>
 <translation id="8376384591331888629">Y compris les cookies tiers de ce site</translation>
 <translation id="8376451933628734023">Si cette appli Web essaie de se faire passer pour une autre, désinstallez-la.</translation>
@@ -10558,6 +10561,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="9188142767272053574">Activer l'isolation des processus</translation>
 <translation id="9192019773545828776">Activez la lecture vocale pour utiliser votre appareil sans regarder l'écran. Les retours en braille sont disponibles sur un appareil connecté. Appuyez sur Ctrl+Alt+Z pour activer ou désactiver ChromeVox. Appuyez sur Recherche+Flèche vers la gauche ou Flèche vers la droite pour parcourir l'écran, et appuyez sur Recherche+Espace pour sélectionner (activer).</translation>
 <translation id="9195969368671142407">Lorsque votre organisation limite l'enregistrement dans votre compte Google, vous ne pouvez pas rejoindre ni partager de groupes d'onglets</translation>
+<translation id="9197456336762295195">Scannez ce QR code avec l'appareil photo de l'appareil qui a votre clé d'accès pour google.com</translation>
 <translation id="919840898042157087">Mouvement statique</translation>
 <translation id="9199503643457729322">Cliquez pour quitter le Guide sur la confidentialité.</translation>
 <translation id="9199695835892108985">Réinitialiser toutes les autorisations de port série ?</translation>

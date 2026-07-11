@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">Іскери білім</translation>
 <translation id="1542830386724426410">Төлеу кезінде қолжетімді карта бонустарын көрсету. Эмитент шарттары қолданылады. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Толық ақпарат<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Баға тарихы</translation>
+<translation id="1546286808622193216">Gemini арқылы карта бонустарын салыстырыңыз.</translation>
 <translation id="1549470594296187301">Бұл мүмкіндікті пайдалану үшін JavaScript қосылуы керек.</translation>
 <translation id="1553152622374372421">Қысқы спорт түрлері</translation>
 <translation id="1553358976309200471">Chrome жаңарту</translation>
@@ -1424,6 +1425,7 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлеріне кіріп, синхрондалатын ақпаратты басқару үшін Tab, сосын Enter пернелерін басыңыз.</translation>
 <translation id="3203025201812691413">URL бос болмауы керек</translation>
 <translation id="320323717674993345">Төлемнен бас тарту</translation>
+<translation id="3204534477198689393">Ұсыныстарды жақсарту және үлгілерді жылдам толтыру үшін сіз кірген беттердің контенті мен URL мекенжайлары бұлттағы құпия кеңістікте өңделуі мүмкін.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> веб-сайтында ересектерге арналған контент болуы мүмкін.</translation>
 <translation id="3207960819495026254">Бетбелгі қойылған</translation>
 <translation id="3208701679386778924">Қосымша ChromeOS жаңартуларын жақсарта алуымыз үшін есеп жіберіңіз.</translation>
@@ -1479,6 +1481,7 @@
 <translation id="3272643614306383237">1 МБ-тан аз. Келесі жолы кейбір сайттар баяу жүктелуі мүмкін.</translation>
 <translation id="3273738040255912340">Әкімші профиль мен браузерге қашықтан өзгеріс енгізе алады, есеп беру арқылы браузер туралы ақпаратты талдай алады және басқа қажетті тапсырмаларды орындай алады. Бұл құрылғыдағы әрекеттерді Chromium браузерінен тыс та басқаруға болады. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">Толығымен ашылған IBAN нөмірін сақтау.</translation>
+<translation id="327455571215090823">Смарт автотолтыру қызметі деректерді құпия сақтайды</translation>
 <translation id="3281350579597955952">{0,plural, =1{Әкімші саясаты бойынша бұл файлды <ph name="DESTINATION_NAME" /> ішінде ашпаған дұрыс.}other{Әкімші саясаты бойынша бұл файлдарды <ph name="DESTINATION_NAME" /> ішінде ашпаған дұрыс.}}</translation>
 <translation id="3282085321714087552">Ұйымыңыз (<ph name="ENROLLMENT_DOMAIN" />) келесі веб-сайттарға бірқатар ақпарат (мысалы, параметрлер немесе саясаттар) жіберді.</translation>
 <translation id="3286372614333682499">портреттік</translation>
@@ -2415,6 +2418,7 @@
 <translation id="4744603770635761495">Орындалатын жол</translation>
 <translation id="4744816391336495134">Сақталған құпия сөзді пайдаланатын кезде жеке басыңызды саусағыңыздың ізімен растай аласыз.</translation>
 <translation id="4749011317274908093">Инкогнито режиміне өттіңіз</translation>
+<translation id="4749620353539006322">Бонустарды барынша тиімді пайдаланыңыз</translation>
 <translation id="4749924365937394956">Сервер аутентификациясы</translation>
 <translation id="4750671009706599284">осы телефон</translation>
 <translation id="4750917950439032686">Бұл сайтқа жіберілетін жеке ақпаратыңыз (мысалы, құпия сөздер не несиелік карта нөмірлері) құпия сақталады.</translation>
@@ -2990,6 +2994,7 @@
 <translation id="5611398002774823980">Аккаунтта сақтау</translation>
 <translation id="561165882404867731">Осы бетті Google Translate арқылы аударыңыз.</translation>
 <translation id="5612720917913232150"><ph name="URL" /> компьютеріңіздің орналасқан жер деректерін пайдаланғысы келеді</translation>
+<translation id="5613958591683399697"><ph name="ENGINE_NAME" /> жүйесінен сұрау</translation>
 <translation id="5614190747811328134">Пайдаланушы хабарламасы</translation>
 <translation id="5614520971155863709">Карта ойындары</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> сізді тым көп қайта бағыттады.</translation>

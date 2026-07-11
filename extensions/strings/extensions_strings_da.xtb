@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Siden "<ph name="ABOUT_PAGE" />" kunne ikke indlæses.</translation>
 <translation id="424963718355121712">Apps, der styrer et website, kan kun downloades fra det pågældende website</translation>
 <translation id="4306119971288449206">Apps skal downloades med indholdstypen "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4349181963619779233">Udvidelser og apps kan ikke tilføjes fra dette website</translation>
 <translation id="4625078469366263107">Aktivér app</translation>
 <translation id="4633003931260532286">Udvidelsen skal bruge "<ph name="IMPORT_NAME" />" med minimumversionen "<ph name="IMPORT_VERSION" />", men kun versionen "<ph name="INSTALLED_VERSION" />" er installeret</translation>
 <translation id="4660476621274971848">Den forventede version var "<ph name="EXPECTED_VERSION" />", men versionen viste sig at være "<ph name="NEW_ID" />"</translation>

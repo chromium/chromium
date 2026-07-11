@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">व्यावसायिक शिक्षा</translation>
 <translation id="1542830386724426410">चेकआउट गर्ने क्रममा कार्डमार्फत उपलब्ध हुने लाभ तथा रिवार्डहरू देखाउनुहोस्। कार्ड जारीकर्ताका सर्तहरू लागू हुन्छन्। <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />थप जान्नुहोस्<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">विगतको मूल्य</translation>
+<translation id="1546286808622193216">Gemini प्रयोग गरी कार्डका लाभहरूको तुलना गर्नुहोस्</translation>
 <translation id="1549470594296187301">यो सुविधा प्रयोग गर्न JavaScript सक्रिय गर्नुपर्छ।</translation>
 <translation id="1553152622374372421">हिउँदे खेलकुद</translation>
 <translation id="1553358976309200471">Chrome अपडेट गर्नुहोस्</translation>
@@ -2414,6 +2415,7 @@
 <translation id="4744603770635761495">कार्यान्वयनयोग्य मार्ग</translation>
 <translation id="4744816391336495134">तपाईंले सेभ गरिएको पासवर्ड प्रयोग गर्दा तपाईं आफ्नो पहिचान पुष्टि गर्न आफ्नो फिंगरप्रिन्ट प्रयोग गर्न सक्नुहुन्छ</translation>
 <translation id="4749011317274908093">तपाईं इन्कोग्निटो मोडमा जानुभएको छ</translation>
+<translation id="4749620353539006322">बढीभन्दा बढी रिवार्ड प्राप्त गर्नुहोस्</translation>
 <translation id="4749924365937394956">सर्भरको प्रमाणीकरण</translation>
 <translation id="4750671009706599284">यो फोन</translation>
 <translation id="4750917950439032686">यस साइटमा तपाईँको जानकारी (उदाहरणका लागि पासवर्ड वा क्रेडिट कार्डको नम्बर) पठाउँदा त्यो निजी रहन्छ।</translation>
@@ -2989,6 +2991,7 @@
 <translation id="5611398002774823980">खातामा सेभ गर्नुहोस्</translation>
 <translation id="561165882404867731">Google अनुवादकका सहायताले यो पृष्ठ अनुवाद गर्नुहोस्</translation>
 <translation id="5612720917913232150"><ph name="URL" /> तपाईंको कम्प्युटरको स्थान प्रयोग गर्न चाहन्छ</translation>
+<translation id="5613958591683399697"><ph name="ENGINE_NAME" /> लाई सोध्नुहोस्</translation>
 <translation id="5614190747811328134">प्रयोगकर्त सूचना</translation>
 <translation id="5614520971155863709">ताससम्बन्धी गेमहरू</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> ले तपाईँलाई धेरै पटक रिडिरेक्ट गर्यो।</translation>

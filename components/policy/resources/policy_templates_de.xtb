@@ -2685,6 +2685,7 @@ Wenn die Richtlinie auf „2“ (Deaktiviert) festgelegt wird, ist die Einbindun
 <translation id="2707733461906745082">Profiltrennung</translation>
 <translation id="2707873794476722903">Safe Browsing ist im Standardmodus aktiv.</translation>
 <translation id="2709516037105925701">Autofill</translation>
+<translation id="2712089199157322391">Die Entwicklertools für das normale Surfen im Web zulassen, aber für unternehmensweit installierte und in den Browser integrierte Erweiterungen verwalteter Nutzer einschränken (ab M150 auf Seiten blockiert, auf denen diese Erweiterungen eingebettet sind, mit Ausnahme des integrierten PDF-Viewers).</translation>
 <translation id="2713913573196284609">Dieser Wert wird ab M121 eingestellt. Ab M121 werden Werte als „EnabledBelowThreshold“ behandelt.</translation>
 <translation id="2713977837384407666">Messwerte immer an Google senden</translation>
 <translation id="2714359695399346815">Wenn diese Richtlinie aktiviert wird oder nicht konfiguriert ist, wird der Einsatz von STUN-Servern aktiviert und Remote-Clients können diesen Computer finden und eine Verbindung herstellen, selbst wenn er sich hinter einer Firewall befindet.
@@ -12450,26 +12451,6 @@ Weitere Informationen dazu findest du unter https://support.google.com/chrome/a/
 <translation id="8931555638815157255">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird über registrierte Geräte von Zeit zu Zeit die Version ihres Betriebssystems und ihrer Firmware gemeldet.
 
       Ist die Richtlinie deaktiviert, melden registrierte Geräte keine Informationen zu der Version.</translation>
-<translation id="8931984670731745012">Wenn du diese Richtlinie konfigurierst, kannst du angeben, welche Autofill-Datentypen für bestimmte URL-Muster blockiert werden.
-
-Die Richtlinie ist als Liste von Wörterbüchern strukturiert. Jedes Wörterbuch muss Folgendes enthalten:
-* „url_pattern“: Ein URL-Muster für die Inhaltseinstellungen (z. B. „https://[*.]beispiel.de“).
-* „blocked_types“: Eine Liste von Strings, die die Kategorien von Autofill-Daten darstellen, die blockiert werden sollen.
-
-Die unterstützten Werte für „blocked_types“ sind:
-* „contact_info“: Das Ausfüllen und Speichern von Kontaktdaten wird blockiert.
-* „payments“: Das Ausfüllen und Speichern von Kreditkarten und Zahlungsmethoden wird blockiert.
-* „identity_docs“: Das Ausfüllen und Speichern von Identitätsdokumenten (z. B. Reisepass, Führerschein, Personalausweis) wird blockiert.
-* „travel“: Das Ausfüllen und Speichern von Reiseinformationen (z. B. Flugreservierungen, Fahrzeugkennzeichen) wird blockiert.
-* „shopping“: Das Ausfüllen und Speichern von Shopping-Informationen (z. B. Onlinebestellungen, Sendungen) wird blockiert.
-
-Wenn ein Datentyp für eine Website blockiert ist, sind sowohl das Erstellen von Vorschlägen als auch die Aufforderung zum Speichern/Importieren neuer Daten dieses Typs auf dieser Website deaktiviert.
-
-Wenn eine URL mit mehreren Mustereinträgen in der Liste übereinstimmt, werden die blockierten Typen aus allen übereinstimmenden Einträgen zusammengeführt. Ungültige URL-Muster in der Liste werden ignoriert.
-
-Wenn diese Richtlinie nicht konfiguriert ist, werden keine Autofill-Datentypen nach Domain blockiert.
-
-Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Der Platzhalter * wird unterstützt. Dieses Muster entspricht jeder URL mit beliebigem Schema, Port und Pfad.</translation>
 <translation id="8934296213794658971">Einstellungen für die Gemini-Integration</translation>
 <translation id="8937282917198525844"> Ab M81 wurde für die Standard-Formularsteuerelemente (z. B. &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) ein überarbeitetes Design mit verbesserter Zugänglichkeit und einer vereinheitlichten Plattform entwickelt. Mit dieser Richtlinie werden die "alten" Formularsteuerelemente bis M84 wiederhergestellt.
 

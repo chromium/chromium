@@ -189,6 +189,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1807709131360304325">कुनै नयाँ विन्डो खोल्नुहोस्</translation>
 <translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मा <ph name="SITE_ETLD_PLUS_ONE" /> प्रयोग गरिराख्न मिल्दैन</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, रेकर्डिङ ट्याब</translation>
+<translation id="1819443852740954262">सबै URL इन्कोग्निटो विन्डोमा खोलियोस्</translation>
 <translation id="1820408774134375111">साइन इन गर्ने पुछारको पाना</translation>
 <translation id="1823492026305965829"><ph name="USER_FULL_NAME" /> का रूपमा साइन इन गर्नुहोस्</translation>
 <translation id="1824902652744048041">"ब्राउजिङ डेटा मेटाउनुहोस्" मा ट्याप गर्नुहोस्</translation>
@@ -771,7 +772,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4256782883801055595">स्रोत इजाजतपत्रहरू खोल्नुहोस्</translation>
 <translation id="426652736638196239">यो IBAN यो डिभाइसमा मात्र सेभ गरिने छ।</translation>
 <translation id="4269820728363426813">लिङ्क ठेगाना कपी गर्नुहोस्</translation>
-<translation id="4270730597186910506">कुनै उत्पादन ट्र्याक वा अनट्र्याक गर्नुहोस्।</translation>
 <translation id="4277529130885813215">अर्को डिभाइस प्रयोग गर्नुहोस्</translation>
 <translation id="427987768447457592">नयाँ ट्याब समूह</translation>
 <translation id="4282440837784183472">तपाईंको सङ्गठन, <ph name="MANAGED_DOMAIN" /> ले तपाईंले साइन इन गर्न लागिरहेको खाता र Chrome प्रयोग गर्न सकिने तरिका व्यवस्थापन गर्छ। तपाईंका एड्मिन खास सुविधाहरू सेटअप गर्न वा ती सुविधामाथि प्रतिबन्ध लगाउन सक्नुहुन्छ।</translation>
@@ -1475,6 +1475,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6983306615164277634">तपाईं स्थान परिवर्तन गर्न एड्रेस बार टच एण्ड होल्ड गर्न पनि सक्नुहुन्छ।</translation>
 <translation id="6987047470128880212">यो डिभाइसमा इन्कोग्निटो मोड उपलब्ध छैन</translation>
 <translation id="6996145122199359148">यो पेज डाउनलोड गर्नुहोस्</translation>
+<translation id="7007648447224463482">सबै url हरूलाई नयाँ विन्डोमा खोल्नुहोस्</translation>
 <translation id="7013762323294215682">यो पासकी पासवर्ड म्यानेजरमा सेभ गरिने छ। यो पासकी प्रयोग गर्ने अनुमति भएका जोकोहीले यो पासकी प्रयोग गर्न सक्ने छन्।</translation>
 <translation id="7020741890149022655">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हाल्नुहोस् <ph name="BEGIN_NEW" />नयाँ सुविधा<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ब्राउजरमा खाेल्नुहाेस्</translation>
@@ -1841,6 +1842,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8445448999790540984">पासवर्डहरू निर्यात गर्न सकिएन</translation>
 <translation id="8446884382197647889">थप जान्नुहोस्</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{एउटा साइटलाई दिइएका अनुमति रद्द गरिएका छन्}other{# वटा साइटलाई दिइएका अनुमति रद्द गरिएका छन्}}</translation>
+<translation id="8449836157089738489">सबै URL नयाँ ट्याब समूहमा खोल्नुहोस्</translation>
 <translation id="8453310803815879010">Dino गेम खेल्न थाल्नुहोस्</translation>
 <translation id="8455675988389029454">आफ्ना बुकमार्क, पासवर्डलगायतका कुराहरू आफूले प्रयोग गर्ने सबै डिभाइसमा प्राप्त गर्नुहोस्</translation>
 <translation id="8458341576712814616">सर्टकट</translation>
@@ -1862,6 +1864,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8506357771923193001">तपाईंले डाउनलोड गरेका सामग्री यहाँ देखिने छन्</translation>
 <translation id="8512053371384421952">तपाईं अबदेखि <ph name="DOMAIN" /> बाट सूचनाहरू प्राप्त गर्नु हुने छैन।</translation>
 <translation id="8516012719330875537">फोटो सम्पादक</translation>
+<translation id="8517759303731677493">सम्पादन गर्नुहोस्…</translation>
 <translation id="8533670235862049797">Safe Browsing अन छ</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, एकभन्दा बढी विकल्प चयन गरिएको पिन गरिएको Picture-in-Picture ट्याब</translation>
 <translation id="8540136935098276800">सही ढाँचा भएको URL प्रविष्टि गर्नुहोस्</translation>

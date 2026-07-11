@@ -1535,6 +1535,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2199298570273670671">Błąd</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200781749203116929">Logi systemowe ChromeOS</translation>
+<translation id="2202391868799679245">Włącz skrót klawiszowy</translation>
 <translation id="2203088913459920044">Nazwa może zawierać litery, cyfry i znaki specjalne</translation>
 <translation id="220321590587754225">Nie udało się połączyć. Spróbuj ponownie.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> będzie mógł sprawdzić Twoje hasła, gdy zalogujesz się na konto Google</translation>
@@ -4979,6 +4980,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4849286518551984791">Uniwersalny czas koordynowany (UTC/GMT)</translation>
 <translation id="4849517651082200438">Nie instaluj</translation>
 <translation id="4849731766219625109">Użyj konta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="4850279708232718725">Opowiedz mi o tym</translation>
 <translation id="485053257961878904">Nie udało się skonfigurować synchronizacji powiadomień</translation>
 <translation id="4850548109381269495">Na obu urządzeniach sprawdź połączenie z internetem i włącz Bluetooth. Następnie spróbuj ponownie.</translation>
 <translation id="4850669014075537160">Przewijanie</translation>
@@ -5072,6 +5074,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4906490889887219338">Skonfiguruj sieciowe udziały plików i zarządzaj nimi. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Przywróć domyślne</translation>
 <translation id="4907129260985716018">Wybierz, kiedy to rozszerzenie może odczytywać i zmieniać dane witryny</translation>
+<translation id="4908076691331874303">Ukryty w tej witrynie</translation>
 <translation id="4908811072292128752">Otwórz nową kartę, by przeglądać dwie strony naraz</translation>
 <translation id="4910241725741323970">Aplikacja jest już zainstalowana</translation>
 <translation id="4912643508233590958">Wyjścia z nieaktywności</translation>
@@ -6325,6 +6328,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5922854266885514646">Kliknij „Dostosuj Chrome”</translation>
 <translation id="5924047253200400718">Pomoc<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Pytaj przed skopiowaniem lub przeniesieniem plików Microsoft na Dysk Google</translation>
+<translation id="5925057331573749968">Loguj się szybciej za pomocą kodu QR</translation>
 <translation id="5926936390113611560">Otwórz wszystkie profile</translation>
 <translation id="592880897588170157">Pobieraj pliki PDF zamiast otwierać je automatycznie w Chrome</translation>
 <translation id="5930567261594625340">Nocne niebo</translation>
@@ -9474,6 +9478,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8372678064309688510">Adres został zapisany</translation>
 <translation id="8373652277231415614">Katalogi udostępnione Crostini</translation>
 <translation id="8374243500935816406">Nie zezwalaj stronom na zarządzanie oknami na wszystkich wyświetlaczach</translation>
+<translation id="8375703478696038265">Krok <ph name="STEP_NUMBER" /> z <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Powiedz nam, co się dzieje z Google Cast.</translation>
 <translation id="8376384591331888629">Również pliki cookie innych firm na tej stronie</translation>
 <translation id="8376451933628734023">Jeśli aplikacja internetowa podszywa się pod inną, odinstaluj ją.</translation>
@@ -10538,6 +10543,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="9188142767272053574">Włącz izolację procesów</translation>
 <translation id="9192019773545828776">Umożliwia odtwarzanie komunikatów głosowych, aby można było korzystać z urządzenia bez patrzenia na ekran. Komunikaty brajlowskie są dostępne na połączonych urządzeniach. Aby włączyć lub wyłączyć ChromeVoksa, naciśnij Ctrl + Alt + Z. Do nawigacji służą klawisze wyszukiwania + strzałka w lewo lub w prawo. Aby wybrać (aktywować) tę funkcję, naciśnij klawisz wyszukiwania + spację.</translation>
 <translation id="9195969368671142407">Gdy Twoja organizacja ogranicza zapisywanie danych na koncie Google, nie możesz udostępniać grup kart ani do nich dołączać</translation>
+<translation id="9197456336762295195">Zeskanuj ten kod QR aparatem urządzenia, na którym masz klucz dostępu do google.com</translation>
 <translation id="919840898042157087">Ruch – statyczny</translation>
 <translation id="9199503643457729322">Kliknij, aby opuścić Przewodnik po prywatności.</translation>
 <translation id="9199695835892108985">Zresetować wszystkie uprawnienia dotyczące portu szeregowego?</translation>

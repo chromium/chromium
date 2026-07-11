@@ -4984,6 +4984,7 @@
 <translation id="4849286518551984791">世界標準時間 (UTC/GMT)</translation>
 <translation id="4849517651082200438">不要安裝</translation>
 <translation id="4849731766219625109">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶</translation>
+<translation id="4850279708232718725">進一步說明</translation>
 <translation id="485053257961878904">無法設定通知同步功能</translation>
 <translation id="4850548109381269495">檢查兩部裝置的網路連線並開啟藍牙，然後再試一次。</translation>
 <translation id="4850669014075537160">捲動</translation>
@@ -6329,6 +6330,7 @@
 <translation id="5922854266885514646">點選「自訂 Chrome」</translation>
 <translation id="5924047253200400718">查看說明。<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">先詢問我，再將 Microsoft 檔案複製或移動到 Google 雲端硬碟</translation>
+<translation id="5925057331573749968">使用 QR code 快速登入</translation>
 <translation id="5926936390113611560">開啟所有設定檔</translation>
 <translation id="592880897588170157">下載 PDF 檔案，而不自動在 Chrome 中開啟</translation>
 <translation id="5930567261594625340">夜空</translation>
@@ -9475,6 +9477,7 @@
 <translation id="8372678064309688510">地址已儲存</translation>
 <translation id="8373652277231415614">Crostini 共用目錄</translation>
 <translation id="8374243500935816406">不允許網站管理所有螢幕上的視窗</translation>
+<translation id="8375703478696038265">第 <ph name="STEP_NUMBER" /> 步 (共 <ph name="TOTAL_STEPS" /> 步)</translation>
 <translation id="8376137163494131156">將 Google Cast 的問題告訴我們。</translation>
 <translation id="8376384591331888629">包括這個網站上的第三方 Cookie</translation>
 <translation id="8376451933628734023">如果這個網頁應用程式企圖讓你誤認為其他應用程式，請解除安裝。</translation>
@@ -10546,6 +10549,7 @@
 <translation id="9188142767272053574">啟用「程序隔離」</translation>
 <translation id="9192019773545828776">系統會提供互動朗讀內容，讓你不用看螢幕也能夠輕鬆使用裝置。你可透過已連結的裝置使用點字回饋功能。使用 Ctrl + Alt + Z 鍵即可開啟或關閉 ChromeVox。使用搜尋鍵 + 向左鍵或向右鍵即可瀏覽。使用搜尋鍵 + 空格鍵即可選取 (亦即啟用)。</translation>
 <translation id="9195969368671142407">如果貴機構限制你儲存內容到 Google 帳戶，你就無法分享或加入分頁群組</translation>
+<translation id="9197456336762295195">使用存有 google.com 密碼金鑰的裝置開啟相機，掃描這個 QR code</translation>
 <translation id="919840898042157087">固定位置</translation>
 <translation id="9199503643457729322">按一下即可離開「隱私權指南」頁面。</translation>
 <translation id="9199695835892108985">要重設所有序列埠權限嗎？</translation>

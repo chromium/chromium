@@ -4989,6 +4989,7 @@
 <translation id="4849286518551984791">‏کوآرڈینیٹڈ یونیورسل ٹائم (UTC/GMT)</translation>
 <translation id="4849517651082200438">انسٹال نہ کریں</translation>
 <translation id="4849731766219625109">اپنا <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اکاؤنٹ استعمال کریں</translation>
+<translation id="4850279708232718725">مجھے اس کے بارے میں بتائیں</translation>
 <translation id="485053257961878904">اطلاعات کی مطابقت پذیری کو سیٹ اپ نہیں کیا جا سکا</translation>
 <translation id="4850548109381269495">دونوں آلات پر، اپنا انٹرنیٹ کنکشن چیک کریں اور بلوٹوتھ آن کریں۔ پھر، دوبارہ کوشش کریں۔</translation>
 <translation id="4850669014075537160">سکرولنگ</translation>
@@ -6335,6 +6336,7 @@
 <translation id="5922854266885514646">‏‫"Chrome کو حسب ضرورت بنائیں" پر کلک کریں</translation>
 <translation id="5924047253200400718">مدد حاصل کریں<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">‏Microsoft فائلز کو Google Drive میں کاپی یا منتقل کرنے سے پہلے پوچھیں</translation>
+<translation id="5925057331573749968">‏‫QR کوڈ کے ساتھ تیزی سے سائن ان کریں</translation>
 <translation id="5926936390113611560">تمام پروفائلز کھولیں</translation>
 <translation id="592880897588170157">‏PDF فائلیں Chrome میں خودکار طور پر کھولنے کے بجائے انہیں ڈاؤن لوڈ کریں</translation>
 <translation id="5930567261594625340">رات کا آسمانی رنگ</translation>
@@ -9482,6 +9484,7 @@
 <translation id="8372678064309688510">آپ کا پتہ محفوظ کیا گیا ہے</translation>
 <translation id="8373652277231415614">‏Crostini کی اشتراک کردہ ڈائرکٹریز</translation>
 <translation id="8374243500935816406">سائٹس کو اپنے تمام ڈسپلیز پر ونڈوز کا نظم کرنے کی اجازت نہ دیں</translation>
+<translation id="8375703478696038265">مرحلہ <ph name="STEP_NUMBER" /> از <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">‏ہمیں بتائیں کہ Google Cast کے ساتھ کیا ہو رہا ہے۔</translation>
 <translation id="8376384591331888629">اس سائٹ میں فریق ثالث کوکیز سمیت</translation>
 <translation id="8376451933628734023">اگر یہ ویب ایپ آپ کو سوچنے پر مجبور کر رہی ہو کہ یہ ایک مختلف ایپ ہے تو اسے اَن انسٹال کریں۔</translation>
@@ -10553,6 +10556,7 @@
 <translation id="9188142767272053574">پروسیس کی علیحدگی کو فعال کریں</translation>
 <translation id="9192019773545828776">‏صوتی تاثرات سنیں تاکہ آپ اسکرین پر دیکھے بغیر اپنا آلہ استعمال کر سکیں۔ بریل تاثرات منسلک آلہ کے ساتھ دستیاب ہے۔ ChromeVox کو آن اور آف کرنے کے لیے Ctrl + Alt + Z استعمال کریں۔ نیویگیٹ کرنے کے لیے Search + بائیں تیر کے نشان یا دائیں تیر کے نشان کا استعمال کریں۔ منتخب کرنے کے لیے Search + Space استعمال کریں (فعال کریں)۔</translation>
 <translation id="9195969368671142407">‏جب آپ کی تنظیم آپ کے Google اکاؤنٹ میں محفوظ کرنے کے عمل کو محدود کرتی ہے تو آپ ٹیب گروپس کا اشتراک نہیں کر سکتے یا اس میں شامل نہیں ہو سکتے</translation>
+<translation id="9197456336762295195">‏اس QR کوڈ کو کیمرے کے ساتھ اس آلہ پر اسکین کریں جس میں google.com کے لیے آپ کی پاس کی ہے</translation>
 <translation id="919840898042157087">جامد حرکت</translation>
 <translation id="9199503643457729322">رازداری کی گائیڈ سے دور نیویگیٹ کرنے کے لیے کلک کریں۔</translation>
 <translation id="9199695835892108985">سیریل پورٹ کی تمام اجازتیں ری سیٹ کریں؟</translation>

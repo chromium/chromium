@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Zobrazujte si svetlé a vzdušné prostredie</translation>
 <translation id="243179355394256322">Vaša organizácia obmedzuje registráciu zariadení iba na oprávnených používateľov. Tento používateľ nemá oprávnenie registrovať zariadenia. V sekcii Používatelia v správcovskej konzole skontrolujte, či má používateľ správcovské oprávnenie na registráciu súpravy Google Meet hardware.</translation>
 <translation id="2439152382014731627">Obnova hesla typu zariadenia <ph name="DEVICE_TYPE" /></translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Inštaláciou <ph name="BEGIN_BOLD" />vymažete celý pevný disk<ph name="END_BOLD" />. Skontrolujte, či sú údaje zálohované.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Po spustení sa inštalácia nedá zrušiť.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Nebudete môcť pridať používateľov, pretože chýbajú kľúče rozhrania Google API. Podrobnosti si môžete prečítať na adrese <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Povoľte službu obnovenia údajov.</translation>
 <translation id="2485681265915754872">Zmluvné podmienky služby Google Play</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebooky používajú namiesto tradičného softvéru aplikácie. Získajte aplikácie na zvýšenie produktivity, zábavu a ďalšie činnosti.</translation>
 <translation id="450867954911715010">Nastavenia dostupnosti</translation>
 <translation id="4519605771716872386">Synchronizácia súborov je zapnutá</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Vyskúšajte tieto kroky na odstránenie problémov:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Uistite sa, že v zariadení máte fungujúce interné úložisko, ako je HDD, SSD alebo eMMC.
+        <ph name="LIST_ITEM" />Skontrolujte, či je interné úložisko väčšie ako 16 GB.
+        <ph name="LIST_ITEM" />Skontrolujte pripojenie k internému úložisku (ak je fyzicky k dispozícii).
+        <ph name="LIST_ITEM" />Uistite sa, že používate certifikovaný model a prezrite si poznámky k inštalácii.
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ďalšiu pomoc získate na g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Koho chcete pridať do tohto zariadenia <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Ak budete chcieť po registrácii prejsť na iný spôsob, musíte obnoviť výrobné nastavenia zariadenia (funkcia Powerwash).</translation>
 <translation id="4567512141633030272">Nesprávna možnosť prihlásenia?</translation>
@@ -572,6 +583,8 @@
 <translation id="7189451821249468368">Nemáte dostatočný počet inovácií na registráciu tohto zariadenia. Kontaktujte obchodné oddelenie a kúpte si ďalšie. Ak sa domnievate, že ide o chybu, kontaktujte podporu.</translation>
 <translation id="7202337678781136582">Naskenujte QR kód pomocou telefónu s Androidom</translation>
 <translation id="7228854227189381547">Neprepínať</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Najlepšie prostredie získate inštaláciou operačného systému <ph name="DEVICE_OS" /> na interný disk. Môžete si ho nainštalovať aj neskôr na prihlasovacej obrazovke.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ak si ho zatiaľ nechcete nainštalovať, môžete ho spustiť z kľúča USB a vyskúšať ho. Ponecháte si tak súčasný operačný systém aj údaje, ale môžete naraziť na obmedzenia ukladacieho priestoru a výkonnosti.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Zmeny sa uplatnia po nastavení</translation>
 <translation id="7260186537988033909">Registrácia zariadenia pomocou verejného terminálu a značenia bola dokončená</translation>
 <translation id="7284411326658527427">Každá osoba si môže prispôsobiť účet a uchovať údaje v súkromí.</translation>
@@ -589,6 +602,8 @@
 <translation id="7416263748877373774">Zmluvné podmienky sa nedajú načítať. Skontrolujte pripojenie k sieti a skúste to znova.</translation>
 <translation id="7475742997309661417">Čítačku obrazovky ChromeVox v systéme ChromeOS používajú predovšetkým nevidiaci a slabozrakí. Umožňuje im čítať text na obrazovke pomocou rečového syntetizéra alebo Braillovho displeja. Zapnete ju pridržaním oboch tlačidiel hlasitosti na päť sekúnd. Po aktivácii vás prevedie krátkou prehliadkou.</translation>
 <translation id="7476454130948140105">Batéria je príliš slabá na aktualizáciu (<ph name="BATTERY_PERCENT" /> %)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />NIečo sa pokazilo a operačný systém <ph name="DEVICE_OS" /> sa nepodarilo nainštalovať.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ďalšiu pomoc získate na g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Než sa zaregistrujete, musíte vymazať TPM, aby mohol kontrolu nad týmto zariadením prevziať operačný systém <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Zariadenie TPM môžete tiež úplne vypnúť. Vaše údaje budú naďalej bezpečne ukladané pomocou softvérového šifrovania, ale určité bezpečnostné funkcie (ako certifikáty podporované hardvérom) budú vypnuté.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Nastavenia TPM môžete zmeniť reštartovaním a prejdením do nastavení systému BIOS/UEFI. Postup sa v rôznych modeloch zariadení líši. Ďalšie informácie si prečítajte ešte pred reštartovaním v dokumentácii k systému <ph name="DEVICE_OS" /> v inom zariadení na g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

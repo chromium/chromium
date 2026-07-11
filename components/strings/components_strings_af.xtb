@@ -350,6 +350,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1542105669288201090">Besigheidonderrig</translation>
 <translation id="1542830386724426410">Wys beskikbare kaartvoordele en -belonings by betaalpunt. Uitreikerbepalings geld. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Meer inligting<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Prysgeskiedenis</translation>
+<translation id="1546286808622193216">Vergelyk kaartvoordele met Gemini</translation>
 <translation id="1549470594296187301">JavaScript moet geaktiveer wees om hierdie kenmerk te gebruik.</translation>
 <translation id="1553152622374372421">Wintersport</translation>
 <translation id="1553358976309200471">Dateer Chrome op</translation>
@@ -2416,6 +2417,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4744603770635761495">Uitvoerbare pad</translation>
 <translation id="4744816391336495134">Jy kan jou vingerafdruk gebruik om te verifieer dis jy wanneer ook al jy ’n gestoorde wagwoord gebruik</translation>
 <translation id="4749011317274908093">Jy is nou Incognito</translation>
+<translation id="4749620353539006322">Maksimeer belonings</translation>
 <translation id="4749924365937394956">Bedienerstawing</translation>
 <translation id="4750671009706599284">hierdie foon</translation>
 <translation id="4750917950439032686">Jou inligting (byvoorbeeld, wagwoorde en kredietkaartnommers) is privaat wanneer dit na hierdie werf gestuur word.</translation>
@@ -2991,6 +2993,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5611398002774823980">Stoor in rekening</translation>
 <translation id="561165882404867731">Vertaal hierdie bladsy met Google Vertaal</translation>
 <translation id="5612720917913232150"><ph name="URL" /> wil jou rekenaar se ligging gebruik</translation>
+<translation id="5613958591683399697">Vra <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Gebruikerkennisgewing</translation>
 <translation id="5614520971155863709">Kaartspeletjies</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> het jou te veel kere herlei.</translation>

@@ -350,6 +350,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1542105669288201090">Formación empresarial</translation>
 <translation id="1542830386724426410">Mostra os beneficios e as recompensas das tarxetas dispoñibles ao tramitar a compra. Vantaxes suxeitas ás condicións do emisor. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Máis información<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Historial de prezos</translation>
+<translation id="1546286808622193216">Compara os beneficios das tarxetas con Gemini</translation>
 <translation id="1549470594296187301">JavaScript debe estar activado para usar esta función.</translation>
 <translation id="1553152622374372421">Deportes de inverno</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
@@ -2416,6 +2417,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4744603770635761495">Ruta executable</translation>
 <translation id="4744816391336495134">Podes usar a impresión dixital para verificar a túa identidade cando uses un contrasinal gardado</translation>
 <translation id="4749011317274908093">Pasaches ao modo de incógnito</translation>
+<translation id="4749620353539006322">Maximizar recompensas</translation>
 <translation id="4749924365937394956">Autenticación do servidor</translation>
 <translation id="4750671009706599284">este teléfono</translation>
 <translation id="4750917950439032686">A túa información (por exemplo, os contrasinais ou os números da tarxeta de crédito) mantense en privado cando se envía a este sitio.</translation>
@@ -2991,6 +2993,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5611398002774823980">Gardar na conta</translation>
 <translation id="561165882404867731">Traducir esta páxina co Tradutor de Google</translation>
 <translation id="5612720917913232150">O URL <ph name="URL" /> quere utilizar a localización do teu ordenador</translation>
+<translation id="5613958591683399697">Preguntar a <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Aviso do usuario</translation>
 <translation id="5614520971155863709">Xogos de cartas</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> redireccionoute demasiadas veces.</translation>

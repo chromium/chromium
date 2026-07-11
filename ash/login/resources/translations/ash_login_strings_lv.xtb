@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Spilgts un gaisīgs motīvs</translation>
 <translation id="243179355394256322">Jūsu organizācijā tikai pilnvaroti lietotāji drīkst reģistrēt ierīces. Šis lietotājs nav pilnvarots reģistrēt ierīces. Administrēšanas konsoles sadaļā “Lietotāji” piešķiriet lietotājam administrēšanas atļauju reģistrēt Google Meet aparatūru.</translation>
 <translation id="2439152382014731627">Ierīces (<ph name="DEVICE_TYPE" />) paroles atiestatīšana</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Instalēšanas laikā <ph name="BEGIN_BOLD" />no cietā diska tiks izdzēsti visi jūsu dati<ph name="END_BOLD" />. Noteikti dublējiet savus datus.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Kad instalēšana būs sākta, to nevarēs atcelt.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Jūs nevarēsiet pievienot lietotājus, jo trūkst Google API atslēgu. Detalizētu informāciju skatiet vietnē <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Iespējojiet datu atkopšanas pakalpojumu</translation>
 <translation id="2485681265915754872">Google Play pakalpojumu sniegšanas noteikumi</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Tradicionālas programmatūras vietā Chromebook datoros tiek izmantotas lietotnes. Varat iegūt lietotnes produktivitātei, izklaidei un daudz kam citam.</translation>
 <translation id="450867954911715010">Pieejamības iestatījumi</translation>
 <translation id="4519605771716872386">Failu sinhronizācija ir ieslēgta.</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Veiciet tālāk norādītās problēmu novēršanas darbības.
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Gādājiet, lai ierīcē būtu derīga iekšējā atmiņa, piemēram, HDD, SSD vai eMMC.
+        <ph name="LIST_ITEM" />Pārliecinieties, ka iekšējās atmiņas ierīces ietilpība ir lielāka par 16 GB.
+        <ph name="LIST_ITEM" />Pārbaudiet savienojumu ar iekšējo atmiņu, ja tas ir fiziski pieejams.
+        <ph name="LIST_ITEM" />Noteikti izmantojiet sertificētu modeli un izlasiet instalēšanas piezīmes.
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Lai saņemtu papildu palīdzību, apmeklējiet vietni g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Kuru lietotāju vēlaties pievienot šai <ph name="DEVICE_TYPE" /> ierīcei?</translation>
 <translation id="4566170377336116390">Lai pārslēgtos pēc reģistrācijas, jums būs jāveic rūpnīcas datu atiestatīšana (jāizmanto funkcija Powerwash) savā ierīcē.</translation>
 <translation id="4567512141633030272">Vai nepareiza pierakstīšanās opcija?</translation>
@@ -572,6 +583,8 @@
 <translation id="7189451821249468368">Jums nav pietiekami daudz jauninātu licenču, lai reģistrētu šo ierīci. Lūdzu, sazinieties ar tirdzniecības nodaļu, lai iegādātos vairāk licenču. Ja uzskatāt, ka šis ziņojums tiek rādīts kļūdas dēļ, lūdzu, sazinieties ar atbalsta dienestu.</translation>
 <translation id="7202337678781136582">Kvadrātkoda skenēšana, izmantojot Android tālruni</translation>
 <translation id="7228854227189381547">Nepārslēgt</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Lai operētājsistēma darbotos optimāli, instalējiet <ph name="DEVICE_OS" /> iekšējā diskā. Varat arī instalēt to vēlāk no pieteikšanās ekrāna.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ja neesat gatavs instalēt šo operētājsistēmu, bet vēlaties to izmēģināt, varat to palaist no USB diska. Tādējādi tiks saglabāta jūsu esošā operētājsistēma un dati, taču var tikt ierobežota veiktspēja un vieta krātuvē.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Izmaiņas tiks lietotas pēc iestatīšanas</translation>
 <translation id="7260186537988033909">Kioska un digitālā ceļrāža ierīces reģistrācija pabeigta</translation>
 <translation id="7284411326658527427">Katra persona var personalizēt savu kontu, un katras personas dati ir konfidenciāli.</translation>
@@ -589,6 +602,8 @@
 <translation id="7416263748877373774">Nevar ielādēt pakalpojumu sniegšanas noteikumus. Lūdzu, pārbaudiet tīkla savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="7475742997309661417">ChromeOS ekrāna lasītāju ChromeVox galvenokārt izmanto neredzīgi vai vājredzīgi lietotāji, lai ekrānā redzamo tekstu atskaņotu ar runas sintezatoru vai lasītu Braila displejā. Lai ieslēgtu ChromeVox, nospiediet un piecas sekundes turiet nospiestas abas skaļuma pogas. Kad ChromeVox būs aktivizēts, tiks parādīts īss ceļvedis.</translation>
 <translation id="7476454130948140105">Nevar veikt atjaunināšanu, jo akumulatora uzlādes līmenis ir pārāk zems (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Radās problēma, un operētājsistēmu <ph name="DEVICE_OS" /> nevarēja instalēt.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Lai saņemtu papildu palīdzību, apmeklējiet vietni g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Pirms reģistrēšanās jums ir jānotīra TPM dati, lai operētājsistēma <ph name="DEVICE_OS" /> varētu pārņemt ierīces īpašumtiesības.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Varat arī izslēgt TPM ierīci. Jūsu dati tiks glabāti drošībā, izmantojot programmatūras šifrēšanu, taču noteiktas drošības funkcijas (piemēram, sertifikātu dublikātu glabāšana aparatūrā) tiks atspējotas.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />TPM iestatījumus varat mainīt, veicot atkārtotu palaišanu un atverot sistēmas BIOS/UEFI iestatījumus. Veicamās darbības dažādos ierīču modeļos var atšķirties. Lai pirms atkārtotas palaišanas skatītu plašāku informāciju, citā ierīcē atveriet <ph name="DEVICE_OS" /> dokumentāciju: g.co/flex/TPMHelp<ph name="END_PARAGRAPH3" /></translation>

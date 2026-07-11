@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Nepavyko įkelti informacijos puslapio „<ph name="ABOUT_PAGE" />“.</translation>
 <translation id="424963718355121712">Programos turi būti teikiamos iš prieglobos, kurią jos veikia</translation>
 <translation id="4306119971288449206">Teikiamų programų turinio tipas turi būti „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4349181963619779233">Plėtinių ir programų negalima pridėti iš šios svetainės</translation>
 <translation id="4625078469366263107">Įgalinti programą</translation>
 <translation id="4633003931260532286">Norint naudoti plėtinį reikalinga bent <ph name="IMPORT_VERSION" /> versijos „<ph name="IMPORT_NAME" />“, bet įdiegta tik <ph name="INSTALLED_VERSION" /> versija</translation>
 <translation id="4660476621274971848">Versija turėjo būti <ph name="EXPECTED_VERSION" />, o buvo pateikta <ph name="NEW_ID" /></translation>

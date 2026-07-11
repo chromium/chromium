@@ -189,6 +189,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="1807709131360304325">नई विंडो खोलें</translation>
 <translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> पर <ph name="SITE_ETLD_PLUS_ONE" /> का इस्तेमाल जारी नहीं रखा जा सकता</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, ऐसा टैब जिसका कॉन्टेंट रिकॉर्ड किया जा रहा है</translation>
+<translation id="1819443852740954262">सभी यूआरएल गुप्त विंडो में खोलें</translation>
 <translation id="1820408774134375111">साइन इन करने के लिए, खातों की सूची</translation>
 <translation id="1823492026305965829"><ph name="USER_FULL_NAME" /> के तौर पर साइन इन करें</translation>
 <translation id="1824902652744048041">'ब्राउज़िंग डेटा मिटाएं' पर टैप करें</translation>
@@ -771,7 +772,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="4256782883801055595">ओपन सोर्स लाइसेंस</translation>
 <translation id="426652736638196239">इस IBAN को सिर्फ़ इस डिवाइस पर सेव किया जाएगा</translation>
 <translation id="4269820728363426813">लिंक पते को कॉपी करें</translation>
-<translation id="4270730597186910506">किसी प्रॉडक्ट को ट्रैक करें या ट्रैक करने से रोकें.</translation>
 <translation id="4277529130885813215">दूसरे डिवाइस का इस्तेमाल करें</translation>
 <translation id="427987768447457592">नया टैब ग्रुप</translation>
 <translation id="4282440837784183472">आपका संगठन <ph name="MANAGED_DOMAIN" />, उस खाते को मैनेज करता है जिसमें साइन इन किया जा रहा है. साथ ही, आपका संगठन Chrome इस्तेमाल करने के तरीके को भी मैनेज करता है. आपका एडमिन कुछ सुविधाओं को सेट अप कर सकता है या उन पर पाबंदी लगा सकता है.</translation>
@@ -1476,6 +1476,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="6983306615164277634">जगह बदलने के लिए, पता बार को दबाकर रखें.</translation>
 <translation id="6987047470128880212">इस डिवाइस पर गुप्त टैब का इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="6996145122199359148">यह पेज डाउनलोड करें</translation>
+<translation id="7007648447224463482">सभी को नई विंडो में खोलें</translation>
 <translation id="7013762323294215682">यह पासकी आपके Password Manager में सेव हो जाएगी. जिन लोगों के पास इस पासकी का ऐक्सेस होगा वे इसका इस्तेमाल कर पाएंगे.</translation>
 <translation id="7020741890149022655">रीडिंग लिस्ट में जोड़ें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ब्राउज़र में खोलें</translation>
@@ -1842,6 +1843,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="8445448999790540984">पासवर्ड निर्यात नहीं कर सकते</translation>
 <translation id="8446884382197647889">ज़्यादा जानें</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{1 साइट को दी गई अनुमतियां हटाई गईं}one{# साइट को दी गई अनुमतियां हटाई गईं}other{# साइटों को दी गई अनुमतियां हटाई गईं}}</translation>
+<translation id="8449836157089738489">सभी यूआरएल नए टैब ग्रुप में खोलें</translation>
 <translation id="8453310803815879010">डायनो गेम शुरू करें</translation>
 <translation id="8455675988389029454">सभी डिवाइसों पर अपने बुकमार्क, पासवर्ड वगैरह ऐक्सेस करें</translation>
 <translation id="8458341576712814616">शॉर्टकट</translation>
@@ -1863,6 +1865,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="8506357771923193001">डाउनलोड की गई फ़ाइलें यहां दिखेंगी</translation>
 <translation id="8512053371384421952">अब आपको <ph name="DOMAIN" /> से सूचनाएं नहीं मिलेंगी.</translation>
 <translation id="8516012719330875537">इमेज एडिटर</translation>
+<translation id="8517759303731677493">बदलाव करें…</translation>
 <translation id="8533670235862049797">सुरक्षित ब्राउज़िंग की सुविधा चालू है</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, चुने गए टैब में से एक ऐसा टैब जिसे पिन किया गया है और पिक्चर में पिक्चर मोड में खुला है</translation>
 <translation id="8540136935098276800">सही से फ़ॉर्मैट किया गया यूआरएल डालें</translation>

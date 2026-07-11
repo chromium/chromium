@@ -5003,6 +5003,7 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="4849286518551984791">I-Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">Ungafaki</translation>
 <translation id="4849731766219625109">Sebenzisa i-akhawunti yakho ye-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="4850279708232718725">Ngitshele ngalokhu</translation>
 <translation id="485053257961878904">Ayikwazanga ukusetha ukuvumelanisa izaziso</translation>
 <translation id="4850548109381269495">Kuwo womabili amadivayisi, hlola ukuxhumeka kwakho kwe-inthanethi bese uvula i-Bluetooth. Bese, uyazama futhi.</translation>
 <translation id="4850669014075537160">Ukuskrola</translation>
@@ -6352,6 +6353,7 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="5922854266885514646">Chofoza okuthi "qamba ngokwabahlinzekelwayo iChrome"</translation>
 <translation id="5924047253200400718">Thola usizo<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Cela ngaphambi kokukopisha noma ukuhambisa amafayela e-Microsoft ku-Google Drive</translation>
+<translation id="5925057331573749968">Ngena ngemvume ngokushesha ngekhodi ye-QR</translation>
 <translation id="5926936390113611560">Vula wonke amaphrofayela</translation>
 <translation id="592880897588170157">Landa amafayela e-PDF esikhundleni sokuwavula ngokuzenzakalela ku-Chrome</translation>
 <translation id="5930567261594625340">Isibhakabhaka sasebusuku</translation>
@@ -9501,6 +9503,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8372678064309688510">Ikheli Lakho Lilondoloziwe</translation>
 <translation id="8373652277231415614">I-Crostini yabelane ngezinkombandlela</translation>
 <translation id="8374243500935816406">Ungavumeli amasayithi ukuthi aphathe amawindi kuzo zonke izibonisi zakho</translation>
+<translation id="8375703478696038265">Isinyathelo <ph name="STEP_NUMBER" /> kwezingu-<ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Sitshele ukuthi kwenzakalani nge-Google Cast.</translation>
 <translation id="8376384591331888629">Kuhlanganise namakhukhi enkampani yangaphandle kule webhusayithi</translation>
 <translation id="8376451933628734023">Uma le app yewebhu izama ukukukhohlisa ukuze ucabange ukuthi i-app ehlukile, ikhiphe.</translation>
@@ -10572,6 +10575,7 @@ Lokhu kungabandakanya ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza y
 <translation id="9188142767272053574">Yenza Kusebenze Ukuhlukaniswa Kwenqubo</translation>
 <translation id="9192019773545828776">Izwa impendulo ekhulunywayo ukuze usebenzise idivayisi yakho ngaphandle kokubheka isikrini. Impendulo ye-Braille iyatholakala ngedivayisi exhunyiwe. Sebenzisa u-Ctrl + Alt + Z ukuze uvule futhi uvale i-ChromeVox. Sebenzisa okuthi Search + Umcibisholo wangokwesokunxele noma Umcibisholo wangokwesokudla ukuze ufune. Sebenzisa u-Search + Space ukuze ukhethe (yenza kusebenze).</translation>
 <translation id="9195969368671142407">Uma inhlangano yakho ikhawulela ukulondoloza kuGoogle Account, awukwazi ukwabelana noma ukujoyina amaqembu amathebhu</translation>
+<translation id="9197456336762295195">Skena le khodi ye-QR ngekhamera kudivayisi enokhiye wakho wokudlula wokuthi google.com</translation>
 <translation id="919840898042157087">Umnyakazo omile</translation>
 <translation id="9199503643457729322">Chofoza ukuze ufune kude kusuka Kumhlahlandlela Wobumfihlo.</translation>
 <translation id="9199695835892108985">Setha kabusha zonke izimvume zembobo ye-Serial?</translation>

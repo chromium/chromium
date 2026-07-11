@@ -4991,6 +4991,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4849286518551984791">Koordinisano univerzalno vreme (UTC/GMT)</translation>
 <translation id="4849517651082200438">Ne instaliraj</translation>
 <translation id="4849731766219625109">Koristite nalog <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="4850279708232718725">Reci mi nešto o ovome</translation>
 <translation id="485053257961878904">Podešavanje sinhronizovanja obaveštenja nije uspelo</translation>
 <translation id="4850548109381269495">Proverite internet vezu i uključite Bluetooth na oba uređaja. Zatim probajte ponovo.</translation>
 <translation id="4850669014075537160">Pomeranje</translation>
@@ -6338,6 +6339,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5922854266885514646">Kliknite na Prilagodite Chrome</translation>
 <translation id="5924047253200400718">Potražite pomoć<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Pitaj pre kopiranja ili premeštanja Microsoft fajlova na Google disk</translation>
+<translation id="5925057331573749968">Brže se prijavljujte pomoću QR koda</translation>
 <translation id="5926936390113611560">Otvori sve profile</translation>
 <translation id="592880897588170157">Preuzmite PDF datoteke da se ne bi automatski otvarale u Chrome-u</translation>
 <translation id="5930567261594625340">Noćno nebo</translation>
@@ -9490,6 +9492,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8372678064309688510">Adresa je sačuvana</translation>
 <translation id="8373652277231415614">Deljeni Crostini direktorijumi</translation>
 <translation id="8374243500935816406">Ne dozvoljavajte sajtovima da upravljaju prozorima na svim ekranima</translation>
+<translation id="8375703478696038265"><ph name="STEP_NUMBER" />. korak od <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Recite nam šta se dešava sa Google Cast-om.</translation>
 <translation id="8376384591331888629">Uključujući kolačiće trećih strana na ovom sajtu</translation>
 <translation id="8376451933628734023">Ako ova veb-aplikacija pokušava da vas prevari da je neka druga aplikacija, deinstalirajte je.</translation>
@@ -10561,6 +10564,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="9188142767272053574">Omogući izolaciju procesa</translation>
 <translation id="9192019773545828776">Slušajte govorne povratne informacije da biste mogli da koristite uređaj bez gledanja u ekran. Povratne informacije sa Brajevom azbukom dostupne su pomoću povezanog uređaja. Koristite Ctrl + Alt + Z da biste uključili ili isključili ChromeVox. Koristite taster za pretragu + strelicu nalevo ili strelicu nadesno da biste se kretali. Za izbor (aktiviranje) koristite taster za pretragu + taster za razmak.</translation>
 <translation id="9195969368671142407">Kada organizacija ograniči čuvanje na Google nalogu, ne možete da delite grupe kartica niti da im se pridružite</translation>
+<translation id="9197456336762295195">Skenirajte ovaj QR kôd kamerom na uređaju koji ima pristupni ključ za google.com</translation>
 <translation id="919840898042157087">Statično kretanje</translation>
 <translation id="9199503643457729322">Kliknite da biste napustili Vodič za privatnost.</translation>
 <translation id="9199695835892108985">Želite da resetujete sve dozvole za serijski port?</translation>

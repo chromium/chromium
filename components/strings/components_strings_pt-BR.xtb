@@ -350,6 +350,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1542105669288201090">Educação em administração</translation>
 <translation id="1542830386724426410">Mostrar os benefícios e recompensas do cartão na finalização da compra. Condições sujeitas aos termos do emissor. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Saiba mais<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Histórico de preços</translation>
+<translation id="1546286808622193216">Compare os benefícios dos cartões usando o Gemini</translation>
 <translation id="1549470594296187301">O JavaScript deve ser ativado para usar este recurso.</translation>
 <translation id="1553152622374372421">Esportes de inverno</translation>
 <translation id="1553358976309200471">Atualizar o Chrome</translation>
@@ -1425,6 +1426,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e "Enter" para gerenciar quais informações são sincronizadas nas configurações do Chrome</translation>
 <translation id="3203025201812691413">O URL não pode ficar em branco</translation>
 <translation id="320323717674993345">Cancelar pagamento</translation>
+<translation id="3204534477198689393">Para melhorar as sugestões e preencher formulários com mais rapidez, o conteúdo e os URLs das páginas que você visita podem ser processados em um espaço privado na nuvem.</translation>
 <translation id="3207830513221832868">O endereço <ph name="BLOCKED_URL" /> pode ter conteúdo para maiores</translation>
 <translation id="3207960819495026254">Adicionado aos favoritos</translation>
 <translation id="3208701679386778924">Envie um relatório para que possamos melhorar as atualizações do ChromeOS.</translation>
@@ -1480,6 +1482,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3272643614306383237">Menos de 1 MB. Alguns sites podem carregar mais lentamente no próximo acesso.</translation>
 <translation id="3273738040255912340">O administrador pode fazer mudanças no seu perfil e no seu navegador remotamente, analisar informações sobre o navegador com relatórios e realizar outras tarefas necessárias. A atividade deste dispositivo também pode ser gerenciada fora do Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">Página "Salvar IBAN" aberta no tamanho máximo.</translation>
+<translation id="327455571215090823">Preenchimento automático mais inteligente e privado</translation>
 <translation id="3281350579597955952">{0,plural, =1{A política do administrador não recomenda abrir este arquivo em <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda abrir este arquivo em <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda abrir estes arquivos em <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Sua organização, <ph name="ENROLLMENT_DOMAIN" />, enviou algumas informações, como configurações ou políticas, aos sites a seguir.</translation>
 <translation id="3286372614333682499">retrato</translation>
@@ -2416,6 +2419,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4744603770635761495">Caminho do executável</translation>
 <translation id="4744816391336495134">Você pode usar sua impressão digital para confirmar sua identidade sempre que usar uma senha salva</translation>
 <translation id="4749011317274908093">Você entrou no modo de navegação anônima</translation>
+<translation id="4749620353539006322">Consiga o máximo de recompensas</translation>
 <translation id="4749924365937394956">Autenticação do servidor</translation>
 <translation id="4750671009706599284">este smartphone</translation>
 <translation id="4750917950439032686">Suas informações (por exemplo, senhas ou números de cartão de crédito) permanecem privadas quando são enviadas para esse site.</translation>
@@ -2684,7 +2688,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5157504274688344097">Atacadistas e lojas de departamentos</translation>
 <translation id="5158275234811857234">Capa</translation>
 <translation id="5159010409087891077">Abrir página em uma nova janela anônima (⇧⌘N)</translation>
-<translation id="5160781056848005130">Ao compartilhar seu dados com o Google, você ajuda a melhorar o preenchimento automático aprimorado</translation>
+<translation id="5160781056848005130">Ao compartilhar seus dados com o Google, você ajuda a melhorar o preenchimento automático aprimorado</translation>
 <translation id="5161334686036120870">Assunto:</translation>
 <translation id="5161506081086828129">Empilhador 9</translation>
 <translation id="5164537320435517152">Excluir arquivos em <ph name="MINUTES" /> min</translation>
@@ -2991,6 +2995,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5611398002774823980">Salvar na conta</translation>
 <translation id="561165882404867731">Traduza esta página com o Google Tradutor</translation>
 <translation id="5612720917913232150"><ph name="URL" /> quer acessar o local do seu computador</translation>
+<translation id="5613958591683399697">Pergunte ao <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Aviso para o usuário</translation>
 <translation id="5614520971155863709">Jogos de cartas</translation>
 <translation id="5617949217645503996">Redirecionamento em excesso por <ph name="HOST_NAME" /></translation>

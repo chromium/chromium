@@ -5005,6 +5005,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4849286518551984791">Samræmdur alþjóðlegur tími (UTC/GMT)</translation>
 <translation id="4849517651082200438">Ekki setja upp</translation>
 <translation id="4849731766219625109">Notaðu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-reikninginn þinn</translation>
+<translation id="4850279708232718725">Segðu mér frá þessu</translation>
 <translation id="485053257961878904">Ekki tókst að setja upp samstillingu tilkynninga</translation>
 <translation id="4850548109381269495">Kannaðu nettenginguna þína í báðum tækjum og kveiktu á Bluetooth. Reyndu svo aftur.</translation>
 <translation id="4850669014075537160">Fletting</translation>
@@ -6353,6 +6354,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5922854266885514646">Smelltu á „Sérsníða Chrome“</translation>
 <translation id="5924047253200400718">Fá aðstoð<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Spyrja áður en Microsoft-skrár eru afritaðar eða fluttar yfir á Google Drive</translation>
+<translation id="5925057331573749968">Skráðu þig hraðar inn með QR-kóða</translation>
 <translation id="5926936390113611560">Opna alla prófíla</translation>
 <translation id="592880897588170157">Sækja PDF-skrár í stað þess að opna þær sjálfkrafa í Chrome</translation>
 <translation id="5930567261594625340">Næturhiminn</translation>
@@ -9502,6 +9504,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8372678064309688510">Heimilisfangið var vistað</translation>
 <translation id="8373652277231415614">Sameiginleg skráasöfn Crostini</translation>
 <translation id="8374243500935816406">Ekki leyfa vefsvæðum að stjórna gluggum á öllum skjáum</translation>
+<translation id="8375703478696038265">Skref <ph name="STEP_NUMBER" /> af <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Lýstu upplifun þinni af Google Cast.</translation>
 <translation id="8376384591331888629">Hafa fótspor þriðju aðila á þessu vefsvæði með</translation>
 <translation id="8376451933628734023">Þú ættir að fjarlægja þetta vefforrit ef það reynir að plata þig með því að þykjast vera eitthvert annað forrit.</translation>
@@ -10573,6 +10576,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9188142767272053574">Kveikja á ferliseinangrun</translation>
 <translation id="9192019773545828776">Fáðu raddsvörun svo þú getir notað tækið þitt án þess að horfa á skjáinn. Blindraleturssvörun er í boði með tengdu tæki. Notaðu Ctrl + Alt + Z til að kveikja og slökkva á ChromeVox. Notaðu Leit + ör til vinstri eða ör til hægri til að fletta. Notaðu Search + bilslána til að velja (virkja).</translation>
 <translation id="9195969368671142407">Þegar fyrirtækið þitt takmarkar vistanir við Google-reikninginn þinn getur þú ekki deilt eða tengst flipahópum</translation>
+<translation id="9197456336762295195">Skannaðu þennan QR-kóða með myndavélinni í tækinu sem er með aðgangslykilinn þinn fyrir google.com</translation>
 <translation id="919840898042157087">Föst hreyfing</translation>
 <translation id="9199503643457729322">Smelltu til að fara úr leiðbeiningum um persónuvernd.</translation>
 <translation id="9199695835892108985">Endurstilla allar heimildir raðtengja?</translation>

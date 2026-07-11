@@ -189,6 +189,7 @@
 <translation id="1807709131360304325">បើក​វិនដូ​ថ្មី</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> មិនអាច​បន្តប្រើ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> បានទេ</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, ផ្ទាំង​ដែលកំពុង​ថត</translation>
+<translation id="1819443852740954262">បើកទាំងអស់​នៅក្នុង​ផ្ទាំងឯកជន</translation>
 <translation id="1820408774134375111">សន្លឹក​ខាងក្រោម​សម្រាប់​ចូលគណនី</translation>
 <translation id="1823492026305965829">ចូលគណនី​ជា <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">ចុច "លុប​ទិន្នន័យរុករក"</translation>
@@ -771,7 +772,6 @@
 <translation id="4256782883801055595">អាជ្ញាប័ណ្ណប្រភពបើកចំហ</translation>
 <translation id="426652736638196239">IBAN នេះ​នឹងត្រូវបាន​រក្សាទុក​ទៅក្នុង​ឧបករណ៍នេះ​តែប៉ុណ្ណោះ</translation>
 <translation id="4269820728363426813">ចម្លងអាសយដ្ឋានតំណ</translation>
-<translation id="4270730597186910506">តាមដាន ឬឈប់តាមដានផលិតផល។</translation>
 <translation id="4277529130885813215">ប្រើ​ឧបករណ៍​ផ្សេងទៀត</translation>
 <translation id="427987768447457592">ក្រុមផ្ទាំងថ្មី</translation>
 <translation id="4282440837784183472">ស្ថាប័ន​របស់អ្នក <ph name="MANAGED_DOMAIN" /> គ្រប់គ្រង​គណនី​ដែលអ្នក​កំពុងចូល និង​របៀបដែល Chrome អាចត្រូវបានប្រើ។ អ្នកគ្រប់គ្រង​របស់អ្នក​អាចរៀបចំ ឬ​ដាក់កំហិត​លើមុខងារ​ជាក់លាក់បាន។</translation>
@@ -1476,6 +1476,7 @@
 <translation id="6983306615164277634">អ្នកក៏​អាចចុច​របារអាសយដ្ឋាន​ឱ្យជាប់ ដើម្បី​ប្ដូរទីតាំង​បានផងដែរ។</translation>
 <translation id="6987047470128880212">មិនអាចប្រើមុខងារឯកជន​នៅលើឧបករណ៍​នេះបានទេ</translation>
 <translation id="6996145122199359148">ទាញយកទំព័រនេះ</translation>
+<translation id="7007648447224463482">បើក​ទាំងអស់​នៅក្នុង​វិនដូថ្មី</translation>
 <translation id="7013762323294215682">កូដសម្ងាត់នេះ​នឹងត្រូវបាន​រក្សាទុក​ទៅក្នុង​កម្មវិធីគ្រប់គ្រង​ពាក្យសម្ងាត់​របស់អ្នក។ អ្នកដែលមាន​សិទ្ធិចូលប្រើ​កម្មវិធីនេះ​នឹងអាចប្រើ​កូដសម្ងាត់​នេះបាន។</translation>
 <translation id="7020741890149022655">បញ្ចូលទៅក្នុងបញ្ជីអាន<ph name="BEGIN_NEW" />ថ្មី<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">បើកនៅក្នុងកម្មវិធីរុករក</translation>
@@ -1842,6 +1843,7 @@
 <translation id="8445448999790540984">មិន​អាច​នាំ​ពាក្យសម្ងាត់​ចេញ​បាន​ទេ</translation>
 <translation id="8446884382197647889">ស្វែងយល់បន្ថែម</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{បានដក​ការអនុញ្ញាត​ចេញពី​គេហទំព័រ​ចំនួន 1}other{បានដក​ការអនុញ្ញាត​ចេញពី​គេហទំព័រ​ចំនួន #}}</translation>
+<translation id="8449836157089738489">បើកទាំងអស់នៅក្នុងក្រុមផ្ទាំងថ្មី</translation>
 <translation id="8453310803815879010">ចាប់ផ្ដើមហ្គេមដាយណូស័រ</translation>
 <translation id="8455675988389029454">ទទួលបានចំណាំ ពាក្យ​សម្ងាត់ និងអ្វីៗជាច្រើនទៀតនៅលើឧបករណ៍ទាំងអស់របស់អ្នក</translation>
 <translation id="8458341576712814616">ផ្លូវកាត់</translation>
@@ -1863,6 +1865,7 @@
 <translation id="8506357771923193001">អ្នកនឹងឃើញ​ការទាញយក​របស់អ្នក​នៅទីនេះ</translation>
 <translation id="8512053371384421952">អ្នកនឹងលែង​ទទួលបាន​ការជូនដំណឹងពី <ph name="DOMAIN" /> ទៀតហើយ។</translation>
 <translation id="8516012719330875537">កម្មវិធីកែ​រូបភាព</translation>
+<translation id="8517759303731677493">កែ…</translation>
 <translation id="8533670235862049797">ការរុករក​ដោយសុវត្ថិភាព​បានបើក</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, ផ្ទាំង​រូបក្នុងរូប​ដែលបាន​ខ្ទាស់ និង​បានជ្រើសរើស​ច្រើន</translation>
 <translation id="8540136935098276800">សូមបញ្ចូល URL ដែលមាន​ទម្រង់ត្រឹមត្រូវ</translation>

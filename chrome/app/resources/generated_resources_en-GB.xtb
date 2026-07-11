@@ -5005,6 +5005,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4849286518551984791">Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">Don't Install</translation>
 <translation id="4849731766219625109">Use your <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> account</translation>
+<translation id="4850279708232718725">Tell me about this</translation>
 <translation id="485053257961878904">Could not set up notifications syncing</translation>
 <translation id="4850548109381269495">On both devices, check your Internet connection and turn on Bluetooth. Then try again.</translation>
 <translation id="4850669014075537160">Scrolling</translation>
@@ -6353,6 +6354,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5922854266885514646">Click 'Customise Chrome'</translation>
 <translation id="5924047253200400718">Get help<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Ask before copying or moving Microsoft files to Google Drive</translation>
+<translation id="5925057331573749968">Sign in faster with a QR code</translation>
 <translation id="5926936390113611560">Open all profiles</translation>
 <translation id="592880897588170157">Download PDF files instead of automatically opening them in Chrome</translation>
 <translation id="5930567261594625340">Night sky</translation>
@@ -9501,6 +9503,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8372678064309688510">Your address is saved</translation>
 <translation id="8373652277231415614">Crostini shared directories</translation>
 <translation id="8374243500935816406">Don't allow sites to manage windows on all your displays</translation>
+<translation id="8375703478696038265">Step <ph name="STEP_NUMBER" /> of <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Tell us what's happening with Google Cast.</translation>
 <translation id="8376384591331888629">Including third-party cookies on this site</translation>
 <translation id="8376451933628734023">If this web app is trying to trick you into thinking it's a different app, uninstall it.</translation>
@@ -10572,6 +10575,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9188142767272053574">Enable process isolation</translation>
 <translation id="9192019773545828776">Hear spoken feedback so that you can use your device without looking at the screen. Braille feedback is available with a connected device. Use Ctrl + Alt + Z to turn ChromeVox on and off. Use Search + Left arrow or Right arrow to navigate. Use Search + Space to select (activate).</translation>
 <translation id="9195969368671142407">When your organisation limits saving to your Google Account, you can’t share or join tab groups</translation>
+<translation id="9197456336762295195">Scan this QR code with the camera on the device that has your passkey for google.com</translation>
 <translation id="919840898042157087">Static movement</translation>
 <translation id="9199503643457729322">Click to navigate away from Privacy Guide.</translation>
 <translation id="9199695835892108985">Reset all serial port permissions?</translation>

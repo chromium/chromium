@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">පිටුව '<ph name="ABOUT_PAGE" />' පිළිබඳව ප්‍රවේශනය කළ නොහැක.</translation>
 <translation id="424963718355121712">යෙදුම් ඒවාට බලපාන සත්කාරක වෙතින් සැපයිය යුතුය</translation>
 <translation id="4306119971288449206">යෙදුම් පිරිනැමිය යුත්තේ "<ph name="CONTENT_TYPE" />" අන්තර්ගත වර්ගය සමඟිනි</translation>
+<translation id="4349181963619779233">මෙම වෙබ් අඩවියෙන් දිගු සහ යෙදුම් එක් කළ නොහැක</translation>
 <translation id="4625078469366263107">යෙදුම සබල කරන්න</translation>
 <translation id="4633003931260532286">දිගුවට "<ph name="IMPORT_NAME" />" හි අවම "<ph name="IMPORT_VERSION" />" අනුවාදයක් අවශ්‍යයි, නමුත් ස්ථාපිතව ඇත්තේ "<ph name="INSTALLED_VERSION" />" පමණි</translation>
 <translation id="4660476621274971848">අපේක්ෂිත අනුවාදය "<ph name="EXPECTED_VERSION" />", නමුත් අනුවාදය වූයේ "<ph name="NEW_ID" />"</translation>

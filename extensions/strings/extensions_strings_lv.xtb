@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Nevarēja ielādēt lapu “Par” (<ph name="ABOUT_PAGE" />).</translation>
 <translation id="424963718355121712">Lietotnēm ir jābūt no tā paša saimniekdatora, kuru tās ietekmē.</translation>
 <translation id="4306119971288449206">Instalētajām lietotnēm ir jābūt ar šāda veida saturu: <ph name="CONTENT_TYPE" />.</translation>
+<translation id="4349181963619779233">Paplašinājumus un lietotnes nevar pievienot no šīs tīmekļa vietnes.</translation>
 <translation id="4625078469366263107">Iespējot lietotni</translation>
 <translation id="4633003931260532286">Paplašinājumam ir nepieciešama “<ph name="IMPORT_NAME" />” versija <ph name="IMPORT_VERSION" /> (vismaz), taču ir instalēta tikai versija <ph name="INSTALLED_VERSION" />.</translation>
 <translation id="4660476621274971848">Paredzētā versija bija <ph name="EXPECTED_VERSION" />, bet faktiskā versija bija <ph name="NEW_ID" />.</translation>

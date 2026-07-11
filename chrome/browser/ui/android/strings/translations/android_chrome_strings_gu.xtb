@@ -189,6 +189,7 @@
 <translation id="1807709131360304325">એક નવી વિન્ડો ખોલો</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> પર <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />નો ઉપયોગ કરવાનું ચાલુ રાખી શકાતું નથી</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, રેકોર્ડ કરતું ટૅબ</translation>
+<translation id="1819443852740954262">તમામ URLને છૂપી વિન્ડોમાં ખોલો</translation>
 <translation id="1820408774134375111">સાઇન ઇન કરવા માટેની બોટમ શીટ</translation>
 <translation id="1823492026305965829"><ph name="USER_FULL_NAME" /> તરીકે સાઇન ઇન કરો</translation>
 <translation id="1824902652744048041">'બ્રાઉઝિંગ ડેટા ડિલીટ કરો' પર ટૅપ કરો</translation>
@@ -771,7 +772,6 @@
 <translation id="4256782883801055595">ઓપન સોર્સ લાઇસન્સ</translation>
 <translation id="426652736638196239">આ IBAN માત્ર આ ડિવાઇસમાં જ સાચવવામાં આવશે</translation>
 <translation id="4269820728363426813">લિંક સરનામું કૉપિ કરો</translation>
-<translation id="4270730597186910506">પ્રોડક્ટ ટ્રૅક કરો અથવા તેને ટ્રૅક કરવાનું બંધ કરો.</translation>
 <translation id="4277529130885813215">કોઈ અન્ય ડિવાઇસનો ઉપયોગ કરો</translation>
 <translation id="427987768447457592">ટૅબનું નવું ગ્રૂપ</translation>
 <translation id="4282440837784183472">તમે જેમાં સાઇન ઇન કરી રહ્યાં હો તે એકાઉન્ટને અને Chromeના વપરાશની રીતને તમારી સંસ્થા <ph name="MANAGED_DOMAIN" /> મેનેજ કરે છે. તમારા ઍડમિનિસ્ટ્રેટર અમુક સુવિધાઓનું સેટઅપ અથવા તેને પ્રતિબંધિત કરી શકે છે.</translation>
@@ -1476,6 +1476,7 @@
 <translation id="6983306615164277634">તમે આ સ્થિતિને બદલવા માટે ઍડ્રેસ બારને ટચ કરીને થોડીવાર દબાવી રાખી શકો છો.</translation>
 <translation id="6987047470128880212">છૂપી ટૅબ આ ડિવાઇસ પર ઉપલબ્ધ નથી</translation>
 <translation id="6996145122199359148">આ પેજ ડાઉનલોડ કરો</translation>
+<translation id="7007648447224463482">બધું નવી વિંડોમાં ખોલો</translation>
 <translation id="7013762323294215682">આ પાસકી તમારા Password Managerમાં સાચવવામાં આવશે. આ પાસકીની ઍક્સેસ ધરાવનારી કોઈપણ વ્યક્તિ તેનો ઉપયોગ કરી શકશે.</translation>
 <translation id="7020741890149022655">વાંચન સૂચિમાં ઉમેરો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">બ્રાઉઝરમાં ખોલો</translation>
@@ -1842,6 +1843,7 @@
 <translation id="8445448999790540984">બધા પાસવર્ડ નિકાસ કરી શકાતાં નથી</translation>
 <translation id="8446884382197647889">વધુ જાણો</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{1 સાઇટમાંથી પરવાનગીઓ કાઢી નાખી}one{# સાઇટમાંથી પરવાનગીઓ કાઢી નાખી}other{# સાઇટમાંથી પરવાનગીઓ કાઢી નાખી}}</translation>
+<translation id="8449836157089738489">બધા નવી ટૅબના ગ્રૂપમાં ખોલો</translation>
 <translation id="8453310803815879010">Dino ગેમ શરૂ કરો</translation>
 <translation id="8455675988389029454">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક, પાસવર્ડ અને બીજું ઘણું મેળવો</translation>
 <translation id="8458341576712814616">શૉર્ટકટ</translation>
@@ -1863,6 +1865,7 @@
 <translation id="8506357771923193001">તમને તમારા ડાઉનલોડ અહીં જોવા મળશે</translation>
 <translation id="8512053371384421952">તમને હવે <ph name="DOMAIN" /> તરફથી નોટિફિકેશન મળશે નહીં.</translation>
 <translation id="8516012719330875537">ઇમેજ એડિટર</translation>
+<translation id="8517759303731677493">ફેરફાર કરો…</translation>
 <translation id="8533670235862049797">Safe Browsingની સુવિધા ચાલુ છે</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલું પિન કરેલું ચિત્ર-માં-ચિત્રનું ટૅબ</translation>
 <translation id="8540136935098276800">સાચી રીતે ફોર્મેટ કરેલું URL દાખલ કરો</translation>

@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">ビジネス教育</translation>
 <translation id="1542830386724426410">購入手続きの際に、ご利用いただけるカードの特典とメリットを表示します。カード発行会社の利用規約が適用されます。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />詳細<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">価格の推移</translation>
+<translation id="1546286808622193216">Gemini を使用してカードの特典を比較します</translation>
 <translation id="1549470594296187301">この機能を使用するには JavaScript を有効にする必要があります。</translation>
 <translation id="1553152622374372421">ウィンター スポーツ</translation>
 <translation id="1553358976309200471">Chrome を更新</translation>
@@ -1425,6 +1426,7 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の設定で同期する情報を管理します</translation>
 <translation id="3203025201812691413">URL を空白にすることはできません</translation>
 <translation id="320323717674993345">支払いをキャンセル</translation>
+<translation id="3204534477198689393">候補を改善し、フォームの入力をより迅速に行うため、アクセスしたページのコンテンツと URL がクラウドのプライベート スペースで処理される場合があります。</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> には成人向けコンテンツが含まれている可能性があります</translation>
 <translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3208701679386778924">ChromeOS の今後の更新に役立てるため、報告を送信してください。</translation>
@@ -1480,6 +1482,7 @@
 <translation id="3272643614306383237">1 MB 未満。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
 <translation id="3273738040255912340">管理者は、ユーザーのプロフィールやブラウザをリモートで変更したり、レポートを通じてブラウザに関する情報を分析したり、その他の必要なタスクを行ったりすることができます。このデバイス上のアクティビティは、Chromium の外部でも管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">[IBAN を保存] が画面全体に表示されています。</translation>
+<translation id="327455571215090823">プライバシーを保護してスマートに自動入力</translation>
 <translation id="3281350579597955952">{0,plural, =1{管理者のポリシー設定では、このファイルを <ph name="DESTINATION_NAME" /> で開くことは推奨されていません}other{管理者のポリシー設定では、これらのファイルを <ph name="DESTINATION_NAME" /> で開くことは推奨されていません}}</translation>
 <translation id="3282085321714087552">あなたの組織（<ph name="ENROLLMENT_DOMAIN" />）は次のウェブサイトに設定やポリシーなどの情報を送信するよう設定しています。</translation>
 <translation id="3286372614333682499">縦向き</translation>
@@ -2416,6 +2419,7 @@
 <translation id="4744603770635761495">実行ファイルのパス</translation>
 <translation id="4744816391336495134">保存したパスワードを使用するたびに指紋認証で本人確認を行うことができます</translation>
 <translation id="4749011317274908093">シークレット モードです</translation>
+<translation id="4749620353539006322">特典を最大限に活用</translation>
 <translation id="4749924365937394956">サーバー認証</translation>
 <translation id="4750671009706599284">このスマートフォン</translation>
 <translation id="4750917950439032686">お客様がこのサイトに送信した情報（パスワード、クレジット カード番号など）が第三者に見られることはありません。</translation>
@@ -2991,6 +2995,7 @@
 <translation id="5611398002774823980">アカウントに保存</translation>
 <translation id="561165882404867731">Google 翻訳でこのページを翻訳します</translation>
 <translation id="5612720917913232150"><ph name="URL" /> から、パソコンの現在地情報の使用許可を求められています</translation>
+<translation id="5613958591683399697"><ph name="ENGINE_NAME" /> に質問する</translation>
 <translation id="5614190747811328134">ユーザー通知</translation>
 <translation id="5614520971155863709">カードゲーム</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> でリダイレクトが繰り返し行われました。</translation>

@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Gcina izinto zigqamile futhi zinomoya</translation>
 <translation id="243179355394256322">Inhlangano yakho ivumela ukubhalisa idivayisi kubasebenzisi abagunyaziwe kuphela. Lo msebenzisi akagunyaziwe ukubhalisa amadivayisi. Sicela uqiniseke ukuthi umsebenzisa unelungelo lomlawuli "Lokubhalisa izingxenyekazi zekhompuyutha ze-Google Meet" esigabeni Sabasebenzisi sekhonsoli Yomphathi.</translation>
 <translation id="2439152382014731627">Setha phasiwedi kabusha ye-<ph name="DEVICE_TYPE" /></translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Okufakwayo <ph name="BEGIN_BOLD" />kuzokusula konke okuphathekayo kwakho<ph name="END_BOLD" />. Qinisekisa ukuthi idatha yakho yenziwe isipele.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Lapho okufakwayo sekuqalile akukwazi ukukhanselwa.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Ngeke uze ukwazi ukungeza abasebenzisi ngoba okhiye be-Google API abekho. Bona i-<ph name="DETAILS_URL" /> ukuze uthole imininingwane.</translation>
 <translation id="24786041351753425">Nika amandla isevisi yokuthola idatha.</translation>
 <translation id="2485681265915754872">Imigomo yesevisi ye-Google Play</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">I-Chromebooks isebenzisa izinhlelo zokusebenza zesofthiwe yezosiko. Thola izinhlelo zokusebenza zokukhiqiza, okokuzijabulisa, nokuningi.</translation>
 <translation id="450867954911715010">Izulungiselelo zokufinyelela</translation>
 <translation id="4519605771716872386">Ukuvumelanisa ifayela kuvuliwe</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Zama lezi zinyathelo zokuxazulula inkinga:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Qinisekisa ukuthi idivayisi yakho iqukethe isitoreji sangaphakathi esisebenzayo njenge-HDD, i-SSD, noma i-eMMC
+    <ph name="LIST_ITEM" />Hlola ukuthi ingabe isitoreji sakho sangaphakathi sikhulu kuno-16GB
+    <ph name="LIST_ITEM" />Hlola ukuxhumeka kokugcina kwangaphakathi, uma kufinyeleleka ngokomzimba
+    <ph name="LIST_ITEM" />Qinisekisa ukuthi usebenzisa imodeli eqinisekisiwe bese uhlola amanothi wokufaka
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Mayelana nosizo olwengeziwe, vakashela: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Ubani ongathanda ukumengeza kule <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Uma ufuna ukushintsha ngemva kokubhalisa, kuzodingeka usethe kabusha njengasekuqaleni idivayisi yakho (ku-powerwash).</translation>
 <translation id="4567512141633030272">Inketho yokungena ngemvume engalungile?</translation>
@@ -572,6 +583,8 @@
 <translation id="7189451821249468368">Awunakho ukuthuthukisa okwanele ukuze ubhalisele le divayisi. Sicela uxhumane nentengiso ukuze uthenge okuningi. Uma ukholwa ukuthi ubona lo mlayezo ngephutha, sicela uxhumane nosekelo.</translation>
 <translation id="7202337678781136582">Skena ikhodi ye-QR ngefoni yakho ye-Android</translation>
 <translation id="7228854227189381547">Ungashintshi</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Ukuze uthole umuzwa ohamba phambili, faka i-<ph name="DEVICE_OS" /> kudiski yakho yangaphakathi. Ungase futhi uyifake ngokuhamba kwesikhathi esikrinini sokungena ngemvume.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Uma ungakulungele ukuyifaka, ungayisebenzisa ku-USB ukuze uyizame. Lokhu kuzogcina i-OS nedatha ekhona kakade, kodwa ungase ubone imikhawulo yesitoreji neyokusebenza.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Izinguquko zizosetshenziswa ngemva kokusetha</translation>
 <translation id="7260186537988033909">Ikhiyoski nokubhaliswa kudivayisi yezimpawu kuqedile</translation>
 <translation id="7284411326658527427">Umuntu ngamunye angenza i-akhawunti yakhe ibe ngokwakhe futhi igcine idatha iyimfihlo.</translation>
@@ -589,6 +602,8 @@
 <translation id="7416263748877373774">Imigomo Yesevisi ayikwazi ukulayishwa. Sicela uhlole ukuxhumeka kwakho kwenethiwekhi uphinde uzame futhi.</translation>
 <translation id="7475742997309661417">Isifundi sesikrini ku-ChromeOS, ChromeVox, sisetshenziswa ngokuyinhloko abayizimpumputhe kanye nabangaboni kahle ukuze bafunde umbhalo ovezwe esikrinini besizwa yizwi lomshini noma isibonisi se-braille. Cindezela futhi ubambe bobabili okhiye bevolumu imizuzwana emihlanu ukuze uvule i-ChromeVox. Uma i-ChromeVox yenziwe yasebenza, uzoyihambela ngokushesha.</translation>
 <translation id="7476454130948140105">Ibhethri liphansi kakhulu ukuthi lingabuyekezwa (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Okuthile akuhambanga kahle futhi i-<ph name="DEVICE_OS" /> ayikwazanga ukufakwa.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ukuze uthole usizo olwengeziwe, vakashela: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Ngaphambi kokubhalisa kudingeka usule i-TPM ukuze i-<ph name="DEVICE_OS" /> ithathe ubunikazi bedivayisi.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Ungavala nedivayisi ye-TPM ngokuphelele. Idatha yakho isazogcinwa ngokuphephile ngokubethela kwesofthiwe, kodwa izici ezithile zokuphepha njengezitifiketi ezisekelwe yihadiwe zizovalwa.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Ungaguqula amasethingi akho we-TPM ngokuqalisa kabusha bese ufaka amasethingi we-BIOS/UEFI. Izinyathelo ziyahluka ngokwemodeli yedivayisi. Mayelana nolwazi olubanzi, vula amadokhumenti we-<ph name="DEVICE_OS" /> kudivayisi ehlukile ngaphambi kokuthi uqalise kabusha: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

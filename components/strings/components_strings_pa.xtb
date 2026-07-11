@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">ਕਾਰੋਬਾਰੀ ਸਿੱਖਿਆ</translation>
 <translation id="1542830386724426410">ਚੈੱਕ-ਆਊਟ ਵੇਲੇ ਕਾਰਡ ਦੇ ਉਪਲਬਧ ਲਾਭਾਂ ਅਤੇ ਇਨਾਮਾਂ ਨੂੰ ਦਿਖਾਓ। ਜਾਰੀਕਰਤਾ ਦੇ ਨਿਯਮ ਲਾਗੂ ਹਨ। <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">ਕੀਮਤ ਦਾ ਇਤਿਹਾਸ</translation>
+<translation id="1546286808622193216">Gemini ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਕਾਰਡ ਦੇ ਲਾਭਾਂ ਦੀ ਤੁਲਨਾ ਕਰੋ</translation>
 <translation id="1549470594296187301">ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਵਰਤਣ ਲਈ JavaScript ਨੂੰ ਸਮਰੱਥ ਬਣਾਇਆ ਜਾਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
 <translation id="1553152622374372421">ਸਰਦੀ ਦੀਆਂ ਖੇਡਾਂ</translation>
 <translation id="1553358976309200471">Chrome ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
@@ -2413,6 +2414,7 @@
 <translation id="4744603770635761495">ਐਗਜੀਕਿਊਟੇਬਲ ਪਾਥ</translation>
 <translation id="4744816391336495134">ਜਦੋਂ ਵੀ ਤੁਸੀਂ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਆਪਣੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="4749011317274908093">ਤੁਸੀਂ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਚਲੇ ਗਏ ਹੋ</translation>
+<translation id="4749620353539006322">ਵੱਧੋ-ਵੱਧ ਇਨਾਮ</translation>
 <translation id="4749924365937394956">ਸਰਵਰ ਪ੍ਰਮਾਣੀਕਰਨ</translation>
 <translation id="4750671009706599284">ਇਹ ਫ਼ੋਨ</translation>
 <translation id="4750917950439032686">ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ (ਉਦਾਹਰਨ ਲਈ, ਪਾਸਵਰਡ ਜਾਂ ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਨੰਬਰ) ਨਿੱਜੀ ਹੈ ਜਦੋਂ ਉਸਨੂੰ ਇਸ ਸਾਈਟ 'ਤੇ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ।</translation>
@@ -2988,6 +2990,7 @@
 <translation id="5611398002774823980">ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="561165882404867731">ਇਸ ਪੰਨੇ ਦਾ Google Translate ਨਾਲ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ਦੀ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਦੀ ਟਿਕਾਣਾ ਜਾਣਕਾਰੀ ਵਰਤਣ ਦੀ ਇੱਛਾ ਹੈ</translation>
+<translation id="5613958591683399697"><ph name="ENGINE_NAME" /> ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="5614190747811328134">ਵਰਤੋਂਕਾਰ ਨੋਟਿਸ</translation>
 <translation id="5614520971155863709">ਕਾਰਡ ਗੇਮਾਂ</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> ਨੇ ਤੁਹਾਨੂੰ ਕਈ ਵਾਰ ਰੀਡਾਇਰੈਕਟ ਕੀਤਾ।</translation>

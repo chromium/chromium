@@ -5003,6 +5003,7 @@
 <translation id="4849286518551984791">Олон Улсын Зохицуулсан Цаг (UTC/GMT)</translation>
 <translation id="4849517651082200438">Битгий суурьлуул</translation>
 <translation id="4849731766219625109"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> бүртгэлээ ашиглах</translation>
+<translation id="4850279708232718725">Надад энэ талаар ярина уу</translation>
 <translation id="485053257961878904">Мэдэгдэл синк хийхийг тохируулж чадсангүй</translation>
 <translation id="4850548109381269495">Хоёр төхөөрөмжид интернэт холболтоо шалгаад Bluetooth-г асаана уу. Дараа нь дахин оролдоно уу.</translation>
 <translation id="4850669014075537160">Гүйлгэх</translation>
@@ -6351,6 +6352,7 @@
 <translation id="5922854266885514646">"Chrome-г тусгайлан өөрчлөх" дээр товшино уу</translation>
 <translation id="5924047253200400718">Тусламж авах<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft файлуудыг Google Драйв руу хуулах эсвэл зөөхөөсөө өмнө асуух</translation>
+<translation id="5925057331573749968">QR кодоор илүү хурдан нэвтрээрэй</translation>
 <translation id="5926936390113611560">Бүх профайлыг нээх</translation>
 <translation id="592880897588170157">PDF файлыг автоматаар Chrome-д нээхийн оронд татна уу</translation>
 <translation id="5930567261594625340">Шөнийн тэнгэр</translation>
@@ -9497,6 +9499,7 @@
 <translation id="8372678064309688510">Таны хаягийг хадгалсан</translation>
 <translation id="8373652277231415614">Crostini-н хуваалцсан лавлахууд</translation>
 <translation id="8374243500935816406">Сайтуудад таны бүх дэлгэц дээр цонх удирдахыг бүү зөвшөөр</translation>
+<translation id="8375703478696038265"><ph name="TOTAL_STEPS" />-н <ph name="STEP_NUMBER" />-р алхам</translation>
 <translation id="8376137163494131156">Google Cast-д юу болж байгааг бидэнд хэлнэ үү.</translation>
 <translation id="8376384591331888629">Энэ сайт дээрх гуравдагч талын күүкитэй цуг</translation>
 <translation id="8376451933628734023">Хэрэв энэ веб апп өөрийгөө өөр апп гэж танд итгүүлж, хуурахаар оролдож байвал үүнийг устгана уу.</translation>
@@ -10566,6 +10569,7 @@
 <translation id="9188142767272053574">Процессын тусгаарлалтыг идэвхжүүлэх</translation>
 <translation id="9192019773545828776">Яриагаар өгөх саналыг сонссоноор та төхөөрөмжөө дэлгэц рүү нь харалгүйгээр ашиглах боломжтой. Холбогдсон төхөөрөмжөөр брайл санал хүсэлт өгөх боломжтой. ChromeVox-г асаах болон унтраахын тулд Ctrl + Alt + Z-г ашиглана уу. Шилжихийн тулд Search + Зүүн сум эсвэл баруун сумыг ашиглана уу. Сонгох (Идэвхжүүлэх) бол Search + Space-г ашиглана уу.</translation>
 <translation id="9195969368671142407">Танай байгууллага таны Google Бүртгэлд хадгалахыг хязгаарлахад та табын бүлэг хуваалцах, нэгдэх боломжгүй</translation>
+<translation id="9197456336762295195">Таны google.com-н нэвтрэх түлхүүртэй төхөөрөмж дээр энэ QR кодыг камераар скан хийнэ үү</translation>
 <translation id="919840898042157087">Статик хөдөлгөөн</translation>
 <translation id="9199503643457729322">Нууцлалын хөтчөөс шилжиж явахын тулд товшино уу.</translation>
 <translation id="9199695835892108985">Цуваа портын бүх зөвшөөрлийг шинэчлэх үү?</translation>

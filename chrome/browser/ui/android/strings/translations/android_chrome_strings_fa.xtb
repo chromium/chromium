@@ -189,6 +189,7 @@
 <translation id="1807709131360304325">باز کردن پنجره جدید</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> نمی‌تواند بااستفاده از <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ادامه دهد.</translation>
 <translation id="1815975907734103433">‫<ph name="TAB_TITLE" />، زبانه ضبط</translation>
+<translation id="1819443852740954262">باز کردن همه در «پنجره ناشناس»</translation>
 <translation id="1820408774134375111">برگ زیرین ورود به سیستم</translation>
 <translation id="1823492026305965829">ورود به سیستم به‌عنوان <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">روی «حذف داده‌های مرور» تک‌ضرب بزنید</translation>
@@ -771,7 +772,6 @@
 <translation id="4256782883801055595">مجوزهای متن‌باز</translation>
 <translation id="426652736638196239">‏این IBAN فقط در این دستگاه ذخیره خواهد شد</translation>
 <translation id="4269820728363426813">کپی کردن نشانی پیوند</translation>
-<translation id="4270730597186910506">محصول را پیگیری یا لغو پیگیری کنید.</translation>
 <translation id="4277529130885813215">استفاده از دستگاهی دیگر</translation>
 <translation id="427987768447457592">گروه زبانه جدید</translation>
 <translation id="4282440837784183472">‏سازمانتان (<ph name="MANAGED_DOMAIN" />) حسابی که با آن به سیستم وارد می‌شوید و نحوه استفاده از Chrome را مدیریت می‌کند. سرپرستتان می‌تواند برخی‌از ویژگی‌ها را راه‌اندازی یا محدود کند.</translation>
@@ -1476,6 +1476,7 @@
 <translation id="6983306615164277634">برای تغییر جای نوار نشانی، می‌توانید آن را نیز لمس کنید و نگه دارید.</translation>
 <translation id="6987047470128880212">«حالت ناشناس» در این دستگاه دردسترس نیست</translation>
 <translation id="6996145122199359148">بارگیری این صفحه</translation>
+<translation id="7007648447224463482">باز کردن همه در پنجره جدید</translation>
 <translation id="7013762323294215682">این گذرکلید در مدیر گذرواژه‌تان ذخیره خواهد شد. هر کسی که به آن دسترسی داشته باشد می‌تواند از این گذرکلید استفاده کند.</translation>
 <translation id="7020741890149022655">افزودن به فهرست خواندن <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">بازکردن در مرورگر</translation>
@@ -1792,7 +1793,7 @@
 <translation id="8244444485683708655">پیوست کردن عکس دوربین</translation>
 <translation id="8250920743982581267">اسناد</translation>
 <translation id="8257429805444572809">اشتراک <ph name="DOMAIN" /> لغو شد</translation>
-<translation id="8258999165172757081">اضافه شد</translation>
+<translation id="8258999165172757081">افزوده شده</translation>
 <translation id="8259179246279078674">‏ازآنجایی‌که صفحات پیش‌بارگیری‌شده رمزگذاری شده‌اند، Google هیچ اطلاعاتی درباره محتوای صفحه پیش‌بارگیری‌شده دریافت نخواهد کرد. سرورهای Google مطلع خواهد شد که کدام سایت‌ها خصوصی پیش‌بارگیری می‌شوند. از این اطلاعات فقط برای پیش‌بارگیری صفحات استفاده می‌شود و با سایر اطلاعات «حساب Google» شما پیوند داده نمی‌شود.</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="82619448491672958">دیدن برگه‌های دیگر</translation>
@@ -1842,6 +1843,7 @@
 <translation id="8445448999790540984">گذرواژه‌ها صادر نشدند</translation>
 <translation id="8446884382197647889">بیشتر بدانید</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{اجازه‌ها از ۱ سایت برداشته شد}one{اجازه‌ها از # سایت برداشته شد}other{اجازه‌ها از # سایت برداشته شد}}</translation>
+<translation id="8449836157089738489">باز کردن همه در گروه زبانه جدید</translation>
 <translation id="8453310803815879010">شروع بازی داینو</translation>
 <translation id="8455675988389029454">نشانک‌ها، گذرواژه‌ها، و موارد دیگر را در همه دستگاه‌هایتان دریافت کنید</translation>
 <translation id="8458341576712814616">میان‌بر</translation>
@@ -1863,6 +1865,7 @@
 <translation id="8506357771923193001">بارگیری‌هایتان را اینجا خواهید دید</translation>
 <translation id="8512053371384421952">دیگر اعلان‌های <ph name="DOMAIN" /> را دریافت نخواهید کرد.</translation>
 <translation id="8516012719330875537">ویرایشگر تصویر</translation>
+<translation id="8517759303731677493">ویرایش…</translation>
 <translation id="8533670235862049797">«مرور ایمن» روشن است</translation>
 <translation id="8538291624121505885">‫<ph name="TAB_TITLE" />، زبانه سنجاق‌شده چندانتخابی تصویردرتصویر</translation>
 <translation id="8540136935098276800">نشانی وبی وارد کنید که به‌درستی قالب‌بندی شده باشد</translation>

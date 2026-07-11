@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">ব্যবসা সম্পর্কিত প্রশিক্ষণ</translation>
 <translation id="1542830386724426410">চেক-আউটের সময় উপলভ্য থাকা কার্ডের সুবিধা ও পুরস্কার দেখুন। ইস্যুকারীর শর্তাবলী প্রযোজ্য। <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />আরও জানুন<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">দাম সম্পর্কিত ইতিহাস</translation>
+<translation id="1546286808622193216">Gemini ব্যবহার করে কার্ডের সুবিধার তুলনা করুন</translation>
 <translation id="1549470594296187301">এই বৈশিষ্ট্যটি ব্যবহার করার জন্য জাভাস্ক্রিপ্ট চালু করা প্রয়োজন।</translation>
 <translation id="1553152622374372421">শীতকালীন খেলাধূলা</translation>
 <translation id="1553358976309200471">Chrome আপডেট করুন</translation>
@@ -2417,6 +2418,7 @@
 <translation id="4744603770635761495">সম্পাদনযোগ্য পাথ</translation>
 <translation id="4744816391336495134">সেভ করা পাসওয়ার্ড ব্যবহার করার সময় নিজের পরিচয় যাচাই করার জন্য ফিঙ্গারপ্রিন্ট ব্যবহার করতে পারেন</translation>
 <translation id="4749011317274908093">আপনি ছদ্মবেশী মোড ব্যবহার করছেন</translation>
+<translation id="4749620353539006322">পুরস্কারের পরিমাণ সর্বাধিক করুন</translation>
 <translation id="4749924365937394956">সার্ভার যাচাইকরণ</translation>
 <translation id="4750671009706599284">এই ফোন</translation>
 <translation id="4750917950439032686">আপনার তথ্য (উদাহরণস্বরূপ, পাসওয়ার্ড বা ক্রেডিট কার্ড নম্বর) যখন এই সাইটে পাঠানো হয় তখন সেটি ব্যক্তিগত থাকে।</translation>
@@ -2992,6 +2994,7 @@
 <translation id="5611398002774823980">অ্যাকাউন্টে সেভ করুন</translation>
 <translation id="561165882404867731">Google Translate ব্যবহার করে এই পৃষ্ঠা অনুবাদ করুন</translation>
 <translation id="5612720917913232150"><ph name="URL" /> আপনার কম্পিউটারের লোকেশন ব্যবহার করতে চায়</translation>
+<translation id="5613958591683399697"><ph name="ENGINE_NAME" />-কে জিজ্ঞাসা করুন</translation>
 <translation id="5614190747811328134">ব্যবহারকারী বিজ্ঞপ্তি</translation>
 <translation id="5614520971155863709">কার্ড গেম</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> আপনাকে অনেক বেশিবার পুনঃনির্দেশিত করেছে।</translation>

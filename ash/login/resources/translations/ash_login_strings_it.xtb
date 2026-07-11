@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Mantieni un ambiente ampio e luminoso</translation>
 <translation id="243179355394256322">La tua organizzazione ha limitato la registrazione dei dispositivi ai soli utenti autorizzati. Questo utente non è autorizzato a registrare i dispositivi. Assicurati che l'utente disponga del privilegio di amministratore per Registrazione dell'hardware Google Meet nella sezione Utenti della Console di amministrazione.</translation>
 <translation id="2439152382014731627">Reimposta la password di <ph name="DEVICE_TYPE" /></translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />L'installazione <ph name="BEGIN_BOLD" />comporterà il reset di tutto il disco rigido<ph name="END_BOLD" />. Assicurati di aver fatto il backup dei tuoi dati.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Non è possibile annullare l'installazione dopo averla avviata.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Non potrai aggiungere utenti perché mancano le chiavi dell'API di Google. Per informazioni dettagliate, visita la pagina <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Attiva il servizio di recupero dati</translation>
 <translation id="2485681265915754872">Termini di servizio di Google Play</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Al posto del software tradizionale i Chromebook usano le app. Scarica app per la produttività, l'intrattenimento e altro.</translation>
 <translation id="450867954911715010">Impostazioni di accessibilità</translation>
 <translation id="4519605771716872386">Sincronizzazione file attivata</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Prova a svolgere i seguenti passaggi per la risoluzione dei problemi:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Assicurati che il tuo dispositivo contenga una memoria interna funzionante, ad esempio HDD, SSD o eMMC
+        <ph name="LIST_ITEM" />Verifica che le dimensioni della memoria interna del dispositivo siano superiori a 16 GB
+        <ph name="LIST_ITEM" />Controlla la connessione alla memoria interna, se è fisicamente accessibile
+        <ph name="LIST_ITEM" />Assicurati di usare un modello certificato e controlla le note di installazione
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Per maggiore assistenza, visita il sito g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Chi vorresti aggiungere a questo <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Se vuoi effettuare il passaggio dopo la registrazione, dovrai ripristinare i dati di fabbrica (Powerwash) del dispositivo.</translation>
 <translation id="4567512141633030272">Opzione di accesso sbagliata?</translation>
@@ -571,6 +582,8 @@
 <translation id="7189451821249468368">Non disponi di licenze Upgrade sufficienti per registrare questo dispositivo. Contatta l'ufficio vendite per acquistarne altre. Se ritieni che questo messaggio sia stato visualizzato per sbaglio, contatta l'assistenza.</translation>
 <translation id="7202337678781136582">Scansiona il codice QR con il tuo smartphone Android</translation>
 <translation id="7228854227189381547">Non cambiare</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Per un'esperienza ottimale, installa <ph name="DEVICE_OS" /> sul disco interno. Puoi anche installarlo in un secondo momento dalla schermata di accesso.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Se non vuoi installarlo ora, puoi eseguirlo da un'unità USB per provarlo. In questo modo manterrai il tuo attuale sistema operativo e i tuoi dati, ma potresti riscontrare limiti relativi allo spazio di archiviazione e alle prestazioni.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Le modifiche verranno applicate dopo la configurazione</translation>
 <translation id="7260186537988033909">Registrazione dei dispositivi kiosk e segnaletica completata</translation>
 <translation id="7284411326658527427">Ogni persona potrà personalizzare il proprio account e mantenere privati i dati.</translation>
@@ -588,6 +601,8 @@
 <translation id="7416263748877373774">Impossibile caricare i Termini di servizio. Controlla la connessione di rete e riprova.</translation>
 <translation id="7475742997309661417">ChromeVox, lo screen reader su ChromeOS, viene usato principalmente da persone cieche o ipovedenti per leggere il testo visualizzato sullo schermo con un sintetizzatore vocale o un display braille. Per attivare ChromeVox, tieni premuti entrambi i tasti del volume per cinque secondi. Quando ChromeVox verrà attivato potrai fare un rapido tour.</translation>
 <translation id="7476454130948140105">Livello della batteria troppo basso per eseguire l'aggiornamento (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Si è verificato un errore. Impossibile installare <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Per maggiore assistenza, visita la pagina g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Prima di procedere con la registrazione, devi cancellare il TPM in modo che <ph name="DEVICE_OS" /> possa acquisire la proprietà del dispositivo.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Puoi anche disattivare completamente il dispositivo TPM. I tuoi dati rimarranno comunque memorizzati in modo sicuro tramite la crittografia software, ma alcune funzionalità di sicurezza, come i certificati basati sull'hardware, verranno disattivate.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Puoi modificare le impostazioni del TPM riavviando il dispositivo e accedendo alle impostazioni BIOS/UEFI di sistema. I passaggi variano in base al modello del dispositivo. Per maggiori informazioni, apri la documentazione relativa a <ph name="DEVICE_OS" /> su un altro dispositivo prima del riavvio: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Impossible de charger la page « <ph name="ABOUT_PAGE" /> ».</translation>
 <translation id="424963718355121712">Les applications doivent être diffusées de l'hôte sur lequel elles ont un effet</translation>
 <translation id="4306119971288449206">Les applications doivent être diffusées avec le type de contenu « <ph name="CONTENT_TYPE" /> ».</translation>
+<translation id="4349181963619779233">Les extensions et les applis ne peuvent pas être ajoutées à partir de ce site Web</translation>
 <translation id="4625078469366263107">Activer l'application</translation>
 <translation id="4633003931260532286">L'extension requiert « <ph name="IMPORT_NAME" /> » avec au moins une version « <ph name="IMPORT_VERSION" /> », mais seule la version « <ph name="INSTALLED_VERSION" /> » est installée</translation>
 <translation id="4660476621274971848">Version « <ph name="NEW_ID" /> » reçue au lieu de la version « <ph name="EXPECTED_VERSION" /> » attendue</translation>

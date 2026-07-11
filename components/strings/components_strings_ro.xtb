@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">Educație comercială</translation>
 <translation id="1542830386724426410">Afișează beneficiile și recompensele disponibile pentru card la finalizarea achiziției. Se aplică anumite condiții ale emitentului. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Află mai multe<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Istoricul prețurilor</translation>
+<translation id="1546286808622193216">Compară beneficiile cardurilor folosind Gemini</translation>
 <translation id="1549470594296187301">Trebuie să activezi JavaScript pentru a folosi această funcție.</translation>
 <translation id="1553152622374372421">Sporturi de iarnă</translation>
 <translation id="1553358976309200471">Actualizează Chrome</translation>
@@ -2416,6 +2417,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4744603770635761495">Cale executabilă</translation>
 <translation id="4744816391336495134">Poți folosi amprenta pentru a-ți confirma identitatea când folosești o parolă salvată</translation>
 <translation id="4749011317274908093">Ai trecut în modul incognito</translation>
+<translation id="4749620353539006322">Maximizează recompensele</translation>
 <translation id="4749924365937394956">Autentificare pe server</translation>
 <translation id="4750671009706599284">acest telefon</translation>
 <translation id="4750917950439032686">Informațiile tale (de exemplu, parolele și numerele cardurilor de credit) sunt private când sunt trimise la acest site.</translation>
@@ -2991,6 +2993,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5611398002774823980">Salvează în cont</translation>
 <translation id="561165882404867731">Tradu această pagină cu Google Traducere</translation>
 <translation id="5612720917913232150"><ph name="URL" /> dorește să utilizeze locația computerului</translation>
+<translation id="5613958591683399697">Întreabă <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Notificare pentru utilizator</translation>
 <translation id="5614520971155863709">Jocuri de cărți</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> te-a redirecționat de prea multe ori.</translation>

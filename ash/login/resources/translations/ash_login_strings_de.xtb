@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Hell und freundlich</translation>
 <translation id="243179355394256322">In deiner Organisation darf die Geräteregistrierung nur von autorisierten Nutzern durchgeführt werden. Dieser Nutzer ist nicht für die Geräteregistrierung autorisiert. Der Nutzer muss im Bereich „Nutzer“ in der Admin-Konsole über die Administratorberechtigung „Google Meet-Hardware registrieren“ verfügen.</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" />-Passwort zurücksetzen</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Durch die Installation <ph name="BEGIN_BOLD" />wird deine gesamte Festplatte gelöscht<ph name="END_BOLD" />. Sichere unbedingt deine Daten.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Sobald die Installation gestartet wurde, kann sie nicht mehr abgebrochen werden.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Du kannst keine Nutzer hinzufügen, da Google API-Schlüssel fehlen. Weitere Informationen erhältst du unter <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Dienst zur Datenwiederherstellung aktivieren</translation>
 <translation id="2485681265915754872">Google Play-Nutzungsbedingungen</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebooks verwenden Apps anstatt traditioneller Software. Es gibt Apps für Produktivität, Unterhaltung und vieles mehr.</translation>
 <translation id="450867954911715010">Einstellungen für Bedienungshilfen</translation>
 <translation id="4519605771716872386">Dateisynchronisierung aktiviert</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Versuche es mit diesen Schritten zur Fehlerbehebung:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Dein Gerät muss einen funktionierenden internen Speicher haben, z. B. eine HDD, SSD oder einen eMMC-Speicher
+        <ph name="LIST_ITEM" />Achte darauf, dass der interne Speicher größer als 16 GB ist
+        <ph name="LIST_ITEM" />Prüfe die Verbindung zum internen Speicher, sofern auf diesen zugegriffen werden kann
+        <ph name="LIST_ITEM" />Vergewissere dich, dass du ein zertifiziertes Modell verwendest, und lies dir die Installationshinweise durch
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Weitere Hilfestellung findest du unter g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Wen möchtest du diesem Gerät (<ph name="DEVICE_TYPE" />) hinzufügen?</translation>
 <translation id="4566170377336116390">Wenn du nach der Registrierung wechseln möchtest, musst du dein Gerät auf die Werkseinstellungen zurücksetzen (Powerwash).</translation>
 <translation id="4567512141633030272">Falsche Anmeldeoption?</translation>
@@ -569,6 +580,8 @@
 <translation id="7189451821249468368">Du hast nicht genügend Upgrades zum Anmelden dieses Geräts. Weitere Upgrades kannst du beim Vertrieb erwerben. Wenn du glaubst, dass du diese Meldung fälschlicherweise erhalten hast, kontaktiere bitte den Support.</translation>
 <translation id="7202337678781136582">QR-Code mit deinem Android-Smartphone scannen</translation>
 <translation id="7228854227189381547">Nicht wechseln</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Für optimale Leistung solltest du <ph name="DEVICE_OS" /> auf dem internen Laufwerk installieren. Eine Installation ist aber auch später über den Anmeldebildschirm möglich.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Zum Ausprobieren kannst du es erst einmal über den USB-Stick ausführen. So behältst du dein vorhandenes Betriebssystem und deine Daten. Speicherplatz und Leistung sind jedoch möglicherweise begrenzt.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Änderungen werden nach der Einrichtung angewendet</translation>
 <translation id="7260186537988033909">Geräteregistrierung für Kioske und digitale Beschilderung abgeschlossen</translation>
 <translation id="7284411326658527427">Jeder Nutzer kann sein Konto personalisieren. Dabei bleiben die Daten der einzelnen Nutzer privat.</translation>
@@ -586,6 +599,8 @@
 <translation id="7416263748877373774">Fehler beim Laden der Nutzungsbedingungen. Prüfe die Netzwerkverbindung und versuche es noch einmal.</translation>
 <translation id="7475742997309661417">Der Screenreader unter ChromeOS, ChromeVox, wird vor allem von Menschen mit Sehbehinderung oder eingeschränktem Sehvermögen verwendet, um auf dem Bildschirm dargestellten Text mit einem Sprachsynthesizer oder einer Braillezeile zu lesen. Halte beide Lautstärketasten fünf Sekunden gedrückt, um ChromeVox zu aktivieren. Wenn ChromeVox aktiviert ist, erhältst du eine kurze Einführung.</translation>
 <translation id="7476454130948140105">Der Akku ist für ein Update zu schwach (<ph name="BATTERY_PERCENT" /> %)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Bei der Installation von <ph name="DEVICE_OS" /> ist ein Fehler aufgetreten.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Hier findest du Hilfestellung: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Vor der Registrierung musst du das TPM löschen, damit <ph name="DEVICE_OS" /> Inhaber des Geräts werden kann.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Du kannst das TPM auch vollständig deaktivieren. Deine Daten werden trotzdem sicher mit Softwareverschlüsselung gespeichert. Einige Sicherheitsfunktionen werden jedoch deaktiviert (z. B. hardwaregestützte Zertifikate).<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Zum Ändern der TPM-Einstellungen starte das Gerät neu und rufe die BIOS-/UEFI-Einstellungen auf. Je nach Gerätemodell können diese Schritte variieren. Am besten öffnest du vor dem Neustart die Dokumentation von <ph name="DEVICE_OS" /> auf einem anderen Gerät: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

@@ -350,6 +350,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1542105669288201090">Formació empresarial</translation>
 <translation id="1542830386724426410">Mostra els avantatges i les recompenses disponibles de la targeta en tramitar la compra. S'hi apliquen les condicions de l'emissor. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Més informació<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Historial de preus</translation>
+<translation id="1546286808622193216">Compara els avantatges de les targetes amb Gemini</translation>
 <translation id="1549470594296187301">Heu d'activar el JavaScript per utilitzar aquesta funció.</translation>
 <translation id="1553152622374372421">Esports d'hivern</translation>
 <translation id="1553358976309200471">Actualitza Chrome</translation>
@@ -2416,6 +2417,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4744603770635761495">Camí executable</translation>
 <translation id="4744816391336495134">Pots utilitzar l'empremta digital per verificar la teva identitat sempre que utilitzis una contrasenya desada</translation>
 <translation id="4749011317274908093">Has passat al mode d'incògnit</translation>
+<translation id="4749620353539006322">Maximitza les recompenses</translation>
 <translation id="4749924365937394956">Autenticació del servidor</translation>
 <translation id="4750671009706599284">aquest telèfon</translation>
 <translation id="4750917950439032686">La teva informació (com ara les contrasenyes o els números de targeta de crèdit) és privada quan s'envia a aquest lloc web.</translation>
@@ -2991,6 +2993,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5611398002774823980">Desa al compte</translation>
 <translation id="561165882404867731">Tradueix aquesta pàgina amb el Traductor de Google</translation>
 <translation id="5612720917913232150"><ph name="URL" /> vol utilitzar la ubicació de l'ordinador</translation>
+<translation id="5613958591683399697">Pregunta a <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Avís per a l'usuari </translation>
 <translation id="5614520971155863709">Jocs de cartes</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> us ha redirigit massa vegades.</translation>

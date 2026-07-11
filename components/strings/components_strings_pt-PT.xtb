@@ -329,6 +329,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1486096554574027028">Pesquisar palavras-passe</translation>
 <translation id="1492194039220927094">Push das políticas:</translation>
 <translation id="1495677929897281669">Voltar ao separador</translation>
+<translation id="1496318738909526466">Faça a gestão do preenchimento automático melhorado</translation>
 <translation id="1500286806237135498">Câmaras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Flauta</translation>
 <translation id="1507202001669085618">&lt;p&gt;Este erro é apresentado se estiver a utilizar um portal Wi-Fi que requer que inicie sessão para poder aceder à Internet.&lt;/p&gt;
@@ -865,6 +866,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2322254345061973671">{COUNT,plural, =1{1 janela}other{# janelas}}</translation>
 <translation id="232390861414237658">Preencha automaticamente este cartão para compras feitas no Chrome quando este estiver guardado para utilização com o Google Pay</translation>
 <translation id="2326283484705860548">Agora, pode preencher automaticamente mais informações da Carteira do Google</translation>
+<translation id="2326747055382936979">Faça a gestão do preenchimento automático melhorado</translation>
 <translation id="2328651992442742497">Permitido (predefinição)</translation>
 <translation id="2328955282645810595">Ferramentas de construção e elétricas</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expira a <ph name="EXPIRATION_DATE_ABBR" /></translation>

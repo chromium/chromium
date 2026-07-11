@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' పరిచయ పేజీని లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="424963718355121712">యాప్‌లు తప్పనిసరిగా అవి ప్రభావితమయ్యే హోస్ట్ నుండి అందించబడాలి</translation>
 <translation id="4306119971288449206">యాప్‌లు తప్పనిసరిగా "<ph name="CONTENT_TYPE" />" కంటెంట్-రకంతో అందించబడాలి</translation>
+<translation id="4349181963619779233">ఈ వెబ్‌సైట్ నుండి ఎక్స్‌టెన్షన్‌లు, యాప్‌లను జోడించడం సాధ్యపడదు</translation>
 <translation id="4625078469366263107">యాప్‌ను ప్రారంభించండి</translation>
 <translation id="4633003931260532286">"<ph name="IMPORT_NAME" />" యొక్క వెర్షన్ కనీసం "<ph name="IMPORT_VERSION" />" ఉండాలని ఎక్స్‌టెన్షన్ కోరుతోంది, కానీ "<ph name="INSTALLED_VERSION" />" వెర్షన్ మాత్రమే ఇన్‌స్టాల్ చేయబడి ఉంది</translation>
 <translation id="4660476621274971848">ఆశించిన వెర్షన్ "<ph name="EXPECTED_VERSION" />", కానీ ఉన్న వెర్షన్ "<ph name="NEW_ID" />"</translation>

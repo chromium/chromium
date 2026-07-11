@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Menține conținutul luminos și spațios</translation>
 <translation id="243179355394256322">Organizația ta limitează înregistrarea dispozitivelor doar la utilizatorii autorizați. Acest utilizator nu este autorizat să înregistreze dispozitive. Verifică dacă utilizatorul are privilegiul de administrator „Înregistrează hardware Google Meet” în secțiunea Utilizatori din Consola de administrare.</translation>
 <translation id="2439152382014731627">Resetează parola <ph name="DEVICE_TYPE" /></translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Instalarea <ph name="BEGIN_BOLD" />va șterge toate datele de pe hard disk<ph name="END_BOLD" />. Asigură-te că ai făcut backup pentru date.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Odată ce începe instalarea, nu o poți anula.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Nu vei putea adăuga utilizatori, deoarece lipsesc cheile pentru API-ul Google. Pentru detalii, consultă <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Activează serviciul de recuperare a datelor.</translation>
 <translation id="2485681265915754872">Termeni și condiții Google Play</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebookurile folosesc aplicații în loc de software tradițional. Descarcă aplicații pentru productivitate, divertisment și altele.</translation>
 <translation id="450867954911715010">Setări de accesibilitate</translation>
 <translation id="4519605771716872386">Sincronizarea fișierelor este activată</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Încearcă următorii pași pentru remedierea erorilor:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />verifică dacă dispozitivul conține o unitate de memorie internă funcțională, de exemplu, HDD, SSD sau eMMC;
+        <ph name="LIST_ITEM" />verifică dacă dispozitivul de memorie internă are un spațiu liber de cel puțin 16 GB;
+        <ph name="LIST_ITEM" />verifică starea conexiunii la dispozitivul de memorie internă, dacă acesta este accesibil fizic;
+        <ph name="LIST_ITEM" />verifică dacă folosești un model certificat și consultă notele de instalare.
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Pentru ajutor suplimentar, accesează g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Pe cine vrei să adaugi la acest <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Dacă vrei să schimbi acest lucru după înregistrare, va trebui să revii cu dispozitivul la setările din fabrică (funcția powerwash).</translation>
 <translation id="4567512141633030272">Opțiune de conectare greșită?</translation>
@@ -569,6 +580,8 @@
 <translation id="7189451821249468368">Nu deții suficiente upgrade-uri pentru a înscrie acest dispozitiv. Contactează departamentul de vânzări pentru a achiziționa upgrade-uri suplimentare. În cazul în care consideri că acest mesaj este afișat din greșeală, contactează serviciul de asistență.</translation>
 <translation id="7202337678781136582">Scanează codul QR cu telefonul Android</translation>
 <translation id="7228854227189381547">Nu schimba</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Pentru o experiență optimă, instalează <ph name="DEVICE_OS" /> pe discul intern. Poți să instalezi și mai târziu din ecranul de conectare.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Dacă nu ești gata de instalare, poți să rulezi serviciul de pe USB pentru a-l încerca. Astfel, vei păstra sistemul de operare și datele existente, dar pot să existe limitări ale spațiului de stocare și ale performanței.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Modificările se vor aplica după configurare</translation>
 <translation id="7260186537988033909">Înregistrarea dispozitivului chioșc și pentru semne s-a finalizat</translation>
 <translation id="7284411326658527427">Fiecare persoană poate să-și personalizeze contul și să-și păstreze datele private.</translation>
@@ -586,6 +599,8 @@
 <translation id="7416263748877373774">Nu se pot încărca Termenii și condițiile. Verifică-ți conexiunea de rețea și încearcă din nou.</translation>
 <translation id="7475742997309661417">Cititorul de ecran din ChromeOS, ChromeVox, este folosit în principal de persoane oarbe sau cu vedere slabă pentru a citi textul afișat pe ecran cu un sintetizator vocal sau un afișaj Braille. Apasă lung ambele butoane de volum timp de cinci secunde pentru a activa ChromeVox. Când ChromeVox este activat, vei face un tur rapid.</translation>
 <translation id="7476454130948140105">Bateria este prea descărcată pentru actualizare (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />A apărut o eroare și <ph name="DEVICE_OS" /> nu s-a putut instala.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Pentru ajutor suplimentar, accesează g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Înainte să te înregistrezi, trebuie să ștergi TPM-ul pentru ca <ph name="DEVICE_OS" /> să preia controlul asupra dispozitivului.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Poți și să dezactivezi complet dispozitivul TPM. Datele tale vor fi stocate în siguranță prin criptarea software-ului, dar anumite funcții de securitate, cum ar fi certificatele stocate pe hardware, vor fi dezactivate.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Poți modifica setările TPM prin repornirea sistemului și accesarea setărilor BIOS / UEFI. Pașii variază în funcție de modelul dispozitivului. Pentru mai multe informații, deschide documentația <ph name="DEVICE_OS" /> pe alt dispozitiv înainte de repornire: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

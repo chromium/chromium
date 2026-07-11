@@ -189,6 +189,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1807709131360304325">Åbn et nyt vindue</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> kan ikke fortsætte med at bruge <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, fane, der optager</translation>
+<translation id="1819443852740954262">Åbn alle i et inkognitovindue</translation>
 <translation id="1820408774134375111">Loginfeltet i bunden</translation>
 <translation id="1823492026305965829">Log ind som <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">Tryk på Slet browserdata</translation>
@@ -771,7 +772,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4256782883801055595">Open source-licenser</translation>
 <translation id="426652736638196239">Dette IBAN gemmes kun på denne enhed</translation>
 <translation id="4269820728363426813">Kopiér linkadresse</translation>
-<translation id="4270730597186910506">Overvåg eller stop med at overvåge et produkt.</translation>
 <translation id="4277529130885813215">Brug en anden enhed</translation>
 <translation id="427987768447457592">Ny fanegruppe</translation>
 <translation id="4282440837784183472">Din organisation, <ph name="MANAGED_DOMAIN" />, administrerer den konto, du logger ind på, og hvordan Chrome kan bruges. Din administrator kan konfigurere eller begrænse visse funktioner.</translation>
@@ -1476,6 +1476,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6983306615164277634">Du kan også holde fingeren nede på adresselinjen for at ændre placeringen.</translation>
 <translation id="6987047470128880212">Inkognitofaner er ikke tilgængelige på denne enhed</translation>
 <translation id="6996145122199359148">Download denne side</translation>
+<translation id="7007648447224463482">Åbn alle i et nyt vindue</translation>
 <translation id="7013762323294215682">Denne adgangsnøgle gemmes i Adgangs­kode­admin­istrator. Alle med adgang til Adgangs­kode­admin­istrator kan bruge denne adgangsnøgle.</translation>
 <translation id="7020741890149022655">Føj til læseliste <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Åbn i browser</translation>
@@ -1842,6 +1843,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8445448999790540984">Der kan ikke eksporteres adgangskoder</translation>
 <translation id="8446884382197647889">Få flere oplysninger</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Tilladelserne er fjernet fra 1 website}one{Tilladelserne er fjernet fra # website}other{Tilladelserne er fjernet fra # websites}}</translation>
+<translation id="8449836157089738489">Åbn alle i en ny fanegruppe</translation>
 <translation id="8453310803815879010">Start Dino-spillet</translation>
 <translation id="8455675988389029454">Få adgang til dine bogmærker, adgangskoder og meget mere på alle dine enheder</translation>
 <translation id="8458341576712814616">Genvej</translation>
@@ -1863,6 +1865,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8506357771923193001">Her finder du dine downloads</translation>
 <translation id="8512053371384421952">Du vil ikke længere modtage notifikationer fra <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Billedredigering</translation>
+<translation id="8517759303731677493">Rediger…</translation>
 <translation id="8533670235862049797">Beskyttet browsing er aktiveret</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, fastgjort fane med multivalg i tilstanden integreret billede</translation>
 <translation id="8540136935098276800">Angiv en webadresse i korrekt format</translation>

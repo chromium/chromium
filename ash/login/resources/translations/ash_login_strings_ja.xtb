@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">明るく見やすい画面にします</translation>
 <translation id="243179355394256322">お客様の組織では、デバイスの登録は権限のあるユーザーしか行えません。このユーザーにはデバイスを登録する権限がありません。管理コンソールの [ユーザー] で、ユーザーに「Google Meet ハードウェアの登録」管理者権限があることをご確認ください。</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> のパスワードを再設定</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />インストールすると、<ph name="BEGIN_BOLD" />ハードドライブのデータはすべて消去されます<ph name="END_BOLD" />。データをバックアップしていることを確認してください。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />インストールを開始した後にキャンセルすることはできません。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Google API キーがないため、ユーザーを追加できません。詳しくは、<ph name="DETAILS_URL" /> をご覧ください。</translation>
 <translation id="24786041351753425">データ復旧サービスを有効にしてください。</translation>
 <translation id="2485681265915754872">Google Play 利用規約</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebook では従来のソフトウェアではなくアプリを使用します。仕事効率化やエンタメなど、豊富なアプリが揃っています。</translation>
 <translation id="450867954911715010">ユーザー補助機能の設定</translation>
 <translation id="4519605771716872386">ファイルの同期がオンになっています</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />次の解決方法をお試しください。
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />デバイスに使用可能な内部ストレージ（HDD、SSD、eMMC など）があることを確認します
+        <ph name="LIST_ITEM" />内部ストレージ デバイスが 16 GB 以上であることを確認します
+        <ph name="LIST_ITEM" />物理的にアクセスできる場合は、内部ストレージへの接続を確認します
+        <ph name="LIST_ITEM" />認定モデルを使用していることを確認し、インストールに関する注意事項を確認します
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />詳しくは、g.co/flex/InstallErrors をご覧ください。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">この <ph name="DEVICE_TYPE" /> にどのユーザーを追加しますか？</translation>
 <translation id="4566170377336116390">登録後に変更する場合は、デバイスを出荷時の設定にリセットする（Powerwash）必要があります。</translation>
 <translation id="4567512141633030272">ログイン オプションが間違っている場合</translation>
@@ -571,6 +582,8 @@
 <translation id="7189451821249468368">このデバイスの登録に必要なアップグレード ライセンスを持っていません。さらに購入するには、販売担当者にお問い合わせください。このメッセージが間違って表示されていると思われる場合は、サポートにお問い合わせください。</translation>
 <translation id="7202337678781136582">Android スマートフォンで QR コードをスキャンする</translation>
 <translation id="7228854227189381547">切り替えない</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />快適にご利用いただくには、<ph name="DEVICE_OS" /> を内部ディスクにインストールしてください。後でログイン画面からインストールすることもできます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />インストールする準備ができていない場合は、USB から実行して試してみることもできます。この場合、既存の OS とデータは残りますが、保存容量やパフォーマンスが制限される可能性があります。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">変更は設定完了後に適用されます</translation>
 <translation id="7260186537988033909">キオスクとサイネージ デバイスの登録が完了しました</translation>
 <translation id="7284411326658527427">ユーザーごとにアカウントをカスタマイズして、データのプライバシーを確保できます。</translation>
@@ -588,6 +601,8 @@
 <translation id="7416263748877373774">利用規約を読み込めません。ネットワーク接続を確認してからもう一度お試しください。</translation>
 <translation id="7475742997309661417">ChromeVox は ChromeOS のスクリーン リーダーです。主に目の不自由な方やロービジョンの方が、画面に表示されたテキストを音声合成や点字ディスプレイを使って読む際に使用することを想定しています。ChromeVox をオンにするには、両方の音量キーを 5 秒間長押しします。ChromeVox がオンになると、クイックツアーが表示されます。</translation>
 <translation id="7476454130948140105">更新するには電池残量が少なすぎます（<ph name="BATTERY_PERCENT" />%）</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />エラーが発生したため、<ph name="DEVICE_OS" /> をインストールできませんでした。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />詳しくは、g.co/flex/InstallErrors をご覧ください。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />登録する前に、<ph name="DEVICE_OS" /> がデバイスのオーナー権限を取得できるよう TPM を消去する必要があります。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />デバイスの TPM を完全にオフにすることもできます。データは、ソフトウェアによる暗号化で引き続き安全に保存されますが、ハードウェア式証明書など、特定のセキュリティ機能は無効になります。<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />TPM の設定を変更するには、再起動してシステム BIOS / UEFI の設定に入ってください。手順はデバイスモデルに応じて異なります。詳しくは、再起動する前に別のデバイスで <ph name="DEVICE_OS" /> のドキュメントをご確認ください: g.co/flex/TPMHelp<ph name="END_PARAGRAPH3" /></translation>

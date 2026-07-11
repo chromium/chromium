@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">商业教育</translation>
 <translation id="1542830386724426410">在结账时显示凭卡可享受哪些福利和奖励。须遵守发卡机构的相关条款。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />了解详情<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">既往价格</translation>
+<translation id="1546286808622193216">使用 Gemini 比较凭卡可享的福利</translation>
 <translation id="1549470594296187301">必须启用 JavaScript 才能使用此功能。</translation>
 <translation id="1553152622374372421">冬季运动</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
@@ -2412,6 +2413,7 @@
 <translation id="4744603770635761495">可执行文件路径</translation>
 <translation id="4744816391336495134">您每次使用保存的密码时，都可以使用指纹验证您的身份</translation>
 <translation id="4749011317274908093">您已进入无痕模式</translation>
+<translation id="4749620353539006322">奖励最大化</translation>
 <translation id="4749924365937394956">服务器身份验证</translation>
 <translation id="4750671009706599284">这部手机</translation>
 <translation id="4750917950439032686">您发送给这个网站的信息（例如密码或信用卡号）不会外泄。</translation>
@@ -2987,6 +2989,7 @@
 <translation id="5611398002774823980">保存到账号</translation>
 <translation id="561165882404867731">使用 Google 翻译来翻译此页面</translation>
 <translation id="5612720917913232150"><ph name="URL" /> 想使用您计算机的位置信息</translation>
+<translation id="5613958591683399697">问问 <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">用户须知</translation>
 <translation id="5614520971155863709">卡牌游戏</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> 将您重定向的次数过多。</translation>

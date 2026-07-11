@@ -4999,6 +4999,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4849286518551984791">Koordinert universaltid (UTC/GMT)</translation>
 <translation id="4849517651082200438">Ikke installer</translation>
 <translation id="4849731766219625109">Bruk <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-kontoen din</translation>
+<translation id="4850279708232718725">Fortell meg om dette</translation>
 <translation id="485053257961878904">Kunne ikke konfigurere synkronisering av varsler</translation>
 <translation id="4850548109381269495">Sjekk internettilkoblingen på begge enhetene, og slå på Bluetooth. Prøv deretter på nytt.</translation>
 <translation id="4850669014075537160">Rulling</translation>
@@ -6345,6 +6346,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5922854266885514646">Klikk på «Tilpass Chrome»</translation>
 <translation id="5924047253200400718">Få hjelp<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Spør før Microsoft-filer flyttes eller kopieres til Google Disk</translation>
+<translation id="5925057331573749968">Logg på raskere med en QR-kode</translation>
 <translation id="5926936390113611560">Åpne alle profiler</translation>
 <translation id="592880897588170157">Last ned PDF-filer i stedet for at de åpnes automatisk i Chrome</translation>
 <translation id="5930567261594625340">Nattehimmel</translation>
@@ -9493,6 +9495,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8372678064309688510">Adressen din er lagret</translation>
 <translation id="8373652277231415614">Delte kataloger for Crostini</translation>
 <translation id="8374243500935816406">Ikke la nettsteder administrere vinduer på alle skjermene dine</translation>
+<translation id="8375703478696038265">Trinn <ph name="STEP_NUMBER" /> av <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Fortell oss hva som skjer med Google Cast.</translation>
 <translation id="8376384591331888629">Inkludert informasjonskapsler fra tredjeparter på dette nettstedet</translation>
 <translation id="8376451933628734023">Hvis denne nettappen prøver å lure deg til å tro at det er en annen app, må du avinstallere det.</translation>
@@ -10564,6 +10567,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9188142767272053574">Slå på prosessisolering</translation>
 <translation id="9192019773545828776">Hør taletilbakemeldinger, slik at du kan bruke enheten uten å se på skjermen. Tilbakemelding med punktskrift er tilgjengelig med en tilkoblet enhet. Bruk Ctrl + Alt + Z for å slå ChromeVox på og av. Bruk søketasten + venstrepil eller høyrepil for å navigere. Bruk Søk + mellomromstasten for å velge (aktivere).</translation>
 <translation id="9195969368671142407">Når organisasjonen din begrenser lagring i Google-kontoen din, kan du ikke dele eller bli med i fanegrupper</translation>
+<translation id="9197456336762295195">Skann denne QR-koden med kameraet på enheten som har passnøkkelen din for google.com</translation>
 <translation id="919840898042157087">Statisk bevegelse</translation>
 <translation id="9199503643457729322">Klikk for å navigere bort fra personvernveiledningen.</translation>
 <translation id="9199695835892108985">Vil du tilbakestille alle tillatelser for alle serielle porter?</translation>

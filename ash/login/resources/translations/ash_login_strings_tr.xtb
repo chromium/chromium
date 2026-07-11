@@ -138,6 +138,8 @@
 <translation id="2418307627282545839">Arayüzünüz parlak ve canlı olsun</translation>
 <translation id="243179355394256322">Kuruluşunuz, cihaz kaydını yalnızca yetkili kullanıcılarla sınırlıyor. Bu kullanıcının cihaz kaydetme yetkisi yok. Lütfen kullanıcının, Yönetici konsolunun Kullanıcılar bölümünde "Google Meet hardware cihazlarını kaydetme" yönetici ayrıcalıklarına sahip olduğundan emin olun.</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> şifresini sıfırla</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Yükleme işlemi <ph name="BEGIN_BOLD" />sabit diskinizin tamamını silecek<ph name="END_BOLD" />. Verilerinizi yedeklemeyi unutmayın.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Yükleme işlemi, başladıktan sonra iptal edilemez.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Google API anahtarları eksik olduğundan kullanıcı ekleyemezsiniz. Ayrıntılar için <ph name="DETAILS_URL" /> sayfasına bakın.</translation>
 <translation id="24786041351753425">Veri kurtarma hizmetini etkinleştirme.</translation>
 <translation id="2485681265915754872">Google Play hizmet şartları</translation>
@@ -318,6 +320,15 @@
 <translation id="4487489714832036847">Chromebook'lar geleneksel yazılım yerine uygulama kullanır. Üretkenlik, eğlence ve diğer konularla ilgili uygulamalar edinin.</translation>
 <translation id="450867954911715010">Erişilebilirlik ayarları</translation>
 <translation id="4519605771716872386">Dosya senkronizasyonu açık</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Şu sorun giderme adımlarını deneyin:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Cihazınızda HDD, SSD veya eMMC gibi dahili bir depolama alanı bulunduğundan emin olun.
+        <ph name="LIST_ITEM" />Dahili depolama cihazınızın 16 GB'tan büyük olduğunu kontrol edin.
+        <ph name="LIST_ITEM" />Fiziksel olarak erişilebiliyorsa dahili depolama alanına bağlantıyı kontrol edin.
+        <ph name="LIST_ITEM" />Sertifikalı bir model kullandığınızdan emin olun ve yükleme notlarını kontrol edin.
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Daha fazla yardım için g.co/flex/InstallErrors adresini ziyaret edebilirsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Bu <ph name="DEVICE_TYPE" /> cihazına kimleri eklemek istersiniz?</translation>
 <translation id="4566170377336116390">Kaydolduktan sonra geçiş yapmak isterseniz cihazınızı fabrika ayarlarına sıfırlamanız (powerwash) gerekir.</translation>
 <translation id="4567512141633030272">Oturum açma seçeneği yanlış mı?</translation>
@@ -563,6 +574,8 @@
 <translation id="7189451821249468368">Bu cihazı kaydetmek için yeterli yükseltmeye sahip değilsiniz. Daha fazla yazılım satın almak için lütfen satış birimiyle bağlantı kurun. Bu mesajın yanlışlıkla görüntülendiğini düşünüyorsanız lütfen destekle bağlantı kurun.</translation>
 <translation id="7202337678781136582">QR kodunu Android telefonunuzla tarayın</translation>
 <translation id="7228854227189381547">Değiştirme</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />En iyi deneyim için <ph name="DEVICE_OS" /> yüklemesini dahili diskinizde gerçekleştirin. Daha sonra giriş ekranından da yükleyebilirsiniz.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Yüklemeye hazır değilseniz önce denemek için USB'den çalıştırabilirsiniz. Bu şekilde mevcut işletim sisteminiz ve verileriniz kaldırılmaz ancak depolama alanı ve performansla ilgili bazı sınırlar görebilirsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Değişiklikler, kurulumdan sonra uygulanır</translation>
 <translation id="7260186537988033909">Kiosk ve tabela cihaz kaydı tamamlandı</translation>
 <translation id="7284411326658527427">Her kullanıcı, hesabını kişiselleştirip verilerini gizli tutabilir.</translation>
@@ -580,6 +593,8 @@
 <translation id="7416263748877373774">Hizmet Şartları yüklenemiyor. Lütfen ağ bağlantınızı kontrol edip tekrar deneyin.</translation>
 <translation id="7475742997309661417">ChromeOS'teki ekran okuyucu olan ChromeVox, özellikle görme engelli ve az gören kişiler tarafından konuşma sentezleyici ya da Braille ekranla birlikte ekranda gösterilen metni okumak için kullanılır. ChromeVox'u açmak için ses seviyesi tuşlarının ikisini birden beş saniye boyunca basılı tutun. ChromeVox etkinleştirildiğinde hızlı bir tura çıkarsınız.</translation>
 <translation id="7476454130948140105">Pil gücü güncelleme için yeterli değil (%<ph name="BATTERY_PERCENT" />)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Bir sorun oluştuğu için <ph name="DEVICE_OS" /> yüklenemedi.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Daha fazla yardım için g.co/flex/InstallErrors sayfasını ziyaret edin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> işletim sisteminin, cihazın sahipliğini alabilmesi için kaydolmadan önce Güvenilir Platform Modülü'nü (TPM) temizlemeniz gerekir.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />TPM cihazını tamamen de kapatabilirsiniz. Verileriniz yazılım şifreleme ile güvenli bir şekilde depolanmaya devam eder ancak donanım destekli sertifikalar gibi bazı güvenlik özellikleri devre dışı bırakılır.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Yeniden başlatıp sistem BIOS/UEFI ayarlarını girerek TPM ayarlarınızı değiştirebilirsiniz. Uygulanacak adımlar cihaz modeline göre değişir. Daha fazla bilgi için, yeniden başlatma işleminden önce <ph name="DEVICE_OS" /> dokümanlarını ayrı bir cihazda açın: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

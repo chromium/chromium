@@ -5005,6 +5005,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4849286518551984791">Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">Huwag I-install</translation>
 <translation id="4849731766219625109">Gamitin ang iyong <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> account</translation>
+<translation id="4850279708232718725">Sabihin sa akin ang tungkol dito</translation>
 <translation id="485053257961878904">Hindi ma-set up ang pag-sync ng mga notification</translation>
 <translation id="4850548109381269495">Tingnan ang iyong koneksyon sa internet at i-on ang Bluetooth sa dalawang device. Pagkatapos ay subukan ulit.</translation>
 <translation id="4850669014075537160">Pag-ii-scroll</translation>
@@ -6353,6 +6354,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5922854266885514646">I-click ang "I-customize ang Chrome"</translation>
 <translation id="5924047253200400718">Humingi ng tulong<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Magtanong bago kumopya o maglipat ng mga Microsoft file sa Google Drive</translation>
+<translation id="5925057331573749968">Mas mabilis na mag-sign in gamit ang QR code</translation>
 <translation id="5926936390113611560">Buksan ang lahat ng profile</translation>
 <translation id="592880897588170157">I-download ang mga PDF file sa halip na awtomatikong buksan ang mga ito sa Chrome</translation>
 <translation id="5930567261594625340">Langit sa gabi</translation>
@@ -9503,6 +9505,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8372678064309688510">Na-save Ang Iyong Address</translation>
 <translation id="8373652277231415614">Mga nakabahaging directory ng Crostini</translation>
 <translation id="8374243500935816406">Huwag payagan ang mga site na pamahalaan ang mga window sa lahat ng iyong display</translation>
+<translation id="8375703478696038265">Hakbang <ph name="STEP_NUMBER" /> sa <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Sabihin sa amin kung ano ang nangyayari sa paggamit ng Google Cast.</translation>
 <translation id="8376384591331888629">Kasama ang third-party na cookies sa site na ito</translation>
 <translation id="8376451933628734023">Kung sinusubukan kang linlangin ng web app na ito para maisip mong ibang app ito, i-uninstall ito.</translation>
@@ -10576,6 +10579,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="9188142767272053574">I-enable ang Pag-isolate ng Proseso</translation>
 <translation id="9192019773545828776">Makarinig ng pasalitang feedback para magamit mo ang iyong device nang hindi tumitingin sa screen. Available ang braille na feedback gamit ang isang nakakonektang device. Gamitin ang Ctrl + Alt + Z para i-on at i-off ang ChromeVox. Gamitin ang Search + Pakaliwang arrow o Pakanang arrow para mag-navigate. Gamitin ang Search + Space para pumili (mag-activate).</translation>
 <translation id="9195969368671142407">Kapag nilimitahan ng iyong organisasyon ang pag-save sa Google Account mo, hindi ka puwedeng mag-share ng o sumali sa mga grupo ng tab</translation>
+<translation id="9197456336762295195">I-scan ang QR code na ito gamit ang camera sa device na may passkey mo para sa google.com</translation>
 <translation id="919840898042157087">Static na paggalaw</translation>
 <translation id="9199503643457729322">I-click para mag-navigate paalis sa Gabay sa Privacy.</translation>
 <translation id="9199695835892108985">I-reset ang lahat ng pahintulot sa Serial port?</translation>

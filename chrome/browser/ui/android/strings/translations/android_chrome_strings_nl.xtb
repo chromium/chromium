@@ -189,6 +189,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1807709131360304325">Een nieuw venster openen</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> kan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> niet meer gebruiken</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, tabblad voor opname</translation>
+<translation id="1819443852740954262">Alles openen in incognitovenster</translation>
 <translation id="1820408774134375111">Inlogblad onderaan</translation>
 <translation id="1823492026305965829">Inloggen als <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">Tik op Browsegegevens verwijderen</translation>
@@ -771,7 +772,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4256782883801055595">Opensource-licenties</translation>
 <translation id="426652736638196239">Dit IBAN-nummer wordt alleen op dit apparaat opgeslagen</translation>
 <translation id="4269820728363426813">Linkadres kopiëren</translation>
-<translation id="4270730597186910506">Een product volgen of niet meer volgen.</translation>
 <translation id="4277529130885813215">Ander apparaat gebruiken</translation>
 <translation id="427987768447457592">Nieuwe tabbladgroep</translation>
 <translation id="4282440837784183472">Je organisatie, <ph name="MANAGED_DOMAIN" />, beheert het account waarop je inlogt en hoe Chrome kan worden gebruikt. Je beheerder kan bepaalde functies instellen of beperken.</translation>
@@ -1476,6 +1476,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6983306615164277634">Je kunt ook je vinger op de adresbalk houden om de positie te wijzigen.</translation>
 <translation id="6987047470128880212">Incognito is niet beschikbaar op dit apparaat.</translation>
 <translation id="6996145122199359148">Deze pagina downloaden</translation>
+<translation id="7007648447224463482">Alles openen in nieuw venster</translation>
 <translation id="7013762323294215682">Deze toegangssleutel wordt opgeslagen in je wachtwoordmanager. Iedereen met toegang kan deze toegangssleutel gebruiken.</translation>
 <translation id="7020741890149022655">Toevoegen aan leeslijst <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Openen in browser</translation>
@@ -1842,6 +1843,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8445448999790540984">Wachtwoorden kunnen niet worden geëxporteerd</translation>
 <translation id="8446884382197647889">Meer informatie</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Rechten verwijderd voor 1 site}other{Rechten verwijderd voor # sites}}</translation>
+<translation id="8449836157089738489">Alles openen in nieuwe tabbladgroep</translation>
 <translation id="8453310803815879010">Dino-game starten</translation>
 <translation id="8455675988389029454">Je bookmarks, wachtwoorden en meer op al je apparaten gebruiken</translation>
 <translation id="8458341576712814616">Snelkoppeling</translation>
@@ -1863,6 +1865,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8506357771923193001">Hier vind je je downloads</translation>
 <translation id="8512053371384421952">Je krijgt geen meldingen meer van <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Bewerkingsprogramma voor afbeeldingen</translation>
+<translation id="8517759303731677493">Bewerken…</translation>
 <translation id="8533670235862049797">Safe Browsing staat aan</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, meervoudig geselecteerd vastgezet tabblad voor scherm-in-scherm</translation>
 <translation id="8540136935098276800">Geef een correct opgemaakte URL op</translation>

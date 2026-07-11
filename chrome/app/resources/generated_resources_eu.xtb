@@ -3521,6 +3521,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="371370241367527062">Aurreko mikrofonoa</translation>
 <translation id="37143699183660101">Kurtsorearen egonkortasuna</translation>
 <translation id="3714610938239537183">2/4 urratsa: hautatu esportatu nahi dituzun diagnostiko-datuak</translation>
+<translation id="3715519518311454566">Tolestu da pantailaren behealdean ainguratutako Gemini-ren orria.</translation>
 <translation id="3717133748480414053">Gaitasunek web-orriak laburtzen, eskaintza bikainak bilatzen eta beste gauza asko egiten lagun diezazukete</translation>
 <translation id="3719245268140483218">Gailuaren gertaera</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> bete da.</translation>
@@ -6201,6 +6202,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5828181959764767444">Ilunabarra</translation>
 <translation id="5828545842856466741">Gehitu profil bat…</translation>
 <translation id="5828633471261496623">Inprimatzen…</translation>
+<translation id="5829137022934788067">Eman hautapen honi buruzko informazioa</translation>
 <translation id="5829214552954466783">Partekatu <ph name="USER_EMAIL" /> erabiltzaile-izenari dagokion <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="5829544019044013776">Google Diru-zorroa zerbitzuko ordainketa-metodoak</translation>
 <translation id="5830512293931520102">Pasahitza enkriptatuta dago, eta inork ez du inoiz ikusten</translation>
@@ -6991,6 +6993,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6455264371803474013">Webgune zehatzetan</translation>
 <translation id="6455521402703088376">Desaktibatuta • Garatzaileak luzapena desargitaratu du</translation>
 <translation id="6455894534188563617">&amp;Karpeta berria</translation>
+<translation id="6456162045957729200">Azaldu hautapena</translation>
 <translation id="645705751491738698">Jarraitu JavaScript blokeatzen</translation>
 <translation id="6457572529564180082"><ph name="APP_NAME" /> ezin da exekutatu</translation>
 <translation id="6458701200018867744">Ezin izan da kargatu (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
@@ -8849,6 +8852,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7903481341948453971">Erabili pantailaren blokeoa pasahitzen eremuak betetzean</translation>
 <translation id="7903925330883316394">Zerbitzu-aplikazioaren prozesua: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7904492297081735975">&amp;Ireki Laster-marken kudeatzailea</translation>
 <translation id="7904526211178107182">Ezarri Linux-eko atakak sareko beste gailu batzuentzat erabilgarri.</translation>
 <translation id="7907312522152480478">Beste gailuetako fitxak lortzeko, egiaztatu zeu zarela eta sinkronizatu historia eta fitxak. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="7907502219904644296">Aldatu sarbidea</translation>
@@ -10601,6 +10605,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="942296794412775122">Aktibatu/Desaktibatu mikrofonoa</translation>
 <translation id="942488123151518958">Pausatu (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> Chrome-ko fitxa bat eta audioa partekatzen ari da.</translation>
+<translation id="943744232549395906">Ahozko idazketa gelditu egin da</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
 <translation id="947156494302904893">Bisitatzen dituzun webguneek benetako pertsona bat zarela eta robot bat ez zarela egiazta dezakete</translation>
 <translation id="947329552760389097">&amp;Aztertu elementuak</translation>

@@ -4990,6 +4990,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4849286518551984791">Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">Non installare</translation>
 <translation id="4849731766219625109">Usa il tuo account <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="4850279708232718725">Parlami di questo argomento</translation>
 <translation id="485053257961878904">Impossibile configurare la sincronizzazione delle notifiche</translation>
 <translation id="4850548109381269495">Controlla la connessione a internet su entrambi i dispositivi e attiva il Bluetooth. Quindi riprova.</translation>
 <translation id="4850669014075537160">Scorrimento</translation>
@@ -6336,6 +6337,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5922854266885514646">Fai clic su "Personalizza Chrome"</translation>
 <translation id="5924047253200400718">Richiedi assistenza<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Chiedi prima di copiare o spostare i file Microsoft su Google Drive</translation>
+<translation id="5925057331573749968">Accedi più velocemente con un codice QR</translation>
 <translation id="5926936390113611560">Apri tutti i profili</translation>
 <translation id="592880897588170157">Scarica i file PDF anziché aprirli automaticamente in Chrome</translation>
 <translation id="5930567261594625340">Cielo notturno</translation>
@@ -9483,6 +9485,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8372678064309688510">Il tuo indirizzo è stato salvato</translation>
 <translation id="8373652277231415614">Directory condivise di Crostini</translation>
 <translation id="8374243500935816406">Non consentire ai siti di gestire le finestre su tutti i tuoi schermi</translation>
+<translation id="8375703478696038265">Passaggio <ph name="STEP_NUMBER" /> di <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Comunicaci i tuoi commenti su Google Cast.</translation>
 <translation id="8376384591331888629">Inclusi i cookie di terze parti su questo sito</translation>
 <translation id="8376451933628734023">Se questa app web sta cercando di farti credere che si tratta di un'app diversa, disinstallala.</translation>
@@ -10554,6 +10557,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9188142767272053574">Attiva l'isolamento dei processi</translation>
 <translation id="9192019773545828776">Attiva la funzione di lettura vocale per usare il dispositivo senza dover guardare lo schermo. Il feedback braille è disponibile con un dispositivo connesso. Premi Ctrl + Alt + Z per attivare e disattivare ChromeVox. Utilizza il tasto per la ricerca + Freccia sinistra o Freccia destra per spostarti. Utilizza il tasto per la ricerca + Barra spaziatrice per selezionare (attivare).</translation>
 <translation id="9195969368671142407">Quando la tua organizzazione limita il salvataggio nel tuo Account Google, non puoi partecipare a gruppi di schede o condividerli</translation>
+<translation id="9197456336762295195">Scansiona questo codice QR con la fotocamera del dispositivo che ha la tua passkey per google.com</translation>
 <translation id="919840898042157087">Movimento statico</translation>
 <translation id="9199503643457729322">Fai clic per uscire dalla Guida alla privacy.</translation>
 <translation id="9199695835892108985">Vuoi reimpostare tutte le autorizzazioni delle porte seriali?</translation>

@@ -4990,6 +4990,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4849286518551984791">Universālais koordinētais laiks (UTC/GMT)</translation>
 <translation id="4849517651082200438">Neinstalēt</translation>
 <translation id="4849731766219625109">Izmantot jūsu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kontu</translation>
+<translation id="4850279708232718725">Pastāsti man par šo</translation>
 <translation id="485053257961878904">Nevarēja iestatīt paziņojumu sinhronizēšanu</translation>
 <translation id="4850548109381269495">Abās ierīcēs pārbaudiet interneta savienojumu un ieslēdziet Bluetooth savienojumu. Pēc tam mēģiniet vēlreiz.</translation>
 <translation id="4850669014075537160">Ritināšana</translation>
@@ -6335,6 +6336,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5922854266885514646">Noklikšķiniet uz “Pielāgot pārlūkprogrammu Chrome”.</translation>
 <translation id="5924047253200400718">Saņemt palīdzību<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Jautāt pirms Microsoft failu kopēšanas vai pārvietošanas uz Google disku</translation>
+<translation id="5925057331573749968">Ātrāka pierakstīšanās, izmantojot kvadrātkodu</translation>
 <translation id="5926936390113611560">Atvērt visus profilus</translation>
 <translation id="592880897588170157">Lejupielādēt PDF failus, nevis automātiski atvērt tos pārlūkā Chrome</translation>
 <translation id="5930567261594625340">Nakts debesis</translation>
@@ -9486,6 +9488,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8372678064309688510">Jūsu adrese ir saglabāta</translation>
 <translation id="8373652277231415614">Crostini koplietotie katalogi</translation>
 <translation id="8374243500935816406">Neatļaut vietnēm pārvaldīt logus visos jūsu displejos</translation>
+<translation id="8375703478696038265"><ph name="STEP_NUMBER" />. darbība no <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Pastāstiet par problēmām ar Google Cast.</translation>
 <translation id="8376384591331888629">Arī šajā vietnē esošos trešo pušu sīkfailus</translation>
 <translation id="8376451933628734023">Ja šī tīmekļa lietotne ir maldinošs citas lietotnes atdarinājums, atinstalējiet to.</translation>
@@ -10557,6 +10560,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="9188142767272053574">Iespējot procesu izolāciju</translation>
 <translation id="9192019773545828776">Klausieties balss komentārus, lai varētu izmantot ierīci, neskatoties ekrānā. Braila raksts ir pieejams, izmantojot pievienotu ierīci. Lai ieslēgtu vai izslēgtu ChromeVox, nospiediet Ctrl + Alt + Z. Lai pārvietotos, nospiediet meklēšanas taustiņu + kreiso vai labo bultiņu. Lai atlasītu (aktivizētu), nospiediet meklēšanas taustiņu + atstarpes taustiņu.</translation>
 <translation id="9195969368671142407">Ja jūsu organizācija ierobežo saglabāšanas iespējas jūsu Google kontā, jūs nevarat kopīgot vai pievienoties ciļņu grupām.</translation>
+<translation id="9197456336762295195">Skenējiet šo kvadrātkodu, izmantojot tās ierīces kameru, kurā ir jūsu piekļuves atslēga vietnei google.com.</translation>
 <translation id="919840898042157087">Statiskas kustības</translation>
 <translation id="9199503643457729322">Noklikšķiniet, lai izietu no konfidencialitātes ceļveža.</translation>
 <translation id="9199695835892108985">Vai atiestatīt visas seriālo ierīču atļaujas?</translation>

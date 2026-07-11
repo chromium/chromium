@@ -1547,6 +1547,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2199298570273670671">Klaida</translation>
 <translation id="2200094388063410062">El. paštas</translation>
 <translation id="2200781749203116929">„ChromeOS“ sistemos žurnalai</translation>
+<translation id="2202391868799679245">Įjungti spartųjį klavišą</translation>
 <translation id="2203088913459920044">Pavadinimą gali sudaryti raidės, skaitmenys ir specialieji ženklai</translation>
 <translation id="220321590587754225">Nepavyko prijungti. Bandykite dar kartą.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> gali tikrinti jūsų slaptažodžius, kai prisijungiate naudodami „Google“ paskyrą</translation>
@@ -5005,6 +5006,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4849286518551984791">Suderintasis pasaulinis laikas (UTC / GMT)</translation>
 <translation id="4849517651082200438">Neįdiegti</translation>
 <translation id="4849731766219625109">Naudoti „<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />“ paskyrą</translation>
+<translation id="4850279708232718725">Papasakok apie tai</translation>
 <translation id="485053257961878904">Nepavyko nustatyti pranešimų sinchronizavimo</translation>
 <translation id="4850548109381269495">Abiejuose įrenginiuose patikrinkite interneto ryšį ir įjunkite „Bluetooth“. Tada bandykite dar kartą.</translation>
 <translation id="4850669014075537160">Slinkimas</translation>
@@ -5098,6 +5100,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4906490889887219338">Nustatykite arba tvarkykite tinklo failų bendrinimą. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Iš naujo nustatyti numatytąjį</translation>
 <translation id="4907129260985716018">Pasirinkite, kada šis plėtinys gali skaityti ir keisti svetainės duomenis</translation>
+<translation id="4908076691331874303">Paslėpta šioje svetainėje</translation>
 <translation id="4908811072292128752">Jei norite naršyti iš karto dvi svetaines, atidarykite naują skirtuką</translation>
 <translation id="4910241725741323970">Programa jau įdiegta</translation>
 <translation id="4912643508233590958">Neaktyvumo režimo nutraukimo veiksmai</translation>
@@ -6354,6 +6357,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5922854266885514646">Spustelėkite „Tinkinti „Chrome“</translation>
 <translation id="5924047253200400718">Gaukite pagalbos<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Klausti prieš kopijuojant ar perkeliant „Microsoft“ failus į „Google“ diską</translation>
+<translation id="5925057331573749968">Prisijunkite greičiau naudodami QR kodą</translation>
 <translation id="5926936390113611560">Atidaryti visus profilius</translation>
 <translation id="592880897588170157">Atsisiųskite PDF failus, užuot automatiškai atidarę juos naršyklėje „Chrome“</translation>
 <translation id="5930567261594625340">Nakties dangus</translation>
@@ -9508,6 +9512,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8372678064309688510">Adresas išsaugotas</translation>
 <translation id="8373652277231415614">„Crostini“ bendrinami katalogai</translation>
 <translation id="8374243500935816406">Neleisti svetainėms tvarkyti langų visuose ekranuose</translation>
+<translation id="8375703478696038265"><ph name="STEP_NUMBER" /> veiksmas iš <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Nurodykite, kas nutiko naudojant „Google Cast“.</translation>
 <translation id="8376384591331888629">Įskaitant trečiosios šalies slapukus jūsų svetainėje</translation>
 <translation id="8376451933628734023">Jei ši žiniatinklio programa bando apsimesti kita programa, ją pašalinkite.</translation>
@@ -10579,6 +10584,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="9188142767272053574">Įgalinti proceso izoliavimą</translation>
 <translation id="9192019773545828776">Klausykitės balsu skaitomo ekrano, kad galėtumėte naudoti įrenginį nežiūrėdami į ekraną. Brailio rašmenys pasiekiami naudojant prijungtą įrenginį. Naudodami „Ctrl“ + „Alt“ + Z įjunkite arba išjunkite „ChromeVox“. Naršykite naudodami paieškos, rodyklės kairėn ir rodyklės dešinėn klavišus. Norėdami pasirinkti (suaktyvinti) naudokite paieškos ir tarpo klavišus.</translation>
 <translation id="9195969368671142407">Kai organizacija riboja išsaugojimą „Google“ paskyroje, negalite bendrinti skirtukų grupių ar prie jų prisijungti</translation>
+<translation id="9197456336762295195">Nuskaitykite šį QR kodą naudodami įrenginio, kuriame yra google.com prieigos raktas, vaizdo kamerą</translation>
 <translation id="919840898042157087">Statinis judesys</translation>
 <translation id="9199503643457729322">Spustelėkite, kad išeitumėte iš privatumo vadovo.</translation>
 <translation id="9199695835892108985">Iš naujo nustatyti visus nuosekliojo prievado leidimus?</translation>

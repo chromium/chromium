@@ -69,6 +69,7 @@
 <translation id="4233778200880751280">पृष्ठ बारे '<ph name="ABOUT_PAGE" />'लाई लोड गर्न सकिएन।</translation>
 <translation id="424963718355121712">एपहरू अनिवार्य रूपमा तिनले प्रभाव पार्ने होस्टबाट सञ्चालित हुनु पर्छ</translation>
 <translation id="4306119971288449206">एपहरू अनिवार्य रूपमा "<ph name="CONTENT_TYPE" />" नामक सामग्रीको प्रकारबाट सञ्चालित हुनु पर्छ</translation>
+<translation id="4349181963619779233">यो वेबसाइटबाट एक्स्टेन्सन तथा एपहरू हाल्न मिल्दैन</translation>
 <translation id="4625078469366263107">एप सक्षम पार्नुहोस्</translation>
 <translation id="4633003931260532286">विस्तारलाई कम्तीमा "<ph name="IMPORT_VERSION" />" संस्करणको "<ph name="IMPORT_NAME" />" आवश्यक पर्छ तर स्थापना संस्करण भने केवल "<ph name="INSTALLED_VERSION" />" हो</translation>
 <translation id="4660476621274971848">अपेक्षित संस्करण "<ph name="EXPECTED_VERSION" />" हो, तर भएको संस्करण भने "<ph name="NEW_ID" />" छ</translation>

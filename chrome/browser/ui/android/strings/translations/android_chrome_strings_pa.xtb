@@ -189,6 +189,7 @@
 <translation id="1807709131360304325">ਨਵੀਂ ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਦੀ ਵਰਤੋਂ ਜਾਰੀ ਨਹੀਂ ਰੱਖ ਸਕਦਾ</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, ਰਿਕਾਰਡਿੰਗ ਟੈਬ</translation>
+<translation id="1819443852740954262">ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਸਭ ਖੋਲ੍ਹੋ</translation>
 <translation id="1820408774134375111">ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਹੇਠਲੀ ਸ਼ੀਟ</translation>
 <translation id="1823492026305965829"><ph name="USER_FULL_NAME" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="1824902652744048041">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
@@ -771,7 +772,6 @@
 <translation id="4256782883801055595">ਖੁੱਲ੍ਹਾ ਸਰੋਤ ਲਾਇਸੰਸ</translation>
 <translation id="426652736638196239">ਇਹ IBAN ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="4269820728363426813">ਲਿੰਕ ਪਤਾ ਕਾਪੀ ਕਰੋ</translation>
-<translation id="4270730597186910506">ਕਿਸੇ ਉਤਪਾਦ ਨੂੰ ਟਰੈਕ ਕਰੋ ਜਾਂ ਟਰੈਕ ਕਰਨਾ ਬੰਦ ਕਰੋ।</translation>
 <translation id="4277529130885813215">ਕੋਈ ਹੋਰ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="427987768447457592">ਨਵਾਂ ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="4282440837784183472">ਤੁਹਾਡੀ ਸੰਸਥਾ, <ph name="MANAGED_DOMAIN" />, ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਜਾਣ ਵਾਲੇ ਖਾਤੇ ਅਤੇ Chrome ਦੇ ਵਰਤੇ ਜਾਣ ਦੇ ਤਰੀਕੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦੀ ਹੈ। ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਕੁਝ ਖਾਸ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦਾ ਸੈੱਟਅੱਪ ਜਾਂ ਉਨ੍ਹਾਂ ਨੂੰ ਪ੍ਰਤਿਬੰਧਿਤ ਕਰ ਸਕਦਾ ਹੈ।</translation>
@@ -1476,6 +1476,7 @@
 <translation id="6983306615164277634">ਤੁਸੀਂ ਜਗ੍ਹਾ ਬਦਲਣ ਲਈ ਪਤਾ ਬਾਰ ਨੂੰ ਸਪਰਸ਼ ਕਰ ਕੇ ਵੀ ਰੱਖ ਸਕਦੇ ਹੋ।</translation>
 <translation id="6987047470128880212">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਇਨਕੋਗਨਿਟੋ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="6996145122199359148">ਇਸ ਪੰਨੇ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
+<translation id="7007648447224463482">ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਸਭ ਖੋਲ੍ਹੋ</translation>
 <translation id="7013762323294215682">ਇਹ ਪਾਸਕੀ ਤੁਹਾਡੇ Password Manager ਵਿੱਚ ਰੱਖਿਅਤ ਹੋ ਜਾਵੇਗੀ। ਇਸ ਪਾਸਕੀ ਤੱਕ ਪਹੁੰਚ ਵਾਲਾ ਕੋਈ ਵੀ ਵਿਅਕਤੀ ਇਸਦੀ ਵਰਤੋਂ ਕਰ ਸਕੇਗਾ।</translation>
 <translation id="7020741890149022655">ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
@@ -1842,6 +1843,7 @@
 <translation id="8445448999790540984">ਪਾਸਵਰਡ ਨਿਰਯਾਤ ਨਹੀਂ ਕੀਤੇ ਜਾ ਸਕਦੇ</translation>
 <translation id="8446884382197647889">ਹੋਰ ਜਾਣੋ</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{1 ਸਾਈਟ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾਇਆ ਗਿਆ}one{# ਸਾਈਟ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾਇਆ ਗਿਆ}other{# ਸਾਈਟਾਂ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾਇਆ ਗਿਆ}}</translation>
+<translation id="8449836157089738489">ਸਾਰਿਆਂ ਨੂੰ ਨਵੇਂ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="8453310803815879010">Dino ਗੇਮ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="8455675988389029454">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="8458341576712814616">ਸ਼ਾਰਟਕੱਟ</translation>
@@ -1863,6 +1865,7 @@
 <translation id="8506357771923193001">ਤੁਹਾਨੂੰ ਆਪਣੇ ਡਾਊਨਲੋਡ ਇੱਥੇ ਮਿਲਣਗੇ</translation>
 <translation id="8512053371384421952">ਤੁਹਾਨੂੰ ਹੁਣ <ph name="DOMAIN" /> ਤੋਂ ਸੂਚਨਾਵਾਂ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋਣਗੀਆਂ।</translation>
 <translation id="8516012719330875537">ਚਿੱਤਰ ਸੰਪਾਦਕ</translation>
+<translation id="8517759303731677493">ਸੰਪਾਦਨ ਕਰੋ…</translation>
 <translation id="8533670235862049797">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਚਾਲੂ ਹੈ</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, ਇੱਕ ਤੋਂ ਵੱਧ ਚੁਣੀਆਂ ਗਈਆਂ ਪਿੰਨ ਕੀਤੀਆਂ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਟੈਬਾਂ</translation>
 <translation id="8540136935098276800">ਸਹੀ ਢੰਗ ਨਾਲ ਫਾਰਮੈਟ ਕੀਤਾ URL ਦਾਖਲ ਕਰੋ</translation>

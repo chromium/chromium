@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">વ્યવસાય સંબંધિત શિક્ષણ</translation>
 <translation id="1542830386724426410">ચેકઆઉટ વખતે ઉપલબ્ધ કાર્ડના લાભ અને રિવૉર્ડ બતાવો. રજૂકર્તાની શરતો લાગુ થાય છે. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />વધુ જાણો<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">કિંમતનો ઇતિહાસ</translation>
+<translation id="1546286808622193216">Geminiનો ઉપયોગ કરીને કાર્ડના લાભની તુલના કરો</translation>
 <translation id="1549470594296187301">આ સુવિધાનો ઉપયોગ કરવા માટે JavaScript સક્ષમ કરેલ હોવી આવશ્યક છે.</translation>
 <translation id="1553152622374372421">શિયાળામાં રમાતી રમતો</translation>
 <translation id="1553358976309200471">Chrome અપડેટ કરો</translation>
@@ -2416,6 +2417,7 @@
 <translation id="4744603770635761495">અમલ કરવાયોગ્ય પાથ</translation>
 <translation id="4744816391336495134">જ્યારે પણ તમે સાચવેલા પાસવર્ડનો ઉપયોગ કરો, ત્યારે તે તમે જ છો તેની ચકાસણી કરવા માટે તમે તમારી ફિંગરપ્રિન્ટનો ઉપયોગ કરી શકો છો</translation>
 <translation id="4749011317274908093">તમે છૂપા મોડમાં ગયા છો</translation>
+<translation id="4749620353539006322">રિવૉર્ડ વધારો</translation>
 <translation id="4749924365937394956">સર્વર પ્રમાણીકરણ</translation>
 <translation id="4750671009706599284">આ ફોન</translation>
 <translation id="4750917950439032686">તમારી માહિતી (ઉદાહરણ તરીકે, પાસવર્ડ્સ અથવા ક્રેડિટ કાર્ડ નંબર્સ) ખાનગી હોય છે જ્યારે તે આ સાઇટ પર મોકલવામાં આવે.</translation>
@@ -2991,6 +2993,7 @@
 <translation id="5611398002774823980">એકાઉન્ટમાં સાચવો</translation>
 <translation id="561165882404867731">Google Translate વડે આ પેજનો અનુવાદ કરો</translation>
 <translation id="5612720917913232150"><ph name="URL" /> તમારા કમ્પ્યુટરનાં સ્થાનનો ઉપયોગ કરવા માગે છે</translation>
+<translation id="5613958591683399697"><ph name="ENGINE_NAME" />ને પૂછો</translation>
 <translation id="5614190747811328134">વપરાશકર્તા સૂચના</translation>
 <translation id="5614520971155863709">પત્તાંની રમતો</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> એ તમને ઘણીબધી વખત રીડાયરેક્ટ કર્યું.</translation>

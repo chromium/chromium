@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Világos és könnyed téma</translation>
 <translation id="243179355394256322">Szervezete csak a jogosult felhasználók számára engedélyezi az eszközregisztrációt. Ez a felhasználó nem jogosult eszközök regisztrációjára. A felhasználónak az „Enroll Google Meet hardware” (Google Meet-hardver regisztrációja) adminisztrátori jogosultsággal kell rendelkeznie a Felügyeleti Konzol Felhasználók szakaszában.</translation>
 <translation id="2439152382014731627">A(z) <ph name="DEVICE_TYPE" /> jelszavának visszaállítása</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />A telepítéssel a <ph name="BEGIN_BOLD" />merevlemez teljes tartalma törlődik<ph name="END_BOLD" />. Gondoskodjon adatainak biztonsági mentéséről.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Miután kezdetét vette a telepítés, már nem lehet megszakítani.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Nem tud majd hozzáadni felhasználókat, mert hiányoznak a Google API-kulcsok. Részletekért lásd: <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Adat-helyreállítási szolgáltatás engedélyezése.</translation>
 <translation id="2485681265915754872">A Google Play Általános Szerződési Feltételei</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">A Chromebookok alkalmazásokat használnak hagyományos szoftverek helyett. Válogasson a produktivitást segítő, szórakoztató és egyéb alkalmazások között.</translation>
 <translation id="450867954911715010">Kisegítő beállítások</translation>
 <translation id="4519605771716872386">Fájlszinkronizálás bekapcsolva</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />A problémamegoldáshoz próbálkozzon a következő lépésekkel:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Győződjön meg arról, hogy eszközének van működőképes belső tárhelye (pl. HDD, SSD vagy eMMC).
+    <ph name="LIST_ITEM" />Ellenőrizze, hogy az eszköz belső tárhelyének mérete nagyobb-e 16 GB-nál.
+    <ph name="LIST_ITEM" />Ha fizikailag hozzáférhető, ellenőrizze a belső tárhellyel fennálló összeköttetést.
+    <ph name="LIST_ITEM" />Győződjön meg arról, hogy tanúsítvánnyal rendelkező modellt használ, és tekintse át a telepítésre vonatkozó megjegyzéseket.
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Ha további segítségre van szüksége, látogasson el a következő oldalra: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Kit szeretne hozzáadni ehhez az eszközhöz (<ph name="DEVICE_TYPE" />)?</translation>
 <translation id="4566170377336116390">Ha váltani szeretne a regisztrálás után, vissza kell állítania a gyári beállításokat (Powerwash) az eszközén.</translation>
 <translation id="4567512141633030272">Másik bejelentkezési lehetőséget szeretne használni?</translation>
@@ -572,6 +583,8 @@ működését. Ha úgy véli, hogy nem kellene proxyszervert használnia,
 <translation id="7189451821249468368">Ön nem rendelkezik elegendő bővítéssel az eszköz regisztrálásához. Kérjük, vegye fel a kapcsolatot az értékesítéssel továbbiak vásárlásához. Ha úgy gondolja, ezt az üzenetet tévesen kapta meg, forduljon az ügyfélszolgálathoz.</translation>
 <translation id="7202337678781136582">Olvassa be a QR-kódot androidos telefonjával</translation>
 <translation id="7228854227189381547">Nincs váltás</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />A legjobb élmény érdekében telepítse a következő rendszert: <ph name="DEVICE_OS" />. Később is telepítheti a bejelentkezési képernyőről.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ha még nem áll készen a telepítésre, USB-ről futtatva is kipróbálhatja. Így megmaradnak a jelenlegi adatai és operációs rendszere, de korlátozott lehet a rendelkezésre álló tárhely és teljesítmény.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">A módosítások a beállítás után lépnek életbe</translation>
 <translation id="7260186537988033909">A kioszk vagy tájékoztatóeszköz regisztrációja kész</translation>
 <translation id="7284411326658527427">Bárki személyre szabhatja a saját fiókját, és gondoskodhat adatainak biztonságáról.</translation>
@@ -589,6 +602,8 @@ működését. Ha úgy véli, hogy nem kellene proxyszervert használnia,
 <translation id="7416263748877373774">Nem sikerült betölteni az Általános Szerződési Feltételeket. Ellenőrizze a hálózati kapcsolatot, és próbálkozzon újra.</translation>
 <translation id="7475742997309661417">A ChromeOS képernyőolvasóját, a ChromeVoxot elsősorban vakok és gyengénlátók használják a képernyőn megjelenő szövegek olvasására beszédszintetizátorral vagy Braille-kijelzővel. Tartsa lenyomva öt másodpercig mindkét hangerőszabályzó gombot a ChromeVox bekapcsolásához. A ChromeVox aktiválásakor egy rövid bemutatót láthat.</translation>
 <translation id="7476454130948140105">Az akkumulátor töltöttségi szintje túl alacsony a frissítéshez (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Hiba történt, és nem sikerült telepíteni a(z) <ph name="DEVICE_OS" /> rendszert.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />További segítségért keresse fel a g.co/flex/InstallErrors webhelyet.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />A regisztráció előtt ki kell ürítenie a TPM-et, hogy a <ph name="DEVICE_OS" /> tulajdonba vehesse az eszközt.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Arra is lehetősége van, hogy teljesen kikapcsolja a TPM-eszközt. Adatait biztonságosan, szoftveres titkosítással tárolja a rendszer, de bizonyos biztonsági funkciók (például a hardveresen támogatott tanúsítványok) letiltásra kerülnek.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />TPM-beállításait a rendszert újraindítva, majd a BIOS-/UEFI-beállításokba belépve módosíthatja. A lépések eszközmodellenként eltérők lehetnek. További információért az újraindítás előtt nyissa meg egy másik eszközön a <ph name="DEVICE_OS" /> dokumentációját: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

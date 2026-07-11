@@ -285,6 +285,7 @@
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Pasek menu inteligentnego sortowania</translation>
 <translation id="1883255238294161206">Zwiń listę</translation>
+<translation id="1883898928879467646">Karta została usunięta</translation>
 <translation id="1888854257756214946">Wybierz hasło…</translation>
 <translation id="1890237935065108104">To ustawienie jest niedostępne.</translation>
 <translation id="1894023287452300670">Tutaj możesz monitorować cenę</translation>
@@ -1619,6 +1620,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6406506848690869874">Synchronizacja</translation>
 <translation id="6410390304316730527">Bezpieczne przeglądanie chroni Cię przed osobami przeprowadzającymi ataki, które mogą podstępem nakłonić Cię do wykonania niebezpiecznych czynności, takich jak zainstalowanie oprogramowania czy ujawnienie danych osobowych (na przykład haseł, numerów telefonów lub danych kart kredytowych). Gdy wyłączasz tę funkcję, zachowaj ostrożność, przeglądając nieznane lub cieszące się złą sławą strony.</translation>
 <translation id="6410883413783534063">Otwórz karty, by odwiedzić jednocześnie wiele stron</translation>
+<translation id="6412195388778525440">Usuń kartę</translation>
 <translation id="6418346271604475326">Przygotowuję PDF</translation>
 <translation id="6420292512900923139">Podczas importowania danych wystąpił problem</translation>
 <translation id="6421038304268477484">Przetłumaczony tekst</translation>
@@ -1741,7 +1743,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6761393919622941301">Dźwięk</translation>
 <translation id="6765551480308401897">Nie ustawiaj jako domyślnego</translation>
 <translation id="6770452996697898492">[ZAREZERWOWANO]</translation>
-<translation id="6775952316617222141">Korzystanie z trybu Live w Gemini w Chrome</translation>
+<translation id="6775952316617222141">Przejdź do trybu Live w Gemini w Chrome</translation>
 <translation id="6779455296366983087">Dane przeglądania zostaną usunięte</translation>
 <translation id="6782531425936234573">Eksportuj dane</translation>
 <translation id="6791425686608802741">Kliknij „Dodaj kartę do nowej grupy”</translation>

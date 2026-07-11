@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Nie udało się załadować strony z informacjami: „<ph name="ABOUT_PAGE" />”.</translation>
 <translation id="424963718355121712">Aplikacje muszą być udostępniane z hosta, którego dotyczą</translation>
 <translation id="4306119971288449206">Aplikacje muszą być udostępniane z parametrem content-type „<ph name="CONTENT_TYPE" />”</translation>
+<translation id="4349181963619779233">Nie można dodawać rozszerzeń ani aplikacji z tej witryny</translation>
 <translation id="4625078469366263107">Włącz aplikację</translation>
 <translation id="4633003931260532286">Rozszerzenie wymaga: „<ph name="IMPORT_NAME" />” przynajmniej w wersji „<ph name="IMPORT_VERSION" />”, ale zainstalowana jest tylko wersja „<ph name="INSTALLED_VERSION" />”</translation>
 <translation id="4660476621274971848">To jest wersja „<ph name="NEW_ID" />”, a oczekiwano wersji „<ph name="EXPECTED_VERSION" />”</translation>

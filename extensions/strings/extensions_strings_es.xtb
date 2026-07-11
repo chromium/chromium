@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">No se ha podido cargar la página de información (<ph name="ABOUT_PAGE" />).</translation>
 <translation id="424963718355121712">Las aplicaciones deben proceder del host al que afecten</translation>
 <translation id="4306119971288449206">Las aplicaciones deben incluir el encabezado content-type "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4349181963619779233">No se pueden añadir extensiones ni aplicaciones desde este sitio web</translation>
 <translation id="4625078469366263107">Habilitar aplicación</translation>
 <translation id="4633003931260532286">La extensión necesita "<ph name="IMPORT_NAME" />" con la versión "<ph name="IMPORT_VERSION" />" como mínimo, pero solo está instalada la versión "<ph name="INSTALLED_VERSION" />".</translation>
 <translation id="4660476621274971848">Se esperaba la versión "<ph name="EXPECTED_VERSION" />", pero se ha detectado la versión "<ph name="NEW_ID" />"</translation>

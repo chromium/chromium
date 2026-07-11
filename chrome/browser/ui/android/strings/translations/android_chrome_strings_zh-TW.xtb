@@ -189,6 +189,7 @@
 <translation id="1807709131360304325">開啟新視窗</translation>
 <translation id="1812027881030482584">無法在「<ph name="SITE_ETLD_PLUS_ONE" />」上繼續使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />，正在錄製媒體的分頁</translation>
+<translation id="1819443852740954262">在無痕視窗中開啟所有網址</translation>
 <translation id="1820408774134375111">登入底部功能表</translation>
 <translation id="1823492026305965829">以「<ph name="USER_FULL_NAME" />」身分登入</translation>
 <translation id="1824902652744048041">輕觸「刪除瀏覽資料」</translation>
@@ -771,7 +772,6 @@
 <translation id="4256782883801055595">開放原始碼授權</translation>
 <translation id="426652736638196239">這個 IBAN 只會儲存在這部裝置上</translation>
 <translation id="4269820728363426813">複製連結網址</translation>
-<translation id="4270730597186910506">追蹤或取消追蹤商品。</translation>
 <translation id="4277529130885813215">改用其他裝置</translation>
 <translation id="427987768447457592">新分頁群組</translation>
 <translation id="4282440837784183472">貴機構 (<ph name="MANAGED_DOMAIN" />) 會管理你登入的帳戶和 Chrome 的使用方式。管理員可以設定或限制特定功能。</translation>
@@ -1476,6 +1476,7 @@
 <translation id="6983306615164277634">你也可以按住網址列來變更位置。</translation>
 <translation id="6987047470128880212">這部裝置不支援無痕模式</translation>
 <translation id="6996145122199359148">下載這個網頁</translation>
+<translation id="7007648447224463482">在新視窗中開啟所有書籤</translation>
 <translation id="7013762323294215682">這個密碼金鑰會儲存至密碼管理工具。凡是有權存取密碼管理工具的使用者，都能使用這個密碼金鑰。</translation>
 <translation id="7020741890149022655">新增到閱讀清單 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">在瀏覽器中開啟</translation>
@@ -1842,6 +1843,7 @@
 <translation id="8445448999790540984">無法匯出密碼</translation>
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{已移除 1 個網站的權限}other{已移除 # 個網站的權限}}</translation>
+<translation id="8449836157089738489">在新分頁群組中開啟所有網址</translation>
 <translation id="8453310803815879010">啟動恐龍遊戲</translation>
 <translation id="8455675988389029454">在任何裝置上存取書籤、密碼及其他設定</translation>
 <translation id="8458341576712814616">搜尋捷徑</translation>
@@ -1863,6 +1865,7 @@
 <translation id="8506357771923193001">這裡會顯示你的下載內容</translation>
 <translation id="8512053371384421952">你不會再收到「<ph name="DOMAIN" />」的通知。</translation>
 <translation id="8516012719330875537">圖片編輯器</translation>
+<translation id="8517759303731677493">編輯…</translation>
 <translation id="8533670235862049797">已啟用安全瀏覽功能</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />，多選且已固定的子母畫面分頁</translation>
 <translation id="8540136935098276800">請輸入正確格式的網址</translation>

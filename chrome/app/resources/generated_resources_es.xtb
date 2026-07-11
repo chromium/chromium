@@ -1895,7 +1895,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2476901513051581836">No se puede liberar espacio de almacenamiento hasta que se conozca el tamaño del almacenamiento sin conexión.</translation>
 <translation id="2477065602824695373">Como has configurado varios interruptores, se ha desactivado la búsqueda automática.</translation>
 <translation id="2478176599153288112">Permisos de archivos multimedia para "<ph name="EXTENSION" />"</translation>
-<translation id="2479148705183875116">Ve a Ajustes</translation>
+<translation id="2479148705183875116">Ir a Ajustes</translation>
 <translation id="2479541499757560845">Ajustes de accesibilidad del teclado</translation>
 <translation id="2480868415629598489">Modificar los datos que se copian y se pegan</translation>
 <translation id="2480881140544300950">El buscador actual gestiona tu página Nueva pestaña</translation>
@@ -4991,6 +4991,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4849286518551984791">Tiempo universal coordinado (UTC/GMT)</translation>
 <translation id="4849517651082200438">No instalar</translation>
 <translation id="4849731766219625109">Usar tu cuenta de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="4850279708232718725">Dame información sobre esto</translation>
 <translation id="485053257961878904">No se ha podido configurar la sincronización de notificaciones</translation>
 <translation id="4850548109381269495">En ambos dispositivos, comprueba tu conexión a Internet y activa el Bluetooth. Después, inténtalo de nuevo.</translation>
 <translation id="4850669014075537160">Desplazamiento</translation>
@@ -6338,6 +6339,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5922854266885514646">Haz clic en Personalizar Chrome</translation>
 <translation id="5924047253200400718">Obtener ayuda<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Preguntar antes de copiar o mover archivos de Microsoft a Google Drive</translation>
+<translation id="5925057331573749968">Inicia sesión más rápido con un código QR</translation>
 <translation id="5926936390113611560">Abrir todos los perfiles</translation>
 <translation id="592880897588170157">Descargar archivos PDF en lugar de abrirlos automáticamente en Chrome</translation>
 <translation id="5930567261594625340">Cielo nocturno</translation>
@@ -9486,6 +9488,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8372678064309688510">Se ha guardado tu dirección</translation>
 <translation id="8373652277231415614">Directorios compartidos de Crostini</translation>
 <translation id="8374243500935816406">No permitir que los sitios gestionen las ventanas en ninguna de tus pantallas</translation>
+<translation id="8375703478696038265">Paso <ph name="STEP_NUMBER" /> de <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Envíanos tus comentarios sobre Google Cast</translation>
 <translation id="8376384591331888629">Incluir cookies de terceros en este sitio</translation>
 <translation id="8376451933628734023">Si esta aplicación web intenta hacerte creer que es otra aplicación, desinstálala.</translation>
@@ -10557,6 +10560,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9188142767272053574">Habilitar aislamiento de procesos</translation>
 <translation id="9192019773545828776">Escucha mensajes de voz para poder usar el dispositivo sin mirar la pantalla. Se pueden recibir mensajes en braille con un dispositivo conectado. Pulsa Ctrl + Alt + Z para activar o desactivar ChromeVox. Usa la tecla de búsqueda + flecha hacia la izquierda o hacia la derecha para desplazarte. Pulsa la tecla de búsqueda y la barra espaciadora para seleccionar (activar).</translation>
 <translation id="9195969368671142407">Si tu organización limita lo que puedes guardar en tu cuenta de Google, no podrás compartir ni unirte a grupos de pestañas</translation>
+<translation id="9197456336762295195">Escanea este código QR con la cámara del dispositivo que tenga tu llave de acceso de google.com</translation>
 <translation id="919840898042157087">Movimiento estático</translation>
 <translation id="9199503643457729322">Haz clic para salir de la guía de privacidad.</translation>
 <translation id="9199695835892108985">¿Restablecer todos los permisos del puerto serie?</translation>

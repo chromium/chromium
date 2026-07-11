@@ -350,6 +350,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1542105669288201090">Bedriftsutdanning</translation>
 <translation id="1542830386724426410">Vis tilgjengelige kortfordeler og -belønninger i kassen. Utstederens vilkår gjelder. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Finn ut mer<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Prishistorikk</translation>
+<translation id="1546286808622193216">Bruk Gemini til å sammenligne kortfordeler</translation>
 <translation id="1549470594296187301">Denne funksjonen kan ikke brukes når JavaScript er slått av.</translation>
 <translation id="1553152622374372421">Vintersport</translation>
 <translation id="1553358976309200471">Oppdater Chrome</translation>
@@ -2416,6 +2417,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4744603770635761495">Kjørbar sti</translation>
 <translation id="4744816391336495134">Du kan bruke fingeravtrykket til å bekrefte at det er deg, når du bruker lagrede passord</translation>
 <translation id="4749011317274908093">Nå er du inkognito</translation>
+<translation id="4749620353539006322">Maksimer fordelene</translation>
 <translation id="4749924365937394956">Autentisering av tjener</translation>
 <translation id="4750671009706599284">denne telefonen</translation>
 <translation id="4750917950439032686">Informasjonen din (for eksempel passord eller kredittkortnumre) er privat når den sendes til dette nettstedet.</translation>
@@ -2991,6 +2993,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5611398002774823980">Lagre i kontoen</translation>
 <translation id="561165882404867731">Oversett denne siden med Google Oversetter</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ber om å bruke posisjonen til enheten din</translation>
+<translation id="5613958591683399697">Spør <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Brukerinformasjon</translation>
 <translation id="5614520971155863709">Kortspill</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> viderekoblet deg for mange ganger.</translation>

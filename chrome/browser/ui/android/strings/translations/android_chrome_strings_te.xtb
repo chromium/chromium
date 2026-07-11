@@ -189,6 +189,7 @@
 <translation id="1807709131360304325">కొత్త విండోను తెరవండి</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ని ఉపయోగించి కొనసాగించడం సాధ్యం కాదు</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, రికార్డింగ్ ట్యాబ్</translation>
+<translation id="1819443852740954262">అన్నింటినీ అజ్ఞాత విండోలో తెరవండి</translation>
 <translation id="1820408774134375111">సైన్ ఇన్ చేయదగిన దిగువున ఉన్న షీట్</translation>
 <translation id="1823492026305965829"><ph name="USER_FULL_NAME" />‌గా సైన్ ఇన్ చేయండి</translation>
 <translation id="1824902652744048041">'బ్రౌజింగ్ డేటాను తొలగించండి' ఆప్షన్‌ను ట్యాప్ చేయండి</translation>
@@ -771,7 +772,6 @@
 <translation id="4256782883801055595">ఓపెన్ సోర్స్ లైసెన్స్‌లు</translation>
 <translation id="426652736638196239">ఈ IBAN ఈ పరికరంలో మాత్రమే సేవ్ అవుతుంది</translation>
 <translation id="4269820728363426813">లింక్ అడ్రస్‌ను కాపీ చేయండి</translation>
-<translation id="4270730597186910506">ప్రోడక్ట్‌ను ట్రాక్ లేదా అన్‌ట్రాక్ చేసే వీలు కల్పిస్తుంది.</translation>
 <translation id="4277529130885813215">మరొక డివైజ్‌ను ఉపయోగించండి</translation>
 <translation id="427987768447457592">కొత్త ట్యాబ్ గ్రూప్</translation>
 <translation id="4282440837784183472">మీరు సైన్ ఇన్ చేస్తున్న ఖాతాను, Chromeను ఎలా ఉపయోగించవచ్చో మీ సంస్థ, <ph name="MANAGED_DOMAIN" /> మేనేజ్ చేస్తుంది. మీ అడ్మినిస్ట్రేటర్ నిర్దిష్ట ఫీచర్‌లను సెటప్ చేయవచ్చు లేదా పరిమితం చేయవచ్చు.</translation>
@@ -1474,6 +1474,7 @@
 <translation id="6983306615164277634">అడ్రస్ బార్ స్థానాన్ని మార్చడానికి దాన్ని నొక్కి, పట్టుకోవచ్చు.</translation>
 <translation id="6987047470128880212">ఈ పరికరంలో అజ్ఞాత మోడ్ అందుబాటులో లేదు</translation>
 <translation id="6996145122199359148">ఈ పేజీని డౌన్‌లోడ్ చేయండి</translation>
+<translation id="7007648447224463482">అన్నీ కొత్త విండోలో తెరవండి</translation>
 <translation id="7013762323294215682">ఈ పాస్-కీ మీ password managerకు సేవ్ చేయబడుతుంది. దీనికి యాక్సెస్ ఉన్న ఎవరైనా ఈ పాస్-కీని ఉపయోగించగలరు.</translation>
 <translation id="7020741890149022655"><ph name="BEGIN_NEW" />న్యూ<ph name="END_NEW" /> రీడింగ్ లిస్టుకు చేర్చండి</translation>
 <translation id="7022756207310403729">బ్రౌజర్‌లో తెరువు</translation>
@@ -1840,6 +1841,7 @@
 <translation id="8445448999790540984">పాస్‌వర్డ్‌లను ఎగుమతి చేయడం సాధ్యం కాదు</translation>
 <translation id="8446884382197647889">మరింత తెలుసుకోండి</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{1 సైట్ నుండి అనుమతులు తీసివేయబడ్డాయి}other{# సైట్‌ల నుండి అనుమతులు తీసివేయబడ్డాయి}}</translation>
+<translation id="8449836157089738489">అన్నింటినీ కొత్త ట్యాబ్ గ్రూప్‌లో తెరవండి</translation>
 <translation id="8453310803815879010">డైనో గేమ్‌ను ప్రారంభించండి</translation>
 <translation id="8455675988389029454">మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, అలాగే మరిన్నింటిని మీ పరికరాలన్నింటిలో పొందండి</translation>
 <translation id="8458341576712814616">షార్ట్‌కట్</translation>
@@ -1861,6 +1863,7 @@
 <translation id="8506357771923193001">మీ డౌన్‌లోడ్‌లను ఇక్కడ కనుగొనవచ్చు</translation>
 <translation id="8512053371384421952">మీరు ఇకపై <ph name="DOMAIN" /> నుండి నోటిఫికేషన్‌లను అందుకోలేరు.</translation>
 <translation id="8516012719330875537">చిత్ర ఎడిటర్</translation>
+<translation id="8517759303731677493">ఎడిట్ చేయండి…</translation>
 <translation id="8533670235862049797">సురక్షిత బ్రౌజింగ్ ఆన్‌లో ఉంది</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, మల్టీసెలెక్ట్ అయిన పిన్ చేసిన పిక్చర్-ఇన్-పిక్చర్ ట్యాబ్</translation>
 <translation id="8540136935098276800">సరిగ్గా ఫార్మాట్ చేసిన URLను ఎంటర్ చేయండి</translation>

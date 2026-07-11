@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Hafa allt bjart og fínt</translation>
 <translation id="243179355394256322">Fyrirtækið takmarkar skráningu tækja við notendur með heimild. Þessi notandi hefur ekki heimild til að skrá tæki. Gakktu úr skugga um að notandinn sé með heimild til að „Skrá Google Meet vélbúnað“ á notandasvæði stjórnborðs stjórnanda.</translation>
 <translation id="2439152382014731627">Endurstilla <ph name="DEVICE_TYPE" /> aðgangsorð</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Við uppsetninguna <ph name="BEGIN_BOLD" />verður öllu eytt af harða diskinum<ph name="END_BOLD" />. Gakktu úr skugga um að taka afrit af gögnunum.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ekki er hægt að hætta við uppsetninguna eftir að hún hefst.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Þú getur ekki bætt inn notendum vegna þess að það vantar Google forritaskil. Sjá frekari upplýsingar á <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Kveikja á þjónustu fyrir endurheimt gagna.</translation>
 <translation id="2485681265915754872">Þjónustuskilmálar Google Play</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebook notar forrit í stað hefðbundins hugbúnaðar. Fáðu forrit til að auka afköst, þér til skemmtunar og fleira.</translation>
 <translation id="450867954911715010">Aðgengisstillingar</translation>
 <translation id="4519605771716872386">Kveikt á samstillingu skráa</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Reyndu að leysa vandann á eftirfarandi máta:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Gakktu úr skugga um að tækið innihaldi virka, innbyggða geymslu eins og HDD, SSD eða eMMC
+    <ph name="LIST_ITEM" />Gakktu úr skugga um að innbyggða geymslan rúmi meira en 16 GB
+    <ph name="LIST_ITEM" />Athugaðu tenginguna við innri geymsluna, ef hún er aðgengileg
+    <ph name="LIST_ITEM" />Gakktu úr skugga um að vottuð útgáfa sé notuð og skoðaðu leiðbeiningar um uppsetningu
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Frekari aðstoð er að finna á: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Hverjum viltu bæta við þetta <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Ef þú vilt skipta eftir skráningu þarftu að núllstilla (djúphreinsa) tækið þitt.</translation>
 <translation id="4567512141633030272">Rangur innskráningarkostur?</translation>
@@ -571,6 +582,8 @@
 <translation id="7189451821249468368">Þú ert ekki með tilskildar uppfærslur til að skrá þetta tæki. Hafðu samband við söludeild til að kaupa uppfærslur. Ef þú telur að þessi villuboð ættu ekki að birtast þér skaltu hafa samband við þjónustudeild.</translation>
 <translation id="7202337678781136582">Skannaðu QR-kóðann með Android-símanum</translation>
 <translation id="7228854227189381547">Ekki breyta</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Settu upp <ph name="DEVICE_OS" /> á innra drifinu til að upplifunin verði sem best. Þú getur einnig sett forritið upp síðar á innskráningarskjánum.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Prófaðu að keyra forritið af USB ef þú vilt ekki setja það upp á drifinu. Þannig er hægt að halda núverandi stýrikerfi og gögnum en hugsanlega finnur þú fyrir takmörkunum á geymslurými og afkastagetu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Breytingar taka gildi eftir uppsetningu</translation>
 <translation id="7260186537988033909">Skráningu tækis í sjálfsala- og merkingastillingu lokið</translation>
 <translation id="7284411326658527427">Hver einstaklingur getur sérsniðið reikninginn sinn og tryggt öryggi gagna.</translation>
@@ -588,6 +601,8 @@
 <translation id="7416263748877373774">Ekki er hægt að hlaða þjónustuskilmálum. Athugaðu nettenginguna og reyndu aftur.</translation>
 <translation id="7475742997309661417">Skjálesarinn í ChromeOS, ChromeVox, er aðallega notaður af fólki sem er blint eða með lélega sjón til að lesa texta sem birtur er á skjánum með talgervli eða blindraletri. Haltu báðum hljóðstyrkstökkunum inni í fimm sekúndur til að kveikja á ChromeVox. Þegar kveikt hefur verið á ChromeVox er þér boðið upp á stutta kynningu.</translation>
 <translation id="7476454130948140105">Of lítil hleðsla á rafhlöðu til að uppfæra (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Eitthvað fór úrskeiðis og ekki tókst að setja upp <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Frekari aðstoð má finna á: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Áður en þú skráir þig þarftu að hreinsa TPM til að <ph name="DEVICE_OS" /> geti orðið eigandi tækisins.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Þú getur einnig slökkt alveg á TPM-tækinu. Gögnin þín verða áfram geymd með öruggum hætti með hugbúnaðardulkóðun en tilteknir öryggiseiginleikar verða óvirkir, t.d. vottorð sem byggjast á vélbúnaði.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Þú getur breytt TPM-stillingum með því að endurræsa og opna kerfisstillingarnar í BIOS/UEFI. Skrefin eru breytileg og fara eftir gerð tækisins. Þú getur fengið frekari upplýsingar í fylgiskjölum <ph name="DEVICE_OS" /> í öðru tæki áður en þú endurræsir: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

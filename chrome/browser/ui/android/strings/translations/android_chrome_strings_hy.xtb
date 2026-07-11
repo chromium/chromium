@@ -189,6 +189,7 @@
 <translation id="1807709131360304325">Բացել նոր պատուհան</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> կայքը չի կարող շարունակել<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ի օգտագործումը</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, ներդիր, որում տեսագրում է արվում</translation>
+<translation id="1819443852740954262">Բացել բոլորն ինկոգնիտո պատուհանում</translation>
 <translation id="1820408774134375111">Հաշիվ մտնելու ներքևի էկրան</translation>
 <translation id="1823492026305965829">Մուտք գործել որպես <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">Հպեք «Ջնջել այցելությունների պատմությունը»</translation>
@@ -771,7 +772,6 @@
 <translation id="4256782883801055595">Բաց կոդով ծրագրերի լիցենզիաներ</translation>
 <translation id="426652736638196239">IBAN-ը կպահվի միայն այս սարքում</translation>
 <translation id="4269820728363426813">Պատճենել հղման հասցեն</translation>
-<translation id="4270730597186910506">Հետագծել ապրանքը կամ չեղարկել դրա հետագծումը։</translation>
 <translation id="4277529130885813215">Օգտագործել այլ սարք</translation>
 <translation id="427987768447457592">Ներդիրների նոր խումբ</translation>
 <translation id="4282440837784183472">Ձեր կազմակերպությունը (<ph name="MANAGED_DOMAIN" />) կառավարում է հաշիվը, որը մուտք եք գործում, և այն, թե ինչպես կարող է Chrome-ն օգտագործվել։ Ձեր ադմինիստրատորը կարող է կարգավորել և սահմանափակել որոշակի գործառույթներ։</translation>
@@ -1476,6 +1476,7 @@
 <translation id="6983306615164277634">Կարող եք նաև հպել հասցեագոտուն և պահել՝ դիրքը փոխելու համար։</translation>
 <translation id="6987047470128880212">Ինկոգնիտո ռեժիմը հասանելի չէ այս սարքում</translation>
 <translation id="6996145122199359148">Ներբեռնել այս էջը</translation>
+<translation id="7007648447224463482">Բացել բոլորը նոր պատուհանում</translation>
 <translation id="7013762323294215682">Այս մուտքի բանալին կպահվի ձեր գաղտնաբառի կառավարիչում։ Բոլորը, ովքեր թույլտվություն ունեն, կկարողանան օգտագործել այն։</translation>
 <translation id="7020741890149022655">Ավելացնել ընթերցանության ցանկում <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Բացել դիտարկիչով</translation>
@@ -1842,6 +1843,7 @@
 <translation id="8445448999790540984">Չհաջողվեց արտահանել գաղտնաբառերը</translation>
 <translation id="8446884382197647889">Մանրամասն</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Թույլտվությունները հեռացվել են 1 կայքից}one{Թույլտվությունները հեռացվել են # կայքից}other{Թույլտվությունները հեռացվել են # կայքից}}</translation>
+<translation id="8449836157089738489">Բացել բոլորը նոր ներդիրների խմբում</translation>
 <translation id="8453310803815879010">Սկսել Dino խաղը</translation>
 <translation id="8455675988389029454">Օգտագործեք ձեր էջանիշները, գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում</translation>
 <translation id="8458341576712814616">Դյուրանցում</translation>
@@ -1863,6 +1865,7 @@
 <translation id="8506357771923193001">Ձեր ներբեռնումները կտեսնեք այստեղ</translation>
 <translation id="8512053371384421952">Դուք այլևս չեք ստանա ծանուցումներ <ph name="DOMAIN" /> կայքից։</translation>
 <translation id="8516012719330875537">Պատկերների խմբագրիչ</translation>
+<translation id="8517759303731677493">Փոփոխել…</translation>
 <translation id="8533670235862049797">Ապահով դիտարկումը միացված է</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, ընտրված մի քանի ներդիրներից մեկը, որն ամրացված է, և որում նկարը նկարի մեջ է</translation>
 <translation id="8540136935098276800">Մուտքագրեք ճիշտ ձևաչափի URL</translation>

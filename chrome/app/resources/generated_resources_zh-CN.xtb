@@ -4988,6 +4988,7 @@
 <translation id="4849286518551984791">协调世界时 (UTC/GMT)</translation>
 <translation id="4849517651082200438">不安装</translation>
 <translation id="4849731766219625109">使用您的 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 账号</translation>
+<translation id="4850279708232718725">请说明</translation>
 <translation id="485053257961878904">无法设置通知同步</translation>
 <translation id="4850548109381269495">在这两台设备上，检查您的互联网连接并开启蓝牙。然后，再试一次。</translation>
 <translation id="4850669014075537160">滚动</translation>
@@ -6333,6 +6334,7 @@
 <translation id="5922854266885514646">点击“自定义 Chrome”</translation>
 <translation id="5924047253200400718">获取帮助<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">将 Microsoft 文件复制到或移到 Google 云端硬盘前询问我</translation>
+<translation id="5925057331573749968">使用二维码更快登录</translation>
 <translation id="5926936390113611560">打开所有资料</translation>
 <translation id="592880897588170157">下载 PDF 文件，而不是在 Chrome 中自动打开它们</translation>
 <translation id="5930567261594625340">夜空</translation>
@@ -9480,6 +9482,7 @@
 <translation id="8372678064309688510">您的地址已保存</translation>
 <translation id="8373652277231415614">Crostini 共享目录</translation>
 <translation id="8374243500935816406">不允许网站管理您的所有显示屏上的窗口</translation>
+<translation id="8375703478696038265">第 <ph name="STEP_NUMBER" /> 步（共 <ph name="TOTAL_STEPS" /> 步）</translation>
 <translation id="8376137163494131156">请将 Google Cast 发生的情况告诉我们。</translation>
 <translation id="8376384591331888629">包括此网站上的第三方 Cookie</translation>
 <translation id="8376451933628734023">如果此 Web 应用试图诱骗您认为它是另一款应用，请卸载它。</translation>
@@ -10551,6 +10554,7 @@
 <translation id="9188142767272053574">启用进程隔离</translation>
 <translation id="9192019773545828776">收听语音反馈，让您无需看屏幕即可使用设备。通过已连接的设备可以获得盲文反馈。使用 Ctrl + Alt + Z 可开启和关闭 ChromeVox。使用搜索键 + 向左键或向右键可进行导航。使用搜索键 + 空格键即可选择（启用）。</translation>
 <translation id="9195969368671142407">如果您所在的组织限制您将内容保存到 Google 账号，您将无法分享或加入标签页分组</translation>
+<translation id="9197456336762295195">请使用存有 google.com 通行密钥的设备的摄像头扫描此二维码</translation>
 <translation id="919840898042157087">固定焦点移动</translation>
 <translation id="9199503643457729322">点击即可退出“隐私保护指南”。</translation>
 <translation id="9199695835892108985">重置所有串行端口权限？</translation>

@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Neka sve bude svetlo i prozračno</translation>
 <translation id="243179355394256322">Organizacija ograničava registraciju uređaja samo na ovlašćene korisnike. Ovaj korisnik nije ovlašćen za registrovanje uređaja. Proverite da li korisnik ima administratorsku privilegiju Registracija Google Meet hardvera u odeljku Korisnici na administratorskoj konzoli.</translation>
 <translation id="2439152382014731627">Resetujte lozinku za <ph name="DEVICE_TYPE" /></translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Instalacija <ph name="BEGIN_BOLD" />će obrisati ceo hard-disk<ph name="END_BOLD" />. Proverite da li ste napravili rezervne kopije podataka.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Kada instalacija počne, ne može da se otkaže.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Nećete moći da dodajete korisnike zato što nedostaju šifre za Google API. Potražite detalje na <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Omogućite uslugu vraćanja podataka.</translation>
 <translation id="2485681265915754872">Uslovi korišćenja usluge Google Play</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebook koristi aplikacije umesto tradicionalnog softvera. Nabavite aplikacije za produktivnost, zabavu i drugo.</translation>
 <translation id="450867954911715010">Podešavanja pristupačnosti</translation>
 <translation id="4519605771716872386">Sinhronizacija fajlova je uključena</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Isprobajte ove korake za rešavanje problema:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Uverite se da uređaj ima ispravnu internu memoriju, kao što je HDD, SSD ili eMMC
+        <ph name="LIST_ITEM" />Uverite se da je interna memorija uređaja veća od 16 GB
+        <ph name="LIST_ITEM" />Proverite vezu sa internom memorijom ako je fizički dostupna
+        <ph name="LIST_ITEM" />Uverite se da koristite sertifikovan model i pregledajte napomene o instalaciji
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Dodatnu pomoć potražite na: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Koga želite da dodate u ovaj <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Ako želite da promenite posle registracije, morate da resetujete uređaj na fabrička podešavanja (powerwash).</translation>
 <translation id="4567512141633030272">Pogrešna opcija za prijavljivanje?</translation>
@@ -572,6 +583,8 @@
 <translation id="7189451821249468368">Nemate dovoljno nadogradnji da biste registrovali ovaj uređaj. Obratite se sektoru prodaje da biste kupili još licenci. Ako smatrate da se ova poruka prikazuje greškom, obratite se podršci.</translation>
 <translation id="7202337678781136582">Skenirajte QR kôd Android telefonom</translation>
 <translation id="7228854227189381547">Ne prebacuj</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Za najbolji doživljaj instalirajte sistem <ph name="DEVICE_OS" /> na interni disk. Možete i da ga instalirate kasnije sa ekrana za prijavljivanje.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ako niste spremni za instalaciju, možete da ga pokrenete sa USB-a da biste ga isprobali. Time ćete zadržati postojeći operativni sistem i podatke, ali možda ćete primetiti ograničenja u pogledu memorijskog prostora i performansi.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Promene će se primeniti posle podešavanja</translation>
 <translation id="7260186537988033909">Registracija kioska i uređaja za prijavljivanje je dovršena</translation>
 <translation id="7284411326658527427">Svaka osoba može da personalizuje nalog i čuva privatnost podataka.</translation>
@@ -589,6 +602,8 @@
 <translation id="7416263748877373774">Nije uspelo učitavanje Uslova korišćenja usluge. Proverite mrežnu vezu i probajte ponovo.</translation>
 <translation id="7475742997309661417">ChromeVox, čitač ekrana u ChromeOS-u, prvenstveno koriste slepe ili slabovide osobe za čitanje teksta prikazanog na ekranu pomoću sintetizatora govora ili Brajevog ekrana. Pritisnite i zadržite oba tastera za jačinu zvuka pet sekundi da biste uključili ChromeVox. Kada se ChromeVox aktivira, krenućete u kratak obilazak.</translation>
 <translation id="7476454130948140105">Nivo napunjenosti baterije je prenizak za ažuriranje (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Došlo je do greške i instalacija sistema <ph name="DEVICE_OS" /> nije uspela.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Dodatnu pomoć potražite na: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Pre nego što se registrujete, treba da obrišete TPM da bi <ph name="DEVICE_OS" /> mogao da preuzme vlasništvo nad uređajem.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Možete i u potpunosti da isključite TPM uređaj. Vaši podaci će se i dalje bezbedno čuvati pomoću softverskog šifrovanja, ali određene bezbednosne funkcije, poput hardverskih sertifikata, biće onemogućene.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Podešavanja TPM-a možete da promenite restartovanjem i unosom BIOS/UEFI podešavanja. Koraci se razlikuju u zavisnosti od modela uređaja. Da biste pronašli više informacija, otvorite dokumentaciju za <ph name="DEVICE_OS" /> na posebnom uređaju pre restartovanja: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

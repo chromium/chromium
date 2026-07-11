@@ -189,6 +189,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1807709131360304325">Abrir uma nova janela</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> não pode continuar usando o <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, guia com gravação</translation>
+<translation id="1819443852740954262">Abrir todos em uma janela anônima</translation>
 <translation id="1820408774134375111">Página inferior de login</translation>
 <translation id="1823492026305965829">Fazer login como <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">Toque em Excluir Dados de Navegação.</translation>
@@ -771,7 +772,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4256782883801055595">Licenças de código aberto</translation>
 <translation id="426652736638196239">O IBAN vai ser salvo apenas neste dispositivo</translation>
 <translation id="4269820728363426813">Copiar endereço do link</translation>
-<translation id="4270730597186910506">Monitorar ou parar de monitorar um produto.</translation>
 <translation id="4277529130885813215">Usar outro dispositivo</translation>
 <translation id="427987768447457592">Novo grupo de guias</translation>
 <translation id="4282440837784183472">Sua organização, <ph name="MANAGED_DOMAIN" />, gerencia a conta em que você faz login e a forma como o Chrome pode ser usado. Seu admin pode configurar ou restringir determinados recursos.</translation>
@@ -1477,6 +1477,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6983306615164277634">Você também pode manter a barra endereço pressionada para mudar a posição dela.</translation>
 <translation id="6987047470128880212">A navegação anônima não está disponível neste dispositivo</translation>
 <translation id="6996145122199359148">Fazer o download desta página</translation>
+<translation id="7007648447224463482">Abrir todos em uma nova janela</translation>
 <translation id="7013762323294215682">Esta chave de acesso será salva no seu gerenciador de senhas. Qualquer pessoa com acesso a ela poderá usá-la.</translation>
 <translation id="7020741890149022655">Adicionar à lista de leitura <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Abrir no navegador</translation>
@@ -1843,6 +1844,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8445448999790540984">Não é possível exportar senhas</translation>
 <translation id="8446884382197647889">Saiba mais</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Permissões removidas de 1 site}one{Permissões removidas de # site}other{Permissões removidas de # sites}}</translation>
+<translation id="8449836157089738489">Abrir tudo em um novo grupo de guias</translation>
 <translation id="8453310803815879010">Iniciar jogo do dinossauro</translation>
 <translation id="8455675988389029454">Acesse seus favoritos, senhas e mais em todos os dispositivos</translation>
 <translation id="8458341576712814616">Atalho</translation>
@@ -1864,6 +1866,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8506357771923193001">Seus downloads serão salvos aqui</translation>
 <translation id="8512053371384421952">Você não vai mais receber notificações de <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Editor de imagem</translation>
+<translation id="8517759303731677493">Editar…</translation>
 <translation id="8533670235862049797">A Navegação Segura está ativada</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, guia picture-in-picture fixada com várias seleções</translation>
 <translation id="8540136935098276800">Insira um URL formatado corretamente</translation>

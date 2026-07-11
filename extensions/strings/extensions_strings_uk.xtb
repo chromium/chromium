@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Не вдалося завантажити сторінку з інформацією про "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">Додатки мають встановлюватися з хосту, на якому вони працюють</translation>
 <translation id="4306119971288449206">Додатки мають наповнюватися вмістом типу "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4349181963619779233">Із цього вебсайту не можна встановлювати розширення й додатки</translation>
 <translation id="4625078469366263107">Увімкнути додаток</translation>
 <translation id="4633003931260532286"><ph name="IMPORT_NAME" /> з мінімальною версією <ph name="IMPORT_VERSION" /> – це обов’язковий компонент для роботи розширення, але встановлено версію <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4660476621274971848">Очікувалася версія <ph name="EXPECTED_VERSION" />, але отримано <ph name="NEW_ID" /></translation>

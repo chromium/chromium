@@ -189,6 +189,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="1807709131360304325">Жаңы терезе ачуу</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аркылуу уланта албайт</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" /> өтмөгүндө медиа жаздырылууда</translation>
+<translation id="1819443852740954262">Баарын жашыруун терезеде ачуу</translation>
 <translation id="1820408774134375111">Кирүү процессинин ылдыйкы экраны</translation>
 <translation id="1823492026305965829"><ph name="USER_FULL_NAME" /> катары кирүү</translation>
 <translation id="1824902652744048041">Серептөө дайындарын өчүрүү баскычын басыңыз</translation>
@@ -771,7 +772,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="4256782883801055595">Ачык программа уруксаттамалары</translation>
 <translation id="426652736638196239">Бул IBAN ушул түзмөккө гана сакталат</translation>
 <translation id="4269820728363426813">Шилтеме дарегин көчүрүү</translation>
-<translation id="4270730597186910506">Товарга көз салуу же көз салбоо.</translation>
 <translation id="4277529130885813215">Башка түзмөктү колдонуу</translation>
 <translation id="427987768447457592">Жаңы өтмөктөр тобу</translation>
 <translation id="4282440837784183472">Кирип жаткан аккаунтуңузду жана Chrome'дун колдонулушун уюмуңуз (<ph name="MANAGED_DOMAIN" />) тескейт. Администратор айрым функцияларды тууралап же чектеп коюшу мүмкүн.</translation>
@@ -1476,6 +1476,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6983306615164277634">Ордун өзгөртүү үчүн дарек тилкесин коё бербей басып турсаңыз болот.</translation>
 <translation id="6987047470128880212">Бул түзмөктө жашыруун өтмөк жок</translation>
 <translation id="6996145122199359148">Бул баракты жүктөп алуу</translation>
+<translation id="7007648447224463482">Баарын жаңы терезеде ачуу</translation>
 <translation id="7013762323294215682">Бул киргизүүчү ачкыч сырсөздөрдү башкаргычка сакталат. Ага кире алгандардын баары бул киргизүүчү ачкычты колдоно алышат.</translation>
 <translation id="7020741890149022655">Окуу тизмесине кошуу <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Серепчиден ачуу</translation>
@@ -1842,6 +1843,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8445448999790540984">Сырсөздөр экспорттолбой жатат</translation>
 <translation id="8446884382197647889">Көбүрөөк билүү</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{1 сайттан уруксаттар өчүрүлдү}other{# сайттан уруксаттар өчүрүлдү}}</translation>
+<translation id="8449836157089738489">Баарын жаңы өтмөктөр тобунда ачуу</translation>
 <translation id="8453310803815879010">Динозавр оюнун ойноп баштоо</translation>
 <translation id="8455675988389029454">Бардык түзмөктөрүңүздө кыстармаларды, сырсөздөрдү жана башка нерселерди алыңыз</translation>
 <translation id="8458341576712814616">Ыкчам баскыч</translation>
@@ -1863,6 +1865,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8506357771923193001">Жүктөлүп алынган файлдар ушул жерде болот</translation>
 <translation id="8512053371384421952">Эми <ph name="DOMAIN" /> доменинен билдирмелерди албайсыз.</translation>
 <translation id="8516012719330875537">Сүрөттү түзөткүч</translation>
+<translation id="8517759303731677493">Түзөтүү…</translation>
 <translation id="8533670235862049797">Коопсуз серептөө күйүк</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, Көп жолу тандалган кадалган сүрөттөгү сүрөт өтмөгү</translation>
 <translation id="8540136935098276800">Туура форматталган URL дарегин киргизиңиз</translation>

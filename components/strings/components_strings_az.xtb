@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">Biznes təhsili</translation>
 <translation id="1542830386724426410">Ödəmə zamanı əlçatan kart üstünlüklərini və mükafatlarını göstərin. Emitent şərtləri tətbiq olunur. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Ətraflı məlumat<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Qiymət tarixçəsi</translation>
+<translation id="1546286808622193216">Gemini-dan istifadə edərək kartın üstünlüklərini müqayisə edin</translation>
 <translation id="1549470594296187301">JavaScript bu funksiyanı istifadə etmək üçün aktiv olmalıdır.</translation>
 <translation id="1553152622374372421">Qış idmanları</translation>
 <translation id="1553358976309200471">Chrome'u güncəlləşdirin</translation>
@@ -1423,6 +1424,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında sinxronlaşdırdığınız məlumatları idarə etmək üçün Tab, sonra Enter düyməsinə basın</translation>
 <translation id="3203025201812691413">URL boş ola bilməz</translation>
 <translation id="320323717674993345">Ödənişi ləğv edin</translation>
+<translation id="3204534477198689393">Təklifləri təkmilləşdirmək və formaları daha tez doldurmaq üçün daxil olduğunuz səhifələrin kontenti və URL-ləri buludda şəxsi sahədə emal edilə bilər.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> saytında böyüklər üçün kontent ola bilər</translation>
 <translation id="3207960819495026254">Əlfəcinlənib</translation>
 <translation id="3208701679386778924">Gələcək ChromeOS güncəllənmələrini təkmilləşdirməyimiz üçün hesabat göndərin.</translation>
@@ -1478,6 +1480,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3272643614306383237">1 MB-dən az. Növbəti dəfə daxil olarkən bəzi saytlar yavaş yüklənə bilər.</translation>
 <translation id="3273738040255912340">Administrator profil və brauzerinizə uzaqdan dəyişikliklər edə, hesabat vasitəsilə brauzer haqqında məlumatları təhlil edə və digər zəruri tapşırıqları yerinə yetirə bilər. Bu cihazdakı fəaliyyət Chromium-dan kənarda da idarə edilə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">Tam hündürlükdə açılan IBAN-ı yadda saxlayın.</translation>
+<translation id="327455571215090823">Daha ağıllı avtodoldurma, məxfi saxlanılır</translation>
 <translation id="3281350579597955952">{0,plural, =1{Administrator siyasəti bu faylı burada açmağı tövsiyə etmir: <ph name="DESTINATION_NAME" />}other{Administrator siyasəti bu faylları burada açmağı tövsiyə etmir: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Təşkilatınız <ph name="ENROLLMENT_DOMAIN" /> aşağıdakı veb saytlara ayarlar və ya siyasətlər kimi bəzi məlumatlar göndərib.</translation>
 <translation id="3286372614333682499">portret</translation>
@@ -2412,6 +2415,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4744603770635761495">İcra olunan yol</translation>
 <translation id="4744816391336495134">Yadda saxlanmış paroldan istifadə etdiyiniz zaman kimliyinizi doğrulamaq üçün barmaq izindən istifadə edə bilərsiniz</translation>
 <translation id="4749011317274908093">Anonim rejimə keçdiniz</translation>
+<translation id="4749620353539006322">Mükafatları maksimuma çatdırın</translation>
 <translation id="4749924365937394956">Serverin doğrulanması</translation>
 <translation id="4750671009706599284">bu telefon</translation>
 <translation id="4750917950439032686">Bu saytda göndərildiyi zaman məlumatınız (məsələn, parol və ya kredit kartı nömrəsi) gizli saxlanır.</translation>
@@ -2987,6 +2991,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5611398002774823980">Hesabda yadda saxlayın</translation>
 <translation id="561165882404867731">Bu səhifəni Google Tərcümə ilə tərcümə edin</translation>
 <translation id="5612720917913232150"><ph name="URL" /> kompüterinizin məkanından istifadə etmək istəyir</translation>
+<translation id="5613958591683399697"><ph name="ENGINE_NAME" /> ilə soruşun</translation>
 <translation id="5614190747811328134">İstifadəçi bildirişi</translation>
 <translation id="5614520971155863709">Kart Oyunları</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> bir çox dəfə sizə istiqamətləndirilib.</translation>

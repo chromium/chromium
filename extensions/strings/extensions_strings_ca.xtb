@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">No s'ha pogut carregar la pàgina d'informació "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">Les aplicacions s'han de distribuir des de l'amfitrió que afecten</translation>
 <translation id="4306119971288449206">Les aplicacions s'han de distribuir amb el tipus de contingut "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4349181963619779233">No es poden afegir extensions ni aplicacions des d'aquest lloc web</translation>
 <translation id="4625078469366263107">Activa l'aplicació</translation>
 <translation id="4633003931260532286">L'extensió requereix <ph name="IMPORT_NAME" /> amb <ph name="IMPORT_VERSION" /> com a versió mínima, però només hi ha instal·lada la versió <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4660476621274971848">La versió esperada era <ph name="EXPECTED_VERSION" />, però la que hi havia era <ph name="NEW_ID" /></translation>

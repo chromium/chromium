@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Hold det lett og luftig</translation>
 <translation id="243179355394256322">Organisasjonen din begrenser registrering av enheter til kun autoriserte brukere. Denne brukeren er ikke autorisert til å registrere enheter. Sørg for at brukeren har administratorrettigheten «Registrer Google Meet-enheter» i Brukere-delen av administrasjonskonsollen.</translation>
 <translation id="2439152382014731627">Tilbakestill <ph name="DEVICE_TYPE" />-passordet</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Installasjonen <ph name="BEGIN_BOLD" />sletter alt på hele harddisken<ph name="END_BOLD" />. Sørg for at dataene dine er sikkerhetskopiert.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Når installasjonen er startet, kan den ikke avbrytes.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Du kan ikke legge til brukere fordi Google API-nøkler mangler. Se <ph name="DETAILS_URL" /> for nærmere informasjon.</translation>
 <translation id="24786041351753425">Slå på tjenesten for datagjenoppretting.</translation>
 <translation id="2485681265915754872">Vilkår for bruk av Google Play</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebook bruker apper i stedet for tradisjonell programvare. Skaff deg apper for produktivitet, underholdning med mer.</translation>
 <translation id="450867954911715010">Innstillinger for tilgjengelighet</translation>
 <translation id="4519605771716872386">Filsynkronisering er slått på</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Prøv denne fremgangsmåten for feilsøking:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Sjekk at enheten har fungerende intern lagringsplass, for eksempel HDD, SSD eller eMMC
+        <ph name="LIST_ITEM" />Sjekk at den interne lagringsplassen er større enn 16 GB
+        <ph name="LIST_ITEM" />Sjekk tilkoblingen til den interne lagringsplassen hvis du har fysisk tilgang til den
+        <ph name="LIST_ITEM" />Sjekk at du bruker en sertifisert modell, og les installasjonsmerknadene
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Du finner mer hjelp på g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Hvem vil du legge til på denne <ph name="DEVICE_TYPE" />-enheten?</translation>
 <translation id="4566170377336116390">Hvis du vil endre dette etter registreringen, må du tilbakestille enheten til fabrikkstandard (utføre en powerwash).</translation>
 <translation id="4567512141633030272">Feil påloggingsalternativ?</translation>
@@ -572,6 +583,8 @@
 <translation id="7189451821249468368">Du har ikke tilstrekkelige oppgraderinger for å registrere denne enheten. Ta kontakt med salgsavdelingen for å kjøpe flere. Hvis du tror dette er en feil, kan du ta kontakt med brukerstøtten.</translation>
 <translation id="7202337678781136582">Skann QR-koden med Android-telefonen</translation>
 <translation id="7228854227189381547">Ikke bytt</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />For å få den beste opplevelsen bør du installere <ph name="DEVICE_OS" /> på den interne disken. Du kan også installere det senere via påloggingsskjermbildet.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Hvis du ikke er klar til å installere, kan du kjøre det fra USB for å prøve det. Da beholder du operativsystemet og dataene du har nå, men det kan hende du opplever lagrings- og ytelsesbegrensninger.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Endringene tas i bruk etter konfigureringen</translation>
 <translation id="7260186537988033909">Registreringen som kiosk- og skiltenhet er fullført</translation>
 <translation id="7284411326658527427">Hver person kan gi kontoen sin et personlig preg og holde dataene sine private.</translation>
@@ -589,6 +602,8 @@
 <translation id="7416263748877373774">Vilkårene for bruk kan ikke lastes inn. Kontroller nettverkstilkoblingen, og prøv på nytt.</translation>
 <translation id="7475742997309661417">Skjermleseren på ChromeOS, ChromeVox, brukes hovedsakelig av blinde eller svaksynte for å lese tekst som vises på skjermen, via talesyntetisering eller en leselist. Trykk og hold på begge volumtastene i fem sekunder for å slå på ChromeVox. Når ChromeVox er aktivert, får du en rask innføring.</translation>
 <translation id="7476454130948140105">Det er for lite batteri igjen til å starte oppdateringen (<ph name="BATTERY_PERCENT" /> %)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Noe gikk galt, og <ph name="DEVICE_OS" /> kunne ikke installeres.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />For å få mer hjelp, se g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Før du registrerer deg, må du tømme TPM-enheten, slik at <ph name="DEVICE_OS" /> kan overta enheten.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Du kan også slå TPM-enheten helt av. Dataene dine blir fremdeles lagret trygt med programvarekryptering, men visse sikkerhetsfunksjoner, som maskinvarebaserte sertifikater, blir deaktivert.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Du kan endre TPM-innstillingene ved å starte systemet på nytt og gå inn i BIOS-/UEFI-innstillingene. Fremgangsmåten for dette avhenger av hvilken enhetsmodell du har. For mer informasjon, åpne <ph name="DEVICE_OS" />-dokumentasjonen på en annen enhet før du starter systemet på nytt: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

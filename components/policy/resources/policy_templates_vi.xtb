@@ -2702,6 +2702,7 @@ Nếu bạn đặt chính sách này thành 2 – "Đã tắt", thì bạn sẽ 
 <translation id="2707733461906745082">Phân tách hồ sơ</translation>
 <translation id="2707873794476722903">Tính năng Duyệt web an toàn đang hoạt động ở chế độ chuẩn.</translation>
 <translation id="2709516037105925701">Tự động điền</translation>
+<translation id="2712089199157322391">Cho phép sử dụng Công cụ cho nhà phát triển khi duyệt web thông thường, nhưng hạn chế việc sử dụng này đối với các tiện ích do doanh nghiệp cài đặt và các tiện ích tích hợp sẵn dành cho người dùng được quản lý (công cụ sẽ bị chặn trên những trang nhúng các tiện ích này kể từ phiên bản M150, ngoại trừ trình xem PDF tích hợp sẵn).</translation>
 <translation id="2713913573196284609">Kể từ M121, giá trị này sẽ không được dùng nữa. Kể từ M121 trở đi, các giá trị sẽ được coi là EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Luôn gửi các chỉ số cho Google</translation>
 <translation id="2714359695399346815">Việc đặt thành Bật hoặc không đặt chính sách này sẽ cho phép việc sử dụng các máy chủ STUN. Qua đó, máy khách từ xa có thể phát hiện và kết nối với máy này, ngay cả khi bị phân cách bằng tường lửa.
@@ -12682,27 +12683,6 @@ Vui lòng truy cập https://support.google.com/chrome/a/answer/9301891 để bi
 <translation id="8931555638815157255">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì thiết bị đã đăng ký sẽ định kỳ báo cáo phiên bản hệ điều hành và chương trình cơ sở của thiết bị đó.
 
       Nếu bạn đặt chính sách này thành Tắt, thiết bị đã đăng ký sẽ không báo cáo thông tin phiên bản.</translation>
-<translation id="8931984670731745012">Khi đặt chính sách này, bạn có thể chỉ định những loại dữ liệu Tự động điền nào sẽ bị chặn trên các mẫu URL cụ thể.
-
-Chính sách này được cấu trúc dưới dạng một danh sách các từ điển. Mỗi từ điển phải chứa:
-* "url_pattern": Mẫu URL của chế độ cài đặt nội dung (ví dụ: "https://[*.]example.com").
-* "blocked_types": Danh sách các chuỗi đại diện cho danh mục dữ liệu Tự động điền cần chặn.
-
-Các giá trị được hỗ trợ cho "blocked_types" là:
-* "contact_info": Chặn việc điền và lưu thông tin liên hệ.
-* "payments": Chặn việc điền và lưu thẻ tín dụng cũng như phương thức thanh toán.
-* "identity_docs": Chặn việc điền và lưu giấy tờ tuỳ thân (ví dụ: hộ chiếu, giấy phép lái xe, thẻ căn cước).
-* "travel": Chặn việc điền và lưu thông tin về việc đi lại (ví dụ: đặt vé máy bay, đăng ký xe).
-* "shopping": Chặn việc điền và lưu thông tin mua sắm (ví dụ: đơn đặt hàng trực tuyến, lô hàng).
-
-Nếu một loại dữ liệu bị chặn trên một trang web, thì cả tính năng tạo đề xuất và lời nhắc lưu/nhập dữ liệu mới thuộc loại đó đều bị tắt trên trang web đó.
-
-Nếu một URL khớp với nhiều mục mẫu trong danh sách, thì các loại dữ liệu bị chặn từ tất cả các mục trùng khớp sẽ được kết hợp (hợp nhất theo phép hợp). Các mẫu URL không hợp lệ trong danh sách sẽ bị bỏ qua.
-
-Nếu bạn không đặt chính sách này, thì không có loại dữ liệu Tự động điền nào bị chặn theo miền.
-
-Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập:
-https://chromeenterprise.google/policies/url-patterns. Hệ thống hỗ trợ ký tự đại diện *, mẫu này khớp với mọi URL, có giao thức, cổng và đường dẫn bất kỳ.</translation>
 <translation id="8934296213794658971">Chế độ cài đặt cho tính năng tích hợp Gemini</translation>
 <translation id="8937282917198525844"> Kể từ phiên bản M81, các thành phần điều khiển biểu mẫu tiêu chuẩn (ví dụ: &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) đều có giao diện mới, với khả năng tiếp cận tốt hơn và nền tảng đồng nhất hơn. Chính sách này khôi phục các thành phần điều khiển biểu mẫu "cũ" cho đến phiên bản M84.
 

@@ -5002,6 +5002,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4849286518551984791">Koordinált világidő (UTC/GMT)</translation>
 <translation id="4849517651082200438">Ne telepítse</translation>
 <translation id="4849731766219625109"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-fiók használata</translation>
+<translation id="4850279708232718725">Információkat kérek erről</translation>
 <translation id="485053257961878904">Nem sikerült beállítani az értesítések szinkronizálását</translation>
 <translation id="4850548109381269495">Ellenőrizze mindkét eszközön az internetkapcsolatot, és kapcsolja be a Bluetooth-t. Ezután próbálja újra.</translation>
 <translation id="4850669014075537160">Görgetés</translation>
@@ -6351,6 +6352,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5922854266885514646">Kattintson „A Chrome személyre szabása” lehetőségre</translation>
 <translation id="5924047253200400718">Kérjen segítséget <ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Kérjen engedélyt a Microsoft-fájlok Google Drive-ra való másolása vagy áthelyezése előtt</translation>
+<translation id="5925057331573749968">Gyorsabb bejelentkezés QR-kóddal</translation>
 <translation id="5926936390113611560">Az összes profil megnyitása</translation>
 <translation id="592880897588170157">PDF-fájlok letöltése ahelyett, hogy automatikusan megnyitná őket a Chrome</translation>
 <translation id="5930567261594625340">Éjszakai égbolt</translation>
@@ -9498,6 +9500,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8372678064309688510">Sikerült a cím mentése</translation>
 <translation id="8373652277231415614">Megosztott Crostini-könyvtárak</translation>
 <translation id="8374243500935816406">A webhelyek nem kezelhetnek ablakokat az összes képernyőn</translation>
+<translation id="8375703478696038265"><ph name="TOTAL_STEPS" />/<ph name="STEP_NUMBER" />. lépés</translation>
 <translation id="8376137163494131156">Mondja el, mi történik a Google Casttal.</translation>
 <translation id="8376384591331888629">Az ezen a webhelyen található, harmadik felektől származó cookie-k is</translation>
 <translation id="8376451933628734023">Ha ez az internetes alkalmazás azt próbálja elhitetni Önnel, hogy egy másik alkalmazás, akkor távolítsa el.</translation>
@@ -10569,6 +10572,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="9188142767272053574">Folyamatelszigetelés engedélyezése</translation>
 <translation id="9192019773545828776">Hangos visszajelzést kaphat, így anélkül használhatja eszközét, hogy a képernyőre kellene néznie. A Braille-visszajelzés csatlakoztatott eszközökön áll rendelkezésre. Használja a Ctrl + Alt + Z billentyűparancsot a ChromeVox be- vagy kikapcsolásához. A navigáláshoz használja a Keresés + balra vagy jobbra nyíl kombinációt. A kiválasztáshoz (aktiváláshoz) használja a Keresés + Szóköz billentyűparancsot.</translation>
 <translation id="9195969368671142407">Ha a szervezete korlátozza a Google-fiókba történő mentést, akkor nem oszthat meg lapcsoportokat, valamint nem csatlakozhat hozzájuk</translation>
+<translation id="9197456336762295195">Olvassa be ezt a QR-kódot annak az eszköznek a kamerájával, amely az Ön google.com-hoz tartozó azonosítókulcsával rendelkezik.</translation>
 <translation id="919840898042157087">Statikus mozgás</translation>
 <translation id="9199503643457729322">Kattintson, ha el kívánja hagyni az Adatvédelmi útmutatót.</translation>
 <translation id="9199695835892108985">Visszaállítja az összes soros portot érintő engedélyt?</translation>

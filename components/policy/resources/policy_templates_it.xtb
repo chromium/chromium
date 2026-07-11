@@ -2734,6 +2734,7 @@ Se la policy viene impostata su 2 - "Disattivata", l'integrazione del Google Dev
 <translation id="2707733461906745082">Separazione profilo</translation>
 <translation id="2707873794476722903">Navigazione sicura è attiva in modalità standard.</translation>
 <translation id="2709516037105925701">Compilazione automatica</translation>
+<translation id="2712089199157322391">Consenti l'utilizzo degli Strumenti per sviluppatori per la navigazione web standard, ma limitalo per le estensioni installate a livello aziendale e per le estensioni integrate per gli utenti gestiti (l'utilizzo è bloccato sulle pagine che incorporano queste estensioni a partire dalla versione M150, ad eccezione del visualizzatore PDF integrato).</translation>
 <translation id="2713913573196284609">Questo valore è obsoleto a partire dalla versione M121. Nella versione M121 e successive, i valori verranno trattati come EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Invia sempre le metriche a Google</translation>
 <translation id="2714359695399346815">Se la policy viene impostata su Attivata o se non viene configurata, viene consentito l'utilizzo di server STUN, permettendo ai client remoti di rilevare e collegarsi a questo computer anche se sono separati da un firewall.
@@ -12678,27 +12679,6 @@ Per maggiori dettagli, vai su https://support.google.com/chrome/a/answer/9301891
 <translation id="8931555638815157255">Se la policy viene impostata su Attivata o se non viene configurata, i dispositivi registrati segnalano periodicamente la versione dei relativi sistemi operativi e firmware.
 
       Se la policy viene impostata su Disattivata, i dispositivi registrati non segnalano le informazioni sulla versione.</translation>
-<translation id="8931984670731745012">Configurando questa policy, puoi specificare quali tipi di dati della compilazione automatica bloccare per determinati pattern URL.
-
-La policy è strutturata come un elenco di dizionari. Ogni dizionario deve contenere:
-* "url_pattern": un pattern URL delle impostazioni dei contenuti (ad es. "https://[*.]example.com").
-* "blocked_types": un elenco di stringhe che rappresentano le categorie di dati della compilazione automatica da bloccare.
-
-I valori supportati per "blocked_types" sono:
-* "contact_info": impedisce la compilazione e il salvataggio dei dati di contatto.
-* "payments": impedisce la compilazione e il salvataggio di carte di credito e metodi di pagamento.
-* "identity_docs": impedisce la compilazione e il salvataggio di documenti di identità (ad es. passaporto, patente di guida, documento di identità nazionale).
-* "travel": impedisce la compilazione e il salvataggio di informazioni di viaggio (ad es. prenotazioni di voli, immatricolazioni di veicoli).
-* "shopping": impedisce la compilazione e il salvataggio di informazioni sugli acquisti (ad es. ordini online, spedizioni).
-
-Se un tipo di dati è bloccato per un sito, su quel sito vengono disattivate sia la generazione di suggerimenti sia il prompt di salvataggio o importazione di nuovi dati di quel tipo.
-
-Se un URL corrisponde a più voci di pattern nell'elenco, i tipi bloccati di tutte le voci corrispondenti vengono combinati (unione tramite merge). I pattern URL non validi nell'elenco verranno ignorati.
-
-Se questa policy non viene configurata, nessun tipo di dati della compilazione automatica verrà bloccato per dominio.
-
-Per informazioni dettagliate sui pattern URL validi, consulta la pagina:
-https://chromeenterprise.google/policies/url-patterns. È supportato il carattere jolly *, questo pattern corrisponde a qualsiasi URL, con qualsiasi schema, porta e percorso.</translation>
 <translation id="8934296213794658971">Impostazioni per l'integrazione di Gemini</translation>
 <translation id="8937282917198525844"> A partire dalla versione M81, abbiamo rinnovato aspetto e design degli elementi di controllo modulo standard (ad esempio, &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;), con una superiore accessibilità e una migliore uniformità della piattaforma. Questa policy ripristina i precedenti controlli modulo "legacy" fino alla versione M84.
 

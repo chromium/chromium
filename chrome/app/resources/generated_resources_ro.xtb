@@ -4990,6 +4990,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4849286518551984791">Timpul universal coordonat (UTC/GMT)</translation>
 <translation id="4849517651082200438">Nu instala</translation>
 <translation id="4849731766219625109">Folosește-ți contul <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="4850279708232718725">Spune-mi despre asta</translation>
 <translation id="485053257961878904">Sincronizarea notificărilor nu a putut fi configurată</translation>
 <translation id="4850548109381269495">Pe ambele dispozitive, verifică conexiunea la internet și activează Bluetooth. Apoi, încearcă din nou.</translation>
 <translation id="4850669014075537160">Derulare</translation>
@@ -6337,6 +6338,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5922854266885514646">Dă clic pe Personalizează Chrome</translation>
 <translation id="5924047253200400718">Obține ajutor <ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Întreabă înainte de a copia sau a muta fișiere Microsoft în Google Drive</translation>
+<translation id="5925057331573749968">Conectează-te mai rapid cu un cod QR</translation>
 <translation id="5926936390113611560">Deschide toate profilurile</translation>
 <translation id="592880897588170157">Descarcă fișierele PDF în loc să le deschizi automat în Chrome</translation>
 <translation id="5930567261594625340">Cer nocturn</translation>
@@ -9487,6 +9489,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8372678064309688510">Adresa ta este salvată</translation>
 <translation id="8373652277231415614">Directoare comune în Crostini</translation>
 <translation id="8374243500935816406">Nu permite site-urilor să gestioneze ferestre de pe toate ecranele</translation>
+<translation id="8375703478696038265">Pasul <ph name="STEP_NUMBER" /> din <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Spune-ne ce se întâmplă cu Google Cast.</translation>
 <translation id="8376384591331888629">Inclusiv cookie-urile terță parte de pe acest site</translation>
 <translation id="8376451933628734023">Dacă aplicația web încearcă să te facă să crezi că este o altă aplicație, dezinstaleaz-o.</translation>
@@ -10558,6 +10561,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9188142767272053574">Activează Izolarea proceselor</translation>
 <translation id="9192019773545828776">Auzi feedback rostit, ca să poți folosi dispozitivul fără să te uiți la ecran. Feedbackul Braille este disponibil pe un dispozitiv conectat. Folosește Ctrl + Alt + Z ca să activezi și să dezactivezi ChromeVox. Folosește tasta de căutare + săgeată spre stânga sau săgeată spre dreapta pentru a naviga. Folosește tasta de căutare + bara de spațiu pentru a selecta (activa).</translation>
 <translation id="9195969368671142407">Când organizația limitează salvarea în Contul Google, nu poți să permiți accesul sau să te alături grupurilor de file</translation>
+<translation id="9197456336762295195">Scanează codul QR cu camera foto a dispozitivului care are cheia de acces pentru google.com</translation>
 <translation id="919840898042157087">Mișcare statică</translation>
 <translation id="9199503643457729322">Dă clic pentru a închide Ghidul privind confidențialitatea.</translation>
 <translation id="9199695835892108985">Resetezi toate permisiunile pentru portul serial?</translation>

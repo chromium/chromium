@@ -2687,6 +2687,7 @@ Si la règle est définie sur 2 (désactivée), l'intégration du Google Develo
 <translation id="2707733461906745082">Séparation du profil</translation>
 <translation id="2707873794476722903">La navigation sécurisée est active et en mode de protection standard.</translation>
 <translation id="2709516037105925701">Saisie automatique</translation>
+<translation id="2712089199157322391">Autoriser les Outils pour les développeurs pour la navigation Web standard, mais les limiter pour les extensions installées par l'entreprise et celles intégrées pour les utilisateurs gérés (blocage sur les pages intégrant ces extensions depuis M150, sauf pour la visionneuse PDF intégrée).</translation>
 <translation id="2713913573196284609">Cette valeur a été abandonnée dans la version M121. Dans M121 et les versions ultérieures, les valeurs seront traitées comme EnabledUnderThreshold.</translation>
 <translation id="2713977837384407666">Toujours envoyer des métriques à Google</translation>
 <translation id="2714359695399346815">Si cette règle est activée ou qu'elle n'est pas configurée, elle permet d'utiliser des serveurs STUN. Les clients distants peuvent ainsi détecter cet ordinateur et s'y connecter même s'ils sont séparés par un pare-feu.
@@ -12466,27 +12467,6 @@ Pour en savoir plus, consultez https://support.google.com/chrome/a/answer/930189
 <translation id="8931555638815157255">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent régulièrement la version de leur système d'exploitation et celle du micrologiciel.
 
       Si cette règle est désactivée, les appareils enregistrés ne communiquent pas d'informations sur les versions.</translation>
-<translation id="8931984670731745012">Cette règle vous permet de spécifier les types de données utilisés par la saisie automatique qui sont bloqués sur des formats d'URL spécifiques.
-
-La règle prend la forme d'une liste de dictionnaires. Chaque dictionnaire doit contenir :
-* "url_pattern" : format d'URL de paramètre de contenu (par exemple, "https://[*.]example.com").
-* "blocked_types" : liste de chaînes représentant les catégories de données utilisées par la saisie automatique à bloquer.
-
-Les valeurs acceptées pour "blocked_types" sont les suivantes :
-* "contact_info" : bloque la saisie et l'enregistrement des coordonnées.
-* "paiements" : bloque la saisie et l'enregistrement des cartes de crédit et des modes de paiement.
-* "identity_docs" : bloque la saisie et l'enregistrement des pièces d'identité (par exemple, passeport, permis de conduire, pièce d'identité nationale).
-* "travel" : bloque la saisie et l'enregistrement des informations de voyage (par exemple, réservation de vol, numéro d'immatriculation de véhicule).
-* "shopping" : bloque la saisie et l'enregistrement des informations d'achat (par exemple, commandes en ligne et livraisons).
-
-Si un type de données est bloqué pour un site, la génération de suggestions et l'invite d'enregistrement/d'importation de nouvelles données de ce type sont désactivées sur ce site.
-
-Si une URL correspond à plusieurs entrées de format dans la liste, les types bloqués de toutes les entrées correspondantes sont combinés (fusion par union). Les formats d'URL non valides de la liste sont ignorés.
-
-Si cette règle n'est pas configurée, aucun type de données utilisé par la saisie automatique n'est bloqué par domaine.
-
-Pour en savoir plus sur les formats d'URL valides, veuillez consulter :
-https://chromeenterprise.google/policies/url-patterns. Le caractère générique * est pris en charge. Ce format correspond à n'importe quelle URL, avec n'importe quel schéma, port ou chemin.</translation>
 <translation id="8934296213794658971">Paramètres pour l'intégration de Gemini</translation>
 <translation id="8937282917198525844"> À partir de la version M81, les éléments de contrôle de formulaire (par exemple, &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) ont été actualisés pour améliorer leur accessibilité et l'uniformité de la plate-forme. Cette règle restaure les anciens éléments de contrôle de formulaire (jusqu'à la version M84).
 

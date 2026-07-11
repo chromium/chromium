@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">A(z) „<ph name="ABOUT_PAGE" />” névjegyoldal betöltése sikertelen volt.</translation>
 <translation id="424963718355121712">Az alkalmazásokat az általuk érintett gazdagépről kell kiszolgálni</translation>
 <translation id="4306119971288449206">Az alkalmazásokat „<ph name="CONTENT_TYPE" />” tartalomtípussal kell ellátni</translation>
+<translation id="4349181963619779233">Erről a webhelyről nem lehet bővítményeket és alkalmazásokat hozzáadni</translation>
 <translation id="4625078469366263107">Alkalmazás engedélyezése</translation>
 <translation id="4633003931260532286">A bővítmény a(z) „<ph name="IMPORT_NAME" />” legalább „<ph name="IMPORT_VERSION" />” verzióját igényli, ám csak a(z) „<ph name="INSTALLED_VERSION" />” verzió van telepítve</translation>
 <translation id="4660476621274971848">A várt verzió „<ph name="EXPECTED_VERSION" />”, de a kapott verzió „<ph name="NEW_ID" />”</translation>

@@ -189,6 +189,7 @@
 <translation id="1807709131360304325">አዲስ መስኮት ክፈት</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> መጠቀም መቀጠል አይችልም</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />፣ እየቀዳ ያለ ትር</translation>
+<translation id="1819443852740954262">ሁሉንም ማንነት በማያሳውቅ መስኮት ውስጥ ክፈት</translation>
 <translation id="1820408774134375111">የመግቢያ የግርጌ ሉህ</translation>
 <translation id="1823492026305965829">እንደ <ph name="USER_FULL_NAME" /> ሆነው ይግቡ</translation>
 <translation id="1824902652744048041">የአሰሳ ውሂብን ሰርዝ ላይ መታ ያድርጉ</translation>
@@ -771,7 +772,6 @@
 <translation id="4256782883801055595">የክፍት ምንጭ ፍቃዶች</translation>
 <translation id="426652736638196239">ይህ አይ ቢ ኤ ኤን በዚህ መሣሪያ ላይ ብቻ ይቀመጣል</translation>
 <translation id="4269820728363426813">የአገናኝ አድራሻ ቅዳ</translation>
-<translation id="4270730597186910506">አንድ ምርትን ይከታተሉ ወይም አይከታተሉ።</translation>
 <translation id="4277529130885813215">ሌላ መሣሪያ ተጠቀም</translation>
 <translation id="427987768447457592">አዲስ የትር ቡድን</translation>
 <translation id="4282440837784183472">ድርጅትዎ <ph name="MANAGED_DOMAIN" /> የሚገቡበትን መለያ እና Chrome እንዴት ጥቅም ላይ እንደሚውል ያስተዳድራል። አስተዳዳሪዎ የተወሰኑ ባህሪያትን ማቀናበር ወይም መገደብ ይችላል።</translation>
@@ -1476,6 +1476,7 @@
 <translation id="6983306615164277634">እንዲሁም ቦታውን ለመቀየር የአድራሻ አሞሌውን መንካት እና መያዝ ይችላሉ።</translation>
 <translation id="6987047470128880212">ማንነት የማያሳውቅ በዚህ መሣሪያ ላይ አይገኝም</translation>
 <translation id="6996145122199359148">ይህን ገጽ አውርድ</translation>
+<translation id="7007648447224463482">ሁሉንም በአዲስ መስኮት ውስጥ ክፈት</translation>
 <translation id="7013762323294215682">ይህ የይለፍ ቁልፍ የሚስጥር ቁልፍ አስተዳዳሪዎ ላይ ይቀመጣል። ማንኛውም ለእሱ መዳረሻ ያለው ሰው ይህን የይለፍ ቁልፍ መጠቀም ይችላል።</translation>
 <translation id="7020741890149022655">ወደ ንባብ ዝርዝር ያክሉ <ph name="BEGIN_NEW" />አዲስ <ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">በአሳሽ ውስጥ ክፈት</translation>
@@ -1842,6 +1843,7 @@
 <translation id="8445448999790540984">የይለፍ ቃላትን ወደ ውጭ መላክ አልተቻለም</translation>
 <translation id="8446884382197647889">ተጨማሪ ለመረዳት</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{ፈቃዶች ከ1 ጣቢያ ተወግደዋል}one{ፈቃዶች ከ# ጣቢያ ተወግደዋል}other{ፈቃዶች ከ# ጣቢያዎች ተወግደዋል}}</translation>
+<translation id="8449836157089738489">ሁሉንም በአዲስ ትር ቡድን ውስጥ ይክፈቱ</translation>
 <translation id="8453310803815879010">የዳይኖ ጨዋታን ይጀምሩ</translation>
 <translation id="8455675988389029454">የእርስዎን ዕልባቶች፣ የይለፍ ቃላት እና ሌሎች በሁሉም መሣሪያዎችዎ ላይ ያግኙ</translation>
 <translation id="8458341576712814616">አቋራጭ</translation>
@@ -1863,6 +1865,7 @@
 <translation id="8506357771923193001">ውርዶችዎን እዚህ ማግኘት ይችላሉ</translation>
 <translation id="8512053371384421952">ከእንግዲህ ከ<ph name="DOMAIN" /> ማሳወቂያዎችን አይቀበሉም።</translation>
 <translation id="8516012719330875537">የምስል አርታዒ</translation>
+<translation id="8517759303731677493">አርትዕ…</translation>
 <translation id="8533670235862049797">የጥንቃቄ አሰሳ በርቷል</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />፣ ብዙ የተመረጠ የተሰካ የሥዕል-ላይ-ሥዕል ትር</translation>
 <translation id="8540136935098276800">በትክክል የተቀረጸ ዩአርኤል ያስገቡ</translation>

@@ -189,6 +189,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="1807709131360304325">新しいウィンドウを開く</translation>
 <translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> を使用して <ph name="SITE_ETLD_PLUS_ONE" /> で続行できません</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />、録画中のタブ</translation>
+<translation id="1819443852740954262">シークレット ウィンドウですべて開く</translation>
 <translation id="1820408774134375111">ログインのボトムシート</translation>
 <translation id="1823492026305965829"><ph name="USER_FULL_NAME" /> としてログイン</translation>
 <translation id="1824902652744048041">[閲覧履歴データの削除] をタップ</translation>
@@ -771,7 +772,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4256782883801055595">オープンソース ライセンス</translation>
 <translation id="426652736638196239">この IBAN はこのデバイスにのみ保存されます</translation>
 <translation id="4269820728363426813">リンクアドレスをコピー</translation>
-<translation id="4270730597186910506">商品のトラッキングをオンまたはオフにします。</translation>
 <translation id="4277529130885813215">別のデバイスを使用</translation>
 <translation id="427987768447457592">新しいタブグループ</translation>
 <translation id="4282440837784183472">ログインしようとしているアカウントおよび Chrome の使用方法は、組織（<ph name="MANAGED_DOMAIN" />）によって管理されています。管理者は特定の機能を設定または制限できます。</translation>
@@ -1476,6 +1476,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6983306615164277634">アドレスバーを長押しして位置を変更することもできます。</translation>
 <translation id="6987047470128880212">シークレット モードはこのデバイスではご利用いただけません</translation>
 <translation id="6996145122199359148">このページをダウンロード</translation>
+<translation id="7007648447224463482">すべてを新しいウィンドウで開く</translation>
 <translation id="7013762323294215682">このパスキーはパスワード マネージャーに保存されます。パスワード マネージャーにアクセスできるユーザーなら誰でも、このパスキーを使用できます。</translation>
 <translation id="7020741890149022655">リーディング リストに追加<ph name="BEGIN_NEW" />新規<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ブラウザで開く</translation>
@@ -1842,6 +1843,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8445448999790540984">パスワードをエクスポートできません</translation>
 <translation id="8446884382197647889">詳細</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{1 件のサイトから権限を削除しました}other{# 件のサイトから権限を削除しました}}</translation>
+<translation id="8449836157089738489">すべてを新しいタブグループで開く</translation>
 <translation id="8453310803815879010">Dino ゲームを開始</translation>
 <translation id="8455675988389029454">すべてのデバイスで同じブックマーク、パスワード、その他の設定を利用する</translation>
 <translation id="8458341576712814616">ショートカット</translation>
@@ -1863,6 +1865,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8506357771923193001">ダウンロードはここに表示されます</translation>
 <translation id="8512053371384421952">今後 <ph name="DOMAIN" /> から通知が届くことはありません。</translation>
 <translation id="8516012719330875537">画像エディタ</translation>
+<translation id="8517759303731677493">編集…</translation>
 <translation id="8533670235862049797">セーフ ブラウジングはオンになっています</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />、複数選択されたピクチャー イン ピクチャーの固定タブ</translation>
 <translation id="8540136935098276800">正しい形式の URL を入力してください</translation>

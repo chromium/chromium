@@ -349,6 +349,7 @@
 <translation id="1542105669288201090">商業教育</translation>
 <translation id="1542830386724426410">結帳時顯示可用的卡片福利和獎勵 (適用發卡機構的條款規定)。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />瞭解詳情<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">價格記錄</translation>
+<translation id="1546286808622193216">使用 Gemini 比較卡片福利</translation>
 <translation id="1549470594296187301">您必須啟用 JavaScript 才能使用這項功能。</translation>
 <translation id="1553152622374372421">冬季運動</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
@@ -1423,6 +1424,7 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理要同步處理哪些資訊</translation>
 <translation id="3203025201812691413">網址不得留空</translation>
 <translation id="320323717674993345">取消付款</translation>
+<translation id="3204534477198689393">系統可能會在雲端私人空間處理你造訪過的網頁內容和網址，以提供更精準的建議，並加快表單填寫速度。</translation>
 <translation id="3207830513221832868">「<ph name="BLOCKED_URL" />」可能含有兒童不宜的內容</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208701679386778924">請傳送報告，讓我們進一步改善 ChromeOS 更新。</translation>
@@ -1478,6 +1480,7 @@
 <translation id="3272643614306383237">低於 1 MB。下次造訪某些網站時，載入速度可能會變慢。</translation>
 <translation id="3273738040255912340">系統管理員可以從遠端變更你的設定檔和瀏覽器、透過報表分析瀏覽器相關資訊，以及執行其他必要工作。這部裝置上的活動也可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">已完整開啟儲存 IBAN 的底部功能表。</translation>
+<translation id="327455571215090823">自動填入更聰明，隱私安全有保障</translation>
 <translation id="3281350579597955952">{0,plural, =1{根據系統管理員政策，建議你不要在「<ph name="DESTINATION_NAME" />」中開啟這個檔案}other{根據系統管理員政策，建議你不要在「<ph name="DESTINATION_NAME" />」中開啟這些檔案}}</translation>
 <translation id="3282085321714087552">貴機構 (<ph name="ENROLLMENT_DOMAIN" />) 已將一些資訊 (例如設定或政策) 傳送到下列網站。</translation>
 <translation id="3286372614333682499">直向</translation>
@@ -2414,6 +2417,7 @@
 <translation id="4744603770635761495">可執行檔的路徑</translation>
 <translation id="4744816391336495134">你隨時可以使用指紋驗證身分，使用已儲存的密碼</translation>
 <translation id="4749011317274908093">你已進入無痕模式</translation>
+<translation id="4749620353539006322">獲取最多獎勵</translation>
 <translation id="4749924365937394956">伺服器驗證</translation>
 <translation id="4750671009706599284">這支手機</translation>
 <translation id="4750917950439032686">你傳送給這個網站的資訊 (例如密碼或信用卡號碼) 不會外洩。</translation>
@@ -2989,6 +2993,7 @@
 <translation id="5611398002774823980">儲存到帳戶</translation>
 <translation id="561165882404867731">使用 Google 翻譯來翻譯這個頁面</translation>
 <translation id="5612720917913232150"><ph name="URL" /> 要求使用電腦的位置資訊</translation>
+<translation id="5613958591683399697">問問「<ph name="ENGINE_NAME" />」</translation>
 <translation id="5614190747811328134">使用者通知</translation>
 <translation id="5614520971155863709">卡牌遊戲</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> 將您重新導向的次數過多。</translation>

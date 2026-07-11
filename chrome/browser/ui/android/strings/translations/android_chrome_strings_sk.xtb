@@ -189,6 +189,7 @@
 <translation id="1807709131360304325">Otvorenie nového okna</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> nemôže ďalej používať poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, karta s nahrávaním</translation>
+<translation id="1819443852740954262">Otvoriť všetky v okne inkognito</translation>
 <translation id="1820408774134375111">Dolný hárok prihlásenia</translation>
 <translation id="1823492026305965829">Prihlásiť sa ako <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">Klepnite na Odstrániť dáta prehliadania</translation>
@@ -771,7 +772,6 @@
 <translation id="4256782883801055595">Licencie open source</translation>
 <translation id="426652736638196239">Toto číslo IBAN sa uloží iba do tohto zariadenia</translation>
 <translation id="4269820728363426813">Kopírovať adresu odkazu</translation>
-<translation id="4270730597186910506">Sledujte výrobok alebo ho prestaňte sledovať.</translation>
 <translation id="4277529130885813215">Použiť iné zariadenie</translation>
 <translation id="427987768447457592">Nová skupina kariet</translation>
 <translation id="4282440837784183472">Vaša organizácia <ph name="MANAGED_DOMAIN" /> spravuje účet, do ktorého sa prihlasujete, a spôsob, akým sa dá Chrome používať. Váš správca môže nastaviť alebo obmedziť určité funkcie.</translation>
@@ -1476,6 +1476,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6983306615164277634">Pozíciu môžete zmeniť aj pridržaním panela s adresou.</translation>
 <translation id="6987047470128880212">Režim inkognito nie je k dispozícii v tomto zariadení</translation>
 <translation id="6996145122199359148">Stiahnuť túto stránku</translation>
+<translation id="7007648447224463482">Otvoriť všetky v novom okne</translation>
 <translation id="7013762323294215682">Tento prístupový kľúč bude uložený do vášho správcu hesiel. Budú ho môcť používať všetci, ktorí k nemu majú prístup.</translation>
 <translation id="7020741890149022655">Pridať do čit. zoznamu <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Otvoriť v prehliadači</translation>
@@ -1842,6 +1843,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8445448999790540984">Heslá sa nepodarilo exportovať</translation>
 <translation id="8446884382197647889">Ďalšie informácie</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Boli odstránené povolenia 1 webu}few{Boli odstránené povolenia # webom}many{Permissions removed from # sites}other{Boli odstránené povolenia # webom}}</translation>
+<translation id="8449836157089738489">Otvoriť všetko v novej skupine kariet</translation>
 <translation id="8453310803815879010">Spustiť hru s dinosaurom</translation>
 <translation id="8455675988389029454">Majte k dispozícii svoje záložky, heslá a ďalší obsah vo všetkých zariadeniach</translation>
 <translation id="8458341576712814616">Skratka</translation>
@@ -1863,6 +1865,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8506357771923193001">Tu nájdete svoje stiahnuté súbory</translation>
 <translation id="8512053371384421952">Už nebudete dostávať upozornenia z domény <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Editor obrázkov</translation>
+<translation id="8517759303731677493">Upraviť…</translation>
 <translation id="8533670235862049797">Bezpečné prehliadanie je zapnuté</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, viackrát vybraná pripnutá karta s obrazom v obraze</translation>
 <translation id="8540136935098276800">Zadajte správne naformátovanú webovú adresu</translation>

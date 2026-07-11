@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">ነገሮችን ደማቅ እና ቀላል አድርገው ያቆዩ</translation>
 <translation id="243179355394256322">የእርስዎ ድርጅት መሣሪያን ማስመዘገብን ለተፈቀደላቸው ተጠቃሚዎች ብቻ ይገድባል። እኚህ ተጠቃሚ መሣሪያዎችን እንዲያስመዘግቡ አልተፈቀደላቸውም። እባክዎ ተጠቃሚው በአሰዳደር መሥሪያ የተጠቃሚ ክፍል ውስጥ «የGoogle Meet ሃርድዌርን አስመዝግብ» የአስተዳዳሪ መብት እንዳላቸው ያረጋግጡ።</translation>
 <translation id="2439152382014731627">የ<ph name="DEVICE_TYPE" /> የይለፍ ቃል ዳግም ያስጀምሩ</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />መጫን <ph name="BEGIN_BOLD" />ሙሉውን የእርስዎ ደረቅ አንጻፊ ይደመስሳል<ph name="END_BOLD" />። የእርስዎ ውሂብ ምትኬ ማስቀመጡን ያረጋግጡ።<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />አንዴ መጫን ከተጀመረ በኋላ ሊሰረዝ አይችልም።<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">የGoogle ኤፒአይ ቁልፎች ስለጎደሉ ተጠቃሚዎችን ማከል አይችሉም። ለዝርዝሩ <ph name="DETAILS_URL" />ን ይመልከቱ።</translation>
 <translation id="24786041351753425">የውሂብ መልሶ ማግኛ አገልግሎትን አንቃ</translation>
 <translation id="2485681265915754872">የGoogle Play አገልግሎት ውል</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebooks ከተለምዷዊ ሶፍትዌር ይልቅ መተግበሪያዎችን ይጠቀማሉ። ለአምራችነት፣ መዝናኛ እና ተጨማሪ ነገሮች የሚሆኑ መተግበሪያዎችን ያግኙ።</translation>
 <translation id="450867954911715010">የተደራሽነት ቅንብሮች</translation>
 <translation id="4519605771716872386">የፋይል ስምረት በርቷል</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />እነዚህን የመላ ፍለጋ እርምጃዎች ይሞክሩ፦
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />መሣሪያዎ እንደ ኤችዲዲ፣ ኤስኤስዲ ወይም ኢኤምኤምሲ ያለ የሚሠራ ውስጣዊ ማከማቻ መያዙን ያረጋግጡ
+        <ph name="LIST_ITEM" />የውስጥ ማከማቻ መሣሪያዎ ከ16 ጊባ በላይ መሆኑን ያረጋግጡ
+        <ph name="LIST_ITEM" />በአካል ተደራሽ ከሆነ ከውስጣዊ ማከማቻ ጋር ያለውን ግንኙነት ይፈትሹ
+        <ph name="LIST_ITEM" />የተረጋገጠ ሞዴል እየተጠቀሙ መሆኑን ያረጋግጡ እና የመጫኛ ማስታወሻዎችን ይፈትሹ
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />ለተጨማሪ እገዛ የሚከተለውን ይጎብኙ፦ g.co/flex/InstallErrors።<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">ማንን ወደዚህ <ph name="DEVICE_TYPE" /> ማከል ይፈልጋል?</translation>
 <translation id="4566170377336116390">ከተመዘገቡ በኋላ መቀየር ከፈለጉ መሳሪያዎን በፋብሪካ ዳግም ማስጀመር (powerwash) ይኖርብዎታል።</translation>
 <translation id="4567512141633030272">የተሳሳተ የመለያ መግቢያ አማራጭ?</translation>
@@ -571,6 +582,8 @@
 <translation id="7189451821249468368">ይህን መሣሪያ ለማስመዝገብ በቂ ማላቂያዎች የለዎትም። ተጨማሪ ለመግዛት እባክዎ ሽያጭን ያነጋግሩ። ይህን መልዕክት የሚያዩት በስህተት ነው ብለው ካመኑ እባክዎ ድጋፍን ያነጋግሩ።</translation>
 <translation id="7202337678781136582">በAndroid ስልክዎ ላይ የQR ኮዱን ይቃኙ</translation>
 <translation id="7228854227189381547">አትቀይር</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />ለምርጥ ተሞክሮ <ph name="DEVICE_OS" />ን ውስጣዊ ዲስክዎ ላይ ይጫኑ። እንዲሁም በኋላ ላይ ከመግቢያ ማያ ገጹ ላይ ሊጭኑት ይችላሉ።<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />ለመጫን ዝግጁ ካልሆኑ እሱን ለመሞከር ከዩኤስቢ ማሄድ ይችላሉ። ይህ የእርስዎን ነባር ስርዓተ ክወና እና ውሂብ ያቆያል፣ ነገር ግን የማከማቻ እና የአፈጻጸም ገደቦችን ሊያዩ ይችላሉ።<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">ለውጦች ከውቅረት በኋላ ይተገበራሉ</translation>
 <translation id="7260186537988033909">የኪዮስክ እና የምልክት ቋንቋ መሣሪያ ምዝገባ ተጠናቅቋል</translation>
 <translation id="7284411326658527427">እያንዳንዱ ሰው መለያቸውን የግል ማድረግ እና ውሂብን የግል አድርገው ማቆየት ይችላሉ።</translation>
@@ -588,6 +601,8 @@
 <translation id="7416263748877373774">የአገልግሎት ውሉ ሊጫን አልቻለም። እባክዎ የእርስዎን አውታረ መረብ ይፈትሹ እና እንደገና ይሞክሩ።</translation>
 <translation id="7475742997309661417">በChromeOS፣ ChromeVox ላይ ያለው ማያ ገፅ አንባቢ በቀዳሚነት ማያ ገፁ ላይ የሚታይ ጽሁፍ ለማንበብ ዓይነ ስውር በሆኑ ወይም ዝቅተኛ-ዕይታ ባላቸው ሰዎች በንግግር አዋሃጅ ወይም በብሬይል ማሳያ ጥቅም ላይ ይውላል። ChromeVox ለማብራት ሁለቱንም የድምፅ መጠን ቁልፎች ለአምስት ሰከንዶች ተጭነው ይያዙ። ChromeVox ገቢር ሲሆን ፈጣን ጉብኝት ያደርጋሉ።</translation>
 <translation id="7476454130948140105">ባትሪ ለዝማኔ በጣም ዝቅተኛ ነው (<ph name="BATTERY_PERCENT" />)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />የሆነ ችግር ተፈጥሯል እና <ph name="DEVICE_OS" /> ሊጫን አልቻለም።<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />ተጨማሪ እገዛ ለማግኘት የሚከተለውን ይጎብኙ፦ g.co/flex/InstallErrors።<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />ከመመዝገብዎ በፊት <ph name="DEVICE_OS" /> የመሣሪያውን ባለቤትነት መውሰድ እንዲችል TPMን ማጽዳት ይኖርብዎታል።<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />እንዲሁም የTPM መሣሪያውን ሙሉ በሙሉ ማጥፋት ይችላሉ። የእርስዎ ውሂብ አሁንም በሶፍትዌር ምሥጠራ አማካኝነት ደኅንነቱ በተጠበቀ ሁኔታ ይቀመጣል፣ ነገር ግን እንደ በሃርድዌር የሚደገፉ የዕውቅና ማረጋገጫዎች ያሉ የተወሰኑ የደኅንነት ባህሪዎች ይሰናከላሉ።<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />ዳግም በማስነሳት እና የሥርዓቱን የBIOS/UEFI ቅንብሮችን በመግባት የTPM ቅንብሮችን መለወጥ ይችላሉ። ደረጃዎች በመሣሪያው ሞዴል ላይ ተመስርተው ይለያያሉ። ለተጨማሪ መረጃ፣ ዳግም ከማስነሳትዎ በፊት የ<ph name="DEVICE_OS" /> ሰነድን በተለየ መሣሪያ ላይ ይክፈቱ፦ g.co/flex/TPMHelp።<ph name="END_PARAGRAPH3" /></translation>

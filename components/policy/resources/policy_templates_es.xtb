@@ -2689,6 +2689,7 @@ Si se le asigna el valor 2 (inhabilitada) a la política, no se permitirá la in
 <translation id="2707733461906745082">Separación de perfiles</translation>
 <translation id="2707873794476722903">La función Navegación segura está activa en modo estándar.</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
+<translation id="2712089199157322391">Permitir herramientas de desarrollo en la navegación web estándar, pero restringirlas en extensiones instaladas por la empresa y en extensiones integradas de usuarios gestionados (bloqueadas en páginas que incluyan estas extensiones desde la versión M150, excepto en el visor de PDFs integrado).</translation>
 <translation id="2713913573196284609">Este valor no está disponible desde la versión M121. En la versión M121 y en versiones posteriores, los valores se tratarán como EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Enviar siempre métricas a Google</translation>
 <translation id="2714359695399346815">Si se habilita esta política o no se le asigna ningún valor, se permitirá el uso de servidores STUN, los clientes remotos podrán detectar estos equipos y establecer conexión con ellos aunque haya un cortafuegos.
@@ -12534,27 +12535,6 @@ Para obtener más información, consulta https://support.google.com/chrome/a/ans
 <translation id="8931555638815157255">Si se habilita la política o no se establece, los dispositivos registrados informarán sobre su versión de firmware y de SO de forma periódica.
 
       Si se inhabilita la política, los dispositivos registrados no informarán sobre su versión.</translation>
-<translation id="8931984670731745012">Si se define esta política, podrás especificar qué tipos de datos de Autocompletar se bloquean en patrones de URL concretos.
-
-La política se estructura como una lista de diccionarios. Cada diccionario debe contener:
-* "url_pattern": un patrón de URL de configuración de contenido (por ejemplo, "https://[*.]example.com").
-* "blocked_types": lista de cadenas que representan las categorías de datos de Autocompletar que se deben bloquear.
-
-Los valores admitidos para "blocked_types" son:
-* "contact_info": impide que se rellene y se guarde la información de contacto.
-* "payments": impide que se rellenen y guarden tarjetas de crédito y métodos de pago.
-* "identity_docs": impide rellenar y guardar documentos de identidad (por ejemplo, pasaporte, carné de conducir o documento nacional de identidad).
-* "travel": impide rellenar y guardar información de viajes (por ejemplo, reservas de vuelos o matrículas de vehículos).
-* "shopping": impide rellenar y guardar información de compras (por ejemplo, pedidos online o envíos).
-
-Si un tipo de datos está bloqueado en un sitio, se inhabilitan tanto la generación de sugerencias como la petición para guardar o importar nuevos datos de ese tipo en ese sitio.
-
-Si una URL coincide con varias entradas de patrón de la lista, los tipos bloqueados de todas las entradas coincidentes se combinan (se fusionan en unión). Los patrones de URL no válidos de la lista se ignoran.
-
-Si no se define esta política, no se bloqueará ningún tipo de datos de Autocompletar por dominio.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta:
-https://chromeenterprise.google/policies/url-patterns. Se admite el comodín *. Este patrón coincide con cualquier URL, con cualquier esquema, puerto y ruta.</translation>
 <translation id="8934296213794658971">Ajustes de la integración de Gemini</translation>
 <translation id="8937282917198525844"> A partir de la versión M81, se renovaron los elementos de control de formulario estándar (por ejemplo, &lt;select&gt;, &lt;button&gt; o &lt;input type=date&gt;) para mejorar su accesibilidad y uniformidad en distintas plataformas. Esta política restaura los elementos de control de formularios antiguos hasta la versión M84.
 

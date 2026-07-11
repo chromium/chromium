@@ -189,6 +189,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1807709131360304325">Uue akna avamine</translation>
 <translation id="1812027881030482584">Sait <ph name="SITE_ETLD_PLUS_ONE" /> ei saa teenuse <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kasutamisega jätkata</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, salvestav vaheleht</translation>
+<translation id="1819443852740954262">Kõik avatakse inkognito aknas</translation>
 <translation id="1820408774134375111">Sisselogimise alumine leht</translation>
 <translation id="1823492026305965829">Logi sisse kasutajana <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">Puudutage valikut Sirvimisandmete kustutamine.</translation>
@@ -771,7 +772,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4256782883801055595">Avatud lähtekoodi litsentsid</translation>
 <translation id="426652736638196239">IBAN salvestatakse ainult sellesse seadmesse</translation>
 <translation id="4269820728363426813">Kopeeri lingi aadress</translation>
-<translation id="4270730597186910506">Jälgige toodet või tühistage selle jälgimine.</translation>
 <translation id="4277529130885813215">Kasuta teist seadet</translation>
 <translation id="427987768447457592">Uus vahelehegrupp</translation>
 <translation id="4282440837784183472">Teie organisatsioon <ph name="MANAGED_DOMAIN" /> haldab kontot, millele sisse logite, ja Chrome'i kasutamist. Teie administraator saab teatud funktsioone seadistada või piirata.</translation>
@@ -1476,6 +1476,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6983306615164277634">Aadressiriba asukoha muutmiseks võite seda ka pikalt puudutada.</translation>
 <translation id="6987047470128880212">Inkognito ei ole selles seadmes saadaval</translation>
 <translation id="6996145122199359148">Selle lehe allalaadimine</translation>
+<translation id="7007648447224463482">Ava kõik uues aknas</translation>
 <translation id="7013762323294215682">See pääsuvõti salvestatakse teie paroolihaldurisse. Igaüks, kellel on sellele juurdepääs, saab seda pääsuvõtit kasutada.</translation>
 <translation id="7020741890149022655">Lisa lugemisloendisse <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Avamine brauseris</translation>
@@ -1842,6 +1843,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8445448999790540984">Paroole ei saa eksportida</translation>
 <translation id="8446884382197647889">Lisateave</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Load eemaldati ühelt saidilt}other{Load eemaldati # saidilt}}</translation>
+<translation id="8449836157089738489">Ava kõik uues vahelehegrupis</translation>
 <translation id="8453310803815879010">Dinosaurusemängu alustamine</translation>
 <translation id="8455675988389029454">Kõigis oma seadmetes järjehoidjatele, paroolidele ja muule juurdepääsemine</translation>
 <translation id="8458341576712814616">Otsetee</translation>
@@ -1863,6 +1865,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8506357771923193001">Oma allalaadimised leiate siit</translation>
 <translation id="8512053371384421952">Te ei saa enam domeenilt <ph name="DOMAIN" /> märguandeid.</translation>
 <translation id="8516012719330875537">Pildiredigeerija</translation>
+<translation id="8517759303731677493">Muuda …</translation>
 <translation id="8533670235862049797">Google'i ohutu sirvimine on sees</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, mitmikvalikuga kinnitatud pilt-pildis vaheleht</translation>
 <translation id="8540136935098276800">Sisestage õigesti vormindatud URL</translation>

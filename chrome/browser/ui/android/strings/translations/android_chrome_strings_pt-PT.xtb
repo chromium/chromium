@@ -189,6 +189,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1807709131360304325">Abrir uma nova janela</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> não pode continuar a usar <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, separador a gravar</translation>
+<translation id="1819443852740954262">Abrir todos numa janela de navegação anónima</translation>
 <translation id="1820408774134375111">Secção inferior de início de sessão</translation>
 <translation id="1823492026305965829">Iniciar sessão como <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">Toque em Eliminar dados de navegação</translation>
@@ -558,6 +559,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3331974543021145906">Informações da aplicação</translation>
 <translation id="3334729583274622784">Quer alterar a extensão de ficheiro?</translation>
 <translation id="333863344734218290">Envia-lhe avisos sobre sites públicos e privados inseguros</translation>
+<translation id="3339788961947270565">A finalizar o encerramento</translation>
 <translation id="3340978935015468852">definições</translation>
 <translation id="3351959803838327376">Mantenha premido o Website e abra o menu</translation>
 <translation id="3359667936385849800">Usar o seu fornecedor de serviços atual</translation>
@@ -721,6 +723,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4044708993631234325">Secção inferior</translation>
 <translation id="4045441967987592849">Reabrir</translation>
 <translation id="4049920046559074950">Mais opções para <ph name="INSTANCE_TITLE" /></translation>
+<translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{Abrir na janela de navegação anónima}other{Abrir tudo (#) numa janela de navegação anónima}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> separador padrão com nova atividade em grupos de separadores partilhados}other{<ph name="TABS_COUNT_MANY" /> separadores padrão com nova atividade em grupos de separadores partilhados}}</translation>
 <translation id="405365679581583349">Atualize os Serviços do Google Play</translation>
 <translation id="405399507749852140">Obtenha alertas se o preço descer em qualquer site</translation>
@@ -771,7 +774,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4256782883801055595">Licenças de código aberto</translation>
 <translation id="426652736638196239">Este IBAN vai ser guardado apenas neste dispositivo</translation>
 <translation id="4269820728363426813">Copiar endereço do link</translation>
-<translation id="4270730597186910506">Ative ou desative o acompanhamento de um produto.</translation>
 <translation id="4277529130885813215">Usar outro dispositivo</translation>
 <translation id="427987768447457592">Novo grupo separadores</translation>
 <translation id="4282440837784183472">A sua organização, <ph name="MANAGED_DOMAIN" />, gere a conta na qual está a iniciar sessão e a forma como o Chrome pode ser usado. O seu administrador pode configurar ou restringir determinadas funcionalidades.</translation>
@@ -1073,6 +1075,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5517326820028369152">Secção inferior da atividade recente</translation>
 <translation id="5526281268548144413">Não é possível fechar os separadores em várias janelas</translation>
 <translation id="5532536403031755365">Adicione uma camada extra de proteção contra ameaças online com a Proteção melhorada</translation>
+<translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{Abrir marcador}other{Abrir tudo (#)}}</translation>
 <translation id="5548606607480005320">Verificação de segurança</translation>
 <translation id="5554520618550346933">Quando usa uma palavra-passe, o Chrome avisa se esta tiver sido publicada online. Ao fazê-lo, as suas palavras-passe e nomes de utilizador estão encriptados e, por isso, não podem ser lidos por ninguém, incluindo a Google.</translation>
 <translation id="5555525474779371165">Escolha a sua proteção de Navegação segura</translation>
@@ -1246,6 +1249,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6246073558347462570">Janela pop-up de contexto</translation>
 <translation id="6247557882553405851">Gestor de Palavras-passe da Google</translation>
 <translation id="6248988683584659830">Pesquise definições</translation>
+<translation id="6250486830372700930">Também pode remover extensões deste dispositivo</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, separador de navegação anónima fixo e multisselecionado</translation>
 <translation id="6251449557817521191">Veja o Histórico do Chrome aqui</translation>
 <translation id="6254139308321626268">Está a ver um ficheiro PDF</translation>
@@ -1421,7 +1425,9 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> separadores fechados</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 resultado encontrado}other{# resultados encontrados}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Ficheiros de áudio, 1 ficheiro de áudio na lista}other{Ficheiros de áudio, # ficheiros de áudio na lista}}</translation>
+<translation id="6857043990326114901">Adicionar pasta…</translation>
 <translation id="685850645784703949">Discover da Google – desativado</translation>
+<translation id="6858893072923394368">Adicionar página…</translation>
 <translation id="6864459304226931083">Transferir imagem</translation>
 <translation id="686490460830618322">Página para filtrar por app</translation>
 <translation id="6865313869410766144">Dados de formulário de preenchimento automático</translation>
@@ -1476,6 +1482,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6983306615164277634">Também pode tocar sem soltar na barra de endereço para alterar a posição.</translation>
 <translation id="6987047470128880212">A Navegação anónima não está disponível neste dispositivo</translation>
 <translation id="6996145122199359148">Transfira esta página</translation>
+<translation id="7007648447224463482">Abrir tudo numa nova janela</translation>
 <translation id="7013762323294215682">Esta chave de acesso vai ser guardada no seu gestor de palavras-passe. Qualquer pessoa com acesso a este gestor vai poder usar esta chave de acesso.</translation>
 <translation id="7020741890149022655">Adic. à Lista de leitura <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Abrir no navegador</translation>
@@ -1597,6 +1604,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7475688122056506577">Cartão SD não encontrado. Alguns dos seus ficheiros poderão estar em falta.</translation>
 <translation id="7479104141328977413">Gestão de separadores</translation>
 <translation id="7481312909269577407">Avançar</translation>
+<translation id="7481588001304663390">{NUM_BOOKMARKS,plural, =1{Abrir num novo grupo de separadores}other{Abrir tudo (#) num novo grupo de separadores}}</translation>
 <translation id="7482656565088326534">Separador Pré-visualização</translation>
 <translation id="7484997419527351112">Discover – desativado</translation>
 <translation id="7485033510383818941">Para atualizar os conteúdos do feed, puxe a página para baixo</translation>
@@ -1753,6 +1761,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8103578431304235997">Separador de navegação anónima</translation>
 <translation id="810433609302852">Secção inferior de passos de utilização e promoção da funcionalidade de notificações de dicas</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8109802255973641442">Remover as extensões e os dados que estas tenham guardado neste dispositivo</translation>
 <translation id="8110024788458304985">Ajudar a melhorar as funcionalidades e o desempenho do Chrome</translation>
 <translation id="8110087112193408731">Quer apresentar a sua atividade do Chrome no Bem-estar digital?</translation>
 <translation id="8118117428362942925">Se precisares de ajuda, pede à pessoa adulta responsável (<ph name="PARENT_NAME" />)</translation>
@@ -1842,6 +1851,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8445448999790540984">Não é possível exportar as palavras-passe</translation>
 <translation id="8446884382197647889">Saiba Mais</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Autorizações removidas de 1 site}other{Autorizações removidas de # sites}}</translation>
+<translation id="8449836157089738489">Abrir tudo num novo grupo de separadores</translation>
 <translation id="8453310803815879010">Inicie o jogo Dino</translation>
 <translation id="8455675988389029454">Tenha os marcadores, as palavras-passe e muito mais em todos os seus dispositivos</translation>
 <translation id="8458341576712814616">Atalho</translation>
@@ -1851,6 +1861,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8460448946170646641">Reveja os principais controlos de privacidade e segurança</translation>
 <translation id="8460932807646981183">Gerir motores de pesquisa e a pesquisa de sites</translation>
 <translation id="8465252176946159372">Não é válido</translation>
+<translation id="8472353072135865937">{NUM_BOOKMARKS,plural, =1{Abrir numa nova janela}other{Abra tudo (#) numa nova janela}}</translation>
 <translation id="8473863474539038330">Moradas e mais</translation>
 <translation id="847433688444405067">Navegue entre dispositivos</translation>
 <translation id="8477178913400731244">Eliminar dados</translation>
@@ -1863,6 +1874,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8506357771923193001">As suas transferências são apresentadas aqui</translation>
 <translation id="8512053371384421952">Vai deixar de receber notificações de <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Editor de imagens</translation>
+<translation id="8517759303731677493">Editar…</translation>
 <translation id="8533670235862049797">A Navegação segura está ativada.</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, separador no modo ecrã no ecrã fixo numa seleção múltipla</translation>
 <translation id="8540136935098276800">Introduza um URL formatado corretamente.</translation>

@@ -350,6 +350,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1542105669288201090">Educación empresarial</translation>
 <translation id="1542830386724426410">Muestra las recompensas y los beneficios de la tarjeta disponibles durante la confirmación de la compra. Se aplican los términos de la entidad emisora. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Más información<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Historial de precios</translation>
+<translation id="1546286808622193216">Compara los beneficios de tarjetas con Gemini</translation>
 <translation id="1549470594296187301">JavaScript debe estar habilitado para usar esta función.</translation>
 <translation id="1553152622374372421">Deportes de invierno</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
@@ -2417,6 +2418,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4744603770635761495">Ruta ejecutable</translation>
 <translation id="4744816391336495134">Puedes usar tu huella dactilar para verificar tu identidad cada vez que uses una contraseña guardada</translation>
 <translation id="4749011317274908093">Estás en modo Incógnito</translation>
+<translation id="4749620353539006322">Maximiza las recompensas</translation>
 <translation id="4749924365937394956">Autenticación de servidores</translation>
 <translation id="4750671009706599284">este teléfono</translation>
 <translation id="4750917950439032686">Tu información (p. ej., contraseñas o números de tarjetas de crédito) es privada cuando se envía a este sitio.</translation>
@@ -2992,6 +2994,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5611398002774823980">Guardar en la cuenta</translation>
 <translation id="561165882404867731">Traduce esta página con Google Traductor</translation>
 <translation id="5612720917913232150"><ph name="URL" /> desea usar la ubicación de tu computadora</translation>
+<translation id="5613958591683399697">Preguntarle a <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Aviso de usuario</translation>
 <translation id="5614520971155863709">Juegos de naipes</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> te redireccionó demasiadas veces.</translation>

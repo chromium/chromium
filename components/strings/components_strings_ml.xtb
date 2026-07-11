@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">ബിസിനസ് വിദ്യാഭ്യാസം</translation>
 <translation id="1542830386724426410">ലഭ്യമായ കാർഡ് ആനുകൂല്യങ്ങളും റിവാർഡുകളും ചെക്ക്ഔട്ടിൽ കാണിക്കുക. ഇഷ്യൂവറുടെ നിബന്ധനകൾ ബാധകമാണ്. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />കൂടുതലറിയുക<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">നിരക്ക് ചരിത്രം</translation>
+<translation id="1546286808622193216">Gemini ഉപയോഗിച്ച് കാർഡ് ആനുകൂല്യങ്ങൾ താരതമ്യം ചെയ്യുക</translation>
 <translation id="1549470594296187301">ഈ ഫീച്ചർ ഉപയോഗിക്കാൻ JavaScript പ്രവർത്തനക്ഷമമാക്കിയിരിക്കണം.</translation>
 <translation id="1553152622374372421">വിന്റർ സ്‌പോർട്‌സ്</translation>
 <translation id="1553358976309200471">Chrome അപ്‌ഡേറ്റുചെയ്യുക</translation>
@@ -2415,6 +2416,7 @@
 <translation id="4744603770635761495">നിര്‍വ്വഹിക്കാവുന്ന പാത</translation>
 <translation id="4744816391336495134">സംരക്ഷിച്ച പാസ്‌വേഡ് ഉപയോഗിക്കുമ്പോഴെല്ലാം ഫിംഗർപ്രിന്റ് ഉപയോഗിച്ച് അത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കാം</translation>
 <translation id="4749011317274908093">നിങ്ങൾ അദൃശ്യ മോഡിലാണ്</translation>
+<translation id="4749620353539006322">പരമാവധി റിവാർഡുകൾ സ്വന്തമാക്കൂ</translation>
 <translation id="4749924365937394956">സെർവർ പരിശോധിച്ചുറപ്പിക്കൽ</translation>
 <translation id="4750671009706599284">ഈ ഫോൺ</translation>
 <translation id="4750917950439032686">നിങ്ങളുടെ വിവരങ്ങൾ (ഉദാഹരണത്തിന്, പാസ്‌വേഡുകളോ ക്രെഡിറ്റ് കാർഡ് നമ്പറുകളോ) ഈ സൈറ്റിലേക്ക് അയച്ച് കഴിഞ്ഞാൽ പിന്നെയത് സ്വകാര്യമായിരിക്കും.</translation>
@@ -2990,6 +2992,7 @@
 <translation id="5611398002774823980">അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
 <translation id="561165882404867731">Google Translate ഉപയോഗിച്ച് ഈ പേജ് വിവർത്തനം ചെയ്യുക</translation>
 <translation id="5612720917913232150">നിങ്ങളുടെ കമ്പ്യൂട്ടറിന്‍റെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
+<translation id="5613958591683399697"><ph name="ENGINE_NAME" /> എന്നതിനോട് ചോദിക്കുക</translation>
 <translation id="5614190747811328134">ഉപയോക്തൃ അറിയിപ്പ്</translation>
 <translation id="5614520971155863709">കാർഡ് ഗെയിമുകൾ</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" />, നിരവധി തവണ നിങ്ങളെ റീഡയറക്‌ടുചെയ്‌തു.</translation>

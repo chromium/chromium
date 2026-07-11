@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">Formation commerciale</translation>
 <translation id="1542830386724426410">Affichez les avantages et les récompenses de la carte disponibles au moment du paiement. Les conditions de l'émetteur s'appliquent. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />En savoir plus<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">Historique des prix</translation>
+<translation id="1546286808622193216">Comparez les avantages des cartes à l'aide de Gemini</translation>
 <translation id="1549470594296187301">Pour utiliser cette fonctionnalité, vous devez activer JavaScript.</translation>
 <translation id="1553152622374372421">Sports d'hiver</translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
@@ -2416,6 +2417,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4744603770635761495">Chemin d'accès exécutable</translation>
 <translation id="4744816391336495134">Vous pouvez utiliser votre empreinte digitale pour vérifier qu'il s'agit bien de vous chaque fois que vous utilisez un mot de passe enregistré</translation>
 <translation id="4749011317274908093">Vous êtes passé en mode de navigation privée</translation>
+<translation id="4749620353539006322">Maximisez les récompenses</translation>
 <translation id="4749924365937394956">Authentification du serveur</translation>
 <translation id="4750671009706599284">ce téléphone</translation>
 <translation id="4750917950439032686">Vos données (par exemple, vos mots de passe ou vos numéros de carte de crédit) sont privées lorsqu'elles sont envoyées à ce site.</translation>
@@ -2991,6 +2993,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5611398002774823980">Enregistrer dans le compte</translation>
 <translation id="561165882404867731">Traduisez cette page avec Google Traduction</translation>
 <translation id="5612720917913232150">L'URL <ph name="URL" /> veut utiliser la position de votre ordinateur</translation>
+<translation id="5613958591683399697">Demandez à <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">Avis pour les utilisateurs</translation>
 <translation id="5614520971155863709">Jeux de cartes</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> vous a redirigé(e) à de trop nombreuses reprises.</translation>

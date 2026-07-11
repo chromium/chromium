@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">讓畫面保持鮮明光亮</translation>
 <translation id="243179355394256322">您的機構限制只有授權使用者可以註冊裝置。這位使用者未獲授權，因此無法註冊裝置。請前往管理控制台的「使用者」部分，確認該使用者擁有「註冊 Google Meet 硬件」的管理員權限。</translation>
 <translation id="2439152382014731627">重設 <ph name="DEVICE_TYPE" /> 密碼</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />安裝程序<ph name="BEGIN_BOLD" />會清除整個硬碟的資料<ph name="END_BOLD" />。請確保已備份資料。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />安裝程序開始後就無法取消。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">找不到 Google API 金鑰，因此您無法新增使用者。詳情請參閱 <ph name="DETAILS_URL" />。</translation>
 <translation id="24786041351753425">啟用資料復原服務。</translation>
 <translation id="2485681265915754872">《Google Play 服務條款》</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebook 使用應用程式代替傳統軟件。下載各種應用程式，以提升生產力、享受娛樂體驗等等。</translation>
 <translation id="450867954911715010">無障礙功能設定</translation>
 <translation id="4519605771716872386">已開啟檔案同步處理功能</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />請嘗試執行以下解決疑難步驟：
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />確保裝置含有可用的內部儲存空間，例如 HDD、SSD 或 eMMC
+        <ph name="LIST_ITEM" />確認裝置內部儲存空間大於 16 GB
+        <ph name="LIST_ITEM" />檢查內部儲存空間的連接狀態 (如果支援實體存取方式)
+        <ph name="LIST_ITEM" />務必使用通過認證的型號，並查看安裝注意事項
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請前往：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">您想將誰加入此 <ph name="DEVICE_TYPE" />？</translation>
 <translation id="4566170377336116390">如果要在完成註冊後切換裝置，您需要將裝置回復原廠設定 (Powerwash)。</translation>
 <translation id="4567512141633030272">登入選項有錯嗎？</translation>
@@ -569,6 +580,8 @@
 <translation id="7189451821249468368">您沒有足夠升級，無法註冊這部裝置。如要購買更多升級，請與銷售人員聯絡。如果您認為這則訊息有誤，請與支援團隊聯絡。</translation>
 <translation id="7202337678781136582">使用 Android 手機掃瞄 QR 碼</translation>
 <translation id="7228854227189381547">不切換</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />為獲得最佳體驗，請將 <ph name="DEVICE_OS" /> 安裝至內置磁碟。你亦可稍後從登入畫面安裝。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />如果暫時不想安裝，可以透過 USB 執行並試用。此操作會保留你現有的 OS 和資料，但儲存空間和效能可能受限。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">系統會在設定完成後套用變更</translation>
 <translation id="7260186537988033909">Kiosk 和標牌裝置註冊完成</translation>
 <translation id="7284411326658527427">每位使用者都可將帳戶個人化，以確保資料私隱。</translation>
@@ -586,6 +599,8 @@
 <translation id="7416263748877373774">無法載入《服務條款》。請檢查您的網絡連線，然後再試一次。</translation>
 <translation id="7475742997309661417">ChromeOS 嘅螢幕閱讀器 ChromeVox 主要係俾失明或者低視力人士用嚟透過語音合成器或者點字顯示器閱讀螢幕上面顯示嘅文字。同時㩒住校高同校低音量掣 5 秒就可以啟用 ChromeVox。ChromeVox 啟動之後，系統就會提供快速導覽。</translation>
 <translation id="7476454130948140105">電量過低，無法更新 (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />發生問題，系統無法安裝 <ph name="DEVICE_OS" />。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請瀏覽：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />在註冊裝置前，你需要清除 TPM，<ph name="DEVICE_OS" /> 才能取得裝置的擁有權。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />你亦可完全關閉 TPM 裝置。系統仍會透過軟件加密功能安全儲存你的資料，但會停用硬件支援憑證等特定安全功能。<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />如要變更 TPM 設定，請重新啟動並進入系統的 BIOS/UEFI 設定。操作步驟根據裝置型號而有所不同。如需更多資料，請在重新啟動前使用其他裝置開啟 <ph name="DEVICE_OS" /> 文件：g.co/flex/TPMHelp。<ph name="END_PARAGRAPH3" /></translation>

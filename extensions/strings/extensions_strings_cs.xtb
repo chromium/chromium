@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Načtení stránky s informacemi <ph name="ABOUT_PAGE" /> se nezdařilo.</translation>
 <translation id="424963718355121712">Aplikace musí být poskytovány hostitelem, kterého ovlivňují</translation>
 <translation id="4306119971288449206">Aplikace musí být poskytovány s typem obsahu <ph name="CONTENT_TYPE" /></translation>
+<translation id="4349181963619779233">Z tohohle webu nejde přidávat rozšíření a aplikace</translation>
 <translation id="4625078469366263107">Aktivovat aplikaci</translation>
 <translation id="4633003931260532286">Rozšíření vyžaduje rozhraní <ph name="IMPORT_NAME" /> s minimální verzí <ph name="IMPORT_VERSION" />, máte však nainstalovanou pouze verzi <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4660476621274971848">Byla očekávána verze <ph name="EXPECTED_VERSION" />, ale použita byla verze <ph name="NEW_ID" /></translation>

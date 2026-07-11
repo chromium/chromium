@@ -350,6 +350,7 @@
 <translation id="1542105669288201090">비즈니스 교육</translation>
 <translation id="1542830386724426410">결제 시 사용 가능한 카드 혜택 및 리워드를 표시합니다. 발급기관 약관이 적용됩니다. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />자세히 알아보기<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="1545757265410828525">가격 변동 내역</translation>
+<translation id="1546286808622193216">Gemini를 사용하여 카드 혜택 비교</translation>
 <translation id="1549470594296187301">이 기능을 이용하려면 자바스크립트를 사용하도록 설정해야 합니다.</translation>
 <translation id="1553152622374372421">동계 스포츠</translation>
 <translation id="1553358976309200471">Chrome 업데이트</translation>
@@ -2416,6 +2417,7 @@
 <translation id="4744603770635761495">실행 가능 경로</translation>
 <translation id="4744816391336495134">저장된 비밀번호를 사용할 때마다 지문을 사용하여 본인 인증을 할 수 있습니다.</translation>
 <translation id="4749011317274908093">시크릿 모드로 전환됨</translation>
+<translation id="4749620353539006322">리워드 극대화</translation>
 <translation id="4749924365937394956">서버 인증</translation>
 <translation id="4750671009706599284">이 휴대전화</translation>
 <translation id="4750917950439032686">비밀번호나 신용카드 번호 등의 정보는 비공개 상태로 이 사이트에 전송됩니다.</translation>
@@ -2991,6 +2993,7 @@
 <translation id="5611398002774823980">계정에 저장</translation>
 <translation id="561165882404867731">Google 번역으로 이 페이지를 번역하세요.</translation>
 <translation id="5612720917913232150"><ph name="URL" />에서 내 컴퓨터의 위치에 액세스하려고 합니다</translation>
+<translation id="5613958591683399697"><ph name="ENGINE_NAME" />에 물어보기</translation>
 <translation id="5614190747811328134">사용자 알림</translation>
 <translation id="5614520971155863709">카드 게임</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" />에서 리디렉션한 횟수가 너무 많습니다.</translation>

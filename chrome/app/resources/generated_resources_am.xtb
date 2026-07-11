@@ -4998,6 +4998,7 @@
 <translation id="4849286518551984791">የተቀነባበረ ሁለገብ ሰዓት (ዩቲሲ/ጂኤምቲ)</translation>
 <translation id="4849517651082200438">አትጫን</translation>
 <translation id="4849731766219625109">የእርስዎን <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> መለያ ይጠቀሙ</translation>
+<translation id="4850279708232718725">ስለዚህ ንገረኝ</translation>
 <translation id="485053257961878904">የማሳወቂያዎች ስምረትን ማቀናበር አልተቻለም</translation>
 <translation id="4850548109381269495">በሁለቱም መሣሪያዎች ላይ የእርስዎን የበይነመረብ ግንኙነት ይፈትሹ እና ብሉቱዝን ያብሩ። ከዚያም እንደገና ይሞክሩ።</translation>
 <translation id="4850669014075537160">ሽብለላ</translation>
@@ -6346,6 +6347,7 @@
 <translation id="5922854266885514646">«Chromeን አብጅ» ላይ ጠቅ ያድርጉ</translation>
 <translation id="5924047253200400718">እገዛን ያግኙ<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">የMicrosoft ፋይሎችን ወደ Google Drive ከመቅዳትዎ ወይም ከማንቀሳቀስዎ በፊት ይጠይቁ</translation>
+<translation id="5925057331573749968">በQR ኮድ ይበልጥ በፍጥነት ይግቡ</translation>
 <translation id="5926936390113611560">ሁሉንም መገለጫዎች ክፈት</translation>
 <translation id="592880897588170157">በChrome ውስጥ በራስ-ሰር ከመክፈት ይልቅ የፒዲኤፍ ፋይሎችን አውርድ</translation>
 <translation id="5930567261594625340">የማታ ሰማይ</translation>
@@ -9501,6 +9503,7 @@ nil</translation>
 <translation id="8372678064309688510">የእርስዎ አድራሻ ተቀምጧል</translation>
 <translation id="8373652277231415614">በCrostini የተጋሩ ማውጫዎች</translation>
 <translation id="8374243500935816406">ጣቢያዎች በሁሉም የእርስዎ ማሳያዎች ላይ መስኮቶችን እንዲያስተዳድሩ አይፍቀዱ</translation>
+<translation id="8375703478696038265">እርምጃ <ph name="STEP_NUMBER" /> ከ<ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Google Cast ላይ ምን እየተፈጠረ እንዳለ ይንገሩን።</translation>
 <translation id="8376384591331888629">በዚህ ጣቢያ ላይ የሶስተኛ ወገን ኩኪዎችን ጨምሮ</translation>
 <translation id="8376451933628734023">ይህ የድር መተግበሪያ ሌላ መተግበሪያ ነው ብለው እንዲያስቡት ለማታለል እየሞከረ ከሆነ ያራግፉት።</translation>
@@ -10572,6 +10575,7 @@ nil</translation>
 <translation id="9188142767272053574">የሂደት መገለልን ያንቁ</translation>
 <translation id="9192019773545828776">የመሣሪያዎን ማያ ገፅ ሳይመለከቱ መጠቀም እንዲችሉ የቃል ግብረመልስን ይስሙ። የብሬይል ግብረመልስ በተገናኘ መሣሪያ ይገኛል። ChromeVoxን ለማብራት እና ለማጥፋት Ctrl + Alt + Zን ይጠቀሙ። ለማሰስ Search + የግራ ቀስት ወይም የቀኝ ቀስትን ይጠቀሙ። ለመምረጥ (ማግበር) Search + Spaceን ይጠቀሙ።</translation>
 <translation id="9195969368671142407">ድርጅትዎ ወደ Google መለያ ማስቀመጥን ከገደበ የትር ቡድኖችን ማጋራት ወይም መቀላቀል አይችሉም</translation>
+<translation id="9197456336762295195">ለgoogle.com የይለፍ ቁልፍዎን በያዘው መሣሪያ ላይ ባለው ካሜራ ይህን QR ኮድ ይቃኙ።</translation>
 <translation id="919840898042157087">የማይንቀሳቀስ እንቅስቃሴ</translation>
 <translation id="9199503643457729322">ከግላዊነት መመሪያ ለማሰስ ጠቅ ያድርጉ።</translation>
 <translation id="9199695835892108985">ሁሉም የተከታታይ ወደብ ፈቃዶች እንደገና ይጀምሩ?</translation>

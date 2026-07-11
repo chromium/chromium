@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Mostra una aparença vívida i etèria</translation>
 <translation id="243179355394256322">La teva organització limita la inscripció de dispositius només als usuaris autoritzats. Aquest usuari no té autorització per inscriure dispositius. Assegura't que l'usuari tingui el privilegi d'administrador "Inscriure maquinari de Google Meet" a la secció de la consola d'administració Usuaris.</translation>
 <translation id="2439152382014731627">Restableix la contrasenya del dispositiu (<ph name="DEVICE_TYPE" />)</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />La instal·lació <ph name="BEGIN_BOLD" />esborrarà tota la unitat de disc dur<ph name="END_BOLD" />. Assegura't de tenir còpies de seguretat de les dades.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Quan comenci la instal·lació, no es podrà cancel·lar.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">No podreu afegir usuaris perquè falten les claus de l'API de Google. Consulteu <ph name="DETAILS_URL" /> per obtenir-ne més informació.</translation>
 <translation id="24786041351753425">Activa el servei de recuperació de dades</translation>
 <translation id="2485681265915754872">Condicions del servei de Google Play</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Els Chromebook utilitzen aplicacions en lloc de programari tradicional. Obtén aplicacions de productivitat, entreteniment i més.</translation>
 <translation id="450867954911715010">Configuració d'accessibilitat</translation>
 <translation id="4519605771716872386">La sincronització de fitxers s'ha activat</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Prova aquests passos per resoldre el problema:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Assegura't que el dispositiu contingui un emmagatzematge intern que funcioni, com ara un HDD, SSD o eMMC.
+    <ph name="LIST_ITEM" />Comprova que el dispositiu d'emmagatzematge intern tingui més de 16 GB.
+    <ph name="LIST_ITEM" />Comprova la connexió a l'emmagatzematge intern, si s'hi pot accedir físicament.
+    <ph name="LIST_ITEM" />Assegura't que utilitzis un model certificat i consulta les notes d'instal·lació.
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Per obtenir més ajuda, ves a g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">A qui t'agradaria afegir al <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Si vols canviar-ho després de la inscripció, hauràs de restablir les dades de fàbrica (Powerwash) del dispositiu.</translation>
 <translation id="4567512141633030272">Opció d'inici de sessió incorrecta?</translation>
@@ -569,6 +580,8 @@
 <translation id="7189451821249468368">No tens prou actualitzacions per inscriure aquest dispositiu. Contacta amb l'equip de vendes per comprar-ne més. Si creus que veus aquest missatge per error, posa't en contacte amb el servei d'assistència.</translation>
 <translation id="7202337678781136582">Escaneja el codi QR amb el telèfon Android</translation>
 <translation id="7228854227189381547">No canviïs</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Per gaudir de la millor experiència possible, instal·la <ph name="DEVICE_OS" /> al disc intern. També pots instal·lar-lo més tard des de la pantalla d'inici de sessió.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Si no estàs a punt per instal·lar-lo, pots executar-lo des de l'USB per provar-lo. Aquesta acció conservarà el teu sistema operatiu i les teves dades actuals, però és possible que vegis límits d'emmagatzematge i de rendiment.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Els canvis s'aplicaran després de la configuració</translation>
 <translation id="7260186537988033909">S'ha completat la inscripció del dispositiu de quiosc i de cartelleria</translation>
 <translation id="7284411326658527427">Cada persona pot personalitzar el seu compte i mantenir la privadesa de les dades.</translation>
@@ -586,6 +599,8 @@
 <translation id="7416263748877373774">Les condicions del servei no es poden carregar. Comprova la connexió de xarxa i torna-ho a provar.</translation>
 <translation id="7475742997309661417">El lector de pantalla de ChromeOS, ChromeVox, l'utilitzen principalment persones amb ceguesa o poca visió per llegir el text que es mostra en pantalla amb un sintetitzador de veu o una pantalla braille. Mantén premudes les dues tecles de volum durant cinc segons per activar ChromeVox. Quan ChromeVox estigui activat, podràs fer una visita ràpida.</translation>
 <translation id="7476454130948140105">No hi ha prou bateria per fer l'actualització (<ph name="BATTERY_PERCENT" />%)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Hi ha hagut un error i no s'ha pogut instal·lar <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Per obtenir més ajuda, ves a g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Abans d'inscriure't, has d'esborrar el TPM perquè <ph name="DEVICE_OS" /> pugui assumir la propietat del dispositiu.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />També pots desactivar el dispositiu TPM completament. Les teves dades es continuaran emmagatzemant de manera segura amb encriptació de programari, però algunes funcions de seguretat, com ara els certificats recolzats per maquinari, es desactivaran.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Pots canviar la configuració del TPM reiniciant el dispositiu i accedint a la configuració del BIOS o de la UEFI del sistema. Els passos varien en funció del model de dispositiu. Per obtenir més informació, obre la documentació de <ph name="DEVICE_OS" /> en un altre dispositiu abans de reiniciar: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

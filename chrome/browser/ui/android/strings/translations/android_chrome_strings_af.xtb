@@ -189,6 +189,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1807709131360304325">Maak ’n nuwe venster oop</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> kan nie voortgaan om <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> te gebruik nie</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, oortjie wat opgeneem word</translation>
+<translation id="1819443852740954262">Maak alles in Incognito-venster oop</translation>
 <translation id="1820408774134375111">Aanmelding se onderste blad</translation>
 <translation id="1823492026305965829">Meld aan as <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">Tik op Vee blaaierdata uit</translation>
@@ -771,7 +772,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4256782883801055595">Oopbronlisensies</translation>
 <translation id="426652736638196239">Hierdie IBAN sal net op hierdie toestel gestoor word</translation>
 <translation id="4269820728363426813">Kopieer skakeladres</translation>
-<translation id="4270730597186910506">Begin of stop nasporing van ’n produk.</translation>
 <translation id="4277529130885813215">Gebruik ’n ander toestel</translation>
 <translation id="427987768447457592">Nuwe oortjiegroep</translation>
 <translation id="4282440837784183472">Jou organisasie, <ph name="MANAGED_DOMAIN" />, bestuur die rekening waarby jy aanmeld en hoe Chrome gebruik kan word. Jou administrateur kan sekere kenmerke opstel of beperk.</translation>
@@ -1476,6 +1476,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6983306615164277634">Jy kan ook die adresbalk raak en hou om die posisie te verander.</translation>
 <translation id="6987047470128880212">Incognito is nie op hierdie toestel beskikbaar nie</translation>
 <translation id="6996145122199359148">Laai hierdie bladsy af</translation>
+<translation id="7007648447224463482">Maak almal in nuwe venster oop</translation>
 <translation id="7013762323294215682">Hierdie toegangsleutel sal in jou wagwoordbestuurder gestoor word. Enigiemand met toegang daartoe sal hierdie toegangsleutel kan gebruik.</translation>
 <translation id="7020741890149022655">Voeg by leeslys <ph name="BEGIN_NEW" />Nuut<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Maak in blaaier oop</translation>
@@ -1842,6 +1843,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8445448999790540984">Kan nie wagwoorde uitvoer nie</translation>
 <translation id="8446884382197647889">Kom meer te wete</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Toestemmings is van 1 werf verwyder}other{Toestemmings is van # werwe verwyder}}</translation>
+<translation id="8449836157089738489">Maak almal in nuwe oortjiegroep oop</translation>
 <translation id="8453310803815879010">Begin Dinosourusspeletjie</translation>
 <translation id="8455675988389029454">Kry jou boekmerke, wagwoorde en meer op al jou toestelle</translation>
 <translation id="8458341576712814616">Kortpad</translation>
@@ -1863,6 +1865,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8506357771923193001">Jy sal jou aflaaie hier kry</translation>
 <translation id="8512053371384421952">Jy sal nie meer kennisgewings van<ph name="DOMAIN" /> ontvang nie.</translation>
 <translation id="8516012719330875537">Prentredigeerder</translation>
+<translation id="8517759303731677493">Wysig …</translation>
 <translation id="8533670235862049797">Veiligblaai is aan</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, multigekose vasgespelde prent-in-prent-oortjie</translation>
 <translation id="8540136935098276800">Voer 'n URL in wat reg geformateer is</translation>

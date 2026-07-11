@@ -189,6 +189,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="1807709131360304325">Yeni pəncərə açın</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> istifadəsinə davam edə bilməz</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, Qeydəalma tabı</translation>
+<translation id="1819443852740954262">Hamısını Anonim pəncərədə açın</translation>
 <translation id="1820408774134375111">Giriş üzrə aşağıdakı vərəq</translation>
 <translation id="1823492026305965829"><ph name="USER_FULL_NAME" /> olaraq daxil olun</translation>
 <translation id="1824902652744048041">Axtarış datasını silin seçiminə toxunun</translation>
@@ -771,7 +772,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4256782883801055595">Açıq mənbə lisenziyaları</translation>
 <translation id="426652736638196239">Bu IBAN yalnız bu cihazda yadda saxlanılacaq</translation>
 <translation id="4269820728363426813">Link ünvanını kopyalayın</translation>
-<translation id="4270730597186910506">Məhsulu izləyin və ya izləməyin.</translation>
 <translation id="4277529130885813215">Digər cihazdan istifadə edin</translation>
 <translation id="427987768447457592">Yeni tab qrupu</translation>
 <translation id="4282440837784183472">Təşkilat (<ph name="MANAGED_DOMAIN" />) daxil olduğunuz hesabı və Chrome-dan istifadə qaydasını idarə edir. Administrator müəyyən funksiyaları ayarlaya və ya məhdudlaşdıra bilər.</translation>
@@ -1474,6 +1474,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6983306615164277634">Mövqeni dəyişmək üçün ünvan panelinə toxunub saxlaya bilərsiniz.</translation>
 <translation id="6987047470128880212">Anonim bu cihazda əlçatan deyil</translation>
 <translation id="6996145122199359148">Bu səhifəni endirin</translation>
+<translation id="7007648447224463482">Hamısını yeni pəncərədə açın</translation>
 <translation id="7013762323294215682">Bu giriş açarı parol menecerində yadda saxlanacaq. Giriş imkanı olan hər kəs ondan istifadə edə biləcək.</translation>
 <translation id="7020741890149022655">Oxu siyahısına əlavə edin <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Brauzerdə açın</translation>
@@ -1840,6 +1841,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8445448999790540984">Parolları eksport etmək alınmadı</translation>
 <translation id="8446884382197647889">Ətraflı Məlumat</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{1 saytdan icazələr silindi}other{# saytdan icazələr silindi}}</translation>
+<translation id="8449836157089738489">Hamısını yeni tab qrupunda açın</translation>
 <translation id="8453310803815879010">Dinozavr oyununu başladın</translation>
 <translation id="8455675988389029454">Əlfəcin, parol və s. məlumatları bütün cihazlarda əldə edin</translation>
 <translation id="8458341576712814616">Qısayol</translation>
@@ -1861,6 +1863,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8506357771923193001">Endirmələr burada olacaq</translation>
 <translation id="8512053371384421952"><ph name="DOMAIN" /> ünvanından bildiriş almayacaqsınız.</translation>
 <translation id="8516012719330875537">Şəkil Redaktoru</translation>
+<translation id="8517759303731677493">Redaktə edin…</translation>
 <translation id="8533670235862049797">Təhlükəsiz Baxış aktivdir</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, Çoxseçimli, bərkidilmiş şəkildə şəkil tabı</translation>
 <translation id="8540136935098276800">Düzgün formatlanmış URL daxil edin</translation>

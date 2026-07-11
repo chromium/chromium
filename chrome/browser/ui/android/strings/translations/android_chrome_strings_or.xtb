@@ -189,6 +189,7 @@
 <translation id="1807709131360304325">ଏକ ନୂଆ ୱିଣ୍ଡୋ ଖୋଲନ୍ତୁ</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />କୁ ବ୍ୟବହାର କରିବା ଜାରି ରଖିପାରିବ ନାହିଁ</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, ରେକର୍ଡ କରୁଥିବା ଟାବ</translation>
+<translation id="1819443852740954262">ସବୁ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="1820408774134375111">ସାଇନ ଇନ ବଟମ ସିଟ</translation>
 <translation id="1823492026305965829"><ph name="USER_FULL_NAME" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="1824902652744048041">ବ୍ରାଉଜିଂ ଡାଟା ଡିଲିଟ କରନ୍ତୁରେ ଟାପ କରନ୍ତୁ</translation>
@@ -771,7 +772,6 @@
 <translation id="4256782883801055595">ମୁକ୍ତ ଉତ୍ସ ଲାଇସେନ୍ସ</translation>
 <translation id="426652736638196239">ଏହି IBANକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯିବ</translation>
 <translation id="4269820728363426813">ଲିଙ୍କ୍ ଠିକଣା କପି କରନ୍ତୁ</translation>
-<translation id="4270730597186910506">ଏକ ପ୍ରଡକ୍ଟକୁ ଟ୍ରାକ କିମ୍ବା ଅନଟ୍ରାକ କରନ୍ତୁ।</translation>
 <translation id="4277529130885813215">ଅନ୍ୟ ଏକ ଡିଭାଇସ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="427987768447457592">ନୂଆ ଟାବ ଗ୍ରୁପ</translation>
 <translation id="4282440837784183472">ଆପଣ ସାଇନ ଇନ କରୁଥିବା ଆକାଉଣ୍ଟ ଏବଂ Chromeକୁ କିପରି ବ୍ୟବହାର କରାଯାଇପାରିବ ତାକୁ ଆପଣଙ୍କ ସଂସ୍ଥା, <ph name="MANAGED_DOMAIN" />, ପରିଚାଳନା କରେ। ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ନିର୍ଦ୍ଦିଷ୍ଟ ଫିଚରଗୁଡ଼ିକୁ ସେଟ ଅପ କିମ୍ବା ପ୍ରତିବନ୍ଧିତ କରିପାରିବେ।</translation>
@@ -1476,6 +1476,7 @@
 <translation id="6983306615164277634">ଆପଣ ଅବସ୍ଥିତିକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଠିକଣା ବାରକୁ ମଧ୍ୟ ସ୍ପର୍ଶ କରି ଧରି ରଖିପାରିବେ।</translation>
 <translation id="6987047470128880212">ଏହି ଡିଭାଇସରେ ଇନକଗ୍ନିଟୋ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="6996145122199359148">ଏହି ପୃଷ୍ଠା ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
+<translation id="7007648447224463482">ସବୁ ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="7013762323294215682">ଏହି ପାସକୀ'କୁ ଆପଣଙ୍କ Password Managerରେ ସେଭ କରାଯିବ। ଏହି ପାସକୀ'କୁ ଆକ୍ସେସ ଥିବା ଯେ କୌଣସି ବ୍ୟକ୍ତି ଏହାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ସକ୍ଷମ ହେବେ।</translation>
 <translation id="7020741890149022655">ପଢ଼ିବା ତାଲିକାରେ ଯୋଗ କରନ୍ତୁ <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ବ୍ରାଉଜର୍‌ରେ ଖୋଲନ୍ତୁ</translation>
@@ -1842,6 +1843,7 @@
 <translation id="8445448999790540984">ପାସ୍‍ୱାର୍ଡ ଏକ୍ସପୋର୍ଟ କରିପାରିବ ନାହିଁ</translation>
 <translation id="8446884382197647889">ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{1 ସାଇଟରୁ ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯାଇଛି}other{# ସାଇଟରୁ ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯାଇଛି}}</translation>
+<translation id="8449836157089738489">ସମସ୍ତ URLକୁ ନୂଆ ଟାବ ଗ୍ରୁପରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="8453310803815879010">Dino ଗେମ୍ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="8455675988389029454">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ବୁକମାର୍କ, ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଆନ୍ତୁ</translation>
 <translation id="8458341576712814616">ସର୍ଟକଟ୍</translation>
@@ -1863,6 +1865,7 @@
 <translation id="8506357771923193001">ଆପଣ ଏଠାରେ ଆପଣଙ୍କ ଡାଉନଲୋଡଗୁଡ଼ିକ ପାଇବେ</translation>
 <translation id="8512053371384421952">ଆପଣ <ph name="DOMAIN" />ରୁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଆଉ ପାଇବେ ନାହିଁ।</translation>
 <translation id="8516012719330875537">ଇମେଜ୍ ଏଡିଟର୍</translation>
+<translation id="8517759303731677493">ଏଡିଟ କରନ୍ତୁ…</translation>
 <translation id="8533670235862049797">ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ଚାଲୁ ଅଛି</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, ମଲ୍ଟିସିଲେକ୍ଟେଡ ପିନ ହୋଇଥିବା ପିକଚର-ଇନ-ପିକଚର ଟାବ</translation>
 <translation id="8540136935098276800">ସଠିକ୍ ଭାବରେ ଫର୍ମାଟ୍ କରାଯାଇଥିବା ଗୋଟିଏ URL ଲେଖନ୍ତୁ</translation>

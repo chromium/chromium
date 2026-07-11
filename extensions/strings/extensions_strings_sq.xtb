@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Faqja informuese <ph name="ABOUT_PAGE" /> nuk mund të ngarkohej.</translation>
 <translation id="424963718355121712">Aplikacionet duhet të shërbehen nga strehuesi që prekin</translation>
 <translation id="4306119971288449206">Aplikacionet duhet të shërbehen me llojin "<ph name="CONTENT_TYPE" />" të përmbajtjes</translation>
+<translation id="4349181963619779233">Shtesat dhe aplikacionet nuk mund të shtohen nga ky uebsajt</translation>
 <translation id="4625078469366263107">Aktivizo aplikacionin</translation>
 <translation id="4633003931260532286">Shtesa kërkon "<ph name="IMPORT_NAME" />" me një version minimal "<ph name="IMPORT_VERSION" />", por është instaluar vetëm versioni "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4660476621274971848">Versioni i pritur ishte "<ph name="EXPECTED_VERSION" />", por versioni rezultoi "<ph name="NEW_ID" />".</translation>

@@ -140,6 +140,8 @@
 <translation id="2418307627282545839">밝고 가벼운 느낌을 줍니다.</translation>
 <translation id="243179355394256322">조직에서 승인된 사용자만 기기를 등록할 수 있도록 제한하고 있습니다. 이 사용자는 기기를 등록할 권한이 없습니다. 관리 콘솔의 사용자 섹션에서 사용자가 'Google Meet 하드웨어 등록' 관리자 권한을 보유하고 있는지 확인하세요.</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> 비밀번호 재설정</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />설치를 진행하면 <ph name="BEGIN_BOLD" />하드 드라이브 전체가 삭제됩니다<ph name="END_BOLD" />. 데이터가 백업되었는지 확인하세요.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />설치가 시작된 후에는 취소할 수 없습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Google API 키가 누락되었으므로 사용자를 추가할 수 없습니다. 자세한 내용은 <ph name="DETAILS_URL" /> 페이지를 참조하세요.</translation>
 <translation id="24786041351753425">데이터 복구 서비스 사용 설정</translation>
 <translation id="2485681265915754872">Google Play 서비스 약관</translation>
@@ -322,6 +324,15 @@
 <translation id="4487489714832036847">Chromebook에서는 기존 소프트웨어 대신 앱을 사용합니다. 생산성, 엔터테인먼트 등을 위한 앱을 활용해 보세요.</translation>
 <translation id="450867954911715010">접근성 설정</translation>
 <translation id="4519605771716872386">파일 동기화 사용 설정됨</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />다음 문제 해결 단계를 시도해 보세요.
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />기기에 HDD, SSD 또는 eMMC와 같은 내부 저장소가 설치되어 있고 정상 작동하는지 확인하세요.
+        <ph name="LIST_ITEM" />내부 저장소가 16GB 이상인지 확인하세요.
+        <ph name="LIST_ITEM" />내부 저장소 연결을 물리적으로 확인할 수 있으면 점검하세요.
+        <ph name="LIST_ITEM" />인증된 모델을 사용하고 있는지 확인하고 설치 노트를 확인하세요.
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />도움이 더 필요하면 g.co/flex/InstallErrors 페이지를 참고하세요.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143"><ph name="DEVICE_TYPE" />에 어떤 사용자를 추가할까요?</translation>
 <translation id="4566170377336116390">등록 후 전환하려면 기기를 초기화(파워워시)해야 합니다.</translation>
 <translation id="4567512141633030272">잘못된 로그인 옵션인가요?</translation>
@@ -574,6 +585,8 @@
 <translation id="7189451821249468368">기기를 등록하는 데 필요한 업그레이드가 부족합니다. 판매처에 문의하여 추가로 구매하시기 바랍니다. 이 메시지가 잘못 표시되었다고 판단되는 경우 지원팀에 문의하세요.</translation>
 <translation id="7202337678781136582">Android 휴대전화로 QR 코드 스캔</translation>
 <translation id="7228854227189381547">전환 안함</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />최적의 환경에서 이용하려면 <ph name="DEVICE_OS" />을(를) 내부 디스크에 설치하세요. 나중에 로그인 화면에서 설치할 수도 있습니다.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />아직 설치할 준비가 되지 않았다면 USB에서 실행하여 사용해 볼 수도 있습니다. 이렇게 하면 기존 OS와 데이터는 그대로 유지되지만 저장용량과 성능이 제한될 수 있습니다<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">설정 후 변경사항이 적용됩니다.</translation>
 <translation id="7260186537988033909">키오스크 및 사이니지 기기 등록 완료</translation>
 <translation id="7284411326658527427">모든 사용자는 자신의 계정을 맞춤설정하고 데이터를 비공개로 유지할 수 있습니다.</translation>
@@ -591,6 +604,8 @@
 <translation id="7416263748877373774">서비스 약관을 로드할 수 없습니다. 네트워크 연결을 확인한 다음 다시 시도하세요.</translation>
 <translation id="7475742997309661417">ChromeOS의 스크린 리더인 ChromeVox는 주로 시각장애인과 저시력자가 음성 합성기나 점자 디스플레이를 통해 화면에 표시된 텍스트를 읽는 데 사용됩니다. ChromeVox를 사용 설정하려면 볼륨 키 2개를 5초 동안 길게 누르세요. ChromeVox가 활성화되면 빠르게 둘러볼 수 있습니다.</translation>
 <translation id="7476454130948140105">배터린 잔량이 부족하여(<ph name="BATTERY_PERCENT" />%) 업데이트할 수 없음</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />문제가 발생하여 <ph name="DEVICE_OS" />을(를) 설치할 수 없습니다.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />도움이 더 필요하면 g.co/flex/InstallErrors 페이지를 참고하세요<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />등록하기 전에 <ph name="DEVICE_OS" />에서 기기 소유권을 가질 수 있도록 TPM을 삭제해야 합니다.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />TPM 기기를 완전히 끌 수도 있습니다. 데이터는 소프트웨어 암호화를 통해 계속 안전하게 저장되지만 하드웨어 지원 인증서와 같은 특정 보안 기능은 중지됩니다.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />재부팅하고 시스템 BIOS/UEFI 설정을 입력하여 TPM 설정을 변경할 수 있습니다. 기기 모델에 따라 설정을 변경하는 단계가 다를 수 있습니다. 자세한 내용을 확인하려면 재부팅하기 전에 별도의 기기에서 <ph name="DEVICE_OS" /> 도움말(g.co/flex/TPMHelp)을 참고하세요.<ph name="END_PARAGRAPH3" /></translation>

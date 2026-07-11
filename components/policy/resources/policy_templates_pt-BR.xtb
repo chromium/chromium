@@ -2799,6 +2799,7 @@ Se a política for definida como 2 ("Desativada"), a integração do Google Deve
 <translation id="2707733461906745082">Separação de perfis</translation>
 <translation id="2707873794476722903">O "Navegação segura" está ativo no modo padrão.</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
+<translation id="2712089199157322391">Permitir as Ferramentas para Desenvolvedores na navegação padrão da web, mas as restringir para as extensões que foram instaladas pela empresa e as que são integradas para usuários gerenciados. As ferramentas são bloqueadas em páginas que incorporam essas extensões a partir da versão 150, exceto o visualizador de PDF integrado.</translation>
 <translation id="2713913573196284609">Esse valor foi descontinuado na versão M121. Na versão M121 e em versões mais recentes, os valores serão tratados como EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Sempre enviar métricas ao Google</translation>
 <translation id="2714359695399346815">Se a política for definida como "Ativada" ou deixada sem definição, o uso de servidores STUN será permitido, isso faz com que clientes remotos possam descobrir e se conectar a esta máquina, mesmo quando separados por um firewall.
@@ -6657,7 +6658,7 @@ Cada entrada na lista especifica:
 
 * <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: o identificador do domínio de provisionamento (um nome de domínio).
 
-* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: a configuração de autenticação opcional. Se não for configurada ou for definida como "nenhuma", a autenticação não será realizada. Quando definido como "profile_bearer_token", o navegador recupera um token de acesso OAuth2 com o escopo fornecido para a conta principal conectada e o anexa no cabeçalho "Authorization" como um token "Bearer".
+* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: a configuração de autenticação opcional. Se não for configurada ou for definida como "none", a autenticação não será realizada. Quando definido como "profile_bearer_token", o navegador recupera um token de acesso OAuth2 com o escopo fornecido para a conta principal conectada e o anexa no cabeçalho "Authorization" como um token "Bearer".
 
 * <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: uma lista opcional de cabeçalhos HTTP personalizados para incluir ao consultar o endpoint do PvD. É possível injetar valores dinâmicos, como "profile_id" (que representa um identificador estável e exclusivo do perfil do navegador no dispositivo, permitindo a segmentação de configuração por perfil) ou "accept_language" (que representa os idiomas preferenciais do navegador).
 
@@ -10930,7 +10931,6 @@ As políticas que precisam ser mescladas também precisam ser definidas na <ph n
 <translation id="7652330587655863759">O tipo de autenticação.
 
 * 'none': nenhuma autenticação é realizada.
-
 * 'profile_bearer_token': instrui o navegador a buscar um token de acesso OAuth2 para a conta principal conectada e anexá-lo no cabeçalho "Authorization" como um token "Bearer".</translation>
 <translation id="7657261947024629645">Otimiza o desempenho.</translation>
 <translation id="76580522298425324">Permitir captura de tela sem o gesto anterior do usuário</translation>
@@ -12976,27 +12976,6 @@ Veja mais detalhes em https://support.google.com/chrome/a/answer/9301891.</trans
 <translation id="8931555638815157255">Se a política for definida como "Ativada" ou não for definida, os dispositivos registrados informarão a versão do SO e do firmware periodicamente.
 
       Se a política for definida como "Desativada", os dispositivos registrados não relatarão as informações de versão.</translation>
-<translation id="8931984670731745012">Ao definir essa política, é possível especificar quais tipos de dados de preenchimento automático são bloqueados em padrões de URL específicos.
-
-A política é estruturada como uma lista de dicionários. Cada dicionário precisa conter:
-* "url_pattern": um padrão do URL de configuração de conteúdo (por exemplo, "https://[*.]example.com").
-* "blocked_types": uma lista de strings que representam as categorias de dados de preenchimento automático a serem bloqueadas.
-
-Os valores aceitos para "blocked_types" são:
-* "contact_info": bloqueia o preenchimento e o salvamento de dados de contato.
-* "payments": impede o preenchimento e o salvamento de cartões de crédito e formas de pagamento.
-* "identity_docs": impede o preenchimento e o salvamento de documentos de identificação (por exemplo, passaporte, carteira de habilitação, documento de identidade nacional).
-* "travel": impede o preenchimento e o salvamento de informações de viagem (por exemplo, reserva de voo, registro de veículo).
-* "shopping": impede o preenchimento e o salvamento de informações de compras (por exemplo, pedidos on-line, envios).
-
-Se um tipo de dados for bloqueado para um site, a geração de sugestões e o comando para salvar/importar novos dados desse tipo serão desativados nesse site.
-
-Se um URL corresponder a várias entradas de padrão na lista, os tipos bloqueados de todas as entradas correspondentes serão combinados (mesclados por união). Os padrões de URL inválidos na lista são ignorados.
-
-Se a política for deixada sem definição, nenhum tipo de dados de preenchimento automático será bloqueado por domínio.
-
-Para informações mais detalhadas sobre padrões de URL válidos, consulte:
-https://chromeenterprise.google/policies/url-patterns. O caractere curinga * é compatível. Esse padrão corresponde a qualquer URL, com qualquer esquema, porta e caminho.</translation>
 <translation id="8934296213794658971">Configurações da integração do Gemini</translation>
 <translation id="8937282917198525844"> A partir da versão M81, os elementos padrão de controle de formulários (por exemplo, &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) foram atualizados para proporcionar melhor acessibilidade e uniformidade na plataforma. Esta política restaura os antigos elementos de controle de formulários "legados" até a M84.
 

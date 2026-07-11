@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Не ўдалося загрузіць старонку "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">Праграмы павінны ўсталёўвацца з тых хостаў, з якімі яны працуюць</translation>
 <translation id="4306119971288449206">Праграмы павінны ўключаць наступны тып змесціва: <ph name="CONTENT_TYPE" /></translation>
+<translation id="4349181963619779233">Нельга дадаваць пашырэнні і праграмы з гэтага вэб-сайта</translation>
 <translation id="4625078469366263107">Уключыць праграму</translation>
 <translation id="4633003931260532286">Для пашырэння патрабуецца <ph name="IMPORT_NAME" /> версіі <ph name="IMPORT_VERSION" /> і вышэй, але ўсталявана толькі версія <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4660476621274971848">Чакалася версія "<ph name="EXPECTED_VERSION" />", фактычная версія – "<ph name="NEW_ID" />"</translation>
