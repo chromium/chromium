@@ -1790,7 +1790,7 @@
 <translation id="3761718714832595332">إخفاء الحالة</translation>
 <translation id="3763752038825281594">لم تسمح في السابق باستخدام <ph name="PERMISSION" /> لهذا الموقع الإلكتروني</translation>
 <translation id="3765588406864124894">صندوق البريد الإلكتروني 9</translation>
-<translation id="3766505784424699541">يمكنك الحصول على ردود مخصصة أكثر لك من خلال المشاركة التلقائية لعلامات التبويب ذات الصلة في هذه النافذة إذا كانت مرتبطة بسلسلة المحادثات هذه.</translation>
+<translation id="3766505784424699541">يمكنك الحصول على ردود أكثر تخصيصًا من خلال مشاركة علامات التبويب تلقائيًا في هذه النافذة إذا كانت مرتبطة بسلسلة المحادثات هذه.</translation>
 <translation id="3767485424735936570">لا تقترح سياسة المشرف نسخ هذا المحتوى ولصقه في <ph name="VM_NAME" />.</translation>
 <translation id="3769584711865378220">يريد <ph name="URL" /> تغيير إذن الوصول إلى الموقع الجغرافي من "تقريبي" إلى "دقيق"</translation>
 <translation id="3772211998634047851">ورق (سندات)</translation>
@@ -2394,7 +2394,7 @@
 <translation id="4726672564094551039">إعادة تحميل السياسات</translation>
 <translation id="4728558894243024398">النظام الأساسي</translation>
 <translation id="4729147136006144950">مؤسسات وأعمال خيرية</translation>
-<translation id="4730773064303503917">‏إرسال دفعات عبر Pix إلى الشركات والأصدقاء الذين يستخدمون "محفظة Google"</translation>
+<translation id="4730773064303503917">‏يمكنك إرسال الدفعات عبر Pix إلى الشركات والأصدقاء الذين يستخدمون "محفظة Google"</translation>
 <translation id="4730977633786878901">عرض المراجعات</translation>
 <translation id="4731638775147756694">حظَر مشرفك هذا التطبيق.</translation>
 <translation id="4732860731866514038">جارٍ تنزيل حزمة اللغة <ph name="LANGUAGE" />… %<ph name="PERCENT" /></translation>
@@ -4516,7 +4516,7 @@
 <translation id="7966803981046576691">نوع حساب المهمة</translation>
 <translation id="7967477318370169806">صناديق استثمار مشتركة</translation>
 <translation id="7967636097426665267">أجهزة الاتصالات</translation>
-<translation id="7967973398323409409">لا يمكن لأي شخص الاطّلاع على المعلومات التي يتم ملؤها تلقائيًا</translation>
+<translation id="7967973398323409409">لا يمكن لأي شخص الاطّلاع على المعلومات التي ملأتها تلقائيًا</translation>
 <translation id="79682505114836835">القيمة "<ph name="VALUE" />" هي لون سداسي عشري غير صالح.</translation>
 <translation id="7968982339740310781">عرض التفاصيل</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 مع ترميز RSA</translation>

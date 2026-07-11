@@ -32,7 +32,6 @@
 <translation id="126567311906253476">Google სერვისებში, მაგალითად, Gmail-სა თუ YouTube-ში <ph name="USER_EMAIL" />-ით შესვლისას შეგიძლიათ Chromium-შიც იმავე ანგარიშით შეხვიდეთ</translation>
 <translation id="1287534462498555020">ჩამოტვირთეთ Chromium თქვენს ტელეფონში</translation>
 <translation id="1290883685122687410">დაყენების შეცდომა: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">ილუსტრაცია, რომელიც აჩვენებს, თუ როგორ შეგიძლიათ გამოიყენოთ სურათების ძიება პროდუქტის მოსაძებნად</translation>
 <translation id="1315551408014407711">შექმენით ახალი Chromium პროფილი</translation>
 <translation id="132092532143527429">ცადეთ Gemini Chromium-ში</translation>
 <translation id="1324107359134968521">Chromium საჭიროებს Bluetooth-ს, რომ აღმოაჩინოს 
@@ -511,7 +510,6 @@
 <translation id="6400112897226594999">Chromium-ის ლოგო კომპიუტერის ეკრანზე.</translation>
 <translation id="6403826409255603130">Chromium არის ვებ ბრაუზერი, რომელიც ვებგვერდებს და აპლიკაციებს ელვისებური სისწრაფით ხსნის. ის არის სწრაფი, სტაბილური და გამოსაყენებლად მარტივი. დაათვალიერეთ ვები უფრო უსაფრთხოდ Chromium-ში ჩაშენებული საზიანო პროგრამული უზრუნველყოფისა და თაღლითობისგან დაცვის საშუალებით.</translation>
 <translation id="6414624068245092115">დაადასტურეთ ვინაობა, რომ თქვენს Google ანგარიშში გამოიყენოთ და შეინახოთ Chromium-ის მონაცემები</translation>
-<translation id="6417332166651156371">გამარტივებული სურათი, რომელიც აჩვენებს პაროლების მმართველის კონტაქტის წერტილს Chromium-ში</translation>
 <translation id="642132557830635295">Chromium უფრო სწრაფად, ხოლო ფუნქციები, რომლებიც JavaScript-ს იყენებს, დანიშნულებისამებრ იმუშავებს</translation>
 <translation id="6436260184216827876">სურათების ძიება მიუწვდომელია. ცადეთ მოგვიანებით.</translation>
 <translation id="6442900851116057561">გადატვირთეთ ChromiumOS</translation>

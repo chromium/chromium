@@ -6653,7 +6653,7 @@ Cada entrada na lista especifica:
 
 * <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: o identificador do domínio de provisionamento (um nome de domínio).
 
-* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: a configuração de autenticação opcional. Se não for configurada ou for definida como "nenhuma", a autenticação não será realizada. Quando definido como "profile_bearer_token", o navegador recupera um token de acesso OAuth2 com o escopo fornecido para a conta principal conectada e o anexa no cabeçalho "Authorization" como um token "Bearer".
+* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: a configuração de autenticação opcional. Se não for configurada ou for definida como "none", a autenticação não será realizada. Quando definido como "profile_bearer_token", o navegador recupera um token de acesso OAuth2 com o escopo fornecido para a conta principal conectada e o anexa no cabeçalho "Authorization" como um token "Bearer".
 
 * <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: uma lista opcional de cabeçalhos HTTP personalizados para incluir ao consultar o endpoint do PvD. É possível injetar valores dinâmicos, como "profile_id" (que representa um identificador estável e exclusivo do perfil do navegador no dispositivo, permitindo a segmentação de configuração por perfil) ou "accept_language" (que representa os idiomas preferenciais do navegador).
 
@@ -10923,7 +10923,6 @@ As políticas que precisam ser mescladas também precisam ser definidas na <ph n
 <translation id="7652330587655863759">O tipo de autenticação.
 
 * 'none': nenhuma autenticação é realizada.
-
 * 'profile_bearer_token': instrui o navegador a buscar um token de acesso OAuth2 para a conta principal conectada e anexá-lo no cabeçalho "Authorization" como um token "Bearer".</translation>
 <translation id="7657261947024629645">Otimiza o desempenho.</translation>
 <translation id="76580522298425324">Permitir captura de tela sem o gesto anterior do usuário</translation>

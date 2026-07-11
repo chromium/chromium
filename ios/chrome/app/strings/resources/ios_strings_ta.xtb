@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">சேமிப்பகம் நிரம்பிவிட்டது</translation>
 <translation id="1181037720776840403">அகற்று</translation>
 <translation id="1190609913194133056">அறிவிப்பு மையம்</translation>
+<translation id="1196534270480620381">இந்தப் பக்கத்தின் சுருக்க விவரத்தை வழங்கு</translation>
 <translation id="1199631150313925648">நீங்களே ஸ்கேன் செய்யுங்கள்</translation>
 <translation id="1199963004393929848">பச்சை தீம்</translation>
 <translation id="1201402288615127009">அடுத்து</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">இந்தத் தளத்திற்கான கடவுச்சொற்களோ கடவுச்சாவிகளோ இல்லை</translation>
 <translation id="1540800554400757039">முகவரி 1</translation>
 <translation id="154312949627292154">பிற சாதனங்களில் இருந்து பெறப்பட்ட பக்கங்களை நீங்கள் பூட்டுத் திரையில் திறக்கலாம்.</translation>
+<translation id="1544653821167545205">பக்கத்தைச் சுருக்கு</translation>
 <translation id="1545749641540134597">QR குறியீட்டை ஸ்கேன் செய்க</translation>
 <translation id="1545757265410828525">இதுவரையிலான விலைகள்</translation>
 <translation id="1547610699249301703">கடவுச்சொற்களைப் பகிருங்கள்</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Googleளை உங்கள் இயல்புத் தேடல் இன்ஜினாக அமைத்திருந்தால் மட்டுமே திரையில் தேடும் அம்சம் கிடைக்கும். <ph name="BEGIN_LINK" />அமைப்புகளில்<ph name="END_LINK" /> உங்கள் இயல்புத் தேடல் இன்ஜினை மாற்றலாம்.</translation>
 <translation id="1872096359983322073">டார்ச்</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Chromeமில் Gemini என்ன செய்ய முடியும்?</translation>
 <translation id="1881621406744213161">குடும்ப உறுப்பினர்களை அழையுங்கள்</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">ஸ்மார்ட்டாக வரிசைப்படுத்தப்படும் மெனு பட்டி</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">தளங்களிலும் ஆப்ஸிலும் எளிதாக உள்நுழைய உங்கள் கடவுச்சொற்களைச் சேமிக்கலாம்.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">உங்கள் உலாவி பாதுகாப்பாக உள்ளது</translation>
+<translation id="2470654816840674524">Chromeமில் Gemini மூலம் நான் என்னவெல்லாம் செய்யலாம்?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> தளத்திற்கான கடவுச்சொல்லை ஏற்கெனவே சேமித்துள்ளீர்கள்</translation>
 <translation id="247430852844518481">இந்தப் பக்கத்தை மீண்டும் வந்து பார்க்க நீங்கள் நினைவூட்டலை அமைக்கலாம்</translation>
 <translation id="2479148705183875116">அமைப்புகளுக்குச் செல்லவும்</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">“பாதுகாப்புச் சரிபார்ப்பை” மறை</translation>
 <translation id="2625189173221582860">கடவுச்சொல் நகலெடுக்கப்பட்டது</translation>
 <translation id="2626236249646841566">இணைப்பைச் சரிபார்த்துவிட்டு மீண்டும் உள்நுழைய முயலவும்.</translation>
+<translation id="2629543259235506452">இந்தப் பக்கத்திலும் இதுபோன்ற இணையதளங்களிலும் உள்ள தகவல்களைப் பயன்படுத்தி இந்தத் தலைப்பிற்கான சிறிய அளவிலான பொதுவான கேள்விகளை உருவாக்கு</translation>
 <translation id="2635918910848538771">CVCயைத் தானாக நிரப்பும்</translation>
 <translation id="2640733327287333451">பயனர்பெயர் இல்லை ••••••</translation>
 <translation id="264215785133931186">சற்றுமுன் சரிபார்க்கப்பட்டது</translation>
@@ -2349,6 +2354,7 @@
 <translation id="8766790350274092814"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ஆகியவற்றுக்கான கடவுச்சொற்கள் நீக்கப்படும். உங்கள் கணக்குகள் நீக்கப்படாது.</translation>
 <translation id="8775144690796719618">தவறான URL</translation>
 <translation id="8781834595282316166">குழுவில் புதிய தாவல்</translation>
+<translation id="8783445328207519872">இந்தத் தலைப்பு குறித்த பொதுவான கேள்விகளை உருவாக்கு</translation>
 <translation id="8784653774976848206">ஃபைல்களைத் தேர்வுசெய்க</translation>
 <translation id="8786100550345425552">அனுமதிகளை மாற்றுங்கள்</translation>
 <translation id="878871978861915380">"விலைக் கண்காணிப்பை" மறை</translation>

@@ -12535,7 +12535,7 @@ La política se estructura como una lista de diccionarios. Cada diccionario debe
 
 Los valores admitidos para "blocked_types" son:
 * "contact_info": impide que se rellene y se guarde la información de contacto.
-* "payments": impide que se rellenen y guarden tarjetas de crédito y métodos de pago.
+* "payments": impide que se rellenen y se guarden tarjetas de crédito y métodos de pago.
 * "identity_docs": impide rellenar y guardar documentos de identidad (por ejemplo, pasaporte, carné de conducir o documento nacional de identidad).
 * "travel": impide rellenar y guardar información de viajes (por ejemplo, reservas de vuelos o matrículas de vehículos).
 * "shopping": impide rellenar y guardar información de compras (por ejemplo, pedidos online o envíos).

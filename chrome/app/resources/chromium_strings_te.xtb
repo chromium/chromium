@@ -30,7 +30,6 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" />‌తో Gmail లేదా YouTube వంటి Google సర్వీస్‌లకు ఆటోమేటిక్‌గా సైన్ ఇన్ చేస్తున్నప్పుడు, మీరు అదే ఖాతాతో Chromiumకి సైన్ ఇన్ చేయవచ్చు</translation>
 <translation id="1287534462498555020">మీ ఫోన్‌లో Chromiumను పొందండి</translation>
 <translation id="1290883685122687410">సెటప్ ఎర్రర్: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">ఒక ప్రోడక్ట్‌ను వెతకడానికి మీరు ఇమేజ్ సెర్చ్‌ను ఎలా ఉపయోగించవచ్చో చూపించే ఉదాహరణ</translation>
 <translation id="1315551408014407711">మీ కొత్త Chromium ప్రొఫైల్‍ను సెట్ అప్ చేయండి</translation>
 <translation id="132092532143527429">Chromiumలో Geminiని ట్రై చేయండి</translation>
 <translation id="1324107359134968521">బ్లూటూత్ పరికరాలను 
@@ -507,7 +506,6 @@
 <translation id="6400112897226594999">కంప్యూటర్ స్క్రీన్‌లో Chromium లోగో.</translation>
 <translation id="6403826409255603130">Chromium అనేది మెరుపు వేగంతో వెబ్‌పేజీలను మరియు యాప్‌ల‌ను అమలు చేసే వెబ్ బ్రౌజర్. ఇది వేగవంతమైనది, స్థిరమైనది మరియు ఉపయోగించడానికి సులభమైనది. Chromiumలో రూపొందించిన మాల్‌వేర్‌ మరియు ఫిషింగ్ రక్షణతో మరింత సురక్షితంగా వెబ్‌లో బ్రౌజ్ చేయండి.</translation>
 <translation id="6414624068245092115">మీరు మీ Google ఖాతాలో Chromium డేటాను ఎల్లప్పుడూ ఉపయోగించగలరని, సేవ్ చేయగలరని నిర్ధారించుకోవడానికి, ఇది మీరేనని వెరిఫై చేయండి</translation>
-<translation id="6417332166651156371">Chromiumలో Password Manager ఎంట్రీ పాయింట్‌ను చూపుతున్న సింప్లిఫైడ్ ఇమేజ్</translation>
 <translation id="642132557830635295">Chromium మరింత వేగంగా పని చేస్తుంది, JavaScriptను ఉపయోగించే ఫీచర్‌లు డిజైన్ చేసిన విధంగానే పని చేస్తాయి</translation>
 <translation id="6436260184216827876">ఇమేజ్ సెర్చ్ అందుబాటులో లేదు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6442900851116057561">ChromiumOSను రీస్టార్ట్ చేయండి</translation>

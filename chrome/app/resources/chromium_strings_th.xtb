@@ -30,7 +30,6 @@
 <translation id="126567311906253476">เมื่อลงชื่อเข้าใช้บริการของ Google อย่าง Gmail หรือ YouTube ด้วย <ph name="USER_EMAIL" /> คุณจะลงชื่อเข้าใช้ Chromium ด้วยบัญชีเดียวกันได้โดยอัตโนมัติ</translation>
 <translation id="1287534462498555020">ดาวน์โหลด Chromium ในโทรศัพท์</translation>
 <translation id="1290883685122687410">ข้อผิดพลาดในการตั้งค่า: <ph name="METAINSTALLER_EXIT_CODE" /> <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">ภาพแสดงวิธีใช้ Image Search เพื่อค้นหาผลิตภัณฑ์</translation>
 <translation id="1315551408014407711">ตั้งค่าโปรไฟล์ Chromium ใหม่</translation>
 <translation id="132092532143527429">ลองใช้ Gemini ใน Chromium</translation>
 <translation id="1324107359134968521">Chromium ต้องการสิทธิ์เข้าถึงบลูทูธเพื่อสำรวจอุปกรณ์บลูทูธ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -508,7 +507,6 @@
 <translation id="6400112897226594999">โลโก้ Chromium ในหน้าจอคอมพิวเตอร์</translation>
 <translation id="6403826409255603130">Chromium เป็นเว็บเบราว์เซอร์ที่เรียกใช้หน้าเว็บและแอปพลิเคชันด้วยความเร็วสูง มีความรวดเร็ว เสถียร และง่ายในการใช้งาน เรียกดูเว็บได้อย่างปลอดภัยมากขึ้นด้วยการป้องกันมัลแวร์และฟิชชิงที่สร้างอยู่ภายใน Chromium</translation>
 <translation id="6414624068245092115">โปรดยืนยันว่าเป็นคุณเพื่อให้ใช้และบันทึกข้อมูล Chromium ในบัญชี Google ได้เสมอ</translation>
-<translation id="6417332166651156371">รูปภาพแบบเรียบง่ายที่แสดงจุดแรกเข้าของเครื่องมือจัดการรหัสผ่านใน Chromium</translation>
 <translation id="642132557830635295">Chromium ทำงานได้เร็วขึ้นและฟีเจอร์ที่ใช้ JavaScript ควรทำงานตามที่ออกแบบไว้</translation>
 <translation id="6436260184216827876">การค้นหารูปภาพไม่พร้อมใช้งาน โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="6442900851116057561">รีสตาร์ท Chromium OS</translation>

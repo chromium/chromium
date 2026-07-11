@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">آپ کی اسٹوریج بھری ہوئی ہے</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1190609913194133056">اطلاعاتی مرکز</translation>
+<translation id="1196534270480620381">مجھے اس صفحہ کا مختصر خلاصہ دیں</translation>
 <translation id="1199631150313925648">دستی طور پر درج کریں</translation>
 <translation id="1199963004393929848">سبز تھیم</translation>
 <translation id="1201402288615127009">اگلا</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">اس سائٹ کے لیے کوئی پاس ورڈ یا پاس کی نہیں ملی</translation>
 <translation id="1540800554400757039">پتہ 1</translation>
 <translation id="154312949627292154">لاک اسکرین سے اپنے دوسرے آلات سے موصول کردہ ٹیبز کو کھولیں۔</translation>
+<translation id="1544653821167545205">صفحہ کا خلاصہ بیان کریں</translation>
 <translation id="1545749641540134597">‏QR کوڈ اسکین کریں</translation>
 <translation id="1545757265410828525">قیمت کی سرگزشت</translation>
 <translation id="1547610699249301703">پاس ورڈز کا اشتراک کریں</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">‏تلاش کی اسکرین صرف اس وقت دستیاب ہوتی ہے جب Google کو آپ کے ڈیفالٹ سرچ انجن کے طور پر سیٹ کیا جاتا ہے۔ آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں اپنا ڈیفالٹ سرچ انجن تبدیل کر سکتے ہیں۔</translation>
 <translation id="1872096359983322073">ٹارچ</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />۔</translation>
+<translation id="1876230899304059090">‏‫Chrome میں Gemini کیا کر سکتا ہے؟</translation>
 <translation id="1881621406744213161">فیملی ممبرز کو دعوت دیں</translation>
 <translation id="188177382966899059">‫Deep Search</translation>
 <translation id="188237709236611317">اسمارٹ ترتیب کا مینیو بار</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">سائٹس اور ایپس میں آسانی سے سائن ان کرنے کے لیے اپنے پاس ورڈز محفوظ کریں۔</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">آپ کا براؤزر صحیح لگ رہا ہے</translation>
+<translation id="2470654816840674524">‏میں Chrome میں Gemini کے ساتھ کیا کر سکتا ہوں؟</translation>
 <translation id="2473876017985765807">آپ نے پہلے ہی <ph name="WEBSITE" /> کے لیے ایک پاس ورڈ محفوظ کیا ہے</translation>
 <translation id="247430852844518481">آپ اس صفحہ کو بعد میں دوبارہ ملاحظہ کرنے کے لیے ایک یاد دہانی سیٹ کر سکتے ہیں</translation>
 <translation id="2479148705183875116">ترتیبات پر جائیں</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">"سیفٹی چیک" کو چھپائیں</translation>
 <translation id="2625189173221582860">پاس ورڈ کاپی ہو گیا</translation>
 <translation id="2626236249646841566">اپنا کنکشن چیک کریں اور دوبارہ سائن ان کرنے کی کوشش کریں۔</translation>
+<translation id="2629543259235506452">اس صفحہ اور اسی طرح کی ویب سائٹس سے معلومات کا استعمال کرتے ہوئے اس موضوع کے لیے ایک مختصر اکثر پوچھے گئے سوالات بنائیں</translation>
 <translation id="2635918910848538771">‏‫CVC کو آٹو فل کریں</translation>
 <translation id="2640733327287333451">کوئی صارف نام نہیں ہے ••••••</translation>
 <translation id="264215785133931186">ابھی چیک کیا گيا</translation>
@@ -2349,6 +2354,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8766790350274092814"><ph name="WEBSITE" /> اور <ph name="SECOND_WEBSITE" /> کے پاسورڈز حذف ہو جائيں گے۔ آپ کے اکاؤنٹس حذف نہیں ہوں گے۔</translation>
 <translation id="8775144690796719618">‏غلط URL</translation>
 <translation id="8781834595282316166">گروپ میں نیا ٹیب</translation>
+<translation id="8783445328207519872">اس موضوع کے بارے میں اکثر پوچھے گئے سوالات تخلیق کریں</translation>
 <translation id="8784653774976848206">فائلوں کا انتخاب کریں</translation>
 <translation id="8786100550345425552">اجازتوں میں ترمیم کریں</translation>
 <translation id="878871978861915380">"قیمت کی ٹریکنگ" کو چھپائیں</translation>

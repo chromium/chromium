@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">El teu emmagatzematge és ple</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="1190609913194133056">Centre de notificacions</translation>
+<translation id="1196534270480620381">Fes-me un resum breu d'aquesta pàgina</translation>
 <translation id="1199631150313925648">Introdueix manualment</translation>
 <translation id="1199963004393929848">Tema verd</translation>
 <translation id="1201402288615127009">Següent</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">No s'ha trobat cap contrasenya ni clau d'accés per a aquest lloc web</translation>
 <translation id="1540800554400757039">Adreça 1</translation>
 <translation id="154312949627292154">Obre les pestanyes rebudes dels teus altres dispositius des de la pantalla de bloqueig.</translation>
+<translation id="1544653821167545205">Resumeix la pàgina</translation>
 <translation id="1545749641540134597">Escaneja el codi QR</translation>
 <translation id="1545757265410828525">Historial de preus</translation>
 <translation id="1547610699249301703">Comparteix contrasenyes</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">La pantalla de cerca només està disponible quan Google està definit com a motor de cerca predeterminat. Pots canviar el motor de cerca predeterminat a <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Llanterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Què pot fer Gemini a Chrome?</translation>
 <translation id="1881621406744213161">Convida membres de la família</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Barra de menú d'ordenació intel·ligent</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Desa les teves contrasenyes per iniciar la sessió fàcilment en llocs web i aplicacions.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Tot correcte al teu navegador</translation>
+<translation id="2470654816840674524">Què puc fer amb Gemini a Chrome?</translation>
 <translation id="2473876017985765807">Ja has desat una contrasenya per a <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Pots configurar un recordatori per tornar a visitar aquesta pàgina més endavant</translation>
 <translation id="2479148705183875116">Ves a Configuració</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Amaga Comprovació de seguretat</translation>
 <translation id="2625189173221582860">S'ha copiat la contrasenya</translation>
 <translation id="2626236249646841566">Comprova la connexió i torna a provar d'iniciar la sessió.</translation>
+<translation id="2629543259235506452">Crea un recull breu de les PMF sobre aquest tema utilitzant informació d'aquesta pàgina i de llocs web similars</translation>
 <translation id="2635918910848538771">Emplena automàticament el CVC</translation>
 <translation id="2640733327287333451">Sense nom d'usuari ••••••</translation>
 <translation id="264215785133931186">Comprovada ara mateix</translation>
@@ -2349,6 +2354,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="8766790350274092814">Les contrasenyes de <ph name="WEBSITE" /> i <ph name="SECOND_WEBSITE" /> se suprimiran. Els teus comptes no se suprimiran.</translation>
 <translation id="8775144690796719618">URL no vàlid</translation>
 <translation id="8781834595282316166">Pestanya nova al grup</translation>
+<translation id="8783445328207519872">Crea un recull de les PMF sobre aquest tema</translation>
 <translation id="8784653774976848206">Tria fitxers</translation>
 <translation id="8786100550345425552">Edita els permisos</translation>
 <translation id="878871978861915380">Amaga l'opció Seguiment de preus</translation>

@@ -32,7 +32,6 @@
 <translation id="126567311906253476">ເມື່ອເຂົ້າສູ່ລະບົບບໍລິການຕ່າງໆຂອງ Google ເຊັ່ນ: Gmail ຫຼື YouTube ດ້ວຍ <ph name="USER_EMAIL" />, ທ່ານສາມາດເຂົ້າສູ່ລະບົບ Chromium ດ້ວຍບັນຊີດຽວກັນໄດ້ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="1287534462498555020">ດາວໂຫຼດ Chromium ຢູ່ໂທລະສັບຂອງທ່ານ</translation>
 <translation id="1290883685122687410">ຂໍ້ຜິດພາດໃນການຕັ້ງຄ່າ: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">ຮູບປະກອບສະແດງວິທີທີ່ທ່ານສາມາດໃຊ້ຄຸນສົມບັດຊອກຫາຮູບເພື່ອຊອກຫາຜະລິດຕະພັນໄດ້</translation>
 <translation id="1315551408014407711">ຕັ້ງຄ່າໂປຣໄຟລ໌ Chromium ໃໝ່ຂອງທ່ານ</translation>
 <translation id="132092532143527429">ລອງໃຊ້ Gemini ໃນ Chromium</translation>
 <translation id="1324107359134968521">Chromium ຕ້ອງການສິດເຂົ້າເຖິງ Bluetooth ເພື່ອສຳຫຼວດ 
@@ -511,7 +510,6 @@
 <translation id="6400112897226594999">ໂລໂກ້ Chromium ພາຍໃນໜ້າຈໍຄອມພິວເຕີ.</translation>
 <translation id="6403826409255603130">Chromium ແມ່ນບຣາວເຊີເວັບທີ່ແລ່ນໜ້າເວັບ ແລະແອັບພລິເຄຊັນດ້ວຍຄວາມໄວແບບສາຍຟ້າແມັບ. ມັນໄວ, ໝັ້ນຄົງ, ແລະໃຊ້ງ່າຍ. ທ່ອງເວັບໄດ້ປອດໄພກ່ວາດ້ວຍການປົກປ້ອງມາລແວ ແລະພິຊຊິງທີ່ສ້າງຢູ່ໃນຕົວ Chromium.</translation>
 <translation id="6414624068245092115">ເພື່ອກວດສອບໃຫ້ແນ່ໃຈວ່າທ່ານສາມາດໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chromium ໃນບັນຊີ Google ຂອງທ່ານໄດ້ຕະລອດເວລາ, ກະລຸນາຢັ້ງຢືນວ່າແມ່ນທ່ານ</translation>
-<translation id="6417332166651156371">ຮູບພາບແບບຮຽບງ່າຍທີ່ສະແດງຈຸດເຂົ້າເຖິງຕົວຈັດການລະຫັດຜ່ານໃນ Chromium</translation>
 <translation id="642132557830635295">Chromium ເຮັດວຽກໄດ້ໄວຂຶ້ນ ແລະ ຄຸນສົມບັດທີ່ໃຊ້ JavaScript ຄວນເຮັດວຽກຕາມທີ່ອອກແບບໄວ້</translation>
 <translation id="6436260184216827876">ການຊອກຫາຮູບບໍ່ພ້ອມນຳໃຊ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="6442900851116057561">ຣີສະຕາດ ChromiumOS</translation>

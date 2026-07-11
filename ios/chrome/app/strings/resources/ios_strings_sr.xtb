@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Меморијски простор је пун</translation>
 <translation id="1181037720776840403">Уклони</translation>
 <translation id="1190609913194133056">Центар за обавештења</translation>
+<translation id="1196534270480620381">Дај ми кратак резиме ове странице</translation>
 <translation id="1199631150313925648">Унесите ручно</translation>
 <translation id="1199963004393929848">Зелена тема</translation>
 <translation id="1201402288615127009">Даље</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Нису пронађени ниједна лозинка ни приступни кључ за овај сајт</translation>
 <translation id="1540800554400757039">1. ред за адресу</translation>
 <translation id="154312949627292154">Отварајте картице које сте примили са других уређаја са закључаног екрана.</translation>
+<translation id="1544653821167545205">Резимирај страницу</translation>
 <translation id="1545749641540134597">Скенирајте QR кôд</translation>
 <translation id="1545757265410828525">Историја цена</translation>
 <translation id="1547610699249301703">Делите лозинке</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Екран за претрагу је доступан само када је Google подешен као подразумевани претраживач. Подразумевани претраживач можете да промените у <ph name="BEGIN_LINK" />Подешавањима<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Блиц</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Шта Gemini може да ради у Chrome-у?</translation>
 <translation id="1881621406744213161">Позовите чланове породице</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Трака менија паметног сортирања</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Чувајте лозинке да бисте се лако пријављивали на сајтове и у апликације.</translation>
 <translation id="2468132863574325555">Диск</translation>
 <translation id="2468444275314013497">Прегледач делује у реду</translation>
+<translation id="2470654816840674524">Шта могу да радим са Gemini-јем у Chrome-у?</translation>
 <translation id="2473876017985765807">Већ сте сачували лозинку за <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Можете да подесите подсетник да бисте поново посетили ову страницу касније</translation>
 <translation id="2479148705183875116">Иди у Подешавања</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Сакриј Проверу безбедности</translation>
 <translation id="2625189173221582860">Лозинка је копирана</translation>
 <translation id="2626236249646841566">Проверите везу и пробајте поново да се пријавите.</translation>
+<translation id="2629543259235506452">Направи кратка честа питања за ову тему помоћу информација са ове странице и сличних веб-сајтова</translation>
 <translation id="2635918910848538771">Аутоматски попуни CVC</translation>
 <translation id="2640733327287333451">Нема корисничког имена ••••••</translation>
 <translation id="264215785133931186">Проверено малопре</translation>
@@ -2349,6 +2354,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8766790350274092814">Лозинке за <ph name="WEBSITE" /> и <ph name="SECOND_WEBSITE" /> ће бити избрисане. Ваши налози неће бити избрисани.</translation>
 <translation id="8775144690796719618">Неважећи URL</translation>
 <translation id="8781834595282316166">Нова картица у групи</translation>
+<translation id="8783445328207519872">Направи честа питања о овој теми</translation>
 <translation id="8784653774976848206">Изабери фајлове</translation>
 <translation id="8786100550345425552">Измените дозволе</translation>
 <translation id="878871978861915380">Сакриј Праћење цена</translation>

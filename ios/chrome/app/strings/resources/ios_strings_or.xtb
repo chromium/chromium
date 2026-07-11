@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">ଆପଣଙ୍କ ଷ୍ଟୋରେଜ ପୂର୍ଣ୍ଣ ଅଛି</translation>
 <translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1190609913194133056">ବିଜ୍ଞପ୍ତି କେନ୍ଦ୍ର</translation>
+<translation id="1196534270480620381">ମୋତେ ଏହି ପୃଷ୍ଠାର ଏକ ସଂକ୍ଷିପ୍ତ ସାରାଂଶ ଦିଅ</translation>
 <translation id="1199631150313925648">ମାନୁଆଲୀ ଲେଖନ୍ତୁ</translation>
 <translation id="1199963004393929848">ସବୁଜ ଥିମ</translation>
 <translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">ଏହି ସାଇଟ ପାଇଁ କୌଣସି ପାସୱାର୍ଡ କିମ୍ବା ପାସକୀ ମିଳିଲା ନାହିଁ</translation>
 <translation id="1540800554400757039">ଠିକଣା 1</translation>
 <translation id="154312949627292154">ଲକ ସ୍କ୍ରିନରେ ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରୁ ପ୍ରାପ୍ତ ଟାବଗୁଡ଼ିକ ଖୋଲନ୍ତୁ।</translation>
+<translation id="1544653821167545205">ପୃଷ୍ଠାର ସାରାଂଶ ପ୍ରସ୍ତୁତ କରନ୍ତୁ</translation>
 <translation id="1545749641540134597">QR କୋଡ୍ ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="1545757265410828525">ମୂଲ୍ୟ ଇତିହାସ</translation>
 <translation id="1547610699249301703">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସେୟାର କରନ୍ତୁ</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Googleକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ଭାବେ ସେଟ କରାଗଲେ କେବଳ ସର୍ଚ୍ଚ ସ୍କ୍ରିନ ଉପଲବ୍ଧ ହୋଇଥାଏ। ଆପଣ <ph name="BEGIN_LINK" />ସେଟିଂସ<ph name="END_LINK" />ରେ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="1872096359983322073">ଟର୍ଚ୍ଚ</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />।</translation>
+<translation id="1876230899304059090">Chromeରେ Gemini କଣ କରିପାରିବ?</translation>
 <translation id="1881621406744213161">ପରିବାରର ସଦସ୍ୟମାନଙ୍କୁ ନିମନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
 <translation id="188177382966899059">ଡିପ ସର୍ଚ୍ଚ</translation>
 <translation id="188237709236611317">ସ୍ମାର୍ଟ ସର୍ଟ ମେନୁ ବାର</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">ସାଇଟ ଏବଂ ଆପ୍ସରେ ସହଜରେ ସାଇନ ଇନ କରିବାକୁ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସେଭ କରେ।</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">ଆପଣଙ୍କ ବ୍ରାଉଜର ଠିକ ଲାଗୁଛି</translation>
+<translation id="2470654816840674524">Chromeରେ Gemini ମାଧ୍ୟମରେ ମୁଁ କଣ କରିପାରିବି?</translation>
 <translation id="2473876017985765807">ଆପଣ <ph name="WEBSITE" /> ପାଇଁ ପୂର୍ବରୁ ଏକ ପାସୱାର୍ଡ ସେଭ କରିଛନ୍ତି</translation>
 <translation id="247430852844518481">ପରେ ଏହି ପୃଷ୍ଠାକୁ ପୁଣି ଭିଜିଟ କରିବା ପାଇଁ ଆପଣ ଏକ ରିମାଇଣ୍ଡର ସେଟ କରିପାରିବେ</translation>
 <translation id="2479148705183875116">ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">“ସୁରକ୍ଷା ଯାଞ୍ଚ”କୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="2625189173221582860">ପାସ୍‍ୱର୍ଡ କପି ହୋଇଛି</translation>
 <translation id="2626236249646841566">ଆପଣଙ୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରି ପୁଣି ସାଇନ ଇନ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="2629543259235506452">ଏହି ପୃଷ୍ଠା ଏବଂ ସମାନ ୱେବସାଇଟଗୁଡ଼ିକରୁ ସୂଚନା ବ୍ୟବହାର କରି ଏହି ବିଷୟ ପାଇଁ ଏକ ସଂକ୍ଷିପ୍ତ FAQ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="2635918910848538771">CVCକୁ ଅଟୋଫିଲ କରନ୍ତୁ</translation>
 <translation id="2640733327287333451">କୌଣସି ୟୁଜରନେମ ନାହିଁ ••••••</translation>
 <translation id="264215785133931186">ଏବେ ଯାଞ୍ଚ କରାଯାଇଛି</translation>
@@ -2349,6 +2354,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="8766790350274092814"><ph name="WEBSITE" /> ଏବଂ <ph name="SECOND_WEBSITE" />ର ପାସୱାର୍ଡଗୁଡ଼ିକ ଡିଲିଟ ହୋଇଯିବ। ଆପଣଙ୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକ ଡିଲିଟ ହେବ ନାହିଁ।</translation>
 <translation id="8775144690796719618">ଅବୈଧ URL</translation>
 <translation id="8781834595282316166">ଗୋଷ୍ଠୀରେ ନୂଆ ଟାବ୍</translation>
+<translation id="8783445328207519872">ଏହି ବିଷୟ ଉପରେ FAQ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8784653774976848206">ଫାଇଲଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
 <translation id="8786100550345425552">ଅନୁମତିଗୁଡ଼ିକୁ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="878871978861915380">"ମୂଲ୍ୟ ଟ୍ରାକିଂ" ଲୁଚାନ୍ତୁ</translation>

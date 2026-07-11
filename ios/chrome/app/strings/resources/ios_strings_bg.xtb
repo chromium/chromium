@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Хранилището ви е пълно</translation>
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1190609913194133056">Център за известия</translation>
+<translation id="1196534270480620381">Дай ми кратко обобщение на тази страница</translation>
 <translation id="1199631150313925648">Ръчно въвеждане</translation>
 <translation id="1199963004393929848">Зелена тема</translation>
 <translation id="1201402288615127009">Напред</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Няма намерени пароли или ключове за достъп за този сайт</translation>
 <translation id="1540800554400757039">Адрес 1</translation>
 <translation id="154312949627292154">Отваряйте от заключения екран разделите, получени от другите ви устройства.</translation>
+<translation id="1544653821167545205">Обобщи страницата</translation>
 <translation id="1545749641540134597">Сканирайте код за бърза реакция</translation>
 <translation id="1545757265410828525">История на цените</translation>
 <translation id="1547610699249301703">Споделяне на пароли</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Функцията за търсене на съдържанието на екрана е налице само когато Google е зададена като основна търсеща машина. Можете да промените основната си търсеща машина от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Фенерче</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Какво може да прави Gemini в Chrome?</translation>
 <translation id="1881621406744213161">Изпращане на покана до членове на семейството</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Интелигентно сортиране на лентата с менюта</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Запазвайте паролите си, за да влизате лесно в сайтове и приложения.</translation>
 <translation id="2468132863574325555">Диск</translation>
 <translation id="2468444275314013497">Всичко е наред с браузъра ви</translation>
+<translation id="2470654816840674524">Какво мога да правя с Gemini в Chrome?</translation>
 <translation id="2473876017985765807">Вече запазихте парола за <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Можете да зададете напомняне, за да посетите отново тази страница по-късно</translation>
 <translation id="2479148705183875116">Към настройките</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Скриване на „Проверка на безопасността“</translation>
 <translation id="2625189173221582860">Паролата е копирана</translation>
 <translation id="2626236249646841566">Проверете връзката си и опитайте отново да влезете.</translation>
+<translation id="2629543259235506452">Създай кратка статия с ЧЗВ за тази тема, като използваш информация от тази страница и подобни уебсайтове</translation>
 <translation id="2635918910848538771">Автоматично попълване на кода за проверка</translation>
 <translation id="2640733327287333451">Няма потребителско име ••••••</translation>
 <translation id="264215785133931186">Проверено току-що</translation>
@@ -2349,6 +2354,7 @@
 <translation id="8766790350274092814">Паролите за <ph name="WEBSITE" /> и <ph name="SECOND_WEBSITE" /> ще бъдат изтрити. Профилите ви няма да бъдат изтрити.</translation>
 <translation id="8775144690796719618">Невалиден URL адрес</translation>
 <translation id="8781834595282316166">Нов раздел в групата</translation>
+<translation id="8783445328207519872">Създай ЧЗВ за тази тема</translation>
 <translation id="8784653774976848206">Избор на файлове</translation>
 <translation id="8786100550345425552">Редактиране на разрешенията</translation>
 <translation id="878871978861915380">Скриване на „Проследяване на цената“</translation>

@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Depolama alanınız dolu</translation>
 <translation id="1181037720776840403">Kaldır</translation>
 <translation id="1190609913194133056">Bildirim Merkezi</translation>
+<translation id="1196534270480620381">Bu sayfayı kısaca özetle</translation>
 <translation id="1199631150313925648">Manuel olarak gir</translation>
 <translation id="1199963004393929848">Yeşil tema</translation>
 <translation id="1201402288615127009">İleri</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Bu site için şifre veya geçiş anahtarı bulunamadı</translation>
 <translation id="1540800554400757039">Adres 1</translation>
 <translation id="154312949627292154">Diğer cihazlarınızdan alınan sekmeleri kilit ekranından açın.</translation>
+<translation id="1544653821167545205">Sayfayı özetle</translation>
 <translation id="1545749641540134597">QR Kodunu Tara</translation>
 <translation id="1545757265410828525">Fiyat geçmişi</translation>
 <translation id="1547610699249301703">Şifreleri paylaşın</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Arama ekranı yalnızca Google varsayılan arama motorunuz olarak ayarlandığında kullanılabilir. Varsayılan arama motorunuzu <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'dan değiştirebilirsiniz.</translation>
 <translation id="1872096359983322073">Flaş</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Chrome'da Gemini neler yapabilir?</translation>
 <translation id="1881621406744213161">Aile üyelerini davet edin</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Menü çubuğunu akıllı sıralama</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Sitelerde ve uygulamalarda kolayca oturum açmak için şifrelerinizi kaydedin.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Tarayıcınızda bir sorun görünmüyor</translation>
+<translation id="2470654816840674524">Chrome'da Gemini ile neler yapabilirim?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> için zaten kayıtlı şifreniz var</translation>
 <translation id="247430852844518481">Bu sayfayı daha sonra tekrar ziyaret etmek için hatırlatıcı oluşturabilirsiniz</translation>
 <translation id="2479148705183875116">Ayarlar'a git</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">"Güvenlik Kontrolü"nü gizle</translation>
 <translation id="2625189173221582860">Şifre kopyalandı</translation>
 <translation id="2626236249646841566">Bağlantınızı kontrol edip tekrar oturum açmayı deneyin.</translation>
+<translation id="2629543259235506452">Bu sayfadaki ve benzer web sitelerindeki bilgileri kullanarak bu konuyla ilgili kısa bir SSS oluştur</translation>
 <translation id="2635918910848538771">CVC'yi otomatik doldur</translation>
 <translation id="2640733327287333451">Kullanıcı Adı Yok ••••••</translation>
 <translation id="264215785133931186">Az önce kontrol edildi</translation>
@@ -2277,7 +2282,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8571019948162152515">"<ph name="FILENAME" />" silinsin mi?</translation>
 <translation id="8571213806525832805">Son 4 hafta</translation>
 <translation id="8577056989960190117">Son kullanma tarihinin yıl kısmını (<ph name="YEAR" />) otomatik doldur</translation>
-<translation id="8582026929965253036">Gemini ile sohbete başlayın</translation>
+<translation id="8582026929965253036">Gemini Live'ı kullanın</translation>
 <translation id="8587001564479545614">Kurtarma PIN'i oluşturun</translation>
 <translation id="8588404856427128947">Kapalı</translation>
 <translation id="8590286732816598906">Sekme grubu, <ph name="GROUP_TITLE" />, Menü.</translation>
@@ -2349,6 +2354,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8766790350274092814"><ph name="WEBSITE" /> ve <ph name="SECOND_WEBSITE" /> şifreleri silinecek. Hesaplarınız silinmeyecek.</translation>
 <translation id="8775144690796719618">Geçersiz URL</translation>
 <translation id="8781834595282316166">Grupta Yeni Sekme</translation>
+<translation id="8783445328207519872">Bu konu hakkında SSS oluştur</translation>
 <translation id="8784653774976848206">Dosyaları Seç</translation>
 <translation id="8786100550345425552">İzinleri düzenle</translation>
 <translation id="878871978861915380">"Fiyat takibi"ni gizle</translation>

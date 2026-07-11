@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Krātuve ir pilna</translation>
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1190609913194133056">Paziņojumu centrs</translation>
+<translation id="1196534270480620381">Sniedz īsu šīs lapas apkopojumu</translation>
 <translation id="1199631150313925648">Ievadīt manuāli</translation>
 <translation id="1199963004393929848">Zaļš motīvs</translation>
 <translation id="1201402288615127009">Tālāk</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Šai vietnei nav atrasta neviena parole vai piekļuves atslēga.</translation>
 <translation id="1540800554400757039">1. adrese</translation>
 <translation id="154312949627292154">Bloķēšanas ekrānā varat atvērt no citām ierīcēm saņemtās cilnes.</translation>
+<translation id="1544653821167545205">Izveido lapas apkopojumu</translation>
 <translation id="1545749641540134597">Skenējiet kvadrātkodu</translation>
 <translation id="1545757265410828525">Cenu vēsture</translation>
 <translation id="1547610699249301703">Paroļu kopīgošana</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Meklēšana ekrānā ir pieejama tikai tad, ja Google ir iestatīta kā noklusējuma meklētājprogramma. Noklusējuma meklētājprogrammu varat mainīt <ph name="BEGIN_LINK" />iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Lukturītis</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Ko Gemini var paveikt pārlūkā Chrome?</translation>
 <translation id="1881621406744213161">Ģimenes locekļu uzaicināšana</translation>
 <translation id="188177382966899059">Dziļā meklēšana</translation>
 <translation id="188237709236611317">Viedās kārtošanas izvēlņu josla</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Saglabājiet paroles, lai varētu ērti pierakstīties vietnēs un lietotnēs.</translation>
 <translation id="2468132863574325555">Disks</translation>
 <translation id="2468444275314013497">Jūsu pārlūks izskatās drošs</translation>
+<translation id="2470654816840674524">Ko varu paveikt, izmantojot Gemini pārlūkā Chrome?</translation>
 <translation id="2473876017985765807">Jūs jau esat saglabājis paroli vietnei <ph name="WEBSITE" />.</translation>
 <translation id="247430852844518481">Varat iestatīt atgādinājumu, lai vēlāk šo lapu apmeklētu vēlreiz.</translation>
 <translation id="2479148705183875116">Atvērt iestatījumus</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Paslēpt moduli Drošības pārbaude</translation>
 <translation id="2625189173221582860">Parole ir nokopēta.</translation>
 <translation id="2626236249646841566">Pārbaudiet savienojumu un mēģiniet pierakstīties vēlreiz.</translation>
+<translation id="2629543259235506452">Izveido īsu bieži uzdoto jautājumu sadaļu par šo tēmu, izmantojot informāciju no šīs lapas un līdzīgām tīmekļa vietnēm</translation>
 <translation id="2635918910848538771">Automātiski aizpildīt CVC kodu</translation>
 <translation id="2640733327287333451">Nav lietotājvārda ••••••</translation>
 <translation id="264215785133931186">Pārbaudīts: tikko</translation>
@@ -2349,6 +2354,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="8766790350274092814">Tiks dzēstas paroles vietnēm <ph name="WEBSITE" /> un <ph name="SECOND_WEBSITE" />. Jūsu konti netiks dzēsti.</translation>
 <translation id="8775144690796719618">Nederīgs URL</translation>
 <translation id="8781834595282316166">Jauna cilne grupā</translation>
+<translation id="8783445328207519872">Izveido bieži uzdoto jautājumu sadaļu par šo tēmu</translation>
 <translation id="8784653774976848206">Izvēlēties failus</translation>
 <translation id="8786100550345425552">Atļauju rediģēšana</translation>
 <translation id="878871978861915380">Paslēpt sadaļu “Cenu izsekošana”</translation>

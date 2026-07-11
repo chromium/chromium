@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Geymslurýmið þitt er fullt</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
 <translation id="1190609913194133056">Tilkynningamiðstöð</translation>
+<translation id="1196534270480620381">Gefðu mér stutta samantekt á þessari síðu</translation>
 <translation id="1199631150313925648">Færa inn handvirkt</translation>
 <translation id="1199963004393929848">Grænt þema</translation>
 <translation id="1201402288615127009">Áfram</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Engin aðgangsorð eða aðgangslyklar fundust fyrir þetta vefsvæði</translation>
 <translation id="1540800554400757039">Heimilisfang 1</translation>
 <translation id="154312949627292154">Opna flipa sem tekið var á móti úr hinum tækjunum þínum af lásskjánum.</translation>
+<translation id="1544653821167545205">Samantekt síðu</translation>
 <translation id="1545749641540134597">Skanna QR-kóða</translation>
 <translation id="1545757265410828525">Verðferill</translation>
 <translation id="1547610699249301703">Deila aðgangsorðum</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Skjáleit er aðeins í boði þegar Google er stillt sem sjálfgefin leitarvél. Þú getur breytt sjálfgefnu leitarvélinni þinni í <ph name="BEGIN_LINK" />stillingum<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Ljós</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Hvað getur Gemini gert í Chrome?</translation>
 <translation id="1881621406744213161">Bjóddu fjölskyldumeðlimum</translation>
 <translation id="188177382966899059">Djúpleit</translation>
 <translation id="188237709236611317">Valmyndarstika snjallflokkunar</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Vistaðu aðgangsorðin þín til að skrá þig inn á vefsvæði og forrit á einfaldan hátt.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Vafrinn er í góðu lagi</translation>
+<translation id="2470654816840674524">Hvað get ég gert með Gemini í Chrome?</translation>
 <translation id="2473876017985765807">Þú hefur þegar vistað aðgangsorð fyrir <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Þú getur stillt áminningu um að skoða þessa síðu aftur síðar</translation>
 <translation id="2479148705183875116">Opna stillingar</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Fela „Öryggisathugun“</translation>
 <translation id="2625189173221582860">Aðgangsorð afritað</translation>
 <translation id="2626236249646841566">Athugaðu nettenginguna og reyndu að skrá þig inn aftur.</translation>
+<translation id="2629543259235506452">Búðu til nokkrar algengar spurningar fyrir þetta efni með upplýsingum af þessari síðu og svipuðum vefsvæðum</translation>
 <translation id="2635918910848538771">Fylla CVC-númer sjálfkrafa út</translation>
 <translation id="2640733327287333451">Ekkert notandanafn ••••••</translation>
 <translation id="264215785133931186">Skoðað rétt í þessu</translation>
@@ -2349,6 +2354,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="8766790350274092814">Aðgangsorðum fyrir <ph name="WEBSITE" /> og<ph name="SECOND_WEBSITE" /> verður eytt. Reikningunum þínum verður ekki eytt.</translation>
 <translation id="8775144690796719618">Ógild vefslóð</translation>
 <translation id="8781834595282316166">Nýr flipi í hópi</translation>
+<translation id="8783445328207519872">Búðu til algengar spurningar um þetta efni</translation>
 <translation id="8784653774976848206">Velja skrár</translation>
 <translation id="8786100550345425552">Breyta heimildum</translation>
 <translation id="878871978861915380">Fela „Verðrakning“</translation>

@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Տարածքը լցված է</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1190609913194133056">Ծանուցումների կենտրոն</translation>
+<translation id="1196534270480620381">Ամփոփ ներկայացրու այս էջի բովանդակությունը</translation>
 <translation id="1199631150313925648">Մուտքագրել ձեռքով</translation>
 <translation id="1199963004393929848">Կանաչ թեմա</translation>
 <translation id="1201402288615127009">Հաջորդ</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Այս կայքի համար գաղտնաբառեր կամ մուտքի բանալիներ չեն գտնվել</translation>
 <translation id="1540800554400757039">Հասցե 1</translation>
 <translation id="154312949627292154">Բացեք ձեր մյուս սարքերից ստացված ներդիրները կողպէկրանից։</translation>
+<translation id="1544653821167545205">Ամփոփել էջը</translation>
 <translation id="1545749641540134597">Սկանավորեք QR-կոդը</translation>
 <translation id="1545757265410828525">Գների փոփոխությունների պատմություն</translation>
 <translation id="1547610699249301703">Կիսվեք գաղտնաբառերով</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Էկրանին որոնումը հասանելի է միայն այն դեպքում, երբ Google-ը նշված է որպես ձեր կանխադրված որոնողական համակարգ։ Դուք կարող եք փոխել ձեր կանխադրված որոնողական համակարգը <ph name="BEGIN_LINK" />Կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="1872096359983322073">Լապտեր</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />։</translation>
+<translation id="1876230899304059090">Ի՞նչ կարող է անել Gemini-ը Chrome-ում</translation>
 <translation id="1881621406744213161">Հրավիրեք ընտանիքի անդամների</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Խելացի դասավորման ընտրացանկի գոտի</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Պահեք ձեր գաղտնաբառերը, որպեսզի հեշտությամբ մուտք գործեք կայքեր և հավելվածներ։</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Ձեր դիտարկիչն ապահով է</translation>
+<translation id="2470654816840674524">Ի՞նչ կարող եմ անել «Gemini-ը Chrome-ում» գործառույթի օգնությամբ</translation>
 <translation id="2473876017985765807">Դուք <ph name="WEBSITE" /> կայքի համար արդեն պահել եք գաղտնաբառ։</translation>
 <translation id="247430852844518481">Դուք կարող եք ստեղծել այս էջն ավելի ուշ այցելելու մասին հիշեցում</translation>
 <translation id="2479148705183875116">Անցնել կարգավորումներ</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Թաքցնել «Անվտանգության ստուգում» գործառույթը</translation>
 <translation id="2625189173221582860">Գաղտնաբառը պատճենվեց</translation>
 <translation id="2626236249646841566">Ստուգեք կապը և նորից փորձեք մուտք գործել։</translation>
+<translation id="2629543259235506452">Ստեղծիր այս թեմայի մասին ՀՏՀ բաժին՝ օգտագործելով այս էջում և նմանատիպ կայքերում եղած տեղեկությունները</translation>
 <translation id="2635918910848538771">Ինքնալրացնել CVC-ն</translation>
 <translation id="2640733327287333451">Օգտանուն չկա ••••••</translation>
 <translation id="264215785133931186">Ստուգվել է հենց նոր</translation>
@@ -2349,6 +2354,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8766790350274092814">Կջնջվեն <ph name="WEBSITE" /> և <ph name="SECOND_WEBSITE" /> հաշիվների գաղտնաբառերը։ Ձեր հաշիվները չեն ջնջվի։</translation>
 <translation id="8775144690796719618">URL-ն անվավեր է</translation>
 <translation id="8781834595282316166">Նոր ներդիր խմբում</translation>
+<translation id="8783445328207519872">Ստեղծել ՀՏՀ այս թեմայի մասին</translation>
 <translation id="8784653774976848206">Ընտրել ֆայլեր</translation>
 <translation id="8786100550345425552">Փոփոխել թույլտվությունները</translation>
 <translation id="878871978861915380">Թաքցնել «Գների հետագծում» քարտը</translation>

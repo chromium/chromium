@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Biltegia beteta dago</translation>
 <translation id="1181037720776840403">Kendu</translation>
 <translation id="1190609913194133056">Jakinarazpen-zentroa</translation>
+<translation id="1196534270480620381">Eman orri honi buruzko laburpen motz bat</translation>
 <translation id="1199631150313925648">Idatz ezazu eskuz</translation>
 <translation id="1199963004393929848">Gai berdea</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Ez da aurkitu pasahitzik edo sarbide-gakorik webgune honetarako</translation>
 <translation id="1540800554400757039">Helbidea (1)</translation>
 <translation id="154312949627292154">Ireki beste gailuetatik jasotako fitxak pantaila blokeatutik.</translation>
+<translation id="1544653821167545205">Laburbildu orria</translation>
 <translation id="1545749641540134597">Eskaneatu QR kodea</translation>
 <translation id="1545757265410828525">Prezioen historia</translation>
 <translation id="1547610699249301703">Partekatu pasahitzak</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Google bilatzaile lehenetsi gisa ezarrita daukazunean soilik dago erabilgarri pantailan bilatzeko aukera. Bilatzaile lehenetsia aldatzeko, joan <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalera.</translation>
 <translation id="1872096359983322073">Linterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Zer egin dezake Gemini-k Chrome-n?</translation>
 <translation id="1881621406744213161">Gonbidatu familiako kideak</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Ordenatu menu-barra modu adimendunean</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Gorde pasahitzak, webgune eta aplikazioetan saioa erraz hasteko.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Zure arakatzaileak itxura ona du</translation>
+<translation id="2470654816840674524">Zer egin dezaket Chrome-ko Gemini-rekin?</translation>
 <translation id="2473876017985765807">Gordeta daukazu jada <ph name="WEBSITE" /> webguneari dagokion pasahitza</translation>
 <translation id="247430852844518481">Geroago orri honetara itzultzeko gogorarazpen bat ezar dezakezu</translation>
 <translation id="2479148705183875116">Joan "Ezarpenak" atalera</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Ezkutatu Segurtasun-egiaztapena</translation>
 <translation id="2625189173221582860">Kopiatu da pasahitza</translation>
 <translation id="2626236249646841566">Egiaztatu konektatuta zaudela eta saiatu berriro saioa hasten.</translation>
+<translation id="2629543259235506452">Sortu gai honi buruz maiz egiten diren galderen atal labur bat orri honetako eta antzeko webguneetako informazioa erabilita</translation>
 <translation id="2635918910848538771">Bete CVCa automatikoki</translation>
 <translation id="2640733327287333451">Ez dago erabiltzaile-izenik ••••••••</translation>
 <translation id="264215785133931186">Oraintxe bertan egiaztatu da</translation>
@@ -2349,6 +2354,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="8766790350274092814"><ph name="WEBSITE" /> eta <ph name="SECOND_WEBSITE" /> webguneetako pasahitzak ezabatuko dira. Zure kontuak ez dira ezabatuko.</translation>
 <translation id="8775144690796719618">URLak ez du balio</translation>
 <translation id="8781834595282316166">Gehitu fitxa bat taldean</translation>
+<translation id="8783445328207519872">Sortu gai honi buruz maiz egiten diren galderen atal bat</translation>
 <translation id="8784653774976848206">Aukeratu fitxategiak</translation>
 <translation id="8786100550345425552">Editatu baimenak</translation>
 <translation id="878871978861915380">Ezkutatu "Prezioen jarraipena"</translation>

@@ -30,7 +30,6 @@
 <translation id="126567311906253476">‏عند تسجيل الدخول إلى خدمات Google، مثل Gmail أو YouTube باستخدام <ph name="USER_EMAIL" />، يمكنك تسجيل الدخول تلقائيًا إلى Chromium باستخدام الحساب نفسه</translation>
 <translation id="1287534462498555020">‏تنزيل Chromium على هاتفك</translation>
 <translation id="1290883685122687410">حدث خطأ أثناء الإعداد: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">صورة توضيحية تعرض كيفية استخدام ميزة "البحث بالصور" للبحث عن منتج</translation>
 <translation id="1315551408014407711">‏إعداد ملفك الشخصي الجديد على Chromium</translation>
 <translation id="132092532143527429">‏يمكنك تجربة "Gemini في Chromium"</translation>
 <translation id="1324107359134968521">‏يجب منح Chromium الإذن بالوصول إلى البلوتوث لاستكشاف 
@@ -509,7 +508,6 @@
 <translation id="6400112897226594999">‏شعار Chromium على شاشة كمبيوتر</translation>
 <translation id="6403826409255603130">‏ إن Chromium هو متصفح ويب يشغّل صفحات الويب والتطبيقات بسرعة مذهلة. إنه سريع وثابت وسهل الاستخدام. يمكنك تصفح الويب بشكل أكثر أمانًا من خلال ميزات الحماية من البرامج الضارة والتصيّد الاحتيالي المدمجة في Chromium.</translation>
 <translation id="6414624068245092115">‏لضمان إمكانية استخدامك لبيانات Chromium وحفظها في حسابك على Google متى شئت، يجب إثبات هويتك</translation>
-<translation id="6417332166651156371">‏صورة مبسّطة تعرض كيفية الوصول إلى "مدير كلمات المرور" في Chromium</translation>
 <translation id="642132557830635295">‏سيعمل Chromium بشكل أسرع ومن المفترض أن تعمل الميزات التي تستخدِم JavaScript على النحو المطلوب</translation>
 <translation id="6436260184216827876">ميزة "البحث بالصور" ليست متوفرة. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="6442900851116057561">‏إعادة تشغيل نظام التشغيل Chromium</translation>

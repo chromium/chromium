@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">O armazenamento está cheio</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1190609913194133056">Central de Notificações</translation>
+<translation id="1196534270480620381">Faça um pequeno resumo desta página</translation>
 <translation id="1199631150313925648">Informar manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
 <translation id="1201402288615127009">Avançar</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Nenhuma senha ou chave de acesso foi encontrada para este site</translation>
 <translation id="1540800554400757039">Endereço 1</translation>
 <translation id="154312949627292154">Abra as guias recebidas dos seus outros dispositivos na tela de bloqueio.</translation>
+<translation id="1544653821167545205">Resumir página</translation>
 <translation id="1545749641540134597">Ler QR code</translation>
 <translation id="1545757265410828525">Histórico de preços</translation>
 <translation id="1547610699249301703">Compartilhe senhas</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">A tela de pesquisa só fica disponível quando o Google está definido como o mecanismo de pesquisa padrão. Você pode mudar o mecanismo de pesquisa padrão nas <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">O que o Gemini pode fazer no Chrome?</translation>
 <translation id="1881621406744213161">Convidar membros da família</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Barra de menus da ordenação inteligente</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Salve suas senhas para fazer login em sites e apps com facilidade.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Tudo certo com seu navegador</translation>
+<translation id="2470654816840674524">O que posso fazer com o Gemini no Chrome?</translation>
 <translation id="2473876017985765807">Você já salvou uma senha em <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Você pode definir um lembrete para rever esta página mais tarde</translation>
 <translation id="2479148705183875116">Acessar as configurações</translation>
@@ -484,7 +488,7 @@
 <translation id="2579713773888829241">Drives compartilhados</translation>
 <translation id="2580306219079937316">Abrir configurações do Tradutor</translation>
 <translation id="2583688836549072561">Grupo de guias, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> guias, nova atividade.</translation>
-<translation id="2584994295315085351">Abrir uma nova guia ao voltar ao Chrome após 4 horas</translation>
+<translation id="2584994295315085351">Abrir uma nova guia ao voltar para o Chrome após 4 horas</translation>
 <translation id="2593272815202181319">Espaçamento uniforme</translation>
 <translation id="2601778637777010194">Monitorar reduções no preço de produtos</translation>
 <translation id="2602372807870028932">Isso vai excluir as informações selecionadas salvas neste dispositivo</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Ocultar a Confirmação de segurança</translation>
 <translation id="2625189173221582860">Senha copiada</translation>
 <translation id="2626236249646841566">Verifique sua conexão e tente fazer login novamente.</translation>
+<translation id="2629543259235506452">Crie um breve conjunto de perguntas frequentes sobre este tema usando informações desta página e de sites parecidos</translation>
 <translation id="2635918910848538771">Preencher automaticamente o CVC</translation>
 <translation id="2640733327287333451">Sem nome de usuário ••••••</translation>
 <translation id="264215785133931186">Verificadas agora mesmo</translation>
@@ -2349,6 +2354,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="8766790350274092814">As senhas de <ph name="WEBSITE" /> e <ph name="SECOND_WEBSITE" /> vão ser excluídas. Suas contas não serão excluídas.</translation>
 <translation id="8775144690796719618">URL inválido</translation>
 <translation id="8781834595282316166">Nova guia no grupo</translation>
+<translation id="8783445328207519872">Criar perguntas frequentes sobre este tema</translation>
 <translation id="8784653774976848206">Escolher arquivos</translation>
 <translation id="8786100550345425552">Editar permissões</translation>
 <translation id="878871978861915380">Ocultar "Monitoramento de preços"</translation>

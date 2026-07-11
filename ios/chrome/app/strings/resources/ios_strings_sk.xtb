@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Priestor je plný</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1190609913194133056">Centrum upozornení</translation>
+<translation id="1196534270480620381">Stručne mi zhrň túto stránku</translation>
 <translation id="1199631150313925648">Zadať manuálne</translation>
 <translation id="1199963004393929848">Zelený motív</translation>
 <translation id="1201402288615127009">Ďalej</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Pre tento web sa nenašli žiadne heslá ani prístupové kľúče</translation>
 <translation id="1540800554400757039">Adresa 1</translation>
 <translation id="154312949627292154">Otvárajte karty prijaté z iných zariadení na uzamknutej obrazovke.</translation>
+<translation id="1544653821167545205">Zhrň stránku</translation>
 <translation id="1545749641540134597">Naskenovať kód QR</translation>
 <translation id="1545757265410828525">História cien</translation>
 <translation id="1547610699249301703">Zdieľanie hesiel</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Obrazovka vyhľadávania je k dispozícii iba vtedy, keď máte nastavený Google ako predvolený vyhľadávač. Predvolený vyhľadávač môžete zmeniť v <ph name="BEGIN_LINK" />Nastaveniach<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Baterka</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Čo dokáže Gemini v Chrome?</translation>
 <translation id="1881621406744213161">Pozvite členov rodiny</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Panel s ponukami inteligentného zoradenia</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Ukladajte si heslá, aby ste sa mohli ľahko prihlasovať na weboch a v aplikáciách.</translation>
 <translation id="2468132863574325555">Disk</translation>
 <translation id="2468444275314013497">Váš prehliadač je v poriadku</translation>
+<translation id="2470654816840674524">Čo môžem robiť s Gemini v Chrome?</translation>
 <translation id="2473876017985765807">Už ste si uložili heslo pre web <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Môžete si nastaviť pripomenutie, aby ste sa na túto stránku vrátili neskôr</translation>
 <translation id="2479148705183875116">Prejsť do Nastavení</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Skryť kontrolu bezpečnosti</translation>
 <translation id="2625189173221582860">Heslo bolo skopírované.</translation>
 <translation id="2626236249646841566">Skontrolujte pripojenie a skúste sa prihlásiť znova.</translation>
+<translation id="2629543259235506452">Vytvor krátke časté otázky k tejto téme pomocou informácií z tejto stránky a podobných webov</translation>
 <translation id="2635918910848538771">Automaticky dopĺňať overovací kód karty</translation>
 <translation id="2640733327287333451">Žiadne používateľské meno ••••••</translation>
 <translation id="264215785133931186">Kontrola prebehla pred chvíľou</translation>
@@ -2349,6 +2354,7 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="8766790350274092814">Heslá pre <ph name="WEBSITE" /> a <ph name="SECOND_WEBSITE" /> budú odstránené. Vaše účty odstránené nebudú.</translation>
 <translation id="8775144690796719618">Neplatná webová adresa</translation>
 <translation id="8781834595282316166">Nová karta v skupine</translation>
+<translation id="8783445328207519872">Vytvor časté otázky k tejto téme</translation>
 <translation id="8784653774976848206">Vybrať súbory</translation>
 <translation id="8786100550345425552">Upraviť povolenia</translation>
 <translation id="878871978861915380">Skryť „Sledovanie cien“</translation>

@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">נפח האחסון שלך מלא</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1190609913194133056">מרכז התראות</translation>
+<translation id="1196534270480620381">תסכם לי בקצרה את הדף הזה</translation>
 <translation id="1199631150313925648">סריקה ידנית</translation>
 <translation id="1199963004393929848">עיצוב ירוק</translation>
 <translation id="1201402288615127009">הבא</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">לא נמצאו סיסמאות או מפתחות גישה לאתר הזה</translation>
 <translation id="1540800554400757039">כתובת, שורה 1</translation>
 <translation id="154312949627292154">פתיחת כרטיסיות שהתקבלו מהמכשירים האחרים שלך ממסך הנעילה.</translation>
+<translation id="1544653821167545205">סיכום הדף</translation>
 <translation id="1545749641540134597">‏סריקת קוד QR</translation>
 <translation id="1545757265410828525">היסטוריית המחירים</translation>
 <translation id="1547610699249301703">שיתוף סיסמאות</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">‏מסך החיפוש זמין רק כשמנוע החיפוש של Google מוגדר כברירת המחדל. אפשר להחליף את מנוע החיפוש שמוגדר כברירת המחדל ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">פנס</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">‏מה Gemini יכול לעשות ב-Chrome?</translation>
 <translation id="1881621406744213161">הזמנת חברים לקבוצה המשפחתית</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">סרגל תפריטים למיון חכם</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">עם הסיסמאות השמורות אפשר להיכנס בקלות לאתרים ולאפליקציות.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">נראה שהכול בסדר בדפדפן שלך</translation>
+<translation id="2470654816840674524">‏מה אפשר לעשות עם Gemini ב-Chrome?</translation>
 <translation id="2473876017985765807">כבר שמרת סיסמה לאתר <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">אפשר להגדיר תזכורת כדי לחזור לדף הזה מאוחר יותר</translation>
 <translation id="2479148705183875116">למעבר אל ההגדרות</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">הסתרת התכונה 'טיימר לדיווח על מצב מסוכן'</translation>
 <translation id="2625189173221582860">הסיסמה הועתקה</translation>
 <translation id="2626236249646841566">עליך לבדוק את החיבור ולנסות להיכנס שוב.</translation>
+<translation id="2629543259235506452">תיצור רשימה קצרה של שאלות נפוצות בנושא הזה באמצעות מידע מהדף הזה ומאתרים דומים</translation>
 <translation id="2635918910848538771">‏מילוי אוטומטי של קוד האימות (CVC)</translation>
 <translation id="2640733327287333451">אין שם משתמש ••••••</translation>
 <translation id="264215785133931186">התבצעה בדיקה עכשיו</translation>
@@ -2349,6 +2354,7 @@
 <translation id="8766790350274092814">הסיסמאות של <ph name="WEBSITE" /> ושל <ph name="SECOND_WEBSITE" /> יימחקו. החשבונות שלך לא יימחקו.</translation>
 <translation id="8775144690796719618">כתובת אתר לא חוקית</translation>
 <translation id="8781834595282316166">כרטיסייה חדשה בקבוצה</translation>
+<translation id="8783445328207519872">תיצור רשימת שאלות נפוצות בנושא הזה</translation>
 <translation id="8784653774976848206">בחירת קבצים</translation>
 <translation id="8786100550345425552">עריכת ההרשאות</translation>
 <translation id="878871978861915380">הסתרת האפשרות "מעקב מחירים"</translation>

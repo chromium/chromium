@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Hapësira ruajtëse është plot</translation>
 <translation id="1181037720776840403">Hiq</translation>
 <translation id="1190609913194133056">Qendra e njoftimeve</translation>
+<translation id="1196534270480620381">Më jep një përmbledhje të shkurtër të kësaj faqeje</translation>
 <translation id="1199631150313925648">Fut manualisht</translation>
 <translation id="1199963004393929848">Tema e gjelbër</translation>
 <translation id="1201402288615127009">Para</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Nuk u gjet asnjë fjalëkalim apo çelës kalimi për këtë sajt</translation>
 <translation id="1540800554400757039">Adresa 1</translation>
 <translation id="154312949627292154">Hap skedat e marra nga pajisjet e tjera nga ekrani i kyçjes.</translation>
+<translation id="1544653821167545205">Përmblidh faqen</translation>
 <translation id="1545749641540134597">Skano kodin QR</translation>
 <translation id="1545757265410828525">Historiku i çmimeve</translation>
 <translation id="1547610699249301703">Ndaj fjalëkalimet</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Ekrani i kërkimit ofrohet vetëm kur Google është caktuar si motori i parazgjedhur i kërkimit. Mund ta ndryshosh motorin e parazgjedhur të kërkimit te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Elektriku</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Çfarë mund të bëjë Gemini në Chrome?</translation>
 <translation id="1881621406744213161">Fto anëtarët e familjes</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Shiriti i menysë për renditjen inteligjente</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Ruaj fjalëkalimet e tua për t'u identifikuar me lehtësi në sajte dhe aplikacione.</translation>
 <translation id="2468132863574325555">Disku</translation>
 <translation id="2468444275314013497">Shfletuesi yt duket në rregull</translation>
+<translation id="2470654816840674524">Çfarë mund të bëj me Gemini në Chrome?</translation>
 <translation id="2473876017985765807">Ke ruajtur tashmë një fjalëkalim për <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Mund të caktosh një alarm rikujtues për ta vizituar përsëri këtë faqe më vonë</translation>
 <translation id="2479148705183875116">Shko te "Cilësimet"</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Fshihe "Kontrollin e sigurisë"</translation>
 <translation id="2625189173221582860">Fjalëkalimi u kopjua</translation>
 <translation id="2626236249646841566">Kontrollo lidhjen dhe provo të identifikohesh sërish.</translation>
+<translation id="2629543259235506452">Krijo një listë të shkurtër me pyetje të shpeshta për këtë temë duke përdorur informacionet nga kjo faqe dhe uebsajte të ngjashme</translation>
 <translation id="2635918910848538771">Plotëso automatikisht kodin CVC</translation>
 <translation id="2640733327287333451">Nuk ka emër përdoruesi ••••••</translation>
 <translation id="264215785133931186">Kontrolluar pikërisht tani</translation>
@@ -2349,6 +2354,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="8766790350274092814">Fjalëkalimet për <ph name="WEBSITE" /> dhe <ph name="SECOND_WEBSITE" /> do të fshihen. Llogaritë e tua nuk do të fshihen.</translation>
 <translation id="8775144690796719618">URL-ja është e pavlefshme</translation>
 <translation id="8781834595282316166">Skedë e re në grup</translation>
+<translation id="8783445328207519872">Krijo pyetje të shpeshta për këtë temë</translation>
 <translation id="8784653774976848206">Zgjidh skedarët</translation>
 <translation id="8786100550345425552">Modifiko lejet</translation>
 <translation id="878871978861915380">Fshih "Monitorimin e çmimeve"</translation>

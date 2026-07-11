@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">A tárhely megtelt</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
 <translation id="1190609913194133056">Értesítési központ</translation>
+<translation id="1196534270480620381">Rövid összefoglalót kérek erről az oldalról</translation>
 <translation id="1199631150313925648">Megadás manuálisan</translation>
 <translation id="1199963004393929848">Zöld téma</translation>
 <translation id="1201402288615127009">Tovább</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Nem találhatók jelszavak vagy azonosítókulcsok ehhez a webhelyhez</translation>
 <translation id="1540800554400757039">Cím 1. sora</translation>
 <translation id="154312949627292154">A többi eszközéről kapott lapokat a zárolási képernyőn nyithatja meg.</translation>
+<translation id="1544653821167545205">Oldal összefoglalása</translation>
 <translation id="1545749641540134597">QR-kód beolvasása</translation>
 <translation id="1545757265410828525">Árelőzmények</translation>
 <translation id="1547610699249301703">Jelszavak megosztása</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">A Keresés a képernyőn funkció csak akkor áll rendelkezésre, ha a Google van beállítva alapértelmezett keresőmotorként. Az alapértelmezett keresőmotort a <ph name="BEGIN_LINK" />Beállítások<ph name="END_LINK" /> között módosíthatja.</translation>
 <translation id="1872096359983322073">Vaku</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Mire képes a Gemini a Chrome-ban?</translation>
 <translation id="1881621406744213161">Családtagok meghívása</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Menüsor intelligens rendezése</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Jelszavai mentésével egyszerűen bejelentkezhet a webhelyekre és az alkalmazásokba.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Böngészője jól néz ki</translation>
+<translation id="2470654816840674524">Mire használhatom a Gemini a Chrome-ban szolgáltatást?</translation>
 <translation id="2473876017985765807">Már mentett jelszót a(z) „<ph name="WEBSITE" />” webhelyhez.</translation>
 <translation id="247430852844518481">Beállíthat emlékeztetőt, hogy később újra felkereshesse ezt az oldalt</translation>
 <translation id="2479148705183875116">Beállítások</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">A „Biztonsági ellenőrzés” elrejtése</translation>
 <translation id="2625189173221582860">Jelszó vágólapra másolva</translation>
 <translation id="2626236249646841566">Ellenőrizze a kapcsolatot, majd próbáljon újból bejelentkezni.</translation>
+<translation id="2629543259235506452">Készíts egy rövid GYIK-et erről a témáról az erről az oldalról és hasonló webhelyekről származó információk felhasználásával</translation>
 <translation id="2635918910848538771">CVC automatikus kitöltése</translation>
 <translation id="2640733327287333451">Nincs felhasználónév ••••••</translation>
 <translation id="264215785133931186">Most volt ellenőrizve</translation>
@@ -2349,6 +2354,7 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="8766790350274092814">A következőkhöz tartozó jelszavak törölve lesznek: <ph name="WEBSITE" /> és <ph name="SECOND_WEBSITE" />. A fiókjai nem törlődnek.</translation>
 <translation id="8775144690796719618">Érvénytelen URL</translation>
 <translation id="8781834595282316166">Új lap a csoportban</translation>
+<translation id="8783445328207519872">GYIK létrehozása a témáról</translation>
 <translation id="8784653774976848206">Fájlok kiválasztása</translation>
 <translation id="8786100550345425552">Engedélyek szerkesztése</translation>
 <translation id="878871978861915380">Az „Árfigyelés” elrejtése</translation>

@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Je opslag is vol</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1190609913194133056">Meldingscentrum</translation>
+<translation id="1196534270480620381">Geef me een korte samenvatting van deze pagina</translation>
 <translation id="1199631150313925648">Handmatig invoeren</translation>
 <translation id="1199963004393929848">Groen thema</translation>
 <translation id="1201402288615127009">Volgende</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Geen wachtwoorden of toegangssleutels gevonden voor deze site</translation>
 <translation id="1540800554400757039">Adres 1</translation>
 <translation id="154312949627292154">Geopende tabbladen die je van je andere apparaten krijgt vanaf het vergrendelscherm.</translation>
+<translation id="1544653821167545205">Pagina samenvatten</translation>
 <translation id="1545749641540134597">QR-code scannen</translation>
 <translation id="1545757265410828525">Prijsgeschiedenis</translation>
 <translation id="1547610699249301703">Wachtwoorden delen</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Zoeken op scherm is alleen beschikbaar als Google is ingesteld als je standaard zoekmachine. Je kunt je standaard zoekmachine wijzigen in de <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Zaklamp</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Wat kan Gemini doen in Chrome?</translation>
 <translation id="1881621406744213161">Gezinsleden uitnodigen</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Menubalk slim sorteren</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Sla je wachtwoorden op om makkelijk in te loggen bij sites en apps.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Je browser ziet er goed uit</translation>
+<translation id="2470654816840674524">Wat kan ik doen met Gemini in Chrome?</translation>
 <translation id="2473876017985765807">Je hebt al een wachtwoord opgeslagen voor <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Je kunt een herinnering instellen om deze pagina later opnieuw te bezoeken</translation>
 <translation id="2479148705183875116">Naar Instellingen</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Veiligheidscheck verbergen</translation>
 <translation id="2625189173221582860">Wachtwoord gekopieerd</translation>
 <translation id="2626236249646841566">Check je verbinding en probeer opnieuw in te loggen.</translation>
+<translation id="2629543259235506452">Maak een korte lijst met veelgestelde vragen voor dit onderwerp met informatie van deze pagina en vergelijkbare websites</translation>
 <translation id="2635918910848538771">De CVC automatisch invullen</translation>
 <translation id="2640733327287333451">Geen gebruikersnaam ••••••••</translation>
 <translation id="264215785133931186">Zojuist gecheckt</translation>
@@ -2349,6 +2354,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="8766790350274092814">Wachtwoorden voor <ph name="WEBSITE" /> en <ph name="SECOND_WEBSITE" /> worden verwijderd. Je accounts zelf worden niet verwijderd.</translation>
 <translation id="8775144690796719618">Ongeldige URL</translation>
 <translation id="8781834595282316166">Nieuw tabblad in groep</translation>
+<translation id="8783445328207519872">Veelgestelde vragen over dit onderwerp maken</translation>
 <translation id="8784653774976848206">Bestanden kiezen</translation>
 <translation id="8786100550345425552">Rechten bewerken</translation>
 <translation id="878871978861915380">Prijzen volgen verbergen</translation>

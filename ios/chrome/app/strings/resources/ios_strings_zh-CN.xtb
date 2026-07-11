@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">存储空间已满</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1190609913194133056">通知中心</translation>
+<translation id="1196534270480620381">简要总结此页面的内容</translation>
 <translation id="1199631150313925648">手动输入</translation>
 <translation id="1199963004393929848">绿色主题</translation>
 <translation id="1201402288615127009">下一步</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">未找到此网站的密码或通行密钥</translation>
 <translation id="1540800554400757039">地址第1行</translation>
 <translation id="154312949627292154">在锁屏状态下打开从其他设备接收的标签页。</translation>
+<translation id="1544653821167545205">总结页面内容</translation>
 <translation id="1545749641540134597">扫描二维码</translation>
 <translation id="1545757265410828525">既往价格</translation>
 <translation id="1547610699249301703">分享密码</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">只有将 Google 设为默认搜索引擎时，才能使用屏幕搜索功能。您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中更改默认搜索引擎。</translation>
 <translation id="1872096359983322073">闪光灯</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />。</translation>
+<translation id="1876230899304059090">Chrome 中的 Gemini 可提供哪些功能？</translation>
 <translation id="1881621406744213161">邀请家庭成员</translation>
 <translation id="188177382966899059">深度搜索</translation>
 <translation id="188237709236611317">菜单栏智能排序</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">保存密码即可轻松登录网站和应用。</translation>
 <translation id="2468132863574325555">云端硬盘</translation>
 <translation id="2468444275314013497">您的浏览器很安全</translation>
+<translation id="2470654816840674524">我可以使用 Chrome 中的 Gemini 做些什么？</translation>
 <translation id="2473876017985765807">您已经保存了在 <ph name="WEBSITE" /> 上使用的密码</translation>
 <translation id="247430852844518481">您可以设置提醒，以便日后再次访问此页面</translation>
 <translation id="2479148705183875116">前往“设置”</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">隐藏“安全检查”</translation>
 <translation id="2625189173221582860">已复制密码</translation>
 <translation id="2626236249646841566">请检查网络连接状况并尝试重新登录。</translation>
+<translation id="2629543259235506452">使用本页面和类似网站中的信息，针对此主题创建简短的常见问题解答</translation>
 <translation id="2635918910848538771">自动填充银行卡验证码 (CVC)</translation>
 <translation id="2640733327287333451">无用户名 ••••••</translation>
 <translation id="264215785133931186">刚刚检查过</translation>
@@ -2349,6 +2354,7 @@
 <translation id="8766790350274092814">用于登录 <ph name="WEBSITE" /> 和 <ph name="SECOND_WEBSITE" /> 的密码将被删除。您的相关账号不会被删除。</translation>
 <translation id="8775144690796719618">网址无效</translation>
 <translation id="8781834595282316166">在分组内添加新标签页</translation>
+<translation id="8783445328207519872">创建关于此主题的常见问题解答</translation>
 <translation id="8784653774976848206">选择文件</translation>
 <translation id="8786100550345425552">修改权限</translation>
 <translation id="878871978861915380">隐藏“价格跟踪”</translation>

@@ -32,7 +32,6 @@
 <translation id="126567311906253476">នៅពេល​ចូល​សេវាកម្ម Google ដូចជា Gmail ឬ YouTube ដោយប្រើ <ph name="USER_EMAIL" /> អ្នកអាច​ចូល Chromium ដោយ​ស្វ័យប្រវត្តិ ដោយប្រើ​គណនី​តែមួយ</translation>
 <translation id="1287534462498555020">យក Chromium ដាក់នៅលើទូរសព្ទរបស់អ្នក</translation>
 <translation id="1290883685122687410">បញ្ហា​ក្នុងការរៀបចំ៖ <ph name="METAINSTALLER_EXIT_CODE" />។ <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">រូបភាពដែលបង្ហាញអំពីរបៀបដែលអ្នកអាចប្រើការស្វែងរករូបភាព ដើម្បីរកមើលផលិតផល</translation>
 <translation id="1315551408014407711">រៀបចំ​កម្រងព័ត៌មាន Chromium ថ្មី​របស់អ្នក</translation>
 <translation id="132092532143527429">សាកល្បងប្រើ Gemini ក្នុង Chromium</translation>
 <translation id="1324107359134968521">Chromium ត្រូវការសិទ្ធិចូលប្រើប៊្លូធូស ដើម្បីរុករកឧបករណ៍​ប៊្លូធូស។ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -511,7 +510,6 @@
 <translation id="6400112897226594999">រូបសញ្ញា Chromium នៅក្នុង​អេក្រង់​កុំព្យូទ័រ។</translation>
 <translation id="6403826409255603130">Chromium គឺជាកម្មវិធីរុករកអ៊ីនធឺណិត ដែលដំណើរការគេហទំព័រ និងកម្មវិធីបានយ៉ាងរហ័សបំផុត។ វាលឿន មានស្ថេរភាព និងងាយស្រួលប្រើ។ រុករកគេហទំព័រប្រកបដោយសុវត្ថិភាពជាមួយការពារពីមេរោគ និងការលួចឆ្មក់យកទិន្នន័យដែលភ្ជាប់នៅក្នុង Chromium។</translation>
 <translation id="6414624068245092115">ដើម្បី​ប្រាកដថា​អ្នកអាចប្រើ និង​រក្សាទុក​ទិន្នន័យ Chromium នៅក្នុង​គណនី Google របស់អ្នក​បានជានិច្ច សូម​ផ្ទៀងផ្ទាត់​ថាជាអ្នក</translation>
-<translation id="6417332166651156371">រូបភាព​សាមញ្ញ​ដែលបង្ហាញ​ចំណុចចូល​កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់​នៅក្នុង Chromium</translation>
 <translation id="642132557830635295">Chromium ដំណើរការ​លឿន​ជាងមុន ហើយ​មុខងារដែលប្រើ JavaScript គួរតែ​ដំណើរការ​ដូចដែលបាន​រចនាឡើង</translation>
 <translation id="6436260184216827876">មិនអាចប្រើការស្វែងរករូបភាពបានទេ។ សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ។</translation>
 <translation id="6442900851116057561">ចាប់ផ្តើម ChromiumOS ឡើងវិញ</translation>

@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Pamięć jest pełna</translation>
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1190609913194133056">Centrum powiadomień</translation>
+<translation id="1196534270480620381">Przygotuj krótkie podsumowanie tej strony</translation>
 <translation id="1199631150313925648">Wpisz ręcznie</translation>
 <translation id="1199963004393929848">Motyw zielony</translation>
 <translation id="1201402288615127009">Dalej</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Nie znaleziono haseł ani kluczy dostępu do tej witryny</translation>
 <translation id="1540800554400757039">Adres 1</translation>
 <translation id="154312949627292154">Otwieraj karty z innych urządzeń na ekranie blokady.</translation>
+<translation id="1544653821167545205">Podsumuj stronę</translation>
 <translation id="1545749641540134597">Zeskanuj kod QR</translation>
 <translation id="1545757265410828525">Historia cen</translation>
 <translation id="1547610699249301703">Udostępnianie haseł</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Wyszukiwanie na ekranie jest dostępne tylko wtedy, gdy domyślną wyszukiwarką jest Google. Domyślną wyszukiwarkę możesz zmienić w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Latarka</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Co Gemini może robić w Chrome?</translation>
 <translation id="1881621406744213161">Zaproś osoby do grupy rodzinnej</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Pasek menu inteligentnego sortowania</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Zapisuj hasła, aby łatwo logować się na stronach i w aplikacjach.</translation>
 <translation id="2468132863574325555">Dysk</translation>
 <translation id="2468444275314013497">Zabezpieczenia w przeglądarce wydają się wystarczające</translation>
+<translation id="2470654816840674524">Co mogę zrobić za pomocą Gemini w Chrome?</translation>
 <translation id="2473876017985765807">Masz już zapisane hasło do strony <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Możesz ustawić przypomnienie, aby wrócić na tę stronę później</translation>
 <translation id="2479148705183875116">Otwórz Ustawienia</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Ukryj „kontrolę zabezpieczeń”</translation>
 <translation id="2625189173221582860">Hasło zostało skopiowane</translation>
 <translation id="2626236249646841566">Sprawdź połączenie i zaloguj się ponownie.</translation>
+<translation id="2629543259235506452">Utwórz krótką listę najczęstszych pytań na ten temat, korzystając z informacji podanych na tej stronie i w podobnych witrynach</translation>
 <translation id="2635918910848538771">Automatycznie uzupełnij kod CVC</translation>
 <translation id="2640733327287333451">Brak nazwy użytkownika ••••••</translation>
 <translation id="264215785133931186">Sprawdzono przed chwilą</translation>
@@ -1742,7 +1747,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6761393919622941301">Dźwięk</translation>
 <translation id="6765551480308401897">Nie ustawiaj jako domyślnego</translation>
 <translation id="6770452996697898492">[ZAREZERWOWANO]</translation>
-<translation id="6775952316617222141">Korzystanie z trybu Live w Gemini w Chrome</translation>
+<translation id="6775952316617222141">Przejdź do trybu Live w Gemini w Chrome</translation>
 <translation id="6779455296366983087">Dane przeglądania zostaną usunięte</translation>
 <translation id="6782531425936234573">Eksportuj dane</translation>
 <translation id="6791425686608802741">Kliknij „Dodaj kartę do nowej grupy”</translation>
@@ -2349,6 +2354,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="8766790350274092814">Hasła do stron <ph name="WEBSITE" /> i <ph name="SECOND_WEBSITE" /> zostaną usunięte. Twoje konta nie zostaną usunięte.</translation>
 <translation id="8775144690796719618">Nieprawidłowy URL</translation>
 <translation id="8781834595282316166">Nowa karta w grupie</translation>
+<translation id="8783445328207519872">Przygotuj listę najczęstszych pytań na ten temat</translation>
 <translation id="8784653774976848206">Wybierz pliki</translation>
 <translation id="8786100550345425552">Edytuj uprawnienia</translation>
 <translation id="878871978861915380">Ukryj „Śledzenie cen”</translation>

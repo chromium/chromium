@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Pohrana je puna</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1190609913194133056">Centar za obavijesti</translation>
+<translation id="1196534270480620381">Napiši kratak sažetak ove stranice</translation>
 <translation id="1199631150313925648">Unesi ručno</translation>
 <translation id="1199963004393929848">Zelena tema</translation>
 <translation id="1201402288615127009">Dalje</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Nije pronađena nijedna zaporka ili pristupni ključ za ovu web-lokaciju</translation>
 <translation id="1540800554400757039">1. adresni redak</translation>
 <translation id="154312949627292154">Otvorite kartice primljene s drugih uređaja sa zaključanog zaslona.</translation>
+<translation id="1544653821167545205">Sažmi stranicu</translation>
 <translation id="1545749641540134597">Skenirajte QR kôd</translation>
 <translation id="1545757265410828525">Povijest cijena</translation>
 <translation id="1547610699249301703">Dijeljenje zaporki</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Pretraživanje zaslona dostupno je samo kad je Google postavljen kao zadana tražilica. Zadanu tražilicu možete promijeniti u <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Svjetlo</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Što sve može Gemini u Chromeu?</translation>
 <translation id="1881621406744213161">Pozovite članove obitelji</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Traka izbornika za pametno razvrstavanje</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Spremite zaporke da biste se lako prijavljivali na web-lokacije i u aplikacije.</translation>
 <translation id="2468132863574325555">Disk</translation>
 <translation id="2468444275314013497">Čini se da je sve u redu s preglednikom</translation>
+<translation id="2470654816840674524">Što mi omogućuje Gemini u Chromeu?</translation>
 <translation id="2473876017985765807">Već ste spremili zaporku za web-lokaciju <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Možete postaviti podsjetnik da kasnije ponovo posjetite ovu stranicu</translation>
 <translation id="2479148705183875116">Otvori Postavke</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Sakrijte sigurnosnu provjeru</translation>
 <translation id="2625189173221582860">Zaporka je kopirana</translation>
 <translation id="2626236249646841566">Provjerite vezu i pokušajte se ponovno prijaviti.</translation>
+<translation id="2629543259235506452">Izradi česta pitanja i odgovore za ovu temu koristeći informacije s ove stranice i sličnih web-lokacija</translation>
 <translation id="2635918910848538771">Automatsko popunjavanje CVC-a</translation>
 <translation id="2640733327287333451">Nema korisničkog imena ••••••</translation>
 <translation id="264215785133931186">Provjera je upravo izvršena</translation>
@@ -2349,6 +2354,7 @@ Da biste nastavili s računala, prebacite se na <ph name="OTHER_EMAIL" />. Dohva
 <translation id="8766790350274092814">Izbrisat će se zaporke za <ph name="WEBSITE" /> i <ph name="SECOND_WEBSITE" />. Vaši se računi neće izbrisati.</translation>
 <translation id="8775144690796719618">Nevažeći URL</translation>
 <translation id="8781834595282316166">Nova kartica u grupi</translation>
+<translation id="8783445328207519872">Izradi česta pitanja o ovoj temi</translation>
 <translation id="8784653774976848206">Odabir datoteka</translation>
 <translation id="8786100550345425552">Uredite dopuštenja</translation>
 <translation id="878871978861915380">Sakrij opciju Praćenje cijena</translation>

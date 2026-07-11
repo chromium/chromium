@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">আপনার স্টোরেজ ভর্তি হয়ে গেছে</translation>
 <translation id="1181037720776840403">সরান</translation>
 <translation id="1190609913194133056">বিজ্ঞপ্তি কেন্দ্র</translation>
+<translation id="1196534270480620381">আমাকে এই পৃষ্ঠার একটি সংক্ষিপ্ত বিবরণ দাও</translation>
 <translation id="1199631150313925648">ম্যানুয়ালি লিখুন</translation>
 <translation id="1199963004393929848">গ্রিন থিম</translation>
 <translation id="1201402288615127009">পরের</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">এই সাইটের জন্য কোনও পাসওয়ার্ড বা পাসকী পাওয়া যায়নি</translation>
 <translation id="1540800554400757039">ঠিকানা ১</translation>
 <translation id="154312949627292154">আপনার অন্য ডিভাইস থেকে পাওয়া ট্যাবগুলি লক স্ক্রিনে খুলুন।</translation>
+<translation id="1544653821167545205">পৃষ্ঠার সারসংক্ষেপ দাও</translation>
 <translation id="1545749641540134597">QR কোড স্ক্যান করুন</translation>
 <translation id="1545757265410828525">দাম সম্পর্কিত ইতিহাস</translation>
 <translation id="1547610699249301703">পাসওয়ার্ড শেয়ার করুন</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Google আপনার ডিফল্ট সার্চ ইঞ্জিন হিসেবে সেট করা থাকলে তবেই 'স্ক্রিন সার্চ করুন' ফিচার উপলভ্য হয়। আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে আপনার ডিফল্ট সার্চ ইঞ্জিন পরিবর্তন করতে পারবেন।</translation>
 <translation id="1872096359983322073">টর্চ</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Chrome-এ Gemini কী কী করতে পারে?</translation>
 <translation id="1881621406744213161">ফ্যামিলি মেম্বারদের আমন্ত্রণ জানান</translation>
 <translation id="188177382966899059">ডিপ সার্চ</translation>
 <translation id="188237709236611317">স্মার্ট সর্ট মেনু বার</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">পাসওয়ার্ড তৈরি করুন, যাতে আপনি সহজেই সাইট ও অ্যাপে সাইন-ইন করতে পারেন।</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">আপনার ব্রাউজার সঠিক বলে মনে হচ্ছে</translation>
+<translation id="2470654816840674524">Chrome-এ Gemini ব্যবহার করে আমি কী কী করতে পারি?</translation>
 <translation id="2473876017985765807">আপনি আগেই <ph name="WEBSITE" />-এর জন্য পাসওয়ার্ড সেভ করেছেন</translation>
 <translation id="247430852844518481">আপনি এই পৃষ্ঠা পরে আবার দেখার জন্য রিমাইন্ডার সেট করতে পারবেন</translation>
 <translation id="2479148705183875116">সেটিংসে যান</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">"নিরাপত্তা সংক্রান্ত পরীক্ষা" লুকান</translation>
 <translation id="2625189173221582860">পাসওয়ার্ড কপি করা হয়েছে</translation>
 <translation id="2626236249646841566">ইন্টারনেট কানেকশন চেক করে আবার সাইন-ইন করার চেষ্টা করুন।</translation>
+<translation id="2629543259235506452">এই পৃষ্ঠা এবং একই ধরনের ওয়েবসাইট থেকে তথ্য নিয়ে এই বিষয়ে প্রায়শই জিজ্ঞাসিত প্রশ্নের একটি তালিকা তৈরি করো</translation>
 <translation id="2635918910848538771">CVC অটোফিল করুন</translation>
 <translation id="2640733327287333451">কোনও ইউজারনেম নেই ••••••</translation>
 <translation id="264215785133931186">এখনই চেক করা হয়েছে</translation>
@@ -2350,6 +2355,7 @@
 <translation id="8766790350274092814"><ph name="WEBSITE" /> এবং <ph name="SECOND_WEBSITE" />-এর পাসওয়ার্ড মুছে ফেলা হবে। আপনার অ্যাকাউন্ট মুছে ফেলা হবে না।</translation>
 <translation id="8775144690796719618">ভুল ইউআরএল</translation>
 <translation id="8781834595282316166">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
+<translation id="8783445328207519872">এই বিষয় সম্পর্কে প্রায়শই জিজ্ঞাসিত প্রশ্ন তৈরি করো</translation>
 <translation id="8784653774976848206">ফাইল বেছে নিন</translation>
 <translation id="8786100550345425552">অনুমতি এডিট করুন</translation>
 <translation id="878871978861915380">"প্রাইস ট্র্যাকিং" লুকান</translation>

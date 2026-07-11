@@ -30,7 +30,6 @@
 <translation id="126567311906253476">Kad se na Googleove usluge kao što su Gmail ili YouTube prijavljujete pomoću računa <ph name="USER_EMAIL" />, možete se automatski prijaviti u Chromium istim računom</translation>
 <translation id="1287534462498555020">Preuzmite Chromium na telefon</translation>
 <translation id="1290883685122687410">Pogreška pri postavljanju: <ph name="METAINSTALLER_EXIT_CODE" /> <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">Ilustracija koja prikazuje kako možete upotrijebiti pretraživanje slika za pretraživanje proizvoda</translation>
 <translation id="1315551408014407711">Postavite novi profil u Chromiumu</translation>
 <translation id="132092532143527429">Isprobajte s Geminijem u Chromiumu</translation>
 <translation id="1324107359134968521">Chromium treba pristup Bluetoothu kako bi pronašao 
@@ -509,7 +508,6 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="6400112897226594999">Logotip Chromiuma na zaslonu računala.</translation>
 <translation id="6403826409255603130">Chromium je web-preglednik koji munjevitom brzinom prikazuje web-stranice i aplikacije. Brz je, stabilan i jednostavan za upotrebu. Pregledavajte web sigurnije jer je zaštita od zlonamjernog softvera i krađe identiteta ugrađena u Chromium.</translation>
 <translation id="6414624068245092115">Da biste uvijek mogli upotrebljavati i spremati podatke iz Chromiuma na svojem Google računu, potvrdite svoj identitet</translation>
-<translation id="6417332166651156371">Pojednostavljena slika koja prikazuje ulaznu točku Upravitelja zaporki u Chromiumu</translation>
 <translation id="642132557830635295">Chromium se pokreće brže, a značajke koje upotrebljavaju JavaScript trebale bi funkcionirati kako je predviđeno</translation>
 <translation id="6436260184216827876">Pretraživanje slika nije dostupno. Pokušajte ponovo kasnije.</translation>
 <translation id="6442900851116057561">Ponovo pokrenite Chromium OS</translation>

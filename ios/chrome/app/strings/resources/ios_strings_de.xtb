@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Dein Speicher ist voll</translation>
 <translation id="1181037720776840403">Entfernen</translation>
 <translation id="1190609913194133056">Benachrichtigungscenter</translation>
+<translation id="1196534270480620381">Gib mir eine kurze Zusammenfassung dieser Seite</translation>
 <translation id="1199631150313925648">Manuell eingeben</translation>
 <translation id="1199963004393929848">Grünes Design</translation>
 <translation id="1201402288615127009">Weiter</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Keine Passwörter oder Passkeys für diese Website gefunden</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="154312949627292154">Tabs, die du von anderen Geräten erhalten hast, vom Sperrbildschirm aus öffnen.</translation>
+<translation id="1544653821167545205">Seite zusammenfassen</translation>
 <translation id="1545749641540134597">QR-Code scannen</translation>
 <translation id="1545757265410828525">Preisentwicklung</translation>
 <translation id="1547610699249301703">Passwörter teilen</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Die Bildschirmsuche ist nur verfügbar, wenn die Google Suche als deine Standardsuchmaschine festgelegt ist. Du kannst deine Standardsuchmaschine in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> ändern.</translation>
 <translation id="1872096359983322073">Taschenlampe</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Was kann Gemini in Chrome?</translation>
 <translation id="1881621406744213161">Familienmitglieder einladen</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Menüleiste mit intelligenter Sortierung</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Du kannst deine Passwörter speichern, um dich einfacher auf Websites und in Apps anzumelden.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Dein Browser sieht sicher aus</translation>
+<translation id="2470654816840674524">Was kann ich alles mit Gemini in Chrome machen?</translation>
 <translation id="2473876017985765807">Du hast bereits ein Passwort für <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="247430852844518481">Du kannst eine Erinnerung festlegen, um später noch einmal auf diese Seite zuzugreifen</translation>
 <translation id="2479148705183875116">Zu den Einstellungen</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Sicherheitscheck ausblenden</translation>
 <translation id="2625189173221582860">Passwort kopiert</translation>
 <translation id="2626236249646841566">Prüfe deine Verbindung und versuche es noch einmal.</translation>
+<translation id="2629543259235506452">Erstelle anhand von Informationen auf dieser Seite und ähnlichen Websites einige häufig gestellte Fragen zu diesem Thema</translation>
 <translation id="2635918910848538771">CVC automatisch ausfüllen lassen</translation>
 <translation id="2640733327287333451">Kein Nutzername ••••••</translation>
 <translation id="264215785133931186">Zuletzt geprüft: gerade eben</translation>
@@ -2349,6 +2354,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8766790350274092814">Passwörter für <ph name="WEBSITE" /> und <ph name="SECOND_WEBSITE" /> werden gelöscht. Deine Konten werden nicht gelöscht.</translation>
 <translation id="8775144690796719618">Ungültige URL</translation>
 <translation id="8781834595282316166">Neuer Tab in Gruppe</translation>
+<translation id="8783445328207519872">Häufig gestellte Fragen zu diesem Thema erstellen</translation>
 <translation id="8784653774976848206">Dateien auswählen</translation>
 <translation id="8786100550345425552">Berechtigungen bearbeiten</translation>
 <translation id="878871978861915380">Preis-Tracking ausblenden</translation>

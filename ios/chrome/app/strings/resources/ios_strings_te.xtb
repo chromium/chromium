@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">మీ స్టోరేజ్ నిండింది</translation>
 <translation id="1181037720776840403">తీసివేయండి</translation>
 <translation id="1190609913194133056">నోటిఫికేషన్ కేంద్రం</translation>
+<translation id="1196534270480620381">నాకు ఈ పేజీ తాలూకు షార్ట్ సమ్మరీని ఇవ్వు</translation>
 <translation id="1199631150313925648">మాన్యువల్‌గా ఎంటర్ చేయండి</translation>
 <translation id="1199963004393929848">ఆకుపచ్చ రంగు థీమ్</translation>
 <translation id="1201402288615127009">తర్వాత</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">ఈ సైట్‌కు సంబంధించి పాస్‌వర్డ్‌లు లేదా పాస్-కీలు ఏవీ దొరకలేదు</translation>
 <translation id="1540800554400757039">అడ్రస్‌ 1</translation>
 <translation id="154312949627292154">లాక్ స్క్రీన్ నుండి, మీ ఇతర పరికరాల నుండి అందుకున్న ట్యాబ్‌లను తెరవండి.</translation>
+<translation id="1544653821167545205">పేజీ సారాంశాన్ని పొందండి</translation>
 <translation id="1545749641540134597">QR కోడ్‌ను స్కాన్ చేయండి</translation>
 <translation id="1545757265410828525">ధర హిస్టరీ</translation>
 <translation id="1547610699249301703">పాస్‌వర్డ్‌లను షేర్ చేయండి</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Googleను మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌గా సెట్ చేసినప్పుడు మాత్రమే సెర్చ్ స్క్రీన్ అందుబాటులో ఉంటుంది. మీరు <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" />లో మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌ను మార్చవచ్చు.</translation>
 <translation id="1872096359983322073">టార్చ్</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Chromeలో Gemini ఏం చేయగలదు?</translation>
 <translation id="1881621406744213161">ఫ్యామిలీ మెంబర్‌లను ఆహ్వానించండి</translation>
 <translation id="188177382966899059">డీప్ సెర్చ్</translation>
 <translation id="188237709236611317">స్మార్ట్‌గా క్రమపద్ధతిలో అమర్చే మెనూ బార్</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">సైట్‌లు, యాప్‌లకు సులభంగా సైన్ ఇన్ చేయడానికి మీ పాస్‌వర్డ్‌లను సేవ్ చేయండి.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">మీ బ్రౌజర్ చూడటానికి బాగుంది</translation>
+<translation id="2470654816840674524">Chromeలో Geminiతో నేను ఏమి చేయగలను?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" />లో మీరు ఇప్పటికే పాస్‌వర్డ్‌ను సేవ్ చేశారు</translation>
 <translation id="247430852844518481">ఈ పేజీని తర్వాత మళ్ళీ సందర్శించడానికి మీరు రిమైండర్‌ను సెట్ చేయవచ్చు</translation>
 <translation id="2479148705183875116">సెట్టింగ్‌లకు వెళ్లు</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">"సేఫ్టీ చెక్"‌ను దాచండి</translation>
 <translation id="2625189173221582860">పాస్‌వర్డ్ కాపీ చేయబడింది</translation>
 <translation id="2626236249646841566">మీ కనెక్షన్‌‌ను చెక్ చేసి, మళ్లీ సైన్ ఇన్ చేయడానికి ట్రై చేయండి.</translation>
+<translation id="2629543259235506452">ఈ పేజీలోని, ఇటువంటి ఇతర వెబ్‌సైట్‌లలోని సమాచారాన్ని ఉపయోగించి ఈ టాపిక్‌కు షార్ట్ FAQను క్రియేట్ చేయండి</translation>
 <translation id="2635918910848538771">CVCని ఆటోఫిల్ చేయండి</translation>
 <translation id="2640733327287333451">యూజర్‌నేమ్, •••••• సేవ్ చేసి లేవు</translation>
 <translation id="264215785133931186">ఇప్పుడే చెక్ చేయడం జరిగింది</translation>
@@ -2349,6 +2354,7 @@
 <translation id="8766790350274092814"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> URLలకు సంబంధించిన పాస్‌వర్డ్‌లు తొలగించబడతాయి. మీ ఖాతాలు తొలగించబడవు.</translation>
 <translation id="8775144690796719618">URL చెల్లదు</translation>
 <translation id="8781834595282316166">గ్రూప్‌లో కొత్త ట్యాబ్</translation>
+<translation id="8783445328207519872">ఈ టాపిక్‌కు సంబంధించి FAQను క్రియేట్ చేయండి</translation>
 <translation id="8784653774976848206">ఫైళ్లను ఎంచుకోండి</translation>
 <translation id="8786100550345425552">అనుమతులను ఎడిట్ చేయండి</translation>
 <translation id="878871978861915380">"ధర ట్రాకింగ్"‌ను దాచండి</translation>

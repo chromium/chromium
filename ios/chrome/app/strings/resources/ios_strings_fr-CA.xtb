@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Votre espace de stockage est plein</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1190609913194133056">Centre de notification</translation>
+<translation id="1196534270480620381">Fais-moi un bref résumé de cette page</translation>
 <translation id="1199631150313925648">Entrer manuellement</translation>
 <translation id="1199963004393929848">Thème vert</translation>
 <translation id="1201402288615127009">Suivant</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Aucun mot de passe ni clé d'accès trouvé pour ce site</translation>
 <translation id="1540800554400757039">Ligne adresse 1</translation>
 <translation id="154312949627292154">Ouvrez les onglets reçus de vos autres appareils à partir de l'écran de verrouillage.</translation>
+<translation id="1544653821167545205">Résumer la page</translation>
 <translation id="1545749641540134597">Balayer le code QR</translation>
 <translation id="1545757265410828525">Historique des prix</translation>
 <translation id="1547610699249301703">Partagez des mots de passe</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">L'écran de recherche n'est accessible que lorsque Google est défini comme moteur de recherche par défaut. Vous pouvez modifier votre moteur de recherche par défaut dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Lampe de poche</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Que peut faire Gemini dans Chrome?</translation>
 <translation id="1881621406744213161">Inviter des membres de la famille</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Barre de menu du tri intelligent</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Enregistrez vos mots de passe pour vous connecter facilement aux sites et aux applis.</translation>
 <translation id="2468132863574325555">Disque</translation>
 <translation id="2468444275314013497">Votre navigateur semble correct</translation>
+<translation id="2470654816840674524">Que puis-je faire avec Gemini dans Chrome?</translation>
 <translation id="2473876017985765807">Vous avez déjà enregistré un mot de passe pour le site <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Vous pouvez créer un rappel pour revenir à cette page plus tard</translation>
 <translation id="2479148705183875116">Accéder aux paramètres</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Masquer « Vérification de sécurité »</translation>
 <translation id="2625189173221582860">Mot de passe copié</translation>
 <translation id="2626236249646841566">Vérifiez votre connexion et réessayez de vous connecter.</translation>
+<translation id="2629543259235506452">Crée une courte FAQ sur ce sujet à partir des informations de cette page et de sites Web similaires</translation>
 <translation id="2635918910848538771">Remplissage automatique du code CVC</translation>
 <translation id="2640733327287333451">Aucun nom d'utilisateur ••••••</translation>
 <translation id="264215785133931186">Dernière vérification : à l'instant</translation>
@@ -2349,6 +2354,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="8766790350274092814">Les mots de passe de <ph name="WEBSITE" /> et <ph name="SECOND_WEBSITE" /> seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="8775144690796719618">URL non valide</translation>
 <translation id="8781834595282316166">Nouvel onglet dans le groupe</translation>
+<translation id="8783445328207519872">Crée une FAQ sur ce sujet</translation>
 <translation id="8784653774976848206">Sélectionner les fichiers</translation>
 <translation id="8786100550345425552">Modifier les autorisations</translation>
 <translation id="878871978861915380">Masquer « Suivi des prix »</translation>

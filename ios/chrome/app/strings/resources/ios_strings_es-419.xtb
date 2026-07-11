@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">El almacenamiento está lleno</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1190609913194133056">Centro de notificaciones</translation>
+<translation id="1196534270480620381">Dame un breve resumen de esta página</translation>
 <translation id="1199631150313925648">Ingresar manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
 <translation id="1201402288615127009">Siguiente</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">No se encontraron contraseñas ni llaves de acceso para este sitio</translation>
 <translation id="1540800554400757039">Dirección 1</translation>
 <translation id="154312949627292154">Abre las pestañas que recibes de tus otros dispositivos desde la pantalla de bloqueo.</translation>
+<translation id="1544653821167545205">Resumir página</translation>
 <translation id="1545749641540134597">Escanear código QR</translation>
 <translation id="1545757265410828525">Historial de precios</translation>
 <translation id="1547610699249301703">Comparte contraseñas</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">La pantalla de búsqueda solo está disponible cuando Google está establecido como el motor de búsqueda predeterminado. Puedes cambiar el motor de búsqueda predeterminado en la <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Linterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">¿Qué puede hacer Gemini en Chrome?</translation>
 <translation id="1881621406744213161">Invita a miembros de tu familia</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Barra de menú con orden inteligente</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Guarda tus contraseñas para acceder fácilmente a sitios y apps.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Tu navegador parece estar en orden</translation>
+<translation id="2470654816840674524">¿Qué puedo hacer con Gemini en Chrome?</translation>
 <translation id="2473876017985765807">Ya guardaste una contraseña para <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Puedes establecer un recordatorio para volver a ver esta página más tarde</translation>
 <translation id="2479148705183875116">Configurar</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Ocultar la "Verificación de seguridad"</translation>
 <translation id="2625189173221582860">Se copió la contraseña</translation>
 <translation id="2626236249646841566">Comprueba tu conexión y vuelve a intentar acceder.</translation>
+<translation id="2629543259235506452">Crear una breve sección de preguntas frecuentes sobre este tema con información de esta página y sitios web similares</translation>
 <translation id="2635918910848538771">Autocompletar el CVC</translation>
 <translation id="2640733327287333451">Sin nombre de usuario ••••••</translation>
 <translation id="264215785133931186">Se verificó recién</translation>
@@ -2349,6 +2354,7 @@ Para continuar desde tu computadora, cambia a <ph name="OTHER_EMAIL" />. Obtendr
 <translation id="8766790350274092814">Se borrarán las contraseñas de <ph name="WEBSITE" /> y <ph name="SECOND_WEBSITE" />. No se borrarán tus cuentas.</translation>
 <translation id="8775144690796719618">URL no válida</translation>
 <translation id="8781834595282316166">Nueva pestaña en el grupo</translation>
+<translation id="8783445328207519872">Crear preguntas frecuentes sobre este tema</translation>
 <translation id="8784653774976848206">Elegir archivos</translation>
 <translation id="8786100550345425552">Editar permisos</translation>
 <translation id="878871978861915380">Ocultar “Seguimiento de precios”</translation>

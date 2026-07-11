@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">သိုလှောင်ခန်း ပြည့်သွားပါပြီ</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="1190609913194133056">အသိပေးချက် စင်တာ</translation>
+<translation id="1196534270480620381">ဤစာမျက်နှာကို အကျဉ်းချုပ်ပေးပါ</translation>
 <translation id="1199631150313925648">မိမိကိုယ်တိုင် ထည့်ရန်</translation>
 <translation id="1199963004393929848">အစိမ်းရောင် အပြင်အဆင်</translation>
 <translation id="1201402288615127009">ရှေ့သို့</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">ဤဝဘ်ဆိုက်အတွက် စကားဝှက် (သို့) လျှို့ဝှက်ကီး မတွေ့ပါ</translation>
 <translation id="1540800554400757039">လိပ်စာ: 1</translation>
 <translation id="154312949627292154">သင်၏အခြားစက်များမှ ရရှိထားသော တဘ်များကို လော့ခ်မျက်နှာပြင်တွင် ဖွင့်ပါ။</translation>
+<translation id="1544653821167545205">စာမျက်နှာ အကျဉ်းချုပ်ရန်</translation>
 <translation id="1545749641540134597">QR ကုဒ်ကို ဖတ်ပါ</translation>
 <translation id="1545757265410828525">ဈေးနှုန်းမှတ်တမ်း</translation>
 <translation id="1547610699249301703">စကားဝှက်များ မျှဝေခြင်း</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Google ကို သင်၏မူရင်းရှာဖွေရေးအင်ဂျင်အဖြစ် သတ်မှတ်ထားသောအခါမှသာ ရှာဖွေမှုစခရင် အသုံးပြုနိုင်သည်။ မူရင်းရှာဖွေရေးအင်ဂျင်ကို <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> တွင် ပြောင်းနိုင်သည်။</translation>
 <translation id="1872096359983322073">ဓာတ်မီး</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />။</translation>
+<translation id="1876230899304059090">Chrome တွင် Gemini က ဘာလုပ်နိုင်သလဲ</translation>
 <translation id="1881621406744213161">မိသားစုဝင်များကို ဖိတ်ကြားပါ</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">မီနူးဘားကို စမတ်ကျကျစီရန်</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">ဝဘ်ဆိုက်နှင့် အက်ပ်များသို့ အလွယ်တကူ လက်မှတ်ထိုးဝင်ရန် စကားဝှက်များကို သိမ်းနိုင်သည်။</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">သင့်ဘရောင်ဇာသည် အဆင်ပြေပုံပေါ်သည်</translation>
+<translation id="2470654816840674524">Chrome ရှိ Gemini ဖြင့် ဘာလုပ်နိုင်သလဲ</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> အတွက် စကားဝှက်ကို သိမ်းပြီးဖြစ်သည်</translation>
 <translation id="247430852844518481">ဤစာမျက်နှာကို နောက်မှပြန်ဝင်ကြည့်ရန် သတိပေးချက် သတ်မှတ်နိုင်သည်</translation>
 <translation id="2479148705183875116">'ဆက်တင်များ' သို့ သွားရန်</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">“လုံခြုံရေး စစ်ဆေးမှု” ဖျောက်ရန်</translation>
 <translation id="2625189173221582860">စကားဝှက်ကို ကူးပြီးပါပြီ</translation>
 <translation id="2626236249646841566">သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်မံလက်မှတ်ထိုးဝင်ကြည့်ပါ။</translation>
+<translation id="2629543259235506452">ဤစာမျက်နှာနှင့် အလားတူဝဘ်ဆိုက်များမှ အချက်အလက်များကို သုံးပြီး ဤအကြောင်းအရာအတွက် မေးလေ့ရှိသော မေးခွန်းအတိုများ ထုတ်ပေးပါ</translation>
 <translation id="2635918910848538771">CVC အော်တိုဖြည့်ရန်</translation>
 <translation id="2640733327287333451">အသုံးပြုသူအမည် မရှိပါ ••••••</translation>
 <translation id="264215785133931186">ယခုလေးတင် စစ်ဆေးထားသည်</translation>
@@ -2348,6 +2353,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8766790350274092814"><ph name="WEBSITE" /> နှင့် <ph name="SECOND_WEBSITE" /> အတွက် စကားဝှက်များကို ဖျက်မည်မဟုတ်ပါ။ သင့်အကောင့်များကို ဖျက်မည်မဟုတ်ပါ။</translation>
 <translation id="8775144690796719618">URL မမှန်ပါ</translation>
 <translation id="8781834595282316166">အုပ်စုတွင် တဘ်အသစ်ထည့်ခြင်း</translation>
+<translation id="8783445328207519872">ဤအကြောင်းအရာအတွက် မေးလေ့ရှိသော မေးခွန်းများ ထုတ်ပေးပါ</translation>
 <translation id="8784653774976848206">ဖိုင်များရွေးရန်</translation>
 <translation id="8786100550345425552">ခွင့်ပြုချက်များကို ပြင်ခြင်း</translation>
 <translation id="878871978861915380">“ဈေးနှုန်းခြေရာခံခြင်း” ဖျောက်ရန်</translation>

@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">فضای ذخیره‌سازی پر است</translation>
 <translation id="1181037720776840403">برداشتن</translation>
 <translation id="1190609913194133056">مرکز اعلان‌ها</translation>
+<translation id="1196534270480620381">خلاصه کوتاهی از این صفحه به من ارائه بده</translation>
 <translation id="1199631150313925648">وارد کردن به‌صورت دستی</translation>
 <translation id="1199963004393929848">زمینه سبز</translation>
 <translation id="1201402288615127009">بعدی</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">گذرواژه یا گذرکلیدی برای این سایت پیدا نشد</translation>
 <translation id="1540800554400757039">آدرس ۱</translation>
 <translation id="154312949627292154">برگه‌های دریافت‌شده از دستگاه‌های دیگرتان را از صفحه قفل باز کنید.</translation>
+<translation id="1544653821167545205">خلاصه کردن صفحه</translation>
 <translation id="1545749641540134597">اسکن رمزینه پاسخ‌سریع</translation>
 <translation id="1545757265410828525">سابقه قیمت</translation>
 <translation id="1547610699249301703">هم‌رسانی گذرواژه‌ها</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">‏«جستجوی صفحه» فقط زمانی دردسترس است که Google به‌عنوان موتور جستجوی پیش‌فرض تنظیم شده باشد. می‌توانید موتور جستجوی پیش‌فرض را در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> تغییر دهید.</translation>
 <translation id="1872096359983322073">چراغ‌قوه</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">‏‫Gemini در Chrome چه کارهایی می‌تواند انجام دهد؟</translation>
 <translation id="1881621406744213161">دعوت از اعضای خانواده</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">مرتب کردن هوشمند نوار منو</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">گذرواژه‌هایتان را ذخیره کنید تا بتوانید به‌راحتی به سیستم سایت‌ها و برنامه‌ها وارد شوید.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">مرورگرتان مشکلی ندارد</translation>
+<translation id="2470654816840674524">‏با «Gemini در Chrome» چه کارهایی می‌توانم انجام دهم؟</translation>
 <translation id="2473876017985765807">قبلاً گذرواژه‌ای برای <ph name="WEBSITE" /> ذخیره کرده‌اید</translation>
 <translation id="247430852844518481">برای بازدید مجدد از این صفحه در فرصتی دیگر، می‌توانید یادآوری تنظیم کنید</translation>
 <translation id="2479148705183875116">رفتن به «تنظیمات»</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">پنهان کردن «بررسی ایمنی»</translation>
 <translation id="2625189173221582860">گذرواژه کپی شد</translation>
 <translation id="2626236249646841566">اتصال خود را بررسی کنید و دوباره به سیستم وارد شوید.</translation>
+<translation id="2629543259235506452">بااستفاده از اطلاعات این صفحه و وب‌سایت‌های مشابه، پرسشگان کوتاهی برای این موضوع بساز</translation>
 <translation id="2635918910848538771">‏تکمیل خودکار کد تأیید کارت (CVC)</translation>
 <translation id="2640733327287333451">بدون نام کاربری ••••••</translation>
 <translation id="264215785133931186">آخرین بررسی: همین‌حالا</translation>
@@ -2174,7 +2179,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8250920743982581267">اسناد</translation>
 <translation id="8252980988000695656">‏«لنز Google» تکمیل شد!</translation>
 <translation id="8258734532103758067">داده‌هایم را صادر کرده‌ام</translation>
-<translation id="8258999165172757081">اضافه شد</translation>
+<translation id="8258999165172757081">افزوده شده</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="82619448491672958">دیدن برگه‌های دیگر</translation>
 <translation id="8263228331881858381">گذرکلید ذخیره شد</translation>
@@ -2349,6 +2354,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8766790350274092814">گذرواژه‌های <ph name="WEBSITE" /> و <ph name="SECOND_WEBSITE" /> حذف خواهد شد. حساب‌هایتان حذف نخواهد شد.</translation>
 <translation id="8775144690796719618">نشانی وب نامعتبر</translation>
 <translation id="8781834595282316166">برگه جدید در گروه</translation>
+<translation id="8783445328207519872">ایجاد پرسشگان درباره این موضوع</translation>
 <translation id="8784653774976848206">انتخاب کردن فایل‌ها</translation>
 <translation id="8786100550345425552">ویرایش کردن اجازه‌ها</translation>
 <translation id="878871978861915380">پنهان کردن «ردگیری قیمت»</translation>

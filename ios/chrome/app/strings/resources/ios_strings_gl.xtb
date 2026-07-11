@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Tes o espazo de almacenamento cheo</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1190609913194133056">Centro de notificacións</translation>
+<translation id="1196534270480620381">Facer un resumo breve desta páxina</translation>
 <translation id="1199631150313925648">Introducir manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
 <translation id="1201402288615127009">Seguinte</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Non se atopou ningún contrasinal nin clave de acceso para este sitio</translation>
 <translation id="1540800554400757039">Enderezo 1</translation>
 <translation id="154312949627292154">Abre as pestanas recibidas doutros dispositivos desde a pantalla de bloqueo.</translation>
+<translation id="1544653821167545205">Resumir páxina</translation>
 <translation id="1545749641540134597">Escanear código QR</translation>
 <translation id="1545757265410828525">Historial de prezos</translation>
 <translation id="1547610699249301703">Comparte contrasinais</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">A busca na pantalla só está dispoñible cando Google está definido como buscador predeterminado. Podes cambiar o buscador predeterminado en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Que pode facer Gemini en Chrome?</translation>
 <translation id="1881621406744213161">Invita membros da familia</translation>
 <translation id="188177382966899059">Busca profunda</translation>
 <translation id="188237709236611317">Barra de menú con orde intelixente</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Garda os contrasinais para poder iniciar sesión facilmente nos sitios e nas aplicacións.</translation>
 <translation id="2468132863574325555">Google Drive</translation>
 <translation id="2468444275314013497">Todo en orde co navegador</translation>
+<translation id="2470654816840674524">Que podo facer con Gemini en Chrome?</translation>
 <translation id="2473876017985765807">Xa gardaches un contrasinal para <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Podes definir un recordatorio para volver visitar esta páxina máis tarde</translation>
 <translation id="2479148705183875116">Ir a Configuración</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Ocultar Comprobación de seguranza</translation>
 <translation id="2625189173221582860">Copiouse o contrasinal</translation>
 <translation id="2626236249646841566">Comproba a túa conexión e tenta iniciar sesión de novo.</translation>
+<translation id="2629543259235506452">Crea unha breve sección de preguntas frecuentes sobre este tema coa información desta páxina e de sitios web semellantes</translation>
 <translation id="2635918910848538771">Autocompletar o CVC</translation>
 <translation id="2640733327287333451">Sen nome de usuario ••••••••</translation>
 <translation id="264215785133931186">Comprobación feita hai uns intres</translation>
@@ -2349,6 +2354,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="8766790350274092814">Eliminaranse os contrasinais de <ph name="WEBSITE" /> e <ph name="SECOND_WEBSITE" />. Non se eliminarán as túas contas.</translation>
 <translation id="8775144690796719618">URL non válido</translation>
 <translation id="8781834595282316166">Nova pestana no grupo</translation>
+<translation id="8783445328207519872">Elaborar preguntas frecuentes sobre este tema</translation>
 <translation id="8784653774976848206">Seleccionar ficheiros</translation>
 <translation id="8786100550345425552">Modificar permisos</translation>
 <translation id="878871978861915380">Ocultar Seguimento de prezos</translation>

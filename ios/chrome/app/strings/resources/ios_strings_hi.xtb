@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">स्टोरेज भर गया है</translation>
 <translation id="1181037720776840403">हटाएं</translation>
 <translation id="1190609913194133056">सूचना केंद्र</translation>
+<translation id="1196534270480620381">मुझे इस पेज की कम शब्दों में खास जानकारी दो</translation>
 <translation id="1199631150313925648">मैन्युअल तरीके से डालें</translation>
 <translation id="1199963004393929848">हरे रंग वाली थीम</translation>
 <translation id="1201402288615127009">अगला</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">इस साइट के लिए कोई पासवर्ड या पासकी नहीं मिली</translation>
 <translation id="1540800554400757039">पता 1</translation>
 <translation id="154312949627292154">लॉक स्क्रीन से, अपने अन्य डिवाइसों से मिले टैब खोलें.</translation>
+<translation id="1544653821167545205">पेज के बारे में खास जानकारी दो</translation>
 <translation id="1545749641540134597">QR कोड स्कैन करें</translation>
 <translation id="1545757265410828525">कीमत का इतिहास</translation>
 <translation id="1547610699249301703">पासवर्ड शेयर करें</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">स्क्रीन पर मौजूद कॉन्टेंट के बारे में खोजने की सुविधा सिर्फ़ तब उपलब्ध होती है, जब Google को डिफ़ॉल्ट सर्च इंजन के तौर पर सेट किया गया हो. <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> में जाकर, डिफ़ॉल्ट सर्च इंजन को बदला जा सकता है.</translation>
 <translation id="1872096359983322073">टॉर्च</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Chrome में Gemini क्या-क्या कर सकता है?</translation>
 <translation id="1881621406744213161">फ़ैमिली ग्रुप के सदस्यों को न्योता भेजें</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">स्मार्ट सॉर्ट मेन्यू बार</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">साइटों और ऐप्लिकेशन में आसानी से साइन इन करने के लिए, अपने पासवर्ड सेव करें.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">आपके ब्राउज़र में सुरक्षा से जुड़ी कोई समस्या नहीं है</translation>
+<translation id="2470654816840674524">Chrome में Gemini की मदद से क्या-क्या काम किए जा सकते हैं?</translation>
 <translation id="2473876017985765807">आपने <ph name="WEBSITE" /> पर, पासवर्ड पहले ही सेव कर दिया है</translation>
 <translation id="247430852844518481">इस पेज पर बाद में वापस आने के लिए, रिमाइंडर सेट किया जा सकता है</translation>
 <translation id="2479148705183875116">सेटिंग पर जाएं</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">“सुरक्षा जांच” सुविधा को छिपाएं</translation>
 <translation id="2625189173221582860">पासवर्ड कॉपी किया गया</translation>
 <translation id="2626236249646841566">अपने कनेक्शन की जांच करें और फिर से साइन इन करने की कोशिश करें.</translation>
+<translation id="2629543259235506452">इस पेज और इससे मिलती-जुलती अन्य वेबसाइटों से मिली जानकारी का इस्तेमाल करके, इस विषय के बारे में अक्सर पूछे जाने वाले सवालों की एक छोटी सी सूची तैयार करो</translation>
 <translation id="2635918910848538771">सीवीसी को अपने-आप भरें</translation>
 <translation id="2640733327287333451">उपयोगकर्ता नाम नहीं है ••••••</translation>
 <translation id="264215785133931186">अभी-अभी जांच की गई</translation>
@@ -2349,6 +2354,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8766790350274092814"><ph name="WEBSITE" /> और <ph name="SECOND_WEBSITE" /> के पासवर्ड मिटा दिए जाएंगे. हालांकि, आपके खाते नहीं मिटाए जाएंगे.</translation>
 <translation id="8775144690796719618">गलत यूआरएल</translation>
 <translation id="8781834595282316166">ग्रुप में नया टैब जोड़ें</translation>
+<translation id="8783445328207519872">इस विषय के बारे में अक्सर पूछे जाने वाले सवालों की सूची तैयार करो</translation>
 <translation id="8784653774976848206">फ़ाइलें चुनें</translation>
 <translation id="8786100550345425552">अनुमतियों में बदलाव करें</translation>
 <translation id="878871978861915380">"कीमत को ट्रैक करने की सुविधा" कार्ड को छिपाएं</translation>

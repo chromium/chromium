@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">Spațiul de stocare este plin</translation>
 <translation id="1181037720776840403">Elimină</translation>
 <translation id="1190609913194133056">Centrul pentru notificări</translation>
+<translation id="1196534270480620381">Fă-mi un scurt rezumat al acestei pagini</translation>
 <translation id="1199631150313925648">Introdu manual</translation>
 <translation id="1199963004393929848">Temă verde</translation>
 <translation id="1201402288615127009">Înainte</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Nu s-au găsit parole sau chei de acces pentru acest site</translation>
 <translation id="1540800554400757039">Adresă 1</translation>
 <translation id="154312949627292154">Deschide filele primite de pe alte dispozitive de pe ecranul de blocare.</translation>
+<translation id="1544653821167545205">Rezumă pagina</translation>
 <translation id="1545749641540134597">Scanează codul QR</translation>
 <translation id="1545757265410828525">Istoricul prețurilor</translation>
 <translation id="1547610699249301703">Trimite parole</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">Ecranul de căutare este disponibil numai dacă Google este setat ca motor de căutare prestabilit. Poți să schimbi motorul de căutare prestabilit în <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Lanternă</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">Ce poate face Gemini în Chrome?</translation>
 <translation id="1881621406744213161">Invită membrii familiei</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Bara de meniu pentru sortare inteligentă</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Salvează parolele pentru a te conecta cu ușurință la site-uri și aplicații.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Browserul pare în regulă</translation>
+<translation id="2470654816840674524">Ce pot face cu Gemini în Chrome?</translation>
 <translation id="2473876017985765807">Ai salvat deja o parolă pentru <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Poți seta un memento pentru a reveni la această pagină mai târziu</translation>
 <translation id="2479148705183875116">Accesează Setările</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Ascunde Verificarea de siguranță</translation>
 <translation id="2625189173221582860">Parola a fost copiată</translation>
 <translation id="2626236249646841566">Verifică-ți conexiunea și încearcă să te conectezi din nou.</translation>
+<translation id="2629543259235506452">Creează o listă scurtă de întrebări frecvente pentru acest subiect folosind informații din această pagină și de pe site-uri similare</translation>
 <translation id="2635918910848538771">Completează automat codul CVC</translation>
 <translation id="2640733327287333451">Niciun nume de utilizator ••••••</translation>
 <translation id="264215785133931186">S-a verificat adineauri</translation>
@@ -2349,6 +2354,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="8766790350274092814">Parolele pentru <ph name="WEBSITE" /> și <ph name="SECOND_WEBSITE" /> se vor șterge. Conturile tale nu se vor șterge.</translation>
 <translation id="8775144690796719618">Adresă URL nevalidă</translation>
 <translation id="8781834595282316166">Filă nouă în grup</translation>
+<translation id="8783445328207519872">Creează o listă de întrebări frecvente despre acest subiect</translation>
 <translation id="8784653774976848206">Alege fișierele</translation>
 <translation id="8786100550345425552">Editează permisiunile</translation>
 <translation id="878871978861915380">Ascunde opțiunea Urmărirea prețurilor</translation>
