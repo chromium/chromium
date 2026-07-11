@@ -461,8 +461,9 @@ void WtsSessionProcessDelegate::Core::DoLaunchProcess() {
   if (!LaunchProcessWithToken(
           command_line.GetProgram(), command_line.GetCommandLineString(),
           session_token_.Get(), /*security_attributes=*/nullptr,
-          /* thread_attributes= */ nullptr, handles_to_inherit,
-          /* creation_flags= */ CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB,
+          /*thread_attributes=*/nullptr, handles_to_inherit,
+          /*security_capabilities=*/nullptr,
+          /*creation_flags=*/CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB,
           base::UTF8ToWide(kDefaultDesktopName).c_str(), &worker_process,
           &worker_thread)) {
     ReportFatalError();

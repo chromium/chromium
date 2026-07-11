@@ -362,8 +362,9 @@ void UnprivilegedProcessDelegate::LaunchProcess(
   if (!LaunchProcessWithToken(
           command_line.GetProgram(), command_line.GetCommandLineString(),
           token.Get(), &process_attributes, &thread_attributes,
-          handles_to_inherit, /* creation_flags= */ 0,
-          /* thread_attributes= */ nullptr, &worker_process, &worker_thread)) {
+          handles_to_inherit, /*security_capabilities=*/nullptr,
+          /* creation_flags= */ 0,
+          /* desktop_name= */ nullptr, &worker_process, &worker_thread)) {
     ReportFatalError();
     return;
   }

@@ -23,11 +23,16 @@ namespace remoting {
 bool CreateSessionToken(uint32_t session_id,
                         base::win::ScopedHandle* token_out);
 
-// Launches |binary| in the security context of the user represented by
-// |user_token|. The session ID specified by the token is respected as well.
-// If |handles_to_inherit| is non-empty, these handles will be inherited by the
-// new process. The other parameters are passed directly to
-// CreateProcessAsUser().
+// Launches `binary` in the security context of the user represented by
+// `user_token`. The session ID specified by the token is respected as well.
+// If `handles_to_inherit` is non-empty, these handles will be inherited by the
+// new process.
+// `security_capabilities` is an optional pointer to a `SECURITY_CAPABILITIES`
+// structure used to launch the process inside an AppContainer sandbox via
+// `PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES`. This parameter should only
+// be provided (non-null) iff the process is being launched in an AppContainer.
+// If null, the process launches as a standard non-AppContainer process.
+// The other parameters are passed directly to CreateProcessAsUser().
 bool LaunchProcessWithToken(
     const base::FilePath& binary,
     const base::CommandLine::StringType& command_line,
@@ -35,6 +40,7 @@ bool LaunchProcessWithToken(
     SECURITY_ATTRIBUTES* process_attributes,
     SECURITY_ATTRIBUTES* thread_attributes,
     const base::HandlesToInheritVector& handles_to_inherit,
+    SECURITY_CAPABILITIES* security_capabilities,
     DWORD creation_flags,
     const wchar_t* desktop_name,
     base::win::ScopedHandle* process_out,

@@ -117,6 +117,7 @@ bool LaunchProcessWithToken(
     SECURITY_ATTRIBUTES* process_attributes,
     SECURITY_ATTRIBUTES* thread_attributes,
     const base::HandlesToInheritVector& handles_to_inherit,
+    SECURITY_CAPABILITIES* security_capabilities,
     DWORD creation_flags,
     const wchar_t* desktop_name,
     ScopedHandle* process_out,
@@ -130,6 +131,7 @@ bool LaunchProcessWithToken(
   }
 
   bool inherit_handles = false;
+  DWORD attribute_count = 0;
   if (!handles_to_inherit.empty()) {
     if (handles_to_inherit.size() >
         std::numeric_limits<DWORD>::max() / sizeof(HANDLE)) {
@@ -143,22 +145,41 @@ bool LaunchProcessWithToken(
                                          HANDLE_FLAG_INHERIT);
       PCHECK(result);
     }
+    inherit_handles = true;
+    attribute_count++;
+  }
+  if (security_capabilities) {
+    attribute_count++;
+  }
 
+  if (attribute_count > 0) {
     if (!startup_info_wrapper.InitializeProcThreadAttributeList(
-            /* attribute_count= */ 1)) {
+            attribute_count)) {
       PLOG(ERROR) << "InitializeProcThreadAttributeList()";
       return false;
     }
 
-    if (!startup_info_wrapper.UpdateProcThreadAttribute(
-            PROC_THREAD_ATTRIBUTE_HANDLE_LIST,
-            const_cast<HANDLE*>(&handles_to_inherit.at(0)),
-            static_cast<DWORD>(handles_to_inherit.size() * sizeof(HANDLE)))) {
-      PLOG(ERROR) << "UpdateProcThreadAttribute()";
-      return false;
+    if (inherit_handles) {
+      if (!startup_info_wrapper.UpdateProcThreadAttribute(
+              PROC_THREAD_ATTRIBUTE_HANDLE_LIST,
+              const_cast<HANDLE*>(&handles_to_inherit.at(0)),
+              static_cast<DWORD>(handles_to_inherit.size() * sizeof(HANDLE)))) {
+        PLOG(ERROR)
+            << "UpdateProcThreadAttribute(PROC_THREAD_ATTRIBUTE_HANDLE_LIST)";
+        return false;
+      }
     }
 
-    inherit_handles = true;
+    if (security_capabilities) {
+      if (!startup_info_wrapper.UpdateProcThreadAttribute(
+              PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES,
+              security_capabilities, sizeof(*security_capabilities))) {
+        PLOG(ERROR) << "UpdateProcThreadAttribute(PROC_THREAD_ATTRIBUTE_"
+                       "SECURITY_CAPABILITIES)";
+        return false;
+      }
+    }
+
     creation_flags |= EXTENDED_STARTUPINFO_PRESENT;
   }
   PROCESS_INFORMATION temp_process_info = {};
