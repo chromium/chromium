@@ -77,6 +77,12 @@ GetModerateViewportHeuristicConfigFromFeatureParams() {
       .delay = kDelay.Get()};
 }
 
+// Minimum author-specifiable dwell time before the heuristic triggers. A
+// nonzero floor is enforced (per privacy review) so that authors cannot
+// configure the heuristic to fire essentially immediately.
+constexpr base::TimeDelta kMinModerateViewportHeuristicDelay =
+    base::Milliseconds(10);
+
 // Maximum author-specifiable dwell time before the heuristic triggers.
 constexpr base::TimeDelta kMaxModerateViewportHeuristicDelay = base::Seconds(5);
 
@@ -104,7 +110,7 @@ void ApplyAuthorModerateViewportHeuristicsOverrides(
   }
 
   if (params.delay.has_value()) {
-    config.delay = std::clamp(*params.delay, base::TimeDelta(),
+    config.delay = std::clamp(*params.delay, kMinModerateViewportHeuristicDelay,
                               kMaxModerateViewportHeuristicDelay);
   }
 }

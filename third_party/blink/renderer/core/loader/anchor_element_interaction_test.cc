@@ -1511,6 +1511,65 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest,
   EXPECT_EQ(moderate_viewport_call_it->url, KURL("https://example.com/foo"));
 }
 
+// An author-specified "delay" below the 10ms floor (enforced per privacy
+// review) is clamped up to 10ms. A requested delay of 0 would otherwise fire
+// the "moderate" trigger synchronously while processing position updates; the
+// clamp defers it, so it must not fire until time has advanced past 10ms.
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       AuthorDelayIsClampedToTenMillisecondMinimum) {
+  ScopedSpeculationRulesModerateViewportHeuristicsControlForTest ot_enabled(
+      true);
+  ScopedSyntheticMouseHoverOverInactivePageForTest
+      disable_synthetic_mouse_hover_over_inactive_page(false);
+
+  String source(KURL("https://example.com"));
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <body style="margin: 0px">
+      <script type="speculationrules">
+      { "moderate_viewport_heuristics": { "delay": 0 } }
+      </script>
+      <div style="height: 200px"></div>
+      <a href="https://example.com/foo"
+         style="height: 100px; display: block;">link</a>
+      <div style="height: 300px"></div>
+    </body>
+  )HTML");
+
+  GetDocument().GetAnchorElementInteractionTracker()->SetTaskRunnerForTesting(
+      task_environment().GetMainThreadTaskRunner(),
+      task_environment().GetMockTickClock());
+
+  Compositor().BeginFrame();
+  // The 10ms matches the "post_fcp_observation_delay" param set for
+  // kNavigationPredictor.
+  task_environment().FastForwardBy(base::Milliseconds(10));
+  DispatchPointerDownAndVerticalScroll(gfx::PointF(100, 180), -100);
+  ProcessPositionUpdates();
+
+  // The requested delay of 0 is clamped up to the 10ms minimum, so the
+  // "moderate" trigger must not have fired synchronously with the position
+  // update (it would have, had the 0ms been honored).
+  ASSERT_EQ(hosts_.size(), 1u);
+  EXPECT_EQ(std::ranges::count_if(hosts_[0]->calls_, IsModerateViewportCall),
+            0);
+
+  // After advancing past the 10ms floor, the "moderate" trigger fires.
+  task_environment().FastForwardBy(base::Milliseconds(10));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return std::ranges::any_of(hosts_[0]->calls_, IsModerateViewportCall);
+  }));
+  const auto moderate_viewport_call_it =
+      std::ranges::find_if(hosts_[0]->calls_, IsModerateViewportCall);
+  ASSERT_NE(moderate_viewport_call_it, hosts_[0]->calls_.end());
+  EXPECT_EQ(moderate_viewport_call_it->url, KURL("https://example.com/foo"));
+
+  // Applying author params (under the origin trial) records the use counter.
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kSpeculationRulesModerateViewportHeuristicsControl));
+}
+
 // Regression test for https://crbug.com/458237344.
 TEST_F(AnchorElementInteractionViewportHeuristicsTest,
        IgnoreSameDocumentNavigation) {
