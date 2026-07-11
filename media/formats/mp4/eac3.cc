@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "media/base/bit_reader.h"
 #include "media/base/channel_layout.h"
@@ -78,8 +77,7 @@ bool EAC3::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
     uint8_t lfeon;
     RCHECK(reader.ReadBits(1, &lfeon));
 
-    ChannelLayout channel_layout =
-        UNSAFE_TODO(kAC3AudioCodingModeTable[lfeon][acmod]);
+    ChannelLayout channel_layout = kAC3AudioCodingModeTable[lfeon][acmod];
     uint32_t channel_count = ChannelLayoutToChannelCount(channel_layout);
 
     // always use channel layout with the largest number of channels when

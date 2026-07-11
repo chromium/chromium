@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <array>
+
 #include "media/base/channel_layout.h"
 #include "media/base/media_export.h"
 
@@ -51,8 +53,9 @@ MEDIA_EXPORT inline constexpr uint8_t kAC3AudioCodingModeSize = 8;
 // Taking the 5.1 channel layout as an example, it contains a LFE channel, so
 // lfeon = 1, and the remaining five channels are: L, C, R, Ls, Rs with acmod =
 // 7, so kAC3AudioCodingModeTable[1][7] = CHANNEL_LAYOUT_5_1.
-MEDIA_EXPORT extern const ChannelLayout
-    kAC3AudioCodingModeTable[kAC3LFESize][kAC3AudioCodingModeSize];
+MEDIA_EXPORT extern const std::
+    array<std::array<ChannelLayout, kAC3AudioCodingModeSize>, kAC3LFESize>
+        kAC3AudioCodingModeTable;
 
 }  // namespace media
 
