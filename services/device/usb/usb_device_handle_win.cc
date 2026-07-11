@@ -49,6 +49,10 @@ namespace {
 
 const std::wstring_view kWinUsbDriverName = L"winusb";
 
+// Bits 6:5 of the bmRequestType byte in the USB specification define the
+// request type: 0=Standard, 1=Class, 2=Vendor, 3=Reserved.
+constexpr uint8_t kBmRequestReserved = 3;
+
 uint8_t BuildRequestFlags(UsbTransferDirection direction,
                           UsbControlTransferType request_type,
                           UsbControlTransferRecipient recipient) {
@@ -74,7 +78,8 @@ uint8_t BuildRequestFlags(UsbTransferDirection direction,
       flags |= BMREQUEST_VENDOR << 5;
       break;
     case UsbControlTransferType::RESERVED:
-      flags |= 4 << 5;  // Not defined by usbspec.h.
+      flags |= kBmRequestReserved
+               << 5;  // USB Spec reserved type (0x60 on the wire).
       break;
   }
 
