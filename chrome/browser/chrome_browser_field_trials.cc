@@ -256,6 +256,10 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/504722790): Remove when experiment is complete.
   feature_overrides.EnableFeature(features::kTextClassifierTimeout);
 
+  // Enable graceful tab shutdown.
+  // TODO(crbug.com/532514154): Remove when experiment is complete.
+  feature_overrides.EnableFeature(chrome::android::kTabAndroidGracefulShutdown);
+
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
