@@ -204,8 +204,8 @@ public class ActorUiTabController implements UserData {
      *
      * @param state The new visual and control ownership state of the tab.
      */
-    @VisibleForTesting
-    void onUiTabStateChange(UiTabState state) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void onUiTabStateChange(UiTabState state) {
         mCurrentState = state;
         mTab.setFocusChangeSuppressed(state.actorOverlay.isActive);
         if (mTab.getWebContents() != null) {
