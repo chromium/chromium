@@ -13,6 +13,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/pref_types.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 
@@ -57,6 +58,10 @@ class ManifestV2Handler : public KeyedService,
     kHardDisabled = 4,
     kMaxValue = kHardDisabled,
   };
+
+  // Stores whether the user has acknowledged the MV2 deprecation notice for the
+  // unsupported stage globally.
+  static const PrefMap kMV2UnsupportedAcknowledgedGloballyPref;
 
   // Retrieves the ManifestV2Handler associated with the given
   // `browser_context`. Note this instance is shared between on- and off-the-

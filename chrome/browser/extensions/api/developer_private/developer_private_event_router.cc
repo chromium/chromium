@@ -28,6 +28,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/manifest_v2_handler.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/service_worker/worker_id.h"
@@ -97,15 +98,7 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
       base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      kMV2DeprecationWarningAcknowledgedGloballyPref.name,
-      base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
-                          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      kMV2DeprecationDisabledAcknowledgedGloballyPref.name,
-      base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
-                          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      kMV2DeprecationUnsupportedAcknowledgedGloballyPref.name,
+      ManifestV2Handler::kMV2UnsupportedAcknowledgedGloballyPref.name,
       base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
                           base::Unretained(this)));
 

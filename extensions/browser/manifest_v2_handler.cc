@@ -133,6 +133,11 @@ ManifestV2Handler::ManifestV2Handler(content::BrowserContext* browser_context)
 ManifestV2Handler::~ManifestV2Handler() = default;
 
 // static
+const PrefMap ManifestV2Handler::kMV2UnsupportedAcknowledgedGloballyPref = {
+    "mv2_deprecation_unsupported_ack_globally", PrefType::kBool,
+    PrefScope::kProfile};
+
+// static
 ManifestV2Handler* ManifestV2Handler::Get(
     content::BrowserContext* browser_context) {
   return static_cast<ManifestV2HandlerFactory*>(GetFactory())
@@ -173,12 +178,12 @@ bool ManifestV2Handler::ShouldBlockExtensionEnable(const Extension& extension) {
 
 bool ManifestV2Handler::DidUserAcknowledgeNoticeGlobally() {
   return extension_prefs()->GetPrefAsBoolean(
-      kMV2DeprecationUnsupportedAcknowledgedGloballyPref);
+      kMV2UnsupportedAcknowledgedGloballyPref);
 }
 
 void ManifestV2Handler::MarkNoticeAsAcknowledgedGlobally() {
-  extension_prefs()->SetBooleanPref(
-      kMV2DeprecationUnsupportedAcknowledgedGloballyPref, true);
+  extension_prefs()->SetBooleanPref(kMV2UnsupportedAcknowledgedGloballyPref,
+                                    true);
 }
 
 ExtensionPrefs* ManifestV2Handler::extension_prefs() {
