@@ -13,7 +13,6 @@ build_webui("build") {
   ts_files = [
     "app.html.ts",
     "app.ts",
-    "comments_api_proxy.ts",
   ]
 
   ts_deps = [

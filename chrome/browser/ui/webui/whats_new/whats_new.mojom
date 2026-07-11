@@ -9,10 +9,9 @@ import "url/mojom/url.mojom";
 
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
-  // The WebUI page's |BrowserProxy| singleton calls this method when the
-  // page is first initialized.
-  CreatePageHandler(
-      pending_remote<Page> page, pending_receiver<PageHandler> handler);
+  // Creates the `handler` to be used for communication between the browser
+  // and the renderer.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
 };
 
 // Enum used to depict what quartile of the page the user scrolled to.
@@ -115,6 +114,3 @@ interface PageHandler {
   // Record metric when the user clicks on the next button.
   RecordNextButtonClick();
 };
-
-// WebUI-side handler for requests from the browser.
-interface Page {};

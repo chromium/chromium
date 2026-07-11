@@ -5,11 +5,10 @@
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getHtml} from './app.html.js';
-import type {CommentsApiProxy} from './comments_api_proxy.js';
-import {CommentsApiProxyImpl} from './comments_api_proxy.js';
+import {browserProxyFactory} from './comments.mojom-webui.js';
 
 export class CommentsAppElement extends CrLitElement {
-  private commentsApi_: CommentsApiProxy = CommentsApiProxyImpl.getInstance();
+  private commentsApi_ = browserProxyFactory.getInstance();
 
   static get is() {
     return 'comments-app';
@@ -21,7 +20,7 @@ export class CommentsAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.commentsApi_.showUi();
+    this.commentsApi_.handler.showUI();
   }
 }
 

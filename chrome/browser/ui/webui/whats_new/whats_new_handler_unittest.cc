@@ -36,20 +36,7 @@ namespace {
 // Modules
 BASE_FEATURE(kTestEdition, "TestEdition", base::FEATURE_DISABLED_BY_DEFAULT);
 
-class MockPage : public whats_new::mojom::Page {
- public:
-  MockPage() = default;
-  ~MockPage() override = default;
 
-  mojo::PendingRemote<whats_new::mojom::Page> BindAndGetRemote() {
-    DCHECK(!receiver_.is_bound());
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  void FlushForTesting() { receiver_.FlushForTesting(); }
-
-  mojo::Receiver<whats_new::mojom::Page> receiver_{this};
-};
 
 }  // namespace
 
@@ -79,11 +66,8 @@ class WhatsNewHandlerTest : public testing::Test {
         std::make_unique<WhatsNewRegistry>(std::move(mock_storage_service));
 
     handler_ = std::make_unique<WhatsNewHandler>(
-        mojo::PendingReceiver<whats_new::mojom::PageHandler>(),
-        mock_page_.BindAndGetRemote(), profile_.get(), web_contents_,
-        base::Time::Now(), whats_new_registry_.get());
-    mock_page_.FlushForTesting();
-    testing::Mock::VerifyAndClearExpectations(&mock_page_);
+        mojo::PendingReceiver<whats_new::mojom::PageHandler>(), profile_.get(),
+        web_contents_, base::Time::Now(), whats_new_registry_.get());
   }
 
   void TearDown() override {
@@ -106,7 +90,6 @@ class WhatsNewHandlerTest : public testing::Test {
   raw_ptr<MockHatsService> mock_hats_service_;
   content::TestWebContentsFactory factory_;
   raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
-  testing::NiceMock<MockPage> mock_page_;
   std::unique_ptr<WhatsNewRegistry> whats_new_registry_;
   std::unique_ptr<WhatsNewHandler> handler_;
 };
@@ -124,7 +107,6 @@ TEST_F(WhatsNewHandlerTest, GetServerUrl) {
   });
 
   handler_->GetServerUrl(false, callback.Get());
-  mock_page_.FlushForTesting();
 }
 
 TEST_F(WhatsNewHandlerTest, HistogramsAreEmitted) {
@@ -233,7 +215,6 @@ TEST_F(WhatsNewHandlerTest, SurveyIsTriggered) {
       .Times(1);
 
   handler_->GetServerUrl(false, callback.Get());
-  mock_page_.FlushForTesting();
 }
 
 TEST_F(WhatsNewHandlerTest, SurveyIsTriggeredWithOverride) {
@@ -258,7 +239,6 @@ TEST_F(WhatsNewHandlerTest, SurveyIsTriggeredWithOverride) {
       .Times(1);
 
   handler_->GetServerUrl(false, callback.Get());
-  mock_page_.FlushForTesting();
 }
 
 TEST_F(WhatsNewHandlerTest, SurveyIsNotTriggeredForPreviouslyUsedEdition) {
@@ -286,6 +266,5 @@ TEST_F(WhatsNewHandlerTest, SurveyIsNotTriggeredForPreviouslyUsedEdition) {
       .Times(1);
 
   handler_->GetServerUrl(false, callback.Get());
-  mock_page_.FlushForTesting();
 }
 

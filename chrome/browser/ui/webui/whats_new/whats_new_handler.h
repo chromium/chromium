@@ -22,7 +22,6 @@ class Profile;
 class WhatsNewHandler : public whats_new::mojom::PageHandler {
  public:
   WhatsNewHandler(mojo::PendingReceiver<whats_new::mojom::PageHandler> receiver,
-                  mojo::PendingRemote<whats_new::mojom::Page> page,
                   Profile* profile,
                   content::WebContents* web_contents,
                   const base::Time& navigation_start_time,
@@ -95,7 +94,6 @@ class WhatsNewHandler : public whats_new::mojom::PageHandler {
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.
   mojo::Receiver<whats_new::mojom::PageHandler> receiver_;
-  mojo::Remote<whats_new::mojom::Page> page_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_HANDLER_H_

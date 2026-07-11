@@ -32,8 +32,7 @@ suite('EventListElement', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = TestMock.fromClass(PageHandlerRemote);
-    const {instance} = browserProxyFactory.createForTest(handler);
-    browserProxyFactory.setInstance(instance);
+    browserProxyFactory.setInstance({handler});
 
     PluralStringProxyImpl.setInstance(new TestPluralStringProxy());
     element = document.createElement('event-list');

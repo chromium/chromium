@@ -23,7 +23,6 @@ class CommentsPageHandler : public comments::mojom::PageHandler {
  public:
   explicit CommentsPageHandler(
       mojo::PendingReceiver<comments::mojom::PageHandler> receiver,
-      mojo::PendingRemote<comments::mojom::Page> page,
       CommentsSidePanelUI& comments_ui,
       content::WebUI& web_ui);
   CommentsPageHandler(const CommentsPageHandler&) = delete;
@@ -36,7 +35,6 @@ class CommentsPageHandler : public comments::mojom::PageHandler {
 
  private:
   mojo::Receiver<comments::mojom::PageHandler> receiver_;
-  mojo::Remote<comments::mojom::Page> page_;
   const raw_ref<content::WebUI> web_ui_;
   const raw_ref<CommentsSidePanelUI> comments_ui_;
 };

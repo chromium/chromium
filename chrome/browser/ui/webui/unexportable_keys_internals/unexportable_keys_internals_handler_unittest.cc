@@ -35,19 +35,7 @@ using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::UnorderedElementsAre;
 
-class MockUnexportableKeysInternalsPage
-    : public unexportable_keys_internals::mojom::Page {
- public:
-  MockUnexportableKeysInternalsPage() = default;
-  ~MockUnexportableKeysInternalsPage() override = default;
 
-  mojo::PendingRemote<unexportable_keys_internals::mojom::Page>
-  BindAndGetRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  mojo::Receiver<unexportable_keys_internals::mojom::Page> receiver_{this};
-};
 
 class UnexportableKeysInternalsHandlerTest : public testing::Test {
  public:
@@ -57,7 +45,7 @@ class UnexportableKeysInternalsHandlerTest : public testing::Test {
     mock_key_service_ = mock_key_service.get();
     handler_ = std::make_unique<UnexportableKeysInternalsHandler>(
         handler_remote_.BindNewPipeAndPassReceiver(),
-        mock_page_.BindAndGetRemote(), std::move(mock_key_service));
+        std::move(mock_key_service));
   }
 
  protected:
@@ -73,7 +61,6 @@ class UnexportableKeysInternalsHandlerTest : public testing::Test {
   std::unique_ptr<UnexportableKeysInternalsHandler> handler_;
   raw_ptr<StrictMock<unexportable_keys::MockUnexportableKeyService>>
       mock_key_service_;
-  StrictMock<MockUnexportableKeysInternalsPage> mock_page_;
   mojo::Remote<unexportable_keys_internals::mojom::PageHandler> handler_remote_;
 };
 

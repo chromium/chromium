@@ -52,8 +52,7 @@ void CommentsSidePanelUI::BindInterface(
 }
 
 void CommentsSidePanelUI::CreatePageHandler(
-    mojo::PendingRemote<comments::mojom::Page> page,
     mojo::PendingReceiver<comments::mojom::PageHandler> receiver) {
   comments_page_handler_ = std::make_unique<CommentsPageHandler>(
-      std::move(receiver), std::move(page), *this, *web_ui());
+      std::move(receiver), *this, *web_ui());
 }

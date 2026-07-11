@@ -40,7 +40,6 @@ namespace {
 
 WhatsNewHandler::WhatsNewHandler(
     mojo::PendingReceiver<whats_new::mojom::PageHandler> receiver,
-    mojo::PendingRemote<whats_new::mojom::Page> page,
     Profile* profile,
     content::WebContents* web_contents,
     const base::Time& navigation_start_time,
@@ -49,8 +48,7 @@ WhatsNewHandler::WhatsNewHandler(
       web_contents_(web_contents),
       navigation_start_time_(navigation_start_time),
       whats_new_registry_(CHECK_DEREF(whats_new_registry)),
-      receiver_(this, std::move(receiver)),
-      page_(std::move(page)) {}
+      receiver_(this, std::move(receiver)) {}
 
 WhatsNewHandler::~WhatsNewHandler() = default;
 

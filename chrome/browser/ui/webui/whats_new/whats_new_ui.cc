@@ -103,12 +103,10 @@ void WhatsNewUI::BindInterface(
 }
 
 void WhatsNewUI::CreatePageHandler(
-    mojo::PendingRemote<whats_new::mojom::Page> page,
     mojo::PendingReceiver<whats_new::mojom::PageHandler> receiver) {
-  DCHECK(page);
   page_handler_ = std::make_unique<WhatsNewHandler>(
-      std::move(receiver), std::move(page), profile_,
-      web_ui()->GetWebContents(), navigation_start_time_,
+      std::move(receiver), profile_, web_ui()->GetWebContents(),
+      navigation_start_time_,
       g_browser_process->GetFeatures()->whats_new_registry());
 }
 

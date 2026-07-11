@@ -84,8 +84,7 @@ suite('UpdaterStateCardElement', () => {
 
     setup(() => {
       handler = TestMock.fromClass(PageHandlerRemote);
-      const {instance} = browserProxyFactory.createForTest(handler);
-      browserProxyFactory.setInstance(instance);
+      browserProxyFactory.setInstance({handler});
     });
 
     SCOPES.forEach(scope => {

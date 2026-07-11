@@ -35,8 +35,7 @@ suite('UpdaterAppElement', () => {
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = TestMock.fromClass(PageHandlerRemote);
-    const {instance} = browserProxyFactory.createForTest(handler);
-    browserProxyFactory.setInstance(instance);
+    browserProxyFactory.setInstance({handler});
 
     PluralStringProxyImpl.setInstance(new TestPluralStringProxy());
 

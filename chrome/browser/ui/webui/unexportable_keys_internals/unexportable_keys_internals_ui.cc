@@ -46,11 +46,10 @@ void UnexportableKeysInternalsUI::BindInterface(
 }
 
 void UnexportableKeysInternalsUI::CreateUnexportableKeysInternalsHandler(
-    mojo::PendingRemote<unexportable_keys_internals::mojom::Page> page,
     mojo::PendingReceiver<unexportable_keys_internals::mojom::PageHandler>
         receiver) {
   page_handler_ = std::make_unique<UnexportableKeysInternalsHandler>(
-      std::move(receiver), std::move(page),
+      std::move(receiver),
       UnexportableKeyServiceFactory::CreateForGarbageCollection(
           unexportable_keys::GetDefaultConfig()));
 }

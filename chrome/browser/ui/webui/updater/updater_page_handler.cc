@@ -299,11 +299,9 @@ UpdaterPageHandler::Delegate::CreateDefault() {
 UpdaterPageHandler::UpdaterPageHandler(
     Profile* profile,
     mojo::PendingReceiver<updater_ui::mojom::PageHandler> receiver,
-    mojo::PendingRemote<updater_ui::mojom::Page> page,
     scoped_refptr<Delegate> delegate)
     : profile_(profile),
       receiver_(this, std::move(receiver)),
-      page_(std::move(page)),
       delegate_(delegate) {}
 
 UpdaterPageHandler::~UpdaterPageHandler() = default;

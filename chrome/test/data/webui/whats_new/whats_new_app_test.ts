@@ -39,8 +39,7 @@ suite('WhatsNewAppTest', function() {
     loadTimeData.resetForTesting({isStaging: false});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = new TestWhatsNewPageHandler();
-    browserProxyFactory.setInstance(
-        browserProxyFactory.createForTest(handler).instance);
+    browserProxyFactory.setInstance({handler});
   });
 
   test('with query parameters', async () => {

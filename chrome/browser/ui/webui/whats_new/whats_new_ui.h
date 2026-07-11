@@ -74,7 +74,6 @@ class WhatsNewUI : public ui::MojoWebUIController,
  private:
   // whats_new::mojom::PageHandlerFactory:
   void CreatePageHandler(
-      mojo::PendingRemote<whats_new::mojom::Page> page,
       mojo::PendingReceiver<whats_new::mojom::PageHandler> receiver) override;
 
   std::unique_ptr<WhatsNewHandler> page_handler_;

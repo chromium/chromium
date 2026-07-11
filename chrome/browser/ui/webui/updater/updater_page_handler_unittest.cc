@@ -130,15 +130,7 @@ class MockUpdaterPageHandlerDelegate : public UpdaterPageHandler::Delegate {
   ~MockUpdaterPageHandlerDelegate() override = default;
 };
 
-class MockUpdaterPage : public updater_ui::mojom::Page {
- public:
-  mojo::PendingRemote<updater_ui::mojom::Page> BindAndGetRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
 
- private:
-  mojo::Receiver<updater_ui::mojom::Page> receiver_{this};
-};
 
 class UpdaterPageHandlerTest : public testing::Test {
  public:
@@ -150,7 +142,7 @@ class UpdaterPageHandlerTest : public testing::Test {
     handler_ = std::make_unique<UpdaterPageHandler>(
         /*profile=*/nullptr,
         mojo::PendingReceiver<updater_ui::mojom::PageHandler>(),
-        mock_page_.BindAndGetRemote(), mock_delegate_);
+        mock_delegate_);
   }
 
   mojo_base::BigBuffer CreateZip(
@@ -174,7 +166,6 @@ class UpdaterPageHandlerTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment environment_;
-  MockUpdaterPage mock_page_;
   std::unique_ptr<UpdaterPageHandler> handler_;
   scoped_refptr<MockUpdaterPageHandlerDelegate> mock_delegate_ =
       base::MakeRefCounted<MockUpdaterPageHandlerDelegate>();

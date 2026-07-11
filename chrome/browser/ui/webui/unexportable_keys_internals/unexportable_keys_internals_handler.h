@@ -30,7 +30,6 @@ class UnexportableKeysInternalsHandler
   UnexportableKeysInternalsHandler(
       mojo::PendingReceiver<unexportable_keys_internals::mojom::PageHandler>
           receiver,
-      mojo::PendingRemote<unexportable_keys_internals::mojom::Page> page,
       std::unique_ptr<unexportable_keys::UnexportableKeyService> key_service);
   ~UnexportableKeysInternalsHandler() override;
 
@@ -53,8 +52,6 @@ class UnexportableKeysInternalsHandler
 
   // Allows handling received messages from the web ui page.
   mojo::Receiver<unexportable_keys_internals::mojom::PageHandler> receiver_;
-  // Interface to send information to the web ui page.
-  mojo::Remote<unexportable_keys_internals::mojom::Page> page_;
   std::unique_ptr<unexportable_keys::UnexportableKeyService> key_service_;
 };
 

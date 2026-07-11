@@ -249,9 +249,7 @@ void UpdaterUI::BindInterface(
 }
 
 void UpdaterUI::CreatePageHandler(
-    mojo::PendingRemote<updater_ui::mojom::Page> page,
     mojo::PendingReceiver<updater_ui::mojom::PageHandler> receiver) {
-  CHECK(page);
   page_handler_ = std::make_unique<UpdaterPageHandler>(
-      Profile::FromWebUI(web_ui()), std::move(receiver), std::move(page));
+      Profile::FromWebUI(web_ui()), std::move(receiver));
 }

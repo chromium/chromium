@@ -46,7 +46,6 @@ class UnexportableKeysInternalsUI
  private:
   // unexportable_keys_internals::mojom::PageHandlerFactory:
   void CreateUnexportableKeysInternalsHandler(
-      mojo::PendingRemote<unexportable_keys_internals::mojom::Page> page,
       mojo::PendingReceiver<unexportable_keys_internals::mojom::PageHandler>
           receiver) override;
 

@@ -37,8 +37,7 @@ suite('UpdaterStateElement', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = TestMock.fromClass(PageHandlerRemote);
-    const {instance} = browserProxyFactory.createForTest(handler);
-    browserProxyFactory.setInstance(instance);
+    browserProxyFactory.setInstance({handler});
 
     element = document.createElement('updater-state');
     document.body.appendChild(element);

@@ -42,7 +42,6 @@ class UpdaterUI final : public ui::MojoWebUIController,
  private:
   // updater_ui::mojom::PageHandlerFactory:
   void CreatePageHandler(
-      mojo::PendingRemote<updater_ui::mojom::Page> page,
       mojo::PendingReceiver<updater_ui::mojom::PageHandler> receiver) override;
 
   std::unique_ptr<UpdaterPageHandler> page_handler_;

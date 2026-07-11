@@ -9,13 +9,11 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
-// Factory ensures that the Page and PageHandler interfaces are always created
-// together without requiring an initialization call from the WebUI to the
-// handler.
+// Factory ensures that the PageHandler interface is created with the WebUI
+// page without requiring an initialization call from the WebUI to the handler.
 interface PageHandlerFactory {
   // Create a page handler and link it to the UI.
-  CreatePageHandler(
-      pending_remote<Page> page, pending_receiver<PageHandler> handler);
+  CreatePageHandler(pending_receiver<PageHandler> handler);
 };
 
 // A snapshot of an updater installation's state.
@@ -165,6 +163,3 @@ interface PageHandler {
   UnzipUpdaterHistoryFiles(mojo_base.mojom.BigBuffer zip_data)
       => result<UnzipUpdaterHistoryFilesResponse, UnzipUpdaterHistoryFilesError>;
 };
-
-// Called from C++ side of chrome://updater (Browser -> Renderer).
-interface Page {};

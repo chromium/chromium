@@ -37,8 +37,7 @@ suite('EnterpriseCompanionStateCardElement', () => {
 
   test('opens installation directory when clicked', async () => {
     const handler = TestMock.fromClass(PageHandlerRemote);
-    const {instance} = browserProxyFactory.createForTest(handler);
-    browserProxyFactory.setInstance(instance);
+    browserProxyFactory.setInstance({handler});
 
     item.version = '1.0.0.0';
     item.installPath = '/home/user/companion';

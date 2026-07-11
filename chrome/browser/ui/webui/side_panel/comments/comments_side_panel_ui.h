@@ -44,7 +44,6 @@ class CommentsSidePanelUI : public TopChromeWebUIController,
 
   // comments::mojom::PageHandlerFactory:
   void CreatePageHandler(
-      mojo::PendingRemote<comments::mojom::Page> page,
       mojo::PendingReceiver<comments::mojom::PageHandler> receiver) override;
 
   std::unique_ptr<CommentsPageHandler> comments_page_handler_;

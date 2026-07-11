@@ -40,10 +40,8 @@ std::string_view GetAlgorithmName(
 UnexportableKeysInternalsHandler::UnexportableKeysInternalsHandler(
     mojo::PendingReceiver<unexportable_keys_internals::mojom::PageHandler>
         receiver,
-    mojo::PendingRemote<unexportable_keys_internals::mojom::Page> page,
     std::unique_ptr<unexportable_keys::UnexportableKeyService> key_service)
     : receiver_(this, std::move(receiver)),
-      page_(std::move(page)),
       key_service_(std::move(key_service)) {
   CHECK(key_service_);
 }

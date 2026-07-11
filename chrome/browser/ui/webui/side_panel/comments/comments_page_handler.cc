@@ -10,11 +10,9 @@
 
 CommentsPageHandler::CommentsPageHandler(
     mojo::PendingReceiver<comments::mojom::PageHandler> receiver,
-    mojo::PendingRemote<comments::mojom::Page> page,
     CommentsSidePanelUI& comments_ui,
     content::WebUI& web_ui)
     : receiver_(this, std::move(receiver)),
-      page_(std::move(page)),
       web_ui_(web_ui),
       comments_ui_(comments_ui) {}
 
