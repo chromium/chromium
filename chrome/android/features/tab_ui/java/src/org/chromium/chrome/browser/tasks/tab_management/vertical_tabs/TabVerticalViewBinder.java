@@ -568,6 +568,14 @@ class TabVerticalViewBinder {
                                                     view.getContext(), /* isIncognito= */ false)));
                             break;
                         case MotionEvent.ACTION_HOVER_EXIT:
+                            if (actionButton != null
+                                    && (actionButton.isHovered()
+                                            || isPointWithinChild(
+                                                    actionButton,
+                                                    motionEvent.getX(),
+                                                    motionEvent.getY()))) {
+                                break;
+                            }
                             if (actionButton != null) {
                                 actionButton.setVisibility(View.INVISIBLE);
                             }
@@ -576,5 +584,35 @@ class TabVerticalViewBinder {
                     }
                     return false;
                 });
+
+        if (actionButton != null) {
+            actionButton.setOnHoverListener(
+                    (v, motionEvent) -> {
+                        if (motionEvent.getAction() == MotionEvent.ACTION_HOVER_EXIT) {
+                            float xInView = v.getLeft() + motionEvent.getX();
+                            float yInView = v.getTop() + motionEvent.getY();
+                            if (xInView < 0
+                                    || xInView >= view.getWidth()
+                                    || yInView < 0
+                                    || yInView >= view.getHeight()) {
+                                if (!model.get(TabProperties.IS_SELECTED)) {
+                                    actionButton.setVisibility(View.INVISIBLE);
+                                    ViewCompat.setBackgroundTintList(view, defaultBackgroundColor);
+                                }
+                            }
+                        }
+                        return false;
+                    });
+        }
+    }
+
+    private static boolean isPointWithinChild(
+            @Nullable View child, float xInParent, float yInParent) {
+        return child != null
+                && child.getVisibility() == View.VISIBLE
+                && xInParent >= child.getLeft()
+                && xInParent < child.getRight()
+                && yInParent >= child.getTop()
+                && yInParent < child.getBottom();
     }
 }

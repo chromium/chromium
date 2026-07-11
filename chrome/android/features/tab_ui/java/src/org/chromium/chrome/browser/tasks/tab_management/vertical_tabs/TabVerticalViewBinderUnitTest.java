@@ -384,6 +384,78 @@ public class TabVerticalViewBinderUnitTest {
 
     @Test
     @SmallTest
+    public void testTabHover_ExitToActionButton_DoesNotClearHover() {
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
+        mModel.set(TabProperties.IS_SELECTED, false);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+
+        // Enter hover on tab row
+        MotionEvent hoverEnterEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
+        hoverEnterEvent.setSource(InputDevice.SOURCE_MOUSE);
+        mItemView.dispatchGenericMotionEvent(hoverEnterEvent);
+
+        ColorStateList hoveredTint = mItemView.getBackgroundTintList();
+        assertNotNull(hoveredTint);
+        assertEquals(
+                TabUiThemeUtil.getHoveredTabContainerColor(
+                        mItemView.getContext(), /* isIncognito= */ false),
+                hoveredTint.getDefaultColor());
+        assertEquals(View.VISIBLE, mCloseButton.getVisibility());
+
+        // Simulate close button being hovered when hover exits item view onto close button
+        mCloseButton.setHovered(true);
+
+        MotionEvent hoverExitEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 0f, 0f, 0);
+        hoverExitEvent.setSource(InputDevice.SOURCE_MOUSE);
+        mItemView.dispatchGenericMotionEvent(hoverExitEvent);
+
+        // Verify hover background tint and close button visibility are preserved
+        ColorStateList tintAfterExit = mItemView.getBackgroundTintList();
+        assertNotNull(tintAfterExit);
+        assertEquals(hoveredTint.getDefaultColor(), tintAfterExit.getDefaultColor());
+        assertEquals(View.VISIBLE, mCloseButton.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testActionButtonHover_ExitOutsideView_ClearsHover() {
+        // Lay out item view so width and height are known (> 0)
+        mItemView.layout(0, 0, 100, 50);
+        mCloseButton.layout(80, 10, 95, 40);
+
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
+        mModel.set(TabProperties.IS_SELECTED, false);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+
+        // Enter hover on tab row
+        MotionEvent hoverEnterEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
+        hoverEnterEvent.setSource(InputDevice.SOURCE_MOUSE);
+        mItemView.dispatchGenericMotionEvent(hoverEnterEvent);
+        assertEquals(View.VISIBLE, mCloseButton.getVisibility());
+
+        // Dispatch ACTION_HOVER_EXIT on close button with coordinates outside mItemView bounds
+        // Notice v.getLeft() + x = 80 + 50 = 130 > mItemView.getWidth() (100)
+        MotionEvent buttonExitEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 50f, 0f, 0);
+        buttonExitEvent.setSource(InputDevice.SOURCE_MOUSE);
+        mCloseButton.dispatchGenericMotionEvent(buttonExitEvent);
+
+        // Verify row un-hovered and close button is invisible
+        ColorStateList bgTint = mItemView.getBackgroundTintList();
+        assertNotNull(bgTint);
+        assertEquals(Color.TRANSPARENT, bgTint.getDefaultColor());
+        assertEquals(View.INVISIBLE, mCloseButton.getVisibility());
+    }
+
+    @Test
+    @SmallTest
     public void testBindPinnedTab_FaviconAndClick() {
         ViewGroup pinnedView =
                 (ViewGroup)
