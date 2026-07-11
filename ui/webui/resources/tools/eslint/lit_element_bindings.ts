@@ -48,18 +48,38 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
     // Property binding validation: check that the bound property's type
     // is compatible with |expressionType|.
     function checkPropertyBinding(
-        currentTagName: string, propBinding: string,
+        currentTagName: string, currentTagId: string, propBinding: string,
         expression: TSESTree.Expression, tsNode: ts.Node,
         expressionType: ts.Type, expressionTypeStr: string,
         checker: ts.TypeChecker) {
-      // Use the HTMLElementTagNameMap to get the class name from the
-      // tag name.
-      const mapSymbol = checker.resolveName(
-          'HTMLElementTagNameMap', tsNode, ts.SymbolFlags.Interface,
-          /* escapeGlobals= */ false);
-      assert.ok(mapSymbol && mapSymbol.members);
-      const elSymbol =
-          mapSymbol.members.get(currentTagName as ts.InternalSymbolName);
+      let elSymbol: ts.Symbol|undefined;
+
+      if (currentTagId) {
+        // 1. Check for a context-specific TemplatizedDomNodes interface or type
+        // in the template file.
+        const templatizedSymbol = checker.resolveName(
+            'TemplatizedDomNodes', tsNode,
+            ts.SymbolFlags.Interface | ts.SymbolFlags.TypeAlias,
+            /* escapeGlobals= */ false);
+
+        if (templatizedSymbol) {
+          const templatizedType =
+              checker.getDeclaredTypeOfSymbol(templatizedSymbol);
+          elSymbol = templatizedType.getProperty(currentTagId);
+        }
+      }
+
+      // 2. Fallback to HTMLElementTagNameMap if no context-specific type was
+      // found.
+      if (!elSymbol) {
+        const mapSymbol = checker.resolveName(
+            'HTMLElementTagNameMap', tsNode, ts.SymbolFlags.Interface,
+            /* escapeGlobals= */ false);
+        assert.ok(mapSymbol && mapSymbol.members);
+        elSymbol =
+            mapSymbol.members.get(currentTagName as ts.InternalSymbolName);
+      }
+
       assert.ok(elSymbol);
       const elementType = checker.getTypeOfSymbolAtLocation(elSymbol, tsNode);
       const apparentType = checker.getApparentType(elementType);
@@ -259,6 +279,7 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
         const bindingRegex =
             /(\s+(?<attrName>[a-z0-9\-]+)|\?(?<boolName>[a-z0-9-]+)|\.(?<propName>[a-zA-Z0-9-]+)|@(?<eventName>[a-zA-Z0-9-]+))="$/;
         let currentTagName = '';
+        let currentTagId = '';
 
         for (let i = 0; i < node.quasis.length; i++) {
           // Extract the last tag name that was seen before an expression
@@ -267,6 +288,12 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
               /<([a-zA-Z0-9-]+)[^>]*$/.exec(node.quasis[i]!.value.raw);
           if (tagMatch) {
             currentTagName = tagMatch[1]!;
+            // Try to extract an id for this tag. Note: This will only work for
+            // an id in the same quasi as the tag. If relying on the DOM id for
+            // type mapping in a TemplatizedDomNodes interface, the id should
+            // immediately follow the tag, e.g. <cr-lazy-list id="list" ...>
+            const idMatch = /\bid\s*=\s*"([^\s"]+)"/.exec(tagMatch[0]);
+            currentTagId = idMatch ? idMatch[1]! : '';
           }
 
           const match = bindingRegex.exec(node.quasis[i]!.value.raw);
@@ -305,8 +332,8 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
           const propBinding = match.groups['propName'];
           if (propBinding && currentTagName) {
             checkPropertyBinding(
-                currentTagName, propBinding, expression, tsNode, expressionType,
-                expressionTypeStr, checker);
+                currentTagName, currentTagId, propBinding, expression, tsNode,
+                expressionType, expressionTypeStr, checker);
             continue;
           }
 

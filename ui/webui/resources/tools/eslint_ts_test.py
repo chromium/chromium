@@ -896,6 +896,55 @@ class EslintTsTest(unittest.TestCase):
       self.assertFalse(
           e in str(context.exception), f'Found unexpected error: {e}')
 
+  def testWebUiEslintPlugin_LitElementBindings_TemplatizedDomNodes(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test([
+          "with_webui_plugin_lit_element_bindings_templatized_dom_nodes_violations.ts",
+          "with_webui_plugin_lit_element_bindings_templatized_dom_nodes_violations.html.ts",
+          "with_webui_plugin_lit_element_bindings_templatized_dom_nodes_child.ts",
+      ])
+
+    _EXPECTED_STRING = "@webui-eslint/lit-element-expressions"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+
+    _BINDING_TYPE_MISMATCH_ERROR = "Type mismatch in property binding: Property '%(propertyName)s' on element '%(tagName)s' expects type '%(expectedType)s', but was provided '%(providedType)s'"
+
+    errors = [
+        _BINDING_TYPE_MISMATCH_ERROR % {
+            'propertyName': 'items',
+            'tagName': 'generic-list',
+            'expectedType': 'string[]',
+            'providedType': 'number[]',
+        },
+        _BINDING_TYPE_MISMATCH_ERROR % {
+            'propertyName': 'selectedItem',
+            'tagName': 'generic-list',
+            'expectedType': 'string | undefined',
+            'providedType': 'number',
+        },
+    ]
+    for e in errors:
+      self.assertTrue(
+          e in str(context.exception), f'Didn\'t find expected error: {e}')
+
+    non_errors = [
+        _BINDING_TYPE_MISMATCH_ERROR % {
+            'propertyName': 'items',
+            'tagName': 'generic-list',
+            'expectedType': 'number[]',
+            'providedType': 'string[]',
+        },
+        _BINDING_TYPE_MISMATCH_ERROR % {
+            'propertyName': 'selectedItem',
+            'tagName': 'generic-list',
+            'expectedType': 'number | undefined',
+            'providedType': 'string',
+        },
+    ]
+    for e in non_errors:
+      self.assertFalse(
+          e in str(context.exception), f'Found unexpected error: {e}')
+
   def testWebUiEslintPlugin_NoMixedTypeAndValueImports(self):
     with self.assertRaises(RuntimeError) as context:
       self._run_test(
