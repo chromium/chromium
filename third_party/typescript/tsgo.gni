@@ -6,17 +6,17 @@ import("//build/toolchain/rbe.gni")
 
 if (host_os == "linux" || use_remoteexec) {
   _platform_dir = "linux-amd64"
-  _binary_name = "tsgo"
+  _binary_name = "tsc"
 } else if (host_os == "mac") {
   if (host_cpu == "arm64") {
     _platform_dir = "mac-arm64"
   } else {
     _platform_dir = "mac-amd64"
   }
-  _binary_name = "tsgo"
+  _binary_name = "tsc"
 } else if (host_os == "win") {
   _platform_dir = "windows-amd64"
-  _binary_name = "tsgo.exe"
+  _binary_name = "tsc.exe"
 }
 
 assert(defined(_platform_dir), "Did not find binary for host_os='${host_os}'")

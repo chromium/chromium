@@ -11,12 +11,12 @@ import {UnitLabelAlign} from './line_chart/constants.js';
 import {DataSeries} from './line_chart/data_series.js';
 import {LineChart} from './line_chart/line_chart.js';
 import {UnitLabel} from './line_chart/unit_label.js';
-import {CounterType, DataSeriesSet, GeneralCpuType, GeneralGpuType, GeneralInfoType, GeneralMemoryType, GeneralNpuType, GeneralZramType, MemoryDataSeriesSet, ZramDataSeriesSet} from './types.js';
 
-/** @type {!DataSeriesSet} */
+
+/** @type {!import('./types.js').DataSeriesSet} */
 const dataSeries = initDataSeries();
 
-/** @type {!GeneralInfoType} */
+/** @type {!import('./types.js').GeneralInfoType} */
 const generalInfo = initGeneralInfo();
 
 /** @type{!Object<string, PromiseResolver>} */
@@ -38,7 +38,7 @@ export const lineChart = new LineChart();
  */
 let counterMax = 0;
 
-/** @const{Map<string, !CounterType>} */
+/** @const{Map<string, !import('./types.js').CounterType>} */
 const counterDict = new Map();
 
 /**
@@ -103,10 +103,10 @@ export function closeDrawer() {
 
 /**
  * Initialize the data series of the page.
- * @return {!DataSeriesSet}
+ * @return {!import('./types.js').DataSeriesSet}
  */
 function initDataSeries() {
-  const /** DataSeriesSet */ dataSeriesRes = {
+  const /** import('./types.js').DataSeriesSet */ dataSeriesRes = {
     cpus: null,
     memory: {
       memUsed: new DataSeries('Used Memory', MEMORY_COLOR_SET[0]),
@@ -129,7 +129,7 @@ function initDataSeries() {
 
 /**
  * Initialize generalInfo.
- * @return {!GeneralInfoType}
+ * @return {!import('./types.js').GeneralInfoType}
  */
 function initGeneralInfo() {
   return {
@@ -243,7 +243,8 @@ function updateCpuData(cpus, timestamp) {
     allIdle += idle;
   }
 
-  const /** !GeneralCpuType */ generalCpu = generalInfo.cpu;
+  const /** !import('./types.js').GeneralCpuType */ generalCpu =
+      generalInfo.cpu;
   generalCpu.core = cpus.length;
   const allTotal = allKernel + allUser + allIdle;
   generalCpu.usage = allTotal === 0 ? 0 : (allKernel + allUser) / allTotal;
@@ -275,7 +276,8 @@ function initCpuDataSeries(cpus) {
  * @param {number} timestamp
  */
 function updateMemoryData(memory, timestamp) {
-  const /** !MemoryDataSeriesSet */ memDataSeries = dataSeries.memory;
+  const /** !import('./types.js').MemoryDataSeriesSet */ memDataSeries =
+      dataSeries.memory;
   const /** number */ memUsed = memory.total - memory.available;
   memDataSeries.memUsed.addDataPoint(memUsed, timestamp);
   const /** number */ swapUsed = memory.swapTotal - memory.swapFree;
@@ -287,7 +289,8 @@ function updateMemoryData(memory, timestamp) {
       getDiffPerSecAndUpdateCounter('pswpout', memory.pswpout, timestamp);
   memDataSeries.pswpout.addDataPoint(pswpout, timestamp);
 
-  const /** !GeneralMemoryType */ generalMem = generalInfo.memory;
+  const /** !import('./types.js').GeneralMemoryType */ generalMem =
+      generalInfo.memory;
   generalMem.total = memory.total;
   generalMem.used = memUsed;
   generalMem.swapTotal = memory.swapTotal;
@@ -300,7 +303,8 @@ function updateMemoryData(memory, timestamp) {
  * @param {number} timestamp
  */
 function updateZramData(zram, timestamp) {
-  const /** !ZramDataSeriesSet */ zramDataSeries = dataSeries.zram;
+  const /** !import('./types.js').ZramDataSeriesSet */ zramDataSeries =
+      dataSeries.zram;
   zramDataSeries.origDataSize.addDataPoint(zram.origDataSize, timestamp);
   zramDataSeries.comprDataSize.addDataPoint(zram.comprDataSize, timestamp);
   zramDataSeries.memUsedTotal.addDataPoint(zram.memUsedTotal, timestamp);
@@ -311,7 +315,8 @@ function updateZramData(zram, timestamp) {
       getDiffPerSecAndUpdateCounter('numWrites', zram.numWrites, timestamp);
   zramDataSeries.numWrites.addDataPoint(numWrites, timestamp);
 
-  const /** !GeneralZramType */ generalZram = generalInfo.zram;
+  const /** !import('./types.js').GeneralZramType */ generalZram =
+      generalInfo.zram;
   generalZram.total = zram.memUsedTotal;
   generalZram.orig = zram.origDataSize;
   generalZram.compr = zram.comprDataSize;
@@ -375,7 +380,8 @@ export function getDiffAndUpdateCounter(name, newValue, timestamp) {
     counterDict.set(name, {value: newValue, timestamp: timestamp});
     return 0;
   }
-  const /** !CounterType */ counter = counterDict.get(name);
+  const /** !import('./types.js').CounterType */ counter =
+      counterDict.get(name);
   let /** number */ valueDelta = newValue - counter.value;
 
   /* If the increments of the counter is negative, it means that the counter
@@ -576,7 +582,8 @@ function setupCPUPage() {
  * Set the current page to memory page.
  */
 function setupMemoryPage() {
-  const /** !MemoryDataSeriesSet */ memDataSeries = dataSeries.memory;
+  const /** !import('./types.js').MemoryDataSeriesSet */ memDataSeries =
+      dataSeries.memory;
   lineChart.setSubChart(
       LEFT, UNITS_NUMBER_PER_SECOND, UNITBASE_NUMBER_PER_SECOND);
   lineChart.setSubChart(RIGHT, UNITS_MEMORY, UNITBASE_MEMORY);
@@ -590,7 +597,8 @@ function setupMemoryPage() {
  * Set the current page to zram page.
  */
 function setupZramPage() {
-  const /** !ZramDataSeriesSet */ zramDataSeries = dataSeries.zram;
+  const /** !import('./types.js').ZramDataSeriesSet */ zramDataSeries =
+      dataSeries.zram;
   lineChart.setSubChart(
       LEFT, UNITS_NUMBER_PER_SECOND, UNITBASE_NUMBER_PER_SECOND);
   lineChart.setSubChart(RIGHT, UNITS_MEMORY, UNITBASE_MEMORY);
