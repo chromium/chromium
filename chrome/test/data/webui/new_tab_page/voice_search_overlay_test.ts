@@ -242,6 +242,9 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
               voiceSearchOverlay.$.micVolume, '--mic-volume-level', '0');
           assertEquals(1, metrics.count('NewTabPage.VoiceErrors'));
           assertEquals(1, metrics.count('NewTabPage.VoiceErrors', logError));
+          assertEquals(1, metrics.count('VoiceSearch.Errors.NTP_REALBOX'));
+          assertEquals(
+              1, metrics.count('VoiceSearch.Errors.NTP_REALBOX', logError));
         });
       });
 
@@ -457,5 +460,63 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     assertEquals(
         1,
         metrics.count('NewTabPage.VoiceActions', Action.SUPPORT_LINK_CLICKED));
+  });
+
+  test('Voice recognition errors log to new VoiceSearch metrics', async () => {
+    // Test that various recognition errors emitted by NTP voice search overlay
+    // log accurately to VoiceSearch.Errors.NTP_REALBOX.
+    const testCases:
+        Array<{error: SpeechRecognitionErrorCode, expectedBucket: number}> = [
+          {error: 'audio-capture', expectedBucket: 1},
+          {error: 'network', expectedBucket: 4},
+          {error: 'no-speech', expectedBucket: 6},
+          {error: 'not-allowed', expectedBucket: 7},
+        ];
+
+    for (const {error, expectedBucket} of testCases) {
+      metrics = fakeMetricsPrivate();
+
+      mockSpeechRecognition.onerror!(
+          new webkitSpeechRecognitionError('error', {error}));
+      await microtasksFinished();
+
+      assertEquals(1, metrics.count('VoiceSearch.Errors.NTP_REALBOX'));
+      assertEquals(
+          1, metrics.count('VoiceSearch.Errors.NTP_REALBOX', expectedBucket));
+    }
+
+    // Verify that onnomatch also records the no-match (bucket 5) error.
+    metrics = fakeMetricsPrivate();
+    mockSpeechRecognition.onnomatch!();
+    await microtasksFinished();
+
+    assertEquals(1, metrics.count('VoiceSearch.Errors.NTP_REALBOX'));
+    assertEquals(1, metrics.count('VoiceSearch.Errors.NTP_REALBOX', 5));
+
+    // Recreate overlay to reset internal state from State.ERROR_RECEIVED back
+    // to State.STARTED before verifying onend fallback behavior.
+    document.body.removeChild(voiceSearchOverlay);
+    voiceSearchOverlay = document.createElement('ntp-voice-search-overlay');
+    document.body.appendChild(voiceSearchOverlay);
+    await flushTasks();
+
+    // Verify fallback error when speech recognition ends unexpectedly without
+    // final results (maps to AUDIO_CAPTURE / bucket 1).
+    metrics = fakeMetricsPrivate();
+    mockSpeechRecognition.onend!();
+    await microtasksFinished();
+
+    assertEquals(1, metrics.count('VoiceSearch.Errors.NTP_REALBOX'));
+    assertEquals(1, metrics.count('VoiceSearch.Errors.NTP_REALBOX', 1));
+
+    // Verify that aborted errors (closing voice search mid-process) log
+    // bucket 0 (ABORTED) to error metrics.
+    metrics = fakeMetricsPrivate();
+    mockSpeechRecognition.onerror!(new webkitSpeechRecognitionError(
+        'error', {error: 'aborted' as SpeechRecognitionErrorCode}));
+    await microtasksFinished();
+
+    assertEquals(1, metrics.count('VoiceSearch.Errors.NTP_REALBOX'));
+    assertEquals(1, metrics.count('VoiceSearch.Errors.NTP_REALBOX', 0));
   });
 });
