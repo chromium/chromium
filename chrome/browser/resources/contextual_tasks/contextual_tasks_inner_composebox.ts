@@ -64,7 +64,6 @@ export interface ContextualTasksInnerComposeboxInterface {
   searchboxLayoutMode: string;
   showLensButton: boolean;
   showVoiceSearch: boolean;
-  suggestionActivityEnabled: boolean;
   readonly updateComplete: Promise<boolean>;
   usePecApi: boolean;
 
@@ -128,7 +127,6 @@ export class
       lensButtonDisabled: {type: Boolean},
       lensButtonTriggersOverlay: {type: Boolean},
       showLensButton: {type: Boolean},
-      suggestionActivityEnabled: {type: Boolean},
     };
   }
 
@@ -146,7 +144,6 @@ export class
   accessor lensButtonDisabled: boolean = false;
   accessor lensButtonTriggersOverlay: boolean = false;
   accessor showLensButton: boolean = true;
-  accessor suggestionActivityEnabled: boolean = true;
 
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;

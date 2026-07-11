@@ -87,7 +87,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   static override get properties() {
     return {
       showLensButton: {type: Boolean},
-      suggestionActivityEnabled: {type: Boolean},
       lensButtonTriggersOverlay: {type: Boolean},
       isCollapsible: {
         reflect: true,
@@ -151,7 +150,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   accessor isFollowupQuery: boolean = false;
   accessor enableFileHint: boolean = false;
   accessor inputPlaceholderOverride: string = '';
-  accessor suggestionActivityEnabled: boolean = true;
   accessor disableComposeboxAnimation: boolean = false;
   accessor observeResize: boolean = true;
   accessor enableCarouselScrolling: boolean = false;
