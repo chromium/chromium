@@ -1879,7 +1879,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2461550163693930491">Älä salli sivustojen vierittää ja zoomata jaettuja välilehtiä</translation>
 <translation id="2461593638794842577">Voit laittaa tämän asetuksen pois päältä, jos haluat tallentaa salasanat vain tälle laitteelle</translation>
 <translation id="2462550463312552298">Tee yhteenveto tästä dokumentista</translation>
-<translation id="2462577132948197840">Kirjaudu sisään puhelimellasi</translation>
+<translation id="2462577132948197840">Kirjaudu sisään puhelimella</translation>
 <translation id="246264032905007361">Avaa Edge</translation>
 <translation id="2462752602710430187">Lisättiin <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Näet ehdotettuja tiedostoja, jotta voit helposti jatkaa viimeaikaista toimintaa Microsoft SharePointissa ja OneDrivessa.
@@ -3229,7 +3229,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3487007233252413104">tuntematon toiminto</translation>
 <translation id="3487649228420469005">Skannaus on valmis</translation>
 <translation id="3488199663160411179">nimesi</translation>
-<translation id="3488609300093733298">Kirjaudu sisään puhelimellasi</translation>
+<translation id="3488609300093733298">Kirjaudu sisään puhelimella</translation>
 <translation id="3489457144969823485">Chrome-sovellukset lakkasivat toimimasta ChromeOS-laitteilla heinäkuussa 2025. Kokeile toista sovellusta.</translation>
 <translation id="3490695139702884919">Ladataan… <ph name="PERCENT" /> %</translation>
 <translation id="3491171603443463516">Paikallinen data voidaan palauttaa, jos unohdat PIN-koodin tai salasanan</translation>

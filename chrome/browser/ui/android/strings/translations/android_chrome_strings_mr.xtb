@@ -559,6 +559,7 @@
 <translation id="3331974543021145906">ॲप माहिती</translation>
 <translation id="3334729583274622784">फाइल एक्स्टेंशन बदलायचे आहे का?</translation>
 <translation id="333863344734218290">तुम्हाला असुरक्षित सार्वजनिक आणि खाजगी साइटसाठी चेतावणी देते</translation>
+<translation id="3339788961947270565">बंद करणे पूर्ण करत आहे</translation>
 <translation id="3340978935015468852">सेटिंग्ज</translation>
 <translation id="3351959803838327376">वेबसाइटवर प्रेस करून ठेवा आणि मेनू उघडा</translation>
 <translation id="3359667936385849800">तुमचा सध्याचा सेवा पुरवठादार वापरा</translation>
@@ -722,6 +723,7 @@
 <translation id="4044708993631234325">तळाशी असलेली शीट</translation>
 <translation id="4045441967987592849">पुन्हा उघडा</translation>
 <translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> यासाठी आणखी पर्याय</translation>
+<translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{गुप्त विंडोमध्ये उघडा}other{सर्व (#) गुप्त विंडोमध्ये उघडा}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{शेअर केलेल्या टॅब गटांमध्ये नवीन अ‍ॅक्टिव्हिटी असलेला <ph name="TABS_COUNT_ONE" /> साधारण टॅब आहे}other{शेअर केलेल्या टॅब गटांमध्ये नवीन अ‍ॅक्टिव्हिटी असलेले <ph name="TABS_COUNT_MANY" /> साधारण टॅब आहेत}}</translation>
 <translation id="405365679581583349">Google Play सेवा अपडेट करा</translation>
 <translation id="405399507749852140">कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा</translation>
@@ -1073,6 +1075,7 @@
 <translation id="5517326820028369152">अलीकडील अ‍ॅक्टिव्हिटीची तळाशी असलेली शीट</translation>
 <translation id="5526281268548144413">एकाहून अधिक विंडोवर बंद केले जाऊ शकत नाहीत</translation>
 <translation id="5532536403031755365">वर्धित संरक्षणाच्या मदतीने ऑनलाइन धोक्यांपासून संरक्षणासाठी सुरक्षेचा अतिरिक्त स्तर जोडा</translation>
+<translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{बुकमार्क उघडा}other{सर्व (#) उघडा}}</translation>
 <translation id="5548606607480005320">सुरक्षा तपासणी</translation>
 <translation id="5554520618550346933">तुम्ही पासवर्ड वापरता, तेव्हा तो ऑनलाइन प्रकाशित झाला असल्यास Chrome तुम्हाला चेतावणी देते. हे करत असताना, तुमचे पासवर्ड आणि वापरकर्ता नावे या गोष्टी एंक्रिप्ट केल्या जातात, जेणेकरून Google च्या समावेशासह इतर कोणीही त्या वाचू शकणार नाही.</translation>
 <translation id="5555525474779371165">तुमचे सुरक्षित ब्राउझिंग संरक्षण निवडा</translation>
@@ -1246,6 +1249,7 @@
 <translation id="6246073558347462570">संदर्भ पॉपअप विंडो</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6248988683584659830">शोध सेटिंग्ज</translation>
+<translation id="6250486830372700930">तुम्ही या डिव्हाइसवरून एक्सटेंशनदेखील काढून टाकू शकता</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, मल्टीसिलेक्ट केलेला पिन केलेला गुप्त टॅब</translation>
 <translation id="6251449557817521191">तुमचा Chrome इतिहास इथे पहा</translation>
 <translation id="6254139308321626268">तुम्ही PDF फाइल पाहत आहात</translation>
@@ -1421,7 +1425,9 @@
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> टॅब बंद केले</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{१ परिणाम आढळला}other{# परिणाम आढळले}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{ऑडिओ फाइल, सूचीमध्ये १ ऑडिओ फाइल आहे}other{ऑडिओ फाइल, सूचीमध्ये # ऑडिओ फाइल आहेत}}</translation>
+<translation id="6857043990326114901">फोल्डर जोडा…</translation>
 <translation id="685850645784703949">Google चे Discover - बंद आहे</translation>
+<translation id="6858893072923394368">पेज जोडा…</translation>
 <translation id="6864459304226931083">इमेज डाउनलोड करा</translation>
 <translation id="686490460830618322">अ‍ॅप फिल्टर शीट</translation>
 <translation id="6865313869410766144">ऑटोफिल फॉर्म डेटा</translation>
@@ -1598,6 +1604,7 @@
 <translation id="7475688122056506577">SD कार्ड आढळले नाही. तुमच्या काही फाइल गहाळ झालेल्या असू शकतात.</translation>
 <translation id="7479104141328977413">टॅब व्यवस्थापन</translation>
 <translation id="7481312909269577407">पुढील</translation>
+<translation id="7481588001304663390">{NUM_BOOKMARKS,plural, =1{नवीन टॅब गटामध्ये उघडा}other{सर्व (#) नवीन टॅब गटामध्ये उघडा}}</translation>
 <translation id="7482656565088326534">पूर्वावलोकन टॅब</translation>
 <translation id="7484997419527351112">Discover - बंद आहे</translation>
 <translation id="7485033510383818941">फीडमधील आशय रिफ्रेश करण्यासाठी पेज खाली ओढा</translation>
@@ -1754,6 +1761,7 @@
 <translation id="8103578431304235997">गुप्त टॅब</translation>
 <translation id="810433609302852">तळाशी असलेल्या शीटमधील टिपा असलेल्या नोटिफिकेशनमध्ये प्रोमो आणि वापराच्या पायऱ्या दिसतात</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8109802255973641442">एक्स्टेंशन आणि त्यांनी या डिव्हाइसवर सेव्ह केलेला डेटा काढून टाका</translation>
 <translation id="8110024788458304985">Chrome ची वैशिष्ट्ये आणि परफॉर्मन्समध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="8110087112193408731">Digital wellbeing मध्ये तुमची Chrome ॲक्टिव्हिटी दाखवायची का?</translation>
 <translation id="8118117428362942925">तुम्हाला मदत हवी असल्यास, तुमचे पालक (<ph name="PARENT_NAME" />) यांना विचारा</translation>
@@ -1853,6 +1861,7 @@
 <translation id="8460448946170646641">महत्त्वाच्या गोपनीयता आणि सुरक्षा नियंत्रणांचे पुनरावलोकन करा</translation>
 <translation id="8460932807646981183">शोध इंजीन आणि साइट शोध व्यवस्थापित करा</translation>
 <translation id="8465252176946159372">वैध नाही</translation>
+<translation id="8472353072135865937">{NUM_BOOKMARKS,plural, =1{नवीन विंडोमध्ये उघडा}other{सर्व (#) नवीन विंडोमध्ये उघडा}}</translation>
 <translation id="8473863474539038330">अ‍ॅड्रेस आणि बरेच काही</translation>
 <translation id="847433688444405067">सर्व डिव्हाइसवर ब्राउझ करा</translation>
 <translation id="8477178913400731244">डेटा हटवा</translation>

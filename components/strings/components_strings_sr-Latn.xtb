@@ -329,6 +329,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1486096554574027028">Pretražite lozinke</translation>
 <translation id="1492194039220927094">Slanje smernica:</translation>
 <translation id="1495677929897281669">Nazad na karticu</translation>
+<translation id="1496318738909526466">Upravljaj poboljšanim automatskim popunjavanjem</translation>
 <translation id="1500286806237135498">Kamere (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Flauta</translation>
 <translation id="1507202001669085618">&lt;p&gt;Ova greška se prikazuje ako koristite WiFi portal na kome morate da se prijavite da biste se povezali na internet.&lt;/p&gt;
@@ -865,6 +866,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2322254345061973671">{COUNT,plural, =1{1 prozor}one{# prozor}few{# prozora}other{# prozora}}</translation>
 <translation id="232390861414237658">Automatski popunjavajte ovu karticu za kupovine u Chrome-u kada je sačuvate da biste je koristili uz Google Pay</translation>
 <translation id="2326283484705860548">Sada možete da automatski popunjavate više informacija iz Google novčanika</translation>
+<translation id="2326747055382936979">Upravljaj poboljšanim automatskim popunjavanjem</translation>
 <translation id="2328651992442742497">Dozvoljeno (podrazumevano)</translation>
 <translation id="2328955282645810595">Građevinski i električni alati</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, ističe <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1426,6 +1428,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali time koje informacije sinhronizujete u podešavanjima Chrome-a</translation>
 <translation id="3203025201812691413">URL ne može da bude prazan</translation>
 <translation id="320323717674993345">Otkaži plaćanje</translation>
+<translation id="3204534477198689393">Da bismo poboljšali predloge i brže popunjavali obrasce, sadržaj i URL-ovi stranica koje posećujete mogu da se obrađuju u privatnom prostoru u klaudu.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> može da obuhvata sadržaj za stariju publiku</translation>
 <translation id="3207960819495026254">Obeleženo</translation>
 <translation id="3208701679386778924">Pošaljite izveštaj da bismo poboljšali dalja ažuriranja ChromeOS-a.</translation>
@@ -1481,6 +1484,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3272643614306383237">Manje od 1 MB. Neki sajtovi mogu da se učitavaju sporije tokom sledeće posete.</translation>
 <translation id="3273738040255912340">Administrator može daljinski da unosi promene u profil i pregledač, da analizira informacije o pregledaču pomoću izveštavanja i obavlja druge neophodne zadatke. Aktivnostima na ovom uređaju može da se upravlja i van Chromium-a. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">Upit za čuvanje IBAN-a je otvoren u punoj visini.</translation>
+<translation id="327455571215090823">Pametnije automatsko popunjavanje uz zagarantovanu privatnost</translation>
 <translation id="3281350579597955952">{0,plural, =1{Smernice administratora ne preporučuju otvaranje ovog fajla u: <ph name="DESTINATION_NAME" />}one{Smernice administratora ne preporučuju otvaranje ovih fajlova u: <ph name="DESTINATION_NAME" />}few{Smernice administratora ne preporučuju otvaranje ovih fajlova u: <ph name="DESTINATION_NAME" />}other{Smernice administratora ne preporučuju otvaranje ovih fajlova u: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Vaša organizacija, <ph name="ENROLLMENT_DOMAIN" />, poslala je određene podatke sledećim veb-sajtovima, poput podešavanja ili smernica.</translation>
 <translation id="3286372614333682499">uspravno</translation>

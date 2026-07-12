@@ -4988,6 +4988,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4849286518551984791">Ordu unibertsal koordinatua (UTC/GMT)</translation>
 <translation id="4849517651082200438">Ez instalatu</translation>
 <translation id="4849731766219625109">Erabili <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> helbideko kontua</translation>
+<translation id="4850279708232718725">Eman honi buruzko informazioa</translation>
 <translation id="485053257961878904">Ezin izan da konfiguratu jakinarazpenen sinkronizazioa</translation>
 <translation id="4850548109381269495">Bi gailuetan, egiaztatu Internetera konektatuta zaudela eta aktibatu Bluetooth-a. Ondoren, saiatu berriro.</translation>
 <translation id="4850669014075537160">Desplazamendua</translation>
@@ -6333,6 +6334,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5922854266885514646">Sakatu "Pertsonalizatu Chrome"</translation>
 <translation id="5924047253200400718">Lortu laguntza<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Galdetu Microsoft-eko fitxategiak kopiatu edo Google Drive-ra eraman aurretik</translation>
+<translation id="5925057331573749968">Hasi saioa bizkorrago QR kode batekin</translation>
 <translation id="5926936390113611560">Ireki profil guztiak</translation>
 <translation id="592880897588170157">Chrome-n automatikoki ireki beharrean, deskargatu PDF fitxategiak</translation>
 <translation id="5930567261594625340">Gaueko zerua</translation>
@@ -9478,6 +9480,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8372678064309688510">Gorde da helbidea</translation>
 <translation id="8373652277231415614">Crostini-ko direktorio partekatuak</translation>
 <translation id="8374243500935816406">Ez eman leihoak pantaila guztietan kudeatzeko baimena webguneei</translation>
+<translation id="8375703478696038265"><ph name="TOTAL_STEPS" /> urratsetatik <ph name="STEP_NUMBER" />garrena</translation>
 <translation id="8376137163494131156">Esan iezaguzu zer moduz dabilen Google Cast.</translation>
 <translation id="8376384591331888629">Webgune honetako hirugarrenen cookieak barne</translation>
 <translation id="8376451933628734023">Sareko aplikazio hau beste aplikazio baten plantak egiten ari bada, desinstala ezazu.</translation>
@@ -10549,6 +10552,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="9188142767272053574">Gaitu prozesu-isolamendua</translation>
 <translation id="9192019773545828776">Entzun ahozko argibideak gailua pantailari begiratu gabe erabili ahal izateko. Braillea erabilita ematen diren argibideak konektatutako gailuekin erabilgarri daude. Erabili Ktrl + Alt + Z ChromeVox aktibatu eta desaktibatzeko. Nabigatzeko, berriz, erabili Bilaketa + ezkerrera edo eskuinera egiteko gezi-tekla. Azkenik, hautatzeko (aktibatzeko), erabili Bilaketa + zuriune-barra.</translation>
 <translation id="9195969368671142407">Erakundeak Google-ko kontuan gordetzeko aukera mugatzen dizunean, ezin dituzu partekatu fitxa taldeak, ezta haietan sartu ere</translation>
+<translation id="9197456336762295195">Eskaneatu QR kodea google.com webgunerako sarbide-gakoa duen gailuaren kamerarekin</translation>
 <translation id="919840898042157087">Mugimendu estatikoa</translation>
 <translation id="9199503643457729322">Egin klik hemen pribatutasun-gidatik irteteko.</translation>
 <translation id="9199695835892108985">Serieko ataken baimen guztiak berrezarri nahi dituzu?</translation>

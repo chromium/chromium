@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Չհաջողվեց բեռնել տեղեկությունների էջը` «<ph name="ABOUT_PAGE" />»:</translation>
 <translation id="424963718355121712">Հավելվածները պետք է բեռնվեն այն կայքից, որի հետ աշխատում են</translation>
 <translation id="4306119971288449206">Հավելվածները պետք է ունենան «<ph name="CONTENT_TYPE" />» բովանդակության տեսակը</translation>
+<translation id="4349181963619779233">Ընդլայնումներ և հավելվածներ չեն կարող ավելացվել այս կայքից</translation>
 <translation id="4625078469366263107">Միացնել հավելվածը</translation>
 <translation id="4633003931260532286">Ընդլայնումը պահանջում է «<ph name="IMPORT_NAME" />»՝ «<ph name="IMPORT_VERSION" />» նվազագույն տարբերակով, սակայն տեղադրված է «<ph name="INSTALLED_VERSION" />» տարբերակը</translation>
 <translation id="4660476621274971848">Սպասված տարբերակը՝ «<ph name="EXPECTED_VERSION" />», ստացված տարբերակը՝ «<ph name="NEW_ID" />»</translation>

@@ -559,6 +559,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3331974543021145906">Informacije o aplikaciji</translation>
 <translation id="3334729583274622784">Želite da promenite ekstenziju datoteke?</translation>
 <translation id="333863344734218290">Upozorava vas na nebezbedne javne i privatne sajtove</translation>
+<translation id="3339788961947270565">Završava se isključivanje</translation>
 <translation id="3340978935015468852">podešavanja</translation>
 <translation id="3351959803838327376">Dugo pritisnite veb-sajt i otvorite meni</translation>
 <translation id="3359667936385849800">Koristi aktuelnog dobavljača usluge</translation>
@@ -722,6 +723,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4044708993631234325">Donja tabela</translation>
 <translation id="4045441967987592849">Ponovo otvori</translation>
 <translation id="4049920046559074950">Još opcija za <ph name="INSTANCE_TITLE" /></translation>
+<translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{Otvori u prozoru bez arhiviranja}one{Otvori sve (#) u prozoru bez arhiviranja}few{Otvori sve (#) u prozoru bez arhiviranja}other{Otvori sve (#) u prozoru bez arhiviranja}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardna kartica sa novom aktivnošću u deljenim grupama kartica}one{<ph name="TABS_COUNT_MANY" /> standardna kartica sa novom aktivnošću u deljenim grupama kartica}few{<ph name="TABS_COUNT_MANY" /> standardne kartice sa novom aktivnošću u deljenim grupama kartica}other{<ph name="TABS_COUNT_MANY" /> standardnih kartica sa novom aktivnošću u deljenim grupama kartica}}</translation>
 <translation id="405365679581583349">Ažurirajte Google Play usluge</translation>
 <translation id="405399507749852140">Dobijajte obaveštenja kada se cena snizi na bilo kom sajtu</translation>
@@ -1073,6 +1075,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5517326820028369152">Donja tabela sa nedavnim aktivnostima</translation>
 <translation id="5526281268548144413">Ne možete da zatvorite u više prozora</translation>
 <translation id="5532536403031755365">Dodajte još jedan nivo zaštite od onlajn pretnji pomoću poboljšane zaštite</translation>
+<translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{Otvori obeleživač}one{Otvori sve (#)}few{Otvori sve (#)}other{Otvori sve (#)}}</translation>
 <translation id="5548606607480005320">Bezbednosna provera</translation>
 <translation id="5554520618550346933">Kada koristite lozinku, Chrome vas upozorava ako je ona objavljena onlajn. Dok to radi, vaše lozinke i korisnička imena su šifrovani, pa niko ne može da ih pročita, uključujući Google.</translation>
 <translation id="5555525474779371165">Odaberite zaštitu pomoću Bezbednog pregledanja</translation>
@@ -1246,6 +1249,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6246073558347462570">Iskačući prozor sa kontekstom</translation>
 <translation id="6247557882553405851">Google menadžeru lozinki</translation>
 <translation id="6248988683584659830">Podešavanja pretrage</translation>
+<translation id="6250486830372700930">Ukloni i dodatke sa ovog uređaja</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, višestruko izabrana zakačena kartica bez arhiviranja</translation>
 <translation id="6251449557817521191">Ovde pregledajte istoriju Chrome-a</translation>
 <translation id="6254139308321626268">Pregledate PDF fajl</translation>
@@ -1421,7 +1425,9 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6850830437481525139">Zatvorenih kartica: <ph name="TAB_COUNT" /></translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{Pronađen je 1 rezultat}one{Pronađen je # rezultat}few{Pronađena su # rezultata}other{Pronađeno je # rezultata}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Audio fajlovi, 1 audio fajl na listi}one{Audio fajlovi, # audio fajl na listi}few{Audio fajlovi, # audio fajla na listi}other{Audio fajlovi, # audio fajlova na listi}}</translation>
+<translation id="6857043990326114901">Dodaj folder…</translation>
 <translation id="685850645784703949">Google Discover – isključeno</translation>
+<translation id="6858893072923394368">Dodaj stranicu…</translation>
 <translation id="6864459304226931083">Preuzmi sliku</translation>
 <translation id="686490460830618322">Tabela sa filterima aplikacija</translation>
 <translation id="6865313869410766144">Podaci za automatsko popunjavanje obrazaca</translation>
@@ -1598,6 +1604,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7475688122056506577">SD kartica nije pronađena. Neke datoteke možda nedostaju.</translation>
 <translation id="7479104141328977413">Upravljanje karticama</translation>
 <translation id="7481312909269577407">Napred</translation>
+<translation id="7481588001304663390">{NUM_BOOKMARKS,plural, =1{Otvori u novoj grupi kartica}one{Otvori sve (#) u novoj grupi kartica}few{Otvori sve (#) u novoj grupi kartica}other{Otvori sve (#) u novoj grupi kartica}}</translation>
 <translation id="7482656565088326534">Kartica za pregled</translation>
 <translation id="7484997419527351112">Discover – isključeno</translation>
 <translation id="7485033510383818941">Da biste osvežili sadržaj fida, povucite stranicu nadole</translation>
@@ -1754,6 +1761,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8103578431304235997">Kartice bez arhiviranja</translation>
 <translation id="810433609302852">Donja tabela sa promocijom funkcije obaveštenja sa savetima i koracima za korišćenje</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8109802255973641442">Ukloni dodatke i podatke koje su sačuvali na ovom uređaju</translation>
 <translation id="8110024788458304985">Pomozite nam da poboljšamo funkcije i učinak Chrome OS-a</translation>
 <translation id="8110087112193408731">Želite li da se Chrome aktivnosti prikazuju u Digitalnom blagostanju?</translation>
 <translation id="8118117428362942925">Ako ti treba pomoć, pitaj roditelja (<ph name="PARENT_NAME" />)</translation>
@@ -1853,6 +1861,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8460448946170646641">Pregledajte ključne kontrole privatnosti i bezbednosti</translation>
 <translation id="8460932807646981183">Upravljajte pretraživačima i pretragom sajta</translation>
 <translation id="8465252176946159372">Nije važeći</translation>
+<translation id="8472353072135865937">{NUM_BOOKMARKS,plural, =1{Otvori u novom prozoru}one{Otvori sve (#) u novom prozoru}few{Otvori sve (#) u novom prozoru}other{Otvori sve (#) u novom prozoru}}</translation>
 <translation id="8473863474539038330">Adrese i drugo</translation>
 <translation id="847433688444405067">Pregledajte na više uređaja</translation>
 <translation id="8477178913400731244">Izbriši podatke</translation>

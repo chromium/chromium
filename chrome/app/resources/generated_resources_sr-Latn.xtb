@@ -1536,6 +1536,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2199298570273670671">Greška</translation>
 <translation id="2200094388063410062">Pošalji imejlom</translation>
 <translation id="2200781749203116929">ChromeOS sistemske evidencije</translation>
+<translation id="2202391868799679245">Uključi tastersku prečicu</translation>
 <translation id="2203088913459920044">Slova, brojevi i specijalni znakovi mogu da se koriste u nazivu</translation>
 <translation id="220321590587754225">Povezivanje nije uspelo. Probajte ponovo.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> može da vam proverava lozinke kada se prijavite pomoću Google naloga.</translation>
@@ -5085,6 +5086,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4906490889887219338">Podesite deljenja datoteka na mreži ili upravljajte njima. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Vrati na podrazumevanu vrednost</translation>
 <translation id="4907129260985716018">Odaberite kada ovaj dodatak može da čita i menja podatke o sajtovima</translation>
+<translation id="4908076691331874303">Sakriveno sa ovog sajta</translation>
 <translation id="4908811072292128752">Otvorite novu karticu da biste pregledali dva sajta istovremeno</translation>
 <translation id="4910241725741323970">Aplikacija je već instalirana</translation>
 <translation id="4912643508233590958">Buđenja iz stanja mirovanja</translation>

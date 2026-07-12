@@ -329,6 +329,7 @@
 <translation id="1486096554574027028">पासवर्ड शोधा</translation>
 <translation id="1492194039220927094">धोरणे पुढे ढकला:</translation>
 <translation id="1495677929897281669">टॅबवर परत</translation>
+<translation id="1496318738909526466">वर्धित ऑटोफिल व्यवस्थापित करा</translation>
 <translation id="1500286806237135498">कॅमेरा (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">फ्लूट</translation>
 <translation id="1507202001669085618">&lt;p&gt;ऑनलाइन येण्यापूर्वी तुम्हाला साइन इन करावे लागेल अशी व्यवस्था असलेले वाय-फाय पोर्टल वापरत असल्यास तुम्हाला ही एरर दिसून येईल.&lt;/p&gt;
@@ -865,6 +866,7 @@
 <translation id="2322254345061973671">{COUNT,plural, =1{१ विंडो}other{# विंडो}}</translation>
 <translation id="232390861414237658">हे कार्ड Google Pay सह वापरण्यासाठी सेव्ह केलेले असते, तेव्हा Chrome मध्ये केलेल्या खरेदीसाठी ते ऑटोफिल करा</translation>
 <translation id="2326283484705860548">तुम्ही आता Google Wallet मधून आणखी माहिती ऑटोफिल करू शकता</translation>
+<translation id="2326747055382936979">वर्धित ऑटोफिल व्यवस्थापित करा</translation>
 <translation id="2328651992442742497">अनुमती आहे (डीफॉल्ट)</translation>
 <translation id="2328955282645810595">बांधकाम आणि मोटारद्वारे चालवली जाणारी टूल</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> रोजी एक्स्पायर होईल</translation>

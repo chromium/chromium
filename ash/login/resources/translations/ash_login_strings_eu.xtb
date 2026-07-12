@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">Mantendu gauzak argi eta zabala dirudien gune batean</translation>
 <translation id="243179355394256322">Zure erakundeak ezarritako mugen arabera, baimendutako erabiltzaileek soilik erregistra ditzakete gailuak. Erabiltzaileak ez du baimenik gailuak erregistratzeko. Egiaztatu erabiltzaileak "Erregistratu Google Meet-en hardwarea" administratzaile-pribilegioa duela administrazio-kontsolako Erabiltzaileak atalean.</translation>
 <translation id="2439152382014731627">Berrezarri <ph name="DEVICE_TYPE" /> gailuko pasahitza</translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />Instalatuz gero, <ph name="BEGIN_BOLD" />disko gogorreko eduki guztia ezabatuko da<ph name="END_BOLD" />. Ziurtatu datuen babeskopiak egin dituzula.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Instalazio-prozesua hasiz gero, ezin da utzi bertan behera.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">Ezin izango dituzu erabiltzaileak gehitu, Google APIko gakoak falta direlako. Xehetasun gehiago nahi badituzu, ikusi <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Gaitu datuak berreskuratzeko zerbitzua.</translation>
 <translation id="2485681265915754872">Google Play-ren Zerbitzu-baldintzak</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">Chromebook-ek aplikazioak erabiltzen dituzte ohiko softwarearen ordez. Lortu aplikazioak produktibitatea handitzeko, aisialdirako eta gehiagorako.</translation>
 <translation id="450867954911715010">Erabilerraztasun-ezarpenak</translation>
 <translation id="4519605771716872386">Fitxategiak sinkronizatzeko aukera aktibatuta dago</translation>
+<translation id="4523780892555982827"><ph name="BEGIN_PARAGRAPH1" />Egin urrats hauek arazoa konpontzeko:
+        <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Ziurtatu gailuak ongi funtzionatzen duen barneko memoria bat duela (adibidez, HDD, SSD edo eMMC bat).
+        <ph name="LIST_ITEM" />Egiaztatu gailuaren barneko memoriak gutxienez 16 GB dituela.
+        <ph name="LIST_ITEM" />Egiaztatu barneko memoriarako konexioa behar bezala dabilela, hura fisikoki atzitzen ahal bada.
+        <ph name="LIST_ITEM" />Egiaztatu modelo ziurtatu bat darabilzula eta irakurri instalazio-oharrak.
+        <ph name="END_LIST" />
+        <ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Informazio gehiago lortzeko, joan g.co/flex/InstallErrors helbidera.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Nor gehitu nahi duzu <ph name="DEVICE_TYPE" /> gailuan?</translation>
 <translation id="4566170377336116390">Erregistroa amaitu ondoren moduz aldatu nahi baduzu, gailuaren jatorrizko datuak berrezarri beharko dituzu (Powerwash bidez).</translation>
 <translation id="4567512141633030272">Saioa hasteko okerreko modua hautatu duzu?</translation>
@@ -572,6 +583,8 @@
 <translation id="7189451821249468368">Ez dituzu behar adina lizentzia gailua erregistratzeko. Gehiago erosteko, jarri salmenta sailarekin harremanetan. Mezu hau ikusi beharko ez zenukeela uste baduzu, jarri laguntza-zerbitzuarekin harremanetan.</translation>
 <translation id="7202337678781136582">Eskaneatu QR kodea Android-eko telefonoarekin</translation>
 <translation id="7228854227189381547">Ez aldatu</translation>
+<translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Zerbitzurik onena izateko, instalatu <ph name="DEVICE_OS" /> barneko diskoan. Saioa hasteko pantailan ere instala dezakezu geroago.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Alabaina, instalatzeko prest ez bazaude, USB bidezko flash unitate baten bidez exekuta dezakezu, probatu ahal izateko. Aukera hori hautatuz gero, lehendik dauden sistema eragilea eta datuak mantenduko dira, baina baliteke memoria eta errendimendua murriztea.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">Konfigurazioa amaitu ostean aplikatuko dira aldaketak</translation>
 <translation id="7260186537988033909">Osatu da gailuaren erregistroa (kiosko eta seinaleztatze modua)</translation>
 <translation id="7284411326658527427">Bakoitzak bere kontua pertsonaliza dezake, eta datuak pribatu mantendu.</translation>
@@ -589,6 +602,8 @@
 <translation id="7416263748877373774">Ezin dira kargatu Zerbitzu-baldintzak. Egiaztatu sarera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="7475742997309661417">ChromeOS-eko pantaila-irakurgailua, ChromeVox, pertsona itsuek eta ikusmen urriko pertsonek erabiltzen dute nagusiki, pantailan bistaratutako testua irakurtzeko hizketa-sintetizatzaile baten edo braille-pantaila baten bidez. ChromeVox aktibatzeko, eduki sakatuta bi bolumen-botoiak 5 segundoz. ChromeVox aktibatzen denean, txango bizkor bat egingo duzu.</translation>
 <translation id="7476454130948140105">Ez daukazu eguneratzeko behar adina bateria (% <ph name="BATTERY_PERCENT" />)</translation>
+<translation id="7479437430459628222"><ph name="BEGIN_PARAGRAPH1" />Arazoren bat izan da eta ezin izan da instalatu <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Laguntza gehiago behar baduzu, joan g.co/flex/InstallErrors helbidera.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912"><ph name="BEGIN_PARAGRAPH1" />Erregistratu aurretik, TPMa garbitu behar duzu, <ph name="DEVICE_OS" /> sistemak zure gailuaren jabetza eskura dezan.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Bestela, itzali egin dezakezu TPMa darabilen gailua. Hala ere, datuak segurtasun osoz gordeko dira software-enkriptatzearen bidez, baina segurtasun-eginbide batzuk (adibidez, hardwarean gordetako ziurtagiriak) desgaitu egingo dira.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />TPMaren ezarpenak aldatzeko, berrabiarazi gailua eta idatzi sistemak darabilen BIOS edo UEFIaren ezarpenak. Urratsak gailuaren modeloaren araberakoak dira. Informazio gehiago lortzeko, berrabiarazi aurretik, ireki <ph name="DEVICE_OS" /> sistemari buruzko dokumentazio hau beste gailu batean: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

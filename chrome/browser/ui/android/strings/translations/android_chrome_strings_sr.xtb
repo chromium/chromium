@@ -559,6 +559,7 @@
 <translation id="3331974543021145906">Информације о апликацији</translation>
 <translation id="3334729583274622784">Желите да промените екстензију датотеке?</translation>
 <translation id="333863344734218290">Упозорава вас на небезбедне јавне и приватне сајтове</translation>
+<translation id="3339788961947270565">Завршава се искључивање</translation>
 <translation id="3340978935015468852">подешавања</translation>
 <translation id="3351959803838327376">Дуго притисните веб-сајт и отворите мени</translation>
 <translation id="3359667936385849800">Користи актуелног добављача услуге</translation>
@@ -722,6 +723,7 @@
 <translation id="4044708993631234325">Доња табела</translation>
 <translation id="4045441967987592849">Поново отвори</translation>
 <translation id="4049920046559074950">Још опција за <ph name="INSTANCE_TITLE" /></translation>
+<translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{Отвори у прозору без архивирања}one{Отвори све (#) у прозору без архивирања}few{Отвори све (#) у прозору без архивирања}other{Отвори све (#) у прозору без архивирања}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандардна картица са новом активношћу у дељеним групама картица}one{<ph name="TABS_COUNT_MANY" /> стандардна картица са новом активношћу у дељеним групама картица}few{<ph name="TABS_COUNT_MANY" /> стандардне картице са новом активношћу у дељеним групама картица}other{<ph name="TABS_COUNT_MANY" /> стандардних картица са новом активношћу у дељеним групама картица}}</translation>
 <translation id="405365679581583349">Ажурирајте Google Play услуге</translation>
 <translation id="405399507749852140">Добијајте обавештења када се цена снизи на било ком сајту</translation>
@@ -1073,6 +1075,7 @@ Google налог можда има друге облике историје п�
 <translation id="5517326820028369152">Доња табела са недавним активностима</translation>
 <translation id="5526281268548144413">Не можете да затворите у више прозора</translation>
 <translation id="5532536403031755365">Додајте још један ниво заштите од онлајн претњи помоћу побољшане заштите</translation>
+<translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{Отвори обележивач}one{Отвори све (#)}few{Отвори све (#)}other{Отвори све (#)}}</translation>
 <translation id="5548606607480005320">Безбедносна провера</translation>
 <translation id="5554520618550346933">Када користите лозинку, Chrome вас упозорава ако је она објављена онлајн. Док то ради, ваше лозинке и корисничка имена су шифровани, па нико не може да их прочита, укључујући Google.</translation>
 <translation id="5555525474779371165">Одаберите заштиту помоћу Безбедног прегледања</translation>
@@ -1246,6 +1249,7 @@ Google налог можда има друге облике историје п�
 <translation id="6246073558347462570">Искачући прозор са контекстом</translation>
 <translation id="6247557882553405851">Google менаџеру лозинки</translation>
 <translation id="6248988683584659830">Подешавања претраге</translation>
+<translation id="6250486830372700930">Уклони и додатке са овог уређаја</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, вишеструко изабрана закачена картица без архивирања</translation>
 <translation id="6251449557817521191">Овде прегледајте историју Chrome-а</translation>
 <translation id="6254139308321626268">Прегледате PDF фајл</translation>
@@ -1421,7 +1425,9 @@ Google налог можда има друге облике историје п�
 <translation id="6850830437481525139">Затворених картица: <ph name="TAB_COUNT" /></translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{Пронађен је 1 резултат}one{Пронађен је # резултат}few{Пронађена су # резултата}other{Пронађено је # резултата}}</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Аудио фајлови, 1 аудио фајл на листи}one{Аудио фајлови, # аудио фајл на листи}few{Аудио фајлови, # аудио фајла на листи}other{Аудио фајлови, # аудио фајлова на листи}}</translation>
+<translation id="6857043990326114901">Додај фолдер…</translation>
 <translation id="685850645784703949">Google Discover – искључено</translation>
+<translation id="6858893072923394368">Додај страницу…</translation>
 <translation id="6864459304226931083">Преузми слику</translation>
 <translation id="686490460830618322">Табела са филтерима апликација</translation>
 <translation id="6865313869410766144">Подаци за аутоматско попуњавање образаца</translation>
@@ -1598,6 +1604,7 @@ Google налог можда има друге облике историје п�
 <translation id="7475688122056506577">SD картица није пронађена. Неке датотеке можда недостају.</translation>
 <translation id="7479104141328977413">Управљање картицама</translation>
 <translation id="7481312909269577407">Напред</translation>
+<translation id="7481588001304663390">{NUM_BOOKMARKS,plural, =1{Отвори у новој групи картица}one{Отвори све (#) у новој групи картица}few{Отвори све (#) у новој групи картица}other{Отвори све (#) у новој групи картица}}</translation>
 <translation id="7482656565088326534">Картица за преглед</translation>
 <translation id="7484997419527351112">Discover – искључено</translation>
 <translation id="7485033510383818941">Да бисте освежили садржај фида, повуците страницу надоле</translation>
@@ -1754,6 +1761,7 @@ Google налог можда има друге облике историје п�
 <translation id="8103578431304235997">Картице без архивирања</translation>
 <translation id="810433609302852">Доња табела са промоцијом функције обавештења са саветима и корацима за коришћење</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8109802255973641442">Уклони додатке и податке које су сачували на овом уређају</translation>
 <translation id="8110024788458304985">Помозите нам да побољшамо функције и учинак Chrome ОС-а</translation>
 <translation id="8110087112193408731">Желите ли да се Chrome активности приказују у Дигиталном благостању?</translation>
 <translation id="8118117428362942925">Ако ти треба помоћ, питај родитеља (<ph name="PARENT_NAME" />)</translation>
@@ -1853,6 +1861,7 @@ Google налог можда има друге облике историје п�
 <translation id="8460448946170646641">Прегледајте кључне контроле приватности и безбедности</translation>
 <translation id="8460932807646981183">Управљајте претраживачима и претрагом сајта</translation>
 <translation id="8465252176946159372">Није важећи</translation>
+<translation id="8472353072135865937">{NUM_BOOKMARKS,plural, =1{Отвори у новом прозору}one{Отвори све (#) у новом прозору}few{Отвори све (#) у новом прозору}other{Отвори све (#) у новом прозору}}</translation>
 <translation id="8473863474539038330">Адресе и друго</translation>
 <translation id="847433688444405067">Прегледајте на више уређаја</translation>
 <translation id="8477178913400731244">Избриши податке</translation>

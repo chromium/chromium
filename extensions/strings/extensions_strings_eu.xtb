@@ -73,6 +73,7 @@
 <translation id="4233778200880751280">Ezin izan da "<ph name="ABOUT_PAGE" />" orria kargatu.</translation>
 <translation id="424963718355121712">Haien eragina jasaten duten ostalarietatik hornitu behar dira aplikazioak</translation>
 <translation id="4306119971288449206">"<ph name="CONTENT_TYPE" />" eduki motarekin hornitu behar dira aplikazioak</translation>
+<translation id="4349181963619779233">Ezin da gehitu luzapenik edo aplikaziorik webgune honetatik</translation>
 <translation id="4625078469366263107">Gaitu aplikazioa</translation>
 <translation id="4633003931260532286">Luzapenak "<ph name="IMPORT_NAME" />" eskatzen du, gutxienez "<ph name="IMPORT_VERSION" />" bertsiokoa, baina "<ph name="INSTALLED_VERSION" />" bertsioa baino ez dago instalatuta</translation>
 <translation id="4660476621274971848">"<ph name="EXPECTED_VERSION" />" bertsioa espero zen, baina "<ph name="NEW_ID" />" da bertsioa</translation>
