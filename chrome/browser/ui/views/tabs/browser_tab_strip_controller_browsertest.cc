@@ -60,7 +60,7 @@ class BrowserTabStripControllerTestBase : public InProcessBrowserTest {
     tab_groups::TabGroupSyncService* tgss_service =
         static_cast<tab_groups::TabGroupSyncService*>(
             tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-                browser()->profile()));
+                browser()->GetProfile()));
     // Make the observer
     tab_groups::TabGroupSyncServiceInitializedObserver tgss_observer{
         tgss_service};

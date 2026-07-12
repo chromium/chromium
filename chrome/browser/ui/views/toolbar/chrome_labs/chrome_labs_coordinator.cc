@@ -43,7 +43,7 @@ ChromeLabsCoordinator::ChromeLabsCoordinator(Browser* browser)
     : browser_(browser),
       scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
   pinned_actions_observation_.Observe(
-      PinnedToolbarActionsModel::Get(browser->profile()));
+      PinnedToolbarActionsModel::Get(browser->GetProfile()));
 
   chrome_labs_action_item_ = actions::ActionManager::Get().FindAction(
       kActionShowChromeLabs, browser->browser_actions()->root_action_item());
@@ -73,7 +73,7 @@ bool ChromeLabsCoordinator::BubbleExists() {
 void ChromeLabsCoordinator::Show(ShowUserType user_type) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Bypass possible incognito profile same as chrome://flags does.
-  Profile* original_profile = browser_->profile()->GetOriginalProfile();
+  Profile* original_profile = browser_->GetProfile()->GetOriginalProfile();
   if (user_type == ShowUserType::kChromeOsOwnerUserType) {
     ash::OwnerSettingsServiceAsh* service =
         ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
@@ -145,7 +145,7 @@ void ChromeLabsCoordinator::ShowOrHide() {
   // bubble only after we have this information.
 #if BUILDFLAG(IS_CHROMEOS)
   // Bypass possible incognito profile same as chrome://flags does.
-  Profile* original_profile = browser_->profile()->GetOriginalProfile();
+  Profile* original_profile = browser_->GetProfile()->GetOriginalProfile();
   if ((base::SysInfo::IsRunningOnChromeOS() ||
        should_circumvent_device_check_for_testing_) &&
       ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
@@ -207,7 +207,7 @@ void ChromeLabsCoordinator::MaybeInstallDotIndicator() {
   }
   views::DotIndicator* dot_indicator = views::DotIndicator::Install(anchor);
   dot_indicator->SetVisible(
-      AreNewChromeLabsExperimentsAvailable(browser_->profile()));
+      AreNewChromeLabsExperimentsAvailable(browser_->GetProfile()));
 
   gfx::Rect dot_rect(8, 8);
   dot_rect.set_origin(gfx::Point(anchor->GetPreferredSize().width(),

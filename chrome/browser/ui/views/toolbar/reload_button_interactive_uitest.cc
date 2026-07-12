@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_P(ReloadButtonBrowserTest, MAYBE_AllowExternalProtocols) {
 
   ASSERT_EQ(ExternalProtocolHandler::BLOCK,
             ExternalProtocolHandler::GetBlockState(fake_protocol, nullptr,
-                                                   browser()->profile()));
+                                                   browser()->GetProfile()));
 
   ASSERT_TRUE(RunTestSequence(
       // Clicking the reload button should remove the blocked state.
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_P(ReloadButtonBrowserTest, MAYBE_AllowExternalProtocols) {
           kBlockState,
           [this, &fake_protocol]() {
             return ExternalProtocolHandler::GetBlockState(
-                fake_protocol, nullptr, browser()->profile());
+                fake_protocol, nullptr, browser()->GetProfile());
           },
           testing::Ne(ExternalProtocolHandler::BLOCK))));
 }

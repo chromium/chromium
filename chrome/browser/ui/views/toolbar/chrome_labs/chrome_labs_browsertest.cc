@@ -67,7 +67,7 @@ class ChromeLabsTestHelper {
   // SetUpOnMainThread().
   void PinChromeLabsButton(Browser* browser) {
     PinnedToolbarActionsModel* const actions_model =
-        PinnedToolbarActionsModel::Get(browser->profile());
+        PinnedToolbarActionsModel::Get(browser->GetProfile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, true);
     CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
         << "Test needs modification to support WebUIPinnedToolbarActions";

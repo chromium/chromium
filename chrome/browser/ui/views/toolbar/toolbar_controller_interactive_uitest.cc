@@ -91,7 +91,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest,
     InteractiveFeaturePromoTest::SetUpOnMainThread();
     browser_view_ = BrowserView::GetBrowserViewForBrowser(browser());
     PinnedToolbarActionsModel* const actions_model =
-        PinnedToolbarActionsModel::Get(browser()->profile());
+        PinnedToolbarActionsModel::Get(browser()->GetProfile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
     CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
         << "Test needs modification to support WebUIPinnedToolbarActions";
@@ -411,7 +411,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest,
     return Steps(
         Do([this, ids]() {
           auto* actions_model =
-              PinnedToolbarActionsModel::Get(browser()->profile());
+              PinnedToolbarActionsModel::Get(browser()->GetProfile());
           for (actions::ActionId id : ids) {
             actions_model->UpdatePinnedState(id, true);
           }
@@ -453,12 +453,12 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest,
         ]
       })";
       extension_directory.WriteManifest(kManifest);
-      extensions::ChromeTestExtensionLoader loader(browser()->profile());
+      extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
       scoped_refptr<const extensions::Extension> extension =
           loader.LoadExtension(extension_directory.UnpackedPath());
 
       // Pin extension.
-      auto* toolbar_model = ToolbarActionsModel::Get(browser()->profile());
+      auto* toolbar_model = ToolbarActionsModel::Get(browser()->GetProfile());
       ASSERT_TRUE(toolbar_model);
       toolbar_model->SetActionVisibility(extension->id(), true);
       views::test::RunScheduledLayout(browser_view_);

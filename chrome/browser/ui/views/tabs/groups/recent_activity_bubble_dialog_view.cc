@@ -611,7 +611,7 @@ void RecentActivityRowView::ReopenTab() {
   if (auto* browser = tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
           group_id.value())) {
     tab_groups::SavedTabGroupUtils::OpenTabInBrowser(
-        GURL(tab_url.value()), browser, browser->profile(),
+        GURL(tab_url.value()), browser, browser->GetProfile(),
         WindowOpenDisposition::NEW_BACKGROUND_TAB, std::nullopt,
         group_id.value());
   }
@@ -644,7 +644,7 @@ void RecentActivityRowView::ManageSharing() {
                                            data_sharing::FlowType::kManage);
     collaboration::CollaborationService* service =
         collaboration::CollaborationServiceFactory::GetForProfile(
-            browser->profile());
+            browser->GetProfile());
     std::unique_ptr<CollaborationControllerDelegateDesktop> delegate =
         std::make_unique<CollaborationControllerDelegateDesktop>(browser);
     service->StartShareOrManageFlow(

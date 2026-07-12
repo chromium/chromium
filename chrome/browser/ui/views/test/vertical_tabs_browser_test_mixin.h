@@ -120,7 +120,7 @@ class VerticalTabsBrowserTestMixin : public T {
   void AppendPinnedTab() {
     std::unique_ptr<content::WebContents> contents =
         content::WebContents::Create(
-            content::WebContents::CreateParams(T::browser()->profile()));
+            content::WebContents::CreateParams(T::browser()->GetProfile()));
     tab_strip_model()->InsertWebContentsAt(
         tab_strip_model()->count(), std::move(contents),
         ADD_INHERIT_OPENER | ADD_ACTIVE | ADD_PINNED);

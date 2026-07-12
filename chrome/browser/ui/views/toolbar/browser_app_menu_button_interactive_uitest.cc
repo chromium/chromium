@@ -106,7 +106,7 @@ class BrowserAppMenuButtonInteractiveTest : public InteractiveFeaturePromoTest {
  private:
   UserEducationService* factory() {
     return UserEducationServiceFactory::GetForBrowserContext(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   FeaturePromoRegistry* registry() {

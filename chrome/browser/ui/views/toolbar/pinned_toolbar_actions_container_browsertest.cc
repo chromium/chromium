@@ -41,7 +41,7 @@ class PinnedToolbarActionsContainerBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     PinnedToolbarActionsModel* const actions_model =
-        PinnedToolbarActionsModel::Get(browser()->profile());
+        PinnedToolbarActionsModel::Get(browser()->GetProfile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
     views::test::WaitForAnimatingLayoutManager(container());
     // OS integration is needed to be able to launch web applications. This
@@ -88,7 +88,8 @@ class PinnedToolbarActionsContainerBrowserTest : public InProcessBrowserTest {
   }
 
   Browser* CreateBrowser() {
-    Browser::CreateParams params(browser()->profile(), true /* user_gesture */);
+    Browser::CreateParams params(browser()->GetProfile(),
+                                 true /* user_gesture */);
     Browser* browser = Browser::Create(params);
     browser->GetWindow()->Show();
     return browser;
@@ -137,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        CustomizeToolbarCanNotBeCalledFromIncognitoWindow) {
   Browser* incognito_browser = Browser::Create(Browser::CreateParams(
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
       true));
   AddBlankTabAndShow(incognito_browser);
   auto pinned_button = std::make_unique<PinnedActionToolbarButton>(
@@ -149,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        TranslateStatusIndicator) {
   PinnedToolbarActionsModel* const actions_model =
-      PinnedToolbarActionsModel::Get(browser()->profile());
+      PinnedToolbarActionsModel::Get(browser()->GetProfile());
   actions_model->UpdatePinnedState(kActionShowTranslate, true);
 
   EXPECT_EQ(container()->IsActionPinned(kActionShowTranslate), true);
@@ -181,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        ButtonsSetToNotVisibleNotSeenAfterLayout) {
   PinnedToolbarActionsModel* const actions_model =
-      PinnedToolbarActionsModel::Get(browser()->profile());
+      PinnedToolbarActionsModel::Get(browser()->GetProfile());
   actions_model->UpdatePinnedState(kActionShowTranslate, true);
 
   EXPECT_EQ(container()->IsActionPinned(kActionShowTranslate), true);
@@ -233,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
           SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
   entry->set_should_show_ephemerally_in_toolbar(false);
   PinnedToolbarActionsModel* const actions_model =
-      PinnedToolbarActionsModel::Get(browser()->profile());
+      PinnedToolbarActionsModel::Get(browser()->GetProfile());
   actions_model->UpdatePinnedState(kActionSidePanelShowBookmarks, true);
   views::test::WaitForAnimatingLayoutManager(container());
   EXPECT_TRUE(container()->IsActionPinned(kActionSidePanelShowBookmarks));
@@ -258,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
   EXPECT_EQ(true, prefs->GetBoolean(prefs::kDesktopSharingHubEnabled));
 
   PinnedToolbarActionsModel* const actions_model =
-      PinnedToolbarActionsModel::Get(browser()->profile());
+      PinnedToolbarActionsModel::Get(browser()->GetProfile());
   actions_model->UpdatePinnedState(kActionQrCodeGenerator, true);
   views::test::WaitForAnimatingLayoutManager(container());
 
@@ -282,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
   PrefService* prefs = g_browser_process->local_state();
   prefs->SetBoolean(prefs::kQRCodeGeneratorEnabled, true);
 
-  PinnedToolbarActionsModel::Get(browser()->profile())
+  PinnedToolbarActionsModel::Get(browser()->GetProfile())
       ->UpdatePinnedState(kActionQrCodeGenerator, true);
   button = container()->GetButtonFor(kActionQrCodeGenerator);
   EXPECT_NE(button, nullptr);
@@ -295,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        NoPinnedButtonsInWebApps) {
   PinnedToolbarActionsModel* const actions_model =
-      PinnedToolbarActionsModel::Get(browser()->profile());
+      PinnedToolbarActionsModel::Get(browser()->GetProfile());
 
   // Pin a few buttons and verify they exist.
   actions_model->UpdatePinnedState(kActionShowTranslate, true);
@@ -320,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        PinnedButtonPinningAndUnpinning) {
   PinnedToolbarActionsModel* const actions_model =
-      PinnedToolbarActionsModel::Get(browser()->profile());
+      PinnedToolbarActionsModel::Get(browser()->GetProfile());
 
   actions::ActionItem* action_item =
       actions::ActionManager::Get().FindAction(kActionShowTranslate);

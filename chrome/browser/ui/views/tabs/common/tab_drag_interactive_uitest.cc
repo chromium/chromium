@@ -971,7 +971,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToScroll) {
         for (int i = 1; i < kTabCount; ++i) {
           std::unique_ptr<content::WebContents> contents =
               content::WebContents::Create(
-                  content::WebContents::CreateParams(browser()->profile()));
+                  content::WebContents::CreateParams(browser()->GetProfile()));
           tab_strip_model()->InsertWebContentsAt(tab_strip_model()->count(),
                                                  std::move(contents),
                                                  ADD_INHERIT_OPENER);

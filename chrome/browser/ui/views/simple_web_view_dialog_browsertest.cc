@@ -45,7 +45,8 @@ using SimpleWebViewDialogTest = ::InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(SimpleWebViewDialogTest, HttpAuthWebDialog) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  auto dialog_ptr = std::make_unique<SimpleWebViewDialog>(browser()->profile());
+  auto dialog_ptr =
+      std::make_unique<SimpleWebViewDialog>(browser()->GetProfile());
   auto delegate = dialog_ptr->MakeWidgetDelegate();
   auto* dialog = delegate->SetContentsView(std::move(dialog_ptr));
 
@@ -100,7 +101,8 @@ IN_PROC_BROWSER_TEST_F(SimpleWebViewDialogTest, NoHttpsUpgradeOnInitialLoad) {
   HttpsUpgradesInterceptor::SetHttpsPortForTesting(0);
   HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
 
-  auto dialog_ptr = std::make_unique<SimpleWebViewDialog>(browser()->profile());
+  auto dialog_ptr =
+      std::make_unique<SimpleWebViewDialog>(browser()->GetProfile());
   auto delegate = dialog_ptr->MakeWidgetDelegate();
   auto* dialog = delegate->SetContentsView(std::move(dialog_ptr));
 

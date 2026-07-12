@@ -894,7 +894,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardSystemWebAppTest,
                        HideDomainNameFromHoverCard) {
   test_system_web_app_installation_->WaitForAppInstall();
   auto* const app_browser = web_app::LaunchWebAppBrowser(
-      browser()->profile(), test_system_web_app_installation_->GetAppId());
+      browser()->GetProfile(), test_system_web_app_installation_->GetAppId());
   const char kTabToHover[] = "Tab to hover";
 
   RunTestSequenceInContext(

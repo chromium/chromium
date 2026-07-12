@@ -100,14 +100,14 @@ IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
                        BubbleBackgroundColorMatchesBrowserTheme) {
   // Set up browser theme
   ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(browser()->profile());
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile());
   test::ThemeServiceChangedWaiter waiter(theme_service);
   theme_service->SetUserColor(SK_ColorGREEN);
   waiter.WaitForThemeChanged();
 
   // Force preload Tab Search immediately using the Test API
   WebUIContentsPreloadManagerTestAPI test_api;
-  test_api.PreloadUrl(browser()->profile(),
+  test_api.PreloadUrl(browser()->GetProfile(),
                       GURL(chrome::kChromeUITabSearchURL));
 
   auto* preload_manager = WebUIContentsPreloadManager::GetInstance();

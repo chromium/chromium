@@ -236,7 +236,7 @@ bool WaitForButtonVisible(content::WebContents* web_contents,
 }
 
 void PinButton(Browser* browser, views::WebView* web_view, const char* pref) {
-  browser->profile()->GetPrefs()->SetBoolean(pref, true);
+  browser->GetProfile()->GetPrefs()->SetBoolean(pref, true);
   content::WaitForCopyableViewInWebContents(web_view->GetWebContents());
 }
 
@@ -507,7 +507,7 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     // Force the color mode to light to avoid flakiness.
-    ThemeServiceFactory::GetForProfile(browser()->profile())
+    ThemeServiceFactory::GetForProfile(browser()->GetProfile())
         ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kLight);
   }
 
@@ -1434,7 +1434,7 @@ class WebUIToolbarWebViewStabilityTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     // Force the color mode to light to avoid flakiness.
-    ThemeServiceFactory::GetForProfile(browser()->profile())
+    ThemeServiceFactory::GetForProfile(browser()->GetProfile())
         ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kLight);
   }
 
@@ -1641,7 +1641,7 @@ class WebUIToolbarWebViewRaceTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewRaceTest,
                        BindInterfaceAfterCloseRace) {
   // 1. Setup: Create a new browser window.
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  Browser* new_browser = CreateBrowser(browser()->GetProfile());
   ui_test_utils::WaitForBrowserSetLastActive(new_browser);
 
   WebUIToolbarWebView* toolbar_view = ::GetWebUIToolbarWebView(new_browser);
@@ -1773,7 +1773,7 @@ class WebUIToolbarLifecycleBrowserTest : public InProcessBrowserTest {
 
   struct LifecycleTestSetup {
     explicit LifecycleTestSetup(Browser* browser) {
-      profile = browser->profile();
+      profile = browser->GetProfile();
       EXPECT_CALL(mock_browser, GetProfile())
           .WillRepeatedly(testing::Return(profile));
       EXPECT_CALL(testing::Const(mock_browser), GetProfile())
@@ -2281,7 +2281,7 @@ class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    ThemeServiceFactory::GetForProfile(browser()->profile())
+    ThemeServiceFactory::GetForProfile(browser()->GetProfile())
         ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kLight);
   }
 
@@ -2356,13 +2356,13 @@ class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
 
     EXPECT_TRUE(base::WriteFile(manifest_path, manifest_content));
 
-    extensions::ChromeTestExtensionLoader loader(browser()->profile());
+    extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
     scoped_refptr<const extensions::Extension> extension =
         loader.LoadExtension(temp_dir.GetPath());
     EXPECT_TRUE(extension);
 
     // Pin the extension so it becomes visible.
-    ToolbarActionsModel::Get(browser()->profile())
+    ToolbarActionsModel::Get(browser()->GetProfile())
         ->SetActionVisibility(extension->id(), true);
 
     base::RunLoop run_loop;
@@ -2639,7 +2639,7 @@ IN_PROC_BROWSER_TEST_P(WebUIAppMenuButtonStateTest, VerifyState) {
         break;
     }
     auto error = std::make_unique<MockGlobalError>(severity);
-    GlobalErrorServiceFactory::GetForProfile(browser()->profile())
+    GlobalErrorServiceFactory::GetForProfile(browser()->GetProfile())
         ->AddGlobalError(std::move(error));
   }
 
@@ -3008,7 +3008,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   base::HistogramTester histogram_tester;
 
   // Open a new one to capture the initial metric if it was already recorded.
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  Browser* new_browser = CreateBrowser(browser()->GetProfile());
   ui_test_utils::WaitForBrowserSetLastActive(new_browser);
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(new_browser);
   ASSERT_TRUE(webui_toolbar_view);
@@ -3337,7 +3337,7 @@ class WebUIToolbarWebViewSplitTabsBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    ThemeServiceFactory::GetForProfile(browser()->profile())
+    ThemeServiceFactory::GetForProfile(browser()->GetProfile())
         ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kLight);
   }
 
@@ -4455,7 +4455,7 @@ class WebUIToolbarWebViewHomeButtonBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    ThemeServiceFactory::GetForProfile(browser()->profile())
+    ThemeServiceFactory::GetForProfile(browser()->GetProfile())
         ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kLight);
   }
 
@@ -4471,7 +4471,7 @@ class WebUIToolbarWebViewHomeButtonBrowserTest : public InProcessBrowserTest {
 
   GURL GetHomeURL() {
     GURL home_url(
-        browser()->profile()->GetPrefs()->GetString(prefs::kHomePage));
+        browser()->GetProfile()->GetPrefs()->GetString(prefs::kHomePage));
     if (home_url.is_empty()) {
       return chrome::ChromeUINewTabURLAsGURL();
     }
@@ -4966,7 +4966,7 @@ class WebUIPinnedToolbarActionsBrowserTest
         action_item->SetVisible(true);
       }
     }
-    model_ = PinnedToolbarActionsModel::Get(browser()->profile());
+    model_ = PinnedToolbarActionsModel::Get(browser()->GetProfile());
     WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
     // cast to get to the non-const variant.
     static_cast<views::View*>(webui_toolbar_view)
@@ -6261,7 +6261,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarAlreadyExistsForTheSameProfileOnInitTest,
   // Create a second browser window. This will trigger the creation of a new
   // toolbar process for that window.
   base::HistogramTester histograms;
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(second_browser);
 
   content::FetchHistogramsFromChildProcesses();

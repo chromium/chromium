@@ -69,7 +69,7 @@ SplitTabsToolbarButton::SplitTabsToolbarButton(Browser* browser)
                           base::Unretained(this)),
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(this)));
   pin_state_.Init(
-      prefs::kPinSplitTabButton, browser_->profile()->GetPrefs(),
+      prefs::kPinSplitTabButton, browser_->GetProfile()->GetPrefs(),
       base::BindRepeating(&SplitTabsToolbarButton::UpdateButtonVisibility,
                           base::Unretained(this)));
   views::View* const image_container = image_container_view();

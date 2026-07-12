@@ -279,7 +279,7 @@ CreateNavigationAction(GURL target) {
       [](GURL url, ContextPtr ctx,
          user_education::FeaturePromoHandle promo_handle) {
         auto* browser = GetBrowser(ctx);
-        NavigateParams params(browser->profile(), url,
+        NavigateParams params(browser->GetProfile(), url,
                               ui::PAGE_TRANSITION_LINK);
         params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
         params.browser = browser;
@@ -665,12 +665,12 @@ void MaybeRegisterChromeFeaturePromos(
                  user_education::FeaturePromoHandle promo_handle) {
                 Browser* const browser = GetBrowser(ctx);
                 if (!search::DefaultSearchProviderIsGoogle(
-                        browser->profile())) {
+                        browser->GetProfile())) {
                   return;
                 }
                 auto* service =
                     UserEducationServiceFactory::GetForBrowserContext(
-                        browser->profile());
+                        browser->GetProfile());
                 user_education::TutorialService* tutorial_service =
                     service ? &service->tutorial_service() : nullptr;
                 if (!tutorial_service) {
@@ -682,7 +682,7 @@ void MaybeRegisterChromeFeaturePromos(
                       tab_strip_model->GetActiveWebContents();
                   if (web_contents &&
                       web_contents->GetURL() != browser->GetNewTabURL()) {
-                    NavigateParams params(browser->profile(),
+                    NavigateParams params(browser->GetProfile(),
                                           chrome::ChromeUINewTabPageURLAsGURL(),
                                           ui::PAGE_TRANSITION_LINK);
                     params.disposition =
@@ -1148,7 +1148,7 @@ void MaybeRegisterChromeFeaturePromos(
                 Browser* const browser = GetBrowser(ctx);
                 auto* service =
                     contextual_tasks::ContextualTasksUiServiceFactory::
-                        GetForBrowserContext(browser->profile());
+                        GetForBrowserContext(browser->GetProfile());
                 if (service) {
                   service->TurnOnSmartTabSharing(browser);
                 }
@@ -1609,7 +1609,7 @@ void MaybeRegisterChromeFeaturePromos(
                 }
                 base::RecordAction(
                     base::UserMetricsAction("BookmarkBar_Simplified_IPH_Undo"));
-                browser->profile()->GetPrefs()->SetInteger(
+                browser->GetProfile()->GetPrefs()->SetInteger(
                     bookmarks::prefs::kBookmarkBarVisibilityState,
                     static_cast<int>(
                         bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp));
@@ -1966,7 +1966,7 @@ void MaybeRegisterChromeFeaturePromos(
                   // corresponding to the Finch arm.
                   SearchPromotionManager* manager =
                       SearchPromotionManagerFactory::GetForProfile(
-                          browser->profile());
+                          browser->GetProfile());
                   if (manager) {
                     manager->OnPromoAccepted();
                   }

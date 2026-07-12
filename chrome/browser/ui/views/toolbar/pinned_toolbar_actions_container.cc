@@ -312,7 +312,7 @@ bool PinnedToolbarActionsContainer::AreDropTypesRequired() {
 
 bool PinnedToolbarActionsContainer::CanDrop(const OSExchangeData& data) {
   return BrowserActionDragData::CanDrop(data,
-                                        browser_view_->browser()->profile());
+                                        browser_view_->browser()->GetProfile());
 }
 
 void PinnedToolbarActionsContainer::OnDragEntered(

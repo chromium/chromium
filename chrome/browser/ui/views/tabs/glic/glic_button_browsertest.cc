@@ -56,7 +56,8 @@ class GlicButtonTest : public InProcessBrowserTest {
   }
 
   GlicKeyedService* glic_service() {
-    return GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+    return GlicKeyedServiceFactory::GetGlicKeyedService(
+        browser()->GetProfile());
   }
 
   void WaitForGlicPanelShow() {
@@ -145,7 +146,7 @@ class GlicButtonPrewarmDelayedTest : public GlicButtonTest {
     mock_client_ptr_ = mock_client.get();
     private_ai::PrivateAiService* service =
         private_ai::PrivateAiServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     ASSERT_TRUE(service);
     service->SetClientForTesting(std::move(mock_client));
   }
@@ -154,7 +155,7 @@ class GlicButtonPrewarmDelayedTest : public GlicButtonTest {
     mock_client_ptr_ = nullptr;
     private_ai::PrivateAiService* service =
         private_ai::PrivateAiServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     if (service) {
       service->SetClientForTesting(nullptr);
     }
@@ -210,7 +211,7 @@ class GlicButtonPrewarmCancelledTest : public GlicButtonTest {
     mock_client_ptr_ = mock_client.get();
     private_ai::PrivateAiService* service =
         private_ai::PrivateAiServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     ASSERT_TRUE(service);
     service->SetClientForTesting(std::move(mock_client));
   }
@@ -219,7 +220,7 @@ class GlicButtonPrewarmCancelledTest : public GlicButtonTest {
     mock_client_ptr_ = nullptr;
     private_ai::PrivateAiService* service =
         private_ai::PrivateAiServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     if (service) {
       service->SetClientForTesting(nullptr);
     }

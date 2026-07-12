@@ -184,7 +184,7 @@ class WebUIToolbarPixelInteractiveUiTest : public InteractiveBrowserTest {
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
     // Force the color mode to light to avoid flakiness.
-    ThemeServiceFactory::GetForProfile(browser()->profile())
+    ThemeServiceFactory::GetForProfile(browser()->GetProfile())
         ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kLight);
   }
 
@@ -202,7 +202,7 @@ class WebUIToolbarPixelInteractiveUiTest : public InteractiveBrowserTest {
     // The WebView should be using the light color mode for regular windows,
     // and dark color mode for incognito windows.
     ASSERT_EQ(web_view->GetWidget()->GetColorMode(),
-              browser->profile()->IsIncognitoProfile()
+              browser->GetProfile()->IsIncognitoProfile()
                   ? ui::ColorProviderKey::ColorMode::kDark
                   : ui::ColorProviderKey::ColorMode::kLight);
 
@@ -1473,7 +1473,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
       // Pin an action so that WebUIPinnedToolbarActions has at least one action
       // and is visible!
       Do(base::BindLambdaForTesting([this]() {
-        PinnedToolbarActionsModel::Get(browser()->profile())
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
             ->UpdatePinnedState(kActionCopyUrl, true);
       })),
 

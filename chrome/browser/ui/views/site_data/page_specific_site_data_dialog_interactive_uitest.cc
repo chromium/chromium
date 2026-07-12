@@ -399,7 +399,8 @@ class PageSpecificSiteDataDialogWithRelatedWebAppsInteractiveUiTest
 
   MultiStep LaunchBrowserForWebAppInTab(const webapps::AppId& app_id,
                                         ui::ElementIdentifier section_id) {
-    auto* provider = web_app::WebAppProvider::GetForTest(browser()->profile());
+    auto* provider =
+        web_app::WebAppProvider::GetForTest(browser()->GetProfile());
     const GURL target_app_url(
         provider->registrar_unsafe().GetAppLaunchUrl(app_id));
 
@@ -480,14 +481,14 @@ IN_PROC_BROWSER_TEST_F(
 #if BUILDFLAG(IS_CHROMEOS)
   // Make sure the system web apps are installed since the app management page
   // opens in the OS Settings app, and not a normal browser tab.
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Install an app so that the related application section will have something
   // to show. We don't actually care about the app in this test though.
   auto app_id = web_app::test::InstallDummyWebApp(
-      browser()->profile(), GetDummyAppName(), GetDummyAppUrl());
+      browser()->GetProfile(), GetDummyAppName(), GetDummyAppUrl());
 
   RunTestSequence(
       LaunchBrowserForWebAppInTabAndOpenDialog(app_id, kWebContentsElementId),
@@ -521,16 +522,16 @@ IN_PROC_BROWSER_TEST_F(
 #if BUILDFLAG(IS_CHROMEOS)
   // Make sure the system web apps are installed since the app management page
   // opens in the OS Settings app, and not a normal browser tab.
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Install and launch the web app.
   auto app_id = web_app::test::InstallDummyWebApp(
-      browser()->profile(), GetDummyAppName(), GetDummyAppUrl());
+      browser()->GetProfile(), GetDummyAppName(), GetDummyAppUrl());
 
   Browser* app_browser =
-      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+      web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
 
   // Helper for the test sequence.
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAppWindowId);
@@ -694,7 +695,7 @@ class PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest
   void SetUpCookieControlMode() override {}
 
   void SetUpPrivacySandboxState() override {
-    PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
+    PrivacySandboxSettingsFactory::GetForProfile(browser()->GetProfile())
         ->SetAllPrivacySandboxAllowedForTesting();
   }
 

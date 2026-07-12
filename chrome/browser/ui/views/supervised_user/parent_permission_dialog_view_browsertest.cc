@@ -146,7 +146,7 @@ class ParentPermissionDialogViewHarness
       gfx::ImageSkia icon,
       ParentPermissionDialog::DoneCallback done_callback) {
     return ParentPermissionDialog::CreateParentPermissionDialog(
-        browser->profile(), contents->GetTopLevelNativeWindow(), icon,
+        browser->GetProfile(), contents->GetTopLevelNativeWindow(), icon,
         dialog_input, std::move(done_callback));
   }
 
@@ -158,7 +158,7 @@ class ParentPermissionDialogViewHarness
       gfx::ImageSkia icon,
       ParentPermissionDialog::DoneCallback done_callback) {
     return ParentPermissionDialog::CreateParentPermissionDialogForExtension(
-        browser->profile(), contents->GetTopLevelNativeWindow(), icon,
+        browser->GetProfile(), contents->GetTopLevelNativeWindow(), icon,
         dialog_input, std::move(done_callback));
   }
 
@@ -232,11 +232,11 @@ class ParentPermissionDialogViewTest
 
     supervised_user_test_util::
         SetSupervisedUserExtensionsMayRequestPermissionsPref(
-            browser()->profile(), /*enabled=*/true);
+            browser()->GetProfile(), /*enabled=*/true);
 
     supervised_user_extensions_delegate_ =
         std::make_unique<extensions::SupervisedUserExtensionsDelegateImpl>(
-            browser()->profile());
+            browser()->GetProfile());
 
     test_extension_ = AddAndDisableExtensionWithName("test extension");
   }
@@ -251,11 +251,11 @@ class ParentPermissionDialogViewTest
   }
 
   extensions::ExtensionRegistrar* extension_registrar() {
-    return extensions::ExtensionRegistrar::Get(browser()->profile());
+    return extensions::ExtensionRegistrar::Get(browser()->GetProfile());
   }
 
   extensions::ExtensionService* extension_service() {
-    return extensions::ExtensionSystem::Get(browser()->profile())
+    return extensions::ExtensionSystem::Get(browser()->GetProfile())
         ->extension_service();
   }
 

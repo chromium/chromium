@@ -302,13 +302,13 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest, ToolbarCycleFocusWithBookmarkBar) {
   updater->ExecuteCommand(IDC_SHOW_BOOKMARK_BAR);
 
   BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::AddIfNotBookmarked(model, GURL("http://foo.com"), u"Foo");
 
   // We want to specifically test the case where the bookmark bar is
   // already showing when a window opens, so create a second browser
   // window with the same profile.
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
   WaitForInitialWebUI(second_browser);
   RunToolbarCycleFocusTest(second_browser);
 }

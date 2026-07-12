@@ -152,7 +152,7 @@ task_manager::TaskManagerTableModel* TaskManagerView::Show(
   if (browser) {
     ui::win::SetAppIdForWindow(
         shell_integration::win::GetAppUserModelIdForBrowser(
-            browser->profile()->GetPath()),
+            browser->GetProfile()->GetPath()),
         views::HWNDForWidget(g_task_manager_view->GetWidget()));
   }
 #endif

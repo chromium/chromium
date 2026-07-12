@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
     GTEST_SKIP() << "System DnD simulation is not supported on Wayland.";
   }
   bookmarks::BookmarkModel* const model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
   const bookmarks::BookmarkNode* const bb_node = model->bookmark_bar_node();
   model->AddFolder(bb_node, 0, u"a");
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
     GTEST_SKIP() << "System DnD simulation is not supported on Wayland.";
   }
   bookmarks::BookmarkModel* const model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
   const bookmarks::BookmarkNode* const bb_node = model->bookmark_bar_node();
   model->AddFolder(bb_node, 0, u"a");
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
     GTEST_SKIP() << "System DnD simulation is not supported on Wayland.";
   }
   bookmarks::BookmarkModel* const model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
   const bookmarks::BookmarkNode* const bb_node = model->bookmark_bar_node();
   model->AddFolder(bb_node, 0, u"a");

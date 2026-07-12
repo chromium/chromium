@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest, DropInCollapsedGroups) {
 IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest, DropInPinnedTabs) {
   tab_strip_model()->AppendWebContents(
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile())),
+          content::WebContents::CreateParams(browser()->GetProfile())),
       /*foreground=*/true);
   tab_strip_model()->SetTabPinned(0, true);
   tab_strip_model()->SetTabPinned(1, true);
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest,
                        DropInPinnedTabsCollapsed) {
   tab_strip_model()->AppendWebContents(
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile())),
+          content::WebContents::CreateParams(browser()->GetProfile())),
       /*foreground=*/true);
   tab_strip_model()->SetTabPinned(0, true);
   tab_strip_model()->SetTabPinned(1, true);

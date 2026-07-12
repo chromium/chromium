@@ -58,7 +58,7 @@ class AlertIndicatorButtonBrowserTest
   void SetPermission(content::WebContents* web_contents,
                      ContentSettingsType type,
                      ContentSetting result) {
-    HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+    HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
         ->SetContentSettingDefaultScope(web_contents->GetURL(), GURL(), type,
                                         result);
   }

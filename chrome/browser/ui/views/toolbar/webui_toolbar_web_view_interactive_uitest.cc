@@ -162,7 +162,7 @@ class WebUIPinnedToolbarActionsInteractiveTest : public InteractiveBrowserTest {
           static_cast<int>(actions::ActionPinnableState::kPinnable));
     }
 
-    model_ = PinnedToolbarActionsModel::Get(browser()->profile());
+    model_ = PinnedToolbarActionsModel::Get(browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override {

@@ -231,7 +231,7 @@ ToolbarController::~ToolbarController() {
 
 std::vector<ToolbarController::ResponsiveElementInfo>
 ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
-  bool is_incognito = browser->profile()->IsIncognitoProfile();
+  bool is_incognito = browser->GetProfile()->IsIncognitoProfile();
   // TODO(crbug.com/40912482): Fill in observed identifier.
   // Order matters because it should match overflow menu order top to bottom.
   std::vector<ToolbarController::ResponsiveElementInfo> elements = {
@@ -278,7 +278,7 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
     auto* root_item = browser_actions->root_action_item();
     if (root_item) {
       PinnedToolbarActionsModel* const pinned_actions_model =
-          PinnedToolbarActionsModel::Get(browser->profile());
+          PinnedToolbarActionsModel::Get(browser->GetProfile());
       for (const auto& item : root_item->GetChildren().children()) {
         auto id = item->GetActionId();
         // Add an item if it is pinnable and/or pinned. The tab search item may

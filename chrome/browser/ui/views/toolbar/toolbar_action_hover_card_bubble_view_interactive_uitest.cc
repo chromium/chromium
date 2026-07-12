@@ -160,7 +160,7 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
 
   void PinExtension(const extensions::ExtensionId& extension_id) {
     ToolbarActionsModel* const toolbar_model =
-        ToolbarActionsModel::Get(browser()->profile());
+        ToolbarActionsModel::Get(browser()->GetProfile());
     toolbar_model->SetActionVisibility(extension_id, true);
     GetExtensionsToolbarDesktop()->GetWidget()->LayoutRootViewIfNecessary();
   }

@@ -497,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, CloseTab) {
 
 IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
                        BorderWidgetShouldCloseWhenBrowserCloses) {
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  Browser* new_browser = CreateBrowser(browser()->GetProfile());
   AddTabs(new_browser, 2);
   ASSERT_EQ(new_browser->tab_strip_model()->count(), 3);
   CreateUiAndStartSharing(new_browser, /*capturing_tab=*/0, /*captured_tab=*/1);
@@ -985,7 +985,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(guest_browser->tab_strip_model()->count(), 2);
 
   // Create a normal-mode browser.
-  Browser* const main_browser = CreateBrowser(browser()->profile());
+  Browser* const main_browser = CreateBrowser(browser()->GetProfile());
   AddTabs(main_browser, 1);
   ASSERT_EQ(main_browser->tab_strip_model()->count(), 2);
 
@@ -1008,7 +1008,7 @@ IN_PROC_BROWSER_TEST_F(
     MultipleTabSharingUIViewsBrowserTest,
     NormalModeCapturerDoesNotProduceInfobarInGuestModeTabOpenedAfterCapture) {
   // Create a normal-mode browser.
-  Browser* const main_browser = CreateBrowser(browser()->profile());
+  Browser* const main_browser = CreateBrowser(browser()->GetProfile());
   AddTabs(main_browser, 1);
   ASSERT_EQ(main_browser->tab_strip_model()->count(), 2);
 
@@ -1036,7 +1036,7 @@ IN_PROC_BROWSER_TEST_F(
     MultipleTabSharingUIViewsBrowserTest,
     GuestModeCapturerDoesNotProduceInfobarInNormalModeTabOpenedBeforeCapture) {
   // Create a normal-mode browser.
-  Browser* const main_browser = CreateBrowser(browser()->profile());
+  Browser* const main_browser = CreateBrowser(browser()->GetProfile());
   AddTabs(main_browser, 1);
   ASSERT_EQ(main_browser->tab_strip_model()->count(), 2);
 
@@ -1073,7 +1073,7 @@ IN_PROC_BROWSER_TEST_F(
                            /*captured_tab_first=*/1);
 
   // Create a normal-mode browser.
-  Browser* const main_browser = CreateBrowser(browser()->profile());
+  Browser* const main_browser = CreateBrowser(browser()->GetProfile());
   AddTabs(main_browser, 1);
   ASSERT_EQ(main_browser->tab_strip_model()->count(), 2);
 
