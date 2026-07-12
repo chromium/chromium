@@ -847,7 +847,34 @@ ui::EventTarget* GetTarget(aura::Window* window, const gfx::Point& location) {
 
 }  // namespace
 
-TEST_F(NativeViewHostAuraTest, TopInsets) {
+class NativeViewHostAuraTopInsetsTest
+    : public NativeViewHostAuraTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  NativeViewHostAuraTopInsetsTest() = default;
+  ~NativeViewHostAuraTopInsetsTest() override = default;
+
+  void SetUp() override {
+    if (use_clip_window) {
+      feature_list_.InitAndEnableFeature(
+          views::features::kUseNativeViewHostAuraWithClipWindow);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          views::features::kUseNativeViewHostAuraWithClipWindow);
+    }
+    NativeViewHostAuraTest::SetUp();
+  }
+
+ protected:
+  const bool use_clip_window = GetParam();
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, NativeViewHostAuraTopInsetsTest, testing::Bool());
+
+TEST_P(NativeViewHostAuraTopInsetsTest, TopInsets) {
   CreateHost();
   toplevel()->SetBounds(gfx::Rect(20, 20, 100, 100));
   toplevel()->Show();
@@ -864,14 +891,167 @@ TEST_F(NativeViewHostAuraTest, TopInsets) {
 
   host()->SetHitTestTopInset(10);
   EXPECT_EQ(toplevel_window, GetTarget(toplevel_window, gfx::Point(1, 1)));
+  EXPECT_EQ(toplevel_window,
+            GetTarget(toplevel_window, gfx::Point(1, 1) + offset));
   EXPECT_EQ(child_window,
             GetTarget(toplevel_window, gfx::Point(1, 11) + offset));
 
+  // Reset.
   host()->SetHitTestTopInset(0);
   EXPECT_EQ(child_window,
             GetTarget(toplevel_window, gfx::Point(1, 1) + offset));
   EXPECT_EQ(child_window,
             GetTarget(toplevel_window, gfx::Point(1, 11) + offset));
+
+  DestroyHost();
+  DestroyTopLevel();
+}
+
+TEST_P(NativeViewHostAuraTopInsetsTest, SetNativeViewClipRect) {
+  CreateHost();
+  toplevel()->SetBounds(gfx::Rect(20, 20, 100, 100));
+  toplevel()->Show();
+
+  aura::Window* child_window = child_widget()->GetNativeWindow();
+  ui::Layer* child_layer = child_window->layer();
+  ASSERT_TRUE(child_layer);
+
+  gfx::Rect host_bounds = host()->GetLocalBounds();
+  ASSERT_FALSE(host_bounds.IsEmpty());
+
+  // Initial state: no clip.
+  EXPECT_TRUE(child_layer->clip_rect().IsEmpty());
+
+  // Set clip.
+  gfx::Rect clip(10, 10, 30, 30);
+  EXPECT_TRUE(host()->SetNativeViewClipRect(clip));
+  EXPECT_EQ(clip, child_layer->clip_rect());
+
+  // Set same clip again: should return false.
+  EXPECT_FALSE(host()->SetNativeViewClipRect(clip));
+  EXPECT_EQ(clip, child_layer->clip_rect());
+
+  // Set different clip.
+  gfx::Rect clip2(20, 20, 20, 20);
+  EXPECT_TRUE(host()->SetNativeViewClipRect(clip2));
+  EXPECT_EQ(clip2, child_layer->clip_rect());
+
+  // Clear clip.
+  EXPECT_TRUE(host()->SetNativeViewClipRect(gfx::Rect()));
+  EXPECT_TRUE(child_layer->clip_rect().IsEmpty());
+
+  DestroyHost();
+  DestroyTopLevel();
+}
+
+TEST_P(NativeViewHostAuraTopInsetsTest,
+       SetNativeViewClipRectWithRoundedCorners) {
+  CreateHost();
+  toplevel()->SetBounds(gfx::Rect(20, 20, 100, 100));
+  toplevel()->Show();
+
+  aura::Window* child_window = child_widget()->GetNativeWindow();
+  ui::Layer* child_layer = child_window->layer();
+  ASSERT_TRUE(child_layer);
+
+  gfx::Size host_size = host()->bounds().size();
+  int host_width = host_size.width();
+  int host_height = host_size.height();
+  ASSERT_GE(host_width, 50);
+  ASSERT_GE(host_height, 50);
+
+  // Set corner radii.
+  const gfx::RoundedCornersF kRadii(5, 10, 15, 20);
+  EXPECT_TRUE(host()->SetCornerRadii(kRadii));
+
+  // If no clip, rounded corners should be applied.
+  EXPECT_EQ(kRadii, child_layer->rounded_corner_radii());
+
+  // Set external clip that clips right and bottom edges.
+  gfx::Rect clip(0, 0, host_width - 10, host_height - 10);
+  EXPECT_TRUE(host()->SetNativeViewClipRect(clip));
+
+  if (use_clip_window) {
+    // NativeViewHostAuraWithClipWindow: corners are not adjusted by clip.
+    EXPECT_EQ(kRadii, child_layer->rounded_corner_radii());
+  } else {
+    // NativeViewHostAura: corners should be adjusted by clip.
+    // Only upper-left corner is not clipped.
+    EXPECT_EQ(gfx::RoundedCornersF(5, 0, 0, 0),
+              child_layer->rounded_corner_radii());
+  }
+
+  // Clear clip.
+  EXPECT_TRUE(host()->SetNativeViewClipRect(gfx::Rect()));
+  EXPECT_EQ(kRadii, child_layer->rounded_corner_radii());
+
+  DestroyHost();
+  DestroyTopLevel();
+}
+
+TEST_P(NativeViewHostAuraTopInsetsTest,
+       SetNativeViewClipRectWithTopInsetsAndRoundedCorners) {
+  CreateHost();
+  toplevel()->SetBounds(gfx::Rect(20, 20, 100, 100));
+  toplevel()->Show();
+
+  aura::Window* child_window = child_widget()->GetNativeWindow();
+  ui::Layer* child_layer = child_window->layer();
+  ASSERT_TRUE(child_layer);
+
+  gfx::Size host_size = host()->bounds().size();
+  int host_width = host_size.width();
+  int host_height = host_size.height();
+  ASSERT_GE(host_width, 50);
+  ASSERT_GE(host_height, 50);
+
+  // Set corner radii.
+  const gfx::RoundedCornersF kRadii(5, 10, 15, 20);
+  EXPECT_TRUE(host()->SetCornerRadii(kRadii));
+
+  // Set top inset.
+  host()->SetHitTestTopInset(20);
+
+  // Set external clip.
+  gfx::Rect clip(0, 0, host_width - 10, host_height + 10);
+  EXPECT_TRUE(host()->SetNativeViewClipRect(clip));
+
+  if (use_clip_window) {
+    // NativeViewHostAuraWithClipWindow:
+    // Clip on child layer is just the external clip.
+    EXPECT_EQ(clip, child_layer->clip_rect());
+    // Corners are not adjusted.
+    EXPECT_EQ(kRadii, child_layer->rounded_corner_radii());
+  } else {
+    // NativeViewHostAura:
+    // Combined clip: clip (0, 0, host_width-10, host_height+10) intersect
+    // top_inset (0, 20, host_width, host_height-20) = (0, 20, host_width-10,
+    // host_height-20).
+    EXPECT_EQ(gfx::Rect(0, 20, host_width - 10, host_height - 20),
+              child_layer->clip_rect());
+    // Corners are adjusted based on combined clip (Top and Right clipped).
+    EXPECT_EQ(gfx::RoundedCornersF(0, 0, 0, 20),
+              child_layer->rounded_corner_radii());
+  }
+
+  // Clear external clip.
+  EXPECT_TRUE(host()->SetNativeViewClipRect(gfx::Rect()));
+  if (use_clip_window) {
+    EXPECT_TRUE(child_layer->clip_rect().IsEmpty());
+    EXPECT_EQ(kRadii, child_layer->rounded_corner_radii());
+  } else {
+    // Still has top_inset clip: (0, 20, host_width, host_height-20).
+    EXPECT_EQ(gfx::Rect(0, 20, host_width, host_height - 20),
+              child_layer->clip_rect());
+    // Corners adjusted based on top_inset clip (Top clipped).
+    EXPECT_EQ(gfx::RoundedCornersF(0, 0, 15, 20),
+              child_layer->rounded_corner_radii());
+  }
+
+  // Reset top inset.
+  host()->SetHitTestTopInset(0);
+  EXPECT_TRUE(child_layer->clip_rect().IsEmpty());
+  EXPECT_EQ(kRadii, child_layer->rounded_corner_radii());
 
   DestroyHost();
   DestroyTopLevel();

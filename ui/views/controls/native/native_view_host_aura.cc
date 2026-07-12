@@ -4,6 +4,7 @@
 
 #include "ui/views/controls/native/native_view_host_aura.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -80,7 +81,7 @@ void NativeViewHostAura::AttachNativeView() {
   host_->native_view()->AddObserver(this);
   original_transform_ = host_->native_view()->transform();
   original_transform_changed_ = false;
-  UpdateInsets();
+  UpdateLayerClip();
 }
 
 void NativeViewHostAura::SetParentAccessible(
@@ -148,7 +149,7 @@ void NativeViewHostAura::AddedToWidget() {
     host_->native_view()->Hide();
   }
   host_->InvalidateLayout();
-  UpdateInsets();
+  UpdateLayerClip();
 }
 
 void NativeViewHostAura::RemovedFromWidget() {
@@ -177,7 +178,7 @@ void NativeViewHostAura::SetHitTestTopInset(int top_inset) {
     return;
   }
   top_inset_ = top_inset;
-  UpdateInsets();
+  UpdateLayerClip();
 }
 
 void NativeViewHostAura::InstallClip(int x, int y, int w, int h) {
@@ -196,6 +197,17 @@ void NativeViewHostAura::UninstallClip() {
   clip_rect_.reset();
 }
 
+bool NativeViewHostAura::SetNativeViewClipRect(const gfx::Rect& clip_rect) {
+  std::optional<gfx::Rect> new_clip =
+      clip_rect.IsEmpty() ? std::nullopt : std::make_optional(clip_rect);
+  if (external_clip_rect_ == new_clip) {
+    return false;
+  }
+  external_clip_rect_ = new_clip;
+  UpdateLayerClip();
+  return true;
+}
+
 void NativeViewHostAura::ShowWidget(int x,
                                     int y,
                                     int w,
@@ -206,7 +218,6 @@ void NativeViewHostAura::ShowWidget(int x,
     native_w = host_->native_view()->bounds().width();
     native_h = host_->native_view()->bounds().height();
     InstallClip(0, 0, w, h);
-    GetUILayer()->SetClipRect(clip_rect_.value());
   } else {
     gfx::Transform transform = original_transform_;
     if (w > 0 && h > 0 && native_w > 0 && native_h > 0) {
@@ -218,10 +229,9 @@ void NativeViewHostAura::ShowWidget(int x,
       host_->native_view()->SetTransform(transform);
       original_transform_changed_ = true;
     }
-    GetUILayer()->SetClipRect(clip_rect_.value_or(gfx::Rect()));
   }
-  ApplyRoundedCorners();
   host_->native_view()->SetBounds({x, y, native_w, native_h});
+  UpdateLayerClip();
   host_->native_view()->Show();
 }
 
@@ -291,19 +301,20 @@ void NativeViewHostAura::ApplyRoundedCorners() {
                                  radii.lower_left(), radii.lower_right());
   }
 
-  if (clip_rect_) {
+  gfx::Rect actual_clip = GetActualClipRect();
+  if (!actual_clip.IsEmpty()) {
     const gfx::Size size = layer->size();
-    if (clip_rect_->x() > 0 || clip_rect_->y() > 0) {
+    if (actual_clip.x() > 0 || actual_clip.y() > 0) {
       radii.set_upper_left(0);
     }
-    if (clip_rect_->right() < size.width() || clip_rect_->y() > 0) {
+    if (actual_clip.right() < size.width() || actual_clip.y() > 0) {
       radii.set_upper_right(0);
     }
-    if (clip_rect_->right() < size.width() ||
-        clip_rect_->bottom() < size.height()) {
+    if (actual_clip.right() < size.width() ||
+        actual_clip.bottom() < size.height()) {
       radii.set_lower_right(0);
     }
-    if (clip_rect_->x() > 0 || clip_rect_->bottom() < size.height()) {
+    if (actual_clip.x() > 0 || actual_clip.bottom() < size.height()) {
       radii.set_lower_left(0);
     }
   }
@@ -314,23 +325,47 @@ void NativeViewHostAura::ApplyRoundedCorners() {
   }
 }
 
-void NativeViewHostAura::UpdateInsets() {
-  if (!host_->native_view()) {
-    return;
+void NativeViewHostAura::UpdateLayerClip() {
+  ui::Layer* layer = GetUILayer();
+  if (layer) {
+    layer->SetClipRect(GetActualClipRect());
   }
-  auto* window = host_->native_view();
-  if (top_inset_ == 0) {
-    // The window targeter needs to be uninstalled when not used; keeping empty
-    // targeter here actually conflicts with ash::ImmersiveWindowTargeter on
-    // immersive mode in Ash.
-    // TODO(mukai): fix this.
-    window->SetEventTargeter(nullptr);
-  } else {
-    if (!window->targeter()) {
-      window->SetEventTargeter(std::make_unique<aura::WindowTargeter>());
+  ApplyRoundedCorners();
+}
+
+gfx::Rect NativeViewHostAura::GetActualClipRect() const {
+  gfx::Rect clip;
+  if (clip_rect_) {
+    clip = *clip_rect_;
+  }
+
+  // Intersect with external clip if present.
+  if (external_clip_rect_) {
+    if (clip.IsEmpty()) {
+      clip = *external_clip_rect_;
+    } else {
+      clip.Intersect(*external_clip_rect_);
     }
-    window->targeter()->SetInsets(gfx::Insets::TLBR(top_inset_, 0, 0, 0));
   }
+
+  if (top_inset_ > 0 && host_->native_view()) {
+    double scale_y = 1.0;
+    if (host_->native_view()->bounds().height() > 0 && host_->height() > 0) {
+      scale_y = static_cast<double>(host_->height()) /
+                host_->native_view()->bounds().height();
+    }
+    int native_top_inset = base::ClampRound(top_inset_ / scale_y);
+    gfx::Rect allowed_rect(0, native_top_inset,
+                           host_->native_view()->bounds().width(),
+                           std::max(0, host_->native_view()->bounds().height() -
+                                           native_top_inset));
+    if (clip.IsEmpty()) {
+      clip = allowed_rect;
+    } else {
+      clip.Intersect(allowed_rect);
+    }
+  }
+  return clip;
 }
 
 }  // namespace views

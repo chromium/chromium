@@ -46,6 +46,7 @@ class NativeViewHostAuraWithClipWindow : public NativeViewHostWrapper,
   void InstallClip(int x, int y, int w, int h) override;
   bool HasInstalledClip() override;
   void UninstallClip() override;
+  bool SetNativeViewClipRect(const gfx::Rect& clip_rect) override;
   void ShowWidget(int x, int y, int w, int h, int native_w, int native_h)
       override;
   void HideWidget() override;
@@ -105,6 +106,8 @@ class NativeViewHostAuraWithClipWindow : public NativeViewHostWrapper,
 
   // True if a transform different from the original was set.
   bool original_transform_changed_ = false;
+  // The external clip rect of the native view.
+  std::optional<gfx::Rect> external_clip_rect_;
 
   // The top insets to exclude the underlying native view from the target.
   int top_inset_ = 0;

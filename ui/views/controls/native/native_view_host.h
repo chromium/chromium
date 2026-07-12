@@ -75,6 +75,10 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // NatieView's size always equals this View's size.
   void SetNativeViewSize(const gfx::Size& size);
 
+  // Sets the external clip rect of the native view. Returns true if the clip
+  // rect changed.
+  bool SetNativeViewClipRect(const gfx::Rect& clip_rect);
+
   // Returns the container that contains this host's native view. Returns null
   // if there's no attached native view or it has no container.
   gfx::NativeView GetNativeViewContainer() const;

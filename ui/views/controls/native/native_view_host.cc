@@ -298,6 +298,13 @@ bool NativeViewHost::OnMousePressed(const ui::MouseEvent& event) {
 ////////////////////////////////////////////////////////////////////////////////
 // NativeViewHost, private:
 
+bool NativeViewHost::SetNativeViewClipRect(const gfx::Rect& clip_rect) {
+  if (native_wrapper_) {
+    return native_wrapper_->SetNativeViewClipRect(clip_rect);
+  }
+  return false;
+}
+
 void NativeViewHost::Detach(bool destroyed) {
   if (native_view_) {
     if (!destroyed) {

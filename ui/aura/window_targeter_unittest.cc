@@ -374,4 +374,37 @@ TEST_F(WindowTargeterTest, TargeterChecksOwningEventTarget) {
   EXPECT_EQ(root_window(), targeter->FindTargetForEvent(root_target, &mouse2));
 }
 
+TEST_F(WindowTargeterTest, LayerClipRect) {
+  test::TestWindowDelegate delegate;
+  std::unique_ptr<Window> child(
+      CreateNormalWindow(1, root_window(), &delegate));
+  child->SetBounds(gfx::Rect(0, 0, 100, 100));
+
+  ui::EventTarget* root_target = root_window();
+  ui::EventTargeter* targeter = root_target->GetEventTargeter();
+
+  // Initially no clip, should target child.
+  ui::MouseEvent mouse(ui::EventType::kMouseMoved, gfx::Point(50, 50),
+                       gfx::Point(50, 50), ui::EventTimeForNow(), ui::EF_NONE,
+                       ui::EF_NONE);
+  EXPECT_EQ(child.get(), targeter->FindTargetForEvent(root_target, &mouse));
+
+  // Set clip rect on child layer.
+  child->layer()->SetClipRect(gfx::Rect(10, 10, 80, 80));
+
+  // Event inside clip should target child.
+  ui::MouseEvent mouse_inside(ui::EventType::kMouseMoved, gfx::Point(50, 50),
+                              gfx::Point(50, 50), ui::EventTimeForNow(),
+                              ui::EF_NONE, ui::EF_NONE);
+  EXPECT_EQ(child.get(),
+            targeter->FindTargetForEvent(root_target, &mouse_inside));
+
+  // Event outside clip (but inside window bounds) should target root.
+  ui::MouseEvent mouse_outside(ui::EventType::kMouseMoved, gfx::Point(5, 5),
+                               gfx::Point(5, 5), ui::EventTimeForNow(),
+                               ui::EF_NONE, ui::EF_NONE);
+  EXPECT_EQ(root_window(),
+            targeter->FindTargetForEvent(root_target, &mouse_outside));
+}
+
 }  // namespace aura

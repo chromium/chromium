@@ -4,11 +4,13 @@
 
 #include "ui/views/controls/native/native_view_host_aura_with_clip_window.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
@@ -221,6 +223,20 @@ void NativeViewHostAuraWithClipWindow::UninstallClip() {
   clip_rect_.reset();
 }
 
+bool NativeViewHostAuraWithClipWindow::SetNativeViewClipRect(
+    const gfx::Rect& clip_rect) {
+  std::optional<gfx::Rect> new_clip =
+      clip_rect.IsEmpty() ? std::nullopt : std::make_optional(clip_rect);
+  if (external_clip_rect_ == new_clip) {
+    return false;
+  }
+  external_clip_rect_ = new_clip;
+  if (host_->native_view()) {
+    host_->native_view()->layer()->SetClipRect(clip_rect);
+  }
+  return true;
+}
+
 void NativeViewHostAuraWithClipWindow::ShowWidget(int x,
                                                   int y,
                                                   int w,
@@ -247,6 +263,11 @@ void NativeViewHostAuraWithClipWindow::ShowWidget(int x,
   }
 
   clipping_window_->SetBounds(clip_rect_ ? *clip_rect_ : gfx::Rect(x, y, w, h));
+  if (host_->native_view()) {
+    host_->native_view()->layer()->SetClipRect(
+        external_clip_rect_.value_or(gfx::Rect()));
+  }
+
   gfx::Point clip_offset = clipping_window_->bounds().origin();
   host_->native_view()->SetBounds(
       gfx::Rect(x - clip_offset.x(), y - clip_offset.y(), native_w, native_h));

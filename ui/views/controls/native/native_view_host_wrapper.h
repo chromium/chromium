@@ -71,6 +71,10 @@ class NativeViewHostWrapper {
   // adjusted its position.
   virtual void UninstallClip() = 0;
 
+  // Sets the external clip rect of the native view. Returns true if the clip
+  // rect changed.
+  virtual bool SetNativeViewClipRect(const gfx::Rect& clip_rect) = 0;
+
   // Shows the gfx::NativeView within the specified region (relative to the
   // parent native view) and with the given native size. The content will
   // appear scaled if the |native_w| or |native_h| are different from |w| or

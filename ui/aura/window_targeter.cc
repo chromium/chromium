@@ -46,6 +46,13 @@ bool WindowTargeter::GetHitTestRects(Window* window,
     hit_test_rect_touch->Inset(touch_extend_);
   }
 
+  if (window->layer() && !window->layer()->clip_rect().IsEmpty()) {
+    gfx::Rect clip = window->layer()->clip_rect();
+    clip.Offset(window->bounds().OffsetFromOrigin());
+    hit_test_rect_mouse->Intersect(clip);
+    hit_test_rect_touch->Intersect(clip);
+  }
+
   return true;
 }
 

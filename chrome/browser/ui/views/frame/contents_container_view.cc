@@ -449,13 +449,8 @@ void ContentsContainerView::SetRoundedCorners(
 }
 
 void ContentsContainerView::UpdateContentsClip() {
-  bool changed = false;
-  if (auto* const layer = contents_view_->holder()->GetUILayer()) {
-    if (layer->clip_rect() != contents_clip_rect_) {
-      layer->SetClipRect(contents_clip_rect_);
-      changed = true;
-    }
-  }
+  bool changed =
+      contents_view_->holder()->SetNativeViewClipRect(contents_clip_rect_);
   if (auto* const layer = contents_view_->layer()) {
     if (layer->clip_rect() != contents_clip_rect_) {
       layer->SetClipRect(contents_clip_rect_);

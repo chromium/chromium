@@ -45,6 +45,7 @@ class NativeViewHostAura : public NativeViewHostWrapper,
   void InstallClip(int x, int y, int w, int h) override;
   bool HasInstalledClip() override;
   void UninstallClip() override;
+  bool SetNativeViewClipRect(const gfx::Rect& clip_rect) override;
   void ShowWidget(int x, int y, int w, int h, int native_w, int native_h)
       override;
   void HideWidget() override;
@@ -67,8 +68,12 @@ class NativeViewHostAura : public NativeViewHostWrapper,
   // Sets or updates the |corner_radii_| on the native view's layer.
   void ApplyRoundedCorners();
 
-  // Updates the top insets of |clipping_window_|.
-  void UpdateInsets();
+  // Updates the clip on the native view's layer.
+  void UpdateLayerClip();
+
+  // Returns the actual clip rect to be applied, combining layout clip and top
+  // inset.
+  gfx::Rect GetActualClipRect() const;
 
   // Our associated NativeViewHost.
   raw_ptr<NativeViewHost> host_;
@@ -89,6 +94,9 @@ class NativeViewHostAura : public NativeViewHostWrapper,
 
   // True if a transform different from the original was set.
   bool original_transform_changed_ = false;
+
+  // The external clip rect of the native view.
+  std::optional<gfx::Rect> external_clip_rect_;
 
   // The top insets to exclude the underlying native view from the target.
   int top_inset_ = 0;

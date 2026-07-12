@@ -51,6 +51,7 @@ class NativeViewHostMac : public NativeViewHostWrapper,
   void InstallClip(int x, int y, int w, int h) override;
   bool HasInstalledClip() override;
   void UninstallClip() override;
+  bool SetNativeViewClipRect(const gfx::Rect& clip_rect) override;
   void ShowWidget(int x, int y, int w, int h, int native_w, int native_h)
       override;
   void HideWidget() override;

@@ -250,6 +250,18 @@ void NativeViewHostMac::UninstallClip() {
   NOTIMPLEMENTED();
 }
 
+bool NativeViewHostMac::SetNativeViewClipRect(const gfx::Rect& clip_rect) {
+  ui::Layer* layer = GetUILayer();
+  if (!layer) {
+    return false;
+  }
+  if (layer->clip_rect() == clip_rect) {
+    return false;
+  }
+  layer->SetClipRect(clip_rect);
+  return true;
+}
+
 void NativeViewHostMac::ShowWidget(int x,
                                    int y,
                                    int w,
