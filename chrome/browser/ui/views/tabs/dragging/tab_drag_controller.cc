@@ -2624,7 +2624,7 @@ std::optional<webapps::AppId> TabDragController::GetControllingAppForDrag(
     return std::nullopt;
   }
   const web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(browser->profile());
+      web_app::WebAppProvider::GetForWebApps(browser->GetProfile());
   const base::flat_map<webapps::AppId, std::string> all_controlling_apps =
       provider->registrar_unsafe().GetAllAppsControllingUrl(
           active_contents->GetLastCommittedURL());
@@ -2659,13 +2659,13 @@ Browser* TabDragController::CreateBrowserForDrag(TabDragContext* source,
   const bool open_as_web_app = controlling_app.has_value();
 
   Browser::CreateParams create_params =
-      open_as_web_app
-          ? Browser::CreateParams::CreateForApp(
-                web_app::GenerateApplicationNameFromAppId(
-                    controlling_app.value()),
-                /* trusted_source=*/true, gfx::Rect(), from_browser->profile(),
-                /* user_gesture=*/true)
-          : from_browser->create_params();
+      open_as_web_app ? Browser::CreateParams::CreateForApp(
+                            web_app::GenerateApplicationNameFromAppId(
+                                controlling_app.value()),
+                            /* trusted_source=*/true, gfx::Rect(),
+                            from_browser->GetProfile(),
+                            /* user_gesture=*/true)
+                      : from_browser->create_params();
 
   // Web app windows have their own initial size independent of the source
   // browser window.
@@ -2869,7 +2869,7 @@ bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
                          ->browser();
 
   // Profiles must be the same.
-  if (other_browser->profile() != browser->profile()) {
+  if (other_browser->GetProfile() != browser->GetProfile()) {
     return false;
   }
 
@@ -2924,13 +2924,13 @@ void TabDragController::MaybePauseTrackingSavedTabGroup() {
     return;
   }
 
-  const Browser* const browser =
-      BrowserView::GetBrowserViewForNativeWindow(
-          GetAttachedBrowserWidget()->GetNativeWindow())
-          ->browser();
+  Browser* const browser = BrowserView::GetBrowserViewForNativeWindow(
+                               GetAttachedBrowserWidget()->GetNativeWindow())
+                               ->browser();
 
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser->profile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser->GetProfile());
 
   if (!tab_group_service ||
       !tab_group_service->GetGroup(
@@ -2946,13 +2946,13 @@ void TabDragController::MaybeResumeTrackingSavedTabGroup() {
     return;
   }
 
-  const Browser* const browser =
-      BrowserView::GetBrowserViewForNativeWindow(
-          GetAttachedBrowserWidget()->GetNativeWindow())
-          ->browser();
+  Browser* const browser = BrowserView::GetBrowserViewForNativeWindow(
+                               GetAttachedBrowserWidget()->GetNativeWindow())
+                               ->browser();
 
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser->profile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser->GetProfile());
 
   if (!tab_group_service) {
     return;

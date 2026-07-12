@@ -27,7 +27,7 @@ class WindowSizerChromeOS : public WindowSizer {
   static const int kMaximumWindowWidth = 1100;
 
   WindowSizerChromeOS(std::unique_ptr<StateProvider> state_provider,
-                      const Browser* browser);
+                      Browser* browser);
   WindowSizerChromeOS(const WindowSizerChromeOS&) = delete;
   WindowSizerChromeOS& operator=(const WindowSizerChromeOS&) = delete;
   ~WindowSizerChromeOS() override;

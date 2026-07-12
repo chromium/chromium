@@ -47,7 +47,7 @@ class WindowSizerChromeOSTest : public ChromeAshTestBase {
   // TODO(mek): Refactor this to use a builder pattern similar to what
   // WindowSizerTestUtil does.
   enum Source { DEFAULT, LAST_ACTIVE, PERSISTED, BOTH };
-  void GetWindowBounds(const Browser* browser,
+  void GetWindowBounds(Browser* browser,
                        const gfx::Rect& passed_in,
                        int64_t display_id,
                        const gfx::Rect& bounds,
@@ -67,7 +67,7 @@ class WindowSizerChromeOSTest : public ChromeAshTestBase {
     WindowSizer::GetBrowserWindowBoundsAndShowState(
         std::move(state_provider), passed_in, browser, out_bounds, &ignored);
   }
-  void GetWindowBounds(const Browser* browser,
+  void GetWindowBounds(Browser* browser,
                        const gfx::Rect& passed_in,
                        int64_t display_id,
                        gfx::Rect* out_bounds = nullptr) {
@@ -83,7 +83,7 @@ class WindowSizerChromeOSTest : public ChromeAshTestBase {
       ui::mojom::WindowShowState show_state_persisted,
       ui::mojom::WindowShowState show_state_last,
       Source source,
-      const Browser* browser,
+      Browser* browser,
       const gfx::Rect& passed_in,
       gfx::Rect* out_bounds,
       ui::mojom::WindowShowState* out_show_state) {
@@ -106,7 +106,7 @@ class WindowSizerChromeOSTest : public ChromeAshTestBase {
       ui::mojom::WindowShowState show_state_persisted,
       ui::mojom::WindowShowState show_state_last,
       Source source,
-      const Browser* browser,
+      Browser* browser,
       const gfx::Rect& bounds,
       const gfx::Rect& work_area) {
     ui::mojom::WindowShowState out_show_state =

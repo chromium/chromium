@@ -406,7 +406,8 @@ class TabStatsTracker::TabStripInterface {
   content::WebContents* GetWebContentsAt(size_t index) const;
 
   // Returns the profile this tab strip is attached to.
-  Profile* GetProfile() const;
+  Profile* GetProfile();
+  const Profile* GetProfile() const;
 
   // Returns true if this tab strip is attached to a TYPE_NORMAL Browser.
   // Always returns true on Android.

@@ -65,7 +65,7 @@ void SaveWindowVisibleOnAllWorkspaces(Browser* browser,
 // Return the |bounds| for the browser window to be used upon creation.
 // The |show_state| variable will receive the desired initial show state for
 // the window.
-void GetSavedWindowBoundsAndShowState(const Browser* browser,
+void GetSavedWindowBoundsAndShowState(Browser* browser,
                                       gfx::Rect* bounds,
                                       ui::mojom::WindowShowState* show_state);
 

@@ -1164,7 +1164,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
   }
 
   void RestoreTabGroupMetadata(
-      const Browser* browser,
+      Browser* browser,
       const base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupId>&
           new_group_ids,
       const std::vector<std::unique_ptr<sessions::SessionTabGroup>>&
@@ -1174,7 +1174,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
     }
 
     SessionService* session_service =
-        SessionServiceFactory::GetForProfile(browser->profile());
+        SessionServiceFactory::GetForProfile(browser->GetProfile());
     CHECK(session_service);
 
     for (const std::unique_ptr<sessions::SessionTabGroup>& session_tab_group :
@@ -1197,7 +1197,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       browser->tab_strip_model()->ChangeTabGroupVisuals(
           new_tab_group_id, session_tab_group->visual_data);
 
-      ProcessSavedGroup(browser->profile(), new_tab_group_id,
+      ProcessSavedGroup(browser->GetProfile(), new_tab_group_id,
                         session_tab_group->saved_guid);
     }
   }
@@ -1387,7 +1387,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
     // be deleted. This is necessitated by browser destruction first hiding
     // the window, and then asynchronously deleting it.
     return browser_ && browser_->is_type_normal() &&
-           !browser_->profile()->IsOffTheRecord() &&
+           !browser_->GetProfile()->IsOffTheRecord() &&
            browser_->GetWindow()->IsVisible();
   }
 
@@ -1505,7 +1505,7 @@ Browser* SessionRestore::RestoreSession(
 
 // static
 void SessionRestore::RestoreSessionAfterCrash(Browser* browser) {
-  auto* profile = browser->profile();
+  auto* profile = browser->GetProfile();
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Desks restore a window to the right desk, so we should not reuse any

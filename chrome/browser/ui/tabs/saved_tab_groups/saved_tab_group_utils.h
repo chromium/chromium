@@ -61,7 +61,7 @@ class SavedTabGroupUtils {
                                 const base::Uuid& saved_group_guid);
   static void DeleteSavedGroup(Browser* browser,
                                const base::Uuid& saved_group_guid);
-  static void LeaveSharedGroup(const Browser* browser,
+  static void LeaveSharedGroup(Browser* browser,
                                const base::Uuid& saved_group_guid);
 
   // Open the `url` to the end of `browser` tab strip as a new ungrouped tab.

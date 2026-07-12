@@ -28,8 +28,16 @@ PreloadContext PreloadContext::From(Profile* profile) {
   return context;
 }
 
+Browser* PreloadContext::GetBrowser() {
+  return IsBrowser() ? std::get<Browser*>(store_) : nullptr;
+}
+
 const Browser* PreloadContext::GetBrowser() const {
   return IsBrowser() ? std::get<Browser*>(store_) : nullptr;
+}
+
+Profile* PreloadContext::GetProfile() {
+  return IsProfile() ? std::get<Profile*>(store_) : nullptr;
 }
 
 const Profile* PreloadContext::GetProfile() const {

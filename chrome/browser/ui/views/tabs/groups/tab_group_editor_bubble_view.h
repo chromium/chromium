@@ -228,7 +228,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   class Footer : public views::View {
     METADATA_HEADER(Footer, views::View)
    public:
-    explicit Footer(const Browser* browser_);
+    explicit Footer(Browser* browser_);
     ~Footer() override = default;
 
     static void OpenLearnMorePage(const Browser* browser_);

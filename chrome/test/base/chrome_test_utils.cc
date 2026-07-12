@@ -66,7 +66,7 @@ content::WebContents* GetWebContentsAt(const PlatformBrowserTest* browser_test,
 
 Profile* GetProfile(const PlatformBrowserTest* browser_test) {
 #if BUILDFLAG(IS_ANDROID)
-  for (const TabModel* model : TabModelList::models()) {
+  for (TabModel* model : TabModelList::models()) {
     if (model->IsActiveModel())
       return model->GetProfile();
   }

@@ -12,7 +12,7 @@ class Browser;
 class WindowSizerLinux : public WindowSizer {
  public:
   WindowSizerLinux(std::unique_ptr<StateProvider> state_provider,
-                   const Browser* browser);
+                   Browser* browser);
   WindowSizerLinux(const WindowSizerLinux&) = delete;
   WindowSizerLinux& operator=(const WindowSizerLinux&) = delete;
   ~WindowSizerLinux() override;

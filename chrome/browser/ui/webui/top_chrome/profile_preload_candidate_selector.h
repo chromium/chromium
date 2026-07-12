@@ -31,8 +31,7 @@ class ProfilePreloadCandidateSelector : public PreloadCandidateSelector {
 
   // PreloadCandidateSelector:
   void Init(const std::vector<GURL>& preloadable_urls) override;
-  std::optional<GURL> GetURLToPreload(
-      const PreloadContext& context) const override;
+  std::optional<GURL> GetURLToPreload(PreloadContext context) const override;
 
   void set_no_preload_if_most_engaged_url_is_background_for_testing(
       bool value) {

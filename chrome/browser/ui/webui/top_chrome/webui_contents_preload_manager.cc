@@ -80,7 +80,7 @@ class FixedCandidateSelector : public webui::PreloadCandidateSelector {
     DCHECK(std::ranges::contains(preloadable_urls, webui_url_));
   }
   std::optional<GURL> GetURLToPreload(
-      const webui::PreloadContext& context) const override {
+      webui::PreloadContext context) const override {
     return IsUrlExcludedByFlag(webui_url_) ? std::nullopt
                                            : std::make_optional(webui_url_);
   }

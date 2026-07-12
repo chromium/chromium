@@ -53,7 +53,11 @@ TabModel::TabModel(Profile* profile,
 
 TabModel::~TabModel() = default;
 
-Profile* TabModel::GetProfile() const {
+Profile* TabModel::GetProfile() {
+  return profile_;
+}
+
+const Profile* TabModel::GetProfile() const {
   return profile_;
 }
 

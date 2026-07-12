@@ -45,7 +45,7 @@ class MockPreloadCandidateSelector : public webui::PreloadCandidateSelector {
   MOCK_METHOD(void, Init, (const std::vector<GURL>&), (override));
   MOCK_METHOD(std::optional<GURL>,
               GetURLToPreload,
-              (const webui::PreloadContext&),
+              (webui::PreloadContext),
               (const, override));
 };
 

@@ -28,7 +28,7 @@ namespace web_app {
 enum class WebAppInstallFlow;
 
 // Returns whether a WebApp installation is allowed for the current page.
-bool CanCreateWebApp(const Browser* browser);
+bool CanCreateWebApp(Browser* browser);
 
 // Returns whether the current profile is allowed to pop out a web app into a
 // separate window. Does not check whether any particular page can pop out.

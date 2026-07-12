@@ -26,7 +26,7 @@ namespace {
 // first run will be maximized.
 constexpr int kForceMaximizeWidthLimit = 1366;
 
-bool ShouldForceMaximizeOnFirstRun(Profile* profile) {
+bool ShouldForceMaximizeOnFirstRun(const Profile* profile) {
   return profile->GetPrefs()->GetBoolean(prefs::kForceMaximizeOnFirstRun);
 }
 
@@ -34,7 +34,7 @@ bool ShouldForceMaximizeOnFirstRun(Profile* profile) {
 
 WindowSizerChromeOS::WindowSizerChromeOS(
     std::unique_ptr<StateProvider> state_provider,
-    const Browser* browser)
+    Browser* browser)
     : WindowSizer(std::move(state_provider), browser) {}
 
 WindowSizerChromeOS::~WindowSizerChromeOS() = default;
@@ -166,7 +166,7 @@ void WindowSizerChromeOS::GetTabbedBrowserBounds(
     display = display::Screen::Get()->GetDisplayMatching(*bounds_in_screen);
   } else if (GlobalBrowserCollection::GetInstance()->IsEmpty() &&
              !is_saved_bounds &&
-             (ShouldForceMaximizeOnFirstRun(browser()->profile()) ||
+             (ShouldForceMaximizeOnFirstRun(browser()->GetProfile()) ||
               (display.work_area().width() <= kForceMaximizeWidthLimit &&
                !command_line->HasSwitch(
                    switches::kDisableAutoMaximizeForTests)))) {

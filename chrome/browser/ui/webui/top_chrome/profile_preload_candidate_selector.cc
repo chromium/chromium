@@ -33,14 +33,14 @@ void ProfilePreloadCandidateSelector::Init(
 }
 
 std::optional<GURL> ProfilePreloadCandidateSelector::GetURLToPreload(
-    const PreloadContext& context) const {
+    PreloadContext context) const {
   if (preloadable_urls_.empty()) {
     return std::nullopt;
   }
 
   // Sanity check that the context is a Profile.
   CHECK(context.IsProfile());
-  Profile* profile = const_cast<Profile*>(context.GetProfile());
+  Profile* profile = context.GetProfile();
   SiteEngagementService* engagement_service =
       SiteEngagementService::Get(profile);
 

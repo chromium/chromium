@@ -35,9 +35,9 @@ gfx::Size GetWindowSize(Browser* browser) {
   return bounds.size();
 }
 
-void VerifyColorsForFrameType(const Browser* browser, bool use_custom_frame) {
+void VerifyColorsForFrameType(Browser* browser, bool use_custom_frame) {
   ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(browser->profile());
+      ThemeServiceFactory::GetForProfile(browser->GetProfile());
   EXPECT_EQ(use_custom_frame, theme_service->ShouldUseCustomFrame());
 
   ui::ColorProviderManager::ResetForTesting();

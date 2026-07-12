@@ -145,7 +145,7 @@ void SaveWindowVisibleOnAllWorkspaces(Browser* browser,
   }
 }
 
-void GetSavedWindowBoundsAndShowState(const Browser* browser,
+void GetSavedWindowBoundsAndShowState(Browser* browser,
                                       gfx::Rect* bounds,
                                       ui::mojom::WindowShowState* show_state) {
   DCHECK(browser);

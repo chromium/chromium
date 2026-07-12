@@ -156,7 +156,7 @@ void PushMessagingNotificationManager::DidCountVisibleNotifications(
 
   // Sites with a currently visible tab don't need to show notifications.
 #if BUILDFLAG(IS_ANDROID)
-  for (const TabModel* model : TabModelList::models()) {
+  for (TabModel* model : TabModelList::models()) {
     Profile* profile = model->GetProfile();
     if (IsTabVisible(profile, model->GetActiveWebContents(), origin)) {
       notification_needed = false;

@@ -25,7 +25,9 @@ class PreloadContext {
   static PreloadContext From(Browser* browser);
   static PreloadContext From(Profile* profile);
 
+  Browser* GetBrowser();
   const Browser* GetBrowser() const;
+  Profile* GetProfile();
   const Profile* GetProfile() const;
 
   bool IsBrowser() const;
