@@ -30,6 +30,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -569,6 +570,11 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
                        ResetStateAfterBrowserNavigation) {
   CreateIframePage("a()");
+  // Focus is preserved across BFCache pagehide, so the cached page's <input>
+  // would still report TEXT_INPUT_TYPE_TEXT after navigation. This test
+  // exercises the cross-renderer reset path, so disable BFCache.
+  content::DisableBackForwardCacheForTesting(
+      active_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   content::RenderFrameHost* main_frame = GetFrame(IndexVector{});
   AddInputFieldToFrame(main_frame, "text", "", false);
 

@@ -1415,6 +1415,22 @@ void RenderWidgetHostImpl::Blur() {
   if (!focused_widget) {
     focused_widget = this;
   }
+  // `GetRenderWidgetHostWithPageFocus()` always returns a main frame's widget.
+  // If this widget is itself a main frame widget (it has an `owner_delegate_`)
+  // but page focus is held by a *different* main frame in the *same* FrameTree,
+  // then this is an outgoing page being swapped out for another page in the
+  // same tab, e.g. while restoring a page from the back-forward cache. Hiding
+  // the outgoing view can route a page-level blur to the page that just gained
+  // focus; forwarding it would spuriously toggle that page's focus and fire
+  // blur/focus events on its focused element, even though a BFCached page's
+  // focused area must be preserved. Skip the blur in that case. Note this is
+  // restricted to the same FrameTree so that legitimate cross-WebContents focus
+  // changes (e.g. focusing the omnibox while an inner page is focused) still
+  // propagate the blur.
+  if (owner_delegate_ && focused_widget != this &&
+      focused_widget->frame_tree() == frame_tree_) {
+    return;
+  }
   focused_widget->SetPageFocus(false);
 }
 

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "content/browser/site_instance_group.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/site_instance.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
@@ -89,6 +90,16 @@ class StoredPage : public SiteInstanceGroup::Observer {
       std::optional<blink::ViewTransitionState> view_transition_state);
   std::optional<blink::ViewTransitionState> TakeViewTransitionState();
 
+  // The frame that was focused within this page when it was stored, so that the
+  // focused frame can be restored on activation (e.g. for back-forward cache).
+  // Invalid if no frame in this page was focused.
+  void set_focused_frame_tree_node_id(FrameTreeNodeId id) {
+    focused_frame_tree_node_id_ = id;
+  }
+  FrameTreeNodeId focused_frame_tree_node_id() const {
+    return focused_frame_tree_node_id_;
+  }
+
  private:
   void ClearAllObservers();
 
@@ -124,6 +135,10 @@ class StoredPage : public SiteInstanceGroup::Observer {
   // View transition state to use when the page is activated, either via BFCache
   // activation or prerender activation.
   std::optional<blink::ViewTransitionState> view_transition_state_;
+
+  // The frame focused within this page when it was stored. See the accessors
+  // above.
+  FrameTreeNodeId focused_frame_tree_node_id_;
 };
 
 }  // namespace content

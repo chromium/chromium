@@ -1236,7 +1236,7 @@ void RenderFrameHostManager::DidChangeOpener(
 std::unique_ptr<StoredPage> RenderFrameHostManager::TakePrerenderedPage() {
   CHECK(frame_tree_node_->IsMainFrame());
   auto main_render_frame_host = SetRenderFrameHost(nullptr);
-  return CollectPage(std::move(main_render_frame_host));
+  return CollectPage(std::move(main_render_frame_host), FrameTreeNodeId());
 }
 
 void RenderFrameHostManager::PrepareForCollectingPage(
@@ -1314,7 +1314,8 @@ void RenderFrameHostManager::PrepareForCollectingPage(
 }
 
 std::unique_ptr<StoredPage> RenderFrameHostManager::CollectPage(
-    std::unique_ptr<RenderFrameHostImpl> main_render_frame_host) {
+    std::unique_ptr<RenderFrameHostImpl> main_render_frame_host,
+    FrameTreeNodeId focused_frame_tree_node_id) {
   CHECK(main_render_frame_host->is_main_frame());
 
   StoredPage::RenderViewHostImplSafeRefSet render_view_hosts;
@@ -1326,6 +1327,7 @@ std::unique_ptr<StoredPage> RenderFrameHostManager::CollectPage(
   auto stored_page = std::make_unique<StoredPage>(
       std::move(main_render_frame_host), std::move(proxy_hosts),
       std::move(render_view_hosts));
+  stored_page->set_focused_frame_tree_node_id(focused_frame_tree_node_id);
   return stored_page;
 }
 
@@ -1355,7 +1357,8 @@ void RenderFrameHostManager::UnloadOldFrame(
     std::unique_ptr<RenderFrameHostImpl> old_render_frame_host,
     const ViewTransitionCommitInfo& view_transition_commit_info,
     const base::optional_ref<const GURL> navigation_request_url,
-    bool is_backward_navigation) {
+    bool is_backward_navigation,
+    FrameTreeNodeId focused_frame_tree_node_id) {
   TRACE_EVENT1("navigation", "RenderFrameHostManager::UnloadOldFrame",
                "FrameTreeNode id", frame_tree_node_->frame_tree_node_id());
 
@@ -1447,7 +1450,8 @@ void RenderFrameHostManager::UnloadOldFrame(
         base::debug::DumpWithoutCrashing();
       }
 
-      auto stored_page = CollectPage(std::move(old_render_frame_host));
+      auto stored_page = CollectPage(std::move(old_render_frame_host),
+                                     focused_frame_tree_node_id);
       auto entry =
           std::make_unique<BackForwardCacheImpl::Entry>(std::move(stored_page));
       // Ensures RenderViewHosts are not reused while they are in the cache.
@@ -5259,6 +5263,21 @@ void RenderFrameHostManager::CommitPending(
       old_view && old_view->HasFocus() &&
       render_frame_host_->GetMainFrame()->GetRenderWidgetHost()->is_focused();
 
+  // Remember which frame within the outgoing page is focused before the swap
+  // moves focus to the new page, so that the focused frame can be restored if
+  // the outgoing page is stored in the back-forward cache. This is passed down
+  // to UnloadOldFrame() (and ultimately CollectPage()), which runs
+  // synchronously below, so it can travel with the page into the cache. This is
+  // recorded regardless of whether the page widget is focused, since
+  // element-level focus within the frame is preserved either way.
+  FrameTreeNodeId focused_frame_tree_node_id;
+  if (is_main_frame) {
+    if (FrameTreeNode* focused_frame =
+            frame_tree_node_->frame_tree().GetFocusedFrame()) {
+      focused_frame_tree_node_id = focused_frame->frame_tree_node_id();
+    }
+  }
+
   // Remove the current frame and its descendants from the set of fullscreen
   // frames immediately. They can stay in pending deletion for some time.
   // Removing them when they are deleted is too late.
@@ -5487,6 +5506,27 @@ void RenderFrameHostManager::CommitPending(
     }
   }
 
+  // When restoring a page from the back-forward cache, restore the frame that
+  // was focused within the page. Committing the navigation focuses the new
+  // page's main frame, but BFCache preserves the focused element in the
+  // renderer, so re-point the browser's focused frame at the previously focused
+  // subframe to keep the browser and renderer in sync. This is done regardless
+  // of whether the page widget is focused, since the per-page focused-frame
+  // tracking is independent of page-level focus.
+  if (pending_stored_page &&
+      pending_stored_page->focused_frame_tree_node_id()) {
+    FrameTreeNode* restored_focused_frame =
+        frame_tree_node_->frame_tree().FindByID(
+            pending_stored_page->focused_frame_tree_node_id());
+    if (restored_focused_frame && !restored_focused_frame->IsMainFrame() &&
+        restored_focused_frame->current_frame_host()->IsActive()) {
+      frame_tree_node_->frame_tree().SetFocusedFrame(
+          restored_focused_frame, restored_focused_frame->current_frame_host()
+                                      ->GetSiteInstance()
+                                      ->group());
+    }
+  }
+
   // Notify that we have no `old_view` from which to TakeFallbackContentFrom.
   // This will clear the current Fallback Surface, which would be from a
   // previous Navigation. This way we do not display old content if this new
@@ -5565,7 +5605,8 @@ void RenderFrameHostManager::CommitPending(
   // This will unload it and schedule it for deletion when the unload ack
   // arrives (or immediately if the process isn't live).
   UnloadOldFrame(std::move(old_render_frame_host), view_transition_commit_info,
-                 navigation_request_url, is_backward_navigation);
+                 navigation_request_url, is_backward_navigation,
+                 focused_frame_tree_node_id);
 
   // Since the new RenderFrameHost is now committed, there must be no proxies
   // for its SiteInstance. Delete any existing ones.

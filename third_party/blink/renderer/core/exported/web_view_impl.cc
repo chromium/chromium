@@ -2586,7 +2586,20 @@ void WebViewImpl::SetPageLifecycleStateInternal(
       new_state->eviction_enabled != old_state->eviction_enabled;
 
   if (dispatching_pagehide) {
-    RemoveFocusAndTextInputState();
+    // `pagehide_dispatch` tells us whether this page is being stored in
+    // BFCache: `kDispatchedPersisted` means the page is frozen and kept in
+    // BFCache, while `kDispatchedNotPersisted` means the page is being
+    // discarded as part of a normal navigation away (not stored in BFCache).
+    //
+    // For a discarded (non-persisted) page, clear DOM focus as well as the
+    // browser-side text input state. For a BFCache (persisted) page, keep DOM
+    // focus so it can be restored on page restore, but still clear the cached
+    // text input state so it is sent again on restore, after the browser has
+    // stopped treating this frozen page as the active IME target.
+    const bool clear_focus =
+        new_state->pagehide_dispatch !=
+        mojom::blink::PagehideDispatch::kDispatchedPersisted;
+    RemoveFocusAndTextInputState(clear_focus);
   }
   if (dispatching_pagehide) {
     // Note that |dispatching_pagehide| is different than |hiding_page|.
@@ -2777,22 +2790,32 @@ void WebViewImpl::AudioStateChanged(bool is_audio_playing) {
   GetPage()->GetPageScheduler()->AudioStateChanged(is_audio_playing);
 }
 
-void WebViewImpl::RemoveFocusAndTextInputState() {
+void WebViewImpl::RemoveFocusAndTextInputState(bool clear_focus) {
   auto& focus_controller = GetPage()->GetFocusController();
   auto* focused_frame = focus_controller.FocusedFrame();
   if (!focused_frame) {
     return;
   }
-  // Remove focus from the currently focused element and frame.
-  focus_controller.SetFocusedElement(nullptr, nullptr);
+  if (clear_focus) {
+    // Remove focus from the currently focused element and frame.
+    focus_controller.SetFocusedElement(nullptr, nullptr);
+  }
   // Clear composing state, and make sure we send a TextInputState update.
-  // Note that the TextInputState itself is cleared when we clear the focus,
-  // but no updates to the browser will be triggered until the next animation
-  // frame, which won't happen if we're freezing the page.
+  // When we clear focus, the text input state itself is cleared too, but no
+  // updates to the browser will be triggered until the next animation frame,
+  // which won't happen if we're freezing the page.
   if (auto* widget = static_cast<WebFrameWidgetImpl*>(
           focused_frame->GetWidgetForLocalRoot())) {
     widget->FinishComposingText(false /* keep_selection */);
-    widget->UpdateTextInputState();
+    if (clear_focus) {
+      widget->UpdateTextInputState();
+    } else {
+      // When freezing for BFCache, send a synchronous clear instead of
+      // UpdateTextInputState(), whose async IPC could race with
+      // TextInputManager::DidEnterBackForwardCache and re-mark this frozen
+      // page as the active IME target.
+      widget->ClearTextInputState();
+    }
   }
 }
 

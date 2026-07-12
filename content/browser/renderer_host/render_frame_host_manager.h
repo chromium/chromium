@@ -1168,7 +1168,8 @@ class CONTENT_EXPORT RenderFrameHostManager {
       std::unique_ptr<RenderFrameHostImpl> old_render_frame_host,
       const ViewTransitionCommitInfo& view_transition_commit_info,
       const base::optional_ref<const GURL> navigation_request_url,
-      bool is_backward_navigation);
+      bool is_backward_navigation,
+      FrameTreeNodeId focused_frame_tree_node_id);
 
   // Discards a RenderFrameHost that was never made active (for active ones
   // UnloadOldFrame is used instead).
@@ -1213,7 +1214,8 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // RenderFrameProxyHosts) into a StoredPage object to be
   // stored in back-forward cache or to activate the prerenderer.
   std::unique_ptr<StoredPage> CollectPage(
-      std::unique_ptr<RenderFrameHostImpl> main_render_frame_host);
+      std::unique_ptr<RenderFrameHostImpl> main_render_frame_host,
+      FrameTreeNodeId focused_frame_tree_node_id);
 
   // Update `render_frame_host`'s opener in the renderer process in response to
   // the opener being modified (e.g., with window.open or being set to null) in

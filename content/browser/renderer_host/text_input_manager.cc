@@ -450,6 +450,18 @@ void TextInputManager::Register(RenderWidgetHostViewBase* view) {
   text_selection_map_[view] = TextSelection();
 }
 
+void TextInputManager::DidEnterBackForwardCache(
+    RenderWidgetHostViewBase* view) {
+  if (!IsRegistered(view) || active_view_ != view) {
+    return;
+  }
+  // The view remains registered and its cached state is preserved across
+  // BFCache, but it is no longer the active text-input target while the page is
+  // frozen.
+  active_view_ = nullptr;
+  NotifyObserversAboutInputStateUpdate(view, true);
+}
+
 void TextInputManager::Unregister(RenderWidgetHostViewBase* view) {
   CHECK(IsRegistered(view), base::NotFatalUntil::M153);
 

@@ -1874,34 +1874,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   }
 
   {
-    // 5) Navigating back to |url_1|, we shouldn't restore the focus to the
-    // text input, but |rfh_1| will be focused again as we will restore focus
-    // to main frame after navigation.
+    // 5) Navigating back to |url_1|, the focus on the <input> is preserved
+    // across BFCache, so no blur event should have been fired and the input
+    // should still be the active element.
     ASSERT_TRUE(HistoryGoBack(web_contents()));
 
     EXPECT_EQ(rfh_1, web_contents()->GetFocusedFrame());
     EXPECT_EQ(EvalJs(rfh_1, "focusCount").ExtractInt(), 1);
-    EXPECT_EQ(EvalJs(rfh_1, "blurCount").ExtractInt(), 1);
-  }
-
-  {
-    TextInputManagerTypeObserver type_observer(web_contents(),
-                                               ui::TEXT_INPUT_TYPE_TEXT);
-    TextInputManagerValueObserver value_observer(web_contents(), "A");
-    // 6) Press tab key to focus the <input> again. Note that we need to press
-    // the tab key twice here, because the last "tab focus" point was the
-    // <input> element. The first tab key press would focus on the UI/url bar,
-    // then the second tab key would go back to the <input>.
-    SimulateKeyPress(web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
-                     ui::VKEY_TAB, false, false, false, false);
-    SimulateKeyPress(web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
-                     ui::VKEY_TAB, false, false, false, false);
-    type_observer.Wait();
-    value_observer.Wait();
-
-    EXPECT_EQ(rfh_1, web_contents()->GetFocusedFrame());
-    EXPECT_EQ(EvalJs(rfh_1, "focusCount").ExtractInt(), 2);
-    EXPECT_EQ(EvalJs(rfh_1, "blurCount").ExtractInt(), 1);
+    EXPECT_EQ(EvalJs(rfh_1, "blurCount").ExtractInt(), 0);
+    EXPECT_TRUE(
+        EvalJs(rfh_1, "document.activeElement === input").ExtractBool());
   }
 }
 
@@ -1979,29 +1961,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   }
 
   {
-    // 5) Navigating back to |url_1|, we shouldn't restore the focus to the
-    // text input in the subframe (we will focus on the main frame |rfh_a|
-    // instead).
+    // 5) Navigating back to |url_1|, the focus on the subframe <input> is
+    // preserved across BFCache, so no blur event should have been fired and
+    // the subframe should be the focused frame.
     ASSERT_TRUE(HistoryGoBack(web_contents()));
 
-    EXPECT_EQ(rfh_a, web_contents()->GetFocusedFrame());
-    EXPECT_EQ(EvalJs(rfh_subframe_a, "focusCount").ExtractInt(), 1);
-    EXPECT_EQ(EvalJs(rfh_subframe_a, "blurCount").ExtractInt(), 1);
-  }
-
-  {
-    TextInputManagerTypeObserver type_observer(web_contents(),
-                                               ui::TEXT_INPUT_TYPE_TEXT);
-    TextInputManagerValueObserver value_observer(web_contents(), "A");
-    // 6) Press tab key to focus the <input> again.
-    SimulateKeyPress(web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
-                     ui::VKEY_TAB, false, false, false, false);
-    type_observer.Wait();
-    value_observer.Wait();
-
     EXPECT_EQ(rfh_subframe_a, web_contents()->GetFocusedFrame());
-    EXPECT_EQ(EvalJs(rfh_subframe_a, "focusCount").ExtractInt(), 2);
-    EXPECT_EQ(EvalJs(rfh_subframe_a, "blurCount").ExtractInt(), 1);
+    EXPECT_EQ(EvalJs(rfh_subframe_a, "focusCount").ExtractInt(), 1);
+    EXPECT_EQ(EvalJs(rfh_subframe_a, "blurCount").ExtractInt(), 0);
+    EXPECT_TRUE(EvalJs(rfh_subframe_a, "document.activeElement === input")
+                    .ExtractBool());
   }
 }
 

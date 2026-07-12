@@ -276,6 +276,11 @@ class CONTENT_EXPORT TextInputManager {
   // should be reset to none.
   void Unregister(RenderWidgetHostViewBase* view);
 
+  // Called when |view|'s document enters the back-forward cache. If |view| is
+  // the currently active view, the active view is cleared while the view
+  // remains registered, so its cached state can be reused on restore.
+  void DidEnterBackForwardCache(RenderWidgetHostViewBase* view);
+
   // Returns true if |view| is already registered.
   bool IsRegistered(RenderWidgetHostViewBase* view) const;
 
