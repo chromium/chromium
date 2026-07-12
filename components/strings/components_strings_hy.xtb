@@ -1636,7 +1636,7 @@
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Էկրան (էջակալված)</translation>
 <translation id="3541016556608204104">Ավելին Chrome Enterprise Connectors-ի մասին</translation>
-<translation id="3542005451565251757">Դուք տեսնում եք այս նախազգուշացումը, քանի որ այս կայքը չի աջակցում HTTPS-ը, իսկ դուք Android-ի կարգավորումներում միացրել եք Լրացուցիչ պաշտպանության ծրագիրը։ <ph name="LEARN_MORE" /></translation>
+<translation id="3542005451565251757">Դուք տեսնում եք այս նախազգուշացումը, քանի որ այս կայքը չի աջակցում HTTPS հաղորդակարգը, իսկ դուք Android-ի կարգավորումներում միացրել եք Լրացուցիչ պաշտպանության ծրագիրը։ <ph name="LEARN_MORE" /></translation>
 <translation id="3542628208405253498">Քարտի պատկեր</translation>
 <translation id="3542768452570884558">Բացել հղումը նոր պատուհանում</translation>
 <translation id="3543597750097719865">X9.62 ECDSA ստորագրություն SHA-512-ով</translation>
@@ -3682,7 +3682,7 @@
 <translation id="6689271823431384964">Chrome-ն առաջարկում է պահել քարտերը ձեր Google հաշվում, քանի որ դուք մտել եք հաշիվ: Այս գործառույթը կարող եք փոխել կարգավորումներում։ Քարտապանի անունը վերցվել է ձեր հաշվից:</translation>
 <translation id="6690688090329768424">«<ph name="PROXY_INVALID_DESTINATION" />» պարամետրը վավեր նպատակակետի ձևանմուշ չէ։</translation>
 <translation id="6691397311652656001">Ազատեք ավելի քան <ph name="REQUIRED_FREE_DISK_SPACE" /> տարածք</translation>
-<translation id="6692006953064648573">Դուք տեսնում եք այս նախազգուշացումը, քանի որ այս կայքը չի աջակցում HTTPS-ը, իսկ ձեզ մոտ միացված է Google-ի Լրացուցիչ պաշտպանության ծրագիրը։ <ph name="LEARN_MORE" /></translation>
+<translation id="6692006953064648573">Դուք տեսնում եք այս նախազգուշացումը, քանի որ այս կայքը չի աջակցում HTTPS հաղորդակարգը, իսկ ձեզ մոտ միացված է Google-ի Լրացուցիչ պաշտպանության ծրագիրը։ <ph name="LEARN_MORE" /></translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Google հաշվում «Գտնել իմ սարքը» բաժինը բացելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="6695428916538794739">Էքշն և արկածային ֆիլմեր</translation>
 <translation id="6696424331653607346">Տուրիստական ուղեցույցներ և գրականություն</translation>
@@ -4074,7 +4074,7 @@
 <translation id="7310392214323165548">Սարքը շուտով կվերագործարկվի</translation>
 <translation id="7311244614769792472">Ոչինչ չի գտնվել</translation>
 <translation id="7313107491291103073">Ձեր կազմակերպությունը նշել է այս կայքը, քանի որ այն հավանաբար խախտում է կանոնները։</translation>
-<translation id="7313260329718515829">Gemini-ի միջոցով Personal Intelligence-ին ուղարկված հարցումները վերլուծվում են ինքնալրացումը բարելավելու համար</translation>
+<translation id="7313260329718515829">Gemini-ի միջոցով Personal Intelligence-ին ուղարկված հարցումները վերլուծվում են՝ ինքնալրացումը բարելավելու համար</translation>
 <translation id="7316521168101843192">Ֆայլը պահվում է Microsoft OneDrive-ում</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Օգնություն կապի խնդիրների դեպքում</translation>
@@ -4524,7 +4524,7 @@
 <translation id="7966803981046576691">Առաջադրանքի հաշվի տեսակը</translation>
 <translation id="7967477318370169806">Համատեղ ներդրումային հիմնադրամներ</translation>
 <translation id="7967636097426665267">Կապի միջոցներ</translation>
-<translation id="7967973398323409409">Ձեր ինքնալրացվող տեղեկությունները երբեք տեսանելի չեն լինում որևէ մեկի</translation>
+<translation id="7967973398323409409">Ձեր ինքնալրացվող տեղեկությունները երբեք տեսանելի չեն որևէ մեկի</translation>
 <translation id="79682505114836835">«<ph name="VALUE" />» արժեքը անվավեր HEX գույն է։</translation>
 <translation id="7968982339740310781">Դիտել մանրամասները</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384՝ RSA գաղտնագրումով</translation>
