@@ -397,7 +397,7 @@ if (!is_android) {
         sources += [
           # TODO(crbug.com/40659953): Re-enable this test when history backend
           # failures are addressed.
-          "omnibox_view_browsertest.cc",
+          "omnibox_view_interactive_uitest.cc",
         ]
         deps += [
           ":omnibox",
