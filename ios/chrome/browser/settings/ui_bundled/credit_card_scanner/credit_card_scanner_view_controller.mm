@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_view_controller.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanned_image_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_camera_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_view.h"
@@ -67,6 +69,28 @@ NSString* const kCreditCardScannerViewID = @"kCreditCardScannerViewID";
 - (CameraController*)buildCameraController {
   return [[CreditCardScannerCameraController alloc]
       initWithCreditCardScannerDelegate:self];
+}
+
+- (void)dismissForReason:(scannerViewController::DismissalReason)reason
+          withCompletion:(void (^)(void))completion {
+  switch (reason) {
+    case scannerViewController::CLOSE_BUTTON:
+      base::RecordAction(
+          base::UserMetricsAction("IOS.CreditCardScanner.DismissedByUser"));
+      break;
+    case scannerViewController::ERROR_DIALOG:
+      base::RecordAction(
+          base::UserMetricsAction("IOS.CreditCardScanner.Error"));
+      break;
+    case scannerViewController::SCAN_COMPLETE:
+      base::RecordAction(
+          base::UserMetricsAction("IOS.CreditCardScanner.ScannedCard"));
+      break;
+    case scannerViewController::IMPOSSIBLY_UNLIKELY_AUTHORIZATION_CHANGE:
+      break;
+  }
+
+  [super dismissForReason:reason withCompletion:completion];
 }
 
 #pragma mark - CreditCardScannerCameraControllerDelegate

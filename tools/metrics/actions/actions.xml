@@ -18825,6 +18825,34 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.CreditCardScanner.DismissedByUser">
+  <owner>yiwenqian@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <description>
+    User closed the Credit Card Scanner without scanning a credit card. iOS
+    only.
+  </description>
+</action>
+
+<action name="IOS.CreditCardScanner.Error">
+  <owner>yiwenqian@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <description>
+    User closed the Credit Card Scanner from an error dialog. iOS only.
+  </description>
+</action>
+
+<action name="IOS.CreditCardScanner.ScannedCard">
+  <owner>yiwenqian@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <description>
+    User scanned a credit card using the Credit Card Scanner. iOS only.
+  </description>
+</action>
+
 <action name="IOS.DefaultBrowserFullscreenPromo.Cancel">
   <owner>gayane@chromium.org</owner>
   <owner>bling-pandamonium@google.com</owner>
