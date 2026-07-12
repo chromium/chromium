@@ -29,6 +29,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/immersive:immersive_mode_controller",
     "//chrome/browser/ui/interaction",
+    "//chrome/browser/ui/views/interaction",
     "//ui/views",
   ]
 }

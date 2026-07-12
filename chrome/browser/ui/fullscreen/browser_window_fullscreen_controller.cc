@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -19,22 +20,12 @@ DEFINE_USER_DATA(BrowserWindowFullscreenController);
 namespace {
 
 const BrowserFrameView* GetBrowserFrameView(BrowserWindowInterface* browser) {
-  auto* browser_elements = BrowserElements::From(browser);
-  if (!browser_elements) {
+  auto* browser_elements = BrowserElementsViews::From(browser);
+  if (!browser_elements || !browser_elements->GetContext()) {
     return nullptr;
   }
-
-  const ui::TrackedElement* element =
-      browser_elements->GetElement(kBrowserFrameElementId);
-  if (!element) {
-    return nullptr;
-  }
-
-  const views::TrackedElementViews* element_views =
-      element->AsA<views::TrackedElementViews>();
-  return element_views
-             ? views::AsViewClass<BrowserFrameView>(element_views->view())
-             : nullptr;
+  return browser_elements->GetViewAs<BrowserFrameView>(
+      kBrowserFrameElementId, /*require_visible=*/false);
 }
 
 }  // namespace
