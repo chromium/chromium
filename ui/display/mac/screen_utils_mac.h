@@ -16,6 +16,8 @@ namespace display {
 // Unlike NSScreen APIs, this is safe to call from non-browser helper processes
 // (such as the GPU process) because it does not require an initialized
 // NSApplication instance.
+// Warning: Get refresh rate from CoreGraphics can take 1 ms in a very fast
+// MacbookPro. It will take much longer on a slow or busy devices.
 base::TimeDelta GetCGRefreshInterval(CGDirectDisplayID display_id);
 
 // Only call the following NSScreen utility functions in the Browser process,

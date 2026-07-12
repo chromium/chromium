@@ -525,16 +525,19 @@ scoped_refptr<ui::DisplayLinkMac> ExternalBeginFrameSourceMac::GetForDisplay(
 }
 
 base::TimeDelta ExternalBeginFrameSourceMac::GetMinimumFrameInterval() {
+  if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
+    // Calling CoreGraphics to get the refresh rate is expensive, so we return
+    // the last known or default refresh interval instead. If the refresh rate
+    // has changed, OnDisplayLinkCallback() will receive the updated interval
+    // and invoke update_vsync_params_callback_ to update FrameIntervalDecider.
+    return min_refresh_interval_;
+  }
+
   if (display_link_mac_) {
     min_refresh_interval_ = display_link_mac_->GetRefreshInterval();
   } else {
     // If no display link is active, fall back to a timer-based interval.
-    if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
-      min_refresh_interval_ =
-          ui::DisplayLinkMac::GetScreenDefaultRefreshInterval(display_id_);
-    } else {
-      min_refresh_interval_ = BeginFrameArgs::DefaultInterval();
-    }
+    min_refresh_interval_ = BeginFrameArgs::DefaultInterval();
   }
 
   return min_refresh_interval_;
@@ -572,9 +575,6 @@ ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
 
   // For displays with fixed refresh rates, try to emulate lower rate
   // options (2^n sub-multiples) by skipping VSyncs.
-  if (!ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
-    min_refresh_interval_ = GetMinimumFrameInterval();
-  }
   base::TimeDelta interval = min_refresh_interval_;
   while (interval <= kMaxSupportedFrameInterval) {
     VLOG(kOutputLevel) << interval;
