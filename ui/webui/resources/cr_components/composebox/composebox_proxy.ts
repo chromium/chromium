@@ -50,6 +50,12 @@ export interface ComposeboxProxy {
   callbackRouter: PageCallbackRouter;
   searchboxHandler: SearchboxPageHandlerRemote;
   searchboxCallbackRouter: SearchboxPageCallbackRouter;
+
+  // <if expr="not is_android">
+  getSmartTabSharingActive(): Promise<{active: boolean}>;
+  setSmartTabSharingActive(active: boolean): void;
+  observeSmartTabSharingActive(callback: (active: boolean) => void): number;
+  // </if>
 }
 
 export class ComposeboxProxyImpl implements ComposeboxProxy {
@@ -66,6 +72,21 @@ export class ComposeboxProxyImpl implements ComposeboxProxy {
     this.searchboxHandler = searchboxHandler;
     this.searchboxCallbackRouter = searchboxCallbackRouter;
   }
+
+  // <if expr="not is_android">
+  getSmartTabSharingActive(): Promise<{active: boolean}> {
+    return this.searchboxHandler.getSmartTabSharingActive();
+  }
+
+  setSmartTabSharingActive(active: boolean): void {
+    this.searchboxHandler.setSmartTabSharingActive(active);
+  }
+
+  observeSmartTabSharingActive(callback: (active: boolean) => void): number {
+    return this.searchboxCallbackRouter.updateSmartTabSharingActive.addListener(
+        callback);
+  }
+  // </if>
 
   static getInstance(): ComposeboxProxyImpl {
     if (instance) {

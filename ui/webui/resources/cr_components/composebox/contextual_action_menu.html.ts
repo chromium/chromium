@@ -62,6 +62,7 @@ export function getHtml(this: ContextualActionMenuElement) {
                       aria-checked="false"
                       ?hidden="${!this.shareTabsFlyoutOpen}"
                       @click="${this.onSmartTabSharingItemClick_}">
+                    <cr-icon icon="composebox:screensaverAuto"></cr-icon>
                     <span class="tab-title">
                       ${this.i18n('stsMegaplusShareRelevantOpenTabs')}</span>
                   </button>

@@ -10,7 +10,7 @@ import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/searchbox/searchbox_input.js';
 
 import type {ComposeboxState, ContextualUpload, DriveUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
-import {ContextType, GlifAnimationState, recordContextAdditionMethod, recordContextualElementClickedMetric, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, TabSuggestionsState} from '//resources/cr_components/composebox/common.js';
+import {ContextType, getLoadTimeBoolean, GlifAnimationState, recordContextAdditionMethod, recordContextualElementClickedMetric, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, TabSuggestionsState} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
@@ -202,10 +202,15 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       hasUserInput_: {type: Boolean},
       ntpRealboxDynamicAiModeButtonEnabled_: {type: Boolean},
       contextManagementInComposeboxEnabled: {type: Boolean},
+      smartTabSharingVisible: {type: Boolean},
+      smartTabSharingActive: {type: Boolean},
     };
   }
 
   accessor ntpRealboxNextEnabled: boolean = false;
+  accessor smartTabSharingVisible: boolean =
+      getLoadTimeBoolean('composeboxSmartTabSharingVisible', false);
+  accessor smartTabSharingActive: boolean = false;
   accessor energyEffectAnimationEnabled: boolean = false;
   accessor composeboxEnabled: boolean = false;
   accessor composeButtonEnabled: boolean = false;
@@ -298,6 +303,11 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     if (this.inputState_) {
       this.inputState_.activeModel = ModelMode.kUnspecified;
     }
+
+    // <if expr="not is_android">
+    this.smartTabSharingActive =
+        (await this.pageHandler().getSmartTabSharingActive()).active;
+    // </if>
   }
 
   override disconnectedCallback() {
@@ -531,6 +541,17 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
         e.detail.files, ComposeboxContextAddedMethod.CONTEXT_MENU);
   }
 
+  protected onSmartTabSharingActiveChanged_(
+      _e: CustomEvent<{active: boolean}>) {
+    // <if expr="not is_android">
+    this.smartTabSharingActive = _e.detail.active;
+    this.pageHandler().setSmartTabSharingActive(_e.detail.active);
+    if (_e.detail.active) {
+      this.openComposebox_();
+    }
+    // </if>
+  }
+
   protected onAddTabContext_(e: CustomEvent<{
     id: number,
     title: string,
@@ -761,6 +782,9 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       mode: mode,
       model: model,
       error: error,
+      // <if expr="not is_android">
+      smartTabSharingActive: this.smartTabSharingActive,
+      // </if>
     });
     this.setInputText('');
   }

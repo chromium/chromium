@@ -137,7 +137,6 @@ function simulateUserTextInput(
 
 suite('ComposeboxMixinTest', () => {
   let element: TestComposeboxMixinElement;
-  let handler: PageHandlerRemote&TestMock<PageHandlerRemote>;
   let searchboxHandler: SearchboxPageHandlerRemote&
       TestMock<SearchboxPageHandlerRemote>;
   let searchboxCallbackRouterRemote: SearchboxPageRemote;
@@ -150,17 +149,18 @@ suite('ComposeboxMixinTest', () => {
     const callbackRouter = new SearchboxPageCallbackRouter();
     searchboxCallbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
 
-    handler = installMock(
+    installMock(
         PageHandlerRemote,
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
             mock, new PageCallbackRouter(), new SearchboxPageHandlerRemote(),
             callbackRouter)));
-    handler.setResultMapperFor(
-        'getSmartTabSharingActive', () => Promise.resolve({active: false}));
-
     searchboxHandler = installMock(
         SearchboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
+    // <if expr="not is_android">
+    searchboxHandler.setResultMapperFor(
+        'getSmartTabSharingActive', () => Promise.resolve({active: false}));
+    // </if>
     searchboxHandler.setPromiseResolveFor('getInputState', {
       state: new MockInputState(),
     });
@@ -775,6 +775,9 @@ suite('ComposeboxMixinTest', () => {
       }],
       mode: 0,
       model: 0,
+      // <if expr="not is_android">
+      smartTabSharingActive: false,
+      // </if>
     };
     await microtasksFinished();
     assertTrue(element.files.has(token));
@@ -836,6 +839,9 @@ suite('ComposeboxMixinTest', () => {
           files: [{file: mockFile}],
           mode: ToolMode.kDeepSearch,
           model: ModelMode.kGeminiRegular,
+          // <if expr="not is_android">
+          smartTabSharingActive: false,
+          // </if>
         };
         await searchboxHandler.whenCalled('addFileContext');
         await element.updateComplete;

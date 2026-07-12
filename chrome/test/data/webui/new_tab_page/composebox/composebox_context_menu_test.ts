@@ -884,6 +884,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
                   }],
                   mode: ToolMode.kUnspecified,
                   model: 0,
+                  smartTabSharingActive: false,
                 };
 
                 createComposeboxElement(testProxy, {state: initialState});

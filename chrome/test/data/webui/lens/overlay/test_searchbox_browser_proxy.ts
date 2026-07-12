@@ -25,44 +25,46 @@ import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy
 class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   constructor() {
     super([
-      'deleteAutocompleteMatch',
       'activateKeyword',
-      'showContextMenu',
+      'activateMetricsFunnel',
+      'addFileContext',
+      'addTabContext',
+      'clearFiles',
+      'deleteAutocompleteMatch',
+      'deleteContext',
+      'deleteTabContext',
       'executeAction',
+      'getDriveDisclaimerStatus',
+      'getInputState',
+      'getPageClassification',
+      'getPlaceholderConfig',
+      'getRecentTabs',
+      'getSmartTabSharingActive',
+      'getTabPreview',
+      'notifySessionAbandoned',
+      'notifySessionStarted',
+      'onDriveUploadClicked',
+      'onFocusChanged',
       'onNavigationLikely',
       'onThumbnailRemoved',
       'openAutocompleteMatch',
+      'openLensSearch',
+      'openPopupSelection',
       'queryAutocomplete',
       'queryAutocompleteWithSuggestInventory',
-      'stopAutocomplete',
-      'toggleSuggestionGroupIdVisibility',
-      'onFocusChanged',
-      'getPlaceholderConfig',
-      'getRecentTabs',
-      'getTabPreview',
-      'waitForTabFaviconLoad',
-      'notifySessionStarted',
-      'notifySessionAbandoned',
-      'addFileContext',
-      'addTabContext',
-      'onDriveUploadClicked',
-      'deleteContext',
-      'deleteTabContext',
-      'clearFiles',
-      'submitQuery',
-      'openLensSearch',
-      'setActiveToolMode',
+      'recordModelSelectionAction',
       'recordToolSelectionAction',
       'setActiveModelMode',
-      'recordModelSelectionAction',
+      'setActiveToolMode',
       'setPage',
-      'getInputState',
-      'activateMetricsFunnel',
       'setPopupSelection',
-      'openPopupSelection',
-      'getPageClassification',
       'setSmartComposeStats',
-      'getDriveDisclaimerStatus',
+      'setSmartTabSharingActive',
+      'showContextMenu',
+      'stopAutocomplete',
+      'submitQuery',
+      'toggleSuggestionGroupIdVisibility',
+      'waitForTabFaviconLoad',
     ]);
   }
 
@@ -285,6 +287,15 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   getPageClassification() {
     this.methodCalled('getPageClassification');
     return Promise.resolve({metricSource: 'LENS_SIDE_PANEL_SEARCHBOX'});
+  }
+
+  setSmartTabSharingActive(active: boolean) {
+    this.methodCalled('setSmartTabSharingActive', active);
+  }
+
+  getSmartTabSharingActive() {
+    this.methodCalled('getSmartTabSharingActive');
+    return Promise.resolve({active: false});
   }
 }
 

@@ -98,6 +98,9 @@ class MockSearchboxPage : public searchbox::mojom::Page {
               (searchbox::mojom::TabInfoPtr));
   MOCK_METHOD(void, UpdateLensSearchEligibility, (bool eligible), (override));
   MOCK_METHOD(void, UpdateAimPopupEligibility, (bool eligible), (override));
+#if !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void, UpdateSmartTabSharingActive, (bool active), (override));
+#endif
   MOCK_METHOD(void, UpdateContentSharingPolicy, (bool enabled), (override));
   MOCK_METHOD(void,
               OnPermissionPromptChanged,

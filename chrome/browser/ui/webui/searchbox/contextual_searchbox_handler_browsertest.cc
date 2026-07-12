@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,6 +18,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -46,7 +48,17 @@ class TestSearchboxHandler : public ContextualSearchboxHandler {
 };
 
 class ContextualSearchboxHandlerBrowserTest : public InProcessBrowserTest {
+ public:
+  ContextualSearchboxHandlerBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{contextual_tasks::kContextualTasksContext,
+          {{"ContextualTasksContextSmartTabSharing", "true"}}},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
+        {});
+  }
+
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<MockSearchboxPage> page_;
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       session_handle_;
@@ -203,4 +215,17 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
 
   std::optional<GURL> data_url = future.Get();
   EXPECT_FALSE(data_url.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
+                       SmartTabSharingActive) {
+  base::test::TestFuture<bool> get_future;
+  handler_->GetSmartTabSharingActive(get_future.GetCallback());
+  EXPECT_FALSE(get_future.Get());
+
+  handler_->SetSmartTabSharingActive(true);
+
+  base::test::TestFuture<bool> get_future2;
+  handler_->GetSmartTabSharingActive(get_future2.GetCallback());
+  EXPECT_TRUE(get_future2.Get());
 }

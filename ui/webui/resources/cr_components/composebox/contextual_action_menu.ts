@@ -789,20 +789,9 @@ export class ContextualActionMenuElement extends
     return this.recentTabId !== null && tabId === this.recentTabId;
   }
 
-  protected async onSmartTabSharingItemClick_(e: Event) {
-    const target = e.currentTarget as HTMLElement;
-    const isFlyout = target.id === 'smartTabSharingItemFlyout';
+  protected onSmartTabSharingItemClick_() {
     this.toggleSmartTabSharing_();
-    if (isFlyout) {
-      this.$.menu.close();
-    } else {
-      await this.updateComplete;
-      const trigger =
-          this.shadowRoot.querySelector<HTMLElement>('#shareTabsTrigger');
-      if (trigger) {
-        trigger.focus();
-      }
-    }
+    this.$.menu.close();
   }
 
   private toggleSmartTabSharing_() {

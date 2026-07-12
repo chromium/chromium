@@ -630,14 +630,15 @@ bool ContextualSearchboxHandler::IsSmartTabSharingActive() const {
   return false;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void ContextualSearchboxHandler::SetSmartTabSharingActive(bool active) {
   if (!contextual_tasks::ContextualTasksContextService::
           GetIsSmartTabSharingEnabled(profile_)) {
     return;
   }
   smart_tab_sharing_active_for_thread_ = active;
+  page()->UpdateSmartTabSharingActive(active);
 
-#if !BUILDFLAG(IS_ANDROID)
   if (active && profile_ && !has_incremented_sts_activation_count_) {
     has_incremented_sts_activation_count_ = true;
     auto* tracker =
@@ -666,13 +667,13 @@ void ContextualSearchboxHandler::SetSmartTabSharingActive(bool active) {
       }
     }
   }
-#endif
 }
 
 void ContextualSearchboxHandler::GetSmartTabSharingActive(
-    composebox::mojom::PageHandler::GetSmartTabSharingActiveCallback callback) {
+    searchbox::mojom::PageHandler::GetSmartTabSharingActiveCallback callback) {
   std::move(callback).Run(IsSmartTabSharingActive());
 }
+#endif
 
 std::vector<int32_t> ContextualSearchboxHandler::GetSelectedTabIds() const {
   std::vector<int32_t> ids;

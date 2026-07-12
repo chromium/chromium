@@ -14,10 +14,13 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
+// <if expr="not is_android">
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
+
+// </if>
 
 import {installMock} from './composebox_test_utils.js';
 
@@ -29,7 +32,6 @@ interface TestComposeboxElement extends ComposeboxElement {
 // LINT.IfChange
 suite('ComposeboxTest', () => {
   let composebox: ComposeboxElement;
-  let handler: PageHandlerRemote&TestMock<PageHandlerRemote>;
   let searchboxHandler: SearchboxPageHandlerRemote&TestMock<SearchboxPageHandlerRemote>;
 
   setup(async () => {
@@ -42,19 +44,22 @@ suite('ComposeboxTest', () => {
       composeboxFileMaxSize: 1024,
       composeboxAttachmentFileTypes: '.pdf',
       composeboxImageFileTypes: 'image/png',
+      composeboxSmartTabSharingVisible: false,
     });
 
-    handler = installMock(
+    installMock(
         PageHandlerRemote,
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
             mock, new PageCallbackRouter(), new SearchboxPageHandlerRemote(),
             new SearchboxPageCallbackRouter())));
-    handler.setResultMapperFor(
-        'getSmartTabSharingActive', () => Promise.resolve({active: false}));
 
     searchboxHandler = installMock(
         SearchboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
+    // <if expr="not is_android">
+    searchboxHandler.setResultMapperFor(
+        'getSmartTabSharingActive', () => Promise.resolve({active: false}));
+    // </if>
     searchboxHandler.setResultFor(
         'getPageClassification',
         Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
@@ -68,52 +73,64 @@ suite('ComposeboxTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  test('connectedCallback calls getSmartTabSharingActive when' +
-        ' smartTabSharingVisible pre-set to true', async () => {
-    handler.setResultMapperFor(
-        'getSmartTabSharingActive',
-        () => Promise.resolve({active: true}));
+  // <if expr="not is_android">
+  test(
+      'connectedCallback calls getSmartTabSharingActive when' +
+          ' smartTabSharingVisible pre-set to true',
+      async () => {
+        searchboxHandler.setResultMapperFor(
+            'getSmartTabSharingActive', () => Promise.resolve({active: true}));
 
-    const newComposebox = document.createElement('cr-composebox');
-    newComposebox.smartTabSharingVisible = true;
-    document.body.appendChild(newComposebox);
-    await handler.whenCalled('getSmartTabSharingActive');
-    await microtasksFinished();
+        const newComposebox = document.createElement('cr-composebox');
+        newComposebox.smartTabSharingVisible = true;
+        document.body.appendChild(newComposebox);
+        await searchboxHandler.whenCalled('getSmartTabSharingActive');
+        await microtasksFinished();
+        await newComposebox.updateComplete;
 
-    assertEquals(1, handler.getCallCount('getSmartTabSharingActive'));
-    assertTrue(newComposebox.smartTabSharingActive);
-  });
+        assertTrue(
+            searchboxHandler.getCallCount('getSmartTabSharingActive') === 1);
+        assertTrue(newComposebox.smartTabSharingActive);
+      });
 
-  test('connectedCallback does NOT call getSmartTabSharingActive when' +
-        ' smartTabSharingVisible is false', () => {
-    const newComposebox = document.createElement('cr-composebox');
-    newComposebox.smartTabSharingVisible = false;
-    document.body.appendChild(newComposebox);
+  test(
+      'connectedCallback does NOT call getSmartTabSharingActive when' +
+          ' smartTabSharingVisible is false',
+      async () => {
+        const newComposebox = document.createElement('cr-composebox');
+        newComposebox.smartTabSharingVisible = false;
+        document.body.appendChild(newComposebox);
+        await newComposebox.updateComplete;
 
-    assertEquals(0, handler.getCallCount('getSmartTabSharingActive'));
-    assertFalse(newComposebox.smartTabSharingActive);
-  });
+        assertTrue(
+            searchboxHandler.getCallCount('getSmartTabSharingActive') === 0);
+        assertFalse(newComposebox.smartTabSharingActive);
+      });
 
-  test('host template .prop binding triggers getSmartTabSharingActive' +
-        ' at child mount', async () => {
-    handler.setResultMapperFor(
-        'getSmartTabSharingActive',
-        () => Promise.resolve({active: true}));
+  test(
+      'host template .prop binding triggers getSmartTabSharingActive' +
+          ' at child mount',
+      async () => {
+        searchboxHandler.setResultMapperFor(
+            'getSmartTabSharingActive', () => Promise.resolve({active: true}));
 
-    document.body.innerHTML = getTrustedHtml(`
+        document.body.innerHTML = getTrustedHtml(`
       <cr-composebox smart-tab-sharing-visible></cr-composebox>
     `);
 
-    const newComposebox =
-        document.body.querySelector<ComposeboxElement>('cr-composebox');
-    assertTrue(!!newComposebox);
+        const newComposebox =
+            document.body.querySelector<ComposeboxElement>('cr-composebox');
+        assertTrue(!!newComposebox);
 
-    await handler.whenCalled('getSmartTabSharingActive');
-    await microtasksFinished();
+        await searchboxHandler.whenCalled('getSmartTabSharingActive');
+        await microtasksFinished();
+        await newComposebox.updateComplete;
 
-    assertEquals(1, handler.getCallCount('getSmartTabSharingActive'));
-    assertTrue(newComposebox.smartTabSharingActive);
-  });
+        assertTrue(
+            searchboxHandler.getCallCount('getSmartTabSharingActive') === 1);
+        assertTrue(newComposebox.smartTabSharingActive);
+      });
+  // </if>
 
   test('UpdateAutoSuggestedTabContext_NullDoesNotDelete', () => {
     loadTimeData.overrideValues({webUIOmniboxAskGAboutThisPageEnabled: true});
@@ -271,6 +288,61 @@ suite('ComposeboxTest', () => {
             }));
         assertTrue(keepMenuOpenCalled);
       });
+
+  test('onContextMenuClosed sets shareTabsFlyoutOpen to false', async () => {
+    composebox.shareTabsFlyoutOpen = true;
+    await composebox.onContextMenuClosed();
+    assertFalse(composebox.shareTabsFlyoutOpen);
+  });
+});
+
+
+suite('composeboxSharedMountAutoRepositionDefault', () => {
+  let composebox: ComposeboxElement;
+
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({
+      composeboxSource: 'NTP',
+      composeboxShowZps: true,
+      composeboxFileMaxCount: 1,
+      composeboxFileMaxSize: 1024,
+      composeboxAttachmentFileTypes: '.pdf',
+      composeboxImageFileTypes: 'image/png',
+      composeboxShowContextMenu: true,
+      composeboxContextMenuEnableMultiTabSelection: false,
+      composeboxShowContextMenuTabPreviews: false,
+      ShowContextMenuHeaders: false,
+      menu: 'menu',
+      addContextTitle: 'Add context',
+      addContext: 'Add context',
+    });
+
+    installMock(
+        PageHandlerRemote,
+        mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+            mock, new PageCallbackRouter(), new SearchboxPageHandlerRemote(),
+            new SearchboxPageCallbackRouter())));
+    const searchboxHandler = installMock(
+        SearchboxPageHandlerRemote,
+        mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
+    // <if expr="not is_android">
+    searchboxHandler.setResultMapperFor(
+        'getSmartTabSharingActive', () => Promise.resolve({active: false}));
+    // </if>
+    searchboxHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'NTP_REALBOX'}));
+
+    composebox = document.createElement('cr-composebox');
+    document.body.appendChild(composebox);
+    await composebox.updateComplete;
+  });
+
+  teardown(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  });
 
   test('onContextMenuClosed sets shareTabsFlyoutOpen to false', async () => {
     composebox.shareTabsFlyoutOpen = true;

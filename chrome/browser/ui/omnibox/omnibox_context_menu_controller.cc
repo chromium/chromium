@@ -24,6 +24,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,6 +54,7 @@
 #include "chrome/grit/omnibox_popup_resources.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/input_state_model.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/lens/contextual_input.h"
@@ -86,6 +88,23 @@ constexpr int kMinOmniboxContextMenuRecentTabsCommandId = 33000;
 // Default limit for the maximum number of files if the input state is
 // uninitialized.
 constexpr int kDefaultMaxNumFiles = 10;
+
+std::u16string GetSmartTabSharingMegaplusMenuLabel() {
+  switch (contextual_tasks::kSmartTabSharingMegaplusStringOption.Get()) {
+    case contextual_tasks::SmartTabSharingMegaplusStringOption::kMegaplusV1:
+      return l10n_util::GetStringUTF16(
+          IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS);
+    case contextual_tasks::SmartTabSharingMegaplusStringOption::kMegaplusV2:
+      return l10n_util::GetStringUTF16(
+          IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS_V2);
+    case contextual_tasks::SmartTabSharingMegaplusStringOption::kMegaplusV3:
+      return l10n_util::GetStringUTF16(
+          IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS_V3);
+    default:
+      return l10n_util::GetStringUTF16(
+          IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS);
+  }
+}
 
 }  // namespace
 
@@ -354,9 +373,42 @@ void OmniboxContextMenuController::AddRecentTabItems() {
     return;
   }
 
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_.get());
+  Profile* profile = browser_window_interface->GetProfile();
+  const bool is_smart_tab_sharing_enabled =
+      profile && contextual_tasks::ContextualTasksContextService::
+                     GetIsSmartTabSharingEnabled(profile);
+
+  auto* handler = GetSearchboxHandler();
+  const bool is_smart_tab_sharing_active =
+      handler && handler->IsSmartTabSharingActive();
+
   const bool include_tabs_submenu =
       base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox) &&
       base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox);
+
+  // If Smart Tab Sharing is active, display the toggle directly in the main
+  // menu, and do not show the manual tab sharing submenu.
+  if (include_tabs_submenu && is_smart_tab_sharing_enabled &&
+      is_smart_tab_sharing_active) {
+    size_t index = menu_model_->GetItemCount();
+    menu_model_->AddItem(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING,
+                         GetSmartTabSharingMegaplusMenuLabel());
+    menu_model_->SetIconForCommandId(
+        IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING,
+        ui::ImageModel::FromVectorIcon(kTabOldIcon, ui::kColorMenuIcon,
+                                       ui::SimpleMenuModel::kDefaultIconSize));
+    menu_model_->SetMinorIcon(
+        index,
+        ui::ImageModel::FromVectorIcon(
+            features::IsRoundedIconsEnabled() ? kCheckSmallIcon : kCheckOldIcon,
+            ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
+    menu_model_->SetMinorIconOnRight(
+        ui::MenuModel::MinorIconOnRightPasskey(index),
+        /*minor_icon_on_right=*/true);
+    return;
+  }
 
   ui::SimpleMenuModel* target_menu_model;
   size_t first_tab_index;
@@ -369,6 +421,20 @@ void OmniboxContextMenuController::AddRecentTabItems() {
     shared_tabs_menu_model_ = std::make_unique<TabSimpleMenuModel>(this);
     target_menu_model = shared_tabs_menu_model_.get();
     first_tab_index = 0;
+
+    // If Smart Tab Sharing is enabled but NOT active, put the toggle at the
+    // top of the submenu.
+    if (is_smart_tab_sharing_enabled) {
+      shared_tabs_menu_model_->AddItem(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING,
+                                       GetSmartTabSharingMegaplusMenuLabel());
+      shared_tabs_menu_model_->SetIconForCommandId(
+          IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING,
+          ui::ImageModel::FromVectorIcon(
+              kScreensaverAutoIcon, ui::kColorMenuIcon,
+              ui::SimpleMenuModel::kDefaultIconSize));
+      shared_tabs_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+      first_tab_index = shared_tabs_menu_model_->GetItemCount();
+    }
   } else {
     // Add default title for 'Recent tabs' when there is no shared tabs menu.
     if (omnibox::kShowContextMenuHeaders.Get()) {
@@ -631,7 +697,7 @@ OmniboxContextMenuController::GetRecentTabs() const {
     tab_data.is_active_tab = (tab == tab_strip_model->GetActiveTab());
 
     bool is_checked = false;
-    if (auto omnibox_popup_ui = GetOmniboxPopupUI()) {
+    if (auto* omnibox_popup_ui = GetOmniboxPopupUI()) {
       auto* composebox_handler = omnibox_popup_ui->composebox_handler();
       if (composebox_handler) {
         is_checked = std::ranges::any_of(
@@ -682,11 +748,11 @@ bool OmniboxContextMenuController::IsTabContextEnabled() const {
     return it != input_type_info_.end() && it->second.enabled;
   }
 
-  auto omnibox_controller = GetOmniboxController();
+  auto* omnibox_controller = GetOmniboxController();
   if (!omnibox_controller) {
     return false;
   }
-  auto omnibox_popup_ui = GetOmniboxPopupUI();
+  auto* omnibox_popup_ui = GetOmniboxPopupUI();
   if (!omnibox_popup_ui || !omnibox_popup_ui->composebox_handler() ||
       !omnibox_popup_ui->composebox_handler()->input_state_model()) {
     return false;
@@ -760,7 +826,7 @@ void OmniboxContextMenuController::AddTitleWithStringId(int localization_id) {
 void OmniboxContextMenuController::AddTabContext(const TabInfo& tab_info) {
   UpdateSearchboxContext(web_contents_.get(), /*tab_info=*/tab_info,
                          /*tool_mode=*/std::nullopt);
-  GetEditModel()->OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
+  OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
 }
 
 // static
@@ -1167,13 +1233,12 @@ OmniboxController* OmniboxContextMenuController::GetOmniboxController(
   return helper ? helper->get_omnibox_controller() : nullptr;
 }
 
-raw_ptr<OmniboxController> OmniboxContextMenuController::GetOmniboxController()
-    const {
+OmniboxController* OmniboxContextMenuController::GetOmniboxController() const {
   return GetOmniboxController(web_contents_.get());
 }
 
-raw_ptr<OmniboxEditModel> OmniboxContextMenuController::GetEditModel() {
-  auto omnibox_controller = GetOmniboxController();
+OmniboxEditModel* OmniboxContextMenuController::GetEditModel() {
+  auto* omnibox_controller = GetOmniboxController();
   if (!omnibox_controller) {
     return nullptr;
   }
@@ -1231,8 +1296,7 @@ OmniboxPopupUI* OmniboxContextMenuController::GetOmniboxPopupUI(
   return wrapper->GetWebUIController();
 }
 
-raw_ptr<OmniboxPopupUI> OmniboxContextMenuController::GetOmniboxPopupUI()
-    const {
+OmniboxPopupUI* OmniboxContextMenuController::GetOmniboxPopupUI() const {
   return GetOmniboxPopupUI(web_contents_.get());
 }
 
@@ -1241,7 +1305,24 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
     // Shared tabs does not do anything as a button.
     return;
   }
-  auto omnibox_controller = GetOmniboxController();
+  if (id == IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING) {
+    if (auto* handler = GetSearchboxHandler()) {
+      bool active = handler->IsSmartTabSharingActive();
+      handler->SetSmartTabSharingActive(!active);
+
+      auto* omnibox_controller = GetOmniboxController();
+      bool is_aim_popup_open =
+          omnibox_controller &&
+          omnibox_controller->popup_state_manager()->popup_state() ==
+              OmniboxPopupState::kAim;
+
+      if (!active || is_aim_popup_open) {
+        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
+      }
+    }
+    return;
+  }
+  auto* omnibox_controller = GetOmniboxController();
   bool is_aim_popup_open =
       omnibox_controller &&
       omnibox_controller->popup_state_manager()->popup_state() ==
@@ -1260,7 +1341,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
       bool was_uploaded = false;
       base::UnguessableToken file_token_to_delete;
       ContextualSearchboxHandler* active_handler = nullptr;
-      if (auto omnibox_popup_ui = GetOmniboxPopupUI()) {
+      if (auto* omnibox_popup_ui = GetOmniboxPopupUI()) {
         auto* composebox_handler = omnibox_popup_ui->composebox_handler();
         if (composebox_handler) {
           for (const auto& pair : composebox_handler->selected_tabs) {
@@ -1290,8 +1371,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         active_handler->DeleteContextFromBrowser(file_token_to_delete,
                                                  /*from_automatic_chip=*/false);
         // Refresh omnibox popup UI.
-        GetEditModel()->OpenAiMode(
-            OmniboxEditModel::AimActivation::kContextMenu);
+        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
       } else {  // If not staged for upload, then stage for upload.
         base::UmaHistogramExactLinear(
             "ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox",
@@ -1301,7 +1381,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
     }
     RecordContextMenuItemSelection(sliced_prefix, id);
   } else {
-    auto omnibox_popup_ui = GetOmniboxPopupUI();
+    auto* omnibox_popup_ui = GetOmniboxPopupUI();
     auto* composebox_handler =
         omnibox_popup_ui ? omnibox_popup_ui->composebox_handler() : nullptr;
 
@@ -1377,8 +1457,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         }
 
         RecordContextMenuItemSelection(sliced_prefix, id);
-        GetEditModel()->OpenAiMode(
-            OmniboxEditModel::AimActivation::kContextMenu);
+        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
         return;
       }
 
@@ -1394,8 +1473,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         }
 
         RecordContextMenuItemSelection(sliced_prefix, id);
-        GetEditModel()->OpenAiMode(
-            OmniboxEditModel::AimActivation::kContextMenu);
+        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
         return;
       }
     }
@@ -1426,8 +1504,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
               omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
         }
         RecordContextMenuItemSelection(sliced_prefix, id);
-        GetEditModel()->OpenAiMode(
-            OmniboxEditModel::AimActivation::kContextMenu);
+        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
         break;
       case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
         if (composebox_handler) {
@@ -1437,8 +1514,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
               omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
         }
         RecordContextMenuItemSelection(sliced_prefix, id);
-        GetEditModel()->OpenAiMode(
-            OmniboxEditModel::AimActivation::kContextMenu);
+        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
         break;
       case IDC_OMNIBOX_CONTEXT_CANVAS:
         if (composebox_handler) {
@@ -1448,8 +1524,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
               omnibox::ToolMode::TOOL_MODE_CANVAS);
         }
         RecordContextMenuItemSelection(sliced_prefix, id);
-        GetEditModel()->OpenAiMode(
-            OmniboxEditModel::AimActivation::kContextMenu);
+        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
         break;
       default:
         NOTREACHED();
@@ -1466,13 +1541,17 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
     CHECK(
         base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox) &&
         base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox));
+    auto* handler = GetSearchboxHandler();
+    return !handler || !handler->IsSmartTabSharingActive();
+  }
+  if (command_id == IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING) {
     return true;
   }
   if (command_id == ui::MenuModel::kTitleId) {
     return false;
   }
 
-  auto omnibox_controller = GetOmniboxController();
+  auto* omnibox_controller = GetOmniboxController();
   if (!omnibox_controller) {
     return false;
   }
@@ -1504,7 +1583,7 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
                                   ? kDefaultMaxNumFiles
                                   : input_state_.max_total_inputs;
           std::vector<contextual_search::FileInfo> file_infos;
-          if (auto omnibox_popup_ui = GetOmniboxPopupUI()) {
+          if (auto* omnibox_popup_ui = GetOmniboxPopupUI()) {
             if (auto* session_handle =
                     omnibox_popup_ui->GetOrCreateContextualSessionHandle()) {
               file_infos = session_handle->GetUploadedContextFileInfos();
@@ -1560,7 +1639,7 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
     return false;
   }
 
-  auto omnibox_popup_ui = GetOmniboxPopupUI();
+  auto* omnibox_popup_ui = GetOmniboxPopupUI();
   if (!omnibox_popup_ui || !omnibox_popup_ui->composebox_handler() ||
       !omnibox_popup_ui->composebox_handler()->input_state_model()) {
     return false;
@@ -1679,6 +1758,15 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
         base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox));
     return true;
   }
+  if (command_id == IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING) {
+    auto* browser_window_interface =
+        webui::GetBrowserWindowInterface(web_contents_.get());
+    if (!browser_window_interface) {
+      return false;
+    }
+    return contextual_tasks::ContextualTasksContextService::
+        GetIsSmartTabSharingEnabled(browser_window_interface->GetProfile());
+  }
 
   // When using the PEC API, whether or not an item is visible is controlled
   // purely by server-side logic (see `InitializeMenuItemInfo()` for details).
@@ -1716,4 +1804,25 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
   }
 
   return true;
+}
+
+ContextualSearchboxHandler* OmniboxContextMenuController::GetSearchboxHandler()
+    const {
+  auto* omnibox_popup_ui = GetOmniboxPopupUI();
+  if (!omnibox_popup_ui) {
+    return nullptr;
+  }
+  if (omnibox_popup_ui->composebox_handler()) {
+    return omnibox_popup_ui->composebox_handler();
+  }
+  return omnibox_popup_ui->omnibox_handler();
+}
+
+void OmniboxContextMenuController::OpenAiMode(
+    OmniboxEditModel::AimActivation activation) {
+  if (OmniboxEditModel* edit_model = GetEditModel()) {
+    edit_model->OpenAiMode(activation);
+  } else {
+    DLOG(WARNING) << "OpenAiMode called but no edit model present.";
+  }
 }

@@ -828,20 +828,12 @@ suite('ContextualActionMenu', () => {
     actionMenu.showAt(actionMenu);
     await actionMenu.updateComplete;
 
-    const item = $$(actionMenu, '#smartTabSharingItem');
+    const item = $$(actionMenu, '#smartTabSharingItem') as HTMLElement;
     assertTrue(!!item);
-
     item.click();
-
-    actionMenu.smartTabSharingActive = false;
     await actionMenu.updateComplete;
 
-    const mainMenuToggle = $$(actionMenu, '#smartTabSharingItem');
-    assertFalse(!!mainMenuToggle);
-
-    const trigger = $$(actionMenu, '#shareTabsTrigger');
-    assertTrue(!!trigger);
-    assertTrue(isVisible(trigger));
+    assertFalse(actionMenu.$.menu.open);
   });
 
   test('AutoRepositionEnabledByDefaultOnSharedWrapper', () => {
@@ -2105,6 +2097,9 @@ suite('ContextualActionMenu', () => {
 
       assertEquals('false', flyoutToggleItem.getAttribute('aria-checked'));
       assertFalse(!!flyoutToggleItem.querySelector('.share-tabs-check'));
+      const icon = flyoutToggleItem.querySelector('cr-icon');
+      assertTrue(!!icon);
+      assertEquals('composebox:screensaverAuto', icon.getAttribute('icon'));
     });
 
     test('STS is ON: Show toggle in main menu, no flyout', async () => {
@@ -2153,7 +2148,7 @@ suite('ContextualActionMenu', () => {
       assertFalse(actionMenu.$.menu.open);
     });
 
-    test('Clicking toggle in main menu does NOT close the menu', async () => {
+    test('Clicking toggle in main menu closes the menu', async () => {
       actionMenu.smartTabSharingActive = true;
       actionMenu.showAt(actionMenu);
       await microtasksFinished();
@@ -2169,8 +2164,8 @@ suite('ContextualActionMenu', () => {
       mainMenuToggle.click();
       await microtasksFinished();
 
-      // Verify menu stays open!
-      assertTrue(actionMenu.$.menu.open);
+      // Verify menu closes
+      assertFalse(actionMenu.$.menu.open);
     });
 
     test(
