@@ -20,6 +20,7 @@
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
+#include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_process_host.h"
@@ -957,6 +958,20 @@ void GuestViewBase::ContentsZoomChange(bool zoom_in) {
     return;
   }
   embedder_web_contents()->GetDelegate()->ContentsZoomChange(zoom_in);
+}
+
+content::KeyboardEventProcessingResult GuestViewBase::PreHandleKeyboardEvent(
+    WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
+  if (!attached() || !embedder_web_contents()->GetDelegate()) {
+    return content::KeyboardEventProcessingResult::NOT_HANDLED;
+  }
+
+  // Send the keyboard events back to the embedder to reprocess them.
+  return embedder_web_contents()->GetDelegate()->PreHandleKeyboardEvent(
+      embedder_web_contents(), event);
 }
 
 bool GuestViewBase::HandleKeyboardEvent(

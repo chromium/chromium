@@ -337,6 +337,9 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   content::RenderFrameHost* GetProspectiveOuterDocument() override;
 
   // WebContentsDelegate implementation.
+  content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
+      content::WebContents* source,
+      const input::NativeWebKeyboardEvent& event) override;
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
 
