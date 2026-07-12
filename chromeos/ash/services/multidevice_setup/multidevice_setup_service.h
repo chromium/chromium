@@ -19,9 +19,6 @@ class DeviceSyncClient;
 }  // namespace device_sync
 
 namespace multidevice_setup {
-
-class AndroidSmsAppHelperDelegate;
-class AndroidSmsPairingStateTracker;
 class AuthTokenValidator;
 class MultiDeviceSetupBase;
 class PrivilegedHostDeviceSetterBase;
@@ -37,8 +34,6 @@ class MultiDeviceSetupService {
       device_sync::DeviceSyncClient* device_sync_client,
       AuthTokenValidator* auth_token_validator,
       OobeCompletionTracker* oobe_completion_tracker,
-      AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
-      AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
       bool is_secondary_user);
 
   MultiDeviceSetupService(const MultiDeviceSetupService&) = delete;

@@ -16,7 +16,6 @@
 #include "chromeos/ash/services/multidevice_setup/fake_feature_state_manager.h"
 #include "chromeos/ash/services/multidevice_setup/fake_global_state_feature_manager.h"
 #include "chromeos/ash/services/multidevice_setup/fake_host_status_provider.h"
-#include "chromeos/ash/services/multidevice_setup/public/cpp/fake_android_sms_pairing_state_tracker.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -111,10 +110,6 @@ class MultiDeviceSetupFeatureStateManagerImplTest : public testing::Test {
                                          test_host_device_});
     fake_device_sync_client_->set_local_device_metadata(test_local_device_);
 
-    fake_android_sms_pairing_state_tracker_ =
-        std::make_unique<FakeAndroidSmsPairingStateTracker>();
-    fake_android_sms_pairing_state_tracker_->SetPairingComplete(true);
-
     fake_global_state_feature_managers_.emplace(
         mojom::Feature::kWifiSync,
         std::make_unique<FakeGlobalStateFeatureManager>());
@@ -122,7 +117,6 @@ class MultiDeviceSetupFeatureStateManagerImplTest : public testing::Test {
     manager_ = FeatureStateManagerImpl::Factory::Create(
         test_pref_service_.get(), fake_host_status_provider_.get(),
         fake_device_sync_client_.get(),
-        fake_android_sms_pairing_state_tracker_.get(),
         {{mojom::Feature::kWifiSync,
           fake_global_state_feature_managers_.at(mojom::Feature::kWifiSync)
               .get()}},
@@ -245,10 +239,6 @@ class MultiDeviceSetupFeatureStateManagerImplTest : public testing::Test {
     fake_device_sync_client_->NotifyNewDevicesSynced();
   }
 
-  void SetAndroidSmsPairingState(bool is_paired) {
-    fake_android_sms_pairing_state_tracker_->SetPairingComplete(is_paired);
-  }
-
   sync_preferences::TestingPrefServiceSyncable* test_pref_service() {
     return test_pref_service_.get();
   }
@@ -271,8 +261,6 @@ class MultiDeviceSetupFeatureStateManagerImplTest : public testing::Test {
       test_pref_service_;
   std::unique_ptr<FakeHostStatusProvider> fake_host_status_provider_;
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
-  std::unique_ptr<FakeAndroidSmsPairingStateTracker>
-      fake_android_sms_pairing_state_tracker_;
   base::flat_map<mojom::Feature, std::unique_ptr<FakeGlobalStateFeatureManager>>
       fake_global_state_feature_managers_;
 

@@ -3513,7 +3513,6 @@ source_set("browser") {
       "//chrome/browser/ash/accessibility/live_caption",
       "//chrome/browser/ash/account_manager",
       "//chrome/browser/ash/ambient",
-      "//chrome/browser/ash/android_sms",
       "//chrome/browser/ash/api/tasks",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",

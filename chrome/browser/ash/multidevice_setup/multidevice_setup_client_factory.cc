@@ -43,8 +43,8 @@ class MultiDeviceSetupClientHolder : public KeyedService {
 
     // NOTE: We bind the receiver asynchronously, because we can't synchronously
     // depend on MultiDeviceSetupServiceFactory at construction time. This is
-    // due to a circular dependency among the AndroidSmsServiceFactory,
-    // MultiDeviceSetupServiceFactory, and MultiDeviceSetupClientFactory
+    // due to a circular dependency between MultiDeviceSetupServiceFactory
+    // and MultiDeviceSetupClientFactory.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&MultiDeviceSetupClientHolder::BindService,

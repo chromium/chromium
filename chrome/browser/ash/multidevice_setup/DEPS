@@ -14,7 +14,6 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ash/android_sms",
   "+chrome/browser/ash/device_sync",
   "+chrome/browser/ash/login/quick_unlock",
   "+chrome/browser/ash/profiles",

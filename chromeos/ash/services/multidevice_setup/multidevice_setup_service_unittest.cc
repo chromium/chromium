@@ -16,8 +16,6 @@
 #include "chromeos/ash/services/multidevice_setup/fake_host_status_observer.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_impl.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
-#include "chromeos/ash/services/multidevice_setup/public/cpp/fake_android_sms_app_helper_delegate.h"
-#include "chromeos/ash/services/multidevice_setup/public/cpp/fake_android_sms_pairing_state_tracker.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_auth_token_validator.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
@@ -42,18 +40,11 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
       device_sync::FakeDeviceSyncClient* expected_device_sync_client,
       FakeAuthTokenValidator* expected_auth_token_validator,
       OobeCompletionTracker* expected_oobe_completion_tracker,
-      FakeAndroidSmsAppHelperDelegate* expected_android_sms_app_helper_delegate,
-      FakeAndroidSmsPairingStateTracker*
-          expected_android_sms_pairing_state_tracker,
       bool expected_is_secondary_user)
       : expected_testing_pref_service_(expected_testing_pref_service),
         expected_device_sync_client_(expected_device_sync_client),
         expected_auth_token_validator_(expected_auth_token_validator),
         expected_oobe_completion_tracker_(expected_oobe_completion_tracker),
-        expected_android_sms_app_helper_delegate_(
-            expected_android_sms_app_helper_delegate),
-        expected_android_sms_pairing_state_tracker_(
-            expected_android_sms_pairing_state_tracker),
         expected_is_secondary_user_(expected_is_secondary_user) {}
 
   FakeMultiDeviceSetupFactory(const FakeMultiDeviceSetupFactory&) = delete;
@@ -70,18 +61,12 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
       device_sync::DeviceSyncClient* device_sync_client,
       AuthTokenValidator* auth_token_validator,
       OobeCompletionTracker* oobe_completion_tracker,
-      AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
-      AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
       bool is_secondary_user) override {
     EXPECT_FALSE(instance_);
     EXPECT_EQ(expected_testing_pref_service_, pref_service);
     EXPECT_EQ(expected_device_sync_client_, device_sync_client);
     EXPECT_EQ(expected_auth_token_validator_, auth_token_validator);
     EXPECT_EQ(expected_oobe_completion_tracker_, oobe_completion_tracker);
-    EXPECT_EQ(expected_android_sms_app_helper_delegate_,
-              android_sms_app_helper_delegate);
-    EXPECT_EQ(expected_android_sms_pairing_state_tracker_,
-              android_sms_pairing_state_tracker);
     EXPECT_EQ(expected_is_secondary_user_, is_secondary_user);
 
     auto instance = std::make_unique<FakeMultiDeviceSetup>();
@@ -94,10 +79,6 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
   raw_ptr<device_sync::FakeDeviceSyncClient> expected_device_sync_client_;
   raw_ptr<FakeAuthTokenValidator> expected_auth_token_validator_;
   raw_ptr<OobeCompletionTracker> expected_oobe_completion_tracker_;
-  raw_ptr<FakeAndroidSmsAppHelperDelegate>
-      expected_android_sms_app_helper_delegate_;
-  raw_ptr<FakeAndroidSmsPairingStateTracker>
-      expected_android_sms_pairing_state_tracker_;
   bool expected_is_secondary_user_;
 
   raw_ptr<FakeMultiDeviceSetup, DanglingUntriaged> instance_ = nullptr;
@@ -125,26 +106,19 @@ class MultiDeviceSetupServiceTest : public testing::Test {
         std::make_unique<device_sync::FakeDeviceSyncClient>();
     fake_auth_token_validator_ = std::make_unique<FakeAuthTokenValidator>();
     fake_oobe_completion_tracker_ = std::make_unique<OobeCompletionTracker>();
-    fake_android_sms_app_helper_delegate_ =
-        std::make_unique<FakeAndroidSmsAppHelperDelegate>();
-    fake_android_sms_pairing_state_tracker_ =
-        std::make_unique<FakeAndroidSmsPairingStateTracker>();
 
     fake_multidevice_setup_factory_ =
         std::make_unique<FakeMultiDeviceSetupFactory>(
             test_pref_service_.get(), fake_device_sync_client_.get(),
             fake_auth_token_validator_.get(),
-            fake_oobe_completion_tracker_.get(),
-            fake_android_sms_app_helper_delegate_.get(),
-            fake_android_sms_pairing_state_tracker_.get(), is_secondary_user_);
+            fake_oobe_completion_tracker_.get(), is_secondary_user_);
     MultiDeviceSetupImpl::Factory::SetFactoryForTesting(
         fake_multidevice_setup_factory_.get());
 
     service_ = std::make_unique<MultiDeviceSetupService>(
         test_pref_service_.get(), fake_device_sync_client_.get(),
         fake_auth_token_validator_.get(), fake_oobe_completion_tracker_.get(),
-        fake_android_sms_app_helper_delegate_.get(),
-        fake_android_sms_pairing_state_tracker_.get(), is_secondary_user_);
+        is_secondary_user_);
 
     service_->BindMultiDeviceSetup(
         multidevice_setup_remote_.BindNewPipeAndPassReceiver());
@@ -206,10 +180,6 @@ class MultiDeviceSetupServiceTest : public testing::Test {
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
   std::unique_ptr<FakeAuthTokenValidator> fake_auth_token_validator_;
   std::unique_ptr<OobeCompletionTracker> fake_oobe_completion_tracker_;
-  std::unique_ptr<FakeAndroidSmsAppHelperDelegate>
-      fake_android_sms_app_helper_delegate_;
-  std::unique_ptr<FakeAndroidSmsPairingStateTracker>
-      fake_android_sms_pairing_state_tracker_;
   bool is_secondary_user_ = false;
 
   std::unique_ptr<FakeMultiDeviceSetupFactory> fake_multidevice_setup_factory_;

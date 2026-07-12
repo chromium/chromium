@@ -21,7 +21,6 @@ static_library("multidevice_setup") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash/android_sms",
     "//chrome/browser/ash/cryptauth",
     "//chrome/browser/ash/device_sync",
     "//chrome/browser/ash/login",
@@ -41,8 +40,5 @@ static_library("multidevice_setup") {
     "//content/public/browser",
   ]
 
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/android_sms",
-    "//chrome/browser/ash/login",
-  ]
+  allow_circular_includes_from = [ "//chrome/browser/ash/login" ]
 }

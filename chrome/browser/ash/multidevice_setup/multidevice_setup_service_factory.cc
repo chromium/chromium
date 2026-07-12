@@ -9,9 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
-#include "chrome/browser/ash/android_sms/android_sms_pairing_state_tracker_impl.h"
-#include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/multidevice_setup/auth_token_validator_factory.h"
 #include "chrome/browser/ash/multidevice_setup/auth_token_validator_impl.h"
@@ -46,18 +43,11 @@ class MultiDeviceSetupServiceHolder : public KeyedService {
     bool is_secondary_user =
         user->GetAccountId() != primary_user->GetAccountId();
 
-    android_sms::AndroidSmsService* android_sms_service =
-        android_sms::AndroidSmsServiceFactory::GetForBrowserContext(context);
     multidevice_setup_service_ = std::make_unique<MultiDeviceSetupService>(
         profile_->GetPrefs(),
         device_sync::DeviceSyncClientFactory::GetForProfile(profile_),
         AuthTokenValidatorFactory::GetForProfile(profile_),
         OobeCompletionTrackerFactory::GetForProfile(profile_),
-        android_sms_service ? android_sms_service->android_sms_app_manager()
-                            : nullptr,
-        android_sms_service
-            ? android_sms_service->android_sms_pairing_state_tracker()
-            : nullptr,
         is_secondary_user);
   }
 
@@ -119,7 +109,6 @@ MultiDeviceSetupServiceFactory::MultiDeviceSetupServiceFactory()
   DependsOn(device_sync::DeviceSyncClientFactory::GetInstance());
   DependsOn(AuthTokenValidatorFactory::GetInstance());
   DependsOn(OobeCompletionTrackerFactory::GetInstance());
-  DependsOn(android_sms::AndroidSmsServiceFactory::GetInstance());
 }
 
 MultiDeviceSetupServiceFactory::~MultiDeviceSetupServiceFactory() = default;

@@ -27,21 +27,6 @@ source_set("auth_token_validator") {
   deps = [ "//base" ]
 }
 
-source_set("android_sms_app_helper_delegate") {
-  sources = [ "android_sms_app_helper_delegate.h" ]
-
-  deps = [ "//base" ]
-}
-
-source_set("android_sms_pairing_state_tracker") {
-  sources = [
-    "android_sms_pairing_state_tracker.cc",
-    "android_sms_pairing_state_tracker.h",
-  ]
-
-  deps = [ "//base" ]
-}
-
 source_set("prefs") {
   sources = [
     "prefs.cc",
@@ -97,10 +82,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "fake_android_sms_app_helper_delegate.cc",
-    "fake_android_sms_app_helper_delegate.h",
-    "fake_android_sms_pairing_state_tracker.cc",
-    "fake_android_sms_pairing_state_tracker.h",
     "fake_auth_token_validator.cc",
     "fake_auth_token_validator.h",
     "fake_multidevice_setup.cc",
@@ -112,8 +93,6 @@ static_library("test_support") {
   ]
 
   public_deps = [
-    ":android_sms_app_helper_delegate",
-    ":android_sms_pairing_state_tracker",
     ":auth_token_validator",
     ":cpp",
     "//chromeos/ash/services/multidevice_setup",

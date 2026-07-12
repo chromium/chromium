@@ -176,7 +176,6 @@ source_set("app_service") {
       "//ui/native_window_tracker",
 
       # For circular deps.
-      "//chrome/browser/ash/android_sms",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/app_service",
       "//chrome/browser/ash/app_list/search",
@@ -215,7 +214,6 @@ source_set("app_service") {
 
     # TODO(crbug.com/40251079): Remove circular dependencies.
     allow_circular_includes_from += [
-      "//chrome/browser/ash/android_sms",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/app_service",
       "//chrome/browser/ash/app_list/arc",

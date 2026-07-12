@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/multidevice_setup/account_status_change_delegate_notifier_impl.h"
-#include "chromeos/ash/services/multidevice_setup/android_sms_app_installing_status_observer.h"
 #include "chromeos/ash/services/multidevice_setup/global_state_feature_manager_impl.h"
 #include "chromeos/ash/services/multidevice_setup/grandfathered_easy_unlock_host_disabler.h"
 #include "chromeos/ash/services/multidevice_setup/host_backend_delegate_impl.h"
@@ -16,8 +15,6 @@
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_base.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_initializer.h"
 #include "chromeos/ash/services/multidevice_setup/privileged_host_device_setter_impl.h"
-#include "chromeos/ash/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
-#include "chromeos/ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/ash/services/multidevice_setup/wifi_sync_notification_controller.h"
 
@@ -43,16 +40,12 @@ MultiDeviceSetupService::MultiDeviceSetupService(
     device_sync::DeviceSyncClient* device_sync_client,
     AuthTokenValidator* auth_token_validator,
     OobeCompletionTracker* oobe_completion_tracker,
-    AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
-    AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
     bool is_secondary_user)
     : multidevice_setup_(MultiDeviceSetupInitializer::Factory::Create(
           pref_service,
           device_sync_client,
           auth_token_validator,
           oobe_completion_tracker,
-          android_sms_app_helper_delegate,
-          android_sms_pairing_state_tracker,
           is_secondary_user)),
       privileged_host_device_setter_(
           PrivilegedHostDeviceSetterImpl::Factory::Create(

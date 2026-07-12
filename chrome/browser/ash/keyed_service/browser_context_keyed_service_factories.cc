@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service_factory.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
-#include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ash/app_list/app_sync_ui_state_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_vpn_provider_manager_factory.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service_factory.h"
@@ -132,7 +131,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   AccountManagerPolicyControllerFactory::GetInstance();
   AdminTemplateServiceFactory::GetInstance();
   ash::AlwaysOnVpnPreConnectUrlAllowlistServiceFactory::GetInstance();
-  android_sms::AndroidSmsServiceFactory::GetInstance();
   ApkWebAppServiceFactory::GetInstance();
   app_list::ArcVpnProviderManagerFactory::GetInstance();
   app_list::LocalImageSearchServiceFactory::GetInstance();

@@ -19,8 +19,6 @@
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_initializer.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
-#include "chromeos/ash/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
-#include "chromeos/ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,14 +42,11 @@ class FakeMultiDeviceSetupInitializerFactory
 
   ~FakeMultiDeviceSetupInitializerFactory() override = default;
 
-  // MultiDeviceSetupInitializer::Factory:
   std::unique_ptr<MultiDeviceSetupBase> CreateInstance(
       PrefService* pref_service,
       device_sync::DeviceSyncClient* device_sync_client,
       AuthTokenValidator* auth_token_validator,
       OobeCompletionTracker* oobe_completion_tracker,
-      AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
-      AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
       bool is_secondary_user) override {
     EXPECT_TRUE(fake_multidevice_setup_);
     return std::move(fake_multidevice_setup_);
@@ -138,8 +133,6 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
         nullptr /* pref_service */, nullptr /* device_sync_client */,
         nullptr /* auth_token_validator */,
         nullptr /* oobe_completion_tracker */,
-        nullptr /* android_sms_app_helper_delegate */,
-        nullptr /* android_sms_pairing_state_tracker */,
         false /* is_secondary_user */);
   }
 

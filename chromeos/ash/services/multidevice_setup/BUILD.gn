@@ -10,8 +10,6 @@ static_library("multidevice_setup") {
     "account_status_change_delegate_notifier.h",
     "account_status_change_delegate_notifier_impl.cc",
     "account_status_change_delegate_notifier_impl.h",
-    "android_sms_app_installing_status_observer.cc",
-    "android_sms_app_installing_status_observer.h",
     "device_with_connectivity_status.cc",
     "device_with_connectivity_status.h",
     "eligible_host_devices_provider.cc",
@@ -67,8 +65,6 @@ static_library("multidevice_setup") {
     "//chromeos/ash/services/device_sync/public/cpp",
     "//chromeos/ash/services/device_sync/public/mojom",
     "//chromeos/ash/services/multidevice_setup/proto",
-    "//chromeos/ash/services/multidevice_setup/public/cpp:android_sms_app_helper_delegate",
-    "//chromeos/ash/services/multidevice_setup/public/cpp:android_sms_pairing_state_tracker",
     "//chromeos/ash/services/multidevice_setup/public/cpp:auth_token_validator",
     "//chromeos/ash/services/multidevice_setup/public/cpp:oobe_completion_tracker",
     "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
@@ -140,7 +136,6 @@ source_set("unit_tests") {
 
   sources = [
     "account_status_change_delegate_notifier_impl_unittest.cc",
-    "android_sms_app_installing_status_observer_unittest.cc",
     "eligible_host_devices_provider_impl_unittest.cc",
     "feature_state_manager_impl_unittest.cc",
     "global_state_feature_manager_impl_unittest.cc",

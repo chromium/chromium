@@ -196,7 +196,6 @@ std::unique_ptr<FeatureStateManager> FeatureStateManagerImpl::Factory::Create(
     PrefService* pref_service,
     HostStatusProvider* host_status_provider,
     device_sync::DeviceSyncClient* device_sync_client,
-    AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
     const base::flat_map<mojom::Feature,
                          raw_ptr<GlobalStateFeatureManager, CtnExperimental>>&
         global_state_feature_managers,
@@ -204,14 +203,12 @@ std::unique_ptr<FeatureStateManager> FeatureStateManagerImpl::Factory::Create(
   if (test_factory_) {
     return test_factory_->CreateInstance(
         pref_service, host_status_provider, device_sync_client,
-        android_sms_pairing_state_tracker, global_state_feature_managers,
-        is_secondary_user);
+        global_state_feature_managers, is_secondary_user);
   }
 
   return base::WrapUnique(new FeatureStateManagerImpl(
       pref_service, host_status_provider, device_sync_client,
-      android_sms_pairing_state_tracker, global_state_feature_managers,
-      is_secondary_user));
+      global_state_feature_managers, is_secondary_user));
 }
 
 // static
@@ -226,7 +223,6 @@ FeatureStateManagerImpl::FeatureStateManagerImpl(
     PrefService* pref_service,
     HostStatusProvider* host_status_provider,
     device_sync::DeviceSyncClient* device_sync_client,
-    AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
     const base::flat_map<mojom::Feature,
                          raw_ptr<GlobalStateFeatureManager, CtnExperimental>>&
         global_state_feature_managers,
@@ -234,7 +230,6 @@ FeatureStateManagerImpl::FeatureStateManagerImpl(
     : pref_service_(pref_service),
       host_status_provider_(host_status_provider),
       device_sync_client_(device_sync_client),
-      android_sms_pairing_state_tracker_(android_sms_pairing_state_tracker),
       global_state_feature_managers_(global_state_feature_managers),
       is_secondary_user_(is_secondary_user),
       feature_to_enabled_pref_name_map_(GenerateFeatureToEnabledPrefNameMap()),
@@ -242,10 +237,6 @@ FeatureStateManagerImpl::FeatureStateManagerImpl(
       cached_feature_state_map_(GenerateInitialDefaultCachedStateMap()) {
   host_status_observation_.Observe(host_status_provider);
   device_sync_observation_.Observe(device_sync_client);
-  if (android_sms_pairing_state_tracker_) {
-    android_sms_pairing_state_observation_.Observe(
-        android_sms_pairing_state_tracker);
-  }
 
   registrar_.Init(pref_service_);
 
@@ -318,10 +309,6 @@ void FeatureStateManagerImpl::OnNewDevicesSynced() {
 }
 
 void FeatureStateManagerImpl::OnPrefValueChanged() {
-  UpdateFeatureStateCache(true /* notify_observers_of_changes */);
-}
-
-void FeatureStateManagerImpl::OnPairingStateChanged() {
   UpdateFeatureStateCache(true /* notify_observers_of_changes */);
 }
 
