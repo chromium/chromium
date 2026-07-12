@@ -85,6 +85,8 @@ class CORE_EXPORT HighlightPainter {
     // ops done while rotated need coordinates in this rotated space, but ops
     // done outside of these rotations need the original physical rect.
     const PhysicalRect& PhysicalSelectionRect();
+    PhysicalRect ComputePhysicalSelectionRect(unsigned start,
+                                              unsigned end) const;
     const LineRelativeRect& LineRelativeSelectionRect();
 
     void PaintSelectionBackground(
@@ -281,7 +283,6 @@ class CORE_EXPORT HighlightPainter {
   TextDecorationPainter& decoration_painter_;
   const PaintInfo& paint_info_;
   const InlineCursor& cursor_;
-  InlineCursor root_inline_cursor_;
   const FragmentItem& fragment_item_;
   const PhysicalOffset& box_origin_;
   const ComputedStyle& originating_style_;

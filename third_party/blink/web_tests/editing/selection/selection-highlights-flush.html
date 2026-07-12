@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body { margin: 0; display: flex; gap: 20px;
+  font: 18.6px monospace; line-height: 1.2; }
+::selection { background: rgba(0, 128, 255, 0.5); }
+.u { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div>XXX<br>XXX<br>XXX<br>XXX</div>
+<div class="u">XXX<br>XXX<br>XXX<br>XXX</div>
+<script>
+// Image test to validate that translucent selection highlight backgrounds are
+// drawn flush to adjacent lines with no gaps or overlap. This entails rounding
+// the bounds of the highlight rects consistently with non-integer line heights.
+onload = () => {
+  // Select everything.
+  const d = document, r = d.createRange();
+  r.selectNodeContents(d.body);
+  const s = getSelection();
+  s.removeAllRanges();
+  s.addRange(r);
+};
+</script>
+</body>
+</html>

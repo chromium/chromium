@@ -316,9 +316,8 @@ void HighlightPainter::SelectionPaintState::ComputeSelectionStyle(
 
 void HighlightPainter::SelectionPaintState::ComputeSelectionRectIfNeeded() {
   if (!selection_rect_) {
-    PhysicalRect physical =
-        containing_block_.CurrentLocalSelectionRectForText(selection_status_);
-    physical.offset += box_offset_;
+    PhysicalRect physical = ComputePhysicalSelectionRect(
+        selection_status_.start, selection_status_.end);
     LineRelativeRect rotated =
         LineRelativeRect::Create(physical, writing_mode_rotation_);
     selection_rect_.emplace(SelectionRect{physical, rotated});
@@ -329,6 +328,17 @@ const PhysicalRect&
 HighlightPainter::SelectionPaintState::PhysicalSelectionRect() {
   ComputeSelectionRectIfNeeded();
   return selection_rect_->physical;
+}
+
+PhysicalRect
+HighlightPainter::SelectionPaintState::ComputePhysicalSelectionRect(
+    unsigned start,
+    unsigned end) const {
+  LayoutSelectionStatus status{selection_status_};
+  status.start = start;
+  status.end = end;
+  return containing_block_.CurrentLocalSelectionRectForText(status) +
+         box_offset_;
 }
 
 const LineRelativeRect&
@@ -426,7 +436,6 @@ HighlightPainter::HighlightPainter(
       decoration_painter_(decoration_painter),
       paint_info_(paint_info),
       cursor_(cursor),
-      root_inline_cursor_(cursor),
       fragment_item_(fragment_item),
       box_origin_(box_origin),
       originating_style_(style),
@@ -440,8 +449,6 @@ HighlightPainter::HighlightPainter(
       background_auto_dark_mode_(
           PaintAutoDarkMode(originating_style_,
                             DarkModeFilter::ElementRole::kBackground)) {
-  root_inline_cursor_.ExpandRootToContainingBlock();
-
   // Custom highlights and marker-based highlights are defined in terms of
   // DOM ranges in a Text node. Generated text either has no Text node or does
   // not derive its content from the Text node (e.g. ellipsis, soft hyphens).
@@ -836,12 +843,7 @@ const PhysicalRect HighlightPainter::ComputeBackgroundRect(
 const PhysicalRect HighlightPainter::ComputeBackgroundRectForSelection(
     unsigned start_offset,
     unsigned end_offset) {
-  LayoutSelectionStatus selection_status{selection_->Status()};
-  selection_status.start = start_offset;
-  selection_status.end = end_offset;
-  return root_inline_cursor_.CurrentLocalSelectionRectForText(
-             selection_status) +
-         box_origin_;
+  return selection_->ComputePhysicalSelectionRect(start_offset, end_offset);
 }
 
 void HighlightPainter::PaintHighlightOverlays(

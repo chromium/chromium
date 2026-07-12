@@ -59,10 +59,16 @@ inline const DisplayItemClient& AsDisplayItemClient(const InlineCursor& cursor,
   return *cursor.Current().GetDisplayItemClient();
 }
 
-inline PhysicalRect PhysicalBoxRect(const InlineCursor& cursor,
-                                    const PhysicalOffset& paint_offset,
-                                    const PhysicalOffset& parent_offset,
-                                    const LayoutTextCombine* text_combine) {
+struct PhysicalBoxGeometry {
+  PhysicalRect text_paint_rect;
+  PhysicalOffset selection_offset;
+};
+
+inline PhysicalBoxGeometry ComputePhysicalBoxGeometry(
+    const InlineCursor& cursor,
+    const PhysicalOffset& paint_offset,
+    const PhysicalOffset& parent_offset,
+    const LayoutTextCombine* text_combine) {
   PhysicalRect box_rect;
   if (const auto* svg_data = cursor.CurrentItem()->GetSvgFragmentData()) {
     box_rect = PhysicalRect::FastAndLossyFromRectF(svg_data->rect);
@@ -76,16 +82,22 @@ inline PhysicalRect PhysicalBoxRect(const InlineCursor& cursor,
   } else {
     box_rect = cursor.CurrentItem()->RectInContainerFragment();
   }
-  box_rect.offset.left += paint_offset.left;
-  // We round the y-axis to ensure consistent line heights.
-  box_rect.offset.top =
-      LayoutUnit((paint_offset.top + parent_offset.top).Round()) +
-      (box_rect.offset.top - parent_offset.top);
+  box_rect.offset += paint_offset;
   if (text_combine) {
     box_rect.offset.left =
         text_combine->AdjustTextLeftForPaint(box_rect.offset.left);
   }
-  return box_rect;
+  const PhysicalOffset selection_offset = box_rect.offset;
+
+  // Round the physical y-axis to ensure the actual text glyphs are drawn at a
+  // whole-pixel y-offset, and so that text decorations like underlines are
+  // placed consistently relative to the text.
+  //
+  // Also return the unrounded offset as selection_offset, so that selection
+  // highlights can be painted flush with adjacent lines.
+  const LayoutUnit line_top = paint_offset.top + parent_offset.top;
+  box_rect.offset.top += LayoutUnit(line_top.Round()) - line_top;
+  return {box_rect, selection_offset};
 }
 
 inline const InlineCursor& InlineCursorForBlockFlow(
@@ -349,8 +361,9 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   const bool is_rendering_resource = paint_info.IsRenderingResourceSubtree();
   const auto* const text_combine =
       DynamicTo<LayoutTextCombine>(layout_object->Parent());
-  const PhysicalRect physical_box =
-      PhysicalBoxRect(cursor_, paint_offset, parent_offset_, text_combine);
+  const PhysicalBoxGeometry box_geometry = ComputePhysicalBoxGeometry(
+      cursor_, paint_offset, parent_offset_, text_combine);
+  const PhysicalRect& physical_box = box_geometry.text_paint_rect;
 #if DCHECK_IS_ON()
   if (text_combine) [[unlikely]] {
     LayoutTextCombine::AssertStyleIsValid(style);
@@ -391,8 +404,8 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
     // Empty selections might be the boundary of the document selection, and
     // thus need to get recorded. We only need to paint the selection if it
     // has a valid range.
-    selection_for_bounds_recording.emplace(root_inline_cursor,
-                                           physical_box.offset, rotation);
+    selection_for_bounds_recording.emplace(
+        root_inline_cursor, box_geometry.selection_offset, rotation);
     if (selection_for_bounds_recording->Status().HasValidRange())
       selection = &selection_for_bounds_recording.value();
   }
