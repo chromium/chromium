@@ -822,6 +822,112 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void pauseSignalsWhenLastCommittedUrlHasTextFragment() {
+        Tab initialTab = env.prepareTab();
+        // The visible URL reflects a pending navigation without a text fragment, but the last
+        // committed page still has one.
+        when(env.webContents.getVisibleUrl()).thenReturn(JUnitTestGURLs.HTTP_URL);
+        when(env.webContents.getLastCommittedUrl()).thenReturn(JUnitTestGURLs.TEXT_FRAGMENT_URL);
+        doAnswer(
+                        invocation -> {
+                            CustomTabTabObserver observer = invocation.getArgument(0);
+                            initialTab.addObserver(observer);
+                            observer.onAttachedToInitialTab(initialTab);
+                            return null;
+                        })
+                .when(env.tabObserverRegistrar)
+                .registerActivityTabObserver(any());
+        mEngagementSignalObserver =
+                new RealtimeEngagementSignalObserver(
+                        env.tabObserverRegistrar,
+                        env.session.getSessionAsCustomTab(),
+                        mEngagementSignalsCallback,
+                        /* hadScrollDown= */ false);
+        env.tabProvider.setInitialTab(initialTab, TabCreationMode.DEFAULT);
+
+        GestureStateListener listener = captureGestureStateListener();
+
+        // Do a scroll.
+        listener.onScrollStarted(0, SCROLL_EXTENT, false);
+        when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(50);
+        listener.onScrollOffsetOrExtentChanged(50, SCROLL_EXTENT);
+        listener.onScrollEnded(50, SCROLL_EXTENT);
+        RobolectricUtil.runAllBackgroundAndUi();
+        // We shouldn't get scroll signals because the committed page has a text fragment.
+        verify(mEngagementSignalsCallback, never())
+                .onVerticalScrollEvent(anyBoolean(), any(Bundle.class));
+        verify(mEngagementSignalsCallback, never())
+                .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
+    }
+
+    @Test
+    public void keepSignalsPausedAfterSameDocumentNavigation() {
+        initializeTabForTest();
+        GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
+        WebContentsObserver webContentsObserver = captureWebContentsObserver();
+
+        // Navigate to a URL with text fragment.
+        var navigationHandle = createNavigationHandle(JUnitTestGURLs.TEXT_FRAGMENT_URL);
+        webContentsObserver.didFinishNavigationInPrimaryMainFrame(navigationHandle);
+
+        // Same-document navigation to a URL with no text fragment.
+        var navigationHandle2 =
+                createNavigationHandle(JUnitTestGURLs.HTTP_URL, /* isSameDocument= */ true);
+        webContentsObserver.didFinishNavigationInPrimaryMainFrame(navigationHandle2);
+
+        // Do a scroll.
+        listener.onScrollStarted(0, SCROLL_EXTENT, false);
+        when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(50);
+        listener.onScrollOffsetOrExtentChanged(50, SCROLL_EXTENT);
+        listener.onScrollEnded(50, SCROLL_EXTENT);
+        RobolectricUtil.runAllBackgroundAndUi();
+        // We shouldn't get scroll signals.
+        verify(mEngagementSignalsCallback, never())
+                .onVerticalScrollEvent(anyBoolean(), any(Bundle.class));
+        verify(mEngagementSignalsCallback, never())
+                .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
+    }
+
+    @Test
+    public void pauseAndUnpauseSignalsOnPageWithFragment() {
+        initializeTabForTest();
+        GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
+        WebContentsObserver webContentsObserver = captureWebContentsObserver();
+
+        // Navigate to a URL with an element fragment.
+        var navigationHandle = createNavigationHandle(new GURL("https://www.example.com/#target"));
+        webContentsObserver.didFinishNavigationInPrimaryMainFrame(navigationHandle);
+
+        // Do a scroll.
+        listener.onScrollStarted(0, SCROLL_EXTENT, false);
+        when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(24);
+        listener.onScrollOffsetOrExtentChanged(24, SCROLL_EXTENT);
+        listener.onScrollEnded(24, SCROLL_EXTENT);
+        RobolectricUtil.runAllBackgroundAndUi();
+        // We shouldn't get scroll signals.
+        verify(mEngagementSignalsCallback, never())
+                .onVerticalScrollEvent(anyBoolean(), any(Bundle.class));
+        verify(mEngagementSignalsCallback, never())
+                .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
+
+        // Navigate back to a URL with no fragment.
+        var navigationHandle2 = createNavigationHandle(JUnitTestGURLs.HTTP_URL);
+        webContentsObserver.didFinishNavigationInPrimaryMainFrame(navigationHandle2);
+
+        // Do a scroll.
+        listener.onScrollStarted(24, SCROLL_EXTENT, false);
+        when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(50);
+        listener.onScrollOffsetOrExtentChanged(50, SCROLL_EXTENT);
+        listener.onScrollEnded(50, SCROLL_EXTENT);
+        RobolectricUtil.runAllBackgroundAndUi();
+        // We should normally get signals.
+        verify(mEngagementSignalsCallback).onVerticalScrollEvent(eq(false), any(Bundle.class));
+        verify(mEngagementSignalsCallback)
+                .onGreatestScrollPercentageIncreased(eq(50), any(Bundle.class));
+    }
+
+    @Test
     public void doesNotSendSignalsBeforeDownScroll() {
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
@@ -932,8 +1038,8 @@ public class RealtimeEngagementSignalObserverUnitTest {
     @SuppressWarnings("DirectInvocationOnMock")
     private void initializeTabForTest(boolean hadScrollDown) {
         Tab initialTab = env.prepareTab();
-        when(initialTab.getWebContents().getVisibleUrl()).thenReturn(GURL.emptyGURL());
-        when(env.webContents.getVisibleUrl()).thenReturn(GURL.emptyGURL());
+        when(initialTab.getWebContents().getLastCommittedUrl()).thenReturn(GURL.emptyGURL());
+        when(env.webContents.getLastCommittedUrl()).thenReturn(GURL.emptyGURL());
         doAnswer(
                         invocation -> {
                             CustomTabTabObserver observer = invocation.getArgument(0);
@@ -995,7 +1101,19 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     private NavigationHandle createNavigationHandle(GURL url) {
-        var navigationHandle = NavigationHandle.createForTesting(url, false, 0, false);
+        return createNavigationHandle(url, /* isSameDocument= */ false);
+    }
+
+    private NavigationHandle createNavigationHandle(GURL url, boolean isSameDocument) {
+        var navigationHandle =
+                NavigationHandle.createForTesting(
+                        url,
+                        /* isInPrimaryMainFrame= */ true,
+                        isSameDocument,
+                        /* isRendererInitiated= */ false,
+                        /* transition= */ 0,
+                        /* hasUserGesture= */ false,
+                        /* isReload= */ false);
         navigationHandle.callDidFinishForTesting(url);
         return navigationHandle;
     }
@@ -1003,7 +1121,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     private Tab createNewTab() {
         Tab tab = mock(Tab.class);
         var webContents = mock(MockWebContents.class);
-        when(webContents.getVisibleUrl()).thenReturn(GURL.emptyGURL());
+        when(webContents.getLastCommittedUrl()).thenReturn(GURL.emptyGURL());
         when(tab.getWebContents()).thenReturn(webContents);
         return tab;
     }
