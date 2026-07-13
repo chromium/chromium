@@ -13,6 +13,7 @@
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/accessibility_prefs_custom_associator.h"
+#include "ash/accessibility/accessibility_sync_prefs_utils.h"
 #include "ash/accessibility/disable_touchpad_event_rewriter.h"
 #include "ash/accessibility/filter_keys_event_rewriter.h"
 #include "ash/accessibility/flash_screen_controller.h"
@@ -2691,10 +2692,17 @@ class AccessibilityControllerRegisterProfilePrefsTest
   ~AccessibilityControllerRegisterProfilePrefsTest() override = default;
 
  protected:
-  template <size_t N>
-  void CheckPrefsSyncableFlags(const std::array<const char*, N>& pref_names) {
+  void CheckPrefsSyncableFlags(
+      const std::vector<AccessibilityPrefBatchEntry>& batch) {
     const bool expect_sync = GetParam();
-    for (const char* pref_name : pref_names) {
+    for (const AccessibilityPrefBatchEntry& entry : batch) {
+      // Preferences with custom registration are registered elsewhere, not by
+      // the generic batch registration this test exercises, so their sync
+      // flags are not governed by the batch feature and are skipped here.
+      if (entry.has_custom_registration) {
+        continue;
+      }
+      const char* pref_name = entry.pref_name;
       const auto* pref = prefs()->FindPreference(pref_name);
       ASSERT_TRUE(pref) << pref_name;
       const uint32_t flags = pref->registration_flags();
@@ -2713,35 +2721,9 @@ class AccessibilityControllerRegisterProfilePrefsTest
 
 TEST_P(AccessibilityControllerRegisterProfilePrefsTest,
        RegistersVisualPrefsWithExpectedSyncFlags) {
-  constexpr auto kBatch1AccessibilitySyncPrefs = std::to_array<const char*>({
-      prefs::kAccessibilityColorCorrectionEnabled,
-      prefs::kAccessibilityColorCorrectionHasBeenSetup,
-      prefs::kAccessibilityCursorHighlightEnabled,
-      prefs::kAccessibilityCursorColorEnabled,
-      prefs::kAccessibilityCursorColor,
-      prefs::kAccessibilityLargeCursorEnabled,
-      prefs::kAccessibilityLargeCursorDipSize,
-      prefs::kAccessibilityHighContrastEnabled,
-      prefs::kHighContrastAcceleratorDialogHasBeenAccepted,
-      prefs::kAccessibilityCaretHighlightEnabled,
-      prefs::kAccessibilityCaretBlinkInterval,
-      prefs::kAccessibilityFocusHighlightEnabled,
-  });
-  CheckPrefsSyncableFlags(kBatch1AccessibilitySyncPrefs);
-
-  constexpr auto kBatch2AccessibilitySyncPrefs = std::to_array<const char*>({
-      prefs::kAccessibilityReducedAnimationsEnabled,
-  });
-  CheckPrefsSyncableFlags(kBatch2AccessibilitySyncPrefs);
-
-  constexpr auto kBatch3AccessibilitySyncPrefs = std::to_array<const char*>(
-      {prefs::kAccessibilityScreenMagnifierEnabled,
-       prefs::kAccessibilitySelectToSpeakEnabled,
-       prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted,
-       prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted,
-       prefs::kSelectToSpeakAcceleratorDialogHasBeenAccepted,
-       prefs::kAccessibilityScreenMagnifierScale});
-  CheckPrefsSyncableFlags(kBatch3AccessibilitySyncPrefs);
+  CheckPrefsSyncableFlags(GetSyncableAccessibilityPrefsBatch1());
+  CheckPrefsSyncableFlags(GetSyncableAccessibilityPrefsBatch2());
+  CheckPrefsSyncableFlags(GetSyncableAccessibilityPrefsBatch3());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
