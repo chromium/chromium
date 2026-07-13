@@ -136,6 +136,7 @@
   E(kActionDevToolsConsole, IDC_DEV_TOOLS_CONSOLE) \
   E(kActionDevToolsDevices, IDC_DEV_TOOLS_DEVICES) \
   E(kActionFeedback, IDC_FEEDBACK) \
+  E(kActionReportUnsafeSite, IDC_REPORT_UNSAFE_SITE) \
   E(kActionShowBookmarkBar, IDC_SHOW_BOOKMARK_BAR) \
   E(kActionBookmarkBarSubmenuAlwaysShow, \
     IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW) \
