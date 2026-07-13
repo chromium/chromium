@@ -2031,6 +2031,7 @@ Called by update_net_error_codes.py.-->
   <int value="-202" label="CERT_AUTHORITY_INVALID"/>
   <int value="-201" label="CERT_DATE_INVALID"/>
   <int value="-200" label="CERT_COMMON_NAME_INVALID"/>
+  <int value="-190" label="MULTICAST_NOT_ALLOWED"/>
   <int value="-189" label="CONTROL_MSG_TOO_BIG"/>
   <int value="-188" label="PROXY_DELEGATE_CANCELED_CONNECT_RESPONSE"/>
   <int value="-187" label="PROXY_DELEGATE_CANCELED_CONNECT_REQUEST"/>
@@ -8572,6 +8573,8 @@ from previous Chrome versions.
   <int value="-1928198763" label="enable-async-dns"/>
   <int value="-1927968708" label="OmniboxPedalsAndroidBatch1:disabled"/>
   <int value="-1927080237" label="Vulkan:enabled"/>
+  <int value="-1926746234"
+      label="DirectSocketsUdpSendRequireMulticastPermissionPolicy:disabled"/>
   <int value="-1926236767" label="DynamicColorButtonsAndroid:enabled"/>
   <int value="-1926124919" label="WebViewOriginTrials:enabled"/>
   <int value="-1925573731" label="CreateShortcutIgnoresManifest:enabled"/>
@@ -16332,6 +16335,8 @@ from previous Chrome versions.
       label="AutofillEnableMerchantOptOutErrorDialog:enabled"/>
   <int value="560062958" label="Cr2023MacFontSmoothing:disabled"/>
   <int value="560369327" label="LauncherImageSearch:disabled"/>
+  <int value="560843639"
+      label="DirectSocketsUdpSendRequireMulticastPermissionPolicy:enabled"/>
   <int value="560953355"
       label="ExtractRelatedSearchesFromPrefetchedZPSResponse:disabled"/>
   <int value="561162418" label="DrawKeyNativeEdgeToEdge:disabled"/>
@@ -22218,6 +22223,7 @@ Called by update_net_error_codes.py.-->
   <int value="187" label="PROXY_DELEGATE_CANCELED_CONNECT_REQUEST"/>
   <int value="188" label="PROXY_DELEGATE_CANCELED_CONNECT_RESPONSE"/>
   <int value="189" label="CONTROL_MSG_TOO_BIG"/>
+  <int value="190" label="MULTICAST_NOT_ALLOWED"/>
   <int value="200" label="CERT_COMMON_NAME_INVALID"/>
   <int value="201" label="CERT_DATE_INVALID"/>
   <int value="202" label="CERT_AUTHORITY_INVALID"/>

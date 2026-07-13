@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/report.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
@@ -217,6 +218,23 @@ void UDPWritableStreamWrapper::ErrorStream(int32_t error_code) {
   // Scope is needed because there's no ScriptState* on the call stack for
   // ScriptValue.
   ScriptState::Scope scope{script_state};
+
+  // If sending to a multicast address was rejected due to missing
+  // 'direct-sockets-multicast' Permissions Policy, report a clear console
+  // error message so web developers understand why the stream was aborted.
+  // Note: This check (and console message) was added after the API shipped to
+  // ease transition for developers who might have relied on the previous
+  // behavior.
+  if (error_code == net::ERR_MULTICAST_NOT_ALLOWED &&
+      ExecutionContext::From(script_state)) {
+    ExecutionContext::From(script_state)
+        ->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kError,
+            "DirectSockets UDP packet sending failed with "
+            "ERR_MULTICAST_NOT_ALLOWED. Sending to a multicast address "
+            "requires 'direct-sockets-multicast' permissions policy."));
+  }
 
   auto message =
       String{"Stream aborted by the remote: " + net::ErrorToString(error_code)};

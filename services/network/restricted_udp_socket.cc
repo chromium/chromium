@@ -10,6 +10,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_host_resolver.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/udp_socket.h"
@@ -95,6 +96,12 @@ void RestrictedUDPSocket::SendTo(base::span<const uint8_t> data,
                                  SendToCallback callback) {
   // If a raw IP address is supplied, call SendTo() immediately.
   if (net::IPAddress address; address.AssignFromIPLiteral(dest_addr.host())) {
+    if (base::FeatureList::IsEnabled(
+            features::kDirectSocketsUdpSendRequireMulticastPermissionPolicy) &&
+        !allow_multicast_ && address.IsMulticast()) {
+      std::move(callback).Run(net::ERR_MULTICAST_NOT_ALLOWED);
+      return;
+    }
     udp_socket_->SendTo(net::IPEndPoint(std::move(address), dest_addr.port()),
                         data, traffic_annotation_, std::move(callback));
     return;
@@ -131,8 +138,16 @@ void RestrictedUDPSocket::OnResolveCompleteForSendTo(
     return;
   }
 
-  udp_socket_->SendTo(resolved_addresses.front(), std::move(data),
-                      traffic_annotation_, std::move(callback));
+  const net::IPEndPoint& dest_addr = resolved_addresses.front();
+  if (base::FeatureList::IsEnabled(
+          features::kDirectSocketsUdpSendRequireMulticastPermissionPolicy) &&
+      !allow_multicast_ && dest_addr.address().IsMulticast()) {
+    std::move(callback).Run(net::ERR_MULTICAST_NOT_ALLOWED);
+    return;
+  }
+
+  udp_socket_->SendTo(dest_addr, std::move(data), traffic_annotation_,
+                      std::move(callback));
 }
 
 }  // namespace network

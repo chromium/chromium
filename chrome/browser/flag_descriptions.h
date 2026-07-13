@@ -2080,6 +2080,14 @@ inline constexpr char kDirectSocketsInSharedWorkersDescription[] =
     "Enables access to the Direct Sockets API in shared workers. See "
     "https://github.com/WICG/direct-sockets for details.";
 
+inline constexpr char
+    kDirectSocketsUdpSendRequireMulticastPermissionPolicyName[] =
+        "Direct Sockets UDP send require multicast permission policy";
+inline constexpr char
+    kDirectSocketsUdpSendRequireMulticastPermissionPolicyDescription[] =
+        "Requires the 'direct-sockets-multicast' permissions policy to send or "
+        "connect to multicast addresses using the Direct Sockets API.";
+
 inline constexpr char kEnableIsolatedWebAppUnmanagedInstallName[] =
     "Enable Isolated Web App unmanaged installation";
 inline constexpr char kEnableIsolatedWebAppUnmanagedInstallDescription[] =

@@ -424,3 +424,36 @@ async function testUdpMessageConfiguration(socketOptions, message) {
     return "testUdpMessageConfiguration failed: " + error;
   }
 }
+
+async function sendUdpToMulticastBound(multicastAddress) {
+  try {
+    const socket = new UDPSocket({ localAddress: '0.0.0.0' });
+    const { writable } = await socket.opened;
+    const writer = writable.getWriter();
+
+    await writer.write({
+      data: new Uint8Array([1, 2, 3]),
+      remoteAddress: multicastAddress,
+      remotePort: 5353
+    });
+    writer.releaseLock();
+    await socket.close();
+    return "sendUdpToMulticastBound succeeded.";
+  } catch (error) {
+    return "sendUdpToMulticastBound failed: " + error;
+  }
+}
+
+async function openUdpToMulticastConnected(multicastAddress) {
+  try {
+    const socket = new UDPSocket({
+      remoteAddress: multicastAddress,
+      remotePort: 5353
+    });
+    await socket.opened;
+    await socket.close();
+    return "openUdpToMulticastConnected succeeded.";
+  } catch (error) {
+    return "openUdpToMulticastConnected failed: " + error;
+  }
+}

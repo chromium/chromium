@@ -5473,6 +5473,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDirectSocketsInSharedWorkersName,
      flag_descriptions::kDirectSocketsInSharedWorkersDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kDirectSocketsInSharedWorkers)},
+    {"direct-sockets-udp-send-require-multicast-permission-policy",
+     flag_descriptions::
+         kDirectSocketsUdpSendRequireMulticastPermissionPolicyName,
+     flag_descriptions::
+         kDirectSocketsUdpSendRequireMulticastPermissionPolicyDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         network::features::
+             kDirectSocketsUdpSendRequireMulticastPermissionPolicy)},
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-chromeos-isolated-web-app-set-shape",
      flag_descriptions::kEnableChromeOSIsolatedWebAppSetShapeName,

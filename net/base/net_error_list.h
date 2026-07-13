@@ -486,6 +486,10 @@ NET_ERROR(PROXY_DELEGATE_CANCELED_CONNECT_RESPONSE, -188)
 // message control data exceeds size threshold).
 NET_ERROR(CONTROL_MSG_TOO_BIG, -189)
 
+// Direct Sockets attempted to connect to or send a packet to a multicast
+// address without 'direct-sockets-multicast' permissions policy.
+NET_ERROR(MULTICAST_NOT_ALLOWED, -190)
+
 // Certificate error codes
 //
 // The values of certificate error codes must be consecutive.

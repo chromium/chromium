@@ -666,6 +666,9 @@ BASE_FEATURE_PARAM(bool,
                    &kRestrictForbiddenSecurityHeaders,
                    false);
 
+BASE_FEATURE(kDirectSocketsUdpSendRequireMulticastPermissionPolicy,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kBrowserInitiatedFileUploadValidation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

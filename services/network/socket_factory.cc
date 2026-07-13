@@ -22,6 +22,7 @@
 #include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/url_request/url_request_context.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_host_resolver.h"
 #include "services/network/restricted_udp_socket.h"
 #include "services/network/tls_client_socket.h"
@@ -72,6 +73,12 @@ void SocketFactory::CreateRestrictedUDPSocket(
                        std::move(callback));
       break;
     case mojom::RestrictedUDPSocketMode::CONNECTED:
+      if (base::FeatureList::IsEnabled(
+              features::
+                  kDirectSocketsUdpSendRequireMulticastPermissionPolicy)) {
+        // Checked in DirectSocketsServiceImpl::OnResolveCompleteForUDPSocket.
+        CHECK(allow_multicast || !addr.address().IsMulticast());
+      }
       udp_socket->Connect(addr, /*options=*/
                           params ? std::move(params->socket_options) : nullptr,
                           std::move(callback));

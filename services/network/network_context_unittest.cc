@@ -4285,6 +4285,142 @@ TEST_F(NetworkContextTest, CreateRestrictedUDPSocket) {
   }
 }
 
+struct SendUdpToMulticastParams {
+  bool flag_enabled;
+  bool allow_multicast;
+  bool connected_else_bound_socket;
+};
+
+class RestrictedUDPSocketMulticastTest
+    : public NetworkContextTest,
+      public testing::WithParamInterface<SendUdpToMulticastParams> {
+ public:
+  RestrictedUDPSocketMulticastTest() {
+    if (GetParam().flag_enabled) {
+      feature_list_.InitAndEnableFeature(
+          features::kDirectSocketsUdpSendRequireMulticastPermissionPolicy);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kDirectSocketsUdpSendRequireMulticastPermissionPolicy);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RestrictedUDPSocketMulticastTest,
+    testing::Values(
+        SendUdpToMulticastParams{/*flag_enabled=*/false,
+                                 /*allow_multicast=*/false,
+                                 /*connected_else_bound_socket=*/false},
+        SendUdpToMulticastParams{/*flag_enabled=*/false,
+                                 /*allow_multicast=*/false,
+                                 /*connected_else_bound_socket=*/true},
+        SendUdpToMulticastParams{/*flag_enabled=*/false,
+                                 /*allow_multicast=*/true,
+                                 /*connected_else_bound_socket=*/false},
+        SendUdpToMulticastParams{/*flag_enabled=*/false,
+                                 /*allow_multicast=*/true,
+                                 /*connected_else_bound_socket=*/true},
+        SendUdpToMulticastParams{/*flag_enabled=*/true,
+                                 /*allow_multicast=*/false,
+                                 /*connected_else_bound_socket=*/false},
+        SendUdpToMulticastParams{/*flag_enabled=*/true,
+                                 /*allow_multicast=*/false,
+                                 /*connected_else_bound_socket=*/true},
+        SendUdpToMulticastParams{/*flag_enabled=*/true,
+                                 /*allow_multicast=*/true,
+                                 /*connected_else_bound_socket=*/false},
+        SendUdpToMulticastParams{/*flag_enabled=*/true,
+                                 /*allow_multicast=*/true,
+                                 /*connected_else_bound_socket=*/true}),
+    [](const testing::TestParamInfo<SendUdpToMulticastParams>& info) {
+      return base::StringPrintf(
+          "%s_%s_%s", info.param.flag_enabled ? "FlagEnabled" : "FlagDisabled",
+          info.param.allow_multicast ? "MulticastAllowed" : "MulticastDenied",
+          info.param.connected_else_bound_socket ? "Connected" : "Bound");
+    });
+
+TEST_P(RestrictedUDPSocketMulticastTest, MulticastSendOrConnect) {
+  auto resolver = std::make_unique<net::MockHostResolver>();
+  resolver->rules()->AddRule("mcast.test", "224.0.0.251");
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  mojo::Remote<mojom::RestrictedUDPSocket> socket;
+  const SendUdpToMulticastParams& params = GetParam();
+
+  if (params.connected_else_bound_socket) {
+    base::test::TestFuture<int32_t, const std::optional<net::IPEndPoint>&>
+        create_future;
+    if (params.flag_enabled && !params.allow_multicast) {
+      EXPECT_CHECK_DEATH(network_context->CreateRestrictedUDPSocket(
+          net::IPEndPoint(net::IPAddress(224, 0, 0, 251), 5353),
+          mojom::RestrictedUDPSocketMode::CONNECTED,
+          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+          /*params=*/nullptr, socket.BindNewPipeAndPassReceiver(),
+          /*listener=*/mojo::NullRemote(),
+          /*allow_multicast=*/params.allow_multicast,
+          /*allow_source_specific_multicast=*/false,
+          create_future.GetCallback()));
+    } else {
+      network_context->CreateRestrictedUDPSocket(
+          net::IPEndPoint(net::IPAddress(224, 0, 0, 251), 5353),
+          mojom::RestrictedUDPSocketMode::CONNECTED,
+          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+          /*params=*/nullptr, socket.BindNewPipeAndPassReceiver(),
+          /*listener=*/mojo::NullRemote(),
+          /*allow_multicast=*/params.allow_multicast,
+          /*allow_source_specific_multicast=*/false,
+          create_future.GetCallback());
+      EXPECT_NE(create_future.Get<0>(), net::ERR_MULTICAST_NOT_ALLOWED);
+    }
+  } else {
+    base::test::TestFuture<int32_t, const std::optional<net::IPEndPoint>&>
+        create_future;
+    network_context->CreateRestrictedUDPSocket(
+        GetLocalHostWithAnyPort(), mojom::RestrictedUDPSocketMode::BOUND,
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+        /*params=*/nullptr, socket.BindNewPipeAndPassReceiver(),
+        /*listener=*/mojo::NullRemote(),
+        /*allow_multicast=*/params.allow_multicast,
+        /*allow_source_specific_multicast=*/false, create_future.GetCallback());
+    ASSERT_EQ(create_future.Get<0>(), net::OK);
+
+    const std::vector<uint8_t> test_msg{1, 2, 3};
+
+    // SendTo() with a multicast IP literal.
+    {
+      base::test::TestFuture<int32_t> send_future;
+      socket->SendTo(test_msg, net::HostPortPair("224.0.0.251", 5353),
+                     net::DnsQueryType::UNSPECIFIED, send_future.GetCallback());
+      if (params.flag_enabled && !params.allow_multicast) {
+        EXPECT_EQ(send_future.Get(), net::ERR_MULTICAST_NOT_ALLOWED);
+      } else {
+        EXPECT_NE(send_future.Get(), net::ERR_MULTICAST_NOT_ALLOWED);
+      }
+    }
+
+    // SendTo() with a hostname that resolves to a multicast address.
+    {
+      base::test::TestFuture<int32_t> send_future;
+      socket->SendTo(test_msg, net::HostPortPair("mcast.test", 5353),
+                     net::DnsQueryType::UNSPECIFIED, send_future.GetCallback());
+      if (params.flag_enabled && !params.allow_multicast) {
+        EXPECT_EQ(send_future.Get(), net::ERR_MULTICAST_NOT_ALLOWED);
+      } else {
+        EXPECT_NE(send_future.Get(), net::ERR_MULTICAST_NOT_ALLOWED);
+      }
+    }
+  }
+}
+
 TEST_F(NetworkContextTest, CreateNetLogExporter) {
   // Basic flow around start/stop.
   std::unique_ptr<NetworkContext> network_context =

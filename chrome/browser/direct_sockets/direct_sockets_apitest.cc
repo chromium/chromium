@@ -773,6 +773,56 @@ class IsolatedWebAppApiTest : public web_app::IsolatedWebAppBrowserTestHarness {
     web_app::IsolatedWebAppUrlInfo url_info = app->Install(profile()).value();
     return OpenApp(url_info.app_id());
   }
+
+  void TestMulticastSend(bool with_pna,
+                         bool with_multicast,
+                         bool connected_else_bound,
+                         std::string_view expected_result) {
+    content::RenderFrameHost* app_frame =
+        InstallAndOpenIsolatedWebApp(with_pna, with_multicast);
+
+    std::string script;
+    if (connected_else_bound) {
+      script = R"(
+        (async () => {
+          try {
+            const socket = new UDPSocket({
+              remoteAddress: '239.255.255.250',
+              remotePort: 1900
+            });
+            await socket.opened;
+            await socket.close();
+            return 'success';
+          } catch (e) {
+            return e.message;
+          }
+        })()
+      )";
+    } else {
+      script = R"(
+        (async () => {
+          try {
+            const socket = new UDPSocket({
+              localAddress: '0.0.0.0'
+            });
+            const { writable } = await socket.opened;
+            const writer = writable.getWriter();
+            await writer.write({
+              data: new Uint8Array([1, 2, 3]),
+              remoteAddress: '239.255.255.250',
+              remotePort: 1900
+            });
+            writer.releaseLock();
+            await socket.close();
+            return 'success';
+          } catch (e) {
+            return e.message;
+          }
+        })()
+      )";
+    }
+    EXPECT_EQ(expected_result, EvalJs(app_frame, script));
+  }
 };
 
 using IsolatedWebAppMulticastApiTest = IsolatedWebAppApiTest;
@@ -1835,25 +1885,55 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppDirectSocketsPermissionPrompt,
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiTest,
-                       MulticastSendWithoutPrivatePolicyBypass) {
-  content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp(
-      /*with_pna=*/false, /*with_multicast=*/false);
+                       MulticastConnectedWithPnaAndMulticastPolicy) {
+  TestMulticastSend(/*with_pna=*/true, /*with_multicast=*/true,
+                    /*connected_else_bound=*/true, "success");
+}
 
-  const std::string script = R"(
-    (async () => {
-      try {
-        const socket = new UDPSocket({ remoteAddress: '239.255.255.250', remotePort: 1900 });
-        const { writable } = await socket.opened;
-        const writer = writable.getWriter();
-        await writer.write({ data: new TextEncoder().encode("M-SEARCH * HTTP/1.1\r\n...") });
-        writer.releaseLock();
-        await socket.close();
-        return 'success';
-      } catch (e) {
-        return e.message;
-      }
-    })()
-  )";
-  EXPECT_EQ("Access to local network is blocked.", EvalJs(app_frame, script));
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiTest,
+                       MulticastBoundWithPnaAndMulticastPolicy) {
+  TestMulticastSend(/*with_pna=*/true, /*with_multicast=*/true,
+                    /*connected_else_bound=*/false, "success");
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiTest,
+                       MulticastConnectedWithPnaWithoutMulticastPolicy) {
+  TestMulticastSend(/*with_pna=*/true, /*with_multicast=*/false,
+                    /*connected_else_bound=*/true, "Network Error.");
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiTest,
+                       MulticastBoundWithPnaWithoutMulticastPolicy) {
+  TestMulticastSend(
+      /*with_pna=*/true, /*with_multicast=*/false,
+      /*connected_else_bound=*/false,
+      "Stream aborted by the remote: net::ERR_MULTICAST_NOT_ALLOWED");
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiTest,
+                       MulticastConnectedWithoutPnaWithMulticastPolicy) {
+  TestMulticastSend(/*with_pna=*/false, /*with_multicast=*/true,
+                    /*connected_else_bound=*/true,
+                    "Access to local network is blocked.");
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiTest,
+                       MulticastBoundWithoutPnaWithMulticastPolicy) {
+  TestMulticastSend(/*with_pna=*/false, /*with_multicast=*/true,
+                    /*connected_else_bound=*/false,
+                    "Access to local network is blocked.");
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiTest,
+                       MulticastConnectedWithoutPnaWithoutMulticastPolicy) {
+  TestMulticastSend(/*with_pna=*/false, /*with_multicast=*/false,
+                    /*connected_else_bound=*/true, "Network Error.");
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiTest,
+                       MulticastBoundWithoutPnaWithoutMulticastPolicy) {
+  TestMulticastSend(/*with_pna=*/false, /*with_multicast=*/false,
+                    /*connected_else_bound=*/false,
+                    "Access to local network is blocked.");
 }
 }  // namespace

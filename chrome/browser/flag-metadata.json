@@ -2555,6 +2555,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "direct-sockets-udp-send-require-multicast-permission-policy",
+    "owners": [ "//content/browser/direct_sockets/OWNERS" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "disable-accelerated-2d-canvas",
     "owners": [ "fserb@chromium.org" ],
     "expiry_milestone": -1
