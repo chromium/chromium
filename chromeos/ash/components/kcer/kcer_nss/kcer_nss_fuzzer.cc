@@ -103,7 +103,9 @@ enum class Method {
   kSetKeyNickname,
   kSetKeyPermissions,
   kSetCertProvisioningProfileId,
-  kMaxValue = kSetCertProvisioningProfileId,
+  kGetBrowserEnterpriseClientCertTag,
+  kSetBrowserEnterpriseClientCertTag,
+  kMaxValue = kSetBrowserEnterpriseClientCertTag,
 };
 
 // Test-only overloads for better errors from EXPECT_EQ, etc.
@@ -195,6 +197,9 @@ struct FuzzKey {
     // empty values by default.
     key_permissions = chaps::KeyPermissions();
     cert_provisioning_profile_id = "";
+    // Browser enterprise client cert tag defaults to absent (false) until
+    // SetBrowserEnterpriseClientCertTag has been called on this key.
+    browser_enterprise_client_cert_tag = false;
   }
   FuzzKey(FuzzKey&&) = default;
   FuzzKey& operator=(FuzzKey&&) = default;
@@ -225,6 +230,9 @@ struct FuzzKey {
   std::optional<std::string> nickname;
   std::optional<chaps::KeyPermissions> key_permissions;
   std::optional<std::string> cert_provisioning_profile_id;
+  // Mirrors the kCkaBrowserEnterpriseClientCertKey attribute on the underlying
+  // key. False == attribute not set; true == set to CK_TRUE.
+  bool browser_enterprise_client_cert_tag = false;
 };
 
 //==============================================================================
@@ -617,9 +625,11 @@ class KcerFuzzer {
   void RunGetKeyInfo();
   void RunGetKeyPermissions();
   void RunGetCertProvisioningProfileId();
+  void RunGetBrowserEnterpriseClientCertTag();
   void RunSetKeyNickname();
   void RunSetKeyPermissions();
   void RunSetCertProvisioningProfileId();
+  void RunSetBrowserEnterpriseClientCertTag();
 
   // Returns a randomized set of tokens. Can return tokens that were not
   // initialized for the current instance of Kcer.
@@ -741,12 +751,16 @@ void KcerFuzzer::RunNextMethod() {
       return RunGetKeyPermissions();
     case Method::kGetCertProvisioningProfileId:
       return RunGetCertProvisioningProfileId();
+    case Method::kGetBrowserEnterpriseClientCertTag:
+      return RunGetBrowserEnterpriseClientCertTag();
     case Method::kSetKeyNickname:
       return RunSetKeyNickname();
     case Method::kSetKeyPermissions:
       return RunSetKeyPermissions();
     case Method::kSetCertProvisioningProfileId:
       return RunSetCertProvisioningProfileId();
+    case Method::kSetBrowserEnterpriseClientCertTag:
+      return RunSetBrowserEnterpriseClientCertTag();
   }
 }
 
@@ -1430,6 +1444,31 @@ void KcerFuzzer::RunGetCertProvisioningProfileId() {
             expected_key->cert_provisioning_profile_id);
 }
 
+void KcerFuzzer::RunGetBrowserEnterpriseClientCertTag() {
+  FuzzKey* expected_key = nullptr;
+  PrivateKeyHandle key_handle = GeneratePrivateKeyHandle(&expected_key);
+
+  base::test::TestFuture<base::expected<bool, Error>> tag_waiter;
+  kcer_->GetBrowserEnterpriseClientCertTag(key_handle,
+                                           tag_waiter.GetCallback());
+
+  if (available_tokens_.empty() ||
+      (key_handle.GetTokenInternal().has_value() &&
+       !available_tokens_.contains(key_handle.GetTokenInternal().value()))) {
+    ASSERT_FALSE(tag_waiter.Get().has_value());
+    EXPECT_EQ(tag_waiter.Get().error(), Error::kTokenIsNotAvailable);
+    return;
+  }
+
+  if (!expected_key) {
+    EXPECT_FALSE(tag_waiter.Get().has_value());
+    return;
+  }
+  ASSERT_TRUE(tag_waiter.Get().has_value());
+  EXPECT_EQ(tag_waiter.Get().value(),
+            expected_key->browser_enterprise_client_cert_tag);
+}
+
 void KcerFuzzer::RunSetKeyNickname() {
   FuzzKey* expected_key = nullptr;
   PrivateKeyHandle key_handle = GeneratePrivateKeyHandle(&expected_key);
@@ -1493,6 +1532,30 @@ void KcerFuzzer::RunSetCertProvisioningProfileId() {
 
   EXPECT_TRUE(set_cert_prov_id_waiter.Get().has_value());
   expected_key->cert_provisioning_profile_id = cert_prov_id;
+}
+
+void KcerFuzzer::RunSetBrowserEnterpriseClientCertTag() {
+  FuzzKey* expected_key = nullptr;
+  PrivateKeyHandle key_handle = GeneratePrivateKeyHandle(&expected_key);
+
+  base::test::TestFuture<base::expected<void, Error>> set_tag_waiter;
+  kcer_->SetBrowserEnterpriseClientCertTag(key_handle,
+                                           set_tag_waiter.GetCallback());
+  if (available_tokens_.empty() ||
+      (key_handle.GetTokenInternal().has_value() &&
+       !available_tokens_.contains(key_handle.GetTokenInternal().value()))) {
+    ASSERT_FALSE(set_tag_waiter.Get().has_value());
+    EXPECT_EQ(set_tag_waiter.Get().error(), Error::kTokenIsNotAvailable);
+    return;
+  }
+
+  if (!expected_key) {
+    EXPECT_FALSE(set_tag_waiter.Get().has_value());
+    return;
+  }
+
+  EXPECT_TRUE(set_tag_waiter.Get().has_value());
+  expected_key->browser_enterprise_client_cert_tag = true;
 }
 
 base::flat_set<Token> KcerFuzzer::SelectTokens() {
