@@ -37,6 +37,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -62,6 +63,8 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.S
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link TabSearchOverlayCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -282,6 +285,9 @@ public class TabSearchOverlayCoordinatorUnitTest {
     }
 
     private void assertOverlayHidden() {
+        // Idle the main looper to ensure all hide transition frame updates and animator listener
+        // callbacks (which toggle visibility to GONE) execute completely before verification.
+        ShadowLooper.idleMainLooper(1, TimeUnit.SECONDS);
         assertFalse(mCoordinator.isVisible());
         assertEquals(View.GONE, mPanelContainer.getVisibility());
         verify(mLocationBarCoordinator).clearOmniboxFocus();

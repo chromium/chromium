@@ -176,6 +176,7 @@ public class TabSearchOverlayCoordinator {
         if (mSearchUiCoordinator == null) {
             mSearchUiCoordinator = new SearchUiCoordinator(mActivity, mSearchBoxDataProvider);
             mSearchUiCoordinator.getLocationBarUiOverrides().setVoiceEntrypointAllowed(false);
+            mSearchUiCoordinator.getLocationBarUiOverrides().setLensEntrypointAllowed(false);
             mSearchUiCoordinator.getLocationBarUiOverrides().setEmbedderControlledHint(true);
         }
 
@@ -238,7 +239,7 @@ public class TabSearchOverlayCoordinator {
         setSearchUiElements();
 
         TabSearchOverlayViewBinder.ViewHolder viewHolder =
-                new TabSearchOverlayViewBinder.ViewHolder(panelContainer, scrim);
+                new TabSearchOverlayViewBinder.ViewHolder(panelContainer, scrim, panelView);
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mModel, viewHolder, TabSearchOverlayViewBinder::bind);

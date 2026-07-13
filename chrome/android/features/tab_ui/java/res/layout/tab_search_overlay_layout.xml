@@ -18,7 +18,7 @@ found in the LICENSE file.
     <!-- The left-anchored search panel elevated over SideUi containers -->
     <LinearLayout
         android:id="@+id/tab_search_overlay_panel"
-        android:layout_width="264dp"
+        android:layout_width="@dimen/tab_search_overlay_width"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@drawable/tab_search_overlay_panel_bg"

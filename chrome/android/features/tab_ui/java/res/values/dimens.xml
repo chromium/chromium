@@ -240,4 +240,7 @@ found in the LICENSE file.
     <dimen name="vertical_tabs_header_button_padding">4dp</dimen>
     <dimen name="vertical_tabs_header_button_gap">2dp</dimen>
     <dimen name="vertical_tabs_header_button_collapsed_margin_end">8dp</dimen>
+
+    <!-- Dimens for tab search -->
+    <dimen name="tab_search_overlay_width">264dp</dimen>
 </resources>
