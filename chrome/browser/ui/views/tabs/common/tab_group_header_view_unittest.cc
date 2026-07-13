@@ -126,6 +126,41 @@ TEST_P(TabGroupHeaderViewTest, TooltipText) {
   EXPECT_EQ(header->GetTooltipText(), expected_tooltip);
 }
 
+TEST_P(TabGroupHeaderViewTest, TitleLabelHeightWhenConstrained) {
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
+
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
+
+  EXPECT_CALL(delegate, GetTabGroup())
+      .WillRepeatedly(testing::ReturnRef(mock_tab_group));
+
+  tabs::TabGroupData data;
+  data.visual_data = visual_data;
+
+  EXPECT_CALL(delegate, GetGroupContentString())
+      .WillRepeatedly(testing::Return(u"1 tab"));
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* header = widget->SetContentsView(
+      std::make_unique<TabGroupHeaderView>(delegate, nullptr, &visual_data));
+  header->OnDataChanged(data);
+
+  // Set the header bounds to a height smaller than the label's preferred line
+  // height.
+  const int constrained_height = 10;
+  header->SetBounds(0, 0, 200, constrained_height);
+  header->DeprecatedLayoutImmediately();
+
+  // The label height should be constrained_height rather than snapping to 0.
+  EXPECT_GT(header->title_label_for_testing()->bounds().height(), 0);
+  EXPECT_EQ(header->title_label_for_testing()->bounds().height(),
+            constrained_height);
+}
+
 TEST_P(TabGroupHeaderViewTest, ShowHoverCardOnMouseEnter) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(

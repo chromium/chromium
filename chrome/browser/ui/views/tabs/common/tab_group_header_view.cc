@@ -163,12 +163,17 @@ TabGroupHeaderView::TabGroupHeaderView(
                  views::MaximumFlexSizeRule::kPreferred));
   // Let the header label grow to fill any extra available space but at a lower
   // order so that things like the editor bubble button will be shown over the
-  // label.
+  // label. Set the cross axis minimum flex size rule to kScaleToZero so that
+  // as much of the label shows as possible if the height is taller than the max
+  // height.
   group_header_label_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(
+          views::LayoutOrientation::kHorizontal,
           views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
-          views::MaximumFlexSizeRule::kUnbounded)
+          views::MaximumFlexSizeRule::kUnbounded,
+          /*adjust_height_for_width=*/false,
+          views::MinimumFlexSizeRule::kScaleToZero)
           .WithOrder(2));
   // The collapse icon should always be seen.
   // Let the collapse icon grow to fill the remaining available space while

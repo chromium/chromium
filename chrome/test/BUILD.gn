@@ -7333,6 +7333,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/glic",
       "//chrome/browser/ui/views/page_action:test_support",
       "//chrome/browser/ui/views/page_action:unit_tests",
+      "//chrome/browser/ui/views/tabs/common:unit_tests",
       "//chrome/browser/ui/views/tabs/glic",
       "//chrome/browser/ui/views/tabs/vertical:unit_tests",
       "//chrome/browser/ui/views/toolbar:unit_tests",
