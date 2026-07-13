@@ -17,6 +17,7 @@
 #include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
+#include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -47,6 +48,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace indigo {
 
@@ -384,7 +386,8 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ASSERT_TRUE(subframe.get());
   EXPECT_EQ(subframe->GetLastCommittedURL(), component_extension_url);
   EXPECT_FALSE(subframe->IsErrorDocument());
-  EXPECT_EQ("Indigo", content::EvalJs(subframe.get(), "document.title"));
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_INDIGO_TITLE),
+            content::EvalJs(subframe.get(), "document.title"));
   EXPECT_TRUE(content::EvalJs(subframe.get(), R"js(
     (() => {
       const shadowRoot = document.body.querySelector(

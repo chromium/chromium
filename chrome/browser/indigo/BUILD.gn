@@ -187,6 +187,7 @@ source_set("browser_tests") {
     ":test_support",
     "//base",
     "//chrome/browser/indigo/onboarding",
+    "//chrome/browser/indigo/resources:indigo_strings",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
@@ -207,6 +208,7 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//extensions/common",
     "//testing/gtest",
+    "//ui/base",
     "//ui/display",
   ]
 }
