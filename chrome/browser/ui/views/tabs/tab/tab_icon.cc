@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -603,6 +604,11 @@ bool TabIcon::GetCrashed() const {
 }
 
 void TabIcon::UpdateThrobber() {
+  TRACE_EVENT0("ui", "TabIcon::UpdateThrobber");
+  base::ScopedUmaHistogramTimer timer(
+      "Tab.Icon.UpdateThrobber.Time",
+      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
+
   // Since the loading animation can run for a long time, paint to a
   // separate layer when possible to reduce repaint overhead.
   bool should_paint_to_layer =
@@ -610,6 +616,11 @@ void TabIcon::UpdateThrobber() {
       (GetShowingLoadingAnimation() || favicon_size_animation_.is_animating() ||
        tab_discard_animation_.is_animating());
   if (should_paint_to_layer != !!layer()) {
+    TRACE_EVENT0("ui", "TabIcon::UpdateThrobber (Toggle Layer)");
+    std::optional<base::ScopedUmaHistogramTimer> not_cached_timer;
+    not_cached_timer.emplace("Tab.Icon.UpdateThrobber.Time.NotCached",
+                             base::ScopedUmaHistogramTimer::
+                                 ScopedHistogramTiming::kMicrosecondTimes);
     // Change layer mode. Promoting to a layer reduces composition cost
     // regardless of whether we use the compositor-driven throbber or not.
     if (should_paint_to_layer) {

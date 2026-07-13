@@ -582,6 +582,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.Icon.UpdateThrobber.Time" units="microseconds"
+    expires_after="2026-10-10">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the duration of TabIcon::UpdateThrobber calls. Recorded when the
+    tab's throbber is updated. This captures fast cached cases as well as slow
+    layer creation/destruction cases. This metric is only reported for clients
+    with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Icon.UpdateThrobber.Time.NotCached" units="microseconds"
+    expires_after="2026-10-10">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the duration of TabIcon::UpdateThrobber calls that result in actual
+    layer creation or destruction. Recorded when the tab's throbber is updated
+    and results in actual layer creation or destruction. This metric is only
+    reported for clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Tab.NewTab" enum="NewTabType" expires_after="2026-11-29">
   <owner>bsep@chromium.org</owner>
   <summary>
