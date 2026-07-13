@@ -9521,4 +9521,5 @@ crbug.com/532874152 external/wpt/html/semantics/document-metadata/the-link-eleme
 # Gardener 2026-07-13
 crbug.com/534101060 [ Linux ] wpt_internal/webmcp/custom-element-invalid-schema.https.html [ Failure Pass ]
 crbug.com/534138461 [ Linux ] external/wpt/css/css-ui/compute-kind-widget-generated/grouped-kind-of-widget-fallback-background-attachment-001.html [ Failure Pass ]
+crbug.com/534138461 [ Linux ] external/wpt/css/css-ui/compute-kind-widget-generated/grouped-kind-of-widget-fallback-border-block-start-style-001.html [ Failure Pass ]
 crbug.com/534282817 [ Linux ] external/wpt/css/css-ui/compute-kind-widget-generated/grouped-kind-of-widget-fallback-border-block-start-color-001.html [ Failure Pass ]
