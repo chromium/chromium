@@ -58,7 +58,10 @@ source_set("autofill_and_passwords") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "autofill_and_passwords_table_view_controller_unittest.mm" ]
+  sources = [
+    "autofill_and_passwords_table_view_controller_unittest.mm",
+    "autofill_settings_table_view_controller_unittest.mm",
+  ]
   deps = [
     ":autofill_and_passwords",
     "//base",
@@ -71,6 +74,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//testing/gtest",
     "//ui/base",
   ]
