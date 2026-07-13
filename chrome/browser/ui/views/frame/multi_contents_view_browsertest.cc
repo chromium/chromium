@@ -516,17 +516,8 @@ IN_PROC_BROWSER_TEST_F(
   CheckNoResizeHappened();
 }
 
-// TODO(crbug.com/429495554): Failing on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes \
-  DISABLED_EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes
-#else
-#define MAYBE_EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes \
-  EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes
-#endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(
-    MultiContentsViewWebContentsReLayoutBrowserTest,
-    MAYBE_EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes) {
+IN_PROC_BROWSER_TEST_F(MultiContentsViewWebContentsReLayoutBrowserTest,
+                       EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes) {
   auto* tab_strip_model = browser()->tab_strip_model();
 
   const GURL test_url = embedded_test_server()->GetURL(kReLayoutTestURL);
@@ -570,6 +561,18 @@ IN_PROC_BROWSER_TEST_F(
     // Wayland compositor responds.
     expected_resize = 4;
   }
+#elif BUILDFLAG(IS_MAC)
+  // The WebContents is resized three times when entering and exiting fullscreen
+  // due to the layout process involving the new `main_container_`:
+  // 1. `BrowserViewLayout` sets the bounds of `main_container_`. The default
+  //    layout manager for `main_container_` immediately resizes its child,
+  //    `contents_container_`, to fit.
+  // 2. `BrowserViewLayout` then explicitly sets the bounds of
+  //    `contents_container_` itself, triggering a second layout.
+  // 3. `BrowserViewLayout` also updates separators in `MultiContentsView`,
+  //    which calls `InvalidateLayout()`, scheduling a final, asynchronous
+  //    layout pass.
+  expected_resize = 3;
 #endif
 
   EXPECT_TRUE(base::test::RunUntil([this, split_tab, expected_resize]() {
