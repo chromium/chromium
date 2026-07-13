@@ -5,6 +5,7 @@
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/infobar_features.h"
@@ -19,6 +20,7 @@
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace infobars {
 
@@ -283,6 +285,59 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, FullscreenHiding) {
   // 4. Verify their ShouldHideInFullscreen() implementation.
   EXPECT_TRUE(ib_hide->delegate()->ShouldHideInFullscreen());
   EXPECT_FALSE(ib_show->delegate()->ShouldHideInFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, CentralizedMetrics) {
+  base::HistogramTester histogram_tester;
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  auto spec =
+      InfoBarSpec::Builder(identifier)
+          .SetMessageText(u"Test Message")
+          .SetScope(InfoBarScope::kTab)
+          .SetLinkNavigationUrl(GURL("about:blank"))
+          .AddOkButton(u"OK",
+                       base::BindLambdaForTesting([](content::WebContents*) {}))
+          .AddCancelButton(u"Cancel", base::BindLambdaForTesting(
+                                          [](content::WebContents*) {}))
+          .SetDismissAction(
+              base::BindLambdaForTesting([](content::WebContents*) {}))
+          .Build();
+
+  manager()->Register(std::move(spec));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* infobar_manager = ContentInfoBarManager::FromWebContents(web_contents);
+
+  // 1. Show the infobar and check "Show" metric.
+  manager()->Show(web_contents, identifier);
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+  histogram_tester.ExpectUniqueSample("InfoBar.Centralized.Show", identifier,
+                                      1);
+
+  auto* delegate =
+      infobar_manager->infobars()[0]->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(delegate);
+
+  // 2. Accept and check "Accept" metric.
+  delegate->Accept();
+  histogram_tester.ExpectUniqueSample("InfoBar.Centralized.Accept", identifier,
+                                      1);
+
+  // 3. Cancel and check "Cancel" metric.
+  delegate->Cancel();
+  histogram_tester.ExpectUniqueSample("InfoBar.Centralized.Cancel", identifier,
+                                      1);
+
+  // 4. Dismiss and check "Dismiss" metric.
+  delegate->InfoBarDismissed();
+  histogram_tester.ExpectUniqueSample("InfoBar.Centralized.Dismiss", identifier,
+                                      1);
+
+  // 5. LinkClicked and check "LinkClicked" metric.
+  delegate->LinkClicked(WindowOpenDisposition::CURRENT_TAB);
+  histogram_tester.ExpectUniqueSample("InfoBar.Centralized.LinkClicked",
+                                      identifier, 1);
 }
 
 }  // namespace infobars

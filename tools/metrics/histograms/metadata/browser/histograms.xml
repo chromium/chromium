@@ -2138,6 +2138,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InfoBar.Centralized.{Action}" enum="InfoBarIdentifier"
+    expires_after="2027-07-13">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records when a desktop infobar centralized under the new centralization
+    framework triggers a specific {Action}.
+
+    Each bucket in this sparse histogram corresponds to a unique
+    InfoBarIdentifier, and the count reflects the number of times that specific
+    infobar triggered the {Action}.
+
+    Recorded once per event to track user engagement and health of migrated
+    infobars under the centralization framework.
+  </summary>
+  <token key="Action">
+    <variant name="Accept" summary="Accept/OK button click action"/>
+    <variant name="Cancel" summary="Cancel button click action"/>
+    <variant name="Dismiss" summary="Dismissal action"/>
+    <variant name="LinkClicked" summary="Link click action"/>
+    <variant name="Show" summary="Show/display action"/>
+  </token>
+</histogram>
+
 <histogram name="InfoBar.CountAtShow" units="InfoBars" expires_after="never">
 <!-- expires-never: Required as long as infobars exist. -->
 

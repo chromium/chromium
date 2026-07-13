@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_spec.h"
@@ -75,6 +76,7 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate {
   }
 
   bool Accept() override {
+    base::UmaHistogramSparse("InfoBar.Centralized.Accept", GetIdentifier());
     if (spec_.ok_button_callback()) {
       spec_.ok_button_callback().Run(GetWebContents());
     }
@@ -82,6 +84,7 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate {
   }
 
   bool Cancel() override {
+    base::UmaHistogramSparse("InfoBar.Centralized.Cancel", GetIdentifier());
     if (spec_.cancel_button_callback()) {
       spec_.cancel_button_callback().Run(GetWebContents());
     }
@@ -89,9 +92,16 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate {
   }
 
   void InfoBarDismissed() override {
+    base::UmaHistogramSparse("InfoBar.Centralized.Dismiss", GetIdentifier());
     if (spec_.dismiss_callback()) {
       spec_.dismiss_callback().Run(GetWebContents());
     }
+  }
+
+  bool LinkClicked(WindowOpenDisposition disposition) override {
+    base::UmaHistogramSparse("InfoBar.Centralized.LinkClicked",
+                             GetIdentifier());
+    return ConfirmInfoBarDelegate::LinkClicked(disposition);
   }
 
   bool ShouldExpire(const NavigationDetails& details) const override {
@@ -182,8 +192,10 @@ void BrowserInfoBarManager::Show(
   if (!manager) {
     return;
   }
-  manager->AddInfoBar(CreateConfirmInfoBar(
-      std::make_unique<RegistryInfoBarDelegate>(it->second)));
+  if (manager->AddInfoBar(CreateConfirmInfoBar(
+          std::make_unique<RegistryInfoBarDelegate>(it->second)))) {
+    base::UmaHistogramSparse("InfoBar.Centralized.Show", identifier);
+  }
 }
 
 void BrowserInfoBarManager::ShowGlobally(
@@ -201,8 +213,10 @@ void BrowserInfoBarManager::ShowGlobally(
   }
   active_global_infobars_[identifier] = GlobalInfoBarContext{.spec = spec};
 
+  bool added_any_infobars = false;
   GlobalBrowserCollection::GetInstance()->ForEach(
-      [this, &spec, identifier](BrowserWindowInterface* browser) {
+      [this, &spec, identifier,
+       &added_any_infobars](BrowserWindowInterface* browser) {
         tabs::TabInterface* active_tab = browser->GetActiveTabInterface();
         content::WebContents* active_contents =
             active_tab ? active_tab->GetContents() : nullptr;
@@ -216,6 +230,7 @@ void BrowserInfoBarManager::ShowGlobally(
             if (added_infobar) {
               active_global_infobars_[identifier].active_instances[manager] =
                   added_infobar;
+              added_any_infobars = true;
               if (!infobar_manager_observations_.IsObservingSource(manager)) {
                 infobar_manager_observations_.AddObservation(manager);
               }
@@ -224,6 +239,10 @@ void BrowserInfoBarManager::ShowGlobally(
         }
         return true;
       });
+
+  if (added_any_infobars) {
+    base::UmaHistogramSparse("InfoBar.Centralized.Show", identifier);
+  }
 }
 
 void BrowserInfoBarManager::Hide(
