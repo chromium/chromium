@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "base/test/scoped_feature_list.h"
@@ -248,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_DisabledInput) {
                         /*follow_by_enter=*/true);
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
-    ExpectErrorResult(result, mojom::ActionResultCode::kElementDisabled);
+    ExpectElementDisabledResultWithReason(result, "disabled");
     EXPECT_EQ("",
               EvalJs(web_contents(), "document.getElementById('input').value"));
   }

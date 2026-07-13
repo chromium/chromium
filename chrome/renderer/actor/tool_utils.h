@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "chrome/common/actor.mojom-forward.h"
@@ -28,6 +29,9 @@ class PointF;
 }  // namespace gfx
 
 namespace actor {
+
+std::string_view WebElementInteractionDisallowedReasonToString(
+    blink::WebElementInteractionDisallowedReason reason);
 
 // Class to help with iteratively refining interaction points. When created,
 // it grabs the client rects for the provided web node. Then if you perform a

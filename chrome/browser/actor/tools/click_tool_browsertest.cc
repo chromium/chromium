@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(ActorClickToolBrowserTest, ClickTool_DisabledElement) {
       MakeClickRequest(*main_frame(), button_id.value());
   ActResultFuture result_fail;
   actor_task().Act(ToRequestList(action), result_fail.GetCallback());
-  ExpectErrorResult(result_fail, mojom::ActionResultCode::kElementDisabled);
+  ExpectElementDisabledResultWithReason(result_fail, "disabled");
 
   // The page should not have received any click events.
   EXPECT_THAT(
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(
       MakeClickRequest(*main_frame(), node_id.value());
   ActResultFuture result_fail;
   actor_task().Act(ToRequestList(action), result_fail.GetCallback());
-  ExpectErrorResult(result_fail, mojom::ActionResultCode::kElementDisabled);
+  ExpectElementDisabledResultWithReason(result_fail, "inert");
 
   // Validation must stop before the page sees trusted mouse events.
   EXPECT_THAT(

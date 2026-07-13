@@ -773,6 +773,23 @@ void ExpectErrorResult(ActResultFuture& future,
                            << " not found in action results.";
 }
 
+void ExpectElementDisabledResultWithReason(ActResultFuture& future,
+                                           std::string_view reason) {
+  const auto& action_results = future.Get();
+  ASSERT_EQ(1u, action_results.size());
+
+  // The actor layer uses one result for one requested action.
+  const mojom::ActionResultPtr& result = action_results[0].result;
+  EXPECT_EQ(mojom::ActionResultCode::kElementDisabled, result->code);
+  EXPECT_FALSE(result->requires_page_stabilization);
+
+  std::string expected_message =
+      "The target element is unavailable because it is ";
+  expected_message += reason;
+  expected_message += ".";
+  EXPECT_EQ(expected_message, result->message);
+}
+
 bool SetUpOptimizationGuideComponentBlocklist(const base::FilePath& path,
                                               const std::string& blocked_host) {
   base::ScopedAllowBlockingForTesting allow_blocking;

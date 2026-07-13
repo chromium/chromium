@@ -5,11 +5,14 @@
 #include "chrome/renderer/actor/tool_utils.h"
 
 #include <algorithm>
+#include <optional>
 #include <sstream>
+#include <string>
 #include <vector>
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_features.h"
@@ -98,6 +101,28 @@ std::vector<gfx::Rect> getHitBoxesForElement(blink::WebElement& element) {
 }
 
 }  // namespace
+
+std::string_view WebElementInteractionDisallowedReasonToString(
+    blink::WebElementInteractionDisallowedReason reason) {
+  switch (reason) {
+    case blink::WebElementInteractionDisallowedReason::kDisabled:
+      return "disabled";
+    case blink::WebElementInteractionDisallowedReason::kNoLayoutObject:
+      return "not rendered";
+    case blink::WebElementInteractionDisallowedReason::kAriaDisabled:
+      return "aria-disabled";
+    case blink::WebElementInteractionDisallowedReason::kAriaHidden:
+      return "aria-hidden";
+    case blink::WebElementInteractionDisallowedReason::kInert:
+      return "inert";
+    case blink::WebElementInteractionDisallowedReason::kPointerEventsNone:
+      return "pointer-events:none";
+    case blink::WebElementInteractionDisallowedReason::kRolePresentationOrNone:
+      return "role=presentation or role=none";
+  }
+
+  NOTREACHED();
+}
 
 InteractionPointRefiner::InteractionPointRefiner(const blink::WebNode& node) {
   blink::WebElement element = node.DynamicTo<blink::WebElement>();

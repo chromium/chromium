@@ -702,14 +702,16 @@ ValidationResult TypeTool::Validate() {
   // fails validation like DOM-node type targets.
   const bool reject_non_disabled_reasons = base::FeatureList::IsEnabled(
       features::kGlicActorRejectInteractionDisallowedTargets);
-  if (ShouldRejectInteractionDisallowedTarget(*resolved_target,
-                                              /*check_aria=*/false,
-                                              reject_non_disabled_reasons)) {
+  std::optional<blink::WebElementInteractionDisallowedReason>
+      disallowed_reason = GetInteractionDisallowedReason(
+          *resolved_target, /*check_aria=*/false, reject_non_disabled_reasons);
+  if (disallowed_reason.has_value()) {
     return ValidationResult(MakeResult(
         mojom::ActionResultCode::kElementDisabled,
         /*requires_page_stabilization=*/false,
-        "The target element is disabled, inert, hidden, or otherwise "
-        "unavailable."));
+        absl::StrFormat("The target element is unavailable because it is %s.",
+                        WebElementInteractionDisallowedReasonToString(
+                            *disallowed_reason))));
   }
 
   resolved_target_ = std::move(resolved_target.value());

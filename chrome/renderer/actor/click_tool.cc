@@ -5,6 +5,7 @@
 #include "chrome/renderer/actor/click_tool.h"
 
 #include <cstdint>
+#include <optional>
 
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -191,13 +192,16 @@ ToolBase::ResolveResult ClickTool::ResolveValidatedClickTarget(
           TargetOcclusionMode::kAllowOccludedForDirectActivation ||
       base::FeatureList::IsEnabled(
           features::kGlicActorRejectInteractionDisallowedTargets);
-  if (ShouldRejectInteractionDisallowedTarget(*resolved_target, check_aria,
-                                              reject_non_disabled_reasons)) {
-    return base::unexpected(
-        MakeResult(mojom::ActionResultCode::kElementDisabled,
-                   /*requires_page_stabilization=*/false,
-                   "The target element is disabled, inert, hidden, or "
-                   "otherwise unavailable."));
+  std::optional<blink::WebElementInteractionDisallowedReason>
+      disallowed_reason = GetInteractionDisallowedReason(
+          *resolved_target, check_aria, reject_non_disabled_reasons);
+  if (disallowed_reason.has_value()) {
+    return base::unexpected(MakeResult(
+        mojom::ActionResultCode::kElementDisabled,
+        /*requires_page_stabilization=*/false,
+        absl::StrFormat("The target element is unavailable because it is %s.",
+                        WebElementInteractionDisallowedReasonToString(
+                            *disallowed_reason))));
   }
 
   return resolved_target;

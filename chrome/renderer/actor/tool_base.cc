@@ -377,22 +377,26 @@ ToolBase::ResolveResult ToolBase::ValidateAndResolveTarget(
   return resolved_target.value();
 }
 
-bool ToolBase::ShouldRejectInteractionDisallowedTarget(
+std::optional<blink::WebElementInteractionDisallowedReason>
+ToolBase::GetInteractionDisallowedReason(
     const ResolvedTarget& resolved_target,
     bool check_aria,
     bool reject_non_disabled_reasons) const {
   WebElement validation_element =
       GetTargetElementForValidation(resolved_target);
   if (validation_element.IsNull()) {
-    return false;
+    return std::nullopt;
   }
 
   if (IsDisabledFormControlTarget(validation_element)) {
-    return true;
+    return blink::WebElementInteractionDisallowedReason::kDisabled;
   }
 
-  return reject_non_disabled_reasons &&
-         HasInteractionDisallowedTarget(validation_element, check_aria);
+  if (!reject_non_disabled_reasons) {
+    return std::nullopt;
+  }
+
+  return GetInteractionDisallowedReason(validation_element, check_aria);
 }
 
 bool ToolBase::IsDisabledFormControlTarget(
@@ -406,17 +410,14 @@ bool ToolBase::IsDisabledFormControlTarget(
   return !form_control.IsNull() && !form_control.IsEnabled();
 }
 
-bool ToolBase::HasInteractionDisallowedTarget(
-    const WebElement& validation_element,
-    bool check_aria) const {
+std::optional<blink::WebElementInteractionDisallowedReason>
+ToolBase::GetInteractionDisallowedReason(const WebElement& validation_element,
+                                         bool check_aria) const {
   if (validation_element.IsNull()) {
-    return false;
+    return std::nullopt;
   }
 
-  std::optional<blink::WebElementInteractionDisallowedReason>
-      disallowed_reason =
-          validation_element.InteractionDisallowedReason(check_aria);
-  return disallowed_reason.has_value();
+  return validation_element.InteractionDisallowedReason(check_aria);
 }
 
 WebElement ToolBase::GetTargetElementForValidation(

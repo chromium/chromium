@@ -283,6 +283,9 @@ void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future);
 void ExpectOkResult(ActResultFuture& future);
 void ExpectErrorResult(ActResultFuture& future,
                        mojom::ActionResultCode expected_code);
+// Checks the standard disabled-target error and its reason-specific message.
+void ExpectElementDisabledResultWithReason(ActResultFuture& future,
+                                           std::string_view reason);
 
 // Sets up GLIC_ACTION_PAGE_BLOCK to block the given host via component updater.
 bool SetUpOptimizationGuideComponentBlocklist(const base::FilePath& path,

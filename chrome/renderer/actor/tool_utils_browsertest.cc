@@ -19,6 +19,15 @@
 
 namespace actor {
 
+TEST(ToolUtilsStandaloneTest, InvalidInteractionDisallowedReasonIsUnreachable) {
+  // The Blink enum is closed. Missing a new value must fail loudly so actor
+  // does not silently report an inaccurate fallback reason.
+  EXPECT_DEATH_IF_SUPPORTED(
+      WebElementInteractionDisallowedReasonToString(
+          static_cast<blink::WebElementInteractionDisallowedReason>(-1)),
+      "");
+}
+
 class ToolUtilsTest : public ChromeRenderViewTest {
  public:
   ToolUtilsTest() = default;

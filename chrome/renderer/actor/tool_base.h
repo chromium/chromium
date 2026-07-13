@@ -135,12 +135,12 @@ class ToolBase {
       TargetOcclusionMode occlusion_mode =
           TargetOcclusionMode::kRequireUnoccluded) const;
 
-  // Returns whether actor should reject the target for disabled state or for a
-  // caller-enabled Blink interaction barrier.
-  bool ShouldRejectInteractionDisallowedTarget(
-      const ResolvedTarget& resolved_target,
-      bool check_aria,
-      bool reject_non_disabled_reasons) const;
+  // Returns the Blink-reported reason actor should reject the target, if any.
+  // Disabled controls are always rejected; other reasons are caller-controlled.
+  std::optional<blink::WebElementInteractionDisallowedReason>
+  GetInteractionDisallowedReason(const ResolvedTarget& resolved_target,
+                                 bool check_aria,
+                                 bool reject_non_disabled_reasons) const;
 
   // Returns the element whose interaction-disallowed state should be checked.
   // Coordinate hit tests can resolve to text or an internal child, such as a
@@ -172,12 +172,11 @@ class ToolBase {
   bool IsDisabledFormControlTarget(
       const blink::WebElement& validation_element) const;
 
-  // Returns whether Blink reports a general interaction barrier for the
-  // validation element. Callers keep disabled rejection separate before
-  // consulting this helper.
-  bool HasInteractionDisallowedTarget(
-      const blink::WebElement& validation_element,
-      bool check_aria) const;
+  // Returns Blink's interaction-disallowed reason for the validation element.
+  // Callers keep disabled rejection separate before consulting this helper.
+  std::optional<blink::WebElementInteractionDisallowedReason>
+  GetInteractionDisallowedReason(const blink::WebElement& validation_element,
+                                 bool check_aria) const;
 
   bool is_revalidation_ = false;
 };
