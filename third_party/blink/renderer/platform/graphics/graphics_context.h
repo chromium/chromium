@@ -213,6 +213,34 @@ class PLATFORM_EXPORT GraphicsContext {
   DarkModeFilter* GetDarkModeFilterForImage(
       const ImageAutoDarkMode& auto_dark_mode);
 
+  // Pushes a dark mode inversion pause state on construction and pops it on
+  // destruction, guaranteeing pushes and pops are always balanced. See the
+  // comment on IsAutoDarkModePaused() for the semantics of the pause states.
+  class ScopedAutoDarkModeState {
+    STACK_ALLOCATED();
+
+   public:
+    ScopedAutoDarkModeState(GraphicsContext& context, bool paused)
+        : context_(context) {
+      context_.PushAutoDarkModeState(paused);
+    }
+    ScopedAutoDarkModeState(const ScopedAutoDarkModeState&) = delete;
+    ScopedAutoDarkModeState& operator=(const ScopedAutoDarkModeState&) = delete;
+    ~ScopedAutoDarkModeState() { context_.PopAutoDarkModeState(); }
+
+   private:
+    GraphicsContext& context_;
+  };
+
+  // Dark mode color/flags inversion pause state. While the latest pushed state
+  // is true, inversion is paused regardless of the per-draw |enabled| flag.
+  // Nested scopes can override the pause state of their ancestors: the pushed
+  // state applies until it is popped, after which the previous state takes
+  // effect again. Use ScopedAutoDarkModeState to manage the states.
+  bool IsAutoDarkModePaused() const {
+    return !auto_dark_mode_states_.empty() && auto_dark_mode_states_.back();
+  }
+
   void SetDarkModeFilterForTest(std::unique_ptr<DarkModeFilter>);
 
   // ---------- State management methods -----------------
@@ -511,6 +539,16 @@ class PLATFORM_EXPORT GraphicsContext {
     return paint_state_;
   }
 
+  // Managed exclusively through ScopedAutoDarkModeState to keep pushes and pops
+  // balanced.
+  void PushAutoDarkModeState(bool paused) {
+    auto_dark_mode_states_.push_back(paused);
+  }
+  void PopAutoDarkModeState() {
+    DCHECK(!auto_dark_mode_states_.empty());
+    auto_dark_mode_states_.pop_back();
+  }
+
   template <typename DrawTextFunc>
   void DrawTextPasses(const DrawTextFunc&);
 
@@ -571,6 +609,7 @@ class PLATFORM_EXPORT GraphicsContext {
 
   std::unique_ptr<DarkModeFilter> dark_mode_filter_;
 
+  Vector<bool> auto_dark_mode_states_;
   bool printing_ = false;
   bool printing_internal_headers_and_footers_ = false;
   bool in_drawing_recorder_ = false;

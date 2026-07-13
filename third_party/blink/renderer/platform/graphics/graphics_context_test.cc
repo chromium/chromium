@@ -198,5 +198,77 @@ TEST_F(GraphicsContextDarkModeTest, InvertLightnessLAB) {
   EXPECT_EQ(0xff7f7f7f, bitmap_.getColor(3, 0));
 }
 
+TEST_F(GraphicsContextDarkModeTest, ScopedAutoDarkModeStatePaused) {
+  PaintController paint_controller;
+  GraphicsContext context(paint_controller);
+  DarkModeSettings settings;
+  context.SetDarkModeFilterForTest(std::make_unique<DarkModeFilter>(settings));
+  AutoDarkMode auto_dark_mode(DarkModeFilter::ElementRole::kBackground,
+                              /*enabled=*/true);
+
+  EXPECT_FALSE(context.IsAutoDarkModePaused());
+
+  context.BeginRecording();
+  {
+    // Pausing suppresses inversion, so black stays black.
+    GraphicsContext::ScopedAutoDarkModeState paused(context, /*paused=*/true);
+    EXPECT_TRUE(context.IsAutoDarkModePaused());
+    context.FillRect(gfx::RectF(0, 0, 1, 1), Color::kBlack, auto_dark_mode);
+
+    {
+      // A nested scope overrides the ancestor, re-enabling inversion so black
+      // becomes white.
+      GraphicsContext::ScopedAutoDarkModeState resumed(context,
+                                                       /*paused=*/false);
+      EXPECT_FALSE(context.IsAutoDarkModePaused());
+      context.FillRect(gfx::RectF(1, 0, 1, 1), Color::kBlack, auto_dark_mode);
+    }
+
+    // The outer paused state is restored when the nested scope exits.
+    EXPECT_TRUE(context.IsAutoDarkModePaused());
+  }
+
+  // Back to the default (not paused) state after all scopes exit; inversion
+  // applies again, so black becomes white.
+  EXPECT_FALSE(context.IsAutoDarkModePaused());
+  context.FillRect(gfx::RectF(2, 0, 1, 1), Color::kBlack, auto_dark_mode);
+
+  canvas_->drawPicture(context.EndRecording());
+
+  EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(0, 0));
+  EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(1, 0));
+  EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(2, 0));
+}
+
+TEST_F(GraphicsContextDarkModeTest,
+       BitmapImageIgnoresAutoDarkModePausedStates) {
+  PaintController paint_controller;
+  GraphicsContext context(paint_controller);
+  DarkModeSettings settings;
+  context.SetDarkModeFilterForTest(std::make_unique<DarkModeFilter>(settings));
+
+  ImageAutoDarkMode icon(DarkModeFilter::ElementRole::kBackground,
+                         /*enabled=*/true, DarkModeFilter::ImageType::kIcon);
+  ImageAutoDarkMode photo(DarkModeFilter::ElementRole::kBackground,
+                          /*enabled=*/true, DarkModeFilter::ImageType::kPhoto);
+
+  // Not paused: icons are inverted, photos are not.
+  EXPECT_FALSE(context.IsAutoDarkModePaused());
+  EXPECT_NE(nullptr, context.GetDarkModeFilterForImage(icon));
+  EXPECT_EQ(nullptr, context.GetDarkModeFilterForImage(photo));
+
+  {
+    // Paused: the icon is still inverted, and the photo is still untouched.
+    GraphicsContext::ScopedAutoDarkModeState paused(context, /*paused=*/true);
+    EXPECT_TRUE(context.IsAutoDarkModePaused());
+    EXPECT_NE(nullptr, context.GetDarkModeFilterForImage(icon));
+    EXPECT_EQ(nullptr, context.GetDarkModeFilterForImage(photo));
+  }
+
+  // A disabled image auto dark mode never returns a filter.
+  EXPECT_EQ(nullptr,
+            context.GetDarkModeFilterForImage(ImageAutoDarkMode::Disabled()));
+}
+
 }  // namespace
 }  // namespace blink

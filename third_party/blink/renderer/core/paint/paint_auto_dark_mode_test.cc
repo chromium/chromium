@@ -4,8 +4,13 @@
 
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 
+#include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -72,6 +77,18 @@ class PaintAutoDarkModeTest : public testing::Test {
         ImageClassifierHelper::GetImageTypeForTesting(dest_rect, src_rect,
                                                       layout_zoom)));
   }
+
+  DarkModeFilter::ImageType GetSVGDocumentType(float layout_zoom,
+                                               const gfx::Rect& size) {
+    LocalFrame& frame = page_holder_->GetFrame();
+    frame.SetLayoutZoomFactor(layout_zoom);
+    return ImageClassifierHelper::GetSVGDocumentType(frame, size);
+  }
+
+ private:
+  test::TaskEnvironment task_environment_;
+  std::unique_ptr<DummyPageHolder> page_holder_ =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
 };
 
 TEST_F(PaintAutoDarkModeTest, ShouldApplyFilterToImage) {
@@ -152,6 +169,32 @@ TEST_F(PaintAutoDarkModeTest,
   screen_info.device_scale_factor = 3.0f;
 
   TestApplyFilterToImageIrrespectiveOfPageZoom(screen_info);
+}
+
+TEST_F(PaintAutoDarkModeTest, SVGDocumentImage) {
+  // Both dimensions are at or below the icon threshold (kMaxImageLength == 64).
+  EXPECT_EQ(DarkModeFilter::ImageType::kIcon,
+            GetSVGDocumentType(1.0f, gfx::Rect(50, 50)));
+
+  // Either dimension above the threshold classifies the document as a photo.
+  EXPECT_EQ(DarkModeFilter::ImageType::kPhoto,
+            GetSVGDocumentType(1.0f, gfx::Rect(200, 200)));
+  // Only the width exceeds the threshold.
+  EXPECT_EQ(DarkModeFilter::ImageType::kPhoto,
+            GetSVGDocumentType(1.0f, gfx::Rect(100, 50)));
+  // Only the height exceeds the threshold.
+  EXPECT_EQ(DarkModeFilter::ImageType::kPhoto,
+            GetSVGDocumentType(1.0f, gfx::Rect(50, 100)));
+
+  // A 40x40 CSS-sized SVG scaled up by a 5x layout zoom is still an icon after
+  // the zoom is undone.
+  EXPECT_EQ(DarkModeFilter::ImageType::kIcon,
+            GetSVGDocumentType(5.0f, gfx::Rect(200, 200)));
+
+  // A 400x400 CSS-sized SVG scaled down by a 0.25x layout zoom is still a photo
+  // after the zoom is undone.
+  EXPECT_EQ(DarkModeFilter::ImageType::kPhoto,
+            GetSVGDocumentType(0.25f, gfx::Rect(100, 100)));
 }
 
 }  // namespace blink

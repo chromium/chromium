@@ -39,6 +39,10 @@ class ImageClassifierHelper {
       DarkModeFilter::ElementRole role =
           DarkModeFilter::ElementRole::kBackground);
 
+  CORE_EXPORT static DarkModeFilter::ImageType GetSVGDocumentType(
+      LocalFrame& local_frame,
+      const gfx::Rect& size);
+
   CORE_EXPORT static DarkModeFilter::ImageType GetImageTypeForTesting(
       const gfx::RectF& dest_rect,
       const gfx::RectF& src_rect,

@@ -70,6 +70,25 @@ ImageAutoDarkMode ImageClassifierHelper::GetImageAutoDarkMode(
 }
 
 // static
+DarkModeFilter::ImageType ImageClassifierHelper::GetSVGDocumentType(
+    LocalFrame& local_frame,
+    const gfx::Rect& size) {
+  // |size| includes the layout zoom factor (page zoom and DSF). Undo it so the
+  // size threshold matches bitmap images, whose classification is unaffected by
+  // page zoom and DSF.
+  const float layout_zoom = local_frame.LayoutZoomFactor();
+  const float unzoomed_width =
+      layout_zoom > 0.f ? size.width() / layout_zoom : size.width();
+  const float unzoomed_height =
+      layout_zoom > 0.f ? size.height() / layout_zoom : size.height();
+  if (unzoomed_width <= kMaxImageLength && unzoomed_height <= kMaxImageLength) {
+    return DarkModeFilter::ImageType::kIcon;
+  }
+
+  return DarkModeFilter::ImageType::kPhoto;
+}
+
+// static
 DarkModeFilter::ImageType ImageClassifierHelper::GetImageTypeForTesting(
     const gfx::RectF& dest_rect,
     const gfx::RectF& src_rect,

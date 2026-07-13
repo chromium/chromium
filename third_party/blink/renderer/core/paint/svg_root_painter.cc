@@ -4,12 +4,17 @@
 
 #include "third_party/blink/renderer/core/paint/svg_root_painter.h"
 
+#include <optional>
+
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -64,8 +69,10 @@ AffineTransform SVGRootPainter::TransformToPixelSnappedBorderBox(
 void SVGRootPainter::PaintReplaced(const PaintInfo& paint_info,
                                    const PhysicalOffset& paint_offset) {
   // An empty viewport disables rendering.
-  if (PixelSnappedSize(paint_offset).IsEmpty())
+  const gfx::Rect snapped_size = PixelSnappedSize(paint_offset);
+  if (snapped_size.IsEmpty()) {
     return;
+  }
 
   // An empty viewBox also disables rendering.
   // (http://www.w3.org/TR/SVG/coords.html#ViewBoxAttribute)
@@ -76,6 +83,23 @@ void SVGRootPainter::PaintReplaced(const PaintInfo& paint_info,
 
   if (paint_info.DescendantPaintingBlocked()) {
     return;
+  }
+
+  std::optional<GraphicsContext::ScopedAutoDarkModeState> dark_mode_state;
+  if (layout_svg_root_.StyleRef().ForceDark()) {
+    // Only treat icon/separator-sized SVG documents as candidates for dark
+    // mode inversion. Larger SVGs are likely content (illustrations/photos)
+    // and should not be force-darkened. This mirrors the size-based image
+    // classification used for bitmaps (kMaxImageLength). SVGs can be nested,
+    // so pause this SVG's dark mode state while painting its children; the
+    // scoper restores the outer state when it goes out of scope. This lets an
+    // icon-sized SVG embedded inside a larger (paused) SVG re-enable inversion
+    // for itself.
+    const bool pause_dark_mode =
+        ImageClassifierHelper::GetSVGDocumentType(*layout_svg_root_.GetFrame(),
+                                                  snapped_size) !=
+        DarkModeFilter::ImageType::kIcon;
+    dark_mode_state.emplace(paint_info.context, pause_dark_mode);
   }
 
   for (LayoutObject* child = layout_svg_root_.FirstChild(); child;
