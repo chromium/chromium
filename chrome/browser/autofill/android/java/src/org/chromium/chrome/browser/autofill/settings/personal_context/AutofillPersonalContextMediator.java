@@ -49,6 +49,7 @@ class AutofillPersonalContextMediator {
         if (manager != null) {
             manager.setPersonalContextEnabled(enabled);
         }
+        // TODO(crbug.com/391094056): The toggle should not change its state if manager is null.
         mModel.set(PERSONAL_CONTEXT_ENABLED, enabled);
         RecordUserAction.record(
                 enabled

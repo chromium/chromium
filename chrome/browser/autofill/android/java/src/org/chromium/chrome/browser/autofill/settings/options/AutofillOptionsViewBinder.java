@@ -12,7 +12,11 @@ import static org.chromium.chrome.browser.autofill.settings.options.AutofillOpti
 import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.FRAGMENT_TITLE;
 import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED;
 import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.ON_AUTOFILL_AI_SETTING_TOGGLED;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.ON_MANAGE_CONNECTED_APPS_CLICKED;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.ON_PERSONAL_CONTEXT_TOGGLE_CHANGED;
 import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.PERSONAL_CONTEXT_ENABLED;
+import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.PERSONAL_CONTEXT_VISIBLE;
 import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
 import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_HINT;
 import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
@@ -129,6 +133,26 @@ class AutofillOptionsViewBinder {
                         model.get(AUTOFILL_AI_VISIBLE)
                                 && model.get(AUTOFILL_AI_REAUTH_TOGGLE_VISIBLE));
             }
+        } else if (key == PERSONAL_CONTEXT_ENABLED) {
+            view.getAutofillPersonalContextSwitch().setChecked(model.get(PERSONAL_CONTEXT_ENABLED));
+        } else if (key == ON_PERSONAL_CONTEXT_TOGGLE_CHANGED) {
+            view.getAutofillPersonalContextSwitch()
+                    .setOnPreferenceChangeListener(
+                            (preference, newValue) -> {
+                                model.get(ON_PERSONAL_CONTEXT_TOGGLE_CHANGED)
+                                        .onResult((boolean) newValue);
+                                return true;
+                            });
+        } else if (key == PERSONAL_CONTEXT_VISIBLE) {
+            view.getAutofillPersonalContextCategory()
+                    .setVisible(model.get(PERSONAL_CONTEXT_VISIBLE));
+        } else if (key == ON_MANAGE_CONNECTED_APPS_CLICKED) {
+            view.getAutofillPersonalContextManageConnectedApps()
+                    .setOnPreferenceClickListener(
+                            (preference) -> {
+                                model.get(ON_MANAGE_CONNECTED_APPS_CLICKED).run();
+                                return true;
+                            });
         } else {
             assert false : "Unhandled property: " + key;
         }

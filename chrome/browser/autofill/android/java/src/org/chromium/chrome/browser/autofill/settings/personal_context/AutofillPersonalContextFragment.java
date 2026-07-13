@@ -86,8 +86,12 @@ public class AutofillPersonalContextFragment extends ChromeBaseSettingsFragment 
     }
 
     public static boolean shouldShowPersonalContext(Profile profile) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)) {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+                && isPersonalContextEligible(profile);
+    }
+
+    public static boolean isPersonalContextEligible(Profile profile) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)) {
             return false;
         }
         EntityDataManager manager = EntityDataManagerFactory.getForProfile(profile);

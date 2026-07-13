@@ -65,6 +65,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -74,6 +75,7 @@ import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerJni;
 import org.chromium.chrome.browser.autofill.settings.AutofillHelpMenuProvider;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment.AutofillOptionsReferrer;
+import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
@@ -84,6 +86,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.autofill_ai.AutofillAiOptInStatus;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -101,7 +104,8 @@ import org.chromium.ui.text.SpanApplier;
 @Config(manifest = Config.NONE)
 @DisableFeatures({
     ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
-    ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
+    ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED,
+    ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
 })
 public class AutofillOptionsTest {
     private static final String SKIP_ALL_CHECKS_PARAM_VALUE = "skip_all_checks";
@@ -136,6 +140,8 @@ public class AutofillOptionsTest {
     @Mock private PersonalDataManager mMockPersonalDataManager;
     @Mock private EntityDataManager.Natives mMockEntityDataManagerJni;
     @Mock private ReauthenticatorBridge mMockReauthenticatorBridge;
+    @Mock private SettingsIndexData mSearchIndexDataMock;
+    private UserActionTester mActionTester;
 
     @Captor ArgumentCaptor<PropertyModel> mRestartConfirmationDialogModelCaptor;
 
@@ -179,12 +185,16 @@ public class AutofillOptionsTest {
                             (AutofillOptionsFragment)
                                     fragment; // Valid until scenario is recreated.
                 });
+        mActionTester = new UserActionTester();
     }
 
     @After
     public void tearDown() throws Exception {
         if (mScenario != null) {
             mScenario.close();
+        }
+        if (mActionTester != null) {
+            mActionTester.tearDown();
         }
     }
 
@@ -1015,5 +1025,193 @@ public class AutofillOptionsTest {
         assertTrue(hint.isShown());
         assertNotNull(hint.getSummary());
         assertEquals(message.toString(), hint.getSummary().toString());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
+    })
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testPersonalContextVisibleWhenEnabled() {
+        doReturn(true).when(mMockEntityDataManager).isPersonalContextPreferenceVisible();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        assertTrue(mFragment.getAutofillPersonalContextCategory().isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
+    })
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testPersonalContextToggleOn() {
+        doReturn(true).when(mMockEntityDataManager).isPersonalContextPreferenceVisible();
+        doReturn(false).when(mMockEntityDataManager).isPersonalContextEnabled();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        assertFalse(mFragment.getAutofillPersonalContextSwitch().isChecked());
+
+        // Toggle the switch to ON.
+        mFragment
+                .getAutofillPersonalContextSwitch()
+                .getOnPreferenceChangeListener()
+                .onPreferenceChange(mFragment.getAutofillPersonalContextSwitch(), true);
+
+        verify(mMockEntityDataManager).setPersonalContextEnabled(true);
+        assertTrue(mFragment.getAutofillPersonalContextSwitch().isChecked());
+        assertTrue(
+                mActionTester
+                        .getActions()
+                        .contains(AutofillPersonalContextFragment.ACTION_TOGGLED_ON));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
+    })
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testPersonalContextToggleOff() {
+        doReturn(true).when(mMockEntityDataManager).isPersonalContextPreferenceVisible();
+        doReturn(true).when(mMockEntityDataManager).isPersonalContextEnabled();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        assertTrue(mFragment.getAutofillPersonalContextSwitch().isChecked());
+
+        // Toggle the switch to OFF.
+        mFragment
+                .getAutofillPersonalContextSwitch()
+                .getOnPreferenceChangeListener()
+                .onPreferenceChange(mFragment.getAutofillPersonalContextSwitch(), false);
+
+        verify(mMockEntityDataManager).setPersonalContextEnabled(false);
+        assertFalse(mFragment.getAutofillPersonalContextSwitch().isChecked());
+        assertTrue(
+                mActionTester
+                        .getActions()
+                        .contains(AutofillPersonalContextFragment.ACTION_TOGGLED_OFF));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
+    })
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testPersonalContextManageConnectedAppsClick() {
+        final String testUrl = "https://test.com/apps";
+        doReturn(true).when(mMockEntityDataManager).isPersonalContextPreferenceVisible();
+        doReturn(testUrl)
+                .when(mMockEntityDataManagerJni)
+                .getPersonalContextManageConnectedAppsUrl();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        mFragment
+                .getAutofillPersonalContextManageConnectedApps()
+                .getOnPreferenceClickListener()
+                .onPreferenceClick(mFragment.getAutofillPersonalContextManageConnectedApps());
+
+        assertTrue(
+                mActionTester
+                        .getActions()
+                        .contains(AutofillPersonalContextFragment.ACTION_MANAGE_CONNECTED_APPS));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
+    public void testSearchIndexWhenAutofillAiDisabled() {
+        AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                RuntimeEnvironment.getApplication(), mSearchIndexDataMock, mProfile);
+
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillOptionsFragment.PREF_AUTOFILL_AI_SWITCH));
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillOptionsFragment.PREF_AUTOFILL_PERSONAL_CONTEXT_SWITCH));
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillOptionsFragment
+                                        .PREF_AUTOFILL_PERSONAL_CONTEXT_MANAGE_CONNECTED_APPS));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testSearchIndexWhenPersonalContextNotVisible() {
+        doReturn(false).when(mMockEntityDataManager).isPersonalContextPreferenceVisible();
+
+        AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                RuntimeEnvironment.getApplication(), mSearchIndexDataMock, mProfile);
+
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillOptionsFragment.PREF_AUTOFILL_PERSONAL_CONTEXT_SWITCH));
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillOptionsFragment
+                                        .PREF_AUTOFILL_PERSONAL_CONTEXT_MANAGE_CONNECTED_APPS));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
+    public void testPersonalContextHiddenWhenYourSavedInfoEnabled() {
+        doReturn(true).when(mMockEntityDataManager).isPersonalContextPreferenceVisible();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        assertFalse(mFragment.getAutofillPersonalContextCategory().isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
+    public void testSearchIndexWhenYourSavedInfoEnabled() {
+        doReturn(true).when(mMockEntityDataManager).isPersonalContextPreferenceVisible();
+
+        AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                RuntimeEnvironment.getApplication(), mSearchIndexDataMock, mProfile);
+
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillOptionsFragment.PREF_AUTOFILL_PERSONAL_CONTEXT_SWITCH));
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        AutofillOptionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillOptionsFragment
+                                        .PREF_AUTOFILL_PERSONAL_CONTEXT_MANAGE_CONNECTED_APPS));
     }
 }

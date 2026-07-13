@@ -41,6 +41,14 @@ class AutofillOptionsProperties {
             new WritableBooleanPropertyKey("autofill_ai_visible");
     static final WritableBooleanPropertyKey AUTOFILL_AI_REAUTH_TOGGLE_VISIBLE =
             new WritableBooleanPropertyKey("autofill_ai_reauth_toggle_visible");
+    static final WritableBooleanPropertyKey PERSONAL_CONTEXT_ENABLED =
+            new WritableBooleanPropertyKey("personal_context_enabled");
+    static final WritableBooleanPropertyKey PERSONAL_CONTEXT_VISIBLE =
+            new WritableBooleanPropertyKey("personal_context_visible");
+    static final ReadableObjectPropertyKey<Callback<Boolean>> ON_PERSONAL_CONTEXT_TOGGLE_CHANGED =
+            new ReadableObjectPropertyKey<>("on_personal_context_toggle_changed");
+    static final ReadableObjectPropertyKey<Runnable> ON_MANAGE_CONNECTED_APPS_CLICKED =
+            new ReadableObjectPropertyKey<>("on_manage_connected_apps_clicked");
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -56,6 +64,10 @@ class AutofillOptionsProperties {
                 ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED,
                 AUTOFILL_AI_VISIBLE,
                 AUTOFILL_AI_REAUTH_TOGGLE_VISIBLE,
+                PERSONAL_CONTEXT_ENABLED,
+                PERSONAL_CONTEXT_VISIBLE,
+                ON_PERSONAL_CONTEXT_TOGGLE_CHANGED,
+                ON_MANAGE_CONNECTED_APPS_CLICKED,
             };
 
     /**
