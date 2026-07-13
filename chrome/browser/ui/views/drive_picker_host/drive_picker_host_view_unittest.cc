@@ -177,3 +177,21 @@ TEST_F(DrivePickerHostViewTest, EscapeAcceleratorClosesWidget) {
 
   EXPECT_TRUE(widget->IsClosed());
 }
+
+TEST_F(DrivePickerHostViewTest, OpenURLFromTab_ForwardsToBrowserWindow) {
+  auto view = std::make_unique<DrivePickerHostView>(
+      profile(), browser_window_interface(),
+      drive_picker_host::DrivePickerHostRequest::RequestType::kConsentDialog);
+
+  const GURL test_url("https://policies.google.com/terms");
+  content::OpenURLParams params(test_url, content::Referrer(),
+                                WindowOpenDisposition::CURRENT_TAB,
+                                ui::PAGE_TRANSITION_LINK, false);
+
+  EXPECT_CALL(*browser_window_interface(),
+              OpenURL(testing::Field(&content::OpenURLParams::disposition,
+                                     WindowOpenDisposition::NEW_WINDOW),
+                      testing::_));
+
+  view->OpenURLFromTab(view->GetWebContents(), params, base::NullCallback());
+}

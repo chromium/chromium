@@ -10,10 +10,13 @@
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_ui.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
+#include "url/gurl.h"
 
 class Profile;
 class BrowserWindowInterface;
@@ -76,6 +79,19 @@ class DrivePickerHostView : public views::View,
   void OnTransitionToPicker() override;
 
   // `content::WebContentsDelegate`:
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
+  content::WebContents* AddNewContents(
+      content::WebContents* source,
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override;
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       content::WebContents* source,
       const input::NativeWebKeyboardEvent& event) override;

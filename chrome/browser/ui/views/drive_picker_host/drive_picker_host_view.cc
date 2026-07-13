@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_ui.h"
@@ -15,8 +16,10 @@
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -193,6 +196,48 @@ void DrivePickerHostView::SendErrorToRequest(
         request->TakeResultHandler())
         ->OnError(error);
   }
+}
+
+content::WebContents* DrivePickerHostView::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  if (!browser_window_interface_) {
+    return nullptr;
+  }
+  content::OpenURLParams new_params(params);
+  if (new_params.disposition == WindowOpenDisposition::CURRENT_TAB ||
+      new_params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
+    new_params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  }
+  return browser_window_interface_->OpenURL(
+      new_params, std::move(navigation_handle_callback));
+}
+
+content::WebContents* DrivePickerHostView::AddNewContents(
+    content::WebContents* source,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture,
+    bool* was_blocked) {
+  if (!browser_window_interface_) {
+    if (was_blocked) {
+      *was_blocked = true;
+    }
+    return nullptr;
+  }
+  WindowOpenDisposition new_disposition = disposition;
+  if (new_disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
+      new_disposition == WindowOpenDisposition::CURRENT_TAB) {
+    new_disposition = WindowOpenDisposition::NEW_WINDOW;
+  }
+  chrome::AddWebContents(browser_window_interface_, source,
+                         std::move(new_contents), target_url, new_disposition,
+                         window_features);
+  return nullptr;
 }
 
 content::KeyboardEventProcessingResult
