@@ -504,6 +504,7 @@ void AutofillAiPersonalContextAccessManagerImpl::HandleFailedResponse(
     base::span<const EntityType> requested_types,
     bool requested_spii_presence) {
   for (const EntityType& type : requested_types) {
+    // SPII types are handled during SPII requests, instead of their presence.
     if (requested_spii_presence && IsPersonalContextSpiiType(type)) {
       continue;
     }

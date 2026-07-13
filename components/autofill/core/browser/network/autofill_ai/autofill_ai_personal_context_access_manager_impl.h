@@ -170,6 +170,11 @@ class AutofillAiPersonalContextAccessManagerImpl
   // `kPrefetchedEntitiesAndSignalsCacheTTL` time.
   void CachePresenceSignal(SpiiEntityPresenceSignal signal);
 
+  // Handles a failed network response for a prefetch request targeting
+  // `requested_types`. Sets their status to `kFailure` and notifies observers.
+  // If `requested_spii_presence` is true, SPII types are excluded from the
+  // failure status, as their outcome is governed by the dedicated SPII data
+  // request.
   void HandleFailedResponse(base::span<const EntityType> requested_types,
                             bool requested_spii_presence);
 
