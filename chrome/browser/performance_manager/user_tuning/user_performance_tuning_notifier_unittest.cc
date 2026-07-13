@@ -9,7 +9,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/performance_manager/graph/frame_node_impl.h"

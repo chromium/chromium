@@ -4,7 +4,7 @@
 
 #include "chrome/browser/performance_manager/metrics/metrics_provider_desktop.h"
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/power_monitor/cpu_frequency_utils.h"
@@ -603,22 +603,22 @@ void MetricsProviderDesktop::RecordDiskMetrics() {
     return;
   }
 
-  if (pending_disk_metrics_->free_bytes.is_negative() ||
-      !pending_disk_metrics_->total_bytes.is_positive()) {
+  if (pending_disk_metrics_->total.is_zero()) {
+    // Avoid division by 0.
     return;
   }
 
   base::UmaHistogramCustomCounts(
       "PerformanceManager.DiskStats.UserDataDirFreeSpaceMb",
-      pending_disk_metrics_->free_bytes.InMiB(), 0,
-      base::GiB(10)
+      pending_disk_metrics_->available.InMiB(), 0,
+      base::GiBU(10)
           .InMiB(),  // It's fine to bucket everything >10Gb as "large enough"
       100);
   // Also report as a percentage of capacity
   base::UmaHistogramPercentage(
       "PerformanceManager.DiskStats.UserDataDirFreeSpacePercent",
-      pending_disk_metrics_->free_bytes.InBytes() * 100 /
-          pending_disk_metrics_->total_bytes.InBytes());
+      pending_disk_metrics_->available.InBytes() * 100 /
+          pending_disk_metrics_->total.InBytes());
 
   pending_disk_metrics_ = std::nullopt;
 }
@@ -643,22 +643,18 @@ void MetricsProviderDesktop::PostDiskMetricsTask() {
 }
 
 void MetricsProviderDesktop::SetDiskMetricsForTesting(
-    std::optional<DiskMetrics> metrics) {
+    std::optional<base::SysInfo::DiskSpaceInfo> metrics) {
   disk_metrics_for_testing_ = metrics;
 }
 
-MetricsProviderDesktop::DiskMetrics
+std::optional<base::SysInfo::DiskSpaceInfo>
 MetricsProviderDesktop::DiskMetricsThreadPoolGetter::ComputeDiskMetrics(
     const base::FilePath& user_data_dir) {
-  return {
-      .free_bytes = base::ByteCount(
-          base::SysInfo::AmountOfFreeDiskSpace(user_data_dir).value_or(-1)),
-      .total_bytes = base::ByteCount(
-          base::SysInfo::AmountOfTotalDiskSpace(user_data_dir).value_or(-1)),
-  };
+  return base::SysInfo::AmountOfDiskSpace(user_data_dir);
 }
 
-void MetricsProviderDesktop::SavePendingDiskMetrics(DiskMetrics metrics) {
+void MetricsProviderDesktop::SavePendingDiskMetrics(
+    std::optional<base::SysInfo::DiskSpaceInfo> metrics) {
   if (disk_metrics_for_testing_) {
     pending_disk_metrics_ = *disk_metrics_for_testing_;
     return;

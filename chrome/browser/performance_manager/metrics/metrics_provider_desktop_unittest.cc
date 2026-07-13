@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/metrics/metrics_provider_desktop.h"
 
+#include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
@@ -28,11 +29,10 @@ class PerformanceManagerMetricsProviderDesktopTest : public testing::Test {
                                        MemorySaverModeState::kDisabled));
   }
 
-  void SetDiskMetricsForTesting(int64_t free_bytes, int64_t total_bytes) {
+  void SetDiskMetricsForTesting(base::ByteSize available,
+                                base::ByteSize total) {
     provider()->SetDiskMetricsForTesting(
-        performance_manager::MetricsProviderDesktop::DiskMetrics{
-            .free_bytes = base::ByteCount(0),
-            .total_bytes = base::ByteCount(0)});
+        base::SysInfo::DiskSpaceInfo{.total = total, .available = available});
   }
 
   void SetBatterySaverEnabled(bool enabled) {
@@ -313,7 +313,7 @@ TEST_F(PerformanceManagerMetricsProviderDesktopTest,
 TEST_F(PerformanceManagerMetricsProviderDesktopTest,
        RecordDiskMetricsWithZeroTotal) {
   InitProvider();
-  SetDiskMetricsForTesting(0, 0);
+  SetDiskMetricsForTesting(base::ByteSize(0), base::ByteSize(0));
   // The disk metrics task is posted during InitProvider. Run until it's done.
   RunUntilIdle();
 

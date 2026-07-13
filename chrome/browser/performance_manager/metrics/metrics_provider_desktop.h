@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_DESKTOP_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_DESKTOP_H_
 
-#include "base/byte_count.h"
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
@@ -84,23 +86,21 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
   static void PostCpuFrequencyEstimation();
 #endif  // SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 
-  struct DiskMetrics {
-    base::ByteCount free_bytes;
-    base::ByteCount total_bytes;
-  };
-
   class DiskMetricsThreadPoolGetter {
    public:
-    DiskMetrics ComputeDiskMetrics(const base::FilePath& user_data_dir);
+    std::optional<base::SysInfo::DiskSpaceInfo> ComputeDiskMetrics(
+        const base::FilePath& user_data_dir);
   };
 
   // Sets the value to be returned by ComputeDiskMetrics in tests. To stop
   // overriding the return value, pass std::nullopt.
-  void SetDiskMetricsForTesting(std::optional<DiskMetrics> metrics);
+  void SetDiskMetricsForTesting(
+      std::optional<base::SysInfo::DiskSpaceInfo> metrics);
 
   void RecordDiskMetrics();
   void PostDiskMetricsTask();
-  void SavePendingDiskMetrics(DiskMetrics metrics);
+  void SavePendingDiskMetrics(
+      std::optional<base::SysInfo::DiskSpaceInfo> metrics);
 
   PrefChangeRegistrar pref_change_registrar_;
   const raw_ptr<PrefService> local_state_;
@@ -111,12 +111,12 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
   bool initialized_ = false;
 
   base::SequenceBound<DiskMetricsThreadPoolGetter> disk_metrics_getter_;
-  std::optional<DiskMetrics> pending_disk_metrics_;
+  std::optional<base::SysInfo::DiskSpaceInfo> pending_disk_metrics_;
 
   std::unique_ptr<ScopedTimeInModeTracker> battery_saver_mode_tracker_;
   std::unique_ptr<ScopedTimeInModeTracker> memory_saver_mode_tracker_;
 
-  std::optional<DiskMetrics> disk_metrics_for_testing_;
+  std::optional<base::SysInfo::DiskSpaceInfo> disk_metrics_for_testing_;
 };
 
 }  // namespace performance_manager

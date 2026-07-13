@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
