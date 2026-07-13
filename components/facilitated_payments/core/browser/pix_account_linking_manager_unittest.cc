@@ -747,4 +747,40 @@ TEST_F(PixAccountLinkingManagerTest, PromptAccepted_StrikesCleared) {
   EXPECT_EQ(strike_database.GetStrikes(), 0);
 }
 
+TEST_F(PixAccountLinkingManagerTest, GetHistogramSuffix) {
+  EXPECT_EQ(test_api().GetHistogramSuffix(), "Pix");
+}
+
+TEST_F(PixAccountLinkingManagerTest,
+       GetPayloadForGetDetailsForCreatePaymentInstrument) {
+  EXPECT_TRUE(
+      test_api().GetPayloadForGetDetailsForCreatePaymentInstrument().empty());
+}
+
+TEST_F(PixAccountLinkingManagerTest, DoOnClientTokenReceived) {
+  std::vector<uint8_t> expected_token = {'t', 'o', 'k', 'e', 'n'};
+
+  test_api().DoOnClientTokenReceived(expected_token);
+
+  EXPECT_EQ(test_api().client_token(), expected_token);
+}
+
+TEST_F(PixAccountLinkingManagerTest, DoOnAccountLinkingResult_Success) {
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+  task_environment_.FastForwardBy(kShowPromptDelay);
+
+  EXPECT_CALL(client(), DismissPrompt());
+  test_api().DoOnAccountLinkingResult(AccountLinkingResult{
+      /*is_successful=*/true, 0, AccountLinkingResultCode::kResultOk});
+}
+
+TEST_F(PixAccountLinkingManagerTest, DoOnAccountLinkingResult_Failure) {
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+  task_environment_.FastForwardBy(kShowPromptDelay);
+
+  EXPECT_CALL(client(), DismissPrompt());
+  test_api().DoOnAccountLinkingResult(AccountLinkingResult{
+      /*is_successful=*/false, 0, AccountLinkingResultCode::kCouldNotInvoke});
+}
+
 }  // namespace payments::facilitated

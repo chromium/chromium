@@ -31,6 +31,14 @@ class PixAccountLinkingManagerTestApi {
   void OnUiScreenEvent(UiEvent ui_event_type) {
     manager_->OnUiScreenEvent(ui_event_type);
   }
+
+  // Network and backend response handlers.
+  void DoOnClientTokenReceived(const std::vector<uint8_t>& client_token) {
+    manager_->DoOnClientTokenReceived(client_token);
+  }
+  void DoOnAccountLinkingResult(AccountLinkingResult result) {
+    manager_->DoOnAccountLinkingResult(result);
+  }
   void OnGetDetailsForCreatePaymentInstrumentResponseReceived(
       base::TimeTicks start_time,
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
@@ -40,6 +48,17 @@ class PixAccountLinkingManagerTestApi {
         start_time, result, is_eligible_for_pix_account_linking, action_token);
   }
   void Reset() { manager_->Reset(); }
+
+  // Getters and inspection accessors.
+  std::string_view GetHistogramSuffix() const {
+    return manager_->GetHistogramSuffix();
+  }
+  base::DictValue GetPayloadForGetDetailsForCreatePaymentInstrument() {
+    return manager_->GetPayloadForGetDetailsForCreatePaymentInstrument();
+  }
+  const std::vector<uint8_t>& client_token() const {
+    return manager_->client_token_;
+  }
 
  private:
   const raw_ref<PixAccountLinkingManager> manager_;
