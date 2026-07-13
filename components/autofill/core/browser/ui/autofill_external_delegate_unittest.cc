@@ -3957,6 +3957,16 @@ TEST_F(AutofillExternalDelegateTest,
                    .is_personal_context_ambient_autofill_notice_acknowledged());
 }
 
+// Tests that accepting a personal context notice suggestion is a no-op.
+TEST_F(AutofillExternalDelegateTest,
+       DidAcceptSuggestion_PersonalContextNotice_NoOp) {
+  IssueOnQuery();
+  EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
+  external_delegate().DidAcceptSuggestion(
+      Suggestion(SuggestionType::kPersonalContextNotice),
+      SuggestionPosition{.multi_index = {0}});
+}
+
 TEST_F(AutofillExternalDelegateTest, RecordSuggestionTypeOnSuggestionAccepted) {
   base::HistogramTester histogram_tester;
   IssueOnQuery();
