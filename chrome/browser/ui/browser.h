@@ -360,22 +360,6 @@ class Browser : public TabStripModelObserver,
   // avoided.
   BrowserView& GetBrowserView();
 
-  // Never nullptr.
-  //
-  // When the last tab is removed, the browser attempts to close, see
-  // TabStripEmpty().
-  // TODO(https://crbug.com/331031753): Several existing Browser::Types never
-  // show a tab strip, yet are forced to work with the tab strip API to deal
-  // with the previous condition. This creates confusing control flow both for
-  // the tab strip and this class. One or both of the following should happen:
-  //  (1) tab_strip_model_ should become an optional member.
-  //  (2) Variations of Browser::Type that never show a tab strip should not use
-  //      this class.
-  TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
-  const TabStripModel* tab_strip_model() const {
-    return tab_strip_model_.get();
-  }
-
   BrowserActions* browser_actions() { return GetActions(); }
 
   // TODO(crbug.com/434734349): Remove this method once callsites are migrated.
