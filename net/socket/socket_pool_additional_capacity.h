@@ -12,8 +12,9 @@
 
 namespace net {
 
-// Socket pools update their state before every socket allocation and release.
-enum class SocketPoolState {
+// Socket pools update their expandability before every socket allocation and
+// release.
+enum class SocketPoolExpandability {
 
   // Uncapped pools can allocate or release sockets.
   kUncapped,
@@ -23,8 +24,8 @@ enum class SocketPoolState {
 };
 
 // This class encapsulates the logic for the additional TCP Socket Pool capacity
-// allocated (and randomized) to prevent cross-site state tracking. Stored on
-// `ClientSocketPool` subclasses and used in capacity calculations.
+// allocated (and randomized) to prevent cross-site expandability tracking.
+// Stored on `ClientSocketPool` subclasses and used in capacity calculations.
 // See crbug.com/415691664 for more details.
 class NET_EXPORT_PRIVATE SocketPoolAdditionalCapacity {
  public:
@@ -42,19 +43,23 @@ class NET_EXPORT_PRIVATE SocketPoolAdditionalCapacity {
                                                     double minimum,
                                                     double noise);
 
-  // Calculates the next `SocketPoolState` before the allocation of a socket.
-  // `sockets_in_use` should be counted pre-allocation and `socket_soft_cap`
-  // is likely being passed down from `g_max_sockets_per_pool`.
-  SocketPoolState NextStateBeforeAllocation(SocketPoolState current_state,
-                                            size_t sockets_in_use,
-                                            size_t socket_soft_cap) const;
+  // Calculates the next `SocketPoolExpandability` before the allocation of a
+  // socket. `sockets_in_use` should be counted pre-allocation and
+  // `socket_soft_cap` is likely being passed down from
+  // `g_max_sockets_per_pool`.
+  SocketPoolExpandability NextExpandabilityBeforeAllocation(
+      SocketPoolExpandability current_expandability,
+      size_t sockets_in_use,
+      size_t socket_soft_cap) const;
 
-  // Calculates the next `SocketPoolState` after the release of a socket.
-  // `sockets_in_use` should be counted post-release and `socket_soft_cap`
-  // is likely being passed down from `g_max_sockets_per_pool`.
-  SocketPoolState NextStateAfterRelease(SocketPoolState current_state,
-                                        size_t sockets_in_use,
-                                        size_t socket_soft_cap) const;
+  // Calculates the next `SocketPoolExpandability` after the release of a
+  // socket. `sockets_in_use` should be counted post-release and
+  // `socket_soft_cap` is likely being passed down from
+  // `g_max_sockets_per_pool`.
+  SocketPoolExpandability NextExpandabilityAfterRelease(
+      SocketPoolExpandability current_expandability,
+      size_t sockets_in_use,
+      size_t socket_soft_cap) const;
 
   explicit operator std::string() const {
     return base::StringPrintf(
@@ -71,10 +76,11 @@ class NET_EXPORT_PRIVATE SocketPoolAdditionalCapacity {
  private:
   enum class SocketPoolAction { kAllocation, kRelease };
 
-  static void LogStateTransition(SocketPoolAction action,
-                                 SocketPoolState current_state,
-                                 SocketPoolState next_state,
-                                 size_t sockets_in_use);
+  static void LogExpandabilityTransition(
+      SocketPoolAction action,
+      SocketPoolExpandability current_expandability,
+      SocketPoolExpandability next_expandability,
+      size_t sockets_in_use);
 
   SocketPoolAdditionalCapacity() = default;
   SocketPoolAdditionalCapacity(double base,
@@ -82,20 +88,23 @@ class NET_EXPORT_PRIVATE SocketPoolAdditionalCapacity {
                                double minimum,
                                double noise);
 
-  // Helper for NextStateBeforeAllocation to avoid duplicate logging code.
-  SocketPoolState NextStateBeforeAllocationImpl(SocketPoolState current_state,
-                                                size_t sockets_in_use,
-                                                size_t socket_soft_cap) const;
+  // Helper for NextExpandabilityBeforeAllocation to avoid duplicate logging
+  // code.
+  SocketPoolExpandability NextExpandabilityBeforeAllocationImpl(
+      SocketPoolExpandability current_expandability,
+      size_t sockets_in_use,
+      size_t socket_soft_cap) const;
 
-  // Helper for NextStateAfterRelease to avoid duplicate logging code.
-  SocketPoolState NextStateAfterReleaseImpl(SocketPoolState current_state,
-                                            size_t sockets_in_use,
-                                            size_t socket_soft_cap) const;
+  // Helper for NextExpandabilityAfterRelease to avoid duplicate logging code.
+  SocketPoolExpandability NextExpandabilityAfterReleaseImpl(
+      SocketPoolExpandability current_expandability,
+      size_t sockets_in_use,
+      size_t socket_soft_cap) const;
 
-  // This helper function for `NextStateBefore(Allocation|Release)` handles
-  // common logic. Returns a SocketPoolState if the common logic is controlling,
-  // and std::nullopt otherwise.
-  std::optional<SocketPoolState> NextStateCommonImpl(
+  // This helper function for `NextExpandabilityBefore(Allocation|Release)`
+  // handles common logic. Returns a SocketPoolExpandability if the common logic
+  // is controlling, and std::nullopt otherwise.
+  std::optional<SocketPoolExpandability> NextExpandabilityCommonImpl(
       size_t sockets_in_use,
       size_t socket_soft_cap) const;
 
@@ -104,14 +113,16 @@ class NET_EXPORT_PRIVATE SocketPoolAdditionalCapacity {
   // get to this stage. The actual way this function rolls dice are quite
   // complex, please see the implementation for details.
   // `actions_taken` must be between 0 and `capacity_`, and is the
-  // amount of `capacity_` already allocated for `NextStateBeforeAllocationImpl`
-  // and the amount of `capacity_` free for `NextStateAfterReleaseImpl`. This is
-  // done to ensure the probability converges toward 1 correctly for each.
-  bool ShouldTransitionState(SocketPoolAction action,
-                             size_t actions_taken) const;
+  // amount of `capacity_` already allocated for
+  // `NextExpandabilityBeforeAllocationImpl` and the amount of `capacity_` free
+  // for `NextExpandabilityAfterReleaseImpl`. This is done to ensure the
+  // probability converges toward 1 correctly for each.
+  bool ShouldTransitionExpandability(SocketPoolAction action,
+                                     size_t actions_taken) const;
 
-  // See the implementation of `ShouldTransitionState` for how these constants
-  // are used and bound in calculating the probability of a state transition.
+  // See the implementation of `ShouldTransitionExpandability` for how these
+  // constants are used and bound in calculating the probability of a
+  // expandability transition.
   double base_ = 0.0;
   size_t capacity_ = 0;
   double minimum_ = 0.0;

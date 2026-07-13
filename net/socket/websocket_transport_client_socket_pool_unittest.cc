@@ -1448,12 +1448,12 @@ TEST_P(WebSocketTransportClientSocketPoolTest,
   ValidateAdditionalCapacityForSocketPool(
       base::BindLambdaForTesting([&]() {
         StartRequest(kDefaultPriority, &pool);
-        return pool.StateForTest();
+        return pool.ExpandabilityForTest();
       }),
       base::BindLambdaForTesting([&]() { RunUntilIdle(); }),
       base::BindLambdaForTesting([&]() {
         EXPECT_TRUE(ReleaseOneConnection(ClientSocketPoolTest::NO_KEEP_ALIVE));
-        return pool.StateForTest();
+        return pool.ExpandabilityForTest();
       }),
       base::BindLambdaForTesting([&]() { return pool.SocketsInUse(); }));
   ReleaseAllConnections(ClientSocketPoolTest::NO_KEEP_ALIVE);

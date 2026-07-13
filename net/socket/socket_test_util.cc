@@ -2673,9 +2673,9 @@ uint64_t GetTaggedBytes(int32_t expected_tag) {
 #endif
 
 void ValidateAdditionalCapacityForSocketPool(
-    base::RepeatingCallback<SocketPoolState()> request_socket,
+    base::RepeatingCallback<SocketPoolExpandability()> request_socket,
     base::RepeatingCallback<void()> wait_for_socket_initialization,
-    base::RepeatingCallback<SocketPoolState()> release_socket,
+    base::RepeatingCallback<SocketPoolExpandability()> release_socket,
     base::RepeatingCallback<size_t()> sockets_in_use) {
   size_t total_sockets_seen_at_capping_point = 0;
   size_t capping_points_seen = 0;
@@ -2686,7 +2686,7 @@ void ValidateAdditionalCapacityForSocketPool(
   size_t minimum_sockets_seen_at_uncapping_point = 512;
   size_t maximum_sockets_seen_at_uncapping_point = 0;
   for (size_t i = 0; i < 100; ++i) {
-    while (request_socket.Run() == SocketPoolState::kUncapped) {
+    while (request_socket.Run() == SocketPoolExpandability::kUncapped) {
       continue;
     }
     wait_for_socket_initialization.Run();
@@ -2698,7 +2698,7 @@ void ValidateAdditionalCapacityForSocketPool(
     if (maximum_sockets_seen_at_capping_point < sockets_in_use.Run()) {
       maximum_sockets_seen_at_capping_point = sockets_in_use.Run();
     }
-    while (release_socket.Run() == SocketPoolState::kCapped) {
+    while (release_socket.Run() == SocketPoolExpandability::kCapped) {
       continue;
     }
     total_sockets_seen_at_uncapping_point += sockets_in_use.Run();

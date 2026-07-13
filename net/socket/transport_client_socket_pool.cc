@@ -400,7 +400,7 @@ int TransportClientSocketPool::RequestSocketInternal(
   const bool preconnecting = !handle;
   DCHECK_EQ(preconnecting, !!preconnect_done_closure);
 
-  UpdateStateBeforeAllocation();
+  UpdateExpandabilityBeforeAllocation();
 
   Group* group = nullptr;
   auto group_it = group_map_.find(group_id);
@@ -432,7 +432,7 @@ int TransportClientSocketPool::RequestSocketInternal(
     }
   }
 
-  if (State() == SocketPoolState::kCapped &&
+  if (Expandability() == SocketPoolExpandability::kCapped &&
       request.respect_limits() == RespectLimits::ENABLED) {
     // NOTE(mmenke):  Wonder if we really need different code for each case
     // here.  Only reason for them now seems to be preconnects.
@@ -469,13 +469,13 @@ int TransportClientSocketPool::RequestSocketInternal(
       }
       // We want to know if a new allocation could succeed, if not we must
       // release more idle sockets and try again.
-      UpdateStateBeforeAllocation();
-      if (State() == SocketPoolState::kUncapped) {
+      UpdateExpandabilityBeforeAllocation();
+      if (Expandability() == SocketPoolExpandability::kUncapped) {
         break;
       }
     }
     // If the pool is still capped by now, there's no free capacity to allocate.
-    if (State() == SocketPoolState::kCapped) {
+    if (Expandability() == SocketPoolExpandability::kCapped) {
       return preconnecting ? ERR_PRECONNECT_MAX_SOCKET_LIMIT : ERR_IO_PENDING;
     }
   }
@@ -649,7 +649,7 @@ void TransportClientSocketPool::CancelRequest(const GroupId& group_id,
   std::unique_ptr<Request> request = group->FindAndRemoveBoundRequest(handle);
   if (request) {
     --connecting_socket_count_;
-    UpdateStateAfterRelease();
+    UpdateExpandabilityAfterRelease();
     OnAvailableSocketSlot(group_id, group);
     CheckForStalledSocketGroups();
     return;
@@ -663,13 +663,13 @@ void TransportClientSocketPool::CancelRequest(const GroupId& group_id,
 
     // Let the job run, unless |cancel_connect_job| is true, or we're at the
     // socket limit and there are no other requests waiting on the job.
-    bool reached_limit = State() == SocketPoolState::kCapped;
+    bool reached_limit = Expandability() == SocketPoolExpandability::kCapped;
     if (group->jobs().size() > group->unbound_request_count() &&
         (cancel_connect_job || reached_limit)) {
       RemoveConnectJob(group->jobs().begin()->get(), group);
       if (group->IsEmpty())
         RemoveGroup(group->group_id());
-      UpdateStateAfterRelease();
+      UpdateExpandabilityAfterRelease();
       if (reached_limit)
         CheckForStalledSocketGroups();
     }
@@ -1005,7 +1005,7 @@ void TransportClientSocketPool::CleanupIdleSocketsInGroup(
           reason_for_closing_socket);
       idle_socket_it = group->mutable_idle_sockets()->erase(idle_socket_it);
       DecrementIdleCount();
-      UpdateStateAfterRelease();
+      UpdateExpandabilityAfterRelease();
     } else {
       DCHECK(!reason_for_closing_socket);
       ++idle_socket_it;
@@ -1053,7 +1053,7 @@ void TransportClientSocketPool::ReleaseSocket(
   CHECK_GT(group->active_socket_count(), 0u);
   group->DecrementActiveSocketCount();
 
-  UpdateStateAfterRelease();
+  UpdateExpandabilityAfterRelease();
 
   bool can_resuse_socket = false;
   std::string_view not_reusable_reason;
@@ -1098,7 +1098,7 @@ void TransportClientSocketPool::CheckForStalledSocketGroups() {
     if (!FindTopStalledGroup(&top_group, &top_group_id))
       return;
 
-    if (State() == SocketPoolState::kCapped) {
+    if (Expandability() == SocketPoolExpandability::kCapped) {
       if (idle_socket_count_ > 0) {
         CloseOneIdleSocketExceptInGroup(nullptr);
       } else {
@@ -1172,7 +1172,7 @@ void TransportClientSocketPool::FlushWithError(
   for (auto& group : group_map_) {
     group.second.IncrementGeneration();
   }
-  ResetState();
+  ResetExpandability();
 }
 
 void TransportClientSocketPool::RemoveConnectJob(ConnectJob* job,
@@ -1324,8 +1324,9 @@ bool TransportClientSocketPool::CloseOneIdleSocketExceptInGroup(
       DecrementIdleCount();
       if (group->IsEmpty())
         RemoveGroup(i);
-      // As a socket was released, the state should be updated to reflect this.
-      UpdateStateAfterRelease();
+      // As a socket was released, the expandability should be updated to
+      // reflect this.
+      UpdateExpandabilityAfterRelease();
       return true;
     }
   }
@@ -1359,7 +1360,7 @@ void TransportClientSocketPool::OnConnectJobComplete(Group* group,
                               bound_request->request->socket_tag());
       bound_request->request->net_log().EndEventWithNetErrorCode(
           NetLogEventType::SOCKET_POOL, bound_request->pending_error);
-      UpdateStateAfterRelease();
+      UpdateExpandabilityAfterRelease();
       OnAvailableSocketSlot(group->group_id(), group);
       CheckForStalledSocketGroups();
       return;
@@ -1369,7 +1370,7 @@ void TransportClientSocketPool::OnConnectJobComplete(Group* group,
     // the group, and kick off another request. The socket will be discarded.
     if (bound_request->generation != group->generation()) {
       group->InsertUnboundRequest(std::move(bound_request->request));
-      UpdateStateAfterRelease();
+      UpdateExpandabilityAfterRelease();
       OnAvailableSocketSlot(group->group_id(), group);
       CheckForStalledSocketGroups();
       return;
@@ -1387,7 +1388,7 @@ void TransportClientSocketPool::OnConnectJobComplete(Group* group,
         AddIdleSocket(job->PassSocket(), group);
       RemoveConnectJob(job, group);
       if (result != OK) {
-        UpdateStateAfterRelease();
+        UpdateExpandabilityAfterRelease();
       }
       OnAvailableSocketSlot(group->group_id(), group);
       CheckForStalledSocketGroups();
@@ -1416,7 +1417,7 @@ void TransportClientSocketPool::OnConnectJobComplete(Group* group,
     RemoveConnectJob(job, group);
   // If no socket was handed out, there's a new socket slot available.
   if (!request->handle()->socket()) {
-    UpdateStateAfterRelease();
+    UpdateExpandabilityAfterRelease();
     OnAvailableSocketSlot(group->group_id(), group);
     CheckForStalledSocketGroups();
   }
@@ -1704,7 +1705,8 @@ void TransportClientSocketPool::Group::OnBackupJobTimerFired(
 
   // If our old job is waiting on DNS, or if we can't create any sockets
   // right now due to limits, just reset the timer.
-  if (client_socket_pool_->State() == SocketPoolState::kCapped ||
+  if (client_socket_pool_->Expandability() ==
+          SocketPoolExpandability::kCapped ||
       !HasAvailableSocketSlot(client_socket_pool_->max_sockets_per_group_) ||
       (*jobs_.begin())->GetLoadState() == LOAD_STATE_RESOLVING_HOST) {
     StartBackupJobTimer(group_id);

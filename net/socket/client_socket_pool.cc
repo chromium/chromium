@@ -259,14 +259,14 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
       common_connect_job_params_, group_id.target_network(), delegate);
 }
 
-void ClientSocketPool::UpdateStateBeforeAllocation() {
-  state_ = additional_capacity_.NextStateBeforeAllocation(
-      State(), SocketsInUse(), SocketSoftCap());
+void ClientSocketPool::UpdateExpandabilityBeforeAllocation() {
+  expandability_ = additional_capacity_.NextExpandabilityBeforeAllocation(
+      Expandability(), SocketsInUse(), SocketSoftCap());
 }
 
-void ClientSocketPool::UpdateStateAfterRelease() {
-  state_ = additional_capacity_.NextStateAfterRelease(State(), SocketsInUse(),
-                                                      SocketSoftCap());
+void ClientSocketPool::UpdateExpandabilityAfterRelease() {
+  expandability_ = additional_capacity_.NextExpandabilityAfterRelease(
+      Expandability(), SocketsInUse(), SocketSoftCap());
 }
 
 }  // namespace net

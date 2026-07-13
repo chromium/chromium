@@ -373,7 +373,9 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
     return AdditionalCapacity();
   }
 
-  SocketPoolState StateForTest() const { return State(); }
+  SocketPoolExpandability ExpandabilityForTest() const {
+    return Expandability();
+  }
 
   void SetSocketSoftCapOverrideForTest(
       std::optional<size_t> socket_soft_cap_override_for_test) {
@@ -418,24 +420,26 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
     return additional_capacity_;
   }
 
-  SocketPoolState State() const { return state_; }
+  SocketPoolExpandability Expandability() const { return expandability_; }
 
   // This should be called exactly once before each attempted socket allocation
   // via `RequestSocket` or `RequestSockets` (including before each retry after
   // dropping idle sockets). Under invoking this function can impact security;
   // over invoking this function can impact performance.
-  void UpdateStateBeforeAllocation();
+  void UpdateExpandabilityBeforeAllocation();
 
   // This should be called once after each successful socket released (and not
   // reused) via `RequestSocket`, `RequestSockets`, `CancelRequest`,
   // `ReleaseSocket`, `OnConnectJobComplete`, `CloseIdleSockets`, or
   // `CloseIdleSocketsInGroup`. Under invoking this function can impact
   // performance; over invoking this function can impact security.
-  void UpdateStateAfterRelease();
+  void UpdateExpandabilityAfterRelease();
 
-  // This is used to reset the pool to the initial uncapped state when the
-  // socket pool is fully flushed out before later reuse.
-  void ResetState() { state_ = SocketPoolState::kUncapped; }
+  // This is used to reset the pool to the initial uncapped expandability when
+  // the socket pool is fully flushed out before later reuse.
+  void ResetExpandability() {
+    expandability_ = SocketPoolExpandability::kUncapped;
+  }
 
   const ProxyChain& GetProxyChain() const { return proxy_chain_; }
 
@@ -443,13 +447,13 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   // This section tracks information related to the overall pool capacity.
   // `socket_soft_cap_` is the amount of sockets always available to the pool
   // while additional sockets may be available via `additional_capacity_`
-  // depending on the configuration. `state_` tracks whether this pool has
-  // exhausted the available sockets (for the moment) or not. Due to
+  // depending on the configuration. `expandability_` tracks whether this pool
+  // has exhausted the available sockets (for the moment) or not. Due to
   // randomization the exact amount of sockets available to this pool will
   // fluctuate over time.
   const size_t socket_soft_cap_;
   const SocketPoolAdditionalCapacity additional_capacity_;
-  SocketPoolState state_ = SocketPoolState::kUncapped;
+  SocketPoolExpandability expandability_ = SocketPoolExpandability::kUncapped;
 
   // If set, this overrides `socket_soft_cap_` for future calculations.
   std::optional<size_t> socket_soft_cap_override_for_test_ = std::nullopt;

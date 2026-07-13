@@ -1155,10 +1155,10 @@ TEST_P(TransportClientSocketPoolTest, SSLCertError) {
   EXPECT_TRUE(handle.socket());
 }
 
-// Idle sockets dropped during allocation should force state recalculation.
-// See crbug.com/510607132.
+// Idle sockets dropped during allocation should force expandability
+// recalculation. See crbug.com/510607132.
 TEST_P(TransportClientSocketPoolTest,
-       EnsureStateRecalculationDuringIdleSocketDrop) {
+       EnsureExpandabilityRecalculationDuringIdleSocketDrop) {
   TransportClientSocketPool pool(
       /*socket_soft_cap=*/2, /*max_sockets_per_group=*/1,
       SocketPoolAdditionalCapacity::CreateEmpty(), kUnusedIdleSocketTimeout,
@@ -1198,7 +1198,7 @@ TEST_P(TransportClientSocketPoolTest,
   EXPECT_TRUE(handle1.is_initialized());
   EXPECT_EQ(0u, pool.IdleSocketCount());
   EXPECT_EQ(1u, pool.SocketsInUse());
-  EXPECT_EQ(SocketPoolState::kUncapped, pool.StateForTest());
+  EXPECT_EQ(SocketPoolExpandability::kUncapped, pool.ExpandabilityForTest());
 
   // Connect a socket in Group 2.
   TestCompletionCallback callback2;
@@ -1212,7 +1212,7 @@ TEST_P(TransportClientSocketPoolTest,
   EXPECT_TRUE(handle2.is_initialized());
   EXPECT_EQ(0u, pool.IdleSocketCount());
   EXPECT_EQ(2u, pool.SocketsInUse());
-  EXPECT_EQ(SocketPoolState::kUncapped, pool.StateForTest());
+  EXPECT_EQ(SocketPoolExpandability::kUncapped, pool.ExpandabilityForTest());
 
   // Let sockets go idle.
   handle1.Reset();
@@ -1220,7 +1220,7 @@ TEST_P(TransportClientSocketPoolTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2u, pool.IdleSocketCount());
   EXPECT_EQ(2u, pool.SocketsInUse());
-  EXPECT_EQ(SocketPoolState::kUncapped, pool.StateForTest());
+  EXPECT_EQ(SocketPoolExpandability::kUncapped, pool.ExpandabilityForTest());
 
   // Connect a socket in Group 3, see one idle sockets released.
   TestCompletionCallback callback3;
@@ -1234,14 +1234,14 @@ TEST_P(TransportClientSocketPoolTest,
   EXPECT_TRUE(handle3.is_initialized());
   EXPECT_EQ(1u, pool.IdleSocketCount());
   EXPECT_EQ(2u, pool.SocketsInUse());
-  EXPECT_EQ(SocketPoolState::kUncapped, pool.StateForTest());
+  EXPECT_EQ(SocketPoolExpandability::kUncapped, pool.ExpandabilityForTest());
 
   // Let sockets go idle.
   handle3.Reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2u, pool.IdleSocketCount());
   EXPECT_EQ(2u, pool.SocketsInUse());
-  EXPECT_EQ(SocketPoolState::kUncapped, pool.StateForTest());
+  EXPECT_EQ(SocketPoolExpandability::kUncapped, pool.ExpandabilityForTest());
 
   // Adjust the soft cap downward to 1.
   pool.SetSocketSoftCapOverrideForTest(1);
@@ -1258,7 +1258,7 @@ TEST_P(TransportClientSocketPoolTest,
   EXPECT_TRUE(handle4.is_initialized());
   EXPECT_EQ(0u, pool.IdleSocketCount());
   EXPECT_EQ(1u, pool.SocketsInUse());
-  EXPECT_EQ(SocketPoolState::kUncapped, pool.StateForTest());
+  EXPECT_EQ(SocketPoolExpandability::kUncapped, pool.ExpandabilityForTest());
 }
 
 namespace {
@@ -2411,12 +2411,12 @@ TEST_P(TransportClientSocketPoolTest,
       base::BindLambdaForTesting([&]() {
         StartRequest(base::StringPrintf("a%da", base::RandUint64()),
                      kDefaultPriority, &pool);
-        return pool.StateForTest();
+        return pool.ExpandabilityForTest();
       }),
       base::BindLambdaForTesting([&]() { RunUntilIdle(); }),
       base::BindLambdaForTesting([&]() {
         EXPECT_TRUE(ReleaseOneConnection(ClientSocketPoolTest::NO_KEEP_ALIVE));
-        return pool.StateForTest();
+        return pool.ExpandabilityForTest();
       }),
       base::BindLambdaForTesting([&]() { return pool.SocketsInUse(); }));
   ReleaseAllConnections(ClientSocketPoolTest::NO_KEEP_ALIVE);

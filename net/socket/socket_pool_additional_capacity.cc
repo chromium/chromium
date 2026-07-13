@@ -55,40 +55,48 @@ SocketPoolAdditionalCapacity SocketPoolAdditionalCapacity::CreateForTest(
   return SocketPoolAdditionalCapacity(base, capacity, minimum, noise);
 }
 
-SocketPoolState SocketPoolAdditionalCapacity::NextStateBeforeAllocation(
-    SocketPoolState current_state,
+SocketPoolExpandability
+SocketPoolAdditionalCapacity::NextExpandabilityBeforeAllocation(
+    SocketPoolExpandability current_expandability,
     size_t sockets_in_use,
     size_t socket_soft_cap) const {
-  SocketPoolState next_state = NextStateBeforeAllocationImpl(
-      current_state, sockets_in_use, socket_soft_cap);
-  LogStateTransition(SocketPoolAction::kAllocation, current_state, next_state,
-                     sockets_in_use);
-  return next_state;
+  SocketPoolExpandability next_expandability =
+      NextExpandabilityBeforeAllocationImpl(current_expandability,
+                                            sockets_in_use, socket_soft_cap);
+  LogExpandabilityTransition(SocketPoolAction::kAllocation,
+                             current_expandability, next_expandability,
+                             sockets_in_use);
+  return next_expandability;
 }
 
-SocketPoolState SocketPoolAdditionalCapacity::NextStateAfterRelease(
-    SocketPoolState current_state,
+SocketPoolExpandability
+SocketPoolAdditionalCapacity::NextExpandabilityAfterRelease(
+    SocketPoolExpandability current_expandability,
     size_t sockets_in_use,
     size_t socket_soft_cap) const {
-  SocketPoolState next_state =
-      NextStateAfterReleaseImpl(current_state, sockets_in_use, socket_soft_cap);
-  LogStateTransition(SocketPoolAction::kRelease, current_state, next_state,
-                     sockets_in_use);
-  return next_state;
+  SocketPoolExpandability next_expandability =
+      NextExpandabilityAfterReleaseImpl(current_expandability, sockets_in_use,
+                                        socket_soft_cap);
+  LogExpandabilityTransition(SocketPoolAction::kRelease, current_expandability,
+                             next_expandability, sockets_in_use);
+  return next_expandability;
 }
 
 // static
-void SocketPoolAdditionalCapacity::LogStateTransition(
+void SocketPoolAdditionalCapacity::LogExpandabilityTransition(
     SocketPoolAction action,
-    SocketPoolState current_state,
-    SocketPoolState next_state,
+    SocketPoolExpandability current_expandability,
+    SocketPoolExpandability next_expandability,
     size_t sockets_in_use) {
   base::UmaHistogramCounts1000(
       base::StringPrintf(
           "Net.TcpSocketPoolLimitRandomization.Transition.%s.%sTo%s",
           action == SocketPoolAction::kAllocation ? "Allocation" : "Release",
-          current_state == SocketPoolState::kUncapped ? "Uncapped" : "Capped",
-          next_state == SocketPoolState::kUncapped ? "Uncapped" : "Capped"),
+          current_expandability == SocketPoolExpandability::kUncapped
+              ? "Uncapped"
+              : "Capped",
+          next_expandability == SocketPoolExpandability::kUncapped ? "Uncapped"
+                                                                   : "Capped"),
       sockets_in_use);
 }
 
@@ -130,58 +138,61 @@ SocketPoolAdditionalCapacity::SocketPoolAdditionalCapacity(double base,
   }
 }
 
-SocketPoolState SocketPoolAdditionalCapacity::NextStateBeforeAllocationImpl(
-    SocketPoolState current_state,
+SocketPoolExpandability
+SocketPoolAdditionalCapacity::NextExpandabilityBeforeAllocationImpl(
+    SocketPoolExpandability current_expandability,
     size_t sockets_in_use,
     size_t socket_soft_cap) const {
-  std::optional<SocketPoolState> common_state =
-      NextStateCommonImpl(sockets_in_use, socket_soft_cap);
-  if (common_state) {
-    return *common_state;
+  std::optional<SocketPoolExpandability> common_expandability =
+      NextExpandabilityCommonImpl(sockets_in_use, socket_soft_cap);
+  if (common_expandability) {
+    return *common_expandability;
   }
 
   // As we are using additional capacity, a socket allocation cannot transition
   // the pool to be uncapped.
-  if (current_state == SocketPoolState::kCapped) {
-    return SocketPoolState::kCapped;
+  if (current_expandability == SocketPoolExpandability::kCapped) {
+    return SocketPoolExpandability::kCapped;
   }
 
   // At this point we know we are uncapped and are using more sockets than the
   // soft cap, so we calculate the probability using the amount of free capacity
   // so the probability exponentially converges to 1 as capacity goes to 0.
-  return ShouldTransitionState(SocketPoolAction::kAllocation,
-                               socket_soft_cap + capacity_ - sockets_in_use)
-             ? SocketPoolState::kCapped
-             : SocketPoolState::kUncapped;
+  return ShouldTransitionExpandability(
+             SocketPoolAction::kAllocation,
+             socket_soft_cap + capacity_ - sockets_in_use)
+             ? SocketPoolExpandability::kCapped
+             : SocketPoolExpandability::kUncapped;
 }
 
-SocketPoolState SocketPoolAdditionalCapacity::NextStateAfterReleaseImpl(
-    SocketPoolState current_state,
+SocketPoolExpandability
+SocketPoolAdditionalCapacity::NextExpandabilityAfterReleaseImpl(
+    SocketPoolExpandability current_expandability,
     size_t sockets_in_use,
     size_t socket_soft_cap) const {
-  std::optional<SocketPoolState> common_state =
-      NextStateCommonImpl(sockets_in_use, socket_soft_cap);
-  if (common_state) {
-    return *common_state;
+  std::optional<SocketPoolExpandability> common_expandability =
+      NextExpandabilityCommonImpl(sockets_in_use, socket_soft_cap);
+  if (common_expandability) {
+    return *common_expandability;
   }
 
   // As we are reclaiming capacity, a socket release cannot transition the pool
   // to be capped.
-  if (current_state == SocketPoolState::kUncapped) {
-    return SocketPoolState::kUncapped;
+  if (current_expandability == SocketPoolExpandability::kUncapped) {
+    return SocketPoolExpandability::kUncapped;
   }
 
   // At this point we know we are capped and are using more sockets than the
   // soft cap, so we calculate the probability using the amount of used capacity
   // so the probability exponentially converges to 1 as usage goes to 0.
-  return ShouldTransitionState(SocketPoolAction::kRelease,
-                               sockets_in_use - socket_soft_cap)
-             ? SocketPoolState::kUncapped
-             : SocketPoolState::kCapped;
+  return ShouldTransitionExpandability(SocketPoolAction::kRelease,
+                                       sockets_in_use - socket_soft_cap)
+             ? SocketPoolExpandability::kUncapped
+             : SocketPoolExpandability::kCapped;
 }
 
-std::optional<SocketPoolState>
-SocketPoolAdditionalCapacity::NextStateCommonImpl(
+std::optional<SocketPoolExpandability>
+SocketPoolAdditionalCapacity::NextExpandabilityCommonImpl(
     size_t sockets_in_use,
     size_t socket_soft_cap) const {
   // We don't want to throw in this code, so for range errors we simply log and
@@ -190,13 +201,13 @@ SocketPoolAdditionalCapacity::NextStateCommonImpl(
     base::UmaHistogramEnumeration(
         kErrorHistogramName,
         SocketPoolAdditionalCapacityError::kInvalidSocketSoftCap);
-    return SocketPoolState::kCapped;
+    return SocketPoolExpandability::kCapped;
   }
   if (!base::IsValueInRangeForNumericType<uint16_t>(sockets_in_use)) {
     base::UmaHistogramEnumeration(
         kErrorHistogramName,
         SocketPoolAdditionalCapacityError::kInvalidSocketInUse);
-    return SocketPoolState::kCapped;
+    return SocketPoolExpandability::kCapped;
   }
 
   // At this point we know all three numbers are below an uint16_t, so there's
@@ -207,24 +218,24 @@ SocketPoolAdditionalCapacity::NextStateCommonImpl(
     base::UmaHistogramEnumeration(
         kErrorHistogramName,
         SocketPoolAdditionalCapacityError::kInvalidSocketAllocation);
-    return SocketPoolState::kCapped;
+    return SocketPoolExpandability::kCapped;
   }
 
   // If we are using fewer sockets than the soft cap we are always uncapped.
   if (sockets_in_use < socket_soft_cap) {
-    return SocketPoolState::kUncapped;
+    return SocketPoolExpandability::kUncapped;
   }
 
   // If we are using all possible sockets we are always capped.
   if (sockets_in_use == (socket_soft_cap + capacity_)) {
-    return SocketPoolState::kCapped;
+    return SocketPoolExpandability::kCapped;
   }
 
   // Otherwise, the logic is not shared.
   return std::nullopt;
 }
 
-bool SocketPoolAdditionalCapacity::ShouldTransitionState(
+bool SocketPoolAdditionalCapacity::ShouldTransitionExpandability(
     SocketPoolAction action,
     size_t actions_taken) const {
   // We need to enforce bounds before any math is done here.
