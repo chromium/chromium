@@ -35,7 +35,8 @@ SelectMutationObserver::SelectMutationObserver(HTMLSelectElement& select)
   init->setAttributes(true);
   observer_->observe(select_, init, ASSERT_NO_EXCEPTION);
   // Traverse descendants that have been added to the select so far.
-  TraverseNodeDescendants(select_);
+  HeapHashSet<Member<Node>> visited_nodes;
+  TraverseNodeDescendants(select_, visited_nodes);
 }
 
 ExecutionContext* SelectMutationObserver::GetExecutionContext() const {
@@ -44,14 +45,15 @@ ExecutionContext* SelectMutationObserver::GetExecutionContext() const {
 
 void SelectMutationObserver::Deliver(const MutationRecordVector& records,
                                      MutationObserver&) {
+  HeapHashSet<Member<Node>> visited_nodes;
   for (const auto& record : records) {
     if (record->type() == "childList") {
-      CheckAddedNodes(record);
+      CheckAddedNodes(record, visited_nodes);
       CheckRemovedNodes(record);
     } else if (record->type() == "attributes") {
       if (record->attributeName() == html_names::kTabindexAttr ||
           record->attributeName() == html_names::kContenteditableAttr) {
-        AddDescendantDisallowedErrorToNode(*record->target());
+        AddDescendantDisallowedErrorToNode(*record->target(), visited_nodes);
       }
     }
   }
@@ -67,7 +69,9 @@ void SelectMutationObserver::Trace(Visitor* visitor) const {
   MutationObserver::Delegate::Trace(visitor);
 }
 
-void SelectMutationObserver::CheckAddedNodes(MutationRecord* record) {
+void SelectMutationObserver::CheckAddedNodes(
+    MutationRecord* record,
+    HeapHashSet<Member<Node>>& visited_nodes) {
   DCHECK(record);
   auto* added_nodes = record->addedNodes();
   for (unsigned i = 0; i < added_nodes->length(); ++i) {
@@ -76,9 +80,9 @@ void SelectMutationObserver::CheckAddedNodes(MutationRecord* record) {
     if (IsWhitespaceOrEmpty(*descendant)) {
       continue;
     }
-    AddDescendantDisallowedErrorToNode(*descendant);
+    AddDescendantDisallowedErrorToNode(*descendant, visited_nodes);
     // Check the added node's descendants, if any.
-    TraverseNodeDescendants(descendant);
+    TraverseNodeDescendants(descendant, visited_nodes);
   }
 }
 
@@ -107,16 +111,24 @@ void SelectMutationObserver::CheckRemovedNodes(MutationRecord* record) {
   }
 }
 
-void SelectMutationObserver::TraverseNodeDescendants(const Node* node) {
+void SelectMutationObserver::TraverseNodeDescendants(
+    const Node* node,
+    HeapHashSet<Member<Node>>& visited_nodes) {
   for (Node* descendant = NodeTraversal::FirstWithin(*node); descendant;
        descendant = NodeTraversal::Next(*descendant, node)) {
     if (!IsWhitespaceOrEmpty(*descendant)) {
-      AddDescendantDisallowedErrorToNode(*descendant);
+      AddDescendantDisallowedErrorToNode(*descendant, visited_nodes);
     }
   }
 }
 
-void SelectMutationObserver::AddDescendantDisallowedErrorToNode(Node& node) {
+void SelectMutationObserver::AddDescendantDisallowedErrorToNode(
+    Node& node,
+    HeapHashSet<Member<Node>>& visited_nodes) {
+  if (visited_nodes.Contains(&node)) {
+    return;
+  }
+  visited_nodes.insert(&node);
   ElementAccessibilityIssueReason issue_reason = CheckForIssue(node);
   if (issue_reason != ElementAccessibilityIssueReason::kValidChild) {
     if (!IsAllowedInteractiveElement(node)) {

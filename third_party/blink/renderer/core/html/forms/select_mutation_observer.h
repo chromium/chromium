@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
 namespace blink {
 
@@ -25,10 +26,14 @@ class SelectMutationObserver : public MutationObserver::Delegate {
   void Disconnect();
 
  private:
-  void CheckAddedNodes(MutationRecord* record);
+  void CheckAddedNodes(MutationRecord* record,
+                       HeapHashSet<Member<Node>>& visited_nodes);
   void CheckRemovedNodes(MutationRecord* record);
-  void TraverseNodeDescendants(const Node* node);
-  void AddDescendantDisallowedErrorToNode(Node& node);
+  void TraverseNodeDescendants(const Node* node,
+                               HeapHashSet<Member<Node>>& visited_nodes);
+  void AddDescendantDisallowedErrorToNode(
+      Node& node,
+      HeapHashSet<Member<Node>>& visited_nodes);
   bool IsAllowedInteractiveElement(Node& node);
   bool IsInteractiveElement(const Node& node);
   void RecordIssueByType(ElementAccessibilityIssueReason issue_reason);
