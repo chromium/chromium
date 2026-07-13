@@ -48,20 +48,38 @@
   <a href="https://explainers-by-googlers.github.io/user-dictionary-leaks/">user-dictionary-leaks</a>.
 </p>
 
-<!-- Test 1: basic add then remove on a single field. -->
+<!-- Test 1: basic add then remove on a single field. Covers both a Latin (LTR)
+     word and a Hebrew (RTL) word: matching is exact/verbatim. -->
 <fieldset>
-  <legend>1. Add suppresses the squiggle, remove restores it</legend>
-  <p>The misspelled nonsense word <span class="word">wugzz</span> below should
-     have a red spelling squiggle to start with.</p>
+  <legend>1. Add suppresses the squiggle, remove restores it (LTR and RTL)</legend>
+
+  <p><b>1a. Latin (LTR) word.</b> The misspelled nonsense word
+     <span class="word">wugzz</span> below should have a red spelling squiggle to
+     start with.</p>
   <div id="field1" class="editable" spellcheck="true" contenteditable>This wugzz is misspelled.</div>
   <button data-add='["wugzz"]'>addWords(["wugzz"])</button>
   <button data-remove='["wugzz"]'>removeWords(["wugzz"])</button>
+
+  <p class="note"><b>Precondition for 1b:</b> enable the <b>Hebrew</b> spellcheck
+     dictionary (Settings &rsaquo; Languages). Chrome only squiggles Hebrew text
+     when a Hebrew (<code>he</code>) or Persian (<code>fa</code>) dictionary is
+     on; with only Latin dictionaries enabled the word below is never flagged
+     and there is nothing to observe.</p>
+  <p><b>1b. Hebrew (RTL) word.</b> The misspelled Hebrew nonsense word
+     <span class="word">שלוס</span> below should have a red spelling squiggle to
+     start with.</p>
+  <div id="field1b" class="editable" spellcheck="true" dir="rtl" contenteditable>זה שלוס לא נכון.</div>
+  <button data-add='["שלוס"]'>addWords(["שלוס"])</button>
+  <button data-remove='["שלוס"]'>removeWords(["שלוס"])</button>
+
   <ol>
-    <li>Confirm <span class="word">wugzz</span> is underlined as misspelled.</li>
-    <li>Click <b>addWords</b>. The squiggle on <span class="word">wugzz</span> should disappear
+    <li>For <b>each</b> word (<span class="word">wugzz</span> and
+        <span class="word">שלוס</span>), confirm it is underlined as misspelled.</li>
+    <li>Click that word's <b>addWords</b> button. Its squiggle should disappear
         immediately, with no further interaction.</li>
-    <li>Click <b>removeWords</b>, then click back into this field. The squiggle should
-        come back as soon as you focus the field &mdash; <b>without you having to type</b>.</li>
+    <li>Click that word's <b>removeWords</b> button, then click back into the field.
+        The squiggle should come back as soon as you focus the field &mdash;
+        <b>without you having to type</b>.</li>
   </ol>
   <div class="verdict" data-test="basic"></div>
 </fieldset>

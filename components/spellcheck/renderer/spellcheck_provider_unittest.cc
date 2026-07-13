@@ -17,6 +17,7 @@
 #include "components/spellcheck/renderer/spellcheck.h"
 #include "components/spellcheck/renderer/spellcheck_provider_test.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -24,6 +25,8 @@
 #include "third_party/blink/public/web/web_text_decoration_type.h"
 
 namespace {
+
+using testing::IsEmpty;
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 struct HybridSpellCheckTestCase {
@@ -665,7 +668,50 @@ TEST_F(SpellCheckProviderTest, DocumentCustomDictionaryFiltersPlatformResults) {
   // The post-filter dropped "Pikachu", so Blink sees no misspellings.
   EXPECT_EQ(completion_result.completion_count_, 1u);
   EXPECT_EQ(completion_result.cancellation_count_, 0u);
-  EXPECT_TRUE(completion_result.results_.empty());
+  EXPECT_THAT(completion_result.results_, IsEmpty());
+}
+
+// RTL analog of the test above: a right-to-left (Hebrew) custom word added
+// through the web API must also suppress a platform-reported misspelling.
+TEST_F(SpellCheckProviderTest,
+       DocumentCustomDictionaryFiltersPlatformResultsRtl) {
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "SpellCheckCustomDictionaryAPI", true);
+
+  // "שלוס" (U+05E9 U+05DC U+05D5 U+05E1), a Hebrew nonsense word; each letter
+  // is 2 bytes in UTF-8. The u"" text below spells the same code points.
+  const std::string kHebrewUtf8 = "\xD7\xA9\xD7\x9C\xD7\x95\xD7\xA1";
+  const std::u16string kHebrewUtf16 = u"שלוס";
+  static_cast<blink::WebTextCheckClient*>(&provider_)
+      ->SpellCheckCustomDictionaryChanged({kHebrewUtf8}, {});
+
+  const std::u16string text = u"hi " + kHebrewUtf16;
+  const size_t loc = text.find(kHebrewUtf16);
+  ASSERT_NE(loc, std::u16string::npos);
+  const size_t len = kHebrewUtf16.size();
+
+  FakeTextCheckingResult completion_result;
+  provider_.RequestTextChecking(
+      text, /*spelling_markers=*/{},
+      blink::WebTextCheckClient::ShouldForceRefreshTextCheckService::kNo,
+      std::make_unique<FakeTextCheckingCompletion>(&completion_result));
+
+  ASSERT_EQ(provider_.text_check_requests_.size(), 1u);
+
+  // Simulate the platform spell checker flagging the Hebrew word.
+  std::vector<SpellCheckResult> platform_results = {
+      SpellCheckResult(spellcheck::Decoration::SPELLING, static_cast<int>(loc),
+                       static_cast<int>(len))};
+  std::move(std::get<2>(provider_.text_check_requests_.back()))
+      .Run(platform_results);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return completion_result.completion_count_ > 0; }));
+
+  // The post-filter recognized the RTL custom word and dropped it.
+  EXPECT_EQ(completion_result.completion_count_, 1u);
+  EXPECT_EQ(completion_result.cancellation_count_, 0u);
+  EXPECT_THAT(completion_result.results_, IsEmpty());
 }
 
 // Verifies that committing a new document drops the per-frame custom word
