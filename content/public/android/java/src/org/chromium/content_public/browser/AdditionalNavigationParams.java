@@ -4,43 +4,13 @@
 
 package org.chromium.content_public.browser;
 
-import org.chromium.base.UnguessableToken;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-import org.chromium.content_public.common.ChildProcessId;
-
 /**
- * Holds parameters for NavigationController::LoadUrlParams::AdditionalNavigationParams. This is
- * used to route information about the initiator frame to the navigation request, which is needed
- * for event-level reporting to function properly.
+ * An opaque interface representing parameters for
+ * NavigationController::LoadUrlParams::AdditionalNavigationParams. This is used to route
+ * information about the initiator frame to the navigation request, which is needed for event-level
+ * reporting to function properly.
  */
-@NullMarked
-public class AdditionalNavigationParams {
-    private final UnguessableToken mInitiatorFrameToken;
-    private final ChildProcessId mInitiatorProcessId;
-
-    // Parameters related to Attribution Reporting Impressions. May not always
-    // be set.
-    private final @Nullable UnguessableToken mAttributionSrcToken;
-
-    public AdditionalNavigationParams(
-            UnguessableToken initiatorFrameToken,
-            ChildProcessId initiatorProcessId,
-            @Nullable UnguessableToken attributionSrcToken) {
-        mInitiatorFrameToken = initiatorFrameToken;
-        mInitiatorProcessId = initiatorProcessId;
-        mAttributionSrcToken = attributionSrcToken;
-    }
-
-    public UnguessableToken getInitiatorFrameToken() {
-        return mInitiatorFrameToken;
-    }
-
-    public ChildProcessId getInitiatorProcessId() {
-        return mInitiatorProcessId;
-    }
-
-    public @Nullable UnguessableToken getAttributionSrcToken() {
-        return mAttributionSrcToken;
-    }
+public interface AdditionalNavigationParams {
+    /** Releases the native resources associated with these parameters. */
+    void destroy();
 }

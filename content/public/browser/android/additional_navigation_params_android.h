@@ -5,18 +5,26 @@
 #ifndef CONTENT_PUBLIC_BROWSER_ANDROID_ADDITIONAL_NAVIGATION_PARAMS_ANDROID_H_
 #define CONTENT_PUBLIC_BROWSER_ANDROID_ADDITIONAL_NAVIGATION_PARAMS_ANDROID_H_
 
+#include <optional>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
-#include "content/public/common/child_process_id.h"
 
 namespace content {
 
+class RenderFrameHost;
+
+// Creates a Java AdditionalNavigationParams describing `initiator_frame_host`
+// as the initiator of a future navigation. Because the params may be consumed
+// after `initiator_frame_host` has been destroyed, this holds a reference
+// inside the Java object that keeps the frame's navigation-relevant state
+// available; callers must ensure the Java object is destroyed when no longer
+// needed.
 CONTENT_EXPORT base::android::ScopedJavaLocalRef<jobject>
 CreateJavaAdditionalNavigationParams(
     JNIEnv* env,
-    base::UnguessableToken initiator_frame_token,
-    content::ChildProcessId initiator_process_id,
+    RenderFrameHost& initiator_frame_host,
     std::optional<base::UnguessableToken> attribution_src_token);
 
 }  // namespace content

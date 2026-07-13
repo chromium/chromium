@@ -15,12 +15,13 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "content/browser/android/additional_navigation_params_utils.h"
+#include "content/browser/android/additional_navigation_params.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/initiator_navigation_state.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/common/referrer.h"
@@ -265,6 +266,9 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
             env, j_additional_navigation_params);
     params.initiator_process_id =
         GetInitiatorProcessIdFromJavaAdditionalNavigationParams(
+            env, j_additional_navigation_params);
+    params.initiator_navigation_state =
+        TakeNativeStateFromJavaAdditionalNavigationParams(
             env, j_additional_navigation_params);
 
     // If the attribution src token exists, then an impression exists with this

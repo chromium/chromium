@@ -85,6 +85,8 @@ public class ContextMenuHelper {
         dismissContextMenu();
         if (mCurrentNativeDelegate != null) mCurrentNativeDelegate.destroy();
         if (mPopulatorFactory != null) mPopulatorFactory.onDestroy();
+        destroyContextMenuParams(mCurrentContextMenuParams);
+        mCurrentContextMenuParams = null;
         var removedValue = sContextMenuHelperMap.remove(mNativeContextMenuHelper);
         assert removedValue == this;
         mNativeContextMenuHelper = 0;
@@ -94,6 +96,8 @@ public class ContextMenuHelper {
     private void setPopulatorFactory(ContextMenuPopulatorFactory populatorFactory) {
         dismissContextMenu();
         if (mCurrentNativeDelegate != null) mCurrentNativeDelegate.destroy();
+        destroyContextMenuParams(mCurrentContextMenuParams);
+        mCurrentContextMenuParams = null;
         mCurrentPopulator = null;
         if (mPopulatorFactory != null) mPopulatorFactory.onDestroy();
         mPopulatorFactory = populatorFactory;
@@ -101,6 +105,7 @@ public class ContextMenuHelper {
 
     /**
      * Starts showing a context menu for {@code view} based on {@code params}.
+     *
      * @param params The {@link ContextMenuParams} that indicate what menu items to show.
      * @param renderFrameHost {@link RenderFrameHost} to get the encoded images from.
      * @param view container view for the menu.
@@ -112,7 +117,10 @@ public class ContextMenuHelper {
             RenderFrameHost renderFrameHost,
             View view,
             float topContentOffsetPx) {
-        if (params.isFile()) return;
+        if (params.isFile()) {
+            destroyContextMenuParams(params);
+            return;
+        }
 
         final WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
 
@@ -124,6 +132,7 @@ public class ContextMenuHelper {
                 || mPopulatorFactory == null
                 || !mPopulatorFactory.isEnabled()
                 || mCurrentContextMenu != null) {
+            destroyContextMenuParams(params);
             return;
         }
 
@@ -162,6 +171,8 @@ public class ContextMenuHelper {
                         // Has no effect if the classification already succeeded.
                         mChipDelegate.onMenuClosed();
                     }
+                    destroyContextMenuParams(mCurrentContextMenuParams);
+                    mCurrentContextMenuParams = null;
                     if (mNativeContextMenuHelper == 0) return;
                     ContextMenuHelperJni.get().onContextMenuClosed(mNativeContextMenuHelper);
                 };
@@ -261,6 +272,12 @@ public class ContextMenuHelper {
     @CalledByNative
     private static ContextMenuHelper getJavaObject(long nativeContextMenuHelper) {
         return assertNonNull(sContextMenuHelperMap.get(nativeContextMenuHelper));
+    }
+
+    private static void destroyContextMenuParams(@Nullable ContextMenuParams params) {
+        if (params != null) {
+            params.destroy();
+        }
     }
 
     @NativeMethods

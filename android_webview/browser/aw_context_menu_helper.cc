@@ -6,7 +6,7 @@
 
 #include "android_webview/browser_jni_headers/AwContextMenuHelper_jni.h"
 #include "components/embedder_support/android/contextmenu/context_menu_builder.h"
-#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "ui/android/view_android.h"
 
 using base::android::JavaRef;
@@ -33,9 +33,8 @@ void AwContextMenuHelper::ShowContextMenu(
   gfx::NativeView view = GetWebContents().GetNativeView();
   Java_AwContextMenuHelper_showContextMenu(
       env, java_obj_,
-      context_menu::BuildJavaContextMenuParams(
-          params, nullptr, render_frame_host.GetProcess()->GetID(),
-          render_frame_host.GetFrameToken().value()),
+      context_menu::BuildJavaContextMenuParams(params, nullptr,
+                                               render_frame_host),
       view->GetContainerView());
 }
 

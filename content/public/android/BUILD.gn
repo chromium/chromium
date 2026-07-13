@@ -250,7 +250,7 @@ android_library("content_full_java") {
   resources_package = "org.chromium.content"
 
   sources = [
-    "java/src/org/chromium/content/browser/AdditionalNavigationParamsUtils.java",
+    "java/src/org/chromium/content/browser/AdditionalNavigationParamsImpl.java",
     "java/src/org/chromium/content/browser/AppWebMessagePort.java",
     "java/src/org/chromium/content/browser/AttributionOsLevelManager.java",
     "java/src/org/chromium/content/browser/AudioFocusDelegate.java",
@@ -505,7 +505,7 @@ generate_jar_jni("jar_jni") {
 
 generate_jni("content_jni_headers") {
   sources = [
-    "java/src/org/chromium/content/browser/AdditionalNavigationParamsUtils.java",
+    "java/src/org/chromium/content/browser/AdditionalNavigationParamsImpl.java",
     "java/src/org/chromium/content/browser/AppWebMessagePort.java",
     "java/src/org/chromium/content/browser/AttributionOsLevelManager.java",
     "java/src/org/chromium/content/browser/AudioFocusDelegate.java",

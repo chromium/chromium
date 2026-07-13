@@ -68,6 +68,7 @@ public class AwContextMenuCoordinator {
     private WebContentsObserver mWebContentsObserver;
     private final boolean mIsDragDropEnabled;
     private final boolean mUsePopupWindow;
+    private boolean mDismissed;
 
     AwContextMenuCoordinator(
             WindowAndroid windowAndroid,
@@ -97,6 +98,9 @@ public class AwContextMenuCoordinator {
     }
 
     public void dismiss() {
+        if (mDismissed) return;
+        mDismissed = true;
+
         if (mWebContentsObserver != null) {
             mWebContentsObserver.observe(null);
         }
@@ -115,6 +119,8 @@ public class AwContextMenuCoordinator {
             mCurrentPopulator.onMenuClosed();
             mCurrentPopulator = null;
         }
+
+        mParams.destroy();
     }
 
     void displayMenu() {

@@ -215,6 +215,13 @@ public class ContextMenuParams {
         return mAdditionalNavigationParams;
     }
 
+    /** Releases resources associated with this Context Menu. */
+    public void destroy() {
+        if (mAdditionalNavigationParams != null) {
+            mAdditionalNavigationParams.destroy();
+        }
+    }
+
     /** Returns the {@link MenuModelBridge} associated with this context menu. */
     public MenuModelBridge getMenuModelBridge() {
         return mMenuModelBridge;

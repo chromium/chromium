@@ -7,10 +7,12 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/unguessable_token_android.h"
+#include "base/check_op.h"
 #include "base/unguessable_token.h"
 #include "content/public/browser/android/additional_navigation_params_android.h"
 #include "content/public/browser/android/impression_android.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-shared.h"
 #include "ui/menus/android/menu_model_bridge.h"
@@ -26,8 +28,7 @@ namespace context_menu {
 base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
     const content::ContextMenuParams& params,
     ui::MenuModel* menu_model,
-    content::ChildProcessId initiator_process_id,
-    std::optional<base::UnguessableToken> initiator_frame_token) {
+    content::RenderFrameHost& initiator_frame_host) {
   GURL sanitizedReferrer =
       (params.frame_url.is_empty() ? params.page_url : params.frame_url)
           .GetAsReferrer();
@@ -37,18 +38,13 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
   std::u16string title_text =
       (params.title_text.empty() ? params.alt_text : params.title_text);
 
-  std::optional<base::UnguessableToken> attribution_src_token;
-  if (initiator_frame_token && params.impression) {
-    attribution_src_token = params.impression->attribution_src_token.value();
-  }
-
-  base::android::ScopedJavaLocalRef<jobject> additional_navigation_params;
-  if (initiator_frame_token) {
-    additional_navigation_params =
-        content::CreateJavaAdditionalNavigationParams(
-            env, initiator_frame_token.value(), initiator_process_id,
-            attribution_src_token);
-  }
+  std::optional<base::UnguessableToken> attribution_src_token =
+      params.impression
+          ? std::make_optional(params.impression->attribution_src_token.value())
+          : std::nullopt;
+  base::android::ScopedJavaLocalRef<jobject> additional_navigation_params =
+      content::CreateJavaAdditionalNavigationParams(env, initiator_frame_host,
+                                                    attribution_src_token);
 
   ui::MenuModelBridge* menu_model_bridge =
       new ui::MenuModelBridge(menu_model ? menu_model->AsWeakPtr() : nullptr);

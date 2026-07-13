@@ -64,6 +64,7 @@ public class AwContextMenuHelper {
                 || windowAndroid.getActivity().get() == null
                 || windowAndroid.getContext().get() == null) {
             Log.w(TAG, "Could not create context menu");
+            params.destroy();
             return false;
         }
 
