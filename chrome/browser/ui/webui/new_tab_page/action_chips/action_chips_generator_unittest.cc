@@ -239,6 +239,21 @@ const ActionChipPtr& GetStaticCanvasChip() {
   return *kInstance;
 }
 
+const ActionChipPtr& GetStaticStarterChip() {
+  static const base::NoDestructor<ActionChipPtr> kInstance(CreateActionChip(
+      /*suggestion=*/"",
+      SuggestTemplateInfo::New(IconType::kSearchLoopWithSparkle,
+                               CreateFormattedString(l10n_util::GetStringUTF8(
+                                   IDS_NTP_ACTION_CHIP_STARTER_HEADING)),
+                               CreateFormattedString(l10n_util::GetStringUTF8(
+                                   IDS_NTP_ACTION_CHIP_STARTER_BODY)),
+                               std::nullopt,
+                               omnibox::SuggestInventory::
+                                   SUGGEST_INVENTORY_AIM_CONVERSATION_STARTERS),
+      /*tab=*/nullptr));
+  return *kInstance;
+}
+
 // A container to store WebContents and its dependency.
 // The main usage is to populate TabInterface.
 class TabFixture {
@@ -783,6 +798,105 @@ TEST(ActionChipGeneratorTest, NewEndpointFailureFallsBackToStaticChips) {
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.ActionChips.RequestStatus.NetworkError",
       std::abs(net::ERR_TIMED_OUT), 1);
+}
+
+TEST(ActionChipGeneratorTest,
+     NewEndpointFailureFallsBackToStaticChipsWithStarterChip) {
+  const GURL page_url("https://www.google.com/");
+  const std::u16string page_title(u"Google");
+
+  // With Canvas disabled.
+  {
+    EnvironmentFixture env;
+    TabFixture tab_fixture(page_url, page_title);
+    GeneratorFixture generator_fixture;
+
+    EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
+                IsCreateImagesEligible())
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
+                IsDeepSearchEligible())
+        .WillRepeatedly(Return(false));
+
+    EXPECT_CALL(generator_fixture.mock_service(),
+                GetActionChipSuggestions(Eq(page_title), Eq(page_url), _, _, _))
+        .WillOnce(WithArg<4>(
+            [](base::OnceCallback<void(RemoteSuggestionsServiceSimple::
+                                           ActionChipSuggestionsResult&&)>
+                   callback) {
+              std::move(callback).Run(
+                  base::unexpected(RemoteSuggestionsServiceSimple::NetworkError{
+                      .net_error = net::ERR_TIMED_OUT}));
+              return nullptr;
+            }));
+
+    base::test::ScopedFeatureList list;
+    list.InitWithFeaturesAndParameters(
+        {{ntp_features::kNtpNextFeatures,
+          {{ntp_features::kNtpNextShowStaticTextParam.name, "false"}}}},
+        /*disabled_features=*/{});
+    base::test::ScopedFeatureList starter_chip_feature_list;
+    starter_chip_feature_list.InitAndEnableFeature(
+        ntp_features::kNtpStarterChip);
+
+    base::RunLoop run_loop;
+    std::vector<ActionChipPtr> actual;
+    generator_fixture.GenerateActionChips(&tab_fixture.mock_tab(), run_loop,
+                                          actual);
+    run_loop.Run();
+
+    EXPECT_THAT(actual,
+                ElementsAre(Eq(std::cref(GetStaticStarterChip())),
+                            Eq(std::cref(GetStaticImageGenerationChip()))));
+  }
+
+  // With Canvas enabled.
+  {
+    EnvironmentFixture env;
+    TabFixture tab_fixture(page_url, page_title);
+    GeneratorFixture generator_fixture;
+
+    EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
+                IsCreateImagesEligible())
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
+                IsCanvasEligible())
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
+                IsDeepSearchEligible())
+        .WillRepeatedly(Return(false));
+
+    EXPECT_CALL(generator_fixture.mock_service(),
+                GetActionChipSuggestions(Eq(page_title), Eq(page_url), _, _, _))
+        .WillOnce(WithArg<4>(
+            [](base::OnceCallback<void(RemoteSuggestionsServiceSimple::
+                                           ActionChipSuggestionsResult&&)>
+                   callback) {
+              std::move(callback).Run(
+                  base::unexpected(RemoteSuggestionsServiceSimple::NetworkError{
+                      .net_error = net::ERR_TIMED_OUT}));
+              return nullptr;
+            }));
+
+    base::test::ScopedFeatureList list;
+    list.InitWithFeaturesAndParameters(
+        {{ntp_features::kNtpNextFeatures,
+          {{ntp_features::kNtpNextShowStaticTextParam.name, "false"}}},
+         {ntp_features::kNtpNextCanvasChip, {}},
+         {ntp_features::kNtpStarterChip, {}}},
+        /*disabled_features=*/{});
+
+    base::RunLoop run_loop;
+    std::vector<ActionChipPtr> actual;
+    generator_fixture.GenerateActionChips(&tab_fixture.mock_tab(), run_loop,
+                                          actual);
+    run_loop.Run();
+
+    EXPECT_THAT(actual,
+                ElementsAre(Eq(std::cref(GetStaticStarterChip())),
+                            Eq(std::cref(GetStaticImageGenerationChip())),
+                            Eq(std::cref(GetStaticCanvasChip()))));
+  }
 }
 
 TEST(ActionChipGeneratorTest, NewEndpointOptOutReturnsEndpointChips) {
