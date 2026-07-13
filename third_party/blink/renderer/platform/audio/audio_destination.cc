@@ -183,7 +183,8 @@ int AudioDestination::Render(base::TimeDelta delay,
               &AudioDestination::RequestRenderWait, WrapRefCounted(this),
               number_of_frames, frames_to_render, delay, delay_timestamp,
               glitch_info, /*request_timestamp=*/base::TimeTicks::Now(),
-              current_session_id));
+              current_session_id, has_unexpected_fifo_underrun_occurred_));
+      has_unexpected_fifo_underrun_occurred_ = false;
 
       if (posted_successfully) {
         TRACE_EVENT0("webaudio", "AudioDestination::Render waiting");
@@ -242,14 +243,17 @@ int AudioDestination::Render(base::TimeDelta delay,
 
     const uint32_t frames_after_render = fifo_->FramesAvailable();
     if (frames_after_render < number_of_frames) {
-      // A FIFO underrun (insufficient frames) is only permitted if it was
-      // caused by a known state change (e.g., the destination is pausing,
-      // resuming, or stopping, which results in tasks being discarded or
-      // not posted). If an underrun occurs during normal execution without
-      // a state change, it indicates a critical logic error or thread
-      // leak. We CHECK this flag to catch such errors early.
-      CHECK(is_state_change_underrun_in_bypass_mode_.load(
+      // In bypass mode, we expect to have rendered enough frames. If we didn't,
+      // it might be due to transient CPU overload or complex race conditions
+      // during rapid hardware suspend/resume cycles (see crbug.com/528653884).
+      // We demote this to DCHECK to avoid crashing production users, and
+      // recover by zeroing the output and pulling whatever is left.
+      DCHECK(is_state_change_underrun_in_bypass_mode_.load(
           std::memory_order_relaxed));
+      if (!is_state_change_underrun_in_bypass_mode_.load(
+              std::memory_order_relaxed)) {
+        has_unexpected_fifo_underrun_occurred_ = true;
+      }
       output_bus_->Zero();
       fifo_->Pull(output_bus_.get(), frames_after_render);
       return frames_after_render;
@@ -293,6 +297,7 @@ int AudioDestination::Render(base::TimeDelta delay,
                             combined_glitch_info,
                             /*request_timestamp=*/base::TimeTicks::Now(),
                             session_id_.load(std::memory_order_relaxed),
+                            /*has_unexpected_fifo_underrun_occurred=*/false,
                             has_fifo_underrun_occurred));
   } else {
     // Otherwise use the single-thread rendering.
@@ -618,12 +623,13 @@ void AudioDestination::RequestRenderWait(
     base::TimeTicks delay_timestamp,
     const media::AudioGlitchInfo& glitch_info,
     base::TimeTicks request_timestamp,
-    uint32_t session_id) {
+    uint32_t session_id,
+    bool has_unexpected_fifo_underrun_occurred) {
   bool success = false;
   if (session_id == session_id_.load(std::memory_order_acquire)) {
     success = RequestRender(frames_requested, frames_to_render, delay,
                             delay_timestamp, glitch_info, request_timestamp,
-                            session_id);
+                            session_id, has_unexpected_fifo_underrun_occurred);
   }
 
   // We check the session ID again because the session might have changed
@@ -643,14 +649,16 @@ void AudioDestination::RequestRenderWait(
   }
 }
 
-bool AudioDestination::RequestRender(size_t frames_requested,
-                                     size_t frames_to_render,
-                                     base::TimeDelta delay,
-                                     base::TimeTicks delay_timestamp,
-                                     const media::AudioGlitchInfo& glitch_info,
-                                     base::TimeTicks request_timestamp,
-                                     uint32_t session_id,
-                                     bool has_fifo_underrun_occurred) {
+bool AudioDestination::RequestRender(
+    size_t frames_requested,
+    size_t frames_to_render,
+    base::TimeDelta delay,
+    base::TimeTicks delay_timestamp,
+    const media::AudioGlitchInfo& glitch_info,
+    base::TimeTicks request_timestamp,
+    uint32_t session_id,
+    bool has_unexpected_fifo_underrun_occurred,
+    bool has_fifo_underrun_occurred) {
   base::TimeTicks start_timestamp = base::TimeTicks::Now();
   uma_reporter_.AddRequestRenderGapDuration(start_timestamp -
                                             request_timestamp);
@@ -689,6 +697,9 @@ bool AudioDestination::RequestRender(size_t frames_requested,
   base::TimeDelta fifo_delay = audio_utilities::FramesToTime(
       fifo_->FramesAvailable(), web_audio_device_->SampleRate());
   uma_reporter_.AddFifoDelay(fifo_delay);
+  if (has_unexpected_fifo_underrun_occurred) {
+    uma_reporter_.IncreaseUnexpectedFifoUnderrunCount();
+  }
   if (has_fifo_underrun_occurred) {
     uma_reporter_.IncreaseFifoUnderrunCount();
   }

@@ -415,6 +415,25 @@ chromium-metrics-reviews@google.com.
   <token key="LatencyTag" variants="WebAudioLatencyTag"/>
 </histogram>
 
+<histogram
+    name="WebAudio.AudioDestination.{ModeTag}.UnexpectedFIFOUnderrunCount{Duration}{LatencyTag}"
+    units="underruns" expires_after="2027-07-13">
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    The number of times the AudioDestination experienced an unexpected underrun
+    in bypass mode. The &quot;Intervals&quot; duration indicates that the metric
+    is measured and logged every 1000 audio render callbacks. For
+    &quot;Short&quot;, it is logged at the end of the audio stream. This metric
+    is categorized by &quot;ModeTag&quot;, which indicates the rendering mode:
+    DualThread, used when audio worklet is involved. Or SingleThread, used when
+    audio worklet is not involved.
+  </summary>
+  <token key="ModeTag" variants="RenderMode"/>
+  <token key="Duration" variants="WebAudioCallbackAggregationDuration"/>
+  <token key="LatencyTag" variants="WebAudioLatencyTag"/>
+</histogram>
+
 <histogram name="WebAudio.AudioNode.ProcessTimeRatio.{NodeTag}" units="%"
     expires_after="2026-09-06">
   <owner>mjwilson@chromium.org</owner>

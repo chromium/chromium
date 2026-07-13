@@ -185,7 +185,8 @@ class PLATFORM_EXPORT AudioDestination final
                          base::TimeTicks delay_timestamp,
                          const media::AudioGlitchInfo& glitch_info,
                          base::TimeTicks request_timestamp,
-                         uint32_t session_id);
+                         uint32_t session_id,
+                         bool has_unexpected_fifo_underrun_occurred);
 
   // Returns true if it was able to provide audio, false otherwise (this would
   // happen if and only if rendering is stopping or stopped.
@@ -196,6 +197,7 @@ class PLATFORM_EXPORT AudioDestination final
                      const media::AudioGlitchInfo& glitch_info,
                      base::TimeTicks request_timestamp,
                      uint32_t session_id,
+                     bool has_unexpected_fifo_underrun_occurred = false,
                      bool has_fifo_underrun_occurred = false);
 
   // Provide input to the resampler (if used).
@@ -284,6 +286,7 @@ class PLATFORM_EXPORT AudioDestination final
 
   const bool is_output_buffer_bypassed_ = false;
   std::atomic<bool> is_state_change_underrun_in_bypass_mode_ = false;
+  bool has_unexpected_fifo_underrun_occurred_ = false;
 
   // Incremented on every Start() to identify tasks from the current session.
   // uint32 is safe because overflow requires over 100,000 years of typical

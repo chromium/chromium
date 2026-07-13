@@ -49,6 +49,13 @@ AudioDestinationUmaReporter::AudioDestinationUmaReporter(
       base::StrCat({fifo_underrun_histogram_name_, ".",
                     WebAudioLatencyHint::AsString(latency_hint_)});
 
+  unexpected_fifo_underrun_histogram_name_ = GetExpectedHistogramName(
+      kUnexpectedFifoUnderrunHistogramNameBase, use_audio_worklet_,
+      /*duration=*/"Intervals");
+  unexpected_fifo_underrun_histogram_name_with_latency_tag_ =
+      base::StrCat({unexpected_fifo_underrun_histogram_name_, ".",
+                    WebAudioLatencyHint::AsString(latency_hint_)});
+
   total_playout_delay_histogram_name_ = GetExpectedHistogramName(
       kTotalPlayoutDelayHistogramNameBase, use_audio_worklet_,
       /*duration=*/std::nullopt);
@@ -90,6 +97,20 @@ AudioDestinationUmaReporter::~AudioDestinationUmaReporter() {
     base::UmaHistogramCustomCounts(
         fifo_underrun_histogram_name_with_latency_tag_, fifo_underrun_count_, 1,
         1000, 50);
+
+    unexpected_fifo_underrun_histogram_name_ = GetExpectedHistogramName(
+        kUnexpectedFifoUnderrunHistogramNameBase, use_audio_worklet_,
+        /*duration=*/"Short");
+    unexpected_fifo_underrun_histogram_name_with_latency_tag_ =
+        base::StrCat({unexpected_fifo_underrun_histogram_name_, ".",
+                      WebAudioLatencyHint::AsString(latency_hint_)});
+
+    base::UmaHistogramCustomCounts(unexpected_fifo_underrun_histogram_name_,
+                                   unexpected_fifo_underrun_count_, 1, 1000,
+                                   50);
+    base::UmaHistogramCustomCounts(
+        unexpected_fifo_underrun_histogram_name_with_latency_tag_,
+        unexpected_fifo_underrun_count_, 1, 1000, 50);
   }
 }
 
@@ -104,6 +125,10 @@ void AudioDestinationUmaReporter::AddTotalPlayoutDelay(
 
 void AudioDestinationUmaReporter::IncreaseFifoUnderrunCount() {
   fifo_underrun_count_++;
+}
+
+void AudioDestinationUmaReporter::IncreaseUnexpectedFifoUnderrunCount() {
+  unexpected_fifo_underrun_count_++;
 }
 
 void AudioDestinationUmaReporter::Report() {
@@ -139,6 +164,13 @@ void AudioDestinationUmaReporter::Report() {
         fifo_underrun_histogram_name_with_latency_tag_, fifo_underrun_count_, 1,
         1000, 50);
 
+    base::UmaHistogramCustomCounts(unexpected_fifo_underrun_histogram_name_,
+                                   unexpected_fifo_underrun_count_, 1, 1000,
+                                   50);
+    base::UmaHistogramCustomCounts(
+        unexpected_fifo_underrun_histogram_name_with_latency_tag_,
+        unexpected_fifo_underrun_count_, 1, 1000, 50);
+
     int render_time_percentage =
         PercentOfCallbackInterval(render_total_duration_);
     int request_render_time_percentage =
@@ -164,6 +196,7 @@ void AudioDestinationUmaReporter::Report() {
 
     callback_count_ = 0;
     fifo_underrun_count_ = 0;
+    unexpected_fifo_underrun_count_ = 0;
     render_total_duration_ = base::TimeDelta();
     request_render_total_duration_ = base::TimeDelta();
     request_render_gap_total_duration_ = base::TimeDelta();
@@ -185,6 +218,13 @@ void AudioDestinationUmaReporter::UpdateMetricNameForDualThreadMode() {
       /*duration=*/"Intervals");
   fifo_underrun_histogram_name_with_latency_tag_ =
       base::StrCat({fifo_underrun_histogram_name_, ".",
+                    WebAudioLatencyHint::AsString(latency_hint_)});
+
+  unexpected_fifo_underrun_histogram_name_ = GetExpectedHistogramName(
+      kUnexpectedFifoUnderrunHistogramNameBase, use_audio_worklet_,
+      /*duration=*/"Intervals");
+  unexpected_fifo_underrun_histogram_name_with_latency_tag_ =
+      base::StrCat({unexpected_fifo_underrun_histogram_name_, ".",
                     WebAudioLatencyHint::AsString(latency_hint_)});
 
   total_playout_delay_histogram_name_ = GetExpectedHistogramName(
