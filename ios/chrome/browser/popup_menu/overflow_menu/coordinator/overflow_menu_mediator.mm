@@ -2041,19 +2041,25 @@ UIImage* CreateCustomBackgroundPreviewImage(
     // Custom background image.
     previewImage =
         CreateCustomBackgroundPreviewImage(self.backgroundImageCacheService);
-  } else if (colorTheme.has_value()) {
-    // Custom color theme.
-    UIColor* seedColor = skia::UIColorFromSkColor(colorTheme->color());
-    ui::ColorProviderKey::SchemeVariant schemeVariant =
-        ProtoEnumToSchemeVariant(colorTheme->browser_color_variant());
-    NewTabPageColorPalette* customColorPalette =
-        CreateColorPaletteFromSeedColor(seedColor, schemeVariant);
-    previewImage =
-        CreateColorPalettePreviewImage(customColorPalette, traitCollection);
-  } else {
-    // Default (un-themed).
-    previewImage = CreateColorPalettePreviewImage(DefaultNTPColorPalette(),
-                                                  traitCollection);
+  }
+
+  // Fallback to color theme or default preview if the custom background preview
+  // could not be loaded or is not cached.
+  if (!previewImage) {
+    if (colorTheme.has_value()) {
+      // Custom color theme.
+      UIColor* seedColor = skia::UIColorFromSkColor(colorTheme->color());
+      ui::ColorProviderKey::SchemeVariant schemeVariant =
+          ProtoEnumToSchemeVariant(colorTheme->browser_color_variant());
+      NewTabPageColorPalette* customColorPalette =
+          CreateColorPaletteFromSeedColor(seedColor, schemeVariant);
+      previewImage =
+          CreateColorPalettePreviewImage(customColorPalette, traitCollection);
+    } else {
+      // Default (un-themed).
+      previewImage = CreateColorPalettePreviewImage(DefaultNTPColorPalette(),
+                                                    traitCollection);
+    }
   }
 
   _customizeHomepageAction.previewImage = previewImage;

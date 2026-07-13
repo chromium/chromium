@@ -49,7 +49,10 @@
 #import "components/translate/core/language_detection/language_detection_model.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
+#import "ios/chrome/browser/ntp/model/ntp_background_image_cache_service_factory.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
@@ -1498,6 +1501,85 @@ TEST_F(OverflowMenuMediatorTest, TestCustomizeHomePageShownOnNTP) {
   mediator_.model = model_;
 
   EXPECT_TRUE(HasItem(kToolsMenuCustomizeHomePageId, /*enabled=*/YES));
+}
+
+// Tests that the Customize Home Page item has a preview image.
+TEST_F(OverflowMenuMediatorTest, TestCustomizeHomePageHasPreviewImage) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{kComposeboxIpad, kChromeNextIa,
+                            kOverflowMenuNTPRefactor,
+                            kOverflowMenuHomeCustomizationEntrypoint},
+      /*disabled_features=*/{});
+
+  navigation_item_->SetURL(GURL("chrome://newtab"));
+
+  CreateMediator(/*incognito=*/NO);
+  SetUpActiveWebState();
+  mediator_.webStateList = browser_->GetWebStateList();
+
+  // Force model update.
+  mediator_.model = model_;
+
+  OverflowMenuAction* customizeAction = nil;
+  for (OverflowMenuActionGroup* group in mediator_.model.actionGroups) {
+    for (OverflowMenuAction* action in group.actions) {
+      if ([action.accessibilityIdentifier
+              isEqualToString:kToolsMenuCustomizeHomePageId]) {
+        customizeAction = action;
+        break;
+      }
+    }
+  }
+
+  ASSERT_NE(nil, customizeAction);
+  EXPECT_NE(nil, customizeAction.previewImage);
+}
+
+// Tests that the Customize Home Page item has a fallback preview image when the
+// custom background has a value but cache is empty.
+TEST_F(OverflowMenuMediatorTest,
+       TestCustomizeHomePageHasPreviewImageWithCustomBackgroundFallback) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{kComposeboxIpad, kChromeNextIa,
+                            kOverflowMenuNTPRefactor,
+                            kOverflowMenuHomeCustomizationEntrypoint},
+      /*disabled_features=*/{});
+
+  navigation_item_->SetURL(GURL("chrome://newtab"));
+
+  CreateMediator(/*incognito=*/NO);
+  SetUpActiveWebState();
+  mediator_.webStateList = browser_->GetWebStateList();
+
+  HomeBackgroundCustomizationService* backgroundCustomizationService =
+      HomeBackgroundCustomizationServiceFactory::GetForProfile(profile_.get());
+  backgroundCustomizationService->SetCurrentBackground(
+      GURL("https://example.com/bg.jpg"), GURL("https://example.com/thumb.jpg"),
+      "attribution1", "attribution2", GURL("https://example.com/action"),
+      "collection");
+
+  mediator_.backgroundCustomizationService = backgroundCustomizationService;
+  mediator_.backgroundImageCacheService =
+      NTPBackgroundImageCacheServiceFactory::GetForProfile(profile_.get());
+
+  // Force model update.
+  mediator_.model = model_;
+
+  OverflowMenuAction* customizeAction = nil;
+  for (OverflowMenuActionGroup* group in mediator_.model.actionGroups) {
+    for (OverflowMenuAction* action in group.actions) {
+      if ([action.accessibilityIdentifier
+              isEqualToString:kToolsMenuCustomizeHomePageId]) {
+        customizeAction = action;
+        break;
+      }
+    }
+  }
+
+  ASSERT_NE(nil, customizeAction);
+  EXPECT_NE(nil, customizeAction.previewImage);
 }
 
 // Tests that the Customize Home Page item is NOT shown on a regular web page
