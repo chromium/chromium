@@ -177,33 +177,6 @@ public class RuntimePermissionTestUtils {
             final String javascriptToExecute,
             final @StringRes int missingPermissionPromptTextId)
             throws Exception {
-        runTestInternal(
-                activity,
-                permissionTestRule,
-                testAndroidPermissionDelegate,
-                testUrl,
-                expectPermissionAllowed,
-                promptDecision,
-                waitForMissingPermissionPrompt,
-                waitForUpdater,
-                javascriptToExecute,
-                missingPermissionPromptTextId,
-                /* useForgivingClick= */ false);
-    }
-
-    private static void runTestInternal(
-            final ChromeActivity activity,
-            final PermissionTestRule permissionTestRule,
-            final TestAndroidPermissionDelegate testAndroidPermissionDelegate,
-            final String testUrl,
-            final boolean expectPermissionAllowed,
-            final @PermissionTestRule.PromptDecision int promptDecision,
-            final boolean waitForMissingPermissionPrompt,
-            final boolean waitForUpdater,
-            final String javascriptToExecute,
-            final @StringRes int missingPermissionPromptTextId,
-            final boolean useForgivingClick)
-            throws Exception {
         activity.getWindowAndroid().setAndroidPermissionDelegate(testAndroidPermissionDelegate);
 
         final Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
@@ -236,11 +209,7 @@ public class RuntimePermissionTestUtils {
                     ThreadUtils.runOnUiThreadBlocking(activity::getModalDialogManager);
             askPermissionDialogModel = manager.getCurrentDialogForTest();
 
-            if (useForgivingClick) {
-                PermissionTestRule.replyToDialogForgiving(promptDecision, activity);
-            } else {
-                PermissionTestRule.replyToDialog(promptDecision, activity);
-            }
+            PermissionTestRule.replyToDialog(promptDecision, activity);
 
             if (waitForMissingPermissionPrompt) {
                 // Wait for Chrome to inform user that a permission is missing --> different dialog
@@ -315,35 +284,5 @@ public class RuntimePermissionTestUtils {
                 waitForUpdater,
                 javascriptToExecute,
                 missingPermissionPromptTextId);
-    }
-
-    /**
-     * Identical to {@link #runTest} but uses {@link PermissionTestRule#replyToDialogForgiving} to
-     * bypass Espresso's default 90% visibility requirement for clicks.
-     */
-    public static void runTestForgiving(
-            final PermissionTestRule permissionTestRule,
-            final TestAndroidPermissionDelegate testAndroidPermissionDelegate,
-            final String testUrl,
-            final boolean expectPermissionAllowed,
-            final @PermissionTestRule.PromptDecision int promptDecision,
-            final boolean waitForMissingPermissionPrompt,
-            final boolean waitForUpdater,
-            final String javascriptToExecute,
-            final @StringRes int missingPermissionPromptTextId)
-            throws Exception {
-        final ChromeActivity activity = permissionTestRule.getActivity();
-        runTestInternal(
-                activity,
-                permissionTestRule,
-                testAndroidPermissionDelegate,
-                testUrl,
-                expectPermissionAllowed,
-                promptDecision,
-                waitForMissingPermissionPrompt,
-                waitForUpdater,
-                javascriptToExecute,
-                missingPermissionPromptTextId,
-                /* useForgivingClick= */ true);
     }
 }

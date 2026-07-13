@@ -106,7 +106,7 @@ public class FeedV2NewTabPageTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             ChromeRenderTestRule.Component.UI_BROWSER_CONTENT_SUGGESTIONS_FEED)
-                    .setRevision(5)
+                    .setRevision(4)
                     .build();
 
     private Tab mTab;
@@ -297,22 +297,6 @@ public class FeedV2NewTabPageTest {
 
         RecyclerView recyclerView = getRecyclerView();
         FeedV2TestHelper.waitForRecyclerItems(MIN_ITEMS_AFTER_LOAD, recyclerView);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // Scroll down so the logo is at the top of the viewport.
-                    // This removes the variable top padding from the screenshot,
-                    // making the render test compatible with both bottom bar enabled and disabled
-                    // while ensuring the MVTs are fully visible in the smaller viewport.
-                    View logo = mNtp.getView().findViewById(R.id.search_provider_logo);
-                    if (logo != null) {
-                        int[] logoLocation = new int[2];
-                        logo.getLocationInWindow(logoLocation);
-                        int[] rvLocation = new int[2];
-                        recyclerView.getLocationInWindow(rvLocation);
-                        recyclerView.scrollBy(0, logoLocation[1] - rvLocation[1]);
-                    }
-                });
 
         mRenderTestRule.render(recyclerView, "feedContent_landscape_with_scrollable_mvt_v5");
     }

@@ -310,7 +310,7 @@ public class PageInfoDiscoverabilityTest {
                 new RuntimePermissionTestUtils.TestAndroidPermissionDelegate(
                         requestablePermission,
                         RuntimePermissionTestUtils.RuntimePromptResponse.GRANT);
-        RuntimePermissionTestUtils.runTestForgiving(
+        RuntimePermissionTestUtils.runTest(
                 sPermissionTestRule,
                 testAndroidPermissionDelegate,
                 GEOLOCATION_TEST,
@@ -345,7 +345,7 @@ public class PageInfoDiscoverabilityTest {
                 new RuntimePermissionTestUtils.TestAndroidPermissionDelegate(
                         requestablePermission,
                         RuntimePermissionTestUtils.RuntimePromptResponse.DENY);
-        RuntimePermissionTestUtils.runTestForgiving(
+        RuntimePermissionTestUtils.runTest(
                 sPermissionTestRule,
                 testAndroidPermissionDelegate,
                 GEOLOCATION_TEST,

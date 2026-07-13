@@ -240,9 +240,7 @@ public class RuntimePermissionTest {
         mTestAndroidPermissionDelegate =
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.ASSERT_NEVER_ASKED);
-
-        // TODO(crbug.com/531793849): See if we want to keep using ForgivingClickAction.
-        RuntimePermissionTestUtils.runTestForgiving(
+        RuntimePermissionTestUtils.runTest(
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 GEOLOCATION_TEST,

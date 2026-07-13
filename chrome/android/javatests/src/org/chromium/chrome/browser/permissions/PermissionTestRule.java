@@ -20,7 +20,6 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
-import androidx.test.espresso.ViewAction;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -30,7 +29,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.ForgivingClickAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -653,18 +651,6 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     /** Utility functions to support permissions testing in other contexts. */
     public static void replyToDialog(
             final @PermissionTestRule.PromptDecision int decision, ChromeActivity activity) {
-        replyToDialogInternal(decision, activity, false);
-    }
-
-    public static void replyToDialogForgiving(
-            final @PermissionTestRule.PromptDecision int decision, ChromeActivity activity) {
-        replyToDialogInternal(decision, activity, true);
-    }
-
-    private static void replyToDialogInternal(
-            final @PermissionTestRule.PromptDecision int decision,
-            ChromeActivity activity,
-            boolean useForgivingClick) {
         // Wait for button view to appear in view hierarchy. If the browser controls are not visible
         // then ModalDialogPresenter will first trigger animation for showing browser controls and
         // only then add modal dialog view into the container.
@@ -678,15 +664,11 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
                     default -> throw new IllegalStateException("Unexpected value: " + decision);
                 };
 
-        // TODO(crbug.com/531793849): See if we want to keep using ForgivingClickAction.
-        ViewAction clickAction =
-                useForgivingClick ? ForgivingClickAction.forgivingClick() : click();
-
         ViewUtils.onViewWaiting(
                         allOf(
                                 withTagValue(is(ModalDialogView.getTagForButtonType(buttonId))),
                                 isDisplayed()))
-                .perform(clickAction);
+                .perform(click());
     }
 
     /** Wait for the permission dialog to be in the expected shown state. */
