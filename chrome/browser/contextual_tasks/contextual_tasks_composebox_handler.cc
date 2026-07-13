@@ -52,6 +52,7 @@
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/tab_handle_factory.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -541,9 +542,13 @@ void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
              file_info.tab_title.has_value())) {
           searchbox::mojom::TabInfoPtr tab_info =
               searchbox::mojom::TabInfo::New();
-          tab_info->tab_id = file_info.tab_session_id.has_value()
-                                 ? file_info.tab_session_id.value().id()
-                                 : 0;
+          int32_t tab_id = 0;
+          if (file_info.tab_session_id.has_value()) {
+            tab_id = tabs::SessionMappedTabHandleFactory::GetInstance()
+                         .GetHandleForSessionId(
+                             file_info.tab_session_id.value().id());
+          }
+          tab_info->tab_id = tab_id;
           tab_info->title = file_info.tab_title.value_or("");
           tab_info->url = file_info.tab_url.value_or(GURL());
           submitted_tabs.push_back(std::move(tab_info));
