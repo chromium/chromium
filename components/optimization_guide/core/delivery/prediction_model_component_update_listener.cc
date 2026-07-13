@@ -4,7 +4,7 @@
 
 #include "components/optimization_guide/core/delivery/prediction_model_component_update_listener.h"
 
-#include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -127,7 +127,7 @@ void PredictionModelComponentUpdateListener::MaybeUpdateModel(
 void PredictionModelComponentUpdateListener::OnModelLoaded(
     proto::OptimizationTarget target,
     const base::Version& version,
-    std::unique_ptr<ModelInfo> model_info) {
+    std::optional<ModelInfo> model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Check if this target is still expected and the version matches.
@@ -145,7 +145,7 @@ void PredictionModelComponentUpdateListener::OnModelLoaded(
     return;
   }
 
-  registry_.UpdateModel(target, std::move(model_info));
+  registry_.UpdateModel(target, std::move(*model_info));
 }
 
 void PredictionModelComponentUpdateListener::OnModelUninstalled(

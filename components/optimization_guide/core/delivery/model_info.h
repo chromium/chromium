@@ -22,8 +22,9 @@ namespace optimization_guide {
 // Note: TestModelInfoBuilder can be used to facilitate creation of ModelInfo
 // for testing.
 struct ModelInfo {
-  // Validates and creates a ModelInfo if valid.
-  static std::unique_ptr<ModelInfo> Create(const proto::PredictionModel& model);
+  // Creates a ModelInfo from the proto if valid.
+  static std::optional<ModelInfo> CreateFromProto(
+      const proto::PredictionModel& model);
 
   // Returns the absolute file path of any additional files that were packaged
   // along with the model based on `base_name`.
@@ -44,9 +45,9 @@ std::unique_ptr<proto::PredictionModel> LoadAndVerifyModelOffThread(
     const base::FilePath& base_model_dir);
 
 // Loads the model, verifies if the model files exist, and returns the
-// ModelInfo. Otherwise nullptr is returned on any failures.
+// ModelInfo. Otherwise std::nullopt is returned on any failures.
 // Must be called on a background thread that allows blocking file I/O.
-std::unique_ptr<ModelInfo> LoadAndVerifyModelInfoOffThread(
+std::optional<ModelInfo> LoadAndVerifyModelInfoOffThread(
     proto::OptimizationTarget optimization_target,
     const base::FilePath& base_model_dir);
 

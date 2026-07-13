@@ -70,8 +70,7 @@ ModelBrokerAndroid& FakeModelBrokerAndroid::EnsureBroker() {
 
 void FakeModelBrokerAndroid::UpdateTarget(proto::OptimizationTarget target,
                                           const ModelInfo& model_info) {
-  model_provider_.UpdateModelImmediatelyForTesting(
-      target, std::make_unique<ModelInfo>(model_info));
+  model_provider_.UpdateModelImmediatelyForTesting(target, model_info);
 }
 
 }  // namespace optimization_guide

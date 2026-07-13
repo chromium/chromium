@@ -15,15 +15,15 @@
 namespace optimization_guide {
 
 // static
-std::unique_ptr<ModelInfo> ModelInfo::Create(
+std::optional<ModelInfo> ModelInfo::CreateFromProto(
     const proto::PredictionModel& model) {
   std::optional<base::FilePath> model_file_path =
       StringToFilePath(model.model().download_url());
   if (!model_file_path) {
-    return nullptr;
+    return std::nullopt;
   }
   if (!model.model_info().has_version()) {
-    return nullptr;
+    return std::nullopt;
   }
 
   base::flat_set<base::FilePath> additional_files;
@@ -45,12 +45,12 @@ std::unique_ptr<ModelInfo> ModelInfo::Create(
     model_metadata = model.model_info().model_metadata();
   }
 
-  return std::make_unique<ModelInfo>(ModelInfo{
+  return ModelInfo{
       .model_file_path = *model_file_path,
       .additional_files = std::move(additional_files),
       .version = model.model_info().version(),
       .model_metadata = std::move(model_metadata),
-  });
+  };
 }
 
 std::optional<base::FilePath> ModelInfo::GetAdditionalFileWithBaseName(
@@ -100,11 +100,11 @@ std::unique_ptr<proto::PredictionModel> LoadAndVerifyModelOffThread(
   return model;
 }
 
-std::unique_ptr<ModelInfo> LoadAndVerifyModelInfoOffThread(
+std::optional<ModelInfo> LoadAndVerifyModelInfoOffThread(
     proto::OptimizationTarget optimization_target,
     const base::FilePath& base_model_dir) {
   std::unique_ptr<proto::PredictionModel> model =
       LoadAndVerifyModelOffThread(optimization_target, base_model_dir);
-  return model ? ModelInfo::Create(*model) : nullptr;
+  return model ? ModelInfo::CreateFromProto(*model) : std::nullopt;
 }
 }  // namespace optimization_guide

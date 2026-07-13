@@ -80,8 +80,7 @@ void FakeModelBroker::InstallClassifierModel(
 
 void FakeModelBroker::UpdateTarget(proto::OptimizationTarget target,
                                    const ModelInfo& model_info) {
-  model_provider_.UpdateModelImmediatelyForTesting(
-      target, std::make_unique<ModelInfo>(model_info));
+  model_provider_.UpdateModelImmediatelyForTesting(target, model_info);
 }
 
 void FakeModelBroker::UpdateModelAdaptation(const FakeAdaptationAsset& asset) {

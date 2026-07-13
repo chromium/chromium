@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 
 namespace optimization_guide {
@@ -88,14 +89,14 @@ void ModelProviderRegistry::AddObserverForOptimizationTargetModel(
   // Notify observer of existing model file path.
   auto model_it = optimization_target_model_info_map_.find(optimization_target);
   if (model_it != optimization_target_model_info_map_.end()) {
-    observer->OnModelUpdated(optimization_target, *model_it->second);
+    observer->OnModelUpdated(optimization_target, model_it->second);
     if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
       OPTIMIZATION_GUIDE_LOGGER(
           optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
           optimization_guide_logger_.get())
           << "OnModelFileUpdated for OptimizationTarget: "
           << optimization_target
-          << "\nFile path: " << model_it->second->model_file_path.AsUTF8Unsafe()
+          << "\nFile path: " << model_it->second.model_file_path.AsUTF8Unsafe()
           << "\nHas metadata: " << (model_metadata ? "True" : "False");
     }
     RecordLifecycleState(optimization_target,
@@ -129,7 +130,7 @@ const ModelInfo* ModelProviderRegistry::GetModel(
     proto::OptimizationTarget target) const {
   auto it = optimization_target_model_info_map_.find(target);
   if (it != optimization_target_model_info_map_.end()) {
-    return it->second.get();
+    return &it->second;
   }
   return nullptr;
 }
@@ -152,11 +153,11 @@ ModelProviderRegistry::GetDownloadedModelsInfoForWebUI() const {
   for (const auto& it : optimization_target_model_info_map_) {
     const std::string& optimization_target_name =
         optimization_guide::proto::OptimizationTarget_Name(it.first);
-    const optimization_guide::ModelInfo* const model_info = it.second.get();
+    const optimization_guide::ModelInfo& model_info = it.second;
     auto downloaded_model_info_ptr =
         optimization_guide_internals::mojom::DownloadedModelInfo::New(
-            optimization_target_name, model_info->version,
-            model_info->model_file_path.AsUTF8Unsafe());
+            optimization_target_name, model_info.version,
+            model_info.model_file_path.AsUTF8Unsafe());
     downloaded_models_info.push_back(std::move(downloaded_model_info_ptr));
   }
   return downloaded_models_info;
@@ -164,12 +165,12 @@ ModelProviderRegistry::GetDownloadedModelsInfoForWebUI() const {
 
 void ModelProviderRegistry::UpdateModel(
     proto::OptimizationTarget optimization_target,
-    std::unique_ptr<ModelInfo> model_info) {
+    ModelInfo model_info) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ModelProviderRegistry::NotifyObserversOfNewModel,
                      weak_ptr_factory_.GetWeakPtr(), optimization_target,
-                     *model_info));
+                     model_info));
   optimization_target_model_info_map_.insert_or_assign(optimization_target,
                                                        std::move(model_info));
 }
@@ -182,11 +183,11 @@ void ModelProviderRegistry::RemoveModel(
 
 void ModelProviderRegistry::UpdateModelImmediatelyForTesting(
     proto::OptimizationTarget optimization_target,
-    std::unique_ptr<ModelInfo> model_info) {
+    ModelInfo model_info) {
   auto it = optimization_target_model_info_map_
                 .insert_or_assign(optimization_target, std::move(model_info))
                 .first;
-  NotifyObserversOfNewModel(optimization_target, *it->second);
+  NotifyObserversOfNewModel(optimization_target, it->second);
 }
 
 // static

@@ -18,13 +18,12 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/version.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/model_provider_registry.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {
-
-struct ModelInfo;
 
 // Tracks component updater updates for prediction models, loads them in the
 // background, and notifies observers via OptimizationGuideModelProvider
@@ -80,7 +79,7 @@ class PredictionModelComponentUpdateListener
   // Callback when model loading completes on the background thread.
   void OnModelLoaded(proto::OptimizationTarget target,
                      const base::Version& version,
-                     std::unique_ptr<ModelInfo> model_info);
+                     std::optional<ModelInfo> model_info);
 
   // Returns the task runner to use for loading models for `target`.
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunner(

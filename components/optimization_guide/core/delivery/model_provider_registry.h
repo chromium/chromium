@@ -50,15 +50,14 @@ class ModelProviderRegistry final : public OptimizationGuideModelProvider {
   std::vector<optimization_guide_internals::mojom::DownloadedModelInfoPtr>
   GetDownloadedModelsInfoForWebUI() const;
   // Updates the model for `optimization_target` and notifies observers.
-  // `model_info` must be non-null, use RemoveModel to remove models.
   void UpdateModel(proto::OptimizationTarget optimization_target,
-                   std::unique_ptr<ModelInfo> model_info);
+                   ModelInfo model_info);
   // Removes the model and notifies observers.
   void RemoveModel(proto::OptimizationTarget optimization_target);
   // Like UpdateModel, but NotifyObservers right away instead of via PostTask.
   void UpdateModelImmediatelyForTesting(
       proto::OptimizationTarget optimization_target,
-      std::unique_ptr<ModelInfo> model_info);
+      ModelInfo model_info);
   // Updates the lifecycle histogram for the target.
   static void RecordLifecycleState(
       proto::OptimizationTarget optimization_target,
@@ -87,7 +86,7 @@ class ModelProviderRegistry final : public OptimizationGuideModelProvider {
       proto::OptimizationTarget optimization_target,
       base::optional_ref<const ModelInfo> model_info);
 
-  base::flat_map<proto::OptimizationTarget, std::unique_ptr<ModelInfo>>
+  base::flat_map<proto::OptimizationTarget, ModelInfo>
       optimization_target_model_info_map_;
 
   std::map<proto::OptimizationTarget, ModelRegistrationInfo>

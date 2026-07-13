@@ -721,7 +721,7 @@ bool PredictionManager::ProcessAndStoreLoadedModel(
     return false;
   }
 
-  std::unique_ptr<ModelInfo> model_info = ModelInfo::Create(model);
+  std::optional<ModelInfo> model_info = ModelInfo::CreateFromProto(model);
 
   base::UmaHistogramBoolean(
       base::StrCat({"OptimizationGuide.IsPredictionModelValid.",
@@ -738,10 +738,7 @@ bool PredictionManager::ProcessAndStoreLoadedModel(
     return true;
   }
 
-  // Update prediction model file if that is what we have loaded.
-  if (model_info) {
-    StoreLoadedModelInfo(optimization_target, std::move(model_info));
-  }
+  StoreLoadedModelInfo(optimization_target, std::move(*model_info));
 
   return true;
 }
@@ -758,9 +755,8 @@ bool PredictionManager::ShouldUpdateStoredModelForTarget(
 
 void PredictionManager::StoreLoadedModelInfo(
     proto::OptimizationTarget optimization_target,
-    std::unique_ptr<ModelInfo> model_info) {
+    ModelInfo model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(model_info);
   registry_.UpdateModel(optimization_target, std::move(model_info));
 }
 
@@ -776,7 +772,7 @@ void PredictionManager::OverrideTargetModelForTesting(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (model_info) {
     registry_.UpdateModelImmediatelyForTesting(  // IN-TEST
-        optimization_target, std::move(model_info));
+        optimization_target, std::move(*model_info));
   } else {
     registry_.RemoveModel(optimization_target);
   }

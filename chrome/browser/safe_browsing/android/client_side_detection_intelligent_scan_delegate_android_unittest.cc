@@ -713,7 +713,8 @@ TEST_F(
 TEST_F(
     ClientSideDetectionIntelligentScanDelegateAndroidTestWithServerModelDisabled,
     StartIntelligentScan_OnDeviceModelNotAvailable) {
-  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true,
+                 ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST);
   // Model availability check is now handled during inference, so
   // GetIntelligentScanModelType will always return kOnDevice.
   EXPECT_EQ(delegate_->GetIntelligentScanModelType(
@@ -721,11 +722,14 @@ TEST_F(
             ModelType::kOnDevice);
   base::test::TestFuture<IntelligentScanResult> future;
   delegate_->StartIntelligentScan("test rendered text", future.GetCallback());
+  // Allow asynchronous Mojo IPC calls (RequestAssetsFor and Subscribe) to be
+  // processed so that OnDeviceModelAdaptationLoader registers its observer with
+  // ModelProviderRegistry before RemoveModel is called.
+  task_environment_.RunUntilIdle();
   // Notify the subscriber that the model is not available.
-  fake_broker_->model_provider().UpdateModelImmediatelyForTesting(
+  fake_broker_->model_provider().RemoveModel(
       optimization_guide::proto::
-          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SCAM_DETECTION,
-      /*model_info=*/nullptr);
+          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SCAM_DETECTION);
   EXPECT_FALSE(future.Get().execution_success);
   EXPECT_EQ(future.Get().model_version, -1);
   EXPECT_EQ(future.Get().brand, "");

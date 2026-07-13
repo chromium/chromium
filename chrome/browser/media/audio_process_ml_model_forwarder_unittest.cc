@@ -71,13 +71,13 @@ class AudioProcessMlModelForwarderTest : public testing::Test {
         remote_ml_model_manager_.BindNewPipeAndPassReceiver());
   }
 
-  std::unique_ptr<optimization_guide::ModelInfo> CreateModelInfo() {
+  optimization_guide::ModelInfo CreateModelInfo() {
     auto temp_file = std::make_unique<base::ScopedTempFile>();
     CHECK(temp_file->Create());
     model_files_.push_back(std::move(temp_file));
-    return optimization_guide::TestModelInfoBuilder()
-        .SetModelFilePath(model_files_.back()->path())
-        .Build();
+    return *optimization_guide::TestModelInfoBuilder()
+                .SetModelFilePath(model_files_.back()->path())
+                .Build();
   }
 
   mojo::Remote<audio::mojom::MlModelManager> CreateNewMlModelManager(
