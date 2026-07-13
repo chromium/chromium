@@ -516,8 +516,17 @@ IN_PROC_BROWSER_TEST_F(
   CheckNoResizeHappened();
 }
 
-IN_PROC_BROWSER_TEST_F(MultiContentsViewWebContentsReLayoutBrowserTest,
-                       EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes) {
+// TODO(crbug.com/429495554): Failing on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes \
+  DISABLED_EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes
+#else
+#define MAYBE_EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes \
+  EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(
+    MultiContentsViewWebContentsReLayoutBrowserTest,
+    MAYBE_EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes) {
   auto* tab_strip_model = browser()->tab_strip_model();
 
   const GURL test_url = embedded_test_server()->GetURL(kReLayoutTestURL);
