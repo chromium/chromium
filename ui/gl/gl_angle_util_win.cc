@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/gl/gl_angle_util_win.h"
 
 #include <objbase.h>
 
+#include "base/compiler_specific.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
@@ -47,7 +43,7 @@ void* QueryDeviceObjectFromANGLE(EGLDisplay egl_display,
   if (required_extension != nullptr) {
     const char* extensions = static_cast<const char*>(eglQueryDeviceStringEXT(
         reinterpret_cast<EGLDeviceEXT>(egl_device), EGL_EXTENSIONS));
-    if (strstr(extensions, required_extension) == nullptr) {
+    if (UNSAFE_TODO(strstr(extensions, required_extension)) == nullptr) {
       DVLOG(1) << "Unable to retrieve ANGLE device due to missing extension: "
                << required_extension;
       return nullptr;

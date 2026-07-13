@@ -2,20 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "ui/gfx/image/image_platform.h"
-
 #import <AppKit/AppKit.h>
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_internal.h"
+#include "ui/gfx/image/image_platform.h"
 #include "ui/gfx/image/image_png_rep.h"
 
 namespace {
@@ -98,7 +93,8 @@ scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromNSImage(
   auto* bytes = static_cast<const uint8_t*>(ns_data.bytes);
   scoped_refptr<base::RefCountedBytes> refcounted_bytes(
       new base::RefCountedBytes());
-  refcounted_bytes->as_vector().assign(bytes, bytes + ns_data.length);
+  UNSAFE_TODO(
+      refcounted_bytes->as_vector().assign(bytes, bytes + ns_data.length));
   return refcounted_bytes;
 }
 

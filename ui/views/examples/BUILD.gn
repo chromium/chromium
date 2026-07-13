@@ -287,6 +287,7 @@ if (is_mac) {
       ":views_examples_framework_bundle_data",
       ":views_examples_main_header",
       ":views_examples_resources_bundle_data",
+      "//base:compiler_specific",
     ]
 
     if (is_component_build) {

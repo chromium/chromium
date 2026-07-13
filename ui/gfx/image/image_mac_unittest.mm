@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "ui/gfx/image/image.h"
 
 #include <Cocoa/Cocoa.h>
 #include <stddef.h>
 
+#include <algorithm>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_scale_factor.h"
-#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_png_rep.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -72,7 +71,7 @@ NSBitmapImageRep* BitmapImageRep(int width, int height) {
                                             bitsPerPixel:0];
   unsigned char* image_rep_data = image_rep.bitmapData;
   for (int i = 0; i < width * height * 3; ++i) {
-    image_rep_data[i] = 255;
+    UNSAFE_TODO(image_rep_data[i]) = 255;
   }
 
   return image_rep;

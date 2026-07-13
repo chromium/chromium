@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ui/gfx/ios/uikit_util.h"
 
 #import <Foundation/Foundation.h>
 #include <stddef.h>
+
+#include <array>
 
 #include "testing/platform_test.h"
 
@@ -23,13 +20,12 @@ TEST_F(UIKitUtilTest, AlignValueToUpperPixel) {
    // Pick a few interesting values: already aligned, aligned on retina, and
    // some unaligned values that would round differently. Ensure that all are
    // "integer" values within <1 of the original value in the scaled space.
-   CGFloat test_values[] = { 10.0, 55.5, 3.1, 2.9 };
+   const CGFloat test_values[] = {10.0, 55.5, 3.1, 2.9};
    const CGFloat kMaxAlignDelta = 0.9999;
-   size_t value_count = std::size(test_values);
-   for (unsigned int i = 0; i < value_count; ++i) {
-     CGFloat aligned = ui::AlignValueToUpperPixel(test_values[i]);
+   for (CGFloat val : test_values) {
+     CGFloat aligned = ui::AlignValueToUpperPixel(val);
      EXPECT_FLOAT_EQ(aligned * scale, floor(aligned * scale));
-     EXPECT_NEAR(aligned * scale, test_values[i] * scale, kMaxAlignDelta);
+     EXPECT_NEAR(aligned * scale, val * scale, kMaxAlignDelta);
    }
 }
 
@@ -38,12 +34,11 @@ TEST_F(UIKitUtilTest, AlignSizeToUpperPixel) {
   // Pick a few interesting values: already aligned, aligned on retina, and
   // some unaligned values that would round differently. Ensure that all are
   // "integer" values within <1 of the original value in the scaled space.
-  CGFloat test_values[] = { 10.0, 55.5, 3.1, 2.9 };
+  const auto test_values = std::to_array<CGFloat>({10.0, 55.5, 3.1, 2.9});
   const CGFloat kMaxAlignDelta = 0.9999;
-  size_t value_count = std::size(test_values);
-  for (unsigned int i = 0; i < value_count; ++i) {
-    CGFloat width = test_values[i];
-    CGFloat height = test_values[(i + 1) % value_count];
+  for (size_t i = 0; i < test_values.size(); ++i) {
+    const CGFloat width = test_values[i];
+    const CGFloat height = test_values[(i + 1) % test_values.size()];
     CGSize alignedSize = ui::AlignSizeToUpperPixel(CGSizeMake(width, height));
     EXPECT_FLOAT_EQ(floor(alignedSize.width * scale),
                     alignedSize.width * scale);

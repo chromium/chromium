@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/display_color_spaces.h"
 
 #include <array>
 #include <cmath>
 
+#include "base/compiler_specific.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "skia/ext/skcolorspace_primaries.h"
@@ -55,8 +51,8 @@ size_t GetIndex(ContentColorUsage color_usage, bool needs_alpha) {
 DisplayColorSpaces::DisplayColorSpaces() {
   // TODO(crbug.com/40219387): Revert back to range-based for loops if possible
   for (size_t i = 0; i < kConfigCount; i++) {
-    color_spaces_[i] = gfx::ColorSpace::CreateSRGB();
-    formats_[i] = DefaultFormat();
+    UNSAFE_TODO(color_spaces_[i]) = gfx::ColorSpace::CreateSRGB();
+    UNSAFE_TODO(formats_[i]) = DefaultFormat();
   }
 }
 
@@ -71,15 +67,17 @@ DisplayColorSpaces::DisplayColorSpaces(const gfx::ColorSpace& c)
   if (!c.IsValid())
     return;
   primaries_ = c.GetPrimaries();
-  for (size_t i = 0; i < kConfigCount; i++)  // NOLINT (modernize-loop-convert)
-    color_spaces_[i] = c;
+  for (size_t i = 0; i < kConfigCount;
+       i++) {  // NOLINT (modernize-loop-convert)
+    UNSAFE_TODO(color_spaces_[i]) = c;
+  }
 }
 
 DisplayColorSpaces::DisplayColorSpaces(const ColorSpace& c,
                                        viz::SharedImageFormat f)
     : DisplayColorSpaces(c) {
-  for (size_t i = 0; i < kConfigCount; i++) {
-    formats_[i] = f;
+  for (auto& format : formats_) {
+    format = f;
   }
 }
 
@@ -89,8 +87,8 @@ void DisplayColorSpaces::SetOutputFormats(
   for (const auto& color_usage : kAllColorUsages) {
     size_t i_no_alpha = GetIndex(color_usage, false);
     size_t i_needs_alpha = GetIndex(color_usage, true);
-    formats_[i_no_alpha] = format_no_alpha;
-    formats_[i_needs_alpha] = format_with_alpha;
+    UNSAFE_TODO(formats_[i_no_alpha] = format_no_alpha);
+    UNSAFE_TODO(formats_[i_needs_alpha] = format_with_alpha);
   }
 }
 
@@ -100,20 +98,20 @@ void DisplayColorSpaces::SetOutputColorSpaceAndFormat(
     const gfx::ColorSpace& color_space,
     viz::SharedImageFormat format) {
   size_t i = GetIndex(color_usage, needs_alpha);
-  color_spaces_[i] = color_space;
-  formats_[i] = format;
+  UNSAFE_TODO(color_spaces_[i] = color_space);
+  UNSAFE_TODO(formats_[i] = format);
 }
 
 ColorSpace DisplayColorSpaces::GetOutputColorSpace(
     ContentColorUsage color_usage,
     bool needs_alpha) const {
-  return color_spaces_[GetIndex(color_usage, needs_alpha)];
+  return UNSAFE_TODO(color_spaces_[GetIndex(color_usage, needs_alpha)]);
 }
 
 viz::SharedImageFormat DisplayColorSpaces::GetOutputFormat(
     ContentColorUsage color_usage,
     bool needs_alpha) const {
-  return formats_[GetIndex(color_usage, needs_alpha)];
+  return UNSAFE_TODO(formats_[GetIndex(color_usage, needs_alpha)]);
 }
 
 ColorSpace DisplayColorSpaces::GetRasterAndCompositeColorSpace(
@@ -205,7 +203,8 @@ void DisplayColorSpaces::ToStrings(
   while (i != kConfigCount) {
     // Keep growing the interval [i, j) until entry j is different, or past the
     // end.
-    if (color_spaces_[i] == color_spaces_[j] && formats_[i] == formats_[j] &&
+    if (UNSAFE_TODO(color_spaces_[i]) == UNSAFE_TODO(color_spaces_[j]) &&
+        UNSAFE_TODO(formats_[i]) == UNSAFE_TODO(formats_[j]) &&
         j != kConfigCount) {
       j += 1;
       continue;
@@ -231,8 +230,8 @@ void DisplayColorSpaces::ToStrings(
 
     // Add an entry, and continue with the interval [j, j).
     out_names->push_back(name);
-    out_formats->push_back(formats_[i]);
-    out_color_spaces->push_back(color_spaces_[i]);
+    out_formats->push_back(UNSAFE_TODO(formats_[i]));
+    out_color_spaces->push_back(UNSAFE_TODO(color_spaces_[i]));
     i = j;
   };
 }
@@ -260,9 +259,10 @@ void DisplayColorSpaces::AsValueInto(
 
 bool DisplayColorSpaces::operator==(const DisplayColorSpaces& other) const {
   for (size_t i = 0; i < kConfigCount; ++i) {
-    if (color_spaces_[i] != other.color_spaces_[i])
+    if (UNSAFE_TODO(color_spaces_[i]) != UNSAFE_TODO(other.color_spaces_[i])) {
       return false;
-    if (formats_[i] != other.formats_[i]) {
+    }
+    if (UNSAFE_TODO(formats_[i]) != UNSAFE_TODO(other.formats_[i])) {
       return false;
     }
   }
