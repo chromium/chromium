@@ -19,6 +19,7 @@ import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.MimeTypeUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class PdfContentProvider extends ContentProvider {
     private static final String URI_AUTHORITY_SUFFIX = ".PdfContentProvider";
     private static final String PDF_FILE_PREFIX = "/proc/";
     private static final Object LOCK = new Object();
-    private static final String PDF_MIMETYPE = "application/pdf";
+    private static final String PDF_MIMETYPE = MimeTypeUtils.PDF_MIME_TYPE;
 
     static class PdfFileInfo {
         public final String filePath;

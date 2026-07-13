@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.pdf;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
+import android.provider.OpenableColumns;
 import android.text.format.Formatter;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
@@ -90,6 +93,7 @@ import java.util.function.Consumer;
 public class PdfCoordinator
         implements PdfCoordinatorInterface, PdfActionsDelegate, PdfToolbarActionsDelegate {
     private static final String TAG = "PdfCoordinator";
+    private static final String ACTION_ANNOTATE = "android.intent.action.ANNOTATE";
     private static final int PAGE_TRANSITION_TYPE = PageTransition.LINK;
 
     // PDF link annotations are untrusted input (ISO 32000-1 §12.6.4.7 leaves scheme policy
@@ -439,7 +443,113 @@ public class PdfCoordinator
                 } else {
                     updateToolBoxView();
                 }
+            } else {
+                if (mToolBoxView != null) {
+                    overrideClickListeners(mToolBoxView);
+                }
             }
+        }
+
+        private static final String EXTRA_PDF_FILE_NAME =
+                "androidx.pdf.viewer.fragment.extra.PDF_FILE_NAME";
+        private static final String EXTRA_STARTING_PAGE =
+                "androidx.pdf.viewer.fragment.extra.STARTING_PAGE";
+
+        private void openPdfInExternalEditor() {
+            Context context = getContext();
+            if (context == null) return;
+
+            Uri uri = getDocumentUri();
+            if (uri == null && mDelegate != null) {
+                uri = mDelegate.getUri();
+            }
+            if (uri == null) {
+                return;
+            }
+            if (!PdfUtils.isUriSafeForSharing(uri, context)) {
+                Log.e(TAG, "Blocked openPdfInExternalEditor for unsafe URI: " + uri);
+                showCannotEditToast(context);
+                return;
+            }
+
+            if (!resolveAnnotationIntent(context, uri)) {
+                hideToolBox();
+                showCannotEditToast(context);
+                return;
+            }
+
+            Intent intent = createAnnotationIntent(uri, context);
+
+            try {
+                context.startActivity(intent);
+            } catch (ActivityNotFoundException | SecurityException e) {
+                Log.w(TAG, "Failed to start PDF annotator activity.", e);
+                hideToolBox();
+                showCannotEditToast(context);
+            }
+        }
+
+        private boolean resolveAnnotationIntent(Context context, Uri uri) {
+            Intent intent = createAnnotationIntent(uri, context, /* includeExtras= */ false);
+            return intent.resolveActivity(context.getPackageManager()) != null;
+        }
+
+        private Intent createAnnotationIntent(Uri uri, Context context) {
+            return createAnnotationIntent(uri, context, /* includeExtras= */ true);
+        }
+
+        private Intent createAnnotationIntent(Uri uri, Context context, boolean includeExtras) {
+            Intent intent = new Intent(ACTION_ANNOTATE);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setDataAndType(uri, MimeTypeUtils.PDF_MIME_TYPE);
+
+            if (includeExtras) {
+                String fileName = getFileName(uri, context.getContentResolver());
+                if (fileName != null) {
+                    intent.putExtra(EXTRA_PDF_FILE_NAME, fileName);
+                }
+
+                int pageNum = 0;
+                if (mPdfView != null) {
+                    pageNum = mPdfView.getFirstVisiblePage();
+                }
+                intent.putExtra(EXTRA_STARTING_PAGE, pageNum);
+            }
+
+            return intent;
+        }
+
+        private @Nullable String getFileName(Uri uri, ContentResolver contentResolver) {
+            String fileName = null;
+            if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+                String[] projection = new String[] {OpenableColumns.DISPLAY_NAME};
+                try (android.database.Cursor cursor =
+                        contentResolver.query(uri, projection, null, null, null)) {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                        if (index != -1) {
+                            fileName = cursor.getString(index);
+                        }
+                    }
+                } catch (Exception e) {
+                    // Ignore
+                }
+            }
+            if (fileName == null) {
+                fileName = uri.getLastPathSegment();
+            }
+            return fileName;
+        }
+
+        private void hideToolBox() {
+            if (mToolBoxView != null) {
+                mToolBoxView.setVisibility(View.GONE);
+            }
+        }
+
+        private void showCannotEditToast(Context context) {
+            Toast.makeText(context, R.string.pdf_cannot_edit_pdf, Toast.LENGTH_SHORT).show();
         }
 
         public void setToolBoxViewVisibility(boolean visible) {
@@ -626,6 +736,7 @@ public class PdfCoordinator
         @Override
         public void onLoadDocumentSuccess(PdfDocument pdfDocument) {
             super.onLoadDocumentSuccess(pdfDocument);
+            maybeHideToolBoxForUnsupportedEdit();
             if (PdfUtils.isInlinePdfV2Enabled() && mPdfView != null) {
                 mPdfView.setFormFillingEnabled(!isEditModeEnabled());
             }
@@ -651,6 +762,23 @@ public class PdfCoordinator
                 PdfUtils.recordPdfLoadResultDetail(PdfLoadResult.SUCCESS);
             }
             mIsLoadDocumentSuccess = true;
+        }
+
+        private void maybeHideToolBoxForUnsupportedEdit() {
+            Context context = getContext();
+            if (context == null) return;
+
+            Uri uri = getDocumentUri();
+            if (uri == null && mDelegate != null) {
+                uri = mDelegate.getUri();
+            }
+            if (uri == null) {
+                return;
+            }
+            if (!PdfUtils.isUriSafeForSharing(uri, context)
+                    || !resolveAnnotationIntent(context, uri)) {
+                hideToolBox();
+            }
         }
 
         @Override
@@ -790,6 +918,24 @@ public class PdfCoordinator
                                     if (fitToPageHeight) scrollToPage(pageIndex);
                                 });
                     });
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            if (!PdfUtils.isInlinePdfV2Enabled() && mToolBoxView != null) {
+                overrideClickListeners(mToolBoxView);
+            }
+        }
+
+        private void overrideClickListeners(View view) {
+            view.setOnClickListener(v -> openPdfInExternalEditor());
+            if (view instanceof ViewGroup) {
+                ViewGroup group = (ViewGroup) view;
+                for (int i = 0; i < group.getChildCount(); i++) {
+                    overrideClickListeners(group.getChildAt(i));
+                }
+            }
         }
     }
 

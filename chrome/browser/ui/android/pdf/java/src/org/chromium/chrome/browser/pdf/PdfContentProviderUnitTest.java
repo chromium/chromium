@@ -33,6 +33,7 @@ import org.robolectric.shadows.ShadowParcelFileDescriptor;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.base.MimeTypeUtils;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -102,13 +103,13 @@ public class PdfContentProviderUnitTest {
     public void testGetType() throws Exception {
         Uri uri = PdfContentProvider.createContentUri(TEST_FILE_PATH, TEST_FILE_NAME);
         String type = mProvider.getType(uri);
-        assertEquals("Mime type should be application/pdf", "application/pdf", type);
+        assertEquals("Mime type should be application/pdf", MimeTypeUtils.PDF_MIME_TYPE, type);
 
         // Create another uri.
         Thread.sleep(1);
         Uri uri2 = PdfContentProvider.createContentUri(TEST_FILE_PATH, "xyzs");
         type = mProvider.getType(uri2);
-        assertEquals("Mime type should be application/pdf", "application/pdf", type);
+        assertEquals("Mime type should be application/pdf", MimeTypeUtils.PDF_MIME_TYPE, type);
         assertNotEquals("Content Uris should be different", uri, uri2);
     }
 
@@ -118,10 +119,11 @@ public class PdfContentProviderUnitTest {
         String[] types = mProvider.getStreamTypes(uri, "*/*");
         assertNotNull("Stream types should not be null", types);
         assertEquals("There should be one stream type", 1, types.length);
-        assertEquals("Stream type should be application/pdf", "application/pdf", types[0]);
+        assertEquals(
+                "Stream type should be application/pdf", MimeTypeUtils.PDF_MIME_TYPE, types[0]);
 
         String[] types2 = mProvider.getStreamTypes(uri, "*/pdf");
-        String[] types3 = mProvider.getStreamTypes(uri, "application/pdf");
+        String[] types3 = mProvider.getStreamTypes(uri, MimeTypeUtils.PDF_MIME_TYPE);
         String[] types4 = mProvider.getStreamTypes(uri, "application/*");
         assertEquals(types2, types);
         assertEquals(types3, types);

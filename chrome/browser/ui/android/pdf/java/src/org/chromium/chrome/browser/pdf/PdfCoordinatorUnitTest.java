@@ -19,7 +19,10 @@ import static org.mockito.Mockito.when;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ProviderInfo;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -1189,6 +1192,110 @@ public class PdfCoordinatorUnitTest {
         assertTrue("ParcelFileDescriptor should be closed", pfdClosed);
     }
 
+    private static final String ACTION_ANNOTATE = "android.intent.action.ANNOTATE";
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testOnLoadDocumentSuccess_V2Disabled_HidesToolboxWhenNoAnnotator() {
+        createPdfCoordinator();
+
+        TestChromePdfViewerFragment fragment = new TestChromePdfViewerFragment(mPdfCoordinator);
+        mPdfCoordinator.mChromePdfViewerFragment = fragment;
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(fragment, "test_pdf_tag_1")
+                .commitNow();
+
+        FrameLayout fragmentView = new FrameLayout(mActivity);
+        View toolBoxView = new View(mActivity);
+        toolBoxView.setId(R.id.toolBoxView);
+        fragmentView.addView(toolBoxView);
+        fragment.onViewCreated(fragmentView, null);
+
+        assertEquals(View.VISIBLE, toolBoxView.getVisibility());
+
+        PdfDocument pdfDocument = Mockito.mock(PdfDocument.class);
+        fragment.onLoadDocumentSuccess(pdfDocument);
+
+        assertEquals(View.GONE, toolBoxView.getVisibility());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testOnLoadDocumentSuccess_V2Disabled_KeepsToolboxWhenAnnotatorExists() {
+        Intent intent = new Intent(ACTION_ANNOTATE);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setDataAndType(Uri.parse(TEST_CONTENT_URI), "application/pdf");
+
+        ResolveInfo resolveInfo = new ResolveInfo();
+        resolveInfo.activityInfo = new ActivityInfo();
+        resolveInfo.activityInfo.packageName = "com.example.pdfannotator";
+        resolveInfo.activityInfo.name = "com.example.pdfannotator.AnnotateActivity";
+        org.robolectric.Shadows.shadowOf(mActivity.getPackageManager())
+                .addResolveInfoForIntent(intent, resolveInfo);
+
+        createPdfCoordinator();
+
+        TestChromePdfViewerFragment fragment = new TestChromePdfViewerFragment(mPdfCoordinator);
+        mPdfCoordinator.mChromePdfViewerFragment = fragment;
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(fragment, "test_pdf_tag_2")
+                .commitNow();
+
+        FrameLayout fragmentView = new FrameLayout(mActivity);
+        View toolBoxView = new View(mActivity);
+        toolBoxView.setId(R.id.toolBoxView);
+        fragmentView.addView(toolBoxView);
+        fragment.onViewCreated(fragmentView, null);
+
+        PdfDocument pdfDocument = Mockito.mock(PdfDocument.class);
+        fragment.onLoadDocumentSuccess(pdfDocument);
+
+        assertEquals(View.VISIBLE, toolBoxView.getVisibility());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testOpenPdfInExternalEditor_OnClick() {
+        Intent intent = new Intent(ACTION_ANNOTATE);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setDataAndType(Uri.parse(TEST_CONTENT_URI), "application/pdf");
+
+        ResolveInfo resolveInfo = new ResolveInfo();
+        resolveInfo.activityInfo = new ActivityInfo();
+        resolveInfo.activityInfo.packageName = "com.example.pdfannotator";
+        resolveInfo.activityInfo.name = "com.example.pdfannotator.AnnotateActivity";
+        org.robolectric.Shadows.shadowOf(mActivity.getPackageManager())
+                .addResolveInfoForIntent(intent, resolveInfo);
+
+        createPdfCoordinator();
+
+        TestChromePdfViewerFragment fragment = new TestChromePdfViewerFragment(mPdfCoordinator);
+        mPdfCoordinator.mChromePdfViewerFragment = fragment;
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(fragment, "test_pdf_tag_3")
+                .commitNow();
+
+        FrameLayout fragmentView = new FrameLayout(mActivity);
+        View toolBoxView = new View(mActivity);
+        toolBoxView.setId(R.id.toolBoxView);
+        fragmentView.addView(toolBoxView);
+        fragment.onViewCreated(fragmentView, null);
+
+        toolBoxView.performClick();
+
+        Intent startedIntent = org.robolectric.Shadows.shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(startedIntent);
+        assertEquals(ACTION_ANNOTATE, startedIntent.getAction());
+        assertEquals(Uri.parse(TEST_CONTENT_URI), startedIntent.getData());
+        assertEquals("application/pdf", startedIntent.getType());
+    }
+
     @Implements(PdfView.class)
     public static class ShadowPdfView extends ShadowView {
         public PdfPoint mPdfPoint;
@@ -1251,8 +1358,11 @@ public class PdfCoordinatorUnitTest {
         }
     }
 
-    private static class TestChromePdfViewerFragment
-            extends PdfCoordinator.ChromePdfViewerFragment {
+    public static class TestChromePdfViewerFragment extends PdfCoordinator.ChromePdfViewerFragment {
+        public TestChromePdfViewerFragment() {
+            super();
+        }
+
         public TestChromePdfViewerFragment(PdfActionsDelegate delegate) {
             super(delegate);
         }
