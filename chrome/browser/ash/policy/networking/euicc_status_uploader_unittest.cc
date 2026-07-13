@@ -21,7 +21,7 @@
 #include "chromeos/ash/components/network/policy_util.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/prefs/testing_pref_service.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -261,16 +261,14 @@ class EuiccStatusUploaderTest : public testing::Test {
   void SetUp() override {
     helper_ = std::make_unique<ash::NetworkHandlerTestHelper>();
 
-    EuiccStatusUploader::RegisterLocalStatePrefs(local_state_.registry());
-    helper_->RegisterPrefs(nullptr, local_state_.registry());
-    helper_->InitializePrefs(nullptr, &local_state_);
+    helper_->InitializePrefs(nullptr, local_state());
     SetPolicyClientIsRegistered(/*is_registered=*/true);
   }
 
   std::unique_ptr<EuiccStatusUploader> CreateStatusUploader(
       bool is_policy_fetched = true) {
     auto status_uploader = base::WrapUnique(new EuiccStatusUploader(
-        &cloud_policy_client_, &local_state_,
+        &cloud_policy_client_, local_state(),
         base::BindRepeating(&EuiccStatusUploaderTest::is_device_active,
                             base::Unretained(this))));
     if (is_policy_fetched) {
@@ -297,7 +295,7 @@ class EuiccStatusUploaderTest : public testing::Test {
   }
 
   const base::Value& GetStoredPref() {
-    return local_state_.GetValue(
+    return local_state()->GetValue(
         EuiccStatusUploader::kLastUploadedEuiccStatusPref);
   }
 
@@ -355,11 +353,12 @@ class EuiccStatusUploaderTest : public testing::Test {
             test_profile.activation_code_value);
 
         base::DictValue existing_prefs =
-            local_state_.GetDict(ash::prefs::kManagedCellularESimMetadata)
+            local_state()
+                ->GetDict(ash::prefs::kManagedCellularESimMetadata)
                 .Clone();
         existing_prefs.Set(test_profile.iccid, std::move(esim_metadata));
-        local_state_.Set(ash::prefs::kManagedCellularESimMetadata,
-                         base::Value(std::move(existing_prefs)));
+        local_state()->Set(ash::prefs::kManagedCellularESimMetadata,
+                           base::Value(std::move(existing_prefs)));
       }
     }
 
@@ -379,8 +378,8 @@ class EuiccStatusUploaderTest : public testing::Test {
   }
 
   void SetLastUploadedValue(const std::string& last_value) {
-    local_state_.Set(EuiccStatusUploader::kLastUploadedEuiccStatusPref,
-                     base::test::ParseJson(last_value));
+    local_state()->Set(EuiccStatusUploader::kLastUploadedEuiccStatusPref,
+                       base::test::ParseJson(last_value));
   }
 
   void TriggerManagedCellularPrefChanged(EuiccStatusUploader* status_uploader) {
@@ -418,10 +417,13 @@ class EuiccStatusUploaderTest : public testing::Test {
  private:
   bool is_device_active() { return is_device_active_; }
 
+  PrefService* local_state() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
+  }
+
   bool is_device_active_ = true;
   content::BrowserTaskEnvironment task_environment_;
   FakeCloudPolicyClient cloud_policy_client_;
-  TestingPrefServiceSimple local_state_;
   std::unique_ptr<ash::NetworkHandlerTestHelper> helper_;
   base::HistogramTester histogram_tester_;
 };
