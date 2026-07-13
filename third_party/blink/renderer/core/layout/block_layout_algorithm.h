@@ -35,11 +35,7 @@ struct PreviousInflowPosition {
   MarginStrut margin_strut;
   // > 0: Block-end annotation space of the previous line
   // < 0: Block-end annotation overflow of the previous line
-  // This field is used to pass information across line boxes.
   LayoutUnit block_end_annotation_space;
-  // Block-end annotation space of the previous sibling block.
-  // This field is used to pass information across child IFCs.
-  LayoutUnit previous_sibling_block_end_annotation_space;
   bool self_collapsing_child_had_clearance;
 };
 
@@ -238,8 +234,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
       bool is_new_fc,
       const std::optional<LayoutUnit> bfc_block_offset = std::nullopt,
       bool has_clearance_past_adjoining_floats = false,
-      LayoutUnit block_start_annotation_space = LayoutUnit(),
-      LayoutUnit previous_sibling_block_end_annotation_space = LayoutUnit());
+      LayoutUnit block_start_annotation_space = LayoutUnit());
 
   // @return Estimated BFC block offset for the "to be layout" child.
   InflowChildData ComputeChildData(const PreviousInflowPosition&,

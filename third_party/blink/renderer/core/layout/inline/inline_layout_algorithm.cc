@@ -433,11 +433,6 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
     }
     line_info->SetAnnotationBlockStartAdjustment(SetAnnotationOverflow(
         *line_info, *line_box, line_box_metrics, annotation_metrics));
-  } else if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
-             GetConstraintSpace().ContainsAnnotations() &&
-             line_info->IsLastLine() && !line_info->IsEmptyLine()) {
-    line_info->SetAnnotationBlockStartAdjustment(SetAnnotationOverflow(
-        *line_info, *line_box, line_box_metrics, std::nullopt));
   }
 
   // Truncate the line if:

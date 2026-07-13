@@ -637,11 +637,6 @@ class CORE_EXPORT ConstraintSpace final {
   // annotations or text-emphasis marks.
   bool ContainsAnnotations() const { return bitfields_.contains_annotations; }
 
-  LayoutUnit PreviousSiblingBlockEndAnnotationSpace() const {
-    return rare_data_ ? rare_data_->PreviousSiblingBlockEndAnnotationSpace()
-                      : LayoutUnit();
-  }
-
   MarginStrut GetMarginStrut() const {
     return rare_data_ ? rare_data_->GetMarginStrut() : MarginStrut();
   }
@@ -893,6 +888,7 @@ class CORE_EXPORT ConstraintSpace final {
     RareData() {}
     RareData(const RareData& other)
         : percentage_resolution_size(other.percentage_resolution_size),
+          block_start_annotation_space(other.block_start_annotation_space),
           replaced_child_percentage_resolution_block_size(
               other.replaced_child_percentage_resolution_block_size),
           page_name(other.page_name),
@@ -1134,23 +1130,11 @@ class CORE_EXPORT ConstraintSpace final {
     }
 
     LayoutUnit BlockStartAnnotationSpace() const {
-      return GetDataUnionType() == DataUnionType::kBlockData
-                 ? block_data_.block_start_annotation_space
-                 : LayoutUnit();
+      return block_start_annotation_space;
     }
 
     void SetBlockStartAnnotationSpace(LayoutUnit space) {
-      EnsureBlockData()->block_start_annotation_space = space;
-    }
-
-    LayoutUnit PreviousSiblingBlockEndAnnotationSpace() const {
-      return GetDataUnionType() == DataUnionType::kBlockData
-                 ? block_data_.previous_sibling_block_end_annotation_space
-                 : LayoutUnit();
-    }
-
-    void SetPreviousSiblingBlockEndAnnotationSpace(LayoutUnit space) {
-      EnsureBlockData()->previous_sibling_block_end_annotation_space = space;
+      block_start_annotation_space = space;
     }
 
     MarginStrut GetMarginStrut() const {
@@ -1347,6 +1331,7 @@ class CORE_EXPORT ConstraintSpace final {
     }
 
     LogicalSize percentage_resolution_size;
+    LayoutUnit block_start_annotation_space;
 
     LayoutUnit replaced_child_percentage_resolution_block_size =
         kIndefiniteSize;
@@ -1400,15 +1385,11 @@ class CORE_EXPORT ConstraintSpace final {
    private:
     struct BlockData {
       bool MaySkipLayout(const BlockData& other) const {
-        return line_clamp_data == other.line_clamp_data &&
-               previous_sibling_block_end_annotation_space ==
-                   other.previous_sibling_block_end_annotation_space;
+        return line_clamp_data == other.line_clamp_data;
       }
 
       bool IsInitialForMaySkipLayout() const {
-        return line_clamp_data.state == LineClampData::kDisabled &&
-               block_start_annotation_space == LayoutUnit() &&
-               previous_sibling_block_end_annotation_space == LayoutUnit();
+        return line_clamp_data.state == LineClampData::kDisabled;
       }
 
       MarginStrut margin_strut;
@@ -1416,8 +1397,6 @@ class CORE_EXPORT ConstraintSpace final {
       std::optional<LayoutUnit> forced_bfc_block_offset;
       LayoutUnit clearance_offset = LayoutUnit::Min();
       LineClampData line_clamp_data;
-      LayoutUnit block_start_annotation_space;
-      LayoutUnit previous_sibling_block_end_annotation_space;
     };
 
     struct TableCellData {
