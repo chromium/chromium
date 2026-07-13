@@ -197,7 +197,11 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
     if (!ValidateRect(config.bounds_rect)) {
       fatal_error_message_ = kBoundsRectNanOrInf;
     } else {
+      auto weak_this = weak_factory_.GetWeakPtr();
       window_->OnSequencePoint(frame->seq);
+      if (!weak_this) {
+        return;
+      }
       // During a tab dragging session, OnSequencePoint() can implicitly invoke
       // Hide(). |pending_frames_| will be cleared and we should return
       // directly.

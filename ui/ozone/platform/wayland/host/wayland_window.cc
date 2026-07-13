@@ -163,7 +163,11 @@ void WaylandWindow::UpdateWindowScale(bool update_bounds) {
   const auto window_scale = connection_->UsePerSurfaceScaling()
                                 ? GetPreferredScaleFactor()
                                 : GetScaleFactorFromEnteredOutputs();
+  auto weak_this = AsWeakPtr();
   SetWindowScale(window_scale.value_or(1.0f));
+  if (!weak_this) {
+    return;
+  }
 
   // Propagate update to the popups.
   if (child_popup_) {
