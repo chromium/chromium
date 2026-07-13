@@ -91,14 +91,23 @@ MinimalFormFieldDataForFilling() {
 }
 
 // Returns a simple form suggestion that only consists of a `value` and a `type`
-FormSuggestion* SimpleFormSuggestion(std::u16string value,
-                                     autofill::SuggestionType type) {
+FormSuggestion* SimpleFormSuggestion(
+    std::u16string value,
+    autofill::SuggestionType type,
+    base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate =
+        base::WeakPtr<autofill::AutofillSuggestionDelegate>()) {
+  FormSuggestionMetadata metadata;
+  metadata.suggestion_delegate = delegate;
   return [FormSuggestion suggestionWithValue:base::SysUTF16ToNSString(value)
+                                  minorValue:nil
                           displayDescription:@""
                                         icon:nil
                                         type:type
                                      payload:autofill::Suggestion::Payload()
-                              requiresReauth:NO];
+                 fieldByFieldFillingTypeUsed:autofill::FieldType::EMPTY_TYPE
+                              requiresReauth:NO
+                  acceptanceA11yAnnouncement:nil
+                                    metadata:metadata];
 }
 
 }  // namespace
@@ -106,6 +115,7 @@ FormSuggestion* SimpleFormSuggestion(std::u16string value,
 @interface AutofillAgent (Testing)
 - (void)updateFieldManagerWithFillingResults:(NSString*)jsonString
                                      inFrame:(web::WebFrame*)frame;
+- (void)onSuggestionsReady:(NSArray<FormSuggestion*>*)suggestions;
 @end
 
 // Test fixture for AutofillAgent testing.
@@ -1039,7 +1049,8 @@ TEST_F(AutofillAgentTest, DidSelectSuggestion_AutocompleteEntry) {
   // Select suggestion to trigger field filling.
   __block BOOL completion_handler_called = NO;
   FormSuggestion* form_suggestion = SimpleFormSuggestion(
-      field1_value, autofill::SuggestionType::kAutocompleteEntry);
+      field1_value, autofill::SuggestionType::kAutocompleteEntry,
+      mock_delegate.GetWeakPtr());
   [autofill_agent_ didSelectSuggestion:form_suggestion
                                atIndex:0
                                   form:@"single-username-form"
@@ -1129,6 +1140,42 @@ TEST_F(AutofillAgentTest, DidSelectSuggestion_ClearFormEntry) {
   EXPECT_TRUE(completion_handler_called);
 }
 
+// Tests that a suggestion is correctly routed to its bound delegate, even
+// if focus has shifted or multiple delegates were involved.
+TEST_F(AutofillAgentTest, DidSelectSuggestion_RoutesToSuggestionBoundDelegate) {
+  // Setup mock delegates for two different frames/managers.
+  autofill::MockAutofillSuggestionDelegate mock_delegate_a;
+  autofill::MockAutofillSuggestionDelegate mock_delegate_b;
+
+  // Frame A provides a suggestion.
+  FormSuggestion* suggestion_a =
+      SimpleFormSuggestion(u"value_a", SuggestionType::kAutocompleteEntry,
+                           mock_delegate_a.GetWeakPtr());
+
+  // Frame B provides a suggestion later.
+  FormSuggestion* suggestion_b =
+      SimpleFormSuggestion(u"value_b", SuggestionType::kAutocompleteEntry,
+                           mock_delegate_b.GetWeakPtr());
+
+  // The agent's "most recent" state is updated to suggestions from Frame B.
+  [autofill_agent_ onSuggestionsReady:@[ suggestion_b ]];
+
+  // Verification: Selecting suggestion A should STILL route to delegate A,
+  // despite the agent's global state having moved on to B.
+  EXPECT_CALL(mock_delegate_a, DidAcceptSuggestion).Times(1);
+  EXPECT_CALL(mock_delegate_b, DidAcceptSuggestion).Times(0);
+
+  [autofill_agent_ didSelectSuggestion:suggestion_a
+                               atIndex:0
+                                  form:@"form_a"
+                        formRendererID:FormRendererId(1)
+                       fieldIdentifier:@"field_a"
+                       fieldRendererID:FieldRendererId(2)
+                               frameID:@"frame_a"
+                     completionHandler:^{
+                     }];
+}
+
 // Tests selecting the Undo autofill suggestion.
 TEST_F(AutofillAgentTest, DidSelectSuggestion_Undo) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1151,8 +1198,8 @@ TEST_F(AutofillAgentTest, DidSelectSuggestion_Undo) {
   // Select suggestion to trigger undo.
   FormRendererId form_id(1);
   FieldRendererId field1_id(2);
-  FormSuggestion* form_suggestion =
-      SimpleFormSuggestion(u"", autofill::SuggestionType::kUndoOrClear);
+  FormSuggestion* form_suggestion = SimpleFormSuggestion(
+      u"", autofill::SuggestionType::kUndoOrClear, mock_delegate.GetWeakPtr());
   [autofill_agent_ didSelectSuggestion:form_suggestion
                                atIndex:0
                                   form:@"single-username-form"

@@ -46,6 +46,33 @@
 }
 
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
+                            minorValue:(NSString*)minorValue
+                    displayDescription:(NSString*)displayDescription
+                                  icon:(UIImage*)icon
+                                  type:(autofill::SuggestionType)type
+                               payload:(autofill::Suggestion::Payload)payload
+           fieldByFieldFillingTypeUsed:
+               (autofill::FieldType)fieldByFieldFillingTypeUsed
+                        requiresReauth:(BOOL)requiresReauth
+            acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
+                              metadata:(FormSuggestionMetadata)metadata {
+  return [[FormSuggestion alloc] initWithValue:value
+                                    minorValue:minorValue
+                            displayDescription:displayDescription
+                                          icon:icon
+                                          type:type
+                                       payload:payload
+                   fieldByFieldFillingTypeUsed:fieldByFieldFillingTypeUsed
+                                requiresReauth:requiresReauth
+                    acceptanceA11yAnnouncement:acceptanceA11yAnnouncement
+                                      metadata:metadata
+                                        params:std::nullopt
+                                      provider:nil
+                                 featureForIPH:SuggestionFeatureForIPH::kUnknown
+                            suggestionIconType:SuggestionIconType::kNone];
+}
+
++ (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
                                   type:(autofill::SuggestionType)type

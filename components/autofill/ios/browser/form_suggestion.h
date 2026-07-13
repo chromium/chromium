@@ -8,12 +8,19 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
+#import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
-#include "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/password_manager/core/browser/password_ui_utils.h"
+
+namespace autofill {
+class AutofillSuggestionDelegate;
+}
 
 @protocol FormSuggestionProvider;
 
@@ -33,6 +40,11 @@ struct FormSuggestionMetadata {
   // Indicates if the UI surface that uses the suggestion explicitly accepts
   // auto-submission.
   bool accepts_auto_submit = false;
+
+  // The delegate that provided this suggestion. Used for stateless suggestion
+  // routing in `AutofillAgent`. Must be preserved when copying or modifying
+  // suggestions.
+  base::WeakPtr<autofill::AutofillSuggestionDelegate> suggestion_delegate;
 };
 
 // Enum class used to determine the feature for in-product help for the
@@ -114,6 +126,19 @@ enum class SuggestionIconType {
 // knowing which provider to use for filling the suggestion. Must be set before
 // the suggestion is filled when kStatelessFormSuggestionController is enabled.
 @property(nonatomic, weak) id<FormSuggestionProvider> provider;
+
+// Returns FormSuggestion (immutable) with given values.
++ (FormSuggestion*)suggestionWithValue:(NSString*)value
+                            minorValue:(NSString*)minorValue
+                    displayDescription:(NSString*)displayDescription
+                                  icon:(UIImage*)icon
+                                  type:(autofill::SuggestionType)type
+                               payload:(autofill::Suggestion::Payload)payload
+           fieldByFieldFillingTypeUsed:
+               (autofill::FieldType)fieldByFieldFillingTypeUsed
+                        requiresReauth:(BOOL)requiresReauth
+            acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
+                              metadata:(FormSuggestionMetadata)metadata;
 
 // Returns FormSuggestion (immutable) with given values.
 + (FormSuggestion*)suggestionWithValue:(NSString*)value

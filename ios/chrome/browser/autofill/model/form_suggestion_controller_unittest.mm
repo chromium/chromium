@@ -8,6 +8,7 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
+#import "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
@@ -716,6 +717,34 @@ TEST_P(FormSuggestionControllerTest, CopyAndAdjustSuggestions) {
       [suggestion_controller_ copyAndAdjustSuggestions:suggestions];
   EXPECT_TRUE(adjusted_suggestions.count);
   EXPECT_TRUE(adjusted_suggestions[0].icon);
+}
+
+// Tests that metadata and suggestion_delegate are preserved when suggestions
+// are adjusted (e.g. for icons).
+TEST_P(FormSuggestionControllerTest,
+       PreservesMetadataAndDelegateOnSuggestionCopy) {
+  SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
+
+  autofill::MockAutofillSuggestionDelegate mock_delegate;
+  FormSuggestionMetadata metadata;
+  metadata.suggestion_delegate = mock_delegate.GetWeakPtr();
+
+  FormSuggestion* suggestion = [FormSuggestion
+             suggestionWithValue:@"test-value"
+              displayDescription:nil
+                            icon:nil
+                            type:autofill::SuggestionType::kAddressEntry
+                         payload:autofill::Suggestion::Payload()
+                  requiresReauth:NO
+      acceptanceA11yAnnouncement:nil
+                        metadata:metadata];
+
+  NSArray<FormSuggestion*>* adjusted_suggestions =
+      [suggestion_controller_ copyAndAdjustSuggestions:@[ suggestion ]];
+
+  ASSERT_EQ(adjusted_suggestions.count, 1U);
+  EXPECT_EQ(adjusted_suggestions[0].metadata.suggestion_delegate.get(),
+            &mock_delegate);
 }
 
 std::string ParamToString(const testing::TestParamInfo<bool>& params_info) {
