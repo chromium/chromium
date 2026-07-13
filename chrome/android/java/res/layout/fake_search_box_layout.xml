@@ -92,8 +92,10 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ButtonCompat
         style="@style/AiModeChip"
         android:id="@+id/search_box_ai_chip"
+        android:foreground="@drawable/search_box_ai_chip_focus_ring"
         android:visibility="gone"
         android:pointerIcon="hand"
-        app:verticalInset="6dp" />
+        app:verticalInset="@dimen/ai_chip_vertical_inset"
+        app:horizontalInset="@dimen/ai_chip_horizontal_inset"/>
 
 </org.chromium.chrome.browser.ntp.search.SearchBoxContainerView>

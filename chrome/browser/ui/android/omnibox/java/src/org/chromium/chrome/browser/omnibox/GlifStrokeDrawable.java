@@ -66,6 +66,14 @@ public class GlifStrokeDrawable extends Drawable {
                         .getDimensionPixelSize(R.dimen.fusebox_glif_blur_stroke_width));
     }
 
+    public GlifStrokeDrawable(Context context, float cornerRadius) {
+        this(
+                cornerRadius,
+                context.getResources().getDimensionPixelSize(R.dimen.fusebox_glif_stroke_width),
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.fusebox_glif_blur_stroke_width));
+    }
+
     @VisibleForTesting
     GlifStrokeDrawable(float cornerRadiusPx, float strokePx, float maxBlurStrokePx) {
         mCornerRadius = cornerRadiusPx;
@@ -77,6 +85,10 @@ public class GlifStrokeDrawable extends Drawable {
         mBlurPaint.setStyle(Paint.Style.STROKE);
         mBlurPaint.setStrokeWidth(mBlurStrokePx);
         mBlurPaint.setMaskFilter(new BlurMaskFilter(mBlurStrokePx, BlurMaskFilter.Blur.NORMAL));
+
+        // Keep gradient hidden (alpha = 0) until the animation starts.
+        mSharpPaint.setAlpha(0);
+        mBlurPaint.setAlpha(0);
 
         SweepGradient shader =
                 new SweepGradient(

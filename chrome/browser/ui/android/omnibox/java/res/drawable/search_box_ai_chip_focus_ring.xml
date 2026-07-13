@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingMode="stack">
+  <item>
+    <selector>
+      <item android:state_focused="true">
+        <inset
+            android:insetTop="@dimen/ai_chip_vertical_inset"
+            android:insetBottom="@dimen/ai_chip_vertical_inset">
+          <shape android:shape="rectangle">
+            <stroke
+                android:color="@macro/default_control_color_active"
+                android:width="@dimen/focused_outline_stroke_width" />
+            <!--
+            The AI chip visually has a height of 36dp, so the base radius
+            should be 18dp. Then +3dp to account for the fact that we're 3dp wider on
+            either side.
+            -->
+            <corners android:radius="21dp" />
+          </shape>
+        </inset>
+      </item>
+      <item>
+        <shape android:shape="rectangle">
+          <solid android:color="@android:color/transparent" />
+        </shape>
+      </item>
+    </selector>
+  </item>
+
+  <!-- Layer 1: GLIF Border Placeholder (populated at runtime) -->
+  <item
+      android:id="@+id/glif_border_layer"
+      android:start="@dimen/ai_chip_horizontal_inset"
+      android:end="@dimen/ai_chip_horizontal_inset"
+      android:top="@dimen/ai_chip_vertical_inset"
+      android:bottom="@dimen/ai_chip_vertical_inset">
+    <shape android:shape="rectangle">
+      <solid android:color="@android:color/transparent" />
+    </shape>
+  </item>
+</layer-list>

@@ -220,4 +220,9 @@ found in the LICENSE file.
     <dimen name="omnibox_chip_padding_horizontal_collapsed">12dp</dimen>
     <dimen name="omnibox_chip_padding_horizontal_expanded_start">8dp</dimen>
     <dimen name="omnibox_chip_padding_horizontal_expanded_end">12dp</dimen>
+
+    <!-- AI Mode chip. -->
+    <dimen name="ai_chip_corner_radius">36dp</dimen>
+    <dimen name="ai_chip_vertical_inset">6dp</dimen>
+    <dimen name="ai_chip_horizontal_inset">2dp</dimen>
 </resources>

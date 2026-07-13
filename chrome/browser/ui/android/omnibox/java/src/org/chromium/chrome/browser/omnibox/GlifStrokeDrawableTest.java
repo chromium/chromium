@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Canvas;
@@ -56,5 +57,11 @@ public class GlifStrokeDrawableTest {
                         mCornerRadius,
                         mCornerRadius,
                         mDrawable.getPaintForTesting());
+    }
+
+    @Test
+    public void testInitializeAlphaToZero() {
+        assertEquals(0, mDrawable.getPaintForTesting().getAlpha());
+        assertEquals(0, mDrawable.getBlurPaintForTesting().getAlpha());
     }
 }

@@ -131,8 +131,7 @@ found in the LICENSE file.
         <item name="android:singleLine">true</item>
         <item name="android:text">@string/ai_mode_entrypoint_label</item>
         <item name="android:textAlignment">viewStart</item>
-        <item name="rippleCornerRadius">36dp</item>
-        <item name="android:foreground">@drawable/activation_chip_focus_ring</item>
+        <item name="rippleCornerRadius">@dimen/ai_chip_corner_radius</item>
         <item name="buttonColor">@color/gm3_baseline_surface_container_high_light</item>
         <item name="buttonTextColor">@color/default_text_color_dark</item>
     </style>
