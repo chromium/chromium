@@ -545,9 +545,10 @@ void NavigationEntryImpl::SetDataURLAsString(
     scoped_refptr<base::RefCountedString> data_url) {
   if (data_url) {
     // A quick check that it's actually a data URL.
-    CHECK(base::StartsWith(base::as_string_view(*data_url), url::kDataScheme,
-                           base::CompareCase::SENSITIVE),
-          base::NotFatalUntil::M152);
+    // TODO(crbug.com/532617607): CHECK-exclusion: Convert to CHECK once we are
+    // sure this isn't hit.
+    DCHECK(base::StartsWith(base::as_string_view(*data_url), url::kDataScheme,
+                            base::CompareCase::SENSITIVE));
   }
   data_url_as_string_ = std::move(data_url);
 }
