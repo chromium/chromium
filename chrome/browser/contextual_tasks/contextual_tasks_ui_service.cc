@@ -2575,6 +2575,10 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
       if (net::GetValueForKeyInQuery(url, "mstk", &mstk)) {
         task_id_to_initial_mstk_[task_id] = mstk;
       }
+    } else {
+      // Even if a task already exists, make sure to use the URL given to this
+      // method.
+      task_id_to_creation_url_[task_id] = url;
     }
 
     if (associate_web_contents) {
