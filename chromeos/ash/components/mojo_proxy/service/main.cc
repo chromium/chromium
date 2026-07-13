@@ -17,17 +17,19 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_executor.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/core/embedder/embedder.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/core/embedder/scoped_ipc_support.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/platform/platform_channel_endpoint.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/platform/platform_handle.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/system/invitation.h"
 #include "chromeos/ash/components/mojo_proxy/service/node_proxy.h"
 #include "chromeos/ash/components/mojo_proxy/service/portal_proxy.h"
 #include "chromeos/ash/components/mojo_proxy/service/switches.h"
-#include "mojo/core/embedder/embedder.h"
-#include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/transport.h"
 #include "mojo/core/scoped_ipcz_handle.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "mojo/public/cpp/system/invitation.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo_proxy {
@@ -40,27 +42,32 @@ void RunProxy(int argc, char** argv) {
 
   base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
 
-  // We initialize Mojo with ipcz disabled, since pre-ipcz Mojo Core only works
-  // as a process-wide singleton. This means that all Mojo C APIs in this
-  // process are wired to the old Mojo implementation and are therefore usable
-  // to interface (exclusively) with the proxy's legacy client.
+  // Initialize the frozen legacy Mojo Core clone (`mojo_legacy`), which serves
+  // the proxy's legacy client side. The real Mojo C APIs from //mojo are never
+  // initialized nor used in this process: the legacy side goes through the
+  // `mojo_legacy` clone, and the MojoIpcz side below is driven through direct
+  // ipcz and ipcz driver calls.
   //
   // We always operate as a broker on the legacy side based on the assumption
   // that all legacy clients are non-brokers. We're the only node the legacy
   // client communicates with.
-  mojo::core::Configuration mojo_config;
+  mojo_legacy::core::Configuration mojo_config;
   mojo_config.is_broker_process = true;
-  mojo_config.disable_ipcz = true;
-  mojo::core::Init(mojo_config);
-  at_exit.RegisterTask(base::BindOnce(&mojo::core::ShutDown));
-  auto ipc_support = std::make_unique<mojo::core::ScopedIPCSupport>(
+  mojo_legacy::core::Init(mojo_config);
+  at_exit.RegisterTask(base::BindOnce(&mojo_legacy::core::ShutDown));
+  auto ipc_support = std::make_unique<mojo_legacy::core::ScopedIPCSupport>(
       io_task_executor.task_runner(),
-      mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
+      mojo_legacy::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
 
-  // Also initialize the global MojoIpcz node, but don't re-initialize Mojo
-  // Core. Mojo C APIs therefore still point to the old Mojo implementation, and
-  // any interaction with the MojoIpcz side of the proxy must be done direct
-  // calls into either ipcz or the MojoIpcz driver.
+  // The MojoIpcz driver's transports run their I/O on the same thread
+  // as the legacy side (//mojo embedders usually get this from
+  // `mojo::core::ScopedIPCSupport`, which this process does not use).
+  mojo::core::ipcz_driver::Transport::SetIOTaskRunner(
+      io_task_executor.task_runner());
+
+  // Also initialize the global MojoIpcz node. Any interaction with the
+  // MojoIpcz side of the proxy is done through direct calls into either ipcz
+  // or the MojoIpcz driver.
   //
   // On the ipcz side we're a non-broker, based on the assumption that either
   // our ipcz client is a broker or (if --inherit-ipcz-broker is given) we can
@@ -76,8 +83,8 @@ void RunProxy(int argc, char** argv) {
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
   CHECK(base::StringToInt(
       command_line.GetSwitchValueASCII(switches::kLegacyClientFd), &fd));
-  mojo::PlatformChannelEndpoint legacy_endpoint{
-      mojo::PlatformHandle{base::ScopedFD{fd}}};
+  mojo_legacy::PlatformChannelEndpoint legacy_endpoint{
+      mojo_legacy::PlatformHandle{base::ScopedFD{fd}}};
   CHECK(base::StringToInt(
       command_line.GetSwitchValueASCII(switches::kHostIpczTransportFd), &fd));
   mojo::PlatformChannelEndpoint ipcz_endpoint{
@@ -134,16 +141,16 @@ void RunProxy(int argc, char** argv) {
   // connection.
   base::RunLoop run_loop;
   NodeProxy proxy(ipcz, /*dead_callback=*/run_loop.QuitClosure());
-  mojo::OutgoingInvitation invitation;
+  mojo_legacy::OutgoingInvitation invitation;
   for (size_t i = 0; i < attachment_names.size(); ++i) {
     proxy.AddPortalProxy(mojo::core::ScopedIpczHandle(initial_portals[i + 1]),
                          invitation.AttachMessagePipe(attachment_names[i]));
   }
 
   // After sending the legacy invitation, we wait until all proxies are dead.
-  mojo::OutgoingInvitation::Send(std::move(invitation),
-                                 base::kNullProcessHandle,
-                                 std::move(legacy_endpoint));
+  mojo_legacy::OutgoingInvitation::Send(std::move(invitation),
+                                        base::kNullProcessHandle,
+                                        std::move(legacy_endpoint));
   run_loop.Run();
 
   mojo::core::DestroyIpczNodeForProcess();

@@ -11,8 +11,8 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/system/message_pipe.h"
 #include "mojo/core/scoped_ipcz_handle.h"
-#include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo_proxy {
@@ -33,7 +33,7 @@ class NodeProxy {
   // Registers a new PortalProxy to forward messages between `portal` and
   // `pipe`. The proxy is activated before this call returns.
   void AddPortalProxy(mojo::core::ScopedIpczHandle portal,
-                      mojo::ScopedMessagePipeHandle pipe);
+                      mojo_legacy::ScopedMessagePipeHandle pipe);
 
   // Removes `proxy` from this NodeProxy, effectively destroying it. Calls
   // `dead_callback_` if this was our last remaining portal proxy.

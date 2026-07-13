@@ -8,11 +8,11 @@
 #include <cstdint>
 
 #include "base/memory/raw_ref.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/trap.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/types.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/system/message_pipe.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/system/trap.h"
 #include "mojo/core/scoped_ipcz_handle.h"
-#include "mojo/public/c/system/trap.h"
-#include "mojo/public/c/system/types.h"
-#include "mojo/public/cpp/system/message_pipe.h"
-#include "mojo/public/cpp/system/trap.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo_proxy {
@@ -26,7 +26,7 @@ class PortalProxy {
   PortalProxy(const raw_ref<const IpczAPI> ipcz,
               NodeProxy& node_proxy,
               mojo::core::ScopedIpczHandle portal,
-              mojo::ScopedMessagePipeHandle pipe);
+              mojo_legacy::ScopedMessagePipeHandle pipe);
   ~PortalProxy();
 
   // Starts proxying. Until either the portal or the pipe is disconnected from
@@ -41,8 +41,8 @@ class PortalProxy {
   void FlushAndWatchPortal();
   void FlushAndWatchPipe();
   mojo::core::ScopedIpczHandle TranslateMojoToIpczHandle(
-      mojo::ScopedHandle handle);
-  mojo::ScopedHandle TranslateIpczToMojoHandle(
+      mojo_legacy::ScopedHandle handle);
+  mojo_legacy::ScopedHandle TranslateIpczToMojoHandle(
       mojo::core::ScopedIpczHandle handle);
 
   static void OnIpczPortalActivity(const IpczTrapEvent* event) {
@@ -50,13 +50,13 @@ class PortalProxy {
         ->HandlePortalActivity(event->condition_flags);
   }
 
-  static void OnMojoPipeActivity(const MojoTrapEvent* event) {
+  static void OnMojoPipeActivity(const mojo_legacy::MojoTrapEvent* event) {
     reinterpret_cast<PortalProxy*>(event->trigger_context)
         ->HandlePipeActivity(event->result);
   }
 
   void HandlePortalActivity(IpczTrapConditionFlags flags);
-  void HandlePipeActivity(MojoResult result);
+  void HandlePipeActivity(mojo_legacy::MojoResult result);
   void Die();
 
   bool in_flush_ = false;
@@ -67,8 +67,8 @@ class PortalProxy {
   const raw_ref<const IpczAPI> ipcz_;
   raw_ref<NodeProxy> node_proxy_;
   const mojo::core::ScopedIpczHandle portal_;
-  const mojo::ScopedMessagePipeHandle pipe_;
-  mojo::ScopedTrapHandle pipe_trap_;
+  const mojo_legacy::ScopedMessagePipeHandle pipe_;
+  mojo_legacy::ScopedTrapHandle pipe_trap_;
 };
 
 }  // namespace mojo_proxy

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//mojo/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 
@@ -21,9 +20,11 @@ executable("mojo_proxy") {
   deps = [
     ":switches",
     "//base",
+
+    # The legacy client side of the proxy is served by the frozen legacy
+    # Mojo Core clone; the MojoIpcz host side by //mojo and ipcz.
+    "//chromeos/ash/components/mojo_proxy/mojo_core",
     "//mojo/core/embedder",
-    "//mojo/public/c/system",
-    "//mojo/public/cpp/system",
   ]
 }
 
@@ -41,12 +42,10 @@ mojom("test_mojom") {
 }
 
 # TODO(crbug.com/359926651): Enable these tests on ChromeOS (and linux-chromeos)
-# and remove Linux support once legacy Mojo Core is frozen into a standalone
-# library. Currently, the tests require a host process running Mojo over ipcz
-# and child processes running //mojo's legacy Mojo Core. On ChromeOS builds,
-# Mojo over ipcz is disabled by default when legacy Mojo Core is enabled, so
-# the tests must be built on Linux with mojo_support_legacy_core=true.
-if (is_linux && mojo_support_legacy_core) {
+# and remove Linux support. The test child processes run the frozen legacy Mojo
+# Core clone, but the host process must run Mojo over ipcz, which is not yet the
+# default on ChromeOS builds.
+if (is_linux) {
   test("mojo_proxy_unittests") {
     sources = [ "mojo_proxy_test.cc" ]
     deps = [
@@ -54,6 +53,7 @@ if (is_linux && mojo_support_legacy_core) {
       ":test_mojom",
       "//base",
       "//base/test:test_support",
+      "//chromeos/ash/components/mojo_proxy/mojo_core",
       "//mojo/core/embedder",
       "//mojo/core/test:run_all_unittests",
       "//mojo/core/test:test_support",

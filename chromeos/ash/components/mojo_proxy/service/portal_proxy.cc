@@ -13,18 +13,19 @@
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/buffer.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/platform_handle.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/trap.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/types.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/platform/platform_handle.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/system/message_pipe.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/system/platform_handle.h"
+#include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/system/trap.h"
 #include "chromeos/ash/components/mojo_proxy/service/node_proxy.h"
 #include "mojo/core/ipcz_driver/object.h"
 #include "mojo/core/ipcz_driver/shared_buffer.h"
 #include "mojo/core/ipcz_driver/wrapped_platform_handle.h"
-#include "mojo/public/c/system/buffer.h"
-#include "mojo/public/c/system/platform_handle.h"
-#include "mojo/public/c/system/trap.h"
-#include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "mojo/public/cpp/system/message_pipe.h"
-#include "mojo/public/cpp/system/platform_handle.h"
-#include "mojo/public/cpp/system/trap.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo_proxy {
@@ -34,16 +35,20 @@ using mojo::core::ScopedIpczHandle;
 PortalProxy::PortalProxy(const raw_ref<const IpczAPI> ipcz,
                          NodeProxy& node_proxy,
                          ScopedIpczHandle portal,
-                         mojo::ScopedMessagePipeHandle pipe)
+                         mojo_legacy::ScopedMessagePipeHandle pipe)
     : ipcz_(ipcz),
       node_proxy_(node_proxy),
       portal_(std::move(portal)),
       pipe_(std::move(pipe)) {
-  CHECK_EQ(mojo::CreateTrap(&OnMojoPipeActivity, &pipe_trap_), MOJO_RESULT_OK);
-  const MojoResult add_trigger_result = MojoAddTrigger(
-      pipe_trap_->value(), pipe_->value(), MOJO_HANDLE_SIGNAL_READABLE,
-      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED, trap_context(), nullptr);
-  CHECK_EQ(add_trigger_result, MOJO_RESULT_OK);
+  CHECK_EQ(mojo_legacy::CreateTrap(&OnMojoPipeActivity, &pipe_trap_),
+           mojo_legacy::MOJO_LEGACY_RESULT_OK);
+  const mojo_legacy::MojoResult add_trigger_result =
+      mojo_legacy::MojoAddTrigger(
+          pipe_trap_->value(), pipe_->value(),
+          mojo_legacy::MOJO_LEGACY_HANDLE_SIGNAL_READABLE,
+          mojo_legacy::MOJO_LEGACY_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+          trap_context(), nullptr);
+  CHECK_EQ(add_trigger_result, mojo_legacy::MOJO_LEGACY_RESULT_OK);
 }
 
 PortalProxy::~PortalProxy() = default;
@@ -85,8 +90,8 @@ void PortalProxy::FlushAndWatchPortal() {
         ipcz_->Get(portal_.get(), IPCZ_NO_FLAGS, nullptr, nullptr, &num_bytes,
                    nullptr, &num_handles, nullptr);
     if (result == IPCZ_RESULT_OK) {
-      mojo::WriteMessageRaw(pipe_.get(), nullptr, 0, nullptr, 0,
-                            MOJO_WRITE_MESSAGE_FLAG_NONE);
+      mojo_legacy::WriteMessageRaw(pipe_.get(), nullptr, 0, nullptr, 0,
+                                   MOJO_LEGACY_WRITE_MESSAGE_FLAG_NONE);
       continue;
     }
 
@@ -105,7 +110,7 @@ void PortalProxy::FlushAndWatchPortal() {
                         &num_bytes, handles.data(), &num_handles, nullptr);
     CHECK_EQ(result, IPCZ_RESULT_OK);
 
-    std::vector<MojoHandle> mojo_handles;
+    std::vector<mojo_legacy::MojoHandle> mojo_handles;
     mojo_handles.reserve(handles.size());
     for (IpczHandle handle : handles) {
       mojo_handles.push_back(TranslateIpczToMojoHandle(ScopedIpczHandle(handle))
@@ -113,9 +118,9 @@ void PortalProxy::FlushAndWatchPortal() {
                                  .value());
     }
 
-    mojo::WriteMessageRaw(pipe_.get(), data.data(), data.size(),
-                          mojo_handles.data(), mojo_handles.size(),
-                          MOJO_WRITE_MESSAGE_FLAG_NONE);
+    mojo_legacy::WriteMessageRaw(pipe_.get(), data.data(), data.size(),
+                                 mojo_handles.data(), mojo_handles.size(),
+                                 MOJO_LEGACY_WRITE_MESSAGE_FLAG_NONE);
   }
 
   IpczTrapConditionFlags flags;
@@ -141,21 +146,21 @@ void PortalProxy::FlushAndWatchPortal() {
 void PortalProxy::FlushAndWatchPipe() {
   for (;;) {
     std::vector<uint8_t> data;
-    std::vector<mojo::ScopedHandle> handles;
-    const MojoResult result = mojo::ReadMessageRaw(pipe_.get(), &data, &handles,
-                                                   MOJO_READ_MESSAGE_FLAG_NONE);
-    if (result == MOJO_RESULT_SHOULD_WAIT) {
+    std::vector<mojo_legacy::ScopedHandle> handles;
+    const mojo_legacy::MojoResult result = mojo_legacy::ReadMessageRaw(
+        pipe_.get(), &data, &handles, MOJO_LEGACY_READ_MESSAGE_FLAG_NONE);
+    if (result == mojo_legacy::MOJO_LEGACY_RESULT_SHOULD_WAIT) {
       break;
     }
 
-    if (result != MOJO_RESULT_OK) {
+    if (result != mojo_legacy::MOJO_LEGACY_RESULT_OK) {
       disconnected_ = true;
       return;
     }
 
     std::vector<IpczHandle> ipcz_handles;
     ipcz_handles.reserve(handles.size());
-    for (mojo::ScopedHandle& handle : handles) {
+    for (mojo_legacy::ScopedHandle& handle : handles) {
       ipcz_handles.push_back(
           TranslateMojoToIpczHandle(std::move(handle)).release());
     }
@@ -171,46 +176,50 @@ void PortalProxy::FlushAndWatchPipe() {
   }
 
   uint32_t num_events = 1;
-  MojoTrapEvent event{.struct_size = sizeof(event)};
-  const MojoResult result =
-      MojoArmTrap(pipe_trap_->value(), nullptr, &num_events, &event);
-  if (result == MOJO_RESULT_OK) {
+  mojo_legacy::MojoTrapEvent event{.struct_size = sizeof(event)};
+  const mojo_legacy::MojoResult result = mojo_legacy::MojoArmTrap(
+      pipe_trap_->value(), nullptr, &num_events, &event);
+  if (result == mojo_legacy::MOJO_LEGACY_RESULT_OK) {
     watching_pipe_ = true;
     return;
   }
 
-  CHECK_EQ(result, MOJO_RESULT_FAILED_PRECONDITION);
+  CHECK_EQ(result, mojo_legacy::MOJO_LEGACY_RESULT_FAILED_PRECONDITION);
   CHECK_EQ(num_events, 1u);
-  if (event.result == MOJO_RESULT_FAILED_PRECONDITION) {
+  if (event.result == mojo_legacy::MOJO_LEGACY_RESULT_FAILED_PRECONDITION) {
     disconnected_ = true;
   }
 }
 
 ScopedIpczHandle PortalProxy::TranslateMojoToIpczHandle(
-    mojo::ScopedHandle handle) {
+    mojo_legacy::ScopedHandle handle) {
   // We don't know what kind of handle is in `handle`, but we can find out.
   // First try to unwrap it as a generic platform handle.
-  MojoPlatformHandle platform_handle;
+  mojo_legacy::MojoPlatformHandle platform_handle;
   platform_handle.struct_size = sizeof(platform_handle);
-  const MojoResult unwrap_result =
-      MojoUnwrapPlatformHandle(handle->value(), nullptr, &platform_handle);
-  if (unwrap_result == MOJO_RESULT_OK) {
+  const mojo_legacy::MojoResult unwrap_result =
+      mojo_legacy::MojoUnwrapPlatformHandle(handle->value(), nullptr,
+                                            &platform_handle);
+  if (unwrap_result == mojo_legacy::MOJO_LEGACY_RESULT_OK) {
     std::ignore = handle.release();
     // Platform handles in ipcz are transmitted as boxed driver objects.
     return ScopedIpczHandle(
         mojo::core::ipcz_driver::WrappedPlatformHandle::MakeBoxed(
-            mojo::PlatformHandle::FromMojoPlatformHandle(&platform_handle)));
+            mojo::PlatformHandle(
+                mojo_legacy::PlatformHandle::FromMojoPlatformHandle(
+                    &platform_handle)
+                    .TakeFD())));
   }
 
   // We can non-destructively probe for a shared buffer handle by calling
   // MojoGetBufferInfo().
-  MojoSharedBufferInfo info = {.struct_size = sizeof(info)};
-  const MojoResult info_result =
-      MojoGetBufferInfo(handle->value(), nullptr, &info);
-  if (info_result == MOJO_RESULT_OK) {
-    auto region =
-        mojo::UnwrapPlatformSharedMemoryRegion(mojo::ScopedSharedBufferHandle{
-            mojo::SharedBufferHandle{handle.release().value()}});
+  mojo_legacy::MojoSharedBufferInfo info = {.struct_size = sizeof(info)};
+  const mojo_legacy::MojoResult info_result =
+      mojo_legacy::MojoGetBufferInfo(handle->value(), nullptr, &info);
+  if (info_result == mojo_legacy::MOJO_LEGACY_RESULT_OK) {
+    auto region = mojo_legacy::UnwrapPlatformSharedMemoryRegion(
+        mojo_legacy::ScopedSharedBufferHandle{
+            mojo_legacy::SharedBufferHandle{handle.release().value()}});
     return ScopedIpczHandle(
         mojo::core::ipcz_driver::SharedBuffer::MakeBoxed(std::move(region)));
   }
@@ -222,12 +231,12 @@ ScopedIpczHandle PortalProxy::TranslateMojoToIpczHandle(
                      &portal_to_proxy, &portal_to_host);
   node_proxy_->AddPortalProxy(
       ScopedIpczHandle{portal_to_proxy},
-      mojo::ScopedMessagePipeHandle{
-          mojo::MessagePipeHandle{handle.release().value()}});
+      mojo_legacy::ScopedMessagePipeHandle{
+          mojo_legacy::MessagePipeHandle{handle.release().value()}});
   return ScopedIpczHandle(portal_to_host);
 }
 
-mojo::ScopedHandle PortalProxy::TranslateIpczToMojoHandle(
+mojo_legacy::ScopedHandle PortalProxy::TranslateIpczToMojoHandle(
     ScopedIpczHandle handle) {
   // Attempt a QueryPortalStatus() call. If this succeeds, we have a portal.
   IpczPortalStatus status = {.size = sizeof(status)};
@@ -237,9 +246,10 @@ mojo::ScopedHandle PortalProxy::TranslateIpczToMojoHandle(
     // Create a new Mojo message pipe to proxy through. One end is bound to a
     // new PortalProxy with the input `handle`; the other is returned to be
     // forwarded to the legacy client.
-    mojo::MessagePipe pipe;
+    mojo_legacy::MessagePipe pipe;
     node_proxy_->AddPortalProxy(std::move(handle), std::move(pipe.handle0));
-    return mojo::ScopedHandle{mojo::Handle{pipe.handle1.release().value()}};
+    return mojo_legacy::ScopedHandle{
+        mojo_legacy::Handle{pipe.handle1.release().value()}};
   }
 
   // Otherwise assume it's a boxed driver object. If it's not, something has
@@ -251,15 +261,17 @@ mojo::ScopedHandle PortalProxy::TranslateIpczToMojoHandle(
       auto wrapped_handle =
           mojo::core::ipcz_driver::WrappedPlatformHandle::Unbox(
               handle.release());
-      return mojo::WrapPlatformHandle(wrapped_handle->TakeHandle());
+      return mojo_legacy::WrapPlatformHandle(
+          mojo_legacy::PlatformHandle(wrapped_handle->TakeHandle().TakeFD()));
     }
 
     case mojo::core::ipcz_driver::ObjectBase::Type::kSharedBuffer: {
       auto buffer =
           mojo::core::ipcz_driver::SharedBuffer::Unbox(handle.release());
-      auto mojo_buffer =
-          mojo::WrapPlatformSharedMemoryRegion(std::move(buffer->region()));
-      return mojo::ScopedHandle{mojo::Handle{mojo_buffer.release().value()}};
+      auto mojo_buffer = mojo_legacy::WrapPlatformSharedMemoryRegion(
+          std::move(buffer->region()));
+      return mojo_legacy::ScopedHandle{
+          mojo_legacy::Handle{mojo_buffer.release().value()}};
     }
 
     default:
@@ -287,14 +299,14 @@ void PortalProxy::HandlePortalActivity(IpczTrapConditionFlags flags) {
   }
 }
 
-void PortalProxy::HandlePipeActivity(MojoResult result) {
-  if (result == MOJO_RESULT_CANCELLED) {
+void PortalProxy::HandlePipeActivity(mojo_legacy::MojoResult result) {
+  if (result == mojo_legacy::MOJO_LEGACY_RESULT_CANCELLED) {
     // Proxy is being shut down. Do nothing.
     return;
   }
 
   watching_pipe_ = false;
-  if (result == MOJO_RESULT_FAILED_PRECONDITION) {
+  if (result == mojo_legacy::MOJO_LEGACY_RESULT_FAILED_PRECONDITION) {
     disconnected_ = true;
     if (!in_flush_) {
       // Deletes `this`.

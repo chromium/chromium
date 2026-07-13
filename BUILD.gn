@@ -479,7 +479,9 @@ group("gn_all") {
         "//sandbox/linux:chrome_sandbox",
         "//sandbox/linux:sandbox_linux_unittests",
       ]
-      if (is_linux && mojo_support_legacy_core) {
+
+      # TODO(crbug.com/359926651): move these tests to ChromeOS only.
+      if (is_linux) {
         deps += [
           "//chromeos/ash/components/mojo_proxy/service:mojo_proxy_unittests",
         ]

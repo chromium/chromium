@@ -17,7 +17,7 @@ NodeProxy::NodeProxy(const IpczAPI& ipcz, base::OnceClosure dead_callback)
 NodeProxy::~NodeProxy() = default;
 
 void NodeProxy::AddPortalProxy(mojo::core::ScopedIpczHandle portal,
-                               mojo::ScopedMessagePipeHandle pipe) {
+                               mojo_legacy::ScopedMessagePipeHandle pipe) {
   auto proxy = std::make_unique<PortalProxy>(ipcz_, *this, std::move(portal),
                                              std::move(pipe));
   PortalProxy* proxy_ptr = proxy.get();
