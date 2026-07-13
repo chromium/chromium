@@ -55,9 +55,10 @@ TEST(SyncUtilTest, FormatUserAgentForSync) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST(SyncUtilTest, MakeUserAgentForSyncAndroidDesktop) {
-  // TODO(crbug.com/533093300): Figure out if this test should run on
-  // automotive.
   if (base::android::device_info::is_automotive()) {
+    // The "is_automotive" flag is stronger than "is_desktop", see
+    // GetDeviceFormFactor(), so the set_is_desktop_for_testing(true) override
+    // does not work on automotive.
     GTEST_SKIP() << "This test is not applicable to automotive.";
   }
 
