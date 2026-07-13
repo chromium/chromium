@@ -37,9 +37,12 @@ struct SuccessfulEmptyParse {};
 using SuccessfulParse = ::base::span<const uint8_t>;
 
 // Parses the `signed_data` PKCS7 object to find the final certificate in the
-// list and see whether it has an extension with `kTagOID`, and if so, returns a
-// `base::span` of the tag within this `signed_data`. `success` is set to `true`
-// if there were no parse errors, even if a tag could not be found.
+// list and see whether it has an extension with `kTagOID`. Returns:
+// - `SuccessfulParse` (containing `base::span` of the tag) if the tag extension
+// is found.
+// - `SuccessfulEmptyParse` if no parse errors occurred but no tag extension was
+// found.
+// - `FailedParse` if a parse error occurred.
 std::variant<FailedParse, SuccessfulEmptyParse, SuccessfulParse> ParseTagImpl(
     base::span<const uint8_t> signed_data) {
   CBS content_info = CBSFromSpan(signed_data);
