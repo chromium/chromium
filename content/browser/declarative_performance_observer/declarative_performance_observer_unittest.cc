@@ -378,11 +378,17 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsBFCacheLifecycle) {
   // initial visible + initial navigation + session-end
   ASSERT_EQ(entries1->size(), 3u);
 
-  const base::Value& nav_entry_val1 = (*entries1)[1];
+  const base::Value& nav_entry_val1 = (*entries1)[0];
   const base::DictValue* nav_entry1 = nav_entry_val1.GetIfDict();
   ASSERT_TRUE(nav_entry1);
   EXPECT_EQ(*(nav_entry1->FindString("entryType")), "navigation");
   EXPECT_EQ(*(nav_entry1->FindString("name")), kPageURL.spec());
+
+  const base::Value& vis_entry_val1 = (*entries1)[1];
+  const base::DictValue* vis_entry1 = vis_entry_val1.GetIfDict();
+  ASSERT_TRUE(vis_entry1);
+  EXPECT_EQ(*(vis_entry1->FindString("entryType")), "visibility-state");
+  EXPECT_EQ(*(vis_entry1->FindString("name")), "visible");
 
   const base::Value& end_entry_val = (*entries1)[2];
   const base::DictValue* end_entry = end_entry_val.GetIfDict();

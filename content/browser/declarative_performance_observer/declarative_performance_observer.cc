@@ -57,16 +57,6 @@ DeclarativePerformanceObserver::DeclarativePerformanceObserver(
       web_contents && web_contents->GetVisibility() == Visibility::VISIBLE;
 
   if (enabled_types_.contains(
-          network::mojom::PerformanceEntryType::kVisibilityState)) {
-    base::DictValue entry;
-    entry.Set("name", started_in_foreground_ ? "visible" : "hidden");
-    entry.Set("entryType", "visibility-state");
-    entry.Set("startTime", 0.0);
-    entry.Set("duration", 0.0);
-    AddEntryToBuffer(std::move(entry));
-  }
-
-  if (enabled_types_.contains(
           network::mojom::PerformanceEntryType::kNavigation)) {
     base::DictValue entry;
     entry.Set("name", committed_url_.spec());
@@ -103,6 +93,16 @@ DeclarativePerformanceObserver::DeclarativePerformanceObserver(
     }
     entry.Set("deliveryType", delivery_type);
 
+    AddEntryToBuffer(std::move(entry));
+  }
+
+  if (enabled_types_.contains(
+          network::mojom::PerformanceEntryType::kVisibilityState)) {
+    base::DictValue entry;
+    entry.Set("name", started_in_foreground_ ? "visible" : "hidden");
+    entry.Set("entryType", "visibility-state");
+    entry.Set("startTime", 0.0);
+    entry.Set("duration", 0.0);
     AddEntryToBuffer(std::move(entry));
   }
 
