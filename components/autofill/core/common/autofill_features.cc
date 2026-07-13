@@ -384,6 +384,11 @@ BASE_FEATURE_PARAM(std::string,
                    &kAutofillAmbientAutofill,
                    "ambient_autofill_eligible_tiers",
                    "");
+BASE_FEATURE_PARAM(std::string,
+                   kAutofillAmbientAutofillEnabledDevices,
+                   &kAutofillAmbientAutofill,
+                   "ambient_autofill_enabled_devices",
+                   "");
 
 // If enabled, on Android desktop, the Autofill keyboard accessory will have a
 // new behavior and design.
