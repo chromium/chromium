@@ -8,22 +8,32 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_command_line.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace subscription_eligibility {
 
+namespace {
+class TestObserver : public SubscriptionEligibilityService::Observer {
+ public:
+  void OnAiSubscriptionTierUpdated(int32_t new_subscription_tier) override {
+    last_updated_tier_ = new_subscription_tier;
+    ++update_count_;
+  }
+
+  int32_t last_updated_tier_ = -1;
+  int update_count_ = 0;
+};
+}  // namespace
+
 class SubscriptionEligibilityServiceTest : public testing::Test {
  protected:
   void SetUp() override {
-    auto registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
-    prefs::RegisterProfilePrefs(registry.get());
-    pref_service_.registry()->RegisterIntegerPref(prefs::kAiSubscriptionTier,
-                                                  0);
+    prefs::RegisterProfilePrefs(pref_service_.registry());
   }
 
-  TestingPrefServiceSimple pref_service_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
 };
 
 // Tests that by default (no command-line flag), the service returns the pref
@@ -57,6 +67,20 @@ TEST_F(SubscriptionEligibilityServiceTest, GetAiSubscriptionTier_Invalid) {
 
   SubscriptionEligibilityService service(&pref_service_);
   EXPECT_EQ(service.GetAiSubscriptionTier(), 42);
+}
+
+TEST_F(SubscriptionEligibilityServiceTest, ObserverNotifiedOnPrefChange) {
+  SubscriptionEligibilityService service(&pref_service_);
+  TestObserver observer;
+  service.AddObserver(&observer);
+
+  pref_service_.SetInteger(prefs::kAiSubscriptionTier, 2);
+  EXPECT_EQ(observer.last_updated_tier_, 2);
+  EXPECT_EQ(observer.update_count_, 1);
+
+  service.RemoveObserver(&observer);
+  pref_service_.SetInteger(prefs::kAiSubscriptionTier, 3);
+  EXPECT_EQ(observer.update_count_, 1);
 }
 
 }  // namespace subscription_eligibility

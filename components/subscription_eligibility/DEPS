@@ -2,4 +2,5 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/pref_registry",
   "+components/prefs",
+  "+components/sync_preferences",
 ]

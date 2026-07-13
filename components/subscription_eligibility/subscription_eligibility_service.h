@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SUBSCRIPTION_ELIGIBILITY_SUBSCRIPTION_ELIGIBILITY_SERVICE_H_
 #define COMPONENTS_SUBSCRIPTION_ELIGIBILITY_SUBSCRIPTION_ELIGIBILITY_SERVICE_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -48,6 +50,8 @@ class SubscriptionEligibilityService : public KeyedService {
   PrefChangeRegistrar pref_registrar_;
 
   base::ObserverList<Observer> observers_;
+
+  std::optional<int32_t> forced_tier_;
 };
 
 }  // namespace subscription_eligibility

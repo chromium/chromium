@@ -78,8 +78,7 @@ void SubscriptionEligibilityMetricsProvider::ProvideCurrentSessionData(
   }
 
   AiSubscriptionTierStatus status = AiSubscriptionTierStatus::kValueNotSet;
-  bool nonzero_no_subscription =
-      subscription_tiers.find(0) != subscription_tiers.end();
+  bool nonzero_no_subscription = subscription_tiers.contains(0);
   if (subscription_tiers.size() == 1 && nonzero_no_subscription) {
     // All profiles not enabled.
     status = AiSubscriptionTierStatus::kNoProfilesSubscribed;
