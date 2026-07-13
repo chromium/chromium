@@ -1132,6 +1132,43 @@ IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest, AddAtMemoryFallback) {
   ASSERT_TRUE(ContainsAtMemoryFallback(*menu_model()));
 }
 
+// Tests that when both password fallback and AtMemory fallback are eligible,
+// they are displayed in the same menu group with no separator between them,
+// followed by a separator at the end of the group.
+IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest,
+                       AtMemoryFallbackAndPasswordsFallbackInSameGroup) {
+  // Add a saved credential so "Select password" fallback item is shown.
+  auto* password_store =
+      ProfilePasswordStoreFactory::GetForProfile(
+          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+          .get();
+  password_manager::PasswordStoreWaiter add_waiter(password_store);
+  password_manager::PasswordForm form;
+  form.signon_realm = "http://test.com";
+  form.url = GURL(form.signon_realm);
+  form.username_value = u"username";
+  form.password_value = u"password";
+  password_store->AddLogin(password_manager::FromPasswordForm(form));
+  add_waiter.WaitOrReturn();
+
+  autofill_context_menu_manager()->AppendItems();
+
+  // Find the positions of both fallback options in the context menu model.
+  std::optional<size_t> select_password_idx = menu_model()->GetIndexOfCommandId(
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD);
+  std::optional<size_t> at_memory_idx = menu_model()->GetIndexOfCommandId(
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY);
+
+  ASSERT_TRUE(select_password_idx);
+  ASSERT_TRUE(at_memory_idx);
+
+  // Verify that AtMemory immediately follows "Select password" (same group)
+  // and that the group is terminated with a separator.
+  EXPECT_EQ(*at_memory_idx, *select_password_idx + 1);
+  EXPECT_EQ(menu_model()->GetTypeAt(*at_memory_idx + 1),
+            ui::MenuModel::ItemType::TYPE_SEPARATOR);
+}
+
 // Tests that when the accessibility annotator is disabled for the profile,
 // AtMemory fallback is dropped.
 IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest,

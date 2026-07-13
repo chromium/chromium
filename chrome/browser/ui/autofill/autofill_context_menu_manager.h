@@ -71,8 +71,9 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // suggest.
   void MaybeAddAutofillManualFallbackItems();
 
-  // Adds the @memory manual fallback item if the feature is enabled.
-  void MaybeAddAutofillAtMemoryItem();
+  // Adds the AtMemory manual fallback item if the feature is enabled. Returns
+  // true if the item was added, false otherwise.
+  bool MaybeAddAtMemoryItem();
 
   // Checks if the plus address context menu entry can be shown for the
   // currently focused field.

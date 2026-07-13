@@ -224,12 +224,13 @@ AutofillContextMenuManager::~AutofillContextMenuManager() = default;
 
 void AutofillContextMenuManager::AppendItems() {
   if (params_.is_content_editable_for_autofill) {
-    MaybeAddAutofillAtMemoryItem();
+    if (MaybeAddAtMemoryItem()) {
+      menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+    }
     return;
   }
 
   MaybeAddAutofillManualFallbackItems();
-  MaybeAddAutofillAtMemoryItem();
   MaybeAddAutofillFeedbackItem();
 }
 
@@ -326,26 +327,26 @@ void AutofillContextMenuManager::MaybeAddAutofillFeedbackItem() {
   }
 }
 
-void AutofillContextMenuManager::MaybeAddAutofillAtMemoryItem() {
+bool AutofillContextMenuManager::MaybeAddAtMemoryItem() {
   content::RenderFrameHost* const rfh = delegate_->GetRenderFrameHost();
   if (!rfh) {
-    return;
+    return false;
   }
 
   if (params_.form_control_type &&
       params_.form_control_type.value() ==
           blink::mojom::FormControlType::kInputPassword) {
-    return;
+    return false;
   }
 
   if (!ShouldShowAutofillContextMenu(params_)) {
-    return;
+    return false;
   }
 
   ContentAutofillDriver* autofill_driver =
       ContentAutofillDriver::GetForRenderFrameHost(rfh);
   if (!autofill_driver || !autofill_driver->CanShowAutofillUi()) {
-    return;
+    return false;
   }
 
   if (!MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI,
@@ -354,7 +355,7 @@ void AutofillContextMenuManager::MaybeAddAutofillAtMemoryItem() {
       !MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI,
                                 autofill_driver->GetAutofillClient(),
                                 params_.frame_url)) {
-    return;
+    return false;
   }
 
   menu_model_->AddItemWithStringIdAndIcon(
@@ -364,7 +365,7 @@ void AutofillContextMenuManager::MaybeAddAutofillAtMemoryItem() {
                                          ? vector_icons::kSearchIcon
                                          : vector_icons::kSearchOldIcon,
                                      ui::kColorIcon, kContextMenuIconSize));
-  menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+  return true;
 }
 
 void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
@@ -400,10 +401,6 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
         ShouldAddPasswordsManualFallbackItem(*password_manager_driver);
   }
 
-  if (!add_plus_address_fallback && !add_passwords_fallback) {
-    return;
-  }
-
   if (add_passwords_fallback) {
     Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
     password_manager::PasswordCounter* counter =
@@ -428,7 +425,12 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
         plus_addresses::features::kPlusAddressFallbackFromContextMenu);
     // TODO(crbug.com/327566698): Log metrics for plus address fallbacks, too.
   }
-  menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+  const bool add_at_memory_fallback = MaybeAddAtMemoryItem();
+
+  if (add_passwords_fallback || add_plus_address_fallback ||
+      add_at_memory_fallback) {
+    menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+  }
 }
 
 bool AutofillContextMenuManager::ShouldAddPlusAddressManualFallbackItem(
