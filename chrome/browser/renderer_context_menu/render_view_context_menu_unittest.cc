@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/side_panel/mock_side_panel_ui.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -84,6 +85,8 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/user_education/common/user_education_features.h"
@@ -1385,6 +1388,82 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu.Init();
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE));
+
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+}
+
+class MockPageContextEligibilityHelper
+    : public tabs::PageContextEligibilityHelper {
+ public:
+  explicit MockPageContextEligibilityHelper(tabs::TabInterface& tab)
+      : PageContextEligibilityHelper(tab) {}
+  ~MockPageContextEligibilityHelper() override = default;
+
+  MOCK_METHOD(optimization_guide::PageContextEligibilityStatus,
+              IsPageContextEligible,
+              (),
+              (const, override));
+};
+
+TEST_F(RenderViewContextMenuPrefsTest, GlicShareImageEligibility) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kGlicShareImage);
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+
+  // Create a MockTabInterface and link it to our web contents
+  tabs::MockTabInterface mock_tab;
+  ui::UnownedUserDataHost unowned_user_data_host;
+  ON_CALL(mock_tab, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+  ON_CALL(mock_tab, GetContents())
+      .WillByDefault(testing::Return(web_contents()));
+  ON_CALL(mock_tab, GetProfile()).WillByDefault(testing::Return(profile()));
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+
+  auto mock_helper =
+      std::make_unique<testing::NiceMock<MockPageContextEligibilityHelper>>(
+          mock_tab);
+
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.has_image_contents = true;
+
+  {
+    // Case 1: Helper returns unknown (e.g. inactive or initialization failure)
+    // -> hidden.
+    EXPECT_CALL(*mock_helper, IsPageContextEligible())
+        .WillRepeatedly(testing::Return(
+            optimization_guide::PageContextEligibilityStatus::kUnknown));
+    TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                   params);
+    menu.SetBrowser(GetBrowser());
+    menu.Init();
+    EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE));
+  }
+
+  {
+    // Case 2: Helper returns ineligible -> hidden.
+    EXPECT_CALL(*mock_helper, IsPageContextEligible())
+        .WillRepeatedly(testing::Return(
+            optimization_guide::PageContextEligibilityStatus::kNotEligible));
+    TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                   params);
+    menu.SetBrowser(GetBrowser());
+    menu.Init();
+    EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE));
+  }
+
+  {
+    // Case 3: Helper returns eligible -> visible.
+    EXPECT_CALL(*mock_helper, IsPageContextEligible())
+        .WillRepeatedly(testing::Return(
+            optimization_guide::PageContextEligibilityStatus::kEligible));
+    TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                   params);
+    menu.SetBrowser(GetBrowser());
+    menu.Init();
+    EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE));
+  }
 
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
 }

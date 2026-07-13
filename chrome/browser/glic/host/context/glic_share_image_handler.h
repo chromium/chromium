@@ -14,7 +14,7 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
-#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/lens/lens_metadata.mojom.h"
 #include "components/tabs/public/tab_interface.h"
@@ -27,6 +27,7 @@
 
 namespace content {
 class RenderFrameHost;
+class WebContents;
 }  // namespace content
 
 namespace tabs {
@@ -72,12 +73,6 @@ class GlicShareImageHandler : public content::WebContentsObserver {
                        const std::string& image_extension,
                        std::vector<lens::mojom::LatencyLogPtr> log_data);
 
-  // Called once tab context has been fetched
-  void OnReceivedTabContext(
-      base::expected<glic::mojom::GetContextResultPtr,
-                     page_content_annotations::FetchPageContextErrorDetails>
-          result);
-
   // Attempt to display an error toast
   void MaybeShowErrorToast(tabs::TabInterface* tab);
 
@@ -92,6 +87,21 @@ class GlicShareImageHandler : public content::WebContentsObserver {
   // calling Reset).
   void StopObservingNavigation();
 
+  // Returns true if clipboard policy checks are required for the current state.
+  // If `size` is not provided, we will use the maximum image size.
+  bool AreClipboardPolicyChecksRequired(std::optional<size_t> size);
+
+  // Starts observing navigation if policy checks are required.
+  void MaybeStartObservingNavigation(tabs::TabInterface* tab);
+
+  // Starts observing page context eligibility changes. Returns false if the
+  // context is ineligible or eligibility cannot be determined.
+  bool MaybeStartObservingEligibility(tabs::TabInterface* tab);
+
+  // Called when eligibility changes.
+  void OnPageContextEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus eligibility);
+
   // Called whenever sharing is completed, successful or otherwise. Stops the
   // timer if it is running and clears state.
   void Reset();
@@ -105,10 +115,9 @@ class GlicShareImageHandler : public content::WebContentsObserver {
   GURL src_url_;
   GURL frame_url_;
   url::Origin frame_origin_;
-  std::string mime_type_;
-  std::vector<uint8_t> thumbnail_data_;
   base::CallbackListSubscription will_discard_web_contents_subscription_;
   base::CallbackListSubscription will_detach_subscription_;
+  base::CallbackListSubscription eligibility_subscription_;
 
   // This is used for communicating with the renderer to capture image context.
   std::unique_ptr<mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>>

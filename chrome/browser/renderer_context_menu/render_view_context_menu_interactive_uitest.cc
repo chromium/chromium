@@ -579,10 +579,8 @@ class GlicInteractiveContextMenuTestBase
         glic::kGlicContentsElementId,
         "() => { "
         "  let c = document.querySelector('#additionalContextResult');"
-        "  return !!c && c.children.length === 5 && "
-        "      c.children[1].innerText.startsWith('MIME Type: image/png') && "
-        "      c.children[4].innerText.startsWith("
-        "           'Tab Context: present');"
+        "  return !!c && c.children.length === 4 && "
+        "      c.children[1].innerText.startsWith('MIME Type: image/png');"
         "}");
   }
 

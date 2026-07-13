@@ -44,8 +44,8 @@ class PageContextEligibilityHelper : public tabs::ContentsObservingTabFeature {
 
   // Returns the current page context eligibility status of the active tab.
   // Returns kUnknown until loaded, or if the tab is inactive.
-  optimization_guide::PageContextEligibilityStatus IsPageContextEligible()
-      const;
+  virtual optimization_guide::PageContextEligibilityStatus
+  IsPageContextEligible() const;
 
   using EligibilityChangeCallback = base::RepeatingCallback<void(
       optimization_guide::PageContextEligibilityStatus)>;

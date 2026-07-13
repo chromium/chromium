@@ -130,6 +130,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/split_view_layout_menu_model.h"
@@ -5838,8 +5839,16 @@ bool RenderViewContextMenu::CanAppendGlicShareImageItem() const {
     return false;
   }
 
-  return tabs::TabInterface::MaybeGetFromContents(source_web_contents_) !=
-         nullptr;
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(source_web_contents_);
+  if (!tab) {
+    return false;
+  }
+
+  auto* helper = tabs::PageContextEligibilityHelper::From(tab);
+  return helper &&
+         helper->IsPageContextEligible() ==
+             optimization_guide::PageContextEligibilityStatus::kEligible;
 }
 
 void RenderViewContextMenu::AppendLensGeminiSection() {

@@ -335,6 +335,7 @@ if (!is_android) {
       "//chrome/browser/user_education",
       "//chrome/test:test_support",
       "//components/proxy_config",
+      "//components/tabs:test_support",
       "//content/public/browser",
       "//content/test:test_support",
       "//testing/gmock",

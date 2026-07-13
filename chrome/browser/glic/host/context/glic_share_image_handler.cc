@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
-#include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -31,6 +30,8 @@ namespace {
 constexpr int kShareThumbnailMinSize = 500 * 500;
 constexpr int kShareThumbnailMaxWidth = 1000;
 constexpr int kShareThumbnailMaxHeight = 1000;
+constexpr int kShareThumbnailMaxSize =
+    kShareThumbnailMaxWidth * kShareThumbnailMaxHeight * 4;
 
 mojom::AdditionalContextPtr CreateAdditionalContext(
     const GURL& src_url,
@@ -38,8 +39,7 @@ mojom::AdditionalContextPtr CreateAdditionalContext(
     const url::Origin& frame_origin,
     base::span<const uint8_t> thumbnail_data,
     tabs::TabHandle handle,
-    const std::string& mime_type,
-    mojom::TabContextResultPtr tab_context) {
+    const std::string& mime_type) {
   // TODO(b:448726704): update to use an Image part.
   auto context = glic::mojom::AdditionalContext::New();
   std::vector<glic::mojom::AdditionalContextPartPtr> parts;
@@ -49,8 +49,6 @@ mojom::AdditionalContextPtr CreateAdditionalContext(
   context_data->data = mojo_base::BigBuffer(thumbnail_data);
   parts.push_back(
       mojom::AdditionalContextPart::NewData(std::move(context_data)));
-  parts.push_back(
-      mojom::AdditionalContextPart::NewTabContext(std::move(tab_context)));
   context->name = src_url.spec();
   context->tab_id = handle.raw_value();
   context->origin = frame_origin;
@@ -96,17 +94,12 @@ void GlicShareImageHandler::ShareContextImage(
   frame_origin_ = render_frame_host->GetLastCommittedOrigin();
   render_frame_host_id_ = render_frame_host->GetGlobalId();
 
-  // Listen for navigations and WebContents destruction.
-  Observe(tab->GetContents());
+  MaybeStartObservingNavigation(tab);
 
-  // Listen for WebContents discards.
-  will_discard_web_contents_subscription_ = tab->RegisterWillDiscardContents(
-      base::BindRepeating(&GlicShareImageHandler::OnWillDiscardContents,
-                          base::Unretained(this)));
-
-  // Listen for tab detachment.
-  will_detach_subscription_ = tab->RegisterWillDetach(base::BindRepeating(
-      &GlicShareImageHandler::OnWillDetach, base::Unretained(this)));
+  if (!MaybeStartObservingEligibility(tab)) {
+    ShareComplete(ShareImageResult::kFailedNoTabContext);
+    return;
+  }
 
   // Store the InterfacePtr into the callback so that it's kept alive until
   // there's either a connection error or a response.
@@ -153,6 +146,9 @@ void GlicShareImageHandler::OnReceivedImage(
   // Close the remote since we've received our thumbnail.
   chrome_render_frame_remote_.reset();
 
+  // Also stop observing eligibility.
+  eligibility_subscription_ = base::CallbackListSubscription();
+
   if (thumbnail_data.empty()) {
     ShareComplete(ShareImageResult::kFailedNoImage);
     return;
@@ -164,45 +160,15 @@ void GlicShareImageHandler::OnReceivedImage(
     return;
   }
 
-  mime_type_ = mime_type;
-  thumbnail_data_ = thumbnail_data;
-
-  auto options = mojom::TabContextOptions::New();
-  // Ensure we don't have a huge number; matches actor_keyed_service.cc.
-  options->max_meta_tags = 32;
-  options->annotated_page_content = true;
-
-  FetchPageContext(tab, *options,
-                   base::BindOnce(&GlicShareImageHandler::OnReceivedTabContext,
-                                  weak_ptr_factory_.GetWeakPtr()),
-                   /*progress_listener=*/nullptr,
-                   /*is_screenshot_annotated=*/false);
-}
-
-void GlicShareImageHandler::OnReceivedTabContext(
-    base::expected<glic::mojom::GetContextResultPtr,
-                   page_content_annotations::FetchPageContextErrorDetails>
-        result) {
-  if (!result.has_value() || !result.value()->is_tab_context()) {
-    ShareComplete(ShareImageResult::kFailedNoTabContext);
-    return;
-  }
-
   auto* rfh = content::RenderFrameHost::FromID(render_frame_host_id_);
   if (!rfh) {
     ShareComplete(ShareImageResult::kFailedNoFrame);
     return;
   }
 
-  auto additional_context = CreateAdditionalContext(
-      src_url_, frame_url_, frame_origin_, thumbnail_data_, tab_handle_,
-      mime_type_, std::move(result.value()->get_tab_context()));
-
-  tabs::TabInterface* tab = tab_handle_.Get();
-  if (!tab) {
-    ShareComplete(ShareImageResult::kFailedNoTab);
-    return;
-  }
+  auto additional_context =
+      CreateAdditionalContext(src_url_, frame_url_, frame_origin_,
+                              thumbnail_data, tab_handle_, mime_type);
 
   content::ClipboardEndpoint source(
       ui::DataTransferEndpoint(
@@ -219,24 +185,10 @@ void GlicShareImageHandler::OnReceivedTabContext(
 
   ui::ClipboardMetadata metadata;
   metadata.format_type = ui::ClipboardFormatType::PngType();
-  metadata.size = thumbnail_data_.size();
+  metadata.size = thumbnail_data.size();
 
-  bool copy_check_required =
-      enterprise_data_protection::IsCopyPolicyCheckRequired(source, metadata);
-
-  ui::DataTransferEndpoint dte(glic::GetGuestURL());
-  content::ClipboardEndpoint paste_destination(
-      dte, base::BindRepeating(
-               [](GlicKeyedService* service) -> content::BrowserContext* {
-                 return service->profile();
-               },
-               base::Unretained(&service_.get())));
-
-  bool paste_check_required =
-      enterprise_data_protection::IsPastePolicyCheckRequired(
-          source, paste_destination, metadata);
-
-  bool do_policy_checks = copy_check_required || paste_check_required;
+  bool do_policy_checks =
+      AreClipboardPolicyChecksRequired(thumbnail_data.size());
   PolicyCheck policy_check =
       do_policy_checks ? PolicyCheck::kClipboard : PolicyCheck::kNone;
 
@@ -343,16 +295,104 @@ void GlicShareImageHandler::StopObservingNavigation() {
   will_detach_subscription_ = base::CallbackListSubscription();
 }
 
+bool GlicShareImageHandler::AreClipboardPolicyChecksRequired(
+    std::optional<size_t> size) {
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(render_frame_host_id_);
+  if (!rfh) {
+    return false;
+  }
+
+  content::ClipboardEndpoint source(
+      ui::DataTransferEndpoint(
+          rfh->GetMainFrame()->GetLastCommittedURL(),
+          {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()}),
+      base::BindRepeating(
+          [](content::GlobalRenderFrameHostId rfh_id)
+              -> content::BrowserContext* {
+            auto* rfh = content::RenderFrameHost::FromID(rfh_id);
+            return rfh ? rfh->GetBrowserContext() : nullptr;
+          },
+          rfh->GetGlobalId()),
+      *rfh);
+
+  ui::ClipboardMetadata metadata;
+  metadata.format_type = ui::ClipboardFormatType::PngType();
+  metadata.size = size.value_or(kShareThumbnailMaxSize);
+
+  bool copy_check_required =
+      enterprise_data_protection::IsCopyPolicyCheckRequired(source, metadata);
+
+  ui::DataTransferEndpoint dte(glic::GetGuestURL());
+  content::ClipboardEndpoint paste_destination(
+      dte, base::BindRepeating(
+               [](GlicKeyedService* service) -> content::BrowserContext* {
+                 return service->profile();
+               },
+               base::Unretained(&service_.get())));
+
+  bool paste_check_required =
+      enterprise_data_protection::IsPastePolicyCheckRequired(
+          source, paste_destination, metadata);
+
+  return copy_check_required || paste_check_required;
+}
+
+void GlicShareImageHandler::MaybeStartObservingNavigation(
+    tabs::TabInterface* tab) {
+  if (!AreClipboardPolicyChecksRequired(std::nullopt)) {
+    return;
+  }
+
+  // Listen for navigations and WebContents destruction.
+  Observe(tab->GetContents());
+
+  // Listen for WebContents discards.
+  will_discard_web_contents_subscription_ = tab->RegisterWillDiscardContents(
+      base::BindRepeating(&GlicShareImageHandler::OnWillDiscardContents,
+                          base::Unretained(this)));
+
+  // Listen for tab detachment.
+  will_detach_subscription_ = tab->RegisterWillDetach(base::BindRepeating(
+      &GlicShareImageHandler::OnWillDetach, base::Unretained(this)));
+}
+
+bool GlicShareImageHandler::MaybeStartObservingEligibility(
+    tabs::TabInterface* tab) {
+  if (!tab) {
+    return false;
+  }
+  auto* helper = tabs::PageContextEligibilityHelper::From(tab);
+  if (!helper) {
+    return false;
+  }
+  eligibility_subscription_ =
+      helper->RegisterEligibilityChangeCallback(base::BindRepeating(
+          &GlicShareImageHandler::OnPageContextEligibilityChanged,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  return helper->IsPageContextEligible() ==
+         optimization_guide::PageContextEligibilityStatus::kEligible;
+}
+
+void GlicShareImageHandler::OnPageContextEligibilityChanged(
+    optimization_guide::PageContextEligibilityStatus eligibility) {
+  if (eligibility !=
+      optimization_guide::PageContextEligibilityStatus::kEligible) {
+    ShareComplete(ShareImageResult::kFailedNoTabContext);
+    return;
+  }
+}
+
 void GlicShareImageHandler::Reset() {
   // TODO(b:461529494): Put this state in a struct.
   chrome_render_frame_remote_.reset();
+  eligibility_subscription_ = base::CallbackListSubscription();
   tab_handle_ = tabs::TabHandle::Null();
   render_frame_host_id_ = content::GlobalRenderFrameHostId();
   src_url_ = GURL();
   frame_url_ = GURL();
   frame_origin_ = url::Origin();
-  thumbnail_data_.clear();
-  mime_type_ = "";
   StopObservingNavigation();
 
   // Ensure that async callbacks aren't invoked.

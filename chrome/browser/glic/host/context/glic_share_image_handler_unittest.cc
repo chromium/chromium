@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -111,6 +112,11 @@ class GlicShareImageHandlerTest : public testing::Test {
   }
 
   void OnInvokeError(GlicInvokeError error) { handler_->OnInvokeError(error); }
+
+  void OnPageContextEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus eligibility) {
+    handler_->OnPageContextEligibilityChanged(eligibility);
+  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -253,6 +259,33 @@ TEST_F(GlicShareImageHandlerTest, OnInvokeErrorAdditionalContextNoSourceFrame) {
   histogram_tester_.ExpectBucketCount(
       "Glic.TabContext.ShareImageResult",
       static_cast<int>(ShareImageResult::kFailedNoFrame), 1);
+}
+
+TEST_F(GlicShareImageHandlerTest,
+       PageContextEligibilityChangedToIneligibleFails) {
+  SetShareInProgress(true);
+  OnPageContextEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.TabContext.ShareImageResult",
+      static_cast<int>(ShareImageResult::kFailedNoTabContext), 1);
+}
+
+TEST_F(GlicShareImageHandlerTest, PageContextEligibilityChangedToUnknownFails) {
+  SetShareInProgress(true);
+  OnPageContextEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus::kUnknown);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.TabContext.ShareImageResult",
+      static_cast<int>(ShareImageResult::kFailedNoTabContext), 1);
+}
+
+TEST_F(GlicShareImageHandlerTest,
+       PageContextEligibilityChangedToEligibleDoesNotFail) {
+  SetShareInProgress(true);
+  OnPageContextEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+  histogram_tester_.ExpectTotalCount("Glic.TabContext.ShareImageResult", 0);
 }
 
 }  // namespace glic
