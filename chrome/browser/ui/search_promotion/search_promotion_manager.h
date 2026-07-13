@@ -17,6 +17,10 @@
 class BrowserUserEducationInterface;
 class Profile;
 
+namespace segmentation_platform {
+struct ClassificationResult;
+}
+
 // SearchPromotionManager coordinates promotional states and actions for
 // search-related features. At times, the promos may be OS-specific.
 //
@@ -49,7 +53,12 @@ class SearchPromotionManager : public KeyedService {
   // Checks whether the current user profile belongs to the low engagement tier
   // (defined as being active fewer than 9 days out of the last 28 days).
   // Uses cached results from SegmentationPlatformService.
+  // This returns false until the service has completed initialization.
   bool IsEngagementLowEnough() const;
+
+  void QueryEngagementLevel();
+  void OnEngagementResultRetrieved(
+      const segmentation_platform::ClassificationResult& result);
 
   void PerformArmA();
   void PerformArmB();
@@ -63,6 +72,7 @@ class SearchPromotionManager : public KeyedService {
 
   bool is_promo_allowed_ = false;
   std::string_view arm_ = feature_engagement::kSearchPromotionArmDefault;
+  bool is_engagement_low_enough_ = false;
   bool was_accepted_ = false;
 
   const raw_ref<Profile> profile_;

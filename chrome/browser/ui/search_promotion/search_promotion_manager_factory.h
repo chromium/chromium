@@ -27,8 +27,11 @@ class SearchPromotionManagerFactory : public ProfileKeyedServiceFactory {
   ~SearchPromotionManagerFactory() override;
 
   // BrowserContextKeyedServiceFactory:
+  // This returns nullptr if the kIPHSearchPromotionFeature feature is
+  // disabled.
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_PROMOTION_SEARCH_PROMOTION_MANAGER_FACTORY_H_

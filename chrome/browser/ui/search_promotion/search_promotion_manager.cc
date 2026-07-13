@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/segmentation_platform/public/constants.h"
-#include "components/segmentation_platform/public/segment_selection_result.h"
+#include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "url/gurl.h"
 
@@ -58,6 +58,10 @@ SearchPromotionManager::SearchPromotionManager(Profile& profile)
       // If no valid experiment arm is specified, disable the promotion.
       is_promo_allowed_ = false;
     }
+  }
+
+  if (is_promo_allowed_) {
+    QueryEngagementLevel();
   }
 }
 
@@ -176,32 +180,43 @@ bool SearchPromotionManager::IsEngagementLowEnoughForTesting() const {
 }
 
 bool SearchPromotionManager::IsEngagementLowEnough() const {
-  // Checking profile_->IsRegularProfile() is not required here.
+  return is_engagement_low_enough_;
+}
+
+void SearchPromotionManager::QueryEngagementLevel() {
   // SearchPromotionManagerFactory instantiates this KeyedService only for
   // regular, non-incognito profiles using ProfileSelection::kOriginalOnly
   // in chrome/browser/ui/search_promotion/search_promotion_manager_factory.cc.
-
   auto* service =
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
           &profile_.get());
   if (!service) {
-    return false;
+    return;
   }
+
+  segmentation_platform::PredictionOptions options;
+  options.on_demand_execution = false;
 
   // Query the segmentation platform for the cached low user engagement result
-  // (defined as active fewer than 9 days out of the last 28 days). Caching on
-  // startup ensures this lookup is fast and non-blocking.
-  segmentation_platform::SegmentSelectionResult result =
-      service->GetCachedSegmentResult(
-          segmentation_platform::kChromeLowUserEngagementSegmentationKey);
+  // (defined as active fewer than 9 days out of the last 28 days). By fetching
+  // the result asynchronously on startup and caching it in
+  // `is_engagement_low_enough_`, we ensure that subsequent navigation-time
+  // checks are synchronous and instant.
+  service->GetClassificationResult(
+      segmentation_platform::kChromeLowUserEngagementSegmentationKey, options,
+      nullptr,
+      base::BindOnce(&SearchPromotionManager::OnEngagementResultRetrieved,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 
-  if (!result.is_ready || !result.segment.has_value()) {
-    return false;
+void SearchPromotionManager::OnEngagementResultRetrieved(
+    const segmentation_platform::ClassificationResult& result) {
+  if (result.status == segmentation_platform::PredictionStatus::kSucceeded &&
+      !result.ordered_labels.empty()) {
+    is_engagement_low_enough_ =
+        result.ordered_labels[0] ==
+        segmentation_platform::kChromeLowUserEngagementUmaName;
   }
-
-  return result.segment.value() ==
-         segmentation_platform::proto::SegmentId::
-             OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
 }
 
 void SearchPromotionManager::PerformArmA() {
