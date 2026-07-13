@@ -72,7 +72,7 @@
 </style>
 <div id="separator" class="hr" hidden="[[first]]"></div>
 <div id="list-item" focus-row-container>
-  <site-favicon url="[[getGroupIcon_(group, item)]]" 
+  <site-favicon url="[[getGroupIcon_(group, item)]]"
       domain="[[getGroupName_(group, item)]]" aria-hidden="true">
   </site-favicon>
   <div id="credentialInfo">
@@ -106,17 +106,28 @@
         </cr-button>
       </template>
       <template is="dom-if" if="[[item.isAutomaticPasswordChangeSupported]]">
-        <cr-button
+        <template is="dom-if"
+        if="[[isAutoChangePasswordIdle_(passwordChangeState)]]">
+          <cr-button
           class="tonal-button"
-          id="autoChangePasswordButton"
-          on-click="onAutoChangePasswordClick_"
-          aria-label$="[[getAutoChangeButtonAriaLabel_(group, item)]]">
-          <cr-icon
-            icon="passwords-icon:arrow-selector-spark"
+            id="autoChangePasswordButton"
+            on-click="onAutoChangePasswordClick_"
+            aria-label$="[[getAutoChangeButtonAriaLabel_(group, item)]]">
+            <cr-icon icon="passwords-icon:arrow-selector-spark"
             id="auto-change-password-link-icon">
-          </cr-icon>
-          $i18n{automatedPasswordChangeCheckupButton}
-        </cr-button>
+            </cr-icon>
+            [[getAutoChangePasswordButtonText_(passwordChangeState)]]
+            </cr-button>
+        </template>
+        <template is="dom-if"
+          if="[[!isAutoChangePasswordIdle_(passwordChangeState)]]">
+          <span class="cr-secondary-text label">
+            <cr-icon icon="[[getAutoChangePasswordIcon_(passwordChangeState)]]"
+            id="auto-change-password-link-icon">
+            </cr-icon>
+            [[getAutoChangePasswordButtonText_(passwordChangeState)]]
+          </span>
+        </template>
       </template>
       <a
         id="alreadyChanged"
@@ -131,7 +142,7 @@
     <span id="changePasswordInApp">$i18n{changePasswordInApp}</span>
   </template>
   <cr-icon-button class="icon-more-vert" id="more" title="$i18n{moreActions}"
-      on-click="onMoreClick_" 
+      on-click="onMoreClick_"
       aria-label$="[[getMoreButtonAriaLabel_(group, item)]]">
   </cr-icon-button>
 </div>

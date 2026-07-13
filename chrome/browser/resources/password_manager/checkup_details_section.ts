@@ -20,7 +20,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './checkup_details_section.html.js';
 import type {CheckupListItemElement} from './checkup_list_item.js';
 import type {CredentialsChangedListener} from './password_manager_proxy.js';
-import {PasswordCheckInteraction, PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordAutomaticChangeState, PasswordCheckInteraction, PasswordManagerImpl} from './password_manager_proxy.js';
 import type {Route} from './router.js';
 import {CheckupSubpage, Page, RouteObserverMixin, Router} from './router.js';
 
@@ -115,6 +115,11 @@ export class CheckupDetailsSectionElement extends
         computed: 'computeIsMutingDisabled_(' +
             'prefs.profile.password_dismiss_compromised_alert.value)',
       },
+
+      passwordChangeStates_: {
+        type: Object,
+        value: () => ({}),
+      },
     };
   }
 
@@ -132,8 +137,11 @@ export class CheckupDetailsSectionElement extends
   declare private activeListItem_: CheckupListItemElement|null;
   declare private clickedChangePasswordIds_: Set<number>;
   declare private isMutingDisabled_: boolean;
+  declare private passwordChangeStates_:
+      Record<number, PasswordAutomaticChangeState>;
   private insecureCredentialsChangedListener_: CredentialsChangedListener|null =
       null;
+  private listenerId_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -144,6 +152,8 @@ export class CheckupDetailsSectionElement extends
     };
 
     this.insecureCredentialsChangedListener_ = insecureCredentials => {
+      // TODO(crbug.com/532045774): handle the case when the id of the
+      // credential has changed and APC tracking fails
       this.allInsecureCredentials_ = insecureCredentials;
       updateGroups();
     };
@@ -153,6 +163,37 @@ export class CheckupDetailsSectionElement extends
         this.insecureCredentialsChangedListener_);
     PasswordManagerImpl.getInstance().addInsecureCredentialsListener(
         this.insecureCredentialsChangedListener_);
+
+    this.listenerId_ =
+        PasswordManagerImpl.getInstance()
+            .callbackRouter.onPasswordAutomaticChangeStateUpdated.addListener(
+                (id: number, state: PasswordAutomaticChangeState) =>
+                    this.onStateUpdated_(id, state));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    if (this.insecureCredentialsChangedListener_) {
+      PasswordManagerImpl.getInstance().removeInsecureCredentialsListener(
+          this.insecureCredentialsChangedListener_);
+    }
+    if (this.listenerId_ !== null) {
+      PasswordManagerImpl.getInstance().callbackRouter.removeListener(
+          this.listenerId_);
+      this.listenerId_ = null;
+    }
+  }
+
+  private onStateUpdated_(id: number, state: PasswordAutomaticChangeState) {
+    this.set(`passwordChangeStates_.${id}`, state);
+  }
+
+  private getPasswordChangeStateFor_(
+      id: number,
+      _statesRecord: Record<string, unknown>): PasswordAutomaticChangeState {
+    return this.passwordChangeStates_[id] ||
+        PasswordAutomaticChangeState.kInactive;
   }
 
   override currentRouteChanged(route: Route, oldRoute: Route): void {

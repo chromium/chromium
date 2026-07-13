@@ -19,7 +19,7 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './checkup_list_item.html.js';
-import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordAutomaticChangeState, PasswordManagerImpl} from './password_manager_proxy.js';
 import type {ShowPasswordMixinInterface} from './show_password_mixin.js';
 import {ShowPasswordMixin} from './show_password_mixin.js';
 
@@ -53,6 +53,10 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
       showEditPasswordDialog_: Boolean,
       showEditPasswordDisclaimer_: Boolean,
       showDeletePasswordDialog_: Boolean,
+      passwordChangeState: {
+        type: Number,
+        value: PasswordAutomaticChangeState.kInactive,
+      },
     };
   }
 
@@ -61,6 +65,7 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
   declare first: boolean;
   declare showDetails: boolean;
   declare showAlreadyChanged: boolean;
+  declare passwordChangeState: PasswordAutomaticChangeState;
   declare private showEditPasswordDialog_: boolean;
   declare private showEditPasswordDisclaimer_: boolean;
   declare private showDeletePasswordDialog_: boolean;
@@ -207,6 +212,36 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
 
   private getMoreButtonAriaLabel_(): string {
     return this.i18n('moreActionsAriaDescription', this.getGroupName_());
+  }
+
+  private isAutoChangePasswordIdle_(state: PasswordAutomaticChangeState):
+      boolean {
+    return state === PasswordAutomaticChangeState.kInactive;
+  }
+
+  private getAutoChangePasswordIcon_(state: PasswordAutomaticChangeState):
+      string {
+    return state === PasswordAutomaticChangeState.kPasswordChangedSuccessfully ?
+        'passwords-icon:task-spark' :
+        'passwords-icon:arrow-selector-spark';
+  }
+
+  private getAutoChangePasswordButtonText_(state: PasswordAutomaticChangeState):
+      string {
+    switch (state) {
+      case PasswordAutomaticChangeState.kInactive:
+        return this.i18n('automatedPasswordChangeCheckupButton');
+      case PasswordAutomaticChangeState.kAttemptingSignIn:
+        return this.i18n('automatedPasswordChangeAttemptingSignIn');
+      case PasswordAutomaticChangeState.kChangingPassword:
+        return this.i18n('automatedPasswordChangeChangingPassword');
+      case PasswordAutomaticChangeState.kConfirmingChangedPassword:
+        return this.i18n('automatedPasswordChangeConfirmingChangedPassword');
+      case PasswordAutomaticChangeState.kPasswordChangedSuccessfully:
+        return this.i18n('automatedPasswordChangeChangedSuccessfully');
+      default:
+        return this.i18n('automatedPasswordChangeError');
+    }
   }
 }
 

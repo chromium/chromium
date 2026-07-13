@@ -37,6 +37,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, CheckupDetailsSection) {
   RunTest("password_manager/checkup_details_section_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, CheckupListItem) {
+  RunTest("password_manager/checkup_list_item_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, CredentialField) {
   RunTest("password_manager/credential_field_test.js", "mocha.run()");
 }

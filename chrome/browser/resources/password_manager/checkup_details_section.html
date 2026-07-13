@@ -67,7 +67,9 @@
         group="[[getCurrentGroup_(item.id, groups_)]]"
         show-details="[[isCompromisedType(insecurityType_)]]"
         show-already-changed=
-            "[[clickedChangePassword_(item, clickedChangePasswordIds_.size)]]"
+          "[[clickedChangePassword_(item, clickedChangePasswordIds_.size)]]"
+        password-change-state=
+          "[[getPasswordChangeStateFor_(item.id, passwordChangeStates_.*)]]"
         on-more-actions-click="onMoreActionsClick_"
         on-change-password-clicked="onChangePasswordClick_">
     </checkup-list-item>
@@ -85,7 +87,9 @@
             group="[[getCurrentGroup_(item.id, groups_)]]"
             show-details="[[isCompromisedType(insecurityType_)]]"
             show-already-changed=
-            "[[clickedChangePassword_(item, clickedChangePasswordIds_.size)]]"
+              "[[clickedChangePassword_(item, clickedChangePasswordIds_.size)]]"
+            password-change-state=
+              "[[getPasswordChangeStateFor_(item.id, passwordChangeStates_.*)]]"
             on-more-actions-click="onMoreActionsClick_"
             on-change-password-clicked="onChangePasswordClick_">
         </checkup-list-item>
@@ -104,6 +108,8 @@
           group="[[getCurrentGroup_(item.id, groups_)]]"
           show-already-changed=
             "[[clickedChangePassword_(item, clickedChangePasswordIds_.size)]]"
+          password-change-state=
+            "[[getPasswordChangeStateFor_(item.id, passwordChangeStates_.*)]]"
           on-more-actions-click="onMoreActionsClick_"
           on-change-password-clicked="onChangePasswordClick_">
       </checkup-list-item>

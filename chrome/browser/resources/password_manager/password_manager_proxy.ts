@@ -10,7 +10,7 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {ExportPasswordsResult, ExportProgressStatus, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, PasswordManagerActionableError} from './password_manager.mojom-webui.js';
+import {ExportPasswordsResult, ExportProgressStatus, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, PasswordAutomaticChangeState, PasswordManagerActionableError} from './password_manager.mojom-webui.js';
 import type {ActorLoginPermission} from './password_manager.mojom-webui.js';
 
 export {
@@ -19,6 +19,7 @@ export {
   PageCallbackRouter,
   PageHandlerFactory,
   PageHandlerRemote,
+  PasswordAutomaticChangeState,
   PasswordManagerActionableError,
 };
 
