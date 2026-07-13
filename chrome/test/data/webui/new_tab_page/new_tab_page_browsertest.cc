@@ -382,7 +382,13 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DriveModuleV2) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, FileSuggestion) {
+// TODO(crbug.com/534399662): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_FileSuggestion DISABLED_FileSuggestion
+#else
+#define MAYBE_FileSuggestion FileSuggestion
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, MAYBE_FileSuggestion) {
   RunTest("new_tab_page/modules/file_suggestion/file_suggestion_test.js",
           "mocha.run()");
 }
