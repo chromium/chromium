@@ -648,6 +648,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("area-with-aria-owns.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAEmptyPlaceholder) {
+  RunHtmlTest(FILE_PATH_LITERAL("a-empty-placeholder.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAHrefUpdate) {
   RunHtmlTest(FILE_PATH_LITERAL("a-href-update.html"));
 }

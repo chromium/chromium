@@ -1,0 +1,5 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.widget.TextView
+++++android.view.View role_description='link' clickable link interesting content_description='Valid ARIA Link'
+++++android.widget.TextView interesting name='Text link'

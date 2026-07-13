@@ -3346,6 +3346,9 @@ data/accessibility/hit_testing/simple_rectangles_scrolling_iframe.html
 data/accessibility/hit_testing/simple_rectangles_with_curtain.html
 data/accessibility/hit_testing/text_ranges.html
 data/accessibility/hit_testing/text_ranges_iframe.html
+data/accessibility/html/a-empty-placeholder-expected-android-external.txt
+data/accessibility/html/a-empty-placeholder-expected-android.txt
+data/accessibility/html/a-empty-placeholder.html
 data/accessibility/html/a-expected-android-assist-data.txt
 data/accessibility/html/a-expected-android-external.txt
 data/accessibility/html/a-expected-android.txt

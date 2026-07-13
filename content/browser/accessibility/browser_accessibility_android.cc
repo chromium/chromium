@@ -616,10 +616,6 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
     return true;
   }
 
-  if (ui::IsLink(GetRole())) {
-    return true;
-  }
-
   // If we are the direct descendant of a link and have no siblings/children,
   // then we are not interesting, return false
   parent = PlatformGetParent();
@@ -628,7 +624,7 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
     return false;
   }
 
-  // Otherwise, the interesting nodes are leaf nodes with non-whitespace
+  // Otherwise, the interesting nodes are leaf or link nodes with non-whitespace
   // accessible name or text content.
 
   // First, we determine whether we have a nonempty, nonwhitespace name.
@@ -640,7 +636,8 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
   bool has_nonwhitespace_text =
       !base::ContainsOnlyChars(GetTextContentUTF16(), base::kWhitespaceUTF16);
 
-  return IsLeaf() && (has_nonwhitespace_name || has_nonwhitespace_text);
+  return (IsLeaf() || ui::IsLink(GetRole())) &&
+         (has_nonwhitespace_name || has_nonwhitespace_text);
 }
 
 BrowserAccessibilityAndroid*

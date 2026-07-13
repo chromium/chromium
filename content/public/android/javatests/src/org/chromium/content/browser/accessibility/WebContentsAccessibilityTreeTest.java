@@ -1464,6 +1464,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_aEmptyPlaceholder() {
+        performHtmlTest("a-empty-placeholder.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_aName() {
         performHtmlTest("a-name.html");
     }

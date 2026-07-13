@@ -1,0 +1,5 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++TextView viewIdResName:"empty" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++View contentDescription:"Valid ARIA Link" clickable actions:[CLICK, AX_FOCUS] bundle:[chromeRole="link", roleDescription="link"]
+++++TextView text:"Text link" viewIdResName:"no_href" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
