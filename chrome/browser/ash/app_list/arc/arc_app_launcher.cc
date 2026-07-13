@@ -125,6 +125,11 @@ bool ArcAppLauncher::MaybeLaunchApp(const std::string& app_id,
   app_registry_cache_observer_.Reset();
   arc_app_list_prefs_observer_.Reset();
 
+  // proxy->Launch / proxy->LaunchAppWithIntent can synchronously call
+  // ShelfModel::ReplaceShelfItemDelegate (e.g. via the ARC deferred-launch
+  // spinner path), which can destroy the ArcPlaystoreShortcutShelfItemController
+  // that owns |this|. Guard the trailing member write with a weak pointer.
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   if (launch_intent_) {
     proxy->LaunchAppWithIntent(
         app_id_, ui::EF_NONE, std::move(launch_intent_), launch_source_,
@@ -132,6 +137,11 @@ bool ArcAppLauncher::MaybeLaunchApp(const std::string& app_id,
   } else {
     proxy->Launch(app_id_, ui::EF_NONE, launch_source_,
                   std::make_unique<apps::WindowInfo>(display_id_));
+  }
+
+  if (!weak_this) {
+    // |this| was destroyed during the synchronous launch chain.
+    return true;
   }
 
   app_launched_ = true;
