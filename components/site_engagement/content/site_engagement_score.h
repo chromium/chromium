@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom-forward.h"
@@ -213,9 +213,9 @@ class SiteEngagementScore {
 
   // The clock used to vend times. Enables time travelling in tests. Owned by
   // the SiteEngagementService.
-  // `clock_` is not a raw_ptr<...> for performance reasons (based on analysis
-  // of sampling profiler data).
-  RAW_PTR_EXCLUSION base::Clock* clock_;
+  // `clock_` uses kUnprotectedInRelease for performance reasons (based on
+  // analysis of sampling profiler data).
+  raw_ptr<base::Clock, kUnprotectedInRelease> clock_;
 
   // |raw_score_| is the score before any decay is applied.
   double raw_score_;
@@ -240,9 +240,9 @@ class SiteEngagementScore {
   GURL origin_;
 
   // The settings to write this score to when Commit() is called.
-  // `settings_map_` is not a raw_ptr<...> for performance reasons (based on
-  // analysis of sampling profiler data).
-  RAW_PTR_EXCLUSION HostContentSettingsMap* settings_map_;
+  // `settings_map_` uses kUnprotectedInRelease for performance reasons (based
+  // on analysis of sampling profiler data).
+  raw_ptr<HostContentSettingsMap, kUnprotectedInRelease> settings_map_;
 };
 
 }  // namespace site_engagement
