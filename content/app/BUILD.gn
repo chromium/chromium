@@ -149,14 +149,3 @@ group("for_content_tests") {
     public_deps = [ ":app" ]
   }
 }
-
-if (is_mac) {
-  source_set("aperitif") {
-    sources = [ "aperitif_mac.cc" ]
-    deps = [
-      "//base/allocator:early_zone_registration_apple",
-      "//sandbox/mac:seatbelt",
-    ]
-    visibility = [ "//content/public/app:aperitif" ]
-  }
-}
