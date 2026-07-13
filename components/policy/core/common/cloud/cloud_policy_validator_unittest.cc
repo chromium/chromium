@@ -544,6 +544,35 @@ TEST_F(CloudPolicyValidatorTest, GoodNewSignatureEmptyDeprecatedSignature) {
                  policy_.GetCopy());
 }
 
+TEST_F(CloudPolicyValidatorTest, ErrorVerificationDataKeyMismatch) {
+  // Build a response whose new_public_key_verification_data certifies the
+  // default new signing key.
+  policy_.Build();
+  const std::string verification_data =
+      policy_.policy().new_public_key_verification_data();
+  const std::string verification_data_signature =
+      policy_.policy().new_public_key_verification_data_signature();
+
+  // Build a second response that delivers an unrelated new_public_key and
+  // signs policy_data with it, then attach the verification data from the
+  // first response.
+  UserPolicyBuilder other;
+  other.SetDefaultInitialSigningKey();
+  other.Build();
+  ASSERT_NE(other.policy().new_public_key(), policy_.policy().new_public_key());
+  other.policy().set_new_public_key_verification_data(verification_data);
+  other.policy().set_new_public_key_verification_data_signature(
+      verification_data_signature);
+  other.policy().clear_new_public_key_verification_signature_deprecated();
+
+  auto validator = std::make_unique<UserCloudPolicyValidator>(
+      other.GetCopy(), base::SingleThreadTaskRunner::GetCurrentDefault());
+  validator->ValidateInitialKey(PolicyBuilder::kFakeDomain);
+  validator->RunValidation();
+  EXPECT_EQ(CloudPolicyValidatorBase::VALIDATION_BAD_KEY_VERIFICATION_SIGNATURE,
+            validator->status());
+}
+
 TEST_F(CloudPolicyValidatorTest, ErrorDomainMismatchForKeyVerification) {
   policy_.Build();
   policy_.policy().set_new_public_key_verification_data("invalid");

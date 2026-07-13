@@ -354,10 +354,12 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   // empty string if the policy does not contain a username field.
   std::string ExtractDomainFromPolicy();
 
-  // Returns if the domain from the new_public_key_verification_data matches
-  // the domain extracted from the |policy_|.
-  bool CheckDomainInPublicKeyVerificationData(
-      const std::string& new_public_key_verification_data);
+  // Returns true if |new_public_key_verification_data| can be parsed, the
+  // public key it certifies equals |expected_public_key| and its domain
+  // matches the domain extracted from |policy_|.
+  bool CheckPublicKeyVerificationData(
+      const std::string& new_public_key_verification_data,
+      const std::string& expected_public_key);
 
   // Sets the owning domain used to verify new public keys, and ensures that
   // callers don't try to set conflicting values.
