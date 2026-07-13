@@ -4953,6 +4953,29 @@
             ]
         }
     ],
+    "CentralizedInfoBarFramework": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "kMigratedCollectedCookies": "true",
+                        "kMigratedPageInfo": "true",
+                        "kMigratedPdf": "true"
+                    },
+                    "enable_features": [
+                        "CentralizedInfoBarFramework"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChangeGeneratedCodeCacheSize": [
         {
             "platforms": [
