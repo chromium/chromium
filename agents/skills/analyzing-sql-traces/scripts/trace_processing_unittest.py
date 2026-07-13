@@ -559,10 +559,44 @@ class TestTraceAnalyzerLib(unittest.TestCase):
         self.assertIn(root_path, paths)
         self.assertEqual(paths[root_path]['total'], 5.0)
         self.assertEqual(paths[root_path]['self'], 2.0)
+        self.assertEqual(paths[root_path]['count'], 1)
 
         self.assertIn(child_path, paths)
         self.assertEqual(paths[child_path]['total'], 3.0)
         self.assertEqual(paths[child_path]['self'], 3.0)
+        self.assertEqual(paths[child_path]['count'], 1)
+
+    def test_build_paths_from_slices_multiple_occurrences(self):
+        slices = {
+            1: {
+                'id': 1,
+                'name': 'Root',
+                'parent_id': None,
+                'thread_name': 'ThreadMain',
+                'process_name': 'Browser',
+                'o_dur': 1000000.0,
+                'self_o_dur': 1000000.0,
+                'children': []
+            },
+            2: {
+                'id': 2,
+                'name': 'Root',
+                'parent_id': None,
+                'thread_name': 'ThreadMain',
+                'process_name': 'Browser',
+                'o_dur': 2000000.0,
+                'self_o_dur': 2000000.0,
+                'children': []
+            }
+        }
+        paths = trace_analyzer_lib.build_paths_from_slices(slices)
+        root_path = ('Browser', 'ThreadMain', 'Root')
+
+        self.assertIn(root_path, paths)
+        self.assertEqual(paths[root_path]['total'], 3.0)
+        self.assertEqual(paths[root_path]['self'], 3.0)
+        self.assertEqual(paths[root_path]['count'], 2)
+
 
     def test_build_tree_from_paths(self):
         path_durs = {

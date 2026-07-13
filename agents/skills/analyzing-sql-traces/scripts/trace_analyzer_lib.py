@@ -24,6 +24,15 @@ DEFAULT_EXPAND_CONFIG = {
 }
 
 
+def decode_bytes(val) -> str | None:
+    if val is None or pd.isna(val):
+        return None
+    if isinstance(val, bytes):
+        return val.decode('utf-8', errors='replace')
+    return str(val)
+
+
+
 def format_slice_args(name: str, args: dict[str, str],
                       config: dict[str, list[str]]) -> str | None:
     for pattern, keys in config.items():
@@ -86,13 +95,16 @@ class TraceSession:
 
     def get_process_labels(self) -> dict[int, str]:
         """Maps upid to descriptive process names containing hosted URLs."""
-        df_proc = self.query("SELECT upid, name FROM process;")
+        df_proc = self.query(
+            "SELECT upid, CAST(name AS BLOB) AS name FROM process;")
         labels = {}
         for _, row in df_proc.iterrows():
-            labels[int(row['upid'])] = str(row['name'])
+            labels[int(row['upid'])] = decode_bytes(row['name'])
 
         query_urls = """
-            SELECT DISTINCT p.upid, a.display_value
+            SELECT DISTINCT
+              p.upid,
+              CAST(a.display_value AS BLOB) AS display_value
             FROM args a
             JOIN slice s ON s.arg_set_id = a.arg_set_id
             JOIN thread_track tt ON s.track_id = tt.id
@@ -111,7 +123,7 @@ class TraceSession:
         upid_urls = defaultdict(set)
         for _, row in df_urls.iterrows():
             upid = int(row['upid'])
-            upid_urls[upid].add(str(row['display_value']))
+            upid_urls[upid].add(decode_bytes(row['display_value']))
 
         for upid, name in labels.items():
             if name in ('Renderer',
@@ -318,7 +330,12 @@ def extract_slice_hierarchies(
 
         # Query target details and arguments
         query_target = f"""
-            SELECT s.name, s.dur, s.ts, a.key, a.display_value
+            SELECT
+              CAST(s.name AS BLOB) AS name,
+              s.dur,
+              s.ts,
+              CAST(a.key AS BLOB) AS key,
+              CAST(a.display_value AS BLOB) AS display_value
             FROM slice s
             LEFT JOIN args a ON s.arg_set_id = a.arg_set_id
             WHERE s.id = {target_id};
@@ -331,23 +348,26 @@ def extract_slice_hierarchies(
         for _, t_row in df_target.iterrows():
             if root_node is None:
                 root_node = SliceNode(target_id,
-                                      str(t_row['name']),
+                                      decode_bytes(t_row['name']),
                                       float(t_row['dur']),
                                       int(t_row['ts']),
                                       depth=0)
-            arg_key = str(t_row['key']) if 'key' in t_row and pd.notna(
-                t_row['key']) else None
-            arg_val = str(t_row['display_value']
-                          ) if 'display_value' in t_row and pd.notna(
-                              t_row['display_value']) else None
+            arg_key = decode_bytes(t_row['key']) if 'key' in t_row else None
+            arg_val = decode_bytes(
+                t_row['display_value']) if 'display_value' in t_row else None
             if arg_key is not None:
                 root_node.args[arg_key] = arg_val
 
-        # Query descendants with their arguments
         query_desc = f"""
             SELECT
-                d.id, d.name, d.dur, d.ts, d.depth, d.parent_id,
-                a.key, a.display_value
+                d.id,
+                CAST(d.name AS BLOB) AS name,
+                d.dur,
+                d.ts,
+                d.depth,
+                d.parent_id,
+                CAST(a.key AS BLOB) AS key,
+                CAST(a.display_value AS BLOB) AS display_value
             FROM descendant_slice({target_id}) d
             LEFT JOIN args a ON d.arg_set_id = a.arg_set_id
             ORDER BY d.ts ASC;
@@ -362,15 +382,14 @@ def extract_slice_hierarchies(
             s_id = int(desc_row['id'])
             p_id = int(desc_row['parent_id']
                        ) if desc_row['parent_id'] is not None else None
-            name = str(desc_row['name'])
+            name = decode_bytes(desc_row['name'])
             dur = float(desc_row['dur'])
             ts = int(desc_row['ts'])
             depth = int(desc_row['depth'])
-            arg_key = str(desc_row['key']) if 'key' in desc_row and pd.notna(
-                desc_row['key']) else None
-            arg_val = str(desc_row['display_value']
-                          ) if 'display_value' in desc_row and pd.notna(
-                              desc_row['display_value']) else None
+            arg_key = decode_bytes(
+                desc_row['key']) if 'key' in desc_row else None
+            arg_val = decode_bytes(desc_row['display_value']
+                                   ) if 'display_value' in desc_row else None
 
             if s_id not in slice_map:
                 node = SliceNode(s_id, name, dur, ts, depth, p_id)
@@ -540,15 +559,15 @@ def fetch_windowed_slices(
     query_slices = f"""
         SELECT
           s.id,
-          s.name,
+          CAST(s.name AS BLOB) AS name,
           s.ts,
           s.dur,
           s.parent_id,
-          t.name AS thread_name,
-          p.name AS process_name,
+          CAST(t.name AS BLOB) AS thread_name,
+          CAST(p.name AS BLOB) AS process_name,
           p.upid AS upid,
-          a.key,
-          a.display_value
+          CAST(a.key AS BLOB) AS key,
+          CAST(a.display_value AS BLOB) AS display_value
         FROM slice s
         JOIN thread_track tt ON s.track_id = tt.id
         JOIN thread t USING(utid)
@@ -578,13 +597,14 @@ def fetch_windowed_slices(
             o_end = min(t_end, ts + dur)
             o_dur = max(0, o_end - o_start)
 
-            proc_name = process_labels.get(upid, str(row['process_name']))
+            proc_name = process_labels.get(upid,
+                                           decode_bytes(row['process_name']))
 
             slices[s_id] = {
                 'id': s_id,
-                'name': str(row['name']),
+                'name': decode_bytes(row['name']),
                 'parent_id': parent_id,
-                'thread_name': str(row['thread_name']),
+                'thread_name': decode_bytes(row['thread_name']),
                 'process_name': proc_name,
                 'o_dur': o_dur,
                 'ts': ts,
@@ -593,11 +613,9 @@ def fetch_windowed_slices(
                 'args': {}
             }
 
-        arg_key = str(
-            row['key']) if 'key' in row and pd.notna(row['key']) else None
-        arg_val = str(
-            row['display_value']) if 'display_value' in row and pd.notna(
-                row['display_value']) else None
+        arg_key = decode_bytes(row['key']) if 'key' in row else None
+        arg_val = decode_bytes(
+            row['display_value']) if 'display_value' in row else None
         if arg_key is not None:
             slices[s_id]['args'][arg_key] = arg_val
 
@@ -619,7 +637,11 @@ def build_paths_from_slices(
     expand_config: dict[str, list[str]] | None = None
 ) -> dict[tuple, dict[str, float]]:
     """Reconstructs paths and accumulates total and self duration in ms."""
-    run_path_data = defaultdict(lambda: {'total': 0.0, 'self': 0.0})
+    run_path_data = defaultdict(lambda: {
+        'total': 0.0,
+        'self': 0.0,
+        'count': 0
+    })
     for s in slices.values():
         if s['o_dur'] <= 0:
             continue
@@ -640,6 +662,7 @@ def build_paths_from_slices(
 
         run_path_data[path]['total'] += s['o_dur'] / 1e6
         run_path_data[path]['self'] += s['self_o_dur'] / 1e6
+        run_path_data[path]['count'] += 1
     return run_path_data
 
 

@@ -360,8 +360,7 @@ def main():
                 slice_name = p[-1]
                 flat_metrics[slice_name]['dur_ms'] += d['total']
                 flat_metrics[slice_name]['self_ms'] += d['self']
-                flat_metrics[slice_name][
-                    'count'] += 1  # count traces it occurred in
+                flat_metrics[slice_name]['count'] += d['count']
 
         num_runs = len(metric_durations)
         if num_runs == 0:
@@ -394,6 +393,7 @@ def main():
             for name in flat_metrics:
                 flat_metrics[name]['dur_ms'] /= num_runs
                 flat_metrics[name]['self_ms'] /= num_runs
+                flat_metrics[name]['count'] /= num_runs
             output_content = generate_markdown_report(args, flat_metrics,
                                                       total_dur_ms, True)
 
