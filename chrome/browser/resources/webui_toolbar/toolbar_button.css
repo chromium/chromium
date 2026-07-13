@@ -48,22 +48,37 @@ cr-button[is-menu-open],
   background-color: var(--cr-active-background-color);
 }
 
-:host(.help-anchor-highlight) cr-icon-button {
-  animation: pulse 800ms infinite alternate ease-in-out;
-  --cr-icon-button-active-background-color: var(
-      --color-button-feature-attention-highlight);
-  background-color: var(--cr-icon-button-active-background-color);
+:host(.help-anchor-highlight) cr-icon-button,
+:host(.help-anchor-highlight) cr-button {
+  --cr-hover-background-color: transparent;
+  --cr-icon-button-hover-background-color: transparent;
+  --cr-icon-button-active-background-color: transparent;
+  background-color: transparent !important;
+}
+
+:host(.help-anchor-highlight) cr-icon-button::before,
+:host(.help-anchor-highlight) cr-button::before {
+  animation: pulse 1600ms infinite;
+  background-color: var(--color-button-feature-attention-highlight);
+  border-radius: 50%;
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
 }
 
 @keyframes pulse {
-  from {
-    transform: scale(1);
+  0% {
+    inset: 0;
+    animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1);
   }
-  to {
-    /* Scale so that the difference in size is 3px on any edge. Use the
-     * max dimension to ensure the inset is at most 3px. */
-    transform: scale(calc(
-      1 - 6 / (max(var(--button-height), var(--button-width)) / 1px)));
+  50% {
+    inset: 3px;
+    animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1);
+  }
+  100% {
+    inset: 0;
   }
 }
 
