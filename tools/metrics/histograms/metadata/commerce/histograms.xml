@@ -148,7 +148,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.BottomSheet.ClusterTypeOnCopy"
-    enum="DiscountClusterType" expires_after="2026-07-27">
+    enum="DiscountClusterType" expires_after="2027-01-26">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -158,7 +158,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountBubble.SourceTypeOnShow"
-    enum="DiscountType" expires_after="2026-07-26">
+    enum="DiscountType" expires_after="2027-01-26">
   <owner>ihsuanchen@google.com</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -178,7 +178,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountsBubble.SourceTypeOnCopy"
-    enum="DiscountType" expires_after="2026-07-26">
+    enum="DiscountType" expires_after="2027-01-26">
   <owner>ihsuanchen@google.com</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -189,7 +189,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountsBubble.TypeOnCopy"
-    enum="DiscountClusterType" expires_after="2026-06-07">
+    enum="DiscountClusterType" expires_after="2027-01-26">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
