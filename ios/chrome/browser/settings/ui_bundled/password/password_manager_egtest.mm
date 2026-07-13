@@ -652,14 +652,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 @end
 
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testTappingInfoButtonForHiddenPasskey \
-  FLAKY_testTappingInfoButtonForHiddenPasskey
-#else
-#define MAYBE_testTappingInfoButtonForHiddenPasskey \
-  testTappingInfoButtonForHiddenPasskey
-#endif
-
 @implementation PasswordManagerTestCase {
   // A swizzler to observe fake auto-fill status instead of real one.
   std::unique_ptr<EarlGreyScopedBlockSwizzler> _passwordAutoFillStatusSwizzler;
@@ -2423,7 +2415,15 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // Checks interaction with an info button for a hidden passkey.
-- (void)testTappingInfoButtonForHiddenPasskey {
+// TODO(crbug.com/442428665): Test is flaky.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testTappingInfoButtonForHiddenPasskey \
+  FLAKY_testTappingInfoButtonForHiddenPasskey
+#else
+#define MAYBE_testTappingInfoButtonForHiddenPasskey \
+  testTappingInfoButtonForHiddenPasskey
+#endif
+- (void)MAYBE_testTappingInfoButtonForHiddenPasskey {
   SaveHiddenPasskeyToStore();
 
   OpenPasswordManager();
