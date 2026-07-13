@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -331,6 +332,8 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
     GlicGuestMarker::CreateForWebContents(guest_contents);
     GlicProcessUserData::MarkProcess(
         guest_contents->GetPrimaryMainFrame()->GetProcess());
+
+    PrefsTabHelper::CreateForWebContents(guest_contents);
 
 #if !BUILDFLAG(IS_ANDROID)
     // TODO(harringtond): This looks wrong, either fix or document this.

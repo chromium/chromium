@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "content/public/browser/navigation_handle.h"
@@ -88,6 +89,7 @@ WebUIContentsContainerImpl::WebUIContentsContainerImpl(Profile* profile,
   CHECK(web_contents_);
   CreateGlicWebUiData(web_contents_.get());
   Observe(web_contents_.get());
+  PrefsTabHelper::CreateForWebContents(web_contents_.get());
   web_contents_->SetPageBaseBackgroundColor(
       GetGlicBackgroundColor(profile, web_contents_->GetColorProvider()));
 

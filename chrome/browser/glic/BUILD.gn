@@ -446,6 +446,7 @@ source_set("impl") {
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/passwords",
+    "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
