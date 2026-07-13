@@ -39,7 +39,9 @@ class WaylandWpImageDescription
   WaylandWpImageDescription& operator=(const WaylandWpImageDescription&) =
       delete;
 
-  scoped_refptr<gfx::DisplayColorSpacesRef> AsDisplayColorSpaces() const;
+  scoped_refptr<gfx::DisplayColorSpacesRef> AsDisplayColorSpaces(
+      std::optional<viz::SharedImageFormat> hdr_output_format =
+          std::nullopt) const;
 
   wp_image_description_v1* object() const { return image_description_.get(); }
 

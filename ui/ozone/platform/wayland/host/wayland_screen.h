@@ -52,6 +52,7 @@ class WaylandScreen : public PlatformScreen, public DeviceScaleFactorObserver {
 
   WaylandOutput::Id GetOutputIdForDisplayId(int64_t display_id);
   WaylandOutput* GetWaylandOutputForDisplayId(int64_t display_id);
+  viz::SharedImageFormat GetHDRImageFormat() const;
 
   // Returns id of the output that matches the bounds in screen coordinates.
   WaylandOutput::Id GetOutputIdMatching(const gfx::Rect& match_rect);

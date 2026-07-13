@@ -11,6 +11,8 @@
 #include "base/notreached.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
@@ -87,7 +89,12 @@ void WaylandWpColorManagementSurface::OnImageDescription(
     LOG(ERROR) << "Failed to get image description.";
     display_color_spaces_.reset();
   } else {
-    display_color_spaces_ = image_description->AsDisplayColorSpaces();
+    auto* wayland_screen =
+        connection_->wayland_output_manager()->wayland_screen();
+    display_color_spaces_ = wayland_screen
+                                ? image_description->AsDisplayColorSpaces(
+                                      wayland_screen->GetHDRImageFormat())
+                                : image_description->AsDisplayColorSpaces();
   }
   OnHdrEnabledChanged(connection_->wp_color_manager()->hdr_enabled());
 }

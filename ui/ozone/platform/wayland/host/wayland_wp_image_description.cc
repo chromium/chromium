@@ -145,10 +145,17 @@ WaylandWpImageDescription::WaylandWpImageDescription(
 WaylandWpImageDescription::~WaylandWpImageDescription() = default;
 
 scoped_refptr<gfx::DisplayColorSpacesRef>
-WaylandWpImageDescription::AsDisplayColorSpaces() const {
-  auto display_color_spaces = gfx::DisplayColorSpaces(color_space_);
+WaylandWpImageDescription::AsDisplayColorSpaces(
+    std::optional<viz::SharedImageFormat> hdr_output_format) const {
+  gfx::DisplayColorSpaces display_color_spaces(color_space_);
   display_color_spaces.SetSDRMaxLuminanceNits(sdr_max_luminance_nits_);
   display_color_spaces.SetHDRMaxLuminanceRelative(hdr_max_luminance_relative_);
+  if (display_color_spaces.SupportsHDR() && hdr_output_format) {
+    // SDR content is also composed into the preferred HDR target space, so all
+    // usages need a high-bit-depth output format to avoid banding.
+    display_color_spaces.SetOutputFormats(*hdr_output_format,
+                                          *hdr_output_format);
+  }
   return base::MakeRefCounted<gfx::DisplayColorSpacesRef>(
       std::move(display_color_spaces));
 }
