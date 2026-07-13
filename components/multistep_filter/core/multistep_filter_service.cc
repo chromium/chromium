@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
@@ -78,10 +79,10 @@ void LogHistoryDeleted(MultistepFilterLogRouter* log_router,
 MultistepFilterService::MultistepFilterService(Params params)
     : annotation_index_client_(std::move(params.annotation_index_client)),
       filter_store_(std::move(params.filter_store)),
-      identity_manager_(params.identity_manager),
+      identity_manager_(CHECK_DEREF(params.identity_manager)),
       consent_helper_(std::move(params.consent_helper)),
       log_router_(params.log_router),
-      pref_service_(params.pref_service),
+      pref_service_(CHECK_DEREF(params.pref_service)),
       sync_service_(params.sync_service) {
   CHECK(annotation_index_client_);
   CHECK(filter_store_);
@@ -98,21 +99,17 @@ void MultistepFilterService::Shutdown() {
 }
 
 void MultistepFilterService::RecordSuggestionImpression() {
-  if (!pref_service_) {
-    return;
-  }
-  RecordImpression(pref_service_);
+  RecordImpression(&*pref_service_);
 }
 
 void MultistepFilterService::RecordUserInteractionWithSuggestion(
     SuggestionUserDecision decision) {
-  if (!pref_service_) {
-    return;
-  }
-  RecordUserInteraction(pref_service_, decision);
+  RecordUserInteraction(&*pref_service_, decision);
 }
 
-
+RetentionStateSnapshot MultistepFilterService::GetRetentionState() const {
+  return multistep_filter::GetRetentionState(&*pref_service_);
+}
 
 void MultistepFilterService::DeleteAnnotationsForTask(
     std::string_view task_type,
@@ -140,8 +137,7 @@ bool MultistepFilterService::HasUserProvidedConsent(int64_t navigation_id,
 }
 
 bool MultistepFilterService::IsUserSignedIn() const {
-  return identity_manager_ &&
-         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 bool MultistepFilterService::IsUrlKeyedDataCollectionEnabled() const {

@@ -24,7 +24,6 @@
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/logging/multistep_filter_metrics.h"
-#include "components/multistep_filter/core/multistep_filter_service.h"
 #include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
@@ -77,35 +76,6 @@ class TestFilterUiController : public FilterUiController {
   // Expose protected methods for testing
   using FilterUiController::NavigateTo;
   using FilterUiController::OnSuggestionGenerated;
-};
-
-class MockMultistepFilterService : public MultistepFilterService {
- public:
-  MockMultistepFilterService(
-      std::unique_ptr<AnnotationIndexClient> extraction_client,
-      std::unique_ptr<FilterStore> store)
-      : MultistepFilterService([&]() {
-          MultistepFilterService::Params params;
-          params.annotation_index_client = std::move(extraction_client);
-          params.filter_store = std::move(store);
-          params.identity_manager = nullptr;
-          params.consent_helper = nullptr;
-          params.log_router = nullptr;
-          return params;
-        }()) {}
-  ~MockMultistepFilterService() override = default;
-
-  MOCK_METHOD(void,
-              DeleteAnnotationsForTask,
-              (std::string_view task_type,
-               int64_t navigation_id,
-               std::string_view host),
-              (override));
-  MOCK_METHOD(void, RecordSuggestionImpression, (), (override));
-  MOCK_METHOD(void,
-              RecordUserInteractionWithSuggestion,
-              (SuggestionUserDecision),
-              (override));
 };
 
 class MockWebContentsDelegate : public content::WebContentsDelegate {

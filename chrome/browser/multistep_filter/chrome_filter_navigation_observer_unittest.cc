@@ -11,6 +11,8 @@
 #include "chrome/browser/multistep_filter/chrome_filter_navigation_observer_test_api.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -23,6 +25,7 @@
 #include "components/multistep_filter/core/multistep_filter_service.h"
 #include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
 #include "components/multistep_filter/core/multistep_filter_util.h"
+#include "components/multistep_filter/core/prefs/multistep_filter_retention_prefs.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
@@ -59,12 +62,15 @@ class MockMultistepFilterService : public MultistepFilterService {
  public:
   MockMultistepFilterService(
       std::unique_ptr<AnnotationIndexClient> annotation_index_client,
-      std::unique_ptr<FilterStore> filter_store)
+      std::unique_ptr<FilterStore> filter_store,
+      PrefService* pref_service,
+      signin::IdentityManager* identity_manager)
       : MultistepFilterService([&]() {
           MultistepFilterService::Params params;
           params.annotation_index_client = std::move(annotation_index_client);
           params.filter_store = std::move(filter_store);
-          params.identity_manager = nullptr;
+          params.identity_manager = identity_manager;
+          params.pref_service = pref_service;
           params.consent_helper = nullptr;
           params.log_router = nullptr;
           return params;
@@ -77,15 +83,26 @@ class MockMultistepFilterService : public MultistepFilterService {
 class ChromeFilterNavigationObserverTest
     : public ChromeRenderViewHostTestHarness {
  public:
+  std::unique_ptr<TestingProfile> CreateTestingProfile() override {
+    TestingProfile::Builder builder;
+    builder.AddTestingFactories(IdentityTestEnvironmentProfileAdaptor::
+                                    GetIdentityTestEnvironmentFactories());
+    return builder.Build();
+  }
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     MultistepFilterServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating([](content::BrowserContext* context)
                                            -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
           return std::make_unique<
               testing::NiceMock<MockMultistepFilterService>>(
               std::make_unique<MockAnnotationIndexClient>(),
-              std::make_unique<FilterStore>());
+              std::make_unique<FilterStore>(), profile->GetPrefs(),
+              IdentityManagerFactory::GetForProfile(profile));
         }));
 
     mock_tab_ = std::make_unique<tabs::MockTabInterface>();
@@ -110,6 +127,8 @@ class ChromeFilterNavigationObserverTest
         MultistepFilterServiceFactory::GetForProfile(profile()));
   }
 
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
   std::unique_ptr<tabs::MockTabInterface> mock_tab_;
   ui::UnownedUserDataHost user_data_host_;
   std::unique_ptr<ChromeFilterNavigationObserver> chrome_observer_;

@@ -15,9 +15,12 @@
 #include "components/multistep_filter/core/filter_tab_controller_test_api.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
 #include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
+#include "components/multistep_filter/core/prefs/multistep_filter_retention_prefs.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
 #include "components/multistep_filter/core/switches.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -72,12 +75,15 @@ class MockMultistepFilterService : public MultistepFilterService {
  public:
   MockMultistepFilterService(
       std::unique_ptr<AnnotationIndexClient> annotation_index_client,
-      std::unique_ptr<FilterStore> filter_store)
+      std::unique_ptr<FilterStore> filter_store,
+      PrefService* pref_service,
+      signin::IdentityManager* identity_manager)
       : MultistepFilterService([&]() {
           MultistepFilterService::Params params;
           params.annotation_index_client = std::move(annotation_index_client);
           params.filter_store = std::move(filter_store);
-          params.identity_manager = nullptr;
+          params.identity_manager = identity_manager;
+          params.pref_service = pref_service;
           params.consent_helper = nullptr;
           params.log_router = nullptr;
           return params;
@@ -105,6 +111,9 @@ class MockUiDelegate : public MultistepFilterUiDelegate {
 class ContentFilterNavigationObserverTest
     : public content::RenderViewHostTestHarness {
  public:
+  ContentFilterNavigationObserverTest() {
+    RegisterRetentionProfilePrefs(pref_service_.registry());
+  }
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
 
@@ -119,7 +128,8 @@ class ContentFilterNavigationObserverTest
 
     mock_service_ =
         std::make_unique<testing::NiceMock<MockMultistepFilterService>>(
-            std::move(annotation_client), std::make_unique<FilterStore>());
+            std::move(annotation_client), std::make_unique<FilterStore>(),
+            &pref_service_, identity_test_env_.identity_manager());
     auto delegate = std::make_unique<testing::NiceMock<MockUiDelegate>>();
     delegate_ = delegate.get();
 
@@ -164,6 +174,8 @@ class ContentFilterNavigationObserverTest
   }
 
  private:
+  TestingPrefServiceSimple pref_service_;
+  signin::IdentityTestEnvironment identity_test_env_;
   raw_ptr<MockAnnotationIndexClient> mock_client_ = nullptr;
   raw_ptr<MockFilterExtractor> mock_extractor_ = nullptr;
   raw_ptr<MockFilterSuggestionGenerator> mock_generator_ = nullptr;

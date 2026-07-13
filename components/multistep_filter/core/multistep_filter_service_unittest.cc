@@ -125,6 +125,27 @@ TEST_F(MultistepFilterServiceTest, RecordSuggestionOutcomesUpdatesPrefs) {
   EXPECT_TRUE(acceptance_state.is_last_suggestion_accepted);
 }
 
+TEST_F(MultistepFilterServiceTest, GetRetentionStateReturnsCorrectSnapshot) {
+  CreateService();
+
+  // Verify initial state.
+  RetentionStateSnapshot initial_state = service_->GetRetentionState();
+  EXPECT_EQ(initial_state.suggestion_impressions, 0);
+  EXPECT_EQ(initial_state.suggestion_acceptances, 0);
+  EXPECT_FALSE(initial_state.is_last_suggestion_accepted);
+
+  // Modify state.
+  service_->RecordSuggestionImpression();
+  service_->RecordUserInteractionWithSuggestion(
+      SuggestionUserDecision::kAccepted);
+
+  // Verify updated state is returned by GetRetentionState.
+  RetentionStateSnapshot updated_state = service_->GetRetentionState();
+  EXPECT_EQ(updated_state.suggestion_impressions, 1);
+  EXPECT_EQ(updated_state.suggestion_acceptances, 1);
+  EXPECT_TRUE(updated_state.is_last_suggestion_accepted);
+}
+
 // Tests that when URL-keyed anonymized data collection (MSBB) is explicitly
 // disabled in preferences, consent evaluates to false.
 TEST_F(MultistepFilterServiceTest, HasUserProvidedConsent_MsbbDisabled) {
@@ -161,7 +182,7 @@ TEST_F(MultistepFilterServiceTest, HasUserProvidedConsent_NotSignedIn) {
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, {syncer::UserSelectableType::kHistory});
 
-  CreateService(nullptr);
+  CreateService();
   EXPECT_FALSE(service_->HasUserProvidedConsent(3, "example.com"));
 }
 

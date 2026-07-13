@@ -19,7 +19,10 @@
 #include "components/multistep_filter/core/logging/multistep_filter_metrics.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
 #include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
+#include "components/multistep_filter/core/prefs/multistep_filter_retention_prefs.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -118,7 +121,9 @@ class MockObserver : public FilterTabController::ObserverForTest {
 
 class FilterTabControllerTest : public testing::Test {
  public:
-  FilterTabControllerTest() = default;
+  FilterTabControllerTest() {
+    RegisterRetentionProfilePrefs(pref_service_.registry());
+  }
   ~FilterTabControllerTest() override = default;
 
   void SetUp() override {
@@ -131,6 +136,11 @@ class FilterTabControllerTest : public testing::Test {
     MultistepFilterService::Params params;
     params.annotation_index_client = std::move(mock_client);
     params.filter_store = std::move(filter_store);
+    params.pref_service = &pref_service_;
+    params.identity_manager = identity_test_env_.identity_manager();
+    params.consent_helper =
+        unified_consent::UrlKeyedDataCollectionConsentHelper::
+            NewAnonymizedDataCollectionConsentHelper(&pref_service_);
     mock_service_ = std::make_unique<StrictMock<MockMultistepFilterService>>(
         std::move(params));
     mock_delegate_ =
@@ -223,6 +233,8 @@ class FilterTabControllerTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<StrictMock<MockMultistepFilterService>> mock_service_;
   std::unique_ptr<StrictMock<MockMultistepFilterUiDelegate>> mock_delegate_;
   raw_ptr<StrictMock<MockFilterExtractor>> mock_extractor_ = nullptr;
