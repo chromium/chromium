@@ -151,9 +151,7 @@ TEST_F(PageContextUtilTest, CreatePageContextWrapperWithRichExtraction) {
   MockPageContextWrapper* mockWrapper = [MockPageContextWrapper alloc];
   OCMStub([mockWrapperClass alloc]).andReturn(mockWrapper);
 
-  PageContextWrapperOptions options;
-  options.rich_extraction = true;
-  CreatePageContextWrapper(web_state_.get(), options, base::DoNothing());
+  CreatePageContextWrapper(web_state_.get(), true, base::DoNothing());
 
   EXPECT_TRUE(mockWrapper.lastUseRichExtraction);
   EXPECT_TRUE(mockWrapper.lastUseRefactoredExtractor);
@@ -166,22 +164,7 @@ TEST_F(PageContextUtilTest, CreatePageContextWrapperWithoutRichExtraction) {
   MockPageContextWrapper* mockWrapper = [MockPageContextWrapper alloc];
   OCMStub([mockWrapperClass alloc]).andReturn(mockWrapper);
 
-  PageContextWrapperOptions options;
-  options.rich_extraction = false;
-  CreatePageContextWrapper(web_state_.get(), options, base::DoNothing());
+  CreatePageContextWrapper(web_state_.get(), false, base::DoNothing());
 
   EXPECT_FALSE(mockWrapper.lastUseRichExtraction);
-}
-
-TEST_F(PageContextUtilTest, CreatePageContextWrapperWithActionableModeImpliesRichExtraction) {
-  id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
-  MockPageContextWrapper* mockWrapper = [MockPageContextWrapper alloc];
-  OCMStub([mockWrapperClass alloc]).andReturn(mockWrapper);
-
-  PageContextWrapperOptions options;
-  options.actionable_mode = true;
-  CreatePageContextWrapper(web_state_.get(), options, base::DoNothing());
-
-  EXPECT_TRUE(mockWrapper.lastUseRichExtraction);
-  EXPECT_TRUE(mockWrapper.lastUseRefactoredExtractor);
 }

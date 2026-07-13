@@ -36,18 +36,9 @@ struct SavePageContextResult {
   SavePageContextResult& operator=(SavePageContextResult&&);
 };
 
-// Options for creating a PageContextWrapper.
-struct PageContextWrapperOptions {
-  // Whether to use rich extraction (APC V2).
-  bool rich_extraction = false;
-  // Whether to include actionable elements in the extraction. Note that
-  // enabling `actionable_mode` also implies `rich_extraction`.
-  bool actionable_mode = false;
-};
-
 PageContextWrapper* CreatePageContextWrapper(
     web::WebState* web_state,
-    PageContextWrapperOptions options,
+    bool rich_extraction,
     base::OnceCallback<void(PageContextWrapperCallbackResponse)>
         completion_callback);
 
