@@ -440,9 +440,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorRoundedCornersTest,
 
   views::WebView* web_view = FindWebView(content_parent);
   ASSERT_TRUE(web_view);
-  ui::Layer* layer = web_view->holder()->GetUILayer();
-  ASSERT_TRUE(layer);
-  EXPECT_FALSE(layer->rounded_corner_radii().IsEmpty());
+  EXPECT_FALSE(web_view->holder()->GetNativeViewCornerRadii().IsEmpty());
 
   // 3. Add a new tab and switch to it.
   chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
@@ -453,9 +451,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorRoundedCornersTest,
   EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kShown);
 
   // Verify rounded corners are still there
-  ui::Layer* layer_after = web_view->holder()->GetUILayer();
-  ASSERT_TRUE(layer_after);
-  EXPECT_FALSE(layer_after->rounded_corner_radii().IsEmpty());
+  EXPECT_FALSE(web_view->holder()->GetNativeViewCornerRadii().IsEmpty());
 }
 
 }  // namespace

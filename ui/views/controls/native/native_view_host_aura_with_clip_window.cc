@@ -24,6 +24,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
@@ -197,6 +198,20 @@ bool NativeViewHostAuraWithClipWindow::SetCornerRadii(
   ApplyRoundedCorners();
   return true;
 }
+
+gfx::RoundedCornersF
+NativeViewHostAuraWithClipWindow::GetNativeViewCornerRadii() const {
+  return corner_radii_;
+}
+
+
+
+gfx::Rect NativeViewHostAuraWithClipWindow::GetNativeViewClipRect() const {
+  ui::Layer* layer = host_->native_view() ? host_->native_view()->layer() : nullptr;
+  return layer ? layer->clip_rect() : gfx::Rect();
+}
+
+
 
 void NativeViewHostAuraWithClipWindow::SetHitTestTopInset(int top_inset) {
   if (top_inset_ == top_inset) {

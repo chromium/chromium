@@ -149,9 +149,7 @@ TEST_F(DrivePickerHostViewTest, SetsCornerRadiusOnAddedToWidget) {
 
   // Verify that the corner radii were set to 0 (rectangular) on the WebView
   // holder.
-  gfx::RoundedCornersF holder_radii =
-      web_view->holder()->GetUILayer()->rounded_corner_radii();
-  EXPECT_TRUE(holder_radii.IsEmpty());
+  EXPECT_TRUE(web_view->holder()->GetNativeViewCornerRadii().IsEmpty());
 
   // Verify that the corner radii were set to 0 on the view's layer.
   gfx::RoundedCornersF view_radii = view_ptr->layer()->rounded_corner_radii();

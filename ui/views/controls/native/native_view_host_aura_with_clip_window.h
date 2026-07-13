@@ -41,6 +41,9 @@ class NativeViewHostAuraWithClipWindow : public NativeViewHostWrapper,
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   bool SetCornerRadii(const gfx::RoundedCornersF& corner_radii) override;
+  gfx::RoundedCornersF GetNativeViewCornerRadii() const override;
+  gfx::Rect GetNativeViewClipRect() const override;
+
   void SetHitTestTopInset(int top_inset) override;
   int GetHitTestTopInset() const override;
   void InstallClip(int x, int y, int w, int h) override;

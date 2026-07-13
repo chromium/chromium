@@ -251,32 +251,26 @@ void SetClipToVisibleAreaRecursive(views::View& view,
   if (!clip_to) {
     if (auto* const layer = view.layer()) {
       layer->SetClipRect(gfx::Rect());
-      if (!layer->rounded_corner_radii().IsEmpty()) {
-        layer->SetIsFastRoundedCorner(true);
-      }
     } else {
       view.SetClipPath(SkPath());
     }
     if (auto* const web_view = views::AsViewClass<views::WebView>(&view)) {
-      if (auto* const layer = web_view->holder()->GetUILayer()) {
-        layer->SetClipRect(gfx::Rect());
-        if (!layer->rounded_corner_radii().IsEmpty()) {
-          layer->SetIsFastRoundedCorner(true);
-        }
+      auto* holder = web_view->holder();
+      if (holder) {
+        holder->SetNativeViewClipRect(gfx::Rect());
       }
     }
   } else {
     gfx::Rect mirrored = view.GetMirroredRect(*clip_to);
     if (auto* const layer = view.layer()) {
       layer->SetClipRect(mirrored);
-      layer->SetIsFastRoundedCorner(false);
     } else {
       view.SetClipPath(SkPath::Rect(gfx::RectToSkRect(mirrored)));
     }
     if (auto* const web_view = views::AsViewClass<views::WebView>(&view)) {
-      if (auto* const layer = web_view->holder()->GetUILayer()) {
-        layer->SetClipRect(mirrored);
-        layer->SetIsFastRoundedCorner(false);
+      auto* holder = web_view->holder();
+      if (holder) {
+        holder->SetNativeViewClipRect(mirrored);
       }
     }
   }
