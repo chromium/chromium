@@ -123,7 +123,7 @@ TEST_P(AutofillAndPasswordsTableViewControllerTest, TestModel) {
 }
 
 TEST_P(AutofillAndPasswordsTableViewControllerTest,
-       TestShoppingInfoHiddenWhenAmbientAutofillDisabled) {
+       TestShoppingHiddenWhenAmbientAutofillDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{autofill::features::kAutofillAiWithDataSchema},
@@ -187,7 +187,7 @@ TEST_P(AutofillAndPasswordsTableViewControllerTest,
 }
 
 TEST_P(AutofillAndPasswordsTableViewControllerTest,
-       TestIdentityDocsTravelInfoAndShoppingInfoHidden) {
+       TestIdentityDocsTravelInfoAndShoppingHidden) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       autofill::features::kAutofillAiWithDataSchema);
