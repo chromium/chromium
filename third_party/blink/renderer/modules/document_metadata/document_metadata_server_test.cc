@@ -173,10 +173,11 @@ TEST_F(DocumentMetadataServerTest, HyphenatedName) {
   ASSERT_FALSE(result.is_null());
   EXPECT_TRUE(result->allowed_keyword_found);
 
-  // "noise-cancelling" will NOT match because WordBreakIterator splits it.
+  // "noise-cancelling" will match because both keyword and target text are
+  // tokenized.
   result = Classify({"noise-cancelling"}, {});
   ASSERT_FALSE(result.is_null());
-  EXPECT_FALSE(result->allowed_keyword_found);
+  EXPECT_TRUE(result->allowed_keyword_found);
 }
 
 TEST_F(DocumentMetadataServerTest, PunctuationHandling) {
@@ -219,6 +220,69 @@ TEST_F(DocumentMetadataServerTest, UnicodeCaseFolding) {
   // Page has lowercase 'ὀδυσσεύς' (ends with 'ς').
   // Query has uppercase 'ὈΔΥΣΣΕΎΣ' (ends with 'Σ').
   result = Classify({String::FromUtf8("ὈΔΥΣΣΕΎΣ")}, {});
+  ASSERT_FALSE(result.is_null());
+  EXPECT_TRUE(result->allowed_keyword_found);
+}
+
+TEST_F(DocumentMetadataServerTest, MultiWordKeywords) {
+  SetHTMLInnerHTML(R"HTML(
+    <body>
+      <script type="application/ld+json">
+        {"@type": "Product", "name": "Delicious hot-dog, fresh"}
+      </script>
+    </body>
+  )HTML");
+
+  // 1. Matches multi-word with different punctuation/spacing.
+  auto result = Classify({"hot dog"}, {});
+  ASSERT_FALSE(result.is_null());
+  EXPECT_TRUE(result->allowed_keyword_found);
+
+  // 2. Exact match.
+  result = Classify({"delicious hot"}, {});
+  ASSERT_FALSE(result.is_null());
+  EXPECT_TRUE(result->allowed_keyword_found);
+
+  // 3. No match when words are split by another word.
+  result = Classify({"delicious dog"}, {});
+  ASSERT_FALSE(result.is_null());
+  EXPECT_FALSE(result->allowed_keyword_found);
+
+  // 4. No match when words are combined differently.
+  result = Classify({"hotdog"}, {});
+  ASSERT_FALSE(result.is_null());
+  EXPECT_FALSE(result->allowed_keyword_found);
+
+  // 5. Mixed single-word and multi-word with allowed and blocked.
+  SetHTMLInnerHTML(R"HTML(
+    <body>
+      <script type="application/ld+json">
+        {"@type": "Product", "name": "hot dog bun"}
+      </script>
+    </body>
+  )HTML");
+  result = Classify({"bun"}, {"hot dog"});
+  ASSERT_FALSE(result.is_null());
+  EXPECT_TRUE(result->allowed_keyword_found);
+  EXPECT_TRUE(result->blocked_keyword_found);
+}
+
+TEST_F(DocumentMetadataServerTest, UnicodeMultiWordKeywords) {
+  SetHTMLInnerHTML(String::FromUtf8(R"HTML(
+    <body>
+      <script type="application/ld+json">
+        {"@type": "Product", "name": "Ὀδυσσεύς ὁ μέγας"}
+      </script>
+    </body>
+  )HTML"));
+
+  // 1. "ὀδυσσεύσ ὁ" (lowercase, exact match with diacritics)
+  auto result = Classify({String::FromUtf8("ὀδυσσεύσ ὁ")}, {});
+  ASSERT_FALSE(result.is_null());
+  EXPECT_TRUE(result->allowed_keyword_found);
+
+  // 2. "ὀδυσσεύσ Ὁ" (capital Ὁ U+1F4D folds to ὁ U+1F45)
+  result = Classify({String::FromUtf8("ὀδυσσεύσ Ὁ")}, {});
   ASSERT_FALSE(result.is_null());
   EXPECT_TRUE(result->allowed_keyword_found);
 }

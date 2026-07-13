@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/document_metadata/document_metadata_extractor.h"
@@ -20,35 +21,73 @@ namespace {
 
 enum class KeywordType { kAllowed, kBlocked };
 
+struct PreparedKeyword {
+  Vector<String> words;
+  KeywordType type;
+};
+
+// Map from the first word of a keyword (case-folded) to the list of keywords
+// starting with that word. For example, if the keywords are "hot dog" (blocked)
+// and "bun" (allowed), the map will contain:
+//   "hot" -> [{words: ["hot", "dog"], type: kBlocked}]
+//   "bun" -> [{words: ["bun"], type: kAllowed}]
+using KeywordMap = HashMap<String, Vector<PreparedKeyword>>;
+
+Vector<String> Tokenize(const String& text) {
+  Vector<String> words;
+  if (text.empty()) {
+    return words;
+  }
+  TextBreakIterator* iter = WordBreakIterator(text);
+  if (!iter) {
+    return words;
+  }
+  int32_t pos = iter->first();
+  int32_t next = iter->next();
+  while (next != icu::BreakIterator::DONE) {
+    if (IsWordTextBreak(iter)) {
+      words.push_back(text.substr(pos, next - pos).FoldCase());
+    }
+    pos = next;
+    next = iter->next();
+  }
+  return words;
+}
+
 void MatchKeywords(const String& text,
-                   const HashMap<String, KeywordType>& keywords,
+                   const KeywordMap& keywords,
                    bool& has_allowed,
                    bool& has_blocked) {
   if (text.empty()) {
     return;
   }
 
-  TextBreakIterator* iter = WordBreakIterator(text);
-  if (!iter) {
+  Vector<String> text_words = Tokenize(text);
+  if (text_words.empty()) {
     return;
   }
 
-  int32_t pos = iter->first();
-  int32_t next = iter->next();
-  while (next != icu::BreakIterator::DONE) {
-    if (IsWordTextBreak(iter)) {
-      String word = text.substr(pos, next - pos).FoldCase();
-      auto it = keywords.find(word);
-      if (it != keywords.end()) {
-        if (it->value == KeywordType::kAllowed) {
-          has_allowed = true;
-        } else {
-          has_blocked = true;
+  base::span<const String> text_span(text_words);
+  while (!text_span.empty()) {
+    auto it = keywords.find(text_span.front());
+    if (it != keywords.end()) {
+      const Vector<PreparedKeyword>& candidates = it->value;
+      for (const auto& candidate : candidates) {
+        if (candidate.words.size() > text_span.size()) {
+          continue;
+        }
+
+        auto target_span = text_span.first(candidate.words.size());
+        if (std::ranges::equal(target_span, candidate.words)) {
+          if (candidate.type == KeywordType::kAllowed) {
+            has_allowed = true;
+          } else {
+            has_blocked = true;
+          }
         }
       }
     }
-    pos = next;
-    next = iter->next();
+    text_span = text_span.subspan(1u);
   }
 }
 
@@ -114,14 +153,24 @@ void DocumentMetadataServer::ClassifyProductDetails(
     return;
   }
 
-  HashMap<String, KeywordType> keywords_map;
-  keywords_map.ReserveCapacityForSize(allowed_keywords.size() +
-                                      blocked_keywords.size());
+  KeywordMap keywords_map;
+  auto add_keyword = [&](const String& kw, KeywordType type) {
+    Vector<String> words = Tokenize(kw);
+    if (words.empty()) {
+      return;
+    }
+    String first_word = words[0];
+    auto add_result =
+        keywords_map.insert(first_word, Vector<PreparedKeyword>());
+    add_result.stored_value->value.push_back(
+        PreparedKeyword{std::move(words), type});
+  };
+
   for (const auto& kw : allowed_keywords) {
-    keywords_map.insert(kw.FoldCase(), KeywordType::kAllowed);
+    add_keyword(kw, KeywordType::kAllowed);
   }
   for (const auto& kw : blocked_keywords) {
-    keywords_map.insert(kw.FoldCase(), KeywordType::kBlocked);
+    add_keyword(kw, KeywordType::kBlocked);
   }
 
   const bool has_product_group = std::ranges::any_of(
