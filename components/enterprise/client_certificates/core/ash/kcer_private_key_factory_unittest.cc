@@ -75,6 +75,28 @@ TEST_F(KcerPrivateKeyFactoryTest, CreatePrivateKey_GeneratesRealEcKey) {
   EXPECT_EQ(key->GetSSLPrivateKey(), nullptr);
 }
 
+TEST_F(KcerPrivateKeyFactoryTest, CreatePrivateKey_TagsKeyAsBrowserEnterprise) {
+  auto factory = MakeFactory();
+
+  base::test::TestFuture<scoped_refptr<PrivateKey>> create_future;
+  factory->CreatePrivateKey(create_future.GetCallback());
+  scoped_refptr<PrivateKey> key = create_future.Take();
+  ASSERT_TRUE(key);
+
+  // The factory tags every freshly generated key as owned by the browser
+  // enterprise client certificate (CA Connector) provisioning flow. Read the
+  // tag back through Kcer to confirm it was persisted on the underlying NSS
+  // key.
+  base::test::TestFuture<base::expected<bool, kcer::Error>> tag_future;
+  kcer_holder_.GetKcer()->GetBrowserEnterpriseClientCertTag(
+      kcer::PrivateKeyHandle(
+          kcer::Token::kUser,
+          kcer::PublicKeySpki(key->GetSubjectPublicKeyInfo())),
+      tag_future.GetCallback());
+  ASSERT_TRUE(tag_future.Get().has_value());
+  EXPECT_TRUE(tag_future.Get().value());
+}
+
 TEST_F(KcerPrivateKeyFactoryTest, CreatePrivateKey_NullKcer) {
   KcerPrivateKeyFactory factory(/*kcer=*/base::WeakPtr<kcer::Kcer>(),
                                 task_environment_.GetMainThreadTaskRunner());

@@ -143,12 +143,48 @@ void KcerPrivateKeyFactory::OnSoftwareKeyGenerated(
 void KcerPrivateKeyFactory::DeliverGeneratedKey(PrivateKeyCallback callback,
                                                 kcer::PublicKey public_key,
                                                 PrivateKeySource source) {
-  // TODO(crbug.com/517117656): Once Kcer exposes a way to tag managed
-  // client-cert keys (pending the chromiumos tag + chromium sync CLs), mark
-  // `public_key` as owned by the CA Connector provisioning flow before
-  // delivering it.
+  if (!kcer_) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  // Tag the freshly generated key as owned by the browser enterprise client
+  // certificate (CA Connector) provisioning flow so the stack can identify the
+  // keys it owns for later cleanup and auditing. This applies to both the
+  // TPM-backed and software fallback paths, since both deliver here. The tag is
+  // written immediately after key generation, as required by the Kcer API
+  // contract.
+  kcer::PublicKeySpki spki = public_key.GetSpki();
+  auto handle = kcer::PrivateKeyHandle(kcer::Token::kUser, spki);
+  kcer_->SetBrowserEnterpriseClientCertTag(
+      std::move(handle),
+      base::BindOnce(
+          &KcerPrivateKeyFactory::OnBrowserEnterpriseClientCertTagSet,
+          weak_factory_.GetWeakPtr(), std::move(callback), std::move(spki),
+          source));
+}
+
+void KcerPrivateKeyFactory::OnBrowserEnterpriseClientCertTagSet(
+    PrivateKeyCallback callback,
+    kcer::PublicKeySpki spki,
+    PrivateKeySource source,
+    base::expected<void, kcer::Error> result) {
+  if (!kcer_) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  if (!result.has_value()) {
+    // Non-blocking: a failure to persist the ownership tag must not abort
+    // provisioning. The key itself is valid and usable; only the metadata used
+    // for future cleanup/auditing is missing.
+    // TODO(crbug.com/517117656): Convert this log into a histogram so we can
+    // track how often tagging fails at an aggregate level.
+    LOG(WARNING) << "Failed to tag browser enterprise client certificate key "
+                    "(error: "
+                 << static_cast<int>(result.error())
+                 << "); delivering the key without the ownership tag.";
+  }
   std::move(callback).Run(base::MakeRefCounted<KcerPrivateKey>(
-      kcer_, public_key.GetSpki(), kcer_task_runner_, source));
+      kcer_, std::move(spki), kcer_task_runner_, source));
 }
 
 void KcerPrivateKeyFactory::LoadPrivateKeyImpl(

@@ -52,11 +52,22 @@ class KcerPrivateKeyFactory : public PrivateKeyFactory {
       PrivateKeyCallback callback,
       base::expected<kcer::PublicKey, kcer::Error> result);
 
-  // Builds a KcerPrivateKey wrapping the freshly generated `public_key` and
-  // returns it via `callback`.
+  // Tags the freshly generated `public_key` as owned by the browser enterprise
+  // client certificate (CA Connector) provisioning flow, then builds a
+  // KcerPrivateKey wrapping it and returns it via `callback` from
+  // OnBrowserEnterpriseClientCertTagSet.
   void DeliverGeneratedKey(PrivateKeyCallback callback,
                            kcer::PublicKey public_key,
                            PrivateKeySource source);
+
+  // Continuation of DeliverGeneratedKey, invoked once the ownership tag write
+  // completes. A tag failure is non-blocking: the key is still delivered (only
+  // the cleanup/audit metadata is missing).
+  void OnBrowserEnterpriseClientCertTagSet(
+      PrivateKeyCallback callback,
+      kcer::PublicKeySpki spki,
+      PrivateKeySource source,
+      base::expected<void, kcer::Error> result);
 
   // Common tail of LoadPrivateKey / LoadPrivateKeyFromDict. Both public methods
   // only extract the source and the key from their respective serialization
