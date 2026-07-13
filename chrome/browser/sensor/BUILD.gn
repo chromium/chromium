@@ -15,3 +15,16 @@ source_set("sensor") {
     "//content/public/browser",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chrome_sensor_delegate_unittest.cc" ]
+  deps = [
+    ":sensor",
+    "//chrome/browser/content_settings",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

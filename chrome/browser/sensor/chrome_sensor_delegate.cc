@@ -17,8 +17,11 @@ void ChromeSensorDelegate::SetRequestedSensorIsAvailable(
     content::RenderFrameHost* render_frame_host,
     bool is_available) {
   CHECK(render_frame_host);
-  content_settings::PageSpecificContentSettings::GetForFrame(render_frame_host)
-      ->SetRequestedSensorIsAvailable(is_available);
+  auto* settings = content_settings::PageSpecificContentSettings::GetForFrame(
+      render_frame_host);
+  if (settings) {
+    settings->SetRequestedSensorIsAvailable(is_available);
+  }
 }
 
 void ChromeSensorDelegate::OnSensorStarted(
@@ -45,6 +48,9 @@ void ChromeSensorDelegate::OnSensorStopped(
 void ChromeSensorDelegate::OnSensorBlocked(
     content::RenderFrameHost* render_frame_host) {
   CHECK(render_frame_host);
-  content_settings::PageSpecificContentSettings::GetForFrame(render_frame_host)
-      ->OnContentBlocked(ContentSettingsType::SENSORS);
+  auto* settings = content_settings::PageSpecificContentSettings::GetForFrame(
+      render_frame_host);
+  if (settings) {
+    settings->OnContentBlocked(ContentSettingsType::SENSORS);
+  }
 }
