@@ -39,6 +39,77 @@
       },
     },
 
+    'chrome_ai_wpt_tests_litert_suite': {
+      'chrome_ai_wpt_tests_litert_cpu': {
+        'test_common': {
+          'args': [
+            '--framework=litert-lm',
+            '--backend=cpu',
+            '--performance-hint=ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU',
+            '--expectations-file=AIExpectations_LiteRTCPU',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
+        'test': 'chrome_ai_wpt_tests',
+        'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'blink_tests_write_run_histories',
+        ],
+        'args': [
+          '--release',
+          '--timeout-multiplier=5',
+          '--child-processes=1',
+        ],
+        'mac_args': [
+          '--driver-name',
+          'Google Chrome',
+        ],
+        'swarming': {
+          'shards': 4,
+        },
+      },
+      'chrome_ai_wpt_tests_litert_gpu': {
+        'test_common': {
+          'args': [
+            '--framework=litert-lm',
+            '--backend=gpu',
+            '--performance-hint=ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE',
+            '--expectations-file=AIExpectations_LiteRTGPU',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
+        'test': 'chrome_ai_wpt_tests',
+        'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'blink_tests_write_run_histories',
+        ],
+        'args': [
+          '--release',
+          '--timeout-multiplier=5',
+          '--child-processes=1',
+        ],
+        'mac_args': [
+          '--driver-name',
+          'Google Chrome',
+        ],
+        'swarming': {
+          'shards': 4,
+        },
+      },
+    },
+
     'chrome_ai_wpt_tests_suite': {
       'chrome_ai_wpt_tests_cpu': {
         'test_common': {
@@ -3338,6 +3409,7 @@
     },
 
     'optimization_guide_mac_script_tests': {
+      'chrome_ai_wpt_tests_litert_suite': {},
       'litert_e2e_tests_cpu_suite': {},
       'litert_lm_advanced_main_legacy_tests_cpu_suite': {},
       'model_validation_tests_light_suite': {},

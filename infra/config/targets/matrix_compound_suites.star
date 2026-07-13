@@ -851,12 +851,13 @@ targets.legacy_matrix_compound_suite(
         # "ondevice_model_benchmark_tests_gpu_submodel_suite": None,
         # "ondevice_model_benchmark_tests_gpu_no_submodel_suite": None,
         # "ondevice_model_benchmark_tests_cpu_no_submodel_suite": None,
-        # TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
+        # TODO(b:484388901): Enable GPU backend testing when the issue is fixed.
         # "litert_e2e_tests_gpu_suite": None,
         "litert_e2e_tests_cpu_suite": None,
         "litert_lm_advanced_main_legacy_tests_cpu_suite": None,
-        # TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
+        # TODO(b:484388901): Enable GPU backend testing when the issue is fixed.
         # "litert_lm_advanced_main_legacy_tests_gpu_suite": None,
+        "chrome_ai_wpt_tests_litert_suite": None,
     },
 )
 
