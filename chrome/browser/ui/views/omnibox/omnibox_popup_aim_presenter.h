@@ -11,8 +11,9 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-class LocationBarView;
+class LocationBar;
 class OmniboxController;
+class OmniboxPopupPresenterDelegate;
 
 // Implements subclass of OmniboxPopupPresenterBase to present the AI-Mode
 // compose-plate into an Omnibox popup.
@@ -21,8 +22,9 @@ class OmniboxPopupAimPresenter
       public views::WidgetObserver,
       public permissions::PermissionRequestManager::Observer {
  public:
-  OmniboxPopupAimPresenter(LocationBarView* location_bar_view,
-                           OmniboxController* controller);
+  OmniboxPopupAimPresenter(LocationBar* location_bar,
+                           OmniboxController* controller,
+                           OmniboxPopupPresenterDelegate& presenter_delegate);
   OmniboxPopupAimPresenter(const OmniboxPopupAimPresenter&) = delete;
   OmniboxPopupAimPresenter& operator=(const OmniboxPopupAimPresenter&) = delete;
   ~OmniboxPopupAimPresenter() override;

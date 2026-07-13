@@ -60,15 +60,15 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   void OnKeywordStateChanged(bool is_keyword_selected) override {}
   void OnCharTyped(base::TimeTicks timestamp) override {}
 
+  // OmniboxPopupView:
+  bool IsOpen() const override;
+
  protected:
   OmniboxPopupViewWebUI(OmniboxView* omnibox_view,
                         OmniboxController* controller,
                         LocationBar* location_bar,
                         OmniboxPopupPresenterDelegate& presenter_delegate,
                         std::unique_ptr<OmniboxPopupPresenterBase> presenter);
-
-  // OmniboxPopupView:
-  bool IsOpen() const override;
 
   // The edit view owned by `location_bar_`. May be nullptr in tests.
   raw_ptr<OmniboxView> omnibox_view_;

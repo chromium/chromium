@@ -159,9 +159,10 @@ class WebUILocationBar : public LocationBar,
   // Determines whether the location icon should be overridden while a chip is
   // being displayed.
   bool ShouldChipOverrideLocationIcon();
-  bool ShouldShowAddContextButton();
 
   void OnMovedOrShown(ui::TrackedElement* element);
+  void OnPopupStateChanged(OmniboxPopupState old_state,
+                           OmniboxPopupState new_state);
 
   void UpdateLocationBarFlagsState();
   void UpdateSelectedKeywordState();
@@ -213,6 +214,10 @@ class WebUILocationBar : public LocationBar,
   std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<WebUIReadOnlyOmnibox> omnibox_view_;
   std::unique_ptr<OmniboxPopupViewWebUI> omnibox_popup_view_;
+  // The presenter controlling the showing of the AI mode popup.
+  std::unique_ptr<OmniboxPopupAimPresenter> omnibox_popup_aim_presenter_;
+  std::unique_ptr<OmniboxPopupFileSelector> omnibox_popup_file_selector_;
+  base::CallbackListSubscription popup_state_changed_subscription_;
 
   bool is_initialized_ = false;
 

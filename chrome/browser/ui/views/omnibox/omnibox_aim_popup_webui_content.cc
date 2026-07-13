@@ -33,10 +33,10 @@
 
 OmniboxAimPopupWebUIContent::OmniboxAimPopupWebUIContent(
     OmniboxPopupPresenterBase* presenter,
-    LocationBarView* location_bar_view,
+    LocationBar* location_bar,
     OmniboxController* controller)
     : OmniboxPopupWebUIBaseContent(presenter,
-                                   location_bar_view,
+                                   location_bar,
                                    controller,
                                    /*top_rounded_corners=*/true) {
   SetContentURL(chrome::kChromeUIOmniboxPopupAimURL);

@@ -347,7 +347,8 @@ void LocationBarView::Init() {
   if (!is_web_app && !is_devtools) {
     if (omnibox::IsAimPopupFeatureEnabled()) {
       omnibox_popup_aim_presenter_ = std::make_unique<OmniboxPopupAimPresenter>(
-          this, omnibox_controller_.get());
+          /*location_bar=*/this, omnibox_controller_.get(),
+          /*presenter_delegate=*/*this);
     }
 
     const bool web_ui_popup_dropdown_only =

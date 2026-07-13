@@ -13,7 +13,7 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-class LocationBarView;
+class LocationBar;
 class OmniboxController;
 class OmniboxPopupAimHandler;
 class OmniboxPopupPresenterBase;
@@ -25,7 +25,7 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
  public:
   OmniboxAimPopupWebUIContent() = delete;
   OmniboxAimPopupWebUIContent(OmniboxPopupPresenterBase* presenter,
-                              LocationBarView* location_bar_view,
+                              LocationBar* location_bar,
                               OmniboxController* controller);
   OmniboxAimPopupWebUIContent(const OmniboxAimPopupWebUIContent&) = delete;
   OmniboxAimPopupWebUIContent& operator=(const OmniboxAimPopupWebUIContent&) =

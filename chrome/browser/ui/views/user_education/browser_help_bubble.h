@@ -16,6 +16,8 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/interaction/element_identifier.h"
 
+class BrowserWindowInterface;
+
 // This file provides support classes required to create browser-specific help
 // bubbles.
 
@@ -102,6 +104,10 @@ class BrowserHelpBubble {
 
   // Close lower-priority promos that overlap with `view`.
   static void MaybeCloseOverlappingHelpBubbles(const views::View* view);
+  // Same, but based on overlap with screen coordinates.
+  static void MaybeCloseOverlappingHelpBubbles(
+      BrowserWindowInterface* browser,
+      const gfx::Rect& bounds_in_screen);
 
   // Shared logic with `ProfilePickerFeaturePromoController`.
   static std::u16string GetFocusHelpBubbleScreenReaderHint(

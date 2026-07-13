@@ -182,7 +182,15 @@ bool FloatingWebUIHelpBubbleFactoryBrowser::CanBuildBubbleForTrackedElement(
 // static
 void BrowserHelpBubble::MaybeCloseOverlappingHelpBubbles(
     const views::View* view) {
+  const gfx::Rect bounds = view->GetBoundsInScreen();
   auto* const browser = BrowserFeaturePromoController::GetBrowserForView(view);
+  MaybeCloseOverlappingHelpBubbles(browser, bounds);
+}
+
+// static
+void BrowserHelpBubble::MaybeCloseOverlappingHelpBubbles(
+    BrowserWindowInterface* browser,
+    const gfx::Rect& bounds_in_screen) {
   if (!browser) {
     return;
   }
@@ -193,15 +201,14 @@ void BrowserHelpBubble::MaybeCloseOverlappingHelpBubbles(
     return;
   }
 
-  const gfx::Rect bounds = view->GetBoundsInScreen();
 
   if (auto* const controller = service->GetFeaturePromoController(
           base::PassKey<BrowserHelpBubble>())) {
     static_cast<user_education::FeaturePromoControllerImpl*>(controller)
-        ->DismissNonCriticalBubbleInRegion(bounds);
+        ->DismissNonCriticalBubbleInRegion(bounds_in_screen);
   }
 
-  service->tutorial_service().DismissBubbleInRegion(bounds);
+  service->tutorial_service().DismissBubbleInRegion(bounds_in_screen);
 }
 
 // static

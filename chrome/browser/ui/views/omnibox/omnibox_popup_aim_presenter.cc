@@ -7,9 +7,9 @@
 #include <optional>
 #include <string_view>
 
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -18,13 +18,12 @@
 #include "ui/accessibility/ax_mode.h"
 
 OmniboxPopupAimPresenter::OmniboxPopupAimPresenter(
-    LocationBarView* location_bar_view,
-    OmniboxController* controller)
-    : OmniboxPopupPresenterBase(location_bar_view,
-                                *location_bar_view,
-                                controller) {
+    LocationBar* location_bar,
+    OmniboxController* controller,
+    OmniboxPopupPresenterDelegate& presenter_delegate)
+    : OmniboxPopupPresenterBase(location_bar, presenter_delegate, controller) {
   SetWebUIContent(std::make_unique<OmniboxAimPopupWebUIContent>(
-      this, location_bar_view, controller));
+      this, location_bar, controller));
 }
 
 OmniboxPopupAimPresenter::~OmniboxPopupAimPresenter() = default;

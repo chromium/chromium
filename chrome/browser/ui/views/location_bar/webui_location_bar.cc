@@ -11,6 +11,7 @@
 #include "base/notimplemented.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
+#include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -22,8 +23,11 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_state_helper.h"
+#include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
@@ -34,6 +38,9 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/omnibox/browser/location_bar_model.h"
@@ -107,6 +114,24 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
       /*omnibox_view=*/omnibox_view_.get(), omnibox_controller_.get(),
       /*location_bar=*/this, /*presenter_delegate=*/*this);
 
+  // This location bar implementation isn't used with web apps or devtools
+  // windows as of now. If this changes, we will need to be careful to not
+  // create extra processes for the popups in cases where they can't actually
+  // be shown.
+  const bool is_web_app =
+      browser_ && web_app::AppBrowserController::IsWebApp(browser_);
+  const bool is_devtools = browser_ && browser_->is_type_devtools();
+  DCHECK(!is_web_app);
+  DCHECK(!is_devtools);
+
+  if (omnibox::IsAimPopupFeatureEnabled()) {
+    omnibox_popup_aim_presenter_ = std::make_unique<OmniboxPopupAimPresenter>(
+        /*location_bar=*/this, omnibox_controller_.get(),
+        /*presenter_delegate=*/*this);
+    omnibox_popup_file_selector_ = std::make_unique<OmniboxPopupFileSelector>(
+        GetLocationBarWidget()->GetNativeWindow());
+  }
+
   content_setting_image_control_.Init(delegate);
   page_action_control_.Init(delegate);
 
@@ -121,6 +146,12 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
       ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
           kLocationBarElementId, BrowserElements::From(browser_)->GetContext(),
           base::BindRepeating(&WebUILocationBar::OnMovedOrShown,
+                              base::Unretained(this)));
+
+  // Watch popup state to help switch classical <-> AIM.
+  popup_state_changed_subscription_ =
+      omnibox_controller_->popup_state_manager()->AddPopupStateChangedCallback(
+          base::BindRepeating(&WebUILocationBar::OnPopupStateChanged,
                               base::Unretained(this)));
 
   is_initialized_ = true;
@@ -501,9 +532,6 @@ ui::ImageModel WebUILocationBar::UpdateLocationIcon(
 
   const int dip_size =
       GetLayoutConstant(LayoutConstant::kLocationBarLeadingIconSize);
-  if (ShouldShowAddContextButton()) {
-    return GetOmniboxController()->edit_model()->GetAddContextIcon(dip_size);
-  }
 
   return omnibox_view_->GetIcon(
       dip_size, color_provider->GetColor(id),
@@ -748,14 +776,12 @@ views::Widget* WebUILocationBar::GetLocationBarWidget() {
 
 OmniboxPopupFileSelector* WebUILocationBar::GetOmniboxPopupFileSelector()
     const {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return omnibox_popup_file_selector_.get();
 }
 
 OmniboxPopupAimPresenter* WebUILocationBar::GetOmniboxPopupAimPresenter()
     const {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return omnibox_popup_aim_presenter_.get();
 }
 
 bool WebUILocationBar::ShouldChipOverrideLocationIcon() {
@@ -763,15 +789,72 @@ bool WebUILocationBar::ShouldChipOverrideLocationIcon() {
          permission_dashboard_->GetRequestChip()->GetVisible();
 }
 
-bool WebUILocationBar::ShouldShowAddContextButton() {
-  NOTIMPLEMENTED();
-  // TODO(crbug.com/503784580): When AIM popup is supported this can
-  // return true.
-  return false;
-}
-
 void WebUILocationBar::OnMovedOrShown(ui::TrackedElement* element) {
   NotifyBoundsChanged();
+}
+
+void WebUILocationBar::OnPopupStateChanged(OmniboxPopupState old_state,
+                                           OmniboxPopupState new_state) {
+  if (browser_ && base::FeatureList::IsEnabled(
+                      features::kGlicHandoffButtonHideWhenOmniboxPopupOpened)) {
+    if (auto* window_controller = ActorUiWindowController::From(browser_)) {
+      window_controller->OnOmniboxPopupStateChanged(new_state !=
+                                                    OmniboxPopupState::kNone);
+    }
+  }
+
+  if (new_state != OmniboxPopupState::kNone) {
+    // Close any overlapping user education bubbles when any popup opens.
+    // It's not great for promos to overlap the omnibox if the user opens the
+    // drop-down after showing the promo. This especially causes issues on Mac
+    // and Linux due to z-order/rendering issues, see crbug.com/40775593 and
+    // crbug.com/332769403 for examples.
+    BrowserHelpBubble::MaybeCloseOverlappingHelpBubbles(browser_,
+                                                        BoundsInScreen());
+  }
+
+  // Hide the old popup.
+  switch (old_state) {
+    case OmniboxPopupState::kClassic:
+      // Normally, the classic/full popup hides itself in
+      // `UpdatePopupAppearance()` before updating the popup state. However,
+      // explicitly hide the classic/full popup for scenario of transitioning
+      // from the classic/full to the aim popup.
+      if (omnibox_popup_view_->IsOpen()) {
+        omnibox_popup_view_->UpdatePopupAppearance();
+      }
+      break;
+    case OmniboxPopupState::kFull:
+      CHECK(false);  // Shouldn't see it here.
+
+    case OmniboxPopupState::kAim:
+      if (omnibox_popup_aim_presenter_) {
+        omnibox_popup_aim_presenter_->Hide();
+      }
+      break;
+    case OmniboxPopupState::kNone:
+      break;
+  }
+
+  // Show the new popup.
+  switch (new_state) {
+    case OmniboxPopupState::kClassic:
+      // The classic/full popup shows itself in `UpdatePopupAppearance()` before
+      // updating the popup state.
+      break;
+    case OmniboxPopupState::kFull:
+      CHECK(false);  // Shouldn't see it here.
+
+    case OmniboxPopupState::kAim:
+      if (omnibox_popup_aim_presenter_) {
+        omnibox_popup_aim_presenter_->Show();
+      }
+      break;
+    case OmniboxPopupState::kNone:
+      break;
+  }
+
+  UpdateWithoutTabRestore();
 }
 
 void WebUILocationBar::UpdateLocationBarFlagsState() {

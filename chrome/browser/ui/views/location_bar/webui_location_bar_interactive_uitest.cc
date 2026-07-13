@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
@@ -48,6 +50,7 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kClassicPopupWebViewId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAimPopupWebViewId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIToolbarId);
 
 const WebContentsInteractionTestUtil::DeepQuery kOmniboxInputDeepQuery = {
@@ -56,6 +59,9 @@ const WebContentsInteractionTestUtil::DeepQuery kOmniboxAdditionalText = {
     "toolbar-app", "location-bar", "readonly-omnibox", "#additionalText"};
 const WebContentsInteractionTestUtil::DeepQuery kSearchKeywordText = {
     "toolbar-app", "location-bar", "selected-keyword", "#long"};
+const WebContentsInteractionTestUtil::DeepQuery kAIMButton = {
+    "toolbar-app", "location-bar", "page-action-icons", "page-action-icon",
+    "cr-icon-button"};
 
 const WebContentsInteractionTestUtil::DeepQuery kClassicMatchText0 = {
     "omnibox-popup-app", "cr-searchbox-dropdown",
@@ -115,8 +121,8 @@ class WebUILocationBarInteractiveUiTest : public TestBase {
   WebUILocationBarInteractiveUiTest() {
     feature_list_.InitWithFeatures(
         {features::kInitialWebUI, features::kWebUIReloadButton,
-         features::kWebUILocationBar},
-        {});
+         features::kWebUILocationBar, omnibox::internal::kWebUIOmniboxAimPopup},
+        {omnibox::kAimServerEligibilityEnabled});
   }
   ~WebUILocationBarInteractiveUiTest() override = default;
 
@@ -173,6 +179,28 @@ class WebUILocationBarInteractiveUiTest : public TestBase {
                                              GetActiveClassicPopupWebView())),
         InSameContext(WaitForWebContentsReady(
             kClassicPopupWebViewId, GURL(chrome::kChromeUIOmniboxPopupURL))));
+  }
+
+  auto GetActiveAimPopupWebView() {
+    return base::BindLambdaForTesting([&]() -> views::View* {
+      WebUILocationBar* location_bar = static_cast<WebUILocationBar*>(
+          BrowserView::GetBrowserViewForBrowser(browser())
+              ->toolbar()
+              ->location_bar());
+      auto* aim_presenter = static_cast<OmniboxPopupAimPresenter*>(
+          location_bar->GetOmniboxPopupAimPresenter());
+      return aim_presenter->GetWebUIContent();
+    });
+  }
+
+  auto WaitForAimPopupReady() {
+    return Steps(
+        InAnyContext(
+            WaitForShow(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+        InAnyContext(InstrumentNonTabWebView(kAimPopupWebViewId,
+                                             GetActiveAimPopupWebView())),
+        InSameContext(WaitForWebContentsReady(
+            kAimPopupWebViewId, GURL(chrome::kChromeUIOmniboxPopupAimURL))));
   }
 
   auto RemoveFocusFromPopup() {
@@ -426,6 +454,40 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, ShowHidePopup) {
       EnterText(kOmniboxElementId, u"input"), WaitForClassicPopupReady(),
       // Removing the focus should hide the popup.
       RemoveFocusFromPopup());
+}
+
+// Show and hide the omnibox AI mode popup.
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, ShowHideAIPopup) {
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      InAnyContext(
+          EnsureNotPresent(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+      FocusWebContents(kWebUIToolbarId),
+      ExecuteJsAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "el => el.focus()"),
+      // Shouldn't have a popup visible yet.
+      InAnyContext(
+          EnsureNotPresent(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+      // Type some text, it should show up.
+      EnterText(kOmniboxElementId, u"i"), WaitForClassicPopupReady(),
+      WaitTillOmniboxViewText("i"),
+      // Clear it.
+      SendKeyPress(kWebUIToolbarId, ui::VKEY_BACK), WaitTillOmniboxViewText(""),
+      // Since text is empty, we should be able to see the AI mode button.
+      WaitForJsResultAt(kWebUIToolbarId, kAIMButton,
+                        "(el) => el.title === 'Ask AI Mode in Google Search'"),
+      // Click it.
+      ClickElement(kWebUIToolbarId, kAIMButton),
+      // Should hide classic popup, show AIM one.
+      InAnyContext(
+          WaitForHide(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+      WaitForAimPopupReady(),
+
+      // Press Esc to close it.
+      SendKeyPress(kWebUIToolbarId, ui::VKEY_ESCAPE),
+
+      InAnyContext(
+          WaitForHide(OmniboxPopupPresenterBase::kRoundedResultsFrame)));
 }
 
 // Test that the popup shrinks when the browser window does.
