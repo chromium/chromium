@@ -176,12 +176,10 @@ std::string GetUmaModelNameFromState(OnDeviceModelComponentState* state) {
   return ConvertModelNameToUmaModelName(state->GetBaseModelSpec().model_name);
 }
 
-bool WasOnDeviceModelRecentlyUsed(UsageTracker* usage_tracker,
-                                  OnDeviceModelType model_type) {
+bool WasOnDeviceModelRecentlyUsed(UsageTracker* usage_tracker) {
   return std::ranges::any_of(
       OnDeviceFeatureSet::All(), [&](mojom::OnDeviceFeature feature) {
-        return GetOnDeviceModelType(feature) == model_type &&
-               usage_tracker->WasUseCaseRecentlyUsed(ToUseCaseName(feature));
+        return usage_tracker->WasUseCaseRecentlyUsed(ToUseCaseName(feature));
       });
 }
 
@@ -272,13 +270,11 @@ OnDeviceModelComponentStateManager::OnDeviceModelComponentStateManager(
     PrefService* local_state,
     base::SafeRef<PerformanceClassifier> performance_classifier,
     UsageTracker& usage_tracker,
-    std::unique_ptr<Delegate> delegate,
-    OnDeviceModelType model_type)
+    std::unique_ptr<Delegate> delegate)
     : local_state_(local_state),
       performance_classifier_(std::move(performance_classifier)),
       delegate_(std::move(delegate)),
-      usage_tracker_(usage_tracker),
-      model_type_(model_type) {
+      usage_tracker_(usage_tracker) {
   CHECK(local_state);  // Useful to catch poor test setup.
   usage_tracker_observation_.Observe(&usage_tracker);
   pref_change_registrar_.Init(local_state);
@@ -502,10 +498,6 @@ void OnDeviceModelComponentStateManager::OnDeviceEligibleUseCaseUsed(
     return;
   }
 
-  if (GetOnDeviceModelType(*feature) != model_type_) {
-    return;
-  }
-
   base::UmaHistogramEnumeration(
       "OptimizationGuide.ModelExecution.OnDeviceModelStatusAtUseTime",
       GetOnDeviceModelStatus());
@@ -567,7 +559,7 @@ OnDeviceModelComponentStateManager::ComputeRegistrationCriteria(
   result.disk_space_free = disk_space_free;
   result.device_capable = performance_classifier_->IsDeviceCapable();
   result.on_device_feature_recently_used =
-      WasOnDeviceModelRecentlyUsed(&usage_tracker_.get(), model_type_);
+      WasOnDeviceModelRecentlyUsed(&usage_tracker_.get());
   result.enabled_by_feature = features::IsOnDeviceExecutionEnabled();
   result.enabled_by_enterprise_policy =
       GetGenAILocalFoundationalModelEnterprisePolicySettings(local_state_) ==

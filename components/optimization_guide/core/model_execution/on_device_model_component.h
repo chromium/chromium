@@ -349,8 +349,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
       PrefService* local_state,
       base::SafeRef<PerformanceClassifier> performance_classifier,
       UsageTracker& usage_tracker,
-      std::unique_ptr<Delegate> delegate,
-      OnDeviceModelType model_type);
+      std::unique_ptr<Delegate> delegate);
   ~OnDeviceModelComponentStateManager() override;
 
   // Returns whether the component installation is valid.
@@ -470,9 +469,6 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
       usage_tracker_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // The model type managed by this state manager.
-  const OnDeviceModelType model_type_;
 
   base::WeakPtrFactory<OnDeviceModelComponentStateManager> weak_ptr_factory_{
       this};

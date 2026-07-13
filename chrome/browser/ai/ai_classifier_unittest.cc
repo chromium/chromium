@@ -158,16 +158,16 @@ class AIClassifierTest : public AITestUtils::AITestBase {
 };
 
 TEST_F(AIClassifierTest, Classify) {
-  fake_broker_->InstallClassifierModel(
+  fake_broker_->InstallBaseModel(
       std::make_unique<optimization_guide::FakeBaseModelAsset>());
   fake_broker_->settings().set_execute_result({"Classified result"});
 
   mojo::Remote<blink::mojom::AIClassifier> classifier_remote =
       GetAIClassifierRemote();
 
-  // The FakeBaseModelAsset/FakeService prepends "CPU backend".
+  // The base model runs on GPU by default in tests.
   EXPECT_THAT(Classify(*classifier_remote, kInputString, kContextString),
-              ElementsAreArray({"CPU backend", "Classified result"}));
+              ElementsAreArray({"Classified result"}));
 }
 
 TEST_F(AIClassifierTest, ClassifierTelemetry) {
@@ -177,7 +177,7 @@ TEST_F(AIClassifierTest, ClassifierTelemetry) {
                   optimization_guide::mojom::OnDeviceFeature::kClassifier))
       .WillRepeatedly(testing::Return(
           optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
-  fake_broker_->InstallClassifierModel(
+  fake_broker_->InstallBaseModel(
       std::make_unique<optimization_guide::FakeBaseModelAsset>());
   EnsureModelIsReady();
   GetAIClassifierRemote();
@@ -198,7 +198,7 @@ TEST_F(AIClassifierTest, CanCreateDefaultOptions) {
   }
 
   // After model is ready, `CanCreateClassifier` should return available.
-  fake_broker_->InstallClassifierModel(
+  fake_broker_->InstallBaseModel(
       std::make_unique<optimization_guide::FakeBaseModelAsset>());
   EnsureModelIsReady();
 

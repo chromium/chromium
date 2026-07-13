@@ -12,7 +12,6 @@
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_classifier_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_download_progress_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
@@ -37,8 +36,6 @@ class ModelBrokerState final
       OptimizationGuideModelProvider& model_provider,
       std::unique_ptr<OnDeviceModelComponentStateManager::Delegate>
           base_delegate,
-      std::unique_ptr<OnDeviceModelComponentStateManager::Delegate>
-          classifier_delegate,
       on_device_model::ServiceClient::LaunchFn launch_fn,
       component_updater::ComponentUpdateService* component_update_service);
   ~ModelBrokerState() override;
@@ -116,7 +113,6 @@ class ModelBrokerState final
   PerformanceClassifier performance_classifier_;
   OnDeviceModelComponentStateManager component_state_manager_;
   OnDeviceModelServiceController base_model_controller_;
-  std::optional<OnDeviceModelClassifierController> classifier_controller_;
   OnDeviceAssetManager asset_manager_;
   mojo::ReceiverSet<ModelBrokerDebug> receivers_;
   mojo::RemoteSet<mojom::ModelBrokerDebugObserver> debug_observers_;

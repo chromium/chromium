@@ -36,18 +36,12 @@ class OptimizationGuideOnDeviceModelInstallerPolicy
                              OnDemandUpdater::Priority priority);
 };
 
-enum class OnDeviceModelType {
-  kBaseModel,
-  kClassifierModel,
-};
-
 // Returns the extension ID for the optimization guide on-device models.
-std::string GetOptimizationGuideOnDeviceModelExtensionId(
-    OnDeviceModelType type);
+std::string GetOptimizationGuideOnDeviceModelExtensionId();
 
 std::unique_ptr<
     optimization_guide::OnDeviceModelComponentStateManager::Delegate>
-CreateOptimizationGuideOnDeviceModelComponentDelegate(OnDeviceModelType type);
+CreateOptimizationGuideOnDeviceModelComponentDelegate();
 
 // Creates a generic delegate for Manifest Component.
 std::unique_ptr<optimization_guide::ManifestAssetManager::Delegate>

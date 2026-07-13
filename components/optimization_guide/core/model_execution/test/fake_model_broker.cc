@@ -67,16 +67,6 @@ void FakeModelBroker::InstallBaseModel(
   component_state_.Install(std::move(asset));
 }
 
-void FakeModelBroker::InstallClassifierModel(
-    FakeBaseModelAsset::Content content) {
-  InstallClassifierModel(
-      std::make_unique<FakeBaseModelAsset>(std::move(content)));
-}
-
-void FakeModelBroker::InstallClassifierModel(
-    std::unique_ptr<FakeBaseModelAsset> asset) {
-  classifier_component_state_.Install(std::move(asset));
-}
 
 void FakeModelBroker::UpdateTarget(proto::OptimizationTarget target,
                                    const ModelInfo& model_info) {
@@ -104,9 +94,6 @@ ModelBrokerState& FakeModelBroker::GetOrCreateBrokerState() {
     model_broker_state_.emplace(
         local_state_.local_state(), model_provider_,
         component_state_.CreateDelegate(),
-        options_.include_classifier
-            ? classifier_component_state_.CreateDelegate()
-            : nullptr,
         fake_launcher_.LaunchFn(),
         &component_state_.component_update_service());
   }

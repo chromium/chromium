@@ -178,10 +178,7 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState(
 
   auto model_broker_state = std::make_unique<ModelBrokerState>(
       *g_browser_process->local_state(), model_provider(),
-      component_updater::CreateOptimizationGuideOnDeviceModelComponentDelegate(
-          component_updater::OnDeviceModelType::kBaseModel),
-      component_updater::CreateOptimizationGuideOnDeviceModelComponentDelegate(
-          component_updater::OnDeviceModelType::kClassifierModel),
+      component_updater::CreateOptimizationGuideOnDeviceModelComponentDelegate(),
       launch_service_callback, g_browser_process->component_updater());
 
   component_state_manager_observer_ =
