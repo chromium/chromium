@@ -162,6 +162,15 @@ class GenerateCanonicalLocalesListSanitizer(BaseActionSanitizer):
         return True
 
 
+class GenerateKnownBcp47SubtagsSanitizer(BaseActionSanitizer):
+
+    def _sanitize_args(self):
+        self.args.set_arg_at(0, '$(out)')
+        super()._sanitize_args()
+
+    def is_header_generated(self):
+        return True
+
 class WriteBuildDateHeaderSanitizer(BaseActionSanitizer):
 
     def _sanitize_args(self):
@@ -616,6 +625,8 @@ def get_action_sanitizer(gn, target, gn_type, arch, is_test_target, context):
         return WriteBuildDateHeaderSanitizer(target, arch, context)
     if target.script == "//tools/i18n/generate_canonical_locales_list.py":
         return GenerateCanonicalLocalesListSanitizer(target, arch, context)
+    if target.script == "//tools/i18n/generate_known_bcp47_subtags.py":
+        return GenerateKnownBcp47SubtagsSanitizer(target, arch, context)
     if target.script == "//tools/metrics/histograms/generate_allowlist_from_histograms_file.py":
         return WriteGenerateAllowlistFromHistogramsFileSanitizer(
             target, arch, context)

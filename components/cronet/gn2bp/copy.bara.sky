@@ -42,6 +42,7 @@ origin_files = glob_with_gn2bp([
     "tools/metrics/**",
     # https://crbug.com/514683156
     "tools/i18n/generate_canonical_locales_list.py",
+    "tools/i18n/generate_known_bcp47_subtags.py",
 ]) + glob_with_gn2bp(["base/**"], exclude = [
     # Exclude test files to reduce the number of gn2bp files
     "base/tracing/test/**",
