@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {DebugData} from 'chrome://web-app-internals/web_app_internals_utils.js';
-import {filterToApp, getQuery, renderAppIndex} from 'chrome://web-app-internals/web_app_internals_utils.js';
+import {debugDataJsonReplacer, filterToApp, getAppIndexEntries, getQuery, renderAppIndex} from 'chrome://web-app-internals/web_app_internals_utils.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // Tests only exercise the InstalledWebApps section. Cast as DebugData since
@@ -153,6 +153,37 @@ suite('WebAppInternalsUtilsTest', function() {
       renderAppIndex(data, container, '');
       assertEquals(0, container.querySelectorAll('span').length);
       assertEquals(2, container.querySelectorAll('a').length);
+    });
+
+    test('extracts entries with Show All prepended', function() {
+      const data = makeFakeData({'App1': 'id1', 'App2': 'id2'}, []);
+      const entries = getAppIndexEntries(data, 'id2');
+      assertEquals(3, entries.length);
+      assertDeepEquals(
+          {id: '', label: 'Show All', isActive: false}, entries[0]);
+      assertDeepEquals(
+          {id: 'id1', label: 'App1 (id1)', isActive: false}, entries[1]);
+      assertDeepEquals(
+          {id: 'id2', label: 'App2 (id2)', isActive: true}, entries[2]);
+    });
+
+    test('marks Show All active when query is empty', function() {
+      const data = makeFakeData({'App1': 'id1'}, []);
+      const entries = getAppIndexEntries(data, '');
+      assertTrue(entries[0]!.isActive);
+      assertFalse(entries[1]!.isActive);
+    });
+
+    test('canonical key ordering', function() {
+      const input = {
+        IconErrorLog: [],
+        InstalledWebApps: {'!Index': {}, Details: []},
+        LockManager: {},
+      };
+      const json = JSON.stringify(input, debugDataJsonReplacer, 2);
+      const keys = Object.keys(JSON.parse(json));
+      assertDeepEquals(
+          ['InstalledWebApps', 'LockManager', 'IconErrorLog'], keys);
     });
   });
 });

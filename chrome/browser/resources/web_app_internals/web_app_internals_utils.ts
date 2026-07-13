@@ -32,6 +32,32 @@ export interface DebugData {
 }
 
 /**
+ * Canonical ordering of top-level DebugData keys matching the logical subsystem
+ * grouping rather than alphabetical order, improving scannability and reading.
+ */
+const DebugDataKeyOrder: ReadonlyArray<keyof DebugData> = [
+  'InstalledWebApps',
+  'AppShimRegistryLocalStorage',
+  'LockManager',
+  'NavigationCapturing',
+  'CommandManager',
+  'DatabaseLog',
+  'IconErrorLog',
+  'PreinstalledWebAppConfigs',
+  'UserUninstalledPreinstalledWebAppPrefs',
+  'WebAppPreferences',
+  'WebAppIphPreferences',
+  'WebAppMlPreferences',
+  'WebAppIPHLinkCapturingPreferences',
+  'ShouldGarbageCollectStoragePartitions',
+  'IsolatedWebAppUpdateManager',
+  'IsolatedWebAppPolicyManager',
+  'IwaBundleCacheManager',
+  'IwaKeyDistributionInfoProvider',
+  'WebAppDirectoryDiskState',
+];
+
+/**
  * Result of filterToApp(): either the full DebugData (when filtering doesn't
  * apply) or a subset containing only the filtered InstalledWebApps section.
  */
@@ -47,6 +73,15 @@ export interface InstalledWebAppsData {
 }
 
 /**
+ * Represents a single navigation link entry in the installed web apps index.
+ */
+export interface AppIndexEntry {
+  id: string;  // Empty string '' represents the 'Show All' entry.
+  label: string;
+  isActive: boolean;
+}
+
+/**
  * Gets the app ID query from the URL hash fragment.
  * For example, if the URL is "chrome://web-app-internals/#abc" then the
  * query is "abc".
@@ -59,6 +94,41 @@ export function getQuery(): string {
 }
 
 /**
+ * Extracts and formats the index entries of installed web apps from the parsed
+ * debug JSON for declarative rendering in Lit.
+ */
+export function getAppIndexEntries(
+    data: DebugData, query: string): AppIndexEntry[] {
+  const entries: AppIndexEntry[] = [];
+  const appIndex = data.InstalledWebApps['!Index'];
+
+  let queryMatchFound = false;
+  for (const [name, idOrIds] of Object.entries(appIndex)) {
+    const ids: string[] = Array.isArray(idOrIds) ? idOrIds : [idOrIds];
+    for (const id of ids) {
+      const isActive = (id === query);
+      if (isActive) {
+        queryMatchFound = true;
+      }
+      entries.push({
+        id,
+        label: `${name} (${id})`,
+        isActive,
+      });
+    }
+  }
+
+  // Prepend the 'Show All' navigation entry.
+  entries.unshift({
+    id: '',
+    label: 'Show All',
+    isActive: !query || !queryMatchFound,
+  });
+
+  return entries;
+}
+
+/**
  * Builds a clickable index of installed web apps from the parsed debug JSON.
  * Each app name becomes a link that filters the page to that app's details.
  * The currently selected app (based on URL hash) is highlighted.
@@ -67,30 +137,12 @@ export function renderAppIndex(
     data: DebugData, indexContainer: HTMLElement, query: string): void {
   indexContainer.replaceChildren();
 
-  const appIndex = data.InstalledWebApps['!Index'];
-
-  const showAllLink = document.createElement('a');
-  showAllLink.href = '#';
-  showAllLink.textContent = 'Show All';
-  indexContainer.appendChild(showAllLink);
-
-  let queryMatchFound = false;
-  for (const [name, idOrIds] of Object.entries(appIndex)) {
-    const ids: string[] = Array.isArray(idOrIds) ? idOrIds : [idOrIds];
-    for (const id of ids) {
-      const link = document.createElement('a');
-      link.href = '#' + id;
-      link.textContent = `${name} (${id})`;
-      if (id === query) {
-        link.classList.add('active');
-        queryMatchFound = true;
-      }
-      indexContainer.appendChild(link);
-    }
-  }
-
-  if (!query || !queryMatchFound) {
-    showAllLink.classList.add('active');
+  for (const entry of getAppIndexEntries(data, query)) {
+    const link = document.createElement('a');
+    link.href = `#${entry.id || ''}`;
+    link.textContent = entry.label;
+    link.classList.toggle('active', entry.isActive);
+    indexContainer.appendChild(link);
   }
 }
 
@@ -113,4 +165,33 @@ export function filterToApp(data: DebugData, appId: string): FilteredDebugData {
       Details: filtered,
     },
   };
+}
+
+/**
+ * A JSON.stringify replacer function (second parameter) that orders top-level
+ * DebugData dictionary keys into a logical subsystem sequence matching
+ * DebugDataKeyOrder while preserving all nested properties and sections intact.
+ */
+export function debugDataJsonReplacer(key: string, value: unknown): unknown {
+  if (key === '' && value && typeof value === 'object' &&
+      !Array.isArray(value)) {
+    const ordered: Record<string, unknown> = {};
+    const dict = value as Record<string, unknown>;
+
+    for (const k of DebugDataKeyOrder) {
+      if (k in dict) {
+        ordered[k] = dict[k];
+      }
+    }
+
+    for (const [k, v] of Object.entries(dict)) {
+      if (!(k in ordered) && v !== undefined) {
+        ordered[k] = v;
+      }
+    }
+
+    return ordered;
+  }
+
+  return value;
 }

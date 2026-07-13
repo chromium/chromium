@@ -14,7 +14,7 @@ import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import type {InstallIsolatedWebAppResult, IwaDevModeAppInfo, IwaDevModeLocation, ParseUpdateManifestFromUrlResult, UpdateInfo, UpdateManifest, VersionEntry} from './web_app_internals.mojom-webui.js';
 import {WebAppInternalsHandler} from './web_app_internals.mojom-webui.js';
 import type {DebugData} from './web_app_internals_utils.js';
-import {filterToApp, getQuery, renderAppIndex} from './web_app_internals_utils.js';
+import {debugDataJsonReplacer, filterToApp, getQuery, renderAppIndex} from './web_app_internals_utils.js';
 
 const webAppInternalsHandler = WebAppInternalsHandler.getRemote();
 
@@ -625,9 +625,11 @@ function renderDebugInfo(jsonString: string) {
 
   if (query) {
     const displayData = filterToApp(parsed, query);
-    getRequiredElement('json').innerText = JSON.stringify(displayData, null, 2);
+    getRequiredElement('json').innerText =
+        JSON.stringify(displayData, debugDataJsonReplacer, 2);
   } else {
-    getRequiredElement('json').innerText = jsonString;
+    getRequiredElement('json').innerText =
+        JSON.stringify(parsed, debugDataJsonReplacer, 2);
   }
 }
 
