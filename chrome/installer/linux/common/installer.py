@@ -6,6 +6,7 @@ import argparse
 import dataclasses
 import datetime
 import glob
+import hashlib
 import logging
 import os
 import pathlib
@@ -1180,3 +1181,83 @@ class Installer:
                         msg += f", but they were {oct(actual_perms)}"
                         print(msg, file=sys.stderr)
                         sys.exit(1)
+
+
+def compute_repo_package_hash_for_presubmit(
+    chrome_installer_linux_dir: str | pathlib.Path,
+    out_dir: str | pathlib.Path,
+) -> str:
+    """Builds the repo .deb package in out_dir and returns its SHA-256 hash.
+
+    This function is used during presubmit and key update to build a minimal,
+    deterministic version of the repository package ('google-chrome-repo') and
+    return its hash.
+
+    Since this is only used to verify that modifications to repository package
+    templates or packaging scripts are accompanied by version, timestamp, and
+    hash updates in 'repo_package.include', the package configuration (like
+    version, timestamp, architecture, branding, etc.) can be hardcoded.
+    This avoids needing a real, fully compiled Chrome/Chromium build output
+    directory, making the presubmit check extremely fast and lightweight.
+
+    'google-chrome-repo' is used as the representative package for verification
+    because the repo package scripts (postinst, postrm, etc.) are identical or
+    structurally equivalent under both brandings, and verifying a single
+    representative branding is sufficient to enforce version and hash updates.
+    """
+    old_umask = os.umask(0o022)
+    try:
+        local_root = os.path.abspath(str(chrome_installer_linux_dir))
+        out_dir = os.path.abspath(str(out_dir))
+        common_out = os.path.join(out_dir, "installer", "common")
+        theme_out = os.path.join(out_dir, "installer", "theme")
+        os.makedirs(common_out, exist_ok=True)
+        os.makedirs(theme_out, exist_ok=True)
+
+        # Copy the required 'google-chrome.info' directly from the source repository.
+        # This file must exist as it is a vital part of the repository structure.
+        info_path = os.path.join(local_root, "common", "google-chrome.info")
+        shutil.copy(info_path, os.path.join(common_out, "google-chrome.info"))
+
+        # Write mock files simulating a build directory so build_repo_package.py
+        # can execute in a standalone/presubmit context without requiring a real,
+        # fully-built Chromium/Chrome binary.
+        with open(os.path.join(theme_out, "BRANDING"), "w") as f:
+            f.write("COMPANY_FULLNAME=Google\n")
+        with open(os.path.join(out_dir, "installer", "version.txt"), "w") as f:
+            f.write("MAJOR=130\nMINOR=0\nBUILD=6723\nPATCH=44\n")
+
+        script = os.path.join(local_root, "debian", "build_repo_package.py")
+        cmd = [
+            sys.executable,
+            script,
+            "-a",
+            "amd64",
+            "-b",
+            "1700000000",
+            "-c",
+            "stable",
+            "-d",
+            "google_chrome",
+            "-o",
+            out_dir,
+            "-s",
+            out_dir,
+            "-t",
+            "linux",
+        ]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        if res.returncode != 0:
+            error_msg = f"build_repo_package.py failed (rc={res.returncode})"
+            if res.stdout:
+                error_msg += f"\nstdout:\n{res.stdout}"
+            if res.stderr:
+                error_msg += f"\nstderr:\n{res.stderr}"
+            raise RuntimeError(error_msg)
+        deb_path = os.path.join(out_dir, "google-chrome-repo_amd64.deb")
+        if not os.path.exists(deb_path):
+            raise RuntimeError(f"deb package was not created at {deb_path}")
+        with open(deb_path, "rb") as f:
+            return hashlib.sha256(f.read()).hexdigest()
+    finally:
+        os.umask(old_umask)

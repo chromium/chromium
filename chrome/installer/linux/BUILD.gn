@@ -305,6 +305,7 @@ action("deb_repo_package") {
     "debian/control_repo.template",
     "debian/postinst_repo",
     "debian/postrm_repo",
+    "debian/repo_package.include",
   ]
 
   deps = [ ":installer_deps" ]
