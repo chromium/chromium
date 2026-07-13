@@ -256,9 +256,6 @@ public final class ProductionSupportedFlagList {
                 "Allows autofill to offer filling again on fields that were autofilled and now hold"
                         + " autocomplete=unrecognized value."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_FIX_FORM_EQUALITY,
-                "Fixes the semantics of Form[Field]Data::DeepEqual()"),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_FIX_CIVIL_STATE_MISCLASSIFICATION_FOR_ESPT,
                 "When enabled, improves heuristic regexes for state classification to avoid"
                         + " misclassification as civil state."),

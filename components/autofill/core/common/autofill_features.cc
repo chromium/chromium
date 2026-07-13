@@ -650,11 +650,6 @@ BASE_FEATURE(kAutofillFilterPlaceholderValuesOnImport,
 BASE_FEATURE(kAutofillFixCivilStateMisclassificationForESPT,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch: Changes the behavior of Form[Field]Data::DeepEqual().
-// TODO(crbug.com/40183094): Turn this into a kill switch after a few
-// weeks on canary.
-BASE_FEATURE(kAutofillFixFormEquality, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the rewriter uses updated rewrite rules.
 // TODO(crbug.com/445863287): Cleanup when launched.
 BASE_FEATURE(kAutofillFixRewriterRules, base::FEATURE_DISABLED_BY_DEFAULT);

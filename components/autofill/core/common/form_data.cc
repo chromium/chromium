@@ -107,32 +107,6 @@ bool FormData::IdenticalAndEquivalentDomElements(
     const FormData& a,
     const FormData& b,
     DenseSet<FormFieldData::Exclusion> exclusions) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixFormEquality)) {
-    // We compare all unique identifiers first, including the field renderer
-    // IDs, because we expect most inequalities to be due to them.
-    if (a.global_id() != b.global_id() ||
-        a.child_frames() != b.child_frames() ||
-        !std::ranges::equal(a.fields(), b.fields(), {},
-                            &FormFieldData::global_id,
-                            &FormFieldData::global_id)) {
-      return false;
-    }
-
-    if (a.name() != b.name() || a.id_attribute() != b.id_attribute() ||
-        a.name_attribute() != b.name_attribute() || a.url() != b.url() ||
-        a.action() != b.action() ||
-        a.likely_contains_captcha() != b.likely_contains_captcha() ||
-        !std::ranges::equal(
-            a.fields_, b.fields_,
-            [&](const FormFieldData& f, const FormFieldData& g) {
-              return FormFieldData::IdenticalAndEquivalentDomElements(
-                  f, g, exclusions);
-            })) {
-      return false;
-    }
-    return true;
-  }
-
   // LINT.IfChange(IdenticalAndEquivalentDomElements)
   // clang-format off
   return  // As optimization, compare the form and field IDs first.

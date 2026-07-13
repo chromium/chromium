@@ -2369,8 +2369,6 @@ TEST_F(FormStructureTestImpl, LoyaltyCardsHeuristics_BigForms) {
 // `FormStructure` coming from `FormData` and leaves other information
 // unchanged.
 TEST_F(FormStructureTestImpl, UpdateFormData) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillFixFormEquality};
   FormData form = test::GetFormData(
       {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"}},
        .name = u"form-name"});

@@ -94,23 +94,6 @@ namespace {
 // This is used for sites that change multiple things consecutively.
 constexpr base::TimeDelta kWaitTimeForDynamicForms = base::Milliseconds(200);
 
-// This function is deprecated and one should use
-// FormFieldData::IdenticalAndEquivalentDomElements(_, _, {kNotRefillRelated})
-// instead. Returns true if the fields are considered equal for refill purposes,
-// and false otherwise.
-// TODO(crbug.com/465491175): Remove when `AutofillFixFormEquality` launches.
-bool CompareFieldsForRefillDeprecated(const FormFieldData& f,
-                                      const FormFieldData& g) {
-  return f.name() == g.name() && f.label() == g.label() &&
-         f.form_control_type() == g.form_control_type() &&
-         f.autocomplete_attribute() == g.autocomplete_attribute() &&
-         f.placeholder() == g.placeholder() &&
-         f.host_frame() == g.host_frame() &&
-         f.renderer_id() == g.renderer_id() &&
-         f.max_length() == g.max_length() &&
-         f.is_focusable() == g.is_focusable() && f.options() == g.options();
-}
-
 FillDataType GetFillDataTypeFromFillingPayload(
     const FillingPayload& filling_payload) {
   return std::visit(
@@ -1087,14 +1070,10 @@ void FormFiller::MaybeScheduleAutomaticRefill(
               refill_context->filled_form.fields(), form.fields(),
               [](const FormFieldData& f,
                  const std::unique_ptr<AutofillField>& g) {
-                return base::FeatureList::IsEnabled(
-                           features::kAutofillFixFormEquality)
-                           ? FormFieldData::IdenticalAndEquivalentDomElements(
-                                 f, *g,
-                                 DenseSet<FormFieldData::Exclusion>{
-                                     FormFieldData::Exclusion::
-                                         kNotRefillRelated})
-                           : CompareFieldsForRefillDeprecated(f, *g);
+                return FormFieldData::IdenticalAndEquivalentDomElements(
+                    f, *g,
+                    DenseSet<FormFieldData::Exclusion>{
+                        FormFieldData::Exclusion::kNotRefillRelated});
               })) {
         return;
       }

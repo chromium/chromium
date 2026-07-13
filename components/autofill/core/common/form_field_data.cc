@@ -314,18 +314,6 @@ bool FormFieldData::IdenticalAndEquivalentDomElements(
     const FormFieldData& a,
     const FormFieldData& b,
     DenseSet<Exclusion> exclusions) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixFormEquality)) {
-    auto equality_tuple = [](const FormFieldData& f) {
-      return std::tie(f.renderer_id_, f.host_frame_, f.label_, f.name_,
-                      f.name_attribute_, f.id_attribute_, f.nonce_,
-                      f.form_control_type_, f.autocomplete_attribute_,
-                      f.placeholder_, f.placeholder_attribute_, f.max_length_,
-                      f.css_classes_, f.is_focusable_, f.should_autocomplete_,
-                      f.role_, f.text_direction_, f.options_);
-    };
-    return equality_tuple(a) == equality_tuple(b);
-  }
-
   auto equality_tuple = [e = exclusions](const FormFieldData& f) {
     using enum Exclusion;
     static const bool kFalse = {};

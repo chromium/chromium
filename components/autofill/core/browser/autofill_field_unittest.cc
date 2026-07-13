@@ -306,8 +306,6 @@ TEST_F(AutofillFieldTest, UnionTypesFromHtmlAndServerTypes) {
 // of `AutofillField` coming from `FormFieldData` and leaves other information
 // unchanged.
 TEST_F(AutofillFieldTest, UpdateFieldData) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillFixFormEquality};
   FormFieldData field = test::GetFormFieldData(
       {.role = NAME_FULL, .autocomplete_attribute = "name"});
 
