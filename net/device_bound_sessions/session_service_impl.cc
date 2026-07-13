@@ -56,6 +56,8 @@ namespace {
 constexpr size_t kSigningQuota = 6;
 constexpr base::TimeDelta kSigningQuotaInterval = base::Minutes(9);
 
+constexpr base::TimeDelta kProactiveRefreshThreshold = base::Seconds(120);
+
 bool SessionMatchesFilter(
     const SchemefulSite& site,
     const Session& session,
@@ -1400,13 +1402,7 @@ void SessionServiceImpl::MaybeStartProactiveRefresh(
     DbscRequest& request,
     const SessionKey& session_key,
     base::TimeDelta minimum_cookie_lifetime) {
-  if (!base::FeatureList::IsEnabled(
-          features::kDeviceBoundSessionProactiveRefresh)) {
-    return;
-  }
-
-  if (minimum_cookie_lifetime >
-      features::kDeviceBoundSessionProactiveRefreshThreshold.Get()) {
+  if (minimum_cookie_lifetime > kProactiveRefreshThreshold) {
     return;
   }
 
