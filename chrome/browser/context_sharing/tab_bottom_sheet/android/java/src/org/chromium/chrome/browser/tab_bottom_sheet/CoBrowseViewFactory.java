@@ -143,6 +143,7 @@ public class CoBrowseViewFactory {
                         mContextMenuPopulatorFactory,
                         mSelectionDropdownMenuDelegate,
                         backgroundColor,
+                        clientType,
                         containerType,
                         // Passes a callback to the components layer to open ephemeral tabs,
                         // avoiding a circular dependency since the components layer cannot depend

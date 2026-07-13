@@ -42,8 +42,10 @@ import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate;
+import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
@@ -66,6 +68,7 @@ public class TabBottomSheetWebUi {
     private final SelectionDropdownMenuDelegate mSelectionDropdownMenuDelegate;
     private final WebViewResizingHelper mWebViewResizingHelper;
     private final @ColorInt int mBackgroundColor;
+    private final @TabBottomSheetClientType int mClientType;
     private final @CoBrowseContainerType int mContainerType;
     private final @Nullable BiConsumer<GURL, String> mEphemeralTabOpener;
     private final @Nullable BiConsumer<GURL, String> mReadLaterOpener;
@@ -87,6 +90,7 @@ public class TabBottomSheetWebUi {
             ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
             @ColorInt int backgroundColor,
+            @TabBottomSheetClientType int clientType,
             @CoBrowseContainerType int containerType,
             @Nullable BiConsumer<GURL, String> ephemeralTabOpener,
             @Nullable BiConsumer<GURL, String> readLaterOpener) {
@@ -96,6 +100,7 @@ public class TabBottomSheetWebUi {
         mSelectionDropdownMenuDelegate =
                 new SelectionDropdownMenuDelegateWrapper(selectionDropdownMenuDelegate);
         mBackgroundColor = backgroundColor;
+        mClientType = clientType;
         mContainerType = containerType;
         mEphemeralTabOpener = ephemeralTabOpener;
         mReadLaterOpener = readLaterOpener;
@@ -287,6 +292,13 @@ public class TabBottomSheetWebUi {
                             .setSelectionDropdownMenuDelegate(mSelectionDropdownMenuDelegate)
                             .setSupportTheming(true)
                             .build());
+            if (mClientType == TabBottomSheetClientType.CONTEXTUAL_TASKS) {
+                // This disables ActionModeSelectionMenu from ever being shown on AIM.
+                // TODO (crbug.com/534284847): How to handle ActionModeSelectionMenu on non-AL
+                // devices.
+                SelectionPopupController.fromWebContents(mWebContents)
+                        .setActionModeCallback(ActionModeCallbackHelper.EMPTY_CALLBACK);
+            }
             mWebViewResizingHelper.setThinWebView(mThinWebView, mWebContents);
             setAllowFullscreenIme(
                     mContext.getResources().getConfiguration().orientation

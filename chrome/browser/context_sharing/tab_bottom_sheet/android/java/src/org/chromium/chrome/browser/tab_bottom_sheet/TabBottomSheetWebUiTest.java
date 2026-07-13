@@ -13,6 +13,7 @@ import static org.mockito.ArgumentCaptor.captor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,6 +42,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
@@ -56,6 +58,9 @@ import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate;
+import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
+import org.chromium.content.browser.webcontents.WebContentsImpl;
+import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.EventForwarder;
@@ -73,7 +78,7 @@ public class TabBottomSheetWebUiTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private WebContents mWebContents;
+    @Mock private WebContentsImpl mWebContents;
     @Mock private ThinWebView mThinWebView;
     @Mock private View mView;
     @Mock private ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
@@ -117,6 +122,10 @@ public class TabBottomSheetWebUiTest {
                         mContextMenuPopulatorFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
+                        TabBottomSheetClientType.UNKNOWN,
+                        CoBrowseContainerType.BOTTOM_SHEET,
+                        /* ephemeralTabOpener= */ null,
+                        /* readLaterOpener= */ null,
                         mMockContentView);
         TabBottomSheetWebUi.setInTestModeForTesting();
     }
@@ -335,8 +344,11 @@ public class TabBottomSheetWebUiTest {
                         mockFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
-                        mMockContentView,
-                        CoBrowseContainerType.SIDE_PANEL);
+                        TabBottomSheetClientType.UNKNOWN,
+                        CoBrowseContainerType.SIDE_PANEL,
+                        /* ephemeralTabOpener= */ null,
+                        /* readLaterOpener= */ null,
+                        mMockContentView);
         sidePanelWebUi.setWebContents(mWebContents, true);
 
         ArgumentCaptor<ContextMenuItemDelegate> captor =
@@ -378,8 +390,11 @@ public class TabBottomSheetWebUiTest {
                         mockFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
-                        mMockContentView,
-                        CoBrowseContainerType.SIDE_PANEL);
+                        TabBottomSheetClientType.UNKNOWN,
+                        CoBrowseContainerType.SIDE_PANEL,
+                        /* ephemeralTabOpener= */ null,
+                        /* readLaterOpener= */ null,
+                        mMockContentView);
         sidePanelWebUi.setWebContents(mWebContents, true);
 
         ArgumentCaptor<ContextMenuItemDelegate> delegateCaptor =
@@ -560,8 +575,10 @@ public class TabBottomSheetWebUiTest {
                         mockFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
+                        TabBottomSheetClientType.UNKNOWN,
                         CoBrowseContainerType.SIDE_PANEL,
                         mockOpener,
+                        /* readLaterOpener= */ null,
                         mMockContentView);
         webUi.setWebContents(mWebContents, true);
 
@@ -604,6 +621,7 @@ public class TabBottomSheetWebUiTest {
                         mockFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
+                        TabBottomSheetClientType.UNKNOWN,
                         CoBrowseContainerType.SIDE_PANEL,
                         /* ephemeralTabOpener= */ null,
                         /* readLaterOpener= */ mockOpener,
@@ -625,6 +643,77 @@ public class TabBottomSheetWebUiTest {
         verify(mockOpener).accept(eq(testUrl), eq(testTitle));
     }
 
+    @Test
+    public void testSetWebContents_ContextualTasks_BlocksActionModeMenu() {
+        SelectionPopupControllerImpl mockSelectionPopupController =
+                mock(SelectionPopupControllerImpl.class);
+        when(mWebContents.getOrSetUserData(eq(SelectionPopupControllerImpl.class), any()))
+                .thenReturn(mockSelectionPopupController);
+
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        View containerView =
+                LayoutInflater.from(context)
+                        .inflate(
+                                org.chromium.chrome.browser.context_sharing.R.layout
+                                        .tab_bottom_sheet,
+                                null);
+        TabBottomSheetWebUi webUi =
+                new TestTabBottomSheetWebUi(
+                        context,
+                        containerView,
+                        mWindowAndroid,
+                        mContextMenuPopulatorFactory,
+                        mSelectionDropdownMenuDelegate,
+                        Color.WHITE,
+                        TabBottomSheetClientType.CONTEXTUAL_TASKS,
+                        CoBrowseContainerType.BOTTOM_SHEET,
+                        /* ephemeralTabOpener= */ null,
+                        /* readLaterOpener= */ null,
+                        mMockContentView);
+        webUi.setWebContents(mWebContents, true);
+
+        verify(mockSelectionPopupController)
+                .setActionModeCallback(ActionModeCallbackHelper.EMPTY_CALLBACK);
+    }
+
+    @Test
+    public void testSetWebContents_Glic_DoesNotBlockActionModeMenu() {
+        SelectionPopupControllerImpl mockSelectionPopupController =
+                mock(SelectionPopupControllerImpl.class);
+        when(mWebContents.getOrSetUserData(eq(SelectionPopupControllerImpl.class), any()))
+                .thenReturn(mockSelectionPopupController);
+
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        View containerView =
+                LayoutInflater.from(context)
+                        .inflate(
+                                org.chromium.chrome.browser.context_sharing.R.layout
+                                        .tab_bottom_sheet,
+                                null);
+        TabBottomSheetWebUi webUi =
+                new TestTabBottomSheetWebUi(
+                        context,
+                        containerView,
+                        mWindowAndroid,
+                        mContextMenuPopulatorFactory,
+                        mSelectionDropdownMenuDelegate,
+                        Color.WHITE,
+                        TabBottomSheetClientType.GLIC,
+                        CoBrowseContainerType.BOTTOM_SHEET,
+                        /* ephemeralTabOpener= */ null,
+                        /* readLaterOpener= */ null,
+                        mMockContentView);
+        webUi.setWebContents(mWebContents, true);
+
+        verify(mockSelectionPopupController, never()).setActionModeCallback(any());
+    }
+
     private static class TestTabBottomSheetWebUi extends TabBottomSheetWebUi {
         private final ContentView mMockContentView;
 
@@ -635,48 +724,10 @@ public class TabBottomSheetWebUiTest {
                 ContextMenuPopulatorFactory contextMenuPopulatorFactory,
                 SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
                 int backgroundColor,
-                ContentView mockContentView) {
-            this(
-                    context,
-                    containerView,
-                    windowAndroid,
-                    contextMenuPopulatorFactory,
-                    selectionDropdownMenuDelegate,
-                    backgroundColor,
-                    mockContentView,
-                    CoBrowseContainerType.BOTTOM_SHEET);
-        }
-
-        TestTabBottomSheetWebUi(
-                Context context,
-                View containerView,
-                WindowAndroid windowAndroid,
-                ContextMenuPopulatorFactory contextMenuPopulatorFactory,
-                SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
-                int backgroundColor,
-                ContentView mockContentView,
-                @CoBrowseContainerType int containerType) {
-            this(
-                    context,
-                    containerView,
-                    windowAndroid,
-                    contextMenuPopulatorFactory,
-                    selectionDropdownMenuDelegate,
-                    backgroundColor,
-                    containerType,
-                    /* ephemeralTabOpener= */ null,
-                    mockContentView);
-        }
-
-        TestTabBottomSheetWebUi(
-                Context context,
-                View containerView,
-                WindowAndroid windowAndroid,
-                ContextMenuPopulatorFactory contextMenuPopulatorFactory,
-                SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
-                int backgroundColor,
+                @TabBottomSheetClientType int clientType,
                 @CoBrowseContainerType int containerType,
-                BiConsumer<GURL, String> ephemeralTabOpener,
+                @Nullable BiConsumer<GURL, String> ephemeralTabOpener,
+                @Nullable BiConsumer<GURL, String> readLaterOpener,
                 ContentView mockContentView) {
             super(
                     context,
@@ -685,30 +736,7 @@ public class TabBottomSheetWebUiTest {
                     contextMenuPopulatorFactory,
                     selectionDropdownMenuDelegate,
                     backgroundColor,
-                    containerType,
-                    ephemeralTabOpener,
-                    /* readLaterOpener= */ null);
-            mMockContentView = mockContentView;
-        }
-
-        TestTabBottomSheetWebUi(
-                Context context,
-                View containerView,
-                WindowAndroid windowAndroid,
-                ContextMenuPopulatorFactory contextMenuPopulatorFactory,
-                SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
-                int backgroundColor,
-                @CoBrowseContainerType int containerType,
-                BiConsumer<GURL, String> ephemeralTabOpener,
-                BiConsumer<GURL, String> readLaterOpener,
-                ContentView mockContentView) {
-            super(
-                    context,
-                    containerView,
-                    windowAndroid,
-                    contextMenuPopulatorFactory,
-                    selectionDropdownMenuDelegate,
-                    backgroundColor,
+                    clientType,
                     containerType,
                     ephemeralTabOpener,
                     readLaterOpener);
