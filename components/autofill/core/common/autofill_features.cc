@@ -781,6 +781,11 @@ BASE_FEATURE(kAutofillPopupCheckHtmlFormPopupOverlap,
 BASE_FEATURE(kAutofillPopupDontAcceptNonVisibleEnoughSuggestion,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, fields populated by standard Autofill or Autofill AI products
+// are not saved to the Autocomplete database at form submission.
+BASE_FEATURE(kAutofillPreventAutofillFromSavingToAutocomplete,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Replaces blink::WebFormElementObserver usage in FormTracker by updated logic
 // for tracking the disappearance of forms as well as other submission
 // triggering events.
