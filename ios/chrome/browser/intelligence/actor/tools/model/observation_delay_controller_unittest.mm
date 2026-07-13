@@ -193,4 +193,55 @@ TEST_F(ObservationDelayControllerTest, WebStateDestroyed) {
                   ObservationDelayController::State::kDone));
 }
 
+TEST_F(ObservationDelayControllerTest, DidStartNavigation_UnderMaxNavigations) {
+  controller_->SetNavigationCount(19);
+  base::test::TestFuture<ObservationDelayController::Result> future;
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetLoading(true);
+  controller_->Wait(/*web_state=*/fake_web_state->GetWeakPtr(),
+                    /*web_frame=*/nullptr, future.GetCallback());
+  WaitForState(ObservationDelayController::State::kWaitForLoadCompletion);
+
+  web::FakeNavigationContext context;
+  context.SetIsSameDocument(false);
+  TriggerDidStartNavigation(fake_web_state.get(), &context);
+
+  EXPECT_EQ(future.Get(), ObservationDelayController::Result::kPageNavigated);
+  EXPECT_THAT(controller_->StateHistoryForTesting(),
+              testing::ElementsAre(
+                  ObservationDelayController::State::kInitial,
+                  ObservationDelayController::State::kWaitForPageStability,
+                  ObservationDelayController::State::kWaitForLoadCompletion,
+                  ObservationDelayController::State::kPageNavigated,
+                  ObservationDelayController::State::kDone));
+}
+
+TEST_F(ObservationDelayControllerTest, DidStartNavigation_MaxNavigations) {
+  controller_->SetNavigationCount(20);
+  base::test::TestFuture<ObservationDelayController::Result> future;
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetLoading(true);
+  controller_->Wait(/*web_state=*/fake_web_state->GetWeakPtr(),
+                    /*web_frame=*/nullptr, future.GetCallback());
+  WaitForState(ObservationDelayController::State::kWaitForLoadCompletion);
+
+  web::FakeNavigationContext context;
+  context.SetIsSameDocument(false);
+  TriggerDidStartNavigation(fake_web_state.get(), &context);
+
+  // Fast forward past the default timeout to trigger the timeout, because
+  // DidStartNavigation was ignored.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), ObservationDelayController::Result::kOk);
+  EXPECT_THAT(controller_->StateHistoryForTesting(),
+              testing::ElementsAre(
+                  ObservationDelayController::State::kInitial,
+                  ObservationDelayController::State::kWaitForPageStability,
+                  ObservationDelayController::State::kWaitForLoadCompletion,
+                  ObservationDelayController::State::kDidTimeout,
+                  ObservationDelayController::State::kDone));
+}
+
 }  // namespace actor

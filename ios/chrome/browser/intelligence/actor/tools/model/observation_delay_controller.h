@@ -68,6 +68,12 @@ class ObservationDelayController : public web::WebStateObserver {
     return state_history_;
   }
 
+  // The count of consecutive navigations that have happened and caused the
+  // Result::kPageNavigated. Once the number exceeds the maximum, subsequent
+  // navigations are ignored and `this` continues observing the page.
+  size_t NavigationCount() const;
+  void SetNavigationCount(size_t count);
+
   // For testing only: allows tests to be notified of state changes.
   using StateChangeTestingCallback = base::RepeatingCallback<void(State)>;
   void SetStateChangeCallbackForTesting(StateChangeTestingCallback callback) {
@@ -114,6 +120,7 @@ class ObservationDelayController : public web::WebStateObserver {
   State state_ = State::kInitial;
   std::vector<State> state_history_ = {state_};
   Result result_ = Result::kOk;
+  size_t navigation_count_ = 0;
 
   std::unique_ptr<PageStabilityMonitor> page_stability_monitor_;
 

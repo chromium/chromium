@@ -238,7 +238,28 @@ void ToolController::ObservationDelayComplete(
     ToolExecutionResult action_result,
     ObservationDelayController::Result observation_result) {
   // TODO(crbug.com/498991756): Record UMA about what observation_result is.
-  PostInvokeTool(std::move(action_result));
+  switch (observation_result) {
+    case ObservationDelayController::Result::kOk:
+      PostInvokeTool(std::move(action_result));
+      break;
+    case ObservationDelayController::Result::kPageNavigated: {
+      size_t last_navigation_count = observation_delayer_->NavigationCount();
+      GURL journal_url;
+      if (active_state_ && active_state_->tool) {
+        if (base::WeakPtr<web::WebState> target_web_state =
+                active_state_->tool->GetTargetWebState()) {
+          journal_url = target_web_state->GetLastCommittedURL();
+        }
+      }
+      journal().Log(journal_url, task_id(),
+                    "ToolController Restarting Observation", /*details=*/{});
+      observation_delayer_ =
+          std::make_unique<ObservationDelayController>(task_id(), &journal());
+      observation_delayer_->SetNavigationCount(last_navigation_count + 1);
+      WaitForObservation(std::move(action_result));
+      break;
+    }
+  }
 }
 
 void ToolController::PostInvokeTool(ToolExecutionResult result) {

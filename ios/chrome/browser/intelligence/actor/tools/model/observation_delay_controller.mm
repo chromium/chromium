@@ -25,6 +25,13 @@
 
 namespace actor {
 
+namespace {
+// The maximum number of times a navigation can restart the
+// ObservationDelayController. Beyond this limit, subsequent navigations are
+// ignored and do not trigger a restart.
+constexpr size_t kMaxNavigations = 20;
+}  // namespace
+
 ObservationDelayController::ObservationDelayController(
     ActorTaskId task_id,
     AggregatedJournal* journal)
@@ -72,8 +79,10 @@ void ObservationDelayController::DidStartNavigation(
   if (state_ == State::kInitial) {
     return;
   }
-  // TODO(crbug.com/498991756) - Count how many navigations occur and keep
-  // observing if its beyond a given threshold, see https://crrev.com/c/7239787.
+  // If we exceed the number of navigations just keep observing.
+  if (navigation_count_ >= kMaxNavigations) {
+    return;
+  }
   MoveToState(State::kPageNavigated);
 }
 
@@ -242,6 +251,14 @@ std::string_view ObservationDelayController::StateToString(State state) {
     case State::kDone:
       return "Done";
   }
+}
+
+size_t ObservationDelayController::NavigationCount() const {
+  return navigation_count_;
+}
+
+void ObservationDelayController::SetNavigationCount(size_t count) {
+  navigation_count_ = count;
 }
 
 }  // namespace actor
