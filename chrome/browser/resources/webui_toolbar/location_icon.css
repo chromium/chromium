@@ -34,7 +34,7 @@
   padding-inline-start: var(--location-bar-page-info-icon-padding-left);
   padding-inline-end: var(--location-bar-page-info-icon-padding-right);
   background-color: var(--color-omnibox-icon-background);
-  color: var(--color-omnibox-security-chip-default, currentColor);
+  color: var(--color-omnibox-text, currentColor);
   cursor: default;
 
   /* Ensure the ::after overlay does not spill outside the rounded corners. */
