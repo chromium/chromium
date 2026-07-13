@@ -5,6 +5,7 @@
 #include "cc/metrics/scroll_jank_v4_decider.h"
 
 #include <algorithm>
+#include <cmath>
 #include <optional>
 #include <utility>
 #include <variant>
@@ -255,7 +256,7 @@ bool ScrollJankV4Decider::IsFastScroll(
     const ScrollUpdates::Real& real_updates) {
   static const double kFastScrollContinuityThreshold =
       features::kScrollJankV4MetricFastScrollContinuityThreshold.Get();
-  return real_updates.abs_total_raw_delta_pixels >=
+  return std::abs(real_updates.total_raw_delta_pixels) >=
          kFastScrollContinuityThreshold;
 }
 

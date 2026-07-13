@@ -158,6 +158,10 @@ CREATE PERFETTO TABLE chrome_scroll_jank_v4_results (
   -- included in this frame (in pixels). NULL if this frame contains no real
   -- scroll updates.
   real_abs_total_raw_delta_pixels DOUBLE,
+  -- The total raw (unpredicted) delta of all real scroll updates included in
+  -- this frame (in pixels). NULL if this frame contains no real scroll
+  -- updates, or if the trace was recorded before the field was added.
+  real_total_raw_delta_pixels DOUBLE,
   -- The maximum absolute raw (unpredicted) delta out of all inertial (fling)
   -- scroll updates included in this frame (in pixels). NULL if there were no
   -- inertial scroll updates in this frame.
@@ -314,6 +318,7 @@ WITH
       extract_arg(arg_set_id, 'scroll_jank_v4.current_delivery_cutoff_us') AS current_delivery_cutoff,
       extract_arg(arg_set_id, 'scroll_jank_v4.updates.real.first_event_latency_id') AS real_first_event_latency_id,
       extract_arg(arg_set_id, 'scroll_jank_v4.updates.real.abs_total_raw_delta_pixels') AS real_abs_total_raw_delta_pixels,
+      extract_arg(arg_set_id, 'scroll_jank_v4.updates.real.total_raw_delta_pixels') AS real_total_raw_delta_pixels,
       extract_arg(arg_set_id, 'scroll_jank_v4.updates.real.max_abs_inertial_raw_delta_pixels') AS real_max_abs_inertial_raw_delta_pixels,
       extract_arg(arg_set_id, 'scroll_jank_v4.updates.synthetic.first_event_latency_id') AS synthetic_first_event_latency_id,
       extract_arg(arg_set_id, 'scroll_jank_v4.updates.first_scroll_update_type') AS first_scroll_update_type,
@@ -345,7 +350,8 @@ SELECT
   scroll_jank_v4_slice.real_first_event_latency_id,
   real_input_generation_slice.ts AS real_first_input_generation_ts,
   real_input_generation_slice.ts + real_input_generation_slice.dur AS real_last_input_generation_ts,
-  scroll_jank_v4_slice.real_abs_total_raw_delta_pixels,
+  coalesce(scroll_jank_v4_slice.real_abs_total_raw_delta_pixels, abs(scroll_jank_v4_slice.real_total_raw_delta_pixels)) AS real_abs_total_raw_delta_pixels,
+  scroll_jank_v4_slice.real_total_raw_delta_pixels,
   scroll_jank_v4_slice.real_max_abs_inertial_raw_delta_pixels,
   scroll_jank_v4_slice.synthetic_first_event_latency_id,
   synthetic_first_extrapolated_input_generation_slice.ts AS synthetic_first_extrapolated_input_generation_ts,

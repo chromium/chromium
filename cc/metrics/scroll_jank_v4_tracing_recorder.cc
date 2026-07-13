@@ -56,7 +56,7 @@ void PopulateScrollUpdatesRealProto(
   if (real.first_input_trace_id.has_value()) {
     out.set_first_event_latency_id(real.first_input_trace_id->value());
   }
-  out.set_abs_total_raw_delta_pixels(real.abs_total_raw_delta_pixels);
+  out.set_total_raw_delta_pixels(real.total_raw_delta_pixels);
   if (real.has_inertial_input) {
     out.set_max_abs_inertial_raw_delta_pixels(
         real.max_abs_inertial_raw_delta_pixels);

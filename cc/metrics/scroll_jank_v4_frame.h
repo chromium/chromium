@@ -99,7 +99,7 @@ struct CC_EXPORT ScrollJankV4Frame {
         base::TimeTicks first_input_generation_ts;
         base::TimeTicks last_input_generation_ts;
         bool has_inertial_input;
-        float abs_total_raw_delta_pixels;
+        float total_raw_delta_pixels;
         float max_abs_inertial_raw_delta_pixels;
         std::optional<EventMetrics::TraceId> first_input_trace_id;
 
@@ -233,8 +233,8 @@ inline std::ostream& operator<<(
             << ", last_input_generation_ts: "
             << real_updates.last_input_generation_ts
             << ", has_inertial_input: " << real_updates.has_inertial_input
-            << ", abs_total_raw_delta_pixels: "
-            << real_updates.abs_total_raw_delta_pixels
+            << ", total_raw_delta_pixels: "
+            << real_updates.total_raw_delta_pixels
             << ", max_abs_inertial_raw_delta_pixels: "
             << real_updates.max_abs_inertial_raw_delta_pixels
             << ", first_input_trace_id: " << real_updates.first_input_trace_id

@@ -229,8 +229,7 @@ ScrollJankV4Frame::StageList CalculateStagesDefaultImpl(
                 .first_input_generation_ts = first_real_input_generation_ts,
                 .last_input_generation_ts = last_real_input_generation_ts,
                 .has_inertial_input = has_real_inertial_input,
-                .abs_total_raw_delta_pixels =
-                    std::abs(total_real_raw_delta_pixels),
+                .total_raw_delta_pixels = total_real_raw_delta_pixels,
                 .max_abs_inertial_raw_delta_pixels =
                     max_abs_real_inertial_raw_delta_pixels,
                 .first_input_trace_id = first_real_input_trace_id,
@@ -712,8 +711,7 @@ class ScrollIdBasedCalculator : public ScrollJankV4FrameStageCalculator {
                   .first_input_generation_ts = first_real_input_generation_ts,
                   .last_input_generation_ts = last_real_input_generation_ts,
                   .has_inertial_input = has_real_inertial_input,
-                  .abs_total_raw_delta_pixels =
-                      std::abs(total_real_raw_delta_pixels),
+                  .total_raw_delta_pixels = total_real_raw_delta_pixels,
                   .max_abs_inertial_raw_delta_pixels =
                       max_abs_real_inertial_raw_delta_pixels,
                   .first_input_trace_id = first_real_input_trace_id,

@@ -71,7 +71,7 @@ TEST(ScrollJankV4FrameTest, NonEmptyRealScrollUpdatesToOstream) {
       ScrollJankV4Frame::Stage::ScrollUpdates::Real{
           .last_input_generation_ts = MillisecondsTicks(3),
           .has_inertial_input = false,
-          .abs_total_raw_delta_pixels = 10,
+          .total_raw_delta_pixels = 10,
           .max_abs_inertial_raw_delta_pixels = 0,
       };
 
@@ -110,7 +110,7 @@ TEST(ScrollJankV4FrameTest, ScrollUpdatesToOstream) {
           .first_input_generation_ts = MillisecondsTicks(1),
           .last_input_generation_ts = MillisecondsTicks(3),
           .has_inertial_input = false,
-          .abs_total_raw_delta_pixels = 10,
+          .total_raw_delta_pixels = -10,
           .max_abs_inertial_raw_delta_pixels = 0,
       },
       /* synthetic= */ std::nullopt,
