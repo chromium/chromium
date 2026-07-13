@@ -1182,7 +1182,7 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_COPYVIDEOLOCATION" desc="In Title Case: The name of the Copy Video Location command in the content area context menu">
             C&amp;opy Video Address
           </message>
-          <message name="IDS_CONTENT_CONTEXT_COPYVIDEOFRAME" desc="The name of the Copy Video Frame command in the content area context menu">
+          <message name="IDS_CONTENT_CONTEXT_COPYVIDEOFRAME" desc="In Title Case: The name of the Copy Video Frame command in the content area context menu">
             Cop&amp;y Video Frame
           </message>
           <message name="IDS_CONTENT_CONTEXT_SEARCHFORVIDEOFRAME" desc="In Title Case: The name of the Lens Search command in the content area context menu">
@@ -11950,7 +11950,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_CXMENU_NEWTABTOLEFT" desc="In Title Case: The label of the 'New Tab to the Left' Tab context menu item. Translate this verbatim, do not localize for RTL languages (we have separate strings for RTL).">
           New Tab to the Left
         </message>
-        <message name="IDS_TAB_CXMENU_NEWTABBELOW" desc="The label of the 'New Tab Below' Tab context menu item.">
+        <message name="IDS_TAB_CXMENU_NEWTABBELOW" desc="In Title Case: The label of the 'New Tab Below' Tab context menu item.">
           New Tab Below
         </message>
         <message name="IDS_TAB_CXMENU_RELOAD" desc="In Title Case: The label of the 'Reload' Tab context menu item.">
