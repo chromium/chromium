@@ -47,11 +47,6 @@ class Header:
   # depfile.
   force: bool = False
 
-  # If true, the header will be marked private.
-  # Note: If a header is both textual and private, it will not be added to the
-  # modulemap.
-  private: bool = False
-
 
 # An allowed header is one that is here purely to add it to the allowlist of
 # files to #include. It is not precompiled.
@@ -69,7 +64,6 @@ def headers(os):
   is_apple = os == 'mac' or os == 'ios'
   is_fuchsia = os == 'fuchsia'
   is_win = os == 'win'
-  is_chromeos = os == 'chromeos'
 
   # Keep this list of headers alphabetically sorted, but comments should remain
   # attached to the entry under them, and blank lines should be preserved.
@@ -87,9 +81,6 @@ def headers(os):
       Header('asm/ioctl.h', lazy=True, textual=True),
       AllowedHeader('asm/ptrace.h'),
       Header('asm/sigcontext.h', lazy=True),
-      Header('asm/unistd.h'),
-      Header('asm/unistd_64.h'),
-      Header('asm-generic/errno-base.h'),
       Header('asm-generic/fcntl.h',
              module_name='asm_generic_fcntl',
              exists=is_android),
@@ -99,6 +90,7 @@ def headers(os):
              lazy=True),
       # We need posix_types_32.h to define __kernel_mode_t in the same TU.
       # This way it appears as an override rather than a second definition.
+      Header('asm-generic/posix_types.h', textual=True, lazy=True),
       Header('asm-generic/posix_types.h', textual=True, lazy=True),
       # Inherently textual
       Header('assert.h', textual=True),
@@ -149,14 +141,9 @@ def headers(os):
       AllowedHeader('linux/posix_types.h'),
       AllowedHeader('linux/random.h'),
       AllowedHeader('linux/sched.h'),
-      # On ChromeOS, linux/sched/types.h defines struct sched_param and
-      # conflicts with the definition in bits/types/struct_sched_param.h. We
-      # mark it private and textual to prevent the conflict.
-      Header('linux/sched/types.h', textual=True, private=True),
       Header('linux/fcntl.h', module_name='linux_fcntl'),
       Header('linux/stat.h', module_name='linux_stat'),
       Header('linux/types.h'),
-      Header('linux/unistd.h'),
       Header('locale.h'),
       Header('malloc.h'),
       AllowedHeader('netdb.h'),
@@ -205,8 +192,6 @@ def headers(os):
       AllowedHeader('ucontext.h'),
       # Unistd re-exports basically everything it #includes
       Header('unistd.h', exports=['*', 'bits_getopt']),
-      # Sysroot unwind.h should only ever be included by clang's unwind.h
-      Header('unwind.h', textual=True, private=True),
       # We need to re-export std::exception in std.exception.exception and type
       # info.
       Header('vcruntime_exception.h',

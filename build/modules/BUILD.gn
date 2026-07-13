@@ -284,7 +284,6 @@ if (use_unified_system_module) {
     module_name = "//build/modules:system"
     sources = [ modulemap ]
     public = system_headers
-    check_includes = false
     use_libcxx_modules = false
 
     # We disable strict deps here for two reasons:
