@@ -1,0 +1,400 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/compiler/compiler.gni")
+import("//build/config/features.gni")
+import("//testing/test.gni")
+
+# TODO(crbug.com/359926651): assert(is_chromeos) when the proxy's
+# integration tests no longer need to build on Linux (they currently require
+# mojo_support_legacy_core=true, which only Linux developer builds can set).
+assert(is_linux || is_chromeos)
+
+group("mojo_core") {
+  visibility = [ "//chromeos/ash/components/mojo_proxy/*" ]
+  public_deps = [
+    ":core",
+    ":public_cpp_system",
+  ]
+}
+
+# Corresponds to buildflag_header("buildflags") in //mojo/BUILD.gn.
+# The clone is frozen, so dynamic GN flags ($mojo_use_apple_channel,
+# $mojo_support_legacy_core) are replaced with constant values.
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [
+    "MOJO_LEGACY_USE_APPLE_CHANNEL=false",
+    "MOJO_LEGACY_SUPPORT_LEGACY_CORE=true",
+  ]
+}
+
+# Corresponds to buildflag_header("mojo_buildflags") in
+# //mojo/public/cpp/bindings/BUILD.gn.
+buildflag_header("mojo_buildflags") {
+  header = "mojo_buildflags.h"
+  header_dir =
+      "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/bindings"
+  flags = [ "MOJO_LEGACY_TRACE_ENABLED=false" ]
+}
+
+# Corresponds to component("system") and source_set("headers") from
+# //mojo/public/c/system/BUILD.gn.
+source_set("public_c_system") {
+  visibility = [ ":*" ]
+  sources = [
+    "public/c/system/buffer.h",
+    "public/c/system/core.h",
+    "public/c/system/data_pipe.h",
+    "public/c/system/functions.h",
+    "public/c/system/invitation.h",
+    "public/c/system/macros.h",
+    "public/c/system/message_pipe.h",
+    "public/c/system/platform_handle.h",
+    "public/c/system/quota.h",
+    "public/c/system/system_export.h",
+    "public/c/system/thunks.cc",
+    "public/c/system/thunks.h",
+    "public/c/system/trap.h",
+    "public/c/system/types.h",
+  ]
+  defines = [ "MOJO_LEGACY_SYSTEM_IMPLEMENTATION" ]
+  public_deps = [ "//base" ]
+}
+
+# Corresponds to component("platform") in //mojo/public/cpp/platform/BUILD.gn.
+source_set("public_cpp_platform") {
+  visibility = [ ":*" ]
+  sources = [
+    "public/cpp/platform/named_platform_channel.cc",
+    "public/cpp/platform/named_platform_channel.h",
+    "public/cpp/platform/named_platform_channel_posix.cc",
+    "public/cpp/platform/platform_channel.cc",
+    "public/cpp/platform/platform_channel.h",
+    "public/cpp/platform/platform_channel_endpoint.cc",
+    "public/cpp/platform/platform_channel_endpoint.h",
+    "public/cpp/platform/platform_channel_server.cc",
+    "public/cpp/platform/platform_channel_server.h",
+    "public/cpp/platform/platform_channel_server_endpoint.cc",
+    "public/cpp/platform/platform_channel_server_endpoint.h",
+    "public/cpp/platform/platform_channel_server_posix.cc",
+    "public/cpp/platform/platform_handle.cc",
+    "public/cpp/platform/platform_handle.h",
+    "public/cpp/platform/platform_handle_internal.h",
+    "public/cpp/platform/socket_utils_posix.cc",
+    "public/cpp/platform/socket_utils_posix.h",
+  ]
+  public_deps = [
+    ":buildflags",
+    ":public_c_system",
+    "//base",
+  ]
+  deps = [ "//net" ]
+}
+
+# Corresponds to source_set("impl_for_embedder") in //mojo/core/BUILD.gn,
+# component("embedder") in //mojo/core/embedder/BUILD.gn, and component("ports")
+# in //mojo/core/ports/BUILD.gn. Pruned all ipcz transport/driver sources
+# (ipcz_driver/*, core_ipcz.*, ipcz_api.*) and hardcoded the legacy Core files
+# (from upstream if (mojo_support_legacy_core)).
+source_set("core") {
+  visibility = [ ":*" ]
+  sources = [
+    "core/atomic_flag.cc",
+    "core/atomic_flag.h",
+    "core/broker.h",
+    "core/broker_host.cc",
+    "core/broker_host.h",
+    "core/broker_messages.h",
+    "core/broker_posix.cc",
+    "core/channel.cc",
+    "core/channel.h",
+    "core/channel_linux.cc",
+    "core/channel_linux.h",
+    "core/channel_posix.cc",
+    "core/channel_posix.h",
+    "core/configuration.cc",
+    "core/configuration.h",
+    "core/connection_params.cc",
+    "core/connection_params.h",
+    "core/core.cc",
+    "core/core.h",
+    "core/data_pipe_consumer_dispatcher.cc",
+    "core/data_pipe_consumer_dispatcher.h",
+    "core/data_pipe_control_message.cc",
+    "core/data_pipe_control_message.h",
+    "core/data_pipe_producer_dispatcher.cc",
+    "core/data_pipe_producer_dispatcher.h",
+    "core/dispatcher.cc",
+    "core/dispatcher.h",
+    "core/embedder/configuration.h",
+    "core/embedder/embedder.cc",
+    "core/embedder/embedder.h",
+    "core/embedder/process_error_callback.h",
+    "core/embedder/scoped_ipc_support.cc",
+    "core/embedder/scoped_ipc_support.h",
+    "core/entrypoints.cc",
+    "core/entrypoints.h",
+    "core/handle_signals_state.h",
+    "core/handle_table.cc",
+    "core/handle_table.h",
+    "core/invitation_dispatcher.cc",
+    "core/invitation_dispatcher.h",
+    "core/message_pipe_dispatcher.cc",
+    "core/message_pipe_dispatcher.h",
+    "core/node_channel.cc",
+    "core/node_channel.h",
+    "core/node_controller.cc",
+    "core/node_controller.h",
+    "core/options_validation.h",
+    "core/platform_handle_dispatcher.cc",
+    "core/platform_handle_dispatcher.h",
+    "core/platform_handle_in_transit.cc",
+    "core/platform_handle_in_transit.h",
+    "core/platform_handle_utils.cc",
+    "core/platform_handle_utils.h",
+    "core/platform_shared_memory_mapping.cc",
+    "core/platform_shared_memory_mapping.h",
+    "core/ports/event.cc",
+    "core/ports/event.h",
+    "core/ports/message_filter.h",
+    "core/ports/message_queue.cc",
+    "core/ports/message_queue.h",
+    "core/ports/name.cc",
+    "core/ports/name.h",
+    "core/ports/node.cc",
+    "core/ports/node.h",
+    "core/ports/node_delegate.h",
+    "core/ports/port.cc",
+    "core/ports/port.h",
+    "core/ports/port_locker.cc",
+    "core/ports/port_locker.h",
+    "core/ports/port_ref.cc",
+    "core/ports/port_ref.h",
+    "core/ports/user_data.h",
+    "core/ports/user_message.cc",
+    "core/ports/user_message.h",
+    "core/request_context.cc",
+    "core/request_context.h",
+    "core/shared_buffer_dispatcher.cc",
+    "core/shared_buffer_dispatcher.h",
+    "core/system_impl_export.h",
+    "core/user_message_impl.cc",
+    "core/user_message_impl.h",
+    "core/watch.cc",
+    "core/watch.h",
+    "core/watcher_dispatcher.cc",
+    "core/watcher_dispatcher.h",
+    "core/watcher_set.cc",
+    "core/watcher_set.h",
+  ]
+
+  defines = [ "MOJO_LEGACY_SYSTEM_IMPL_IMPLEMENTATION" ]
+
+  # Mirrors the //mojo/core and //mojo/core/ports defines, which are enabled
+  # on ChromeOS (and Android) builds. They affect the wire protocol, so they
+  # must match what ChromeOS legacy Mojo Core peers were built with.
+  if (is_chromeos) {
+    defines += [
+      "MOJO_LEGACY_CORE_LEGACY_PROTOCOL",
+      "MOJO_LEGACY_BACKWARDS_COMPAT",
+    ]
+  }
+
+  public_deps = [
+    ":mojo_buildflags",
+    ":public_c_system",
+    ":public_cpp_platform",
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  if (!is_debug && !optimize_for_size) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+}
+
+# Corresponds to component("system") in //mojo/public/cpp/system/BUILD.gn.
+source_set("public_cpp_system") {
+  visibility = [ ":*" ]
+  sources = [
+    "public/cpp/system/buffer.cc",
+    "public/cpp/system/buffer.h",
+    "public/cpp/system/data_pipe.h",
+    "public/cpp/system/handle.h",
+    "public/cpp/system/handle_signals_state.h",
+    "public/cpp/system/invitation.cc",
+    "public/cpp/system/invitation.h",
+    "public/cpp/system/isolated_connection.cc",
+    "public/cpp/system/isolated_connection.h",
+    "public/cpp/system/message.cc",
+    "public/cpp/system/message.h",
+    "public/cpp/system/message_pipe.cc",
+    "public/cpp/system/message_pipe.h",
+    "public/cpp/system/platform_handle.cc",
+    "public/cpp/system/platform_handle.h",
+    "public/cpp/system/simple_watcher.cc",
+    "public/cpp/system/simple_watcher.h",
+    "public/cpp/system/system_export.h",
+    "public/cpp/system/trap.cc",
+    "public/cpp/system/trap.h",
+    "public/cpp/system/wait.cc",
+    "public/cpp/system/wait.h",
+  ]
+  public_deps = [
+    ":core",
+    ":public_c_system",
+    ":public_cpp_platform",
+    "//base",
+  ]
+}
+
+# Test support and the retained legacy Mojo Core unit tests. The clone is
+# self-contained, so these build wherever the clone does (no dependency on
+# //mojo or mojo_support_legacy_core).
+
+# Corresponds to static_library("test_support") in //mojo/public/c/test_support.
+static_library("public_test_support") {
+  testonly = true
+  sources = [
+    "public/c/test_support/test_support.h",
+    "public/tests/test_support_private.cc",
+    "public/tests/test_support_private.h",
+  ]
+  deps = [ "//base:compiler_specific" ]
+}
+
+# Corresponds to static_library("test_support_impl") in
+# //mojo/core/test/BUILD.gn.
+static_library("test_support_impl") {
+  testonly = true
+  sources = [
+    "core/test/test_support_impl.cc",
+    "core/test/test_support_impl.h",
+  ]
+  deps = [
+    ":public_cpp_system",
+    ":public_test_support",
+    "//base",
+    "//base/test:test_support",
+  ]
+}
+
+# Corresponds to static_library("test_support") in //mojo/core/test/BUILD.gn.
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "core/test/mock_node_channel_delegate.cc",
+    "core/test/mock_node_channel_delegate.h",
+    "core/test/mojo_test_base.cc",
+    "core/test/mojo_test_base.h",
+    "core/test/mojo_test_suite_base.cc",
+    "core/test/mojo_test_suite_base.h",
+    "core/test/scoped_mojo_support.cc",
+    "core/test/scoped_mojo_support.h",
+    "core/test/test_switches.cc",
+    "core/test/test_switches.h",
+    "core/test/test_utils.cc",
+    "core/test/test_utils.h",
+  ]
+
+  if (use_blink) {
+    sources += [
+      "core/test/multiprocess_test_helper.cc",
+      "core/test/multiprocess_test_helper.h",
+    ]
+  }
+
+  public_deps = [
+    ":core",
+    ":public_cpp_system",
+    "//base",
+    "//base/test:test_support",
+    "//build:blink_buildflags",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  deps = [
+    ":public_test_support",
+    ":test_support_impl",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+# Corresponds to source_set("run_all_unittests") in //mojo/core/test/BUILD.gn.
+source_set("run_all_unittests") {
+  testonly = true
+  sources = [ "core/test/run_all_unittests.cc" ]
+  deps = [
+    ":public_test_support",
+    ":test_support",
+    ":test_support_impl",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+# Corresponds to test("mojo_unittests") in //mojo/BUILD.gn,
+# source_set("test_sources") in //mojo/core/BUILD.gn, and source_set("tests") in
+# //mojo/core/ports/BUILD.gn. Pruned all ipcz-specific tests (core_ipcz_test.cc,
+# ipcz_driver/*) and retained only legacy Core and ports unit tests.
+test("mojo_legacy_unittests") {
+  sources = [
+    "core/channel_unittest.cc",
+    "core/core_test_base.cc",
+    "core/core_test_base.h",
+    "core/core_unittest.cc",
+    "core/embedder_unittest.cc",
+    "core/message_pipe_unittest.cc",
+    "core/message_unittest.cc",
+    "core/node_channel_unittest.cc",
+    "core/options_validation_unittest.cc",
+    "core/platform_handle_dispatcher_unittest.cc",
+    "core/platform_wrapper_unittest.cc",
+    "core/ports/name_unittest.cc",
+    "core/ports/ports_unittest.cc",
+    "core/quota_unittest.cc",
+    "core/shared_buffer_dispatcher_unittest.cc",
+    "core/shared_buffer_unittest.cc",
+    "core/signals_unittest.cc",
+    "core/trap_unittest.cc",
+  ]
+
+  if (use_blink) {
+    sources += [
+      "core/data_pipe_unittest.cc",
+      "core/invitation_unittest.cc",
+      "core/multiprocess_message_pipe_unittest.cc",
+      "core/node_controller_unittest.cc",
+    ]
+  }
+
+  deps = [
+    ":core",
+    ":public_cpp_system",
+    ":public_test_support",
+    ":run_all_unittests",
+    ":test_support",
+    ":test_support_impl",
+    "//base",
+    "//base/test:test_support",
+    "//build:blink_buildflags",
+    "//build:chromeos_buildflags",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}

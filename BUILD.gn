@@ -484,6 +484,13 @@ group("gn_all") {
           "//chromeos/ash/components/mojo_proxy/service:mojo_proxy_unittests",
         ]
       }
+
+      # The frozen legacy Mojo Core clone is self-contained, so its unit tests
+      # build wherever it does (it has no dependency on //mojo's legacy core).
+      deps += [
+        "//chromeos/ash/components/mojo_proxy/mojo_core:mojo_legacy_unittests",
+      ]
+
       if (!is_clang) {
         deps += [ "//testing:empty_main" ]
       }
