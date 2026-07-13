@@ -352,7 +352,7 @@ builder(
             "release_builder",
             "remoteexec",
             "mac",
-            "x64",
+            "arm64",
         ],
     ),
     os = os.MAC_ANY,
@@ -379,7 +379,7 @@ builder(
             "debug_builder",
             "remoteexec",
             "mac",
-            "x64",
+            "arm64",
         ],
     ),
     targets = targets.bundle(
@@ -417,7 +417,7 @@ builder(
             "webrtc_chromium_gtests",
         ],
         mixins = [
-            "mac_default_x64",
+            "mac_default_arm64",
         ],
     ),
     os = os.MAC_ANY,

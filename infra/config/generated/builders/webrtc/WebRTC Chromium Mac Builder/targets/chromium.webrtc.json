@@ -23,7 +23,7 @@
         "name": "browser_tests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
+            "cpu": "arm64",
             "os": "Mac-15|Mac-26"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -44,7 +44,7 @@
         "name": "browser_tests_functional",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
+            "cpu": "arm64",
             "os": "Mac-15|Mac-26"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -64,7 +64,7 @@
         "name": "content_browsertests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
+            "cpu": "arm64",
             "os": "Mac-15|Mac-26"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -85,7 +85,7 @@
         "name": "content_browsertests_sequential",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
+            "cpu": "arm64",
             "os": "Mac-15|Mac-26"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -107,7 +107,7 @@
         "name": "content_browsertests_stress",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
+            "cpu": "arm64",
             "os": "Mac-15|Mac-26"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -127,7 +127,7 @@
         "name": "content_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
+            "cpu": "arm64",
             "os": "Mac-15|Mac-26"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -147,7 +147,7 @@
         "name": "remoting_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
+            "cpu": "arm64",
             "os": "Mac-15|Mac-26"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
