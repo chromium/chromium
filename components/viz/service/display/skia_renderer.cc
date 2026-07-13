@@ -122,6 +122,25 @@ namespace {
 BASE_FEATURE(kDumpWithoutCrashingOnMissingRenderPassBacking,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Killswitch for attempting to reuse scanout render pass backings across
+// non-contiguous frames.
+//
+// This is intended to improve time-to-FCP with partially delegated compositing
+// enabled, which we found to thrash allocations when going from NTP to surface
+// content fallback (i.e. a solid color quad that has no render pass) to the
+// actual surface content render pass.
+//
+// We make the assumption that there is usually, at most, one scanout render
+// pass backing (e.g. for the web contents) that may not always appear on
+// contiguous frames but maintains stable RenderPassRequirements.
+BASE_FEATURE(kReuseScanoutRenderPassBacking,
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 // Smallest unit that impacts anti-aliasing output. We use this to determine
 // when an exterior edge (with AA) has been clipped (no AA). The specific value
 // was chosen to match that used by gl_renderer.
@@ -3649,7 +3668,28 @@ void SkiaRenderer::UpdateRenderPassTextures(
     // of non-root render pass backings that are managed by a BufferQueue will
     // be destroyed when the backing is destroyed.
     if (!(root_buffer_queue_ && backing.is_root) && !backing.buffer_queue) {
-      skia_output_surface_->DestroySharedImage(backing.mailbox);
+      const bool should_stash_scanout_backing =
+          backing.is_scanout && !scanout_backing_for_reuse_ &&
+          base::FeatureList::IsEnabled(kReuseScanoutRenderPassBacking);
+#if BUILDFLAG(IS_WIN)
+      // We only expect scanout backings with partially delegated compositing.
+      const bool delegated_compositing_enabled =
+          IsDelegatedCompositingSupportedAndEnabled(
+              output_surface_->capabilities().dc_support_level);
+#else
+      const bool delegated_compositing_enabled = false;
+#endif
+      if (should_stash_scanout_backing && delegated_compositing_enabled) {
+        // Stash a single scanout backing until the next time we try to allocate
+        // a scanout backing.
+        //
+        // If there are multiple scanout backings being discarded, only keep the
+        // first one we see. This is not a great heuristic, but it is not worse
+        // than not keeping a reuse pool.
+        scanout_backing_for_reuse_.emplace(std::move(backing));
+      } else {
+        skia_output_surface_->DestroySharedImage(backing.mailbox);
+      }
     }
     render_pass_backings_.erase(it);
   }
@@ -3713,6 +3753,32 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
     // already in UpdateRenderPassTextures().
     DCHECK(!(root_buffer_queue_ && it->second.is_root));
     return;
+  }
+
+  // Try to reuse our previously stashed scanout backing, if possible. In the
+  // case that we cannot use it, opt to delete it to minimize memory usage.
+  if (requirements.is_scanout && scanout_backing_for_reuse_.has_value()) {
+    const RenderPassBacking& reusable = *scanout_backing_for_reuse_;
+    if (reusable.IsSufficientForRequirements(requirements)) {
+      const gpu::Mailbox& reused_mailbox = reusable.mailbox;
+      render_pass_backings_.emplace(
+          render_pass_id,
+          RenderPassBacking(requirements.size, requirements.generate_mipmap,
+                            requirements.color_space, requirements.alpha_type,
+                            requirements.format, reused_mailbox, is_root,
+                            requirements.is_scanout,
+                            requirements.scanout_dcomp_surface,
+                            /*buffer_queue=*/nullptr));
+      scanout_backing_for_reuse_.reset();
+      if (base::FeatureList::IsEnabled(
+              kDumpWithoutCrashingOnMissingRenderPassBacking)) {
+        seen_render_pass_ids_.insert(render_pass_id);
+      }
+      return;
+    } else {
+      skia_output_surface_->DestroySharedImage(reusable.mailbox);
+      scanout_backing_for_reuse_.reset();
+    }
   }
 
   gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |

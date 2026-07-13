@@ -590,6 +590,9 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   base::circular_deque<base::flat_set<AggregatedRenderPassId>>
       pending_render_pass_buffer_queue_swaps_;
 
+  // Single-entry reuse pool for scanout backings.
+  std::optional<RenderPassBacking> scanout_backing_for_reuse_;
+
 #if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(USE_V4L2_CODEC)
   bool is_protected_pool_idle_ = true;
