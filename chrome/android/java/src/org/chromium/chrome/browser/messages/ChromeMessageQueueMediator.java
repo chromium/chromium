@@ -232,7 +232,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
             assert !areBrowserControlsReady()
                     : "Should not be requested when browser controls is ready.";
             assert !mBrowserControlsObserver.isRequesting();
-            mBrowserControlsObserver.setOneTimeRunnableOnControlsFullyVisible(runnable);
+            mBrowserControlsObserver.setOneTimeRunnableOnControlsReady(runnable);
             return;
         }
         mBrowserControlsToken =
@@ -240,10 +240,10 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
 
         mContainerCoordinator.showMessageContainer();
         if (areBrowserControlsReady()) {
-            mBrowserControlsObserver.setOneTimeRunnableOnControlsFullyVisible(null);
+            mBrowserControlsObserver.setOneTimeRunnableOnControlsReady(null);
             runnable.run();
         } else {
-            mBrowserControlsObserver.setOneTimeRunnableOnControlsFullyVisible(runnable);
+            mBrowserControlsObserver.setOneTimeRunnableOnControlsReady(runnable);
         }
     }
 
@@ -265,7 +265,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
                 .releasePersistentShowingToken(mBrowserControlsToken);
         mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
         mContainerCoordinator.hideMessageContainer();
-        mBrowserControlsObserver.setOneTimeRunnableOnControlsFullyVisible(null);
+        mBrowserControlsObserver.setOneTimeRunnableOnControlsReady(null);
     }
 
     @Override
@@ -317,7 +317,8 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         assert mActivityTabProvider != null;
         final Tab tab = mActivityTabProvider.get();
         if (tab == null || tab.isDestroyed()) return false;
-        return TabBrowserControlsConstraintsHelper.getConstraints(tab)
+        return mBrowserControlsManager.getTopControlsHeight() == 0
+                || TabBrowserControlsConstraintsHelper.getConstraints(tab)
                         == BrowserControlsState.HIDDEN
                 || BrowserControlsUtils.areTopControlsFullyVisible(mBrowserControlsManager);
     }
@@ -367,7 +368,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
     }
 
     class BrowserControlsObserver implements BrowserControlsStateProvider.Observer {
-        private @Nullable Runnable mRunOnControlsFullyVisible;
+        private @Nullable Runnable mRunOnControlsReady;
 
         @Override
         public void onControlsOffsetChanged(
@@ -379,23 +380,25 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
                 boolean bottomControlsMinHeightChanged,
                 boolean requestNewFrame,
                 boolean isVisibilityForced) {
-            if (mRunOnControlsFullyVisible != null
-                    && BrowserControlsUtils.areTopControlsFullyVisible(mBrowserControlsManager)) {
-                mRunOnControlsFullyVisible.run();
-                mRunOnControlsFullyVisible = null;
+            if (mRunOnControlsReady != null
+                    && (mBrowserControlsManager.getTopControlsHeight() == 0
+                            || BrowserControlsUtils.areTopControlsFullyVisible(
+                                    mBrowserControlsManager))) {
+                mRunOnControlsReady.run();
+                mRunOnControlsReady = null;
             }
         }
 
-        void setOneTimeRunnableOnControlsFullyVisible(@Nullable Runnable runnable) {
-            mRunOnControlsFullyVisible = runnable;
+        void setOneTimeRunnableOnControlsReady(@Nullable Runnable runnable) {
+            mRunOnControlsReady = runnable;
         }
 
         @Nullable Runnable getRunnableForTesting() {
-            return mRunOnControlsFullyVisible;
+            return mRunOnControlsReady;
         }
 
         boolean isRequesting() {
-            return mRunOnControlsFullyVisible != null;
+            return mRunOnControlsReady != null;
         }
     }
 
