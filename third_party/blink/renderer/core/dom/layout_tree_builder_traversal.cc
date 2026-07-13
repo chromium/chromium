@@ -698,6 +698,10 @@ int LayoutTreeBuilderTraversal::ComparePreorderTreePosition(const Node& node1,
   if (node1 == node2) {
     return 0;
   }
+  if (!node1.isConnected() || !node2.isConnected() ||
+      node1.GetDocument() != node2.GetDocument()) {
+    return 0;
+  }
   const Node* anc1 = &node1;
   const Node* anc2 = &node2;
   if (Parent(*anc1) != Parent(*anc2)) {

@@ -64,7 +64,8 @@ class CORE_EXPORT LayoutTreeBuilderTraversal {
   }
   static bool IsLayoutParent(const Node& node);
   // Compares positions of two nodes in preorder tree traversal.
-  // Return -1 if the first one goes first, 0 if they are the same
+  // Return -1 if the first one goes first, 0 if they are the same (or if
+  // node1 and node2 have different Document nodes or one of them is detached),
   // and 1 if the second goes first.
   static int ComparePreorderTreePosition(const Node&, const Node&);
 };

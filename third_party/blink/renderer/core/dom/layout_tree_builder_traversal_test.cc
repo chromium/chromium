@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -306,6 +307,36 @@ TEST_F(LayoutTreeBuilderTraversalTest, InFlowScrollButtons) {
 
   EXPECT_EQ(LayoutTreeBuilderTraversal::NextSiblingLayoutObject(*scroller),
             scroll_button_layout);
+}
+
+// crbug.com/533050757
+TEST_F(LayoutTreeBuilderTraversalTest,
+       ComparePreorderTreePositionDetachedOrDifferentDocument) {
+  const char* const kHtml = "<div id='attached'></div>";
+  SetupSampleHTML(kHtml);
+  Element* attached = GetDocument().QuerySelector(AtomicString("#attached"));
+  ASSERT_TRUE(attached);
+
+  // A detached node with no parent.
+  Element* detached = GetDocument().CreateRawElement(html_names::kDivTag);
+
+  EXPECT_EQ(0, LayoutTreeBuilderTraversal::ComparePreorderTreePosition(
+                   *attached, *detached));
+  EXPECT_EQ(0, LayoutTreeBuilderTraversal::ComparePreorderTreePosition(
+                   *detached, *attached));
+  EXPECT_EQ(0, LayoutTreeBuilderTraversal::ComparePreorderTreePosition(
+                   GetDocument(), *detached));
+
+  // A node belonging to a different document.
+  auto* other_doc =
+      Document::CreateForTest(*GetDocument().GetExecutionContext());
+  Element* other_element = other_doc->CreateRawElement(html_names::kDivTag);
+  other_doc->AppendChild(other_element);
+
+  EXPECT_EQ(0, LayoutTreeBuilderTraversal::ComparePreorderTreePosition(
+                   *attached, *other_element));
+  EXPECT_EQ(0, LayoutTreeBuilderTraversal::ComparePreorderTreePosition(
+                   *other_element, *attached));
 }
 
 }  // namespace blink
