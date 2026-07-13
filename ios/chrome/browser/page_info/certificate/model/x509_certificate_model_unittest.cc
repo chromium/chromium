@@ -613,4 +613,44 @@ TEST_F(X509CertificateModelTest, SubjectAltNameSanityTest) {
   EXPECT_TRUE(ContainsDirectoryNameAttribute(names, "2.5.4.3", "127.0.0.3"));
 }
 
+TEST_F(X509CertificateModelTest, IssuerAltNameTest) {
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  std::unique_ptr<net::CertBuilder> builder =
+      net::CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+
+  // SEQUENCE {                                    -- GeneralNames
+  //   [2 PRIMITIVE] { "test.example" }            -- dNSName
+  //   [1 PRIMITIVE] { "test@test.example" }       -- rfc822Name
+  //   [6 PRIMITIVE] { "http://test.example/" }    -- URI
+  //   [7 PRIMITIVE] { 7F 00 00 02 }               -- iPAddress 127.0.0.2
+  // }
+  const uint8_t kIAN[] = {0x30, 0x3d, 0x82, 0x0c, 0x74, 0x65, 0x73, 0x74, 0x2e,
+                          0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x81, 0x11,
+                          0x74, 0x65, 0x73, 0x74, 0x40, 0x74, 0x65, 0x73, 0x74,
+                          0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x86,
+                          0x14, 0x68, 0x74, 0x74, 0x70, 0x3a, 0x2f, 0x2f, 0x74,
+                          0x65, 0x73, 0x74, 0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70,
+                          0x6c, 0x65, 0x2f, 0x87, 0x04, 0x7f, 0x00, 0x00, 0x02};
+  builder->SetExtension(bssl::der::Input(kIssuerAltNameOid),
+                        std::string(base::as_string_view(kIAN)));
+
+  X509CertificateModel model(bssl::UpRef(builder->GetCertBuffer()));
+  ASSERT_TRUE(model.is_valid());
+
+  EXPECT_FALSE(model.IsIssuerAlternativeNameCritical());
+
+  using GeneralName = X509CertificateModel::GeneralName;
+  auto names = model.GetIssuerAlternativeNames();
+  ASSERT_EQ(4u, names.size());
+  EXPECT_TRUE(
+      ContainsGeneralName(names, GeneralName::Type::kDNSName, "test.example"));
+  EXPECT_TRUE(ContainsGeneralName(names, GeneralName::Type::kRFC822Name,
+                                  "test@test.example"));
+  EXPECT_TRUE(ContainsGeneralName(names, GeneralName::Type::kURI,
+                                  "http://test.example/"));
+  EXPECT_TRUE(
+      ContainsGeneralName(names, GeneralName::Type::kIPAddress, "127.0.0.2"));
+}
+
 }  // namespace x509_certificate_model

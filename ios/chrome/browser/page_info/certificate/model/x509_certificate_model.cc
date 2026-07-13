@@ -304,6 +304,17 @@ std::vector<X509CertificateModel::GeneralName> ProcessGeneralNamesValue(
   }
   return ToGeneralNameList(*general_names);
 }
+
+std::vector<X509CertificateModel::GeneralName> ProcessGeneralNamesTlv(
+    bssl::der::Input extension_data) {
+  bssl::CertErrors unused_errors;
+  std::unique_ptr<bssl::GeneralNames> general_names =
+      bssl::GeneralNames::Create(extension_data, &unused_errors);
+  if (!general_names) {
+    return {};
+  }
+  return ToGeneralNameList(*general_names);
+}
 }  // namespace
 
 // X509CertificateModel implementation
@@ -659,6 +670,24 @@ X509CertificateModel::GetSubjectAlternativeNames() const {
     return {};
   }
   return ToGeneralNameList(*subject_alt_names_);
+}
+
+bool X509CertificateModel::IsIssuerAlternativeNameCritical() const {
+  CHECK(is_valid());
+  return IsExtensionCritical(extensions_, bssl::der::Input(kIssuerAltNameOid));
+}
+
+std::vector<X509CertificateModel::GeneralName>
+X509CertificateModel::GetIssuerAlternativeNames() const {
+  CHECK(is_valid());
+  const bssl::ParsedExtension* extension =
+      FindExtension(extensions_, bssl::der::Input(kIssuerAltNameOid));
+  if (!extension) {
+    return {};
+  }
+  // Unlike SubjectAltName, the base class does not cache IssuerAltName, so
+  // parse the extension's GeneralNames value here.
+  return ProcessGeneralNamesTlv(extension->value);
 }
 
 }  // namespace x509_certificate_model
