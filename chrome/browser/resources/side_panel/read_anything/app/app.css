@@ -243,6 +243,25 @@
     background-color: Highlight;
     color: HighlightText;
   }
+
+  #lineFocus.line-mode {
+    background-color: Highlight;
+  }
+
+  /* Per W3C
+   * (https://www.w3.org/TR/css-color-adjust-1/#forced-color-adjust-prop),
+   * forced-color-adjust: none is permitted when a specific color is needed
+   * to "provide a more appropriate user experience for those elements." In
+   * this case, without this rule, the browser forces box-shadow to 'none',
+   * completely breaking the line focus window scrim.
+   *
+   * Given that line focus is an optional feature within reading mode and
+   * without this rule, the line focus scrim will not work and therefore might
+   * not support the user's color and contrast needs, this is an acceptable
+   * use of forced-color-adjust: none */
+  #lineFocus.window-mode {
+    forced-color-adjust: none;
+  }
 }
 
 #appFlexParent .previous-read-highlight {
