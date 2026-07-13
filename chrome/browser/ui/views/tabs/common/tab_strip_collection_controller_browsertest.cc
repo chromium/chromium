@@ -169,6 +169,11 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
                        ClickTabInImmersiveMode) {
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
+  }
+
   // Add another tab to switch to.
   AppendTab();
 
