@@ -783,6 +783,7 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 
     @Test
     @SmallTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // flaky crbug.com/534257179
     @MinAndroidSdkLevel(Build.VERSION_CODES.KITKAT) // API Level 19
     public void fireGeneratedEvent_alertDisplayStyleChange_firesSubtreeChangeType()
             throws Throwable {
