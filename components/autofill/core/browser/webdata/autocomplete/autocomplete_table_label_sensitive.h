@@ -165,8 +165,8 @@ class AutocompleteTableLabelSensitive : public WebDatabaseTable {
   // Returns the number of unique values such that for all autocomplete entries
   // with that value, the interval between creation date and last usage is
   // entirely contained between [`begin`, `end`).
-  [[nodiscard]] int GetCountOfValuesContainedBetween(base::Time begin,
-                                                     base::Time end);
+  [[nodiscard]] int64_t GetCountOfValuesContainedBetween(base::Time begin,
+                                                         base::Time end);
 
   // Retrieves all of the entries in the autocomplete table.
   [[nodiscard]] bool GetAllAutocompleteEntries(

@@ -389,7 +389,7 @@ bool AutocompleteTableLabelSensitive::RemoveFormElement(
   return s.Run();
 }
 
-int AutocompleteTableLabelSensitive::GetCountOfValuesContainedBetween(
+int64_t AutocompleteTableLabelSensitive::GetCountOfValuesContainedBetween(
     base::Time begin,
     base::Time end) {
   const time_t begin_time_t = begin.ToTimeT();
@@ -410,7 +410,7 @@ int AutocompleteTableLabelSensitive::GetCountOfValuesContainedBetween(
     // This might happen in case of I/O errors. See crbug.com/332263206.
     return 0;
   }
-  return s.ColumnInt(0);
+  return s.ColumnInt64(0);
 }
 
 bool AutocompleteTableLabelSensitive::GetAllAutocompleteEntries(

@@ -720,10 +720,10 @@ AutofillWebDataBackendImpl::GetCountOfValuesContainedBetween(base::Time begin,
                                                              base::Time end,
                                                              WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  int value =
+  int64_t value =
       AutocompleteTable::FromWebDatabase(db)->GetCountOfValuesContainedBetween(
           begin, end);
-  return std::make_unique<WDResult<int>>(AUTOFILL_VALUE_RESULT, value);
+  return std::make_unique<WDResult<int64_t>>(INT64_RESULT, value);
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::UpdateAutocompleteEntries(

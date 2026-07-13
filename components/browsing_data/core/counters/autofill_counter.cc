@@ -5,6 +5,7 @@
 #include "components/browsing_data/core/counters/autofill_counter.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -144,9 +145,9 @@ void AutofillCounter::OnWebDataServiceRequestDone(
   }
 
   // Autocomplete suggestions.
-  DCHECK_EQ(AUTOFILL_VALUE_RESULT, result->GetType());
+  DCHECK_EQ(INT64_RESULT, result->GetType());
   num_suggestions_ =
-      static_cast<const WDResult<int>*>(result.get())->GetValue();
+      static_cast<const WDResult<int64_t>*>(result.get())->GetValue();
 
   ReportResultIfReady();
 }

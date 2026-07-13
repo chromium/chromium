@@ -310,8 +310,8 @@ bool AutocompleteTable::RemoveFormElement(const std::u16string& name,
   return s.Run();
 }
 
-int AutocompleteTable::GetCountOfValuesContainedBetween(base::Time begin,
-                                                        base::Time end) {
+int64_t AutocompleteTable::GetCountOfValuesContainedBetween(base::Time begin,
+                                                            base::Time end) {
   const time_t begin_time_t = begin.ToTimeT();
   const time_t end_time_t = GetEndTime(end);
 
@@ -329,7 +329,7 @@ int AutocompleteTable::GetCountOfValuesContainedBetween(base::Time begin,
     // This might happen in case of I/O errors. See crbug.com/332263206.
     return 0;
   }
-  return s.ColumnInt(0);
+  return s.ColumnInt64(0);
 }
 
 bool AutocompleteTable::GetAllAutocompleteEntries(
