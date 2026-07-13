@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.build.annotations.NullMarked;
@@ -19,6 +20,9 @@ import org.chromium.net.NetError;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /** JNI bridge with content::NavigationHandle */
 @JNINamespace("content")
@@ -58,6 +62,7 @@ public class NavigationHandle {
     private @Nullable WebContents mWebContents;
     private @Nullable Page mCommittedPage;
     private boolean mIsSameOrigin;
+    private @Nullable Map<String, String> mResponseHeaders;
     private int mIgnoredDuplicateNavigationCount;
 
     private boolean mStarted;
@@ -132,6 +137,7 @@ public class NavigationHandle {
         mIsBack = isBack;
         mIsForward = isForward;
         mIsRestore = isRestore;
+        mResponseHeaders = null;
     }
 
     @CalledByNative
@@ -187,7 +193,7 @@ public class NavigationHandle {
     @CalledByNative
     @VisibleForTesting
     public void didFinish(
-            GURL url,
+            @JniType("GURL") GURL url,
             boolean isErrorPage,
             boolean hasCommitted,
             boolean isPrimaryMainFrameFragmentNavigation,
@@ -195,13 +201,15 @@ public class NavigationHandle {
             boolean isValidSearchFormUrl,
             @PageTransition int transition,
             @NetError int errorCode,
-            String errorDescription,
+            @JniType("std::string") String errorDescription,
             int httpStatuscode,
             boolean isExternalProtocol,
             boolean isPdf,
-            String mimeType,
+            @JniType("std::string") String mimeType,
             Page currentPage,
             boolean isSameOrigin,
+            @JniType("base::flat_map<std::string, std::string>")
+                    Map<String, String> responseHeaders,
             int ignoredDuplicateNavigationCount) {
         mUrl = url;
         mIsErrorPage = isErrorPage;
@@ -220,6 +228,7 @@ public class NavigationHandle {
             mCommittedPage = currentPage;
         }
         mIsSameOrigin = isSameOrigin;
+        mResponseHeaders = responseHeaders;
         mIgnoredDuplicateNavigationCount = ignoredDuplicateNavigationCount;
     }
 
@@ -244,6 +253,7 @@ public class NavigationHandle {
                 /* mimeType= */ "",
                 new PageImpl(/* nativePage= */ 0, /* isPrerendering= */ false),
                 /* isSameOrigin= */ true,
+                /* responseHeaders= */ new HashMap<>(),
                 /* ignoredDuplicateNavigationCount= */ 0);
     }
 
@@ -309,6 +319,13 @@ public class NavigationHandle {
     public boolean isSameOrigin() {
         assert mHasCommitted;
         return mIsSameOrigin;
+    }
+
+    /**
+     * @return The response headers.
+     */
+    public @Nullable Map<String, String> getResponseHeaders() {
+        return mResponseHeaders;
     }
 
     /**

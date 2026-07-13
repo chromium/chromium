@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/flat_map.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -108,24 +109,39 @@ void NavigationHandleProxy::DidFinish() {
                             ? cpp_navigation_handle_->IsSameOrigin()
                             : false;
 
+  base::flat_map<std::string, std::string> response_headers;
+  if (cpp_navigation_handle_->GetResponseHeaders()) {
+    size_t headers_iterator = 0;
+    std::string header_name, header_value;
+    while (cpp_navigation_handle_->GetResponseHeaders()->EnumerateHeaderLines(
+        &headers_iterator, &header_name, &header_value)) {
+      auto it = response_headers.find(header_name);
+      if (it == response_headers.end()) {
+        response_headers[header_name] = header_value;
+      } else if (!header_value.empty()) {
+        if (!it->second.empty()) {
+          it->second += ", ";
+        }
+        it->second += header_value;
+      }
+    }
+  }
+
   Java_NavigationHandle_didFinish(
-      env, java_navigation_handle_, url::GURLAndroid::FromNativeGURL(env, gurl),
-      cpp_navigation_handle_->IsErrorPage(),
+      env, java_navigation_handle_, gurl, cpp_navigation_handle_->IsErrorPage(),
       cpp_navigation_handle_->HasCommitted(),
       is_primary_main_frame_fragment_navigation,
       cpp_navigation_handle_->IsDownload(), is_valid_search_form_url,
       cpp_navigation_handle_->GetPageTransition(),
       cpp_navigation_handle_->GetNetErrorCode(),
-      base::android::ConvertUTF8ToJavaString(
-          env, net::ErrorToString(cpp_navigation_handle_->GetNetErrorCode())),
+      net::ErrorToString(cpp_navigation_handle_->GetNetErrorCode()),
       cpp_navigation_handle_->GetResponseHeaders()
           ? cpp_navigation_handle_->GetResponseHeaders()->response_code()
           : 0,
       cpp_navigation_handle_->IsExternalProtocol(),
-      cpp_navigation_handle_->IsPdf(),
-      base::android::ConvertUTF8ToJavaString(env, GetMimeType()),
+      cpp_navigation_handle_->IsPdf(), GetMimeType(),
       cpp_navigation_handle_->GetWebContents()->GetPrimaryPage().GetJavaPage(),
-      is_same_origin,
+      is_same_origin, response_headers,
       cpp_navigation_handle_->GetIgnoredDuplicateNavigationCount());
 }
 

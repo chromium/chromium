@@ -30,6 +30,8 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
+import java.util.HashMap;
+
 /** Tests for the AwWebContentsObserver class. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
@@ -289,6 +291,7 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
                 /* mimeType= */ "",
                 page,
                 /* isSameOrigin= */ true,
+                new HashMap<>(),
                 /* ignoredDuplicateNavigationCount= */ 0);
         mWebContentsObserver.didFinishNavigationInPrimaryMainFrame(navigation);
 

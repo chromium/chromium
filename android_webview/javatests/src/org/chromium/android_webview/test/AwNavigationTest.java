@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import android.util.Pair;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -22,6 +24,9 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.test.util.TestWebServer;
+
+import java.util.List;
+import java.util.Map;
 
 /** Tests for AwNavigation APIs. */
 @RunWith(Parameterized.class)
@@ -83,6 +88,29 @@ public class AwNavigationTest extends AwParameterizedTest {
         Assert.assertNull(navigation.getWebResourceError());
         Assert.assertNotNull(navigation.getPage());
         Assert.assertEquals(url, navigation.getPage().getUrl());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNavigationResponseHeadersCombine() throws Throwable {
+        List<Pair<String, String>> headers =
+                List.of(
+                        new Pair<>("Custom-Header", "Value1"),
+                        new Pair<>("Custom-Header", "Value2"));
+
+        final String url =
+                mWebServer.setResponse("/page.html", "<html><body>Hello</body></html>", headers);
+
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(), mContentsClient.getOnPageFinishedHelper(), url);
+
+        AwNavigation navigation = mNavigationListener.getLastCompletedNavigation();
+        Assert.assertNotNull(navigation);
+
+        Map<String, String> responseHeaders = navigation.getResponseHeaders();
+        Assert.assertNotNull(responseHeaders);
+        Assert.assertEquals("Value1, Value2", responseHeaders.get("Custom-Header"));
     }
 
     @Test
