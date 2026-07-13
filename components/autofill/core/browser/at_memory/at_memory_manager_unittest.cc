@@ -384,7 +384,8 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_SchemalessResultHasEmptyLabels) {
 // (e.g. kManageAddress) and NOT the "Manage enhanced autofill" footer.
 TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_AutofillSource_ShowsLocalManageFooter) {
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          /*parent_suggestion_metadata=*/std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -413,7 +414,8 @@ TEST_F(AtMemoryManagerTest,
 // not local settings).
 TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_AISource_ShowsManageEnhancedAutofillFooter) {
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          /*parent_suggestion_metadata=*/std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -442,7 +444,8 @@ TEST_F(AtMemoryManagerTest,
 // autofill" footer.
 TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_NoSource_ShowsManageEnhancedAutofillFooter) {
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          /*parent_suggestion_metadata=*/std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -1183,7 +1186,8 @@ TEST_F(AtMemoryManagerTest,
 // Also verifies that previewing the suggestion uses the obfuscated value,
 // while filling uses the raw value directly.
 TEST_F(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -1226,8 +1230,7 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
                          FillingProduct::kAtMemory, _));
 
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kPreview,
-                                      FormGlobalId(), FieldGlobalId(),
-                                      final_suggestions[0]);
+                                      form_id, field_id, final_suggestions[0]);
 
   EXPECT_CALL(autofill_manager(),
               FillOrPreviewField(
@@ -1235,9 +1238,8 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
                   mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
                   std::u16string(u"987654321"), FillingProduct::kAtMemory, _));
 
-  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
-                                      FormGlobalId(), FieldGlobalId(),
-                                      final_suggestions[0]);
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
+                                      field_id, final_suggestions[0]);
 }
 
 // Tests that CVC (`kCreditCardSecurityCode`) in metadata is excluded from the
@@ -1285,7 +1287,8 @@ TEST_F(AtMemoryManagerTest, CvcMetadata_ExcludedFromLabels) {
 // Also verifies that previewing the child suggestion uses the obfuscated value,
 // while filling uses the raw value directly.
 TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
-  manager().OnPopupShown(FormGlobalId(), FieldGlobalId(),
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
@@ -1334,7 +1337,7 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
                          FillingProduct::kAtMemory, _));
 
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kPreview,
-                                      FormGlobalId(), FieldGlobalId(),
+                                      form_id, field_id,
                                       final_suggestions[0].children[0]);
 
   EXPECT_CALL(autofill_manager(),
@@ -1343,8 +1346,8 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
                   mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
                   std::u16string(u"987654321"), FillingProduct::kAtMemory, _));
 
-  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
-                                      FormGlobalId(), FieldGlobalId(),
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
+                                      field_id,
                                       final_suggestions[0].children[0]);
 }
 
