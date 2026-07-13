@@ -9240,6 +9240,9 @@ crbug.com/476257809 [ Linux ] external/wpt/fedcm/fedcm-storage-access-api-autogr
 # win-rel flakiness
 crbug.com/515842545 [ Win ] external/wpt/css/css-ui/crashtests/outline-scrollIntoView-crash.html [ Failure Pass ]
 
+crbug.com/340956654 [ Linux ] external/wpt/dom/events/scrolling/scrollend-event-fires-to-iframe-window.html [ Failure Pass ]
+crbug.com/340956654 [ Mac ] external/wpt/dom/events/scrolling/scrollend-event-fires-to-iframe-window.html [ Failure Pass ]
+
 # Pointer Lock `unadjustedMovement: true` is unsupported on Linux.
 # The unadjustedmovement=false variant fails on Linux as well, presumably due to
 # an issue with how the events are being sent by the test driver. The behavior
