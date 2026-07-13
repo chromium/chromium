@@ -1186,6 +1186,16 @@ void SyncServiceImpl::OnActionableProtocolError(
         account_mutator->RemovePrimaryAccountButKeepTokens(
             signin_metrics::ProfileSignout::kServerForcedDisable);
 #else
+        // The Sync consent will be revoked, and Sync will enter
+        // Sync-the-transport mode.
+        if (base::FeatureList::IsEnabled(
+                kSyncCopyPreferencesToTransportModeOnServerForcedDisable)) {
+          CHECK(!GetAccountInfo().gaia.empty());
+          // Migrating the user's selected types prefs to ensure that they will
+          // be available in Sync-the-transport mode.
+          SyncPrefs::MigrateGlobalDataTypePrefsToAccount(
+              sync_client_->GetPrefService(), GetAccountInfo().gaia);
+        }
         // Note: On some platforms, revoking the sync consent will also clear
         // the primary account as transitioning from ConsentLevel::kSync to
         // ConsentLevel::kSignin is not supported.

@@ -254,6 +254,11 @@ BASE_DECLARE_FEATURE(kSyncSimplifyDeviceNaming);
 // recognizable name for the user.
 BASE_DECLARE_FEATURE(kSyncUseServerDeterminedDeviceName);
 
+// If enabled, copies selected types preferences from global profile preferences
+// to account-keyed preferences upon a DISABLE_SYNC_ON_CLIENT protocol error
+// before entering transport mode.
+BASE_DECLARE_FEATURE(kSyncCopyPreferencesToTransportModeOnServerForcedDisable);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

@@ -1593,6 +1593,42 @@ TEST_F(SyncServiceImplTest,
       /*expected_bucket_count=*/1);
 }
 
+// Checks that syncing preferences are being copied to transport mode upon
+// `DISABLE_SYNC_ON_CLIENT` error. Regression test for
+// https://crbug.com/534244680.
+TEST_F(SyncServiceImplTest,
+       DisableSyncOnClientCopiesSyncPreferencesToTransportMode) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kSyncCopyPreferencesToTransportModeOnServerForcedDisable);
+
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(PASSWORDS, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(service()->IsSyncFeatureEnabled());
+  // Disabling password syncing in Sync-the-feature mode.
+  UserSelectableTypeSet enabled_types =
+      service()->GetUserSettings()->GetSelectedTypes();
+  enabled_types.Remove(UserSelectableType::kPasswords);
+  service()->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
+                                                 enabled_types);
+  ASSERT_FALSE(service()->GetUserSettings()->GetSelectedTypes().Has(
+      UserSelectableType::kPasswords));
+
+  // Simulating a Sync error that causes switching to Sync-the-transport mode.
+  SyncProtocolError client_cmd;
+  client_cmd.action = DISABLE_SYNC_ON_CLIENT;
+  service()->OnActionableProtocolError(client_cmd);
+
+  ASSERT_FALSE(service()->IsSyncFeatureEnabled());
+  EXPECT_FALSE(service()->GetUserSettings()->GetSelectedTypes().Has(
+      UserSelectableType::kPasswords));
+}
+
 TEST_F(SyncServiceImplTest,
        DisableSyncOnClientLogsPassphraseTypeForEncryptionObsolete) {
   const PassphraseType kPassphraseType = PassphraseType::kKeystorePassphrase;
