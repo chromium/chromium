@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -52,26 +53,47 @@ class ContextualTasksPrivateApiTest : public ExtensionApiTest {
     EXPECT_TRUE(StartEmbeddedTestServer());
   }
 
-  void SetupMockUiService(bool is_eligible) {
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    ExtensionApiTest::SetUpBrowserContextKeyedServices(context);
+
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
+          auto mock_aim_service =
+              std::make_unique<NiceMock<MockAimEligibilityService>>(
+                  *profile->GetPrefs(), /*template_url_service=*/nullptr,
+                  /*url_loader_factory=*/nullptr,
+                  /*identity_manager=*/nullptr);
+          ON_CALL(*mock_aim_service, IsAimEligible())
+              .WillByDefault(Return(true));
+          ON_CALL(*mock_aim_service, IsAimUrl(testing::_, testing::_))
+              .WillByDefault(Return(true));
+          return mock_aim_service;
+        }));
+
     contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
         ->SetTestingFactory(
-            profile(),
-            base::BindOnce(
+            context,
+            base::BindRepeating(
                 [](bool is_eligible, content::BrowserContext* context)
                     -> std::unique_ptr<KeyedService> {
                   Profile* profile = Profile::FromBrowserContext(context);
+                  auto* aim_eligibility_service =
+                      AimEligibilityServiceFactory::GetForProfile(profile);
+
                   auto mock_eligibility_manager =
                       std::make_unique<MockContextualTasksEligibilityManager>(
                           /*pref_service=*/nullptr,
-                          /*identity_manager=*/nullptr,
-                          /*aim_eligibility_service=*/nullptr, is_eligible);
+                          /*identity_manager=*/nullptr, aim_eligibility_service,
+                          is_eligible);
 
                   auto mock_ui_service = std::make_unique<
                       NiceMock<contextual_tasks::MockContextualTasksUiService>>(
                       profile,
                       /*service=*/nullptr,
-                      /*identity_manager=*/nullptr,
-                      /*aim_eligibility_service=*/nullptr,
+                      /*identity_manager=*/nullptr, aim_eligibility_service,
                       std::move(mock_eligibility_manager),
                       /*cookie_synchronizer=*/nullptr);
 
@@ -81,7 +103,11 @@ class ContextualTasksPrivateApiTest : public ExtensionApiTest {
                             ->ContextualTasksUiService::GetEligibilityManager();
                       });
                   ON_CALL(*mock_ui_service, IsAiUrl(testing::_))
-                      .WillByDefault(Return(true));
+                      .WillByDefault([service_ptr = mock_ui_service.get()](
+                                         const GURL& url) {
+                        return service_ptr->ContextualTasksUiService::IsAiUrl(
+                            url);
+                      });
                   ON_CALL(*mock_ui_service, IsSearchResultsUrl(testing::_))
                       .WillByDefault(Return(true));
                   ON_CALL(*mock_ui_service, GetDefaultAiPageUrl())
@@ -90,14 +116,21 @@ class ContextualTasksPrivateApiTest : public ExtensionApiTest {
                   return std::unique_ptr<KeyedService>(
                       std::move(mock_ui_service));
                 },
-                is_eligible));
+                IsEligible()));
   }
+
+  virtual bool IsEligible() const { return true; }
 
   NiceMock<contextual_tasks::MockContextualTasksUiService>* GetMockUiService() {
     return static_cast<
         NiceMock<contextual_tasks::MockContextualTasksUiService>*>(
         contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
             profile()));
+  }
+
+  MockAimEligibilityService* GetMockAimEligibilityService() {
+    return static_cast<MockAimEligibilityService*>(
+        AimEligibilityServiceFactory::GetForProfile(profile()));
   }
 
  protected:
@@ -108,10 +141,7 @@ class ContextualTasksPrivateApiTest : public ExtensionApiTest {
 class ContextualTasksPrivateApiEligibleTest
     : public ContextualTasksPrivateApiTest {
  public:
-  void SetUpOnMainThread() override {
-    ContextualTasksPrivateApiTest::SetUpOnMainThread();
-    SetupMockUiService(/*is_eligible=*/true);
-  }
+  bool IsEligible() const override { return true; }
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiEligibleTest, GetState) {
@@ -169,6 +199,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiEligibleTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiEligibleTest,
                        LaunchPanelInNewTabPopupWindow) {
+  auto* mock_aim_service = GetMockAimEligibilityService();
+  ON_CALL(*mock_aim_service, IsAimUrl(testing::_, testing::_))
+      .WillByDefault(Return(false));
+
   auto* mock_ui_service = GetMockUiService();
 
   EXPECT_CALL(
@@ -187,10 +221,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiEligibleTest,
 class ContextualTasksPrivateApiIneligibleTest
     : public ContextualTasksPrivateApiTest {
  public:
-  void SetUpOnMainThread() override {
-    ContextualTasksPrivateApiTest::SetUpOnMainThread();
-    SetupMockUiService(/*is_eligible=*/false);
-  }
+  bool IsEligible() const override { return false; }
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiIneligibleTest, GetState) {

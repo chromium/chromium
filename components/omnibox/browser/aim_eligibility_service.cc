@@ -19,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/common/logger.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -45,6 +46,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/omnibox_proto/aim_eligibility_client_request.pb.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
 namespace {
@@ -499,6 +501,40 @@ bool AimEligibilityService::IsFuseboxEligible() const {
   return IsEligibleByServer(GetMostRecentResponse().is_fusebox_eligible());
 }
 
+bool AimEligibilityService::IsAimUrl(
+    const GURL& url,
+    std::optional<std::string> host_override) const {
+  OMNIBOX_LOG("aim_url_check") << "IsAimUrl: Checking " << url
+                               << " override: " << host_override.value_or("");
+  bool is_aim_url =
+      IsAimHost(url, host_override) && IsAimPath(url) && HasAimUrlParams(url);
+  OMNIBOX_LOG("aim_url_check") << "IsAimUrl: " << (is_aim_url ? "yes" : "no");
+  return is_aim_url;
+}
+
+bool AimEligibilityService::IsAimHost(
+    const GURL& url,
+    std::optional<std::string> host_override) const {
+  OMNIBOX_LOG("aim_url_check") << "IsAimHost: Checking host...";
+  if (host_override && host_override.value() == url.host()) {
+    OMNIBOX_LOG("aim_url_check") << "Found overridden host!";
+    return true;
+  }
+  OMNIBOX_LOG("aim_url_check")
+      << "IsAimHost: Available hosts: "
+      << GetMostRecentResponse().interception_allowed_hosts().size();
+  for (const auto& host_pattern :
+       GetMostRecentResponse().interception_allowed_hosts()) {
+    if (re2::RE2::FullMatch(url.host(), host_pattern)) {
+      OMNIBOX_LOG("aim_url_check") << "IsAimHost: Matched : " << host_pattern;
+      return true;
+    }
+  }
+
+  OMNIBOX_LOG("aim_url_check") << "IsAimHost: No host matched";
+  return false;
+}
+
 bool AimEligibilityService::HasAimUrlParams(const GURL& url) const {
   for (const auto& rule : GetMostRecentResponse().aim_detection_url_rule()) {
     int matched_params = 0;
@@ -516,6 +552,23 @@ bool AimEligibilityService::HasAimUrlParams(const GURL& url) const {
     }
   }
 
+  return false;
+}
+
+bool AimEligibilityService::HasNoCobrowseParams(const GURL& url) const {
+  OMNIBOX_LOG("aim_url_check")
+      << "HasNoCobrowseParams: Testing for no-cobrowse params";
+  std::string param_value;
+  for (const auto& param : GetMostRecentResponse().no_cobrowse_params()) {
+    if (net::GetValueForKeyInQuery(url, param.key(), &param_value) &&
+        param_value.find(param.value()) != std::string::npos) {
+      OMNIBOX_LOG("aim_url_check")
+          << "HasNoCobrowseParams: Found " << param.key() << " with value "
+          << param_value;
+      return true;
+    }
+  }
+  OMNIBOX_LOG("aim_url_check") << "HasNoCobrowseParams: No params detected";
   return false;
 }
 
@@ -837,6 +890,19 @@ void AimEligibilityService::OnTemplateURLServiceShuttingDown() {
 void AimEligibilityService::OnPolicyChanged() {
   // Notify observers that eligibility might have changed.
   eligibility_changed_callbacks_.Notify();
+}
+
+bool AimEligibilityService::IsAimPath(const GURL& url) const {
+  OMNIBOX_LOG("aim_url_check") << "IsAimPath: Testing path...";
+  for (const auto& path :
+       GetMostRecentResponse().interception_allowed_paths()) {
+    if (url.path() == path) {
+      OMNIBOX_LOG("aim_url_check") << "IsAimPath: Is an AIM path";
+      return true;
+    }
+  }
+  OMNIBOX_LOG("aim_url_check") << "IsAimPath: Not an AIM path";
+  return false;
 }
 
 void AimEligibilityService::OnEligibilityResponseChanged() {

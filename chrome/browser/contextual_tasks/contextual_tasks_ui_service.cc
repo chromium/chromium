@@ -188,10 +188,6 @@ constexpr net::BackoffEntry::Policy
 constexpr base::TimeDelta kOAuthCacheHitThreshold = base::Milliseconds(30);
 
 constexpr char kAiPageHost[] = "https://google.com";
-constexpr char kDebugParam[] = "deb";
-constexpr char kDebugNoCobrowseValue[] = "nocobrowse1";
-constexpr char kNcbParam[] = "ncb";
-constexpr char kNcbValue[] = "1";
 
 // Parameters that the search results page must contain at least one of to be
 // considered a valid search results page.
@@ -1492,20 +1488,10 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   // The "deb=nocobrowse1" and "ncb=1" params allow bypassing interception.
   bool should_bypass_interception = false;
   std::string bypass_reason;
-  std::string ncb_value;
-  std::string debug_param_value;
 
   if (is_nav_to_ai) {
-    if (net::GetValueForKeyInQuery(url_params.url, kNcbParam, &ncb_value) &&
-        ncb_value == kNcbValue) {
-      should_bypass_interception = true;
-      bypass_reason = "ncb param";
-    } else if (net::GetValueForKeyInQuery(url_params.url, kDebugParam,
-                                          &debug_param_value) &&
-               debug_param_value.contains(kDebugNoCobrowseValue)) {
-      should_bypass_interception = true;
-      bypass_reason = "debug param";
-    }
+    should_bypass_interception =
+        aim_eligibility_service_->HasNoCobrowseParams(url_params.url);
 
     // If the page is to AI and the navigation is not same site, apply a param
     // to the URL to mark it as untrusted. Likewise, remove it if present and
@@ -1523,8 +1509,7 @@ bool ContextualTasksUiService::HandleNavigationImpl(
     if (original_url_is_virtual) {
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: HandleNavigationImpl "
-             "posting LoadUrlInWebContents for "
-          << bypass_reason;
+             "posting LoadUrlInWebContents";
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&ContextualTasksUiService::LoadUrlInWebContents,
@@ -2723,11 +2708,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanelWithErrorPage(
 }
 
 bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
-  if (!IsSearchResultsUrl(url)) {
-    return false;
-  }
-
-  return aim_eligibility_service_->HasAimUrlParams(url);
+  return aim_eligibility_service_->IsAimUrl(url, GetForcedEmbeddedPageHost());
 }
 
 bool ContextualTasksUiService::IsPendingErrorPage(const base::Uuid& task_id) {
@@ -3028,24 +3009,7 @@ void ContextualTasksUiService::OnImageClickedFromSourcesMenu(
 }
 
 bool ContextualTasksUiService::IsAllowedHost(const GURL& url) {
-  // TODO(crbug.com/498566984): Remove this once the AimEligibilityService tells
-  //                            us which hosts to intercept.
-  bool is_lens_debug_host = url.host() == "lndb.corp.google.com" ||
-                            url.host() == "lndb-autopush.corp.google.com";
-  if (net::SchemefulSite::IsSameSite(url, GURL(kAiPageHost)) &&
-      !is_lens_debug_host) {
-    // Exclude lens debugging hosts.
-    return true;
-  }
-  std::string forced_host = GetForcedEmbeddedPageHost();
-  if (!forced_host.empty() &&
-      net::SchemefulSite::IsSameSite(
-          url,
-          GURL(base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator,
-                             forced_host})))) {
-    return true;
-  }
-  return false;
+  return aim_eligibility_service_->IsAimHost(url, GetForcedEmbeddedPageHost());
 }
 
 void ContextualTasksUiService::OnInitialThreadUrlAvailable(

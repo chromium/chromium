@@ -127,6 +127,12 @@ class LensSearchControllerUnificationBrowserTest : public InProcessBrowserTest {
                                          bool cobrowse_eligible) {
     // Set up ineligibility.
     auto* mock_aim = GetMockAimService();
+
+    ON_CALL(*mock_aim, IsAimUrl(testing::_, testing::_))
+        .WillByDefault(testing::Return(false));
+    ON_CALL(*mock_aim, IsAimHost(testing::_, testing::_))
+        .WillByDefault(testing::Return(false));
+
     ASSERT_TRUE(mock_aim);
     EXPECT_CALL(*mock_aim, IsAimEligible())
         .WillRepeatedly(testing::Return(aim_eligible));

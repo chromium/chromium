@@ -39,6 +39,8 @@ class FakeContextualTasksUiService
             /*eligibility_manager=*/nullptr,
             /*cookie_synchronizer=*/nullptr) {}
   GURL GetDefaultAiPageUrl() override { return GURL(url::kAboutBlankURL); }
+
+  bool IsAiUrl(const GURL& url) override { return true; }
 };
 
 class ContextualTasksPixelTestBase : public WebUIComposeBoxPixelTest {

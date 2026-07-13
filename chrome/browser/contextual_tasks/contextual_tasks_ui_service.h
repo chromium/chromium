@@ -77,11 +77,6 @@ class ContextualTasksWindowTrackerManager;
 // thread. Events like tab switching and Intercepted navigations from both the
 // sidepanel and omnibox will be routed here.
 class ContextualTasksUiService : public KeyedService {
-  FRIEND_TEST_ALL_PREFIXES(ContextualTasksUiServiceTest,
-                           IsAllowedHost_WithOverride);
-  FRIEND_TEST_ALL_PREFIXES(ContextualTasksUiServiceTest,
-                           IsAllowedHost_LensDebugNotAllowed);
-
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -576,7 +571,7 @@ class ContextualTasksUiService : public KeyedService {
                                            const GURL& url);
 
   // Checks if the provided URL matches any of the allowed hosts.
-  static bool IsAllowedHost(const GURL& url);
+  bool IsAllowedHost(const GURL& url);
 
   // Returns the host override for a given task if it differs from the default.
   std::string GetHostForTask(const base::Uuid& task_id);
