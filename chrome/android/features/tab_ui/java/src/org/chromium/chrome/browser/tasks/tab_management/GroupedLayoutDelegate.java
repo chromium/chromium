@@ -142,6 +142,8 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
             }
             assert lastShownTab != null;
             mMediator.updateTab(desIndex, lastShownTab, true, false);
+            int targetIndex = getInsertionIndexOfTab(lastShownTab);
+            mModelList.moveItem(desIndex, targetIndex);
             return;
         }
 

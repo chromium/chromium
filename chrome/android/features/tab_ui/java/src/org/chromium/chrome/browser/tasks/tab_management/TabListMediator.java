@@ -1193,6 +1193,8 @@ public class TabListMediator implements TabListNotificationHandler {
                                     .get(index)
                                     .model
                                     .set(TabProperties.IS_PINNED, tab.getIsPinned());
+                            int targetIndex = mTabListLayoutDelegate.getInsertionIndexOfTab(tab);
+                            mModelList.moveItem(index, targetIndex);
                         }
                     }
                 };
