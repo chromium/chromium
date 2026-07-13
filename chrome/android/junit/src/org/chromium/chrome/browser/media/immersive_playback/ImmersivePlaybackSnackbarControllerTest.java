@@ -25,6 +25,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -52,7 +53,8 @@ public class ImmersivePlaybackSnackbarControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mContext = Robolectric.buildActivity(Activity.class).get();
+        mContext = Robolectric.buildActivity(Activity.class).create().get();
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
         mController =
                 new ImmersivePlaybackSnackbarController(
                         mContext,

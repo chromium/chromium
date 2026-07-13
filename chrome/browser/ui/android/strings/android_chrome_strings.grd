@@ -7840,20 +7840,26 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_FORMAT_TITLE" desc="Title of the dialog for selecting immersive playback format." translateable="false">
         Format
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_OPTION_STANDARD" desc="Option for standard projection in the immersive playback confirmation dialog." translateable="false">
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_OPTION_RECOMMENDED" desc="Option for detected custom projection in the immersive playback confirmation dialog." translateable="false">
+        Detected
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_STANDARD" desc="Standard immersive playback format description." translateable="false">
         Standard
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_OPTION_STEREO_3D" desc="Option for stereoscopic 3D projection in the immersive playback confirmation dialog." translateable="false">
+      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_STEREOSCOPIC" desc="Stereoscopic immersive playback format description." translateable="false">
         Stereoscopic
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_OPTION_VR180_3D" desc="Option for VR 180 projection in the immersive playback confirmation dialog." translateable="false">
-        180° stereoscopic
-      </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_OPTION_VR360" desc="Option for VR 360 projection in the immersive playback confirmation dialog." translateable="false">
+      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_360" desc="360° immersive playback format description." translateable="false">
         360°
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_OPTION_RECOMMENDED" desc="Option for recommended custom projection in the immersive playback confirmation dialog." translateable="false">
-        Recommended
+      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_360_STEREOSCOPIC" desc="360° stereoscopic immersive playback format description." translateable="false">
+        360° Stereoscopic
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_180" desc="180° immersive playback format description." translateable="false">
+        180°
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_180_STEREOSCOPIC" desc="180° stereoscopic immersive playback format description." translateable="false">
+        180° Stereoscopic
       </message>
       <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_OK" desc="Text for the positive button in the format selection dialog." translateable="false">
         OK

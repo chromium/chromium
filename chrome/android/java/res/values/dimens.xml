@@ -549,6 +549,5 @@ found in the LICENSE file.
     <dimen name="background_tab_toast_y_margin">16dp</dimen>
 
     <!-- Immersive Playback Confirmation Dialog dimens -->
-    <dimen name="immersive_playback_confirmation_dialog_padding">24dp</dimen>
     <dimen name="immersive_playback_confirmation_dialog_width">256dp</dimen>
 </resources>

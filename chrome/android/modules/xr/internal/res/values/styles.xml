@@ -23,5 +23,9 @@ found in the LICENSE file.
 
     <style name="ImmersiveVideoRadioGroupTheme" parent="ImmersiveVideoControlLabel">
         <item name="android:textColorPrimary">@color/immersive_video_theme_foreground</item>
+        <item name="android:gravity">start</item>
+        <item name="descriptionTextAppearance">
+            @style/TextAppearance.TextSmall.Secondary.Baseline.Light
+        </item>
     </style>
 </resources>

@@ -67,6 +67,7 @@ android_library("java") {
     ":xr_resources",
     "//base:build_info_java",
     "//base:bundle_utils_java",
+    "//base:callback_java",
     "//base:log_java",
     "//base:resetters_java",
     "//base:supplier_java",

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/format_radio_group_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="start"
+    android:orientation="vertical">
+
+    <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+        android:id="@+id/recommended_option"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:primaryText=
+            "@string/immersive_playback_confirmation_option_recommended" />
+
+    <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+        android:id="@+id/standard_option"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:primaryText="@string/immersive_playback_format_standard" />
+
+    <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+        android:id="@+id/stereoscopic_option"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:primaryText="@string/immersive_playback_format_stereoscopic" />
+
+    <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+        android:id="@+id/hemisphere_option"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:primaryText="@string/immersive_playback_format_180_stereoscopic" />
+
+    <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+        android:id="@+id/sphere_option"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:primaryText="@string/immersive_playback_format_360" />
+
+</org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>

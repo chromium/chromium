@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.media.immersive_playback.components;
 import android.util.SizeF;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoFormatRadioGroup;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoFormatRadioGroup.FormatOption;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
 import org.chromium.content_public.browser.ImmersiveStereoMode;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -44,9 +45,10 @@ public class ImmersiveVideoFormatMediator {
     /**
      * Called when a format is selected in the UI.
      *
-     * @param option The {@link ImmersiveVideoFormatRadioGroup.FormatOption} that was selected.
+     * @param option The {@link FormatOption} that was selected.
      */
-    public void onFormatSelected(ImmersiveVideoFormatRadioGroup.FormatOption option) {
+    public void onFormatSelected(@Nullable FormatOption option) {
+        if (option == null) return;
         mModel.set(ImmersiveVideoFormatProperties.SELECTED_STEREO_MODE, option.stereoMode);
         mModel.set(ImmersiveVideoFormatProperties.SELECTED_PROJECTION_TYPE, option.projectionType);
         mFormatListener.onFormatSelected(option.stereoMode, option.projectionType);

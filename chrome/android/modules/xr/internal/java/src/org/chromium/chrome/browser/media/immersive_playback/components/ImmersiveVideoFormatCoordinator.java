@@ -97,11 +97,12 @@ public class ImmersiveVideoFormatCoordinator {
         mHolder = mSessionManager.createPanelEntity(mView, "FormatSelectionPanel");
         mMediator = new ImmersiveVideoFormatMediator(mFormatControlDelegate, mModel);
 
-        mRadioGroup.setOnCheckedChangeListener(
-                (group, checkedId) -> {
-                    if (!mReportFormatSelection || mMediator == null) return;
-                    mMediator.onFormatSelected(
-                            ((ImmersiveVideoFormatRadioGroup) group).getSelectedFormat());
+        mRadioGroup.setSelectionCallback(
+                (selectedFormat) -> {
+                    if (!mReportFormatSelection || mMediator == null || selectedFormat == null) {
+                        return;
+                    }
+                    mMediator.onFormatSelected(selectedFormat);
                 });
 
         PropertyModelChangeProcessor.create(
