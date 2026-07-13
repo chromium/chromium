@@ -9,6 +9,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -96,7 +97,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
@@ -918,54 +918,57 @@ public class ClearBrowsingDataFragmentTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.DBD_PASSWORD_REMOVAL_ON_ANDROID)
     public void testManageOtherGoogleDataSection() {
-        ClearBrowsingDataFragment preferences =
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        ClearBrowsingDataFragment fragment =
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
 
-        ClearBrowsingDataExpandablePreferenceCategory expandablePreference =
-                preferences.findPreference(
-                        ClearBrowsingDataFragment.PREF_MANAGE_OTHER_GOOGLE_DATA_EXPANDABLE);
-
-        assertNotNull(expandablePreference);
-
-        // Manage Other Google Data section is collapsed by default.
-        assertManageOtherGoogleDataSectionState(
-                preferences, expandablePreference, /* isExpanded= */ false);
-
-        clickOnExpandableSection();
-
-        assertManageOtherGoogleDataSectionState(
-                preferences, expandablePreference, /* isExpanded= */ true);
-    }
-
-    private void clickOnExpandableSection() {
-        ClearBrowsingDataFragment fragment = mSettingsActivityTestRule.getFragment();
-        String title =
+        String manageOtherGoogleDataSectionTitle =
                 fragment.getString(
                         R.string.clear_browsing_data_manage_other_google_data_expandable_title);
-        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+
+        String passwordManagerLinkOutTitle =
+                fragment.getString(R.string.password_manager_link_out_title);
+        String searchHistoryLinkOutTitle =
+                fragment.getString(R.string.search_history_link_out_title);
+        String myActivityLinkOutTitle = fragment.getString(R.string.my_activity_link_out_title);
+
+        verifyPrefWithTitleVisible(manageOtherGoogleDataSectionTitle);
+
+        // "Manage other Google data" is initially collapsed.
+        verifyPrefWithTitleHidden(passwordManagerLinkOutTitle);
+        verifyPrefWithTitleHidden(searchHistoryLinkOutTitle);
+        verifyPrefWithTitleHidden(myActivityLinkOutTitle);
+
+        // Expand the "Manage other Google data" section and verify content is visible.
+        clickOnPrefWithTitle(manageOtherGoogleDataSectionTitle);
+
+        verifyPrefWithTitleVisible(passwordManagerLinkOutTitle);
+        verifyPrefWithTitleVisible(searchHistoryLinkOutTitle);
+        verifyPrefWithTitleVisible(myActivityLinkOutTitle);
+
+        // After signing out, only the password manager link out must be visible.
+        mSigninTestRule.signOut();
+
+        verifyPrefWithTitleVisible(passwordManagerLinkOutTitle);
+        verifyPrefWithTitleHidden(searchHistoryLinkOutTitle);
+        verifyPrefWithTitleHidden(myActivityLinkOutTitle);
+    }
+
+    private void clickOnPrefWithTitle(String title) {
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(title))));
         onView(withText(title)).perform(click());
     }
 
-    private void assertManageOtherGoogleDataSectionState(
-            ClearBrowsingDataFragment fragment,
-            ExpandablePreferenceGroup section,
-            boolean isExpanded) {
-        assertEquals(isExpanded, section.isExpanded());
+    private void verifyPrefWithTitleVisible(String title) {
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(title))));
+        onView(withText(title)).check(matches(isDisplayed()));
+    }
 
-        Preference passwordManagerPref =
-                fragment.findPreference(ClearBrowsingDataFragment.PREF_PASSWORD_MANAGER_LINK_OUT);
-        Preference searchHistoryPref =
-                fragment.findPreference(ClearBrowsingDataFragment.PREF_SEARCH_HISTORY_LINK_OUT);
-        Preference myActivityPref =
-                fragment.findPreference(ClearBrowsingDataFragment.PREF_MY_ACTIVITY_LINK_OUT);
-
-        assertNotNull(passwordManagerPref);
-        assertNotNull(searchHistoryPref);
-        assertNotNull(myActivityPref);
-
-        assertEquals(isExpanded, passwordManagerPref.isVisible());
-        assertEquals(isExpanded, searchHistoryPref.isVisible());
-        assertEquals(isExpanded, myActivityPref.isVisible());
+    private void verifyPrefWithTitleHidden(String title) {
+        onView(withText(title)).check(doesNotExist());
     }
 
     /** Wait for the snackbar to show on the main activity post deletion. */
