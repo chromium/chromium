@@ -2025,7 +2025,21 @@ TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestionsNonHttps) {
   // Clear the test credit cards and try again -- we shouldn't return a warning.
   personal_data().test_payments_data_manager().ClearCreditCards();
   OnAskForValuesToFill(form, cc_number_field);
+#if BUILDFLAG(IS_IOS)
+  // On iOS, the Scan Card / Save and Fill promo is enabled by default. Even
+  // though the promo itself doesn't check for secure context, its presence
+  // causes the generic secure context check to replace it with a warning.
+  external_delegate()->CheckSuggestions(
+      cc_number_field.global_id(),
+      {Suggestion(
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION),
+          u"", Suggestion::Icon::kNoIcon,
+          SuggestionType::kInsecureContextPaymentDisabledMessage)});
+#else
+  // On other platforms, the promo is not enabled by default, so no suggestions
+  // are generated.
   external_delegate()->CheckNoSuggestions(cc_number_field.global_id());
+#endif
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -2294,6 +2308,11 @@ TEST_F(BrowserAutofillManagerTest,
       .Times(0);
 #endif
 
+#if BUILDFLAG(IS_IOS)
+  // Set the value of the trigger field to be longer than 3 characters, so that
+  // the "Save and Fill" promo is not shown.
+  test_api(form).field(0).set_value(u"1234");
+#endif
   OnAskForValuesToFill(form, form.fields()[0]);
 
   // Verify that no suggestion is returned.
@@ -2473,6 +2492,13 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
   // Simulate retrieving autofill suggestions with the first field as a trigger
   // script. This should emit signals that lead to recorded metrics later on.
   FormFieldData& field = test_api(form).field(0);
+#if BUILDFLAG(IS_IOS)
+  if (!params.run_with_data_on_file) {
+    // Set the field value to > 3 characters to suppress the "Save and Fill"
+    // promo on iOS, ensuring that NO suggestions are generated.
+    field.set_value(u"1234");
+  }
+#endif
   OnAskForValuesToFill(form, field);
 
   // Simulate user typing into field (due to the ablation we would not fill).

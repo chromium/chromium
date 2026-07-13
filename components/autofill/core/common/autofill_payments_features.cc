@@ -75,7 +75,7 @@ BASE_FEATURE(kAutofillEnableBnplKlarnaInternationalization,
 // When enabled, users are given the bottom sheet suggestion to scan credit
 // card, and save and fill the card information.
 BASE_FEATURE(kAutofillEnableBottomSheetScanCardAndFill,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // When enabled, buy now pay later (BNPL) in Autofill will be offered.

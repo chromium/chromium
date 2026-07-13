@@ -267,9 +267,13 @@ class AutofillControllerTest : public PlatformTest {
  public:
   AutofillControllerTest() : web_client_(std::make_unique<ChromeWebClient>()) {
     TestProfileIOS::Builder builder;
-
-    scoped_feature_list_2_.InitAndEnableFeature(
-        kStatelessFormSuggestionController);
+    // TODO(crbug.com/533826510): Remove this override when
+    // kAutofillEnableBottomSheetScanCardAndFill is cleaned up. These credit
+    // card import tests need to be updated to support the save-and-fill flow.
+    scoped_feature_list_2_.InitWithFeatures(
+        /*enabled_features=*/{kStatelessFormSuggestionController},
+        /*disabled_features=*/{
+            autofill::features::kAutofillEnableBottomSheetScanCardAndFill});
 
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
