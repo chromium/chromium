@@ -44,8 +44,10 @@ class TabGroupEditorBubbleTracker {
   void OnContentsScrolled();
 
   void CloseWidget(views::Widget::ClosedReason reason);
+  void StopIgnoringScroll();
 
   bool is_open_ = false;
+  bool ignore_scroll_ = false;
   std::unique_ptr<views::Widget> widget_;
   base::RepeatingCallbackList<void()> on_bubble_opened_callback_list_;
   base::RepeatingCallbackList<void()> on_bubble_closed_callback_list_;
