@@ -69,23 +69,42 @@ void AutofillPopupHideHelper::OnVisibilityChanged(
   }
 }
 
-void AutofillPopupHideHelper::RenderFrameDeleted(
-    content::RenderFrameHost* rfh) {
+void AutofillPopupHideHelper::RenderFrameHostStateChanged(
+    content::RenderFrameHost* rfh,
+    content::RenderFrameHost::LifecycleState old_state,
+    content::RenderFrameHost::LifecycleState new_state) {
+  auto should_hide_popup = [](content::RenderFrameHost::LifecycleState state) {
+    switch (state) {
+      case content::RenderFrameHost::LifecycleState::kActive:
+        return false;
+      case content::RenderFrameHost::LifecycleState::kPendingCommit:
+      case content::RenderFrameHost::LifecycleState::kPrerendering:
+      case content::RenderFrameHost::LifecycleState::kInBackForwardCache:
+      case content::RenderFrameHost::LifecycleState::kPendingDeletion:
+        return true;
+    }
+    NOTREACHED();
+  };
+
   // If the popup menu has been triggered from within an iframe and that frame
   // is deleted, hide the popup. This is necessary because the popup may
   // actually be shown by the `AutofillExternalDelegate` of an ancestor frame,
   // which is not notified about `rfh`'s destruction and therefore won't close
   // the popup.
-  if (rfh_id_ == rfh->GetGlobalId()) {
+  if (rfh_id_ == rfh->GetGlobalId() && should_hide_popup(new_state)) {
     hiding_callback_.Run(SuggestionHidingReason::kRendererEvent);
   }
 }
 
-void AutofillPopupHideHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (rfh_id_ == navigation_handle->GetPreviousRenderFrameHostId() &&
-      !navigation_handle->IsSameDocument()) {
-    hiding_callback_.Run(SuggestionHidingReason::kNavigation);
+void AutofillPopupHideHelper::RenderFrameDeleted(
+    content::RenderFrameHost* rfh) {
+  // RenderFrameHostStateChanged() is not called when on FrameTree::Shutdown():
+  // crbug.com/40693086.
+  // For the primary frame tree, this is caught by WebContentsDestroyed(), but
+  // for embedded frame trees we observe RenderFrameDeleted() to compensate for
+  // the missing RenderFrameHostStateChanged().
+  if (rfh_id_ == rfh->GetGlobalId()) {
+    hiding_callback_.Run(SuggestionHidingReason::kRendererEvent);
   }
 }
 

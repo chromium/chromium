@@ -16,7 +16,6 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
-class NavigationHandle;
 class RenderFrameHost;
 class RenderWidgetHost;
 enum class Visibility;
@@ -70,9 +69,11 @@ class AutofillPopupHideHelper : public content::WebContentsObserver,
       content::RenderWidgetHost* render_widget_host) override;
   void PrimaryMainFrameWasResized(bool width_changed) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
+  void RenderFrameHostStateChanged(
+      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost::LifecycleState old_state,
+      content::RenderFrameHost::LifecycleState new_state) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // ZoomObserver:

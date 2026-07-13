@@ -22,9 +22,6 @@ EmailVerificationPopupController::EvpPermissionUiStatus MapReasonToStatus(
     case SuggestionHidingReason::kEndEditing:
       return EmailVerificationPopupController::EvpPermissionUiStatus::
           kUserAborted;
-    case SuggestionHidingReason::kNavigation:
-      return EmailVerificationPopupController::EvpPermissionUiStatus::
-          kNavigation;
     case SuggestionHidingReason::kTabGone:
       return EmailVerificationPopupController::EvpPermissionUiStatus::kTabGone;
     case SuggestionHidingReason::kWidgetChanged:

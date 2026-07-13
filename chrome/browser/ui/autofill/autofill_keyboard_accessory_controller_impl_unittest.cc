@@ -185,10 +185,10 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
                                          SuggestionType::kAutocompleteEntry)});
 
   EXPECT_CALL(manager().external_delegate(),
-              OnSuggestionsHidden(SuggestionHidingReason::kNavigation));
+              OnSuggestionsHidden(SuggestionHidingReason::kRendererEvent));
 
   client().suggestion_controller(manager()).Hide(
-      SuggestionHidingReason::kNavigation);
+      SuggestionHidingReason::kRendererEvent);
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,

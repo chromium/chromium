@@ -25,8 +25,6 @@ enum class SuggestionHidingReason {
   kFocusChanged = 3,
   // Scrolling or zooming into the page displaces the popup.
   kContentAreaMoved = 4,
-  // A navigation on the page or frame level.
-  kNavigation = 5,
   // The popup is or would become empty.
   kNoSuggestions = 6,
   // The renderer explicitly requested closing the popup.

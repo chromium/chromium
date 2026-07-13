@@ -493,15 +493,7 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic,
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   // The navigation generates a PrimaryMainFrameWasResized callback.
-  SuggestionHidingReason reason;
-  // On Android, keyboard accessory is not hidden if the Chrome native widget
-  // changes its size. The keyboard accessory is still hidden because the input
-  // field looses.
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    reason = SuggestionHidingReason::kNavigation;
-  } else {
-    reason = SuggestionHidingReason::kWidgetChanged;
-  }
+  SuggestionHidingReason reason = SuggestionHidingReason::kRendererEvent;
   EXPECT_CALL(client().suggestion_controller(manager()), Hide(reason));
   NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
   // Verify and clear before TearDown() closes the popup.
@@ -514,14 +506,8 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic,
        HideInSubFrameOnSubFrameNavigation) {
   ShowSuggestions(sub_manager(), {SuggestionType::kAddressEntry});
   test::GenerateTestAutofillPopup(&sub_manager().external_delegate());
-  if (sub_frame()->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
-    // If the RenderFrameHost changes, a RenderFrameDeleted will fire first.
-    EXPECT_CALL(client().suggestion_controller(sub_manager()),
-                Hide(SuggestionHidingReason::kRendererEvent));
-  } else {
-    EXPECT_CALL(client().suggestion_controller(sub_manager()),
-                Hide(SuggestionHidingReason::kNavigation));
-  }
+  EXPECT_CALL(client().suggestion_controller(sub_manager()),
+              Hide(SuggestionHidingReason::kRendererEvent));
   NavigateAndCommitFrame(sub_frame(), GURL("https://bar.com/"));
   // Verify and clear before TearDown() closes the popup.
   Mock::VerifyAndClearExpectations(
@@ -539,15 +525,7 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic,
        HideInSubFrameOnMainFrameNavigation) {
   ShowSuggestions(sub_manager(), {SuggestionType::kAddressEntry});
   test::GenerateTestAutofillPopup(&sub_manager().external_delegate());
-  SuggestionHidingReason reason;
-  // On Android, keyboard accessory is not hidden if the Chrome native widget
-  // changes its size. The keyboard accessory is still hidden because the input
-  // field looses.
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    reason = SuggestionHidingReason::kRendererEvent;
-  } else {
-    reason = SuggestionHidingReason::kWidgetChanged;
-  }
+  SuggestionHidingReason reason = SuggestionHidingReason::kRendererEvent;
   EXPECT_CALL(client().suggestion_controller(sub_manager()), Hide(reason));
   NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
 }
