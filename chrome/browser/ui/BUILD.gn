@@ -457,6 +457,7 @@ static_library("ui") {
     "//cc/paint",
     "//chrome:resources",
     "//chrome:strings",
+    "//chrome/app:branded_strings",
     "//chrome/app:chrome_dll_resources",
     "//chrome/app:command_ids",
     "//chrome/app/resources:platform_locale_settings",

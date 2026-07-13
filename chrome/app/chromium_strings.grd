@@ -3266,7 +3266,7 @@ Chromium is unable to recover your settings.
         </message>
 
         <message name="IDS_DICTATION_ONBOARDING_TITLE" desc="The title string in the onboarding dialog for the dictation feature." translateable="false">
-          Turn your spoken thoughts into polished text with Chromium.
+          Turn your spoken thoughts into polished text with Chromium
         </message>
         <message name="IDS_DICTATION_ONBOARDING_BULLET_MICROPHONE" desc="The first paragraph in the onboarding dialog describing how the microphone is used." translateable="false">
           Chromium will use your microphone to capture your voice and fill in text fields with cleaned up text.
