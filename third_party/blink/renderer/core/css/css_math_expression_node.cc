@@ -3417,6 +3417,17 @@ String CSSMathExpressionOperation::CustomCSSText() const {
         CSSMathOperator op = terms[i].op;
         const CSSMathExpressionNode* node = terms[i].node;
 
+        // In a product, an inverted operand (1 / x) is serialized as "/ x"
+        // rather than "* (1 / x)", per #serialize-a-calculation-tree.
+        if (op == CSSMathOperator::kMultiply) {
+          if (const auto* invert = DynamicTo<CSSMathExpressionOperation>(node);
+              invert && invert->IsInvert()) {
+            result.Append(" / ");
+            result.Append(invert->GetOperands().front()->CustomCSSText());
+            continue;
+          }
+        }
+
         // For negative literals in sums, we flip the operator instead of
         // outputting the sign (e.g., a + -b => a - b).
         if (IsNumericNodeWithDoubleValue(node) &&
