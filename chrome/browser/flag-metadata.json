@@ -10145,6 +10145,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "webui-ntp-android-theming",
+    "owners": [ "giannich@google.com", "rtatum@google.com", "ruoxih@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "webui-omnibox-aim-popup",
     "owners": [ "mahmadi@chromium.org", "kylixrd@chromium.org", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 160

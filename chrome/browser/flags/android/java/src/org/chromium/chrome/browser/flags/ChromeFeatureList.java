@@ -741,6 +741,7 @@ public abstract class ChromeFeatureList {
     public static final String WEB_APK_MIN_SHELL_APK_VERSION = "WebApkMinShellVersion";
     public static final String WEB_APP_SHORT_EDGES_CUTOUT_MODE = "WebAppShortEdgesCutoutMode";
     public static final String WEB_OTP_CROSS_DEVICE_SIMPLE_STRING = "WebOtpCrossDeviceSimpleString";
+    public static final String WEB_UI_NTP_ANDROID_THEMING = "WebUiNtpAndroidTheming";
     public static final String WIDE_SCREEN_FEED_FOR_FOLDABLES = "WideScreenFeedForFoldables";
     public static final String XPLAT_SYNCED_SETUP = "XplatSyncedSetup";
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
@@ -1255,6 +1256,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(WEB_APK_MIN_SHELL_APK_VERSION, true);
     public static final CachedFlag sWebAppShortEdgesCutoutMode =
             newCachedFlag(WEB_APP_SHORT_EDGES_CUTOUT_MODE, false);
+    public static final CachedFlag sWebUiNtpAndroidTheming =
+            newCachedFlag(WEB_UI_NTP_ANDROID_THEMING, false);
     // keep-sorted end
 
     public static final List<CachedFlag> sFlagsCachedFullBrowser =
@@ -1442,7 +1445,8 @@ public abstract class ChromeFeatureList {
                     sUserFeedbackAllowedPolicy,
                     sVirtualKeyboardTransientInnerHeightFix,
                     sWebApkMinShellApkVersion,
-                    sWebAppShortEdgesCutoutMode
+                    sWebAppShortEdgesCutoutMode,
+                    sWebUiNtpAndroidTheming
                     // keep-sorted end
                     );
 

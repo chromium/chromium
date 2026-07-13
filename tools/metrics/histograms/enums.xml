@@ -14331,6 +14331,7 @@ from previous Chrome versions.
   <int value="-91575163" label="PaymentLinkDetection:disabled"/>
   <int value="-91370149" label="UseSerialBusEnumerator:enabled"/>
   <int value="-90521375" label="PDFTwoUpView:enabled"/>
+  <int value="-90410008" label="WebUiNtpAndroidTheming:enabled"/>
   <int value="-90032223" label="BuiltInModuleInfra:disabled"/>
   <int value="-89812525"
       label="AutofillEnableMerchantOptOutClientSideUrlFiltering:enabled"/>
@@ -15677,6 +15678,7 @@ from previous Chrome versions.
   <int value="343286828" label="IgnoreUiGains:disabled"/>
   <int value="343445783" label="AllowScrollSettings:enabled"/>
   <int value="343815157" label="SafeBrowsingHashPrefixRealTimeLookups:enabled"/>
+  <int value="345246871" label="WebUiNtpAndroidTheming:disabled"/>
   <int value="345430155" label="CrOSDspBasedAgcAllowed:enabled"/>
   <int value="345611669"
       label="OmniboxLocalZeroSuggestFrecencyRanking:enabled"/>
