@@ -298,7 +298,7 @@ class WebAppNotificationsBrowserTest_MacPermissions
   }
 
   void TearDownOnMainThread() override {
-    test::UninstallAllWebApps(browser()->profile());
+    test::UninstallAllWebApps(browser()->GetProfile());
     WebAppNotificationsBrowserTest::TearDownOnMainThread();
   }
 };

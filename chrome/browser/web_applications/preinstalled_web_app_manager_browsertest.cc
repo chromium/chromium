@@ -171,7 +171,7 @@ class PreinstalledWebAppManagerBrowserTestBase
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
     web_app::test::WaitUntilReady(
-        WebAppProvider::GetForTest(browser()->profile()));
+        WebAppProvider::GetForTest(browser()->GetProfile()));
   }
 
   void TearDownOnMainThread() override {
@@ -531,7 +531,7 @@ class PreinstalledWebAppManagerExtensionBrowserTest
   void SetUpOnMainThread() override {
     PreinstalledWebAppManagerBrowserTest::SetUpOnMainThread();
     web_app::test::WaitUntilReady(
-        WebAppProvider::GetForTest(browser()->profile()));
+        WebAppProvider::GetForTest(browser()->GetProfile()));
   }
   void TearDownOnMainThread() override {
     ResetInterceptor();
@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerExtensionBrowserTest,
 
   // Start listening for Chrome app uninstall.
   extensions::TestExtensionRegistryObserver uninstall_observer(
-      extensions::ExtensionRegistry::Get(browser()->profile()));
+      extensions::ExtensionRegistry::Get(browser()->GetProfile()));
 
   constexpr char kAppConfigTemplate[] =
       R"({
@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start listening for Chrome app uninstall.
   extensions::TestExtensionRegistryObserver uninstall_observer(
-      extensions::ExtensionRegistry::Get(browser()->profile()));
+      extensions::ExtensionRegistry::Get(browser()->GetProfile()));
 
   // Trigger preinstall sync again.
   EXPECT_EQ(SyncPreinstalledApps().install_results[app_url].code,

@@ -178,11 +178,11 @@ void EnclaveAuthenticatorTestBase::SetUpOnMainThread() {
 
   identity_test_env_adaptor_ =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-          browser()->profile());
+          browser()->GetProfile());
   identity_test_env().SetAutomaticIssueOfAccessTokens(true);
 
   sync_harness_ = SyncServiceImplHarness::Create(
-      browser()->profile(), SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
+      browser()->GetProfile(), SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
   if (sync_feature_enabled_) {
     ASSERT_TRUE(sync_harness_->SetupSync());
   } else {
@@ -190,7 +190,7 @@ void EnclaveAuthenticatorTestBase::SetUpOnMainThread() {
   }
   syncer::SyncServiceImpl* sync_service =
       SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_EQ(kSyncEmail, sync_service->GetAccountInfo().email);
   sync_service->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
@@ -212,13 +212,13 @@ EnclaveAuthenticatorTestBase::identity_test_env() {
 }
 
 webauthn::PasskeyModel& EnclaveAuthenticatorTestBase::passkey_model() {
-  return CHECK_DEREF(
-      PasskeyModelFactory::GetInstance()->GetForProfile(browser()->profile()));
+  return CHECK_DEREF(PasskeyModelFactory::GetInstance()->GetForProfile(
+      browser()->GetProfile()));
 }
 
 EnclaveManager& EnclaveAuthenticatorTestBase::enclave_manager() {
   return CHECK_DEREF(EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
-      browser()->profile()));
+      browser()->GetProfile()));
 }
 
 void EnclaveAuthenticatorTestBase::EnableUVKeySupport(

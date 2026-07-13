@@ -103,7 +103,7 @@ void PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(
     Browser* browser,
     trusted_vault::TrustedVaultUserActionTriggerForUMA trigger) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser->profile());
+      IdentityManagerFactory::GetForProfile(browser->GetProfile());
   // Default to the first account if the account is not present in the cookie
   // jar. This can happen in tests, or if account state changed right before
   // this code.

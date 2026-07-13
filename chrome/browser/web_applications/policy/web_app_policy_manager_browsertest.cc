@@ -214,7 +214,7 @@ class WebAppPolicyManagerBrowserTest : public base::test::WithFeatureOverride,
       base::DictValue app_config,
       std::optional<webapps::AppId> app_id = std::nullopt) {
     app_id = app_id.value_or(GetAppId());
-    web_app::WebAppTestInstallObserver observer(browser()->profile());
+    web_app::WebAppTestInstallObserver observer(browser()->GetProfile());
     observer.BeginListening({*app_id});
     profile()->GetPrefs()->SetList(
         prefs::kWebAppInstallForceList,

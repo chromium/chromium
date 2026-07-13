@@ -219,7 +219,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     // popup to appear after aborting the request.
     password_manager::PasswordStoreInterface* password_store =
         ProfilePasswordStoreFactory::GetForProfile(
-            browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS)
+            browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS)
             .get();
     password_manager::PasswordForm signin_form;
     GURL url = https_server_.GetURL(kRpId, "/");
@@ -247,7 +247,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
 
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
+            browser()->GetProfile());
     identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
         "test@gmail.com", signin::ConsentLevel::kSignin);
 

@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
                       base::test::ParseJson(kWebAccessibleResources));
 
   scoped_refptr<const extensions::Extension> extension = builder.Build();
-  extensions::ExtensionRegistrar::Get(browser()->profile())
+  extensions::ExtensionRegistrar::Get(browser()->GetProfile())
       ->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(), 0);
 
   auto virtual_device_factory =
@@ -682,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest,
 
   // Set up GPM Passkey.
   auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
-      PasskeyModelFactory::GetForProfile(browser()->profile()));
+      PasskeyModelFactory::GetForProfile(browser()->GetProfile()));
   passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
       kCredentialID, kUserId1, kUsername1, kDisplayName1));
 
@@ -706,7 +706,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest,
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
   // Set up GPM Passkey.
   auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
-      PasskeyModelFactory::GetForProfile(browser()->profile()));
+      PasskeyModelFactory::GetForProfile(browser()->GetProfile()));
   passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
       kCredentialID, kUserId1, kUsername1, kDisplayName1));
 
@@ -742,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest,
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
   // Set up GPM Passkey.
   auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
-      PasskeyModelFactory::GetForProfile(browser()->profile()));
+      PasskeyModelFactory::GetForProfile(browser()->GetProfile()));
   passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
       kCredentialID2, kUserId2, kUsername2, kDisplayName2));
 
@@ -841,7 +841,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest,
 
   // Set up GPM Passkey.
   auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
-      PasskeyModelFactory::GetForProfile(browser()->profile()));
+      PasskeyModelFactory::GetForProfile(browser()->GetProfile()));
   passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
       kCredentialID, kUserId1, kUsername1, kDisplayName1));
 
@@ -892,7 +892,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, SignalCurrentUserDetailsQuota) {
 
   // Set up GPM Passkey.
   auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
-      PasskeyModelFactory::GetForProfile(browser()->profile()));
+      PasskeyModelFactory::GetForProfile(browser()->GetProfile()));
   passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
       kCredentialID, kUserId1, kUsername1, kDisplayName1));
 
@@ -928,7 +928,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest,
 
   // Set up GPM Passkey.
   auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
-      PasskeyModelFactory::GetForProfile(browser()->profile()));
+      PasskeyModelFactory::GetForProfile(browser()->GetProfile()));
   passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
       kCredentialID, kUserId1, kUsername1, kDisplayName1));
 
@@ -1272,7 +1272,7 @@ class WebAuthnAmbientUITest : public WebAuthnBrowserTest {
     virtual_device_factory_->mutable_state()->fingerprints_enrolled = true;
 
     auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
-        PasskeyModelFactory::GetForProfile(browser()->profile()));
+        PasskeyModelFactory::GetForProfile(browser()->GetProfile()));
     passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
         kCredentialID, kUserId1, kUsername1, kDisplayName1));
 
@@ -1341,7 +1341,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIBubble) {
       "sakuya", "Sakuya Izayoi");
 
   auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
-      PasskeyModelFactory::GetForProfile(browser()->profile()));
+      PasskeyModelFactory::GetForProfile(browser()->GetProfile()));
   passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
       kCredentialID2, kUserId2, kUsername2, kDisplayName2));
 
@@ -1376,7 +1376,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIBubble) {
 IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIDeduplication) {
   // One passkey is provided by GPM and the other is from a platform provider.
   auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
-      PasskeyModelFactory::GetForProfile(browser()->profile()));
+      PasskeyModelFactory::GetForProfile(browser()->GetProfile()));
   passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
       kCredentialID, kUserId1, kUsername1, kDisplayName1));
 
@@ -1421,7 +1421,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIPasswordDeduplication) {
       std::vector<uint8_t>(std::begin(kUserId1), std::end(kUserId1)),
       kUsername1, kDisplayName1);
   auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
-      PasskeyModelFactory::GetForProfile(browser()->profile()));
+      PasskeyModelFactory::GetForProfile(browser()->GetProfile()));
   passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
       kCredentialID, kUserId1, kUsername1, kDisplayName1));
 
@@ -1548,7 +1548,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnImmediateGetTest, NoCreds_NotFoundError) {
 IN_PROC_BROWSER_TEST_F(WebAuthnImmediateGetTest,
                        Incognito_NoCreds_NotFoundError) {
   auto* otr_browser = OpenURLOffTheRecord(
-      browser()->profile(),
+      browser()->GetProfile(),
       https_server_.GetURL("www.example.com", "/title1.html"));
   content::WebContents* web_contents =
       otr_browser->tab_strip_model()->GetActiveWebContents();
@@ -1619,7 +1619,8 @@ class WebAuthnActorBrowserTest : public WebAuthnBrowserTest {
   }
 
   void CreateActingTask() {
-    auto* actor_service = actor::ActorKeyedService::Get(browser()->profile());
+    auto* actor_service =
+        actor::ActorKeyedService::Get(browser()->GetProfile());
     actor::TaskId task_id = actor_service->CreateTask(
         actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
 
@@ -1743,7 +1744,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnIWABrowserTest,
           // check due to no remote desktop override extensrion is used.
           )
           .BuildBundle();
-  auto url_info = app->Install(browser()->profile());
+  auto url_info = app->Install(browser()->GetProfile());
 
   auto virtual_device_factory =
       std::make_unique<device::test::VirtualFidoDeviceFactory>();
@@ -1778,7 +1779,7 @@ IN_PROC_BROWSER_TEST_F(
                                     true, {}))
           .BuildBundle();
 
-  auto url_info = app->Install(browser()->profile());
+  auto url_info = app->Install(browser()->GetProfile());
 
   auto virtual_device_factory =
       std::make_unique<device::test::VirtualFidoDeviceFactory>();
@@ -1820,11 +1821,11 @@ IN_PROC_BROWSER_TEST_F(
                                     true, {}))
           .BuildBundle();
 
-  auto url_info = app->Install(browser()->profile());
+  auto url_info = app->Install(browser()->GetProfile());
   // Put IWA origin to prefs to emulate values set by
   // WebAuthenticationRemoteDesktopAllowedOrigins policy
   PrefService* prefs =
-      Profile::FromBrowserContext(browser()->profile())->GetPrefs();
+      Profile::FromBrowserContext(browser()->GetProfile())->GetPrefs();
   base::ListValue list =
       base::ListValue().Append("isolated-app://" + url_info->origin().host());
   prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,

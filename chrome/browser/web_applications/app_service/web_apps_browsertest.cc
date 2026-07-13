@@ -108,12 +108,12 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, ExposeAppServicePublisherId) {
   // Install file handling web app.
   const webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   const WebAppRegistrar& registrar =
-      WebAppProvider::GetForTest(browser()->profile())->registrar_unsafe();
+      WebAppProvider::GetForTest(browser()->GetProfile())->registrar_unsafe();
   const WebApp* web_app = registrar.GetAppById(app_id);
   ASSERT_TRUE(web_app);
 
   // Check the publisher_id is the app's start url.
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+  apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->AppRegistryCache()
       .ForOneApp(app_id, [&](const apps::AppUpdate& update) {
         EXPECT_EQ(web_app->start_url().spec(), update.PublisherId());
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchAppIconKeyUnchanged) {
   const GURL app_url(embedded_test_server()->GetURL("/web_apps/basic.html"));
   const webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   auto* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+      apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile());
 
   std::optional<apps::IconKey> original_key;
   proxy->AppRegistryCache().ForOneApp(

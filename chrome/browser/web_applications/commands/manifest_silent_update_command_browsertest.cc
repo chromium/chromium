@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
 
   {
     UpdateAwaiter awaiter(
-        WebAppProvider::GetForTest(browser()->profile())->install_manager());
+        WebAppProvider::GetForTest(browser()->GetProfile())->install_manager());
     ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, update_url));
     awaiter.AwaitUpdate();
   }

@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
 
-  WebAppProvider::GetForTest(browser()->profile())
+  WebAppProvider::GetForTest(browser()->GetProfile())
       ->sync_bridge_unsafe()
       .SetAppUserDisplayModeForTesting(url_info.app_id(),
                                        mojom::UserDisplayMode::kBrowser);
@@ -1030,7 +1030,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserCookieTest, Cookies) {
       isolated_web_app_dev_server().GetURL("localhost", "/cookie.html");
   GURL non_app_url = embedded_https_test_server().GetURL(
       kNonAppHost, "/web_apps/simple_isolated_app/cookie.html");
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetCookieSetting(non_app_url, CONTENT_SETTING_ALLOW);
 
   // Load a page that sets a cookie, then create a cross-origin iframe that
@@ -1153,7 +1153,7 @@ class IsolatedWebAppBrowserServiceWorkerPushTest
     IsolatedWebAppBrowserServiceWorkerTest::SetUpOnMainThread();
 
     notification_tester_ = std::make_unique<NotificationDisplayServiceTester>(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   void SendMessageAndWaitUntilHandled(
@@ -1190,7 +1190,7 @@ class IsolatedWebAppBrowserServiceWorkerPushTest
       int64_t service_worker_registration_id) {
     push_messaging::AppIdentifier app_identifier =
         PushMessagingAppIdentifier::FindByServiceWorker(
-            browser()->profile(), app_url(), service_worker_registration_id);
+            browser()->GetProfile(), app_url(), service_worker_registration_id);
     return app_identifier;
   }
 
@@ -1286,7 +1286,8 @@ var kApplicationServerKey = new Uint8Array([
   message.sender_id = GetTestApplicationServerKey();
   message.raw_data = "test";
   message.decrypted = true;
-  SendMessageAndWaitUntilHandled(browser()->profile(), app_identifier, message);
+  SendMessageAndWaitUntilHandled(browser()->GetProfile(), app_identifier,
+                                 message);
 
   version_started_waiter.AwaitVersionStartedRunning();
 

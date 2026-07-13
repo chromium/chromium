@@ -58,7 +58,7 @@ void PreventCloseTestBase::SetPoliciesAndWaitUntilInstalled(
     const webapps::AppId& app_id,
     std::string_view web_app_settings,
     std::string_view web_app_install_force_list) {
-  web_app::WebAppTestInstallObserver observer(browser()->profile());
+  web_app::WebAppTestInstallObserver observer(browser()->GetProfile());
   observer.BeginListening({app_id});
 
   SetPolicies(web_app_settings, web_app_install_force_list);
@@ -77,7 +77,7 @@ void PreventCloseTestBase::InstallPWA(const GURL& app_url,
       web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
   web_app_info->scope = app_url.GetWithoutFilename();
   webapps::AppId installed_app_id = web_app::test::InstallWebApp(
-      browser()->profile(), std::move(web_app_info));
+      browser()->GetProfile(), std::move(web_app_info));
   EXPECT_EQ(app_id, installed_app_id);
 }
 

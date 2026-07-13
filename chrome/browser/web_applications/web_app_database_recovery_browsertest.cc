@@ -42,7 +42,7 @@ class WebAppDatabaseRecoveryBrowserTest : public WebAppBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(WebAppDatabaseRecoveryBrowserTest,
                        PRE_RecoverFromDowngrade) {
   // Install a web app to ensure database has content.
-  auto app_id = test::InstallDummyWebApp(browser()->profile(), "Example App",
+  auto app_id = test::InstallDummyWebApp(browser()->GetProfile(), "Example App",
                                          GURL(kAppUrl));
 
   // Access database and set version to a future version that should mean a

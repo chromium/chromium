@@ -74,7 +74,7 @@ class LaunchWebAppWithFirstRunServiceBrowserTest
 
  protected:
   WebAppProvider& GetProvider() {
-    return *WebAppProvider::GetForTest(browser()->profile());
+    return *WebAppProvider::GetForTest(browser()->GetProfile());
   }
 
   webapps::AppId InstallWebApp(const GURL& app_url) {

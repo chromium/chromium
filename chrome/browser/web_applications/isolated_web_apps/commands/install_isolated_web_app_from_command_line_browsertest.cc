@@ -56,7 +56,7 @@ class InstallIsolatedWebAppFromCommandLineBrowserTest
 
   void SetUpOnMainThread() override {
     WebAppBrowserTestBase::SetUpOnMainThread();
-    WebAppProvider::GetForTest(browser()->profile())
+    WebAppProvider::GetForTest(browser()->GetProfile())
         ->isolated_web_app_dev_install_manager()
         .OnReportInstallationResultForTesting(future_.GetCallback());
   }
@@ -68,7 +68,7 @@ class InstallIsolatedWebAppFromCommandLineBrowserTest
   }
 
   WebAppRegistrar& GetWebAppRegistrar() {
-    auto* provider = WebAppProvider::GetForTest(browser()->profile());
+    auto* provider = WebAppProvider::GetForTest(browser()->GetProfile());
     CHECK(provider != nullptr);
     return provider->registrar_unsafe();
   }

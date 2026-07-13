@@ -77,11 +77,11 @@ class PasskeyUnlockManagerBrowserTest : public EnclaveAuthenticatorTestBase {
 
   webauthn::PasskeyUnlockManager* passkey_unlock_manager() {
     return webauthn::PasskeyUnlockManagerFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForProfile(browser()->profile());
+    return IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   }
 
   SyncServiceImplHarness* sync_harness() {
@@ -90,7 +90,8 @@ class PasskeyUnlockManagerBrowserTest : public EnclaveAuthenticatorTestBase {
     }
 
     sync_harness_ = SyncServiceImplHarness::Create(
-        browser()->profile(), SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
+        browser()->GetProfile(),
+        SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
     return sync_harness_.get();
   }
 
@@ -113,7 +114,7 @@ class PasskeyUnlockManagerBrowserTest : public EnclaveAuthenticatorTestBase {
     base::test::TestFuture<void> load_future;
     EnclaveManager* enclave_manager =
         EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     enclave_manager->Load(load_future.GetCallback());
     ASSERT_TRUE(load_future.Wait());
 

@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestGuestModeTest,
 #else
   Browser* guest_browser = CreateGuestBrowser();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  ASSERT_TRUE(guest_browser->profile()->IsGuestSession());
+  ASSERT_TRUE(guest_browser->GetProfile()->IsGuestSession());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       guest_browser, embedded_https_test_server().GetURL("/simple.html")));
@@ -474,7 +474,7 @@ class WebInstallFromManifestPolicyDisabledTest
 IN_PROC_BROWSER_TEST_F(WebInstallFromManifestPolicyDisabledTest,
                        PolicyDisabled_NotSupportedDialog) {
   ASSERT_FALSE(
-      web_app::IsWebAppInstallByUserPolicyEnabled(browser()->profile()));
+      web_app::IsWebAppInstallByUserPolicyEnabled(browser()->GetProfile()));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_https_test_server().GetURL("/simple.html")));

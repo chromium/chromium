@@ -67,7 +67,8 @@ class IsolatedWebAppsWindowOpenPermissionServiceBrowserTest
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
 
-    WebAppProvider* provider = WebAppProvider::GetForTest(browser()->profile());
+    WebAppProvider* provider =
+        WebAppProvider::GetForTest(browser()->GetProfile());
     test::WaitUntilWebAppProviderAndSubsystemsReady(provider);
 
     display_service_tester_ =

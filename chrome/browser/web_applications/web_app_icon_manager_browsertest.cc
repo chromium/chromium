@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
 
     base::RunLoop run_loop;
 
-    auto* provider = WebAppProvider::GetForTest(browser()->profile());
+    auto* provider = WebAppProvider::GetForTest(browser()->GetProfile());
     provider->scheduler().InstallFromInfoNoIntegrationForTesting(
         std::move(install_info),
         /*overwrite_existing_manifest_fields=*/false,

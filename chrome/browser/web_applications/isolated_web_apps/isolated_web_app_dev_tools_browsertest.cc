@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTest, PwaIdentifiedAsPage) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
   webapps::AppId pwa_id = web_app::test::InstallPwaForCurrentUrl(browser());
   Browser* pwa_app =
-      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), pwa_id);
+      web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), pwa_id);
   scoped_refptr<content::DevToolsAgentHost> pwa_host =
       content::DevToolsAgentHost::GetOrCreateFor(
           pwa_app->tab_strip_model()->GetActiveWebContents());

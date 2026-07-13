@@ -231,7 +231,7 @@ content::WebContents* XrBrowserTestBase::GetCurrentWebContents() {
   if (incognito_) {
     BrowserWindowInterface* incognito_browser =
         ProfileBrowserCollection::GetForProfile(
-            browser()->profile()->GetPrimaryOTRProfile(
+            browser()->GetProfile()->GetPrimaryOTRProfile(
                 /*create_if_needed=*/false))
             ->FindTabbedBrowser();
     return incognito_browser->GetTabStripModel()->GetActiveWebContents();
@@ -268,7 +268,7 @@ void XrBrowserTestBase::OpenNewTab(const std::string& url, bool incognito) {
                        /*should_pin=*/false);
 #else
   if (incognito) {
-    OpenURLOffTheRecord(browser()->profile(), GURL(url));
+    OpenURLOffTheRecord(browser()->GetProfile(), GURL(url));
   } else {
     // -1 is a special index value used to append to the end of the tab list.
     chrome::AddTabAt(browser(), GURL(url), /*index=*/-1, /*foreground=*/true);

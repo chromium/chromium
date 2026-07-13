@@ -381,7 +381,7 @@ class IsolatedWebAppNavigationCapturingIntentPickerBrowserTest
             .AddJs("script.js", kIwaJsContent)
             .BuildBundle(bundle_id,
                          {web_package::test::GetDefaultEd25519KeyPair()})
-            ->InstallChecked(browser()->profile());
+            ->InstallChecked(browser()->GetProfile());
 
     return url_info;
   }

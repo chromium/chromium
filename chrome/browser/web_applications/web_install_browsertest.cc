@@ -666,7 +666,7 @@ IN_PROC_BROWSER_TEST_P(WebInstallGuestModeTest,
 #else
   Browser* guest_browser = CreateGuestBrowser();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  ASSERT_TRUE(guest_browser->profile()->IsGuestSession());
+  ASSERT_TRUE(guest_browser->GetProfile()->IsGuestSession());
 
   // Navigate to a valid URL in the guest browser.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -729,7 +729,7 @@ IN_PROC_BROWSER_TEST_P(WebInstallGuestModeTest,
 #else
   Browser* guest_browser = CreateGuestBrowser();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  ASSERT_TRUE(guest_browser->profile()->IsGuestSession());
+  ASSERT_TRUE(guest_browser->GetProfile()->IsGuestSession());
 
   // Navigate to a valid URL in the guest browser.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -840,7 +840,7 @@ IN_PROC_BROWSER_TEST_P(WebInstallPolicyDisabledTest,
                        NotSupportedDialogInstallPolicy) {
   // Verify the policy is disabled from startup
   ASSERT_FALSE(
-      web_app::IsWebAppInstallByUserPolicyEnabled(browser()->profile()));
+      web_app::IsWebAppInstallByUserPolicyEnabled(browser()->GetProfile()));
 
   // Navigate to a valid URL in the browser.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

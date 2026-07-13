@@ -76,7 +76,7 @@ class WebAppOfflineTestBase : public InProcessBrowserTest {
         OsIntegrationTestOverrideImpl::OverrideForTesting();
   }
   void TearDownOnMainThread() override {
-    test::UninstallAllWebApps(browser()->profile());
+    test::UninstallAllWebApps(browser()->GetProfile());
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       override_registration_.reset();
@@ -89,7 +89,7 @@ class WebAppOfflineTestBase : public InProcessBrowserTest {
     GURL target_url(embedded_test_server()->GetURL(relative_url));
     web_app::NavigateViaLinkClickToURLAndWait(browser(), target_url);
     webapps::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
-    WebAppIconWaiter(browser()->profile(), app_id).Wait();
+    WebAppIconWaiter(browser()->GetProfile(), app_id).Wait();
     std::unique_ptr<content::URLLoaderInterceptor> interceptor =
         content::URLLoaderInterceptor::SetupRequestFailForURL(
             target_url, net::ERR_INTERNET_DISCONNECTED);
@@ -105,11 +105,11 @@ class WebAppOfflineTestBase : public InProcessBrowserTest {
                              std::string_view relative_url) {
     GURL target_url(embedded_test_server()->GetURL(relative_url));
     web_app::ServiceWorkerRegistrationWaiter registration_waiter(
-        browser()->profile(), target_url);
+        browser()->GetProfile(), target_url);
     web_app::NavigateViaLinkClickToURLAndWait(browser(), target_url);
     registration_waiter.AwaitRegistration();
     webapps::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
-    WebAppIconWaiter(browser()->profile(), app_id).Wait();
+    WebAppIconWaiter(browser()->GetProfile(), app_id).Wait();
     std::unique_ptr<content::URLLoaderInterceptor> interceptor =
         content::URLLoaderInterceptor::SetupRequestFailForURL(
             target_url, net::ERR_INTERNET_DISCONNECTED);

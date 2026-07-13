@@ -192,7 +192,7 @@ class InstallElementBrowserTest : public InstallElementBrowserTestBase,
           }));
         }
       }
-      WebAppProvider::GetForWebApps(browser()->profile())
+      WebAppProvider::GetForWebApps(browser()->GetProfile())
           ->command_manager()
           .AwaitAllCommandsCompleteForTesting();
       dialog_delegate->AcceptDialog();

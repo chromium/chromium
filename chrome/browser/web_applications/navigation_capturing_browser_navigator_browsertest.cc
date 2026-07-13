@@ -429,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   // Since the web_app has a client_mode of `focus-existing`, `app_browser_2`
   // should be activated with no navigations happening.
   {
-    NavigateParams params(browser()->profile(), GetFocusExistingSecondUrl(),
+    NavigateParams params(browser()->GetProfile(), GetFocusExistingSecondUrl(),
                           ui::PAGE_TRANSITION_LINK);
     params.source_contents =
         browser()->tab_strip_model()->GetActiveWebContents();

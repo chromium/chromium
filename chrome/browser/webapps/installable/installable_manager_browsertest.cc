@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, ManagerInIncognito) {
   // Ensure that the InstallableManager returns an error if called in an
   // incognito profile.
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   content::WebContents* web_contents =
       incognito_browser->tab_strip_model()->GetActiveWebContents();
   auto manager = std::make_unique<InstallableManager>(web_contents);
@@ -1441,7 +1441,8 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerAllowlistOriginBrowserTest,
   // TODO(crbug.com/361129282): Remove scoped http allowlisting once the
   // `unsafely-treat-insecure-origin-as-secure` flag adds to the HTTP allowlist.
   ScopedAllowHttpForHostnamesForTesting allow_http(
-      {"www.google.com", "maps.google.com"}, browser()->profile()->GetPrefs());
+      {"www.google.com", "maps.google.com"},
+      browser()->GetProfile()->GetPrefs());
   // The allowlisted origin should be regarded as secure.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kInsecureOrigin)));
   content::WebContents* contents =

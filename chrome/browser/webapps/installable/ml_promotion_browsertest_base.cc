@@ -95,7 +95,7 @@ void MLPromotionBrowserTestBase::SetUpOnMainThread() {
 // TODO(b/287255120) : Build functionalities for Android.
 #if !BUILDFLAG(IS_ANDROID)
   web_app::test::WaitUntilReady(
-      web_app::WebAppProvider::GetForTest(browser()->profile()));
+      web_app::WebAppProvider::GetForTest(browser()->GetProfile()));
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
@@ -106,7 +106,7 @@ bool MLPromotionBrowserTestBase::InstallAppForCurrentWebContents(
   return false;
 #else
   web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForTest(browser()->profile());
+      web_app::WebAppProvider::GetForTest(browser()->GetProfile());
   base::test::TestFuture<const webapps::AppId&, InstallResultCode>
       install_future;
 

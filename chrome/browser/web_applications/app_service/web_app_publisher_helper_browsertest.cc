@@ -148,7 +148,8 @@ IN_PROC_BROWSER_TEST_F(WebAppPublisherHelperBrowserTest, CreateIntentFilters) {
 
   apps::IntentFilters filters;
   {
-    auto& provider = *web_app::WebAppProvider::GetForTest(browser()->profile());
+    auto& provider =
+        *web_app::WebAppProvider::GetForTest(browser()->GetProfile());
     const webapps::AppId app_id =
         web_app::InstallWebAppFromManifest(browser(), app_url);
     filters = WebAppPublisherHelper::CreateIntentFiltersForWebApp(
@@ -179,7 +180,8 @@ IN_PROC_BROWSER_TEST_F(WebAppPublisherHelperBrowserTest, PartialWild) {
 
   apps::IntentFilters filters;
   {
-    auto& provider = *web_app::WebAppProvider::GetForTest(browser()->profile());
+    auto& provider =
+        *web_app::WebAppProvider::GetForTest(browser()->GetProfile());
     const webapps::AppId app_id =
         web_app::InstallWebAppFromManifest(browser(), app_url);
     filters = WebAppPublisherHelper::CreateIntentFiltersForWebApp(
@@ -208,7 +210,8 @@ IN_PROC_BROWSER_TEST_F(WebAppPublisherHelperBrowserTest,
 
   apps::IntentFilters filters;
   {
-    auto& provider = *web_app::WebAppProvider::GetForTest(browser()->profile());
+    auto& provider =
+        *web_app::WebAppProvider::GetForTest(browser()->GetProfile());
     const webapps::AppId app_id =
         web_app::InstallWebAppFromManifest(browser(), app_url);
     filters = WebAppPublisherHelper::CreateIntentFiltersForWebApp(
@@ -243,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPublisherHelperMigrationTest, MigrationCalls) {
       web_app::AppBrowserController::From(app_browser)->app_id();
 
   auto* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+      apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile());
 
   // Verify source app is installed.
   bool source_found = proxy->AppRegistryCache().ForOneApp(
@@ -263,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPublisherHelperMigrationTest, MigrationCalls) {
                   .WaitAndFlushCommands());
 
   web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForTest(browser()->profile());
+      web_app::WebAppProvider::GetForTest(browser()->GetProfile());
 
   // 3. Accept migration dialog.
   views::NamedWidgetShownWaiter update_dialog_waiter(

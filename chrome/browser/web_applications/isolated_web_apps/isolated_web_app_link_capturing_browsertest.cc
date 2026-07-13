@@ -205,7 +205,7 @@ class IsolatedWebAppLinkCapturingBrowserTestBase
             .AddJs("script.js", kIwaJsContent)
             .BuildBundle(GetBundleId(),
                          {web_package::test::GetDefaultEd25519KeyPair()})
-            ->InstallChecked(browser()->profile());
+            ->InstallChecked(browser()->GetProfile());
 
     app_id_ = url_info.app_id();
     app_start_url_ = url_info.origin().GetURL();

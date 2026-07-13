@@ -896,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
 
   GURL cookie_url = embedded_https_test_server().GetURL(
       "/web_apps/simple_isolated_app/cookie.html");
-  CookieSettingsFactory::GetForProfile(browser->profile())
+  CookieSettingsFactory::GetForProfile(browser->GetProfile())
       ->SetCookieSetting(cookie_url, CONTENT_SETTING_ALLOW);
   CreateIframe(rfh, "child_0", cookie_url, "");
   auto* iframe_rfh = content::ChildFrameAt(rfh, 0);

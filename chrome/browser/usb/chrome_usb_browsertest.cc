@@ -574,7 +574,7 @@ class ChromeWebUsbAppTest : public extensions::ExtensionBrowserTest {
 
  protected:
   UsbChooserContext* GetChooserContext() {
-    return UsbChooserContextFactory::GetForProfile(browser()->profile());
+    return UsbChooserContextFactory::GetForProfile(browser()->GetProfile());
   }
 
   device::FakeUsbDeviceManager& device_manager() { return device_manager_; }

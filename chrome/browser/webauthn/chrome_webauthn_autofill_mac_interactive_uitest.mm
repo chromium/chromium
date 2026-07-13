@@ -80,7 +80,7 @@ class WebAuthnMacAutofillIntegrationTest : public CertVerifierBrowserTest {
     // Set up the fake keychain.
     config_ =
         ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfigForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     touch_id_test_environment_ =
         std::make_unique<device::fido::mac::ScopedTouchIdTestEnvironment>(
             config_);

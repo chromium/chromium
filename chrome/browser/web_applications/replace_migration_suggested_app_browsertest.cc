@@ -53,7 +53,7 @@ class ReplaceMigrationSuggestedAppBrowserTest
   ~ReplaceMigrationSuggestedAppBrowserTest() override = default;
 
   WebAppProvider& provider() {
-    return *WebAppProvider::GetForTest(browser()->profile());
+    return *WebAppProvider::GetForTest(browser()->GetProfile());
   }
 
   webapps::AppId InstallSuggestedFromMigrationApp(const GURL& start_url) {
