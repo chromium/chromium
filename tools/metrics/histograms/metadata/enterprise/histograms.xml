@@ -4601,6 +4601,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="EnterpriseCheck.IsEnterpriseUser2" enum="BooleanEnabled"
+    expires_after="2026-12-01">
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Whether the machine is considered an enterprise user. An enterprise user is
+    either in a domain, either local or cloud via AAD (strict join type check).
+    This check is performed once at start-up on Windows.
+  </summary>
+</histogram>
+
 <histogram name="EnterpriseCheck.IsFullyManaged2" enum="IsFullyManagedBoolean"
     expires_after="2026-12-01">
   <owner>twellington@google.com</owner>
@@ -4622,6 +4633,17 @@ chromium-metrics-reviews@google.com.
     Whether the machine is joined to an Azure AD domain or the user has added
     one or more work/school accounts to their login session. This check is
     performed once at start-up on Windows.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.IsJoinedToAzureAD2" enum="BooleanEnabled"
+    expires_after="2026-12-01">
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Whether the machine is joined to an Azure AD domain (strict join type
+    check). This does not return true if there are only Azure AD work/school
+    accounts added. This check is performed once at start-up on Windows.
   </summary>
 </histogram>
 
@@ -4667,6 +4689,17 @@ chromium-metrics-reviews@google.com.
     Whether the machine is managed or part of an enterprise. This includes
     devices that are either in a domain or managed via MDM. This check is
     performed once at start-up on Windows.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.IsManagedOrEnterpriseDevice2"
+    enum="BooleanEnabled" expires_after="2026-12-01">
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Whether the machine is managed or part of an enterprise. This includes
+    devices that are either in a domain or managed via MDM (strict Azure AD join
+    check). This check is performed once at start-up on Windows.
   </summary>
 </histogram>
 
