@@ -8052,6 +8052,13 @@ IFACEMETHODIMP_(ULONG) AXPlatformNodeWin::AddRef() {
 
 IFACEMETHODIMP_(ULONG) AXPlatformNodeWin::Release() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!IsDestroyed() && ref_count_ == 1) {
+    // Keep the delegate's reference until Destroy().
+    // TODO(crbug.com/532828233): Identify the source of these extra Release()
+    // calls.
+    return 1;
+  }
+
   // As above, infer that the instance is no longer being used for some COM-ish
   // purpose when the refcount drops back down to 1 if it has yet to be
   // disposed. For cases where the instance was disposed while there were
