@@ -45,7 +45,6 @@ crypto/subtle/importKey-badParameters.html
 css1/units/rounding.html
 css3/blending/isolation-parsing.html
 css3/calc/reflection-computed-style.html
-css3/filters/crash-hw-sw-switch.html
 css3/flexbox/assert-generated-new-flexbox.html
 css3/fonts/font-feature-settings-parsing-prefixed.html
 css3/masking/clip-path-reference-of-fake-clipPath.html
@@ -150,6 +149,7 @@ external/wpt/css/css-typed-om/CSSMatrixComponent-DOMMatrix-mutable.html
 external/wpt/css/css-typed-om/declared-styleMap-accepts-inherit.html
 external/wpt/css/css-typed-om/stylevalue-subclasses/cssKeywordValue.html
 external/wpt/css/css-typed-om/the-stylepropertymap/properties/border-style.html
+external/wpt/css/filter-effects/crashtests/filter-hw-sw-switch.html
 external/wpt/css/filter-effects/crashtests/multiple-references-id-crash-001.html
 external/wpt/custom-elements/HTMLElement-constructor.html
 external/wpt/custom-elements/parser/parser-constructs-custom-element-in-document-write.html

@@ -72,7 +72,6 @@ css3/blending/mix-blend-mode-isolated-group-2.html
 css3/blending/mix-blend-mode-isolated-group-3.html
 css3/filters/blur-filter-page-scroll-parents.html
 css3/filters/blur-filter-page-scroll.html
-css3/filters/crash-filter-change.html
 css3/filters/effect-blur.html
 css3/filters/effect-brightness-clamping.html
 css3/filters/effect-combined.html
@@ -87,6 +86,7 @@ css3/masking/mask-repeat-round-border.html
 css3/masking/mask-repeat-round-content.html
 css3/masking/mask-repeat-round-padding.html
 css3/masking/mask-repeat-space-border.html
+external/wpt/css/filter-effects/crashtests/filter-change.html
 images/color-profile-animate-rotate.html
 images/color-profile-animate.html
 images/color-profile-background-image-cover.html
