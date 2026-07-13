@@ -1474,3 +1474,13 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, ImplicitTransition_EsbToggled) {
   histograms.ExpectTotalCount(
       "Security.HttpsFirstMode.SettingImplicitlyChanged", 2);
 }
+
+TEST_F(HttpsFirstModeSettingsTrackerTest, GuestOTRProfileHasService) {
+  TestingProfile::Builder builder;
+  builder.SetGuestSession();
+  std::unique_ptr<TestingProfile> guest_profile = builder.Build();
+  // For a guest OTR profile, the factory should still return a service
+  // instance.
+  EXPECT_TRUE(HttpsFirstModeServiceFactory::GetForProfile(
+      guest_profile->GetPrimaryOTRProfile(true)));
+}
