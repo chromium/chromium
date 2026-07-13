@@ -68,11 +68,11 @@ public class AwContentsClientFaviconTest extends AwParameterizedTest {
 
     @Before
     public void setUp() throws Exception {
-        AwSettings.setShouldDownloadFaviconsGlobal();
         mContentsClient = new TestAwContentsClient();
         AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = testContainerView.getAwContents();
+        mAwContents.getSettings().setDownloadFaviconsEnabled(true);
         mWebServer = TestWebServer.start();
     }
 

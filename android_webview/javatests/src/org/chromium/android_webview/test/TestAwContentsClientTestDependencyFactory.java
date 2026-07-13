@@ -12,7 +12,6 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContents.DependencyFactory;
 import org.chromium.android_webview.AwContents.InternalAccessDelegate;
 import org.chromium.android_webview.AwContentsClient;
-import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 
 /**
@@ -30,7 +29,6 @@ public class TestAwContentsClientTestDependencyFactory
             InternalAccessDelegate internalAccessAdapter,
             AwDrawFnImpl.DrawFnAccess drawFnAccess,
             AwContentsClient contentsClient,
-            AwSettings settings,
             DependencyFactory dependencyFactory) {
         return new TestAwContents(
                 browserContext,
@@ -39,7 +37,6 @@ public class TestAwContentsClientTestDependencyFactory
                 internalAccessAdapter,
                 drawFnAccess,
                 contentsClient,
-                settings,
                 dependencyFactory);
     }
 }

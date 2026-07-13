@@ -357,6 +357,22 @@ public class AwContents implements SmartClipProvider {
                 AwScrollOffsetManager.Delegate delegate) {
             return new AwScrollOffsetManager(delegate);
         }
+
+        public AwSettings createAwSettings(
+                AwContents awContents,
+                boolean isAccessFromFileUrlsGrantedByDefault,
+                boolean supportsLegacyQuirks,
+                boolean allowEmptyDocumentPersistence,
+                boolean allowGeolocationOnInsecureOrigins,
+                boolean doNotUpdateSelectionOnMutatingSelectionRange) {
+            return new AwSettings(
+                    awContents,
+                    isAccessFromFileUrlsGrantedByDefault,
+                    supportsLegacyQuirks,
+                    allowEmptyDocumentPersistence,
+                    allowGeolocationOnInsecureOrigins,
+                    doNotUpdateSelectionOnMutatingSelectionRange);
+        }
     }
 
     /**
@@ -911,8 +927,6 @@ public class AwContents implements SmartClipProvider {
      * @param internalAccessAdapter to access private methods on containerView.
      * @param drawFnAccess to access the draw functor provided by the WebView.
      * @param contentsClient will receive API callbacks from this WebView Contents.
-     * @param awSettings AwSettings instance used to configure the AwContents.
-     *     <p>This constructor uses the default view sizing policy.
      */
     public AwContents(
             AwBrowserContext browserContext,
@@ -920,8 +934,7 @@ public class AwContents implements SmartClipProvider {
             Context context,
             InternalAccessDelegate internalAccessAdapter,
             AwDrawFnImpl.DrawFnAccess drawFnAccess,
-            AwContentsClient contentsClient,
-            AwSettings awSettings) {
+            AwContentsClient contentsClient) {
         this(
                 browserContext,
                 containerView,
@@ -929,7 +942,6 @@ public class AwContents implements SmartClipProvider {
                 internalAccessAdapter,
                 drawFnAccess,
                 contentsClient,
-                awSettings,
                 new DependencyFactory());
     }
 
@@ -946,7 +958,6 @@ public class AwContents implements SmartClipProvider {
             InternalAccessDelegate internalAccessAdapter,
             AwDrawFnImpl.DrawFnAccess drawFnAccess,
             AwContentsClient contentsClient,
-            AwSettings settings,
             DependencyFactory dependencyFactory) {
         assert browserContext != null;
         long startTime = SystemClock.uptimeMillis();
@@ -1019,7 +1030,46 @@ public class AwContents implements SmartClipProvider {
                             },
                             containerView);
             mRendererPriority = RendererPriority.HIGH;
-            mSettings = settings;
+            mContext = context;
+            mAppTargetSdkVersion = mContext.getApplicationInfo().targetSdkVersion;
+
+            boolean isAccessFromFileUrlsGrantedByDefault =
+                    mAppTargetSdkVersion < Build.VERSION_CODES.JELLY_BEAN;
+            boolean areLegacyQuirksEnabled = mAppTargetSdkVersion < Build.VERSION_CODES.KITKAT;
+            boolean allowEmptyDocumentPersistence = mAppTargetSdkVersion <= Build.VERSION_CODES.M;
+            boolean allowGeolocationOnInsecureOrigins =
+                    mAppTargetSdkVersion <= Build.VERSION_CODES.M;
+            boolean doNotUpdateSelectionOnMutatingSelectionRange =
+                    mAppTargetSdkVersion <= Build.VERSION_CODES.M;
+
+            mSettings =
+                    dependencyFactory.createAwSettings(
+                            this,
+                            isAccessFromFileUrlsGrantedByDefault,
+                            areLegacyQuirksEnabled,
+                            allowEmptyDocumentPersistence,
+                            allowGeolocationOnInsecureOrigins,
+                            doNotUpdateSelectionOnMutatingSelectionRange);
+
+            if (mAppTargetSdkVersion < Build.VERSION_CODES.LOLLIPOP) {
+                // Prior to Lollipop we always allowed third party cookies and mixed content.
+                mSettings.setMixedContentMode(
+                        android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+                mSettings.setAcceptThirdPartyCookies(true);
+                mSettings.setZeroLayoutHeightDisablesViewportQuirk(true);
+            }
+
+            if (mAppTargetSdkVersion >= Build.VERSION_CODES.P) {
+                mSettings.setCssHexAlphaColorEnabled(true);
+                mSettings.setScrollTopLeftInteropEnabled(true);
+            }
+
+            if (mAppTargetSdkVersion >= Build.VERSION_CODES.KITKAT) {
+                // On KK and above, favicons are automatically downloaded as the method
+                // old apps use to enable that behavior is deprecated.
+                AwSettings.setShouldDownloadFaviconsGlobal();
+            }
+
             updateDefaultLocale();
 
             // setWillNotDraw(false) is required since WebView draws its own contents using its
@@ -1028,8 +1078,6 @@ public class AwContents implements SmartClipProvider {
             mContainerView = containerView;
             mContainerView.setWillNotDraw(false);
 
-            mContext = context;
-            mAppTargetSdkVersion = mContext.getApplicationInfo().targetSdkVersion;
             mInternalAccessAdapter = internalAccessAdapter;
             mDrawFnAccess = drawFnAccess;
             mContentsClient = contentsClient;
@@ -1044,7 +1092,7 @@ public class AwContents implements SmartClipProvider {
             mLayoutSizer.setDelegate(new AwLayoutSizerDelegate());
             mWebContentsDelegate =
                     new AwWebContentsDelegateAdapter(
-                            this, contentsClient, settings, mContainerView);
+                            this, contentsClient, mSettings, mContainerView);
             mContentsClientBridge =
                     new AwContentsClientBridge(
                             this, contentsClient, AwContentsStatics.getClientCertLookupTable());

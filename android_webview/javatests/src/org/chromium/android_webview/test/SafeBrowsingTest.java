@@ -31,7 +31,6 @@ import org.chromium.android_webview.AwContents.DependencyFactory;
 import org.chromium.android_webview.AwContents.InternalAccessDelegate;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwContentsStatics;
-import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.SafeBrowsingAction;
 import org.chromium.android_webview.WebviewErrorCode;
@@ -219,7 +218,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
                 InternalAccessDelegate internalAccessAdapter,
                 AwDrawFnImpl.DrawFnAccess drawFnAccess,
                 AwContentsClient contentsClient,
-                AwSettings settings,
                 DependencyFactory dependencyFactory) {
             super(
                     browserContext,
@@ -228,7 +226,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
                     internalAccessAdapter,
                     drawFnAccess,
                     contentsClient,
-                    settings,
                     dependencyFactory);
             mCanShowInterstitial = true;
             mCanShowBigInterstitial = true;
@@ -303,7 +300,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
                 InternalAccessDelegate internalAccessAdapter,
                 AwDrawFnImpl.DrawFnAccess drawFnAccess,
                 AwContentsClient contentsClient,
-                AwSettings settings,
                 DependencyFactory dependencyFactory) {
             return new MockAwContents(
                     browserContext,
@@ -312,7 +308,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
                     internalAccessAdapter,
                     drawFnAccess,
                     contentsClient,
-                    settings,
                     dependencyFactory);
         }
     }

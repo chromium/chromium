@@ -4,8 +4,6 @@
 
 package org.chromium.android_webview.test;
 
-import android.content.Context;
-
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -60,33 +58,33 @@ public class GeolocationTest extends AwParameterizedTest {
 
     private static final String RAW_HTML =
             """
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>Geolocation</title>
-            <script>
-              var positionCount = 0;
-              function gotPos(position) {
-                positionCount++;
-              }
-              function errorCallback(error) {
-                window.document.title = 'deny';
-                console.log('navigator.getCurrentPosition error: ', error);
-              }
-              function initiate_getCurrentPosition() {
-                navigator.geolocation.getCurrentPosition(
-                    gotPos, errorCallback, { });
-              }
-              function initiate_watchPosition() {
-                navigator.geolocation.watchPosition(
-                    gotPos, errorCallback, { });
-              }
-            </script>
-          </head>
-          <body>
-          </body>
-        </html>
-        """;
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <title>Geolocation</title>
+                <script>
+                  var positionCount = 0;
+                  function gotPos(position) {
+                    positionCount++;
+                  }
+                  function errorCallback(error) {
+                    window.document.title = 'deny';
+                    console.log('navigator.getCurrentPosition error: ', error);
+                  }
+                  function initiate_getCurrentPosition() {
+                    navigator.geolocation.getCurrentPosition(
+                        gotPos, errorCallback, { });
+                  }
+                  function initiate_watchPosition() {
+                    navigator.geolocation.watchPosition(
+                        gotPos, errorCallback, { });
+                  }
+                </script>
+              </head>
+              <body>
+              </body>
+            </html>
+            """;
 
     private static class GrantPermisionAwContentClient extends TestAwContentsClient {
         @Override
@@ -154,11 +152,17 @@ public class GeolocationTest extends AwParameterizedTest {
         }
 
         @Override
-        public AwSettings createAwSettings(Context context, boolean supportLegacyQuirks) {
+        public AwSettings createAwSettings(
+                AwContents awContents,
+                boolean isAccessFromFileUrlsGrantedByDefault,
+                boolean supportsLegacyQuirks,
+                boolean allowEmptyDocumentPersistence,
+                boolean allowGeolocationOnInsecureOrigins,
+                boolean doNotUpdateSelectionOnMutatingSelectionRange) {
             return new AwSettings(
-                    context,
+                    awContents,
                     /* isAccessFromFileUrlsGrantedByDefault= */ false,
-                    supportLegacyQuirks,
+                    supportsLegacyQuirks,
                     /* allowEmptyDocumentPersistence= */ false,
                     mAllow,
                     /* doNotUpdateSelectionOnMutatingSelectionRange= */ false);

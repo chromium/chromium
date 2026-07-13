@@ -7,9 +7,7 @@ package org.chromium.android_webview;
 import static java.lang.annotation.ElementType.TYPE_USE;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -149,7 +147,7 @@ public class AwSettings {
     private @HyperlinkContextMenuItems int mHyperlinkContextMenuItems =
             HyperlinkContextMenuItems.DISABLED;
 
-    private final Context mContext;
+    private final AwContents mAwContents;
     private WebContents mWebContents;
 
     // This class must be created on the UI thread. Afterwards, it can be
@@ -396,15 +394,17 @@ public class AwSettings {
     }
 
     public AwSettings(
-            Context context,
+            AwContents awContents,
             boolean isAccessFromFileUrlsGrantedByDefault,
             boolean supportsLegacyQuirks,
             boolean allowEmptyDocumentPersistence,
             boolean allowGeolocationOnInsecureOrigins,
             boolean doNotUpdateSelectionOnMutatingSelectionRange) {
-        mContext = context;
+        mAwContents = awContents;
         boolean hasInternetPermission =
-                mContext.checkSelfPermission(android.Manifest.permission.INTERNET)
+                mAwContents
+                                .getProvidedContext()
+                                .checkSelfPermission(android.Manifest.permission.INTERNET)
                         == PackageManager.PERMISSION_GRANTED;
         synchronized (mAwSettingsLock) {
             mHasInternetPermission = hasInternetPermission;
@@ -420,7 +420,9 @@ public class AwSettings {
 
             // Best-guess a sensible initial value based on the features supported on the device.
             mSpatialNavigationEnabled =
-                    !context.getPackageManager()
+                    !mAwContents
+                            .getProvidedContext()
+                            .getPackageManager()
                             .hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN);
 
             // Respect the system setting for password echoing.
@@ -431,7 +433,13 @@ public class AwSettings {
             // By default, scale the text size by the system font scale factor. Embedders
             // may override this by invoking setTextZoom().
             mTextSizePercent =
-                    (int) (mTextSizePercent * context.getResources().getConfiguration().fontScale);
+                    (int)
+                            (mTextSizePercent
+                                    * mAwContents
+                                            .getProvidedContext()
+                                            .getResources()
+                                            .getConfiguration()
+                                            .fontScale);
 
             mSupportLegacyQuirks = supportsLegacyQuirks;
             mAllowEmptyDocumentPersistence = allowEmptyDocumentPersistence;
@@ -480,10 +488,6 @@ public class AwSettings {
         synchronized (mAwSettingsLock) {
             runnable.run();
         }
-    }
-
-    public int getUiModeNight() {
-        return mContext.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
     }
 
     @CalledByNative
@@ -2385,8 +2389,10 @@ public class AwSettings {
         synchronized (mAwSettingsLock) {
             if (support == WebauthnMode.BROWSER) {
                 boolean hasPermission =
-                        mContext.checkSelfPermission(
-                                        android.Manifest.permission.CREDENTIAL_MANAGER_SET_ORIGIN)
+                        ContextUtils.getApplicationContext()
+                                        .checkSelfPermission(
+                                                android.Manifest.permission
+                                                        .CREDENTIAL_MANAGER_SET_ORIGIN)
                                 == android.content.pm.PackageManager.PERMISSION_GRANTED;
                 RecordHistogram.recordBooleanHistogram(
                         "Android.WebView.Webauthn.BrowserModePermissionGranted", hasPermission);

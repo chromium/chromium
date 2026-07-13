@@ -68,7 +68,6 @@ import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwDataDirLock;
 import org.chromium.android_webview.AwLayoutSizer;
 import org.chromium.android_webview.AwPrintDocumentAdapter;
-import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwThreadUtils;
 import org.chromium.android_webview.DarkModeHelper;
 import org.chromium.android_webview.DualTraceEvent;
@@ -1379,44 +1378,6 @@ class WebViewChromium
             recordWebViewApiCall(
                     ApiCall.WEBVIEW_CHROMIUM_INIT_FOR_REAL,
                     ApiCallUserAction.WEBVIEW_INSTANCE_WEBVIEW_CHROMIUM_INIT_FOR_REAL);
-            final boolean isAccessFromFileUrlsGrantedByDefault =
-                    mAppTargetSdkVersion < Build.VERSION_CODES.JELLY_BEAN;
-            final boolean areLegacyQuirksEnabled =
-                    mAppTargetSdkVersion < Build.VERSION_CODES.KITKAT;
-            final boolean allowEmptyDocumentPersistence =
-                    mAppTargetSdkVersion <= Build.VERSION_CODES.M;
-            final boolean allowGeolocationOnInsecureOrigins =
-                    mAppTargetSdkVersion <= Build.VERSION_CODES.M;
-
-            // https://crbug.com/698752
-            final boolean doNotUpdateSelectionOnMutatingSelectionRange =
-                    mAppTargetSdkVersion <= Build.VERSION_CODES.M;
-
-            try (ScopedSysTraceEvent e2 =
-                    ScopedSysTraceEvent.scoped("WebViewChromium.ContentSettingsAdapter")) {
-                mWebSettings =
-                        mFactory.createContentSettingsAdapter(
-                                new AwSettings(
-                                        mContext,
-                                        isAccessFromFileUrlsGrantedByDefault,
-                                        areLegacyQuirksEnabled,
-                                        allowEmptyDocumentPersistence,
-                                        allowGeolocationOnInsecureOrigins,
-                                        doNotUpdateSelectionOnMutatingSelectionRange));
-            }
-
-            if (mAppTargetSdkVersion < Build.VERSION_CODES.LOLLIPOP) {
-                // Prior to Lollipop we always allowed third party cookies and mixed content.
-                mWebSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-                mWebSettings.setAcceptThirdPartyCookies(true);
-                mWebSettings.getAwSettings().setZeroLayoutHeightDisablesViewportQuirk(true);
-            }
-
-            if (mAppTargetSdkVersion >= Build.VERSION_CODES.P) {
-                mWebSettings.getAwSettings().setCssHexAlphaColorEnabled(true);
-                mWebSettings.getAwSettings().setScrollTopLeftInteropEnabled(true);
-            }
-
             AwContentsStatics.setRecordFullDocument(
                     sRecordWholeDocumentEnabledByApi
                             || mAppTargetSdkVersion < Build.VERSION_CODES.LOLLIPOP);
@@ -1442,12 +1403,11 @@ class WebViewChromium
                             new InternalAccessAdapter(),
                             mFactory.getWebViewDelegate()::drawWebViewFunctor,
                             mContentsClientAdapter,
-                            mWebSettings.getAwSettings(),
                             new AwContents.DependencyFactory());
-            if (mAppTargetSdkVersion >= Build.VERSION_CODES.KITKAT) {
-                // On KK and above, favicons are automatically downloaded as the method
-                // old apps use to enable that behavior is deprecated.
-                AwSettings.setShouldDownloadFaviconsGlobal();
+
+            try (ScopedSysTraceEvent e2 =
+                    ScopedSysTraceEvent.scoped("WebViewChromium.ContentSettingsAdapter")) {
+                mWebSettings = mFactory.createContentSettingsAdapter(mAwContents.getSettings());
             }
 
             if (mAppTargetSdkVersion < Build.VERSION_CODES.LOLLIPOP) {

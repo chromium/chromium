@@ -3534,9 +3534,15 @@ public class AwSettingsTest {
         }
 
         @Override
-        public AwSettings createAwSettings(Context context, boolean supportsLegacyQuirks) {
+        public AwSettings createAwSettings(
+                AwContents awContents,
+                boolean isAccessFromFileUrlsGrantedByDefault,
+                boolean supportsLegacyQuirks,
+                boolean allowEmptyDocumentPersistence,
+                boolean allowGeolocationOnInsecureOrigins,
+                boolean doNotUpdateSelectionOnMutatingSelectionRange) {
             return new AwSettings(
-                    context,
+                    awContents,
                     /* isAccessFromFileUrlsGrantedByDefault= */ false,
                     supportsLegacyQuirks,
                     mAllow,
@@ -3585,17 +3591,16 @@ public class AwSettingsTest {
         doAllowEmptyDocumentPersistenceTest(false);
     }
 
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView", "Preferences"})
-    public void testCssHexAlphaColorEnabled() throws Throwable {
+    private void doTestCssHexAlphaColor(boolean enabled) throws Throwable {
         final TestAwContentsClient client = new TestAwContentsClient();
         final AwTestContainerView view =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(client);
         final AwContents awContents = view.getAwContents();
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(() -> awContents.getSettings().setCssHexAlphaColorEnabled(enabled));
         CallbackHelper onPageFinishedHelper = client.getOnPageFinishedHelper();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
-        final String expectedTitle = "false"; // https://crbug.com/618472
+        final String expectedTitle = enabled ? "true" : "false"; // https://crbug.com/618472
         final String page =
                 "<!doctype html>"
                         + "<script>"
@@ -3610,6 +3615,20 @@ public class AwSettingsTest {
         Assert.assertEquals(expectedTitle, actualTitle);
     }
 
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testCssHexAlphaColorEnabled() throws Throwable {
+        doTestCssHexAlphaColor(true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testCssHexAlphaColorDisabled() throws Throwable {
+        doTestCssHexAlphaColor(false);
+    }
+
     private static class SelectionRangeTestDependencyFactory extends TestDependencyFactory {
         private final boolean mDoNotUpdate;
 
@@ -3618,9 +3637,15 @@ public class AwSettingsTest {
         }
 
         @Override
-        public AwSettings createAwSettings(Context context, boolean supportsLegacyQuirks) {
+        public AwSettings createAwSettings(
+                AwContents awContents,
+                boolean isAccessFromFileUrlsGrantedByDefault,
+                boolean supportsLegacyQuirks,
+                boolean allowEmptyDocumentPersistence,
+                boolean allowGeolocationOnInsecureOrigins,
+                boolean doNotUpdateSelectionOnMutatingSelectionRange) {
             return new AwSettings(
-                    context,
+                    awContents,
                     /* isAccessFromFileUrlsGrantedByDefault= */ false,
                     supportsLegacyQuirks,
                     /* allowEmptyDocumentPersistence= */ false,

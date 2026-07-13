@@ -243,14 +243,17 @@ public class AwShellActivity extends Activity {
                     new AwBrowserContext(
                             AwBrowserContext.getDefault().getNativeBrowserContextPointer());
         }
-        final AwSettings awSettings =
-                new AwSettings(
-                        /* context= */ this,
-                        /* isAccessFromFileUrlsGrantedByDefault= */ false,
-                        /* supportsLegacyQuirks= */ false,
-                        /* allowEmptyDocumentPersistence= */ false,
-                        /* allowGeolocationOnInsecureOrigins= */ true,
-                        /* doNotUpdateSelectionOnMutatingSelectionRange= */ false);
+        testContainerView.initialize(
+                new AwContents(
+                        mBrowserContext,
+                        testContainerView,
+                        testContainerView.getContext(),
+                        testContainerView.getInternalAccessDelegate(),
+                        new AwTestContainerView.RoutingDrawFnAccess(),
+                        awContentsClient));
+
+        AwSettings awSettings = testContainerView.getAwContents().getSettings();
+
         // Required for WebGL conformance tests.
         awSettings.setMediaPlaybackRequiresUserGesture(false);
         // Allow zoom and fit contents to screen
@@ -259,17 +262,7 @@ public class AwShellActivity extends Activity {
         awSettings.setUseWideViewPort(true);
         awSettings.setLoadWithOverviewMode(true);
         awSettings.setLayoutAlgorithm(AwSettings.LAYOUT_ALGORITHM_TEXT_AUTOSIZING);
-
-        testContainerView.initialize(
-                new AwContents(
-                        mBrowserContext,
-                        testContainerView,
-                        testContainerView.getContext(),
-                        testContainerView.getInternalAccessDelegate(),
-                        new AwTestContainerView.RoutingDrawFnAccess(),
-                        awContentsClient,
-                        awSettings));
-        testContainerView.getAwContents().getSettings().setJavaScriptEnabled(true);
+        awSettings.setJavaScriptEnabled(true);
         if (mDevToolsServer == null) {
             mDevToolsServer = new AwDevToolsServer();
             mDevToolsServer.setRemoteDebuggingEnabled(true);

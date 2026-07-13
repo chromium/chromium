@@ -559,9 +559,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                 testDependencyFactory.createAwTestContainerView(
                         getActivity(), allowHardwareAcceleration);
 
-        AwSettings awSettings =
-                testDependencyFactory.createAwSettings(getActivity(), supportsLegacyQuirks);
-        if (mMaybeMutateAwSettings != null) mMaybeMutateAwSettings.accept(awSettings);
+        testDependencyFactory.setSupportsLegacyQuirks(supportsLegacyQuirks);
         AwContents awContents =
                 testDependencyFactory.createAwContents(
                         browserContext != null ? browserContext : sBrowserContext,
@@ -570,8 +568,16 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                         testContainerView.getInternalAccessDelegate(),
                         new AwTestContainerView.RoutingDrawFnAccess(),
                         awContentsClient,
-                        awSettings,
                         testDependencyFactory);
+
+        // Disable favicons by default to ensure test determinism, as background
+        // favicon requests can pollute shouldInterceptRequest callbacks. Tests that
+        // specifically need favicons can enable it explicitly.
+        awContents.getSettings().setDownloadFaviconsEnabled(false);
+
+        if (mMaybeMutateAwSettings != null) {
+            mMaybeMutateAwSettings.accept(awContents.getSettings());
+        }
         if (overridesShouldInterceptRequest(awContentsClient)) {
             awContents.onWebViewClientUpdated(OVERRIDES_SHOULD_INTERCEPT_REQUEST_WEB_VIEW_CLIENT);
         }
@@ -997,21 +1003,34 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     }
 
     /**
-     * Factory class used in creation of test AwContents instances. Test cases
-     * can provide subclass instances to the createAwTest* methods in order to
-     * create an AwContents instance with injected test dependencies.
+     * Factory class used in creation of test AwContents instances. Test cases can provide subclass
+     * instances to the createAwTest* methods in order to create an AwContents instance with
+     * injected test dependencies.
      */
     public static class TestDependencyFactory extends AwContents.DependencyFactory {
+        private boolean mSupportsLegacyQuirks;
+
+        public void setSupportsLegacyQuirks(boolean supportsLegacyQuirks) {
+            mSupportsLegacyQuirks = supportsLegacyQuirks;
+        }
+
         public AwTestContainerView createAwTestContainerView(
                 AwTestRunnerActivity activity, boolean allowHardwareAcceleration) {
             return new AwTestContainerView(activity, allowHardwareAcceleration);
         }
 
-        public AwSettings createAwSettings(Context context, boolean supportsLegacyQuirks) {
+        @Override
+        public AwSettings createAwSettings(
+                AwContents awContents,
+                boolean isAccessFromFileUrlsGrantedByDefault,
+                boolean supportsLegacyQuirks,
+                boolean allowEmptyDocumentPersistence,
+                boolean allowGeolocationOnInsecureOrigins,
+                boolean doNotUpdateSelectionOnMutatingSelectionRange) {
             return new AwSettings(
-                    context,
+                    awContents,
                     /* isAccessFromFileUrlsGrantedByDefault= */ false,
-                    supportsLegacyQuirks,
+                    mSupportsLegacyQuirks,
                     /* allowEmptyDocumentPersistence= */ false,
                     /* allowGeolocationOnInsecureOrigins= */ true,
                     /* doNotUpdateSelectionOnMutatingSelectionRange= */ false);
@@ -1024,7 +1043,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                 InternalAccessDelegate internalAccessAdapter,
                 AwDrawFnImpl.DrawFnAccess drawFnAccess,
                 AwContentsClient contentsClient,
-                AwSettings settings,
                 DependencyFactory dependencyFactory) {
             return new AwContents(
                     browserContext,
@@ -1033,7 +1051,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                     internalAccessAdapter,
                     drawFnAccess,
                     contentsClient,
-                    settings,
                     dependencyFactory);
         }
     }

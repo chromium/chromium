@@ -21,7 +21,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.AwActivityTestRule.PopupInfo;
@@ -64,11 +63,11 @@ public class NavigationHistoryTest extends AwParameterizedTest {
 
     @Before
     public void setUp() throws Exception {
-        AwSettings.setShouldDownloadFaviconsGlobal();
         mContentsClient = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = testContainerView.getAwContents();
+        mAwContents.getSettings().setDownloadFaviconsEnabled(true);
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
         mWebServer = TestWebServer.start();
         mLoadedNotifier = new TestPageLoadedNotifier();

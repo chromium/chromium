@@ -479,10 +479,10 @@ public class AwContentsTest extends AwParameterizedTest {
     @CommandLineFlags.Add({"enable-features=WebViewDownloadFavicons"})
     public void testGetFavicon() throws Throwable {
         mActivityTestRule.startBrowserProcess();
-        AwSettings.setShouldDownloadFaviconsGlobal();
         final AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         final AwContents awContents = testView.getAwContents();
+        awContents.getSettings().setDownloadFaviconsEnabled(true);
 
         TestWebServer webServer = TestWebServer.start();
         try {

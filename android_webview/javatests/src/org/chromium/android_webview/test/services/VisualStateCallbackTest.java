@@ -25,7 +25,6 @@ import org.chromium.android_webview.AwContents.DependencyFactory;
 import org.chromium.android_webview.AwContents.InternalAccessDelegate;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwRenderProcessGoneDetail;
-import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.test.AwActivityTestRule;
 import org.chromium.android_webview.test.AwJUnit4ClassRunnerWithParameters;
@@ -76,7 +75,6 @@ public class VisualStateCallbackTest extends AwParameterizedTest {
                 InternalAccessDelegate internalAccessAdapter,
                 AwDrawFnImpl.DrawFnAccess drawFnAccess,
                 AwContentsClient contentsClient,
-                AwSettings settings,
                 DependencyFactory dependencyFactory) {
             super(
                     browserContext,
@@ -85,7 +83,6 @@ public class VisualStateCallbackTest extends AwParameterizedTest {
                     internalAccessAdapter,
                     drawFnAccess,
                     contentsClient,
-                    settings,
                     dependencyFactory);
             mVisualStateCallbackHelper = new VisualStateCallbackHelper();
         }
@@ -107,7 +104,6 @@ public class VisualStateCallbackTest extends AwParameterizedTest {
                 InternalAccessDelegate internalAccessAdapter,
                 AwDrawFnImpl.DrawFnAccess drawFnAccess,
                 AwContentsClient contentsClient,
-                AwSettings settings,
                 DependencyFactory dependencyFactory) {
             return new VisualStateCallbackTestAwContents(
                     browserContext,
@@ -116,7 +112,6 @@ public class VisualStateCallbackTest extends AwParameterizedTest {
                     internalAccessAdapter,
                     drawFnAccess,
                     contentsClient,
-                    settings,
                     dependencyFactory);
         }
     }

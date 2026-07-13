@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient;
-import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 
 import java.util.ArrayList;
@@ -43,7 +42,6 @@ public class TestAwContents extends AwContents {
             InternalAccessDelegate internalAccessAdapter,
             AwDrawFnImpl.DrawFnAccess drawFnAccess,
             AwContentsClient contentsClient,
-            AwSettings settings,
             DependencyFactory dependencyFactory) {
         super(
                 browserContext,
@@ -52,7 +50,6 @@ public class TestAwContents extends AwContents {
                 internalAccessAdapter,
                 drawFnAccess,
                 contentsClient,
-                settings,
                 dependencyFactory);
 
         mRenderProcessGoneHelper = new RenderProcessGoneHelper();
