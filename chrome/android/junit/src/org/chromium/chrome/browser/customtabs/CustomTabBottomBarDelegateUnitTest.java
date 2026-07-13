@@ -83,6 +83,9 @@ public class CustomTabBottomBarDelegateUnitTest {
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.isFirstParty(any())).thenReturn(true);
+        CustomTabsConnection.setInstanceForTesting(connection);
         when(mIntent.getParcelableExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS))
                 .thenReturn(mRemoteViews);
         when(mIntent.getIntArrayExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS_VIEW_IDS))

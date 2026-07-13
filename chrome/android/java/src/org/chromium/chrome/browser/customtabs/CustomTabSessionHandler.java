@@ -116,6 +116,7 @@ public class CustomTabSessionHandler
             @Nullable RemoteViews remoteViews,
             int @Nullable [] clickableIDs,
             @Nullable PendingIntent pendingIntent) {
+        if (remoteViews != null && !mIntentDataProvider.isTrustedIntent()) return false;
         return mBottomBarDelegate.get().updateRemoteViews(remoteViews, clickableIDs, pendingIntent);
     }
 

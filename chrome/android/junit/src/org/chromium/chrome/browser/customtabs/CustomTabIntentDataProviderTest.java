@@ -45,6 +45,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.WindowManager;
+import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
 import androidx.browser.auth.AuthTabIntent;
@@ -1138,6 +1139,36 @@ public class CustomTabIntentDataProviderTest {
 
         assertEquals("fr", provider.getTranslateLanguage());
         assertFalse(provider.shouldAutoTranslate());
+    }
+
+    @Test
+    public void bottomBarRemoteViews_untrustedIntent() {
+        RemoteViews remoteViews =
+                new RemoteViews(mContext.getPackageName(), android.R.layout.simple_list_item_1);
+        Intent intent = new Intent().putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS, remoteViews);
+
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertFalse(dataProvider.isTrustedIntent());
+        assertNull(dataProvider.getBottomBarRemoteViews());
+        assertFalse(dataProvider.shouldShowBottomBar());
+    }
+
+    @Test
+    public void bottomBarRemoteViews_trustedIntent() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.isFirstParty(any())).thenReturn(true);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        RemoteViews remoteViews =
+                new RemoteViews(mContext.getPackageName(), android.R.layout.simple_list_item_1);
+        Intent intent = new Intent().putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS, remoteViews);
+
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertTrue(dataProvider.isTrustedIntent());
+        assertNotNull(dataProvider.getBottomBarRemoteViews());
+        assertTrue(dataProvider.shouldShowBottomBar());
     }
 
     @Test
