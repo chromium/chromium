@@ -180,6 +180,12 @@ TEST_F(X509CertificateModelTest, GetGoogleCertFields) {
   EXPECT_FALSE(model.IsBasicConstraintsCA());
   EXPECT_FALSE(model.GetBasicConstraintsPathLen().has_value());
 
+  EXPECT_FALSE(model.IsCRLDistributionPointsCritical());
+  auto crl_dps = model.GetCRLDistributionPointsFullNames();
+  ASSERT_EQ(1u, crl_dps.size());
+  EXPECT_EQ(X509CertificateModel::GeneralName::Type::kURI, crl_dps[0].type);
+  EXPECT_EQ("http://crl.thawte.com/ThawteSGCCA.crl", crl_dps[0].value);
+
   EXPECT_FALSE(model.IsExtendedKeyUsageCritical());
   auto eku_purposes = model.GetExtendedKeyUsagePurposes();
   ASSERT_EQ(3u, eku_purposes.size());
@@ -435,6 +441,12 @@ TEST_F(X509CertificateModelTest, GlobalsignComCert) {
             aia[0].location.type);
   EXPECT_EQ("http://secure.globalsign.net/cacert/SHA256extendval1.crt",
             aia[0].location.value);
+
+  EXPECT_FALSE(model.IsCRLDistributionPointsCritical());
+  auto crl_dps = model.GetCRLDistributionPointsFullNames();
+  ASSERT_EQ(1u, crl_dps.size());
+  EXPECT_EQ(X509CertificateModel::GeneralName::Type::kURI, crl_dps[0].type);
+  EXPECT_EQ("http://crl.globalsign.net/SHA256ExtendVal1.crl", crl_dps[0].value);
 }
 
 TEST_F(X509CertificateModelTest, DiginotarCert) {

@@ -690,4 +690,36 @@ X509CertificateModel::GetIssuerAlternativeNames() const {
   return ProcessGeneralNamesTlv(extension->value);
 }
 
+bool X509CertificateModel::IsCRLDistributionPointsCritical() const {
+  CHECK(is_valid());
+  return IsExtensionCritical(extensions_,
+                             bssl::der::Input(bssl::kCrlDistributionPointsOid));
+}
+
+std::vector<X509CertificateModel::GeneralName>
+X509CertificateModel::GetCRLDistributionPointsFullNames() const {
+  CHECK(is_valid());
+  const bssl::ParsedExtension* extension = FindExtension(
+      extensions_, bssl::der::Input(bssl::kCrlDistributionPointsOid));
+  if (!extension) {
+    return {};
+  }
+  std::vector<bssl::ParsedDistributionPoint> distribution_points;
+  if (!bssl::ParseCrlDistributionPoints(extension->value,
+                                        &distribution_points)) {
+    return {};
+  }
+  // Only the distributionPoint fullName is surfaced. The relativeName,
+  // reasons, and cRLIssuer fields are skipped.
+  std::vector<GeneralName> result;
+  for (const bssl::ParsedDistributionPoint& dp : distribution_points) {
+    if (dp.distribution_point_fullname) {
+      auto names = ToGeneralNameList(*dp.distribution_point_fullname);
+      result.insert(result.end(), std::make_move_iterator(names.begin()),
+                    std::make_move_iterator(names.end()));
+    }
+  }
+  return result;
+}
+
 }  // namespace x509_certificate_model
