@@ -355,7 +355,6 @@ public abstract class ChromeFeatureList {
             "CCTReportParallelRequestStatus";
     public static final String CCT_REPORT_PRERENDER_EVENTS = "CCTReportPrerenderEvents";
     public static final String CCT_RESET_TIMEOUT_ALLOWED = "CCTResetTimeoutAllowed";
-    public static final String CCT_RESET_TIMEOUT_ENABLED = "CCTResetTimeoutEnabled";
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";
     public static final String CCT_TAB_MODAL_DIALOG = "CCTTabModalDialog";
     public static final String CCT_TAB_RESUMPTION = "CctTabResumption";
@@ -911,11 +910,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_REALTIME_ENGAGEMENT_EVENTS_IN_BACKGROUND, true);
     public static final CachedFlag sCctResetTimeoutAllowed =
             newCachedFlag(CCT_RESET_TIMEOUT_ALLOWED, true);
-    public static final CachedFlag sCctResetTimeoutEnabled =
-            newCachedFlag(
-                    CCT_RESET_TIMEOUT_ENABLED,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sCctResizableForThirdParties =
             newCachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, true);
     public static final CachedFlag sCctTabModalDialog = newCachedFlag(CCT_TAB_MODAL_DIALOG, true);
@@ -1333,7 +1327,6 @@ public abstract class ChromeFeatureList {
                     sCctPageContentRequestEnabled,
                     sCctRealtimeEngagementEventsInBackground,
                     sCctResetTimeoutAllowed,
-                    sCctResetTimeoutEnabled,
                     sCctResizableForThirdParties,
                     sCctTabModalDialog,
                     sChromeItemPickerUi,
@@ -1729,8 +1722,14 @@ public abstract class ChromeFeatureList {
                             "google_bottom_bar_variant_is_google_default_search_engine_check_enabled",
                             false);
 
-    public static final IntCachedFeatureParam sCctResetMinimumTimeoutMinutes =
-            newIntCachedFeatureParam(CCT_RESET_TIMEOUT_ENABLED, "minimum_reset_timeout_mins", 30);
+    /**
+     * A cached parameter representing the timeout minutes for CustomTabs. If set to a positive
+     * value, this value will be used as the timeout minutes instead of the embedder value. Used for
+     * override/testing purposes.
+     */
+    public static final IntCachedFeatureParam sCctResetTimeoutMinutesOverride =
+            newIntCachedFeatureParam(
+                    CCT_RESET_TIMEOUT_ALLOWED, "reset_timeout_mins_override", 0);
 
     public static final IntCachedFeatureParam sCctResetMinimumTimeoutMinutesAllowed =
             newIntCachedFeatureParam(
@@ -1990,8 +1989,8 @@ public abstract class ChromeFeatureList {
                     sCctGoogleBottomBarVariantLayoutsSingleDeckerHeightDp,
                     sCctGoogleBottomBarVariantLayoutsVariantLayout,
                     sCctMinimizedEnabledByDefaultManufacturerExcludeList,
-                    sCctResetMinimumTimeoutMinutes,
                     sCctResetMinimumTimeoutMinutesAllowed,
+                    sCctResetTimeoutMinutesOverride,
                     sCctResizableForThirdPartiesAllowlistEntries,
                     sCctResizableForThirdPartiesDefaultPolicy,
                     sCctResizableForThirdPartiesDenylistEntries,

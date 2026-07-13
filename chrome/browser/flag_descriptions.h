@@ -1355,12 +1355,6 @@ inline constexpr char kCCTNavigationMetricsName[] = "CCT Navigation Metrics";
 inline constexpr char kCCTNavigationMetricsDescription[] =
     "Enables detailed navigation-related metrics in CustomTabsCallback.";
 
-inline constexpr char kCCTResetTimeoutEnabledName[] =
-    "CCT Reset Timeout Enabled";
-inline constexpr char kCCTResetTimeoutEnabledDescription[] =
-    "Enables the reset timeout for CCTs. This flag allows embedder to "
-    "close CCT after a specified time in mins.";
-
 inline constexpr char kCCTResetTimeoutAllowedName[] =
     "CCT Reset Timeout Allowed";
 inline constexpr char kCCTResetTimeoutAllowedDescription[] =

@@ -149,7 +149,8 @@ chromium-metrics-reviews@google.com.
       label="Custom context menu items EXTRA_CUSTOM_CONTENT_ACTIONS"/>
   <int value="67" label="Timeout minutes EXTRA_TIMEOUT_MINUTES"/>
   <int value="68"
-      label="Timeout minutes allowed EXTRA_TIMEOUT_MINUTES_ALLOWED"/>
+      label="(Obsolete) Timeout minutes allowed
+             EXTRA_TIMEOUT_MINUTES_ALLOWED. Removed 2026/06."/>
   <int value="69" label="Timeout pending intent EXTRA_TIMEOUT_PENDING_INTENT"/>
 </enum>
 

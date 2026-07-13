@@ -1359,10 +1359,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             featureUsage.log(CustomTabsFeature.EXTRA_TIMEOUT_MINUTES);
         }
         if (IntentUtils.safeHasExtra(
-                intent, CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES_ALLOWED)) {
-            featureUsage.log(CustomTabsFeature.EXTRA_TIMEOUT_MINUTES_ALLOWED);
-        }
-        if (IntentUtils.safeHasExtra(
                 intent, CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_PENDING_INTENT)) {
             featureUsage.log(CustomTabsFeature.EXTRA_TIMEOUT_PENDING_INTENT);
         }

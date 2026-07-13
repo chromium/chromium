@@ -1671,11 +1671,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "cct-reset-timeout-enabled",
-    "owners": ["kostyukovp@google.com", "tivi@google.com"],
-    "expiry_milestone": 160
-  },
-  {
     "name": "cct-resizable-for-third-parties",
     "owners": ["jinsukkim@chromium.org", "twellington@chromium.org"],
     "expiry_milestone": 110
