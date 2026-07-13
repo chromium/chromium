@@ -279,8 +279,8 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
       LocalFrame*,
       HTMLElement*,
       WebFormRelatedChangeType) override;
-  void HandleKeyboardEventOnTextField(HTMLInputElement&,
-                                      KeyboardEvent&) override;
+  bool HandleKeyboardEventOnEditableElement(HTMLElement&,
+                                            KeyboardEvent&) override;
   void DidChangeValueInTextField(HTMLFormControlElement&) override;
   void DidClearValueInTextField(HTMLFormControlElement&) override;
   void DidUserChangeContentEditableContent(Element&) override;

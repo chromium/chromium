@@ -1104,23 +1104,28 @@ void AutofillAgent::OnSelectControlSelectionChanged(
   }
 }
 
-void AutofillAgent::TextFieldDidReceiveKeyDown(const WebInputElement& element,
-                                               const WebKeyboardEvent& event) {
+bool AutofillAgent::DidReceiveKeyDown(const WebElement& element,
+                                      const WebKeyboardEvent& event) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
 
-  if (event.windows_key_code == ui::VKEY_DOWN ||
-      event.windows_key_code == ui::VKEY_UP) {
+  if (auto input_element = element.DynamicTo<WebInputElement>();
+      input_element && input_element.IsTextField() &&
+      (event.windows_key_code == ui::VKEY_DOWN ||
+       event.windows_key_code == ui::VKEY_UP)) {
+    // Arrow Down/Up on text-type <input> opens the classical Autofill popup.
     std::optional<PasswordSuggestionRequest> password_request =
         password_autofill_agent_
             ? password_autofill_agent_->CreateRequestForDomain(
-                  element,
+                  input_element,
                   AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown,
                   /*form_cache=*/{})
             : std::nullopt;
     ShowSuggestions(
-        element, AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown,
+        input_element,
+        AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown,
         /*form_cache=*/{}, password_request);
   }
+  return false;
 }
 
 void AutofillAgent::OpenTextDataListChooser(const WebInputElement& element) {

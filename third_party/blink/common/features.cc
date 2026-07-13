@@ -153,6 +153,12 @@ BASE_FEATURE(kAudioWorkletThreadRealtimePeriodMac,
 // instances.
 BASE_FEATURE(kAudioWorkletThreadPool, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, Blink informs WebAutofillClient not only about keydown events on
+// text-type <input> but also on <textarea> and contenteditables, and
+// WebAutofillClient may default-handle any of these events.
+BASE_FEATURE(kAutofillKeydownEditableElement,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // https://crbug.com/1472970
 BASE_FEATURE(kAutoSpeculationRules, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,

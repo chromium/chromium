@@ -29,6 +29,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/enum_set.h"
+#include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -131,6 +132,8 @@
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/timing/container_timing.h"
@@ -4014,11 +4017,19 @@ void HTMLElement::DefaultEventHandler(Event& event) {
     return;
   }
 
-  if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-      keyboard_event && event.type() == event_type_names::kKeypress) {
-    HandleKeypressEvent(*keyboard_event);
-    if (event.DefaultHandled()) {
-      return;
+  if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event)) {
+    if (base::FeatureList::IsEnabled(
+            blink::features::kAutofillKeydownEditableElement) &&
+        event.type() == event_type_names::kKeydown) {
+      HandleKeydownEvent(*keyboard_event);
+      if (event.DefaultHandled()) {
+        return;
+      }
+    } else if (event.type() == event_type_names::kKeypress) {
+      HandleKeypressEvent(*keyboard_event);
+      if (event.DefaultHandled()) {
+        return;
+      }
     }
   }
 
@@ -4066,6 +4077,29 @@ bool HTMLElement::MatchesReadOnlyPseudoClass() const {
 // or editable and are neither input elements nor textarea elements
 bool HTMLElement::MatchesReadWritePseudoClass() const {
   return IsEditableOrEditingHost(*this);
+}
+
+void HTMLElement::HandleKeydownEvent(KeyboardEvent& event) {
+  const bool is_focused_contenteditable = [this]() {
+    if (!IsFocusedElementInDocument()) {
+      return false;
+    }
+    // blink::IsEditable() may depend on the computed style, so we may need to
+    // update the style.
+    GetDocument().UpdateStyleAndLayoutTree();
+    return blink::IsEditable(*this);
+  }();
+
+  if (is_focused_contenteditable) {
+    // Handles only contenteditables. TextFieldInputType and HTMLTextAreaElement
+    // analogously handle the event for <input> and <textarea>.
+    GetDocument().UpdateStyleAndLayoutTree();
+    if (Page* page = GetDocument().GetPage();
+        page && page->GetChromeClient().HandleKeyboardEventOnEditableElement(
+                    *this, event)) {
+      event.SetDefaultHandled();
+    }
+  }
 }
 
 void HTMLElement::HandleKeypressEvent(KeyboardEvent& event) {

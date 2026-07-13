@@ -1310,14 +1310,15 @@ void ChromeClientImpl::OnMouseDown(Node& mouse_down_node) {
   }
 }
 
-void ChromeClientImpl::HandleKeyboardEventOnTextField(
-    HTMLInputElement& input_element,
+bool ChromeClientImpl::HandleKeyboardEventOnEditableElement(
+    HTMLElement& element,
     KeyboardEvent& event) {
   if (auto* fill_client =
-          AutofillClientFromFrame(input_element.GetDocument().GetFrame())) {
-    fill_client->TextFieldDidReceiveKeyDown(WebInputElement(&input_element),
-                                            WebKeyboardEventBuilder(event));
+          AutofillClientFromFrame(element.GetDocument().GetFrame())) {
+    return fill_client->DidReceiveKeyDown(WebElement(&element),
+                                          WebKeyboardEventBuilder(event));
   }
+  return false;
 }
 
 void ChromeClientImpl::DidChangeValueInTextField(

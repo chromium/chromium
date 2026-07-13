@@ -354,9 +354,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   void TextFieldValueChanged(
       const blink::WebFormControlElement& element) override;
   void ContentEditableDidChange(const blink::WebElement& element) override;
-  void TextFieldDidReceiveKeyDown(
-      const blink::WebInputElement& element,
-      const blink::WebKeyboardEvent& event) override;
+  bool DidReceiveKeyDown(const blink::WebElement& element,
+                         const blink::WebKeyboardEvent& event) override;
   void OpenTextDataListChooser(const blink::WebInputElement& element) override;
   void DataListOptionsChanged(const blink::WebInputElement& element) override;
   void UserGestureObserved() override;
