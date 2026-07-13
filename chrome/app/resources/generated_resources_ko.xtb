@@ -3247,7 +3247,6 @@
 <translation id="3496995426334945408">사이트에서는 일반적으로 비디오 게임 또는 웹 양식과 같은 대화형 기능을 실행하는 데 JavaScript를 사용합니다.</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" />의 USB 기기(제품 <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">기념일 로고 공유</translation>
-<translation id="3497915391670770295">내 기기로 보내기(&amp;D)</translation>
 <translation id="3498138244916757538">마이크 설정을 변경하려면 <ph name="SPECIFIC_NAME" /> 환경을 종료해야 합니다. 계속하려면 <ph name="SPECIFIC_NAME" /> 환경을 종료하세요.</translation>
 <translation id="3500417806337761827">공유를 마운트하는 중에 오류가 발생했습니다. 너무 많은 SMB 공유가 이미 마운트되었습니다.</translation>
 <translation id="3500764001796099683">분리형 웹 앱 사용 설정</translation>
@@ -3630,7 +3629,6 @@
 <translation id="3774059845329307709">일련번호</translation>
 <translation id="3774166835015494435">최근 사진 및 알림</translation>
 <translation id="3775432569830822555">SSL 서버 인증서</translation>
-<translation id="3775705724665058594">기기로 전송</translation>
 <translation id="3776508619697147021">사이트에서 여러 파일의 자동 다운로드를 요청할 수 있음</translation>
 <translation id="3776796446459804932">이 확장 프로그램은 Chrome 웹 스토어 정책을 위반합니다.</translation>
 <translation id="3777483481409781352">모바일 기기를 활성화하지 못함</translation>
@@ -9754,7 +9752,6 @@
 <translation id="858006550102277544">설명</translation>
 <translation id="8581809080475256101">앞으로 이동하려면 앞으로 버튼을 누르고, 방문 기록을 보려면 컨텍스트 메뉴 키를 누릅니다.</translation>
 <translation id="8584280235376696778">새 탭에서 동영상 열기(&amp;O)</translation>
-<translation id="858451212965845553">내 기기로 보내기(&amp;D)</translation>
 <translation id="8584843865238667486">사용량 페이지 <ph name="USAGE_PAGE" />의 HID 기기(사용량: <ph name="USAGE" />)</translation>
 <translation id="8585480574870650651">Crostini 삭제</translation>
 <translation id="8585841788766257444">다음 사이트는 기본 설정이 아닌 맞춤 설정을 따릅니다.</translation>
@@ -9914,6 +9911,7 @@
 <translation id="8693862390730570097">'작성 지원 기능'이 자동으로 열리도록 허용하지 않음</translation>
 <translation id="8694596275649352090">절전 모드일 때 또는 덮개가 닫힌 경우 잠금</translation>
 <translation id="8695825812785969222">위치 열기(&amp;L)...</translation>
+<translation id="8696297579102085705">기기로 보내기</translation>
 <translation id="869884720829132584">애플리케이션 메뉴</translation>
 <translation id="869891660844655955">유효기간</translation>
 <translation id="8699296325072357994">비밀번호 페이지의 콘텐츠 및 관련 정보가 Google로 전송되어 인적 검토자의 검토를 거칩니다. 비밀번호는 암호화되며, 누구에게도 공개되지 않습니다. <ph name="PASSWORD_CHANGE" /></translation>

@@ -3234,7 +3234,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3496995426334945408">Los sitios suelen usar JavaScript para mostrar contenido interactivo, como videojuegos o formularios web</translation>
 <translation id="3497501929010263034">Dispositivo USB de <ph name="VENDOR_NAME" /> (producto <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Compartir doodle</translation>
-<translation id="3497915391670770295">Enviar a tus &amp;dispositivos</translation>
 <translation id="3498138244916757538">Es necesario apagar <ph name="SPECIFIC_NAME" /> para que se aplique el cambio realizado en el ajuste del micrófono. Apaga <ph name="SPECIFIC_NAME" /> para continuar.</translation>
 <translation id="3500417806337761827">No se ha podido activar el sistema de archivos compartidos. Ya se han activado demasiados sistemas de archivos compartidos SMB.</translation>
 <translation id="3500764001796099683">Habilitar aplicaciones web aisladas</translation>
@@ -3617,7 +3616,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3774059845329307709">Número de serie</translation>
 <translation id="3774166835015494435">Fotos y notificaciones recientes</translation>
 <translation id="3775432569830822555">Certificado de servidor SSL</translation>
-<translation id="3775705724665058594">Enviar a tus dispositivos</translation>
 <translation id="3776508619697147021">Los sitios pueden solicitar permiso para descargar varios archivos automáticamente</translation>
 <translation id="3776796446459804932">Esta extensión infringe la política de Chrome Web Store.</translation>
 <translation id="3777483481409781352">No se ha podido activar el dispositivo móvil</translation>
@@ -9741,7 +9739,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="858006550102277544">Comentario</translation>
 <translation id="8581809080475256101">Pulsa para avanzar y acceder al menú contextual para ver el historial</translation>
 <translation id="8584280235376696778">&amp;Abrir vídeo en una pestaña nueva</translation>
-<translation id="858451212965845553">Enviar a tus &amp;dispositivos</translation>
 <translation id="8584843865238667486">Los dispositivos HID con uso <ph name="USAGE" /> de la página de uso <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Eliminar Crostini</translation>
 <translation id="8585841788766257444">Los sitios indicados a continuación tienen una configuración personalizada en lugar de la predeterminada</translation>
@@ -9901,6 +9898,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8693862390730570097">No permitir que Ayúdame a escribir se abra automáticamente</translation>
 <translation id="8694596275649352090">Bloquear al suspender o al cerrar la tapa</translation>
 <translation id="8695825812785969222">Abrir &amp;ubicación...</translation>
+<translation id="8696297579102085705">Enviar a tu dispositivo</translation>
 <translation id="869884720829132584">Menú de aplicaciones</translation>
 <translation id="869891660844655955">Fecha de caducidad</translation>
 <translation id="8699296325072357994">El contenido de las páginas de contraseñas y la información relacionada se envían a Google y los revisan personas. Tu contraseña está cifrada y nadie la puede ver. <ph name="PASSWORD_CHANGE" /></translation>

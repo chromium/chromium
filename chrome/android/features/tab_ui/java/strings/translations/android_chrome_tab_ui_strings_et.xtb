@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Inaktiivsed üksused ei kuhju</translation>
 <translation id="1329584516321524826">Just värskendatud</translation>
 <translation id="1340839264183302272">Lahku grupist</translation>
+<translation id="1386966479075994683">Vahelehtede laiendamine</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Jagatud vahelehegrupi <ph name="TITLE_OF_GROUP" /> laiendamine <ph name="TABS_COUNT_ONE" /> vahelehega, värv on <ph name="COLOR_NAME" />, silt on <ph name="CARD_LABEL" />.}other{Jagatud vahelehegrupi <ph name="TITLE_OF_GROUP" /> laiendamine <ph name="TABS_COUNT_MANY" /> vahelehega, värv on <ph name="COLOR_NAME" />, silt on <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Siit leiate kõik oma vahelegrupid</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Loodud <ph name="NUM_MINS_ONE" /> minut tagasi}other{Loodud <ph name="NUM_MINS_MANY" /> minutit tagasi}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Peida täisekraani ruudustik</translation>
 <translation id="5076161749301278626">Kas kuvada poe arvustused?</translation>
 <translation id="5161254044473106830">Pealkiri on kohustuslik</translation>
+<translation id="5204584298075822291">Vahelehtede ahendamine</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome sulgeb inaktiivsed vahelehed ja vahelehegrupid <ph name="AUTO_DELETE_DELAY_ONE" /> kuu pärast automaatselt. Saate seda seadetes muuta.}other{Chrome sulgeb inaktiivsed vahelehed ja vahelehegrupid <ph name="AUTO_DELETE_DELAY_MANY" /> kuu pärast automaatselt. Saate seda seadetes muuta.}}</translation>
 <translation id="5254233580564156835">Mälukasutus: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Viimane vaheleht</translation>

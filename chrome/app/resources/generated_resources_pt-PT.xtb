@@ -3235,7 +3235,6 @@ Quer pará-lo?</translation>
 <translation id="3496995426334945408">Normalmente, os sites usam JavaScript para apresentar funcionalidades interativas, como videojogos ou formulários Web</translation>
 <translation id="3497501929010263034">Dispositivo USB de <ph name="VENDOR_NAME" /> (produto <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Partilhar doodle</translation>
-<translation id="3497915391670770295">Enviar para os seus &amp;dispositivos</translation>
 <translation id="3498138244916757538">A alteração na definição do microfone requer o encerramento do <ph name="SPECIFIC_NAME" />. Encerre o <ph name="SPECIFIC_NAME" /> para continuar.</translation>
 <translation id="3500417806337761827">Ocorreu um erro ao montar a partilha. Já se encontram montadas demasiadas partilhas do SMB.</translation>
 <translation id="3500764001796099683">Ative as apps Web isoladas</translation>
@@ -3618,7 +3617,6 @@ Quer pará-lo?</translation>
 <translation id="3774059845329307709">Número de série</translation>
 <translation id="3774166835015494435">Notificações e fotos recentes</translation>
 <translation id="3775432569830822555">Certificado de servidor SSL</translation>
-<translation id="3775705724665058594">Envie para os seus dispositivos</translation>
 <translation id="3776508619697147021">Os sites podem solicitar a transferência automática de vários ficheiros</translation>
 <translation id="3776796446459804932">Esta extensão viola a política da Web Store do Chrome.</translation>
 <translation id="3777483481409781352">Não foi possível ativar o dispositivo móvel</translation>
@@ -9747,7 +9745,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="858006550102277544">Comentário</translation>
 <translation id="8581809080475256101">Premir para avançar, menu de contexto para ver o histórico</translation>
 <translation id="8584280235376696778">&amp;Abrir vídeo num novo separador</translation>
-<translation id="858451212965845553">Enviar para os seus &amp;dispositivos</translation>
 <translation id="8584843865238667486">Dispositivos HID com a utilização <ph name="USAGE" /> da página de utilização <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Remover Crostini</translation>
 <translation id="8585841788766257444">Os sites indicados abaixo seguem uma definição personalizada em vez da predefinição</translation>
@@ -9907,6 +9904,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8693862390730570097">Não permitir que a funcionalidade "Ajuda-me a escrever" seja aberta automaticamente</translation>
 <translation id="8694596275649352090">Bloquear ao suspender ou quando a tampa for fechada</translation>
 <translation id="8695825812785969222">Abrir &amp;Localização...</translation>
+<translation id="8696297579102085705">Enviar para o dispositivo</translation>
 <translation id="869884720829132584">Menu Apps</translation>
 <translation id="869891660844655955">Data de expiração</translation>
 <translation id="8699296325072357994">O conteúdo das páginas de palavras-passe e as informações relacionadas são enviadas para a Google e revistas por humanos. A sua palavra-passe é encriptada e nunca é visível para ninguém. <ph name="PASSWORD_CHANGE" /></translation>

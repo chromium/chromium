@@ -3246,7 +3246,6 @@
 <translation id="3496995426334945408">Сајтовите обично користат JavaScript за прикажување интерактивни функции како видеоигри или интернет-формулари</translation>
 <translation id="3497501929010263034">USB-уред од <ph name="VENDOR_NAME" /> (производ <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Сподели Doodle</translation>
-<translation id="3497915391670770295">Испратете на вашите уреди</translation>
 <translation id="3498138244916757538">Промената на поставките за микрофонот бара да се исклучи <ph name="SPECIFIC_NAME" />. Исклучете <ph name="SPECIFIC_NAME" /> за да продолжите.</translation>
 <translation id="3500417806337761827">Грешка при прикачување на споделувањето. Веќе се прикачени премногу SMB-споделувања.</translation>
 <translation id="3500764001796099683">Овозможете изолирани веб-апликации</translation>
@@ -3629,7 +3628,6 @@
 <translation id="3774059845329307709">Сериски број</translation>
 <translation id="3774166835015494435">Неодамнешни фотографии и известувања</translation>
 <translation id="3775432569830822555">Сертификат на SSL-сервер</translation>
-<translation id="3775705724665058594">Испратете до вашите уреди</translation>
 <translation id="3776508619697147021">Сајтовите може да прашуваат дали автоматски да преземаат повеќе датотеки</translation>
 <translation id="3776796446459804932">Наставката ја прекршува политиката на Веб-продавницата на Chrome.</translation>
 <translation id="3777483481409781352">Не може да се активира мобилниот уред</translation>
@@ -9757,7 +9755,6 @@
 <translation id="858006550102277544">Коментар</translation>
 <translation id="8581809080475256101">Притиснете за да одите напред, контекстуално мени за да ја видите историјата</translation>
 <translation id="8584280235376696778">&amp;Отвори видео во нова картичка</translation>
-<translation id="858451212965845553">Испратете на вашите уреди</translation>
 <translation id="8584843865238667486">HID-уреди со искористеност од <ph name="USAGE" /> од страницата за користење <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Отстранување на Crostini</translation>
 <translation id="8585841788766257444">Сајтовите наведени подолу следат приспособена наместо стандардната поставка</translation>
@@ -9917,6 +9914,7 @@
 <translation id="8693862390730570097">Не дозволувај „Помош при пишување“ да се отвора автоматски</translation>
 <translation id="8694596275649352090">Заклучи при спиење или затворен капак</translation>
 <translation id="8695825812785969222">Отвори &amp;локација...</translation>
+<translation id="8696297579102085705">Испратете до вашиот уред</translation>
 <translation id="869884720829132584">Мени со апликации</translation>
 <translation id="869891660844655955">Рок на важност</translation>
 <translation id="8699296325072357994">Содржините од страниците со лозинки и поврзаните податоци се испраќаат до Google и ги прегледуваат луѓе. Вашата лозинка е шифрирана и не може да ја види никој. <ph name="PASSWORD_CHANGE" /></translation>

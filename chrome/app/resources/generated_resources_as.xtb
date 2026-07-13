@@ -3246,7 +3246,6 @@
 <translation id="3496995426334945408">ছাইটসমূহে সচৰাচৰ ভিডিঅ’ গে’ম অথবা ৱেব ফৰ্মসমূহৰ দৰে ভাব-বিনিময়কাৰী সুবিধাসমূহ প্ৰদৰ্শন কৰিবলৈ JavaScript ব্যৱহাৰ কৰে</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" />ৰ ইউএছবি ডিভাইচ (প্ৰ'ডাক্ট <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">ডুডল শ্বেয়াৰ কৰক</translation>
-<translation id="3497915391670770295">আপোনাৰ &amp;ডিভাইচলৈ পঠিয়াওক</translation>
 <translation id="3498138244916757538">মাইক্ৰ’ফ’নৰ ছেটিঙত কৰা সালসলনিটোৰ বাবে <ph name="SPECIFIC_NAME" /> শ্বাট ডাউন কৰাৰ আৱশ্যক। আগবাঢ়িবলৈ <ph name="SPECIFIC_NAME" /> শ্বাট ডাউন কৰক।</translation>
 <translation id="3500417806337761827">শ্বেয়াৰ মাউণ্ট কৰোঁতে আসোঁৱাহ হৈছে। অতি বেছিসংখ্যক SMB শ্বেয়াৰ ইতিমধ্যে মাউণ্ট কৰা হৈছে।</translation>
 <translation id="3500764001796099683">পোনপটীয়াকৈ বিতৰণ কৰা ৱেব এপ্‌ সক্ষম কৰক</translation>
@@ -3629,7 +3628,6 @@
 <translation id="3774059845329307709">ক্ৰমিক নম্বৰ</translation>
 <translation id="3774166835015494435">শেহতীয়া ফট’ আৰু জাননী</translation>
 <translation id="3775432569830822555">SSL ছাৰ্ভাৰৰ প্ৰমাণপত্ৰ</translation>
-<translation id="3775705724665058594">আপোনাৰ ডিভাইচসমূহলৈ পঠিয়াওক</translation>
 <translation id="3776508619697147021">ছাইটে স্বয়ংক্ৰিয়ভাৱে একাধিক ফাইল ডাউনল'ড কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="3776796446459804932">এই এক্সটেনশ্বনে Chromeৰ Chrome Web Storeৰ নীতি উলংঘা কৰে।</translation>
 <translation id="3777483481409781352">চেলুলাৰ ডিভাইচ সক্রিয় কৰিব পৰা নগ’ল</translation>
@@ -9756,7 +9754,6 @@
 <translation id="858006550102277544">মন্তব্য</translation>
 <translation id="8581809080475256101">পৰৱর্তী পৃষ্ঠালৈ যাবলৈ টিপক, ইতিহাস চাবলৈ প্ৰসংগ মেনুলৈ যাওক</translation>
 <translation id="8584280235376696778">ভিডিঅ’ নতুন টেবত &amp;খোলক</translation>
-<translation id="858451212965845553">আপোনাৰ &amp;ডিভাইচলৈ পঠিয়াওক</translation>
 <translation id="8584843865238667486">ব্যৱহাৰ সংক্ৰান্তীয় পৃষ্ঠা <ph name="USAGE_PAGE" />ৰ পৰা HID ডিভাইচৰ ব্যৱহাৰ <ph name="USAGE" /></translation>
 <translation id="8585480574870650651">Crostini আঁতৰাওক</translation>
 <translation id="8585841788766257444">ছাইটসমূহ এটা ডিফ'ল্ট ছেটিঙৰ সলনি কাষ্টম ছেটিঙৰ বাবে তলত সূচীবদ্ধ কৰা হৈছে</translation>
@@ -9916,6 +9913,7 @@
 <translation id="8693862390730570097">"হেল্প মী ৰাইট" স্বয়ংক্ৰিয়ভাৱে খুলিবলৈ অনুমতি নিদিব</translation>
 <translation id="8694596275649352090">সুপ্ত ম’ডত অথবা লিডখন বন্ধ কৰা থাকিলে লক কৰক</translation>
 <translation id="8695825812785969222">&amp;অৱস্থান খোলক...</translation>
+<translation id="8696297579102085705">আপোনাৰ ডিভাইচলৈ পঠিয়াওক</translation>
 <translation id="869884720829132584">এপ্লিকেশ্বনৰ মেনু</translation>
 <translation id="869891660844655955">ম্যাদ উকলাৰ তাৰিখ</translation>
 <translation id="8699296325072357994">পাছৱৰ্ডৰ পৃষ্ঠাখনৰ সমল আৰু প্ৰাসংগিক তথ্য Googleলৈ পঠিওৱা হয় আৰু মানৱ পৰ্যাবেক্ষকে সেয়া পৰ্যালোচনা কৰে। আপোনাৰ পাছৱৰ্ড এনক্ৰিপ্ট কৰা হৈছে আৰু সেইটো কেতিয়াও আন কোনেও চাব নোৱাৰে। <ph name="PASSWORD_CHANGE" /></translation>

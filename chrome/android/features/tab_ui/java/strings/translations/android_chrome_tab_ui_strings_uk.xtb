@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Неактивні об’єкти не накопичуватимуться</translation>
 <translation id="1329584516321524826">Щойно оновлено</translation>
 <translation id="1340839264183302272">Вийти з групи</translation>
+<translation id="1386966479075994683">Розгорнути вкладки</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_ONE" /> вкладкою; колір: <ph name="COLOR_NAME" />; мітка: <ph name="CARD_LABEL" />.}one{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладкою; колір: <ph name="COLOR_NAME" />; мітка: <ph name="CARD_LABEL" />.}few{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />; мітка: <ph name="CARD_LABEL" />.}many{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />; мітка: <ph name="CARD_LABEL" />.}other{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладки; колір: <ph name="COLOR_NAME" />; мітка: <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Тут можна переглянути всі групи вкладок</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Створено <ph name="NUM_MINS_ONE" /> хвилину тому}one{Створено <ph name="NUM_MINS_MANY" /> хвилину тому}few{Створено <ph name="NUM_MINS_MANY" /> хвилини тому}many{Створено <ph name="NUM_MINS_MANY" /> хвилин тому}other{Створено <ph name="NUM_MINS_MANY" /> хвилини тому}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Сховати повноекранну сітку</translation>
 <translation id="5076161749301278626">Показати відгуки про магазин?</translation>
 <translation id="5161254044473106830">Введіть назву</translation>
+<translation id="5204584298075822291">Згорнути вкладки</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome автоматично закриває неактивні вкладки й групи вкладок через <ph name="AUTO_DELETE_DELAY_ONE" /> місяць. За потреби ви можете це змінити в налаштуваннях.}one{Chrome автоматично закриває неактивні вкладки й групи вкладок через <ph name="AUTO_DELETE_DELAY_MANY" /> місяць. За потреби ви можете це змінити в налаштуваннях.}few{Chrome автоматично закриває неактивні вкладки й групи вкладок через <ph name="AUTO_DELETE_DELAY_MANY" /> місяці. За потреби ви можете це змінити в налаштуваннях.}many{Chrome автоматично закриває неактивні вкладки й групи вкладок через <ph name="AUTO_DELETE_DELAY_MANY" /> місяців. За потреби ви можете це змінити в налаштуваннях.}other{Chrome автоматично закриває неактивні вкладки й групи вкладок через <ph name="AUTO_DELETE_DELAY_MANY" /> місяця. За потреби ви можете це змінити в налаштуваннях.}}</translation>
 <translation id="5254233580564156835">Використання пам’яті: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Остання вкладка</translation>

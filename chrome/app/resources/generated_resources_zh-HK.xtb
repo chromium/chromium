@@ -1546,6 +1546,7 @@
 <translation id="2199298570273670671">錯誤</translation>
 <translation id="2200094388063410062">電郵</translation>
 <translation id="2200781749203116929">ChromeOS 系統記錄</translation>
+<translation id="2202391868799679245">開啟鍵盤快速鍵</translation>
 <translation id="2203088913459920044">名稱可以使用字母、數字和特殊字元</translation>
 <translation id="220321590587754225">無法連接。請再試一次。</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> 可在您使用 Google 帳戶登入時檢查密碼</translation>
@@ -3243,7 +3244,6 @@
 <translation id="3496995426334945408">網站通常會使用 JavaScript 來顯示互動功能，例如電子遊戲或網上表格</translation>
 <translation id="3497501929010263034">來自 <ph name="VENDOR_NAME" /> 的 USB 裝置 (產品 ID：<ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">分享 Doodle</translation>
-<translation id="3497915391670770295">傳送至裝置(&amp;D)</translation>
 <translation id="3498138244916757538"><ph name="SPECIFIC_NAME" /> 需要關閉，麥克風設定的變更才會生效。請關閉 <ph name="SPECIFIC_NAME" /> 以繼續。</translation>
 <translation id="3500417806337761827">連接共用檔案時發生錯誤。已連接過多 SMB 共用檔案。</translation>
 <translation id="3500764001796099683">啟用隔離的網絡應用程式</translation>
@@ -3626,7 +3626,6 @@
 <translation id="3774059845329307709">序號</translation>
 <translation id="3774166835015494435">最近的相片和通知</translation>
 <translation id="3775432569830822555">SSL 伺服器憑證</translation>
-<translation id="3775705724665058594">傳送至您的裝置</translation>
 <translation id="3776508619697147021">網站可要求自動下載多個檔案</translation>
 <translation id="3776796446459804932">這個擴充功能違反了 Chrome 網上應用程式商店政策。</translation>
 <translation id="3777483481409781352">無法啟用流動裝置</translation>
@@ -5095,6 +5094,7 @@
 <translation id="4906490889887219338">設定或管理網絡檔案共用功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">重設為預設值</translation>
 <translation id="4907129260985716018">選擇這個擴充程式何時可讀取並變更網站資料</translation>
+<translation id="4908076691331874303">已從此網站隱藏</translation>
 <translation id="4908811072292128752">開啟新分頁，即可同時瀏覽兩個網站</translation>
 <translation id="4910241725741323970">已安裝應用程式</translation>
 <translation id="4912643508233590958">閒置喚醒</translation>
@@ -9745,7 +9745,6 @@
 <translation id="858006550102277544">註解</translation>
 <translation id="8581809080475256101">按下即可前往下一頁，內容選單會顯示記錄</translation>
 <translation id="8584280235376696778">在新分頁中開啟影片(&amp;O)</translation>
-<translation id="858451212965845553">傳送至裝置(&amp;D)</translation>
 <translation id="8584843865238667486">使用量為 <ph name="USAGE" /> (數據來自 <ph name="USAGE_PAGE" /> 使用量頁面) 的 HID 裝置</translation>
 <translation id="8585480574870650651">移除 Crostini</translation>
 <translation id="8585841788766257444">下列網站採用的是自訂設定，而非預設設定</translation>
@@ -9905,6 +9904,7 @@
 <translation id="8693862390730570097">不允許「幫我寫」自動開啟</translation>
 <translation id="8694596275649352090">在休眠或蓋上螢幕時鎖定</translation>
 <translation id="8695825812785969222">開啟位置(&amp;L)…</translation>
+<translation id="8696297579102085705">傳送至你的裝置</translation>
 <translation id="869884720829132584">應用程式選單</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699296325072357994">密碼頁面的內容及相關資料會傳送到 Google 交由人手審核。你的密碼會加密，不會向任何人顯示。<ph name="PASSWORD_CHANGE" /></translation>

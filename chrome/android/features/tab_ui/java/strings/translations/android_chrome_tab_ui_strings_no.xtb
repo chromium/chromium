@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">De inaktive elementene dine hoper seg ikke opp</translation>
 <translation id="1329584516321524826">Nettopp oppdatert</translation>
 <translation id="1340839264183302272">Forlat gruppen</translation>
+<translation id="1386966479075994683">Vis faner</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Vis den delte fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> fane, fargen <ph name="COLOR_NAME" /> og etiketten <ph name="CARD_LABEL" />.}other{Vis den delte fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> faner, fargen <ph name="COLOR_NAME" /> og etiketten <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Du finner alle fanegruppene dine her</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Opprettet for <ph name="NUM_MINS_ONE" /> minutt siden}other{Opprettet for <ph name="NUM_MINS_MANY" /> minutter siden}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Skjul fullskjermrutenett</translation>
 <translation id="5076161749301278626">Vil du se butikkanmeldelser?</translation>
 <translation id="5161254044473106830">Du må oppgi en tittel</translation>
+<translation id="5204584298075822291">Skjul faner</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome lukker automatisk inaktive faner og fanegrupper etter <ph name="AUTO_DELETE_DELAY_ONE" /> måned. Du kan endre dette i innstillingene.}other{Chrome lukker automatisk inaktive faner og fanegrupper etter <ph name="AUTO_DELETE_DELAY_MANY" /> måneder. Du kan endre dette i innstillingene.}}</translation>
 <translation id="5254233580564156835">Minnebruk: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Den siste fanen du brukte</translation>

@@ -329,6 +329,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1486096554574027028">Chwilio'r Cyfrineiriau</translation>
 <translation id="1492194039220927094">Polisïau i'w gwthio:</translation>
 <translation id="1495677929897281669">Yn ôl i'r tab</translation>
+<translation id="1496318738909526466">Rheoli Awtolenwi Gwell</translation>
 <translation id="1500286806237135498">Camerâu (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Ffliwt</translation>
 <translation id="1507202001669085618">&lt;p&gt;Byddwch yn gweld y gwall hwn os ydych yn defnyddio porth Wi-Fi lle bydd rhaid i chi fewngofnodi cyn y gallwch fynd ar-lein.&lt;/p&gt;
@@ -865,6 +866,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2322254345061973671">{COUNT,plural, =1{1 ffenestr}zero{# ffenestri}two{# ffenestr}few{# ffenestr}many{# ffenestr}other{# ffenestr}}</translation>
 <translation id="232390861414237658">Awtolenwi'r cerdyn hwn ar gyfer pryniannau a wneir yn Chrome pan fydd wedi'i gadw i'w ddefnyddio gyda Google Pay</translation>
 <translation id="2326283484705860548">Gallwch bellach awtolenwi mwy o wybodaeth gan Google Wallet</translation>
+<translation id="2326747055382936979">Rheoli awtolenwi gwell</translation>
 <translation id="2328651992442742497">Caniateir (diofyn)</translation>
 <translation id="2328955282645810595">Offer Adeiladu a Phŵer</translation>
 <translation id="2330137317877982892">Mae <ph name="CREDIT_CARD" /> yn darfod ar <ph name="EXPIRATION_DATE_ABBR" /></translation>

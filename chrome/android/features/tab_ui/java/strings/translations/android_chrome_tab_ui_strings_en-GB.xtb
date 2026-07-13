@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Your inactive items won't pile up</translation>
 <translation id="1329584516321524826">Updated just now</translation>
 <translation id="1340839264183302272">Leave group</translation>
+<translation id="1386966479075994683">Expand tabs</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Expand shared <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />, with label <ph name="CARD_LABEL" />.}other{Expand shared <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />, with label <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">You can find all your tab groups here</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Created <ph name="NUM_MINS_ONE" /> minute ago}other{Created <ph name="NUM_MINS_MANY" /> minutes ago}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Hide full-screen grid</translation>
 <translation id="5076161749301278626">See store reviews?</translation>
 <translation id="5161254044473106830">Title required</translation>
+<translation id="5204584298075822291">Collapse tabs</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome automatically closes inactive tabs and tab groups after <ph name="AUTO_DELETE_DELAY_ONE" /> month. You can change this in settings.}other{Chrome automatically closes inactive tabs and tab groups after <ph name="AUTO_DELETE_DELAY_MANY" /> months. You can change this in settings.}}</translation>
 <translation id="5254233580564156835">Memory usage: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Your last tab</translation>

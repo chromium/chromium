@@ -3233,7 +3233,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3496995426334945408">Weby zvyčajne používajú JavaScript, aby mohli zobraziť interaktívne funkcie, napríklad videohry alebo webové formuláre</translation>
 <translation id="3497501929010263034">Zariadenie USB od dodávateľa <ph name="VENDOR_NAME" /> (výrobok <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Zdieľať doodle</translation>
-<translation id="3497915391670770295">Odoslať do zariadení</translation>
 <translation id="3498138244916757538">Zmena nastavenia mikrofónu vyžaduje, aby ste vypli <ph name="SPECIFIC_NAME" />. Ak chcete pokračovať, vypnite <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="3500417806337761827">Chyba pri inštalácií zdieľaného priestoru. Už je nainštalovaných príliš veľa zdieľaných priestorov SMB.</translation>
 <translation id="3500764001796099683">Povoliť izolované webové aplikácie</translation>
@@ -3616,7 +3615,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3774059845329307709">Sériové číslo</translation>
 <translation id="3774166835015494435">Najnovšie fotky a upozornenia</translation>
 <translation id="3775432569830822555">Certifikát servera SSL</translation>
-<translation id="3775705724665058594">Odoslanie do zariadení</translation>
 <translation id="3776508619697147021">Weby môžu žiadať o automatické sťahovanie viacerých súborov</translation>
 <translation id="3776796446459804932">Toto rozšírenie porušuje pravidlá Internetového obchodu Chrome.</translation>
 <translation id="3777483481409781352">Mobilné zariadenie sa nepodarilo aktivovať</translation>
@@ -9744,7 +9742,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="858006550102277544">Komentár</translation>
 <translation id="8581809080475256101">Stlačením tohto tlačidla prejdete dopredu, históriu si zobrazíte pomocou kontextovej ponuky</translation>
 <translation id="8584280235376696778">&amp;Otvoriť video na novej karte</translation>
-<translation id="858451212965845553">Odoslať do zariadení</translation>
 <translation id="8584843865238667486">Zariadenia HID s použitím <ph name="USAGE" /> zo stránky použití <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Odstrániť Crostini</translation>
 <translation id="8585841788766257444">Weby uvedené nižšie sú ovládané vlastným nastavením (nie predvoleným)</translation>
@@ -9904,6 +9901,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8693862390730570097">Nepovoliť automatické otváranie asistenta pri písaní</translation>
 <translation id="8694596275649352090">Uzamykať počas spánku alebo keď je kryt zavretý</translation>
 <translation id="8695825812785969222">Otvoriť &amp;umiestnenie...</translation>
+<translation id="8696297579102085705">Odoslať do zariadenia</translation>
 <translation id="869884720829132584">Ponuka Aplikácie</translation>
 <translation id="869891660844655955">Koniec platnosti</translation>
 <translation id="8699296325072357994">Obsah zo stránok s heslami a súvisiace informácie sa odosielajú Googlu a kontrolujú ich ľudia. Vaše heslo je šifrované a nikomu sa nikdy nezobrazí. <ph name="PASSWORD_CHANGE" /></translation>

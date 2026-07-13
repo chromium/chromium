@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Неактыўныя элементы не будуць накоплівацца</translation>
 <translation id="1329584516321524826">Абноўлена толькі што</translation>
 <translation id="1340839264183302272">Пакінуць групу</translation>
+<translation id="1386966479075994683">Разгарнуць укладкі</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Разгарнуць абагуленую групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_ONE" /> укладкі, колер: <ph name="COLOR_NAME" />, метка: <ph name="CARD_LABEL" />.}one{Разгарнуць абагуленую групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкі, колер: <ph name="COLOR_NAME" />, метка: <ph name="CARD_LABEL" />.}few{Разгарнуць абагуленую групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладак, колер: <ph name="COLOR_NAME" />, метка: <ph name="CARD_LABEL" />.}many{Разгарнуць абагуленую групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладак, колер: <ph name="COLOR_NAME" />, метка: <ph name="CARD_LABEL" />.}other{Разгарнуць абагуленую групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкі, колер: <ph name="COLOR_NAME" />, метка: <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Тут знаходзяцца ўсе вашы групы ўкладак</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Створана <ph name="NUM_MINS_ONE" /> хвіліну таму}one{Створана <ph name="NUM_MINS_MANY" /> хвіліну таму}few{Створана <ph name="NUM_MINS_MANY" /> хвіліны таму}many{Створана <ph name="NUM_MINS_MANY" /> хвілін таму}other{Створана <ph name="NUM_MINS_MANY" /> хвіліны таму}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Схаваць поўнаэкранную сетку</translation>
 <translation id="5076161749301278626">Паказаць водгукі аб краме?</translation>
 <translation id="5161254044473106830">Патрабуецца назва</translation>
+<translation id="5204584298075822291">Згарнуць укладкі</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome аўтаматычна закрые неактыўныя ўкладкі і групы ўкладак праз <ph name="AUTO_DELETE_DELAY_ONE" /> месяц. Гэту функцыю можна змяніць у наладах.}one{Chrome аўтаматычна закрые неактыўныя ўкладкі і групы ўкладак праз <ph name="AUTO_DELETE_DELAY_MANY" /> месяц. Гэту функцыю можна змяніць у наладах.}few{Chrome аўтаматычна закрые неактыўныя ўкладкі і групы ўкладак праз <ph name="AUTO_DELETE_DELAY_MANY" /> месяцы. Гэту функцыю можна змяніць у наладах.}many{Chrome аўтаматычна закрые неактыўныя ўкладкі і групы ўкладак праз <ph name="AUTO_DELETE_DELAY_MANY" /> месяцаў. Гэту функцыю можна змяніць у наладах.}other{Chrome аўтаматычна закрые неактыўныя ўкладкі і групы ўкладак праз <ph name="AUTO_DELETE_DELAY_MANY" /> месяца. Гэту функцыю можна змяніць у наладах.}}</translation>
 <translation id="5254233580564156835">Выкарыстанне памяці: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Ваша апошняя ўкладка</translation>

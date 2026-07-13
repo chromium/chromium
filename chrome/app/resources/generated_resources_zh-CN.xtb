@@ -3231,7 +3231,6 @@
 <translation id="3496995426334945408">网站通常使用 JavaScript 显示互动功能，例如视频游戏或网络表单</translation>
 <translation id="3497501929010263034">由<ph name="VENDOR_NAME" />供应的 USB 设备（产品 <ph name="PRODUCT_ID" />）</translation>
 <translation id="3497560059572256875">分享涂鸦</translation>
-<translation id="3497915391670770295">发送到您的设备(&amp;D)</translation>
 <translation id="3498138244916757538">您必须关闭 <ph name="SPECIFIC_NAME" /> 才能更改麦克风设置。请关闭 <ph name="SPECIFIC_NAME" /> 以继续操作。</translation>
 <translation id="3500417806337761827">装载文件共享时出错。已装载太多 SMB 文件共享。</translation>
 <translation id="3500764001796099683">启用独立式 Web 应用</translation>
@@ -3614,7 +3613,6 @@
 <translation id="3774059845329307709">序列号</translation>
 <translation id="3774166835015494435">近期拍摄的照片和收到的通知</translation>
 <translation id="3775432569830822555">SSL 服务器证书</translation>
-<translation id="3775705724665058594">发送到您的设备</translation>
 <translation id="3776508619697147021">网站可以请求自动下载多个文件</translation>
 <translation id="3776796446459804932">此扩展程序违反了 Chrome 应用商店政策。</translation>
 <translation id="3777483481409781352">无法激活移动网络设备</translation>
@@ -9735,7 +9733,6 @@
 <translation id="858006550102277544">备注</translation>
 <translation id="8581809080475256101">点按该按钮可前进，点按上下文菜单可查看历史记录</translation>
 <translation id="8584280235376696778">在新标签页中打开视频(&amp;O)</translation>
-<translation id="858451212965845553">发送到您的设备(&amp;D)</translation>
 <translation id="8584843865238667486">具有用法页面 <ph name="USAGE_PAGE" /> 中的用法 <ph name="USAGE" /> 的 HID 设备</translation>
 <translation id="8585480574870650651">移除 Crostini</translation>
 <translation id="8585841788766257444">下列网站采用的是自定义设置（而非默认设置）</translation>
@@ -9895,6 +9892,7 @@
 <translation id="8693862390730570097">不允许自动打开“帮我写”功能</translation>
 <translation id="8694596275649352090">在休眠或合盖时锁定</translation>
 <translation id="8695825812785969222">打开位置(&amp;L)...</translation>
+<translation id="8696297579102085705">发送到您的设备</translation>
 <translation id="869884720829132584">应用菜单</translation>
 <translation id="869891660844655955">失效日期</translation>
 <translation id="8699296325072357994">密码页面中的内容和相关信息会发送给 Google，并由人工审核员审核。您的密码已加密，不会向任何人显示。<ph name="PASSWORD_CHANGE" /></translation>

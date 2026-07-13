@@ -3246,7 +3246,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3496995426334945408">Os sites geralmente usam JavaScript para mostrar recursos interativos, como videogames ou formulários da Web</translation>
 <translation id="3497501929010263034">Dispositivo USB do <ph name="VENDOR_NAME" /> (produto <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Compartilhar doodle</translation>
-<translation id="3497915391670770295">Enviar para seus dispositivos</translation>
 <translation id="3498138244916757538">A mudança na configuração do microfone exige que você desligue o <ph name="SPECIFIC_NAME" />. Desligue o <ph name="SPECIFIC_NAME" /> para continuar.</translation>
 <translation id="3500417806337761827">Erro ao ativar o compartilhamento. Muitos compartilhamentos SMB já estão ativos.</translation>
 <translation id="3500764001796099683">Ativar Apps Isolados da Web</translation>
@@ -3629,7 +3628,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3774059845329307709">Número de série</translation>
 <translation id="3774166835015494435">Fotos e notificações recentes</translation>
 <translation id="3775432569830822555">Certificado de servidor SSL</translation>
-<translation id="3775705724665058594">Enviar para seus dispositivos</translation>
 <translation id="3776508619697147021">Os sites podem pedir para baixar automaticamente vários arquivos</translation>
 <translation id="3776796446459804932">Esta extensão viola a política da Chrome Web Store.</translation>
 <translation id="3777483481409781352">Não foi possível ativar o celular</translation>
@@ -9759,7 +9757,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="858006550102277544">Comentário</translation>
 <translation id="8581809080475256101">Pressione para avançar ao menu de contexto e ver o histórico</translation>
 <translation id="8584280235376696778">&amp;Abrir vídeo em uma nova guia</translation>
-<translation id="858451212965845553">Enviar para seus dispositivos</translation>
 <translation id="8584843865238667486">Dispositivos HID com uso <ph name="USAGE" /> da página de uso <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Remover Crostini</translation>
 <translation id="8585841788766257444">Os sites abaixo seguem uma configuração personalizada em vez do padrão</translation>
@@ -9919,6 +9916,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8693862390730570097">Não permitir que o recurso "Me ajude a escrever" seja aberto automaticamente</translation>
 <translation id="8694596275649352090">Bloquear ao entrar em suspensão ou quando a tampa for fechada</translation>
 <translation id="8695825812785969222">Abrir &amp;local...</translation>
+<translation id="8696297579102085705">Enviar para seu dispositivo</translation>
 <translation id="869884720829132584">Menu Aplicativos</translation>
 <translation id="869891660844655955">Validade</translation>
 <translation id="8699296325072357994">O conteúdo das páginas de senhas e das informações relacionadas é enviado ao Google e revisado por humanos. Sua senha é criptografada e nunca é vista por ninguém. <ph name="PASSWORD_CHANGE" /></translation>

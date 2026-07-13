@@ -3244,7 +3244,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3496995426334945408">A webhelyek a JavaScript segítségével általában bizonyos interaktív funkciókat (például videojátékokat vagy webes űrlapokat) jelenítenek meg.</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> USB-eszköze (termékazonosító: <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Ünnepi embléma megosztása</translation>
-<translation id="3497915391670770295">Kül&amp;dés eszközökre</translation>
 <translation id="3498138244916757538">A mikrofonbeállítások módosítása miatt a(z) <ph name="SPECIFIC_NAME" /> leállítására van szükség. A folytatáshoz állítsa le a következőt: <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="3500417806337761827">Hiba történt a megosztás felcsatolása során. Túl sok felcsatolt SMB-megosztás.</translation>
 <translation id="3500764001796099683">Izolált internetes alkalmazások engedélyezése</translation>
@@ -3627,7 +3626,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3774059845329307709">Sorozatszám</translation>
 <translation id="3774166835015494435">Friss fotók és értesítések</translation>
 <translation id="3775432569830822555">SSL-szerver tanúsítvány</translation>
-<translation id="3775705724665058594">Küldés a saját eszközökre</translation>
 <translation id="3776508619697147021">A webhelyek engedélyt kérhetnek arra, hogy automatikus töltsenek le több fájlt</translation>
 <translation id="3776796446459804932">A bővítmény sérti a Chrome Webáruház irányelvét.</translation>
 <translation id="3777483481409781352">Nem sikerült a mobileszköz aktiválása</translation>
@@ -9753,7 +9751,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="858006550102277544">Megjegyzés</translation>
 <translation id="8581809080475256101">Nyomja meg az előrelépéshez, illetve választhatja a helyi menüt az előzmények megtekintéséshez</translation>
 <translation id="8584280235376696778">&amp;Videó megnyitása új lapon</translation>
-<translation id="858451212965845553">Kül&amp;dés eszközökre</translation>
 <translation id="8584843865238667486">HID-eszközök <ph name="USAGE" /> tárhelyhasználattal a következő használati oldalról: <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">A Crostini eltávolítása</translation>
 <translation id="8585841788766257444">A lent felsorolt webhelyek egyedi (nem pedig alapértelmezett) beállításokat használnak</translation>
@@ -9913,6 +9910,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8693862390730570097">A „Segítség az íráshoz” funkció nem nyílik meg automatikusan</translation>
 <translation id="8694596275649352090">Zárolás alvó üzemmódban és a fedél lecsukásakor</translation>
 <translation id="8695825812785969222">&amp;Hely megnyitása...</translation>
+<translation id="8696297579102085705">Küldés az eszközére</translation>
 <translation id="869884720829132584">Alkalmazások menü</translation>
 <translation id="869891660844655955">Lejárati dátum</translation>
 <translation id="8699296325072357994">A jelszóoldalakról származó tartalmakat és a kapcsolódó információkat a rendszer elküldi a Google-nak, és emberek ellenőrzik őket. Jelszava titkosítva van, és senki sem láthatja. <ph name="PASSWORD_CHANGE" /></translation>

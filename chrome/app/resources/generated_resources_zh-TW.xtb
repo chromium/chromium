@@ -3230,7 +3230,6 @@
 <translation id="3496995426334945408">網站通常會使用 JavaScript 顯示互動功能，例如電玩遊戲或線上表單</translation>
 <translation id="3497501929010263034">來自 <ph name="VENDOR_NAME" /> 的 USB 裝置 (產品 ID：<ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">分享 Doodle</translation>
-<translation id="3497915391670770295">傳送到你的裝置(&amp;D)</translation>
 <translation id="3498138244916757538">必須先關閉 <ph name="SPECIFIC_NAME" />，麥克風設定的變更才會生效。請關閉 <ph name="SPECIFIC_NAME" /> 以繼續操作。</translation>
 <translation id="3500417806337761827">掛接檔案共用區時發生錯誤。已掛接過多 SMB 檔案共用區。</translation>
 <translation id="3500764001796099683">啟用隔離網頁應用程式</translation>
@@ -3613,7 +3612,6 @@
 <translation id="3774059845329307709">序號</translation>
 <translation id="3774166835015494435">最近的相片和通知</translation>
 <translation id="3775432569830822555">SSL 伺服器憑證</translation>
-<translation id="3775705724665058594">傳送至你的裝置</translation>
 <translation id="3776508619697147021">網站可以要求自動下載多個檔案</translation>
 <translation id="3776796446459804932">這個擴充功能違反了 Chrome 線上應用程式商店政策。</translation>
 <translation id="3777483481409781352">無法啟用行動裝置</translation>
@@ -9730,7 +9728,6 @@
 <translation id="858006550102277544">註解</translation>
 <translation id="8581809080475256101">按下即可繼續，內容選單會顯示歷史記錄</translation>
 <translation id="8584280235376696778">在新分頁中開啟影片(&amp;O)</translation>
-<translation id="858451212965845553">傳送到你的裝置(&amp;D)</translation>
 <translation id="8584843865238667486">使用量為 <ph name="USAGE" /> (數據來自 <ph name="USAGE_PAGE" /> 使用量頁面) 的 HID 裝置</translation>
 <translation id="8585480574870650651">移除 Crostini</translation>
 <translation id="8585841788766257444">下列網站採用自訂設定，而非預設設定</translation>
@@ -9890,6 +9887,7 @@
 <translation id="8693862390730570097">不允許自動開啟「幫我寫」</translation>
 <translation id="8694596275649352090">在休眠或機蓋蓋上時鎖定</translation>
 <translation id="8695825812785969222">開啟位置(&amp;L)...</translation>
+<translation id="8696297579102085705">傳送到你的裝置</translation>
 <translation id="869884720829132584">應用程式選單</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699296325072357994">系統會將密碼頁面的內容和相關資訊傳送給 Google，並交由專人審查。你的密碼會加密處理，任何人都無法看到。<ph name="PASSWORD_CHANGE" /></translation>

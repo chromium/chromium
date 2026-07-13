@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Izinto zakho ezingasebenzi ngeke zinqwabelane</translation>
 <translation id="1329584516321524826">Kusandwa ukubuyekezwa</translation>
 <translation id="1340839264183302272">Shiya iqembu</translation>
+<translation id="1386966479075994683">Khulisa Amathebhu</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Nweba ithebhu yeqembu elinwetshiwe elithi <ph name="TITLE_OF_GROUP" /> ngethebhu engu-<ph name="TABS_COUNT_ONE" />, umbala othi <ph name="COLOR_NAME" />, ngelebula ethi <ph name="CARD_LABEL" />.}one{Nweba ithebhu yeqembu elinwetshiwe elithi <ph name="TITLE_OF_GROUP" /> ngamathebhu angu-<ph name="TABS_COUNT_MANY" />, umbala othi <ph name="COLOR_NAME" />, ngelebula ethi <ph name="CARD_LABEL" />.}other{Nweba ithebhu yeqembu elinwetshiwe elithi <ph name="TITLE_OF_GROUP" /> ngamathebhu angu-<ph name="TABS_COUNT_MANY" />, umbala othi <ph name="COLOR_NAME" />, ngelebula ethi <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Ungathola wonke amaqembu akho amathebhu lapha</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Kusungulwe emzuzwini ongu-<ph name="NUM_MINS_ONE" /> odlule}one{Kusungulwe emizuzwini engu-<ph name="NUM_MINS_MANY" /> edlule}other{Kusungulwe emizuzwini engu-<ph name="NUM_MINS_MANY" /> edlule}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Fihla igridi yesikrini esigcwele</translation>
 <translation id="5076161749301278626">Bona izibuyekezo zesitoreji?</translation>
 <translation id="5161254044473106830">Isihloko siyadingeka</translation>
+<translation id="5204584298075822291">Nciphisa Amathebhu</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{IChrome ivala ngokuzenzakalelayo amathebhu angasebenzi namaqembu amathebhu ngemva kwenyanga e-<ph name="AUTO_DELETE_DELAY_ONE" />. Ungakushintsha lokhu kumasethingi.}one{IChrome ivala ngokuzenzakalelayo amathebhu angasebenzi namaqembu amathebhu ngemva kwezinyanga ezi-<ph name="AUTO_DELETE_DELAY_MANY" />. Ungakushintsha lokhu kumasethingi.}other{IChrome ivala ngokuzenzakalelayo amathebhu angasebenzi namaqembu amathebhu ngemva kwezinyanga ezi-<ph name="AUTO_DELETE_DELAY_MANY" />. Ungakushintsha lokhu kumasethingi.}}</translation>
 <translation id="5254233580564156835">Ukusetshenziswa kwenkumbulo: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Ithebhu yakho yokugcina</translation>

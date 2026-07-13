@@ -3244,7 +3244,6 @@
 <translation id="3496995426334945408">ជាធម្មតា គេហទំព័រប្រើ JavaScript ដើម្បី​បង្ហាញ​មុខងារអន្តរកម្ម ដូចជាវីដេអូហ្គេម ឬទម្រង់​បែបបទបណ្ដាញ​ជាដើម</translation>
 <translation id="3497501929010263034">ឧបករណ៍ USB ពី <ph name="VENDOR_NAME" /> (ផលិតផល <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">ចែករំលែក Doodle</translation>
-<translation id="3497915391670770295">ផ្ញើទៅ&amp;ឧបករណ៍​របស់អ្នក</translation>
 <translation id="3498138244916757538">ការផ្លាស់ប្ដូរ​នៅក្នុង​ការកំណត់​មីក្រូហ្វូន​តម្រូវឱ្យបិទ <ph name="SPECIFIC_NAME" />។ សូមបិទ <ph name="SPECIFIC_NAME" /> ដើម្បី​បន្ត។</translation>
 <translation id="3500417806337761827">មានបញ្ហា​ក្នុងការ​ភ្ជាប់​ការចែករំលែក​។ មាន​ការភ្ជាប់​ការចែករំលែក SMB ច្រើនពេក​រួចទៅហើយ​។</translation>
 <translation id="3500764001796099683">បើក​កម្មវិធី​លើអ៊ីនធឺណិត​ដាច់តែឯង</translation>
@@ -3627,7 +3626,6 @@
 <translation id="3774059845329307709">លេខស៊េរី</translation>
 <translation id="3774166835015494435">រូបថត និងការជូនដំណឹងថ្មីៗ</translation>
 <translation id="3775432569830822555">វិញ្ញាបនប័ត្រម៉ាស៊ីនមេ SSL</translation>
-<translation id="3775705724665058594">ផ្ញើ​ទៅ​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="3776508619697147021">គេហទំព័រ​អាច​ស្នើសុំទាញយកឯកសារច្រើនដោយស្វ័យប្រវត្តិ</translation>
 <translation id="3776796446459804932">កម្មវិធីបន្ថែមនេះបំពានគោលការណ៍ Chrome Web Store។</translation>
 <translation id="3777483481409781352">មិនអាច​បើកដំណើរការ​ឧបករណ៍​ចល័ត​បានទេ</translation>
@@ -9753,7 +9751,6 @@
 <translation id="858006550102277544">មតិ</translation>
 <translation id="8581809080475256101">ចុចដើម្បីបន្តទៅមុខ ហើយចុចម៉ឺនុយបរិបទដើម្បីមើលប្រវត្តិ</translation>
 <translation id="8584280235376696778">បើកវីដេអូនៅក្នុងផ្ទាំងថ្មី</translation>
-<translation id="858451212965845553">ផ្ញើទៅ&amp;ឧបករណ៍​របស់អ្នក</translation>
 <translation id="8584843865238667486">ឧបករណ៍ HID ដែលមាន​ការប្រើប្រាស់ <ph name="USAGE" /> ពីទំព័រប្រើប្រាស់ <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">លុប Crostini</translation>
 <translation id="8585841788766257444">គេហទំព័រដែលមាននៅផ្នែកខាងក្រោមប្រើការកំណត់ផ្ទាល់ខ្លួនជំនួសឱ្យការកំណត់លំនាំដើម</translation>
@@ -9913,6 +9910,7 @@
 <translation id="8693862390730570097">កុំអនុញ្ញាត "ជួយខ្ញុំក្នុងការសរសេរ" ឱ្យបើកដោយស្វ័យប្រវត្តិ</translation>
 <translation id="8694596275649352090">ចាក់សោ​នៅពេល​ដេក ឬ​បិទ​គម្រប</translation>
 <translation id="8695825812785969222">បើកទីតាំង...</translation>
+<translation id="8696297579102085705">ផ្ញើទៅឧបករណ៍របស់អ្នក</translation>
 <translation id="869884720829132584">ម៉ឺនុយកម្មវិធី</translation>
 <translation id="869891660844655955">កាលបរិច្ឆេទការផុតកំណត់</translation>
 <translation id="8699296325072357994">ខ្លឹមសារ​ពីទំព័រ​ពាក្យ​សម្ងាត់ និង​ព័ត៌មាន​ដែលពាក់ព័ន្ធ​ត្រូវបាន​បញ្ជូនទៅ Google និងត្រួតពិនិត្យ​ដោយ​មនុស្ស។ ពាក្យសម្ងាត់​របស់អ្នក​ត្រូវបាន​អ៊ីនគ្រីប ហើយ​គ្មាននរណា​មើលឃើញ​ពាក្យសម្ងាត់​នោះទេ។ <ph name="PASSWORD_CHANGE" /></translation>

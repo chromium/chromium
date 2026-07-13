@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">तुमचे इनॅक्टिव्ह आयटम जमा होणार नाहीत</translation>
 <translation id="1329584516321524826">नुकतेच अपडेट केले</translation>
 <translation id="1340839264183302272">गट सोडा</translation>
+<translation id="1386966479075994683">टॅबचा विस्तार करा</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग, <ph name="CARD_LABEL" /> लेबल असलेल्या, <ph name="TITLE_OF_GROUP" /> या शेअर केलेल्या टॅब गटाचा विस्तार करा.}other{<ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग, <ph name="CARD_LABEL" /> लेबल असलेल्या, <ph name="TITLE_OF_GROUP" /> या शेअर केलेल्या टॅब गटाचा विस्तार करा.}}</translation>
 <translation id="1486715732399361704">तुम्हाला तुमचे सर्व टॅब गट इथे सापडू शकतात</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनिटापूर्वी तयार केला आहे}other{<ph name="NUM_MINS_MANY" /> मिनिटांपूर्वी तयार केला आहे}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">फुलस्क्रीन ग्रिड लपवा</translation>
 <translation id="5076161749301278626">स्टोअरशी संबंधित पुनरावलोकने पहायची आहेत का?</translation>
 <translation id="5161254044473106830">शीर्षक आवश्यक</translation>
+<translation id="5204584298075822291">टॅब कोलॅप्स करा</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome <ph name="AUTO_DELETE_DELAY_ONE" /> महिन्यानंतर इनॅक्टिव्ह टॅब आणि टॅब गट आपोआप बंद करते. तुम्ही हे सेटिंग्‍जमध्‍ये बदलू शकता.}other{Chrome <ph name="AUTO_DELETE_DELAY_MANY" /> महिन्यांनंतर इनॅक्टिव्ह टॅब आणि टॅब गट आपोआप बंद करते. तुम्ही हे सेटिंग्‍जमध्‍ये बदलू शकता.}}</translation>
 <translation id="5254233580564156835">मेमरी वापर: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">तुमचा शेवटचा टॅब</translation>

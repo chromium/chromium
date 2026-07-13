@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Tus elementos inactivos no se acumularán</translation>
 <translation id="1329584516321524826">Recién actualizada</translation>
 <translation id="1340839264183302272">Abandonar grupo</translation>
+<translation id="1386966479075994683">Expandir pestañas</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Expandir el grupo de pestañas compartido <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> pestaña, en color <ph name="COLOR_NAME" />, con la etiqueta <ph name="CARD_LABEL" />.}other{Expandir el grupo de pestañas compartido <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestañas, en color <ph name="COLOR_NAME" />, con la etiqueta <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Aquí puedes encontrar todos tus grupos de pestañas</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Se creó hace <ph name="NUM_MINS_ONE" /> minuto}other{Se creó hace <ph name="NUM_MINS_MANY" /> minutos}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Oculta la cuadrícula de pantalla completa</translation>
 <translation id="5076161749301278626">¿Quieres ver las opiniones de la tienda?</translation>
 <translation id="5161254044473106830">Se requiere un título</translation>
+<translation id="5204584298075822291">Contraer pestañas</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome cierra automáticamente las pestañas y los grupos de pestañas inactivos después de <ph name="AUTO_DELETE_DELAY_ONE" /> mes. Puedes cambiarlo en la configuración.}other{Chrome cierra automáticamente las pestañas y los grupos de pestañas inactivos después de <ph name="AUTO_DELETE_DELAY_MANY" /> meses. Puedes cambiarlo en la configuración.}}</translation>
 <translation id="5254233580564156835">Uso de memoria: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Tu pestaña más reciente</translation>

@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">閒置項目不會累積</translation>
 <translation id="1329584516321524826">上次更新時間：剛才</translation>
 <translation id="1340839264183302272">離開群組</translation>
+<translation id="1386966479075994683">展開分頁</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{打開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」共享分頁群組，顏色係<ph name="COLOR_NAME" />，標籤係「<ph name="CARD_LABEL" />」。}other{打開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」共享分頁群組，顏色係<ph name="COLOR_NAME" />，標籤係「<ph name="CARD_LABEL" />」。}}</translation>
 <translation id="1486715732399361704">所有分頁群組都在這裡</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分鐘前建立}other{<ph name="NUM_MINS_MANY" /> 分鐘前建立}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">隱藏全螢幕網格</translation>
 <translation id="5076161749301278626">要查看商店評論嗎？</translation>
 <translation id="5161254044473106830">必須提供標題</translation>
+<translation id="5204584298075822291">收合分頁</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome 會在 <ph name="AUTO_DELETE_DELAY_ONE" /> 個月後自動關閉閒置的分頁和分頁群組。你可在設定中變更這項設定。}other{Chrome 會在 <ph name="AUTO_DELETE_DELAY_MANY" /> 個月後自動關閉閒置的分頁和分頁群組。你可在設定中變更這項設定。}}</translation>
 <translation id="5254233580564156835">記憶體用量：<ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">最後一個分頁</translation>

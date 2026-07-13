@@ -139,6 +139,8 @@
 <translation id="2418307627282545839">נהנים מאווירה מוארת וזורמת</translation>
 <translation id="243179355394256322">‏הארגון שלך מתיר רק למשתמשים מורשים לשייך מכשירים. משתמש זה אינו מורשה לשייך מכשירים. יש לוודא שלמשתמש יש הרשאת אדמין מסוג "שיוך ציוד ל-Google Meet" בקטע 'משתמשים' של מסוף ה-Admin.</translation>
 <translation id="2439152382014731627">איפוס הסיסמה ל-<ph name="DEVICE_TYPE" /></translation>
+<translation id="2441904859060349709"><ph name="BEGIN_PARAGRAPH1" />ההתקנה <ph name="BEGIN_BOLD" />תמחק את כל הכונן הקשיח שלך<ph name="END_BOLD" />. עליך לוודא שגיבית את הנתונים.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />אחרי שההתקנה תתחיל, לא תהיה לך אפשרות לבטל אותה.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2450223707519584812">‏לא תהיה אפשרות להוסיף משתמשים מפני שהמפתחות של Google API חסרים. לפרטים, יש לעבור אל <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">הפעלה של שירות שחזור הנתונים</translation>
 <translation id="2485681265915754872">‏התנאים וההגבלות של Google Play</translation>
@@ -321,6 +323,15 @@
 <translation id="4487489714832036847">‏במכשירי Chromebook משתמשים באפליקציות במקום בתוכנות רגילות. ניתן להוריד אפליקציות לפרודוקטיביות, לבידור ועוד.</translation>
 <translation id="450867954911715010">הגדרות נגישות</translation>
 <translation id="4519605771716872386">סנכרון הקבצים מופעל</translation>
+<translation id="4523780892555982827">‏<ph name="BEGIN_PARAGRAPH1" />אפשר לנסות לפתור את הבעיה באמצעות השלבים הבאים:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />מוודאים שהמכשיר מכיל אחסון פנימי כמו HDD,‏ SSD או eMMC
+    <ph name="LIST_ITEM" />בודקים שהתקן האחסון הפנימי מכיל יותר מ-16GB
+    <ph name="LIST_ITEM" />בודקים את החיבור לאחסון הפנימי, אם הוא נגיש פיזית
+    <ph name="LIST_ITEM" />מוודאים שהדגם קיבל אישור, ובודקים את נתוני ההתקנה
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />בכתובת g.co/flex/InstallErrors אפשר לקבל עזרה נוספת.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">את מי ברצונך להוסיף אל <ph name="DEVICE_TYPE" /> זה?</translation>
 <translation id="4566170377336116390">‏אם רוצים להחליף אחרי הרישום, צריך לבצע איפוס להגדרות המקוריות (Powerwash) במכשיר.</translation>
 <translation id="4567512141633030272">אפשרות הכניסה שגויה?</translation>
@@ -572,6 +583,8 @@
 <translation id="7189451821249468368">אין לך מספיק שדרוגים כדי לרשום את המכשיר הזה. ניתן לרכוש עוד שדרוגים דרך מחלקת המכירות. אם לדעתך ההודעה הזו מוצגת לך בטעות, אפשר לפנות לתמיכה.</translation>
 <translation id="7202337678781136582">‏צריך לסרוק את קוד ה-QR באמצעות טלפון Android</translation>
 <translation id="7228854227189381547">לא רוצה לעבור</translation>
+<translation id="7230429581553827767">‏<ph name="BEGIN_PARAGRAPH1" />כדי ליהנות מחוויית השימוש הכי טובה, כדאי להתקין את <ph name="DEVICE_OS" /> בכונן הפנימי. תהיה לך גם אפשרות להתקין את מערכת ההפעלה אחר כך ממסך ההתחברות.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />כדי לנסות את המערכת בלי להתקין עדיין, אפשר להריץ אותה מ-USB. כך אפשר להמשיך לעבוד עם מערכת ההפעלה והנתונים הקיימים, אבל יכול להיות שנפח האחסון והביצועים יהיו מוגבלים.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7230881857327093958">השינויים יוחלו לאחר ההגדרה</translation>
 <translation id="7260186537988033909">הרישום של מכשיר השילוט והקיוסק הושלם</translation>
 <translation id="7284411326658527427">כל משתמש יכול להתאים אישית את החשבון שלו ולהגן על פרטיות הנתונים.</translation>
@@ -589,6 +602,8 @@
 <translation id="7416263748877373774">לא ניתן לטעון את התנאים וההגבלות. יש לבדוק את החיבור לרשת ולנסות שוב.</translation>
 <translation id="7475742997309661417">‏קורא המסך ב-ChromeOS Flex,‏ ChromeVox, משמש בעיקר עיוורים ולקויי ראייה כדי לקרוא טקסט שמוצג במסך באמצעות סינתיסייזר של דיבור או צג ברייל. כדי להפעיל את ChromeVox, לוחצים לחיצה ארוכה על שני מקשי עוצמת הקול למשך 5 שניות. לאחר הפעלת ChromeVox, יופעל סיור היכרות קצר.</translation>
 <translation id="7476454130948140105">‏הסוללה חלשה מדי להתקנת העדכון (‎<ph name="BATTERY_PERCENT" />%‎)</translation>
+<translation id="7479437430459628222">‏<ph name="BEGIN_PARAGRAPH1" />ההתקנה של <ph name="DEVICE_OS" /> לא הצליחה.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />בכתובת g.co/flex/InstallErrors אפשר לקבל עזרה נוספת.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7504187084873714912">‏<ph name="BEGIN_PARAGRAPH1" />לפני ההרשמה צריך לנקות את מודול הפלטפורמה המהימנה (TPM) כדי ש-<ph name="DEVICE_OS" /> תוכל לקבל בעלות על המכשיר.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />יש לך אפשרות גם לכבות לגמרי את ה-TPM. הנתונים שלך עדיין יישמרו באופן מאובטח באמצעות הצפנת תוכנה, אבל חלק מתכונות האבטחה, כמו אישורים בגיבוי חומרה, יושבתו.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />כדי לשנות את הגדרות ה-TPM אפשר להפעיל מחדש את המכשיר ולהיכנס להגדרות ה-BIOS‏/UEFI של המערכת. השלבים משתנים בהתאם לדגם. למידע נוסף, צריך לפתוח את מאמרי העזרה בנושא <ph name="DEVICE_OS" /> במכשיר אחר לפני ההפעלה מחדש: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>

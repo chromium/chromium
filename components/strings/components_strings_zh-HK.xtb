@@ -329,6 +329,7 @@
 <translation id="1486096554574027028">搜尋密碼</translation>
 <translation id="1492194039220927094">政策推送：</translation>
 <translation id="1495677929897281669">返回分頁</translation>
+<translation id="1496318738909526466">管理加強版自動填入</translation>
 <translation id="1500286806237135498">攝錄機 (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">溝紋</translation>
 <translation id="1507202001669085618">&lt;p&gt;如果您正在使用的 Wi-Fi 入口網站需要登入才能連線至網絡，便會看到此錯誤訊息。&lt;/p&gt;
@@ -865,6 +866,7 @@
 <translation id="2322254345061973671">{COUNT,plural, =1{1 個視窗}other{# 個視窗}}</translation>
 <translation id="232390861414237658">只要將此卡儲存至 Google Pay，就能在 Chrome 中購物時自動填入卡資料</translation>
 <translation id="2326283484705860548">你現在可自動填入更多「Google 錢包」資料</translation>
+<translation id="2326747055382936979">管理加強版自動填入</translation>
 <translation id="2328651992442742497">已允許 (預設)</translation>
 <translation id="2328955282645810595">建築和電動工具</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期日：<ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1426,7 +1428,7 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度管理同步邊啲資料</translation>
 <translation id="3203025201812691413">網址不可留空</translation>
 <translation id="320323717674993345">取消付款</translation>
-<translation id="3204534477198689393">系統可能會在雲端私人空間處理你造訪過的網頁內容和網址，以提供更精準的建議，並加快表單填寫速度。</translation>
+<translation id="3204534477198689393">為改善建議並加快填寫表格，你瀏覽的頁面內容和網址可在雲端私人空間處理。</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> 可能含有兒童不宜內容</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208701679386778924">請傳送報告，讓我們進一步改善 ChromeOS 更新。</translation>
@@ -1482,7 +1484,7 @@
 <translation id="3272643614306383237">小於 1 MB。下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="3273738040255912340">管理員可遠端變更你的設定檔和瀏覽器、透過報告分析瀏覽器相關資料，以及執行其他必要工作。此裝置上的活動亦可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">打開咗儲存 IBAN 嘅底部工作表，宜家顯示喺成個畫面。</translation>
-<translation id="327455571215090823">自動填入更聰明，隱私安全有保障</translation>
+<translation id="327455571215090823">自動填入更智能，確保資料保密</translation>
 <translation id="3281350579597955952">{0,plural, =1{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這個檔案}other{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這些檔案}}</translation>
 <translation id="3282085321714087552">機構 (<ph name="ENROLLMENT_DOMAIN" />) 已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>
 <translation id="3286372614333682499">直向</translation>

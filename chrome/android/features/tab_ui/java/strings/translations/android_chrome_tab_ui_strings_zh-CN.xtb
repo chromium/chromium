@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">闲置标签页不会长期堆积</translation>
 <translation id="1329584516321524826">上次更新时间：刚才</translation>
 <translation id="1340839264183302272">退出分组</translation>
+<translation id="1386966479075994683">展开标签页</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”共享标签页分组，颜色为<ph name="COLOR_NAME" />，标签为“<ph name="CARD_LABEL" />”。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”共享标签页分组，颜色为<ph name="COLOR_NAME" />，标签为“<ph name="CARD_LABEL" />”。}}</translation>
 <translation id="1486715732399361704">您可在此处找到您的所有标签页分组</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{创建时间：<ph name="NUM_MINS_ONE" /> 分钟前}other{创建时间：<ph name="NUM_MINS_MANY" /> 分钟前}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">隐藏“全屏网格状视图”按钮</translation>
 <translation id="5076161749301278626">查看商店评价？</translation>
 <translation id="5161254044473106830">必须提供标题</translation>
+<translation id="5204584298075822291">收起标签页</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome 会在 <ph name="AUTO_DELETE_DELAY_ONE" /> 个月后自动关闭闲置的标签页和标签页分组。您可以在设置中进行更改。}other{Chrome 会在 <ph name="AUTO_DELETE_DELAY_MANY" /> 个月后自动关闭闲置的标签页和标签页分组。您可以在设置中进行更改。}}</translation>
 <translation id="5254233580564156835">内存用量：<ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">您的最后一个标签页</translation>

@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">သင်၏ အသုံးမပြုသောအရာများ စုပုံလာတော့မည်မဟုတ်ပါ</translation>
 <translation id="1329584516321524826">ယခုလေးတင် အပ်ဒိတ်လုပ်ထားသည်</translation>
 <translation id="1340839264183302272">အဖွဲ့မှထွက်ရန်</translation>
+<translation id="1386966479075994683">တဘ်များ ပိုပြရန်</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်၊ <ph name="CARD_LABEL" /> အညွှန်းဖြင့် မျှဝေထားသော <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ပိုပြပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်၊ <ph name="CARD_LABEL" /> အညွှန်းဖြင့် မျှဝေထားသော <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ပိုပြပါ။}}</translation>
 <translation id="1486715732399361704">သင့်တဘ်အုပ်စုအားလုံးကို ဤနေရာတွင် တွေ့နိုင်သည်</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{ပြီးခဲ့သော <ph name="NUM_MINS_ONE" /> မိနစ်က ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_MINS_MANY" /> မိနစ်က ပြုလုပ်ထားသည်}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">မျက်နှာပြင်ပြည့် ဇယားကွက်ကို ဝှက်ရန်</translation>
 <translation id="5076161749301278626">ဆိုင်အကြောင်း သုံးသပ်ချက်များ ကြည့်မလား။</translation>
 <translation id="5161254044473106830">ခေါင်းစီးလိုအပ်သည်</translation>
+<translation id="5204584298075822291">တဘ်များ လျှော့ပြရန်</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome သည် အသုံးမပြုသော တဘ်နှင့် တဘ်အုပ်စုများကို <ph name="AUTO_DELETE_DELAY_ONE" /> လအကြာတွင် အလိုအလျောက် ပိတ်သည်။ ၎င်းကို ဆက်တင်များတွင် ပြောင်းနိုင်သည်။}other{Chrome သည် အသုံးမပြုသော တဘ်နှင့် တဘ်အုပ်စုများကို <ph name="AUTO_DELETE_DELAY_MANY" /> လအကြာတွင် အလိုအလျောက် ပိတ်သည်။ ၎င်းကို ဆက်တင်များတွင် ပြောင်းနိုင်သည်။}}</translation>
 <translation id="5254233580564156835">မှတ်ဉာဏ် အသုံးပြုမှု- <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">သင့်နောက်ဆုံးတဘ်</translation>

@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">รายการที่ไม่ได้ใช้งานจะไม่สะสม</translation>
 <translation id="1329584516321524826">เพิ่งอัปเดตเมื่อสักครู่นี้</translation>
 <translation id="1340839264183302272">ออกจากกลุ่ม</translation>
+<translation id="1386966479075994683">ขยายแท็บ</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" ที่แชร์ซึ่งมี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" /> พร้อมป้ายกำกับ "<ph name="CARD_LABEL" />"}other{ขยายกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" ที่แชร์ซึ่งมี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" /> พร้อมป้ายกำกับ "<ph name="CARD_LABEL" />"}}</translation>
 <translation id="1486715732399361704">คุณดูกลุ่มแท็บทั้งหมดได้ที่นี่</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{สร้างเมื่อ <ph name="NUM_MINS_ONE" /> นาทีที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_MINS_MANY" /> นาทีที่ผ่านมา}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">ซ่อนตารางกริดแบบเต็มหน้าจอ</translation>
 <translation id="5076161749301278626">ดูรีวิวร้านค้าไหม</translation>
 <translation id="5161254044473106830">ต้องระบุชื่อ</translation>
+<translation id="5204584298075822291">ยุบแท็บ</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome จะปิดแท็บและกลุ่มแท็บที่ไม่ได้ใช้งานโดยอัตโนมัติหลังจากผ่านไป <ph name="AUTO_DELETE_DELAY_ONE" /> เดือน คุณเปลี่ยนค่านี้ได้ในการตั้งค่า}other{Chrome จะปิดแท็บและกลุ่มแท็บที่ไม่ได้ใช้งานโดยอัตโนมัติหลังจากผ่านไป <ph name="AUTO_DELETE_DELAY_MANY" /> เดือน คุณเปลี่ยนค่านี้ได้ในการตั้งค่า}}</translation>
 <translation id="5254233580564156835">การใช้งานหน่วยความจำ: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">แท็บสุดท้าย</translation>

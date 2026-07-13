@@ -3247,7 +3247,6 @@
 <translation id="3496995426334945408">व्हिडिओ गेम किंवा वेब फॉर्म यांसारखी सुसंवादी वैशिष्ट्ये दाखवण्यासाठी साइट सामान्यपणे JavaScript वापरतात</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> चे USB डिव्हाइस (उत्पादन <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">डूडल शेअर करा</translation>
-<translation id="3497915391670770295">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="3498138244916757538">मायक्रोफोन सेटिंगमधील बदलासाठी <ph name="SPECIFIC_NAME" /> बंद करणे आवश्यक आहे. पुढे सुरू ठेवण्यासाठी <ph name="SPECIFIC_NAME" /> बंद करा.</translation>
 <translation id="3500417806337761827">शेअर माउंट करताना एरर आली. खूप जास्त SMB शेअर आधीच माउंट केले गेले आहेत.</translation>
 <translation id="3500764001796099683">आयसोलेटेड वेब ॲप्स सुरू करा</translation>
@@ -3630,7 +3629,6 @@
 <translation id="3774059845329307709">सिरीअल नंबर</translation>
 <translation id="3774166835015494435">अलीकडील फोटो आणि सूचना</translation>
 <translation id="3775432569830822555">SSL सर्व्हर प्रमाणप‍त्र</translation>
-<translation id="3775705724665058594">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="3776508619697147021">साइट एकाहून अधिक फाइल आपोआप डाउनलोड करण्यासाठी विचारू शकतात</translation>
 <translation id="3776796446459804932">हे एक्स्टेंशन Chrome वेब स्टोअर धोरणाचे उल्लंघन करते.</translation>
 <translation id="3777483481409781352">मोबाइल डिव्हाइस ॲक्टिव्हेट करू शकलो नाही</translation>
@@ -9758,7 +9756,6 @@ I feel - विटांची इमारत</translation>
 <translation id="858006550102277544">टिप्पणी</translation>
 <translation id="8581809080475256101">पुढे जाण्‍यासाठी प्रेस करा, इतिहास पाहण्‍यासाठी काँटेक्स्ट मेनूवर जा</translation>
 <translation id="8584280235376696778">नवीन टॅबमध्ये व्हिडिओ &amp;उघडा</translation>
-<translation id="858451212965845553">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="8584843865238667486"><ph name="USAGE_PAGE" /> या वापर पेजवर <ph name="USAGE" /> असा वापर असलेली HID डिव्हाइस</translation>
 <translation id="8585480574870650651">Crostini काढून टाका</translation>
 <translation id="8585841788766257444">खाली सूचीबद्ध केलेल्या साइट डीफॉल्टऐवजी कस्टम सेटिंग्ज फॉलो करतात</translation>
@@ -9918,6 +9915,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8693862390730570097">"मला लिहिण्यात मदत करा" ला अपोआप उघडण्याची अनुमती देऊ नका</translation>
 <translation id="8694596275649352090">स्लीप मोडमध्ये किंवा लिड बंद केलेली असताना लॉक करा</translation>
 <translation id="8695825812785969222">&amp;स्थान उघडा...</translation>
+<translation id="8696297579102085705">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="869884720829132584">ॲप्लिकेशन मेनू</translation>
 <translation id="869891660844655955">कालावधी समाप्ती तारीख</translation>
 <translation id="8699296325072357994">पासवर्ड पेजवरील आशय आणि संबंधित माहिती Google ला पाठवली जाते आणि त्याचे माणसांकडून पुनरावलोकन केले जाते. तुमचा पासवर्ड एन्क्रिप्ट केलेला आहे आणि तो कधीच कोणालाही दिसत नाही. <ph name="PASSWORD_CHANGE" /></translation>

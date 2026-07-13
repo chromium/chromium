@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Неактивните ви елементи няма да се натрупват</translation>
 <translation id="1329584516321524826">Актуализирано току-що</translation>
 <translation id="1340839264183302272">Напускане на групата</translation>
+<translation id="1386966479075994683">Разгъване на разделите</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Разгъване на споделената група раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят и етикет „<ph name="CARD_LABEL" />“, в която има <ph name="TABS_COUNT_ONE" /> раздел.}other{Разгъване на споделената група раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят и етикет „<ph name="CARD_LABEL" />“, в която има <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="1486715732399361704">Тук можете да намерите всичките си групи раздели</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Създадено преди <ph name="NUM_MINS_ONE" /> минута}other{Създадено преди <ph name="NUM_MINS_MANY" /> минути}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Скриване на решетката на цял екран</translation>
 <translation id="5076161749301278626">Искате ли да видите отзивите за магазина?</translation>
 <translation id="5161254044473106830">Изисква се заглавие</translation>
+<translation id="5204584298075822291">Свиване на разделите</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome автоматично затваря неактивните раздели и групи раздели след <ph name="AUTO_DELETE_DELAY_ONE" /> месец. Можете да промените това от настройките.}other{Chrome автоматично затваря неактивните раздели и групи раздели след <ph name="AUTO_DELETE_DELAY_MANY" /> месеца. Можете да промените това от настройките.}}</translation>
 <translation id="5254233580564156835">Използвана памет: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Последният ви раздел</translation>

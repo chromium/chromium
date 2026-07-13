@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Je inactieve items stapelen zich niet op</translation>
 <translation id="1329584516321524826">Zojuist geüpdatet</translation>
 <translation id="1340839264183302272">Groep verlaten</translation>
+<translation id="1386966479075994683">Tabbladen uitvouwen</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Gedeelde tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_ONE" /> tabblad uitvouwen, kleur <ph name="COLOR_NAME" />, met label <ph name="CARD_LABEL" />.}other{Gedeelde tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen uitvouwen, kleur <ph name="COLOR_NAME" />, met label <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Hier vind je al je tabbladgroepen</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> minuut geleden gemaakt}other{<ph name="NUM_MINS_MANY" /> minuten geleden gemaakt}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Raster op volledig scherm verbergen</translation>
 <translation id="5076161749301278626">Winkelreviews bekijken?</translation>
 <translation id="5161254044473106830">Titel is vereist</translation>
+<translation id="5204584298075822291">Tabbladen samenvouwen</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome sluit inactieve tabbladen en tabbladgroepen automatisch na <ph name="AUTO_DELETE_DELAY_ONE" /> maand. Je kunt dit wijzigen in de instellingen.}other{Chrome sluit inactieve tabbladen en tabbladgroepen automatisch na <ph name="AUTO_DELETE_DELAY_MANY" /> maanden. Je kunt dit wijzigen in de instellingen.}}</translation>
 <translation id="5254233580564156835">Geheugengebruik: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Je laatste tabblad</translation>

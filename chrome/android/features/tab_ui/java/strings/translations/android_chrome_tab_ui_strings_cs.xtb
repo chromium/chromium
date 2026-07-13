@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Neaktivní položky se vám nebudou hromadit</translation>
 <translation id="1329584516321524826">Aktualizováno právě teď</translation>
 <translation id="1340839264183302272">Opustit skupinu</translation>
+<translation id="1386966479075994683">Rozbalit karty</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Rozbalit sdílenou skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_ONE" /> kartou, barva <ph name="COLOR_NAME" />, se štítkem <ph name="CARD_LABEL" />.}few{Rozbalit sdílenou skupinu karet <ph name="TITLE_OF_GROUP" /> se <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />, se štítkem <ph name="CARD_LABEL" />.}many{Rozbalit sdílenou skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> karty, barva <ph name="COLOR_NAME" />, se štítkem <ph name="CARD_LABEL" />.}other{Rozbalit sdílenou skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />, se štítkem <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Tady najdete všechny své skupiny karet</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Vytvořeno před <ph name="NUM_MINS_ONE" /> minutou}few{Vytvořeno před <ph name="NUM_MINS_MANY" /> minutami}many{Vytvořeno před <ph name="NUM_MINS_MANY" /> minuty}other{Vytvořeno před <ph name="NUM_MINS_MANY" /> minutami}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Skrýt celoobrazovkovou mřížku</translation>
 <translation id="5076161749301278626">Zobrazit recenze obchodu?</translation>
 <translation id="5161254044473106830">Je požadován název</translation>
+<translation id="5204584298075822291">Sbalit karty</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Neaktivní karty a skupiny karet Chrome po <ph name="AUTO_DELETE_DELAY_ONE" /> měsíci automaticky zavírá. Můžete to změnit v nastavení.}few{Neaktivní karty a skupiny karet Chrome po <ph name="AUTO_DELETE_DELAY_MANY" /> měsících automaticky zavírá. Můžete to změnit v nastavení.}many{Neaktivní karty a skupiny karet Chrome po <ph name="AUTO_DELETE_DELAY_MANY" /> měsíce automaticky zavírá. Můžete to změnit v nastavení.}other{Neaktivní karty a skupiny karet Chrome po <ph name="AUTO_DELETE_DELAY_MANY" /> měsících automaticky zavírá. Můžete to změnit v nastavení.}}</translation>
 <translation id="5254233580564156835">Využití paměti: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Vaše poslední karta</translation>

@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Ձեր ոչ ակտիվ տարրերը չեն կուտակվի</translation>
 <translation id="1329584516321524826">Թարմացվեց հենց նոր</translation>
 <translation id="1340839264183302272">Լքել խումբը</translation>
+<translation id="1386966479075994683">Ծավալել ներդիրները</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Ծավալել ներդիրների «<ph name="TITLE_OF_GROUP" />» ընդհանուր խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը և «<ph name="CARD_LABEL" />» պիտակը, և այնտեղ կա <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Ծավալել ներդիրների «<ph name="TITLE_OF_GROUP" />» ընդհանուր խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը և «<ph name="CARD_LABEL" />» պիտակը, և այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}other{Ծավալել ներդիրների «<ph name="TITLE_OF_GROUP" />» ընդհանուր խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը և «<ph name="CARD_LABEL" />» պիտակը, և այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}}</translation>
 <translation id="1486715732399361704">Այստեղ կգտնեք ձեր բոլոր ներդիրների խմբերը</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Ստեղծվել է <ph name="NUM_MINS_ONE" /> րոպե առաջ}one{Ստեղծվել է <ph name="NUM_MINS_MANY" /> րոպե առաջ}other{Ստեղծվել է <ph name="NUM_MINS_MANY" /> րոպե առաջ}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Թաքցնել լիաէկրան ցանցը</translation>
 <translation id="5076161749301278626">Ցուցադրե՞լ խանութի մասին կարծիքները</translation>
 <translation id="5161254044473106830">Վերնագիրը պարտադիր է</translation>
+<translation id="5204584298075822291">Ծալել ներդիրները</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome-ը ավտոմատ կերպով փակում է ոչ ակտիվ ներդիրներն ու ներդիրների խմբերը, որոնք դուք չեք օգտագործել ավելի քան <ph name="AUTO_DELETE_DELAY_ONE" /> ամիս։ Այս պարամետրը կարող եք փոխել կարգավորումներում։}one{Chrome-ը ավտոմատ կերպով փակում է ոչ ակտիվ ներդիրներն ու ներդիրների խմբերը, որոնք դուք չեք օգտագործել ավելի քան <ph name="AUTO_DELETE_DELAY_MANY" /> ամիս։ Այս պարամետրը կարող եք փոխել կարգավորումներում։}other{Chrome-ը ավտոմատ կերպով փակում է ոչ ակտիվ ներդիրներն ու ներդիրների խմբերը, որոնք դուք չեք օգտագործել ավելի քան <ph name="AUTO_DELETE_DELAY_MANY" /> ամիս։ Այս պարամետրը կարող եք փոխել կարգավորումներում։}}</translation>
 <translation id="5254233580564156835">Հիշողության օգտագործում՝ <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Ձեր վերջին ներդիրը</translation>

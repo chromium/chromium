@@ -3230,7 +3230,6 @@
 <translation id="3496995426334945408">インタラクティブなビデオゲームやウェブフォームなどを表示するために、サイトが JavaScript を使用する場合があります。</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> 製 USB デバイス（製品 <ph name="PRODUCT_ID" />）</translation>
 <translation id="3497560059572256875">Doodle を共有</translation>
-<translation id="3497915391670770295">お使いのデバイスに送信(&amp;D)</translation>
 <translation id="3498138244916757538">マイクの設定を変更するには、<ph name="SPECIFIC_NAME" /> をシャットダウンする必要があります。続行するには <ph name="SPECIFIC_NAME" /> をシャットダウンしてください。</translation>
 <translation id="3500417806337761827">共有フォルダのマウントエラー。マウントされた SMB 共有の数が上限を超えています。</translation>
 <translation id="3500764001796099683">独立したウェブアプリを有効にする</translation>
@@ -3613,7 +3612,6 @@
 <translation id="3774059845329307709">シリアル番号</translation>
 <translation id="3774166835015494435">最近の写真と通知</translation>
 <translation id="3775432569830822555">SSL サーバー証明書</translation>
-<translation id="3775705724665058594">お使いのデバイスに送信</translation>
 <translation id="3776508619697147021">サイトが複数のファイルの自動ダウンロードを要求できるようにする</translation>
 <translation id="3776796446459804932">この拡張機能は Chrome ウェブストアのポリシーに違反しています。</translation>
 <translation id="3777483481409781352">モバイル デバイスを有効化できませんでした</translation>
@@ -9735,7 +9733,6 @@
 <translation id="858006550102277544">説明</translation>
 <translation id="8581809080475256101">ボタンを押して次に進みます。履歴を表示するにはコンテキスト メニューを選択します</translation>
 <translation id="8584280235376696778">動画を新しいタブで開く(&amp;O)</translation>
-<translation id="858451212965845553">お使いのデバイスに送信(&amp;D)</translation>
 <translation id="8584843865238667486">使用状況ページ <ph name="USAGE_PAGE" /> で使用状況 <ph name="USAGE" /> が収集されている HID デバイス</translation>
 <translation id="8585480574870650651">Crostini の削除</translation>
 <translation id="8585841788766257444">次のサイトでは、デフォルトではなくカスタムの設定が使用されます</translation>
@@ -9895,6 +9892,7 @@
 <translation id="8693862390730570097">「文書作成サポート」を自動的に開くことを許可しない</translation>
 <translation id="8694596275649352090">スリープ状態またはディスプレイを閉じたときにロックする</translation>
 <translation id="8695825812785969222">場所を開く（&amp;L）...</translation>
+<translation id="8696297579102085705">お使いのデバイスに送信</translation>
 <translation id="869884720829132584">アプリケーション メニュー</translation>
 <translation id="869891660844655955">有効期限</translation>
 <translation id="8699296325072357994">パスワード ページのコンテンツと関連情報は Google に送信され、人間のレビュアーによって確認されます。パスワードは暗号化され、人間が見ることはありません。<ph name="PASSWORD_CHANGE" /></translation>

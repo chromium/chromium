@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">आपके इनऐक्टिव आइटम की संख्या नहीं बढ़ेगी</translation>
 <translation id="1329584516321524826">अभी-अभी अपडेट किया गया</translation>
 <translation id="1340839264183302272">ग्रुप छोड़ें</translation>
+<translation id="1386966479075994683">टैब को बड़ा करें</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{शेयर किए गए, <ph name="TABS_COUNT_ONE" /> टैब वाले टैब ग्रुप <ph name="TITLE_OF_GROUP" /> को बड़ा करें. इसका लेबल <ph name="CARD_LABEL" /> और रंग <ph name="COLOR_NAME" /> है.}one{शेयर किए गए, <ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप <ph name="TITLE_OF_GROUP" /> को बड़ा करें. इसका लेबल <ph name="CARD_LABEL" /> और रंग <ph name="COLOR_NAME" /> है.}other{शेयर किए गए, <ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप <ph name="TITLE_OF_GROUP" /> को बड़ा करें. इसका लेबल <ph name="CARD_LABEL" /> और रंग <ph name="COLOR_NAME" /> है.}}</translation>
 <translation id="1486715732399361704">आपको अपने सभी टैब ग्रुप, यहां दिख सकते हैं</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनट पहले बनाया गया}one{<ph name="NUM_MINS_MANY" /> मिनट पहले बनाया गया}other{<ph name="NUM_MINS_MANY" /> मिनट पहले बनाया गया}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">फ़ुलस्क्रीन ग्रिड को छिपाएं</translation>
 <translation id="5076161749301278626">स्टोर की समीक्षाएं देखें?</translation>
 <translation id="5161254044473106830">टाइटल आवश्‍यक</translation>
+<translation id="5204584298075822291">टैब को छोटा करें</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome, इनऐक्टिव टैब और टैब ग्रुप को <ph name="AUTO_DELETE_DELAY_ONE" /> महीने के बाद अपने-आप बंद कर देता है. सेटिंग में जाकर इसे बदला जा सकता है.}one{Chrome, इनऐक्टिव टैब और टैब ग्रुप को <ph name="AUTO_DELETE_DELAY_MANY" /> महीने के बाद अपने-आप बंद कर देता है. सेटिंग में जाकर इसे बदला जा सकता है.}other{Chrome, इनऐक्टिव टैब और टैब ग्रुप को <ph name="AUTO_DELETE_DELAY_MANY" /> महीनों के बाद अपने-आप बंद कर देता है. सेटिंग में जाकर इसे बदला जा सकता है.}}</translation>
 <translation id="5254233580564156835">मेमोरी का इस्तेमाल: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">आपका आखिरी टैब</translation>

@@ -1547,6 +1547,7 @@
 <translation id="2199298570273670671">गड़बड़ी</translation>
 <translation id="2200094388063410062">ई-मेल</translation>
 <translation id="2200781749203116929">ChromeOS के सिस्टम के लॉग</translation>
+<translation id="2202391868799679245">कीबोर्ड शॉर्टकट चालू करें</translation>
 <translation id="2203088913459920044">नाम में अक्षर, संख्याएं, और विशेष वर्ण इस्तेमाल किए जा सकते हैं</translation>
 <translation id="220321590587754225">कनेक्ट नहीं किया जा सका. फिर से कोशिश करें.</translation>
 <translation id="2203903197029773650">अपने Google खाते से साइन इन करने पर ही, <ph name="BRAND" /> आपके पासवर्ड की जांच कर सकता है</translation>
@@ -3246,7 +3247,6 @@
 <translation id="3496995426334945408">आम तौर पर साइटें, JavaScript का इस्तेमाल इंटरैक्टिव सुविधाओं को दिखाने के लिए करती हैं. जैसे, वीडियो गेम या वेब फ़ॉर्म</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> का यूएसबी डिवाइस (प्रॉडक्ट <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">डूडल शेयर करें</translation>
-<translation id="3497915391670770295">अपने डिवाइसों पर भेजें</translation>
 <translation id="3498138244916757538">माइक्रोफ़ोन की सेटिंग में बदलाव करने के लिए, <ph name="SPECIFIC_NAME" /> को शट डाउन करना ज़रूरी है. आगे बढ़ने के लिए, <ph name="SPECIFIC_NAME" /> को शट डाउन करें.</translation>
 <translation id="3500417806337761827">शेयर माउंट करने में गड़बड़ी हुई. बहुत से एसएमबी शेयर पहले ही माउंट कर दिए गए हैं.</translation>
 <translation id="3500764001796099683">आइसोलेटेड वेब ऐप्लिकेशन चालू करें</translation>
@@ -3629,7 +3629,6 @@
 <translation id="3774059845329307709">सीरियल नंबर</translation>
 <translation id="3774166835015494435">हाल ही की फ़ोटो और सूचनाएं</translation>
 <translation id="3775432569830822555">SSL सर्वर प्रमाणपत्र</translation>
-<translation id="3775705724665058594">अपने डिवाइस पर भेजें</translation>
 <translation id="3776508619697147021">साइटें कई फ़ाइलों को अपने-आप डाउनलोड करने के लिए पूछ सकती हैं</translation>
 <translation id="3776796446459804932">यह एक्सटेंशन Chrome वेब स्टोर नीति का उल्लंघन करता है.</translation>
 <translation id="3777483481409781352">मोबाइल डिवाइस चालू नहीं किया जा सका</translation>
@@ -5097,6 +5096,7 @@
 <translation id="4906490889887219338">नेटवर्क फ़ाइल शेयर सेट अप या प्रबंधित करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">डिफ़ॉल्ट पर रीसेट करें</translation>
 <translation id="4907129260985716018">चुनें कि यह एक्सटेंशन कब आपके साइट डेटा को पढ़ और बदल सकता है</translation>
+<translation id="4908076691331874303">इस साइट के लिए छिपाया गया है</translation>
 <translation id="4908811072292128752">एक बार में दो साइटें ब्राउज़ करने के लिए नया टैब खोलें</translation>
 <translation id="4910241725741323970">यह ऐप्लिकेशन पहले से इंस्टॉल है</translation>
 <translation id="4912643508233590958">इस्तेमाल नहीं किए जा रहे प्रोसेसर को जगाना</translation>
@@ -9754,7 +9754,6 @@
 <translation id="858006550102277544">टिप्पणी</translation>
 <translation id="8581809080475256101">आगे जाने के लिए इसे दबाएं, इतिहास देखने के लिए संदर्भ मेन्यू पर जाएं</translation>
 <translation id="8584280235376696778">वीडियो नए टैब में &amp;खोलें</translation>
-<translation id="858451212965845553">अपने डिवाइसों पर भेजें</translation>
 <translation id="8584843865238667486">इस्तेमाल की जानकारी वाले पेज <ph name="USAGE_PAGE" /> के मुताबिक, एचआईडी डिवाइस और उनका इस्तेमाल <ph name="USAGE" /></translation>
 <translation id="8585480574870650651">Crostini हटाएं</translation>
 <translation id="8585841788766257444">नीचे दी गई साइटें, डिफ़ॉल्ट के बजाय कस्टम सेटिंग को फ़ॉलो करती हैं</translation>
@@ -9914,6 +9913,7 @@
 <translation id="8693862390730570097">"लिखने में मेरी मदद करो" सुविधा को अपने-आप चालू होने की अनुमति न दें</translation>
 <translation id="8694596275649352090">स्लीप मोड (कम बैटरी मोड) में रहने या लिड के बंद होने पर लॉक करें</translation>
 <translation id="8695825812785969222">&amp;स्‍थान खोलें...</translation>
+<translation id="8696297579102085705">अपने डिवाइस पर भेजें</translation>
 <translation id="869884720829132584">ऐप्लिकेशन मेन्यू</translation>
 <translation id="869891660844655955">खत्म होने की तारीख</translation>
 <translation id="8699296325072357994">पासवर्ड वाले पेजों का कॉन्टेंट और उससे जुड़ी जानकारी, Google को भेजी जाती है. साथ ही, इसकी मैन्युअल तरीके से समीक्षा की जाती है. आपका पासवर्ड एन्क्रिप्ट (सुरक्षित) किया जाता है और किसी को भी नहीं दिखता है. <ph name="PASSWORD_CHANGE" /></translation>

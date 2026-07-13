@@ -3246,7 +3246,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3496995426334945408">Sites usually use JavaScript to display interactive features, like video games or web forms</translation>
 <translation id="3497501929010263034">USB device from <ph name="VENDOR_NAME" /> (product <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Share Doodle</translation>
-<translation id="3497915391670770295">Send to Your &amp;Devices</translation>
 <translation id="3498138244916757538">The change in microphone setting requires <ph name="SPECIFIC_NAME" /> to shut down. Shut down <ph name="SPECIFIC_NAME" /> to proceed.</translation>
 <translation id="3500417806337761827">Error mounting share. Too many SMB shares are already mounted.</translation>
 <translation id="3500764001796099683">Enable isolated web apps</translation>
@@ -3629,7 +3628,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3774059845329307709">Serial number</translation>
 <translation id="3774166835015494435">Recent photos and notifications</translation>
 <translation id="3775432569830822555">SSL Server Certificate</translation>
-<translation id="3775705724665058594">Send to your devices</translation>
 <translation id="3776508619697147021">Sites can ask to automatically download multiple files</translation>
 <translation id="3776796446459804932">This extension violates the Chrome Web Store policy.</translation>
 <translation id="3777483481409781352">Could not activate mobile device</translation>
@@ -9756,7 +9754,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="858006550102277544">Comment</translation>
 <translation id="8581809080475256101">Press to go forward, context menu to see history</translation>
 <translation id="8584280235376696778">&amp;Open video in new tab</translation>
-<translation id="858451212965845553">Send to your &amp;devices</translation>
 <translation id="8584843865238667486">HID devices with usage <ph name="USAGE" /> from usage page <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Remove Crostini</translation>
 <translation id="8585841788766257444">Sites listed below follow a custom setting instead of the default</translation>
@@ -9916,6 +9913,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8693862390730570097">Don't allow 'Help me write' to automatically open</translation>
 <translation id="8694596275649352090">Lock when sleeping or lid is closed</translation>
 <translation id="8695825812785969222">Open &amp;Location...</translation>
+<translation id="8696297579102085705">Send to your device</translation>
 <translation id="869884720829132584">Applications menu</translation>
 <translation id="869891660844655955">Expiry date</translation>
 <translation id="8699296325072357994">Content from password pages and related info is sent to Google and reviewed by humans. Your password is encrypted and never seen by anyone. <ph name="PASSWORD_CHANGE" /></translation>

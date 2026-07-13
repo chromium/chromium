@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">የእርስዎ ገቢር ያልሆኑ ንጥሎች አይደራረቡም</translation>
 <translation id="1329584516321524826">አሁን የተዘመነ</translation>
 <translation id="1340839264183302272">ቡድኑን ለቅቀው ይውጡ</translation>
+<translation id="1386966479075994683">ትሮችን ዘርጋ</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{የተጋራ የ<ph name="TITLE_OF_GROUP" /> የትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም፣ በ<ph name="CARD_LABEL" /> መሰየሚያ ይዘረጋል።}one{የተጋራ የ<ph name="TITLE_OF_GROUP" /> የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም፣ በ<ph name="CARD_LABEL" /> መሰየሚያ ይዘረጋል።}other{የተጋራ የ<ph name="TITLE_OF_GROUP" /> የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ በ<ph name="COLOR_NAME" /> ቀለም፣ በ<ph name="CARD_LABEL" /> መሰየሚያ ይዘረጋል።}}</translation>
 <translation id="1486715732399361704">ሁሉንም የትር ቡድኖችዎን እዚህ ማግኘት ይችላሉ</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{ከ<ph name="NUM_MINS_ONE" /> ደቂቃ በፊት የተፈጠረ}one{ከ<ph name="NUM_MINS_MANY" /> ደቂቃ በፊት የተፈጠረ}other{ከ<ph name="NUM_MINS_MANY" /> ደቂቃዎች በፊት የተፈጠረ}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">የሙሉ ማያ ፍርግርግን ደብቅ</translation>
 <translation id="5076161749301278626">የመደብር ግምገማዎችን ይመለከታሉ?</translation>
 <translation id="5161254044473106830">ርዕስ ያስፈልጋል</translation>
+<translation id="5204584298075822291">ትሮችን ሰብስብ</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ከ<ph name="AUTO_DELETE_DELAY_ONE" /> ወር በኋላ ገቢር ያልሆኑ ትሮች እና የትር ቡድኖችን በራስ-ሰር ይዘጋል። ይህን በቅንብሮች ውስጥ መለወጥ ይችላሉ።}one{Chrome ከ<ph name="AUTO_DELETE_DELAY_MANY" /> ወር በኋላ ገቢር ያልሆኑ ትሮች እና የትር ቡድኖችን በራስ-ሰር ይዘጋል። ይህን በቅንብሮች ውስጥ መለወጥ ይችላሉ።}other{Chrome ከ<ph name="AUTO_DELETE_DELAY_MANY" /> ወራት በኋላ ገቢር ያልሆኑ ትሮች እና የትር ቡድኖችን በራስ-ሰር ይዘጋል። ይህን በቅንብሮች ውስጥ መለወጥ ይችላሉ።}}</translation>
 <translation id="5254233580564156835">የማህደረ ትውስታ አጠቃቀም፦ <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">የእርስዎ የመጨረሻ ትር</translation>

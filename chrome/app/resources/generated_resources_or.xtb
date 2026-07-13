@@ -3235,7 +3235,6 @@
 <translation id="3496995426334945408">ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ଭିଡିଓ ଗେମ କିମ୍ବା ୱେବ ଫର୍ମଗୁଡ଼ିକ ପରି ଇଣ୍ଟରାକ୍ଟିଭ ଫିଚରଗୁଡ଼ିକୁ ଡିସପ୍ଲେ କରିବା ପାଇଁ JavaScriptକୁ ବ୍ୟବହାର କରେ</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" />ର USB ଡିଭାଇସ (ପ୍ରଡକ୍ଟ <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">ଡୁଡଲ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
-<translation id="3497915391670770295">ଆପଣଙ୍କ &amp;ଡିଭାଇସଗୁଡ଼ିକୁ ପଠାନ୍ତୁ</translation>
 <translation id="3498138244916757538">ମାଇକ୍ରୋଫୋନ ସେଟିଂରେ କରାଯାଇଥିବା ପରିବର୍ତ୍ତନ ପାଇଁ <ph name="SPECIFIC_NAME" />କୁ ବନ୍ଦ କରାଯିବା ଆବଶ୍ୟକ। ଆଗକୁ ବଢ଼ିବା ପାଇଁ <ph name="SPECIFIC_NAME" />କୁ ବନ୍ଦ କରନ୍ତୁ।</translation>
 <translation id="3500417806337761827">ସେୟାର୍ ମାଉଣ୍ଟ କରିବାରେ ତ୍ରୁଟି। ପୂର୍ବରୁ ଅନେକଗୁଡ଼ିଏ SMB ସେୟାର୍ ମାଉଣ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="3500764001796099683">Isolated Web Appsକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
@@ -3618,7 +3617,6 @@
 <translation id="3774059845329307709">କ୍ରମିକ ନମ୍ବର</translation>
 <translation id="3774166835015494435">ବର୍ତ୍ତମାନର ଫଟୋ ଏବଂ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ</translation>
 <translation id="3775432569830822555">SSL ସର୍ଭର୍ ସାର୍ଟିଫିକେଟ୍</translation>
-<translation id="3775705724665058594">ଆପଣଙ୍କର ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ପଠାନ୍ତୁ</translation>
 <translation id="3776508619697147021">ସାଇଟଗୁଡ଼ିକ ଏକାଧିକ ଫାଇଲକୁ ସ୍ୱଚାଳିତ ଭାବେ ଡାଉନଲୋଡ୍ କରିବାକୁ ପଚାରିପାରିବ</translation>
 <translation id="3776796446459804932">ଏହି ଏକ୍ସଟେନ୍‌ସନ୍ Chrome ୱେବ୍ ଷ୍ଟୋର୍ ନୀତିକୁ ଉଲ୍ଲଂଘନ କରେ।</translation>
 <translation id="3777483481409781352">ସେଲ୍ୟୁଲାର୍ ଡିଭାଇସ୍ ସକ୍ରିୟ କରାଯାଇପାରିଲା ନାହିଁ</translation>
@@ -9740,7 +9738,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="858006550102277544">ମନ୍ତବ୍ୟ</translation>
 <translation id="8581809080475256101">ଆଗକୁ ଯିବାକୁ ଏହାକୁ ଦବାନ୍ତୁ, ଇତିବୃତ୍ତି ଦେଖିବାକୁ ପ୍ରସଙ୍ଗ ମେନୁକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="8584280235376696778">ନୂତନ ଟ୍ୟାବରେ ଭିଡିଓ &amp;ଖୋଲନ୍ତୁ</translation>
-<translation id="858451212965845553">ଆପଣଙ୍କ &amp;ଡିଭାଇସଗୁଡ଼ିକୁ ପଠାନ୍ତୁ</translation>
 <translation id="8584843865238667486">ବ୍ୟବହାର ପୃଷ୍ଠା <ph name="USAGE_PAGE" />ରୁ ବ୍ୟବହାର <ph name="USAGE" /> ସହ HID ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="8585480574870650651">Crostini କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="8585841788766257444">ନିମ୍ନସ୍ଥ ତାଲିକାଭୁକ୍ତ ସାଇଟଗୁଡ଼ିକ ଡିଫଲ୍ଟ ପରିବର୍ତ୍ତେ ଏକ କଷ୍ଟମ୍ ସେଟିଂକୁ ଅନୁସରଣ କରେ</translation>
@@ -9900,6 +9897,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8693862390730570097">"ଲେଖିବାରେ ମୋତେ ସାହାଯ୍ୟ କରନ୍ତୁ"କୁ ସ୍ୱତଃ ଖୋଲିବା ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="8694596275649352090">ସ୍ଲିପ ମୋଡରେ କିମ୍ବା ଲିଡ ବନ୍ଦ ଥିବା ସମୟରେ ଲକ କରନ୍ତୁ</translation>
 <translation id="8695825812785969222">&amp;ଲୋକେସନ୍‌ ଖୋଲନ୍ତୁ...</translation>
+<translation id="8696297579102085705">ଆପଣଙ୍କ ଡିଭାଇସକୁ ପଠାନ୍ତୁ</translation>
 <translation id="869884720829132584">ଆପ୍ଲିକେସନ୍ ମେନୁ</translation>
 <translation id="869891660844655955">ମିଆଦ ଶେଷ ହେଉଥିବା ତାରିଖ</translation>
 <translation id="8699296325072357994">ପାସୱାର୍ଡ ପୃଷ୍ଠାରୁ ବିଷୟବସ୍ତୁ ଓ ସମ୍ବନ୍ଧିତ ସୂଚନା Googleକୁ ପଠାଯାଏ ଏବଂ ଲୋକଙ୍କ ଦ୍ୱାରା ରିଭ୍ୟୁ କରାଯାଏ। ଆପଣଙ୍କର ପାସୱାର୍ଡ ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି ଏବଂ କେହି କେବେ ବି ଦେଖିପାରିବେ ନାହିଁ। <ph name="PASSWORD_CHANGE" /></translation>

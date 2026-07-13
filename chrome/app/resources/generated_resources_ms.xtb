@@ -1547,6 +1547,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2199298570273670671">Ralat</translation>
 <translation id="2200094388063410062">E-mel</translation>
 <translation id="2200781749203116929">Log Sistem ChromeOS</translation>
+<translation id="2202391868799679245">Hidupkan pintasan papan kekunci</translation>
 <translation id="2203088913459920044">Nama boleh menggunakan huruf, nombor dan aksara khas</translation>
 <translation id="220321590587754225">Tidak boleh menyambung. Cuba lagi.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> boleh menyemak kata laluan anda apabila anda log masuk menggunakan Google Account anda</translation>
@@ -3246,7 +3247,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3496995426334945408">Laman biasanya menggunakan JavaScript untuk memaparkan ciri interaktif, seperti permainan video atau borang web</translation>
 <translation id="3497501929010263034">Peranti USB daripada <ph name="VENDOR_NAME" /> (produk <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Kongsi Coretan</translation>
-<translation id="3497915391670770295">Hantar kepada Peranti &amp;Anda</translation>
 <translation id="3498138244916757538">Perubahan dalam tetapan mikrofon memerlukan <ph name="SPECIFIC_NAME" /> dimatikan. Matikan <ph name="SPECIFIC_NAME" /> untuk meneruskan tindakan.</translation>
 <translation id="3500417806337761827">Ralat semasa melekapkan perkongsian. Terlalu banyak perkongsian SMB telah dilekapkan.</translation>
 <translation id="3500764001796099683">Dayakan apl web terpencil</translation>
@@ -3629,7 +3629,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3774059845329307709">Nombor siri</translation>
 <translation id="3774166835015494435">Foto dan pemberitahuan baru-baru ini</translation>
 <translation id="3775432569830822555">Sijil Pelayan SSL</translation>
-<translation id="3775705724665058594">Hantar ke peranti anda</translation>
 <translation id="3776508619697147021">Laman boleh meminta untuk memuat turun berbilang fail secara automatik</translation>
 <translation id="3776796446459804932">Sambungan ini melanggar dasar Kedai Web Chrome.</translation>
 <translation id="3777483481409781352">Tidak dapat mengaktifkan peranti selular</translation>
@@ -5099,6 +5098,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4906490889887219338">Sediakan atau urus perkongsian fail rangkaian. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4906679076183257864">Tetapkan semula kepada Lalai</translation>
 <translation id="4907129260985716018">Pilih masa sambungan ini boleh membaca dan mengubah data laman anda</translation>
+<translation id="4908076691331874303">Disembunyikan daripada laman ini</translation>
 <translation id="4908811072292128752">Buka tab baharu untuk menyemak imbas dua tapak pada masa yang sama</translation>
 <translation id="4910241725741323970">Apl sudah dipasangkan</translation>
 <translation id="4912643508233590958">Bangkit Daripada Melahu</translation>
@@ -9757,7 +9757,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="858006550102277544">Ulas</translation>
 <translation id="8581809080475256101">Tekan untuk beralih ke hadapan, menu konteks untuk melihat sejarah</translation>
 <translation id="8584280235376696778">&amp;Buka video dalam tab baharu</translation>
-<translation id="858451212965845553">Hantar kepada peranti &amp;Anda</translation>
 <translation id="8584843865238667486">Peranti HID dengan penggunaan <ph name="USAGE" /> dari halaman penggunaan <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Alih keluar Crostini</translation>
 <translation id="8585841788766257444">Laman yang disenaraikan di bawah mengikut tetapan tersuai dan bukannya tetapan lalai</translation>
@@ -9917,6 +9916,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8693862390730570097">Jangan benarkan "Bantu saya tulis" untuk dibuka secara automatik</translation>
 <translation id="8694596275649352090">Kunci apabila tidur atau penutup ditutup</translation>
 <translation id="8695825812785969222">Buka &amp;Lokasi...</translation>
+<translation id="8696297579102085705">Hantar kepada peranti anda</translation>
 <translation id="869884720829132584">Menu aplikasi</translation>
 <translation id="869891660844655955">Tarikh tamat tempoh</translation>
 <translation id="8699296325072357994">Kandungan daripada halaman kata laluan dan maklumat berkaitan dihantar kepada Google dan disemak oleh jurusemak. Kata laluan anda disulitkan dan tidak akan dilihat oleh sesiapa. <ph name="PASSWORD_CHANGE" /></translation>

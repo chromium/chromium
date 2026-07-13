@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Τα ανενεργά στοιχεία δεν θα συσσωρευτούν</translation>
 <translation id="1329584516321524826">Ενημερώθηκε μόλις τώρα</translation>
 <translation id="1340839264183302272">Αποχώρηση από την ομάδα</translation>
+<translation id="1386966479075994683">Ανάπτυξη καρτελών</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Ανάπτυξη κοινόχρηστης ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_ONE" /> καρτέλα, χρώμα <ph name="COLOR_NAME" /> και με ετικέτα <ph name="CARD_LABEL" />.}other{Ανάπτυξη κοινόχρηστης ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_MANY" /> καρτέλες, χρώμα <ph name="COLOR_NAME" /> και με ετικέτα <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Μπορείτε να βρείτε εδώ όλες τις ομάδες καρτελών</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_MINS_ONE" /> λεπτό}other{Δημιουργήθηκε πριν από <ph name="NUM_MINS_MANY" /> λεπτά}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Απόκρυψη πλέγματος πλήρους οθόνης</translation>
 <translation id="5076161749301278626">Εμφάνιση αξιολογήσεων καταστήματος;</translation>
 <translation id="5161254044473106830">Απαιτείται τίτλος</translation>
+<translation id="5204584298075822291">Σύμπτυξη καρτελών</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Το Chrome κλείνει αυτόματα τις ανενεργές καρτέλες και τις ομάδες καρτελών μετά από <ph name="AUTO_DELETE_DELAY_ONE" /> μήνα. Μπορείτε να αλλάξετε αυτή την επιλογή στις ρυθμίσεις.}other{Το Chrome κλείνει αυτόματα τις ανενεργές καρτέλες και τις ομάδες καρτελών μετά από <ph name="AUTO_DELETE_DELAY_MANY" /> μήνες. Μπορείτε να αλλάξετε αυτή την επιλογή στις ρυθμίσεις.}}</translation>
 <translation id="5254233580564156835">Χρήση μνήμης: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Η τελευταία καρτέλα σας</translation>

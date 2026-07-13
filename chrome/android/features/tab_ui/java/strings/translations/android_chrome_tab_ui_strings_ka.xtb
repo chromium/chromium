@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">თქვენი არააქტიური ერთეულები არ დაგროვდება</translation>
 <translation id="1329584516321524826">განახლდა ახლახან</translation>
 <translation id="1340839264183302272">ჯგუფიდან გასვლა</translation>
+<translation id="1386966479075994683">ჩანართების გაფართოება</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{გააფართოვეთ ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი გაზიარებული ჯგუფი „<ph name="TITLE_OF_GROUP" />“, <ph name="COLOR_NAME" /> ფერის, ლეიბლით <ph name="CARD_LABEL" />.}other{გააფართოვეთ ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი გაზიარებული ჯგუფები „<ph name="TITLE_OF_GROUP" />“, <ph name="COLOR_NAME" /> ფერის, ლეიბლით <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">ჩანართების ყველა ჯგუფს აქ ნახავთ</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{შეიქმნა <ph name="NUM_MINS_ONE" /> წუთის წინ}other{შეიქმნა <ph name="NUM_MINS_MANY" /> წუთის წინ}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">სრულეკრანიანი ბადის დამალვა</translation>
 <translation id="5076161749301278626">გსურთ, ნახოთ მიმოხილვები მაღაზიიდან?</translation>
 <translation id="5161254044473106830">საჭიროა სათაური</translation>
+<translation id="5204584298075822291">ჩანართების ჩაკეცვა</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ავტომატურად ხურავს არააქტიურ ჩანართებსა და ჩანართების ჯგუფებს <ph name="AUTO_DELETE_DELAY_ONE" /> თვის შემდეგ. ამის შეცვლა პარამეტრებში შეგიძლიათ.}other{Chrome ავტომატურად ხურავს არააქტიურ ჩანართებს და ჩანართების ჯგუფებს <ph name="AUTO_DELETE_DELAY_MANY" /> თვის შემდეგ. ამის შეცვლა პარამეტრებში შეგიძლიათ.}}</translation>
 <translation id="5254233580564156835">მეხსიერების მოხმარება: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">თქვენი ბოლო ჩანართი</translation>

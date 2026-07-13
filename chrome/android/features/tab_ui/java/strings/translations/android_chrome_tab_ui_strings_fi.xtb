@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Ei-aktiivisia kohteita ei keräänny</translation>
 <translation id="1329584516321524826">Päivitetty juuri nyt</translation>
 <translation id="1340839264183302272">Poistu ryhmästä</translation>
+<translation id="1386966479075994683">Laajenna välilehdet</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Laajenna jaettu välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_ONE" /> välilehti, jonka väri on <ph name="COLOR_NAME" /> ja tunniste <ph name="CARD_LABEL" />.}other{Laajenna jaettu välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, jonka väri on <ph name="COLOR_NAME" /> ja tunniste <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Löydät kaikki välilehtiryhmäsi täältä</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Luotu <ph name="NUM_MINS_ONE" /> minuutti sitten}other{Luotu <ph name="NUM_MINS_MANY" /> minuuttia sitten}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Piilota koko näytön ruudukko</translation>
 <translation id="5076161749301278626">Näytetäänkö kaupan arvostelut?</translation>
 <translation id="5161254044473106830">Nimike vaaditaan</translation>
+<translation id="5204584298075822291">Tiivistä välilehdet</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome sulkee automaattisesti ei-aktiiviset välilehdet ja välilehtiryhmät <ph name="AUTO_DELETE_DELAY_ONE" /> kuukauden kuluttua. Voit muuttaa tätä asetuksista.}other{Chrome sulkee automaattisesti ei-aktiiviset välilehdet ja välilehtiryhmät <ph name="AUTO_DELETE_DELAY_MANY" /> kuukauden kuluttua. Voit muuttaa tätä asetuksista.}}</translation>
 <translation id="5254233580564156835">Muistin käyttö: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Viimeisin välilehti</translation>

@@ -3231,7 +3231,6 @@
 <translation id="3496995426334945408">Сайттар әдетте бейне ойындар немесе веб-үлгілер сияқты интерактивті функцияларды көрсету үшін JavaScript-ті пайдаланады</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> ұсынған USB құрылғысы (<ph name="PRODUCT_ID" /> өнімі)</translation>
 <translation id="3497560059572256875">Дудлды бөлісу</translation>
-<translation id="3497915391670770295">&amp;Құрылғыларыңызға жіберу</translation>
 <translation id="3498138244916757538">Микрофонның параметріне өзгеріс енгізілгендіктен, <ph name="SPECIFIC_NAME" /> жүйесін өшіру қажет. Жалғастыру үшін <ph name="SPECIFIC_NAME" /> жүйесін өшіріңіз.</translation>
 <translation id="3500417806337761827">Бөлісу кезінде қате шықты. Тым көп SMB бөлісілген.</translation>
 <translation id="3500764001796099683">Оқшау веб-қолданбаларды қосу</translation>
@@ -3614,7 +3613,6 @@
 <translation id="3774059845329307709">Сериялық нөмірі</translation>
 <translation id="3774166835015494435">Соңғы фотосуреттер мен хабарландырулар</translation>
 <translation id="3775432569830822555">SSL сервер сертификаты</translation>
-<translation id="3775705724665058594">Құрылғыларға жіберу</translation>
 <translation id="3776508619697147021">Сайт автоматты түрде бірнеше файл жүктеп алуға рұқсат сұрай алады.</translation>
 <translation id="3776796446459804932">Бұл кеңейтім Chrome Web Store саясатын бұзады.</translation>
 <translation id="3777483481409781352">Ұялы құрылғыны іске қосу мүмкін болмады</translation>
@@ -9734,7 +9732,6 @@
 <translation id="858006550102277544">Пікір</translation>
 <translation id="8581809080475256101">Журналды көру үшін алға өту, контекстік мәзір түймесін басыңыз</translation>
 <translation id="8584280235376696778">&amp;Бейнені жаңа қойындыда ашу</translation>
-<translation id="858451212965845553">&amp;Құрылғыларыңызға жіберу</translation>
 <translation id="8584843865238667486"><ph name="USAGE_PAGE" /> трафик бетіндегі <ph name="USAGE" /> трафигі бар HID құрылғылары</translation>
 <translation id="8585480574870650651">Crostini жүйесін өшіру</translation>
 <translation id="8585841788766257444">Төменде көрсетілген сайттар әдепкі параметрді емес, арнаулы параметрді басшылыққа алады.</translation>
@@ -9894,6 +9891,7 @@
 <translation id="8693862390730570097">"Жазуға көмек керек" опциясының автоматты түрде ашылуына рұқсат бермеу</translation>
 <translation id="8694596275649352090">Ұйқы режимінде болғанда немесе беті жабылғанда құлыптау</translation>
 <translation id="8695825812785969222">&amp;Орналасқан жерді ашу…</translation>
+<translation id="8696297579102085705">Құрылғыға жіберу</translation>
 <translation id="869884720829132584">Қолданбалар мәзірі</translation>
 <translation id="869891660844655955">Аяқталу мерзімі</translation>
 <translation id="8699296325072357994">Құпия сөз беттеріндегі контент және қатысы бар ақпарат Google-ға жіберіледі және оларды мамандар тексереді. Құпия сөзіңіз шифрланады және ешкімге көрсетілмейді. <ph name="PASSWORD_CHANGE" /></translation>

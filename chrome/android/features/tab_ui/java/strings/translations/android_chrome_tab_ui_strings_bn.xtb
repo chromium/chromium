@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">আপনার চালু না থাকা আইটেমের পরিমাণ বাড়তে দেওয়া হবে না</translation>
 <translation id="1329584516321524826">এখনই আপডেট করা হয়েছে</translation>
 <translation id="1340839264183302272">গ্রুপ থেকে বেরিয়ে আসুন</translation>
+<translation id="1386966479075994683">ট্যাব বড় করুন</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব সহ শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন, এর রঙ <ph name="COLOR_NAME" />, লেবেল <ph name="CARD_LABEL" />।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব সহ শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন, এর রঙ <ph name="COLOR_NAME" />, লেবেল <ph name="CARD_LABEL" />।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব সহ শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন, এর রঙ <ph name="COLOR_NAME" />, লেবেল <ph name="CARD_LABEL" />।}}</translation>
 <translation id="1486715732399361704">আপনি সব ট্যাব গ্রুপ এখানে দেখতে পারবেন</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> মিনিট আগে তৈরি করা হয়েছে}one{<ph name="NUM_MINS_MANY" /> মিনিট আগে তৈরি করা হয়েছে}other{<ph name="NUM_MINS_MANY" /> মিনিট আগে তৈরি করা হয়েছে}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">ফুলস্ক্রিন গ্রিড লুকান</translation>
 <translation id="5076161749301278626">স্টোরের রিভিউ দেখতে চান?</translation>
 <translation id="5161254044473106830">শিরোনাম প্রয়োজন</translation>
+<translation id="5204584298075822291">ট্যাব আড়াল করুন</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome অটোমেটিক <ph name="AUTO_DELETE_DELAY_ONE" /> মাস পরে চালু না থাকা ট্যাব ও ট্যাব গ্রুপ বন্ধ করে দেয়। আপনি সেটিংস থেকে এটি পরিবর্তন করতে পারবেন।}one{Chrome অটোমেটিক <ph name="AUTO_DELETE_DELAY_MANY" /> মাস পরে চালু না থাকা ট্যাব ও ট্যাব গ্রুপ বন্ধ করে দেয়। আপনি সেটিংস থেকে এটি পরিবর্তন করতে পারবেন।}other{Chrome অটোমেটিক <ph name="AUTO_DELETE_DELAY_MANY" /> মাস পরে চালু না থাকা ট্যাব ও ট্যাব গ্রুপ বন্ধ করে দেয়। আপনি সেটিংস থেকে এটি পরিবর্তন করতে পারবেন।}}</translation>
 <translation id="5254233580564156835">মেমরির ব্যবহার: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">আপনার শেষ ট্যাব</translation>

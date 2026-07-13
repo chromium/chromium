@@ -3232,7 +3232,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3496995426334945408">Site-urile folosesc de obicei JavaScript pentru a afișa funcții interactive, cum ar fi jocurile video sau formularele web</translation>
 <translation id="3497501929010263034">Dispozitiv USB de la <ph name="VENDOR_NAME" /> (produsul <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Trimite doodle-ul</translation>
-<translation id="3497915391670770295">Trimite pe &amp;dispozitivele tale</translation>
 <translation id="3498138244916757538">Modificarea setării pentru microfon necesită închiderea <ph name="SPECIFIC_NAME" />. Închide <ph name="SPECIFIC_NAME" /> pentru a continua.</translation>
 <translation id="3500417806337761827">Eroare la montarea dispozitivului de stocare în rețea. Au fost conectate deja prea multe dispozitive de stocare în rețea SMB.</translation>
 <translation id="3500764001796099683">Activează aplicațiile web izolate</translation>
@@ -3615,7 +3614,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3774059845329307709">Număr de serie</translation>
 <translation id="3774166835015494435">Fotografiile și notificările recente</translation>
 <translation id="3775432569830822555">Certificat de server SSL</translation>
-<translation id="3775705724665058594">Trimite pe dispozitivele tale</translation>
 <translation id="3776508619697147021">Site-urile pot solicita permisiunea de a descărca automat mai multe fișiere</translation>
 <translation id="3776796446459804932">Această extensie încalcă politica Magazinului web Chrome.</translation>
 <translation id="3777483481409781352">Dispozitivul celular nu a putut fi activat</translation>
@@ -9742,7 +9740,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="858006550102277544">Comentariu</translation>
 <translation id="8581809080475256101">Apasă pentru a naviga înainte sau folosește meniul contextual pentru a vedea istoricul</translation>
 <translation id="8584280235376696778">&amp;Deschide videoclipul într-o filă nouă</translation>
-<translation id="858451212965845553">Trimite pe &amp;dispozitivele tale</translation>
 <translation id="8584843865238667486">Dispozitivele HID cu o valoare a utilizării de <ph name="USAGE" /> din pagina Utilizare <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Elimină Crostini</translation>
 <translation id="8585841788766257444">Site-urile de mai jos aplică o setare personalizată în locul celei prestabilite</translation>
@@ -9902,6 +9899,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8693862390730570097">Nu permite ca funcția Ajută-mă să scriu să se deschidă automat</translation>
 <translation id="8694596275649352090">Blochează în modul de inactivitate sau când capacul este închis</translation>
 <translation id="8695825812785969222">Deschide &amp;locația...</translation>
+<translation id="8696297579102085705">Trimite pe dispozitivul tău</translation>
 <translation id="869884720829132584">Meniul aplicațiilor</translation>
 <translation id="869891660844655955">Dată de expirare</translation>
 <translation id="8699296325072357994">Conținutul paginilor cu parole și informațiile asociate sunt trimise la Google și examinate de oameni. Parola este criptată și nu este văzută niciodată de nimeni. <ph name="PASSWORD_CHANGE" /></translation>

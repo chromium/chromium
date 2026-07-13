@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">ធាតុ​អសកម្ម​របស់អ្នក​នឹងមិន​កើនឡើង​ទេ</translation>
 <translation id="1329584516321524826">ទើបតែ​បាន​ធ្វើ​បច្ចុប្បន្នភាព</translation>
 <translation id="1340839264183302272">ចាកចេញ​ពី​ក្រុម</translation>
+<translation id="1386966479075994683">ពង្រីកផ្ទាំង</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{ពង្រីក​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលបាន​ចែករំលែក​ដែលមាន <ph name="TABS_COUNT_ONE" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" /> ជាមួយ​ស្លាក <ph name="CARD_LABEL" />។}other{ពង្រីក​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលបាន​ចែករំលែក​ដែលមាន <ph name="TABS_COUNT_MANY" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" /> ជាមួយស្លាក <ph name="CARD_LABEL" />។}}</translation>
 <translation id="1486715732399361704">អ្នកអាច​រកឃើញ​ក្រុមផ្ទាំង​ទាំងអស់​របស់អ្នក​នៅទីនេះ</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{បានបង្កើត <ph name="NUM_MINS_ONE" /> នាទីមុន}other{បានបង្កើត <ph name="NUM_MINS_MANY" /> នាទីមុន}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">លាក់ក្រឡា​ពេញ​អេក្រង់</translation>
 <translation id="5076161749301278626">មើលការវាយតម្លៃហាងឬ?</translation>
 <translation id="5161254044473106830">ត្រូវមានចំណងជើង</translation>
+<translation id="5204584298075822291">បង្រួមផ្ទាំង</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome បិទ​ក្រុមផ្ទាំង និងផ្ទាំង​អសកម្ម​ដោយ​ស្វ័យប្រវត្តិ​ក្រោយ​រយៈពេល <ph name="AUTO_DELETE_DELAY_ONE" /> ខែ។ អ្នកអាច​ប្ដូរលក្ខណៈនេះ​នៅក្នុង​ការកំណត់។}other{Chrome បិទ​ក្រុមផ្ទាំង និងផ្ទាំង​អសកម្ម​ដោយ​ស្វ័យប្រវត្តិ​ក្រោយ​រយៈពេល <ph name="AUTO_DELETE_DELAY_MANY" /> ខែ។ អ្នកអាច​ប្ដូរលក្ខណៈនេះ​នៅក្នុង​ការកំណត់។}}</translation>
 <translation id="5254233580564156835">ការប្រើប្រាស់​អង្គចងចាំ៖ <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">ផ្ទាំង​ចុងក្រោយ​របស់អ្នក</translation>

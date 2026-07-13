@@ -3229,7 +3229,6 @@
 <translation id="3496995426334945408">Կայքերը սովորաբար օգտագործում են JavaScript՝ ինտերակտիվ գործառույթների, օրինակ՝ տեսախաղերի կամ վեբ ձևերի համար</translation>
 <translation id="3497501929010263034">USB սարք <ph name="VENDOR_NAME" /> ընկերությունից (ապրանք <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Կիսվել դուդլով</translation>
-<translation id="3497915391670770295">Ուղարկել ձեր &amp;սարքերին</translation>
 <translation id="3498138244916757538">Խոսափողի կարգավորման փոփոխությունից հետո անհրաժեշտ է <ph name="SPECIFIC_NAME" />-ն անջատել։ Շարունակելու համար <ph name="SPECIFIC_NAME" />-ն անջատեք։</translation>
 <translation id="3500417806337761827">Ընդհանուր միացման սխալ առաջացավ: SMB միացումները չափազանց շատ են:</translation>
 <translation id="3500764001796099683">Միացնել մեկուսացված վեբ հավելվածները</translation>
@@ -3612,7 +3611,6 @@
 <translation id="3774059845329307709">Սերիական համարը</translation>
 <translation id="3774166835015494435">Վերջին լուսանկարներ և ծանուցումներ</translation>
 <translation id="3775432569830822555">SSL սերվերի վկայագիր</translation>
-<translation id="3775705724665058594">Ուղարկել սարքերին</translation>
 <translation id="3776508619697147021">Կայքերը կարող են ավտոմատ մի քանի ֆայլ ներբեռնելու թույլտվություն հայցել</translation>
 <translation id="3776796446459804932">Այս ընդլայնումը խախտում է Chrome Web Store-ի քաղաքականությունը:</translation>
 <translation id="3777483481409781352">Չհաջողվեց ակտիվացնել բջջային սարքը</translation>
@@ -9736,7 +9734,6 @@
 <translation id="858006550102277544">Մեկնաբանություն</translation>
 <translation id="8581809080475256101">Սեղմեք՝ առաջ անցնելու համար, բացեք տեղային ընտրացանկը՝ պատմությունը տեսնելու համար</translation>
 <translation id="8584280235376696778">&amp;Բացել տեսանյութը նոր ներդիրով</translation>
-<translation id="858451212965845553">Ուղարկել ձեր &amp;սարքերին</translation>
 <translation id="8584843865238667486">HID սարքեր՝ <ph name="USAGE_PAGE" /> էջում <ph name="USAGE" /> օգտագործմամբ</translation>
 <translation id="8585480574870650651">Հեռացնել Crostini-ն</translation>
 <translation id="8585841788766257444">Նշված կայքերի համար կանխադրված կարգավորումների փոխարեն գործում են հատուկ կարգավորումները</translation>
@@ -9896,6 +9893,7 @@
 <translation id="8693862390730570097">Թույլ չտալ, որ տեքստագրիչն ավտոմատ բացվի</translation>
 <translation id="8694596275649352090">Կողպել, երբ սարքն անցնում է քնի ռեժիմի, կամ դրա կափարիչը փակվում է</translation>
 <translation id="8695825812785969222">Բացել &amp;հասցեն…</translation>
+<translation id="8696297579102085705">Ուղարկել իմ սարքին</translation>
 <translation id="869884720829132584">Հավելվածների ընտրացանկ</translation>
 <translation id="869891660844655955">Սպառման ժամկետ</translation>
 <translation id="8699296325072357994">Գաղտնաբառերով էջերի բովանդակությունը և առնչվող տեղեկությունները ուղարկվում են Google-ին և ստուգվում են մասնագետների կողմից։ Գաղտնաբառերը գաղտնագրված են և տեսանելի են միայն ձեզ։ <ph name="PASSWORD_CHANGE" /></translation>

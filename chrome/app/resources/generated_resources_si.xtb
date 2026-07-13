@@ -3234,7 +3234,6 @@
 <translation id="3496995426334945408">අඩවි සාමාන්‍යයෙන් වීඩියෝ ක්‍රීඩා හෝ වෙබ් පෝරම වැනි අන්තර්ක්‍රියාකාරී විශේෂාංග සංදර්ශනය කිරීමට ජාවාස්ක්‍රිප්ට් භාවිත කරයි</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> වෙතින් USB උපාංගය (නිෂ්පාදන <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Doodle බෙදා ගන්න</translation>
-<translation id="3497915391670770295">ඔබේ උපාංග වෙත යවන්න</translation>
 <translation id="3498138244916757538">මයික්‍රෆෝන සැකසීම තුළ වෙනස <ph name="SPECIFIC_NAME" /> වසා දැමීම අවශ්‍ය කරයි. ඉදිරියට යාමට <ph name="SPECIFIC_NAME" /> වසා දමන්න.</translation>
 <translation id="3500417806337761827">පංගුව නැංවීමේ දෝෂය. දැනටමත් නංවා ඇත SMB පංගු සංඛ්‍යාව ඉතා වැඩියි.</translation>
 <translation id="3500764001796099683">එකලා වෙබ් යෙදුම් සබල කරන්න</translation>
@@ -3617,7 +3616,6 @@
 <translation id="3774059845329307709">අනුක්‍රමික අංකය</translation>
 <translation id="3774166835015494435">මෑත ඡායාරූප සහ දැනුම්දීම්</translation>
 <translation id="3775432569830822555">SSL සේවාදායක සහතිකය</translation>
-<translation id="3775705724665058594">ඔබේ උපාංග වෙත යවන්න</translation>
 <translation id="3776508619697147021">අඩවි ස්වයංක්‍රියව ගොනු කිහිපයක් බාගැනීමට ඉල්ලිය හැකිය</translation>
 <translation id="3776796446459804932">දිගුව විසින් Chrome Web Store ප්‍රතිපත්තිය උල්ලංගනය කරයි.</translation>
 <translation id="3777483481409781352">සෙලියුලර් උපාංගය ක්‍රියාත්මක කළ නොහැකි විය</translation>
@@ -9743,7 +9741,6 @@
 <translation id="858006550102277544">අදහස</translation>
 <translation id="8581809080475256101">ඉදිරියට යාමට ඔබන්න, ඉතිහාසය බැලීමට සන්දර්භ මෙනුව</translation>
 <translation id="8584280235376696778">නව ටැබයෙහි වීඩියෝව විවෘත කරන්න</translation>
-<translation id="858451212965845553">ඔබේ උපාංග වෙත යවන්න</translation>
 <translation id="8584843865238667486"><ph name="USAGE_PAGE" /> භාවිත පිටුවෙන් <ph name="USAGE" /> භාවිතය සහිත HID උපාංග</translation>
 <translation id="8585480574870650651">Crostini ඉවත් කරන්න</translation>
 <translation id="8585841788766257444">පහත ලැයිස්තුගත කර ඇති අඩවි පෙරනිමිය වෙනුවට අභිරුචි සැකසීමක් අනුගමනය කරයි</translation>
@@ -9903,6 +9900,7 @@
 <translation id="8693862390730570097">"මට ලියන්න උදවු කරන්න" ස්වයංක්‍රීයව විවෘත වීමට ඉඩ නොදෙන්න</translation>
 <translation id="8694596275649352090">නිදන විට හෝ පියන වසා ඇති විට අගුළු දමන්න</translation>
 <translation id="8695825812785969222">ස්ථානය විවෘත කරන්න (&amp;L)...</translation>
+<translation id="8696297579102085705">ඔබේ උපාංගය වෙත යවන්න</translation>
 <translation id="869884720829132584">යෙදුම් මෙනුව</translation>
 <translation id="869891660844655955">කල් ඉකුත් වීමේ දිනය:</translation>
 <translation id="8699296325072357994">මුරපද පිටු වලින් අන්තර්ගතය සහ අදාළ තොරතුරු Google වෙත යවා පුද්ගලයින් විසින් සමාලෝචනය කරනු ලැබේ. ඔබේ මුරපදය සංකේතනය කර ඇති අතර කිසිවෙකුට එය නොපෙනේ. <ph name="PASSWORD_CHANGE" /></translation>

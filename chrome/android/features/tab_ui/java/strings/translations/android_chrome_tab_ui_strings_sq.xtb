@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Artikujt e tu joaktivë nuk do të grumbullohen</translation>
 <translation id="1329584516321524826">U përditësua pikërisht tani</translation>
 <translation id="1340839264183302272">Largohu nga grupi</translation>
+<translation id="1386966479075994683">Zgjero skedat</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Zgjero grupin e ndarë të skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />, me etiketën "<ph name="CARD_LABEL" />".}other{Zgjero grupin e ndarë të skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />, me etiketën "<ph name="CARD_LABEL" />".}}</translation>
 <translation id="1486715732399361704">Mund t'i gjesh të gjitha grupet e skedave këtu</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Krijuar <ph name="NUM_MINS_ONE" /> minutë më parë}other{Krijuar <ph name="NUM_MINS_MANY" /> minuta më parë}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Fshih rrjetën me ekran të plotë</translation>
 <translation id="5076161749301278626">Të shihen komentet e dyqanit?</translation>
 <translation id="5161254044473106830">Kërkohet titulli</translation>
+<translation id="5204584298075822291">Palos skedat</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome mbyll automatikisht skedat dhe grupet e skedave joaktive pas <ph name="AUTO_DELETE_DELAY_ONE" /> muaji. Mund ta ndryshosh këtë te cilësimet.}other{Chrome mbyll automatikisht skedat dhe grupet e skedave joaktive pas <ph name="AUTO_DELETE_DELAY_MANY" /> muajsh. Mund ta ndryshosh këtë te cilësimet.}}</translation>
 <translation id="5254233580564156835">Përdorimi i memories: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Skeda jote e fundit</translation>

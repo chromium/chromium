@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Jūsu neaktīvie vienumi neuzkrāsies</translation>
 <translation id="1329584516321524826">Tikko atjaunināta</translation>
 <translation id="1340839264183302272">Pamest grupu</translation>
+<translation id="1386966479075994683">Izvērst cilnes</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Izvērst kopīgoto ciļņu grupu “<ph name="TITLE_OF_GROUP" />” ar <ph name="TABS_COUNT_ONE" /> cilni šādā krāsā: <ph name="COLOR_NAME" />; ar iezīmi “<ph name="CARD_LABEL" />”.}zero{Izvērst kopīgoto ciļņu grupu “<ph name="TITLE_OF_GROUP" />” ar <ph name="TABS_COUNT_MANY" /> cilnēm šādā krāsā: <ph name="COLOR_NAME" />; ar iezīmi “<ph name="CARD_LABEL" />”.}one{Izvērst kopīgoto ciļņu grupu “<ph name="TITLE_OF_GROUP" />” ar <ph name="TABS_COUNT_MANY" /> cilni šādā krāsā: <ph name="COLOR_NAME" />; ar iezīmi “<ph name="CARD_LABEL" />”.}other{Izvērst kopīgoto ciļņu grupu “<ph name="TITLE_OF_GROUP" />” ar <ph name="TABS_COUNT_MANY" /> cilnēm šādā krāsā: <ph name="COLOR_NAME" />; ar iezīmi “<ph name="CARD_LABEL" />”.}}</translation>
 <translation id="1486715732399361704">Šeit varat skatīt visas savas ciļņu grupas.</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Izveidota pirms <ph name="NUM_MINS_ONE" /> minūtes}zero{Izveidota pirms <ph name="NUM_MINS_MANY" /> minūtēm}one{Izveidota pirms <ph name="NUM_MINS_MANY" /> minūtes}other{Izveidota pirms <ph name="NUM_MINS_MANY" /> minūtēm}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Slēpt pilnekrāna režģi</translation>
 <translation id="5076161749301278626">Vai skatīt atsauksmes par veikalu?</translation>
 <translation id="5161254044473106830">Jānorāda nosaukums</translation>
+<translation id="5204584298075822291">Sakļaut cilnes</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Pārlūkā Chrome tiek automātiski aizvērtas neaktīvās cilnes un ciļņu grupas pēc <ph name="AUTO_DELETE_DELAY_ONE" /> mēneša. Varat to mainīt iestatījumos.}zero{Pārlūkā Chrome tiek automātiski aizvērtas neaktīvās cilnes un ciļņu grupas pēc <ph name="AUTO_DELETE_DELAY_MANY" /> mēnešiem. Varat to mainīt iestatījumos.}one{Pārlūkā Chrome tiek automātiski aizvērtas neaktīvās cilnes un ciļņu grupas pēc <ph name="AUTO_DELETE_DELAY_MANY" /> mēneša. Varat to mainīt iestatījumos.}other{Pārlūkā Chrome tiek automātiski aizvērtas neaktīvās cilnes un ciļņu grupas pēc <ph name="AUTO_DELETE_DELAY_MANY" /> mēnešiem. Varat to mainīt iestatījumos.}}</translation>
 <translation id="5254233580564156835">Atmiņas lietojums: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Jūsu pēdējā izmantotā cilne</translation>

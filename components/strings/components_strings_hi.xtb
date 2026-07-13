@@ -329,6 +329,7 @@
 <translation id="1486096554574027028">पासवर्ड खोजें</translation>
 <translation id="1492194039220927094">नीतियां भेजें:</translation>
 <translation id="1495677929897281669">टैब पर वापस जाएं</translation>
+<translation id="1496318738909526466">बेहतर ऑटोफ़िल की सुविधा को मैनेज करें</translation>
 <translation id="1500286806237135498">कैमरे (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">फ़्लूट</translation>
 <translation id="1507202001669085618">&lt;p&gt;अगर आप ऐसे वाई-फ़ाई पोर्टल का इस्तेमाल कर रहे हैं, जिसमें ऑनलाइन होने से पहले साइन इन ज़रूरी है, तो आपको यह गड़बड़ी दिखाई देगी.&lt;/p&gt;
@@ -866,6 +867,7 @@
 <translation id="2322254345061973671">{COUNT,plural, =1{1 विंडो}one{# विंडो}other{# विंडो}}</translation>
 <translation id="232390861414237658">अगर आपने Google Pay में इस्तेमाल करने के लिए इस कार्ड की जानकारी सेव की है, तो Chrome में खरीदारी करने के लिए कार्ड की जानकारी ऑटोमैटिक भरने की सुविधा चालू करें</translation>
 <translation id="2326283484705860548">अब Google Wallet से ऑटोमैटिक तरीके से ज़्यादा जानकारी भरी जा सकती है</translation>
+<translation id="2326747055382936979">बेहतर ऑटोफ़िल की सुविधा को मैनेज करें</translation>
 <translation id="2328651992442742497">अनुमति है (डिफ़ॉल्ट रूप से)</translation>
 <translation id="2328955282645810595">निर्माण और पावर टूल</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> को खत्म होने वाला है</translation>

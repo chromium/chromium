@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Neaktyvūs elementai nebus kaupiami</translation>
 <translation id="1329584516321524826">Ką tik atnaujinta</translation>
 <translation id="1340839264183302272">Išeiti iš grupės</translation>
+<translation id="1386966479075994683">Išskleisti skirtukus</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Išskleisti bendrinamą skirtukų grupę „<ph name="TITLE_OF_GROUP" />“ su <ph name="TABS_COUNT_ONE" /> skirtuku. Spalva: <ph name="COLOR_NAME" />, etiketė: „<ph name="CARD_LABEL" />“.}one{Išskleisti bendrinamą skirtukų grupę „<ph name="TITLE_OF_GROUP" />“ su <ph name="TABS_COUNT_MANY" /> skirtuku. Spalva: <ph name="COLOR_NAME" />, etiketė: „<ph name="CARD_LABEL" />“.}few{Išskleisti bendrinamą skirtukų grupę „<ph name="TITLE_OF_GROUP" />“ su <ph name="TABS_COUNT_MANY" /> skirtukais. Spalva: <ph name="COLOR_NAME" />, etiketė: „<ph name="CARD_LABEL" />“.}many{Išskleisti bendrinamą skirtukų grupę „<ph name="TITLE_OF_GROUP" />“ su <ph name="TABS_COUNT_MANY" /> skirtuko. Spalva: <ph name="COLOR_NAME" />, etiketė: „<ph name="CARD_LABEL" />“.}other{Išskleisti bendrinamą skirtukų grupę „<ph name="TITLE_OF_GROUP" />“ su <ph name="TABS_COUNT_MANY" /> skirtukų. Spalva: <ph name="COLOR_NAME" />, etiketė: „<ph name="CARD_LABEL" />“.}}</translation>
 <translation id="1486715732399361704">Visas skirtukų grupes rasite čia</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Sukurta prieš <ph name="NUM_MINS_ONE" /> minutę}one{Sukurta prieš <ph name="NUM_MINS_MANY" /> minutę}few{Sukurta prieš <ph name="NUM_MINS_MANY" /> minutes}many{Sukurta prieš <ph name="NUM_MINS_MANY" /> minutės}other{Sukurta prieš <ph name="NUM_MINS_MANY" /> minučių}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Slėpti viso ekrano tinklelį</translation>
 <translation id="5076161749301278626">Peržiūrėti parduotuvės apžvalgas?</translation>
 <translation id="5161254044473106830">Būtina nurodyti pavadinimą</translation>
+<translation id="5204584298075822291">Sutraukti skirtukus</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{„Chrome“ automatiškai uždaro neaktyvius skirtukus ir skirtukų grupes po <ph name="AUTO_DELETE_DELAY_ONE" /> mėnesio. Tai galite keisti nustatymų skiltyje.}one{„Chrome“ automatiškai uždaro neaktyvius skirtukus ir skirtukų grupes po <ph name="AUTO_DELETE_DELAY_MANY" /> mėnesio. Tai galite keisti nustatymų skiltyje.}few{„Chrome“ automatiškai uždaro neaktyvius skirtukus ir skirtukų grupes po <ph name="AUTO_DELETE_DELAY_MANY" /> mėnesių. Tai galite keisti nustatymų skiltyje.}many{„Chrome“ automatiškai uždaro neaktyvius skirtukus ir skirtukų grupes po <ph name="AUTO_DELETE_DELAY_MANY" /> mėnesio. Tai galite keisti nustatymų skiltyje.}other{„Chrome“ automatiškai uždaro neaktyvius skirtukus ir skirtukų grupes po <ph name="AUTO_DELETE_DELAY_MANY" /> mėnesių. Tai galite keisti nustatymų skiltyje.}}</translation>
 <translation id="5254233580564156835">Atminties sąnaudos: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Jūsų paskutinis skirtukas</translation>

@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">ລາຍການທີ່ບໍ່ໄດ້ນຳໃຊ້ຂອງທ່ານຈະບໍ່ສະສົມ</translation>
 <translation id="1329584516321524826">ຫາກໍອັບເດດເມື່ອກີ້ນີ້</translation>
 <translation id="1340839264183302272">ອອກຈາກກຸ່ມ</translation>
+<translation id="1386966479075994683">ຂະຫຍາຍແຖບ</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ແບ່ງປັນເຊິ່ງມີ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />, ພ້ອມກັບປ້າຍກຳກັບ <ph name="CARD_LABEL" />.}other{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ແບ່ງປັນເຊິ່ງມີ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />, ພ້ອມກັບປ້າຍກຳກັບ <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">ທ່ານສາມາດຊອກຫາກຸ່ມແຖບທັງໝົດໄດ້ທີ່ນີ້</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{ສ້າງເມື່ອ <ph name="NUM_MINS_ONE" /> ນາທີກ່ອນ}other{ສ້າງເມື່ອ <ph name="NUM_MINS_MANY" /> ນາທີກ່ອນ}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">ເຊື່ອງຕາໜ່າງແບບເຕັມຈໍ</translation>
 <translation id="5076161749301278626">ເບິ່ງຄຳຕິຊົມຮ້ານຄ້າບໍ?</translation>
 <translation id="5161254044473106830">ຈຳ​ເປັນ​ຕ້ອງ​ມີ​ຫົວ​ຂໍ້</translation>
+<translation id="5204584298075822291">ຫຍໍ້ແຖບລົງ</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ຈະປິດແຖບ ແລະ ກຸ່ມແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ໂດຍອັດຕະໂນມັດຫຼັງຈາກຜ່ານໄປ <ph name="AUTO_DELETE_DELAY_ONE" /> ເດືອນ. ທ່ານສາມາດປ່ຽນຄ່ານີ້ໄດ້ໃນການຕັ້ງຄ່າ.}other{Chrome ຈະປິດແຖບ ແລະ ກຸ່ມແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ໂດຍອັດຕະໂນມັດຫຼັງຈາກຜ່ານໄປ <ph name="AUTO_DELETE_DELAY_MANY" /> ເດືອນ. ທ່ານສາມາດປ່ຽນຄ່ານີ້ໄດ້ໃນການຕັ້ງຄ່າ.}}</translation>
 <translation id="5254233580564156835">ການໃຊ້ໜ່ວຍຄວາມຈຳ: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">ແຖບສຸດທ້າຍຂອງທ່ານ</translation>

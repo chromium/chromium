@@ -3236,7 +3236,6 @@
 <translation id="3496995426334945408">‏تستخدم المواقع الإلكترونية عادةً JavaScript لعرض الميزات التفاعلية، مثل ألعاب الفيديو أو نماذج الويب.</translation>
 <translation id="3497501929010263034">‏أجهزة USB من <ph name="VENDOR_NAME" /> (المنتج <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">‏مشاركة رسومات شعار Google</translation>
-<translation id="3497915391670770295">الإرسال إلى أجهزتك</translation>
 <translation id="3498138244916757538">يجب إيقاف "<ph name="SPECIFIC_NAME" />" لتغيير إعدادات الميكروفون. للمتابعة، يجب أولاً إيقاف "<ph name="SPECIFIC_NAME" />".</translation>
 <translation id="3500417806337761827">‏حدث خطأ أثناء تثبيت المشاركة. سبَق وأن تمّ تثبيت العديد من مشاركات بروتوكول Server Message Block ‏(SMB).</translation>
 <translation id="3500764001796099683">تشغيل تطبيقات الويب المعزولة</translation>
@@ -3620,7 +3619,6 @@
 <translation id="3774059845329307709">رقم تسلسلي</translation>
 <translation id="3774166835015494435">الصور والإشعارات الحديثة</translation>
 <translation id="3775432569830822555">‏شهادة خادم بروتوكول SSL (طبقة المقابس الآمنة)</translation>
-<translation id="3775705724665058594">إرسال إلى أجهزتك</translation>
 <translation id="3776508619697147021">السماح للمواقع الإلكترونية بطلب تنزيل عدّة ملفات تلقائيًا</translation>
 <translation id="3776796446459804932">‏هذه الإضافة تنتهك سياسة سوق Chrome الإلكتروني.</translation>
 <translation id="3777483481409781352">تعذّر تفعيل الجهاز الخلوي.</translation>
@@ -9753,7 +9751,6 @@
 <translation id="858006550102277544">تعليق</translation>
 <translation id="8581809080475256101">اضغط للانتقال للأمام، وقائمة السياقات لمشاهدة السجلّ</translation>
 <translation id="8584280235376696778">&amp;فتح الفيديو في علامة تبويب جديدة</translation>
-<translation id="858451212965845553">الإرسال إلى أجهزتك</translation>
 <translation id="8584843865238667486">‏أجهزة HID لها الاستخدام <ph name="USAGE" /> المحدّد في صفحة الاستخدام <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">‏إزالة نظام التشغيل Crostini</translation>
 <translation id="8585841788766257444">تتبع المواقع الإلكترونية المُدرَجة أدناه إعدادات مُخصَّصة بدلاً من الإعدادات التلقائية.</translation>
@@ -9913,6 +9910,7 @@
 <translation id="8693862390730570097">عدم السماح بفتح ميزة "ساعدني في الكتابة" تلقائيًا</translation>
 <translation id="8694596275649352090">قفل الجهاز عند دخوله وضع السكون أو عند إغلاق غطائه</translation>
 <translation id="8695825812785969222">فتح ال&amp;موقع...</translation>
+<translation id="8696297579102085705">الإرسال إلى جهازك</translation>
 <translation id="869884720829132584">قائمة التطبيقات</translation>
 <translation id="869891660844655955">تاريخ انتهاء الصلاحية</translation>
 <translation id="8699296325072357994">‏يتم إرسال محتوى صفحات كلمات المرور والمعلومات ذات الصلة إلى Google، ويراجعه فريق لدينا. يُرجى العلم أنّ كلمة المرور مشفَّرة ولا يمكن لأي شخص الاطّلاع عليها. <ph name="PASSWORD_CHANGE" /></translation>

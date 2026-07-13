@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Elementele inactive nu se vor acumula</translation>
 <translation id="1329584516321524826">Actualizată chiar acum</translation>
 <translation id="1340839264183302272">Ieși din grup</translation>
+<translation id="1386966479075994683">Extinde filele</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Extinde grupul de file comun <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_ONE" /> filă de culoare <ph name="COLOR_NAME" />, cu eticheta <ph name="CARD_LABEL" />.}few{Extinde grupul de file comun <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> file de culoare <ph name="COLOR_NAME" />, cu eticheta <ph name="CARD_LABEL" />.}other{Extinde grupul de file comun <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> de file de culoare <ph name="COLOR_NAME" />, cu eticheta <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Aici poți găsi toate grupurile de file</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Creat acum <ph name="NUM_MINS_ONE" /> minut}few{Creat acum <ph name="NUM_MINS_MANY" /> minute}other{Creat acum <ph name="NUM_MINS_MANY" /> de minute}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Ascunde grila pe ecran complet</translation>
 <translation id="5076161749301278626">Vezi recenziile magazinului?</translation>
 <translation id="5161254044473106830">Titlul este obligatoriu</translation>
+<translation id="5204584298075822291">Restrânge filele</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome închide automat filele și grupurile de file inactive după <ph name="AUTO_DELETE_DELAY_ONE" /> lună. Poți modifica această opțiune din setări.}few{Chrome închide automat filele și grupurile de file inactive după <ph name="AUTO_DELETE_DELAY_MANY" /> luni. Poți modifica această opțiune din setări.}other{Chrome închide automat filele și grupurile de file inactive după <ph name="AUTO_DELETE_DELAY_MANY" /> de luni. Poți modifica această opțiune din setări.}}</translation>
 <translation id="5254233580564156835">Utilizarea memoriei: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Ultima filă</translation>

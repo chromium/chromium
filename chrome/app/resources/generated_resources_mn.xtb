@@ -3245,7 +3245,6 @@
 <translation id="3496995426334945408">Сайтууд ихэвчлэн видео тоглоом эсвэл веб маягтууд зэрэг интерактив онцлогуудыг үзүүлэхийн тулд JavaScript-г ашигладаг</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> (бүтээгдэхүүн <ph name="PRODUCT_ID" />)-н USB төхөөрөмж</translation>
 <translation id="3497560059572256875">Doodle-г хуваалцах</translation>
-<translation id="3497915391670770295">&amp;Төхөөрөмжүүд рүүгээ илгээх</translation>
 <translation id="3498138244916757538">Микрофоны тохиргоонд хийсэн өөрчлөлт <ph name="SPECIFIC_NAME" />-г унтраахыг шаарддаг. Үргэлжлүүлэхийн тулд <ph name="SPECIFIC_NAME" />-г унтраана уу.</translation>
 <translation id="3500417806337761827">Хуваалцахыг залгаж чадсангүй. Хэт олон SMB хуваалцлыг хэдийн залгасан байна.</translation>
 <translation id="3500764001796099683">Тусгаарласан веб аппуудыг идэвхжүүлэх</translation>
@@ -3628,7 +3627,6 @@
 <translation id="3774059845329307709">Серийн дугаар</translation>
 <translation id="3774166835015494435">Саяхны зургууд болон мэдэгдлүүд</translation>
 <translation id="3775432569830822555">SSL серверийн сертификат</translation>
-<translation id="3775705724665058594">Төхөөрөмжүүддээ илгээх</translation>
 <translation id="3776508619697147021">Сайтууд олон файлыг автоматаар татахыг хүсэх боломжтой</translation>
 <translation id="3776796446459804932">Энэ өргөтгөл нь Chrome Web Store-ын бодлогыг зөрчиж байна.</translation>
 <translation id="3777483481409781352">Үүрэн холбооны төхөөрөмжийг идэвхжүүлж чадсангүй</translation>
@@ -9752,7 +9750,6 @@
 <translation id="858006550102277544">Тайлбар</translation>
 <translation id="8581809080475256101">Үргэлжлүүлэх бол forward, түүх харах бол хулганын баруун товчлуур дээр дарна уу.</translation>
 <translation id="8584280235376696778">&amp; Шинэ цонхонд видео нээх</translation>
-<translation id="858451212965845553">&amp;Төхөөрөмжүүд рүүгээ илгээх</translation>
 <translation id="8584843865238667486"><ph name="USAGE_PAGE" /> ашиглалтын хуудасны <ph name="USAGE" />-н ашиглалттай HID төхөөрөмжүүд</translation>
 <translation id="8585480574870650651">Crostini-г хасах</translation>
 <translation id="8585841788766257444">Доор жагсаасан сайтууд нь өгөгдмөл тохиргооны оронд захиалгат тохиргоог дагадаг</translation>
@@ -9912,6 +9909,7 @@
 <translation id="8693862390730570097">"Надад бичихэд тусал" онцлогийг автоматаар нээгдэхийг бүү зөвшөөр</translation>
 <translation id="8694596275649352090">Идэвхгүй эсвэл таг хаалттай үед түгжих</translation>
 <translation id="8695825812785969222">Нээлттэй &amp; Байршил ...</translation>
+<translation id="8696297579102085705">Төхөөрөмж рүүгээ илгээх</translation>
 <translation id="869884720829132584">Програмын цэс</translation>
 <translation id="869891660844655955">Дуусах хугацаа</translation>
 <translation id="8699296325072357994">Нууц үгний хуудасны агуулга болон холбогдох мэдээллийг Google-д илгээдэг бөгөөд хүн хянадаг. Таны нууц үг шифрлэгдсэн бөгөөд хэнд ч харагдахгүй. <ph name="PASSWORD_CHANGE" /></translation>

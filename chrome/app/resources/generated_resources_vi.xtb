@@ -3246,7 +3246,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3496995426334945408">Các trang web thường sử dụng JavaScript để hiển thị những tính năng tương tác, như trò chơi điện tử hoặc biểu mẫu web</translation>
 <translation id="3497501929010263034">Thiết bị USB của <ph name="VENDOR_NAME" /> (sản phẩm <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Chia sẻ Doodle</translation>
-<translation id="3497915391670770295">Gửi đến thiết bị của bạn</translation>
 <translation id="3498138244916757538">Bạn cần tắt <ph name="SPECIFIC_NAME" /> để thay đổi chế độ cài đặt micrô. Hãy tắt <ph name="SPECIFIC_NAME" /> để tiếp tục.</translation>
 <translation id="3500417806337761827">Lỗi kết nối mục chia sẻ. Đã có quá nhiều mục chia sẻ của doanh nghiệp vừa và nhỏ (SMB) được liên kết.</translation>
 <translation id="3500764001796099683">Bật các ứng dụng web tách biệt</translation>
@@ -3629,7 +3628,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3774059845329307709">Số sê-ri</translation>
 <translation id="3774166835015494435">Thông báo và ảnh mới đây</translation>
 <translation id="3775432569830822555">Chứng chỉ Máy chủ SSL</translation>
-<translation id="3775705724665058594">Gửi đến thiết bị của bạn</translation>
 <translation id="3776508619697147021">Các trang web có thể yêu cầu tự động tải nhiều tệp xuống</translation>
 <translation id="3776796446459804932">Tiện ích này vi phạm chính sách của Cửa hàng Chrome trực tuyến.</translation>
 <translation id="3777483481409781352">Không kích hoạt được thiết bị di động</translation>
@@ -9758,7 +9756,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="858006550102277544">Nhận xét</translation>
 <translation id="8581809080475256101">Nhấn để tiếp tục, nhấn menu ngữ cảnh để xem lịch sử</translation>
 <translation id="8584280235376696778">&amp;Mở video trong thẻ mới</translation>
-<translation id="858451212965845553">Gửi đến thiết bị của bạn</translation>
 <translation id="8584843865238667486">Thiết bị HID với giá trị sử dụng <ph name="USAGE" /> từ trang sử dụng <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Xóa Crostini</translation>
 <translation id="8585841788766257444">Các trang web trong danh sách bên dưới tuân theo một tùy chọn cài đặt tùy chỉnh thay vì mặc định</translation>
@@ -9918,6 +9915,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8693862390730570097">Không cho phép tính năng "Giúp tôi viết" tự động mở</translation>
 <translation id="8694596275649352090">Khoá khi ngủ hoặc khi đóng nắp</translation>
 <translation id="8695825812785969222">Mở &amp;vị trí...</translation>
+<translation id="8696297579102085705">Gửi tới thiết bị của bạn</translation>
 <translation id="869884720829132584">Menu ứng dụng</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
 <translation id="8699296325072357994">Nội dung trên các trang được bảo vệ bằng mật khẩu và thông tin liên quan sẽ được gửi đến Google và được nhân viên xem xét. Mật khẩu của bạn được mã hoá và không ai có thể nhìn thấy. <ph name="PASSWORD_CHANGE" /></translation>

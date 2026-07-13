@@ -14,6 +14,7 @@
 <translation id="1321004960118052490">Az inaktív elemek nem halmozódnak fel</translation>
 <translation id="1329584516321524826">Most frissítve</translation>
 <translation id="1340839264183302272">Kilépés a csoportból</translation>
+<translation id="1386966479075994683">Lapok kibontása</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> című, <ph name="TABS_COUNT_ONE" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű, <ph name="CARD_LABEL" /> címkével ellátott megosztott lapcsoport kibontása.}other{<ph name="TITLE_OF_GROUP" /> című, <ph name="TABS_COUNT_MANY" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű, <ph name="CARD_LABEL" /> címkével ellátott megosztott lapcsoport kibontása.}}</translation>
 <translation id="1486715732399361704">Itt találja az összes lapcsoportot</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> perce létrehozva}other{<ph name="NUM_MINS_MANY" /> perce létrehozva}}</translation>
@@ -127,6 +128,7 @@
 <translation id="5073204694187207510">Teljes képernyős rács elrejtése</translation>
 <translation id="5076161749301278626">Lát véleményeket az üzletről?</translation>
 <translation id="5161254044473106830">Cím megadása kötelező</translation>
+<translation id="5204584298075822291">Lapok összecsukása</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{<ph name="AUTO_DELETE_DELAY_ONE" /> hónap elteltével a Chrome automatikusan bezárja az inaktív lapokat és lapcsoportokat. Ezt a beállításokban módosíthatja.}other{<ph name="AUTO_DELETE_DELAY_MANY" /> hónap elteltével a Chrome automatikusan bezárja az inaktív lapokat és lapcsoportokat. Ezt a beállításokban módosíthatja.}}</translation>
 <translation id="5254233580564156835">Memóriahasználat: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">A legutóbbi lap</translation>

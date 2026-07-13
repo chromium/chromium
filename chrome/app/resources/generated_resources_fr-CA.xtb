@@ -3235,7 +3235,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3496995426334945408">Les sites utilisent généralement JavaScript pour afficher des fonctionnalités interactives, comme des jeux vidéo ou des formulaires Web</translation>
 <translation id="3497501929010263034">Appareil USB de <ph name="VENDOR_NAME" /> (produit <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Partager le logo commémoratif</translation>
-<translation id="3497915391670770295">Envoyer à vos &amp;appareils</translation>
 <translation id="3498138244916757538">La modification du paramètre du microphone nécessite la désactivation de <ph name="SPECIFIC_NAME" />. Désactivez <ph name="SPECIFIC_NAME" /> pour continuer.</translation>
 <translation id="3500417806337761827">Erreur durant le montage du répertoire partagé. Un trop grand nombre de répertoires SMB partagés sont déjà montés.</translation>
 <translation id="3500764001796099683">Activer les applications Web isolées</translation>
@@ -3618,7 +3617,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3774059845329307709">Numéro de série</translation>
 <translation id="3774166835015494435">Photos et notifications récentes</translation>
 <translation id="3775432569830822555">Certificat du serveur SSL</translation>
-<translation id="3775705724665058594">Envoyer à vos appareils</translation>
 <translation id="3776508619697147021">Les sites peuvent demander à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="3776796446459804932">Cette extension ne respecte pas les règles de la boutique Chrome Web Store.</translation>
 <translation id="3777483481409781352">Impossible d'activer l'appareil cellulaire</translation>
@@ -9744,7 +9742,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="858006550102277544">Commentaire</translation>
 <translation id="8581809080475256101">Appuyez pour avancer, menu contextuel pour voir l'historique</translation>
 <translation id="8584280235376696778">&amp;Ouvrir la vidéo dans un nouvel onglet</translation>
-<translation id="858451212965845553">Envoyer à vos &amp;appareils</translation>
 <translation id="8584843865238667486">Appareils HID avec valeur d'utilisation <ph name="USAGE" /> provenant de la page d'utilisation <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Supprimer Crostini</translation>
 <translation id="8585841788766257444">Les sites indiqués ci-dessous suivent un paramètre personnalisé plutôt que la valeur par défaut</translation>
@@ -9904,6 +9901,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="8693862390730570097">Ne pas autoriser l'ouverture automatique de l'« Aide à la rédaction »</translation>
 <translation id="8694596275649352090">Verrouiller lorsque l'appareil est en veille ou que le couvercle est fermé</translation>
 <translation id="8695825812785969222">Atteindre un emp&amp;lacement…</translation>
+<translation id="8696297579102085705">Envoyer l'onglet à votre appareil</translation>
 <translation id="869884720829132584">Menu Applications</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8699296325072357994">Le contenu provenant des pages de mots de passe et les informations connexes sont envoyés à Google et examinés par des humains. Votre mot de passe est chiffré et n'est jamais vu par personne. <ph name="PASSWORD_CHANGE" /></translation>
