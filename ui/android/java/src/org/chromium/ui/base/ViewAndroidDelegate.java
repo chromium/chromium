@@ -22,6 +22,7 @@ import android.view.inputmethod.InputConnection;
 import androidx.annotation.CallSuper;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -594,6 +595,35 @@ public class ViewAndroidDelegate {
     private void setTooltipText(@JniType("std::u16string") String text) {
         View container = getContainerView();
         if (container != null) container.setTooltipText(text);
+    }
+
+    @CalledByNative
+    private void setTooltipFromKeyboard(
+            @JniType("std::u16string") String text,
+            int unusedX,
+            int unusedY,
+            int unusedWidth,
+            int unusedHeight) {
+        // Bounds are unused because Android system API has no way to provide them to accessibility
+        // APIs
+        View container = getContainerView();
+        if (container == null) return;
+
+        // Forward to Android system-default accessibility handler.
+        container.setTooltipText(text);
+        container.performAccessibilityAction(
+                AccessibilityActionCompat.ACTION_SHOW_TOOLTIP.getId(), null);
+    }
+
+    @CalledByNative
+    private void clearTooltipFromKeyboard() {
+        View container = getContainerView();
+        if (container == null) return;
+
+        // Forward to Android system-default accessibility handler.
+        container.setTooltipText("");
+        container.performAccessibilityAction(
+                AccessibilityActionCompat.ACTION_HIDE_TOOLTIP.getId(), null);
     }
 
     /**

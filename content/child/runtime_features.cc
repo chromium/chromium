@@ -328,6 +328,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
 #endif
           {"HstsTopLevelNavigationsOnly",
            raw_ref(net::features::kHstsTopLevelNavigationsOnly)},
+          {"KeyboardAccessibleTooltip",
+           raw_ref(features::kKeyboardAccessibleTooltip)},
           {"MachineLearningNeuralNetwork",
            raw_ref(webnn::mojom::features::kWebMachineLearningNeuralNetwork),
            kSetOnlyIfOverridden},

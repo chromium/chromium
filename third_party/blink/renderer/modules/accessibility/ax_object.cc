@@ -7803,18 +7803,20 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
       }
       SetChildTree(action_data.child_tree_id);
       return true;
+    case ax::mojom::blink::Action::kShowTooltip:
+      return RequestShowTooltipAction();
+    case ax::mojom::blink::Action::kHideTooltip:
+      return RequestHideTooltipAction();
     case ax::mojom::blink::Action::kAnnotatePageImages:
     case ax::mojom::blink::Action::kCustomAction:
     case ax::mojom::blink::Action::kGetImageData:
     case ax::mojom::blink::Action::kGetTextLocation:
-    case ax::mojom::blink::Action::kHideTooltip:
     case ax::mojom::blink::Action::kHitTest:
     case ax::mojom::blink::Action::kInternalInvalidateTree:
     case ax::mojom::blink::Action::kLoadInlineTextBoxes:
     case ax::mojom::blink::Action::kNone:
     case ax::mojom::blink::Action::kReplaceSelectedText:
     case ax::mojom::blink::Action::kSetSelection:
-    case ax::mojom::blink::Action::kShowTooltip:
     case ax::mojom::blink::Action::kSignalEndOfTest:
     case ax::mojom::blink::Action::kResumeMedia:
     case ax::mojom::blink::Action::kStartDuckingMedia:
@@ -8124,6 +8126,51 @@ bool AXObject::RequestReplaceRangesAction(const ui::AXActionData& action_data) {
         *frame, String::FromUtf8(params.replacement_string));
   }
 
+  return true;
+}
+
+bool AXObject::RequestShowTooltipAction() {
+  Element* element = GetElement();
+  if (!element) {
+    return false;
+  }
+
+  Document* document = GetDocument();
+  if (!document || !document->GetFrame() || !document->GetPage()) {
+    return false;
+  }
+
+  // Fetch the tooltip text matching Blink's standard fallback order.
+  String tooltip_text = element->title();
+  if (tooltip_text.IsNull()) {
+    tooltip_text = element->DefaultToolTip();
+  }
+
+  if (tooltip_text.empty()) {
+    return false;
+  }
+
+  LayoutObject* layout_object = element->GetLayoutObject();
+  if (!layout_object) {
+    return false;
+  }
+
+  // Trigger the tooltip via ChromeClient, anchoring it to the element's bounds.
+  TextDirection tooltip_direction = layout_object->StyleRef().Direction();
+  document->GetPage()->GetChromeClient().UpdateTooltipFromKeyboard(
+      *document->GetFrame(), tooltip_text, tooltip_direction,
+      element->BoundsInWidget());
+  return true;
+}
+
+bool AXObject::RequestHideTooltipAction() {
+  Document* document = GetDocument();
+  if (!document || !document->GetFrame() || !document->GetPage()) {
+    return false;
+  }
+
+  document->GetPage()->GetChromeClient().ClearKeyboardTriggeredTooltip(
+      *document->GetFrame());
   return true;
 }
 

@@ -218,6 +218,11 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   void SetTooltip(const std::u16string& text);
 
+  void SetTooltipFromKeyboard(const std::u16string& text,
+                              const gfx::Rect& bounds);
+
+  void ClearTooltipFromKeyboard();
+
   void SetCopyOutputCallback(CopyViewCallback callback);
   // Return the CopyOutputRequest back if view cannot perform readback.
   std::unique_ptr<viz::CopyOutputRequest> MaybeRequestCopyOfView(

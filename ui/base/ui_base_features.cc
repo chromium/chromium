@@ -311,7 +311,7 @@ bool IsEyeDropperEnabled() {
 // (i.e., inside Blink). See
 // ::views::features::kKeyboardAccessibleTooltipInViews for
 // keyboard-accessible tooltips in Views UI.
-BASE_FEATURE(kKeyboardAccessibleTooltip, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kKeyboardAccessibleTooltip, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsKeyboardAccessibleTooltipEnabled() {
   static const bool keyboard_accessible_tooltip_enabled =

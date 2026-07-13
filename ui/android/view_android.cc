@@ -358,6 +358,27 @@ void ViewAndroid::SetTooltip(const std::u16string& text) {
   Java_ViewAndroidDelegate_setTooltipText(env, delegate, text);
 }
 
+void ViewAndroid::SetTooltipFromKeyboard(const std::u16string& text,
+                                         const gfx::Rect& bounds) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate(env));
+  if (delegate.is_null()) {
+    return;
+  }
+  Java_ViewAndroidDelegate_setTooltipFromKeyboard(
+      env, delegate, text, bounds.x(), bounds.y(), bounds.width(),
+      bounds.height());
+}
+
+void ViewAndroid::ClearTooltipFromKeyboard() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate(env));
+  if (delegate.is_null()) {
+    return;
+  }
+  Java_ViewAndroidDelegate_clearTooltipFromKeyboard(env, delegate);
+}
+
 void ViewAndroid::SetCopyOutputCallback(CopyViewCallback callback) {
   copy_view_callback_ = std::move(callback);
 }

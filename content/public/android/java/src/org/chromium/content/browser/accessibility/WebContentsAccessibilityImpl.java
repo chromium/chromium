@@ -23,6 +23,7 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CUT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_EXPAND;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_FOCUS;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_HIDE_TOOLTIP;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_IME_ENTER;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_LONG_CLICK;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_AT_MOVEMENT_GRANULARITY;
@@ -45,6 +46,7 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_SELECTION;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_TEXT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SHOW_ON_SCREEN;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SHOW_TOOLTIP;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA_DATA_TEXT_CHARACTER_LOCATION_ARG_LENGTH;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA_DATA_TEXT_CHARACTER_LOCATION_ARG_START_INDEX;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA_DATA_TEXT_CHARACTER_LOCATION_IN_WINDOW_KEY;
@@ -1751,6 +1753,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                             /* endNodeId= */ selectionEnd.first,
                             /* endNodeOffset= */ selectionEnd.second,
                             /* endOffsetType= */ endOffsetType);
+        } else if (action == ACTION_SHOW_TOOLTIP.getId()) {
+            return WebContentsAccessibilityImplJni.get().showTooltip(mNativeObj, virtualViewId);
+        } else if (action == ACTION_HIDE_TOOLTIP.getId()) {
+            return WebContentsAccessibilityImplJni.get().hideTooltip(mNativeObj, virtualViewId);
         } else {
             // This should never be hit, so do the equivalent of NOTREACHED;
             assert false : "AccessibilityNodeProvider called performAction with unexpected action.";
@@ -2965,6 +2971,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         void collapse(long nativeWebContentsAccessibilityAndroid, int id);
 
         void showContextMenu(long nativeWebContentsAccessibilityAndroid, int id);
+
+        boolean showTooltip(long nativeWebContentsAccessibilityAndroid, int id);
+
+        boolean hideTooltip(long nativeWebContentsAccessibilityAndroid, int id);
 
         boolean isRootManagerConnected(long nativeWebContentsAccessibilityAndroid);
 

@@ -509,6 +509,14 @@ public final class AccessibilityNodeInfoCompatDumper {
                 == AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SHOW_ON_SCREEN
                         .getId()) {
             return "SHOW_ON_SCREEN";
+        } else if (action
+                == AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SHOW_TOOLTIP
+                        .getId()) {
+            return "SHOW_TOOLTIP";
+        } else if (action
+                == AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_HIDE_TOOLTIP
+                        .getId()) {
+            return "HIDE_TOOLTIP";
         } else {
             return "NOT_IMPLEMENTED";
         }

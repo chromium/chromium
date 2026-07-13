@@ -86,6 +86,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // WebContentsAccessibilityAndroid it should talk to.
   void UpdateBrowserAccessibilityManager();
 
+  void OnTooltipCleared();
+
   // --------------------------------------------------------------------------
   // Methods called from Java via JNI
   // --------------------------------------------------------------------------
@@ -201,6 +203,16 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void ClearExtendedSelection(JNIEnv* env, int32_t id);
   bool AdjustSlider(JNIEnv* env, int32_t id, bool increment);
   void ShowContextMenu(JNIEnv* env, int32_t id);
+
+  // Programmatically show tooltip for the AXNode with the given ID; return true
+  // if request is passed on to browser accessibility manager, false if node is
+  // not found.
+  bool ShowTooltip(JNIEnv* env, int32_t id);
+
+  // Programmatically hide tooltip for the AXNode with the given ID; return true
+  // if request is passed on to browser accessibility manager, false if node is
+  // not found.
+  bool HideTooltip(JNIEnv* env, int32_t id);
 
   // Return the id of the next node in tree order in the direction given by
   // |forwards|, starting with |start_id|, that matches |element_type|,
@@ -621,6 +633,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   std::unique_ptr<BrowserAccessibilityManagerAndroid> snapshot_root_manager_;
 
   std::unique_ptr<ScopedAccessibilityMode> scoped_accessibility_mode_;
+
+  int32_t tooltip_showing_node_id_ = 0;
 
   base::WeakPtrFactory<WebContentsAccessibilityAndroid> weak_ptr_factory_{this};
 };

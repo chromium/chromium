@@ -274,6 +274,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
                      const std::vector<BrowserAccessibility::AXRange>& ranges,
                      const std::vector<std::string>& replacement_strings);
   void ShowContextMenu(const BrowserAccessibility& node);
+  void ShowTooltip(const BrowserAccessibility& node);
+  void HideTooltip(const BrowserAccessibility& node);
   void SignalEndOfTest();
   void StitchChildTree(const BrowserAccessibility& node,
                        const AXTreeID& child_tree_id);
