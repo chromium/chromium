@@ -100,3 +100,21 @@ robolectric_library("junit") {
     "//third_party/mockito:mockito_java",
   ]
 }
+
+if (is_android) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "partner_bookmarks_shim_unittest.cc" ]
+    deps = [
+      ":android",
+      ":android_impl",
+      "//base",
+      "//chrome/browser/bookmarks",
+      "//chrome/test:test_support",
+      "//components/bookmarks/browser",
+      "//components/bookmarks/test",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
