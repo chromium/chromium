@@ -181,6 +181,9 @@ const char kJavaScriptFlags[] = "js-flags";
 const char kWebAudioBypassOutputBufferingOptOut[] =
     "web-audio-bypass-output-buffering-opt-out";
 
+const char kDisableBackForwardCacheForWebSockets[] =
+    "disable-back-forward-cache-for-web-sockets";
+
 // Override mechanism for ReduceAcceptLanguage. This feature is typically
 // controlled by base features, but requires an enterprise policy override.
 const char kDisableReduceAcceptLanguage[] = "disable-reduce-accept-language";

@@ -1,0 +1,30 @@
+caption: Allow Back/Forward Cache for WebSockets
+desc: |-
+  This policy controls whether active WebSocket connections are disconnected when a page enters back/forward cache. Active WebSocket connections previously prevented a page from being stored in back/forward cache, but <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> has changed this behavior to disconnect the WebSockets instead, allowing the page to be cached and restoring it in a disconnected state.
+
+  If this policy is set to Enabled or left unset, WebSockets are disconnected when a page enters back/forward cache.
+
+  If this policy is set to Disabled, WebSockets will not be disconnected when a page enters back/forward cache. Since back/forward cache does not support active WebSockets, this means pages with active WebSockets will not be cached.
+
+  This policy is intended to be temporary and will be removed in the future.
+default: true
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow Back/Forward Cache for WebSockets (disconnect them when entering cache).
+  value: true
+- caption: Active WebSocket connections will prevent pages from entering Back/Forward Cache.
+  value: false
+owners:
+- annasato@chromium.org
+- chrome-bfcache@google.com
+schema:
+  type: boolean
+supported_on:
+- android:152-
+- chrome.*:152-
+- chrome_os:152-
+tags: []
+type: main

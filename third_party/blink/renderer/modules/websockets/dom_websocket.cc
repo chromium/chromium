@@ -34,10 +34,12 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -494,7 +496,9 @@ void DOMWebSocket::ContextLifecycleStateChanged(
     // Post another task to update it.
     PostBufferedAmountUpdateTask();
   } else if (state == mojom::blink::FrameLifecycleState::kFrozen &&
-             RuntimeEnabledFeatures::DisconnectWebSocketOnBFCacheEnabled()) {
+             RuntimeEnabledFeatures::DisconnectWebSocketOnBFCacheEnabled() &&
+             !base::CommandLine::ForCurrentProcess()->HasSwitch(
+                 blink::switches::kDisableBackForwardCacheForWebSockets)) {
     event_queue_->Pause();
     if (common_.GetState() == kConnecting || common_.GetState() == kOpen) {
       ExecutionContext* context = GetExecutionContext();

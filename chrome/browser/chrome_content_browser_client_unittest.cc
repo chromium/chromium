@@ -1678,6 +1678,32 @@ TEST_F(ChromeContentBrowserClientSwitchTest, LegacyTechReportEnabled) {
       result.HasSwitch(blink::switches::kLegacyTechReportPolicyEnabled));
 }
 
+TEST_F(ChromeContentBrowserClientSwitchTest,
+       AllowBackForwardCacheForWebSocketsDefault) {
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_FALSE(result.HasSwitch(
+      blink::switches::kDisableBackForwardCacheForWebSockets));
+}
+
+TEST_F(ChromeContentBrowserClientSwitchTest,
+       AllowBackForwardCacheForWebSocketsDisabled) {
+  profile()->GetPrefs()->SetBoolean(
+      policy::policy_prefs::kBackForwardCacheForWebSocketsAllowed, false);
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_TRUE(result.HasSwitch(
+      blink::switches::kDisableBackForwardCacheForWebSockets));
+}
+
+TEST_F(ChromeContentBrowserClientSwitchTest,
+       AllowBackForwardCacheForWebSocketsEnabled) {
+  profile()->GetPrefs()->SetBoolean(
+      policy::policy_prefs::kBackForwardCacheForWebSocketsAllowed,
+                                     true);
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_FALSE(result.HasSwitch(
+      blink::switches::kDisableBackForwardCacheForWebSockets));
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeContentBrowserClientSwitchTest,
        ShouldSetForceAppModeSwitchInRendererProcessIfItIsSetInCurrentProcess) {

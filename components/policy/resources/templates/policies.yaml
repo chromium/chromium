@@ -1470,6 +1470,7 @@ policies:
   1469: Indigo
   1470: DeviceOnlinePasswordMismatchBehavior
   1471: UpdateOnZeroWindowEnabled
+  1472: BackForwardCacheForWebSocketsAllowed
 
 atomic_groups:
   1: Homepage

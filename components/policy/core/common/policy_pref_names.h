@@ -261,6 +261,11 @@ inline constexpr char kLastPlatformManagementLogTime[] =
 inline constexpr char kLastProfileManagementLogTime[] =
     "management.profile.last_log_time";
 
+// A boolean pref indicating whether WebSockets are disconnected when a page
+// enters the Back/Forward Cache.
+inline constexpr char kBackForwardCacheForWebSocketsAllowed[] =
+    "policy.back_forward_cache_for_web_sockets_allowed";
+
 }  // namespace policy_prefs
 }  // namespace policy
 
