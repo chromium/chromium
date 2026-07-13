@@ -480,14 +480,8 @@ class alignas(internal::kPartitionCachelineSize)
   // |type_name == nullptr|: ONLY FOR TESTS except internal uses.
   // You should provide |type_name| to make debugging easier.
   template <AllocFlags flags = AllocFlags::kNone>
-  PA_ALWAYS_INLINE PA_MALLOC_FN void* Alloc(size_t requested_size,
-                                            const char* type_name = nullptr) {
-    return AllocInline<flags>(requested_size, type_name);
-  }
-  // PartitionAlloc should provide only NOINLINE methods as public interfaces.
-  template <AllocFlags flags = AllocFlags::kNone>
-  PA_NOINLINE PA_MALLOC_FN void* AllocInline(size_t requested_size,
-                                             const char* type_name = nullptr);
+  PA_NOINLINE PA_MALLOC_FN void* Alloc(size_t requested_size,
+                                       const char* type_name = nullptr);
 
   // AllocInternal exposed for testing.
   template <AllocFlags flags = AllocFlags::kNone>
