@@ -357,7 +357,7 @@ void CopyOrMoveIOTaskImpl::GotFileSize(size_t idx,
 }
 
 // Ensures that there is enough free space on the destination volume.
-// TODO(crbug.com/429140103): Migrate this to ByteCount.
+// TODO(crbug.com/429140103): Migrate this to ByteSize.
 void CopyOrMoveIOTaskImpl::GotFreeDiskSpace(std::optional<int64_t> free_space) {
   int64_t free_space_bytes = free_space.value_or(-1);
   auto* drive_integration_service =

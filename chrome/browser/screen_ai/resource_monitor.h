@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "base/byte_size.h"
 #include "components/performance_manager/public/resource_attribution/process_context.h"
 #include "components/performance_manager/public/resource_attribution/queries.h"
 
@@ -26,7 +27,7 @@ class ResourceMonitor : public resource_attribution::QueryResultObserver {
   void OnResourceUsageUpdated(
       const resource_attribution::QueryResultMap& results) override;
 
-  base::ByteCount get_max_resident_memory() const {
+  base::ByteSize get_max_resident_memory() const {
     return max_resident_memory_;
   }
 
@@ -37,7 +38,7 @@ class ResourceMonitor : public resource_attribution::QueryResultObserver {
   resource_attribution::ScopedResourceUsageQuery scoped_query_;
   resource_attribution::ScopedQueryObservation query_observation_{this};
 
-  base::ByteCount max_resident_memory_;
+  base::ByteSize max_resident_memory_;
 };
 
 }  // namespace screen_ai

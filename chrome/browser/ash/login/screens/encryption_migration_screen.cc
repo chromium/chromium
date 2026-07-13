@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -394,7 +395,9 @@ void EncryptionMigrationScreen::CheckAvailableStorage() {
 
 void EncryptionMigrationScreen::OnGetAvailableStorage(
     std::optional<int64_t> size) {
-  if (size.value_or(-1) >= arc::kMigrationMinimumAvailableStorage.InBytes() ||
+  if ((size.has_value() &&
+       base::checked_cast<uint64_t>(size.value()) >=
+           arc::kMigrationMinimumAvailableStorage.InBytes()) ||
       IsTestingUI()) {
     RecordFirstScreen(GetFirstScreenForMode(mode_));
     if (IsStartImmediately()) {
@@ -410,8 +413,7 @@ void EncryptionMigrationScreen::OnGetAvailableStorage(
           ->SetSpaceInfoInString(
               ui::FormatBytes(
                   base::ByteSize(base::checked_cast<uint64_t>(size.value()))),
-              ui::FormatBytes(base::ByteSize::FromDeprecatedByteCount(
-                  arc::kMigrationMinimumAvailableStorage)));
+              ui::FormatBytes(arc::kMigrationMinimumAvailableStorage));
       UpdateUIState(screens_login::mojom::EncryptionMigrationPage::UIState::
                         kNotEnoughStorage);
     }

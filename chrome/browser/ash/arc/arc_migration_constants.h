@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_ARC_MIGRATION_CONSTANTS_H_
 #define CHROME_BROWSER_ASH_ARC_ARC_MIGRATION_CONSTANTS_H_
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 
 namespace arc {
 
@@ -13,8 +13,8 @@ namespace arc {
 inline constexpr double kMigrationMinimumBatteryPercent = 10;
 
 // The minimum size of available space to start the migration.
-inline constexpr base::ByteCount kMigrationMinimumAvailableStorage =
-    base::MiB(50);
+inline constexpr base::ByteSize kMigrationMinimumAvailableStorage =
+    base::MiBU(50);
 
 }  // namespace arc
 

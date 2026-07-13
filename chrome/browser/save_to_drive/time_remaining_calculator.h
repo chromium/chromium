@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "components/download/public/common/rate_estimator.h"
 
 namespace extensions::api::pdf_viewer_private {
@@ -36,11 +36,11 @@ class TimeRemainingCalculator {
  private:
   // Returns the remaining time for the save to drive operation.
   std::optional<base::TimeDelta> GetRemainingTime(
-      const base::ByteCount& uploaded_bytes,
-      const base::ByteCount& file_size_bytes) const;
+      const base::ByteSize& uploaded_bytes,
+      const base::ByteSize& file_size_bytes) const;
 
   // The last uploaded bytes.
-  base::ByteCount last_uploaded_bytes_;
+  base::ByteSize last_uploaded_bytes_;
   // Used to get a smooth estimate of the upload speed.
   download::RateEstimator upload_speed_estimator_;
 };

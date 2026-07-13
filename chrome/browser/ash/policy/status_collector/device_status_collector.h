@@ -13,7 +13,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/containers/circular_deque.h"
@@ -389,7 +389,7 @@ class DeviceStatusCollector : public StatusCollector,
   struct MemoryUsage {
     // Amount of free RAM (measures raw memory used by processes, not internal
     // memory waiting to be reclaimed by GC).
-    base::ByteCount bytes_of_ram_free;
+    base::ByteSize bytes_of_ram_free;
 
     // Sampling timestamp.
     base::Time timestamp;
