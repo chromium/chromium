@@ -2516,6 +2516,36 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
                              kMergeableDictPref1, new_value));
 }
 
+// Regression test for crbug.com/496990174.
+TEST_F(DualLayerUserPrefStoreTest,
+       UnmergeValueHandlesIncorrectTypeInLocalStore) {
+  store()->GetLocalPrefStore()->SetValueSilently(kMergeableDictPref1,
+                                                 base::Value("not_a_dict"), 0);
+
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kMergeableDictPref1, MakeDict({{"account_key", "account_value"}}), 0);
+
+  base::Value new_dict = MakeDict({{"new_key", "new_value"}});
+  store()->SetValue(kMergeableDictPref1, new_dict.Clone(), 0);
+
+  EXPECT_TRUE(ValueInStoreIs(*store(), kMergeableDictPref1, new_dict));
+}
+
+// Regression test for crbug.com/496990174.
+TEST_F(DualLayerUserPrefStoreTest,
+       UnmergeValueHandlesIncorrectTypeInAccountStore) {
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kMergeableDictPref1, MakeDict({{"local_key", "local_value"}}), 0);
+
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kMergeableDictPref1, base::Value("not_a_dict"), 0);
+
+  base::Value new_dict = MakeDict({{"new_key", "new_value"}});
+  store()->SetValue(kMergeableDictPref1, new_dict.Clone(), 0);
+
+  EXPECT_TRUE(ValueInStoreIs(*store(), kMergeableDictPref1, new_dict));
+}
+
 TEST_F(
     DualLayerUserPrefStoreMergeTest,
     ShouldClearAccountPrefsOnDisableAndNotifyObserversIfEffectiveValueChanges) {

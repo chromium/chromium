@@ -776,16 +776,20 @@ std::pair<base::Value, base::Value> DualLayerUserPrefStore::UnmergeValue(
     if (value.is_dict()) {
       base::DictValue local_dict;
       if (const base::Value* local_dict_value = nullptr;
-          local_pref_store_->GetValue(pref_name, &local_dict_value)) {
-        // It is assumed that the local store cannot contain value of incorrect
-        // type.
+          local_pref_store_->GetValue(pref_name, &local_dict_value) &&
+          // Very unlikely, but if the value is of incorrect type, ignore it
+          // since the new value will overwrite it anyway (if the new value is
+          // different from the account value).
+          local_dict_value->is_dict()) {
         local_dict = local_dict_value->GetDict().Clone();
       }
       base::DictValue account_dict;
       if (const base::Value* account_dict_value = nullptr;
-          account_pref_store_->GetValue(pref_name, &account_dict_value)) {
-        // It is assumed that the account store cannot contain value of
-        // incorrect type.
+          account_pref_store_->GetValue(pref_name, &account_dict_value) &&
+          // Very unlikely, but if the value is of incorrect type, ignore it
+          // since the new value will overwrite it anyway (if the new value is
+          // different from the local value).
+          account_dict_value->is_dict()) {
         account_dict = account_dict_value->GetDict().Clone();
       }
       auto [new_local_dict, new_account_dict] = helper::UnmergeDictionaryValues(
