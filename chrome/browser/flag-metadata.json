@@ -8735,11 +8735,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "settings-in-tab",
-    "owners": [ "jamescook@google.com", "clank-desktopify@google.com" ],
-    "expiry_milestone": 170
-  },
-  {
     "name": "share-ablation-hide-share-in-toolbar",
     "owners": [ "stkhapugin@google.com", "bling-search@google.com"],
     "expiry_milestone": 150

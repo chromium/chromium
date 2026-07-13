@@ -196,81 +196,97 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         return getSlidingPaneLayout().isOpen();
     }
 
+    /** Shows a fragment inside the detail pane (`preferences_detail`). */
+    public void showDetailFragment(
+            Fragment fragment, boolean addToBackStack, @Nullable String tag) {
+        if (!isAdded()) {
+            Intent intent = new Intent();
+            intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, fragment.getClass().getName());
+            if (fragment.getArguments() != null) {
+                intent.putExtra(
+                        SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, fragment.getArguments());
+            }
+            intent.putExtra(SettingsActivity.EXTRA_ADD_TO_BACK_STACK, addToBackStack);
+            if (tag != null) {
+                intent.putExtra(SettingsActivity.EXTRA_FRAGMENT_TAG, tag);
+            }
+            setPendingFragmentIntent(intent);
+            return;
+        }
+
+        var fragmentManager = getChildFragmentManager();
+
+        // Opening a new page. If we already have back stack entries,
+        // and the intent does NOT says the fragment transaction should be added
+        // to the back stack (checked by processed.addToBackStack), clean it up for
+        // - back button behavior
+        // - detailed page title
+        if (!addToBackStack && fragmentManager.getBackStackEntryCount() > 0) {
+            var entry = fragmentManager.getBackStackEntryAt(0);
+            fragmentManager.popBackStack(entry.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+
+        // Then, open the fragment.
+        var transaction = fragmentManager.beginTransaction();
+        transaction.setReorderingAllowed(true).replace(R.id.preferences_detail, fragment);
+        if (addToBackStack) {
+            transaction.addToBackStack(tag);
+        }
+        transaction.commit();
+        getSlidingPaneLayout().open();
+
+        // When navigating in Single Activity mode, the new fragment's view might not be
+        // laid out yet when it requests focus. If it requests focus while it has zero
+        // size, the keyboard might not show up. Wait for the layout pass and then
+        // ensure focus and keyboard are shown.
+        final Fragment finalFragment = fragment;
+        getSlidingPaneLayout()
+                .post(
+                        () -> {
+                            View detailView = finalFragment.getView();
+                            if (detailView == null) return;
+
+                            // Only proceed if the fragment contains an EditText that might
+                            // need the keyboard.
+                            if (findEditText(detailView) == null) return;
+
+                            // Check if it's already laid out. If so, act immediately.
+                            if (detailView.getWidth() > 0 && detailView.getHeight() > 0) {
+                                ensureFocusAndKeyboard(detailView);
+                                return;
+                            }
+
+                            // Otherwise, wait for the first layout pass.
+                            detailView.addOnLayoutChangeListener(
+                                    new View.OnLayoutChangeListener() {
+                                        @Override
+                                        public void onLayoutChange(
+                                                View v,
+                                                int l,
+                                                int t,
+                                                int r,
+                                                int b,
+                                                int ol,
+                                                int ot,
+                                                int or,
+                                                int ob) {
+                                            int width = r - l;
+                                            int height = b - t;
+                                            if (width > 0 && height > 0) {
+                                                detailView.removeOnLayoutChangeListener(this);
+                                                ensureFocusAndKeyboard(detailView);
+                                            }
+                                        }
+                                    });
+                        });
+    }
+
     @Override
     public void onResume() {
         // Update the detail pane, if the intent is specified.
         FragmentData processed = processPendingFragmentIntent();
         if (processed != null) {
-            var fragmentManager = getChildFragmentManager();
-
-            // Opening a new page. If we already have back stack entries,
-            // and the intent does NOT says the fragment transaction should be added
-            // to the back stack (checked by processed.addToBackStack), clean it up for
-            // - back button behavior
-            // - detailed page title
-            if (!processed.addToBackStack) {
-                if (fragmentManager.getBackStackEntryCount() > 0) {
-                    var entry = fragmentManager.getBackStackEntryAt(0);
-                    fragmentManager.popBackStack(
-                            entry.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                }
-            }
-
-            // Then, open the fragment.
-            var transaction = fragmentManager.beginTransaction();
-            transaction
-                    .setReorderingAllowed(true)
-                    .replace(R.id.preferences_detail, processed.fragment);
-            if (processed.addToBackStack) {
-                transaction.addToBackStack(processed.tag);
-            }
-            transaction.commit();
-            getSlidingPaneLayout().open();
-
-            // When navigating in Single Activity mode, the new fragment's view might not be
-            // laid out yet when it requests focus. If it requests focus while it has zero
-            // size, the keyboard might not show up. Wait for the layout pass and then
-            // ensure focus and keyboard are shown.
-            final Fragment fragment = processed.fragment;
-            getSlidingPaneLayout()
-                    .post(
-                            () -> {
-                                View detailView = fragment.getView();
-                                if (detailView == null) return;
-
-                                // Only proceed if the fragment contains an EditText that might
-                                // need the keyboard.
-                                if (findEditText(detailView) == null) return;
-
-                                // Check if it's already laid out. If so, act immediately.
-                                if (detailView.getWidth() > 0 && detailView.getHeight() > 0) {
-                                    ensureFocusAndKeyboard(detailView);
-                                    return;
-                                }
-
-                                // Otherwise, wait for the first layout pass.
-                                detailView.addOnLayoutChangeListener(
-                                        new View.OnLayoutChangeListener() {
-                                            @Override
-                                            public void onLayoutChange(
-                                                    View v,
-                                                    int l,
-                                                    int t,
-                                                    int r,
-                                                    int b,
-                                                    int ol,
-                                                    int ot,
-                                                    int or,
-                                                    int ob) {
-                                                int width = r - l;
-                                                int height = b - t;
-                                                if (width > 0 && height > 0) {
-                                                    detailView.removeOnLayoutChangeListener(this);
-                                                    ensureFocusAndKeyboard(detailView);
-                                                }
-                                            }
-                                        });
-                            });
+            showDetailFragment(processed.fragment, processed.addToBackStack, processed.tag);
         }
 
         super.onResume();

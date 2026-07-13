@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.commerce.PriceNotificationSettingsFragment;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicActorLoginPermissionsFragment;
 import org.chromium.chrome.browser.glic.GlicSettings;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
@@ -221,6 +222,23 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             @Nullable Bundle fragmentArgs,
             boolean addToBackStack,
             @Nullable String tag) {
+        if (ChromeFeatureList.sSettingsInTab.isEnabled()) {
+            Activity activity = ActivityUtil.getActivityFromContext(context);
+            assert activity != null;
+            SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(activity);
+            assert settingsHostFragment != null;
+            // A null `fragment` implies the main settings page, so pass null to showFragment().
+            Fragment targetFragment =
+                    fragment != null
+                            ? Fragment.instantiate(context, fragment.getName(), fragmentArgs)
+                            : null;
+            if (settingsHostFragment.showFragment(targetFragment, addToBackStack, tag)) {
+                // TODO(crbug.com/521895796): Once we have a mechanism to open the settings
+                // tab when it is closed, switch to that, and move this "return" outside this block.
+                // Until then we fall back to SettingsActivity, just in case.
+                return;
+            }
+        }
         Intent intent = createSettingsIntent(context, fragment, fragmentArgs, addToBackStack, tag);
         IntentUtils.safeStartActivity(context, intent);
     }

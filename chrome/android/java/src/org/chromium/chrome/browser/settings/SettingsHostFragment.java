@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -27,6 +29,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 @NullMarked
 public class SettingsHostFragment extends Fragment
         implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+
+    public static final String SETTINGS_NATIVE_PAGE_TAG = "settings_native_page";
 
     private static final int CONTAINER_ID = View.generateViewId();
 
@@ -89,12 +93,7 @@ public class SettingsHostFragment extends Fragment
 
         Fragment fragment =
                 Fragment.instantiate(requireContext(), fragmentClass, preference.getExtras());
-        getChildFragmentManager()
-                .beginTransaction()
-                .replace(CONTAINER_ID, fragment)
-                .addToBackStack(null)
-                .commitAllowingStateLoss();
-        return true;
+        return showFragment(fragment, /* addToBackStack= */ true, /* tag= */ null);
     }
 
     /**
@@ -108,5 +107,57 @@ public class SettingsHostFragment extends Fragment
     /** Returns the currently active fragment hosted by this fragment. */
     public @Nullable Fragment getActiveFragment() {
         return getChildFragmentManager().findFragmentById(CONTAINER_ID);
+    }
+
+    /** Returns the active {@link SettingsHostFragment} if attached to the activity, or null. */
+    public static @Nullable SettingsHostFragment get(@Nullable Activity activity) {
+        if (!(activity instanceof FragmentActivity fragmentActivity)) return null;
+        Fragment fragment =
+                fragmentActivity
+                        .getSupportFragmentManager()
+                        .findFragmentByTag(SETTINGS_NATIVE_PAGE_TAG);
+        if (fragment instanceof SettingsHostFragment settingsHostFragment
+                && settingsHostFragment.isAttachedToActivity()) {
+            return settingsHostFragment;
+        }
+        return null;
+    }
+
+    /**
+     * Shows a fragment inside the settings native page container or detail pane. Does nothing if
+     * the settings tab is not open (and returns false).
+     *
+     * @param fragment The settings fragment to show. If null, the main settings page will show.
+     * @param addToBackStack Whether to add the fragment to the back stack.
+     * @param tag The tag to use for the fragment.
+     *     <p>TODO(crbug.com/521895796): Provide a mechanism to open settings if it is not open.
+     */
+    public boolean showFragment(
+            @Nullable Fragment fragment, boolean addToBackStack, @Nullable String tag) {
+        if (!isAttachedToActivity()) return false;
+
+        Fragment activeFragment = getActiveFragment();
+        if (activeFragment instanceof MultiColumnSettings multiColumnSettings) {
+            if (fragment == null || fragment instanceof MainSettings) {
+                if (multiColumnSettings.getSlidingPaneLayout().isSlideable()) {
+                    multiColumnSettings.getSlidingPaneLayout().closePane();
+                }
+                return true;
+            }
+            multiColumnSettings.showDetailFragment(fragment, addToBackStack, tag);
+            return true;
+        }
+
+        if (fragment == null) {
+            fragment = createInitialFragment();
+        }
+
+        var transaction = getChildFragmentManager().beginTransaction();
+        transaction.replace(CONTAINER_ID, fragment);
+        if (addToBackStack) {
+            transaction.addToBackStack(tag);
+        }
+        transaction.commitAllowingStateLoss();
+        return true;
     }
 }
