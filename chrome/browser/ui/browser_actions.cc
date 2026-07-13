@@ -2639,6 +2639,30 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                chrome::ExecuteUIDebugCommand(IDC_DEBUG_PRINT_WINDOW_HIERARCHY,
+                                              bwi);
+              },
+              bwi))
+          .SetActionId(kActionDebugPrintWindowHierarchy)
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ExecuteUIDebugCommand(IDC_DEBUG_PRINT_LAYER_HIERARCHY,
+                                              bwi);
+              },
+              bwi))
+          .SetActionId(kActionDebugPrintLayerHierarchy)
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
                 base::RecordAction(base::UserMetricsAction("CloseWindowByKey"));
                 chrome::CloseWindow(bwi);
               },
