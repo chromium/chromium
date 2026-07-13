@@ -919,11 +919,19 @@ class AppMenu implements OnKeyListener {
     private View createAppMenuContentView(Context context, boolean addTopPaddingBeforeFirstRow) {
         ViewGroup contentView =
                 (ViewGroup) LayoutInflater.from(context).inflate(R.layout.app_menu_layout, null);
-        if (addTopPaddingBeforeFirstRow) {
-            contentView.setBackgroundResource(R.drawable.default_popup_menu_bg);
-        } else {
-            contentView.setBackgroundResource(R.drawable.app_menu_bottom_padding_bg);
-        }
+
+        ViewGroup innerContainer = contentView.findViewById(R.id.app_menu_content_container);
+
+        // Ensure the inner shape has standard padding, and conditionally add visual menu top
+        // padding.
+        int topPadding =
+                addTopPaddingBeforeFirstRow
+                        ? context.getResources().getDimensionPixelSize(R.dimen.app_menu_padding)
+                        : 0;
+        int bottomPadding = context.getResources().getDimensionPixelSize(R.dimen.app_menu_padding);
+
+        innerContainer.setPadding(0, topPadding, 0, bottomPadding);
+
         return contentView;
     }
 
