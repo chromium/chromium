@@ -473,7 +473,7 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
   GURL origin = render_frame_host->GetLastCommittedOrigin().GetURL();
   if (origin.is_empty() && render_frame_host->IsInPrimaryMainFrame()) {
     if (!web_contents->GetVisibleURL().is_empty()) {
-      origin = web_contents->GetVisibleURL();
+      origin = web_contents->GetVisibleURL().DeprecatedGetOriginAsURL();
     }
   }
   return origin;
