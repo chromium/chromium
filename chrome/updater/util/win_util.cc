@@ -585,7 +585,7 @@ void EnsureEnoughMemory() {
   MEMORYSTATUSEX memory_status = {};
   memory_status.dwLength = sizeof(memory_status);
   if (!::GlobalMemoryStatusEx(&memory_status)) {
-    VLOG(1) << "Can't memory stat: " << std::hex << ::GetLastError();
+    VPLOG(1) << "Can't memory stat";
     return;
   }
   constexpr SIZE_T kMinMemoryNeeded = 10'000'000;  // 10MB.
@@ -618,8 +618,7 @@ void EnsureEnoughMemory() {
       alloc) {
     ::VirtualFree(alloc, 0, MEM_RELEASE);
   } else {
-    VLOG(1) << "Allocation failed: " << kMinMemoryNeeded / 1024 << "K, "
-            << std::hex << ::GetLastError();
+    VPLOG(1) << "Allocation failed: " << kMinMemoryNeeded / 1024 << "K";
   }
 
   VLOG(1) << MemoryStatus();
