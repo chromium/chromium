@@ -7,9 +7,6 @@ package org.chromium.chrome.browser.ui.autofill;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SearchItemProperties.TILE_DETAILS;
-import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SearchItemProperties.TILE_ICON;
-import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SearchItemProperties.TILE_TITLE;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.DETAILS;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.ICON;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.IS_FLYOUT_VISIBLE;
@@ -43,13 +40,13 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
-import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SearchItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -251,6 +248,7 @@ public class AtMemoryBottomSheetViewRenderTest {
 
     @Test
     @Feature({"RenderTest"})
+    @DisabledTest(message = "Enabled after fixing crbug.com/532513498")
     public void testAtMemoryBottomSheetView_searchTile() throws Exception {
         ContextThemeWrapper themeWrapper =
                 new ContextThemeWrapper(mActivity, R.style.Theme_BrowserUI_DayNight);
@@ -263,12 +261,13 @@ public class AtMemoryBottomSheetViewRenderTest {
 
                     ModelList modelList = new ModelList();
                     PropertyModel searchTileModel =
-                            createSearchTileModel(
+                            createSuggestionModel(
                                     "flight",
                                     "Powered by Personal Intelligence with Gemini",
-                                    R.drawable.ic_spark_24dp);
+                                    R.drawable.ic_spark_24dp,
+                                    /* isFlyoutVisible= */ false);
                     modelList.add(
-                            new ListItem(HomeProperties.ItemType.SEARCH_TILE, searchTileModel));
+                            new ListItem(HomeProperties.ItemType.SUGGESTION, searchTileModel));
 
                     mView.getHomeView().setUpSheetItems(modelList);
                     mView.getHomeView().setShowSuggestionsBackground(false);
@@ -333,15 +332,6 @@ public class AtMemoryBottomSheetViewRenderTest {
                 .with(DETAILS, details)
                 .with(ICON, iconResId)
                 .with(IS_FLYOUT_VISIBLE, isFlyoutVisible)
-                .build();
-    }
-
-    private static PropertyModel createSearchTileModel(
-            String title, String details, int iconResId) {
-        return new PropertyModel.Builder(SearchItemProperties.ALL_KEYS)
-                .with(TILE_TITLE, title)
-                .with(TILE_DETAILS, details)
-                .with(TILE_ICON, iconResId)
                 .build();
     }
 

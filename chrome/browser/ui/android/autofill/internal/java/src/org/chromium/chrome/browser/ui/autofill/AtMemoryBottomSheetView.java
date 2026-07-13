@@ -10,13 +10,13 @@ import android.view.View;
 import android.widget.ViewFlipper;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
-import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SearchItemProperties;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 
 /** View wrapper for the @memory bottom sheet. */
 @NullMarked
-public class AtMemoryBottomSheetView implements SearchItemProperties.Delegate {
+public class AtMemoryBottomSheetView implements HomeProperties.SearchDelegate {
     private final View mContentView;
     private final AtMemoryHomeView mHomeView;
     private final AtMemoryFlyoutView mFlyoutView;

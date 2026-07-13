@@ -82,17 +82,20 @@ class AtMemoryBottomSheetProperties {
             NOTICE_SETTINGS_CLICK_LISTENER
         };
 
-        @IntDef({ItemType.SEARCH_TILE, ItemType.SUGGESTION, ItemType.ZERO_STATE})
+        @IntDef({ItemType.SUGGESTION, ItemType.ZERO_STATE})
         @Retention(RetentionPolicy.SOURCE)
         @interface ItemType {
-            /** A search tile (used to start a new search). */
-            int SEARCH_TILE = 0;
-
             /** A section containing suggestions. */
-            int SUGGESTION = 1;
+            int SUGGESTION = 0;
 
             /** A section containing no results. */
-            int ZERO_STATE = 2;
+            int ZERO_STATE = 1;
+        }
+
+        /** Delegate to request search UI actions (e.g. hiding keyboard or clearing focus). */
+        public interface SearchDelegate {
+            /** Hides the keyboard and clears focus from the search area. */
+            void hideKeyboardAndClearFocus();
         }
 
         private HomeProperties() {}
@@ -147,33 +150,6 @@ class AtMemoryBottomSheetProperties {
         };
 
         private SuggestionItemProperties() {}
-    }
-
-    /** Properties for the search tile displayed within the bottom sheet. */
-    static class SearchItemProperties {
-        // Icon to be displayed in the search tile.
-        static final ReadableIntPropertyKey TILE_ICON = new ReadableIntPropertyKey();
-        // Title to be displayed in the search tile.
-        static final WritableObjectPropertyKey<@Nullable String> TILE_TITLE =
-                new WritableObjectPropertyKey<>();
-        // Details to be displayed in the search tile.
-        static final ReadableObjectPropertyKey<String> TILE_DETAILS =
-                new ReadableObjectPropertyKey<>();
-        // Invoked when the search tile is clicked.
-        static final ReadableObjectPropertyKey<Runnable> ON_TILE_CLICKED =
-                new ReadableObjectPropertyKey<>();
-
-        /** Delegate for the search tile to request UI actions. */
-        interface Delegate {
-            /** Hides the keyboard and clears focus from the search area. */
-            void hideKeyboardAndClearFocus();
-        }
-
-        static final PropertyKey[] ALL_KEYS = {
-            TILE_ICON, TILE_TITLE, TILE_DETAILS, ON_TILE_CLICKED
-        };
-
-        private SearchItemProperties() {}
     }
 
     private AtMemoryBottomSheetProperties() {}

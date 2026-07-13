@@ -10,7 +10,6 @@ import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetPropert
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
-import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SearchItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -93,29 +92,6 @@ class AtMemoryBottomSheetViewBinder {
             view.setSuggestionClickListener(model.get(FlyoutProperties.ON_SUGGESTION_CLICKED));
         } else {
             // Unhandled property.
-            assert false : "Unhandled property: " + propertyKey;
-        }
-    }
-
-    /**
-     * Called whenever the search item property model changes. It updates the given view
-     * accordingly.
-     *
-     * @param model The model containing the search item properties.
-     * @param view The view to update.
-     * @param propertyKey The property key that changed.
-     */
-    static void bindSearchItemView(
-            PropertyModel model, AtMemoryBottomSheetSearchTileView view, PropertyKey propertyKey) {
-        if (propertyKey == SearchItemProperties.TILE_ICON) {
-            view.setIcon(model.get(SearchItemProperties.TILE_ICON));
-        } else if (propertyKey == SearchItemProperties.TILE_TITLE) {
-            view.setTitle(model.get(SearchItemProperties.TILE_TITLE));
-        } else if (propertyKey == SearchItemProperties.TILE_DETAILS) {
-            view.setDetails(model.get(SearchItemProperties.TILE_DETAILS));
-        } else if (propertyKey == SearchItemProperties.ON_TILE_CLICKED) {
-            view.setClickListener(model.get(SearchItemProperties.ON_TILE_CLICKED));
-        } else {
             assert false : "Unhandled property: " + propertyKey;
         }
     }
