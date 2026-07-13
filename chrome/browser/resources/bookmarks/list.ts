@@ -203,7 +203,17 @@ export class BookmarksListElement extends BookmarksListElementBase {
   private async focusMenuButton_(index: number) {
     const element =
         await this.$.list.ensureItemRendered(index) as BookmarksItemElement;
-    element.focusMenuButton();
+    if (isMac && this.getState().selection.items.size === 0) {
+      element.focus();
+      // On macOS, auto-select the first focused item when entering a
+      // folder (when selection is empty) without overriding existing
+      // selections during multi-select navigation (Cmd + Arrow).
+      this.dispatch(selectItem(
+          this.displayedIds_[index]!, this.getState(),
+          {clear: true, range: false, toggle: false}));
+    } else {
+      element.focusMenuButton();
+    }
   }
 
   /**
@@ -389,6 +399,21 @@ export class BookmarksListElement extends BookmarksListElementBase {
 
     if (focusedIdx !== -1) {
       this.focusedIndex_ = focusedIdx;
+      // On macOS, auto-select focused item when tabbing into the list
+      // from outside (when selection is empty). Ignore programmatic focus
+      // changes in unit tests and internal Shadow DOM movements.
+      const related = (e as FocusEvent).relatedTarget as Node | null;
+      const isInsideList = related &&
+          (this.contains(related) ||
+           (this.shadowRoot && this.shadowRoot.contains(related)));
+      const enteringFromOutside =
+          related && related !== document.body && !isInsideList;
+      if (isMac && this.getState().selection.items.size === 0 &&
+          enteringFromOutside) {
+        this.dispatch(selectItem(
+            this.displayedIds_[focusedIdx]!, this.getState(),
+            {clear: true, range: false, toggle: false}));
+      }
     }
   }
 
