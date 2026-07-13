@@ -3,6 +3,7 @@ include_rules = [
   "+chromeos/components/kiosk",
   "+components/feedback",
   "+components/metrics/metrics_state_manager.h",
+  "+components/metrics/startup_visibility.h",
   "+components/signin/public",
   "+components/variations/service",
   "+components/variations/variations_switches.h",

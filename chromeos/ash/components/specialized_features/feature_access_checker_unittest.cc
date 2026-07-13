@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/startup_visibility.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

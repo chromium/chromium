@@ -7,6 +7,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/metrics/metrics_state_manager.h"
+#import "components/metrics/startup_visibility.h"
 #import "components/metrics/test/test_enabled_state_provider.h"
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/metrics_services_manager/metrics_services_manager_client.h"

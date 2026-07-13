@@ -257,6 +257,7 @@ if (!is_cronet_build || is_ios) {
       "server_urls.h",
       "stability_metrics_helper.h",
       "stability_metrics_provider.h",
+      "startup_visibility.h",
       "ukm_demographic_metrics_provider.h",
       "unsent_log_store.h",
       "unsent_log_store_metrics.h",

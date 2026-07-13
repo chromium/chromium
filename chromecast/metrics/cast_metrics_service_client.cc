@@ -31,6 +31,7 @@
 #include "components/metrics/net/net_metrics_log_uploader.h"
 #include "components/metrics/persistent_synthetic_trial_observer.h"
 #include "components/metrics/server_urls.h"
+#include "components/metrics/startup_visibility.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

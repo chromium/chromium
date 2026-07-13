@@ -20,6 +20,7 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/startup_visibility.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"

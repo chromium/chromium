@@ -4,6 +4,7 @@
 
 #import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
 
+#import "components/metrics/startup_visibility.h"
 #import "components/network_time/network_time_tracker.h"
 #import "components/variations/service/variations_service.h"
 #import "components/variations/service/variations_service_client.h"

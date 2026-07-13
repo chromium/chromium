@@ -13,6 +13,7 @@
 #import "base/path_service.h"
 #import "components/metrics/enabled_state_provider.h"
 #import "components/metrics/metrics_state_manager.h"
+#import "components/metrics/startup_visibility.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
