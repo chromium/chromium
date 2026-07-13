@@ -252,8 +252,11 @@ Other options:
       new_srcdir = new_srcdir.replace('\\', '/')
       repl.append((root_obj['SRCDIR'].lo, root_obj['SRCDIR'].hi,
                    repr(new_srcdir)))
+      # Make the input relative to src_dir (the source root), not new_srcdir
+      # (the output dir), which would bake the absolute checkout path in.
       rel_input_dir = os.path.join('$SRCDIR',
-                                   os.path.relpath(rel_input_dir, new_srcdir))
+                                   os.path.relpath(rel_input_dir,
+                                                   src_dir)).replace('\\', '/')
 
     new_data = _MultiReplace(data, repl)
     if args.add_header:
