@@ -431,6 +431,10 @@ Suggestion TransformResultIntoSuggestion(
   }
   for (const accessibility_annotator::EntryMetadata& metadata :
        entry.metadata_list) {
+    // CVCs are always fully obfuscated. They add no value to a label.
+    if (metadata.type == MemoryDataType::kCreditCardSecurityCode) {
+      continue;
+    }
     if (!label_row.empty()) {
       label_row.emplace_back(u"\u2022");  // Bullet (•)
     }

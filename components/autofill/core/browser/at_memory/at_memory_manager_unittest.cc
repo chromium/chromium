@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/filling/autofill_ai/autofill_ai_access_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
@@ -1237,6 +1238,46 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
                                       FormGlobalId(), FieldGlobalId(),
                                       final_suggestions[0]);
+}
+
+// Tests that CVC (`kCreditCardSecurityCode`) in metadata is excluded from the
+// main suggestion labels.
+TEST_F(AtMemoryManagerTest, CvcMetadata_ExcludedFromLabels) {
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  // Create a credit card entry with CVC and Name in metadata.
+  MemorySearchResult entry(MemoryDataType::kCreditCardNumber, u"Card Number",
+                           u"1234567890123456");
+  entry.metadata_list.emplace_back(MemoryDataType::kCreditCardSecurityCode,
+                                   u"CVC",
+                                   std::u16string(3, kMidlineEllipsisPlainDot));
+  entry.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
+                                   u"John Doe");
+
+  std::vector<Suggestion> final_suggestions;
+  MockQueryResultsAndExpectCallback(
+      u"query",
+      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
+      {entry}, final_suggestions);
+  manager().OnSearchSubmitted(u"query");
+
+  // Verify that the CVC is NOT in the labels, but Name is.
+  // The label row should be: [type_name, bullet, Name]
+  // (CVC and its bullet should be skipped).
+  std::vector<std::vector<Suggestion::Text>> expected_labels = {
+      {Suggestion::Text(u"Card Number"), Suggestion::Text(u"\u2022"),
+       Suggestion::Text(u"John Doe")}};
+
+  EXPECT_THAT(final_suggestions,
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kAtMemorySearchResult,
+                  GetObfuscatedValue(u"1234567890123456", kVisibleSuffixLength),
+                  Suggestion::Icon::kCardGenericSpark, expected_labels)));
 }
 
 // Tests that sensitive metadata is obfuscated in the primary suggestion labels
