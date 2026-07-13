@@ -237,7 +237,15 @@ SkiaVulkanMemoryAllocator::totalAllocatedAndUsedMemory() const {
     total_allocated_memory += budget[i].statistics.blockBytes;
     total_used_memory += budget[i].statistics.allocationBytes;
   }
-  DCHECK_LE(total_used_memory, total_allocated_memory);
+  // Because vma::GetBudget reads independent atomic counters without locking
+  // against concurrent deallocations, total_used_memory can transiently exceed
+  // total_allocated_memory during mid-flight frees. Clamp total_used_memory
+  // so callers always receive consistent bounds (used <= allocated). Since
+  // this function is only used for histograms, reporting slightly off numbers
+  // on rare occasions should be fine.
+  if (total_used_memory > total_allocated_memory) {
+    total_used_memory = total_allocated_memory;
+  }
   return {total_allocated_memory, total_used_memory};
 }
 
