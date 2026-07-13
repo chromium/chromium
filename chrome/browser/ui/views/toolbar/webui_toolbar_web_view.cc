@@ -35,6 +35,10 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
@@ -687,6 +691,33 @@ void WebUIToolbarWebView::ShowExtensionContextMenu(
     const std::string& extension_id,
     ui::mojom::MenuSourceType source) {
   extensions_container_.ShowContextMenu(source, extension_id);
+}
+
+base::expected<toolbar_ui_api::mojom::AdjustOmniboxTextForCopyResultPtr,
+               mojo_base::mojom::ErrorPtr>
+WebUIToolbarWebView::AdjustOmniboxTextForCopy(const std::u16string& text,
+                                              int32_t selection_start) {
+  std::u16string text16 = text;
+  GURL url;
+  bool write_url = false;
+
+  LocationBar* location_bar = browser_->GetFeatures().location_bar();
+  if (location_bar) {
+    OmniboxController* controller = location_bar->GetOmniboxController();
+    if (controller && controller->edit_model()) {
+      controller->edit_model()->AdjustTextForCopy(selection_start, &text16,
+                                                  &url, &write_url);
+    }
+  }
+
+  auto result = toolbar_ui_api::mojom::AdjustOmniboxTextForCopyResult::New();
+  result->adjusted_text = text16;
+  if (write_url) {
+    result->adjusted_url = url;
+  } else {
+    result->adjusted_url = std::nullopt;
+  }
+  return result;
 }
 
 ReloadControl* WebUIToolbarWebView::GetReloadControl() {

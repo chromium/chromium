@@ -221,6 +221,10 @@ class WebUIToolbarWebView
   void ExecuteExtensionAction(const std::string& extension_id) override;
   void ShowExtensionContextMenu(const std::string& extension_id,
                                 ui::mojom::MenuSourceType source) override;
+  base::expected<toolbar_ui_api::mojom::AdjustOmniboxTextForCopyResultPtr,
+                 mojo_base::mojom::ErrorPtr>
+  AdjustOmniboxTextForCopy(const std::u16string& text,
+                           int32_t selection_start) override;
 
   // BrowserControlsService::BrowserControlsServiceDelegate:
   void PermitLaunchUrl() override;

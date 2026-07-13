@@ -324,4 +324,18 @@ void ToolbarUIService::ShowExtensionContextMenu(
     delegate_->ShowExtensionContextMenu(extension_id, source);
   }
 }
+
+void ToolbarUIService::AdjustOmniboxTextForCopy(
+    const std::u16string& text,
+    int32_t selection_start,
+    AdjustOmniboxTextForCopyCallback callback) {
+  if (delegate_) {
+    std::move(callback).Run(
+        delegate_->AdjustOmniboxTextForCopy(text, selection_start));
+  } else {
+    std::move(callback).Run(base::unexpected(Error::New(
+        Code::kFailedPrecondition,
+        "ToolbarUIService: null delegate_ for AdjustOmniboxTextForCopy")));
+  }
+}
 }  // namespace toolbar_ui_api

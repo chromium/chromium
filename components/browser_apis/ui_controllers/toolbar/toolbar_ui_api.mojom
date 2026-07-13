@@ -12,6 +12,7 @@ import "ui/base/mojom/menu_source_type.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/empty.mojom";
 import "mojo/public/mojom/base/error.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
 // Used by Toolbar UI to observe navigation controls state changes.
@@ -32,6 +33,11 @@ struct InitialState {
     array<IconUpdate> icons;
     NavigationControlsState state;
     pending_receiver<ToolbarUIObserver> update_stream;
+};
+
+struct AdjustOmniboxTextForCopyResult {
+  mojo_base.mojom.String16 adjusted_text;
+  url.mojom.Url? adjusted_url;
 };
 
 // ToolbarUIService defines methods to be called from the WebUI to the
@@ -145,4 +151,9 @@ interface ToolbarUIService {
 
   // Displays the context menu for the extension with the given ID.
   ShowExtensionContextMenu(string extension_id, ui.mojom.MenuSourceType source);
+
+  // Adjusts the copied or dragged text and returns the adjusted text,
+  // the adjusted URL, and whether a URL should be written to the payload.
+  AdjustOmniboxTextForCopy(mojo_base.mojom.String16 text, int32 selection_start)
+      => result<AdjustOmniboxTextForCopyResult, mojo_base.mojom.Error>;
 };

@@ -6,6 +6,7 @@ import {assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {type Range as MojomRange} from '//resources/mojo/ui/gfx/range/mojom/range.mojom-webui.js';
+import type {AdjustOmniboxTextForCopyResult} from '/shared/toolbar_ui_api.mojom-webui.js';
 import type {OmniboxTextPortion, OmniboxViewState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {FocusRequestTarget, OmniboxTextColor} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -111,6 +112,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   // immediately before. `null` if there is no focus.
   private lastFocusAcquisition_: number|null = null;
   private isDraggingFromSelf_: boolean = false;
+  private adjustedCopyResult_: AdjustOmniboxTextForCopyResult|null = null;
+  private onSelectionChangeBound_ = this.onSelectionChange_.bind(this);
 
   // Bitmap of mouse buttons down. This is using `event.button` as bit position,
   // not their position in `event.buttons`, as that's what's most convenient to
@@ -140,11 +143,14 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     super.connectedCallback();
     this.focusRequestHandle_ = this.browserProxy_.addFocusRequestListener(
         this.onFocusRequest.bind(this));
+    document.addEventListener('selectionchange', this.onSelectionChangeBound_);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.browserProxy_.removeFocusRequestListener(this.focusRequestHandle_);
+    document.removeEventListener(
+        'selectionchange', this.onSelectionChangeBound_);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>): void {
@@ -185,6 +191,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     textInput.addEventListener('input', this.onInputInput.bind(this));
     textInput.addEventListener('keydown', this.onInputKeyDown.bind(this));
     textInput.addEventListener('keyup', this.onInputKeyUp.bind(this));
+    textInput.addEventListener('copy', this.onInputCopy_.bind(this));
 
     this.addEventListener('contextmenu', this.onContextMenu_.bind(this));
     this.addEventListener('dragstart', this.onDragStart_.bind(this));
@@ -651,8 +658,54 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     return this.getSelection();
   }
 
-  private onDragStart_(): void {
+  private populateDataTransfer_(dataTransfer: DataTransfer): boolean {
+    const input = this.$.textInput;
+    const selectionStart = input.selectionStart!;
+    const selectionEnd = input.selectionEnd!;
+
+    if (selectionStart !== selectionEnd && this.adjustedCopyResult_) {
+      dataTransfer.setData('text/plain', this.adjustedCopyResult_.adjustedText);
+
+      if (this.adjustedCopyResult_.adjustedUrl) {
+        dataTransfer.setData(
+            'text/uri-list', this.adjustedCopyResult_.adjustedUrl);
+      }
+      return true;
+    }
+    return false;
+  }
+
+  private onDragStart_(e: DragEvent): void {
     this.isDraggingFromSelf_ = true;
+
+    if (e.dataTransfer && this.populateDataTransfer_(e.dataTransfer)) {
+      e.dataTransfer.effectAllowed = 'copy';
+    }
+  }
+
+  private onInputCopy_(e: ClipboardEvent): void {
+    if (e.clipboardData && this.populateDataTransfer_(e.clipboardData)) {
+      e.preventDefault();
+    }
+  }
+
+  private onSelectionChange_(): void {
+    const input = this.$.textInput;
+    const start = input.selectionStart!;
+    const end = input.selectionEnd!;
+    if (start !== end) {
+      const selectedText = input.value.substring(start, end);
+      this.browserProxy_.toolbarUIHandler
+          .adjustOmniboxTextForCopy(selectedText, start)
+          .then(response => {
+            this.adjustedCopyResult_ = response || null;
+          })
+          .catch(() => {
+            this.adjustedCopyResult_ = null;
+          });
+    } else {
+      this.adjustedCopyResult_ = null;
+    }
   }
 
   private onDragEnd_(): void {

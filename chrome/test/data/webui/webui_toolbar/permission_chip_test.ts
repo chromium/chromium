@@ -96,6 +96,13 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
   onLhsChipDrag(id: LhsChipIdentifier, source: DragEventSource) {
     this.methodCalled('onLhsChipDrag', [id, source]);
   }
+
+  adjustOmniboxTextForCopy(text: string, _selectionStart: number) {
+    return Promise.resolve({
+      adjustedText: text,
+      adjustedUrl: null,
+    });
+  }
 }
 
 class TestBrowserControlsHandler extends TestBrowserProxy implements

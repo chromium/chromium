@@ -12,11 +12,19 @@ import type {OmniboxAction, ReadonlyOmniboxElement} from 'chrome://webui-toolbar
 
 class MockToolbarUiHandler extends TestBrowserProxy {
   constructor() {
-    super(['onOmniboxAction']);
+    super(['onOmniboxAction', 'adjustOmniboxTextForCopy']);
   }
 
   onOmniboxAction(action: OmniboxAction) {
     this.methodCalled('onOmniboxAction', action);
+  }
+
+  adjustOmniboxTextForCopy(text: string, _selectionStart: number) {
+    this.methodCalled('adjustOmniboxTextForCopy', text);
+    return Promise.resolve({
+      adjustedText: text,
+      adjustedUrl: null,
+    });
   }
 }
 

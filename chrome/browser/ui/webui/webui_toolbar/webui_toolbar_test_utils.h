@@ -142,6 +142,12 @@ class MockToolbarUIServiceDelegate
               ShowExtensionContextMenu,
               (const std::string&, ui::mojom::MenuSourceType),
               (override));
+  MOCK_METHOD(
+      (base::expected<toolbar_ui_api::mojom::AdjustOmniboxTextForCopyResultPtr,
+                      mojo_base::mojom::ErrorPtr>),
+      AdjustOmniboxTextForCopy,
+      (const std::u16string&, int32_t),
+      (override));
 };
 
 class MockBrowserControlsServiceDelegate
