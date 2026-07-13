@@ -1007,10 +1007,20 @@ public class CustomTabsConnection {
      * @param intent The intent to verify.
      */
     public boolean isFirstPartyOriginForIntent(Intent intent) {
+        return isFirstPartyOriginForIntent(intent, IntentHandler.getUrlFromIntent(intent));
+    }
+
+    /**
+     * Returns whether an intent is first-party with respect to its session, that is if the
+     * application linked to the session has a relation with the provided origin.
+     *
+     * @param intent The intent to verify.
+     * @param url The url to verify against.
+     */
+    public boolean isFirstPartyOriginForIntent(Intent intent, @Nullable String url) {
         SessionHolder<?> session = SessionHolder.getSessionHolderFromIntent(intent);
         if (session == null) return false;
 
-        String url = IntentHandler.getUrlFromIntent(intent);
         if (url == null) return false;
 
         Origin origin = Origin.create(url);

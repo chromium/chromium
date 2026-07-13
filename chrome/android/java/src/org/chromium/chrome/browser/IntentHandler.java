@@ -732,7 +732,7 @@ public class IntentHandler {
         if (referrer != null) {
             params.setReferrer(new Referrer(referrer, getReferrerPolicyFromIntent(intent)));
         }
-        String headers = getExtraHeadersFromIntent(intent);
+        String headers = getExtraHeadersFromIntent(intent, params.getUrl());
         if (headers != null) params.setVerbatimHeaders(headers);
     }
 
@@ -915,13 +915,25 @@ public class IntentHandler {
      * @param intent The intent containing the bundle extra with the HTTP headers.
      */
     public static @Nullable String getExtraHeadersFromIntent(Intent intent) {
+        return getExtraHeadersFromIntent(intent, IntentHandler.getUrlFromIntent(intent));
+    }
+
+    /**
+     * Returns a String (or null) containing the extra headers sent by the intent, if any.
+     *
+     * <p>This methods skips the referrer header.
+     *
+     * @param intent The intent containing the bundle extra with the HTTP headers.
+     * @param url The destination URL to verify first party origin against.
+     */
+    public static @Nullable String getExtraHeadersFromIntent(Intent intent, @Nullable String url) {
         Bundle bundleExtraHeaders = IntentUtils.safeGetBundleExtra(intent, Browser.EXTRA_HEADERS);
         if (bundleExtraHeaders == null) return null;
         StringBuilder extraHeaders = new StringBuilder();
 
         boolean fromChrome = IntentHandler.wasIntentSenderChrome(intent);
         boolean shouldAllowNonSafelistedHeaders =
-                CustomTabsConnection.getInstance().isFirstPartyOriginForIntent(intent);
+                CustomTabsConnection.getInstance().isFirstPartyOriginForIntent(intent, url);
 
         for (String key : bundleExtraHeaders.keySet()) {
             String value = bundleExtraHeaders.getString(key);
