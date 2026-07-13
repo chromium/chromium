@@ -485,7 +485,13 @@ base::expected<DatagramsMetadata, Error> UDPSocketPosix::ReadMultiple(
     base::OnceCallback<void(base::expected<DatagramsMetadata, Error>)>
         callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  CHECK_NE(socket_, kInvalidSocket);
+  // Protects initial synchronous invocations across all POSIX platforms before
+  // branching into either InternalReadMultiple() or the RecvFrom() fallback.
+  // Prevents crashes when resuming reading on a socket closed asynchronously
+  // during a yield window (see https://crbug.com/533224376).
+  if (socket_ == kInvalidSocket) {
+    return base::unexpected(ERR_INVALID_HANDLE);
+  }
   // Concurrent reads are not supported.
   CHECK(read_multiple_callback_.is_null());
   CHECK(read_callback_.is_null());
@@ -1008,9 +1014,14 @@ base::expected<DatagramsMetadata, Error> UDPSocketPosix::InternalReadMultiple(
     size_t buf_len,
     size_t maximum_packet_size) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // This read API currently only supports connected UDP sockets.
-  CHECK(is_connected_);
-  CHECK(remote_address_);
+  // Protects asynchronous IO completions (DidCompleteMultipleRead) when the
+  // message pump wakes up on Linux/Android/ChromeOS, as that path calls
+  // InternalReadMultiple() directly and bypasses ReadMultiple(). Prevents
+  // crashes if the socket is closed asynchronously while an IO completion task
+  // is queued (see https://crbug.com/533224376).
+  if (socket_ == kInvalidSocket) {
+    return base::unexpected(ERR_SOCKET_NOT_CONNECTED);
+  }
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   return InternalRecvMmsg(buffer, buf_len / maximum_packet_size,
                           maximum_packet_size);

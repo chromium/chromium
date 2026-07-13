@@ -2871,6 +2871,25 @@ TEST_F(UDPSocketTest, ReadMultiple_Async) {
                                               read_result.value()[0].length);
   EXPECT_EQ(base::as_string_view(packet_span), packet);
 }
+
+// Verifies that calling ReadMultiple() on a closed socket returns an explicit
+// net error instead of triggering a fatal crash (see
+// https://crbug.com/533224376).
+TEST_F(UDPSocketTest, ReadMultiple_ClosedSocket) {
+  UDPSocket receiver(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
+  ASSERT_THAT(receiver.Open(ADDRESS_FAMILY_IPV4), IsOk());
+  receiver.Close();
+
+  constexpr size_t kMaxPacketSize = 100;
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(200);
+  base::test::TestFuture<base::expected<DatagramsMetadata, Error>> future;
+
+  auto rv_read = receiver.ReadMultiple(read_buf.get(), read_buf->span().size(),
+                                       kMaxPacketSize, future.GetCallback());
+
+  ASSERT_FALSE(rv_read.has_value());
+  EXPECT_EQ(rv_read.error(), ERR_INVALID_HANDLE);
+}
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace net
