@@ -315,5 +315,35 @@ TEST_F(FrameSensorProviderProxyTest,
   EXPECT_TRUE(fake_sensor->is_browser_suspended());
 }
 
+TEST_F(FrameSensorProviderProxyTest,
+       GetSensor_HiddenDuringPendingRequest_SensorSuspended) {
+  EXPECT_CALL(*permission_manager(),
+              GetPermissionResultForCurrentDocument(_, _, _))
+      .WillOnce(Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
+                                        PermissionStatusSource::UNSPECIFIED)));
+
+  auto provider = GetWebSensorProvider();
+  static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
+
+  fake_sensor_provider()->set_sensor_requested_callback(
+      base::BindLambdaForTesting([this](device::mojom::SensorType type) {
+        web_contents()->WasHidden();
+      }));
+
+  mojo::Remote<device::mojom::Sensor> sensor_remote;
+  base::test::TestFuture<device::mojom::SensorCreationResult,
+                         device::mojom::SensorInitParamsPtr>
+      future;
+  provider->GetSensor(device::mojom::SensorType::ACCELEROMETER,
+                      /*user_gesture=*/true, future.GetCallback());
+  auto [result, params] = future.Take();
+  EXPECT_EQ(result, device::mojom::SensorCreationResult::SUCCESS);
+  sensor_remote.Bind(std::move(params->sensor));
+
+  device::FakeSensor* fake_sensor = fake_sensor_provider()->accelerometer();
+  ASSERT_TRUE(fake_sensor);
+  EXPECT_TRUE(fake_sensor->is_browser_suspended());
+}
+
 }  // namespace
 }  // namespace content

@@ -337,7 +337,11 @@ void FrameSensorProviderProxy::FinalizeSensorConnection(
   SensorDelegate* delegate = GetContentClient()->browser()->GetSensorDelegate();
   bool bound_controller = false;
   if (ShouldTrackSensorConnection() && controller.is_valid()) {
-    client_controllers_.Add(std::move(controller));
+    mojo::RemoteSetElementId id =
+        client_controllers_.Add(std::move(controller));
+    if (is_suspended_.value_or(ShouldSuspendSensors())) {
+      client_controllers_.Get(id)->Suspend();
+    }
     bound_controller = true;
   }
 
