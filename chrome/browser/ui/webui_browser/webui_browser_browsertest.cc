@@ -335,11 +335,15 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, BookmarkNodeFaviconChangedRegression) {
   }
 }
 
-// Verifies that when kSurfaceEmbed is enabled, the WebUI browser (Webium)
-// renders a red rectangle for the tab content. This test will need updated as
-// surface embed support is expanded.
+// TODO(crbug.com/534291359): Re-enable this test on Linux once the issue is
+// fixed.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SurfaceEmbedRendersRedRect DISABLED_SurfaceEmbedRendersRedRect
+#else
+#define MAYBE_SurfaceEmbedRendersRedRect SurfaceEmbedRendersRedRect
+#endif
 IN_PROC_BROWSER_TEST_F(WebUIBrowserSurfaceEmbedPixelTest,
-                       SurfaceEmbedRendersRedRect) {
+                       MAYBE_SurfaceEmbedRendersRedRect) {
   // Get the UI WebContents (the embedder/outer frame that contains the <embed>
   // element with the SurfaceEmbedWebPlugin). We need to capture from this
   // WebContents since it has the fully composed view including the plugin's
