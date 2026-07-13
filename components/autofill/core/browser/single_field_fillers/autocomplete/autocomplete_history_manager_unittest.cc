@@ -788,6 +788,26 @@ TEST_F(AutocompleteHistoryManagerTest,
 }
 
 TEST_F(AutocompleteHistoryManagerTest,
+       OnSingleFieldSuggestionSelected_UpdatesMetadata) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillPreventAutofillFromSavingToAutocomplete);
+
+  Suggestion suggestion(u"TestValue", SuggestionType::kAutocompleteEntry);
+  suggestion.payload = GetAutocompleteEntry(
+      test_field_.name(), u"TestValue",
+      /*date_created=*/base::Time::Now() - base::Days(20),
+      /*date_last_used=*/base::Time::Now() - base::Days(10));
+
+  EXPECT_CALL(*(web_data_service_.get()),
+              AddFormFields(testing::ElementsAre(testing::AllOf(
+                  testing::Property(&FormFieldData::name, test_field_.name()),
+                  testing::Property(&FormFieldData::value, u"TestValue")))));
+
+  autocomplete_manager_->OnSingleFieldSuggestionSelected(suggestion);
+}
+
+TEST_F(AutocompleteHistoryManagerTest,
        SuggestionsReturned_InvokeHandler_TwoRequests_OneHandler_Cancels) {
   int kTestDbQuryId_first = 100;
   int kTestDbQuryId_second = 101;

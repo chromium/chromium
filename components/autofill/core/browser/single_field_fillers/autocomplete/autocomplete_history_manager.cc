@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -36,6 +37,7 @@
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
@@ -288,6 +290,18 @@ void AutocompleteHistoryManager::OnSingleFieldSuggestionSelected(
   // The AutocompleteEntry was found, use it to log the DaysSinceLastUsed.
   base::TimeDelta time_delta = base::Time::Now() - entry.date_last_used();
   AutofillMetrics::LogAutocompleteDaysSinceLastUse(time_delta.InDays());
+
+  if (profile_database_ &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillPreventAutofillFromSavingToAutocomplete)) {
+    // When the feature is enabled, form submission will skip saving any fields
+    // that were autofilled. Therefore, we must update the autocomplete entry's
+    // metadata immediately when the suggestion is selected.
+    FormFieldData field;
+    field.set_name(entry.key().name());
+    field.set_value(entry.key().value());
+    profile_database_->AddFormFields({field});
+  }
 }
 
 void AutocompleteHistoryManager::Init(
