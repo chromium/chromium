@@ -364,9 +364,6 @@ public class AppBannerManagerTest {
         clickButton(rule.getActivity(), ButtonType.NEGATIVE);
         waitUntilNoDialogsShowing(tab);
         tapAndWaitForModalBanner(tab);
-
-        clickButton(rule.getActivity(), ButtonType.NEGATIVE);
-        waitUntilNoDialogsShowing(tab);
     }
 
     private void triggerBottomSheet(
@@ -661,10 +658,6 @@ public class AppBannerManagerTest {
                         WEB_APP_MANIFEST_WITH_UNSUPPORTED_PLATFORM,
                         "call_stashed_prompt_on_click"),
                 false);
-
-        // Explicitly dismiss the banner before test completion.
-        clickButton(mTabbedActivityTestRule.getActivity(), ButtonType.NEGATIVE);
-        waitUntilNoDialogsShowing(mTabbedActivityTestRule.getActivityTab());
 
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));

@@ -96,7 +96,6 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
 
     @Override
     public void onBackgroundColorChanged(int color) {
-        if (mTab.isDestroyed()) return;
         mTab.changeWebContentBackgroundColor(color);
     }
 
@@ -107,7 +106,6 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
             int topControlsMinHeightOffsetY,
             int bottomControlsOffsetY,
             int bottomControlsMinHeightOffsetY) {
-        if (mTab.isDestroyed()) return;
         TabBrowserControlsOffsetHelper.get(mTab)
                 .setOffsets(
                         topControlsOffsetY,
@@ -124,7 +122,6 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
 
     /** Sets the Visual Viewport bottom inset. */
     private void updateVisualViewportBottomInset() {
-        if (mTab.isDestroyed()) return;
         int inset =
                 mTab.isHidden()
                                 || mCurrentInsetSupplier == null
@@ -190,19 +187,16 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
 
     @Override
     public void onProvideAutofillVirtualStructure(ViewStructure structure, int flags) {
-        if (mTab.isDestroyed()) return;
         mTab.onProvideAutofillVirtualStructure(structure, flags);
     }
 
     @Override
     public void autofill(final SparseArray<AutofillValue> values) {
-        if (mTab.isDestroyed()) return;
         mTab.autofill(values);
     }
 
     @Override
     public boolean providesAutofillStructure() {
-        if (mTab.isDestroyed()) return false;
         return mTab.providesAutofillStructure();
     }
 
