@@ -71,10 +71,16 @@ Before running the benchmark on Android, identify the connected device/emulator:
 
 ### Step B: Execute Telemetry Benchmark
 
-#### For Desktop:
+Select either **Cold Run** (default) or **Warm Run** based on the investigation
+requirements.
 
-Run the `run_benchmark` command directly using the `xvfb.py` virtual display
-wrapper:
+#### 1. For Cold Runs (Default)
+
+No pre-warmup is needed. Telemetry will automatically start with a clean
+profile.
+
+**For Desktop:** Run the `run_benchmark` command directly using the `xvfb.py`
+virtual display wrapper:
 
 ```bash
 ./testing/xvfb.py vpython3 tools/perf/run_benchmark run desktop_ui \
@@ -85,10 +91,8 @@ wrapper:
   --output-dir=out/e2e_nla_run_{parent_session_id}/capture/
 ```
 
-#### For Android (Device/Emulator):
-
-Run the `run_benchmark` command with the `--device` argument set to the
-identified device serial:
+**For Android (Device/Emulator):** Run the `run_benchmark` command with the
+`--device` argument set to the identified device serial:
 
 ```bash
 vpython3 tools/perf/run_benchmark run {benchmark_name} \
@@ -96,9 +100,49 @@ vpython3 tools/perf/run_benchmark run {benchmark_name} \
   --browser=exact \
   --browser-executable=out/emulator/apks/ChromePublic.apk \
   --device={device_serial} \
-  --extra-chrome-categories=omnibox,navigation,blink,cc,gpu,toplevel \
+  --extra-chrome-categories=omnibox,navigation,blink,cc,gpu,toplevel,net,Java \
   --output-dir=out/e2e_nla_run_{parent_session_id}/capture/
 ```
+
+#### 2. For Warm Runs (GPU & HTTP Caches Warmed)
+
+To capture a warm run (bypassing GPU shader compilation and static network
+loading), you should use the automated wrapper script `run_warm_benchmark.py`.
+
+The script automatically coordinates the warmup run, profile migration/cleanup,
+final warm run, and temporary directory deletion.
+
+*For Android:*
+
+```bash
+vpython3 .agents/skills/automated-tracing/scripts/run_warm_benchmark.py \
+  --benchmark={benchmark_name} \
+  --story={story_name} \
+  --browser-executable=out/emulator/apks/ChromePublic.apk \
+  --device={device_serial} \
+  --output-dir=out/e2e_nla_run_{parent_session_id}/capture/ \
+  [--delete-state] \
+  --extra-chrome-categories=omnibox,navigation,blink,cc,gpu,toplevel,net,Java \
+  [extra_args...]
+```
+
+*For Desktop:*
+
+```bash
+vpython3 .agents/skills/automated-tracing/scripts/run_warm_benchmark.py \
+  --benchmark=desktop_ui \
+  --story={story_name} \
+  --browser-executable=out/Default/chrome \
+  --output-dir=out/e2e_nla_run_{parent_session_id}/capture/ \
+  [--delete-state] \
+  --extra-chrome-categories=omnibox,navigation,blink,cc,gpu,toplevel,net \
+  [extra_args...]
+```
+
+*(Note: The script automatically detects if a display is present on Linux and
+wraps the desktop Chrome execution with `xvfb.py` if needed. Any unrecognized
+extra arguments `[extra_args...]` are forwarded directly to the underlying
+`run_benchmark` commands.)*
 
 ### Step C: Locate the Captured Trace
 
