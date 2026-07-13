@@ -52,6 +52,7 @@ class OmniboxContextMenuMixinBase {
   bool HandleIsItemForCommandIdDynamic(int command_id) const;
   std::u16string HandleGetLabelForCommandId(int command_id) const;
   bool HandleIsCommandIdEnabled(int command_id) const;
+  bool HandleExecuteCommand(int command_id, int event_flags);
 
   // Asynchronously calls `closure` once preparations to show the context
   // menu (examining the clipboard) have been done.
@@ -119,6 +120,10 @@ class OmniboxContextMenuMixin : public Base,
 
   bool IsCommandIdEnabled(int command_id) const override {
     return HandleIsCommandIdEnabled(command_id);
+  }
+
+  void ExecuteCommand(int command_id, int event_flags) override {
+    HandleExecuteCommand(command_id, event_flags);
   }
 };
 

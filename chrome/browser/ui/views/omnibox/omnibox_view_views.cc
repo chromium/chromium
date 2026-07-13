@@ -721,34 +721,13 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
   // executed. Since we are not always calling the base class implementation
   // here, we need to deactivate touch text selection here, too.
   DestroyTouchSelection();
+
+  if (HandleExecuteCommand(command_id, event_flags)) {
+    return;
+  }
+
   switch (command_id) {
-    // These commands don't invoke the popup via OnBefore/AfterPossibleChange().
-    case IDC_PASTE_AND_GO:
-      GetClipboardText(
-          /*notify_if_restricted=*/true,
-          base::BindOnce(
-              [](base::WeakPtr<OmniboxViewViews> self, std::u16string text) {
-                if (self) {
-                  self->controller()->edit_model()->PasteAndGo(text);
-                }
-              },
-              weak_factory_.GetWeakPtr()));
-      return;
-    case IDC_EDIT_SEARCH_ENGINES:
-    case IDC_SHOW_FULL_URLS:
-    case IDC_SHOW_GOOGLE_LENS_SHORTCUT:
-    case IDC_SHOW_AI_MODE_OMNIBOX_BUTTON:
-    case IDC_SHOW_SEARCH_TOOLS:
-      location_bar_view_->command_updater()->ExecuteCommand(command_id);
-      return;
-
-    case IDC_SEND_TAB_TO_SELF:
-      send_tab_to_self::SendTabToSelfBubbleController::
-          GetOrCreateForWebContents(location_bar_view_->GetWebContents())
-              ->ShowBubble(send_tab_to_self::ShareEntryPoint::kOmniboxMenu);
-      return;
-
-    // These commands do invoke the popup.
+    // These commands invoke the popup via OnBefore/AfterPossibleChange().
     case std::to_underlying(ui::TouchEditable::MenuCommands::kPaste):
       ExecuteTextEditCommand(ui::TextEditCommand::PASTE);
       return;

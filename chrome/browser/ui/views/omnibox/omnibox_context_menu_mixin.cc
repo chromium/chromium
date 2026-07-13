@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -192,6 +193,47 @@ bool OmniboxContextMenuMixinBase::HandleIsCommandIdEnabled(
   return IsContextMenuTextEditingCommandEnabled(command_id) ||
          (location_bar_ &&
           location_bar_->command_updater()->IsCommandEnabled(command_id));
+}
+
+bool OmniboxContextMenuMixinBase::HandleExecuteCommand(int command_id,
+                                                       int event_flags) {
+  switch (command_id) {
+    // These commands DO NOT invoke the popup via
+    // OnBefore/AfterPossibleChange().
+    case IDC_PASTE_AND_GO:
+      GetClipboardText(
+          /*notify_if_restricted=*/true,
+          base::BindOnce(
+              [](base::WeakPtr<OmniboxContextMenuMixinBase> self,
+                 std::u16string text) {
+                if (self && self->controller_) {
+                  self->controller_->edit_model()->PasteAndGo(text);
+                }
+              },
+              weak_ptr_factory_.GetWeakPtr()));
+      return true;
+
+    case IDC_EDIT_SEARCH_ENGINES:
+    case IDC_SHOW_FULL_URLS:
+    case IDC_SHOW_GOOGLE_LENS_SHORTCUT:
+    case IDC_SHOW_AI_MODE_OMNIBOX_BUTTON:
+    case IDC_SHOW_SEARCH_TOOLS:
+      if (location_bar_) {
+        location_bar_->command_updater()->ExecuteCommand(command_id);
+      }
+      return true;
+
+    case IDC_SEND_TAB_TO_SELF:
+      if (location_bar_ && location_bar_->GetWebContents()) {
+        send_tab_to_self::SendTabToSelfBubbleController::
+            GetOrCreateForWebContents(location_bar_->GetWebContents())
+                ->ShowBubble(send_tab_to_self::ShareEntryPoint::kOmniboxMenu);
+      }
+      return true;
+
+    default:
+      return false;
+  }
 }
 
 void OmniboxContextMenuMixinBase::PrepareToShowContextMenu(

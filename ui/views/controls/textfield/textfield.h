@@ -539,6 +539,9 @@ class VIEWS_EXPORT Textfield : public View,
   virtual bool SupportsLookUp() const;
 #endif
 
+  // Utility function to prepare the contents of the context menu.
+  void UpdateContextMenuContents(ui::SimpleMenuModel* menu_contents);
+
  protected:
   TextfieldModel* textfield_model() { return model_.get(); }
 

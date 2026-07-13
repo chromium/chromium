@@ -3151,6 +3151,32 @@ void Textfield::OnTextReadForPaste(base::OnceCallback<void(bool)> callback,
   std::move(callback).Run(pasted);
 }
 
+void Textfield::UpdateContextMenuContents(ui::SimpleMenuModel* menu_contents) {
+  menu_contents->AddItemWithStringId(kUndo, IDS_APP_UNDO);
+  menu_contents->AddSeparator(ui::NORMAL_SEPARATOR);
+  menu_contents->AddItemWithStringId(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCut), IDS_APP_CUT);
+  menu_contents->AddItemWithStringId(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy), IDS_APP_COPY);
+  menu_contents->AddItemWithStringId(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste),
+      IDS_APP_PASTE);
+  menu_contents->AddItemWithStringId(kDelete, IDS_APP_DELETE);
+  menu_contents->AddSeparator(ui::NORMAL_SEPARATOR);
+  menu_contents->AddItemWithStringId(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll),
+      IDS_APP_SELECT_ALL);
+
+  // If the controller adds menu commands, also override ExecuteCommand() and
+  // IsCommandIdEnabled() as appropriate, for the commands added.
+  if (controller_) {
+    controller_->UpdateContextMenu(menu_contents);
+  }
+
+  text_services_context_menu_ =
+      ViewsTextServicesContextMenu::Create(menu_contents, this);
+}
+
 void Textfield::UpdateContextMenu() {
   // TextfieldController may modify Textfield's menu, so the menu should be
   // recreated each time it's shown. Destroy the existing objects in the reverse
@@ -3159,30 +3185,7 @@ void Textfield::UpdateContextMenu() {
   context_menu_contents_.reset();
 
   context_menu_contents_ = std::make_unique<ui::SimpleMenuModel>(this);
-  context_menu_contents_->AddItemWithStringId(kUndo, IDS_APP_UNDO);
-  context_menu_contents_->AddSeparator(ui::NORMAL_SEPARATOR);
-  context_menu_contents_->AddItemWithStringId(
-      std::to_underlying(ui::TouchEditable::MenuCommands::kCut), IDS_APP_CUT);
-  context_menu_contents_->AddItemWithStringId(
-      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy), IDS_APP_COPY);
-  context_menu_contents_->AddItemWithStringId(
-      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste),
-      IDS_APP_PASTE);
-  context_menu_contents_->AddItemWithStringId(kDelete, IDS_APP_DELETE);
-  context_menu_contents_->AddSeparator(ui::NORMAL_SEPARATOR);
-  context_menu_contents_->AddItemWithStringId(
-      std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll),
-      IDS_APP_SELECT_ALL);
-
-  // If the controller adds menu commands, also override ExecuteCommand() and
-  // IsCommandIdEnabled() as appropriate, for the commands added.
-  if (controller_) {
-    controller_->UpdateContextMenu(context_menu_contents_.get());
-  }
-
-  text_services_context_menu_ =
-      ViewsTextServicesContextMenu::Create(context_menu_contents_.get(), this);
-
+  UpdateContextMenuContents(context_menu_contents_.get());
   context_menu_runner_ = std::make_unique<MenuRunner>(
       context_menu_contents_.get(),
       MenuRunner::HAS_MNEMONICS | MenuRunner::CONTEXT_MENU);
