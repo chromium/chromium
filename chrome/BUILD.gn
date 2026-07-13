@@ -443,6 +443,7 @@ if (is_win) {
       "//chrome/common/profiler",
       "//chrome/install_static:install_static_util",
       "//chrome/install_static:secondary_module",
+      "//chrome/installer/util:isolation_support",
       "//components/crash/core/app",
       "//components/memory_system",
       "//components/policy:generated",

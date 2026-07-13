@@ -115,6 +115,7 @@
 #include "base/base_switches.h"
 #include "base/files/important_file_writer_cleaner.h"
 #include "base/process/process_handle.h"
+#include "base/win/access_token.h"
 #include "base/win/current_module.h"
 #include "base/win/dark_mode_support.h"
 #include "base/win/resource_exhaustion.h"
@@ -124,6 +125,7 @@
 #include "chrome/child/v8_crashpad_support_win.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/common/chrome_version.h"
+#include "chrome/installer/util/isolation_support.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "ui/base/resource/resource_bundle_win.h"
@@ -1518,6 +1520,15 @@ void ChromeMainDelegate::PreSandboxStartup() {
   // After all the platform Breakpads have been initialized, store the command
   // line for crash reporting.
   crash_keys::SetCrashKeysFromCommandLine(command_line);
+
+#if BUILDFLAG(IS_WIN)
+  auto process_token = base::win::AccessToken::FromCurrentProcess();
+  if (process_token && process_token->GetSecurityAttribute(
+                           installer::GetIsolationAttributeName())) {
+    static crash_reporter::CrashKeyString<32> is_isolated("is-isolated");
+    is_isolated.Set("yes");
+  }
+#endif
 
 #if BUILDFLAG(ENABLE_PDF)
   MaybePatchGdiGetFontData();

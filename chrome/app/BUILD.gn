@@ -209,6 +209,7 @@ static_library("test_support") {
       "//chrome/browser/win:isolated_browser_support",
       "//chrome/chrome_elf:test_stubs",
       "//chrome/install_static:install_static_util",
+      "//chrome/installer/util:isolation_support",
       "//sandbox/win:sandbox",
     ]
   }
