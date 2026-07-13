@@ -377,6 +377,15 @@ source_set("unit_tests") {
       deps += [ "//chrome/updater:browser_sources" ]
     }
   }
+
+  if (safe_browsing_mode == 2 && is_android) {
+    sources +=
+        [ "real_time_url_checks_allowlist_component_installer_unittest.cc" ]
+    deps += [
+      "//components/safe_browsing/android:real_time_url_checks_allowlist",
+      "//components/update_client",
+    ]
+  }
 }
 
 if (!is_android) {
