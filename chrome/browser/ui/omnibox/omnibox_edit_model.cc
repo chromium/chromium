@@ -2870,24 +2870,9 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   }
 
   if (action) {
-    int enter_starter_pack_id = controller_->client()->ExecuteAction(
+    controller_->client()->ExecuteAction(
         action, disposition, match_selection_timestamp,
         *(autocomplete_controller()->autocomplete_provider_client()));
-    if (enter_starter_pack_id != 0 && template_url_service) {
-      template_url_starter_pack_data::StarterPackId starter_pack_id =
-          static_cast<template_url_starter_pack_data::StarterPackId>(
-              enter_starter_pack_id);
-      if (const TemplateURL* starter_pack_turl =
-              template_url_service->FindStarterPackTemplateURL(
-                  starter_pack_id)) {
-        EnterKeywordMode(
-            OmniboxEventProto::TOOLBELT, starter_pack_turl,
-            AutocompleteMatch::GetKeywordPlaceholder(
-                starter_pack_turl,
-                controller_->client()->IsHistoryEmbeddingsEnabled()));
-        return;
-      }
-    }
   }
 
   if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {

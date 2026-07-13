@@ -138,52 +138,14 @@ struct EligibleMatchesAndActions {
     //   inputs.
     toolbelt_lens =
         toolbelt &&
-        ToolbeltActionEligible(
-            input, client, toolbelt_config.show_lens_action_on_non_ntp,
-            toolbelt_config.show_lens_action_on_ntp, std::nullopt) &&
+        ToolbeltActionEligible(input,
+                               toolbelt_config.show_lens_action_on_non_ntp,
+                               toolbelt_config.show_lens_action_on_ntp) &&
         (toolbelt_config.always_include_lens_action ||
          ContextualSearchProvider::LensEntrypointEligible(input, client));
 
-    // When the AIM page action is enabled, we need to suppress the AIM toolbelt
-    // action in order to ensure that there's at most one AIM entrypoint shown
-    // in the Omnibox.
-    bool is_aim_page_action_enabled =
-        OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(
-            client->GetAimEligibilityService(),
-            client->GetAiModeButtonService(), client->GetTemplateURLService());
-    toolbelt_ai_mode =
-        toolbelt &&
-        ToolbeltActionEligible(
-            input, client, toolbelt_config.show_ai_mode_action_on_non_ntp,
-            toolbelt_config.show_ai_mode_action_on_ntp,
-            template_url_starter_pack_data::StarterPackId::kAiMode) &&
-        !is_aim_page_action_enabled;
-
-    toolbelt_history =
-        toolbelt &&
-        ToolbeltActionEligible(
-            input, client, toolbelt_config.show_history_action_on_non_ntp,
-            toolbelt_config.show_history_action_on_ntp,
-            template_url_starter_pack_data::StarterPackId::kHistory);
-
-    toolbelt_bookmarks =
-        toolbelt &&
-        ToolbeltActionEligible(
-            input, client, toolbelt_config.show_bookmarks_action_on_non_ntp,
-            toolbelt_config.show_bookmarks_action_on_ntp,
-            template_url_starter_pack_data::StarterPackId::kBookmarks);
-
-    toolbelt_tabs =
-        toolbelt &&
-        ToolbeltActionEligible(
-            input, client, toolbelt_config.show_tabs_action_on_non_ntp,
-            toolbelt_config.show_tabs_action_on_ntp,
-            template_url_starter_pack_data::StarterPackId::kTabs);
-
     // Hide toolbelt if it would be empty.
-    toolbelt =
-        toolbelt && (toolbelt_lens || toolbelt_ai_mode || toolbelt_history ||
-                     toolbelt_bookmarks || toolbelt_tabs);
+    toolbelt = toolbelt && toolbelt_lens;
 
     // - Check feature/params.
     // - Restricted to DSE google, which is already checked in
@@ -225,15 +187,12 @@ struct EligibleMatchesAndActions {
   // - Show on non-NTP depending on finch param passed in via
   //   `enabled_non_ntp`
   // - Show on NTP depending on finch param passed in via `enabled_ntp`
-  // - Show only if corresponding starter pack is enabled. `starter_pack_id`
-  //   is `nullopt` when the action is not associated with a starter pack.
-  static bool ToolbeltActionEligible(
-      const AutocompleteInput& input,
-      AutocompleteProviderClient* client,
-      bool enabled_non_ntp,
-      bool enabled_ntp,
-      std::optional<template_url_starter_pack_data::StarterPackId>
-          starter_pack_id) {
+  // - Show on non-NTP depending on finch param passed in via
+  //   `enabled_non_ntp`
+  // - Show on NTP depending on finch param passed in via `enabled_ntp`
+  static bool ToolbeltActionEligible(const AutocompleteInput& input,
+                                     bool enabled_non_ntp,
+                                     bool enabled_ntp) {
     // Only show on NTP if the NTP param is enabled.
     if (!enabled_ntp && input.current_page_classification() ==
                             metrics::OmniboxEventProto::
@@ -247,16 +206,6 @@ struct EligibleMatchesAndActions {
             metrics::OmniboxEventProto::
                 INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS) {
       return false;
-    }
-
-    // If it's a starterpack action, the starterpack must be enabled.
-    if (starter_pack_id.has_value()) {
-      auto* turl_service = client->GetTemplateURLService();
-      const TemplateURL* turl =
-          turl_service->FindStarterPackTemplateURL(starter_pack_id.value());
-      if (!turl || turl->is_active() != TemplateURLData::ActiveStatus::kTrue) {
-        return false;
-      }
     }
 
     return true;
@@ -287,18 +236,6 @@ struct EligibleMatchesAndActions {
                 url, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, false));
       }
     }
-    if (toolbelt_ai_mode) {
-      actions.push_back(base::MakeRefCounted<StarterPackAiModeAction>());
-    }
-    if (toolbelt_history) {
-      actions.push_back(base::MakeRefCounted<StarterPackHistoryAction>());
-    }
-    if (toolbelt_bookmarks) {
-      actions.push_back(base::MakeRefCounted<StarterPackBookmarksAction>());
-    }
-    if (toolbelt_tabs) {
-      actions.push_back(base::MakeRefCounted<StarterPackTabsAction>());
-    }
 
     // `toolbelt` should be set false if it would be empty.
     CHECK(!actions.empty());
@@ -307,10 +244,6 @@ struct EligibleMatchesAndActions {
 
   bool toolbelt;
   bool toolbelt_lens;
-  bool toolbelt_ai_mode;
-  bool toolbelt_history;
-  bool toolbelt_bookmarks;
-  bool toolbelt_tabs;
   bool lens_entry_match;
   bool page_verbatim;
   bool page_suggestions;

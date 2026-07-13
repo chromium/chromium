@@ -353,12 +353,11 @@ class OmniboxClient {
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternative_nav_match) = 0;
 
-  // Executes the given `action`. Returns the starter pack ID if the action
-  // requests entering keyword mode for a starter pack engine, or 0 otherwise.
-  int ExecuteAction(OmniboxAction* action,
-                    WindowOpenDisposition disposition,
-                    base::TimeTicks match_selection_timestamp,
-                    AutocompleteProviderClient& provider_client);
+  // Executes the given `action`.
+  void ExecuteAction(OmniboxAction* action,
+                     WindowOpenDisposition disposition,
+                     base::TimeTicks match_selection_timestamp,
+                     AutocompleteProviderClient& provider_client);
 
   // Called when the input is accepted with a thumbnail and no user text. This
   // is required because there is no verbatim match when the input is just an

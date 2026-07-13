@@ -25,14 +25,7 @@ class ContextualSearchActionTest : public testing::Test {
 TEST_F(ContextualSearchActionTest, RecordActionShown) {
   std::vector<std::pair<scoped_refptr<OmniboxAction>, std::string>> test_cases =
       {{base::MakeRefCounted<ContextualSearchOpenLensAction>(),
-        "ContextualSearchOpenLensAction"},
-       {base::MakeRefCounted<StarterPackBookmarksAction>(),
-        "StarterPackBookmarksAction"},
-       {base::MakeRefCounted<StarterPackHistoryAction>(),
-        "StarterPackHistoryAction"},
-       {base::MakeRefCounted<StarterPackTabsAction>(), "StarterPackTabsAction"},
-       {base::MakeRefCounted<StarterPackAiModeAction>(),
-        "StarterPackAiModeAction"}};
+        "ContextualSearchOpenLensAction"}};
 
   for (const auto& entry : test_cases) {
     {

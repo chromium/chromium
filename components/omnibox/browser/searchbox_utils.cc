@@ -264,55 +264,45 @@ void OpenMatch(
   }
 
   if (action) {
-    const int enter_starter_pack_id = client->ExecuteAction(
+    client->ExecuteAction(
         action, disposition, match_selection_timestamp,
         *(autocomplete_controller->autocomplete_provider_client()));
-    if (enter_starter_pack_id != 0 && template_url_service) {
-      // TODO(crbug.com/531796992): Signal keyword mode entry if any actions
-      //  do return a nonzero starter pack ID. May be deprecated; if only the
-      //  toolbelt feature was using this, it can be simplified/removed.
-      template_url_starter_pack_data::StarterPackId starter_pack_id =
-          static_cast<template_url_starter_pack_data::StarterPackId>(
-              enter_starter_pack_id);
-      if (template_url_service->FindStarterPackTemplateURL(starter_pack_id)) {
-        return;
-      }
-    }
-  } else {
-    RecordNonActionSearchMetrics(template_url_service, match, is_incognito,
-                                 match_selection_timestamp);
-
-    bookmarks::BookmarkModel* bookmark_model = client->GetBookmarkModel();
-    if (bookmark_model && bookmark_model->IsBookmarked(destination_url)) {
-      client->OnBookmarkLaunched();
-    }
-
-    // TODO(crbug.com/531810530): Ensure this doesn't need to be plumbed in
-    //  as with OmniboxEditModel::OpenMatch. Might be refactored there too.
-    GURL alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
-        input, match, autocomplete_controller->autocomplete_provider_client());
-
-    AutocompleteInput alternate_input(
-        input.text(), page_classification, client->GetSchemeClassifier(),
-        client->ShouldDefaultTypedNavigationsToHttps(), 0, false);
-    alternate_input.set_current_url(client->GetURL());
-    alternate_input.set_current_title(client->GetTitle());
-
-    AutocompleteMatch alternative_nav_match = VerbatimMatchForInput(
-        autocomplete_controller->history_url_provider(),
-        autocomplete_controller->autocomplete_provider_client(),
-        alternate_input, alternate_nav_url, false);
-
-    client->OnAutocompleteAccept(
-        destination_url, match.post_content.get(), disposition,
-        ui::PageTransitionFromInt(match.transition |
-                                  ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-        match.type, match_selection_timestamp,
-        input.added_default_scheme_to_typed_url(),
-        input.typed_url_had_http_scheme() &&
-            match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED,
-        input.text(), match, alternative_nav_match);
+    return;
   }
+
+  RecordNonActionSearchMetrics(template_url_service, match, is_incognito,
+                               match_selection_timestamp);
+
+  bookmarks::BookmarkModel* bookmark_model = client->GetBookmarkModel();
+  if (bookmark_model && bookmark_model->IsBookmarked(destination_url)) {
+    client->OnBookmarkLaunched();
+  }
+
+  // TODO(crbug.com/531810530): Ensure this doesn't need to be plumbed in
+  //  as with OmniboxEditModel::OpenMatch. Might be refactored there too.
+  GURL alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
+      input, match, autocomplete_controller->autocomplete_provider_client());
+
+  AutocompleteInput alternate_input(
+      input.text(), page_classification, client->GetSchemeClassifier(),
+      client->ShouldDefaultTypedNavigationsToHttps(), 0, false);
+  alternate_input.set_current_url(client->GetURL());
+  alternate_input.set_current_title(client->GetTitle());
+
+  AutocompleteMatch alternative_nav_match = VerbatimMatchForInput(
+      autocomplete_controller->history_url_provider(),
+      autocomplete_controller->autocomplete_provider_client(), alternate_input,
+      alternate_nav_url, false);
+
+  client->OnAutocompleteAccept(
+      destination_url, match.post_content.get(), disposition,
+      ui::PageTransitionFromInt(match.transition |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      match.type, match_selection_timestamp,
+      input.added_default_scheme_to_typed_url(),
+      input.typed_url_had_http_scheme() &&
+          match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED,
+      input.text(), match, alternative_nav_match);
 }
 
 void RecordNonActionSearchMetrics(TemplateURLService* template_url_service,

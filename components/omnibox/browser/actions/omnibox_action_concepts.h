@@ -35,10 +35,10 @@ enum class OmniboxActionId {
   // These are specified concretely instead of with one abstract keyword entry
   // action because most of the implementation consists of specifying details
   // like the labels, icons, etc. This also avoids the need for metric slicing.
-  STARTER_PACK_BOOKMARKS,
-  STARTER_PACK_HISTORY,
-  STARTER_PACK_TABS,
-  STARTER_PACK_AI_MODE,
+  STARTER_PACK_BOOKMARKS,  // Obsolete
+  STARTER_PACK_HISTORY,    // Obsolete
+  STARTER_PACK_TABS,       // Obsolete
+  STARTER_PACK_AI_MODE,    // Obsolete
 
   // A site search action that enters keyword mode for a specific site.
   SITE_SEARCH,
