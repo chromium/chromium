@@ -101,6 +101,7 @@ struct ProcessMemoryMetricsEmitter::PageInfo {
   // True iff the process for this |PageInfo| hosts the main frame of the page.
   bool hosts_main_frame;
   bool is_visible;
+  bool is_1p_ntp;
   base::TimeDelta time_since_last_navigation;
   base::TimeDelta time_since_last_visibility_change;
 };
