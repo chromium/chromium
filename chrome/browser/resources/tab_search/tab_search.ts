@@ -19,7 +19,7 @@ export type {TabSearchApiProxy} from './tab_search_api_proxy.js';
 export {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 export {TabSearchGroupItemElement} from './tab_search_group_item.js';
 export {TabSearchItemElement} from './tab_search_item.js';
-export {SEARCH_QUERY_MAX_LENGTH, TabSearchPageElement} from './tab_search_page.js';
+export {SEARCH_QUERY_MAX_LENGTH, TabSearchPageElement, TabSearchUserAction} from './tab_search_page.js';
 export {TabSearchSplitItemElement} from './tab_search_split_item.js';
 export type {TabSearchSyncBrowserProxy} from './tab_search_sync_browser_proxy.js';
 export {TabSearchSyncBrowserProxyImpl} from './tab_search_sync_browser_proxy.js';

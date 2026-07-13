@@ -505,6 +505,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Opened recently closed item from unfiltered list"/>
   <int value="4" label="Switched to tab from unfiltered list"/>
   <int value="5" label="Closed tab from unfiltered list"/>
+  <int value="6" label="Switched to other window tab from filtered list"/>
+  <int value="7" label="Switched to other window tab from unfiltered list"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/tab_search/tab_search_page.ts:TabSearchUserAction) -->
