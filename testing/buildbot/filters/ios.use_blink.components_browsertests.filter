@@ -52,6 +52,7 @@
 -SurfaceEmbedBrowserTest.EmbedTagInvalidContentId
 -SurfaceEmbedBrowserTest.EmbedTagRemovedDestroysHost
 -SurfaceEmbedBrowserTest.FocusByClick
+-SurfaceEmbedBrowserTest.FocusPreservedAfterNavigation
 -SurfaceEmbedBrowserTest.HtmlPopupOnSurfaceEmbeddedPage
 -SurfaceEmbedBrowserTest.ResizeEmbedPixelTest
 -SurfaceEmbedBrowserTest.VisibilityHiddenPropagates
