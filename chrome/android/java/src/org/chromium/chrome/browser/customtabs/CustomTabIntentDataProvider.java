@@ -682,10 +682,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                         intentVisibilityState, isTwa);
 
         mRemoteViews =
-                isTrustedIntent()
-                        ? IntentUtils.safeGetParcelableExtra(
-                                intent, CustomTabsIntent.EXTRA_REMOTEVIEWS)
-                        : null;
+                IntentUtils.safeGetParcelableExtra(intent, CustomTabsIntent.EXTRA_REMOTEVIEWS);
         mClickableViewIds =
                 IntentUtils.safeGetIntArrayExtra(
                         intent, CustomTabsIntent.EXTRA_REMOTEVIEWS_VIEW_IDS);

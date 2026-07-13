@@ -878,7 +878,6 @@ public class CustomTabActivityTest {
         remoteViews.setImageViewResource(R.id.icon, R.drawable.ic_email_googblue_36dp);
         intent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS, remoteViews);
         intent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS_VIEW_IDS, new int[] {R.id.icon});
-        IntentUtils.addTrustedIntentExtras(intent);
         PendingIntent pi2 =
                 PendingIntent.getBroadcast(
                         ApplicationProvider.getApplicationContext(),
