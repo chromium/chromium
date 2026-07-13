@@ -320,12 +320,22 @@ void FuchsiaVideoEncodeAccelerator::UseOutputBitstreamBuffer(
     BitstreamBuffer buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!output_queue_) {
+    VLOG(1) << "UseOutputBitstreamBuffer called after output queue destroyed.";
+    return;
+  }
+
   output_queue_->UseBitstreamBuffer(std::move(buffer));
 }
 
 void FuchsiaVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
                                            bool force_keyframe) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!input_queue_) {
+    VLOG(1) << "Encode called after input queue destroyed.";
+    return;
+  }
   DCHECK(config_);
   DCHECK_EQ(frame->format(), PIXEL_FORMAT_I420);
   DCHECK(!frame->coded_size().IsEmpty());
