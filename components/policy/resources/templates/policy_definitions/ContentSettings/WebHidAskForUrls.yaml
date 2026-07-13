@@ -23,6 +23,7 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+- android
 owners:
 - mattreynolds@chromium.org
 - file://third_party/blink/renderer/modules/hid/OWNERS
