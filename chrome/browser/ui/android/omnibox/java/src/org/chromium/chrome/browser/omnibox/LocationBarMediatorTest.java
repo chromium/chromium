@@ -436,6 +436,19 @@ public class LocationBarMediatorTest {
         GeolocationHeader.setPrimeLocationForGeoHeaderIfEnabledForTesting(
                 () -> sGeoHeaderPrimeCount++);
         GeolocationHeader.setStopListeningForLocationUpdatesForTesting(() -> sGeoHeaderStopCount++);
+        mSessionState
+                .getAutocompleteInput()
+                .getAutocompleteStateSupplier()
+                .addSyncObserver(
+                        state -> {
+                            if (mAutocompleteCoordinator == null) return;
+                            if (state == AutocompleteState.STANDBY) {
+                                mAutocompleteCoordinator.stopAutocomplete();
+                                mAutocompleteCoordinator.endInput();
+                            } else if (state == AutocompleteState.DISABLED) {
+                                mAutocompleteCoordinator.endInput();
+                            }
+                        });
     }
 
     private LocationBarMediator createTabletMediator() {
@@ -947,7 +960,7 @@ public class LocationBarMediatorTest {
         mScrimVisibilitySupplier.set(false);
 
         verify(mTabView).requestFocus();
-        verify(mAutocompleteCoordinator).endInput();
+        verify(mAutocompleteCoordinator, atLeastOnce()).endInput();
         verify(mUrlCoordinator).endInput();
     }
 
@@ -1306,11 +1319,12 @@ public class LocationBarMediatorTest {
         input.setInitialUserText("initial text");
 
         {
-            // Step 1: expect suggestions to be cleared if user presses <esc>.
+            // Step 1: expect suggestions to be cleared (transition to STANDBY) if user presses
+            // <esc>.
             doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
             assertTrue(mMediator.handleEscPress());
             verify(mAutocompleteCoordinator).stopAutocomplete();
-            verify(mAutocompleteCoordinator, never()).endInput();
+            verify(mAutocompleteCoordinator).endInput();
             verify(mUrlCoordinator, never()).endInput();
         }
 
@@ -1318,6 +1332,7 @@ public class LocationBarMediatorTest {
             // Step 2: expect content to be reverted if suggestions are already cleared.
             doReturn(false).when(mAutocompleteCoordinator).isServingSuggestions();
             clearInvocations(mLocationBarLayout);
+            clearInvocations(mAutocompleteCoordinator);
             assertTrue(mMediator.handleEscPress());
             verify(mLocationBarLayout).setDeleteButtonVisibility(false);
             assertEquals(input.getUserText(), input.getInitialUserText());
@@ -1328,8 +1343,10 @@ public class LocationBarMediatorTest {
         {
             // Step 3: if both user text and initial user text are same, expect the input to be
             // canceled.
+            clearInvocations(mAutocompleteCoordinator);
+            clearInvocations(mUrlCoordinator);
             assertTrue(mMediator.handleEscPress());
-            verify(mAutocompleteCoordinator).endInput();
+            verify(mAutocompleteCoordinator, atLeastOnce()).endInput();
             verify(mUrlCoordinator).endInput();
         }
 
@@ -1346,11 +1363,14 @@ public class LocationBarMediatorTest {
         mMediator.beginInput(input);
         mScrimVisibilitySupplier.set(true);
 
-        // Press Escape (simulates 3rd press b/c serving suggestions is false and text is the same
-        // as initial text).
+        // 1st ESC: state -> STANDBY. Focus should NOT be restored.
+        assertTrue(mMediator.handleEscPress());
+        verify(mTabView, never()).requestFocus();
+
+        // 2nd ESC: state -> STANDBY and text == initial -> defocus.
         assertTrue(mMediator.handleEscPress());
 
-        // Focus should NOT be restored yet (waiting for scrim hide).
+        // Focus should still NOT be restored yet (waiting for scrim hide).
         verify(mTabView, never()).requestFocus();
 
         // Simulate scrim dismissal.
@@ -1366,8 +1386,10 @@ public class LocationBarMediatorTest {
         doReturn(false).when(mAutocompleteCoordinator).isServingSuggestions();
         mMediator.beginInput(input);
 
-        // Press Escape (simulates 3rd press b/c serving suggestions is false and text is the same
-        // as initial text).
+        // 1st ESC: state -> STANDBY.
+        assertTrue(mMediator.handleEscPress());
+
+        // 2nd ESC: defocus.
         assertTrue(mMediator.handleEscPress());
 
         // Simulate scrim shown again (user re-interaction).
@@ -3731,21 +3753,15 @@ public class LocationBarMediatorTest {
         mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
         mMediator.beginInput(mSessionState.getAutocompleteInput());
         assertTrue(mSessionState.isSessionActive());
-        assertEquals(
-                AutocompleteState.ENABLED,
-                mSessionState.getAutocompleteInput().getAutocompleteState());
 
-        doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
-
-        assertTrue(mMediator.handleEscPress());
-        verify(mAutocompleteCoordinator).stopAutocomplete();
-        assertEquals(
-                AutocompleteState.ENABLED,
-                mSessionState.getAutocompleteInput().getAutocompleteState());
-
-        doReturn(false).when(mAutocompleteCoordinator).isServingSuggestions();
         mSessionState.getAutocompleteInput().setUserText("query");
         mSessionState.getAutocompleteInput().setInitialUserText("example.com");
+
+        assertTrue(mMediator.handleEscPress());
+        assertEquals(
+                AutocompleteState.STANDBY,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+        assertEquals("query", mSessionState.getAutocompleteInput().getUserText());
 
         clearInvocations(mUrlCoordinator);
         assertTrue(mMediator.handleEscPress());
@@ -3783,21 +3799,15 @@ public class LocationBarMediatorTest {
         mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
         mMediator.beginInput(mSessionState.getAutocompleteInput());
         assertTrue(mSessionState.isSessionActive());
-        assertEquals(
-                AutocompleteState.ENABLED,
-                mSessionState.getAutocompleteInput().getAutocompleteState());
 
-        doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
-
-        assertTrue(mMediator.handleEscPress());
-        verify(mAutocompleteCoordinator).stopAutocomplete();
-        assertEquals(
-                AutocompleteState.ENABLED,
-                mSessionState.getAutocompleteInput().getAutocompleteState());
-
-        doReturn(false).when(mAutocompleteCoordinator).isServingSuggestions();
         mSessionState.getAutocompleteInput().setUserText("query");
         mSessionState.getAutocompleteInput().setInitialUserText("example.com");
+
+        assertTrue(mMediator.handleEscPress());
+        assertEquals(
+                AutocompleteState.STANDBY,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+        assertEquals("query", mSessionState.getAutocompleteInput().getUserText());
 
         assertTrue(mMediator.handleEscPress());
         assertEquals(
@@ -3810,5 +3820,67 @@ public class LocationBarMediatorTest {
         assertEquals(
                 AutocompleteState.DISABLED,
                 mSessionState.getAutocompleteInput().getAutocompleteState());
+    }
+
+    @Test
+    public void testEscPress_withPreviewText_upgradesToUserTextAndGoesToStandby() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
+        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        mMediator.beginInput(mSessionState.getAutocompleteInput());
+        assertTrue(mSessionState.isSessionActive());
+
+        mSessionState.getAutocompleteInput().setUserText("goo");
+        mSessionState.getAutocompleteInput().setInitialUserText("example.com");
+        doReturn(true).when(mUrlCoordinator).shouldAutocomplete();
+
+        AutocompleteMatch match = mock(AutocompleteMatch.class);
+        doReturn("gle.com").when(match).getInlineAutocompletion();
+        mSessionState.getAutocompleteInput().setPreviewText("google.com");
+        mMediator.onSuggestionsChanged(match, true);
+
+        assertEquals("google.com", mSessionState.getAutocompleteInput().getPreviewText());
+        assertTrue(mSessionState.getAutocompleteInput().hasPreviewText());
+
+        assertTrue(mMediator.handleEscPress());
+
+        assertEquals(
+                AutocompleteState.STANDBY,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+
+        assertEquals("google.com", mSessionState.getAutocompleteInput().getUserText());
+
+        assertEquals(new TextSelection(3, 10), mSessionState.getAutocompleteInput().getSelection());
+
+        assertFalse(mSessionState.getAutocompleteInput().hasPreviewText());
+    }
+
+    @Test
+    public void testTypeCharacter_replacingOriginalUrl_doesNotAutoCommit() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
+        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        mSessionState.getAutocompleteInput().setUserText("google.com");
+        mSessionState.getAutocompleteInput().setSelection(TextSelection.SELECT_ALL);
+        mMediator.beginInput(mSessionState.getAutocompleteInput());
+        assertTrue(mSessionState.isSessionActive());
+
+        mMediator.onUrlTextChanged("w");
+
+        assertEquals("w", mSessionState.getAutocompleteInput().getUserText());
+
+        doReturn(true).when(mUrlCoordinator).shouldAutocomplete();
+        AutocompleteMatch match = mock(AutocompleteMatch.class);
+        doReturn("ikipedia.org").when(match).getInlineAutocompletion();
+        mSessionState.getAutocompleteInput().setPreviewText("wikipedia.org");
+        mMediator.onSuggestionsChanged(match, true);
+
+        assertEquals("w", mSessionState.getAutocompleteInput().getUserText());
+        assertEquals("wikipedia.org", mSessionState.getAutocompleteInput().getPreviewText());
+        assertTrue(mSessionState.getAutocompleteInput().hasPreviewText());
     }
 }

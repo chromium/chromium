@@ -1033,7 +1033,9 @@ class AutocompleteMediator
         if (!maybeEnterKeywordMode(suggestion)) {
             // Clear keyword mode only if it was a temporary preview triggered by highlighting
             // a starter pack. hasPreviewText() prevents clearing explicitly typed keyword modes.
-            if (mAutocompleteInput != null && mAutocompleteInput.hasPreviewText()) {
+            if (mAutocompleteInput != null
+                    && mAutocompleteInput.getSiteSearchData() != null
+                    && mAutocompleteInput.hasPreviewText()) {
                 onKeywordModeEntered(null);
             }
             setOmniboxEditingText(suggestion.getFillIntoEdit());
@@ -1173,6 +1175,11 @@ class AutocompleteMediator
 
         String userText = input.getUserText();
         mUrlTextAfterSuggestionsReceived = userText + inlineAutocompleteText;
+        if (!TextUtils.isEmpty(inlineAutocompleteText)) {
+            input.setPreviewText(userText + inlineAutocompleteText);
+        } else {
+            input.resetPreviewText();
+        }
 
         if (!(mAutocompleteResult != null && mAutocompleteResult.equals(autocompleteResult))) {
             mAutocompleteResult = autocompleteResult;
@@ -1330,6 +1337,8 @@ class AutocompleteMediator
     private void onAutocompleteStateChanged(@AutocompleteState int state) {
         if (state == AutocompleteState.ENABLED) {
             onInputChanged();
+        } else if (state == AutocompleteState.STANDBY) {
+            stopAutocomplete(AutocompleteStopReason.CLOBBERED);
         }
     }
 

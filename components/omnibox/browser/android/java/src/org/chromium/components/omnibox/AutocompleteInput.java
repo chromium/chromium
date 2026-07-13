@@ -498,11 +498,15 @@ public class AutocompleteInput implements UserData {
         return setPreviewText(null);
     }
 
-    /** Commits the preview text as the user text. */
+    /**
+     * Commits the preview text as the user text, retaining the selection of the committed preview
+     * text part.
+     */
     public AutocompleteInput commitPreviewText() {
-        if (hasPreviewText()) {
-            String textToCommit = mPreviewText;
-            setUserText(textToCommit);
+        if (mPreviewText != null) {
+            TextSelection selection =
+                    new TextSelection(mUserText.get().length(), mPreviewText.length());
+            setUserText(mPreviewText, selection);
         }
         return this;
     }

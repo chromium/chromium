@@ -2657,18 +2657,19 @@ class LocationBarMediator
     @Override
     public Boolean handleEscPress() {
         if (mCurrentInput == null) return false;
-        if (mAutocompleteCoordinator == null) return false;
 
-        if (mAutocompleteCoordinator.isServingSuggestions()) {
-            // First ESC keypress should close the suggestions list.
-            mAutocompleteCoordinator.stopAutocomplete();
+        if (mCurrentInput.getAutocompleteState() == AutocompleteState.ENABLED) {
+            if (mCurrentInput.hasPreviewText()) {
+                mCurrentInput.commitPreviewText();
+            }
+            mCurrentInput.setAutocompleteState(AutocompleteState.STANDBY);
+            // TODO(https://crbug.com/534359434): Remove bespoke update calls.
+            updateButtonVisibility();
         } else if (!TextUtils.equals(
                 mCurrentInput.getUserText(), mCurrentInput.getInitialUserText())) {
-            // Second ESC keypress should reset the input to its initial state, if it's different.
             revertChanges();
             updateButtonVisibility();
         } else {
-            // Third ESC keypress should terminate input.
             endInputAndFocusCurrentTab();
         }
         return true;
