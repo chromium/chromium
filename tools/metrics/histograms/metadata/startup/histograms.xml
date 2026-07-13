@@ -58,8 +58,6 @@ chromium-metrics-reviews@google.com.
 
 <variants name="StartupType">
   <variant name="NewTabPage" summary="Chrome starts into the New Tab Page."/>
-  <variant name="NewTabPageWebUi"
-      summary="Chrome starts into the WebUI New Tab Page."/>
 </variants>
 
 <histogram name="Startup.AfterStartupTaskCount" units="units"
@@ -504,13 +502,11 @@ chromium-metrics-reviews@google.com.
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time from the start of the activity on a cold start until the first draw
-    pass on the root view containing the search provider logo (if available),
-    search box, content, etc. This usually indicates when the fixed UI elements
-    are shown to the user, but the articles might not be filled in yet.
+    pass on the root view (for Java NTP) or first visually non-empty paint (for
+    WebUI NTP). This usually indicates when the fixed UI elements are shown to
+    the user, but the articles might not be filled in yet.
 
-    Metric is recorded once per application lifetime during a cold start only if
-    the {FirstDrawSurface} is shown first when the FeedSurfaceProvider's view
-    calls onDraw.
+    Metric is recorded once per application lifetime during a cold start.
 
     Utilizes ColdStartTracker to determine if a start was cold based on process
     creation reason. Therefore, it is recommended to limit analysis of the data
@@ -519,7 +515,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FirstDrawSurface">
     <variant name="NewTabPage"/>
-    <variant name="NewTabPageWebUi"/>
     <variant name="SearchActivity"/>
   </token>
 </histogram>
