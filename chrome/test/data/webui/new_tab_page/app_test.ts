@@ -3040,6 +3040,59 @@ suite('NewTabPageAppTest', () => {
         });
 
     test(
+        'handles voice-permission-changed event when NTP searchbox (realbox) ' +
+            'voice search coherence is enabled',
+        async () => {
+          loadTimeData.overrideValues({
+            voiceSearchCoherenceAnySearchboxExperimentEnabled: true,
+            voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled: false,
+          });
+          await recreateApp();
+
+          // Act: Open voice search overlay.
+          $$(app, '#searchbox')!.dispatchEvent(new Event('open-voice-search'));
+          await microtasksFinished();
+
+          const voiceSearch =
+              app.shadowRoot.querySelector('cr-composebox-voice-search');
+          assertTrue(!!voiceSearch);
+          const glow = app.shadowRoot.querySelector('search-animated-glow');
+          assertTrue(!!glow);
+
+          // Simulate permission prompt opened.
+          voiceSearch.dispatchEvent(
+              new CustomEvent('voice-permission-changed', {
+                detail: {
+                  isOpened: true,
+                  height: 100,
+                  width: 100,
+                },
+              }));
+          await microtasksFinished();
+
+          assertFalse(glow.isListening);
+          assertTrue(
+              voiceSearch.classList.contains('permission-prompt-showing'));
+          assertTrue(glow.classList.contains('permission-prompt-showing'));
+
+          // Simulate permission prompt closed.
+          voiceSearch.dispatchEvent(
+              new CustomEvent('voice-permission-changed', {
+                detail: {
+                  isOpened: false,
+                  height: 0,
+                  width: 0,
+                },
+              }));
+          await microtasksFinished();
+
+          assertTrue(glow.isListening);
+          assertFalse(
+              voiceSearch.classList.contains('permission-prompt-showing'));
+          assertFalse(glow.classList.contains('permission-prompt-showing'));
+        });
+
+    test(
         'renders live transcript textarea and action buttons when NTP searchbox ' +
             '(realbox) voice search coherence with live transcription is enabled',
         async () => {

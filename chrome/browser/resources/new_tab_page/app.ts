@@ -23,8 +23,9 @@ import {GlifAnimationState} from 'chrome://resources/cr_components/composebox/co
 import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {VoiceSearchAction as ComposeVoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox.js';
-import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
+import type {ComposeboxVoiceSearchElement, VoicePermissionPromptState} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
+import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import type {ClickInfo} from 'chrome://resources/js/browser_command.mojom-webui.js';
@@ -168,6 +169,8 @@ function recordShowBrowserPromosResult(result: ShowNtpPromosResult) {
       'UserEducation.NtpPromos.ShowResult', result,
       ShowNtpPromosResult.MAX_VALUE + 1);
 }
+
+const PERMISSION_PROMPT_CSS_CLASS = 'permission-prompt-showing';
 
 const AppElementBase = HelpBubbleMixinLit(CrLitElement);
 
@@ -1140,6 +1143,38 @@ export class AppElement extends AppElementBase {
     this.showVoiceSearchOverlay_ = false;
     this.hasVoiceSearchError = false;
     this.voiceSearchListening_ = false;
+  }
+
+  protected onVoicePermissionChanged_(
+      e: CustomEvent<VoicePermissionPromptState>) {
+    if (e.detail.isOpened) {
+      this.voiceSearchListening_ = false;
+    } else {
+      this.voiceSearchListening_ =
+          this.showVoiceSearchOverlay_ && !this.hasVoiceSearchError;
+    }
+
+    const audioAnimation =
+        this.shadowRoot.querySelector<SearchAnimatedGlowElement>(
+            '#voiceSearchGlow');
+    if (audioAnimation) {
+      if (e.detail.isOpened) {  // Permission prompt opened.
+        audioAnimation.classList.add(PERMISSION_PROMPT_CSS_CLASS);
+      } else {  // Permission prompt closed.
+        audioAnimation.classList.remove(PERMISSION_PROMPT_CSS_CLASS);
+      }
+    }
+
+    const voiceSearchElement =
+        this.shadowRoot.querySelector<ComposeboxVoiceSearchElement>(
+            '#voiceSearch');
+    if (voiceSearchElement) {
+      if (e.detail.isOpened) {  // Permission prompt opened.
+        voiceSearchElement.classList.add(PERMISSION_PROMPT_CSS_CLASS);
+      } else {  // Permission prompt closed.
+        voiceSearchElement.classList.remove(PERMISSION_PROMPT_CSS_CLASS);
+      }
+    }
   }
 
   protected onVoiceSearchCancel_() {
