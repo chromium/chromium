@@ -9,7 +9,6 @@ mojom("mojom") {
   sources = [
     "account_manager.mojom",
     "crosapi.mojom",
-    "nullable_primitives.mojom",
   ]
   disable_variants = true
   enable_js_fuzzing = false
