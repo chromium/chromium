@@ -25,7 +25,8 @@ _SIMPLE_HEADER_RE = re.compile(r'(\bheader\s+")([^"]+)(")')
 _REQUIRES_RE = re.compile(r'^\s*requires\s+(.*)')
 # This needs to match all triple dirs that exist in root_include_dir in the
 # sysroot.
-_TRIPLE = re.compile('^(.*)-(linux|cros)-(gnu|gnueabi|gnueabihf|android|androideabi)$')
+_TRIPLE = re.compile(
+    '^(.*)-(linux|cros)-(gnu|gnueabi|gnueabihf|android|androideabi)$')
 _DEBUG_SOURCE = '/tmp/debug_generate_system_modulemap.cc'
 _DEBUG_SCRIPT = pathlib.Path('/tmp/debug_generate_system_modulemap.sh')
 
@@ -87,7 +88,10 @@ class AllowList:
     return [path for path, hdr in self.hdrs.items() if not hdr.lazy]
 
   def private(self, path: str) -> bool:
-    return path not in self.hdrs
+    hdr = self.hdrs.get(path)
+    if hdr is not None:
+      return hdr.private
+    return True
 
   def forced(self) -> list[modulemap_config.Header]:
     return [h for h in self.hdrs.values() if h.force]
