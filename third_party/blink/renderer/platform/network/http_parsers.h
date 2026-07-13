@@ -209,6 +209,14 @@ network::mojom::blink::NoVarySearchWithParseErrorPtr ParseNoVarySearch(
 PLATFORM_EXPORT
 String GetNoVarySearchHintConsoleMessage(
     const network::mojom::NoVarySearchParseError& error);
+
+// Returns true if `url1` and `url2` are equivalent under the given
+// No-Vary-Search hint (i.e. they only differ by query parameters that the
+// hint says should be ignored). `no_vary_search` must be non-null.
+PLATFORM_EXPORT bool AreUrlsEquivalentUnderNoVarySearch(
+    const KURL& url1,
+    const KURL& url2,
+    const network::mojom::blink::NoVarySearchPtr& no_vary_search);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_HTTP_PARSERS_H_

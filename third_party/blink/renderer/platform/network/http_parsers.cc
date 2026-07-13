@@ -45,6 +45,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_view_util.h"
 #include "net/http/http_content_disposition.h"
+#include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
@@ -79,6 +80,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
+#include "url/gurl.h"
 
 // We would like finding a way to convert from/to blink type automatically.
 // The following attempt has been withdrawn:
@@ -1192,5 +1194,31 @@ String GetNoVarySearchHintConsoleMessage(
     const network::mojom::NoVarySearchParseError& error) {
   return network::mojom::ConvertToBlink(
       network::GetNoVarySearchHintConsoleMessage(error));
+}
+
+bool AreUrlsEquivalentUnderNoVarySearch(
+    const KURL& url1,
+    const KURL& url2,
+    const network::mojom::blink::NoVarySearchPtr& no_vary_search) {
+  DCHECK(no_vary_search);
+  auto to_std_vector = [](const Vector<String>& params) {
+    std::vector<std::string> result;
+    result.reserve(params.size());
+    for (const String& param : params) {
+      result.push_back(param.Utf8());
+    }
+    return result;
+  };
+  net::HttpNoVarySearchData data =
+      no_vary_search->search_variance->is_vary_params()
+          ? net::HttpNoVarySearchData::CreateFromVaryParams(
+                to_std_vector(
+                    no_vary_search->search_variance->get_vary_params()),
+                no_vary_search->vary_on_key_order)
+          : net::HttpNoVarySearchData::CreateFromNoVaryParams(
+                to_std_vector(
+                    no_vary_search->search_variance->get_no_vary_params()),
+                no_vary_search->vary_on_key_order);
+  return data.AreEquivalent(GURL(url1), GURL(url2));
 }
 }  // namespace blink

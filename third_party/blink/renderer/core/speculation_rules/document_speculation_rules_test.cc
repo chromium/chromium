@@ -114,6 +114,55 @@ TEST_F(DocumentSpeculationRulesTest, RemoveRuleSet) {
 
   EXPECT_TRUE(mock_host().last_candidates().empty());
 }
+
+TEST_F(DocumentSpeculationRulesTest, NoVarySearchDedupesSentCandidates) {
+  Document& document = GetDocument();
+  DocumentSpeculationRules& document_speculation_rules =
+      DocumentSpeculationRules::From(document);
+
+  // First rule set: /p?a=1 with No-Vary-Search hint that excludes "a".
+  auto* source1 = SpeculationRuleSet::Source::FromInlineScript(
+      R"json({"prefetch": [{
+        "urls": ["/p?a=1"],
+        "expects_no_vary_search": "params=(\"a\")"
+      }]})json",
+      document, static_cast<DOMNodeId>(1));
+  auto* rule_set1 =
+      SpeculationRuleSet::Parse(source1, document.GetExecutionContext());
+  document_speculation_rules.AddRuleSet(rule_set1);
+  ProcessAllRuleSets(document_speculation_rules);
+
+  ASSERT_EQ(document_speculation_rules.sent_candidates().size(), 1u);
+
+  // Second rule set: /p?a=2 with the same NVS hint. This URL is equivalent
+  // to /p?a=1 under the hint, so it should not produce a second entry in
+  // sent_candidates().
+  auto* source2 = SpeculationRuleSet::Source::FromInlineScript(
+      R"json({"prefetch": [{
+        "urls": ["/p?a=2"],
+        "expects_no_vary_search": "params=(\"a\")"
+      }]})json",
+      document, static_cast<DOMNodeId>(2));
+  auto* rule_set2 =
+      SpeculationRuleSet::Parse(source2, document.GetExecutionContext());
+  document_speculation_rules.AddRuleSet(rule_set2);
+  ProcessAllRuleSets(document_speculation_rules);
+
+  EXPECT_EQ(document_speculation_rules.sent_candidates().size(), 1u);
+
+  auto* source3 = SpeculationRuleSet::Source::FromInlineScript(
+      R"json({"prefetch": [{
+        "urls": ["/p?b=1"],
+        "expects_no_vary_search": "params=(\"a\")"
+      }]})json",
+      document, static_cast<DOMNodeId>(3));
+  auto* rule_set3 =
+      SpeculationRuleSet::Parse(source3, document.GetExecutionContext());
+  document_speculation_rules.AddRuleSet(rule_set3);
+  ProcessAllRuleSets(document_speculation_rules);
+
+  EXPECT_EQ(document_speculation_rules.sent_candidates().size(), 2u);
+}
 }  // namespace
 
 }  // namespace blink

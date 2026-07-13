@@ -739,9 +739,23 @@ PrerenderHostId PrerenderHostRegistry::CreateAndStartHost(
       return PrerenderHostId();
     }
 
-    // Ignore prerendering requests for the same URL.
+    // Ignore prerendering requests that duplicate an existing host. Two
+    // requests are considered duplicates when they target the same URL, or
+    // when they share the same No-Vary-Search hint and their URLs are
+    // equivalent under that hint (e.g. /p?a=1 and /p?a=2 with hint
+    // `params=("a")`).
     for (auto& iter : prerender_host_by_id_) {
-      if (iter.second->GetInitialUrl() == attributes.prerendering_url) {
+      const PrerenderHost& existing_host = *iter.second;
+      const GURL& existing_url = existing_host.GetInitialUrl();
+      if (existing_url == attributes.prerendering_url) {
+        builder.RejectAsDuplicate();
+        return PrerenderHostId();
+      }
+      if (attributes.no_vary_search_hint.has_value() &&
+          existing_host.no_vary_search_hint() ==
+              attributes.no_vary_search_hint &&
+          attributes.no_vary_search_hint->AreEquivalent(
+              existing_url, attributes.prerendering_url)) {
         builder.RejectAsDuplicate();
         return PrerenderHostId();
       }

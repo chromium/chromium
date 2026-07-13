@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -57,8 +58,18 @@ mojom::blink::SpeculationCandidatePtr SpeculationCandidate::ToMojom() const {
 
 bool SpeculationCandidate::IsSimilarFromAuthorPerspective(
     const SpeculationCandidate& other) const {
+  if (!no_vary_search_ && url_ != other.url_) {
+    return false;
+  }
+  if (no_vary_search_ &&
+      !AreUrlsEquivalentUnderNoVarySearch(url_, other.url_, no_vary_search_)) {
+    return false;
+  }
+
+  // Then compare all other fields (including the hint itself, so two
+  // candidates with different hints are never considered similar).
   auto as_tie = [](const SpeculationCandidate& candidate) {
-    return std::tie(candidate.url_, candidate.action_, candidate.referrer_,
+    return std::tie(candidate.action_, candidate.referrer_,
                     candidate.requires_anonymous_client_ip_when_cross_origin_,
                     candidate.target_hint_, candidate.eagerness_,
                     candidate.no_vary_search_, candidate.injection_type_,
