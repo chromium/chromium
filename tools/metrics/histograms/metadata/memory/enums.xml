@@ -75,6 +75,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="No memory pressure"/>
   <int value="1" label="Moderate memory pressure"/>
   <int value="2" label="Critical memory pressure"/>
+  <int value="3" label="Disk pressure"/>
 </enum>
 
 <!-- LINT.IfChange(RequestOutcome) -->

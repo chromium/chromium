@@ -22,6 +22,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 
 namespace memory_pressure::mac {
 
@@ -152,14 +153,14 @@ void SystemMemoryPressureEvaluator::UpdatePressureLevel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Get the current macOS pressure level and convert to the corresponding
   // Chrome pressure level.
-  auto os_pressure_level =
+  os_pressure_level_ =
       MemoryPressureLevelForMacMemoryPressureLevel(GetMacMemoryPressureLevel());
 
   // The effective pressure level is the most severe of the OS-reported level
   // and our disk-space-derived level. If the disk pressure feature is disabled,
   // `disk_pressure_vote_` will always be `NONE`.
   auto effective_pressure_level =
-      std::max(os_pressure_level, disk_pressure_vote_);
+      std::max(os_pressure_level_, disk_pressure_vote_);
 
   SetCurrentVote(effective_pressure_level);
 }
@@ -205,6 +206,15 @@ void SystemMemoryPressureEvaluator::UpdatePressureAndManageNotifications() {
   // Go through the normal memory pressure level checking mechanism so that
   // |current_vote_| and UMA get updated to the current value.
   UpdatePressureLevel();
+
+  // Notify the reporter of disk pressure state changes, including the
+  // current OS pressure level so that time is only attributed to the disk
+  // bucket when the OS is not also critical.
+  if (auto* monitor = MultiSourceMemoryPressureMonitor::Get()) {
+    monitor->UpdateDiskPressureState(
+        disk_pressure_vote_ == base::MEMORY_PRESSURE_LEVEL_CRITICAL,
+        os_pressure_level_);
+  }
 
   // Run the callback that's waiting on memory pressure change notifications.
   if (current_vote() != old_vote) {

@@ -39,7 +39,9 @@ void MemoryPressureLevelReporter::OnMemoryPressureLevelChanged(
   // |new_level| can be equal to |periodic_reporting_timer_| if this gets called
   // by the one shot reporting timer, do nothing in this case.
   if ((new_level != current_pressure_level_) &&
-      (current_pressure_level_ != base::MEMORY_PRESSURE_LEVEL_NONE)) {
+      (current_pressure_level_ != base::MEMORY_PRESSURE_LEVEL_NONE) &&
+      !(is_disk_pressure_ &&
+        os_pressure_level_ != base::MEMORY_PRESSURE_LEVEL_CRITICAL)) {
     constexpr char kHistogramPrefix[] = "Memory.PressureWindowDuration.";
     std::string histogram_name;
 
@@ -83,27 +85,63 @@ void MemoryPressureLevelReporter::OnMemoryPressureLevelChanged(
   StartPeriodicTimer();
 }
 
+void MemoryPressureLevelReporter::UpdateDiskPressureState(
+    bool new_is_disk_pressure,
+    base::MemoryPressureLevel new_os_pressure_level) {
+  // Update the OS pressure level even if disk pressure state hasn't changed,
+  // because the OS level may have transitioned while disk pressure was active.
+  if (is_disk_pressure_ == new_is_disk_pressure &&
+      os_pressure_level_ == new_os_pressure_level) {
+    return;
+  }
+  // Make sure that the data about the last interval gets reported before we
+  // change the disk pressure state.
+  ReportHistogram(base::TimeTicks::Now());
+  is_disk_pressure_ = new_is_disk_pressure;
+  os_pressure_level_ = new_os_pressure_level;
+  current_pressure_level_begin_ = base::TimeTicks::Now();
+}
+
 void MemoryPressureLevelReporter::ReportHistogram(base::TimeTicks now) {
   auto duration = now - current_pressure_level_begin_;
   auto duration_s = duration.InSeconds();
-  accumulator_buckets_[current_pressure_level_] +=
-      duration - base::Seconds(duration_s);
-  auto accumulated_seconds =
-      accumulator_buckets_[current_pressure_level_].InSeconds();
+
+  MemoryPressureHistogramBuckets bucket;
+  switch (current_pressure_level_) {
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
+      bucket = MemoryPressureHistogramBuckets::kNone;
+      break;
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
+      bucket = MemoryPressureHistogramBuckets::kModerate;
+      break;
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      // Only attribute time to the disk bucket when the OS is not also
+      // critical. If both are critical, attribute to the standard critical
+      // bucket so the OS signal is not masked.
+      bucket = (is_disk_pressure_ &&
+                os_pressure_level_ != base::MEMORY_PRESSURE_LEVEL_CRITICAL)
+                   ? MemoryPressureHistogramBuckets::kDisk
+                   : MemoryPressureHistogramBuckets::kCritical;
+      break;
+  }
+  size_t index = static_cast<size_t>(bucket);
+
+  accumulator_buckets_[index] += duration - base::Seconds(duration_s);
+  auto accumulated_seconds = accumulator_buckets_[index].InSeconds();
   if (accumulated_seconds > 0) {
     duration_s += accumulated_seconds;
-    accumulator_buckets_[current_pressure_level_] -=
-        base::Seconds(accumulated_seconds);
+    accumulator_buckets_[index] -= base::Seconds(accumulated_seconds);
   }
 
   if (duration_s) {
     // We can't use UmaHistogramEnumeration here as it doesn't support
     // |AddCount|.
+    const int max_value =
+        static_cast<int>(MemoryPressureHistogramBuckets::kMaxValue);
     base::LinearHistogram::FactoryGet(
-        "Memory.PressureLevel2", 1, base::MemoryPressureLevel::kMaxValue + 1,
-        base::MemoryPressureLevel::kMaxValue + 2,
+        "Memory.PressureLevel2", 1, max_value + 1, max_value + 2,
         base::HistogramBase::kUmaTargetedHistogramFlag)
-        ->AddCount(current_pressure_level_,
+        ->AddCount(static_cast<int>(bucket),
                    base::saturated_cast<int>(duration_s));
   }
 }

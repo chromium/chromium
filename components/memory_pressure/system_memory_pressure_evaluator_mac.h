@@ -79,6 +79,10 @@ class SystemMemoryPressureEvaluator
   base::MemoryPressureLevel disk_pressure_vote_ =
       base::MEMORY_PRESSURE_LEVEL_NONE;
 
+  // The last computed OS-reported memory pressure level.
+  base::MemoryPressureLevel os_pressure_level_ =
+      base::MEMORY_PRESSURE_LEVEL_NONE;
+
   // The path to the user data directory, used for the disk space check.
   base::FilePath user_data_dir_;
 

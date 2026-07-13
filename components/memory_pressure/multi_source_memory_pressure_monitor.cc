@@ -60,6 +60,14 @@ MultiSourceMemoryPressureMonitor::CreateVoter() {
   return aggregator_.CreateVoter();
 }
 
+void MultiSourceMemoryPressureMonitor::UpdateDiskPressureState(
+    bool new_is_disk_pressure,
+    base::MemoryPressureLevel new_os_pressure_level) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  level_reporter_.UpdateDiskPressureState(new_is_disk_pressure,
+                                          new_os_pressure_level);
+}
+
 void MultiSourceMemoryPressureMonitor::OnMemoryPressureLevelChanged(
     base::MemoryPressureLevel level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

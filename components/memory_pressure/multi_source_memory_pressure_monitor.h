@@ -48,6 +48,13 @@ class MultiSourceMemoryPressureMonitor
   // have input on the overall memory pressure level.
   std::unique_ptr<MemoryPressureVoter> CreateVoter();
 
+  // Set whether the critical memory pressure is due to low disk space.
+  // |new_os_pressure_level| indicates the current OS-reported memory pressure
+  // level, so that time is only attributed to the disk bucket when the OS is
+  // not also critical.
+  void UpdateDiskPressureState(bool new_is_disk_pressure,
+                               base::MemoryPressureLevel new_os_pressure_level);
+
   // Sets the system evaluator on platforms where no default implementation
   // exists, because of layering concerns (ChromeOS & Chromecast).
   void SetSystemEvaluator(
