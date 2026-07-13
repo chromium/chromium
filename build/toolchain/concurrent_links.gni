@@ -64,7 +64,7 @@ if (concurrent_links == -1) {
     # crbug.com/512405078: OOM for win-arm64-dbg.
     _args = [ "--mem_per_link_gb=10" ]
   } else if (is_win) {
-    _args = [ "--mem_per_link_gb=6" ]
+    _args = [ "--mem_per_link_gb=7" ]
   } else if (is_mac) {
     if (enable_dsyms) {
       _args = [ "--mem_per_link_gb=12" ]
