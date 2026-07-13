@@ -39,14 +39,50 @@ void LogAcceptanceHistogram(std::string_view base_histogram,
 // - The number of extracted attributes did not match the suggested count.
 // - There was a mismatch in the keys or values of the filters (e.g. a
 //   different brand or price range was applied than what was suggested).
-void LogApplicationOutcome(std::string_view task_type,
-                           MultistepFilterApplicationOutcome outcome) {
+void LogApplicationOutcome(const UrlFilterSuggestion& suggestion,
+                           bool is_success) {
+  MultistepFilterApplicationOutcome outcome =
+      is_success ? MultistepFilterApplicationOutcome::kAllFiltersApplied
+                 : MultistepFilterApplicationOutcome::kNotAllFiltersApplied;
   base::UmaHistogramEnumeration(kMultistepFilterApplicationOutcomeHistogram,
                                 outcome);
   base::UmaHistogramEnumeration(
       base::StrCat({kMultistepFilterApplicationOutcomeHistogram,
-                    kMultistepFilterByTaskHistogramPrefix, task_type}),
+                    kMultistepFilterByTaskHistogramPrefix,
+                    suggestion.task_type}),
       outcome);
+  if (is_success) {
+    size_t count = suggestion.attribute_ui_labels.size();
+    base::UmaHistogramCounts100(
+        kMultistepFilterNumberOfFacetsSuccessfullyAppliedHistogram, count);
+    base::UmaHistogramCounts100(
+        base::StrCat(
+            {kMultistepFilterNumberOfFacetsSuccessfullyAppliedHistogram,
+             kMultistepFilterByTaskHistogramPrefix, suggestion.task_type}),
+        count);
+  }
+
+  for (const FilterAttributeUiLabel& suggested_label :
+       suggestion.attribute_ui_labels) {
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {kMultistepFilterApplicationOutcomeHistogram,
+             kMultistepFilterByTaskHistogramPrefix, suggestion.task_type,
+             kMultistepFilterByFacetHistogramPrefix, suggested_label.key}),
+        is_success);
+  }
+}
+
+void LogFacetsShown(std::string_view task_type, size_t count) {
+  if (count == 0) {
+    return;
+  }
+  base::UmaHistogramCounts100(kMultistepFilterNumberOfFacetsShownHistogram,
+                              count);
+  base::UmaHistogramCounts100(
+      base::StrCat({kMultistepFilterNumberOfFacetsShownHistogram,
+                    kMultistepFilterByTaskHistogramPrefix, task_type}),
+      count);
 }
 
 }  // namespace
@@ -98,6 +134,7 @@ void MultistepFilterMetricsTracker::OnSuggestionShown(
       .user_decision = SuggestionUserDecision::kIgnored,
       .suggestion_shown_time = base::TimeTicks::Now(),
   };
+  LogFacetsShown(suggestion.task_type, suggestion.attribute_ui_labels.size());
 }
 
 void MultistepFilterMetricsTracker::OnSuggestionReopened() {
@@ -157,12 +194,8 @@ void MultistepFilterMetricsTracker::FlushSuggestionUiSession(
 void MultistepFilterMetricsTracker::FlushSuggestionApplicationSession(
     bool was_applied_successfully) {
   CHECK(current_suggestion_application_session_.has_value());
-  LogApplicationOutcome(
-      current_suggestion_application_session_->suggestion.task_type,
-      was_applied_successfully
-          ? MultistepFilterApplicationOutcome::kAllFiltersApplied
-          : MultistepFilterApplicationOutcome::kNotAllFiltersApplied);
-  // TODO(crbug.com/531717350): Log the result to the appropriate histogram.
+  LogApplicationOutcome(current_suggestion_application_session_->suggestion,
+                        was_applied_successfully);
   current_suggestion_application_session_ = std::nullopt;
 }
 

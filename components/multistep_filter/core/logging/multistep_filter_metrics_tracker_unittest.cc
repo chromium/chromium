@@ -4,8 +4,11 @@
 
 #include "components/multistep_filter/core/logging/multistep_filter_metrics_tracker.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/data_models/filter_navigation_metadata.h"
+#include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
 #include "components/multistep_filter/core/logging/multistep_filter_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -17,11 +20,22 @@ namespace {
 using ::base::Bucket;
 using ::base::BucketsAre;
 
-UrlFilterSuggestion CreateSuggestion(std::string task_type) {
+UrlFilterSuggestion CreateSuggestionWithAttributes(
+    std::string task_type,
+    std::vector<std::pair<std::string, std::string>> attrs) {
   UrlFilterSuggestion::Params params;
   params.navigation_url = GURL("https://example.com");
   params.task_type = std::move(task_type);
+  for (const auto& [key, val] : attrs) {
+    params.attribute_ui_labels.emplace_back(
+        FilterSuggestionCandidateAttribute(key, base::UTF8ToUTF16(key)),
+        FilterAttribute(key, val));
+  }
   return UrlFilterSuggestion(std::move(params));
+}
+
+UrlFilterSuggestion CreateSuggestion(std::string task_type) {
+  return CreateSuggestionWithAttributes(std::move(task_type), {});
 }
 
 // Verifies that destroying a tracker when no suggestion was shown records
@@ -218,7 +232,7 @@ TEST(MultistepFilterMetricsTrackerTest,
                                     0);
 }
 
-// Verifies that if a new navigation finishes while we were waiting for
+// Tests that if a new navigation finishes while we were waiting for
 // extraction of a previously applied suggestion, that application session
 // is flushed as a failure.
 TEST(MultistepFilterMetricsTrackerTest,
@@ -248,6 +262,81 @@ TEST(MultistepFilterMetricsTrackerTest,
           "MultistepFilter.ApplicationOutcome.ByTask.SEARCH_ACCOMMODATIONS"),
       BucketsAre(
           Bucket(MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1)));
+}
+
+// Tests that showing a suggestion logs the number of facets shown.
+TEST(MultistepFilterMetricsTrackerTest, FacetsShownLogged) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestionWithAttributes(
+      "SEARCH_ACCOMMODATIONS", {{"color", "blue"}, {"size", "large"}});
+  {
+    MultistepFilterMetricsTracker tracker;
+    tracker.OnSuggestionShown(suggestion);
+  }
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterNumberOfFacetsShownHistogram, 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "MultistepFilter.NumberOfFacetsShown.ByTask.SEARCH_ACCOMMODATIONS", 2, 1);
+}
+
+// Tests that successful suggestion application logs the count of successfully
+// applied facets and per-facet success.
+TEST(MultistepFilterMetricsTrackerTest,
+     SuggestionApplicationSuccessLogsFacetCountAndOutcomes) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestionWithAttributes(
+      "SEARCH_ACCOMMODATIONS", {{"color", "blue"}, {"size", "large"}});
+  FilterNavigationMetadata metadata;
+  metadata.applied_suggestion = suggestion;
+
+  MultistepFilterMetricsTracker tracker;
+  tracker.OnNavigationFinished(metadata);
+  tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+      /*was_applied_successfully=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterNumberOfFacetsSuccessfullyAppliedHistogram, 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "MultistepFilter.NumberOfFacetsSuccessfullyApplied.ByTask.SEARCH_"
+      "ACCOMMODATIONS",
+      2, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "MultistepFilter.ApplicationOutcome.ByTask.SEARCH_ACCOMMODATIONS.ByFacet."
+      "color",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "MultistepFilter.ApplicationOutcome.ByTask.SEARCH_ACCOMMODATIONS.ByFacet."
+      "size",
+      true, 1);
+}
+
+// Tests that failed suggestion application logs per-facet failure and no
+// success count.
+TEST(MultistepFilterMetricsTrackerTest,
+     SuggestionApplicationFailureLogsPerFacetOutcomes) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestionWithAttributes(
+      "SEARCH_ACCOMMODATIONS", {{"color", "blue"}, {"size", "large"}});
+  FilterNavigationMetadata metadata;
+  metadata.applied_suggestion = suggestion;
+
+  MultistepFilterMetricsTracker tracker;
+  tracker.OnNavigationFinished(metadata);
+  tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+      /*was_applied_successfully=*/false);
+
+  histogram_tester.ExpectTotalCount(
+      kMultistepFilterNumberOfFacetsSuccessfullyAppliedHistogram, 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "MultistepFilter.ApplicationOutcome.ByTask.SEARCH_ACCOMMODATIONS.ByFacet."
+      "color",
+      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "MultistepFilter.ApplicationOutcome.ByTask.SEARCH_ACCOMMODATIONS.ByFacet."
+      "size",
+      false, 1);
 }
 
 }  // namespace

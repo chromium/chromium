@@ -8,6 +8,28 @@ found in the LICENSE file.
 
 <histograms>
 
+<!-- TODO (http://crbug.com/526985492): Update the Filter Facet types variants once task taxonomy is finalized. -->
+
+<variants name="MultistepFilterFacetType">
+  <variant name="AGE_CHILD" summary="AGE_CHILD (shared with SEARCH_FLIGHTS)"/>
+  <variant name="CABIN_CLASS" summary="CABIN_CLASS"/>
+  <variant name="COUNT_ADULT" summary="COUNT_ADULT"/>
+  <variant name="COUNT_ADULTS" summary="COUNT_ADULTS"/>
+  <variant name="COUNT_CHILD" summary="COUNT_CHILD"/>
+  <variant name="COUNT_CHILDREN" summary="COUNT_CHILDREN"/>
+  <variant name="COUNT_ROOM" summary="COUNT_ROOM"/>
+  <variant name="DATE_CHECKIN" summary="DATE_CHECKIN"/>
+  <variant name="DATE_CHECKOUT" summary="DATE_CHECKOUT"/>
+  <variant name="DATE_INBOUND" summary="DATE_INBOUND"/>
+  <variant name="DATE_OUTBOUND" summary="DATE_OUTBOUND"/>
+  <variant name="INFANT_IN_LAP" summary="INFANT_IN_LAP"/>
+  <variant name="LOCATION_INBOUND" summary="LOCATION_INBOUND"/>
+  <variant name="LOCATION_OUTBOUND" summary="LOCATION_OUTBOUND"/>
+  <variant name="NAME_DESTINATION" summary="NAME_DESTINATION"/>
+  <variant name="STOPS" summary="STOPS"/>
+  <variant name="TRIP_TYPE" summary="TRIP_TYPE"/>
+</variants>
+
 <variants name="MultistepFilterTaskType">
   <variant name="SEARCH_ACCOMMODATIONS" summary="SEARCH_ACCOMMODATIONS"/>
   <variant name="SEARCH_FLIGHTS" summary="SEARCH_FLIGHTS"/>
@@ -127,6 +149,87 @@ found in the LICENSE file.
     not match the suggested count. - There was a mismatch in the keys or values
     of the filters (e.g. a different brand or price range was applied than what
     was suggested).
+  </summary>
+  <token key="TaskType" variants="MultistepFilterTaskType"/>
+</histogram>
+
+<histogram
+    name="MultistepFilter.ApplicationOutcome.ByTask.{TaskType}.ByFacet.{FacetType}"
+    enum="BooleanSuccess" expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Records the application outcome (success or failure) for the {FacetType}
+    filter facet when it was part of an accepted Multistep Filter suggestion for
+    task type {TaskType}.
+
+    Note that we only measure the overall application outcome: a facet is
+    recorded as successfully applied (true) if and only if all facets in the
+    accepted suggestion were successfully applied (i.e. the landing page's URL
+    was parsed and all suggested attributes matched). If any facet fails to
+    apply, or if the navigation/extraction fails, all facets in the suggestion
+    are recorded as failed (false).
+  </summary>
+  <token key="TaskType" variants="MultistepFilterTaskType"/>
+  <token key="FacetType" variants="MultistepFilterFacetType"/>
+</histogram>
+
+<histogram name="MultistepFilter.NumberOfFacetsShown" units="count"
+    expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Records the number of filter facets (attributes) contained within a
+    Multistep Filter suggestion when the suggestion is successfully shown to the
+    user (e.g. when the suggestion cue UI is displayed). Only recorded if at
+    least one facet is present.
+  </summary>
+</histogram>
+
+<histogram name="MultistepFilter.NumberOfFacetsShown.ByTask.{TaskType}"
+    units="count" expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Records the number of filter facets (attributes) contained within a
+    Multistep Filter suggestion when the suggestion is successfully shown to the
+    user (e.g. when the suggestion cue UI is displayed) for task type
+    {TaskType}. Only recorded if at least one facet is present.
+  </summary>
+  <token key="TaskType" variants="MultistepFilterTaskType"/>
+</histogram>
+
+<histogram name="MultistepFilter.NumberOfFacetsSuccessfullyApplied"
+    units="count" expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Records the number of filter facets (attributes) that were successfully
+    applied after the user accepted a Multistep Filter suggestion.
+
+    Note that this is only recorded when the overall suggestion application
+    succeeds (i.e., all facets in the suggestion were successfully applied to
+    the landing page). If the application fails (e.g. if any facet mismatch
+    occurs or the navigation fails), nothing is recorded to this histogram (we
+    do not log 0).
+  </summary>
+</histogram>
+
+<histogram
+    name="MultistepFilter.NumberOfFacetsSuccessfullyApplied.ByTask.{TaskType}"
+    units="count" expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Records the number of filter facets (attributes) that were successfully
+    applied after the user accepted a Multistep Filter suggestion for task type
+    {TaskType}.
+
+    Note that this is only recorded when the overall suggestion application
+    succeeds (i.e., all facets in the suggestion were successfully applied to
+    the landing page). If the application fails (e.g. if any facet mismatch
+    occurs or the navigation fails), nothing is recorded to this histogram (we
+    do not log 0).
   </summary>
   <token key="TaskType" variants="MultistepFilterTaskType"/>
 </histogram>
