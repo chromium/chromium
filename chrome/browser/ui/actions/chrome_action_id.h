@@ -447,7 +447,9 @@
   E(kRestoreWindow, IDC_RESTORE_WINDOW)
 #elif BUILDFLAG(IS_WIN)
 #define CHROME_PLATFORM_SPECIFIC_ACTION_IDS \
-  E(kRestoreWindow, IDC_RESTORE_WINDOW)
+  E(kRestoreWindow, IDC_RESTORE_WINDOW) \
+  E(kActionMoveWindow, IDC_MOVE_WINDOW) \
+  E(kActionSizeWindow, IDC_SIZE_WINDOW)
 #else
 #define CHROME_PLATFORM_SPECIFIC_ACTION_IDS
 #endif  // BUILDFLAG(IS_CHROMEOS)

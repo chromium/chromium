@@ -307,6 +307,10 @@ void OpenFeedbackDialog(BrowserWindowInterface* browser,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void OpenReportUnsafeSiteDialog(BrowserWindowInterface* browser);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN)
+void OpenMoveWindow(BrowserWindowInterface* browser);
+void OpenSizeWindow(BrowserWindowInterface* browser);
+#endif  // BUILDFLAG(IS_WIN)
 void ToggleBookmarkBar(BrowserWindowInterface* browser);
 void SetBookmarkBarVisibilityState(BrowserWindowInterface* browser,
                                    bookmarks::BookmarkBarVisibilityState state);

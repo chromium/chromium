@@ -841,24 +841,12 @@ void BrowserCommandController::HandleCommandWithDisposition(
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
-    case IDC_MOVE_WINDOW: {
-      HWND hwnd = BrowserView::GetBrowserViewForBrowser(browser_)
-                      ->GetWidget()
-                      ->GetNativeWindow()
-                      ->GetHost()
-                      ->GetAcceleratedWidget();
-      PostMessage(hwnd, WM_SYSCOMMAND, SC_MOVE, 0);
+    case IDC_MOVE_WINDOW:
+      chrome::OpenMoveWindow(browser_);
       break;
-    }
-    case IDC_SIZE_WINDOW: {
-      HWND hwnd = BrowserView::GetBrowserViewForBrowser(browser_)
-                      ->GetWidget()
-                      ->GetNativeWindow()
-                      ->GetHost()
-                      ->GetAcceleratedWidget();
-      PostMessage(hwnd, WM_SYSCOMMAND, SC_SIZE, 0);
+    case IDC_SIZE_WINDOW:
+      chrome::OpenSizeWindow(browser_);
       break;
-    }
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
