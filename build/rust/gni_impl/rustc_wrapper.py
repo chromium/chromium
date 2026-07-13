@@ -219,9 +219,11 @@ def verify_inputs(depline, sources, abs_build_root):
   return False
 
 
-def ConvertPathsToAbsolute(env):
-  """Converts values stored in the `env` dictionary to absolute paths."""
-  for (k, v) in env.items():
+def PrepareRustEnvForExecution(env):
+  """Converts values stored in the `env` dictionary to absolute paths, and
+     merges in system environment variables (with target-specific variables
+     taking precedence)."""
+  for k, v in env.items():
     # Paths need to be relative at gn/ninja level (for compatibility with
     # distributed builds), but it's okay to use absolute paths below gn/ninja
     # level.  And because some paths need to be absolute, we make all of them
@@ -233,6 +235,10 @@ def ConvertPathsToAbsolute(env):
     # * `SDKROOT` - see https://crbug.com/442128549
     if v and os.path.exists(v):
       env[k] = os.path.abspath(v)
+
+  # Merge in os.environ. Keys already in env take precedence over os.environ.
+  for k, v in os.environ.items():
+    env.setdefault(k, v)
 
 
 def _SaveRustEnvAndFlags(path, rustenv, rustflags):
@@ -389,17 +395,16 @@ def main():
 
   rustenv = dict([item.split("=", 1) for item in rustenv])  # list to dict
   _SaveRustEnvAndFlags(args.dump_rustc_env_and_flags, rustenv, rustc_args)
-  ConvertPathsToAbsolute(rustenv)
-  env = os.environ.copy() | rustenv
+  PrepareRustEnvForExecution(rustenv)
 
   # Add `--emit` and `-o` flags into the `rustc` invocation
   # (but do this _after_ the `_SaveRustEnvAndFlags` call above).
   rustc_args += ["--emit", args.emit, "-o", args.o]
 
   if args.v:
-    print(' '.join(f'{k}={shlex.quote(v)}' for k, v in env.items()), args.rustc,
-          shlex.join(rustc_args))
-  r = subprocess.run([args.rustc, *rustc_args], env=env, check=False)
+    print(' '.join(f'{k}={shlex.quote(v)}' for k, v in rustenv.items()),
+          args.rustc, shlex.join(rustc_args))
+  r = subprocess.run([args.rustc, *rustc_args], env=rustenv, check=False)
   HandleReturnCode(r, args.dump_rustc_env_and_flags)
 
   final_depfile_lines = []

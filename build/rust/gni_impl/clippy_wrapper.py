@@ -10,7 +10,7 @@ import pathlib
 import sys
 import tempfile
 
-from rustc_wrapper import (ConvertPathsToAbsolute, LoadRustEnvAndFlags,
+from rustc_wrapper import (PrepareRustEnvForExecution, LoadRustEnvAndFlags,
                            HandleReturnCode)
 
 
@@ -22,7 +22,7 @@ def main():
   args = parser.parse_args()
 
   (rustenv, rustflags) = LoadRustEnvAndFlags(args.rustc_env_and_flags)
-  ConvertPathsToAbsolute(rustenv)
+  PrepareRustEnvForExecution(rustenv)
 
   # `clippy-driver` should not write any files into the build directory
   # (e.g. into `out/`).

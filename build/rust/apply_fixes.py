@@ -24,7 +24,7 @@ REPOSITORY_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 # Get helpers from `//build/rust/gni_impl/rustc_wrapper.py`.
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), 'gni_impl'))
-from rustc_wrapper import (ConvertPathsToAbsolute, LoadRustEnvAndFlags)
+from rustc_wrapper import (PrepareRustEnvForExecution, LoadRustEnvAndFlags)
 
 
 class Highlight:
@@ -125,7 +125,7 @@ def main():
   args.tool = args.tool.resolve(strict=True)
 
   (rustenv, rustflags) = LoadRustEnvAndFlags(args.rustc_env_and_flags)
-  ConvertPathsToAbsolute(rustenv)
+  PrepareRustEnvForExecution(rustenv)
 
   # `apply_fixes.py` should not write any files into the build directory (e.g.
   # into `out/`).  `--emit=metadata` asks `rustc` and Clippy to only emit
