@@ -115,6 +115,12 @@ public class TopToolbarOverlayMediator implements ThemeColorObserver {
     /** Whether the overlay should be visible despite other signals. */
     private boolean mManualVisibility;
 
+    /**
+     * Whether the hairline shadow is externally suppressed (e.g., during fullscreen video or XR
+     * mode).
+     */
+    private boolean mToolbarHairlineSuppressed;
+
     /** Whether a layout that this overlay can be displayed on is showing. */
     private boolean mIsOnValidLayout;
 
@@ -428,14 +434,34 @@ public class TopToolbarOverlayMediator implements ThemeColorObserver {
     }
 
     /**
+     * Called when the external suppression state of the toolbar hairline shadow changes.
+     *
+     * @param suppressed Whether the hairline shadow should be suppressed (e.g., when in fullscreen
+     *     or XR mode).
+     */
+    void onToolbarHairlineSuppressedChanged(boolean suppressed) {
+        if (mToolbarHairlineSuppressed == suppressed) return;
+        mToolbarHairlineSuppressed = suppressed;
+        updateShadowState();
+    }
+
+    /**
      * Compute whether the texture's shadow should be visible. The shadow is visible whenever the
      * android view is not shown.
      */
     private void updateShadowState() {
+        if (mToolbarHairlineSuppressed) {
+            mModel.set(TopToolbarOverlayProperties.SHOW_SHADOW, false);
+            return;
+        }
+
         if (ChromeFeatureList.sAlwaysDrawCompositedToolbarHairline.isEnabled()) {
-            // With BCIV enabled, we show the hairline on the composited toolbar by default,
-            // and we don't want to update its visibility from the browser, because that incurs a
-            // compositor frame.
+            // With BCIV enabled, the hairline on the composited toolbar is shown by default.
+            // During normal browser scrolling and view transitions, SHOW_SHADOW is already true so
+            // setting it here is a no-op (avoiding extra compositor frames). However, when exiting
+            // external suppression (such as fullscreen video or XR mode where SHOW_SHADOW was set
+            // to false above), setting true here is required to restore the composited hairline.
+            mModel.set(TopToolbarOverlayProperties.SHOW_SHADOW, true);
             return;
         }
 

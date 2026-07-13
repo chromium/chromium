@@ -321,6 +321,24 @@ public class TopToolbarOverlayMediatorTest {
     }
 
     @Test
+    public void testToolbarHairlineSuppressed() {
+        mMediator.setIsAndroidViewVisible(false);
+        assertTrue(
+                "Shadow should be visible initially.",
+                mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
+
+        mMediator.onToolbarHairlineSuppressedChanged(true);
+        assertFalse(
+                "Shadow should be hidden when hairline is suppressed.",
+                mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
+
+        mMediator.onToolbarHairlineSuppressedChanged(false);
+        assertTrue(
+                "Shadow should be restored when hairline is unsuppressed.",
+                mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
+    }
+
+    @Test
     public void testAnonymize_suppressToolbarCaptures_nativePage() {
         assertFalse(mModel.get(TopToolbarOverlayProperties.ANONYMIZE));
         doReturn(true).when(mTab2).isNativePage();

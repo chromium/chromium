@@ -3245,8 +3245,9 @@ public class ToolbarManager
 
     private void updateHairlineVisibility() {
         if (mHairlineVisibilityTokenHolder != null) {
-            setToolbarShadowVisibility(
-                    mHairlineVisibilityTokenHolder.hasTokens() ? View.INVISIBLE : View.VISIBLE);
+            boolean suppressed = mHairlineVisibilityTokenHolder.hasTokens();
+            setToolbarShadowVisibility(suppressed ? View.INVISIBLE : View.VISIBLE);
+            if (mToolbar != null) mToolbar.onToolbarHairlineSuppressedChanged(suppressed);
         }
     }
 

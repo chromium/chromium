@@ -2167,7 +2167,8 @@ public class ToolbarPhone extends ToolbarLayout
             }
             if (!hideHairlineForIncognitoNtp()
                     && !hideHairlineForInterstitial()
-                    && !hideHairlineForRegularNtpTextureCapture()) {
+                    && !hideHairlineForRegularNtpTextureCapture()
+                    && !isToolbarHairlineSuppressed()) {
                 getToolbarHairline().setVisibility(VISIBLE);
             }
             mPreTextureCaptureAlpha = getAlpha();
@@ -2805,7 +2806,11 @@ public class ToolbarPhone extends ToolbarLayout
                     oldTranslationY != mLocationBarBackgroundNtpOffset.top;
         }
         if (!mRefactoredLocationBarTranslating) {
-            getToolbarHairline().setVisibility(hasFocus ? INVISIBLE : VISIBLE);
+            if (hasFocus) {
+                getToolbarHairline().setVisibility(INVISIBLE);
+            } else {
+                updateHairlineVisibility();
+            }
         }
         updateBackground(hasFocus);
         mLocationBar
@@ -2897,7 +2902,7 @@ public class ToolbarPhone extends ToolbarLayout
                     mActiveLocationBarBackgroundView.setAlpha(0.f);
                 }
             } else if (mRefactoredLocationBarTranslating) {
-                getToolbarHairline().setVisibility(VISIBLE);
+                updateHairlineVisibility();
             }
         }
         mRefactoredLocationBarTranslating = false;

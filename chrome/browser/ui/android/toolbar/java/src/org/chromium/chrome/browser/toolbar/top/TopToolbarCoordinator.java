@@ -469,6 +469,9 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                             mToolbarLayout.getProgressBar());
             layoutManager.addSceneOverlay(mOverlayCoordinator);
             mToolbarLayout.setOverlayCoordinator(mOverlayCoordinator);
+            if (mToolbarLayout.isToolbarHairlineSuppressed()) {
+                mOverlayCoordinator.onToolbarHairlineSuppressedChanged(true);
+            }
 
             // mOverlayCoordinator needs to receive the latest yOffset and offset tags to position
             // the scene layer. It's better to request another update to avoid stale values.
@@ -675,6 +678,14 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     /** Sets whether the urlbar should be hidden on first page load. */
     public void setUrlBarHidden(boolean hidden) {
         mToolbarLayout.setUrlBarHidden(hidden);
+    }
+
+    /** Sets whether the toolbar hairline should be suppressed. */
+    public void onToolbarHairlineSuppressedChanged(boolean suppressed) {
+        if (mToolbarLayout != null) mToolbarLayout.onToolbarHairlineSuppressedChanged(suppressed);
+        if (mOverlayCoordinator != null) {
+            mOverlayCoordinator.onToolbarHairlineSuppressedChanged(suppressed);
+        }
     }
 
     /** Tells the Toolbar to update what buttons it is currently displaying. */
@@ -1216,5 +1227,9 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                 .setGlicActionChipVisibility(
                         shouldShowGlicToolbarButton(),
                         v -> assumeNonNull(mToggleGlicCallback).run());
+    }
+
+    void setOverlayCoordinatorForTesting(TopToolbarOverlayCoordinator overlayCoordinator) {
+        mOverlayCoordinator = overlayCoordinator;
     }
 }

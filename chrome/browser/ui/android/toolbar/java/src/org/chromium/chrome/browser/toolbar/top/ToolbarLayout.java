@@ -127,6 +127,9 @@ public abstract class ToolbarLayout extends FrameLayout
 
     protected ImageView mToolbarHairline;
 
+    /** Whether the hairline is externally suppressed (e.g., during fullscreen video or XR mode). */
+    private boolean mToolbarHairlineSuppressed;
+
     /**
      * Whether we are the bottom-most layer in the {@link
      * org.chromium.chrome.browser.browser_controls.TopControlsStacker} stack of top-anchored UI
@@ -301,6 +304,18 @@ public abstract class ToolbarLayout extends FrameLayout
         updateHairlineVisibility();
     }
 
+    /**
+     * Called when the external suppression state of the toolbar hairline changes.
+     *
+     * @param suppressed Whether the hairline should be suppressed (e.g., when in fullscreen or XR
+     *     mode).
+     */
+    public void onToolbarHairlineSuppressedChanged(boolean suppressed) {
+        if (mToolbarHairlineSuppressed == suppressed) return;
+        mToolbarHairlineSuppressed = suppressed;
+        updateHairlineVisibility();
+    }
+
     /** Update the visibility of the toolbar hairline. */
     protected void updateHairlineVisibility() {
         boolean shouldDrawHairline = shouldDrawHairline();
@@ -312,10 +327,31 @@ public abstract class ToolbarLayout extends FrameLayout
     }
 
     /**
-     * @return Whether the toolbar hairline should be drawn.
+     * Computes whether the toolbar hairline should be drawn based on current layout and suppression
+     * state.
+     *
+     * <p>The hairline is drawn only when all of the following conditions are met:
+     *
+     * <ul>
+     *   <li>The progress bar is NOT currently showing for a back/forward transition.
+     *   <li>This layout is the bottom-most layer in the {@link TopControlsStacker} hierarchy.
+     *   <li>The hairline is NOT externally suppressed (e.g., via {@link ToolbarManager} tokens
+     *       during fullscreen video playback or XR Space mode).
+     * </ul>
+     *
+     * @return True if the hairline should be drawn, false otherwise.
      */
     protected boolean shouldDrawHairline() {
-        return !mShowingProgressBarForBackForwardTransition && mIsBottomMostTopControlsLayer;
+        return !mShowingProgressBarForBackForwardTransition
+                && mIsBottomMostTopControlsLayer
+                && !mToolbarHairlineSuppressed;
+    }
+
+    /**
+     * @return Whether the toolbar hairline is currently externally suppressed.
+     */
+    public boolean isToolbarHairlineSuppressed() {
+        return mToolbarHairlineSuppressed;
     }
 
     @Override
