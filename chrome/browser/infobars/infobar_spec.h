@@ -5,11 +5,15 @@
 #ifndef CHROME_BROWSER_INFOBARS_INFOBAR_SPEC_H_
 #define CHROME_BROWSER_INFOBARS_INFOBAR_SPEC_H_
 
+#include <cstddef>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
@@ -36,6 +40,11 @@ enum class InfoBarPriority {
 class InfoBarSpec {
  public:
   using ActionCallback = base::RepeatingCallback<void(content::WebContents*)>;
+  using SubstitutionsCallback =
+      base::RepeatingCallback<std::vector<MessageSubstitution>(
+          content::WebContents*)>;
+  using InlineLinkCallback = base::RepeatingCallback<
+      void(content::WebContents*, size_t, WindowOpenDisposition)>;
 
   class Builder;
 
@@ -49,6 +58,15 @@ class InfoBarSpec {
     return identifier_;
   }
   const std::u16string& message_text() const { return message_text_; }
+  const std::u16string& message_text_template() const {
+    return message_text_template_;
+  }
+  const SubstitutionsCallback& substitutions_callback() const {
+    return substitutions_callback_;
+  }
+  const InlineLinkCallback& inline_link_callback() const {
+    return inline_link_callback_;
+  }
   const std::u16string& link_text() const { return link_text_; }
   const GURL& link_navigation_url() const { return link_navigation_url_; }
   InfoBarPriority priority() const { return priority_; }
@@ -77,6 +95,9 @@ class InfoBarSpec {
   infobars::InfoBarDelegate::InfoBarIdentifier identifier_ =
       infobars::InfoBarDelegate::INVALID;
   std::u16string message_text_;
+  std::u16string message_text_template_;
+  SubstitutionsCallback substitutions_callback_;
+  InlineLinkCallback inline_link_callback_;
   std::u16string link_text_;
   GURL link_navigation_url_;
   InfoBarPriority priority_ = InfoBarPriority::kDefault;
@@ -101,6 +122,9 @@ class InfoBarSpec::Builder {
   Builder& operator=(const Builder&) = delete;
 
   Builder& SetMessageText(std::u16string message_text);
+  Builder& SetMessageTextTemplate(std::u16string message_text_template);
+  Builder& SetSubstitutionsCallback(SubstitutionsCallback callback);
+  Builder& SetInlineLinkCallback(InlineLinkCallback callback);
   Builder& SetLinkText(std::u16string link_text);
   Builder& SetLinkNavigationUrl(GURL gurl);
   Builder& SetIcon(const gfx::VectorIcon& icon);
