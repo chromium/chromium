@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/x/selection_utils.h"
@@ -251,6 +252,8 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragDropClient {
   // only if we have previously received a status message from
   // |source_current_window_|.
   bool status_received_since_enter_ = false;
+
+  base::WeakPtrFactory<XDragDropClient> weak_factory_{this};
 };
 
 }  // namespace ui
