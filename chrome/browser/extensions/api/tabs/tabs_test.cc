@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -1975,14 +1976,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, ExecuteScriptOnDevTools) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
 }
 
-// TODO(crbug.com/504781983): Fails on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_DiscardedProperty DISABLED_DiscardedProperty
-#else
-#define MAYBE_DiscardedProperty DiscardedProperty
-#endif
-// TODO(georgesak): change this browsertest to an unittest.
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_DiscardedProperty) {
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
   ASSERT_TRUE(g_browser_process && g_browser_process->GetTabManager());
   resource_coordinator::TabManager* tab_manager =
       g_browser_process->GetTabManager();
@@ -1991,15 +1985,28 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_DiscardedProperty) {
   // explicitly.
   resource_coordinator::GetTabLifecycleUnitSource()
       ->SetFocusedTabStripModelForTesting(browser()->tab_strip_model());
+  // Ensure the focused tab strip model is reset.
+  // TODO(devlin): Update SetFocusedTabStripModelForTesting() to return a
+  // base::AutoReset<> to avoid this ScopedClosureRunner.
+  base::ScopedClosureRunner reset_focused_tab_strip_model(base::BindOnce(
+      [](resource_coordinator::TabLifecycleUnitSource* source) {
+        source->SetFocusedTabStripModelForTesting(nullptr);
+      },
+      resource_coordinator::GetTabLifecycleUnitSource()));
 
-  // Create two additional tabs.
+  // Create two additional tabs and wait for them to finish loading.
   content::OpenURLParams params(GURL(url::kAboutBlankURL), content::Referrer(),
                                 WindowOpenDisposition::NEW_BACKGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
   content::WebContents* web_contents_a =
       browser()->OpenURL(params, /*navigation_handle_callback=*/{});
+  ASSERT_TRUE(web_contents_a);
+  content::WaitForLoadStop(web_contents_a);
+
   content::WebContents* web_contents_b =
       browser()->OpenURL(params, /*navigation_handle_callback=*/{});
+  ASSERT_TRUE(web_contents_b);
+  content::WaitForLoadStop(web_contents_b);
 
   // Set up query function with an extension.
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
@@ -2087,8 +2094,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_DiscardedProperty) {
     EXPECT_EQ(2u, result.size());
   }
 
-  // Activates the first created tab.
+  // Activate the first created tab and wait for its reload to complete so its
+  // discarded state deterministically updates to false.
   browser()->tab_strip_model()->ActivateTabAt(1);
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
   // Get non-discarded tabs after activating a discarded tab.
   {
