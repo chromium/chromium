@@ -100,6 +100,25 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
         assertFalse(getLastCloseButtonVisibility());
     }
 
+    /** Browser controls should be shown for pages with mixed content warnings. */
+    @Test
+    public void testWarningSecurityLevel() {
+        mController = buildController(mock(BrowserServicesIntentDataProvider.class));
+        setTabSecurityLevel(ConnectionSecurityLevel.WARNING);
+        mController.updateIsInAppMode(true);
+        assertEquals(BrowserControlsState.SHOWN, getLastBrowserControlsState());
+        assertFalse(getLastCloseButtonVisibility());
+    }
+
+    /** Browser controls should be hidden for HTTP connections and mixed forms. */
+    @Test
+    public void testNoneSecurityLevel() {
+        mController = buildController(mock(BrowserServicesIntentDataProvider.class));
+        setTabSecurityLevel(ConnectionSecurityLevel.NONE);
+        mController.updateIsInAppMode(true);
+        assertEquals(BrowserControlsState.HIDDEN, getLastBrowserControlsState());
+    }
+
     /** Browser controls should not be shown for WebAPKs with 'minimal-ui' display mode. */
     @Test
     public void testMinimalUiDisplayMode() {
@@ -201,13 +220,16 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
 
     private TrustedWebActivityBrowserControlsVisibilityManager buildController(
             BrowserServicesIntentDataProvider intentDataProvider) {
-        return spy(
-                new TrustedWebActivityBrowserControlsVisibilityManager(
-                        mTabObserverRegistrar,
-                        mTabProvider,
-                        mToolbarCoordinator,
-                        mCloseButtonVisibilityManager,
-                        intentDataProvider));
+        TrustedWebActivityBrowserControlsVisibilityManager controller =
+                spy(
+                        new TrustedWebActivityBrowserControlsVisibilityManager(
+                                mTabObserverRegistrar,
+                                mTabProvider,
+                                mToolbarCoordinator,
+                                mCloseButtonVisibilityManager,
+                                intentDataProvider));
+        doReturn(ConnectionSecurityLevel.SECURE).when(controller).getSecurityLevel(any());
+        return controller;
     }
 
     /** Returns the current browser controls state. */

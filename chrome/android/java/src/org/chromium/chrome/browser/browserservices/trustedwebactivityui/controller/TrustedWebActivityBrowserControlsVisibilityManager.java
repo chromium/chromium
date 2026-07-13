@@ -115,10 +115,13 @@ public class TrustedWebActivityBrowserControlsVisibilityManager {
     }
 
     private @BrowserControlsState int computeBrowserControlsState(@Nullable Tab tab) {
-        // Force browser controls to show when the security level is dangerous for consistency with
-        // TabStateBrowserControlsVisibilityDelegate.
-        if (tab != null && getSecurityLevel(tab) == ConnectionSecurityLevel.DANGEROUS) {
-            return BrowserControlsState.SHOWN;
+        // Force browser controls to show when the security level is dangerous or warning.
+        if (tab != null) {
+            int securityLevel = getSecurityLevel(tab);
+            if (securityLevel == ConnectionSecurityLevel.DANGEROUS
+                    || securityLevel == ConnectionSecurityLevel.WARNING) {
+                return BrowserControlsState.SHOWN;
+            }
         }
 
         return shouldShowBrowserControlsAndCloseButton(tab)
