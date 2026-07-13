@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.settings;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -167,6 +168,20 @@ public class SettingsPageFragmentDelegateImplTest {
         verify(mFragmentTransaction)
                 .add(eq(CONTAINER_ID), any(SettingsHostFragment.class), eq("settings_native_page"));
         verify(mFragmentTransaction).commitAllowingStateLoss();
+    }
+
+    @Test
+    public void testInitSettings_removesSheetAndDialogContainers() {
+        when(mFragmentManager.findFragmentByTag("settings_native_page")).thenReturn(null);
+
+        mDelegate.initSettings(mContainerView);
+
+        assertNotNull(mInflatedSettingsView);
+
+        // Settings in a tab uses the bottom sheet and dialog containers from ChromeTabbedActivity,
+        // not its own.
+        assertNull(mInflatedSettingsView.findViewById(R.id.sheet_container));
+        assertNull(mInflatedSettingsView.findViewById(R.id.dialog_container));
     }
 
     @Test

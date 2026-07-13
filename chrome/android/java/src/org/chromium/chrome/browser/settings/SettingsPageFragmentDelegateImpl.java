@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -165,6 +166,17 @@ public class SettingsPageFragmentDelegateImpl
         // doesn't map directly to its own activity.
         View settingsView =
                 LayoutInflater.from(mActivity).inflate(R.layout.settings_activity, null);
+
+        // SettingsInTab uses the root BottomSheetController and ModalDialogManager from
+        // ChromeTabbedActivity, so remove the unused local containers to prevent duplicate
+        // R.id.sheet_container or R.id.dialog_container instances.
+        View sheetContainer = settingsView.findViewById(R.id.sheet_container);
+        assert sheetContainer != null;
+        UiUtils.removeViewFromParent(sheetContainer);
+        View dialogContainer = settingsView.findViewById(R.id.dialog_container);
+        assert dialogContainer != null;
+        UiUtils.removeViewFromParent(dialogContainer);
+
         containerView.addView(settingsView);
         ViewGroup fragmentContainer = settingsView.findViewById(R.id.content);
         mToolbar = settingsView.findViewById(R.id.action_bar);
