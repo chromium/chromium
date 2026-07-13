@@ -1645,8 +1645,9 @@ export const ComposeboxEmbedderMixin =
           if (!querySubmitted) {
             this.resetModes();
             // If context management flag is on, do not delete persisted
-            // (restored) tabs.
-            if (!this.contextManagementInComposeboxEnabled) {
+            // (restored) tabs unless the source is Omnibox.
+            if (this.composeboxSource === 'Omnibox' ||
+                !this.contextManagementInComposeboxEnabled) {
               this.resetRestoredTabs();
             }
           }
