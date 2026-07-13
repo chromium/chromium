@@ -20356,10 +20356,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithRPHReuse",
-                    "params": {
-                        "url": "https://www.google.com/search/warmup.html"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
                         "PrewarmZeroSuggestTrigger"
                     ]
