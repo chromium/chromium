@@ -312,8 +312,9 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsPolicy) {
   // On Chrome OS, the local_state is only used on managed profiles.
   g_browser_process->platform_part()
       ->secure_dns_manager()
-      ->SetPrimaryProfilePropertiesForTesting(browser()->profile()->GetPrefs(),
-                                              /*is_profile_managed=*/true);
+      ->SetPrimaryProfilePropertiesForTesting(
+          browser()->GetProfile()->GetPrefs(),
+          /*is_profile_managed=*/true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   policy::PolicyMap policy_map;
@@ -339,8 +340,9 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsPolicyChange) {
   // On Chrome OS, the local_state is only used on managed profiles.
   g_browser_process->platform_part()
       ->secure_dns_manager()
-      ->SetPrimaryProfilePropertiesForTesting(browser()->profile()->GetPrefs(),
-                                              /*is_profile_managed=*/true);
+      ->SetPrimaryProfilePropertiesForTesting(
+          browser()->GetProfile()->GetPrefs(),
+          /*is_profile_managed=*/true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   policy::PolicyMap policy_map;
@@ -480,8 +482,9 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest,
 
   g_browser_process->platform_part()
       ->secure_dns_manager()
-      ->SetPrimaryProfilePropertiesForTesting(browser()->profile()->GetPrefs(),
-                                              /*is_profile_managed=*/true);
+      ->SetPrimaryProfilePropertiesForTesting(
+          browser()->GetProfile()->GetPrefs(),
+          /*is_profile_managed=*/true);
 
   std::string secure_dns_mode;
   std::string doh_config, doh_config_for_display;

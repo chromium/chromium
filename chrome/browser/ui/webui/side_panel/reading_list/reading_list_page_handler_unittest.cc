@@ -108,7 +108,7 @@ class TestReadingListPageHandlerTest : public BrowserWithTestWindowTest {
     handler_ = std::make_unique<TestReadingListPageHandler>(
         page_.BindAndGetRemote(), test_web_ui_.get());
     model_ =
-        ReadingListModelFactory::GetForBrowserContext(browser()->profile());
+        ReadingListModelFactory::GetForBrowserContext(browser()->GetProfile());
     ReadingListLoadObserver(model_).Wait();
 
     AddTabWithTitle(browser(), GURL(kTabUrl1), kTabName1);
@@ -510,7 +510,7 @@ TEST_F(TestReadingListPageHandlerTest,
        OpenInIncognitoRespectsIncognitoModePolicy) {
   // Disable incognito mode, the menu option should be disabled.
   IncognitoModePrefs::SetAvailability(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       policy::IncognitoModeAvailability::kDisabled);
   std::unique_ptr<ui::SimpleMenuModel> read_later_context_menu =
       handler()->GetItemContextMenuModelForTesting(browser(), model(),
@@ -520,7 +520,7 @@ TEST_F(TestReadingListPageHandlerTest,
 
   // Enable incognito mode, the menu option should appear as expected.
   IncognitoModePrefs::SetAvailability(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       policy::IncognitoModeAvailability::kEnabled);
   read_later_context_menu = handler()->GetItemContextMenuModelForTesting(
       browser(), model(), GURL(kTabUrl1));

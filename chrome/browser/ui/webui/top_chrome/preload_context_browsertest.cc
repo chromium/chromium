@@ -20,7 +20,8 @@ IN_PROC_BROWSER_TEST_F(PreloadContextTest, Basic) {
   EXPECT_EQ(brower_context.GetBrowser(), browser());
   EXPECT_EQ(brower_context.GetProfile(), nullptr);
 
-  PreloadContext profile_context = PreloadContext::From(browser()->profile());
+  PreloadContext profile_context =
+      PreloadContext::From(browser()->GetProfile());
   EXPECT_FALSE(profile_context.IsBrowser());
   EXPECT_TRUE(profile_context.IsProfile());
   EXPECT_EQ(profile_context.GetBrowser(), nullptr);

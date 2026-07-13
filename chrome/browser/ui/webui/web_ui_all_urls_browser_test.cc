@@ -121,7 +121,8 @@ void WebUIAllUrlsBrowserTest::SetUpOnMainThread() {
   // checked in `IsMicrosoftOfficeOneDriveIntegrationAllowedAndOdfsInstalled`.
   auto fake_provider = ash::file_system_provider::FakeExtensionProvider::Create(
       extension_misc::kODFSExtensionId);
-  auto* service = ash::file_system_provider::Service::Get(browser()->profile());
+  auto* service =
+      ash::file_system_provider::Service::Get(browser()->GetProfile());
   service->RegisterProvider(std::move(fake_provider));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

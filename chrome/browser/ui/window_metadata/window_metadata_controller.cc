@@ -269,7 +269,7 @@ void WindowMetadataController::SetWindowUserTitle(
   // See comment in Browser::OnTabGroupChanged
   DCHECK(!IsRelevantToAppSessionService(browser_->type()));
   SessionService* const session_service =
-      SessionServiceFactory::GetForProfile(browser_->profile());
+      SessionServiceFactory::GetForProfile(browser_->GetProfile());
   if (session_service) {
     session_service->SetWindowUserTitle(browser_->session_id(), user_title);
   }

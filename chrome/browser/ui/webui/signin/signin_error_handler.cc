@@ -72,7 +72,7 @@ void SigninErrorHandler::HandleLearnMore(const base::ListValue& args) {
     return;
   }
   CloseDialog();
-  signin_ui_util::ShowSigninErrorLearnMorePage(browser_->profile());
+  signin_ui_util::ShowSigninErrorLearnMorePage(browser_->GetProfile());
 }
 
 void SigninErrorHandler::HandleInitializedWithSize(

@@ -210,7 +210,7 @@ class UnloadTest : public InProcessBrowserTest {
     UnloadResults unload_results;
     ui_test_utils::BrowserDestroyedObserver observer(browser());
     chrome::CloseAllBrowsersWithProfile(
-        browser()->profile(), force,
+        browser()->GetProfile(), force,
         base::BindRepeating(&UnloadResults::AddSuccess,
                             base::Unretained(&unload_results)),
         base::BindRepeating(&UnloadResults::AddAbort,
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserListCloseBeforeUnloadOK) {
   UnloadResults unload_results;
   ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsersWithProfile(
-      browser()->profile(), false,
+      browser()->GetProfile(), false,
       base::BindRepeating(&UnloadResults::AddSuccess,
                           base::Unretained(&unload_results)),
       base::BindRepeating(&UnloadResults::AddAbort,
@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, MAYBE_BrowserListCloseBeforeUnloadCancel) {
 
   UnloadResults unload_results;
   chrome::CloseAllBrowsersWithProfile(
-      browser()->profile(), false,
+      browser()->GetProfile(), false,
       base::BindRepeating(&UnloadResults::AddSuccess,
                           base::Unretained(&unload_results)),
       base::BindRepeating(&UnloadResults::AddAbort,
@@ -446,13 +446,13 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserListDoubleCloseBeforeUnloadOK) {
   UnloadResults unload_results;
   ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsersWithProfile(
-      browser()->profile(), false,
+      browser()->GetProfile(), false,
       base::BindRepeating(&UnloadResults::AddSuccess,
                           base::Unretained(&unload_results)),
       base::BindRepeating(&UnloadResults::AddAbort,
                           base::Unretained(&unload_results)));
   chrome::CloseAllBrowsersWithProfile(
-      browser()->profile(), false,
+      browser()->GetProfile(), false,
       base::BindRepeating(&UnloadResults::AddSuccess,
                           base::Unretained(&unload_results)),
       base::BindRepeating(&UnloadResults::AddAbort,
@@ -471,13 +471,13 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserListDoubleCloseBeforeUnloadCancel) {
 
   UnloadResults unload_results;
   chrome::CloseAllBrowsersWithProfile(
-      browser()->profile(), false,
+      browser()->GetProfile(), false,
       base::BindRepeating(&UnloadResults::AddSuccess,
                           base::Unretained(&unload_results)),
       base::BindRepeating(&UnloadResults::AddAbort,
                           base::Unretained(&unload_results)));
   chrome::CloseAllBrowsersWithProfile(
-      browser()->profile(), false,
+      browser()->GetProfile(), false,
       base::BindRepeating(&UnloadResults::AddSuccess,
                           base::Unretained(&unload_results)),
       base::BindRepeating(&UnloadResults::AddAbort,
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserListCloseBeforeUnloadNullCallbackOk) {
   PrepareForDialog(browser());
 
   ui_test_utils::BrowserDestroyedObserver observer(browser());
-  chrome::CloseAllBrowsersWithProfile(browser()->profile(), false);
+  chrome::CloseAllBrowsersWithProfile(browser()->GetProfile(), false);
   ClickModalDialogButton(true);
   observer.Wait();
 }
@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest,
   NavigateToDataURL(BEFORE_UNLOAD_HTML, "beforeunload");
   PrepareForDialog(browser());
 
-  chrome::CloseAllBrowsersWithProfile(browser()->profile(), false);
+  chrome::CloseAllBrowsersWithProfile(browser()->GetProfile(), false);
 
   // We wait for the title to change after cancelling the closure of browser
   // window, to ensure that in-flight IPCs from the renderer reach the browser.
@@ -697,13 +697,13 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserListForceCloseAfterNormalClose) {
   UnloadResults unload_results;
   ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsersWithProfile(
-      browser()->profile(), false,
+      browser()->GetProfile(), false,
       base::BindRepeating(&UnloadResults::AddSuccess,
                           base::Unretained(&unload_results)),
       base::BindRepeating(&UnloadResults::AddAbort,
                           base::Unretained(&unload_results)));
   chrome::CloseAllBrowsersWithProfile(
-      browser()->profile(), true,
+      browser()->GetProfile(), true,
       base::BindRepeating(&UnloadResults::AddSuccess,
                           base::Unretained(&unload_results)),
       base::BindRepeating(&UnloadResults::AddAbort,

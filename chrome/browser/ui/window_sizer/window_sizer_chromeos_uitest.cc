@@ -138,8 +138,8 @@ IN_PROC_BROWSER_TEST_F(WindowSizerTest, TrustedPopupBehavior) {
   ASSERT_TRUE(browser()->GetWindow()->IsMaximized());
 
   // Create a trusted popup browser.
-  Browser::CreateParams trusted_popup_create_params(Browser::TYPE_POPUP,
-                                                    browser()->profile(), true);
+  Browser::CreateParams trusted_popup_create_params(
+      Browser::TYPE_POPUP, browser()->GetProfile(), true);
   trusted_popup_create_params.trusted_source = true;
 
   BrowserWindowInterface* trusted_popup =

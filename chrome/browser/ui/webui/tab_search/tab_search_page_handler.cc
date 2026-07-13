@@ -422,7 +422,7 @@ void TabSearchPageHandler::StartTabGroupTutorial() {
   }
 
   auto* const user_education_service =
-      UserEducationServiceFactory::GetForBrowserContext(browser_->profile());
+      UserEducationServiceFactory::GetForBrowserContext(browser_->GetProfile());
   user_education::TutorialService* const tutorial_service =
       user_education_service ? &user_education_service->tutorial_service()
                              : nullptr;

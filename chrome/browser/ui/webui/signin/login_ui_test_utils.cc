@@ -137,7 +137,7 @@ class SyncConfirmationClosedObserver : public LoginUIService::Observer {
  public:
   explicit SyncConfirmationClosedObserver(Browser* browser) {
     login_ui_service_observation_.Observe(
-        LoginUIServiceFactory::GetForProfile(browser->profile()));
+        LoginUIServiceFactory::GetForProfile(browser->GetProfile()));
   }
 
   void WaitForConfirmationClosed() {
@@ -632,7 +632,7 @@ bool DismissHistorySyncOptinDialog(Browser* browser,
   SiginInModalDialogObserver modal_dialog_observer(browser);
 #if !BUILDFLAG(IS_CHROMEOS)
   HistorySyncServiceObserverImpl history_sync_service_observation_(
-      browser->profile());
+      browser->GetProfile());
 #endif  //! BUILDFLAG(IS_CHROMEOS)
 
   const base::Time expire_time = base::Time::Now() + timeout;
@@ -647,7 +647,7 @@ bool DismissHistorySyncOptinDialog(Browser* browser,
 #if !BUILDFLAG(IS_CHROMEOS)
         history_sync_service_observation_.WaitForReset();
         EXPECT_FALSE(
-            HistorySyncOptinServiceFactory::GetForProfile(browser->profile())
+            HistorySyncOptinServiceFactory::GetForProfile(browser->GetProfile())
                 ->GetHistorySyncOptinHelperForTesting());
         return true;
 #else

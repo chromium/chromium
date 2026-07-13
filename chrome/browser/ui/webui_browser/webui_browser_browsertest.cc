@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, TabFullscreenEnterAndExit) {
 
 IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, BookmarkNodeFaviconChangedRegression) {
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   ASSERT_TRUE(base::test::RunUntil([&]() { return model->loaded(); }));
 
   FakeBookmarkBarPage page;
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, SetContentsSizeResizesWindow) {
 IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, SetContentsSizeEarlyResizesWindow) {
   // 1) Create a new browser window and add a default tab
   Browser* new_browser = Browser::Create(Browser::CreateParams(
-      Browser::Type::TYPE_NORMAL, browser()->profile(), true));
+      Browser::Type::TYPE_NORMAL, browser()->GetProfile(), true));
   chrome::AddTabAt(new_browser, GURL(), -1, true);
 
   auto* window = WebUIBrowserWindow::FromBrowser(new_browser);
@@ -537,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest,
                        ActiveTabHasNonZeroSizeOnWindowCreation) {
   // Create a new browser window with a tab.
   Browser* new_browser = Browser::Create(Browser::CreateParams(
-      Browser::Type::TYPE_NORMAL, browser()->profile(), true));
+      Browser::Type::TYPE_NORMAL, browser()->GetProfile(), true));
   chrome::AddTabAt(new_browser, GURL(), -1, true);
   new_browser->GetWindow()->Show();
 

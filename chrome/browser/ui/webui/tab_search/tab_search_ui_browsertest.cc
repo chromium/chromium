@@ -52,7 +52,7 @@ class TabSearchUIBrowserTest : public InProcessBrowserTest {
     AppendTab(chrome::kChromeUIBookmarksURL);
 
     webui_contents_ = content::WebContents::Create(
-        content::WebContents::CreateParams(browser()->profile()));
+        content::WebContents::CreateParams(browser()->GetProfile()));
 
     webui_contents_->GetController().LoadURLWithParams(
         content::NavigationController::LoadURLParams(
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_OPEN_GUEST_PROFILE));
   Browser* guest_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(guest_browser);
-  ASSERT_TRUE(guest_browser->profile()->IsGuestSession());
+  ASSERT_TRUE(guest_browser->GetProfile()->IsGuestSession());
 
   // Start embedded test server.
   ASSERT_TRUE(embedded_test_server()->Start());

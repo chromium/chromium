@@ -54,7 +54,7 @@ WebUIBrowserBookmarkBarPageHandler::WebUIBrowserBookmarkBarPageHandler(
       web_ui_(web_ui),
       browser_(browser) {
   bookmark_model_ =
-      BookmarkModelFactory::GetForBrowserContext(browser_->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser_->GetProfile());
 
   if (bookmark_model_) {
     bookmark_model_->AddObserver(this);

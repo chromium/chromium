@@ -48,7 +48,7 @@ class WebDialogWebContentsDelegateTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     test_web_contents_delegate_ =
-        std::make_unique<TestWebContentsDelegate>(browser()->profile());
+        std::make_unique<TestWebContentsDelegate>(browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override {
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest, OpenURLFromTabTest) {
 IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest,
                        AddNewContentsForegroundTabTest) {
   std::unique_ptr<WebContents> contents =
-      WebContents::Create(WebContents::CreateParams(browser()->profile()));
+      WebContents::Create(WebContents::CreateParams(browser()->GetProfile()));
   test_web_contents_delegate_->AddNewContents(
       nullptr, std::move(contents), GURL(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB, blink::mojom::WindowFeatures(),
@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest, DetachTest) {
-  EXPECT_EQ(static_cast<content::BrowserContext*>(browser()->profile()),
+  EXPECT_EQ(static_cast<content::BrowserContext*>(browser()->GetProfile()),
             test_web_contents_delegate_->browser_context());
   test_web_contents_delegate_->Detach();
   EXPECT_EQ(nullptr, test_web_contents_delegate_->browser_context());

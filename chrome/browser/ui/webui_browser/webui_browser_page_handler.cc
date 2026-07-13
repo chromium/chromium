@@ -218,7 +218,7 @@ void WebUIBrowserPageHandler::GetGuestIdForTabId(
 }
 
 void WebUIBrowserPageHandler::LoadTabSearch(LoadTabSearchCallback callback) {
-  content::WebContents::CreateParams params(GetBrowser()->profile());
+  content::WebContents::CreateParams params(GetBrowser()->GetProfile());
   tab_search_contents_ = content::WebContents::Create(params);
   tab_search_contents_->SetColorProviderSource(GetBrowserWindow());
   content::NavigationController::LoadURLParams url_params{

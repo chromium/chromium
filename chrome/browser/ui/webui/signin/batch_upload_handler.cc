@@ -235,7 +235,7 @@ void BatchUploadHandler::SaveToAccount(
         device_reauth::DeviceAuthSource::kSettingsBatchUpload);
 
     device_authenticator_ = ChromeDeviceAuthenticatorFactory::GetForProfile(
-        browser_->profile(),
+        browser_->GetProfile(),
         browser_->tab_strip_model()
             ->GetActiveWebContents()
             ->GetTopLevelNativeWindow(),

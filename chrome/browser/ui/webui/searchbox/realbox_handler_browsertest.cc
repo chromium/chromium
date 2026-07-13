@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(RealboxHandlerTest, RealboxUpdatesEditModelInput) {
   handler_->autocomplete_controller_observation_.Reset();
 
   TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   auto client = std::make_unique<MockAutocompleteProviderClient>();
   client->set_template_url_service(template_url_service);
   // Set a mock AutocompleteController.

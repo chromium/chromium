@@ -43,7 +43,8 @@ class SearchboxInteractiveTestMixin : public T {
     return T::Do([this, query]() {
       history::HistoryService* history_service =
           HistoryServiceFactory::GetForProfile(
-              this->browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+              this->browser()->GetProfile(),
+              ServiceAccessType::EXPLICIT_ACCESS);
       GURL search_url("https://www.google.com/search?q=" + query);
       history_service->AddPage(search_url, base::Time::Now(),
                                history::SOURCE_BROWSED);

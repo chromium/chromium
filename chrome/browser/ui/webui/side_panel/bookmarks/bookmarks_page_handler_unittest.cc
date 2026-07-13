@@ -706,7 +706,7 @@ TEST_F(BookmarksPageHandlerTest, DropBookmarks) {
 
   // Create and prepare the bookmark node data to be dropped.
   bookmarks::BookmarkNodeData data({node1, node2});
-  data.SetOriginatingProfilePath(browser()->profile()->GetPath());
+  data.SetOriginatingProfilePath(browser()->GetProfile()->GetPath());
   extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
       side_panel_web_contents())
       ->OnDrop(data);
@@ -733,7 +733,7 @@ TEST_F(BookmarksPageHandlerTest, DropManagedBookmark) {
 
   // Create and prepare the bookmark node data to be dropped.
   bookmarks::BookmarkNodeData data({node1, node2});
-  data.SetOriginatingProfilePath(browser()->profile()->GetPath());
+  data.SetOriginatingProfilePath(browser()->GetProfile()->GetPath());
   extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
       side_panel_web_contents())
       ->OnDrop(data);
@@ -804,7 +804,7 @@ TEST_F(BookmarksPageHandlerTest, DropBookmarksWithAccountNodes) {
 
   // Create and prepare the bookmark node data to be dropped.
   bookmarks::BookmarkNodeData data({node1, node2});
-  data.SetOriginatingProfilePath(browser()->profile()->GetPath());
+  data.SetOriginatingProfilePath(browser()->GetProfile()->GetPath());
   extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
       side_panel_web_contents())
       ->OnDrop(data);

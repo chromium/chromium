@@ -149,7 +149,7 @@ class WhatsNewFetcher {
 
     // Inform the server of the top browser language via the
     // Accept-Language header.
-    if (auto* profile = browser->profile()) {
+    if (auto* profile = browser->GetProfile()) {
       if (auto* delegate =
               profile->GetReduceAcceptLanguageControllerDelegate()) {
         auto languages = delegate->GetUserAcceptLanguages();

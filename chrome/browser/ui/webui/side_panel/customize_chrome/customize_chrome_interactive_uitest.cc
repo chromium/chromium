@@ -112,7 +112,7 @@ class CustomizeChromeInteractiveTest
     extension_dir.WriteManifest(absl::StrFormat(extension_manifest, index));
 
     extensions::ChromeTestExtensionLoader extension_loader(
-        browser()->profile());
+        browser()->GetProfile());
     extension_loader.set_ignore_manifest_warnings(true);
     const extensions::Extension* extension =
         extension_loader.LoadExtension(extension_dir.Pack()).get();
@@ -282,7 +282,7 @@ class CustomizeChromeEnterpriseInteractiveTest
     scoped_browser_management_ =
         std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
             policy::ManagementServiceFactory::GetForProfile(
-                browser()->profile()),
+                browser()->GetProfile()),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     CustomizeChromeInteractiveTest::SetUpOnMainThread();
   }

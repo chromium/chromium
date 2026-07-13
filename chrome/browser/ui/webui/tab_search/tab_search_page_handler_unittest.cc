@@ -179,9 +179,9 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
         "testing_profile2", nullptr, std::u16string(), 0,
         GetTestingFactories());
     browser2_ = CreateTestBrowser(profile1(), false);
-    browser3_ = CreateTestBrowser(
-        browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-        false);
+    browser3_ = CreateTestBrowser(browser()->GetProfile()->GetPrimaryOTRProfile(
+                                      /*create_if_needed=*/true),
+                                  false);
     browser4_ = CreateTestBrowser(profile2(), false);
     browser5_ = CreateTestBrowser(profile1(), true);
     browser1()->DidBecomeActive();

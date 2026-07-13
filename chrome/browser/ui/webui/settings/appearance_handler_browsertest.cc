@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest, ResetPinnedToolbarActions) {
   prefs->SetBoolean(prefs::kShowForwardButton, false);
 
   PinnedToolbarActionsModel* const actions_model =
-      PinnedToolbarActionsModel::Get(browser()->profile());
+      PinnedToolbarActionsModel::Get(browser()->GetProfile());
   actions_model->UpdatePinnedState(kActionSidePanelShowBookmarks, true);
 
   EXPECT_TRUE(prefs->GetBoolean(prefs::kShowHomeButton));

@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(ThemeSettingsInteractiveUiTest,
                                ui::TrackedElement* element) {
                              auto* theme_service =
                                  ThemeServiceFactory::GetForProfile(
-                                     browser()->profile());
+                                     browser()->GetProfile());
                              ASSERT_FALSE(theme_service->UsingDefaultTheme());
                            }))
                        .Build())
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(ThemeSettingsInteractiveUiTest,
                            [&](ui::InteractionSequence*, ui::TrackedElement*) {
                              auto* theme_service =
                                  ThemeServiceFactory::GetForProfile(
-                                     browser()->profile());
+                                     browser()->GetProfile());
                              EXPECT_TRUE(theme_service->UsingDefaultTheme());
                            }))
                        .Build())

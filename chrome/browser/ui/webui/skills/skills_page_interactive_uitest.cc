@@ -65,11 +65,11 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest {
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
     skills::SkillsServiceFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(),
+        browser()->GetProfile(),
         base::BindRepeating(&SkillsPageInteractiveUITest::CreateSkillsService,
                             base::Unretained(this)));
     skills::SkillsService* skills_service =
-        skills::SkillsServiceFactory::GetForProfile(browser()->profile());
+        skills::SkillsServiceFactory::GetForProfile(browser()->GetProfile());
     ASSERT_TRUE(skills_service);
     skills_service->SetServiceStatusForTesting(
         skills::SkillsService::ServiceStatus::kReady);
@@ -195,7 +195,7 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest {
 
   void SignIn(const std::string& email) {
     auto* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
     signin::MakePrimaryAccountAvailable(identity_manager, email,
                                         signin::ConsentLevel::kSync);
   }

@@ -360,7 +360,7 @@ class SearchEngineChoiceUIPixelTest
       Browser* new_browser = browser_created_observer.Wait();
       ASSERT_TRUE(new_browser);
       ASSERT_NE(new_browser, browser());
-      ASSERT_TRUE(new_browser->profile()->IsGuestSession());
+      ASSERT_TRUE(new_browser->GetProfile()->IsGuestSession());
 
       CloseBrowserSynchronously(browser());
       SetBrowser(new_browser);

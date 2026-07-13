@@ -39,7 +39,7 @@ class UnifiedConsentBrowserTest : public SyncTest {
   }
 
   UnifiedConsentService* consent_service() {
-    return UnifiedConsentServiceFactory::GetForProfile(browser()->profile());
+    return UnifiedConsentServiceFactory::GetForProfile(browser()->GetProfile());
   }
 
  protected:

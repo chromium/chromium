@@ -289,7 +289,7 @@ class ReadAnythingUntrustedPageHandlerTest
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
     web_contents_ = content::WebContents::Create(
-        content::WebContents::CreateParams(browser()->profile()));
+        content::WebContents::CreateParams(browser()->GetProfile()));
     test_web_ui_ = std::make_unique<content::TestWebUI>();
     test_web_ui_->set_web_contents(web_contents_.get());
 

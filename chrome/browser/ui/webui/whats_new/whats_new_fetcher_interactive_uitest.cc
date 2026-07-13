@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherActiveStateTest,
   }
 #endif
 
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  Browser* new_browser = CreateBrowser(browser()->GetProfile());
   ui_test_utils::BrowserActivationWaiter(new_browser).WaitForActivation();
   EXPECT_TRUE(new_browser->IsActive());
 

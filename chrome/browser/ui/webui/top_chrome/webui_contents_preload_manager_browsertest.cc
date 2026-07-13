@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_P(WebUIContentsPreloadManagerBrowserSmokeTest,
         .WillByDefault(Return(webui_url));
 
     // Create a new browser.
-    Browser* new_browser = CreateBrowser(browser()->profile());
+    Browser* new_browser = CreateBrowser(browser()->GetProfile());
 
     // Check if the expected WebUI is preloaded.
     if (preload_mode ==
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_P(WebUIContentsPreloadManagerBrowserSmokeTest,
 
     // Trigger the WebUI.
     new_browser->command_controller()->ExecuteCommand(
-        GetCommandIdForURL(browser()->profile(), webui_url));
+        GetCommandIdForURL(browser()->GetProfile(), webui_url));
     navigation_waiter()->Wait();
 
     // Clean up.
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerPageLoadMetricsTest,
   histogram_tester.ExpectTotalCount(kNonTabWebUIRequestToFCPHistogramName, 0);
   histogram_tester.ExpectTotalCount(kNonTabWebUIRequestToLCPHistogramName, 0);
 
-  test_api().MaybePreloadForBrowserContext(browser()->profile());
+  test_api().MaybePreloadForBrowserContext(browser()->GetProfile());
   navigation_waiter()->Wait();
   ASSERT_TRUE(test_api().GetPreloadedURL().has_value());
 
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerPageLoadMetricsTest,
   params.bounds = gfx::Rect(0, 0, 100, 100);
   widget->Init(std::move(params));
 
-  auto webview = std::make_unique<views::WebView>(browser()->profile());
+  auto webview = std::make_unique<views::WebView>(browser()->GetProfile());
   webview->SetWebContents(web_contents);
   webview->SetPreferredSize(gfx::Size(100, 100));
   widget->GetRootView()->AddChildView(std::move(webview));
@@ -350,7 +350,7 @@ class WebUIContentsPreloadManagerHistoryClusterMetricTest
 IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerHistoryClusterMetricTest,
                        DISABLED_PreloadButNeverShow) {
   base::HistogramTester histogram_tester;
-  test_api().MaybePreloadForBrowserContext(browser()->profile());
+  test_api().MaybePreloadForBrowserContext(browser()->GetProfile());
   navigation_waiter()->Wait();
   ASSERT_EQ(test_api().GetPreloadedURL(),
             GURL(chrome::kChromeUIHistoryClustersSidePanelURL));
@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerHistoryClusterMetricTest,
 IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerHistoryClusterMetricTest,
                        DISABLED_PreloadAndShow) {
   base::HistogramTester histogram_tester;
-  test_api().MaybePreloadForBrowserContext(browser()->profile());
+  test_api().MaybePreloadForBrowserContext(browser()->GetProfile());
   navigation_waiter()->Wait();
   ASSERT_EQ(test_api().GetPreloadedURL(),
             GURL(chrome::kChromeUIHistoryClustersSidePanelURL));

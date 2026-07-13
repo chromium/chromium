@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(UpdateMetricsProviderBrowserTest,
   SetUpgradeAvailable();
 
   // Create a second browser window.
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
   AddTabInBrowser(browser2, GURL("about:blank"));
 
   provider_.ProvideCurrentSessionData(nullptr);

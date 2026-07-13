@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(second_browser);
   ASSERT_TRUE(AddTabAtIndexToBrowser(
       second_browser, 1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
 // GetTabStripData: Verify snapshot includes OTR window.
 IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
                        GetTabStripData_IncludesOTRWindow) {
-  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* otr_browser = CreateIncognitoBrowser(browser()->GetProfile());
   ASSERT_TRUE(otr_browser);
 
   ASSERT_TRUE(AddTabAtIndexToBrowser(otr_browser, 1, GURL(url::kAboutBlankURL),
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
   // Push entries into TabRestoreService.
   model->CloseAllTabsInGroup(group_id);
 
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  Browser* new_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(new_browser);
   auto handler =
       CreateHandler(new_browser->GetTabStripModel()->GetActiveWebContents());
@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerSplitBrowserTest,
   // Close the split view.
   model->CloseSelectedTabs();
 
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  Browser* new_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(new_browser);
   auto handler =
       CreateHandler(new_browser->GetTabStripModel()->GetActiveWebContents());
@@ -704,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerSplitBrowserTest,
   // Close the entire group.
   model->CloseAllTabsInGroup(group_id);
 
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  Browser* new_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(new_browser);
   auto handler =
       CreateHandler(new_browser->GetTabStripModel()->GetActiveWebContents());

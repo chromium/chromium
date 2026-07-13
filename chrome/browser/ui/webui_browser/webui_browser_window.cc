@@ -157,7 +157,7 @@ WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
   browser_elements->Init(
       views::Widget::GetWidgetForNativeWindow(GetNativeWindow()));
 
-  auto web_view = std::make_unique<views::WebView>(browser_->profile());
+  auto web_view = std::make_unique<views::WebView>(browser_->GetProfile());
 
   auto* ui_web_contents = web_view->GetWebContents();
   web_contents_delegate_->SetUIWebContents(ui_web_contents);
@@ -443,11 +443,11 @@ const ui::ThemeProvider* WebUIBrowserWindow::GetThemeProvider() const {
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
   // https://crbug.com/40771982.
-  if (app_controller && (!IsUsingLinuxSystemTheme(browser_->profile()) ||
+  if (app_controller && (!IsUsingLinuxSystemTheme(browser_->GetProfile()) ||
                          app_controller->AppUsesWindowControlsOverlay())) {
     return app_controller->GetThemeProvider();
   }
-  return &ThemeService::GetThemeProviderForProfile(browser_->profile());
+  return &ThemeService::GetThemeProviderForProfile(browser_->GetProfile());
 }
 
 const ui::ColorProvider* WebUIBrowserWindow::GetColorProvider() const {
@@ -464,7 +464,7 @@ float WebUIBrowserWindow::GetScaleFactor() const {
 ui::ColorProviderKey::ThemeInitializerSupplier*
 WebUIBrowserWindow::GetThemeInitializerSupplier() const {
   // Do not return any custom theme if this is an incognito browser.
-  if (browser_->profile()->IsIncognitoProfile()) {
+  if (browser_->GetProfile()->IsIncognitoProfile()) {
     return nullptr;
   }
 
@@ -473,11 +473,12 @@ WebUIBrowserWindow::GetThemeInitializerSupplier() const {
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
   // https://crbug.com/40771982.
-  if (app_controller && (!IsUsingLinuxSystemTheme(browser_->profile()) ||
+  if (app_controller && (!IsUsingLinuxSystemTheme(browser_->GetProfile()) ||
                          app_controller->AppUsesWindowControlsOverlay())) {
     return app_controller->GetThemeSupplier();
   }
-  auto* theme_service = ThemeServiceFactory::GetForProfile(browser_->profile());
+  auto* theme_service =
+      ThemeServiceFactory::GetForProfile(browser_->GetProfile());
   return theme_service->UsingDeviceTheme() ? nullptr
                                            : theme_service->GetThemeSupplier();
 }
@@ -496,13 +497,13 @@ ui::ColorProviderKey WebUIBrowserWindow::GetColorProviderKey() const {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   const auto* theme_service =
-      ThemeServiceFactory::GetForProfile(browser_->profile());
+      ThemeServiceFactory::GetForProfile(browser_->GetProfile());
   CHECK(theme_service);
 
   // Determine appropriate key.color_mode.
   [this, &key, theme_service]() {
     // Currently the incognito browser is implemented as unthemed dark mode.
-    if (browser_->profile()->IsIncognitoProfile()) {
+    if (browser_->GetProfile()->IsIncognitoProfile()) {
       key.color_mode = ui::ColorProviderKey::ColorMode::kDark;
       return;
     }
@@ -527,7 +528,7 @@ ui::ColorProviderKey WebUIBrowserWindow::GetColorProviderKey() const {
   }
 
   // Determine appropriate key.user_color_source.
-  if (browser_->profile()->IsIncognitoProfile()) {
+  if (browser_->GetProfile()->IsIncognitoProfile()) {
     key.user_color_source = ui::ColorProviderKey::UserColorSource::kGrayscale;
   } else if (theme_service->UsingDeviceTheme()) {
     key.user_color_source = ui::ColorProviderKey::UserColorSource::kAccent;
@@ -654,8 +655,8 @@ void WebUIBrowserWindow::LoadAccelerators() {
   const bool is_app_mode = IsRunningInForcedAppMode();
 #if BUILDFLAG(IS_CHROMEOS)
   const bool is_captive_portal_signin_window =
-      browser_->profile()->IsOffTheRecord() &&
-      browser_->profile()->GetOTRProfileID().IsCaptivePortal();
+      browser_->GetProfile()->IsOffTheRecord() &&
+      browser_->GetProfile()->GetOTRProfileID().IsCaptivePortal();
 #endif
   for (const auto& entry : GetAcceleratorList()) {
     // In app mode, only allow accelerators of allowlisted commands to pass
