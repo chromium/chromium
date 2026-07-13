@@ -14,6 +14,8 @@
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
+#include "content/browser/webrtc/mock_camera_device.h"
+#include "content/browser/webrtc/mock_capture_device_controller.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/video_capture_service.h"
 #include "content/public/common/content_features.h"
@@ -465,6 +467,344 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
     PushDummyFrameAndScheduleNextPush(device_exerciser);
   }
 
+  void RunOnVirtualDeviceThreadAndWait(base::OnceClosure task) {
+    base::RunLoop run_loop;
+
+    CHECK(virtual_device_thread_.task_runner()->PostTaskAndReply(
+        FROM_HERE, std::move(task), run_loop.QuitClosure()));
+
+    run_loop.Run();
+  }
+
+  bool SetUpMockCaptureDeviceTest() {
+    Initialize();
+    embedded_test_server()->StartAcceptingConnections();
+
+    if (!NavigateToURL(shell(),
+                       embedded_test_server()->GetURL(kVideoCaptureHtmlFile))) {
+      return false;
+    }
+
+    CreateMockCaptureDeviceController();
+    return true;
+  }
+
+  void CreateMockCaptureDeviceController() {
+    RunOnVirtualDeviceThreadAndWait(base::BindOnce(
+        [](WebRtcVideoCaptureServiceBrowserTest* test) {
+          DCHECK(test->virtual_device_thread_.task_runner()
+                     ->RunsTasksInCurrentSequence());
+
+          test->mock_capture_device_controller_ =
+              std::make_unique<MockCaptureDeviceController>(
+                  test->main_task_runner_,
+                  base::BindRepeating(
+                      [](mojo::PendingReceiver<
+                          video_capture::mojom::VideoSourceProvider> receiver) {
+                        GetVideoCaptureService().ConnectToVideoSourceProvider(
+                            std::move(receiver));
+                      }));
+        },
+        base::Unretained(this)));
+  }
+
+  void DestroyMockCaptureDeviceController() {
+    if (!mock_capture_device_controller_) {
+      return;
+    }
+
+    RunOnVirtualDeviceThreadAndWait(base::BindOnce(
+        [](WebRtcVideoCaptureServiceBrowserTest* test) {
+          DCHECK(test->virtual_device_thread_.task_runner()
+                     ->RunsTasksInCurrentSequence());
+          test->mock_capture_device_controller_.reset();
+        },
+        base::Unretained(this)));
+  }
+
+  void AddDefaultMockCamera() {
+    RunOnVirtualDeviceThreadAndWait(base::BindOnce(
+        [](MockCaptureDeviceController* controller) {
+          controller->AddMockCamera(MockCameraConfig{
+              .device_id = kVirtualDeviceId,
+              .label = kVirtualDeviceName,
+              .size = gfx::Size(640, 480),
+              .frame_rate = 5.0,
+          });
+        },
+        base::Unretained(mock_capture_device_controller_.get())));
+  }
+
+  void RemoveDefaultMockCamera() {
+    RunOnVirtualDeviceThreadAndWait(base::BindOnce(
+        [](MockCaptureDeviceController* controller) {
+          controller->RemoveMockCamera(kVirtualDeviceId);
+        },
+        base::Unretained(mock_capture_device_controller_.get())));
+  }
+
+  void ResetMockCameras() {
+    RunOnVirtualDeviceThreadAndWait(base::BindOnce(
+        [](MockCaptureDeviceController* controller) { controller->Reset(); },
+        base::Unretained(mock_capture_device_controller_.get())));
+  }
+
+  void PrepareDeviceChangeWatcher() {
+    EXPECT_EQ("OK", EvalJs(shell(), R"JS(
+    (async () => {
+      const stream =
+          await navigator.mediaDevices.getUserMedia({video: true});
+      stream.getTracks().forEach(track => track.stop());
+
+      window.deviceChangeEventCount = 0;
+      navigator.mediaDevices.addEventListener("devicechange", () => {
+        window.deviceChangeEventCount++;
+      });
+
+      await navigator.mediaDevices.enumerateDevices();
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      return "OK";
+    })()
+  )JS")
+                        .ExtractString());
+  }
+
+  void ArmNextDeviceChange() {
+    EXPECT_EQ("OK", EvalJs(shell(), R"JS(
+    (() => {
+      window.nextDeviceChange = new Promise(resolve => {
+        const handler = () => {
+          navigator.mediaDevices.removeEventListener("devicechange", handler);
+          resolve("OK");
+        };
+        navigator.mediaDevices.addEventListener("devicechange", handler);
+      });
+      return "OK";
+    })()
+  )JS")
+                        .ExtractString());
+  }
+
+  std::string WaitForNextDeviceChange() {
+    return EvalJs(shell(), R"JS(
+    (async () => {
+      return await Promise.race([
+        window.nextDeviceChange,
+        new Promise(resolve => {
+          setTimeout(() => {
+            resolve("FAIL: timeout waiting for devicechange; count=" +
+                    String(window.deviceChangeEventCount || 0));
+          }, 5000);
+        }),
+      ]);
+    })()
+  )JS")
+        .ExtractString();
+  }
+
+  int GetVideoInputCount() {
+    return EvalJs(shell(), R"JS(
+    (async () => {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      return devices.filter(d => d.kind === 'videoinput').length;
+    })()
+  )JS")
+        .ExtractInt();
+  }
+
+  void SaveCurrentVideoInputIds() {
+    EXPECT_EQ("OK", EvalJs(shell(), R"JS(
+    (async () => {
+      // Warm-up getUserMedia to make device metadata available in this test
+      // environment. Stop immediately because we only need permission/metadata.
+      let warmupStream;
+      try {
+        warmupStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
+        warmupStream.getTracks().forEach(track => track.stop());
+      } catch (e) {
+        return "FAIL: warmup getUserMedia rejected: " +
+            e.name + ": " + e.message;
+      }
+
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      window.beforeVideoInputIds = devices
+        .filter(d => d.kind === "videoinput")
+        .map(d => d.deviceId);
+
+      return "OK";
+    })()
+  )JS")
+                        .ExtractString());
+  }
+
+  std::string WaitForAddedVideoInputAndOpenIt() {
+    return EvalJs(shell(), R"JS(
+    (async () => {
+      const beforeIds = new Set(window.beforeVideoInputIds || []);
+      let addedDevice = null;
+
+      for (let i = 0; i < 50; ++i) {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        addedDevice = devices
+          .filter(d => d.kind === "videoinput")
+          .find(d => !beforeIds.has(d.deviceId));
+
+        if (addedDevice && addedDevice.deviceId)
+          break;
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+
+      if (!addedDevice)
+        return "FAIL: no added videoinput";
+
+      if (!addedDevice.deviceId)
+        return "FAIL: added videoinput has empty deviceId";
+
+      const withTimeout = (promise, message) => {
+        let timeoutId;
+        const timeoutPromise = new Promise((_, reject) => {
+          timeoutId = setTimeout(() => reject(new Error(message)), 5000);
+        });
+
+        return Promise.race([promise, timeoutPromise]).finally(() => {
+          clearTimeout(timeoutId);
+        });
+      };
+
+      let stream;
+      try {
+        stream = await withTimeout(
+            navigator.mediaDevices.getUserMedia({
+              video: {
+                deviceId: { exact: addedDevice.deviceId },
+              },
+            }),
+            "timed out waiting for exact-device getUserMedia");
+      } catch (e) {
+        return "FAIL: exact-device getUserMedia failed: " +
+            e.name + ": " + e.message;
+      }
+
+      const tracks = stream.getVideoTracks();
+      if (tracks.length !== 1 || tracks[0].readyState !== "live") {
+        const result =
+            "FAIL: expected one live video track, got " +
+            JSON.stringify(tracks.map(t => ({
+              label: t.label,
+              readyState: t.readyState,
+              settings: t.getSettings(),
+            })));
+        stream.getTracks().forEach(track => track.stop());
+        return result;
+      }
+
+      const video = document.createElement("video");
+      video.autoplay = true;
+      video.muted = true;
+      video.playsInline = true;
+      video.srcObject = stream;
+      document.body.appendChild(video);
+
+      const framePromise = new Promise(resolve => {
+        const timeout = setTimeout(() => {
+          resolve("FAIL: timed out waiting for a video frame; " +
+                  JSON.stringify({
+                    readyState: video.readyState,
+                    videoWidth: video.videoWidth,
+                    videoHeight: video.videoHeight,
+                    paused: video.paused,
+                    trackStates: stream.getTracks().map(track => ({
+                      kind: track.kind,
+                      readyState: track.readyState,
+                      muted: track.muted,
+                    })),
+                  }));
+        }, 5000);
+
+        video.requestVideoFrameCallback(() => {
+          clearTimeout(timeout);
+
+          if (video.videoWidth === 640 && video.videoHeight === 480) {
+            resolve("OK");
+            return;
+          }
+
+          resolve("FAIL: unexpected video size " +
+                  video.videoWidth + "x" + video.videoHeight);
+        });
+      });
+
+      try {
+        await withTimeout(video.play(), "timed out waiting for video.play()");
+        return await framePromise;
+      } catch (e) {
+        return "FAIL: video playback failed: " + e.name + ": " + e.message;
+      } finally {
+        video.srcObject = null;
+        video.remove();
+        stream.getTracks().forEach(track => track.stop());
+      }
+    })()
+  )JS")
+        .ExtractString();
+  }
+
+  std::string WaitForVideoInputCount(int expected_count) {
+    return EvalJs(shell(), base::StringPrintf(R"JS(
+    (async () => {
+      for (let i = 0; i < 50; ++i) {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoInputs = devices.filter(d => d.kind === 'videoinput');
+
+        if (videoInputs.length === %d)
+          return "OK";
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      return "FAIL: " + JSON.stringify(devices.map(d => ({
+        kind: d.kind,
+        label: d.label,
+        deviceId: d.deviceId,
+        groupId: d.groupId,
+      })));
+    })()
+  )JS",
+                                              expected_count))
+        .ExtractString();
+  }
+
+  std::string WaitForVideoInputCountAtLeast(int expected_count) {
+    return EvalJs(shell(), base::StringPrintf(R"JS(
+    (async () => {
+      for (let i = 0; i < 50; ++i) {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoInputs = devices.filter(d => d.kind === 'videoinput');
+
+        if (videoInputs.length >= %d)
+          return "OK";
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      return "FAIL: " + JSON.stringify(devices.map(d => ({
+        kind: d.kind,
+        label: d.label,
+        deviceId: d.deviceId,
+        groupId: d.groupId,
+      })));
+    })()
+  )JS",
+                                              expected_count))
+        .ExtractString();
+  }
+
   void PushDummyFrameAndScheduleNextPush(
       VirtualDeviceExerciser* device_exerciser) {
     DCHECK(virtual_device_thread_.task_runner()->RunsTasksInCurrentSequence());
@@ -516,6 +856,11 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUp();
   }
 
+  void TearDownOnMainThread() override {
+    DestroyMockCaptureDeviceController();
+    ContentBrowserTest::TearDownOnMainThread();
+  }
+
   void Initialize() {
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     main_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
@@ -531,6 +876,9 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
     return base::TimeTicks::Now() - first_frame_time_;
   }
 
+  // The browsertest selects |virtual_device_thread_| as the controller's
+  // owning sequence. Production callers may select a different sequence.
+  std::unique_ptr<MockCaptureDeviceController> mock_capture_device_controller_;
   mojo::Remote<video_capture::mojom::VideoSourceProvider>
       video_source_provider_;
   gfx::Size video_size_;
@@ -538,6 +886,65 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
   base::WeakPtrFactory<WebRtcVideoCaptureServiceBrowserTest> weak_factory_{
       this};
 };
+
+IN_PROC_BROWSER_TEST_F(
+    WebRtcVideoCaptureServiceBrowserTest,
+    MockCaptureDeviceControllerCanAddAndRemoveCameraFromEnumerateDevices) {
+  ASSERT_TRUE(SetUpMockCaptureDeviceTest());
+  const int before_count = GetVideoInputCount();
+
+  AddDefaultMockCamera();
+  EXPECT_EQ("OK", WaitForVideoInputCountAtLeast(before_count + 1));
+
+  RemoveDefaultMockCamera();
+  EXPECT_EQ("OK", WaitForVideoInputCount(before_count));
+}
+
+IN_PROC_BROWSER_TEST_F(WebRtcVideoCaptureServiceBrowserTest,
+                       MockCaptureDeviceControllerFiresDeviceChange) {
+  ASSERT_TRUE(SetUpMockCaptureDeviceTest());
+  PrepareDeviceChangeWatcher();
+
+  ArmNextDeviceChange();
+  AddDefaultMockCamera();
+  EXPECT_EQ("OK", WaitForNextDeviceChange());
+
+  ArmNextDeviceChange();
+
+  RemoveDefaultMockCamera();
+  EXPECT_EQ("OK", WaitForNextDeviceChange());
+}
+
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/40781953): This test is flakey on macOS.
+#define MAYBE_MockCaptureDeviceControllerCameraCanBeTargetedByGetUserMedia \
+  DISABLED_MockCaptureDeviceControllerCameraCanBeTargetedByGetUserMedia
+#else
+#define MAYBE_MockCaptureDeviceControllerCameraCanBeTargetedByGetUserMedia \
+  MockCaptureDeviceControllerCameraCanBeTargetedByGetUserMedia
+#endif
+IN_PROC_BROWSER_TEST_F(
+    WebRtcVideoCaptureServiceBrowserTest,
+    MAYBE_MockCaptureDeviceControllerCameraCanBeTargetedByGetUserMedia) {
+  ASSERT_TRUE(SetUpMockCaptureDeviceTest());
+  SaveCurrentVideoInputIds();
+
+  AddDefaultMockCamera();
+  EXPECT_EQ("OK", WaitForAddedVideoInputAndOpenIt());
+  RemoveDefaultMockCamera();
+}
+
+IN_PROC_BROWSER_TEST_F(WebRtcVideoCaptureServiceBrowserTest,
+                       MockCaptureDeviceControllerResetRemovesCamera) {
+  ASSERT_TRUE(SetUpMockCaptureDeviceTest());
+  const int before_count = GetVideoInputCount();
+
+  AddDefaultMockCamera();
+  EXPECT_EQ("OK", WaitForVideoInputCountAtLeast(before_count + 1));
+
+  ResetMockCameras();
+  EXPECT_EQ("OK", WaitForVideoInputCount(before_count));
+}
 
 // TODO(crbug.com/40835247): Fix and enable on Fuchsia.
 // TODO(crbug.com/40781953): This test is flakey on macOS.
