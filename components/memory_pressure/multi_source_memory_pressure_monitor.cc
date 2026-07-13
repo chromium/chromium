@@ -12,6 +12,7 @@
 #include "base/trace_event/memory_pressure_level_proto.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
+#include "build/build_config.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
 namespace memory_pressure {
@@ -27,7 +28,14 @@ MultiSourceMemoryPressureMonitor::MultiSourceMemoryPressureMonitor()
       dispatch_callback_(base::BindRepeating(
           &base::MemoryPressureListener::NotifyMemoryPressure)),
       aggregator_(this),
-      level_reporter_(current_pressure_level_) {
+      level_reporter_(current_pressure_level_,
+                      "Memory.PressureLevel2",
+#if BUILDFLAG(IS_MAC)
+                      std::nullopt
+#else
+                      "Memory.PressureWindowDuration."
+#endif
+      ) {
   CHECK(!g_monitor);
   g_monitor = this;
 }

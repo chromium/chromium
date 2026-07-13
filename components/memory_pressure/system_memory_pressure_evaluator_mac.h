@@ -8,6 +8,8 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <dispatch/dispatch.h>
 
+#include <memory>
+
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_dispatch_object.h"
 #include "base/files/file_path.h"
@@ -15,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
 #include "base/timer/timer.h"
+#include "components/memory_pressure/memory_pressure_level_reporter.h"
 #include "components/memory_pressure/memory_pressure_voter.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
@@ -87,6 +90,10 @@ class SystemMemoryPressureEvaluator
   base::FilePath user_data_dir_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::MemoryPressureLevel last_os_pressure_level_ =
+      base::MEMORY_PRESSURE_LEVEL_NONE;
+  std::unique_ptr<MemoryPressureLevelReporter> os_transition_reporter_;
 
   base::WeakPtrFactory<SystemMemoryPressureEvaluator> weak_ptr_factory_;
 };

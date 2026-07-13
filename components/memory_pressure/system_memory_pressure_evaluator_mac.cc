@@ -156,6 +156,16 @@ void SystemMemoryPressureEvaluator::UpdatePressureLevel() {
   os_pressure_level_ =
       MemoryPressureLevelForMacMemoryPressureLevel(GetMacMemoryPressureLevel());
 
+  // Lazy initialization of the OS-only transition reporter.
+  if (!os_transition_reporter_) {
+    os_transition_reporter_ = std::make_unique<MemoryPressureLevelReporter>(
+        os_pressure_level_, std::nullopt, "Memory.PressureWindowDuration.");
+    last_os_pressure_level_ = os_pressure_level_;
+  } else if (os_pressure_level_ != last_os_pressure_level_) {
+    last_os_pressure_level_ = os_pressure_level_;
+    os_transition_reporter_->OnMemoryPressureLevelChanged(os_pressure_level_);
+  }
+
   // The effective pressure level is the most severe of the OS-reported level
   // and our disk-space-derived level. If the disk pressure feature is disabled,
   // `disk_pressure_vote_` will always be `NONE`.

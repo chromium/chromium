@@ -6,6 +6,8 @@
 #define COMPONENTS_MEMORY_PRESSURE_MEMORY_PRESSURE_LEVEL_REPORTER_H_
 
 #include <array>
+#include <optional>
+#include <string>
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/time/time.h"
@@ -28,7 +30,10 @@ enum class MemoryPressureHistogramBuckets {
 class MemoryPressureLevelReporter {
  public:
   explicit MemoryPressureLevelReporter(
-      base::MemoryPressureLevel initial_pressure_level);
+      base::MemoryPressureLevel initial_pressure_level,
+      std::optional<std::string> histogram_name = "Memory.PressureLevel2",
+      std::optional<std::string> transition_prefix =
+          "Memory.PressureWindowDuration.");
   ~MemoryPressureLevelReporter();
 
   // Should be called whenever the current memory pressure level changes.
@@ -44,6 +49,8 @@ class MemoryPressureLevelReporter {
   void ReportHistogram(base::TimeTicks now);
   void StartPeriodicTimer();
 
+  const std::optional<std::string> histogram_name_;
+  const std::optional<std::string> transition_prefix_;
   base::MemoryPressureLevel current_pressure_level_;
   base::TimeTicks current_pressure_level_begin_ = base::TimeTicks::Now();
 

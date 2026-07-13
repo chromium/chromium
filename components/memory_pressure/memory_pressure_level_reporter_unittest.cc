@@ -262,7 +262,6 @@ TEST(MemoryPressureLevelReporterTest, DiskSpacePressureBucket) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
-
   MemoryPressureLevelReporter reporter(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::HistogramTester histogram_tester;
 
@@ -312,6 +311,24 @@ TEST(MemoryPressureLevelReporterTest,
   histogram_tester.ExpectBucketCount(
       "Memory.PressureLevel2",
       static_cast<int>(MemoryPressureHistogramBuckets::kCritical), 25);
+}
+
+TEST(MemoryPressureLevelReporterTest, Customization) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  // Instantiate with both histogram and transition prefix disabled.
+  MemoryPressureLevelReporter reporter(base::MEMORY_PRESSURE_LEVEL_MODERATE,
+                                       std::nullopt, std::nullopt);
+  base::HistogramTester histogram_tester;
+  // Transition to CRITICAL.
+  task_environment.AdvanceClock(base::Seconds(10));
+  reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  // Verify no level histogram was reported.
+  histogram_tester.ExpectTotalCount("Memory.PressureLevel2", 0);
+  // Verify no transition was reported.
+  histogram_tester.ExpectTotalCount(
+      "Memory.PressureWindowDuration.ModerateToCritical", 0);
 }
 
 }  // namespace memory_pressure
