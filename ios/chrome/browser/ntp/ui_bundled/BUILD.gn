@@ -252,6 +252,8 @@ source_set("ntp_internal") {
     "new_tab_page_view_controller.mm",
     "ntp_identity_disc_button.h",
     "ntp_identity_disc_button.mm",
+    "scroll_delegate_proxy.h",
+    "scroll_delegate_proxy.mm",
   ]
   deps = [
     ":constants",

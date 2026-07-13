@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_background_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
@@ -585,6 +586,40 @@ TEST_F(AppBarViewControllerTestManual, TestIncognitoInitially) {
   EXPECT_FALSE(assistantButton.enabled);
   EXPECT_TRUE(assistantButton.accessibilityTraits &
               UIAccessibilityTraitNotEnabled);
+}
+
+// Tests that the open new tab button only logs shortcut user action metrics
+// when the tab grid is not visible, and logs the NTP variant when the NTP is
+// visible.
+TEST_F(AppBarViewControllerTest, TestNewTabButtonMetrics) {
+  base::UserActionTester user_action_tester;
+
+  // Set tab grid not visible (browsing mode) and NTP visible.
+  [view_controller_ setTabGridVisible:NO];
+  [view_controller_ setNTPVisible:YES isStartSurface:NO];
+
+  // Trigger tap.
+  UIButton* button = openNewTabButton();
+  [button sendActionsForControlEvents:UIControlEventTouchUpInside];
+
+  EXPECT_EQ(user_action_tester.GetActionCount("MobileToolbarNewTabShortcut"),
+            1);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("MobileToolbarNewTabShortcutOnNTP"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("MobileTabNewTab"), 1);
+
+  // Set tab grid visible.
+  [view_controller_ setTabGridVisible:YES];
+
+  // Trigger tap again.
+  [button sendActionsForControlEvents:UIControlEventTouchUpInside];
+
+  // The metrics should NOT increment because tab grid is visible.
+  EXPECT_EQ(user_action_tester.GetActionCount("MobileToolbarNewTabShortcut"),
+            1);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("MobileToolbarNewTabShortcutOnNTP"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("MobileTabNewTab"), 1);
 }
 
 }  // namespace

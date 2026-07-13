@@ -17,6 +17,14 @@
             (NewTabPageBottomSheetViewController*)bottomSheetViewController
                didUpdateTopOffset:(CGFloat)topOffset;
 
+// Returns the preferred resting offset for the bottom sheet.
+- (CGFloat)restingOffsetForBottomSheetViewController:
+    (NewTabPageBottomSheetViewController*)viewController;
+
+// Returns the preferred collapsed offset for the bottom sheet.
+- (CGFloat)collapsedOffsetForBottomSheetViewController:
+    (NewTabPageBottomSheetViewController*)viewController;
+
 @end
 
 // View controller managing the bottom sheet card, gestures, and subviews for
@@ -41,13 +49,6 @@
 
 // Returns the collapsed offset of the bottom sheet.
 - (CGFloat)collapsedOffset;
-
-// Notification that the feed scroll view scrolled.
-- (void)feedScrollViewDidScroll:(UIScrollView*)scrollView;
-
-// Notification that the feed scroll view finished dragging.
-- (void)feedScrollViewDidEndDragging:(UIScrollView*)scrollView
-                      willDecelerate:(BOOL)decelerate;
 
 @end
 

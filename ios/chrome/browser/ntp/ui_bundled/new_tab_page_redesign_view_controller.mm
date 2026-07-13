@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/ntp_identity_disc_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -58,10 +59,7 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
 }  // namespace
 
 @interface NewTabPageRedesignViewController () <
-    NewTabPageBottomSheetViewControllerDelegate,
-    // Delegate for the feed scroll view, forwarding scrolling events to the
-    // bottom sheet.
-    UIScrollViewDelegate>
+    NewTabPageBottomSheetViewControllerDelegate>
 
 // Properties conformed to by `NewTabPageConsumer`
 @property(nonatomic, assign, readwrite) CGFloat collectionShiftingOffset;
@@ -272,6 +270,24 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
 
 #pragma mark - NewTabPageBottomSheetViewControllerDelegate
 
+- (CGFloat)restingOffsetForBottomSheetViewController:
+    (NewTabPageBottomSheetViewController*)viewController {
+  CGFloat mvtHeight = CGRectGetHeight(_mostVisitedContainerView.bounds);
+  if (mvtHeight <= 0) {
+    mvtHeight = kDefaultMVTHeightFallback;
+  }
+  return [self centeredFakeOmniboxTop] + kFakeLocationBarHeight +
+         kOmniboxToMVTSpacing + mvtHeight + kRestingSheetMVTTopMargin;
+}
+
+- (CGFloat)collapsedOffsetForBottomSheetViewController:
+    (NewTabPageBottomSheetViewController*)viewController {
+  UIView* superview = self.view;
+  CGFloat safeAreaBottom = superview.safeAreaInsets.bottom;
+  CGFloat collapsedHeight = safeAreaBottom + 80.0;
+  return superview.bounds.size.height - collapsedHeight;
+}
+
 - (void)bottomSheetViewController:
             (NewTabPageBottomSheetViewController*)bottomSheetViewController
                didUpdateTopOffset:(CGFloat)topOffset {
@@ -460,10 +476,18 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
 }
 
 - (CGFloat)centeredFakeOmniboxTop {
-  CGFloat safeAreaTop = self.view.safeAreaInsets.top;
-  CGFloat logoHeight =
-      content_suggestions::DoodleHeight(_logoState, self.traitCollection);
-  return safeAreaTop + kLogoTopMargin + logoHeight + kLogoToOmniboxSpacing;
+  CGFloat screenHeight = self.view.bounds.size.height;
+  // During the initial view loading sequence (e.g. before initial layout pass
+  // occurs), screen height bounds will be 0. We fallback to the dynamic
+  // top-down logo offset to avoid negative constraint values during early
+  // configuration.
+  if (screenHeight <= 0) {
+    CGFloat safeAreaTop = self.view.safeAreaInsets.top;
+    CGFloat logoHeight =
+        content_suggestions::DoodleHeight(_logoState, self.traitCollection);
+    return safeAreaTop + kLogoTopMargin + logoHeight + kLogoToOmniboxSpacing;
+  }
+  return (screenHeight - kFakeLocationBarHeight) * 0.5;
 }
 
 #pragma mark - SearchEngineLogoConsumer
@@ -486,18 +510,6 @@ constexpr CGFloat kGoogleLogoWidth = 170.0;
 
 - (void)didChangeOmniboxPosition:(NewTabPageHeaderView*)headerView {
   // TODO(crbug.com/526677926): To be implemented in Phase 2.
-}
-
-#pragma mark - UIScrollViewDelegate
-
-- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  [_bottomSheetViewController feedScrollViewDidScroll:scrollView];
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
-                  willDecelerate:(BOOL)decelerate {
-  [_bottomSheetViewController feedScrollViewDidEndDragging:scrollView
-                                            willDecelerate:decelerate];
 }
 
 #pragma mark - UserAccountImageUpdateDelegate

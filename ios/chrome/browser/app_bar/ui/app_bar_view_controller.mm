@@ -1360,8 +1360,15 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 // Called when the New Tab button is tapped.
 - (void)didTapOpenNewTabButton:(UIView*)sender {
-  [self recordAction:"MobileToolbarNewTabShortcut"
-      withFullscreenAction:"MobileToolbarNewTabShortcutFullscreen"];
+  if (!_isTabGridVisible) {
+    if (_isNtpVisible) {
+      base::RecordAction(
+          base::UserMetricsAction("MobileToolbarNewTabShortcutOnNTP"));
+    }
+    [self recordAction:"MobileToolbarNewTabShortcut"
+        withFullscreenAction:"MobileToolbarNewTabShortcutFullscreen"];
+    base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
+  }
   [self.mutator createNewTabFromView:sender];
 }
 

@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_bottom_sheet_view_controller.h"
 
+#import <cmath>
+
+#import "ios/chrome/browser/ntp/ui_bundled/scroll_delegate_proxy.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -17,11 +20,13 @@ typedef NS_ENUM(NSInteger, BottomSheetSnappingState) {
 // Spacing/margin constants for content container.
 constexpr CGFloat kContentContainerTopMargin = 16.0;
 
-// Minimum velocity needed for a user drag to trigger bottom sheet state change.
-constexpr CGFloat kMinimumDragVelocityToChangeState = 500;
+// Minimum drag velocity required to trigger a state transition.
+constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
+
 }  // namespace
 
-@interface NewTabPageBottomSheetViewController () <UIGestureRecognizerDelegate>
+@interface NewTabPageBottomSheetViewController () <UIGestureRecognizerDelegate,
+                                                   UIScrollViewDelegate>
 @property(nonatomic, strong) NSLayoutConstraint* bottomSheetTopConstraint;
 @end
 
@@ -33,6 +38,10 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 500;
 
   CGSize _lastSize;
   CGFloat _initialConstant;
+
+  UIPanGestureRecognizer* _sheetPanGesture;
+  __weak UIScrollView* _feedScrollView;
+  ScrollDelegateProxy* _scrollProxy;
 }
 
 - (void)loadView {
@@ -88,11 +97,11 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 500;
   ]];
 
   // Add pan gesture recognizer.
-  UIPanGestureRecognizer* panGesture =
+  _sheetPanGesture =
       [[UIPanGestureRecognizer alloc] initWithTarget:self
                                               action:@selector(handlePan:)];
-  panGesture.delegate = self;
-  [self.view addGestureRecognizer:panGesture];
+  _sheetPanGesture.delegate = self;
+  [self.view addGestureRecognizer:_sheetPanGesture];
 
   if (_feedViewController) {
     [self embedFeedViewController];
@@ -116,6 +125,10 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 500;
 }
 
 - (void)invalidate {
+  if (_feedScrollView && _scrollProxy) {
+    _feedScrollView.delegate = _scrollProxy.originalTarget;
+  }
+  _scrollProxy = nil;
   self.delegate = nil;
   self.feedViewController = nil;
 }
@@ -123,6 +136,44 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 500;
 #pragma mark - Action Targets
 
 #pragma mark - Feed Integration
+
+- (UIScrollView*)findScrollViewInView:(UIView*)view {
+  if ([view isKindOfClass:[UIScrollView class]]) {
+    return (UIScrollView*)view;
+  }
+  for (UIView* subview in view.subviews) {
+    UIScrollView* scrollView = [self findScrollViewInView:subview];
+    if (scrollView) {
+      return scrollView;
+    }
+  }
+  return nil;
+}
+
+- (void)updateFeedScrollViewReference {
+  if (_feedScrollView && _scrollProxy) {
+    _feedScrollView.delegate = _scrollProxy.originalTarget;
+  }
+  _scrollProxy = nil;
+
+  if (_feedViewController) {
+    _feedScrollView = [self findScrollViewInView:_feedViewController.view];
+    if (_feedScrollView) {
+      _feedScrollView.scrollEnabled =
+          (_sheetState == BottomSheetSnappingStateExpanded);
+      id originalDelegate = _feedScrollView.delegate;
+      if (originalDelegate != self &&
+          ![originalDelegate isKindOfClass:[ScrollDelegateProxy class]]) {
+        _scrollProxy = [[ScrollDelegateProxy alloc]
+            initWithInterceptingTarget:self
+                        originalTarget:originalDelegate];
+        _feedScrollView.delegate = _scrollProxy;
+      }
+    }
+  } else {
+    _feedScrollView = nil;
+  }
+}
 
 - (void)setFeedViewController:(UIViewController*)feedViewController {
   if (_feedViewController == feedViewController) {
@@ -134,6 +185,7 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 500;
     [_feedViewController removeFromParentViewController];
   }
   _feedViewController = feedViewController;
+  [self updateFeedScrollViewReference];
   if (self.isViewLoaded && _feedViewController) {
     [self embedFeedViewController];
   }
@@ -158,18 +210,17 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 500;
   [_feedViewController didMoveToParentViewController:self];
 
   _feedViewController.view.hidden = NO;
+  [self updateFeedScrollViewReference];
 }
 
 #pragma mark - Snapping Offsets
 
 - (CGFloat)collapsedOffset {
-  UIView* superview = self.view.superview;
-  return superview ? superview.bounds.size.height * 0.75 : 0;
+  return [self.delegate collapsedOffsetForBottomSheetViewController:self];
 }
 
 - (CGFloat)restingOffset {
-  UIView* superview = self.view.superview;
-  return superview ? superview.bounds.size.height * 0.60 : 0;
+  return [self.delegate restingOffsetForBottomSheetViewController:self];
 }
 
 - (CGFloat)expandedOffset {
@@ -216,6 +267,15 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 500;
   }
   CGFloat targetConstant = [self targetOffsetForState:_sheetState];
 
+  if (_feedScrollView) {
+    _feedScrollView.scrollEnabled =
+        (_sheetState == BottomSheetSnappingStateExpanded);
+  }
+
+  if (_sheetState != BottomSheetSnappingStateExpanded && _feedScrollView) {
+    [_feedScrollView setContentOffset:CGPointZero animated:animated];
+  }
+
   if (!animated) {
     _bottomSheetTopConstraint.constant = targetConstant;
     [self updateContentContainerInsetForOffset:targetConstant];
@@ -255,28 +315,33 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 500;
 
   BottomSheetSnappingState targetState = _sheetState;
 
-  if (velocity.y > kMinimumDragVelocityToChangeState) {
-    // Dragged down quickly
-    if (_sheetState == BottomSheetSnappingStateExpanded) {
-      targetState = BottomSheetSnappingStateResting;
-    } else if (_sheetState == BottomSheetSnappingStateResting) {
-      targetState = BottomSheetSnappingStateCollapsed;
-    }
-  } else if (velocity.y < -kMinimumDragVelocityToChangeState) {
-    // Dragged up quickly
-    if (_sheetState == BottomSheetSnappingStateCollapsed) {
-      targetState = BottomSheetSnappingStateResting;
-    } else if (_sheetState == BottomSheetSnappingStateResting) {
-      targetState = BottomSheetSnappingStateExpanded;
+  if (std::abs(velocity.y) > kMinimumDragVelocityToChangeState) {
+    if (velocity.y > 0) {
+      // Swiping down: transition to the next lower state.
+      if (_sheetState == BottomSheetSnappingStateExpanded) {
+        targetState = BottomSheetSnappingStateResting;
+      } else if (_sheetState == BottomSheetSnappingStateResting) {
+        targetState = BottomSheetSnappingStateCollapsed;
+      }
+    } else {
+      // Swiping up: transition to the next higher state.
+      if (_sheetState == BottomSheetSnappingStateCollapsed) {
+        targetState = BottomSheetSnappingStateResting;
+      } else if (_sheetState == BottomSheetSnappingStateResting) {
+        targetState = BottomSheetSnappingStateExpanded;
+      }
     }
   } else {
-    // Slow drag - snap to closest based on distance midpoints
-    CGFloat mid1 = (expanded + resting) / 2.0;
-    CGFloat mid2 = (resting + collapsed) / 2.0;
+    // Slow drag: snap to the closest state based on distance from
+    // currentConstant.
+    CGFloat distExpanded = std::abs(currentConstant - expanded);
+    CGFloat distResting = std::abs(currentConstant - resting);
+    CGFloat distCollapsed = std::abs(currentConstant - collapsed);
 
-    if (currentConstant < mid1) {
+    CGFloat minDist = MIN(distExpanded, MIN(distResting, distCollapsed));
+    if (minDist == distExpanded) {
       targetState = BottomSheetSnappingStateExpanded;
-    } else if (currentConstant >= mid1 && currentConstant < mid2) {
+    } else if (minDist == distResting) {
       targetState = BottomSheetSnappingStateResting;
     } else {
       targetState = BottomSheetSnappingStateCollapsed;
@@ -316,54 +381,76 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 500;
     _initialConstant = _bottomSheetTopConstraint.constant;
   }
 
-  CGFloat newConstant = _initialConstant + translation.y;
+  if (_sheetState == BottomSheetSnappingStateExpanded && _feedScrollView) {
+    if (_feedScrollView.contentOffset.y > 0) {
+      _initialConstant = [self expandedOffset];
+      [gesture setTranslation:CGPointZero inView:superview];
+      return;
+    }
+    if (translation.y < 0) {
+      _initialConstant = [self expandedOffset];
+      [gesture setTranslation:CGPointZero inView:superview];
+      return;
+    }
+  }
+
+  CGFloat targetConstant = _initialConstant + translation.y;
   CGFloat minOffset = [self expandedOffset];
   CGFloat maxOffset = [self collapsedOffset];
 
-  if (newConstant < minOffset) {
-    newConstant = minOffset;
-  } else if (newConstant > maxOffset) {
-    newConstant = maxOffset;
+  if (targetConstant < minOffset) {
+    targetConstant = minOffset;
+  } else if (targetConstant > maxOffset) {
+    targetConstant = maxOffset;
   }
 
-  _bottomSheetTopConstraint.constant = newConstant;
-  [self updateContentContainerInsetForOffset:newConstant];
-  [self.delegate bottomSheetViewController:self didUpdateTopOffset:newConstant];
+  _bottomSheetTopConstraint.constant = targetConstant;
+  [self updateContentContainerInsetForOffset:targetConstant];
+  [self.delegate bottomSheetViewController:self
+                        didUpdateTopOffset:targetConstant];
 
   if (gesture.state == UIGestureRecognizerStateEnded) {
-    [self snapSheetWithVelocity:velocity currentConstant:newConstant];
+    [self snapSheetWithVelocity:velocity currentConstant:targetConstant];
+  } else if (gesture.state == UIGestureRecognizerStateCancelled) {
+    [self updateBottomSheetPositionAnimated:YES];
   }
 }
+#pragma mark - UIGestureRecognizerDelegate
 
-- (void)feedScrollViewDidScroll:(UIScrollView*)scrollView {
-  if (_sheetState == BottomSheetSnappingStateExpanded &&
-      scrollView.contentOffset.y < 0 && scrollView.dragging) {
-    CGFloat delta = -scrollView.contentOffset.y;
-    // Lock contentOffset to top.
-    scrollView.contentOffset = CGPointZero;
-
-    CGFloat newConstant = _bottomSheetTopConstraint.constant + delta;
-    CGFloat maxOffset = [self collapsedOffset];
-    if (newConstant > maxOffset) {
-      newConstant = maxOffset;
-    }
-    _bottomSheetTopConstraint.constant = newConstant;
-    [self.delegate bottomSheetViewController:self
-                          didUpdateTopOffset:newConstant];
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:
+        (UIGestureRecognizer*)otherGestureRecognizer {
+  if (gestureRecognizer == _sheetPanGesture &&
+      otherGestureRecognizer == _feedScrollView.panGestureRecognizer) {
+    return _sheetState == BottomSheetSnappingStateExpanded;
   }
+  return NO;
 }
 
-- (void)feedScrollViewDidEndDragging:(UIScrollView*)scrollView
-                      willDecelerate:(BOOL)decelerate {
-  UIView* superview = self.view.superview;
-  if (!superview) {
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer {
+  return YES;
+}
+
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  if (_sheetState != BottomSheetSnappingStateExpanded) {
     return;
   }
+
   CGFloat currentConstant = _bottomSheetTopConstraint.constant;
-  if (currentConstant > [self expandedOffset]) {
-    CGPoint velocity =
-        [scrollView.panGestureRecognizer velocityInView:superview];
-    [self snapSheetWithVelocity:velocity currentConstant:currentConstant];
+  CGFloat expanded = [self expandedOffset];
+
+  if (currentConstant > expanded) {
+    scrollView.contentOffset = CGPointZero;
+  }
+}
+
+- (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
+                     withVelocity:(CGPoint)velocity
+              targetContentOffset:(inout CGPoint*)targetContentOffset {
+  CGFloat currentConstant = _bottomSheetTopConstraint.constant;
+  if (_sheetState == BottomSheetSnappingStateExpanded &&
+      currentConstant > [self expandedOffset]) {
+    *targetContentOffset = CGPointZero;
   }
 }
 
