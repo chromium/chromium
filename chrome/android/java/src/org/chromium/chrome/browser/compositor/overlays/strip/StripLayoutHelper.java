@@ -967,7 +967,7 @@ public class StripLayoutHelper
     }
 
     private void updateTabSearchButton() {
-        mTabSearchButton.setVisible(mTabStripVisibleSupplier.get() && mTabSearchButtonWidth > 0.f);
+        mTabSearchButton.setVisible(mTabSearchButtonWidth > 0.f);
         if (mTabSearchButton.isVisible()) {
             if (LocalizationUtils.isLayoutRtl()) {
                 mTabSearchButton.setDrawX(mWidth - mRightPadding - mTabSearchButtonWidth);
