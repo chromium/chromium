@@ -73,11 +73,13 @@ class PinnedTabContainerView
       const gfx::Point& loc_in_container);
 
   void ResetCollectionNode();
+  void OnCollapseStateChanged(tabs::VerticalTabStripCollapseState state);
 
   raw_ptr<TabCollectionNode> collection_node_;
   const raw_ref<TabCollectionAnimatingLayoutManager> layout_manager_;
 
   base::CallbackListSubscription node_destroyed_subscription_;
+  base::CallbackListSubscription collapsed_state_changed_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_PINNED_TAB_CONTAINER_VIEW_H_

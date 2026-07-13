@@ -504,9 +504,7 @@ DraggedTabsContainer::GetVisualDataForDraggedView(
 }
 
 bool DraggedTabsContainer::IsHorizontalDragSupported() const {
-  return drag_axes_ != DragAxes::kVerticalOnly &&
-         GetTabStripCollapseState() ==
-             tabs::VerticalTabStripCollapseState::kExpanded;
+  return drag_axes_ != DragAxes::kVerticalOnly;
 }
 
 bool DraggedTabsContainer::HasMinimumOverlap(

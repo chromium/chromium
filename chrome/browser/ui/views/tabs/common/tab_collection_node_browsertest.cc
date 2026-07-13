@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
@@ -668,4 +669,27 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   // Ensure the tab is no longer a child of the Unpinned node.
   EXPECT_NE(unpinned_node->children()[0].get(), tab_to_pin_node);
   EXPECT_NE(unpinned_node->children()[1].get(), tab_to_pin_node);
+}
+
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+                       PinnedContainerDragAxesUpdatesOnCollapseStateChanged) {
+  AppendPinnedTab();
+
+  auto* pinned_view = views::AsViewClass<PinnedTabContainerView>(
+      pinned_collection_node()->view());
+  ASSERT_NE(pinned_view, nullptr);
+
+  EXPECT_EQ(pinned_view->drag_axes(), DraggedTabsContainer::DragAxes::kBoth);
+
+  tabs::VerticalTabStripStateController::From(browser())->RequestCollapse(true);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return pinned_view->drag_axes() ==
+           DraggedTabsContainer::DragAxes::kVerticalOnly;
+  }));
+
+  tabs::VerticalTabStripStateController::From(browser())->RequestCollapse(
+      false);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return pinned_view->drag_axes() == DraggedTabsContainer::DragAxes::kBoth;
+  }));
 }

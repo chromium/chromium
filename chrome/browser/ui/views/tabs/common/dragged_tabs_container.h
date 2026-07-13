@@ -81,6 +81,9 @@ class DraggedTabsContainer : public TabDragTarget,
   // Whether this container is currently handling a drag.
   bool IsHandlingDrag() const;
 
+  DragAxes drag_axes() const { return drag_axes_; }
+  void set_drag_axes(DragAxes drag_axes) { drag_axes_ = drag_axes; }
+
   // Returns the bounds of the box containing all dragged views, adjusted to
   // the point `point_in_container`. The returned bounds are not clamped to the
   // container bounds.
@@ -237,7 +240,7 @@ class DraggedTabsContainer : public TabDragTarget,
       animating_views_start_offsets_;
   gfx::SlideAnimation drag_start_animation_;
 
-  const DragAxes drag_axes_;
+  DragAxes drag_axes_;
   const DragLayout drag_layout_;
 
   base::ScopedObservation<views::View, views::ViewObserver>
