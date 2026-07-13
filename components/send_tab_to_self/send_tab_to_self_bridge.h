@@ -189,6 +189,8 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   void EraseEntryInBatch(std::string_view guid,
                          syncer::DataTypeStore::WriteBatch* batch);
 
+  void MarkEntryOpenedImpl(std::string_view guid, base::Time opened_time);
+
   void MarkEntryActivatedImpl(std::string_view guid,
                               ShareActivatedEntryPoint entry_point,
                               base::Time activated_time);

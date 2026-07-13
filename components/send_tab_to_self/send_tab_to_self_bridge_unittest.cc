@@ -804,6 +804,46 @@ TEST_F(SendTabToSelfBridgeTest, MarkEntryActivatedBeforeLoadRecordsMetric) {
       ShareActivatedEntryPoint::kDesktopToast, 1);
 }
 
+TEST_F(SendTabToSelfBridgeTest, MarkEntryOpenedBeforeLoad) {
+  InitializeBridge();
+
+  SendTabToSelfEntry entry("guid", GURL("http://g.com/"), "title",
+                           AdvanceAndGetTime(), "remote", "remote",
+                           PageContext(), NavigationHistory());
+  syncer::EntityChangeList remote_data;
+  remote_data.push_back(
+      syncer::EntityChange::CreateAdd("guid", MakeEntityData(entry)));
+  bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                              std::move(remote_data));
+
+  // Shutdown bridge to persist data to store_.
+  ShutdownBridge();
+
+  // Re-create bridge but do NOT run the loop yet.
+  InitializeBridgeWithoutRunningLoop();
+
+  base::HistogramTester histogram_tester;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_observer(), OnModelReady()).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
+
+  // Call MarkEntryOpened before the store is loaded.
+  bridge()->MarkEntryOpened("guid");
+
+  // Now run the loop to load the store and process the queued open.
+  EXPECT_CALL(*processor(), Put("guid", _, _)).Times(1);
+  run_loop.Run();
+
+  // Verify that the entry is marked opened locally.
+  EXPECT_TRUE(bridge()->GetEntryByGUID("guid")->IsOpened());
+
+  // Verify metric was recorded.
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.TimeSentToOpened",
+                                    1);
+}
+
 TEST_F(SendTabToSelfBridgeTest, PreserveDissmissalAfterRestartBridge) {
   InitializeBridge();
 
