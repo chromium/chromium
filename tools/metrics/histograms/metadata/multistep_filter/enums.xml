@@ -10,6 +10,15 @@ found in the LICENSE file.
 
 <enums>
 
+<!-- LINT.IfChange(MultistepFilterApplicationOutcome) -->
+
+<enum name="MultistepFilterApplicationOutcome">
+  <int value="0" label="AllFiltersApplied">All filters were applied</int>
+  <int value="1" label="NotAllFiltersApplied">Not all filters were applied</int>
+</enum>
+
+<!-- LINT.ThenChange(//components/multistep_filter/core/logging/multistep_filter_metrics.h:MultistepFilterApplicationOutcome) -->
+
 <!-- LINT.IfChange(SuggestionUserDecision) -->
 
 <enum name="SuggestionUserDecision">

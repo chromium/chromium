@@ -25,6 +25,30 @@ void LogAcceptanceHistogram(std::string_view base_histogram,
       decision);
 }
 
+// Logs the overall technical filter application outcome after a user accepts
+// a Multistep Filter suggestion.
+// "All filter facets successfully applied" (kAllFiltersApplied) means that
+// after the navigation completed, the landing page's URL was successfully
+// parsed, and the extracted filter attributes exactly matched the suggested
+// filters (same keys and values).
+//
+// "Not successfully applied" (kNotAllFiltersApplied) covers cases where:
+//
+// - The navigation failed (error page) or was to an unsupported scheme.
+// - No filter attributes could be extracted from the landing page.
+// - The number of extracted attributes did not match the suggested count.
+// - There was a mismatch in the keys or values of the filters (e.g. a
+//   different brand or price range was applied than what was suggested).
+void LogApplicationOutcome(std::string_view task_type,
+                           MultistepFilterApplicationOutcome outcome) {
+  base::UmaHistogramEnumeration(kMultistepFilterApplicationOutcomeHistogram,
+                                outcome);
+  base::UmaHistogramEnumeration(
+      base::StrCat({kMultistepFilterApplicationOutcomeHistogram,
+                    kMultistepFilterByTaskHistogramPrefix, task_type}),
+      outcome);
+}
+
 }  // namespace
 
 MultistepFilterMetricsTracker::MultistepFilterMetricsTracker() = default;
@@ -38,17 +62,10 @@ MultistepFilterMetricsTracker::~MultistepFilterMetricsTracker() {
   }
 }
 
-void MultistepFilterMetricsTracker::OnNavigationStarted(
-    bool is_back_navigation) {
-  // TODO(crbug.com/531717350): Use these fields to track navigation metrics.
-  current_navigation_ = NavigationSession();
-  current_navigation_.navigation_start_time = base::TimeTicks::Now();
-  current_navigation_.is_back_navigation = is_back_navigation;
-}
-
 void MultistepFilterMetricsTracker::OnNavigationFinished(
     const FilterNavigationMetadata& metadata) {
   // TODO(crbug.com/531717350): Use these fields to track navigation metrics.
+  current_navigation_ = NavigationSession();
   current_navigation_.navigation_finish_time = base::TimeTicks::Now();
 
   // If a new navigation finished while we were still waiting for extraction
@@ -140,6 +157,11 @@ void MultistepFilterMetricsTracker::FlushSuggestionUiSession(
 void MultistepFilterMetricsTracker::FlushSuggestionApplicationSession(
     bool was_applied_successfully) {
   CHECK(current_suggestion_application_session_.has_value());
+  LogApplicationOutcome(
+      current_suggestion_application_session_->suggestion.task_type,
+      was_applied_successfully
+          ? MultistepFilterApplicationOutcome::kAllFiltersApplied
+          : MultistepFilterApplicationOutcome::kNotAllFiltersApplied);
   // TODO(crbug.com/531717350): Log the result to the appropriate histogram.
   current_suggestion_application_session_ = std::nullopt;
 }

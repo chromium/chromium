@@ -27,6 +27,8 @@
 namespace multistep_filter {
 namespace {
 
+using ::base::Bucket;
+using ::base::BucketsAre;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Optional;
@@ -165,6 +167,43 @@ class FilterTabControllerTest : public testing::Test {
     return mock_annotation_client_;
   }
 
+  FilterNavigationMetadata CreateMetadata(
+      int64_t navigation_id,
+      const GURL& url,
+      bool is_cryptographic = true,
+      bool is_error_page = false,
+      int net_error_code = 0,
+      std::optional<UrlFilterSuggestion> applied_suggestion = std::nullopt) {
+    FilterNavigationMetadata metadata;
+    metadata.navigation_id = navigation_id;
+    metadata.url = url;
+    metadata.is_cryptographic_scheme = is_cryptographic;
+    metadata.is_error_page_navigation = is_error_page;
+    metadata.net_error_code = net_error_code;
+    metadata.applied_suggestion = std::move(applied_suggestion);
+    return metadata;
+  }
+
+  UrlFilterSuggestion CreateDefaultSuggestion(
+      int64_t triggering_navigation_id,
+      const GURL& url = GURL("https://example.com/")) {
+    return UrlFilterSuggestion(UrlFilterSuggestion::Params{
+        .navigation_url = url,
+        .triggering_navigation_id = triggering_navigation_id,
+        .triggering_host = "example.com",
+        .task_type = "Task1"});
+  }
+
+  void ExpectNoExtractionOrSuggestion() {
+    EXPECT_CALL(*mock_delegate_, ClearSuggestion());
+    EXPECT_CALL(*mock_delegate_,
+                OnSuggestionGenerated(testing::Eq(std::nullopt), _));
+    EXPECT_CALL(observer_,
+                OnExtractionFinishedForTest(testing::Eq(std::nullopt)));
+    EXPECT_CALL(observer_,
+                OnSuggestionGeneratedForTest(testing::Eq(std::nullopt)));
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<StrictMock<MockMultistepFilterService>> mock_service_;
@@ -181,57 +220,40 @@ class FilterTabControllerTest : public testing::Test {
 // Tests that non-cryptographic insecure schemes (HTTP) instantly trigger early
 // fail-safes.
 TEST_F(FilterTabControllerTest, HttpNavigation) {
-  FilterNavigationMetadata metadata;
-  metadata.navigation_id = 1;
-  metadata.url = GURL("http://example.com");
-  metadata.is_cryptographic_scheme = false;
+  FilterNavigationMetadata metadata = CreateMetadata(
+      /*navigation_id=*/1, GURL("http://example.com"),
+      /*is_cryptographic=*/false);
   metadata.is_http_allowed_for_testing = false;
 
-  EXPECT_CALL(*mock_delegate_, ClearSuggestion());
-  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
-  EXPECT_CALL(observer_, OnExtractionFinishedForTest(Eq(std::nullopt)));
-  EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
+  ExpectNoExtractionOrSuggestion();
 
   controller_->OnNavigationFinished(metadata);
 }
 
 // Tests that network HTTP 4xx/5xx errors instantly trigger early fail-safes.
 TEST_F(FilterTabControllerTest, ErrorPageNavigation) {
-  FilterNavigationMetadata metadata;
-  metadata.navigation_id = 2;
-  metadata.url = GURL("https://example.com");
-  metadata.is_cryptographic_scheme = true;
-  metadata.is_error_page_navigation = true;
-  metadata.net_error_code = -106;
+  FilterNavigationMetadata metadata = CreateMetadata(
+      /*navigation_id=*/2, GURL("https://example.com"),
+      /*is_cryptographic=*/true, /*is_error_page=*/true,
+      /*net_error_code=*/-106);
 
-  EXPECT_CALL(*mock_delegate_, ClearSuggestion());
-  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
-  EXPECT_CALL(observer_, OnExtractionFinishedForTest(Eq(std::nullopt)));
-  EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
+  ExpectNoExtractionOrSuggestion();
 
   controller_->OnNavigationFinished(metadata);
 }
 
 // Tests that FilterTabController aborts immediately when consent is false.
 TEST_F(FilterTabControllerTest, SuppressExtractionAndGenerationOnConsentFalse) {
-  FilterNavigationMetadata metadata;
-  metadata.navigation_id = 3;
-  metadata.url = GURL("https://example.com");
+  FilterNavigationMetadata metadata =
+      CreateMetadata(3, GURL("https://example.com"));
   metadata.prev_url = GURL("https://different.com");
-  metadata.is_cryptographic_scheme = true;
-  metadata.is_error_page_navigation = false;
-  metadata.is_same_document_navigation = false;
   metadata.has_user_gesture = true;
 
-  EXPECT_CALL(*mock_delegate_, ClearSuggestion());
-  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+  ExpectNoExtractionOrSuggestion();
 
   EXPECT_CALL(*mock_service_, HasUserProvidedConsent(metadata.navigation_id,
                                                      metadata.url.GetHost()))
       .WillOnce(Return(false));
-
-  EXPECT_CALL(observer_, OnExtractionFinishedForTest(Eq(std::nullopt)));
-  EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
 
   controller_->OnNavigationFinished(metadata);
 }
@@ -239,12 +261,10 @@ TEST_F(FilterTabControllerTest, SuppressExtractionAndGenerationOnConsentFalse) {
 // Tests that SPA (Single Page Application) fragment routing preserves existing
 // suggestion UI, but aborts early when consent is false.
 TEST_F(FilterTabControllerTest, SameDocumentNavigationConsentFalse) {
-  FilterNavigationMetadata metadata;
-  metadata.navigation_id = 4;
-  metadata.url = GURL("https://example.com/#section1");
+  FilterNavigationMetadata metadata =
+      CreateMetadata(4, GURL("https://example.com/#section1"));
   metadata.prev_url = GURL("https://example.com/");
   metadata.is_same_document_navigation = true;
-  metadata.is_cryptographic_scheme = true;
   metadata.has_user_gesture = true;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion).Times(0);
@@ -263,12 +283,9 @@ TEST_F(FilterTabControllerTest, SameDocumentNavigationConsentFalse) {
 // Tests that explicit user page reloads suppress redundant UI triggers while
 // cleanly preserving the current suggestion.
 TEST_F(FilterTabControllerTest, SameUrlReCommitNavigation) {
-  FilterNavigationMetadata metadata;
-  metadata.navigation_id = 5;
-  metadata.url = GURL("https://example.com/");
+  FilterNavigationMetadata metadata =
+      CreateMetadata(5, GURL("https://example.com/"));
   metadata.prev_url = GURL("https://example.com/");
-  metadata.is_same_document_navigation = false;
-  metadata.is_cryptographic_scheme = true;
   metadata.has_user_gesture = true;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion).Times(0);
@@ -281,12 +298,10 @@ TEST_F(FilterTabControllerTest, SameUrlReCommitNavigation) {
 // suggestion UI, but correctly cascades to new extractions and suggestions on
 // success.
 TEST_F(FilterTabControllerTest, SameDocumentNavigationSuccess) {
-  FilterNavigationMetadata metadata;
-  metadata.navigation_id = 6;
-  metadata.url = GURL("https://example.com/#section1");
+  FilterNavigationMetadata metadata =
+      CreateMetadata(6, GURL("https://example.com/#section1"));
   metadata.prev_url = GURL("https://example.com/");
   metadata.is_same_document_navigation = true;
-  metadata.is_cryptographic_scheme = true;
   metadata.has_user_gesture = true;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion).Times(0);
@@ -307,10 +322,8 @@ TEST_F(FilterTabControllerTest, SameDocumentNavigationSuccess) {
               ExtractAnnotationFromUrl(metadata.url, _, metadata.navigation_id))
       .WillOnce(base::test::RunOnceCallback<1>(annotation));
 
-  UrlFilterSuggestion expected_suggestion(UrlFilterSuggestion::Params{
-      .navigation_url = metadata.url,
-      .triggering_navigation_id = metadata.navigation_id,
-      .task_type = "Task1"});
+  UrlFilterSuggestion expected_suggestion =
+      CreateDefaultSuggestion(metadata.navigation_id, metadata.url);
 
   EXPECT_CALL(*mock_generator_,
               GenerateSuggestion(metadata.url, supported_tasks, _,
@@ -331,10 +344,8 @@ TEST_F(FilterTabControllerTest, SameDocumentNavigationSuccess) {
 // generation aborts gracefully.
 TEST_F(FilterTabControllerTest,
        SuppressExtractionAndGenerationOnEmptySupportedTasks) {
-  FilterNavigationMetadata metadata;
-  metadata.navigation_id = 7;
-  metadata.url = GURL("https://example.com/");
-  metadata.is_cryptographic_scheme = true;
+  FilterNavigationMetadata metadata =
+      CreateMetadata(7, GURL("https://example.com/"));
   metadata.has_user_gesture = true;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion());
@@ -358,10 +369,8 @@ TEST_F(FilterTabControllerTest,
 // Tests that clicking Accept and executing the resulting filter navigation
 // correctly prevents generating a cyclical suggestion on the landing page.
 TEST_F(FilterTabControllerTest, SuppressGenerationOnFilterInitiatedNavigation) {
-  FilterNavigationMetadata metadata;
-  metadata.navigation_id = 8;
-  metadata.url = GURL("https://example.com/filtered");
-  metadata.is_cryptographic_scheme = true;
+  FilterNavigationMetadata metadata =
+      CreateMetadata(8, GURL("https://example.com/filtered"));
   metadata.has_user_gesture = true;
   metadata.was_filter_initiated_navigation = true;
 
@@ -400,10 +409,8 @@ TEST_F(FilterTabControllerTest, SuppressGenerationOnFilterInitiatedNavigation) {
 // Tests the complete end-to-end operational cascade successfully executing
 // extraction and suggestion generation.
 TEST_F(FilterTabControllerTest, SuccessfulExtractionAndGenerationCascade) {
-  FilterNavigationMetadata metadata;
-  metadata.navigation_id = 9;
-  metadata.url = GURL("https://example.com/");
-  metadata.is_cryptographic_scheme = true;
+  FilterNavigationMetadata metadata =
+      CreateMetadata(9, GURL("https://example.com/"));
   metadata.has_user_gesture = true;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion());
@@ -425,10 +432,8 @@ TEST_F(FilterTabControllerTest, SuccessfulExtractionAndGenerationCascade) {
               ExtractAnnotationFromUrl(metadata.url, _, metadata.navigation_id))
       .WillOnce(base::test::RunOnceCallback<1>(annotation));
 
-  UrlFilterSuggestion expected_suggestion(UrlFilterSuggestion::Params{
-      .navigation_url = metadata.url,
-      .triggering_navigation_id = metadata.navigation_id,
-      .task_type = "Task1"});
+  UrlFilterSuggestion expected_suggestion =
+      CreateDefaultSuggestion(metadata.navigation_id, metadata.url);
 
   EXPECT_CALL(*mock_generator_,
               GenerateSuggestion(metadata.url, supported_tasks, _,
@@ -449,10 +454,9 @@ TEST_F(FilterTabControllerTest, SuccessfulExtractionAndGenerationCascade) {
 // Tests that non-cryptographic HTTP navigation successfully triggers extraction
 // and generation cascade when the testing switch is explicitly allowed.
 TEST_F(FilterTabControllerTest, HttpNavigationWithTestingSwitch) {
-  FilterNavigationMetadata metadata;
-  metadata.navigation_id = 10;
-  metadata.url = GURL("http://example.com/");
-  metadata.is_cryptographic_scheme = false;
+  FilterNavigationMetadata metadata = CreateMetadata(
+      /*navigation_id=*/10, GURL("http://example.com/"),
+      /*is_cryptographic=*/false);
   metadata.is_http_allowed_for_testing = true;
   metadata.has_user_gesture = true;
 
@@ -475,10 +479,8 @@ TEST_F(FilterTabControllerTest, HttpNavigationWithTestingSwitch) {
               ExtractAnnotationFromUrl(metadata.url, _, metadata.navigation_id))
       .WillOnce(base::test::RunOnceCallback<1>(annotation));
 
-  UrlFilterSuggestion expected_suggestion(UrlFilterSuggestion::Params{
-      .navigation_url = metadata.url,
-      .triggering_navigation_id = metadata.navigation_id,
-      .task_type = "Task1"});
+  UrlFilterSuggestion expected_suggestion =
+      CreateDefaultSuggestion(metadata.navigation_id, metadata.url);
 
   EXPECT_CALL(*mock_generator_,
               GenerateSuggestion(metadata.url, supported_tasks, _,
@@ -560,10 +562,8 @@ TEST_F(FilterTabControllerTest, OnUserDecisionNotifiesService) {
 
 // Tests that FilterTabController wires the suggestion callbacks correctly.
 TEST_F(FilterTabControllerTest, SuggestionCallbacksWiredCorrectly) {
-  FilterNavigationMetadata metadata;
-  metadata.navigation_id = 9;
-  metadata.url = GURL("https://example.com/");
-  metadata.is_cryptographic_scheme = true;
+  FilterNavigationMetadata metadata =
+      CreateMetadata(9, GURL("https://example.com/"));
   metadata.has_user_gesture = true;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion());
@@ -585,11 +585,8 @@ TEST_F(FilterTabControllerTest, SuggestionCallbacksWiredCorrectly) {
               ExtractAnnotationFromUrl(metadata.url, _, metadata.navigation_id))
       .WillOnce(base::test::RunOnceCallback<1>(annotation));
 
-  UrlFilterSuggestion expected_suggestion(UrlFilterSuggestion::Params{
-      .navigation_url = metadata.url,
-      .triggering_navigation_id = metadata.navigation_id,
-      .triggering_host = "example.com",
-      .task_type = "Task1"});
+  UrlFilterSuggestion expected_suggestion =
+      CreateDefaultSuggestion(metadata.navigation_id, metadata.url);
 
   EXPECT_CALL(*mock_generator_,
               GenerateSuggestion(metadata.url, supported_tasks, _,
@@ -632,10 +629,8 @@ TEST_F(FilterTabControllerTest, SuggestionCallbacksWiredCorrectly) {
 TEST_F(FilterTabControllerTest, HistogramLoggingInitialCueAccepted) {
   base::HistogramTester histogram_tester;
 
-  FilterNavigationMetadata metadata;
-  metadata.navigation_id = 1;
-  metadata.url = GURL("https://example.com");
-  metadata.is_cryptographic_scheme = true;
+  FilterNavigationMetadata metadata =
+      CreateMetadata(1, GURL("https://example.com"));
   metadata.has_user_gesture = true;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion());
@@ -656,11 +651,8 @@ TEST_F(FilterTabControllerTest, HistogramLoggingInitialCueAccepted) {
               ExtractAnnotationFromUrl(metadata.url, _, metadata.navigation_id))
       .WillOnce(base::test::RunOnceCallback<1>(annotation));
 
-  UrlFilterSuggestion expected_suggestion(UrlFilterSuggestion::Params{
-      .navigation_url = metadata.url,
-      .triggering_navigation_id = metadata.navigation_id,
-      .triggering_host = "example.com",
-      .task_type = "Task1"});
+  UrlFilterSuggestion expected_suggestion =
+      CreateDefaultSuggestion(metadata.navigation_id, metadata.url);
 
   EXPECT_CALL(*mock_generator_,
               GenerateSuggestion(metadata.url, supported_tasks, _,
@@ -712,10 +704,8 @@ TEST_F(FilterTabControllerTest,
        HistogramLoggingReopenedCueIgnoredOnNavigation) {
   base::HistogramTester histogram_tester;
 
-  FilterNavigationMetadata metadata;
-  metadata.navigation_id = 1;
-  metadata.url = GURL("https://example.com");
-  metadata.is_cryptographic_scheme = true;
+  FilterNavigationMetadata metadata =
+      CreateMetadata(1, GURL("https://example.com"));
   metadata.has_user_gesture = true;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion());
@@ -736,11 +726,8 @@ TEST_F(FilterTabControllerTest,
               ExtractAnnotationFromUrl(metadata.url, _, metadata.navigation_id))
       .WillOnce(base::test::RunOnceCallback<1>(annotation));
 
-  UrlFilterSuggestion expected_suggestion(UrlFilterSuggestion::Params{
-      .navigation_url = metadata.url,
-      .triggering_navigation_id = metadata.navigation_id,
-      .triggering_host = "example.com",
-      .task_type = "Task1"});
+  UrlFilterSuggestion expected_suggestion =
+      CreateDefaultSuggestion(metadata.navigation_id, metadata.url);
 
   EXPECT_CALL(*mock_generator_,
               GenerateSuggestion(metadata.url, supported_tasks, _,
@@ -774,10 +761,8 @@ TEST_F(FilterTabControllerTest,
   std::move(captured_callbacks.on_suggestion_reopened).Run();
 
   // 3. Navigate away (simulates clearing suggestion with kIgnored).
-  FilterNavigationMetadata new_metadata;
-  new_metadata.navigation_id = 2;
-  new_metadata.url = GURL("https://different-example.com");
-  new_metadata.is_cryptographic_scheme = true;
+  FilterNavigationMetadata new_metadata =
+      CreateMetadata(2, GURL("https://different-example.com"));
   new_metadata.has_user_gesture = true;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion()).Times(1);
@@ -812,10 +797,8 @@ TEST_F(FilterTabControllerTest,
        HistogramLoggingReopenedCueIgnoredOnDestruction) {
   base::HistogramTester histogram_tester;
 
-  FilterNavigationMetadata metadata;
-  metadata.navigation_id = 1;
-  metadata.url = GURL("https://example.com");
-  metadata.is_cryptographic_scheme = true;
+  FilterNavigationMetadata metadata =
+      CreateMetadata(1, GURL("https://example.com"));
   metadata.has_user_gesture = true;
 
   EXPECT_CALL(*mock_delegate_, ClearSuggestion());
@@ -836,11 +819,8 @@ TEST_F(FilterTabControllerTest,
               ExtractAnnotationFromUrl(metadata.url, _, metadata.navigation_id))
       .WillOnce(base::test::RunOnceCallback<1>(annotation));
 
-  UrlFilterSuggestion expected_suggestion(UrlFilterSuggestion::Params{
-      .navigation_url = metadata.url,
-      .triggering_navigation_id = metadata.navigation_id,
-      .triggering_host = "example.com",
-      .task_type = "Task1"});
+  UrlFilterSuggestion expected_suggestion =
+      CreateDefaultSuggestion(metadata.navigation_id, metadata.url);
 
   EXPECT_CALL(*mock_generator_,
               GenerateSuggestion(metadata.url, supported_tasks, _,
@@ -886,6 +866,109 @@ TEST_F(FilterTabControllerTest,
   histogram_tester.ExpectUniqueSample(
       kMultistepFilterAcceptanceReopenedCueHistogram,
       SuggestionUserDecision::kIgnored, 1);
+}
+
+// Tests that when navigation finishes with an error page, and there was an
+// applied suggestion, the application outcome is recorded as failure.
+TEST_F(FilterTabControllerTest, NavigationErrorLogsApplicationFailure) {
+  base::HistogramTester histogram_tester;
+  FilterNavigationMetadata metadata = CreateMetadata(
+      /*navigation_id=*/10, GURL("https://example.com/error"),
+      /*is_cryptographic=*/true, /*is_error_page=*/true,
+      /*net_error_code=*/-106, CreateDefaultSuggestion(9));
+
+  ExpectNoExtractionOrSuggestion();
+
+  controller_->OnNavigationFinished(metadata);
+
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterApplicationOutcomeHistogram,
+      MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1);
+  histogram_tester.ExpectUniqueSample(
+      "MultistepFilter.ApplicationOutcome.ByTask.Task1",
+      MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1);
+}
+
+// Tests that when navigation finishes with an insecure scheme (HTTP), and
+// there was an applied suggestion, the application outcome is recorded as
+// failure.
+TEST_F(FilterTabControllerTest, HttpNavigationLogsApplicationFailure) {
+  base::HistogramTester histogram_tester;
+  FilterNavigationMetadata metadata = CreateMetadata(
+      /*navigation_id=*/12, GURL("http://example.com/error"),
+      /*is_cryptographic=*/false, /*is_error_page=*/false,
+      /*net_error_code=*/0, CreateDefaultSuggestion(9));
+  metadata.is_http_allowed_for_testing = false;
+
+  ExpectNoExtractionOrSuggestion();
+
+  controller_->OnNavigationFinished(metadata);
+
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterApplicationOutcomeHistogram,
+      MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1);
+  histogram_tester.ExpectUniqueSample(
+      "MultistepFilter.ApplicationOutcome.ByTask.Task1",
+      MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1);
+}
+
+// Tests that successful extraction and application verification logs success.
+TEST_F(FilterTabControllerTest, SuccessfulApplicationLogsSuccess) {
+  base::HistogramTester histogram_tester;
+  // Set up suggestion
+  UrlFilterSuggestion::Params params;
+  params.navigation_url = GURL("https://example.com/");
+  params.triggering_navigation_id = 10;
+  params.task_type = "Task1";
+  FilterSuggestionCandidateAttribute candidate_attr("key1", u"Label1");
+  FilterAttribute annotation_attr("key1", "value1");
+  FilterAttributeUiLabel label(candidate_attr, annotation_attr);
+  params.attribute_ui_labels.push_back(label);
+  UrlFilterSuggestion suggestion(std::move(params));
+
+  FilterNavigationMetadata metadata = CreateMetadata(
+      /*navigation_id=*/11, GURL("https://example.com/applied"),
+      /*is_cryptographic=*/true, /*is_error_page=*/false,
+      /*net_error_code=*/0, std::move(suggestion));
+  metadata.has_user_gesture = true;
+
+  EXPECT_CALL(*mock_delegate_, ClearSuggestion());
+  EXPECT_CALL(*mock_service_, HasUserProvidedConsent(metadata.navigation_id,
+                                                     metadata.url.GetHost()))
+      .WillOnce(Return(true));
+
+  std::vector<std::string> supported_tasks = {"Task1"};
+  EXPECT_CALL(*mock_annotation_client(),
+              GetSupportedTasks(metadata.url, _, metadata.navigation_id))
+      .WillOnce(base::test::RunOnceCallback<1>(supported_tasks));
+
+  // Set up matching annotation
+  base::Uuid expected_id = base::Uuid::GenerateRandomV4();
+  FilterAttribute attr("key1", "value1");
+  FilterAnnotation annotation(expected_id, "Task1", "example.com",
+                              base::Time::Now(), {attr});
+
+  EXPECT_CALL(*mock_extractor_,
+              ExtractAnnotationFromUrl(metadata.url, _, metadata.navigation_id))
+      .WillOnce(base::test::RunOnceCallback<1>(annotation));
+
+  EXPECT_CALL(*mock_generator_, GenerateSuggestion)
+      .WillOnce(base::test::RunOnceCallback<2>(std::nullopt));
+  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+  EXPECT_CALL(observer_,
+              OnExtractionFinishedForTest(std::optional(expected_id)));
+  EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
+
+  controller_->OnNavigationFinished(metadata);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kMultistepFilterApplicationOutcomeHistogram),
+              BucketsAre(Bucket(
+                  MultistepFilterApplicationOutcome::kAllFiltersApplied, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "MultistepFilter.ApplicationOutcome.ByTask.Task1"),
+              BucketsAre(Bucket(
+                  MultistepFilterApplicationOutcome::kAllFiltersApplied, 1)));
 }
 
 }  // namespace

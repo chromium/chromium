@@ -5,12 +5,17 @@
 #include "components/multistep_filter/core/logging/multistep_filter_metrics_tracker.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/multistep_filter/core/data_models/filter_navigation_metadata.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
 #include "components/multistep_filter/core/logging/multistep_filter_metrics.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace multistep_filter {
 namespace {
+
+using ::base::Bucket;
+using ::base::BucketsAre;
 
 UrlFilterSuggestion CreateSuggestion(std::string task_type) {
   UrlFilterSuggestion::Params params;
@@ -149,6 +154,100 @@ TEST(MultistepFilterMetricsTrackerTest,
       SuggestionUserDecision::kIgnored, 1);
   histogram_tester.ExpectUniqueSample(kMultistepFilterAcceptanceHistogram,
                                       SuggestionUserDecision::kIgnored, 1);
+}
+
+// Verifies that successful suggestion application logs kAllFiltersApplied.
+TEST(MultistepFilterMetricsTrackerTest,
+     SuggestionApplicationSuccessRecordsSample) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+  FilterNavigationMetadata metadata;
+  metadata.applied_suggestion = suggestion;
+
+  MultistepFilterMetricsTracker tracker;
+  tracker.OnNavigationFinished(metadata);
+  tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+      /*was_applied_successfully=*/true);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kMultistepFilterApplicationOutcomeHistogram),
+              BucketsAre(Bucket(
+                  MultistepFilterApplicationOutcome::kAllFiltersApplied, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "MultistepFilter.ApplicationOutcome.ByTask.SEARCH_ACCOMMODATIONS"),
+      BucketsAre(
+          Bucket(MultistepFilterApplicationOutcome::kAllFiltersApplied, 1)));
+}
+
+// Tests that failed suggestion application logs kNotAllFiltersApplied.
+TEST(MultistepFilterMetricsTrackerTest,
+     SuggestionApplicationFailureRecordsSample) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+  FilterNavigationMetadata metadata;
+  metadata.applied_suggestion = suggestion;
+
+  MultistepFilterMetricsTracker tracker;
+  tracker.OnNavigationFinished(metadata);
+  tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+      /*was_applied_successfully=*/false);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kMultistepFilterApplicationOutcomeHistogram),
+      BucketsAre(
+          Bucket(MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "MultistepFilter.ApplicationOutcome.ByTask.SEARCH_ACCOMMODATIONS"),
+      BucketsAre(
+          Bucket(MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1)));
+}
+
+// Tests that calling annotation extraction finished without a session records
+// no samples.
+TEST(MultistepFilterMetricsTrackerTest,
+     ApplicationFinishedWithoutSessionRecordsNoSamples) {
+  base::HistogramTester histogram_tester;
+  MultistepFilterMetricsTracker tracker;
+  tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+      /*was_applied_successfully=*/true);
+
+  histogram_tester.ExpectTotalCount(kMultistepFilterApplicationOutcomeHistogram,
+                                    0);
+}
+
+// Verifies that if a new navigation finishes while we were waiting for
+// extraction of a previously applied suggestion, that application session
+// is flushed as a failure.
+TEST(MultistepFilterMetricsTrackerTest,
+     ApplicationInterruptedByNewNavigationRecordsFailure) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+
+  MultistepFilterMetricsTracker tracker;
+  // 1. Landing navigation finishes (applying the suggestion).
+  FilterNavigationMetadata landing_metadata;
+  landing_metadata.applied_suggestion = suggestion;
+  tracker.OnNavigationFinished(landing_metadata);
+
+  // 3. Before extraction finishes, a new navigation finishes (e.g. user typed
+  // new URL).
+  FilterNavigationMetadata interrupt_metadata;
+  tracker.OnNavigationFinished(interrupt_metadata);
+
+  // The session should be immediately flushed as failure.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kMultistepFilterApplicationOutcomeHistogram),
+      BucketsAre(
+          Bucket(MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "MultistepFilter.ApplicationOutcome.ByTask.SEARCH_ACCOMMODATIONS"),
+      BucketsAre(
+          Bucket(MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1)));
 }
 
 }  // namespace

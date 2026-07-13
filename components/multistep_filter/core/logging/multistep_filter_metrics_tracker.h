@@ -26,29 +26,25 @@ class MultistepFilterMetricsTracker {
       const MultistepFilterMetricsTracker&) = delete;
   ~MultistepFilterMetricsTracker();
 
-  // --- 1. NAVIGATION START ---
-  // Triggered at the start of ANY new navigation in the tab.
-  void OnNavigationStarted(bool is_back_navigation);
-
-  // --- 2. NAVIGATION FINISH ---
+  // --- 1. NAVIGATION FINISH ---
   // Triggered when ANY navigation in the tab completes (or fails).
   void OnNavigationFinished(const FilterNavigationMetadata& metadata);
 
-  // --- 3. SUGGESTION IMPRESSION LIFE-CYCLE ---
+  // --- 2. SUGGESTION IMPRESSION LIFE-CYCLE ---
   // Triggered when the suggestion UI cue is shown to the user (initial bubble
   // or page action icon). Starts the impression tracking session.
   void OnSuggestionShown(const UrlFilterSuggestion& suggestion);
 
-  // --- 3.1. SUGGESTION REOPEN ---
+  // --- 2.1. SUGGESTION REOPEN ---
   // Triggered once if the user re-opens the cue from the Omnibox.
   void OnSuggestionReopened();
 
-  // --- 3.2. SUGGESTION USER INTERACTION ---
+  // --- 2.2. SUGGESTION USER INTERACTION ---
   // Triggered when the user interacts with the suggestion UI or a
   // navigation/tab close discards the suggestion.
   void OnSuggestionUserInteraction(SuggestionUserDecision decision);
 
-  // --- 4. SUGGESTION APPLICATION LIFE-CYCLE ---
+  // --- 3. SUGGESTION APPLICATION LIFE-CYCLE ---
   // Triggered when the suggestion application extraction is finished.
   // `was_applied_successfully` is true if the navigation completed successfully
   // and the extracted annotations matched the filters the user decided to apply

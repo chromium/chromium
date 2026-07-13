@@ -78,6 +78,7 @@ void LogSuggestionGenerationStarted(MultistepFilterLogRouter* log_router,
 }
 void LogSuggestionApplicationOutcome(
     MultistepFilterLogRouter* log_router,
+    MultistepFilterMetricsTracker& metrics_tracker,
     const FilterNavigationMetadata& metadata,
     const std::optional<UrlFilterSuggestion>& suggested_filters,
     const std::optional<FilterAnnotation>& extracted_annotation) {
@@ -95,6 +96,8 @@ void LogSuggestionApplicationOutcome(
         << LogDetail{"is_error_page", metadata.is_error_page_navigation}
         << LogDetail{"net_error_code", metadata.net_error_code}
         << LogDetail{"http_response_code", metadata.http_response_code};
+    metrics_tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+        /*was_applied_successfully=*/false);
     return;
   }
 
@@ -103,12 +106,13 @@ void LogSuggestionApplicationOutcome(
                          LogEventType::kSuggestionApplied,
                          metadata.url.GetHost())
         << LogDetail{"application_outcome", "error_no_extracted_annotations"};
+    metrics_tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+        /*was_applied_successfully=*/false);
     return;
   }
   const FilterApplicationVerifier::Result result =
       FilterApplicationVerifier::Verify(*suggested_filters,
                                         *extracted_annotation);
-
   switch (result.outcome) {
     case FilterApplicationVerifier::Result::Outcome::kNoExtractedAnnotations:
       MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
@@ -137,6 +141,8 @@ void LogSuggestionApplicationOutcome(
                        base::JoinString(result.missing_keys, ", ")};
       break;
   }
+  metrics_tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+      result.is_success());
 }
 }  // namespace
 
@@ -309,7 +315,7 @@ void FilterTabController::OnSuggestionGenerated(
 void FilterTabController::OnExtractionFinished(
     const FilterNavigationMetadata& metadata,
     std::optional<FilterAnnotation> annotation) {
-  LogSuggestionApplicationOutcome(log_router_, metadata,
+  LogSuggestionApplicationOutcome(log_router_, metrics_tracker_, metadata,
                                   metadata.applied_suggestion, annotation);
   if (observer_for_test_) {
     observer_for_test_->OnExtractionFinishedForTest(  // IN-TEST

@@ -91,6 +91,46 @@ found in the LICENSE file.
   <token key="TaskType" variants="MultistepFilterTaskType"/>
 </histogram>
 
+<histogram name="MultistepFilter.ApplicationOutcome"
+    enum="MultistepFilterApplicationOutcome" expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Records the overall technical filter application outcome after a user
+    accepts a Multistep Filter suggestion. &quot;All filter facets successfully
+    applied&quot; (kAllFiltersApplied) means that after the navigation
+    completed, the landing page's URL was successfully parsed, and the extracted
+    filter attributes exactly matched the suggested filters (same keys and
+    values). &quot;Not successfully applied&quot; (kNotAllFiltersApplied) covers
+    cases where: - The navigation failed (error page) or was to an unsupported
+    scheme. - No filter attributes could be extracted from the landing page. -
+    The number of extracted attributes did not match the suggested count. -
+    There was a mismatch in the keys or values of the filters (e.g. a different
+    brand or price range was applied than what was suggested).
+  </summary>
+</histogram>
+
+<histogram name="MultistepFilter.ApplicationOutcome.ByTask.{TaskType}"
+    enum="MultistepFilterApplicationOutcome" expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Records the overall technical filter application outcome after a user
+    accepts a Multistep Filter suggestion for task type {TaskType}. &quot;All
+    filter facets successfully applied&quot; (kAllFiltersApplied) means that
+    after the navigation completed, the landing page's URL was successfully
+    parsed, and the extracted filter attributes exactly matched the suggested
+    filters (same keys and values). &quot;Not successfully applied&quot;
+    (kNotAllFiltersApplied) covers cases where: - The navigation failed (error
+    page) or was to an unsupported scheme. - No filter attributes could be
+    extracted from the landing page. - The number of extracted attributes did
+    not match the suggested count. - There was a mismatch in the keys or values
+    of the filters (e.g. a different brand or price range was applied than what
+    was suggested).
+  </summary>
+  <token key="TaskType" variants="MultistepFilterTaskType"/>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
