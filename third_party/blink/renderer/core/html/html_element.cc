@@ -1441,7 +1441,7 @@ class ScopedPopoverHiding {
 bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
                                  ExceptionState* exception_state,
                                  bool include_event_handler_text,
-                                 Document* expected_document) const {
+                                 Document* expected_document) {
   CHECK_NE(action, PopoverTriggerAction::kNone);
 
   auto maybe_throw_exception = [&exception_state, &include_event_handler_text](
@@ -1505,9 +1505,20 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
       !expected_document && action == PopoverTriggerAction::kShow &&
       (GetDocument().PopoverShowing() ||
        GetDocument().PopoverHidingNestingCount())) {
-    maybe_throw_exception(
-        DOMExceptionCode::kInvalidStateError,
-        "Invalid to show a popover during another show operation");
+    if (RuntimeEnabledFeatures::PopoverHintNestedShowExceptionEnabled()) {
+      maybe_throw_exception(
+          DOMExceptionCode::kInvalidStateError,
+          "Invalid to show a popover during another show operation");
+    } else {
+      // The spec says to throw an exception here, but doing so causes an issue:
+      // https://crbug.com/527495812
+      AddConsoleMessage(
+          mojom::blink::ConsoleMessageSource::kJavaScript,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "It is invalid to show a popover during another show operation. Note "
+          "that this behavior has recently changed, and is being discussed here: "
+          "https://github.com/whatwg/html/pull/12345#issuecomment-4835361499");
+    }
     return false;
   }
 

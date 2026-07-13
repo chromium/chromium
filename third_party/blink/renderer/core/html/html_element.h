@@ -297,7 +297,7 @@ class CORE_EXPORT HTMLElement : public Element {
   bool IsPopoverReady(PopoverTriggerAction action,
                       ExceptionState* exception_state,
                       bool include_event_handler_text,
-                      Document* expected_document) const;
+                      Document* expected_document);
   bool togglePopover(ExceptionState& exception_state);
   bool togglePopover(V8UnionBooleanOrTogglePopoverOptions* options_or_force,
                      ExceptionState& exception_state);
