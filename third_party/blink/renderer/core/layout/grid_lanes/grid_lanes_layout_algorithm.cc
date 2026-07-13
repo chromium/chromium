@@ -483,9 +483,6 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
           ? container_stacking_axis_available_size
           : stacking_axis_size_;
 
-  ApplyStackingAxisAlignment(running_positions, effective_stacking_axis_size,
-                             stacking_axis_gap);
-
   const auto& content_alignment =
       is_for_columns ? style.AlignContent() : style.JustifyContent();
 
@@ -541,6 +538,9 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
         align_content_offset, /*is_block_direction=*/is_for_columns,
         additional_offset_adjustment);
   }
+
+  ApplyStackingAxisAlignment(running_positions, effective_stacking_axis_size,
+                             stacking_axis_gap);
 }
 
 void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(

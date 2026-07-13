@@ -1031,6 +1031,28 @@ crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/grid-lanes-subgri
 # Baseline subgrid failures.
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/grid-subgridded-to-grid-lanes/alignment/column-subgrid-alignment-in-subgridded-axis-002.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/grid-subgridded-to-grid-lanes/alignment/row-subgrid-alignment-in-subgridded-axis-002.html [ Failure ]
+# Dense-packing alignment tests are not expected to pass yet.
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/column-dense-packing-align-items-001.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/column-dense-packing-align-items-002.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/column-dense-packing-align-items-multi-span-001.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/column-dense-packing-align-items-multi-span-002.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/column-dense-packing-align-self-001.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/column-dense-packing-align-self-002.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/column-dense-packing-align-self-multi-span-001.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/column-dense-packing-align-self-multi-span-002.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/row-dense-packing-justify-items-001.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/row-dense-packing-justify-items-002.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/row-dense-packing-justify-items-multi-span-001.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/row-dense-packing-justify-items-multi-span-002.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/row-dense-packing-justify-self-001.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/row-dense-packing-justify-self-002.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/row-dense-packing-justify-self-multi-span-001.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/row-dense-packing-justify-self-multi-span-002.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/column-fill-reverse-dense-packing-align-items-multi-span-001.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/column-track-reverse-dense-packing-align-items-multi-span-001.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/row-fill-reverse-dense-packing-justify-items-multi-span-001.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/row-track-reverse-dense-packing-justify-items-multi-span-001.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/alignment/row-track-reverse-dense-packing-justify-self-multi-span-001.html [ Failure ]
 
 # external/wpt/css/css-fonts/... tests triaged away from the default WPT bug ID
 crbug.com/641861 [ Mac ] external/wpt/css/css-fonts/font-family-name-025.html [ Failure Timeout ]
