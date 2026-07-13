@@ -225,6 +225,7 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver,
   // Minimum size bounds of omnibox popup.
   gfx::Size minimum_size_;
 
+  base::WeakPtrFactory<OmniboxPopupPresenterBase> metrics_weak_factory_{this};
   base::WeakPtrFactory<OmniboxPopupPresenterBase> weak_factory_{this};
 };
 

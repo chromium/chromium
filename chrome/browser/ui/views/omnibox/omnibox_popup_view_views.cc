@@ -359,6 +359,9 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
       if (!widget_->ShouldHandleNativeWidgetActivationChanged(false)) {
         return;
       }
+      // Drop stale metrics callbacks.
+      metrics_weak_factory_.InvalidateWeakPtrs();
+
       widget_->CloseAnimated();  // This will eventually delete the popup.
       widget_->RemoveObserver(&widget_observer_helper_);
       widget_.reset();
@@ -390,6 +393,9 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
   // Ensure that we have an existing popup widget prior to creating the result
   // views to ensure the proper initialization of the views hierarchy.
   if (!was_open) {
+    // Drop stale metrics callbacks.
+    metrics_weak_factory_.InvalidateWeakPtrs();
+
     views::Widget* popup_parent = location_bar_view_->GetWidget();
 
     // If the popup is currently closed, we need to create it.
@@ -597,13 +603,16 @@ void OmniboxPopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
     // has been created.
     widget_->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
         base::BindOnce(&OmniboxPopupViewViews::OnPopupFirstPaintPresented,
-                       weak_ptr_factory_.GetWeakPtr(),
+                       metrics_weak_factory_.GetWeakPtr(),
                        controller()
                            ->autocomplete_controller()
                            ->result()
                            .result_ready_time(),
                        popup_create_start_time_));
     popup_create_start_time_.reset();
+  } else {
+    // Drop metrics callbacks if the widget is not visible.
+    metrics_weak_factory_.InvalidateWeakPtrs();
   }
 }
 
@@ -613,6 +622,9 @@ void OmniboxPopupViewViews::OnWidgetDestroying(views::Widget* widget) {
     widget_->RemoveObserver(&widget_observer_helper_);
     widget_ = nullptr;
   }
+  // Drop metrics callbacks when the widget is destroyed.
+  metrics_weak_factory_.InvalidateWeakPtrs();
+
   UpdateAccessibleStates();
 
   // Update the popup state manager if widget was destroyed externally, e.g., by
