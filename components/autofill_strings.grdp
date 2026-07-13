@@ -810,26 +810,8 @@
   </if>
 
   <!-- TODO(crbug.com/481979475): Make strings translatable -->
-  <message name="IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_TITLE" desc="Title for the source information section in the flyout menu." translateable="false">
-    About
-  </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_DESCRIPTION" desc="Template for source attribution in the flyout menu. $1 is the data source name" translateable="false">
-    Chrome found this in your <ph name="SOURCE_NAME">$1<ex>Calendar</ex></ph>.
-  </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_SOURCE_GMAIL" desc="Data source name for Gmail in source attribution." translateable="false">
-    Gmail
-  </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_SOURCE_CALENDAR" desc="Data source name for Calendar in source attribution." translateable="false">
-    Calendar
-  </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_SOURCE_PHOTOS" desc="Data source name for Photos in source attribution." translateable="false">
-    Photos
-  </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_SOURCE_AMBIENT" desc="Data source name for Ambient Data in source attribution." translateable="false">
-    Ambient Data
-  </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_SOURCE_LIVETABS" desc="Data source name for Live Tabs in source attribution." translateable="false">
-    Live Tabs
+  <message name="IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE" desc="Attribution text for Gemini-sourced results.">
+    Suggested by Gemini
   </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_NO_DATA" desc="Message shown when no data is found in @memory search." translateable="false">
     Couldn't find this in your info

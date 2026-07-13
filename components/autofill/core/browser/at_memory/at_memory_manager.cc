@@ -77,30 +77,6 @@ SuggestionType GetManageSuggestionType(MemoryDataType type) {
   return SuggestionType::kManageAutofillAi;
 }
 
-std::u16string GetSourceDescriptionText(
-    accessibility_annotator::MemoryEntrySourceType type) {
-  int source_string_id = [type]() {
-    switch (type) {
-      case accessibility_annotator::MemoryEntrySourceType::kGmail:
-        return IDS_AUTOFILL_AT_MEMORY_SOURCE_GMAIL;
-      case accessibility_annotator::MemoryEntrySourceType::kCalendar:
-        return IDS_AUTOFILL_AT_MEMORY_SOURCE_CALENDAR;
-      case accessibility_annotator::MemoryEntrySourceType::kPhotos:
-        return IDS_AUTOFILL_AT_MEMORY_SOURCE_PHOTOS;
-      case accessibility_annotator::MemoryEntrySourceType::kAmbient:
-        return IDS_AUTOFILL_AT_MEMORY_SOURCE_AMBIENT;
-      case accessibility_annotator::MemoryEntrySourceType::kLiveTabs:
-        return IDS_AUTOFILL_AT_MEMORY_SOURCE_LIVETABS;
-      case accessibility_annotator::MemoryEntrySourceType::kAutofill:
-        break;
-    }
-    NOTREACHED();
-  }();
-  return l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_DESCRIPTION,
-      l10n_util::GetStringUTF16(source_string_id));
-}
-
 Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
     MemoryDataType type,
     const std::variant<std::monostate, std::string, int64_t>& identifier) {
@@ -383,12 +359,11 @@ std::vector<Suggestion> CreateSecondarySuggestions(
   return children;
 }
 
-Suggestion CreateSourceAttributionSuggestion(
-    accessibility_annotator::MemoryEntrySourceType type) {
-  Suggestion source_info(l10n_util::GetStringUTF16(
-                             IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_TITLE),
-                         SuggestionType::kAtMemorySearchResult);
-  source_info.labels = {{Suggestion::Text(GetSourceDescriptionText(type))}};
+Suggestion CreateSourceAttributionSuggestion() {
+  Suggestion source_info(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE),
+      SuggestionType::kAtMemorySearchResult);
   source_info.acceptability = Suggestion::Acceptability::kUnacceptable;
   source_info.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   return source_info;
@@ -416,7 +391,7 @@ std::vector<Suggestion> CreateFooterSuggestions(
       separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
       std::vector<Suggestion> result;
       result.reserve(3);
-      result.emplace_back(CreateSourceAttributionSuggestion(source.type));
+      result.emplace_back(CreateSourceAttributionSuggestion());
       result.emplace_back(std::move(separator));
       result.emplace_back(CreateManageEnhancedAutofillSuggestion());
       return result;

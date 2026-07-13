@@ -899,21 +899,22 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenFirstPartySources) {
 
   SetupMockAtMemoryQueryService(u"shoe size", std::move(search_results));
 
-  std::u16string expected_label = l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_DESCRIPTION,
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_SOURCE_GMAIL));
-
   auto matcher = ElementsAre(AllOf(
       HasMainText(u"42"),
-      Field(&Suggestion::children,
-            ElementsAre(
-                AllOf(HasMainText(u"example.com"), HasLabel(u"Store")),
-                AllOf(HasMainText(u"Marian Paździoch"), HasLabel(u"Name")),
-                Field(&Suggestion::type, SuggestionType::kSeparator),
-                AllOf(HasMainText(u"About"), HasLabel(expected_label)),
-                Field(&Suggestion::type, SuggestionType::kSeparator),
-                Field(&Suggestion::type,
-                      SuggestionType::kManageEnhancedAutofill)))));
+      Field(
+          &Suggestion::children,
+          ElementsAre(
+              AllOf(HasMainText(u"example.com"), HasLabel(u"Store")),
+              AllOf(HasMainText(u"Marian Paździoch"), HasLabel(u"Name")),
+              Field(&Suggestion::type, SuggestionType::kSeparator),
+              AllOf(
+                  HasMainText(l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE)),
+                  Field(&Suggestion::type,
+                        SuggestionType::kAtMemorySearchResult)),
+              Field(&Suggestion::type, SuggestionType::kSeparator),
+              Field(&Suggestion::type,
+                    SuggestionType::kManageEnhancedAutofill)))));
 
   // The first call notifies the UI that search has started (clearing current
   // suggestions). The second call provides the actual results.
