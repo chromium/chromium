@@ -483,8 +483,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
       &sign_data,
       crypto::SHA256Hash(UNSAFE_TODO(base::span(
           client_data->pbClientDataJSON, client_data->cbClientDataJSON))));
-  result->signature = registration->private_key->Sign(UNSAFE_TODO(
-      base::span<const uint8_t>{sign_data.data(), sign_data.size()}));
+  result->signature = registration->private_key->Sign(sign_data);
 
   // Fill in the WEBAUTHN_ASSERTION struct returned to the caller.
   result->assertion = {};
