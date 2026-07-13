@@ -68,15 +68,6 @@
     "dependencies": ["manifest:action"],
     "contexts": ["privileged_extension"]
   },
-  "action.isEnabled": {
-    "channel": "stable"
-  },
-  "action.getBadgeTextColor": {
-    "channel": "stable"
-  },
-  "action.setBadgeTextColor": {
-    "channel": "stable"
-  },
   "activityLogPrivate": [{
     "dependencies": ["permission:activityLogPrivate"],
     "contexts": ["privileged_extension"]
