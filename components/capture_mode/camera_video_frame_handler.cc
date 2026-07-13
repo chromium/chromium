@@ -324,7 +324,8 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
 
     // Since this is the first time we create the `shared_image_`, we need to
     // guarantee that the shared image is created before it is used.
-    shared_image_sync_token_ = shared_image_interface->GenVerifiedSyncToken();
+    shared_image_sync_token_ = shared_image_->creation_sync_token();
+    shared_image_interface->VerifySyncToken(shared_image_sync_token_);
 
     should_create_shared_image_ = false;
     return true;

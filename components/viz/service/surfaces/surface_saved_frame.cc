@@ -341,7 +341,8 @@ void SurfaceSavedFrame::CompleteSavedFrameForTesting() {
             {SinglePlaneFormat::kBGRA_8888, kDefaultTextureSizeForTesting,
              gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
              "SurfaceSavedFrameForTesting"});
-    result->sync_token = shared_image_interface_->GenVerifiedSyncToken();
+    result->sync_token = result->shared_image->creation_sync_token();
+    shared_image_interface_->VerifySyncToken(result->sync_token);
     result->release_callback =
         base::DoNothingWithBoundArgs(result->shared_image);
   }
