@@ -98,16 +98,20 @@ IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, ServiceExistForBrowserTypes) {
   EXPECT_TRUE(app_window_features->toast_service());
   EXPECT_TRUE(app_window_features->toast_controller());
 
-  BrowserWindowFeatures* const pip_window_features =
+  Browser* const pip_browser =
       Browser::Create(Browser::CreateParams::CreateForPictureInPicture(
-                          "test_app_name", false, profile, false))
-          ->browser_window_features();
+          "test_app_name", false, profile, false));
+  AddBlankTabAndShow(pip_browser);
+  BrowserWindowFeatures* const pip_window_features =
+      pip_browser->browser_window_features();
   EXPECT_FALSE(pip_window_features->toast_service());
   EXPECT_FALSE(pip_window_features->toast_controller());
 
+  Browser* const devtools_browser =
+      Browser::Create(Browser::CreateParams::CreateForDevTools(profile));
+  AddBlankTabAndShow(devtools_browser);
   BrowserWindowFeatures* const devtools_window_features =
-      Browser::Create(Browser::CreateParams::CreateForDevTools(profile))
-          ->browser_window_features();
+      devtools_browser->browser_window_features();
   EXPECT_FALSE(devtools_window_features->toast_service());
   EXPECT_FALSE(devtools_window_features->toast_controller());
 }
