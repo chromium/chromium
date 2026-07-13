@@ -3056,6 +3056,17 @@ shown properly on the user-facing crash UI.
   <int value="50" label="Error - Not Container"/>
 </enum>
 
+<!-- LINT.IfChange(DeclarativePerformanceObserverStoreReadResult) -->
+
+<enum name="DeclarativePerformanceObserverStoreReadResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed DB Initialization"/>
+  <int value="2" label="Failed SQL Execution"/>
+  <int value="3" label="Failed JSON Deserialization/Parsing"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/declarative_performance_observer/declarative_performance_observer_store.cc) -->
+
 <!-- LINT.IfChange(DeclarativePerformanceObserverStoreReportResult) -->
 
 <enum name="DeclarativePerformanceObserverStoreReportResult">
