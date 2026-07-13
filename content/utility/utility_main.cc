@@ -28,6 +28,7 @@
 #include "content/child/child_process.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
+#include "content/common/skia_utils.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -270,6 +271,11 @@ int UtilityMain(MainFunctionParams parameters) {
   const std::string utility_sub_type =
       parameters.command_line->GetSwitchValueASCII(switches::kUtilitySubType);
   SetUtilityThreadName(utility_sub_type);
+
+  // Some utility services (e.g. data_decoder, print_compositor,
+  // paint_preview_compositor) decode images via Skia and need the same codec
+  // configuration as the browser/renderer/GPU processes.
+  InitializeSkiaLite();
 
   if (parameters.command_line->HasSwitch(switches::kWaitForDebugger)) {
     base::debug::WaitForDebugger(/*wait_seconds=*/60, /*silent=*/true);

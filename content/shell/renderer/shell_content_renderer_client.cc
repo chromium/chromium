@@ -24,6 +24,7 @@
 #include "components/surface_embed/renderer/create_plugin.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
 #include "content/common/pseudonymization_salt.h"
+#include "content/common/skia_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/pseudonymization_util.h"
 #include "content/public/common/web_identity.h"
@@ -158,6 +159,10 @@ class TestRendererServiceImpl : public mojom::TestService {
   void IsPseudonymizationSaltInitialized(
       IsPseudonymizationSaltInitializedCallback callback) override {
     std::move(callback).Run(content::IsSaltInitialized());
+  }
+
+  void IsSkiaInitialized(IsSkiaInitializedCallback callback) override {
+    std::move(callback).Run(IsSkiaInitializedForTesting());
   }
 
   void PassWriteableFile(base::File file,

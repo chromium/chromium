@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "components/services/storage/test_api/test_api.h"
 #include "content/common/pseudonymization_salt.h"
+#include "content/common/skia_utils.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/pseudonymization_util.h"
@@ -149,6 +150,10 @@ class TestUtilityServiceImpl : public mojom::TestService {
   void IsPseudonymizationSaltInitialized(
       IsPseudonymizationSaltInitializedCallback callback) override {
     std::move(callback).Run(content::IsSaltInitialized());
+  }
+
+  void IsSkiaInitialized(IsSkiaInitializedCallback callback) override {
+    std::move(callback).Run(IsSkiaInitializedForTesting());
   }
 
   void PassWriteableFile(base::File file,

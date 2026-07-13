@@ -61,6 +61,9 @@ interface TestService {
   // Returns the pseudonymization salt value directly.
   GetPseudonymizationSalt() => (uint32 salt);
 
+  // Returns whether Skia has been initialized in this process.
+  IsSkiaInitialized() => (bool is_initialized);
+
   // Returns whether the pseudonymization salt has been initialized.
   IsPseudonymizationSaltInitialized() => (bool is_initialized);
 

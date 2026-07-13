@@ -29,9 +29,7 @@ namespace {
 // allocation that exceeds this limit.
 constexpr size_t kImageCacheSingleAllocationByteLimit = 64 * 1024 * 1024;
 
-}  // namespace
-
-namespace {
+bool g_skia_initialized = false;
 
 void ConfigureSkiaKillSwitches() {
   // Configure the ICC profile parser kill-switch early, before any image
@@ -49,6 +47,8 @@ void ConfigureSkiaKillSwitches() {
   // Stable.
   SkExif::ForceSkExif(
       base::FeatureList::IsEnabled(blink::features::kForceSkExifCppParsing));
+
+  g_skia_initialized = true;
 }
 
 }  // namespace
@@ -103,6 +103,10 @@ void InitializeSkia() {
 
   SkGraphics::SetResourceCacheSingleAllocationByteLimit(
       kImageCacheSingleAllocationByteLimit);
+}
+
+bool IsSkiaInitializedForTesting() {
+  return g_skia_initialized;
 }
 
 }  // namespace content

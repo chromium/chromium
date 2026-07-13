@@ -189,6 +189,13 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
         base::Unretained(this)));
   }
 
+  void RunSkiaInitializedTest() {
+    CHECK_CURRENTLY_ON(BrowserThread::UI);
+    service_->IsSkiaInitialized(
+        base::BindOnce(&UtilityProcessHostBrowserTest::OnSkiaInitializedChecked,
+                       base::Unretained(this)));
+  }
+
  protected:
   void DoneRunning(base::OnceClosure quit_closure) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -227,6 +234,14 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     EXPECT_TRUE(is_initialized)
         << "Pseudonymization salt should be initialized in the child process";
+    ResetService();
+    GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(done_closure_));
+  }
+
+  void OnSkiaInitializedChecked(bool is_initialized) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    EXPECT_TRUE(is_initialized)
+        << "Skia should be initialized in the child process";
     ResetService();
     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(done_closure_));
   }
@@ -307,6 +322,15 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchProcess) {
   RunUtilityProcess(
       DefaultOptions(),
       base::BindOnce(&UtilityProcessHostBrowserTest::RunBasicPingPongTest,
+                     base::Unretained(this)));
+}
+
+// Tests that Skia is initialized in utility processes so that image decoding
+// services pick up the same codec configuration as other process types.
+IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, SkiaInitialized) {
+  RunUtilityProcess(
+      DefaultOptions(),
+      base::BindOnce(&UtilityProcessHostBrowserTest::RunSkiaInitializedTest,
                      base::Unretained(this)));
 }
 
