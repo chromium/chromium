@@ -97,6 +97,10 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
             mDelegate.changeZoomLevel(getNextZoomLevel(currentZoomFactor, false));
         } else if (actionId == R.id.fit_to_page_button) {
             boolean showFitToHeight = mModel.get(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON);
+            PdfUtils.recordToolbarAction(
+                    showFitToHeight
+                            ? PdfUtils.PdfToolbarAction.FIT_TO_PAGE_VERTICAL
+                            : PdfUtils.PdfToolbarAction.FIT_TO_PAGE_HORIZONTAL);
             mDelegate.toggleFitToPage(showFitToHeight, currentPageNumber - 1);
             mModel.set(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON, !showFitToHeight);
         } else if (actionId == R.id.download_button) {
@@ -149,6 +153,12 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
                                         int currentPageNumber =
                                                 mModel.get(
                                                         PdfToolbarProperties.CURRENT_PAGE_NUMBER);
+                                        PdfUtils.recordToolbarAction(
+                                                showFitToHeight
+                                                        ? PdfUtils.PdfToolbarAction
+                                                                .FIT_TO_PAGE_VERTICAL
+                                                        : PdfUtils.PdfToolbarAction
+                                                                .FIT_TO_PAGE_HORIZONTAL);
                                         mDelegate.toggleFitToPage(
                                                 showFitToHeight, currentPageNumber - 1);
                                         mModel.set(
@@ -285,6 +295,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
     private void onPageNumberSubmitted(int pageNumber) {
         int totalPageCount = mModel.get(PdfToolbarProperties.TOTAL_PAGE_COUNT);
         if (pageNumber >= 1 && pageNumber <= totalPageCount) {
+            PdfUtils.recordToolbarAction(PdfUtils.PdfToolbarAction.PAGE_NAVIGATION);
             // Convert to 0-based index for the delegate.
             mDelegate.navigateToPage(pageNumber - 1);
         }

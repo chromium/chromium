@@ -209,6 +209,71 @@ public class PdfToolbarCoordinatorUnitTest {
     }
 
     @Test
+    public void testFitToPageToggle_recordsMetric() {
+        View fitToPageButton = mPdfPageView.findViewById(R.id.fit_to_page_button);
+
+        // First click (vertical)
+        var histogramWatcherVertical =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.ToolbarAction", PdfToolbarAction.FIT_TO_PAGE_VERTICAL);
+        fitToPageButton.performClick();
+        histogramWatcherVertical.assertExpected();
+
+        // Second click (horizontal)
+        var histogramWatcherHorizontal =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.ToolbarAction", PdfToolbarAction.FIT_TO_PAGE_HORIZONTAL);
+        fitToPageButton.performClick();
+        histogramWatcherHorizontal.assertExpected();
+    }
+
+    @Test
+    public void testFitToPageViaMenu_recordsMetric() {
+        PdfToolbar toolbar = mPdfPageView.findViewById(R.id.pdf_toolbar);
+        float density = mActivity.getResources().getDisplayMetrics().density;
+        // Layout narrow to hide fit-to-page button and show it in the menu
+        int widthPx = (int) (680 * density);
+        toolbar.layout(0, 0, widthPx, 56);
+
+        View moreMenuButton = mPdfPageView.findViewById(R.id.more_menu_button);
+        moreMenuButton.performClick();
+
+        View contentView = mSpyPopupWindow.getContentView();
+        android.widget.ListView listView = contentView.findViewById(R.id.menu_list);
+        View fitItemView = null;
+        for (int i = 0; i < listView.getAdapter().getCount(); i++) {
+            View itemView = listView.getAdapter().getView(i, null, listView);
+            TextView textView = itemView.findViewById(R.id.menu_item_text);
+            String text = textView.getText().toString();
+            if (text.equals(mActivity.getString(R.string.pdf_fit_height))
+                    || text.equals(mActivity.getString(R.string.pdf_fit_width))) {
+                fitItemView = itemView;
+                break;
+            }
+        }
+        org.junit.Assert.assertNotNull("Fit to page menu item should be found", fitItemView);
+
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.ToolbarAction", PdfToolbarAction.FIT_TO_PAGE_VERTICAL);
+        fitItemView.performClick();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testPageNumberEdit_recordsMetric() {
+        EditText currentPage = mPdfPageView.findViewById(R.id.current_page);
+        assertTrue(currentPage.requestFocus());
+        currentPage.setText("50");
+
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.ToolbarAction", PdfToolbarAction.PAGE_NAVIGATION);
+        currentPage.onEditorAction(android.view.inputmethod.EditorInfo.IME_ACTION_GO);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testOnDocumentLoaded() {
         // Initial state from constructor is 99/100
         mPdfToolbarCoordinator.onDocumentLoaded(50, "test_title.pdf");

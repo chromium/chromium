@@ -298,6 +298,9 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Other"/>
   <int value="1" label="Zoom In"/>
   <int value="2" label="Zoom Out"/>
+  <int value="3" label="Fit To Page Vertical"/>
+  <int value="4" label="Fit To Page Horizontal"/>
+  <int value="5" label="Page Navigation"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/pdf/java/src/org/chromium/chrome/browser/pdf/PdfUtils.java:PdfToolbarAction) -->

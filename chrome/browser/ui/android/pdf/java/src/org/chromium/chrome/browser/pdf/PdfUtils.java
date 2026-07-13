@@ -80,6 +80,9 @@ public class PdfUtils {
         PdfToolbarAction.OTHER,
         PdfToolbarAction.ZOOM_IN,
         PdfToolbarAction.ZOOM_OUT,
+        PdfToolbarAction.FIT_TO_PAGE_VERTICAL,
+        PdfToolbarAction.FIT_TO_PAGE_HORIZONTAL,
+        PdfToolbarAction.PAGE_NAVIGATION,
         PdfToolbarAction.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -87,8 +90,11 @@ public class PdfUtils {
         int OTHER = 0;
         int ZOOM_IN = 1;
         int ZOOM_OUT = 2;
+        int FIT_TO_PAGE_VERTICAL = 3;
+        int FIT_TO_PAGE_HORIZONTAL = 4;
+        int PAGE_NAVIGATION = 5;
 
-        int NUM_ENTRIES = 3;
+        int NUM_ENTRIES = 6;
     }
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidPdfToolbarAction)
 
