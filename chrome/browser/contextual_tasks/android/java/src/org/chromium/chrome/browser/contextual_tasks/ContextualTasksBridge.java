@@ -12,6 +12,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -199,6 +200,20 @@ public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
     }
 
     /**
+     * Asynchronously requests the task title associated with the given tab.
+     *
+     * @param tab The tab to check.
+     * @param callback The callback to receive the task title.
+     */
+    public static void getTaskTitleForTab(@Nullable Tab tab, Callback<String> callback) {
+        if (tab == null || tab.getWebContents() == null) {
+            callback.onResult("");
+            return;
+        }
+        ContextualTasksBridgeJni.get().getTaskTitleForTab(tab.getWebContents(), callback);
+    }
+
+    /**
      * Returns whether the given URL is a contextual tasks WebUI URL.
      *
      * @param url The URL to check.
@@ -235,6 +250,10 @@ public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
 
         @JniType("std::string")
         String getTaskIdForTab(@JniType("content::WebContents*") WebContents webContents);
+
+        void getTaskTitleForTab(
+                @JniType("content::WebContents*") WebContents webContents,
+                @JniType("base::OnceCallback<void(std::string)>") Callback<String> callback);
 
         boolean isContextualTasksUrl(@JniType("GURL") GURL url);
 

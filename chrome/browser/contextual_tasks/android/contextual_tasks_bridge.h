@@ -50,6 +50,14 @@ class ContextualTasksBridge {
   // Returns the ContextualTasksBridge for the given |window|, if one exists.
   static ContextualTasksBridge* From(BrowserWindowInterface* window);
 
+  // Returns the task ID for the given WebContents.
+  static std::string GetTaskIdForTab(content::WebContents* web_contents);
+
+  // Asynchronously requests the task title associated with the given tab.
+  static void GetTaskTitleForTab(
+      content::WebContents* web_contents,
+      base::OnceCallback<void(std::string)> callback);
+
   void Destroy(JNIEnv* env);
 
   // Called from Java via JNI to undo the closure of the sheet.

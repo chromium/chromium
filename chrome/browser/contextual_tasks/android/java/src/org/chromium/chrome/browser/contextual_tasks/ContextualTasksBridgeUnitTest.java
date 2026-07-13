@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.contextual_tasks;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -34,6 +36,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -175,5 +178,17 @@ public class ContextualTasksBridgeUnitTest {
 
         // Should NOT call native.
         verify(mMockJni, never()).undoClose(anyLong());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testGetTaskTitleForTab() {
+        Tab tab = mock(Tab.class);
+        when(tab.getWebContents()).thenReturn(mWebContents);
+        Callback<String> callback = mock(Callback.class);
+
+        ContextualTasksBridge.getTaskTitleForTab(tab, callback);
+
+        verify(mMockJni).getTaskTitleForTab(eq(mWebContents), eq(callback));
     }
 }

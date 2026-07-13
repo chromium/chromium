@@ -4,8 +4,10 @@
 
 #include "chrome/browser/contextual_tasks/android/contextual_tasks_bridge.h"
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider_impl.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
@@ -25,10 +27,53 @@
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that declare FromJniType / ToJniType
 #include "chrome/browser/contextual_tasks/jni_headers/ContextualTasksBridge_jni.h"
 
 namespace contextual_tasks {
+
+namespace {
+
+// Holds resolved task reference, ID, and optional task state.
+struct ResolvedTaskInfo {
+  raw_ptr<ContextualTasksService> service;
+  base::Uuid task_id;
+  std::optional<ContextualTask> task;
+};
+
+ResolvedTaskInfo ResolveTaskInfoForWebContents(
+    content::WebContents* web_contents) {
+  ResolvedTaskInfo info;
+  if (!web_contents) {
+    return info;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  info.service = ContextualTasksServiceFactory::GetForProfile(profile);
+  if (!info.service) {
+    return info;
+  }
+
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
+  if (tab_id.is_valid()) {
+    info.task = info.service->GetContextualTaskForTab(tab_id);
+    if (info.task) {
+      info.task_id = info.task->GetTaskId();
+      return info;
+    }
+  }
+
+  const GURL& url = web_contents->GetLastCommittedURL();
+  if (contextual_tasks::ContextualTasksUiService::IsContextualTasksUrl(url)) {
+    info.task_id =
+        contextual_tasks::ContextualTasksUiService::GetTaskIdFromUrl(url);
+  }
+
+  return info;
+}
+
+}  // namespace
 
 DEFINE_USER_DATA(ContextualTasksBridge);
 
@@ -147,45 +192,51 @@ void ContextualTasksBridge::NotifyOpenFeedbackUi(const GURL& page_url) {
       base::android::ConvertUTF8ToJavaString(env, page_url.spec()));
 }
 
+// static
+std::string ContextualTasksBridge::GetTaskIdForTab(
+    content::WebContents* web_contents) {
+  ResolvedTaskInfo info = ResolveTaskInfoForWebContents(web_contents);
+  if (info.task_id.is_valid()) {
+    return info.task_id.AsLowercaseString();
+  }
+  return std::string();
+}
+
+// static
+void ContextualTasksBridge::GetTaskTitleForTab(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(std::string)> callback) {
+  ResolvedTaskInfo info = ResolveTaskInfoForWebContents(web_contents);
+
+  if (info.task || !info.service || !info.task_id.is_valid()) {
+    std::string title = info.task ? info.task->GetTitle() : std::string();
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(title)));
+    return;
+  }
+
+  info.service->GetTaskById(
+      info.task_id,
+      base::BindOnce(
+          [](base::OnceCallback<void(std::string)> callback,
+             std::optional<ContextualTask> task) {
+            std::move(callback).Run(task ? task->GetTitle() : std::string());
+          },
+          std::move(callback)));
+}
+
 static std::string JNI_ContextualTasksBridge_GetTaskIdForTab(
     JNIEnv* env,
     content::WebContents* web_contents) {
-  if (!web_contents) {
-    return std::string();
-  }
+  return ContextualTasksBridge::GetTaskIdForTab(web_contents);
+}
 
-  // 1. Check the association map (for regular browsing tabs).
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-
-  contextual_tasks::ContextualTasksService* contextual_tasks_service =
-      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile);
-  if (!contextual_tasks_service) {
-    return std::string();
-  }
-
-  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
-  if (!tab_id.is_valid()) {
-    return std::string();
-  }
-
-  std::optional<ContextualTask> task =
-      contextual_tasks_service->GetContextualTaskForTab(tab_id);
-  if (task) {
-    return task->GetTaskId().AsLowercaseString();
-  }
-
-  // 2. If no task in map, check the URL (for the AIM tab itself).
-  const GURL& url = web_contents->GetLastCommittedURL();
-  if (contextual_tasks::ContextualTasksUiService::IsContextualTasksUrl(url)) {
-    base::Uuid task_id =
-        contextual_tasks::ContextualTasksUiService::GetTaskIdFromUrl(url);
-    if (task_id.is_valid()) {
-      return task_id.AsLowercaseString();
-    }
-  }
-
-  return std::string();
+static void JNI_ContextualTasksBridge_GetTaskTitleForTab(
+    JNIEnv* env,
+    content::WebContents* web_contents,
+    base::OnceCallback<void(std::string)> j_callback) {
+  ContextualTasksBridge::GetTaskTitleForTab(web_contents,
+                                            std::move(j_callback));
 }
 
 static bool JNI_ContextualTasksBridge_IsContextualTasksUrl(JNIEnv* env,
