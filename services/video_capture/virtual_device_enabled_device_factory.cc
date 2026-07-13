@@ -25,6 +25,9 @@ namespace video_capture {
 namespace {
 
 bool IsValidVirtualDevice(const media::VideoCaptureDeviceInfo& device_info) {
+  if (device_info.descriptor.model_id != "") {
+    return false;
+  }
   if (!base::StartsWith(device_info.descriptor.device_id,
                         media::kVirtualDeviceIdPrefix,
                         base::CompareCase::SENSITIVE)) {

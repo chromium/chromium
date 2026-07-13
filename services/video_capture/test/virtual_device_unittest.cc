@@ -472,6 +472,27 @@ TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
 }
 
 TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
+       RejectVirtualDeviceWithInvalidModelId) {
+  media::VideoCaptureDeviceInfo device_info;
+  device_info.descriptor.device_id = "chromium-virtual";
+  device_info.descriptor.model_id = "0123:4567";
+
+  mojo::PendingRemote<mojom::Producer> producer;
+  MockProducer mock_producer(producer.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::SharedMemoryVirtualDevice> virtual_device;
+
+  factory_->AddSharedMemoryVirtualDevice(
+      device_info, std::move(producer),
+      virtual_device.BindNewPipeAndPassReceiver());
+
+  base::RunLoop disconnect_loop;
+  virtual_device.set_disconnect_handler(disconnect_loop.QuitClosure());
+  disconnect_loop.Run();
+
+  EXPECT_FALSE(virtual_device.is_connected());
+}
+
+TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
        RejectVirtualDeviceWithForbiddenDisplayNamePrefix) {
   media::VideoCaptureDeviceInfo device_info;
   device_info.descriptor.device_id = "virtual-chromium-device";
