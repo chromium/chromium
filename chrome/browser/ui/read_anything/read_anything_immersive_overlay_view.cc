@@ -157,6 +157,13 @@ ReadAnythingImmersiveOverlayView::CloseUI() {
   std::unique_ptr<ReadAnythingImmersiveWebView> web_view =
       RemoveChildViewT(immersive_web_view_);
   immersive_web_view_ = nullptr;
+
+  // Focus on the underlying web view so that the focus is not lost entirely
+  // when the immersive view is closed.
+  if (contents_web_view_) {
+    contents_web_view_->RequestFocus();
+  }
+
   return web_view->CloseAndTakeContentsWrapper();
 }
 

@@ -204,6 +204,12 @@ class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
     controller->ShowInPreferredUI(trigger);
   }
 
+  bool IsFocusOnMainPage() {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    return browser_view->GetFocusManager()->GetFocusedView() ==
+           browser_view->GetActiveContentsWebView();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -3026,4 +3032,37 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
       blocked_content::PopupBlockerTabHelper::FromWebContents(active_tab);
   ASSERT_TRUE(popup_blocker);
   EXPECT_EQ(1u, popup_blocker->GetBlockedPopupsCount());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       ImmersiveModeCloseRestoresFocus) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/select.html")));
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  // Ensure the main page has focus initially.
+  tab->GetContents()->Focus();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return IsFocusOnMainPage(); }));
+
+  // Open reading mode.
+  chrome::ExecuteCommand(browser(), IDC_SHOW_READING_MODE_KEYBOARD);
+  AwaitAndAssertOverlayVisibility(/*visible=*/true);
+
+  // Verify that presentation state is immersive.
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInImmersiveOverlay);
+
+  // Verify focus is not in the main page.
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !IsFocusOnMainPage(); }));
+
+  // Close reading mode.
+  chrome::ExecuteCommand(browser(), IDC_SHOW_READING_MODE_KEYBOARD);
+  AwaitAndAssertOverlayVisibility(/*visible=*/false);
+
+  // Verify focus has return to the main page.
+  EXPECT_TRUE(base::test::RunUntil([&]() { return IsFocusOnMainPage(); }));
 }
