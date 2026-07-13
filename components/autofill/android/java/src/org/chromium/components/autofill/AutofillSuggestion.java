@@ -34,6 +34,7 @@ public class AutofillSuggestion {
     private final @Nullable GURL mCustomIconUrl;
     private final @Nullable Payload mPayload;
     private final List<AutofillSuggestion> mChildren;
+    private final boolean mIsAcceptable;
 
     public sealed interface Payload
             permits AutofillAiPayload, AutofillProfilePayload, PaymentsPayload {}
@@ -58,6 +59,7 @@ public class AutofillSuggestion {
      *     (e.g., if it requires a fetch from the server).
      * @param payload Additional data passed with the suggestion.
      * @param children The list of children suggestions.
+     * @param isAcceptable Whether the suggestion is acceptable.
      */
     @VisibleForTesting
     public AutofillSuggestion(
@@ -75,7 +77,8 @@ public class AutofillSuggestion {
             @Nullable String iphDescriptionText,
             @Nullable GURL customIconUrl,
             @Nullable Payload payload,
-            List<AutofillSuggestion> children) {
+            List<AutofillSuggestion> children,
+            boolean isAcceptable) {
         mLabel = label;
         mSecondaryLabel = secondaryLabel;
         mSublabel = sublabel;
@@ -91,6 +94,7 @@ public class AutofillSuggestion {
         mCustomIconUrl = customIconUrl;
         mPayload = payload;
         mChildren = children;
+        mIsAcceptable = isAcceptable;
     }
 
     public @Nullable String getLabel() {
@@ -184,6 +188,10 @@ public class AutofillSuggestion {
         return mChildren;
     }
 
+    public boolean isAcceptable() {
+        return mIsAcceptable;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -205,7 +213,8 @@ public class AutofillSuggestion {
                 && Objects.equals(this.mIphDescriptionText, other.mIphDescriptionText)
                 && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl)
                 && Objects.equals(this.mPayload, other.mPayload)
-                && Objects.equals(this.mChildren, other.mChildren);
+                && Objects.equals(this.mChildren, other.mChildren)
+                && this.mIsAcceptable == other.mIsAcceptable;
     }
 
     @Override
@@ -224,7 +233,8 @@ public class AutofillSuggestion {
                 this.mIphDescriptionText,
                 this.mCustomIconUrl,
                 this.mPayload,
-                this.mChildren);
+                this.mChildren,
+                this.mIsAcceptable);
     }
 
     /** Builder for the {@link AutofillSuggestion}. */
@@ -244,6 +254,7 @@ public class AutofillSuggestion {
         private int mSuggestionType;
         private @Nullable Payload mPayload;
         private List<AutofillSuggestion> mChildren = Collections.emptyList();
+        private boolean mIsAcceptable;
 
         public Builder setIconId(int iconId) {
             this.mIconId = iconId;
@@ -320,6 +331,11 @@ public class AutofillSuggestion {
             return this;
         }
 
+        public Builder setIsAcceptable(boolean isAcceptable) {
+            this.mIsAcceptable = isAcceptable;
+            return this;
+        }
+
         public AutofillSuggestion build() {
             assert mSuggestionType == SuggestionType.SEPARATOR || !TextUtils.isEmpty(mLabel)
                     : "Only separators may have an empty label.";
@@ -340,7 +356,8 @@ public class AutofillSuggestion {
                     mIphDescriptionText,
                     mCustomIconUrl,
                     mPayload,
-                    mChildren);
+                    mChildren,
+                    mIsAcceptable);
         }
     }
 }

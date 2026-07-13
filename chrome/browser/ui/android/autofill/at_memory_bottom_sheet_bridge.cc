@@ -56,7 +56,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaSuggestion(
 
   return Java_AtMemoryBottomSheetBridge_createAutofillSuggestion(
       env, suggestion.main_text.value, sub_label, android_icon_id,
-      std::to_underlying(suggestion.type), children);
+      std::to_underlying(suggestion.type), children, suggestion.IsAcceptable());
 }
 
 }  // namespace
