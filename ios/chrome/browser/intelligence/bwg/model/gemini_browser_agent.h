@@ -282,6 +282,10 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // temporarily hidden.
   void ForceDismissFloaty();
 
+  // Switches the view mode to Floaty (i.e., chat) mode if the current page is
+  // eligible, or dismisses the floaty if ineligible.
+  void SwitchToChatModeOrDismiss(bool animated);
+
   // Whether to allow the floaty to be shown given a `source`. If not allowed,
   // the floaty state will be as if a floaty was never shown.
   bool ShouldShowFloatyForSource(gemini::FloatyUpdateSource source);
