@@ -70,7 +70,8 @@ PageContext::FormFieldInfo ExtractFormFieldsFromWebContentsInternal(
 }  // namespace
 
 std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    const std::optional<GURL>& url) {
   if (!web_contents) {
     return std::nullopt;
   }
@@ -78,13 +79,14 @@ std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
   send_tab_to_self::SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  return service ? service->GetEntryPointDisplayReason(
-                       web_contents->GetLastCommittedURL())
+  const GURL& url_to_check = url.value_or(web_contents->GetLastCommittedURL());
+  return service ? service->GetEntryPointDisplayReason(url_to_check)
                  : std::nullopt;
 }
 
-bool ShouldDisplayEntryPoint(content::WebContents* web_contents) {
-  return GetEntryPointDisplayReason(web_contents).has_value();
+bool ShouldDisplayEntryPoint(content::WebContents* web_contents,
+                             const std::optional<GURL>& url) {
+  return GetEntryPointDisplayReason(web_contents, url).has_value();
 }
 
 PageContext::FormFieldInfo ExtractFormFieldsFromWebContents(
