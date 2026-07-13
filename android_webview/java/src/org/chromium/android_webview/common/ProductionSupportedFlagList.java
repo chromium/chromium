@@ -1399,6 +1399,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_GATE_TEXT_SIZE_ADJUST_ON_TEXT_AUTOSIZING,
                 "When enabled, text-size-adjust CSS property only affects WebViews with"
                         + " TEXT_AUTOSIZING layout algorithm."),
+        Flag.baseFeature(
+                "SimpleCachePrefetchExperiment2",
+                "Enables fixed-size prefetching of simple cache entry data during open."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

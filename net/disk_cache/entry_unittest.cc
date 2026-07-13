@@ -5575,6 +5575,7 @@ class DiskCacheSimplePrefetchTest : public DiskCacheEntryTest {
   void SetupFullAndTrailerPrefetch(uint32_t full_size,
                                    uint32_t trailer_speculative_size) {
     std::map<std::string, std::string> params;
+    params[disk_cache::kSimpleCachePrefetchDiskCacheOnlyParam] = "false";
     params[disk_cache::kSimpleCacheFullPrefetchBytesParam] =
         base::NumberToString(full_size);
     params[disk_cache::kSimpleCacheTrailerPrefetchSpeculativeBytesParam] =

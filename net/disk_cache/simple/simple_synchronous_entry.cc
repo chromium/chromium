@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/location.h"
@@ -217,27 +218,65 @@ using simple_util::GetDataSizeFromFileSize;
 using simple_util::GetFileSizeFromDataSize;
 using simple_util::GetFileIndexFromStreamIndex;
 
+// Enables fixed-length prefetching of either the full or trailing portion of
+// a simple cache entry upon opening the entry. Applies to all cache types. See
+// feature params.
+//
+// Note that prefetch lengths that are derived from trailer_prefetch_size_ are
+// not affected by this feature.
 BASE_FEATURE(kSimpleCachePrefetchExperiment,
              "SimpleCachePrefetchExperiment2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kSimpleCachePrefetchDiskCacheOnlyParam[] = "PrefetchDiskCacheOnly";
+// If enabled, limits the SimpleCachePrefetchExperiment to the DISK_CACHE cache
+// type (HTTP Cache).
+constexpr base::FeatureParam<bool> kSimpleCachePrefetchDiskCacheOnly{
+    &kSimpleCachePrefetchExperiment, kSimpleCachePrefetchDiskCacheOnlyParam,
+    true};
+
 const char kSimpleCacheFullPrefetchBytesParam[] = "FullPrefetchBytes";
+// If the feature is enabled, cache entry files with a size less than or equal
+// to this value will be immediately read into memory upon opening the entry.
+// This can avoid the costs of task posting and non-sequential disk reads.
 constexpr base::FeatureParam<int> kSimpleCacheFullPrefetchSize{
-    &kSimpleCachePrefetchExperiment, kSimpleCacheFullPrefetchBytesParam, 0};
+    &kSimpleCachePrefetchExperiment, kSimpleCacheFullPrefetchBytesParam, 65536};
 
 const char kSimpleCacheTrailerPrefetchSpeculativeBytesParam[] =
     "TrailerPrefetchSpeculativeBytes";
+// If the feature is enabled, cache entry files with a size greater than
+// FullPrefetchBytes will have this many bytes from the end of the cache file
+// read into memory. This may avoid having to read stream0 footer separately,
+// which would happen out-of-order.
+//
+// Note that prefetch lengths that are passed in via trailer_prefetch_size_
+// take priority over the value set by this parameter.
 constexpr base::FeatureParam<int> kSimpleCacheTrailerPrefetchSpeculativeBytes{
     &kSimpleCachePrefetchExperiment,
-    kSimpleCacheTrailerPrefetchSpeculativeBytesParam, 0};
+    kSimpleCacheTrailerPrefetchSpeculativeBytesParam, 10240};
 
-uint32_t GetSimpleCacheFullPrefetchSize() {
+uint32_t GetSimpleCacheFullPrefetchSize(net::CacheType type) {
+  if (!base::FeatureList::IsEnabled(kSimpleCachePrefetchExperiment)) {
+    return 0;
+  }
+  if (type != net::CacheType::DISK_CACHE &&
+      kSimpleCachePrefetchDiskCacheOnly.Get()) {
+    return 0;
+  }
   return kSimpleCacheFullPrefetchSize.Get();
 }
 
-uint32_t GetSimpleCacheTrailerPrefetchSize(int hint_size) {
-  if (hint_size > 0)
+uint32_t GetSimpleCacheTrailerPrefetchSize(int hint_size, net::CacheType type) {
+  if (hint_size > 0) {
     return hint_size;
+  }
+  if (!base::FeatureList::IsEnabled(kSimpleCachePrefetchExperiment)) {
+    return 0;
+  }
+  if (type != net::CacheType::DISK_CACHE &&
+      kSimpleCachePrefetchDiskCacheOnly.Get()) {
+    return 0;
+  }
   return kSimpleCacheTrailerPrefetchSpeculativeBytes.Get();
 }
 
@@ -1624,14 +1663,14 @@ int SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1(
   // Determine a threshold for fully prefetching the entire entry file.  If
   // the entry file is less than or equal to this number of bytes it will
   // be fully prefetched.
-  uint32_t full_prefetch_size = GetSimpleCacheFullPrefetchSize();
+  uint32_t full_prefetch_size = GetSimpleCacheFullPrefetchSize(cache_type_);
 
   // Determine how much trailer data to prefetch.  If the full file prefetch
   // does not trigger then this is the number of bytes to read from the end
   // of the file in a single file operation.  Ideally the trailer prefetch
   // will contain at least stream 0 and its EOF record.
   uint32_t trailer_prefetch_size =
-      GetSimpleCacheTrailerPrefetchSize(trailer_prefetch_size_);
+      GetSimpleCacheTrailerPrefetchSize(trailer_prefetch_size_, cache_type_);
 
   OpenPrefetchMode prefetch_mode = OPEN_PREFETCH_NONE;
   if (u_file_size <= full_prefetch_size ||

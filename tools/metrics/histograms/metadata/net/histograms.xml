@@ -10411,15 +10411,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}SyncOpenPrefetchMode"
-    enum="SimpleCachePrefetchMode" expires_after="2026-01-13">
-  <owner>wanderview@chromium.org</owner>
+    enum="SimpleCachePrefetchMode" expires_after="2026-11-29">
+  <owner>ashleynewson@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
     The kind of prefetching performed, if any, when executing
     SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1(). {CacheInstance}
 
-    Warning: this histogram was expired from 2023-12-10 to 2025-10-17; data may
-    be missing.
+    Warning: this histogram was expired from 2023-12-10 to 2025-10-17 and
+    2026-01-13 to 2026-07-07; data may be missing.
   </summary>
 </histogram>
 

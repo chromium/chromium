@@ -43,13 +43,10 @@ class BackendFileOperations;
 class UnboundBackendFileOperations;
 
 NET_EXPORT_PRIVATE BASE_DECLARE_FEATURE(kSimpleCachePrefetchExperiment);
+NET_EXPORT_PRIVATE extern const char kSimpleCachePrefetchDiskCacheOnlyParam[];
 NET_EXPORT_PRIVATE extern const char kSimpleCacheFullPrefetchBytesParam[];
 NET_EXPORT_PRIVATE extern const char
     kSimpleCacheTrailerPrefetchSpeculativeBytesParam[];
-
-// Returns how large a file would get prefetched on reading the entry.
-// If the experiment is disabled, returns 0.
-NET_EXPORT_PRIVATE int GetSimpleCachePrefetchSize();
 
 class SimpleSynchronousEntry;
 struct RangeResult;
