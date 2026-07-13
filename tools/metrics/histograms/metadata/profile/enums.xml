@@ -458,6 +458,7 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="10" label="Feature Showcase"/>
   <int value="11" label="Finish Or Continue"/>
+  <int value="12" label="Device Signals Disclaimer"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/views/profiles/profile_management_flow_controller.h:Step) -->

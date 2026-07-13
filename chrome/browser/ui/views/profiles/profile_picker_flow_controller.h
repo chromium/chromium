@@ -20,6 +20,10 @@ class Profile;
 class ProfilePickerPostSignInAdapter;
 class ForceSigninUIError;
 
+namespace signin {
+enum class DeviceSignalsDisclaimerResult;
+}
+
 class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
  public:
   ProfilePickerFlowController(ProfilePickerWebContentsHost* host,
@@ -88,6 +92,12 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       bool exit_flow_after_profile_picked,
       base::OnceCallback<void(bool)> pick_profile_complete_callback,
       Browser* browser);
+
+  void OnDeviceSignalsDisclaimerResult(
+      Profile* profile,
+      bool open_command_line_urls,
+      base::OnceCallback<void(Browser*)> pick_profile_complete_callback,
+      signin::DeviceSignalsDisclaimerResult result);
 
   const ProfilePicker::EntryPoint entry_point_;
   const GURL selected_profile_target_url_;

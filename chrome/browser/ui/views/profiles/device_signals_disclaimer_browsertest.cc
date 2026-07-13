@@ -10,7 +10,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -26,12 +25,14 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
+#include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
-#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -44,7 +45,40 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/any_widget_observer.h"
+
+namespace {
+
+::testing::AssertionResult WaitForAndClickButton(
+    content::WebContents* web_contents,
+    const std::string& app,
+    const std::string& button_id,
+    bool log_on_failure = false) {
+  content::WaitForLoadStop(web_contents);
+  std::string script = base::StringPrintf(R"(
+    new Promise((resolve) => {
+      const interval = setInterval(() => {
+        const button = document.querySelector('%s')?.shadowRoot?.querySelector('#%s');
+        if (button && !button.hidden) {
+          clearInterval(interval);
+          button.click();
+          resolve(true);
+        }
+      }, 50);
+    });
+  )",
+                                          app.c_str(), button_id.c_str());
+
+  ::testing::AssertionResult result = content::ExecJs(web_contents, script);
+  if (!result && log_on_failure) {
+    LOG(ERROR) << "WaitForAndClickButton failed for " << app << " -> "
+               << button_id << ": " << result.message();
+  }
+  return result;
+}
+
+}  // namespace
 
 class ManagedUserProfileNoticeDeviceSignalsDisclaimerPixelTest
     : public ProfilesPixelTestBaseT<DialogBrowserTest>,
@@ -133,6 +167,101 @@ class ProfileBrowsersClosedWaiter : public BrowserCollectionObserver {
       observation_{this};
 };
 
+class DeviceSignalsDisclaimerUIWindowPixelTest
+    : public ProfilesPixelTestBaseT<UiBrowserTest>,
+      public testing::WithParamInterface<PixelTestParam>,
+      public views::ViewObserver {
+ public:
+  DeviceSignalsDisclaimerUIWindowPixelTest()
+      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam()) {
+    scoped_feature_list_.InitWithFeatures(
+        {policy::features::kDeviceSignalsBackfillDisclaimer,
+         switches::kEnforceManagementDisclaimer},
+        {});
+  }
+
+  ~DeviceSignalsDisclaimerUIWindowPixelTest() override {
+    if (profile_picker_view_) {
+      profile_picker_view_->views::View::RemoveObserver(this);
+    }
+  }
+
+  void ShowUi(const std::string& name) override {
+    gfx::ScopedAnimationDurationScaleMode disable_animation(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    CHECK(browser());
+
+    SignInWithAccount(AccountManagementStatus::kManaged);
+
+    profile_picker_view_ = new ProfileManagementStepTestView(
+        ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
+                                           base::DoNothing()),
+        ProfileManagementFlowController::Step::kDeviceSignalsDisclaimer,
+        /*step_controller_factory=*/
+        base::BindRepeating([](ProfilePickerWebContentsHost* host) {
+          return ProfileManagementStepController::
+              CreateForDeviceSignalsDisclaimer(host, host->GetPickerContents(),
+                                               base::DoNothing());
+        }));
+    profile_picker_view_->views::View::AddObserver(this);
+    profile_picker_view_->ShowAndWait(GetParam().window_size);
+    if (ProfilePicker::GetWebViewForTesting()) {
+      profiles::testing::WaitForPickerUrl(
+          GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+    }
+  }
+
+  bool VerifyUi() override {
+    views::Widget* widget = GetWidgetForScreenshot();
+
+    const testing::TestInfo* test_info =
+        testing::UnitTest::GetInstance()->current_test_info();
+    const std::string screenshot_name =
+        base::StrCat({test_info->test_suite_name(), "_", test_info->name()});
+
+    return VerifyPixelUi(widget, "DeviceSignalsDisclaimerUIWindowPixelTest",
+                         screenshot_name) != ui::test::ActionResult::kFailed;
+  }
+
+  void WaitForUserDismissal() override {
+    if (!profile_picker_view_) {
+      return;
+    }
+    CHECK(GetWidgetForScreenshot());
+    ViewDeletedWaiter(profile_picker_view_).Wait();
+  }
+
+  views::Widget* GetWidgetForScreenshot() {
+    return profile_picker_view_ ? profile_picker_view_->GetWidget() : nullptr;
+  }
+
+  // views::ViewObserver:
+  void OnViewIsDeleting(views::View* observed_view) override {
+    profile_picker_view_ = nullptr;
+  }
+
+ private:
+  raw_ptr<ProfileManagementStepTestView> profile_picker_view_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerUIWindowPixelTest,
+                       InvokeUi_default) {
+  ShowAndVerifyUi();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DeviceSignalsDisclaimerUIWindowPixelTest,
+    testing::ValuesIn(std::vector<PixelTestParam>{
+        {.test_suffix = "Regular"},
+        {.test_suffix = "DarkTheme", .use_dark_theme = true},
+        {.test_suffix = "Rtl", .use_right_to_left_language = true},
+    }),
+    [](const testing::TestParamInfo<PixelTestParam>& info) {
+      return info.param.test_suffix;
+    });
+
 class DeviceSignalsDisclaimerInteractiveTest : public SigninBrowserTestBase {
  public:
   DeviceSignalsDisclaimerInteractiveTest() {
@@ -143,34 +272,6 @@ class DeviceSignalsDisclaimerInteractiveTest : public SigninBrowserTestBase {
   }
 
  protected:
-  ::testing::AssertionResult WaitForAndClickButton(
-      content::WebContents* web_contents,
-      const std::string& app,
-      const std::string& button_id,
-      bool log_on_failure = false) {
-    content::WaitForLoadStop(web_contents);
-    std::string script = base::StringPrintf(R"(
-      new Promise((resolve) => {
-        const interval = setInterval(() => {
-          const button = document.querySelector('%s')?.shadowRoot?.querySelector('#%s');
-          if (button && !button.hidden) {
-            clearInterval(interval);
-            button.click();
-            resolve(true);
-          }
-        }, 50);
-      });
-    )",
-                                            app.c_str(), button_id.c_str());
-
-    ::testing::AssertionResult result = content::ExecJs(web_contents, script);
-    if (!result && log_on_failure) {
-      LOG(ERROR) << "WaitForAndClickButton failed for " << app << " -> "
-                 << button_id << ": " << result.message();
-    }
-    return result;
-  }
-
   content::WebContents* GetModalDialogWebContents(Browser* browser) {
     return browser->GetFeatures()
         .signin_view_controller()
@@ -503,3 +604,6 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupInteractiveTest,
   EXPECT_TRUE(new_browser->GetProfile()->GetPrefs()->GetBoolean(
       device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
 }
+
+// Profile picker tests are located in
+// chrome/browser/ui/views/profiles/profile_picker_view_browsertest.cc
