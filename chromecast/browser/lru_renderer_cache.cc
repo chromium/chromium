@@ -27,8 +27,8 @@ constexpr base::MemoryConsumerTraits kLRURendererCacheTraits(
     base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
     // Eviction results in a cold start, but no user state is lost.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
-    // Process termination by the OS is asynchronous.
-    base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
+    // Cleans up host objects synchronously on the browser main thread.
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
     // Cached memory resides out-of-process.
     base::MemoryConsumerTraits::InProcess::kNo,
     // Launching a replacement renderer processes is expensive.
