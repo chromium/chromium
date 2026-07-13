@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -126,11 +127,15 @@ void ExpectPicturesEqual(sk_sp<const SkPicture> pic,
   // Assert that all the bytes of the backing memory are equal. This check is
   // only safe if all of the width, height and bytesPerPixel are equal between
   // the two bitmaps.
-  UNSAFE_TODO(
-      EXPECT_EQ(memcmp(bitmap.getPixels(), expected_bitmap.getPixels(),
-                       expected_bitmap.bytesPerPixel() *
-                           expected_bitmap.width() * expected_bitmap.height()),
-                0));
+  const size_t bytes = expected_bitmap.bytesPerPixel() *
+                       expected_bitmap.width() * expected_bitmap.height();
+  // SAFETY: `getPixels()` returns a buffer of at least `bytes` size when
+  // width/height/bytesPerPixel are equal.
+  EXPECT_EQ(
+      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(bitmap.getPixels()),
+                                bytes)),
+      UNSAFE_BUFFERS(base::span(
+          static_cast<const uint8_t*>(expected_bitmap.getPixels()), bytes)));
 }
 
 }  // namespace

@@ -5,6 +5,7 @@
 #include "components/paint_preview/common/serial_utils.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -166,8 +167,13 @@ TEST(PaintPreviewSerialUtils, TestSerialAndroidSystemTypeface) {
   EXPECT_GT(typeface_ctx.finished.count(typeface->uniqueID()), 0U);
   auto original_data = typeface->serialize();
   ASSERT_EQ(original_data->size(), final_data->size());
-  ASSERT_EQ(0, UNSAFE_TODO(memcmp(original_data->data(), final_data->data(),
-                                  final_data->size())));
+  // SAFETY: Skia's `serialize()` returns a valid data buffer and size.
+  ASSERT_EQ(UNSAFE_BUFFERS(base::span(
+                static_cast<const uint8_t*>(original_data->data()),
+                original_data->size())),
+            UNSAFE_BUFFERS(
+                base::span(static_cast<const uint8_t*>(final_data->data()),
+                           final_data->size())));
 }
 #endif
 

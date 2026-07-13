@@ -120,7 +120,7 @@ TEST(PaintPreviewFileStreamTest, TestSkip) {
   // Write half the data.
   EXPECT_TRUE(wstream.write(test_data.data(), 4));
   EXPECT_EQ(wstream.bytesWritten(), 4U);
-  UNSAFE_TODO(EXPECT_TRUE(wstream.write(test_data.data() + 4, 4)));
+  EXPECT_TRUE(wstream.write(&test_data[4], 4));
   EXPECT_EQ(wstream.bytesWritten(), test_data.size());
   wstream.Close();
   base::File read_file(file_path, base::File::FLAG_OPEN |

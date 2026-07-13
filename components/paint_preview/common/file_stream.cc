@@ -56,8 +56,10 @@ bool FileWStream::write(const void* buffer, size_t size) {
     has_write_failed_ = true;
     return false;
   }
+  // SAFETY: This is an override of SkWStream::write(), which provides a
+  // pointer and a size that we must trust.
   std::optional<size_t> bytes_written = file_.WriteAtCurrentPos(
-      UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(buffer), size)));
+      UNSAFE_BUFFERS(base::span(reinterpret_cast<const uint8_t*>(buffer), size)));
   if (!bytes_written) {
     has_write_failed_ = true;
     return false;
@@ -108,8 +110,10 @@ size_t FileRStream::read(void* buffer, size_t size) {
     }
     num_bytes = num_bytes - origin;
   } else {
+    // SAFETY: This is an override of SkStream::read(), which provides a
+    // pointer and a size that we must trust.
     const std::optional<size_t> bytes_read = file_.ReadAtCurrentPos(
-        UNSAFE_TODO(base::span(reinterpret_cast<uint8_t*>(buffer), size)));
+        UNSAFE_BUFFERS(base::span(reinterpret_cast<uint8_t*>(buffer), size)));
     if (!bytes_read) {
       return 0;
     }
