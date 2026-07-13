@@ -1749,17 +1749,28 @@ int X11Window::UpdateDrag(const gfx::Point& connection_point) {
       XDragDropClient::GetForWindow(target_current_context->source_window());
   gfx::PointF local_point_in_dip =
       platform_window_delegate_->ConvertScreenPointToLocalDIP(connection_point);
+  base::WeakPtr<X11Window> alive = weak_ptr_factory_.GetWeakPtr();
   if (!notified_enter_) {
     drop_handler->OnDragEnter(local_point_in_dip, suggested_operations,
                               GetKeyModifiers(source_client));
+    if (!alive) {
+      return DragDropTypes::DRAG_NONE;
+    }
 
     // TODO(crbug.com/40073696): Factor DataFetched out of Enter callback.
     drop_handler->OnDragDataAvailable(std::move(data));
+    if (!alive) {
+      return DragDropTypes::DRAG_NONE;
+    }
 
     notified_enter_ = true;
   }
-  allowed_drag_operations_ = drop_handler->OnDragMotion(
+  int allowed_operations = drop_handler->OnDragMotion(
       local_point_in_dip, suggested_operations, GetKeyModifiers(source_client));
+  if (!alive) {
+    return DragDropTypes::DRAG_NONE;
+  }
+  allowed_drag_operations_ = allowed_operations;
   return allowed_drag_operations_;
 }
 
@@ -1783,7 +1794,11 @@ void X11Window::OnBeforeDragLeave() {
   if (!drop_handler) {
     return;
   }
+  base::WeakPtr<X11Window> alive = weak_ptr_factory_.GetWeakPtr();
   drop_handler->OnDragLeave();
+  if (!alive) {
+    return;
+  }
   notified_enter_ = false;
 }
 
@@ -1798,8 +1813,12 @@ DragOperation X11Window::PerformDrop() {
     return DragOperation::kNone;
   }
 
+  base::WeakPtr<X11Window> alive = weak_ptr_factory_.GetWeakPtr();
   drop_handler->OnDragDrop(GetKeyModifiers(
       XDragDropClient::GetForWindow(target_current_context->source_window())));
+  if (!alive) {
+    return DragOperation::kNone;
+  }
   notified_enter_ = false;
   return PreferredDragOperation(allowed_drag_operations_);
 }
