@@ -3823,6 +3823,30 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testTabSwitch_withPreviewText_commitsPreviewText() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
+        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        mMediator.beginInput(mSessionState.getAutocompleteInput());
+        assertTrue(mSessionState.isSessionActive());
+
+        mSessionState.getAutocompleteInput().setUserText("www.");
+        mSessionState.getAutocompleteInput().setInitialUserText("example.com");
+        mSessionState.getAutocompleteInput().setPreviewText("www.example.com");
+
+        mMediator.onTabChanged(null);
+
+        assertEquals(
+                AutocompleteState.STANDBY,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+        assertEquals("www.example.com", mSessionState.getAutocompleteInput().getUserText());
+        assertFalse(mSessionState.getAutocompleteInput().hasPreviewText());
+        assertEquals(new TextSelection(4, 15), mSessionState.getAutocompleteInput().getSelection());
+    }
+
+    @Test
     public void testEscPress_withPreviewText_upgradesToUserTextAndGoesToStandby() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);

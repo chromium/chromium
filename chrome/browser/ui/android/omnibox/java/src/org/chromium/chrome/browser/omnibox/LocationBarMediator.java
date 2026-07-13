@@ -2848,10 +2848,14 @@ class LocationBarMediator
         AutocompleteInput input = mCurrentInput;
         mCurrentInput = null;
 
-        // Preserve editing state ahead of reparenting.
-        input.setSelection(
-                new TextSelection(
-                        mUrlCoordinator.getSelectionStart(), mUrlCoordinator.getSelectionEnd()));
+        if (input.getAutocompleteState() == AutocompleteState.ENABLED && input.hasPreviewText()) {
+            input.commitPreviewText();
+        } else {
+            input.setSelection(
+                    new TextSelection(
+                            mUrlCoordinator.getSelectionStart(),
+                            mUrlCoordinator.getSelectionEnd()));
+        }
 
         updateReparentingState();
 
