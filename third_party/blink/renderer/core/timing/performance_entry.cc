@@ -152,11 +152,9 @@ PerformanceEntry::EntryType PerformanceEntry::ToEntryTypeEnum(
 }
 
 DOMHighResTimeStamp PerformanceEntry::paintTime() const {
-  CHECK(RuntimeEnabledFeatures::PaintTimingMixinEnabled());
   return paint_timing_info_ ? paint_timing_info_->paint_time : 0;
 }
 std::optional<DOMHighResTimeStamp> PerformanceEntry::presentationTime() const {
-  CHECK(RuntimeEnabledFeatures::PaintTimingMixinEnabled());
   return paint_timing_info_ ? paint_timing_info_->presentation_time : 0;
 }
 
@@ -182,7 +180,7 @@ void PerformanceEntry::BuildJSONValue(V8ObjectBuilder& builder) const {
     builder.AddNumber("navigationId", navigationId());
   }
 
-  if (paint_timing_info_ && RuntimeEnabledFeatures::PaintTimingMixinEnabled()) {
+  if (paint_timing_info_) {
     builder.AddNumber("paintTime", paint_timing_info_->paint_time);
     builder.AddNumber("presentationTime",
                       paint_timing_info_->presentation_time);

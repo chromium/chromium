@@ -4,6 +4,6 @@
 
 // https://w3c.github.io/paint-timing/#PaintTimingMixin
 interface mixin PaintTimingMixin {
-    [RuntimeEnabled=PaintTimingMixin] readonly attribute DOMHighResTimeStamp paintTime;
-    [RuntimeEnabled=PaintTimingMixin] readonly attribute DOMHighResTimeStamp? presentationTime;
+    readonly attribute DOMHighResTimeStamp paintTime;
+    readonly attribute DOMHighResTimeStamp? presentationTime;
 };

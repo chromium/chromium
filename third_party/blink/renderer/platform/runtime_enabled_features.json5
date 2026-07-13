@@ -4564,10 +4564,6 @@
       status: "stable",
     },
     {
-      name: "PaintTimingMixin",
-      status: "stable",
-    },
-    {
       name: "PaintUnderInvalidationChecking",
       settable_from_internals: true,
     },
