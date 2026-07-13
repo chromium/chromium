@@ -1,8 +1,12 @@
 # Design: Refactor TWA Registration to use Package Name keys
 
+-   Last Modified: 2026-06-02
+-   Status:
+    [Submitted](https://chromium-review.git.corp.google.com/c/chromium/src/+/7794121).
+
 This document outlines the design of the fix for site settings issues for TWAs
 on Desktop Android, specifically addressing problems with shared UIDs and
-multiple apps for the same origin. This design is implemented at HEAD.
+multiple apps for the same origin.
 
 ## Goal
 
