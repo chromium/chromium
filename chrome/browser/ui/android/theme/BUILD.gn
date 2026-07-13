@@ -59,6 +59,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/theme/BottomUiThemeColorProviderTest.java",
     "java/src/org/chromium/chrome/browser/theme/ThemeUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/theme/ToolbarThemeColorProviderTest.java",
+    "java/src/org/chromium/chrome/browser/theme/TopUiThemeColorProviderUnitTest.java",
   ]
   deps = [
     ":java",

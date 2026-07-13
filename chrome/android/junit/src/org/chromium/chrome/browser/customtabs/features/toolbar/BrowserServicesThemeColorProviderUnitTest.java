@@ -340,6 +340,39 @@ public class BrowserServicesThemeColorProviderUnitTest {
     }
 
     @Test
+    public void testSSLStateUpdateRecomputesTheme() {
+        when(mCustomTabActivityTabProvider.get()).thenReturn(tab);
+        when(mToolbarThemeColorProvider.getToolbarBackgroundColor(eq(tab))).thenReturn(LIGHT_COLOR);
+        var intentDataProvider =
+                buildCctIntentDataProvider(
+                        COLOR_SCHEME_LIGHT,
+                        /* schemeParams= */ null,
+                        /* isOpenedByChrome= */ false,
+                        /* isIncognito= */ false);
+        var themeColorProvider = createThemeColorProvider(intentDataProvider);
+        themeColorProvider.setUseTabTheme(true);
+
+        assertEquals(
+                "Should use the page theme color before the SSL state changes",
+                LIGHT_COLOR,
+                themeColorProvider.getThemeColor());
+
+        int defaultColor = ChromeColors.getDefaultThemeColor(mContext, false);
+        when(mToolbarThemeColorProvider.getToolbarBackgroundColor(eq(tab)))
+                .thenReturn(defaultColor);
+        themeColorProvider.getTabObserver().onSSLStateUpdated(tab);
+
+        assertEquals(
+                "Should refresh the theme color when the SSL state changes",
+                defaultColor,
+                themeColorProvider.getThemeColor());
+        assertEquals(
+                "Should refresh the color scheme when the SSL state changes",
+                BrandedColorScheme.APP_DEFAULT,
+                themeColorProvider.getBrandedColorScheme());
+    }
+
+    @Test
     public void testIncognitoTheme() {
         // emulate incognito tab with chrome default theme
         var intentDataProvider =

@@ -109,6 +109,11 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider
                 }
 
                 @Override
+                public void onSSLStateUpdated(Tab tab) {
+                    updateTheme();
+                }
+
+                @Override
                 public void onDidChangeThemeColor(Tab tab, int color) {
                     updateTheme();
                 }

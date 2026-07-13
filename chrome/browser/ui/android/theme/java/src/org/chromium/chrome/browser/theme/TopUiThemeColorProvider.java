@@ -79,6 +79,11 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
                             }
 
                             @Override
+                            public void onSSLStateUpdated(Tab tab) {
+                                updateColor(tab, tab.getThemeColor(), false);
+                            }
+
+                            @Override
                             public void onContentChanged(Tab tab) {
                                 if (tab != null) {
                                     updateColor(tab, tab.getThemeColor(), false);
