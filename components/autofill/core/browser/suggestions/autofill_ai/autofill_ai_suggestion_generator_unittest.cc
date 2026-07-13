@@ -816,9 +816,13 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SetForm({FLIGHT_RESERVATION_FLIGHT_NUMBER});
 
   client().set_should_show_personal_context_ambient_autofill_notice(true);
-
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              Not(Contains(HasType(SuggestionType::kPersonalContextNotice))));
+#else
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               Contains(HasType(SuggestionType::kPersonalContextNotice)));
+#endif
 }
 
 // Tests that a kPersonalContextNotice suggestion is not appended if the

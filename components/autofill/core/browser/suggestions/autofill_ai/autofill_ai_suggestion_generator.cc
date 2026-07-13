@@ -687,6 +687,15 @@ std::vector<Suggestion> CreateFetchingAmbientSuggestions() {
   return PrepareLoadingStateSuggestions({suggestion}, suggestion);
 }
 
+// The Personal Context Notice suggestion is only supported on Desktop.
+constexpr bool IsPersonalContextNoticeSuggestionSupported() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return false;
+#else
+  return true;
+#endif
+}
+
 std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     const FormStructure& form,
     const AutofillField& trigger_field,
@@ -744,7 +753,8 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
           entity.record_type() == EntityInstance::RecordType::kPersonalContext;
     }
 
-    if (contains_personal_context_entity &&
+    if (IsPersonalContextNoticeSuggestionSupported() &&
+        contains_personal_context_entity &&
         client.ShouldShowPersonalContextAmbientAutofillNotice()) {
       Suggestion& suggestion =
           suggestions.emplace_back(SuggestionType::kPersonalContextNotice);
