@@ -24,6 +24,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -298,6 +299,20 @@ uint64_t GetTotalSizeAndFileSizes(
   return total_size_output;
 }
 
+constexpr base::MemoryConsumerTraits kBlobMemoryControllerTraits(
+    // Can hold up to ~2GB of blob data in memory (platform-dependent).
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
+    // Eviction requires traversing LRU cache and paging items to disk.
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Paged items can be read back from disk.
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    // Eviction is asynchronous, and it uses AsyncMemoryConsumerRegistration.
+    base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
+    // Blob data lives in-process.
+    base::MemoryConsumerTraits::InProcess::kYes,
+    // Reading paged data back from disk.
+    base::MemoryConsumerTraits::RecreateMemoryCost::kCheap);
+
 }  // namespace
 
 FileCreationInfo::FileCreationInfo() = default;
@@ -553,7 +568,7 @@ BlobMemoryController::BlobMemoryController(
           base::LRUCache<uint64_t, ShareableBlobDataItem*>::NO_AUTO_EVICT),
       memory_consumer_registration_(
           "BlobMemoryController",
-          std::nullopt,  // TODO(crbug.com/489671163): Add traits.
+          kBlobMemoryControllerTraits,
           this,
           base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled) {}
 
