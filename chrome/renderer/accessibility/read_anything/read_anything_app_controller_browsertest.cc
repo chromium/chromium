@@ -240,6 +240,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   void Distill() { controller_->Distill(); }
   void ProcessModelUpdates() { controller_->ProcessModelUpdates(); }
+  bool IsControllerHidden() const { return controller_->IsHidden(); }
 
   void SendBatchUpdates() {
     std::vector<ui::AXTreeUpdate> batch_updates;
@@ -3707,6 +3708,139 @@ TEST_F(ReadAnythingAppControllerImmersiveTest,
   // 6. Verify that selections_from_reading_mode_ was reset to 0 by the user
   // event.
   EXPECT_EQ(model().unprocessed_selections_from_reading_mode(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       OnAXTreeDistilled_PdfDebouncerRunning_DoesNotSetDistillationState) {
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
+
+  // Set up a PDF and start the debouncer.
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
+
+  // Call OnAXTreeDistilled. Since the debouncer is running, distillation state
+  // should NOT change.
+  EXPECT_CALL(page_handler_, OnDistillationStateChanged(testing::_)).Times(0);
+  controller().OnAXTreeDistilled(tree_id_, {1});
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       OnPdfDebounceFinished_UpdatesDistillationState) {
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
+
+  // Set up a PDF and start the debouncer.
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
+
+  // Call OnAXTreeDistilled while debouncer is running -> state doesn't change.
+  EXPECT_CALL(page_handler_, OnDistillationStateChanged(testing::_)).Times(0);
+  controller().OnAXTreeDistilled(tree_id_, {1});
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
+
+  // Now, let the debouncer finish.
+  // The distillation state should be updated to kDistillationWithContent.
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       OnActiveAXTreeIDChanged_DoesNotStartDebouncerIfHidden) {
+  // Start in inactive state (hidden).
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+  EXPECT_TRUE(IsControllerHidden());
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
+
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  page_handler_.FlushForTesting();
+
+  // The debouncer should NOT be running.
+  EXPECT_CALL(page_handler_, OnDistillationStateChanged(testing::_)).Times(0);
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       OnPdfDebounceFinished_DoesNotDrawOrUpdateStateIfHidden) {
+  // Start in immersive overlay (not hidden).
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  EXPECT_FALSE(IsControllerHidden());
+
+  static constexpr ui::AXNodeID kId = 4;
+  ui::AXNodeData node;
+  node.id = kId;
+  SendUpdateWithNodes({std::move(node)});
+  model().Reset({kId});
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
+
+  // Set up a PDF and start the debouncer.
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
+
+  // Deactivate (hide) the controller.
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+  EXPECT_TRUE(IsControllerHidden());
+
+  // Distillation state should not be changed by OnPdfDebounceFinished if
+  // hidden.
+  EXPECT_CALL(
+      page_handler_,
+      OnDistillationStateChanged(
+          read_anything::mojom::ReadAnythingDistillationState::kNotAttempted))
+      .Times(1);
+  controller().SetDistillationState(
+      read_anything::mojom::ReadAnythingDistillationState::kNotAttempted);
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
+
+  // We expect NO calls to OnDistillationStateChanged when the timer fires.
+  EXPECT_CALL(page_handler_, OnDistillationStateChanged(testing::_)).Times(0);
+
+  // Fast forward to trigger the debouncer.
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  page_handler_.FlushForTesting();
+
+  // Verification: The display nodes should still be empty (Draw wasn't called)
+  // and the distillation state remains kNotAttempted.
+  EXPECT_FALSE(model().display_node_ids().contains(kId));
+  EXPECT_EQ(model().distillation_state(),
+            read_anything::mojom::ReadAnythingDistillationState::kNotAttempted);
 }
 
 class ReadAnythingAppControllerV8SegmentationTest
