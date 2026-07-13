@@ -385,7 +385,8 @@ bool DeviceImpl::HasControlTransferPermission(
     return AllowAndLog(WebUsbControlTransferPermissionOutcome::kAllowed);
   }
 
-  // Default fallback (should not be reached unless new types are added).
+  // Default fallback. Catches and blocks unhandled request types, including
+  // RESERVED (which is not exposed to JavaScript via the WebIDL layer).
   return BlockAndLog(WebUsbControlTransferPermissionOutcome::kBlocked);
 }
 
