@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/optional_ref.h"
+#include "base/values.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
@@ -71,6 +72,30 @@ base::expected<url::Origin, std::string_view> ConvertOrigin(
           : "";
   return url::Origin::Create(GURL(base::StrCat(
       {protocol, url::kStandardSchemeSeparator, origin.host(), port})));
+}
+
+std::string ActuationCapabilityToString(
+    optimization_guide::proto::RuleMetadata::ActuationCapability capability) {
+  switch (capability) {
+    case optimization_guide::proto::RuleMetadata::CAPABILITY_UNKNOWN:
+      return "CAPABILITY_UNKNOWN";
+    case optimization_guide::proto::RuleMetadata::CAPABILITY_ALL:
+      return "CAPABILITY_ALL";
+    default:
+      return base::NumberToString(static_cast<int>(capability));
+  }
+}
+
+std::string AgentResourceToString(
+    optimization_guide::proto::RuleMetadata::AgentResource resource) {
+  switch (resource) {
+    case optimization_guide::proto::RuleMetadata::RESOURCE_UNKNOWN:
+      return "RESOURCE_UNKNOWN";
+    case optimization_guide::proto::RuleMetadata::RESOURCE_SESSION:
+      return "RESOURCE_SESSION";
+    default:
+      return base::NumberToString(static_cast<int>(resource));
+  }
 }
 
 }  // namespace
@@ -217,6 +242,33 @@ bool ActorContainerConfig::Rule::CanNavigate() const {
              optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
 }
 
+base::Value ActorContainerConfig::Rule::ToDebugValue() const {
+  base::ListValue sources;
+  for (const auto& source : navigation_sources_) {
+    sources.Append(source.ToDebugString());
+  }
+
+  base::ListValue capabilities;
+  for (const auto& capability : metadata_.capabilities()) {
+    capabilities.Append(ActuationCapabilityToString(
+        static_cast<
+            optimization_guide::proto::RuleMetadata::ActuationCapability>(
+            capability)));
+  }
+
+  base::ListValue resources;
+  for (const auto& resource : metadata_.accessible_resources()) {
+    resources.Append(AgentResourceToString(
+        static_cast<optimization_guide::proto::RuleMetadata::AgentResource>(
+            resource)));
+  }
+
+  return base::Value(base::DictValue()
+                         .Set("navigation_sources", std::move(sources))
+                         .Set("capabilities", std::move(capabilities))
+                         .Set("accessible_resources", std::move(resources)));
+}
+
 bool ActorContainerConfig::IsNavigationAllowed(
     const url::Origin& source,
     const url::Origin& destination) const {
@@ -249,6 +301,14 @@ bool ActorContainerConfig::IsActuationAllowed(
     return rule->CanNavigate();
   }
   return false;
+}
+
+base::Value ActorContainerConfig::ToDebugValue() const {
+  base::DictValue rules;
+  for (const auto& [location, rule] : rules_) {
+    rules.Set(location.ToDebugString(), rule.ToDebugValue());
+  }
+  return base::Value(base::DictValue().Set("rules", std::move(rules)));
 }
 
 }  // namespace origin_gating

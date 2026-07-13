@@ -25,10 +25,9 @@ class ActorContainerConfigSlot {
   ~ActorContainerConfigSlot();
 
   // Assigns the `config` to this instance, if provided. This method is a no-op
-  // except for the first time it is called with a non-nullopt payload.
-  void Assign(
-      base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
-          config);
+  // except for the first time it is called.
+  // Returns true if the assignment succeeded, false otherwise.
+  bool Assign(const optimization_guide::proto::AgentContainerConfig& config);
 
   bool has_value() const { return config_.has_value(); }
 

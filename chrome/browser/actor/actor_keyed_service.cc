@@ -595,8 +595,21 @@ void ActorKeyedService::PerformActions(
 
   task->GetExecutionEngine().AddWritableMainframeOrigins(
       task_metadata.added_writable_mainframe_origins());
-  task->GetExecutionEngine().actor_container_config_slot().Assign(
-      task_metadata.agent_container_config());
+  if (task_metadata.agent_container_config().has_value()) {
+    JournalDetailsBuilder builder;
+    if (task->GetExecutionEngine().actor_container_config_slot().Assign(
+            task_metadata.agent_container_config().value())) {
+      builder.Add("status", "assigned")
+          .Add("active config", task->GetExecutionEngine()
+                                    .actor_container_config_slot()
+                                    .value()
+                                    .ToDebugValue());
+    } else {
+      builder.Add("status", "ignored config");
+    }
+    GetJournal().Log(GURL(), task_id, "ActorContainerConfigSlot::Assign",
+                     std::move(builder).Build());
+  }
 
   task->Act(
       std::move(actions),

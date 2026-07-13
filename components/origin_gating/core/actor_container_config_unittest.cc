@@ -4,7 +4,10 @@
 
 #include "components/origin_gating/core/actor_container_config.h"
 
+#include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -66,6 +69,16 @@ optimization_guide::proto::NavigationSource CreateOriginNavigationSource(
   origin->set_protocol(protocol);
   origin->set_host(host);
   origin->set_port(port);
+  return nav_source;
+}
+
+optimization_guide::proto::NavigationSource CreateSiteNavigationSource(
+    std::string host,
+    optimization_guide::proto::Protocol protocol =
+        optimization_guide::proto::Protocol::PROTOCOL_HTTPS) {
+  optimization_guide::proto::NavigationSource nav_source;
+  nav_source.mutable_source()->mutable_site()->set_protocol(protocol);
+  nav_source.mutable_source()->mutable_site()->set_domain(host);
   return nav_source;
 }
 
@@ -1006,6 +1019,96 @@ TEST_F(ActorContainerConfigTest, WssOrigin) {
   // Navigate to wss:// with different host should not be allowed.
   EXPECT_FALSE(config.IsActuationAllowed(kCrossSiteWsOrigin));
   EXPECT_FALSE(config.IsNavigationAllowed(kWssOrigin, kCrossSiteWssOrigin));
+}
+
+TEST_F(ActorContainerConfigTest, ToDebugStringEmpty) {
+  ActorContainerConfig config((AgentContainerConfig()));
+
+  EXPECT_THAT(config.ToDebugValue(), base::test::IsJson(R"({"rules": {}})"));
+}
+
+TEST_F(ActorContainerConfigTest, ToDebugStringWildcard) {
+  optimization_guide::proto::AgentContainerConfig config_proto;
+  *config_proto.add_location_rules() = CreateWildcardLocationRule();
+  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
+      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
+  config_proto.mutable_location_rules(0)
+      ->mutable_metadata()
+      ->add_accessible_resources(
+          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
+  ActorContainerConfig config(config_proto);
+
+  EXPECT_THAT(config.ToDebugValue(), base::test::IsJson(R"json({
+        "rules": {
+            "Wildcard": {
+                "capabilities": ["CAPABILITY_ALL"],
+                "accessible_resources": ["RESOURCE_SESSION"],
+                "navigation_sources": []
+            }
+        }
+    })json"));
+}
+
+TEST_F(ActorContainerConfigTest, ToDebugStringSiteWithNavigationSource) {
+  optimization_guide::proto::AgentContainerConfig config_proto;
+  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
+  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
+      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
+  config_proto.mutable_location_rules(0)
+      ->mutable_metadata()
+      ->add_accessible_resources(
+          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
+  *config_proto.mutable_location_rules(0)->add_navigation_sources() =
+      CreateOriginNavigationSource("a.example.com");
+  ActorContainerConfig config(config_proto);
+
+  EXPECT_THAT(config.ToDebugValue(), base::test::IsJson(R"json({
+        "rules": {
+            "Site(https://example.com)": {
+                "capabilities": ["CAPABILITY_ALL"],
+                "accessible_resources": ["RESOURCE_SESSION"],
+                "navigation_sources": ["Origin(https://a.example.com)"]
+            }
+        }
+  })json"));
+}
+
+TEST_F(ActorContainerConfigTest, ToDebugStringMultipleRules) {
+  optimization_guide::proto::AgentContainerConfig config_proto;
+  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
+  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
+      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
+  config_proto.mutable_location_rules(0)
+      ->mutable_metadata()
+      ->add_accessible_resources(
+          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
+  *config_proto.mutable_location_rules(0)->add_navigation_sources() =
+      CreateOriginNavigationSource("a.example.com");
+
+  *config_proto.add_location_rules() = CreateSiteLocationRule("foo.com");
+  config_proto.mutable_location_rules(1)->mutable_metadata()->add_capabilities(
+      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
+  *config_proto.mutable_location_rules(1)->add_navigation_sources() =
+      CreateOriginNavigationSource("bar.example.com");
+  *config_proto.mutable_location_rules(1)->add_navigation_sources() =
+      CreateSiteNavigationSource("other.com");
+  ActorContainerConfig config(config_proto);
+
+  EXPECT_THAT(config.ToDebugValue(), base::test::IsJson(R"json({
+        "rules": {
+            "Site(https://example.com)": {
+                "capabilities": ["CAPABILITY_ALL"],
+                "accessible_resources": ["RESOURCE_SESSION"],
+                "navigation_sources": ["Origin(https://a.example.com)"]
+            },
+            "Site(https://foo.com)": {
+                "capabilities": ["CAPABILITY_ALL"],
+                "accessible_resources": [],
+                "navigation_sources": ["Origin(https://bar.example.com)",
+                                      "Site(https://other.com)"]
+            }
+        }
+  })json"));
 }
 
 #if BUILDFLAG(USE_FUZZING_ENGINE)

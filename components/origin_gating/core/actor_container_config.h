@@ -17,6 +17,10 @@
 #include "net/base/schemeful_site.h"
 #include "url/origin.h"
 
+namespace base {
+class Value;
+}  // namespace base
+
 namespace origin_gating {
 
 // ActorContainerConfig manages client-side security boundaries for the
@@ -41,6 +45,10 @@ class ActorContainerConfig {
   // Indicates whether or not the actor can actuate when the browser is
   // navigated to `location_origin`.
   bool IsActuationAllowed(const url::Origin& location_origin) const;
+
+  // Serializes `this` as a Value for debugging. Note: the precise format of
+  // this object is not guaranteed to be stable.
+  base::Value ToDebugValue() const;
 
  private:
   // Represents a wildcard location, i.e. matches every origin/site.
@@ -91,6 +99,9 @@ class ActorContainerConfig {
 
     bool MatchesNavigationSource(const url::Origin& source_origin) const;
     bool CanNavigate() const;
+
+    // Serializes `this` as a value for debugging.
+    base::Value ToDebugValue() const;
 
    private:
     std::vector<Location> navigation_sources_;
