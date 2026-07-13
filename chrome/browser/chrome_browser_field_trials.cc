@@ -40,6 +40,7 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/audio/audio_features.h"
@@ -223,6 +224,13 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/453856709): Remove when we determine how to ensure
   // SitePerProcess is enabled for all necessary or eligible Android devices.
   feature_overrides.EnableFeature(::features::kSitePerProcess);
+
+  // Enable sandboxed process service limit for desktop platforms.
+  // This should be on for all devices where SitePerProcess is on by default.
+  // TODO(crbug.com/534420192): Remove when this is enabled by default for all
+  // relevant Android devices.
+  feature_overrides.EnableFeature(
+      features::kSandboxedProcessServiceLimitOnAndroid);
 
   // By setting the kSiteIsolationEnableMemoryThresholdAndroid feature, we make
   // sure that site isolation (enabled by kSitePerProcess above) is not disabled
