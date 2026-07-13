@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -85,6 +86,8 @@ class AtMemoryEnablementUtilsTest : public testing::Test {
   AtMemoryEnablementUtilsTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kAutofillAtMemory, {{"at_memory_eligible_tiers", ""}});
+    autofill_client().GetPrefs()->registry()->RegisterIntegerPref(
+        optimization_guide::prefs::kGeminiSettings, 0);
     // Enable the toggle by default in tests since it represents the default
     // active state.
     autofill_client().GetPrefs()->SetUserPref(
@@ -134,6 +137,27 @@ TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_AtMemoryDisabled) {
       AtMemoryAction::kAllowCustomizeAtMemoryShortcut, autofill_client()));
 }
 
+// Tests that `MayPerformAtMemoryAction` returns false when the Gemini settings
+// enterprise policy disables Gemini.
+TEST_F(AtMemoryEnablementUtilsTest,
+       MayPerformAtMemoryAction_GeminiPolicyDisabled) {
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
+      .WillRepeatedly(
+          Return(personal_context::PersonalContextEligibilityState::kEligible));
+
+  // Value 1 means not available.
+  // components/policy/resources/templates/policy_definitions/GenerativeAI/GeminiSettings.yaml
+  autofill_client().GetPrefs()->SetInteger(
+      optimization_guide::prefs::kGeminiSettings, 1);
+
+  EXPECT_FALSE(MayPerformAtMemoryAction(
+      AtMemoryAction::kTriggerSearchUI, autofill_client(),
+      autofill_client().GetLastCommittedPrimaryMainFrameURL()));
+  EXPECT_FALSE(MayPerformAtMemoryAction(AtMemoryAction::kShowAtMemoryInSettings,
+                                        autofill_client()));
+  EXPECT_FALSE(MayPerformAtMemoryAction(
+      AtMemoryAction::kAllowCustomizeAtMemoryShortcut, autofill_client()));
+}
 
 // Tests that `MayPerformAtMemoryAction` returns false when
 // `personal_context_service` is null.
@@ -183,7 +207,7 @@ TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_NullPrefService) {
       AtMemoryAction::kTriggerSearchUI, &personal_context_service_,
       autofill_client().GetSubscriptionEligibilityService(), nullptr, nullptr,
       nullptr, GURL("https://example.com")));
-  EXPECT_TRUE(MayPerformAtMemoryAction(
+  EXPECT_FALSE(MayPerformAtMemoryAction(
       AtMemoryAction::kShowAtMemoryInSettings, &personal_context_service_,
       autofill_client().GetSubscriptionEligibilityService(), nullptr, nullptr,
       nullptr));
@@ -405,99 +429,93 @@ TEST_F(AtMemoryEnablementUtilsTest,
                                         autofill_client(), blocked_main));
 }
 
+class AtMemoryEnablementUtilsFeatureCheckedLastTest : public testing::Test {
+ protected:
+  AtMemoryEnablementUtilsFeatureCheckedLastTest() {
+    feature_list_.InitAndDisableFeature(features::kAutofillAtMemory);
+    registry_->RegisterBooleanPref(
+        personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+        true);
+    registry_->RegisterIntegerPref(optimization_guide::prefs::kGeminiSettings,
+                                   0);
+    pref_service_ = std::make_unique<TestPrefService>(pref_store_, registry_);
+
+    autofill_client_.set_last_committed_primary_main_frame_url(
+        GURL("https://example.com"));
+  }
+
+  TestAutofillClient& autofill_client() { return autofill_client_; }
+
+  base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+  scoped_refptr<CountingPrefStore> pref_store_ = base::MakeRefCounted<
+      CountingPrefStore>(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus);
+  scoped_refptr<PrefRegistrySimple> registry_ =
+      base::MakeRefCounted<PrefRegistrySimple>();
+  std::unique_ptr<TestPrefService> pref_service_;
+  testing::NiceMock<personal_context::MockPersonalContextEligibilityService>
+      personal_context_service_;
+  TestAutofillClient autofill_client_;
+};
+
 // Tests that when the feature is disabled, the toggle pref is still checked
 // if the user is eligible but the toggle is OFF. This verifies that the
 // toggle check occurs before the feature flag check.
-TEST_F(AtMemoryEnablementUtilsTest,
-       MayPerformAtMemoryAction_FeatureCheckedLast_ToggleOff) {
-  auto pref_store = base::MakeRefCounted<CountingPrefStore>(
-      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus);
-  auto registry = base::MakeRefCounted<PrefRegistrySimple>();
-  registry->RegisterBooleanPref(
-      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
-      true);
-  auto pref_service = std::make_unique<TestPrefService>(pref_store, registry);
-
-  base::test::ScopedFeatureList disabled_features;
-  disabled_features.InitAndDisableFeature(features::kAutofillAtMemory);
-
+TEST_F(AtMemoryEnablementUtilsFeatureCheckedLastTest, ToggleOff) {
   ON_CALL(personal_context_service_, GetEligibilityState)
       .WillByDefault(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
-  pref_store->SetBoolean(
+  pref_store_->SetBoolean(
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
       false);
 
   EXPECT_FALSE(MayPerformAtMemoryAction(
       AtMemoryAction::kTriggerSearchUI, &personal_context_service_,
-      /*subscription_eligibility_service=*/nullptr, pref_service.get(),
+      /*subscription_eligibility_service=*/nullptr, pref_service_.get(),
       /*google_groups_manager=*/nullptr,
       autofill_client().GetAutofillOptimizationGuideDecider(),
       autofill_client().GetLastCommittedPrimaryMainFrameURL()));
-  EXPECT_EQ(pref_store->call_count(), 1);
+  EXPECT_EQ(pref_store_->call_count(), 1);
 }
 
 // Tests that when the feature is disabled, the toggle pref is checked
 // if the user is eligible and the toggle is ON.
-TEST_F(AtMemoryEnablementUtilsTest,
-       MayPerformAtMemoryAction_FeatureCheckedLast_ToggleOn) {
-  auto pref_store = base::MakeRefCounted<CountingPrefStore>(
-      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus);
-  auto registry = base::MakeRefCounted<PrefRegistrySimple>();
-  registry->RegisterBooleanPref(
-      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
-      true);
-  auto pref_service = std::make_unique<TestPrefService>(pref_store, registry);
-
-  base::test::ScopedFeatureList disabled_features;
-  disabled_features.InitAndDisableFeature(features::kAutofillAtMemory);
-
+TEST_F(AtMemoryEnablementUtilsFeatureCheckedLastTest, ToggleOn) {
   ON_CALL(personal_context_service_, GetEligibilityState)
       .WillByDefault(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
-  pref_store->SetBoolean(
+  pref_store_->SetBoolean(
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
       true);
 
   EXPECT_FALSE(MayPerformAtMemoryAction(
       AtMemoryAction::kTriggerSearchUI, &personal_context_service_,
-      /*subscription_eligibility_service=*/nullptr, pref_service.get(),
+      /*subscription_eligibility_service=*/nullptr, pref_service_.get(),
       /*google_groups_manager=*/nullptr,
       autofill_client().GetAutofillOptimizationGuideDecider(),
       autofill_client().GetLastCommittedPrimaryMainFrameURL()));
-  EXPECT_EQ(pref_store->call_count(), 1);
+  EXPECT_EQ(pref_store_->call_count(), 1);
 }
 
 // Tests that if the user is NOT eligible, the function returns early
 // without checking the toggle pref, verifying that eligibility is checked
 // before the toggle.
-TEST_F(AtMemoryEnablementUtilsTest,
-       MayPerformAtMemoryAction_FeatureCheckedLast_NotEligible) {
-  auto pref_store = base::MakeRefCounted<CountingPrefStore>(
-      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus);
-  auto registry = base::MakeRefCounted<PrefRegistrySimple>();
-  registry->RegisterBooleanPref(
-      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
-      true);
-  auto pref_service = std::make_unique<TestPrefService>(pref_store, registry);
-
-  base::test::ScopedFeatureList disabled_features;
-  disabled_features.InitAndDisableFeature(features::kAutofillAtMemory);
-
+TEST_F(AtMemoryEnablementUtilsFeatureCheckedLastTest, NotEligible) {
   ON_CALL(personal_context_service_, GetEligibilityState)
       .WillByDefault(Return(personal_context::PersonalContextEligibilityState::
                                 kDisabledNotEligible));
-  pref_store->SetBoolean(
+  pref_store_->SetBoolean(
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
       true);
 
   EXPECT_FALSE(MayPerformAtMemoryAction(
       AtMemoryAction::kTriggerSearchUI, &personal_context_service_,
-      /*subscription_eligibility_service=*/nullptr, pref_service.get(),
+      /*subscription_eligibility_service=*/nullptr, pref_service_.get(),
       /*google_groups_manager=*/nullptr,
       autofill_client().GetAutofillOptimizationGuideDecider(),
       autofill_client().GetLastCommittedPrimaryMainFrameURL()));
-  EXPECT_EQ(pref_store->call_count(), 0);
+  EXPECT_EQ(pref_store_->call_count(), 0);
 }
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

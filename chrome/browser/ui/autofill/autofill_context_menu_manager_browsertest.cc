@@ -44,6 +44,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -1087,6 +1088,8 @@ class AtMemoryContextMenuManagerTest
     BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
     personal_context::prefs::RegisterProfilePrefs(
         autofill_client()->GetPrefs()->registry());
+    autofill_client()->GetPrefs()->registry()->RegisterIntegerPref(
+        optimization_guide::prefs::kGeminiSettings, 0);
     autofill_client()->GetPrefs()->SetBoolean(
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         true);
