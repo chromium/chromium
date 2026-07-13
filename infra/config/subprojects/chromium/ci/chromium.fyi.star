@@ -2822,16 +2822,11 @@ ci.builder(
         ],
     ),
     targets = targets.bundle(
-        targets = [
+        additional_compile_targets = [
             "browser_tests",
+            "chrome",
             "interactive_ui_tests",
             "unit_tests",
-        ],
-        additional_compile_targets = [
-            "chrome",
-        ],
-        mixins = [
-            "linux-jammy",
         ],
     ),
     os = os.LINUX_DEFAULT,
@@ -2870,16 +2865,11 @@ ci.builder(
         ],
     ),
     targets = targets.bundle(
-        targets = [
+        additional_compile_targets = [
             "browser_tests",
+            "chrome",
             "interactive_ui_tests",
             "unit_tests",
-        ],
-        additional_compile_targets = [
-            "chrome",
-        ],
-        mixins = [
-            "linux-jammy",
         ],
     ),
     os = os.LINUX_DEFAULT,
