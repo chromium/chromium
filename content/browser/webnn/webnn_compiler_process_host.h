@@ -46,9 +46,6 @@ class CONTENT_EXPORT WebNNCompilerProcessHost {
       mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote);
 
  private:
-  // Launches the WebNN Compiler utility process and returns its mojo remote.
-  mojo::Remote<webnn::mojom::WebNNCompilerService> LaunchCompilerProcess();
-
   void OnEpsResolvedForCompilerContext(
       webnn::mojom::CreateContextOptionsPtr context_options,
       const webnn::ContextProperties& context_properties,

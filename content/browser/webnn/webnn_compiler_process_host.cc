@@ -58,6 +58,34 @@ std::string EpDeviceToString(const webnn::EpDeviceInfo& device) {
                        WebnnDeviceTypeToString(device.device_type), "]"});
 }
 
+// Launches the WebNN Compiler utility process and returns its mojo remote.
+// `device_type` is the target device type for this process and included in the
+// process display name.
+mojo::Remote<webnn::mojom::WebNNCompilerService> LaunchCompilerProcess(
+    webnn::mojom::Device device_type) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  ServiceProcessHost::Options options;
+  options.WithDisplayName(base::StrCat(
+      {"WebNN Compiler (", WebnnDeviceTypeToString(device_type), ")"}));
+
+  // Only bypass MITIGATION_FORCE_MS_SIGNED_BINS when the browser was launched
+  // with --allow-third-party-modules (for testing with non-MS-signed DLLs).
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          sandbox::policy::switches::kAllowThirdPartyModules)) {
+    options.WithExtraCommandLineSwitches(
+        {sandbox::policy::switches::kAllowThirdPartyModules});
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          sandbox::policy::switches::kDisableWebNNCompilerSandbox)) {
+    LOG(WARNING) << "[WebNN] Compiler sandbox is disabled";
+  }
+
+  return ServiceProcessHost::Launch<webnn::mojom::WebNNCompilerService>(
+      std::move(options));
+}
+
 }  // namespace
 
 WebNNCompilerProcessHost::WebNNCompilerProcessHost() = default;
@@ -123,7 +151,7 @@ void WebNNCompilerProcessHost::OnEpsResolvedForCompilerContext(
 
   // Launch a new Compiler process for this device if not already running.
   if (!compiler_remote.is_bound()) {
-    compiler_remote = LaunchCompilerProcess();
+    compiler_remote = LaunchCompilerProcess(target_device.device_type);
     // Compiler process could not be launched — peer endpoints will observe a
     // disconnect.
     if (!compiler_remote.is_bound()) {
@@ -181,30 +209,6 @@ void WebNNCompilerProcessHost::OnDisconnected(
   LOG(ERROR) << "[WebNN] Compiler process disconnected unexpectedly for "
              << EpDeviceToString(device_info) << " (count: " << crash_count
              << ").";
-}
-
-mojo::Remote<webnn::mojom::WebNNCompilerService>
-WebNNCompilerProcessHost::LaunchCompilerProcess() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  ServiceProcessHost::Options options;
-  options.WithDisplayName("WebNN Compiler");
-
-  // Only bypass MITIGATION_FORCE_MS_SIGNED_BINS when the browser was launched
-  // with --allow-third-party-modules (for testing with non-MS-signed DLLs).
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          sandbox::policy::switches::kAllowThirdPartyModules)) {
-    options.WithExtraCommandLineSwitches(
-        {sandbox::policy::switches::kAllowThirdPartyModules});
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          sandbox::policy::switches::kDisableWebNNCompilerSandbox)) {
-    LOG(WARNING) << "[WebNN] Compiler sandbox is disabled";
-  }
-
-  return ServiceProcessHost::Launch<webnn::mojom::WebNNCompilerService>(
-      std::move(options));
 }
 
 }  // namespace content
