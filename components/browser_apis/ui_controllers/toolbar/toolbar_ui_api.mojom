@@ -79,6 +79,11 @@ interface ToolbarUIService {
   // passed to `OnNavigationControlsStateChanged()`.
   InvokePinnedToolbarAction(PinnedToolbarAction action_id);
 
+  // Called when whether the focus is inside or outside the location bar is
+  // changed. Note that focus on a subwidget (security icon, omnibox input,
+  // page actions, etc) count as focus being inside.
+  OnLocationBarFocusWithinChanged(bool focus_inside);
+
   // Called when an LHS chip is pressed (e.g., pointerdown).
   OnLhsChipMousePressed(LhsChipIdentifier identifier);
 

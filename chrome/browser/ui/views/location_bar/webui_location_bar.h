@@ -60,6 +60,7 @@ class WebUILocationBar : public LocationBar,
   void OnThemeChanged();
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnOmniboxAction(
       toolbar_ui_api::mojom::OmniboxActionPtr action);
+  void SetFocusWithin(bool focused);
 
   // `edit_flags` use blink::ContextMenuDataEditFlags.
   void HandleContextMenu(views::Widget* widget,
@@ -97,6 +98,7 @@ class WebUILocationBar : public LocationBar,
   bool IsFullscreen() const override;
   bool IsEditingOrEmpty() const override;
   bool IsMouseHovered() const override;
+  bool IsFocusWithin() const override;
   void InvalidateLayout() override;
   gfx::Rect Bounds() const override;
   gfx::Rect BoundsInScreen() const override;
@@ -163,6 +165,7 @@ class WebUILocationBar : public LocationBar,
 
   void UpdateLocationBarFlagsState();
   void UpdateSelectedKeywordState();
+  void RefreshAiModePageAction();
 
   // Updates the state of the LHS location bar chips (e.g. security chip) and
   // pushes it to the WebUI.
@@ -212,6 +215,11 @@ class WebUILocationBar : public LocationBar,
   std::unique_ptr<OmniboxPopupViewWebUI> omnibox_popup_view_;
 
   bool is_initialized_ = false;
+
+  // Keeps track of whether any of our descendant elements has focus.
+  // Updated by SetFocusWithin, which is ultimately called via mojo from
+  // the HTML side.
+  bool focus_within_ = false;
 
   toolbar_ui_api::IconHandle location_icon_;
   security_state::SecurityLevel last_update_security_level_ =

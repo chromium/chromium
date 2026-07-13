@@ -94,6 +94,7 @@ class MockToolbarUIServiceDelegate
               InvokePinnedToolbarAction,
               (toolbar_ui_api::mojom::PinnedToolbarAction action_id),
               (override));
+  MOCK_METHOD(void, OnLocationBarFocusWithinChanged, (bool), (override));
   MOCK_METHOD(void,
               OnLhsChipMousePressed,
               (toolbar_ui_api::mojom::LhsChipIdentifier),

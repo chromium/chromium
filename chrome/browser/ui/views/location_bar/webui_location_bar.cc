@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
@@ -168,6 +169,13 @@ WebUILocationBar::OnOmniboxAction(
   return result;
 }
 
+void WebUILocationBar::SetFocusWithin(bool focused) {
+  focus_within_ = focused;
+
+  // Focus state affects whether AI mode button is visible or not.
+  RefreshAiModePageAction();
+}
+
 void WebUILocationBar::FocusLocation(bool is_user_initiated,
                                      bool clear_focus_if_failed) {
   omnibox_view_->SetFocus(is_user_initiated);
@@ -312,6 +320,7 @@ void WebUILocationBar::OnChanged() {
   UpdateLhsChipsState();
   UpdateLocationBarFlagsState();
   UpdateSelectedKeywordState();
+  RefreshAiModePageAction();
 }
 
 void WebUILocationBar::UpdateWithoutTabRestore() {
@@ -342,6 +351,10 @@ bool WebUILocationBar::IsEditingOrEmpty() const {
 bool WebUILocationBar::IsMouseHovered() const {
   return IsVisible() && BoundsInScreen().Contains(
                             display::Screen::Get()->GetCursorScreenPoint());
+}
+
+bool WebUILocationBar::IsFocusWithin() const {
+  return focus_within_;
 }
 
 void WebUILocationBar::InvalidateLayout() {
@@ -813,4 +826,14 @@ void WebUILocationBar::UpdateSelectedKeywordState() {
     keyword_state->icon = keyword_icon_;
   }
   toolbar_delegate_->OnSelectedKeywordChanged(std::move(keyword_state));
+}
+
+void WebUILocationBar::RefreshAiModePageAction() {
+  auto* aim_page_action_controller =
+      omnibox::AiModePageActionController::From(browser_);
+  if (aim_page_action_controller) {
+    aim_page_action_controller->UpdatePageAction();
+  }
+
+  // TODO(crbug.com/491707187): kShowRhsAimHint support, if relevant.
 }

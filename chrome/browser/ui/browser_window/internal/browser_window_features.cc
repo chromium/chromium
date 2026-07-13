@@ -905,13 +905,12 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
     if (browser_view && IsPageActionMigrated(PageActionIconType::kAiMode) &&
         AiModeButtonServiceFactory::GetForProfile(profile)) {
-      LocationBarView* location_bar_view = browser_view->GetLocationBarView();
-      // TODO(crbug.com/491707187): Make it work with any LocationBar
-      if (location_bar_view) {
+      LocationBar* location_bar = browser_view->GetLocationBar();
+      if (location_bar) {
         ai_mode_page_action_controller_ =
             GetUserDataFactory()
                 .CreateInstance<omnibox::AiModePageActionController>(
-                    *browser, *browser, *profile, *location_bar_view);
+                    *browser, *browser, *profile, *location_bar);
       }
     }
 

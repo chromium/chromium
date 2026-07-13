@@ -48,6 +48,7 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
     return Promise.resolve({result: {}});
   }
   onAppMenuFocusChanged(_focused: boolean) {}
+  onLocationBarFocusWithinChanged(_focusInside: boolean) {}
   onLhsChipMousePressed() {}
   onLhsChipClicked() {}
   onLhsChipCollapseAnimationEnded() {}

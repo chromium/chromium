@@ -119,6 +119,10 @@ bool TestBrowserWindow::TestLocationBar::IsMouseHovered() const {
   return false;
 }
 
+bool TestBrowserWindow::TestLocationBar::IsFocusWithin() const {
+  return false;
+}
+
 gfx::Rect TestBrowserWindow::TestLocationBar::Bounds() const {
   return gfx::Rect();
 }

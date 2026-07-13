@@ -44,6 +44,7 @@ class WebUIStubLocationBar : public LocationBar {
   bool IsFullscreen() const override;
   bool IsEditingOrEmpty() const override;
   bool IsMouseHovered() const override;
+  bool IsFocusWithin() const override;
   void InvalidateLayout() override;
   gfx::Rect Bounds() const override;
   gfx::Rect BoundsInScreen() const override;

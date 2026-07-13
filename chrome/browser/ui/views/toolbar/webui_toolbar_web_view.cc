@@ -1228,6 +1228,12 @@ void WebUIToolbarWebView::OnLhsChipsStateChanged(
   }
 }
 
+void WebUIToolbarWebView::OnLocationBarFocusWithinChanged(bool focused) {
+  if (location_bar_) {
+    location_bar_->SetFocusWithin(focused);
+  }
+}
+
 void WebUIToolbarWebView::OnLhsChipMousePressed(
     toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
   if (location_bar_) {

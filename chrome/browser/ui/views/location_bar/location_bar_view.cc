@@ -2082,6 +2082,11 @@ bool LocationBarView::IsMouseHovered() const {
   return views::View::IsMouseHovered();
 }
 
+bool LocationBarView::IsFocusWithin() const {
+  const views::FocusManager* const focus_manager = GetFocusManager();
+  return focus_manager && Contains(focus_manager->GetFocusedView());
+}
+
 bool LocationBarView::OpenContextMenu() {
   if (browser_ && ShouldShowAddContextButton()) {
     auto* web_contents = GetWrappedWebContents();

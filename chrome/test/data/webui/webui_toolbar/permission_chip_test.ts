@@ -67,6 +67,8 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
   executeExtensionAction(_extensionId: string) {}
   showExtensionContextMenu(_extensionId: string, _source: MenuSourceType) {}
 
+  onLocationBarFocusWithinChanged(_focusInside: boolean) {}
+
   onLhsChipMousePressed(id: LhsChipIdentifier) {
     this.methodCalled('onLhsChipMousePressed', id);
   }

@@ -12,6 +12,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
+#include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_drag_state.h"
 #include "chrome/grit/generated_resources.h"
@@ -64,6 +67,7 @@ WebUIReadOnlyOmnibox::WebUIReadOnlyOmnibox(LocationBar* location_bar,
     : OmniboxView(controller),
       OmniboxContextMenuMixin<ui::SimpleMenuModel::Delegate>(location_bar,
                                                              controller),
+      location_bar_(location_bar),
       update_propagator_(update_propagator),
       selection_(gfx::Range::InvalidRange()) {}
 
@@ -239,8 +243,9 @@ void WebUIReadOnlyOmnibox::SetFocus(bool is_user_initiated) {
 }
 
 bool WebUIReadOnlyOmnibox::AimButtonVisible() const {
-  NOTIMPLEMENTED();
-  return false;
+  return location_bar_ &&
+         omnibox::AiModePageActionController::From(location_bar_->GetBrowser())
+             ->IsVisible();
 }
 
 void WebUIReadOnlyOmnibox::ApplyCaretVisibility() {

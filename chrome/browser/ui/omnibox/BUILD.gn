@@ -46,6 +46,7 @@ source_set("omnibox") {
       "//chrome/browser/bitmap_fetcher",
       "//chrome/browser/page_content_annotations:extraction_service",
       "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/page_action",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/common",
       "//components/infobars/core",

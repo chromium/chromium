@@ -145,6 +145,11 @@ bool WebUIStubLocationBar::IsMouseHovered() const {
   return false;
 }
 
+bool WebUIStubLocationBar::IsFocusWithin() const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 void WebUIStubLocationBar::InvalidateLayout() {
   NOTIMPLEMENTED();
 }

@@ -179,6 +179,12 @@ void ToolbarUIService::InvokePinnedToolbarAction(
   }
 }
 
+void ToolbarUIService::OnLocationBarFocusWithinChanged(bool focused) {
+  if (delegate_) {
+    delegate_->OnLocationBarFocusWithinChanged(focused);
+  }
+}
+
 void ToolbarUIService::OnLhsChipMousePressed(
     toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
   if (delegate_) {

@@ -163,6 +163,7 @@ class WebUIReadOnlyOmnibox
 
   ui::DomKey LookupAndCacheDomKey(std::string_view key_str);
 
+  raw_ptr<LocationBar> location_bar_;  // owns `this`
   raw_ref<UpdatePropagator> update_propagator_;
 
   absl::flat_hash_map<std::string, ui::DomKey> key_code_cache_;

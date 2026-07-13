@@ -109,12 +109,22 @@ class AiModePageActionControllerInteractiveUiTest
   }
 
   InteractiveTestApi::MultiStep CheckChipVisible(bool visible) {
+    BrowserWindowInterface* bwi = browser();
     return visible
-               ? PageActionInteractiveTestMixin::WaitForPageActionChipVisible(
-                     kActionAiMode)
+               ? ui::test::InteractiveTestApi::Steps(
+                     PageActionInteractiveTestMixin::
+                         WaitForPageActionChipVisible(kActionAiMode),
+                     Do([bwi]() {
+                       EXPECT_TRUE(
+                           AiModePageActionController::From(bwi)->IsVisible());
+                     }))
                : ui::test::InteractiveTestApi::Steps(
                      ui::test::InteractiveTestApi::WaitForHide(
-                         kAiModePageActionIconElementId));
+                         kAiModePageActionIconElementId),
+                     Do([bwi]() {
+                       EXPECT_FALSE(
+                           AiModePageActionController::From(bwi)->IsVisible());
+                     }));
   }
 
   ui::InteractionSequence::StepBuilder WaitForAimPopup() {

@@ -328,6 +328,7 @@ class TestLocationBar : public LocationBar {
   bool IsFullscreen() const override { return false; }
   bool IsEditingOrEmpty() const override { return false; }
   bool IsMouseHovered() const override { return false; }
+  bool IsFocusWithin() const override { return false; }
   void InvalidateLayout() override {}
   gfx::Rect Bounds() const override { return gfx::Rect(); }
   gfx::Rect BoundsInScreen() const override { return gfx::Rect(); }
