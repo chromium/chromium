@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
 
+#include "base/callback_list.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
@@ -162,11 +163,20 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   // performed last after all other layout steps.
   virtual void DoPostLayoutCleanup();
 
- private:
   // Called when the layout params are updated mid-layout (typically in
   // fullscreen after a size change in the top container overlay).
   virtual void OnLayoutParamsChanged(const BrowserLayoutParams& old_params,
                                      const BrowserLayoutParams& new_params);
+
+  // Respond to changes in glass mode. Will only be called on systems which are
+  // glass-eligible. Use `in_glass_mode()` to determine if glass changed to on
+  // or off.
+  virtual void OnGlassModeChanged();
+
+  bool in_glass_mode() const { return in_glass_mode_; }
+
+ private:
+  void OnGlassModeChangedCallback(bool in_glass_mode);
 
   // Retrieve dimensions of modal dialogs.
 
@@ -182,6 +192,8 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
 
   int dialog_top_ = 0;
   int dialog_bottom_ = 0;
+  bool in_glass_mode_ = false;
+  base::CallbackListSubscription glass_mode_subscription_;
   bool reentrancy_guard_ = false;
 };
 

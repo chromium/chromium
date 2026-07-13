@@ -214,12 +214,6 @@ class GlobalFeatures {
     return tab_drag_session_manager_.get();
   }
 
-#if BUILDFLAG(IS_MAC)
-  GlassFrameService* glass_frame_service() {
-    return glass_frame_service_.get();
-  }
-#endif
-
  protected:
   GlobalFeatures();
 
@@ -234,10 +228,6 @@ class GlobalFeatures {
 #endif
   virtual std::unique_ptr<GlobalBrowserCollection>
   CreateGlobalBrowserCollection();
-
-#if BUILDFLAG(IS_MAC)
-  virtual std::unique_ptr<GlassFrameService> CreateGlassFrameService();
-#endif
 
  private:
   static ui::UserDataFactoryWithOwner<BrowserProcess>& GetUserDataFactory();

@@ -29,10 +29,18 @@ class GlassFrameServiceInteractiveTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, GetInstance) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
   EXPECT_TRUE(GlassFrameService::GetInstance());
 }
 
 IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, SingleWindowEligible) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
   BrowserWindowInterface* const browser1 = browser();
   EXPECT_TRUE(
       GlassFrameService::GetInstance()->IsBrowserWindowEligible(browser1));
@@ -40,6 +48,10 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, SingleWindowEligible) {
 
 IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
                        ThreeWindowsActivationSwap) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
   BrowserWindowInterface* const browser1 = browser();
   BrowserWindowInterface* const browser2 = CreateBrowser(browser()->profile());
   BrowserWindowInterface* const browser3 = CreateBrowser(browser()->profile());
@@ -69,6 +81,10 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
                        ThreeWindowsCloseMiddle) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
   BrowserWindowInterface* const browser1 = browser();
   BrowserWindowInterface* const browser2 = CreateBrowser(browser()->profile());
   BrowserWindowInterface* const browser3 = CreateBrowser(browser()->profile());
@@ -92,6 +108,10 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, CallbackNotified) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
   GlassFrameService* const glass_frame_service =
       GlassFrameService::GetInstance();
   BrowserWindowInterface* const browser1 = browser();
@@ -137,6 +157,10 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, CallbackNotified) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, LocalStatePref) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
   PrefService* const local_state = g_browser_process->local_state();
   ASSERT_TRUE(local_state);
   EXPECT_TRUE(local_state->GetBoolean(prefs::kGlassFrameEnabled));
