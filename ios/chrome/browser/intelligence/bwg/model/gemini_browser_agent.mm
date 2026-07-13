@@ -395,6 +395,7 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
 }
 
 GeminiBrowserAgent::~GeminiBrowserAgent() {
+  LogLiveSessionMetrics(/*floaty_dismissed=*/true);
   if (identity_manager_) {
     identity_manager_->RemoveObserver(this);
     identity_manager_ = nullptr;
@@ -1032,19 +1033,34 @@ void GeminiBrowserAgent::OnProcessingStatusChanged(
     return;
   }
 
+  LogLiveStatusTransition(processing_status_, processing_status);
+
   processing_status_ = processing_status;
   switch (processing_status) {
     case ios::provider::GeminiClientMode::kTranscribing:
       RequestPageContextGeneration();
       break;
+    case ios::provider::GeminiClientMode::kThinking:
+      live_thinking_start_time_ = base::TimeTicks::Now();
+      break;
     case ios::provider::GeminiClientMode::kResponding: {
+      live_turn_count_++;
+      live_response_start_time_ = base::TimeTicks::Now();
+      if (!live_thinking_start_time_.is_null()) {
+        base::TimeDelta latency =
+            live_response_start_time_ - live_thinking_start_time_;
+        RecordGeminiLiveResponseLatency(latency);
+        live_thinking_start_time_ = base::TimeTicks();
+      }
       // Update partial page context (i.e., live sharing context label) when
       // transitioning out of the transcribing (i.e., speaking) state.
       UpdateFloatyWithPartialPageContext();
       break;
     }
     case ios::provider::GeminiClientMode::kDormant:
+      RecordGeminiLiveDormantReason(dormant_reason);
       HandleDormantStatus(dormant_reason);
+      LogLiveSessionMetrics();
       break;
     default:
       // No-op.
@@ -1086,6 +1102,46 @@ void GeminiBrowserAgent::HandleDormantStatus(
     is_showing_live_session_dormant_snackbar_ = true;
     ShowLiveSessionDormantSnackbar(
         IDS_IOS_GEMINI_LIVE_GENERAL_DORMANT_SNACKBAR);
+  }
+}
+
+void GeminiBrowserAgent::LogLiveStatusTransition(
+    ios::provider::GeminiClientMode old_status,
+    ios::provider::GeminiClientMode new_status) {
+  if (old_status == ios::provider::GeminiClientMode::kResponding &&
+      new_status != ios::provider::GeminiClientMode::kResponding) {
+    if (!live_response_start_time_.is_null()) {
+      base::TimeDelta duration =
+          base::TimeTicks::Now() - live_response_start_time_;
+      RecordGeminiLiveResponseDuration(duration);
+      live_response_start_time_ = base::TimeTicks();
+    }
+  }
+
+  if (old_status == ios::provider::GeminiClientMode::kThinking &&
+      new_status != ios::provider::GeminiClientMode::kResponding) {
+    live_thinking_start_time_ = base::TimeTicks();
+  }
+}
+
+void GeminiBrowserAgent::LogLiveSessionMetrics(bool floaty_dismissed) {
+  if (!live_session_start_time_.is_null() &&
+      (floaty_dismissed || !IsInGeminiLiveMode())) {
+    live_session_accumulated_duration_ +=
+        base::TimeTicks::Now() - live_session_start_time_;
+    live_session_start_time_ = base::TimeTicks();
+
+    RecordGeminiLiveTurnCount(live_turn_count_);
+    live_turn_count_ = 0;
+    live_response_start_time_ = base::TimeTicks();
+    live_thinking_start_time_ = base::TimeTicks();
+  }
+
+  if (floaty_dismissed) {
+    if (!live_session_accumulated_duration_.is_zero()) {
+      RecordGeminiLiveAccumulatedDuration(live_session_accumulated_duration_);
+      live_session_accumulated_duration_ = base::TimeDelta();
+    }
   }
 }
 
@@ -1135,7 +1191,14 @@ void GeminiBrowserAgent::OnGeminiLiveUserDidPressStopButton() {
 }
 
 void GeminiBrowserAgent::OnModeChanged(ios::provider::GeminiViewMode mode) {
-  // TODO(crbug.com/513271981): Record metrics for mode changes.
+  if (mode == ios::provider::GeminiViewMode::kLive) {
+    if (live_session_start_time_.is_null()) {
+      live_session_start_time_ = base::TimeTicks::Now();
+      live_turn_count_ = 0;
+    }
+  } else {
+    LogLiveSessionMetrics();
+  }
 }
 
 void GeminiBrowserAgent::DismissGeminiFromOtherWindows(
@@ -1186,6 +1249,8 @@ void GeminiBrowserAgent::DismissFloaty() {
   if (is_floaty_temporarily_hidden_) {
     return;
   }
+
+  LogLiveSessionMetrics(/*force=*/true);
 
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForProfile(browser_->GetProfile());

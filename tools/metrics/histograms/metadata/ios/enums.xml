@@ -813,6 +813,26 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiCameraPickerResult) -->
 
+<!-- LINT.IfChange(IOSGeminiDormantReason) -->
+
+<enum name="IOSGeminiDormantReason">
+  <summary>
+    Reasons why the Gemini Live session transitioned to dormant.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Interrupted By External Audio"/>
+  <int value="2" label="Low Volume In Background"/>
+  <int value="3" label="Low Volume In Foreground"/>
+  <int value="4" label="Inactivity Timeout"/>
+  <int value="5" label="Long Interaction Timeout"/>
+  <int value="6" label="Moved To Background When Mic Off"/>
+  <int value="7" label="User Stop"/>
+  <int value="8" label="User Pause"/>
+  <int value="9" label="Server Pause"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiDormantReason) -->
+
 <!-- LINT.IfChange(IOSGeminiEntryPoint) -->
 
 <enum name="IOSGeminiEntryPoint">

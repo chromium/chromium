@@ -2898,6 +2898,59 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.Live.AccumulatedDuration" units="ms"
+    expires_after="2027-02-22">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Tracks the total active voice time spent across all Live segments within a
+    single overall Gemini interaction (until the Gemini is dismissed). Recorded
+    when the Gemini floaty/interaction is dismissed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.Live.DormantReason" enum="IOSGeminiDormantReason"
+    expires_after="2027-02-22">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The reason why a Gemini Live session transitioned to the dormant state
+    (e.g., timeout, low volume, backgrounding). Recorded when the session ends
+    prematurely due to dormancy.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.Live.ResponseDuration" units="ms"
+    expires_after="2027-02-22">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The duration of Gemini's spoken response. Recorded only when a spoken
+    response ends naturally (without being interrupted by the user).
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.Live.ResponseLatency" units="ms"
+    expires_after="2027-02-22">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The latency between when the user finishes speaking (thinking state starts)
+    and when Gemini starts speaking its response (responding state starts).
+    Recorded each time Gemini responds.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.Live.TurnCount" units="count"
+    expires_after="2027-02-22">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The total number of speech turns (exchanges) in a Gemini Live session.
+    Recorded once per Gemini Live session when the session ends.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.LocationBarBadgeUpdateSuccess" enum="Boolean"
     expires_after="2027-04-30">
   <owner>joemerramos@google.com</owner>
