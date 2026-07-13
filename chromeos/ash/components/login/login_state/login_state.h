@@ -94,11 +94,6 @@ class COMPONENT_EXPORT(LOGIN_STATE) LoginState
     always_logged_in_ = always_logged_in;
   }
 
-  // DEPRECATED: please use
-  // user_manager::UserManager::Get()->GetPrimaryUser()->username_hash().
-  // TODO(b/278643115): Remove this.
-  const std::string& primary_user_hash() const;
-
   void OnUserManagerCreated(user_manager::UserManager* user_manager);
   void OnUserManagerWillBeDestroyed(user_manager::UserManager* user_manager);
 
@@ -117,7 +112,6 @@ class COMPONENT_EXPORT(LOGIN_STATE) LoginState
 
   LoggedInState logged_in_state_;
   LoggedInUserType logged_in_user_type_;
-  std::string primary_user_hash_;
   base::ObserverList<Observer> observer_list_;
 
   // If true, it always thinks the current status as logged in. Set to true by

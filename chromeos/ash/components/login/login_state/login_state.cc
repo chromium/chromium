@@ -134,20 +134,6 @@ bool LoginState::IsUserAuthenticated() const {
          logged_in_user_type_ == LOGGED_IN_USER_CHILD;
 }
 
-const std::string& LoginState::primary_user_hash() const {
-  auto* user_manager = user_manager::UserManager::Get();
-  if (!user_manager) {
-    return base::EmptyString();
-  }
-
-  auto* primary_user = user_manager->GetPrimaryUser();
-  if (!primary_user) {
-    return base::EmptyString();
-  }
-
-  return primary_user->username_hash();
-}
-
 void LoginState::OnUserManagerCreated(user_manager::UserManager* user_manager) {
   observation_.Observe(user_manager);
 }

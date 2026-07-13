@@ -131,22 +131,4 @@ TEST_F(LoginStateTest, TestLoggedInStateChangedObserverOnUserTypeChange) {
             LoginState::Get()->GetLoggedInUserType());
 }
 
-TEST_F(LoginStateTest, TestPrimaryUser) {
-  TestingPrefServiceSimple local_state;
-  user_manager::UserManagerImpl::RegisterPrefs(local_state.registry());
-  auto fake_user_manager =
-      std::make_unique<user_manager::FakeUserManager>(&local_state);
-
-  const AccountId account_id =
-      AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
-  std::string username_hash =
-      user_manager::TestHelper::GetFakeUsernameHash(account_id);
-  fake_user_manager->AddGaiaUser(account_id, user_manager::UserType::kRegular);
-  fake_user_manager->UserLoggedIn(account_id, username_hash);
-  auto scoped_user_manager = std::make_unique<user_manager::ScopedUserManager>(
-      std::move(fake_user_manager));
-
-  EXPECT_EQ(username_hash, LoginState::Get()->primary_user_hash());
-}
-
 }  // namespace ash
