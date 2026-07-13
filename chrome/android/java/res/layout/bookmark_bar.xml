@@ -19,6 +19,7 @@ found in the LICENSE file.
       android:minHeight="@dimen/bookmark_bar_min_height"
       android:paddingStart="@dimen/bookmark_bar_padding"
       android:paddingEnd="@dimen/bookmark_bar_padding"
+      android:paddingTop="@dimen/bookmark_bar_padding_top"
       android:paddingBottom="@dimen/bookmark_bar_padding">
 
     <!-- Note: This view should never have padding or margins to minimize snapshot memory cost. -->

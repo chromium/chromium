@@ -302,7 +302,7 @@ public class BookmarkBarCoordinatorTest {
     @SmallTest
     public void testOnBookmarkBarHeightChanged() {
         // Verify initial state. Height is read from minHeight and hairline's height.
-        assertEquals("Verify initial state.", 41, mCoordinator.getTopControlHeight());
+        assertEquals("Verify initial state.", 43, mCoordinator.getTopControlHeight());
 
         // NOTE: the `mHeightChangeCallback` is expected to have been registered for observation
         // during `mCoordinator` construction and notified of initial height via posted task.
@@ -489,8 +489,8 @@ public class BookmarkBarCoordinatorTest {
     @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnTopControlsHeightChanged() {
-        // Initialize browser controls manager. Bookmark bar start height is 40.
-        int topControlsHeight = 41;
+        // Initialize browser controls manager. Bookmark bar start height is 42.
+        int topControlsHeight = 43;
         when(mBrowserControlsManager.getTopControlsHeight()).thenReturn(topControlsHeight);
         when(mTopControlsStacker.getHeightFromLayerToTop(TopControlType.BOOKMARK_BAR))
                 .thenReturn(0);
@@ -504,7 +504,7 @@ public class BookmarkBarCoordinatorTest {
                 0,
                 ((MarginLayoutParams) mView.getLayoutParams()).topMargin);
 
-        topControlsHeight = 51;
+        topControlsHeight = 53;
         when(mBrowserControlsManager.getTopControlsHeight()).thenReturn(topControlsHeight);
         when(mTopControlsStacker.getHeightFromLayerToTop(TopControlType.BOOKMARK_BAR))
                 .thenReturn(10);
