@@ -307,6 +307,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // See https://crbug.com/40051700.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDataUrlWorkerOpaqueOrigin);
 
+// When enabled, streamed scripts are only decoded by blink, and the decoded
+// data shared with v8.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDecodeScriptsInBlink);
+
 // When enabled, HTMLTreeBuilder::Flush() will be throttled in kTextMode
 // to reduce O(n^2) string copies.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeferTreeBuilderFlush);

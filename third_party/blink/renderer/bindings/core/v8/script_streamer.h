@@ -41,6 +41,7 @@ class CompileHintsForStreaming;
 class V8LocalCompileHintsConsumer;
 }  // namespace v8_compile_hints
 
+class SegmentedBuffer;
 class ScriptResource;
 class SourceStream;
 class ResponseBodyLoaderClient;
@@ -180,6 +181,7 @@ class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
 
   v8_compile_hints::V8LocalCompileHintsConsumer*
   GetV8LocalCompileHintsConsumerForTest() const;
+  SegmentedBuffer TakeRawDataForTest();
 
  private:
   friend class SourceStream;
@@ -262,6 +264,11 @@ class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
   Member<ResponseBodyLoaderClient> response_body_loader_client_;
 
   ScriptDecoderWithClientPtr script_decoder_;
+
+  // Only set when kDecodeScriptsInBlink is enabled
+  std::unique_ptr<TextResourceDecoder> decoder_;
+  // Only set when kDecodeScriptsInBlink is enabled
+  scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;
 
   // Fields active during asynchronous (non-streaming) reads.
   mojo::ScopedDataPipeConsumerHandle data_pipe_;

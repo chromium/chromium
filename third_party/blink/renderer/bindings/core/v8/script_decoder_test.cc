@@ -23,6 +23,7 @@
 namespace blink {
 namespace {
 
+const unsigned char kBOMOnly[] = {0xef, 0xbb, 0xbf};
 const unsigned char kFooUTF8WithBOM[] = {0xef, 0xbb, 0xbf, 0x66, 0x6f, 0x6f};
 // SHA256 hash of 'foo\1' in hex (the end byte indicates the character width):
 //   python3 -c "print('foo\1', end='')" | sha256sum | xxd -r -p | xxd -i
@@ -116,6 +117,35 @@ TEST_F(ScriptDecoderTest, WithClient) {
   EXPECT_EQ(client->decoded_data(), "foo");
   EXPECT_THAT(client->digest(),
               testing::Pointee(Vector<uint8_t>(base::span(kExpectedDigest))));
+}
+
+TEST_F(ScriptDecoderTest, BOMOnlyWithClient) {
+  scoped_refptr<base::SequencedTaskRunner> default_task_runner =
+      scheduler::GetSequencedTaskRunnerForTesting();
+  DummyResponseBodyLoaderClient* client =
+      MakeGarbageCollected<DummyResponseBodyLoaderClient>();
+  ScriptDecoderWithClientPtr decoder = ScriptDecoderWithClient::Create(
+      client,
+      std::make_unique<TextResourceDecoder>(
+          TextResourceDecoderOptions::CreateUTF8Decode()),
+      default_task_runner);
+  decoder->DidReceiveData(Vector<char>(base::span(kBOMOnly)),
+                          /*send_to_client=*/true);
+
+  base::RunLoop run_loop;
+  decoder->FinishDecode(CrossThreadBindOnce(
+      [&](scoped_refptr<base::SequencedTaskRunner> default_task_runner,
+          base::RunLoop* run_loop) {
+        CHECK(default_task_runner->RunsTasksInCurrentSequence());
+        run_loop->Quit();
+      },
+      default_task_runner, CrossThreadUnretained(&run_loop)));
+  run_loop.Run();
+
+  ASSERT_EQ(client->raw_data().size(), 1u);
+  EXPECT_THAT(client->raw_data().front(), Vector<char>(base::span(kBOMOnly)));
+  EXPECT_EQ(client->decoded_data(), "");
+  EXPECT_NE(client->digest(), nullptr);
 }
 
 TEST_F(ScriptDecoderTest, PartiallySendDifferentThread) {
