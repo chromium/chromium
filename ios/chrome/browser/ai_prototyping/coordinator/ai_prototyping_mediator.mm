@@ -259,9 +259,10 @@ std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
             }
           });
 
-  // Populate the PageContext proto and then execute the query.
+  PageContextWrapperOptions options;
+  options.rich_extraction = richExtraction;
   _pageContextWrapper = CreatePageContextWrapper(
-      _webStateList->GetActiveWebState(), richExtraction,
+      _webStateList->GetActiveWebState(), options,
       std::move(page_context_completion_callback));
   PopulatePageContext(_pageContextWrapper, _webStateList->GetActiveWebState());
 }

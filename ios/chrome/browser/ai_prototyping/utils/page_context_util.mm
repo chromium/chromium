@@ -128,15 +128,18 @@ SavePageContextResult& SavePageContextResult::operator=(
 
 PageContextWrapper* CreatePageContextWrapper(
     web::WebState* web_state,
-    bool rich_extraction,
+    PageContextWrapperOptions options,
     base::OnceCallback<void(PageContextWrapperCallbackResponse)>
         completion_callback) {
   PageContextWrapperConfigBuilder builder;
-  if (rich_extraction) {
+  if (options.rich_extraction || options.actionable_mode) {
     builder.SetUseRichExtraction(true)
         .SetUseRefactoredExtractor(true)
         .SetGraftCrossOriginFrameContent(true)
         .SetExtractPaidContent(true);
+    if (options.actionable_mode) {
+      builder.SetUseRichExtractionWithActionable(true);
+    }
   }
   PageContextWrapperConfig config = builder.Build();
   PageContextWrapper* page_context_wrapper = [[PageContextWrapper alloc]
