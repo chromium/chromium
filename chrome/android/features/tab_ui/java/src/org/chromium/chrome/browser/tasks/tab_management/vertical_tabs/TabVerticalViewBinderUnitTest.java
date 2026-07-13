@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -82,6 +83,8 @@ public class TabVerticalViewBinderUnitTest {
     private ImageView mActuationSpinnerView;
     private PropertyModel mModel;
     private Activity mActivity;
+    private TabFaviconFetcher mMockFaviconFetcher;
+    private Drawable mMockFaviconDrawable;
 
     @Before
     public void setUp() {
@@ -98,6 +101,21 @@ public class TabVerticalViewBinderUnitTest {
         mIndicatorView = mItemView.findViewById(R.id.ai_indicator);
         mActuationSparkView = mItemView.findViewById(R.id.actuation_spark);
         mActuationSpinnerView = mItemView.findViewById(R.id.actuation_spinner);
+
+        mMockFaviconDrawable = mock(Drawable.class);
+        when(mMockFaviconDrawable.mutate()).thenReturn(mMockFaviconDrawable);
+        TabFavicon mockFavicon = mock(TabFavicon.class);
+        when(mockFavicon.getDefaultDrawable()).thenReturn(mMockFaviconDrawable);
+        when(mockFavicon.getSelectedDrawable()).thenReturn(mMockFaviconDrawable);
+        mMockFaviconFetcher = mock(TabFaviconFetcher.class);
+        doAnswer(
+                        invocation -> {
+                            Callback<TabFavicon> callback = invocation.getArgument(0);
+                            callback.onResult(mockFavicon);
+                            return null;
+                        })
+                .when(mMockFaviconFetcher)
+                .fetch(any());
 
         mModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
@@ -183,26 +201,11 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindFavicon() {
-        TabFaviconFetcher mockFetcher = mock(TabFaviconFetcher.class);
-        TabFavicon mockFavicon = mock(TabFavicon.class);
-        Drawable mockDrawable = mock(Drawable.class);
-        when(mockDrawable.mutate()).thenReturn(mockDrawable);
-        when(mockFavicon.getDefaultDrawable()).thenReturn(mockDrawable);
-
-        doAnswer(
-                        invocation -> {
-                            Callback<TabFavicon> callback = invocation.getArgument(0);
-                            callback.onResult(mockFavicon);
-                            return null;
-                        })
-                .when(mockFetcher)
-                .fetch(any());
-
-        mModel.set(TabProperties.FAVICON_FETCHER, mockFetcher);
+        mModel.set(TabProperties.FAVICON_FETCHER, mMockFaviconFetcher);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.FAVICON_FETCHER);
 
         assertEquals(View.VISIBLE, mFaviconView.getVisibility());
-        assertEquals(mockDrawable, mFaviconView.getDrawable());
+        assertEquals(mMockFaviconDrawable, mFaviconView.getDrawable());
     }
 
     @Test
@@ -248,6 +251,7 @@ public class TabVerticalViewBinderUnitTest {
                 new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
         mModel.set(TabProperties.TAB_ID, 123);
         mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
+        mModel.set(TabProperties.IS_SELECTED, true);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ACTION_BUTTON_DATA);
 
         mCloseButton.performClick();
@@ -464,23 +468,9 @@ public class TabVerticalViewBinderUnitTest {
         ImageView faviconView = pinnedView.findViewById(R.id.tab_favicon);
 
         // 1. Test Favicon fetching
-        TabFaviconFetcher mockFetcher = mock(TabFaviconFetcher.class);
-        TabFavicon mockFavicon = mock(TabFavicon.class);
-        Drawable mockDrawable = mock(Drawable.class);
-        when(mockDrawable.mutate()).thenReturn(mockDrawable);
-        when(mockFavicon.getDefaultDrawable()).thenReturn(mockDrawable);
-        doAnswer(
-                        invocation -> {
-                            Callback<TabFavicon> callback = invocation.getArgument(0);
-                            callback.onResult(mockFavicon);
-                            return null;
-                        })
-                .when(mockFetcher)
-                .fetch(any());
-
-        mModel.set(TabProperties.FAVICON_FETCHER, mockFetcher);
+        mModel.set(TabProperties.FAVICON_FETCHER, mMockFaviconFetcher);
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.FAVICON_FETCHER);
-        assertEquals(mockDrawable, faviconView.getDrawable());
+        assertEquals(mMockFaviconDrawable, faviconView.getDrawable());
 
         // 2. Test Click Listener
         TabActionListener mockClickListener = mock(TabActionListener.class);
@@ -732,19 +722,19 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.IS_LOADING, true);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_LOADING);
         assertEquals(View.VISIBLE, spinner.getVisibility());
-        assertEquals(View.INVISIBLE, mFaviconView.getVisibility());
+        assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
 
         // 2. Favicon fetcher updated while loading (should not break INVISIBLE state)
         TabFaviconFetcher mockFetcher2 = mock(TabFaviconFetcher.class);
         mModel.set(TabProperties.FAVICON_FETCHER, mockFetcher2);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.FAVICON_FETCHER);
         assertEquals(View.VISIBLE, spinner.getVisibility());
-        assertEquals(View.INVISIBLE, mFaviconView.getVisibility());
+        assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
 
         // 3. Not Loading
         mModel.set(TabProperties.IS_LOADING, false);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_LOADING);
-        assertEquals(View.GONE, spinner.getVisibility());
+        assertNotEquals(View.VISIBLE, spinner.getVisibility());
         assertEquals(View.VISIBLE, mFaviconView.getVisibility());
     }
 
@@ -866,11 +856,11 @@ public class TabVerticalViewBinderUnitTest {
         assertEquals(expectedSize, mItemView.getLayoutParams().width);
         assertEquals(expectedSize, mItemView.getLayoutParams().height);
 
-        assertEquals(View.GONE, mTitleView.getVisibility());
+        assertNotEquals(View.VISIBLE, mTitleView.getVisibility());
         assertEquals("Google", mItemView.getContentDescription());
-        assertEquals(View.GONE, mCloseButton.getVisibility());
-        assertEquals(View.GONE, mMediaIndicatorView.getVisibility());
-        assertEquals(View.GONE, mIndicatorView.getVisibility());
+        assertNotEquals(View.VISIBLE, mCloseButton.getVisibility());
+        assertNotEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
+        assertNotEquals(View.VISIBLE, mIndicatorView.getVisibility());
 
         // Verify padding is collapsed margin
         ViewGroup.MarginLayoutParams lp =
@@ -1042,5 +1032,96 @@ public class TabVerticalViewBinderUnitTest {
         ViewGroup.MarginLayoutParams lp =
                 (ViewGroup.MarginLayoutParams) headerView.getLayoutParams();
         assertEquals(0, lp.getMarginStart());
+    }
+
+    @Test
+    @SmallTest
+    public void testIconPriorities_RailCollapsed() {
+        // Setup favicon fetcher
+        mModel.set(TabProperties.FAVICON_FETCHER, mMockFaviconFetcher);
+
+        // Setup all other icons to be active
+        mModel.set(TabProperties.IS_LOADING, true);
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.AUDIBLE);
+        mModel.set(
+                TabProperties.ACTOR_UI_STATE,
+                new UiTabState(0, null, null, TabIndicatorStatus.DYNAMIC, false));
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
+        mModel.set(TabProperties.IS_SELECTED, true);
+        mModel.set(TabProperties.IS_RAIL_COLLAPSED, true);
+
+        // Bind all properties
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_RAIL_COLLAPSED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.FAVICON_FETCHER);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_LOADING);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.MEDIA_INDICATOR);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.ACTOR_UI_STATE);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ACTION_BUTTON_DATA);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+
+        View spinner = mItemView.findViewById(R.id.tab_loading_spinner);
+
+        // Hover to show close button
+        MotionEvent hoverEnterEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
+        hoverEnterEvent.setSource(InputDevice.SOURCE_MOUSE);
+        mItemView.dispatchGenericMotionEvent(hoverEnterEvent);
+
+        // --- Priority 1: Action Button ---
+        assertEquals(View.VISIBLE, mCloseButton.getVisibility());
+        assertNotEquals(View.VISIBLE, mActuationSparkView.getVisibility());
+        assertNotEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
+        assertNotEquals(View.VISIBLE, spinner.getVisibility());
+        assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
+
+        // --- Priority 2: AI Indicator ---
+        // Un-hover to hide close button
+        MotionEvent hoverExitEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 0f, 0f, 0);
+        hoverExitEvent.setSource(InputDevice.SOURCE_MOUSE);
+        mItemView.dispatchGenericMotionEvent(hoverExitEvent);
+
+        assertNotEquals(View.VISIBLE, mCloseButton.getVisibility());
+        assertEquals(View.VISIBLE, mActuationSparkView.getVisibility());
+        assertNotEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
+        assertNotEquals(View.VISIBLE, spinner.getVisibility());
+        assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
+
+        // --- Priority 3: Media Indicator ---
+        // Disable AI
+        mModel.set(
+                TabProperties.ACTOR_UI_STATE,
+                new UiTabState(0, null, null, TabIndicatorStatus.NONE, false));
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.ACTOR_UI_STATE);
+
+        assertNotEquals(View.VISIBLE, mCloseButton.getVisibility());
+        assertNotEquals(View.VISIBLE, mActuationSparkView.getVisibility());
+        assertEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
+        assertNotEquals(View.VISIBLE, spinner.getVisibility());
+        assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
+
+        // --- Priority 4: Loading Spinner ---
+        // Disable Media
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.NONE);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.MEDIA_INDICATOR);
+
+        assertNotEquals(View.VISIBLE, mCloseButton.getVisibility());
+        assertNotEquals(View.VISIBLE, mActuationSparkView.getVisibility());
+        assertNotEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
+        assertEquals(View.VISIBLE, spinner.getVisibility());
+        assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
+
+        // --- Priority 5: Favicon ---
+        // Disable Loading
+        mModel.set(TabProperties.IS_LOADING, false);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_LOADING);
+
+        assertNotEquals(View.VISIBLE, mCloseButton.getVisibility());
+        assertNotEquals(View.VISIBLE, mActuationSparkView.getVisibility());
+        assertNotEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
+        assertNotEquals(View.VISIBLE, spinner.getVisibility());
+        assertEquals(View.VISIBLE, mFaviconView.getVisibility());
     }
 }
